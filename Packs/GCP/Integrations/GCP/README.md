@@ -435,64 +435,64 @@ Retrieves the list of instances contained within the specified zone.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | GCP project ID. | Required | 
-| zone | The name of the zone for this request. | Required | 
-| filters | A filter expression that filters resources listed in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be either =, !=, &gt;, or &lt;.  For example, if you are filtering Compute Engine instances, you can exclude instances named example-instance by specifying name != example-instance. | Optional | 
-| limit | The maximum number of results per page that should be returned. Acceptable values are 0 to 500, inclusive. (Default: 500). Default is 500. | Optional | 
-| order_by | Sorts list results by a certain order. By default, results are returned in alphanumerical order based on the resource name.  You can also sort results in descending order based on the creation timestamp using order_by="creationTimestamp desc". | Optional | 
-| page_token | Specifies a page token to use. Set page_token to the nextPageToken returned by a previous list request to get the next page of results. | Optional | 
+| project_id | GCP project ID. | Required |
+| zone | The name of the zone for this request. | Required |
+| filters | A filter expression that filters resources listed in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be either =, !=, &gt;, or &lt;.  For example, if you are filtering Compute Engine instances, you can exclude instances named example-instance by specifying name != example-instance. | Optional |
+| limit | The maximum number of results per page that should be returned. Acceptable values are 0 to 500, inclusive. (Default: 500). Default is 500. | Optional |
+| order_by | Sorts list results by a certain order. By default, results are returned in alphanumerical order based on the resource name.  You can also sort results in descending order based on the creation timestamp using order_by="creationTimestamp desc". | Optional |
+| page_token | Specifies a page token to use. Set page_token to the nextPageToken returned by a previous list request to get the next page of results. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCP.Compute.Instances.kind | String | Type of the resource.Always compute\#instance for instances. | 
-| GCP.Compute.Instances.id | String | The unique identifier for the resource. | 
-| GCP.Compute.Instances.creationTimestamp | String | Creation timestamp in RFC3339 text format. | 
-| GCP.Compute.Instances.name | String | The name of the resource, provided by the client when initially creating the resource. | 
-| GCP.Compute.Instances.description | String | An optional description of this resource. | 
-| GCP.Compute.Instances.tags | String | Tags to apply to this instance. | 
-| GCP.Compute.Instances.machineType | String | Full or partial URL of the machine type resource to use for this instance, in the format: zones/zone/machineTypes/machine-type. | 
-| GCP.Compute.Instances.status | String | The status of the instance. | 
-| GCP.Compute.Instances.statusMessage | String | An optional, human-readable explanation of the status. | 
-| GCP.Compute.Instances.zone | String | URL of the zone where the instance resides. | 
-| GCP.Compute.Instances.canIpForward | String | Allows this instance to send and receive packets with non-matching destination or source IPs. | 
-| GCP.Compute.Instances.networkInterfaces | Object | An array of network configurations for this instance. | 
-| GCP.Compute.Instances.disks | Object | Array of disks associated with this instance. | 
-| GCP.Compute.Instances.metadata | Object | The metadata key/value pairs assigned to this instance. | 
-| GCP.Compute.Instances.serviceAccounts | Object | A list of service accounts, with their specified scopes, authorized for this instance. | 
-| GCP.Compute.Instances.selfLink | String | Server-defined URL for this resource. | 
-| GCP.Compute.Instances.scheduling | Object | Sets the scheduling options for this instance. | 
-| GCP.Compute.Instances.cpuPlatform | String | The CPU platform used by this instance. | 
-| GCP.Compute.Instances.labels | String | Labels to apply to this instance. | 
-| GCP.Compute.Instances.labelFingerprint | String | A fingerprint for this request, which is essentially a hash of the label's contents and used for optimistic locking. | 
-| GCP.Compute.Instances.instanceEncryptionKey | Object | Encrypts suspended data for an instance with a customer-managed encryption key. | 
-| GCP.Compute.Instances.minCpuPlatform | String | Specifies a minimum CPU platform for the VM instance. | 
-| GCP.Compute.Instances.guestAccelerators | Object | A list of the type and count of accelerator cards attached to the instance. | 
-| GCP.Compute.Instances.startRestricted | Boolean | Whether a VM has been restricted for start because Compute Engine has detected suspicious activity. | 
-| GCP.Compute.Instances.deletionProtection | Boolean | Whether the resource should be protected against deletion. | 
-| GCP.Compute.Instances.resourcePolicies | String | Resource policies applied to this instance. | 
-| GCP.Compute.Instances.sourceMachineImage | String | Source machine image. | 
-| GCP.Compute.Instances.reservationAffinity | Object | Specifies the reservations that this instance can consume from. | 
-| GCP.Compute.Instances.hostname | String | Specifies the hostname of the instance. | 
-| GCP.Compute.Instances.displayDevice | Object | Enables display device for the instance. | 
-| GCP.Compute.Instances.shieldedInstanceConfig | Object |  | 
-| GCP.Compute.Instances.sourceMachineImageEncryptionKey | Object | Source machine image encryption key when creating an instance from a machine image. | 
-| GCP.Compute.Instances.confidentialInstanceConfig | Object |  | 
-| GCP.Compute.Instances.fingerprint | String | Specifies a fingerprint for this resource, which is essentially a hash of the instance's contents and used for optimistic locking. | 
-| GCP.Compute.Instances.privateIpv6GoogleAccess | String | The private IPv6 google access type for the VM. | 
-| GCP.Compute.Instances.advancedMachineFeatures | Object | Controls for advanced machine-related behavior features. | 
-| GCP.Compute.Instances.lastStartTimestamp | String | Last start timestamp in RFC3339 text format. | 
-| GCP.Compute.Instances.lastStopTimestamp | String | Last stop timestamp in RFC3339 text format. | 
-| GCP.Compute.Instances.lastSuspendedTimestamp | String | Last suspended timestamp in RFC3339 text format. | 
-| GCP.Compute.Instances.satisfiesPzs | String |  | 
-| GCP.Compute.Instances.satisfiesPzi | String |  | 
-| GCP.Compute.Instances.resourceStatus | Object | The resource status. | 
-| GCP.Compute.Instances.networkPerformanceConfig | Object | Network performance configuration. | 
-| GCP.Compute.Instances.keyRevocationActionType | String | KeyRevocationActionType of the instance. | 
-| GCP.Compute.InstancesNextPageToken | String | This token allows you to get the next page of results for list requests. | 
-| GCP.Compute.InstancesSelfLink | String | Server-defined URL for this resource. | 
-| GCP.Compute.InstancesWarning | Object | Informational warning message. | 
+| GCP.Compute.Instances.kind | String | Type of the resource.Always compute\#instance for instances. |
+| GCP.Compute.Instances.id | String | The unique identifier for the resource. |
+| GCP.Compute.Instances.creationTimestamp | String | Creation timestamp in RFC3339 text format. |
+| GCP.Compute.Instances.name | String | The name of the resource, provided by the client when initially creating the resource. |
+| GCP.Compute.Instances.description | String | An optional description of this resource. |
+| GCP.Compute.Instances.tags | String | Tags to apply to this instance. |
+| GCP.Compute.Instances.machineType | String | Full or partial URL of the machine type resource to use for this instance, in the format: zones/zone/machineTypes/machine-type. |
+| GCP.Compute.Instances.status | String | The status of the instance. |
+| GCP.Compute.Instances.statusMessage | String | An optional, human-readable explanation of the status. |
+| GCP.Compute.Instances.zone | String | URL of the zone where the instance resides. |
+| GCP.Compute.Instances.canIpForward | String | Allows this instance to send and receive packets with non-matching destination or source IPs. |
+| GCP.Compute.Instances.networkInterfaces | Object | An array of network configurations for this instance. |
+| GCP.Compute.Instances.disks | Object | Array of disks associated with this instance. |
+| GCP.Compute.Instances.metadata | Object | The metadata key/value pairs assigned to this instance. |
+| GCP.Compute.Instances.serviceAccounts | Object | A list of service accounts, with their specified scopes, authorized for this instance. |
+| GCP.Compute.Instances.selfLink | String | Server-defined URL for this resource. |
+| GCP.Compute.Instances.scheduling | Object | Sets the scheduling options for this instance. |
+| GCP.Compute.Instances.cpuPlatform | String | The CPU platform used by this instance. |
+| GCP.Compute.Instances.labels | String | Labels to apply to this instance. |
+| GCP.Compute.Instances.labelFingerprint | String | A fingerprint for this request, which is essentially a hash of the label's contents and used for optimistic locking. |
+| GCP.Compute.Instances.instanceEncryptionKey | Object | Encrypts suspended data for an instance with a customer-managed encryption key. |
+| GCP.Compute.Instances.minCpuPlatform | String | Specifies a minimum CPU platform for the VM instance. |
+| GCP.Compute.Instances.guestAccelerators | Object | A list of the type and count of accelerator cards attached to the instance. |
+| GCP.Compute.Instances.startRestricted | Boolean | Whether a VM has been restricted for start because Compute Engine has detected suspicious activity. |
+| GCP.Compute.Instances.deletionProtection | Boolean | Whether the resource should be protected against deletion. |
+| GCP.Compute.Instances.resourcePolicies | String | Resource policies applied to this instance. |
+| GCP.Compute.Instances.sourceMachineImage | String | Source machine image. |
+| GCP.Compute.Instances.reservationAffinity | Object | Specifies the reservations that this instance can consume from. |
+| GCP.Compute.Instances.hostname | String | Specifies the hostname of the instance. |
+| GCP.Compute.Instances.displayDevice | Object | Enables display device for the instance. |
+| GCP.Compute.Instances.shieldedInstanceConfig | Object |  |
+| GCP.Compute.Instances.sourceMachineImageEncryptionKey | Object | Source machine image encryption key when creating an instance from a machine image. |
+| GCP.Compute.Instances.confidentialInstanceConfig | Object |  |
+| GCP.Compute.Instances.fingerprint | String | Specifies a fingerprint for this resource, which is essentially a hash of the instance's contents and used for optimistic locking. |
+| GCP.Compute.Instances.privateIpv6GoogleAccess | String | The private IPv6 google access type for the VM. |
+| GCP.Compute.Instances.advancedMachineFeatures | Object | Controls for advanced machine-related behavior features. |
+| GCP.Compute.Instances.lastStartTimestamp | String | Last start timestamp in RFC3339 text format. |
+| GCP.Compute.Instances.lastStopTimestamp | String | Last stop timestamp in RFC3339 text format. |
+| GCP.Compute.Instances.lastSuspendedTimestamp | String | Last suspended timestamp in RFC3339 text format. |
+| GCP.Compute.Instances.satisfiesPzs | String |  |
+| GCP.Compute.Instances.satisfiesPzi | String |  |
+| GCP.Compute.Instances.resourceStatus | Object | The resource status. |
+| GCP.Compute.Instances.networkPerformanceConfig | Object | Network performance configuration. |
+| GCP.Compute.Instances.keyRevocationActionType | String | KeyRevocationActionType of the instance. |
+| GCP.Compute.InstancesNextPageToken | String | This token allows you to get the next page of results for list requests. |
+| GCP.Compute.InstancesSelfLink | String | Server-defined URL for this resource. |
+| GCP.Compute.InstancesWarning | Object | Informational warning message. |
 
 ### gcp-compute-instance-labels-set
 
@@ -507,37 +507,37 @@ Sets labels on an instance.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| instance | Name of the instance resource to return. | Required | 
-| project_id | Project ID that you want to run this command on. | Required | 
-| zone | The name of the zone for this request. | Required | 
-| labels | An object containing a list of "key": value pairs. Example: key=abc,value=123;key=ABC,value=321. | Required | 
-| label_fingerprint | Fingerprint of the previous set of labels for this resource, used to prevent conflicts. Provide the latest fingerprint value when making a request to add or change labels. | Required | 
+| instance | Name of the instance resource to return. | Required |
+| project_id | Project ID that you want to run this command on. | Required |
+| zone | The name of the zone for this request. | Required |
+| labels | An object containing a list of "key": value pairs. Example: key=abc,value=123;key=ABC,value=321. | Required |
+| label_fingerprint | Fingerprint of the previous set of labels for this resource, used to prevent conflicts. Provide the latest fingerprint value when making a request to add or change labels. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCP.Compute.Operations.id | string | The unique identifier for the resource. This identifier is defined by the server. | 
-| GCP.Compute.Operations.name | string | Name of the resource. | 
-| GCP.Compute.Operations.zone | string | The URL of the zone where the operation resides. Only available when performing per-zone operations. You must specify this field as part of the HTTP request URL. It is not settable as a field in the request body. | 
-| GCP.Compute.Operations.clientOperationId | string | The value of requestId if you provided it in the request. Not present otherwise. | 
-| GCP.Compute.Operations.operationType | string | The type of operation, such as insert, update, or delete, and so on. | 
-| GCP.Compute.Operations.targetLink | string | The URL of the resource that the operation modifies. For operations related to creating a snapshot, this points to the persistent disk that the snapshot was created from. | 
-| GCP.Compute.Operations.targetId | string | The unique target ID, which identifies a specific incarnation of the target resource. | 
-| GCP.Compute.Operations.status | string | The status of the operation, which can be one of the following: PENDING RUNNING or DONE. | 
-| GCP.Compute.Operations.statusMessage | string | An optional textual description of the current status of the operation. | 
-| GCP.Compute.Operations.user | string | User who requested the operation for example EMAILADDRESS. | 
-| GCP.Compute.Operations.progress | number | An optional progress indicator that ranges from 0 to 100. There is no requirement that this be linear or support any granularity of operations. This should not be used to guess when the operation will be complete. This number should monotonically increase as the operation progresses. | 
-| GCP.Compute.Operations.insertTime | string | The time that this operation was requested. This value is in RFC3339 text format. | 
-| GCP.Compute.Operations.startTime | string | The time that this operation was started by the server. This value is in RFC3339 text format. | 
-| GCP.Compute.Operations.endTime | string | The time that this operation was completed. This value is in RFC3339 text format. | 
-| GCP.Compute.Operations.error | string | If errors are generated during processing of the operation, this field will be populated. | 
-| GCP.Compute.Operations.httpErrorStatusCode | number | If the operation fails, this field contains the HTTP error status code that was returned. For example, a 404 means the resource was not found. | 
-| GCP.Compute.Operations.httpErrorMessage | string | If the operation fails, this field contains the HTTP error message that was returned, such as NOT FOUND. | 
-| GCP.Compute.Operations.selfLink | string | Server-defined URL for the resource. | 
-| GCP.Compute.Operations.region | string | The URL of the region where the operation resides. Only available when performing regional operations. You must specify this field as part of the HTTP request URL. It is not settable as a field in the request body. | 
-| GCP.Compute.Operations.description | string | A textual description of the operation, which is set when the operation is created. | 
-| GCP.Compute.Operations.kind | string | Type of the resource. Always compute\#operation for Operation resources. | 
+| GCP.Compute.Operations.id | string | The unique identifier for the resource. This identifier is defined by the server. |
+| GCP.Compute.Operations.name | string | Name of the resource. |
+| GCP.Compute.Operations.zone | string | The URL of the zone where the operation resides. Only available when performing per-zone operations. You must specify this field as part of the HTTP request URL. It is not settable as a field in the request body. |
+| GCP.Compute.Operations.clientOperationId | string | The value of requestId if you provided it in the request. Not present otherwise. |
+| GCP.Compute.Operations.operationType | string | The type of operation, such as insert, update, or delete, and so on. |
+| GCP.Compute.Operations.targetLink | string | The URL of the resource that the operation modifies. For operations related to creating a snapshot, this points to the persistent disk that the snapshot was created from. |
+| GCP.Compute.Operations.targetId | string | The unique target ID, which identifies a specific incarnation of the target resource. |
+| GCP.Compute.Operations.status | string | The status of the operation, which can be one of the following: PENDING RUNNING or DONE. |
+| GCP.Compute.Operations.statusMessage | string | An optional textual description of the current status of the operation. |
+| GCP.Compute.Operations.user | string | User who requested the operation for example EMAILADDRESS. |
+| GCP.Compute.Operations.progress | number | An optional progress indicator that ranges from 0 to 100. There is no requirement that this be linear or support any granularity of operations. This should not be used to guess when the operation will be complete. This number should monotonically increase as the operation progresses. |
+| GCP.Compute.Operations.insertTime | string | The time that this operation was requested. This value is in RFC3339 text format. |
+| GCP.Compute.Operations.startTime | string | The time that this operation was started by the server. This value is in RFC3339 text format. |
+| GCP.Compute.Operations.endTime | string | The time that this operation was completed. This value is in RFC3339 text format. |
+| GCP.Compute.Operations.error | string | If errors are generated during processing of the operation, this field will be populated. |
+| GCP.Compute.Operations.httpErrorStatusCode | number | If the operation fails, this field contains the HTTP error status code that was returned. For example, a 404 means the resource was not found. |
+| GCP.Compute.Operations.httpErrorMessage | string | If the operation fails, this field contains the HTTP error message that was returned, such as NOT FOUND. |
+| GCP.Compute.Operations.selfLink | string | Server-defined URL for the resource. |
+| GCP.Compute.Operations.region | string | The URL of the region where the operation resides. Only available when performing regional operations. You must specify this field as part of the HTTP request URL. It is not settable as a field in the request body. |
+| GCP.Compute.Operations.description | string | A textual description of the operation, which is set when the operation is created. |
+| GCP.Compute.Operations.kind | string | Type of the resource. Always compute\#operation for Operation resources. |
 
 ### gcp-compute-instance-get
 
@@ -552,72 +552,72 @@ Returns the specified Instance resource. Gets a list of available instances by m
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | Project ID that you want to run this command on. | Required | 
-| zone | The name of the zone for this request. | Required | 
-| instance | Name of the instance resource to return. | Required | 
+| project_id | Project ID that you want to run this command on. | Required |
+| zone | The name of the zone for this request. | Required |
+| instance | Name of the instance resource to return. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- |----------| --- |
-| GCP.Compute.Instances.id | string   | The unique identifier for the resource. This identifier is defined by the server. | 
-| GCP.Compute.Instances.creationTimestamp | string   | Creation timestamp in RFC3339 text format. | 
-| GCP.Compute.Instances.name | string   | The name of the resource, provided by the client when initially creating the resource. The resource name must be 1-63 characters long, and comply with RFC1035. Specifically, the name must be 1-63 characters long and match the regular expression \[a-z\]\(\[-a-z0-9\]\*\[a-z0-9\]\)? which means the first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash. | 
-| GCP.Compute.Instances.description | string   | An optional description of this resource. Provide this property when you create the resource. | 
-| GCP.Compute.Instances.tags | string   | Tags to apply to this instance. Tags are used to identify valid sources or targets for network firewalls and are specified by the client during instance creation. The tags can be later modified by the setTags method. Each tag within the list must comply with RFC1035. Multiple tags can be specified via the tags.items field. | 
-| GCP.Compute.Instances.tags.items | Object   | An array of tags. Each tag must be 1-63 characters long, and comply with RFC1035. | 
-| GCP.Compute.Instances.tags.fingerprint | string   | Specifies a fingerprint for this request, which is essentially a hash of the tags contents and used for optimistic locking. The fingerprint is initially generated by Compute Engine and changes after every request to modify or update tags. You must always provide an up-to-date fingerprint hash in order to update or change tags. | 
-| GCP.Compute.Instances.machineType | string   | Full or partial URL of the machine type resource to use for this instance, in the format: zones/zone/machineTypes/machine-type. This is provided by the client when the instance is created. | 
-| GCP.Compute.Instances.status | string   | The status of the instance. One of the following values: PROVISIONING, STAGING, RUNNING, STOPPING, STOPPED, SUSPENDING, SUSPENDED, and TERMINATED. | 
-| GCP.Compute.Instances.statusMessage | string   | An optional, human-readable explanation of the status. | 
-| GCP.Compute.Instances.zone | string   | URL of the zone where the instance resides. You must specify this field as part of the HTTP request URL. It is not settable as a field in the request body. | 
-| GCP.Compute.Instances.canIpForward | boolean  | Allows this instance to send and receive packets with non-matching destination or source IPs. This is required if you plan to use this instance to forward routes. For more information, see Enabling IP Forwarding. | 
-| GCP.Compute.Instances.networkInterfaces | Object   | An array of network configurations for this instance. These specify how interfaces are configured to interact with other network services, such as connecting to the internet. Multiple interfaces are supported per instance. | 
-| GCP.Compute.Instances.networkInterfaces.network | string   | URL of the network resource for this instance. When creating an instance, if neither the network nor the subnetwork is specified, the default network global/networks/default is used; if the network is not specified but the subnetwork is specified, the network is inferred. | 
-| GCP.Compute.Instances.networkInterfaces.subnetwork | string   | The URL of the Subnetwork resource for this instance. If the network resource is in legacy mode, do not provide this property. If the network is in auto subnet mode, providing the subnetwork is optional. If the network is in custom subnet mode, then this field should be specified. If you specify this property, you can specify the subnetwork as a full or partial URL. | 
-| GCP.Compute.Instances.networkInterfaces.networkIP | string   | An IPv4 internal network address to assign to the instance for this network interface. If not specified by the user, an unused internal IP is assigned by the system. | 
-| GCP.Compute.Instances.networkInterfaces.name | string   |  The name of the network interface, generated by the server. For network devices, these are eth0, eth1, etc. | 
-| GCP.Compute.Instances.networkInterfaces.accessConfigs | Object   | An array of configurations for this interface. Currently, only one access config, ONE_TO_ONE_NAT, is supported. If there are no accessConfigs specified, then this instance will have no external internet access. | 
-| GCP.Compute.Instances.networkInterfaces.aliasIpRanges | Object   | An array of alias IP ranges for this network interface. Can only be specified for network interfaces on subnet-mode networks. | 
-| GCP.Compute.Instances.networkInterfaces.fingerprint | string   | Fingerprint hash of contents stored in this network interface. This field will be ignored when inserting an Instance or adding a NetworkInterface. An up-to-date fingerprint must be provided in order to update the NetworkInterface, otherwise the request will fail with error 412 conditionNotMet. | 
-| GCP.Compute.Instances.networkInterfaces.kind | string   | Type of the resource. Always compute\#networkInterface for network interfaces. | 
-| GCP.Compute.Instances.disks | Object   | Array of disks associated with this instance. Persistent disks must be created before you can assign them. | 
-| GCP.Compute.Instances.disks.type | string   | Specifies the type of the disk, either SCRATCH or PERSISTENT. If not specified, the default is PERSISTENT. | 
-| GCP.Compute.Instances.disks.mode | string   | The mode in which to attach this disk, either READ_WRITE or READ_ONLY. If not specified, the default is to attach the disk in READ_WRITE mode. | 
-| GCP.Compute.Instances.disks.source | string   | Specifies a valid partial or full URL to an existing Persistent Disk resource. When creating a new instance, one of initializeParams.sourceImage or disks.source is required except for local SSD. | 
-| GCP.Compute.Instances.disks.deviceName | string   | Specifies a unique device name of your choice that is reflected into the /dev/disk/by-id/google-\* tree of a Linux operating system running within the instance. This name can be used to reference the device for mounting, resizing, and so on, from within the instance. | 
-| GCP.Compute.Instances.disks.index | number   | A zero-based index to this disk, where 0 is reserved for the boot disk. If you have many disks attached to an instance, each disk would have a unique index number. | 
-| GCP.Compute.Instances.disks.boot | boolean  | Indicates that this is a boot disk. The virtual machine will use the first partition of the disk for its root filesystem. | 
-| GCP.Compute.Instances.disks.initializeParams | string   | Specifies the parameters for a new disk that will be created alongside the new instance. Use initialization parameters to create boot disks or local SSDs attached to the new instance. | 
-| GCP.Compute.Instances.disks.autoDelete | boolean  | Specifies whether the disk will be auto-deleted when the instance is deleted \(but not when the disk is detached from the instance\). | 
-| GCP.Compute.Instances.disks.licenses | string   |  Any valid publicly visible licenses. | 
-| GCP.Compute.Instances.disks.interface | string   | Specifies the disk interface to use for attaching this disk, which is either SCSI or NVME. The default is SCSI. Persistent disks must always use SCSI and the request will fail if you attempt to attach a persistent disk in any other format than SCSI. Local SSDs can use either NVME or SCSI. For performance characteristics of SCSI over NVMe, see Local SSD performance. | 
-| GCP.Compute.Instances.disks.guestOsFeatures | string   | A list of features to enable on the guest operating system. Applicable only for bootable images. Read Enabling guest operating system features to see a list of available options. | 
-| GCP.Compute.Instances.disks.diskEncryptionKey | Object   | Encrypts or decrypts a disk using a customer-supplied encryption key. | 
-| GCP.Compute.Instances.disks.kind | string   | Type of the resource. Always compute\#attachedDisk for attached disks. | 
-| GCP.Compute.Instances.metadata | string   | The metadata key/value pairs assigned to this instance. This includes custom metadata and predefined keys. | 
-| GCP.Compute.Instances.metadata.fingerprint | string   | Specifies a fingerprint for this request, which is essentially a hash of the metadatas contents and used for optimistic locking. The fingerprint is initially generated by Compute Engine and changes after every request to modify or update metadata. You must always provide an up-to-date fingerprint hash in order to update or change metadata, otherwise the request will fail with error 412 conditionNotMet. | 
-| GCP.Compute.Instances.metadata.items | Object   | Array of key/value pairs. The total size of all keys and values must be less than 512 KB. | 
-| GCP.Compute.Instances.metadata.kind | string   | Type of the resource. Always compute\#metadata for metadata. | 
-| GCP.Compute.Instances.serviceAccounts | string   | A list of service accounts, with their specified scopes, authorized for this instance. Only one service account per VM instance is supported. | 
-| GCP.Compute.Instances.serviceAccounts.email | string   | Email address of the service account. | 
-| GCP.Compute.Instances.serviceAccounts.scopes | string   | The list of scopes to be made available for this service account. | 
-| GCP.Compute.Instances.selfLink | string   | Server-defined URL for this resource. | 
-| GCP.Compute.Instances.scheduling | string   | Sets the scheduling options for this instance. | 
-| GCP.Compute.Instances.scheduling.onHostMaintenance | string   | Defines the maintenance behavior for this instance. For standard instances, the default behavior is MIGRATE. For preemptible instances, the default and only possible behavior is TERMINATE. For more information, see Setting Instance Scheduling Options. | 
-| GCP.Compute.Instances.scheduling.automaticRestart | boolean  | Specifies whether the instance should be automatically restarted if it is terminated by Compute Engine \(not terminated by a user\). You can only set the automatic restart option for standard instances. Preemptible instances cannot be automatically restarted. | 
-| GCP.Compute.Instances.scheduling.preemptible | boolean  | Defines whether the instance is preemptible. This can only be set during instance creation, it cannot be set or changed after the instance has been created. | 
-| GCP.Compute.Instances.scheduling.nodeAffinities | string   | A set of node affinity and anti-affinity. | 
-| GCP.Compute.Instances.cpuPlatform | string   | The CPU platform used by this instance. | 
-| GCP.Compute.Instances.labels | string   | Labels to apply to this instance. These can be later modified by the setLabels method. | 
-| GCP.Compute.Instances.labels.key | string   | The label key. | 
-| GCP.Compute.Instances.labels.value | string   | The label value. | 
-| GCP.Compute.Instances.labelFingerprint | string   | A fingerprint for this request, which is essentially a hash of the labels contents and used for optimistic locking. The fingerprint is initially generated by Compute Engine and changes after every request to modify or update labels. You must always provide an up-to-date fingerprint hash in order to update or change labels. | 
-| GCP.Compute.Instances.minCpuPlatform | string   | Specifies a minimum CPU platform for the VM instance. Applicable values are the friendly names of CPU platforms, such as minCpuPlatform: "Intel Haswell" or minCpuPlatform: "Intel Sandy Bridge". | 
-| GCP.Compute.Instances.guestAccelerators | string   | A list of the type and count of accelerator cards attached to the instance. | 
-| GCP.Compute.Instances.guestAccelerators.acceleratorType | string   | Full or partial URL of the accelerator type resource to attach to this instance. For example: projects/my-project/zones/us-central1-c/acceleratorTypes/nvidia-tesla-p100 If you are creating an instance template, specify only the accelerator name. See GPUs on Compute Engine for a full list of accelerator types. | 
-| GCP.Compute.Instances.guestAccelerators.acceleratorCount | string   | The number of the guest accelerator cards exposed to this instance. | 
-| GCP.Compute.Instances.startRestricted | boolean  | Whether a VM has been restricted for start because Compute Engine has detected suspicious activity. | 
-| GCP.Compute.Instances.deletionProtection | boolean  | Whether the resource should be protected against deletion. | 
-| GCP.Compute.Instances.hostname | string   | Hostname. | 
-| GCP.Compute.Instances.kind | string   | Type of the resource. Always compute\#instance for instances. | 
+| GCP.Compute.Instances.id | string   | The unique identifier for the resource. This identifier is defined by the server. |
+| GCP.Compute.Instances.creationTimestamp | string   | Creation timestamp in RFC3339 text format. |
+| GCP.Compute.Instances.name | string   | The name of the resource, provided by the client when initially creating the resource. The resource name must be 1-63 characters long, and comply with RFC1035. Specifically, the name must be 1-63 characters long and match the regular expression \[a-z\]\(\[-a-z0-9\]\*\[a-z0-9\]\)? which means the first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash. |
+| GCP.Compute.Instances.description | string   | An optional description of this resource. Provide this property when you create the resource. |
+| GCP.Compute.Instances.tags | string   | Tags to apply to this instance. Tags are used to identify valid sources or targets for network firewalls and are specified by the client during instance creation. The tags can be later modified by the setTags method. Each tag within the list must comply with RFC1035. Multiple tags can be specified via the tags.items field. |
+| GCP.Compute.Instances.tags.items | Object   | An array of tags. Each tag must be 1-63 characters long, and comply with RFC1035. |
+| GCP.Compute.Instances.tags.fingerprint | string   | Specifies a fingerprint for this request, which is essentially a hash of the tags contents and used for optimistic locking. The fingerprint is initially generated by Compute Engine and changes after every request to modify or update tags. You must always provide an up-to-date fingerprint hash in order to update or change tags. |
+| GCP.Compute.Instances.machineType | string   | Full or partial URL of the machine type resource to use for this instance, in the format: zones/zone/machineTypes/machine-type. This is provided by the client when the instance is created. |
+| GCP.Compute.Instances.status | string   | The status of the instance. One of the following values: PROVISIONING, STAGING, RUNNING, STOPPING, STOPPED, SUSPENDING, SUSPENDED, and TERMINATED. |
+| GCP.Compute.Instances.statusMessage | string   | An optional, human-readable explanation of the status. |
+| GCP.Compute.Instances.zone | string   | URL of the zone where the instance resides. You must specify this field as part of the HTTP request URL. It is not settable as a field in the request body. |
+| GCP.Compute.Instances.canIpForward | boolean  | Allows this instance to send and receive packets with non-matching destination or source IPs. This is required if you plan to use this instance to forward routes. For more information, see Enabling IP Forwarding. |
+| GCP.Compute.Instances.networkInterfaces | Object   | An array of network configurations for this instance. These specify how interfaces are configured to interact with other network services, such as connecting to the internet. Multiple interfaces are supported per instance. |
+| GCP.Compute.Instances.networkInterfaces.network | string   | URL of the network resource for this instance. When creating an instance, if neither the network nor the subnetwork is specified, the default network global/networks/default is used; if the network is not specified but the subnetwork is specified, the network is inferred. |
+| GCP.Compute.Instances.networkInterfaces.subnetwork | string   | The URL of the Subnetwork resource for this instance. If the network resource is in legacy mode, do not provide this property. If the network is in auto subnet mode, providing the subnetwork is optional. If the network is in custom subnet mode, then this field should be specified. If you specify this property, you can specify the subnetwork as a full or partial URL. |
+| GCP.Compute.Instances.networkInterfaces.networkIP | string   | An IPv4 internal network address to assign to the instance for this network interface. If not specified by the user, an unused internal IP is assigned by the system. |
+| GCP.Compute.Instances.networkInterfaces.name | string   |  The name of the network interface, generated by the server. For network devices, these are eth0, eth1, etc. |
+| GCP.Compute.Instances.networkInterfaces.accessConfigs | Object   | An array of configurations for this interface. Currently, only one access config, ONE_TO_ONE_NAT, is supported. If there are no accessConfigs specified, then this instance will have no external internet access. |
+| GCP.Compute.Instances.networkInterfaces.aliasIpRanges | Object   | An array of alias IP ranges for this network interface. Can only be specified for network interfaces on subnet-mode networks. |
+| GCP.Compute.Instances.networkInterfaces.fingerprint | string   | Fingerprint hash of contents stored in this network interface. This field will be ignored when inserting an Instance or adding a NetworkInterface. An up-to-date fingerprint must be provided in order to update the NetworkInterface, otherwise the request will fail with error 412 conditionNotMet. |
+| GCP.Compute.Instances.networkInterfaces.kind | string   | Type of the resource. Always compute\#networkInterface for network interfaces. |
+| GCP.Compute.Instances.disks | Object   | Array of disks associated with this instance. Persistent disks must be created before you can assign them. |
+| GCP.Compute.Instances.disks.type | string   | Specifies the type of the disk, either SCRATCH or PERSISTENT. If not specified, the default is PERSISTENT. |
+| GCP.Compute.Instances.disks.mode | string   | The mode in which to attach this disk, either READ_WRITE or READ_ONLY. If not specified, the default is to attach the disk in READ_WRITE mode. |
+| GCP.Compute.Instances.disks.source | string   | Specifies a valid partial or full URL to an existing Persistent Disk resource. When creating a new instance, one of initializeParams.sourceImage or disks.source is required except for local SSD. |
+| GCP.Compute.Instances.disks.deviceName | string   | Specifies a unique device name of your choice that is reflected into the /dev/disk/by-id/google-\* tree of a Linux operating system running within the instance. This name can be used to reference the device for mounting, resizing, and so on, from within the instance. |
+| GCP.Compute.Instances.disks.index | number   | A zero-based index to this disk, where 0 is reserved for the boot disk. If you have many disks attached to an instance, each disk would have a unique index number. |
+| GCP.Compute.Instances.disks.boot | boolean  | Indicates that this is a boot disk. The virtual machine will use the first partition of the disk for its root filesystem. |
+| GCP.Compute.Instances.disks.initializeParams | string   | Specifies the parameters for a new disk that will be created alongside the new instance. Use initialization parameters to create boot disks or local SSDs attached to the new instance. |
+| GCP.Compute.Instances.disks.autoDelete | boolean  | Specifies whether the disk will be auto-deleted when the instance is deleted \(but not when the disk is detached from the instance\). |
+| GCP.Compute.Instances.disks.licenses | string   |  Any valid publicly visible licenses. |
+| GCP.Compute.Instances.disks.interface | string   | Specifies the disk interface to use for attaching this disk, which is either SCSI or NVME. The default is SCSI. Persistent disks must always use SCSI and the request will fail if you attempt to attach a persistent disk in any other format than SCSI. Local SSDs can use either NVME or SCSI. For performance characteristics of SCSI over NVMe, see Local SSD performance. |
+| GCP.Compute.Instances.disks.guestOsFeatures | string   | A list of features to enable on the guest operating system. Applicable only for bootable images. Read Enabling guest operating system features to see a list of available options. |
+| GCP.Compute.Instances.disks.diskEncryptionKey | Object   | Encrypts or decrypts a disk using a customer-supplied encryption key. |
+| GCP.Compute.Instances.disks.kind | string   | Type of the resource. Always compute\#attachedDisk for attached disks. |
+| GCP.Compute.Instances.metadata | string   | The metadata key/value pairs assigned to this instance. This includes custom metadata and predefined keys. |
+| GCP.Compute.Instances.metadata.fingerprint | string   | Specifies a fingerprint for this request, which is essentially a hash of the metadatas contents and used for optimistic locking. The fingerprint is initially generated by Compute Engine and changes after every request to modify or update metadata. You must always provide an up-to-date fingerprint hash in order to update or change metadata, otherwise the request will fail with error 412 conditionNotMet. |
+| GCP.Compute.Instances.metadata.items | Object   | Array of key/value pairs. The total size of all keys and values must be less than 512 KB. |
+| GCP.Compute.Instances.metadata.kind | string   | Type of the resource. Always compute\#metadata for metadata. |
+| GCP.Compute.Instances.serviceAccounts | string   | A list of service accounts, with their specified scopes, authorized for this instance. Only one service account per VM instance is supported. |
+| GCP.Compute.Instances.serviceAccounts.email | string   | Email address of the service account. |
+| GCP.Compute.Instances.serviceAccounts.scopes | string   | The list of scopes to be made available for this service account. |
+| GCP.Compute.Instances.selfLink | string   | Server-defined URL for this resource. |
+| GCP.Compute.Instances.scheduling | string   | Sets the scheduling options for this instance. |
+| GCP.Compute.Instances.scheduling.onHostMaintenance | string   | Defines the maintenance behavior for this instance. For standard instances, the default behavior is MIGRATE. For preemptible instances, the default and only possible behavior is TERMINATE. For more information, see Setting Instance Scheduling Options. |
+| GCP.Compute.Instances.scheduling.automaticRestart | boolean  | Specifies whether the instance should be automatically restarted if it is terminated by Compute Engine \(not terminated by a user\). You can only set the automatic restart option for standard instances. Preemptible instances cannot be automatically restarted. |
+| GCP.Compute.Instances.scheduling.preemptible | boolean  | Defines whether the instance is preemptible. This can only be set during instance creation, it cannot be set or changed after the instance has been created. |
+| GCP.Compute.Instances.scheduling.nodeAffinities | string   | A set of node affinity and anti-affinity. |
+| GCP.Compute.Instances.cpuPlatform | string   | The CPU platform used by this instance. |
+| GCP.Compute.Instances.labels | string   | Labels to apply to this instance. These can be later modified by the setLabels method. |
+| GCP.Compute.Instances.labels.key | string   | The label key. |
+| GCP.Compute.Instances.labels.value | string   | The label value. |
+| GCP.Compute.Instances.labelFingerprint | string   | A fingerprint for this request, which is essentially a hash of the labels contents and used for optimistic locking. The fingerprint is initially generated by Compute Engine and changes after every request to modify or update labels. You must always provide an up-to-date fingerprint hash in order to update or change labels. |
+| GCP.Compute.Instances.minCpuPlatform | string   | Specifies a minimum CPU platform for the VM instance. Applicable values are the friendly names of CPU platforms, such as minCpuPlatform: "Intel Haswell" or minCpuPlatform: "Intel Sandy Bridge". |
+| GCP.Compute.Instances.guestAccelerators | string   | A list of the type and count of accelerator cards attached to the instance. |
+| GCP.Compute.Instances.guestAccelerators.acceleratorType | string   | Full or partial URL of the accelerator type resource to attach to this instance. For example: projects/my-project/zones/us-central1-c/acceleratorTypes/nvidia-tesla-p100 If you are creating an instance template, specify only the accelerator name. See GPUs on Compute Engine for a full list of accelerator types. |
+| GCP.Compute.Instances.guestAccelerators.acceleratorCount | string   | The number of the guest accelerator cards exposed to this instance. |
+| GCP.Compute.Instances.startRestricted | boolean  | Whether a VM has been restricted for start because Compute Engine has detected suspicious activity. |
+| GCP.Compute.Instances.deletionProtection | boolean  | Whether the resource should be protected against deletion. |
+| GCP.Compute.Instances.hostname | string   | Hostname. |
+| GCP.Compute.Instances.kind | string   | Type of the resource. Always compute\#instance for instances. |
