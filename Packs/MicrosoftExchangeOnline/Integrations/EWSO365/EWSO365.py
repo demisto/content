@@ -1186,6 +1186,7 @@ def send_email(
             client.send_email(message)
         except Exception as e:
             demisto.error(f"[send_email]Failed inside the 'else' block to create message object: {e}")
+            raise
 
     results = [CommandResults(entry_type=EntryType.NOTE, raw_response="Mail sent successfully")]
     if render_body:
@@ -1901,19 +1902,24 @@ def sub_main():  # pragma: no cover
             is_test_module = True
             demisto.results(test_module(client, params.get("max_fetch")))
         elif command == "fetch-incidents":
-            demisto.debug("fetch-incidents being called")
-            last_run = demisto.getLastRun()
-            demisto.debug(f"{last_run=}")
-            incident_filter = params.get("incidentFilter", RECEIVED_FILTER)
+            try:
+                demisto.debug("fetch-incidents being called")
+                last_run = demisto.getLastRun()
+                demisto.debug(f"{last_run=}")
+                incident_filter = params.get("incidentFilter", RECEIVED_FILTER)
 
-            if incident_filter not in [RECEIVED_FILTER, MODIFIED_FILTER]:  # Ensure it's one of the allowed filter values
-                incident_filter = RECEIVED_FILTER  # or if not, force it to the default, RECEIVED_FILTER
-            demisto.debug(f"{incident_filter=}")
-            skip_unparsable_emails: bool = argToBoolean(params.get("skip_unparsable_emails", False))
-            demisto.debug(f"{incident_filter=}, {skip_unparsable_emails=}")
-            incidents = fetch_emails_as_incidents(client, last_run, incident_filter, skip_unparsable_emails)
-            demisto.debug(f"Saving incidents with size {sys.getsizeof(incidents)}, len:{len(incidents)}")
-            demisto.incidents(incidents)
+                if incident_filter not in [RECEIVED_FILTER, MODIFIED_FILTER]:  # Ensure it's one of the allowed filter values
+                    incident_filter = RECEIVED_FILTER  # or if not, force it to the default, RECEIVED_FILTER
+                demisto.debug(f"{incident_filter=}")
+                skip_unparsable_emails: bool = argToBoolean(params.get("skip_unparsable_emails", False))
+                demisto.debug(f"{incident_filter=}, {skip_unparsable_emails=}")
+                incidents = fetch_emails_as_incidents(client, last_run, incident_filter, skip_unparsable_emails)
+                demisto.debug(f"Saving incidents with size {sys.getsizeof(incidents)}, len:{len(incidents)}")
+                demisto.debug(f"The incidents are: {incidents}")
+                demisto.incidents(incidents)
+            except Exception as e:
+                demisto.error(f"Failed to fetch incidents. Error: {e}")
+                raise
 
         elif command == "send-mail":
             demisto.debug(f"send-mail being called: received args: {args}")
