@@ -166,7 +166,7 @@ class Command:
         Converts the command object to the format required by `executeCommandBatch`.
         inject using-brand to args if brands_to_run is not empty and ignore_using_brand is False.
         """
-        final_args = self.args.copy()
+        final_args = self.args.copy() if self.args else {}
         if brands_to_run and not self.ignore_using_brand:
             final_args["using-brand"] = ",".join(brands_to_run)
         return {self.name: final_args}
@@ -392,15 +392,16 @@ class ContextBuilder:
         Returns:
             list[dict]: The final list structure.
         """
-        results = []
+        results: list[dict] = []
         for indicator_value, tim_context_result in self.tim_context.items():
-            current_indicator = {"Value": indicator_value}
+            current_indicator: dict[str, Any] = {"Value": indicator_value}
             if tim_indicator := [indicator for indicator in tim_context_result if indicator.get("Brand") == "TIM"]:
-                current_indicator.update({"TIMScore": tim_indicator[0].get("Score"), "Status": tim_indicator[0].get("Status")})
+                current_indicator.update({"TIMScore": tim_indicator[0].get("Score"), 
+                                          "Status": tim_indicator[0].get("Status")})
             indicators = [indicator for indicator in tim_context_result if indicator.get("Brand") != "TIM"]
-
             current_indicator["Results"] = indicators
             results.append(current_indicator)
+            
         return results
 
     def enrich_final_indicator(self, indicator_list: list[dict]):
@@ -1270,7 +1271,7 @@ def convert_cvss_score_to_rating(score: float) -> str:
     return "Unknown"
 
 
-def remove_empty_elements_with_exceptions(d, exceptions: set[str] = set()) -> dict:
+def remove_empty_elements_with_exceptions(d, exceptions: set[str] = set()) -> Any:
     """
     Recursively remove empty lists, empty dicts, or None elements from a dictionary,
     unless their key is in the `exceptions` set.

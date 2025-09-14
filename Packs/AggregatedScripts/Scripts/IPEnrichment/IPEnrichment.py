@@ -95,7 +95,7 @@ def ip_enrichment_script(
     ]
 
     ip_enrichment = ReputationAggregatedCommand(
-        brands=enrichment_brands,
+        brands=enrichment_brands or [],
         verbose=verbose,
         commands=commands,
         additional_fields=additional_fields,

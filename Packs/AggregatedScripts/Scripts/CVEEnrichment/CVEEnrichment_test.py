@@ -63,13 +63,12 @@ def test_cve_enrichment_script_end_to_end_with_batch_file(mocker):
 
     # Helper: wrap raw entries into processed tuples [(entry, hr, err)]
     def _wrap_each_as_command(entries, hr=""):
-    # N commands, each with one entry
+        # N commands, each with one entry
         return [[(e, hr, "")] for e in entries]
 
     def _wrap_all_in_one_command(entries, hr=""):
         # 1 command that yields N entries
         return [[(e, hr, "") for e in entries]]
-
 
     # Batch executor mock → map fixtures to command batches
     def _fake_execute_list_of_batches(self, list_of_batches, brands_to_run=None, verbose=False):
@@ -101,7 +100,6 @@ def test_cve_enrichment_script_end_to_end_with_batch_file(mocker):
             out.append(_wrap_each_as_command(enrich_entries))
 
         return out
-
 
     mocker.patch("AggregatedCommandApiModule.BatchExecutor.execute_list_of_batches", _fake_execute_list_of_batches)
 

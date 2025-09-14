@@ -61,7 +61,7 @@ def test_domain_enrichment_script_end_to_end_with_batch_file(mocker):
 
     # Helper: wrap raw entries into processed tuples: [(entry, hr, err)]
     def _wrap_each_as_command(entries, hr=""):
-    # N commands, each with 1 entry
+        # N commands, each with 1 entry
         return [[(e, hr, "")] for e in entries]
 
     def _wrap_all_in_one_command(entries, hr=""):
