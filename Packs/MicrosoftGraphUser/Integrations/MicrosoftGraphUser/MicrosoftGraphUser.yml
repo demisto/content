@@ -642,7 +642,7 @@ script:
       name: password
       required: false
       secret: true
-    - description: The new password. This argument can eb used in playbooks, but note its value will NOT be hidden in logs.
+    - description: "The new password. This argument can be used in playbooks. Note: the value will NOT be hidden in logs."
       name: nonsensitive_password
       required: false
       secret: false

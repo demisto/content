@@ -173,27 +173,27 @@ class MsGraphClient:
         }
         self.ms_client.http_request(method="PATCH", url_suffix=f"users/{quote(user)}", json_data=body, resp_type="text")
 
-    def fetch_password_id(self, user: str) -> str:
+    def fetch_password_method_id(self, user: str) -> str:
         """
-        fetches the password ID, to be used later. See API docs for reference.
+        fetches the password method ID, to be used later. See API docs for reference.
         """
-        password_id_response = None
+        password_method_id_response = None
         try:
-            password_id_response = self.ms_client.http_request(
+            password_method_id_response = self.ms_client.http_request(
                 method="GET", url_suffix=f"users/{quote(user)}/authentication/passwordMethods"
             )
-            password_id = password_id_response.get("value", [])[0]["id"]
+            password_method_id = password_method_id_response.get("value", [])[0]["id"]
         except (IndexError, KeyError) as e:
-            raise DemistoException("Failed getting passwordMethod id", exception=e, res=password_id_response)
-        return password_id
+            raise DemistoException("Failed getting passwordMethod id", exception=e, res=password_method_id_response)
+        return password_method_id
 
-    def password_change_user_on_premise(self, user: str, password: str, password_id: str) -> None:
+    def password_change_user_on_premise(self, user: str, password: str, password_method_id: str) -> None:
         """
         changes the password of a user on premise.
         """
         self.ms_client.http_request(
             method="POST",
-            url_suffix=f"users/{quote(user)}/authentication/passwordMethods/{password_id}/resetPassword",
+            url_suffix=f"users/{quote(user)}/authentication/passwordMethods/{password_method_id}/resetPassword",
             ok_codes=(202,),
             json_data={"newPassword": password},
             return_empty_response=True,
@@ -476,14 +476,14 @@ def change_password_user_on_premise_command(client: MsGraphClient, args: dict[st
     changes password for on-premise accounts. See change_password_user_saas_command for the SAAS equivalent.
     """
     user = str(args.get("user", ""))
-    password = validate_input_password(args) or ""  # either password or nonsensitive_password may be used
+    password = validate_input_password(args) or ""  # either password or nonsensitive_password can be used
 
-    if not all((user, password)):
-        raise DemistoException("Username and (one of [password, nonsensitive_password]) cannot be empty.")
+    if not password:
+        raise DemistoException("Password cannot be empty. Use the password or non_sensitive_password argument.")
 
-    password_id = client.fetch_password_id(user)
+    password_method_id = client.fetch_password_method_id(user)
 
-    client.password_change_user_on_premise(user, password, password_id)
+    client.password_change_user_on_premise(user, password, password_method_id)
 
     return CommandResults(readable_output=f"The password of user {user} has been changed successfully.")
 
