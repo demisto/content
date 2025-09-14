@@ -794,8 +794,14 @@ class ReputationAggregatedCommand(AggregatedCommand):
         - Else if modifiedTime is less than STATUS_FRESHNESS_WINDOW ago → "fresh"
         - Else → "stale"
         """
-        if "Score" in ioc.get("manuallyEditedFields", {}):
-            return IndicatorStatus.MANUAL
+        manually_edited_fields = ioc.get("manuallyEditedFields", {})
+        if isinstance(manually_edited_fields, dict):
+            if "Score" in manually_edited_fields:
+                return IndicatorStatus.MANUAL
+        elif isinstance(manually_edited_fields, list):
+            for item in manually_edited_fields:
+                if "Score" in item:
+                    return IndicatorStatus.MANUAL
 
         modified_time_str = ioc.get("modifiedTime")
         if modified_time_str:
