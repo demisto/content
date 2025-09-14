@@ -159,9 +159,7 @@ class TestDeduplicateEvents:
                     {"Event Time": "2023-01-01T01:00:00Z", "a": 1},
                     {"Event Time": "2023-01-01T01:01:00Z", "a": 2},
                 ],
-                [
-                    generate_event_hash({"Event Time": "2023-01-01T01:00:00Z", "a": 1})
-                ],
+                [generate_event_hash({"Event Time": "2023-01-01T01:00:00Z", "a": 1})],
                 [2],
                 id="filter out events seen in previous run",
             ),
