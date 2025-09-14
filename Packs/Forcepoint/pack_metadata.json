@@ -1,6 +1,6 @@
 {
-    "name": "Forcepoint Web Security (Deprecated)",
-    "description": "Deprecated. No available replacement.",
+    "name": "Forcepoint Web Security",
+    "description": "No available replacement.",
     "support": "xsoar",
     "hidden": true,
     "currentVersion": "1.0.19",

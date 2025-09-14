@@ -1,9 +1,8 @@
 commonfields:
   id: FPSetRule
   version: -1
-name: FPSetRule (Deprecated)
-description: Deprecated. No available replacement.
-deprecated: true
+name: FPSetRule
+description: No available replacement.
 script: ''
 type: python
 subtype: python3
