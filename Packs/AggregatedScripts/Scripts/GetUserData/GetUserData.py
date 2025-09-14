@@ -1037,6 +1037,22 @@ def main():
             demisto.debug(f"Start getting user data for {user_email=}")
 
             #################################
+            ### Running for Okta v2 ###
+            #################################
+            readable_output, outputs = get_data(
+                modules=modules,
+                brand_name="Okta v2",
+                command_name="okta-get-user",
+                arg_name="userEmail",
+                arg_value=user_email,
+                cmd=okta_get_user,
+                additional_fields=additional_fields,
+            )
+            if readable_output and outputs:
+                users_outputs.extend(outputs)
+                users_readables.extend(readable_output)
+
+            #################################
             ### Running for Active Directory Query v2 ###
             #################################
             readable_output, outputs = get_data(
