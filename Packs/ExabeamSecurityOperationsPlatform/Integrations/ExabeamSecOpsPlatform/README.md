@@ -343,3 +343,25 @@ Search for cases that match one or more search criteria. For example, you can se
 | ExabeamPlatform.Case.mitres.tacticKey | String | Key of the MITRE tactic associated with the case. |
 | ExabeamPlatform.Case.mitres.technique | String | MITRE technique associated with the case. |
 | ExabeamPlatform.Case.mitres.techniqueKey | String | Key of the MITRE technique associated with the case. |
+
+### exabeam-platform-get-events
+
+***
+Get cases from Exabeam Security Operations Platform as Cortex XSIAM events. This command is supported in Cortex XSIAM only and is intended to be used for debugging purposes as it may result in duplicate events.
+
+#### Base Command
+
+`exabeam-platform-get-events`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| start_time | The starting date for the case search range. Default is 1 hour ago. | Optional |
+| end_time | The ending date for the case search range. Default is now. | Optional |
+| limit | The maximum number of results to return. Default is 50. | Optional |
+| should_push_events | If true, the command will push the events to the Cortex XSIAM dataset. Otherwise, it will only display them. Default is false. | Optional |
+
+#### Context Output
+
+There is no context output for this command.

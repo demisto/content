@@ -16,6 +16,10 @@ MAX_EVENTS_LIMIT = 30000
 VENDOR = "Exabeam"
 PRODUCT = "Threat Center"
 
+# Get events (XSIAM & Platform)
+DEFAULT_FROM_DATE = "1 hour ago"
+DEFAULT_TO_DATE = "now"
+
 
 """ CLIENT CLASS """
 
@@ -1013,7 +1017,7 @@ def fetch_incidents(client: Client, params: dict[str, str], last_run) -> tuple[l
 
 def fetch_events(client: Client, max_fetch: int, last_run: dict[str, Any]) -> tuple[list[dict], dict]:
     """
-    Validates the `max_fetch` value, fetches events in batches, and updates the last run.
+    Validates the `max_fetch` value, fetches Exabeam cases as XSIAM events in batches, and updates the last run.
 
     Args:
         client (Client): API client instance.
@@ -1048,6 +1052,35 @@ def fetch_events(client: Client, max_fetch: int, last_run: dict[str, Any]) -> tu
     demisto.debug(f"Fetched {len(events)} cases in batches. Updated {next_run=}.")
 
     return events, next_run
+
+
+def get_events_command(client: Client, args: dict[str, Any]) -> tuple[list[dict], CommandResults]:
+    """
+    Implements `exabeam-platform-get-events`; gets Exabeam cases as XSIAM events in batches.
+
+    Args:
+        client (Client): API client instance.
+        args (dict[str, Any]): The command arguments.
+
+    Returns:
+        tuple[list[dict], CommandResults]: The events and the command results containing a human-readable table of events.
+    """
+    demisto.debug(f"Starting to get events with {args=}.")
+    # `arg_to_datetime` does not return `None` here due to default. Added `type: ignore` to silence type checkers and linters
+    start_time = arg_to_datetime(args.get("start_time", DEFAULT_FROM_DATE)).strftime(DATE_FORMAT)  # type: ignore [union-attr]
+    end_time = arg_to_datetime(args.get("end_time", DEFAULT_TO_DATE)).strftime(DATE_FORMAT)  # type: ignore [union-attr]
+    limit = arg_to_number(args.get("limit")) or MAX_LIMIT
+
+    demisto.debug(f"Starting to get cases in batches with {start_time=}, {end_time=}, {limit=}.")
+    events, *_ = get_cases_in_batches(
+        client=client,
+        start_time=start_time,
+        end_time=end_time,
+        last_fetched_ids=[],
+        max_fetch=limit,
+    )
+
+    return events, CommandResults(readable_output=tableToMarkdown("Events", events))
 
 
 def test_module(client: Client, params: dict[str, Any]) -> str:  # pragma: no cover
@@ -1094,17 +1127,27 @@ def main() -> None:  # pragma: no cover
 
         if command == "test-module":
             return_results(test_module(client, params))
+
         elif (command == "fetch-incidents") and (is_xsiam() or is_platform()):
             last_run = demisto.getLastRun()
             incidents, next_run = fetch_incidents(client, params, last_run)
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
+
         elif (command == "fetch-events") and is_xsoar():
             max_fetch = arg_to_number(params.get("max_events_fetch")) or MAX_EVENTS_LIMIT
             last_run = demisto.getLastRun()
             events, next_run = fetch_events(client, max_fetch, last_run)
             send_events_to_xsiam(events, product=PRODUCT, vendor=VENDOR)
             demisto.setLastRun(next_run)
+
+        elif (command == "exabeam-platform-get-events") and is_xsiam():
+            should_push_events = argToBoolean(args.pop("should_push_events", "false"))
+            events, results = get_events_command(client, args)
+            return_results(results)
+            if should_push_events:
+                send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+
         elif command == "exabeam-platform-event-search":
             return_results(event_search_command(client, args))
         elif command == "exabeam-platform-case-search":

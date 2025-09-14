@@ -152,6 +152,25 @@ script:
     - contextPath: ExabeamPlatform.Event.rawLogs
       description: The raw logs associated with the event.
       type: String
+  - name: exabeam-platform-get-events
+    description: Get cases from Exabeam Security Operations Platform as Cortex XSIAM events. This command is supported in Cortex XSIAM only and is intended to be used for debugging purposes as it may result in duplicate events.
+    arguments:
+    - defaultValue: "1 hour ago"
+      description: The starting date for the case search range.
+      name: start_time
+    - defaultValue: "now"
+      description: The ending date for the case search range.
+      name: end_time
+    - description: The maximum number of results to return.
+      name: limit
+      defaultValue: "50"
+    - description: If true, the command will push the events to the Cortex XSIAM dataset. Otherwise, it will only display them.  
+      name: should_push_events
+      defaultValue: "false"
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
   - name: exabeam-platform-case-search
     description: Search for cases that match one or more search criteria. For example, you can search for cases that are associated with a specific case ID and that reference specific rules.
     arguments:
