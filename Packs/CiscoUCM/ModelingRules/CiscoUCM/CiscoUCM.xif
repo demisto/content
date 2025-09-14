@@ -4,7 +4,7 @@ alter
     src_ipv6 = coalesce(parsed_fields -> IPV6Address, arrayindex(regextract(parsed_fields -> DeviceIPv6Address ,"[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}"),0)),
     outcome = parsed_fields -> FailureDetail
 | alter 
-    xdm.event.id = arrayindex(regextract(_raw_log,"\<\d+\>(\d+):"),0),
+    xdm.event.id = to_string(arrayindex(regextract(_raw_log,"\<\d+\>(\d+):"),0)),
     xdm.observer.name = parsed_fields -> NodeID,
     xdm.observer.type = arrayindex(regextract(_raw_log,"%(UC.*?)-"),0),
     xdm.event.type = arrayindex(regextract(_raw_log,"%UC.*?\d+-([^:]+)"),0),
