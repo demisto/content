@@ -5912,6 +5912,13 @@
             "instance_names": [
                 "virus_total_v3"
             ]
+        },
+        {
+            "playbookID": "DomainEnrichment-Test",
+            "integrations": ["VirusTotal (API v3)","AlienVault OTX v2"],
+            "instance_names": [
+                "virus_total_v3"
+            ]
         }
     ],
     "skipped_tests": {
