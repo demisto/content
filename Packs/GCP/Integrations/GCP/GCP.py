@@ -125,7 +125,7 @@ class GCPServices(Enum):
 
 
 # Command requirements mapping: (GCP_Service_Enum, [Required_Permissions])
-COMMAND_REQUIREMENTS = {
+COMMAND_REQUIREMENTS: dict[str: tuple[Any, list[str]]] = {
     "gcp-compute-firewall-patch": (
         GCPServices.COMPUTE,
         [
