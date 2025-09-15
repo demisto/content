@@ -93,47 +93,55 @@ class Client(BaseClient):
         return response["files"], base_sha
 
 
-def filter_out_files_by_status(commits_files: list, statuses=("added", "modified")) -> list:
+def filter_out_files_by_status(commits_files: list, statuses: tuple[str, ...] = ("added", "modified")) -> list[dict]:
     """
-    Parses files from a list of commit files based on their status.
+    Filters files from a list of commit files based on their GIT status.
 
     Args:
         commits_files (list): A list of dictionaries representing commit files.
+        statuses (tuple): A list of GIT statuses to filter files by.
 
     Returns:
-        list: A list of URLs for files that are added or modified.
+        list[dict]: A list of dictionaries containing information about files that match the GIT statuses.
     """
-    relevant_files: list[dict] = []
-    for file in commits_files:
-        if file.get("status") in statuses:
-            relevant_files.append(file.get("filename"))
-    return relevant_files
+    return [commit_file for commit_file in commits_files if commit_file["status"] in statuses]
 
 
-def get_content_files_from_repo(client: Client, relevant_files: list[str], params: dict):
+def get_content_files_from_repo(client: Client, relevant_files: list[dict], params: dict) -> list:
     """
     Retrieves content of relevant files based on specified extensions.
 
     Args:
         client (Client): An instance of the client used for HTTP requests.
-        relevant_files (list): A list of URLs for relevant files.
+        relevant_files (list): A list of dictionaries containing information about files.
 
     Returns:
         list: A list of file contents fetched via HTTP requests.
     """
     global RAW_RESPONSE
     extensions_to_fetch = argToList(params.get("extensions_to_fetch") or [])
-    relevant_files = [file for file in relevant_files if any(file.endswith(ext) for ext in extensions_to_fetch)]
-    raw_data_files = [
-        {file: base64.b64decode(client._http_request("GET", url_suffix=f"/contents/{file}")["content"]).decode("utf-8")}
-        for file in relevant_files
-    ]
-    demisto.debug(f"list of all files raw_data :{raw_data_files}")
-    RAW_RESPONSE = [list(file.values()) for file in raw_data_files]
+
+    skipped_file_paths: list[str] = []
+    raw_data_files: list[dict] = []
+
+    for relevant_file in relevant_files:
+        file_path = relevant_file["filename"]
+        if not file_path.endswith(tuple(extensions_to_fetch)):
+            skipped_file_paths.append(file_path)
+            continue
+        file_commit = relevant_file["sha"]
+        file_url = relevant_file["contents_url"]
+        demisto.debug(f"Getting contents of file: {file_path} in commit: {file_commit} using URL: {file_url}.")
+        file_contents = client._http_request(method="GET", full_url=file_url)["content"]
+        raw_data_files.append({file_path: base64.b64decode(file_contents).decode("utf-8")})
+
+    demisto.debug(f"Skipped {len(skipped_file_paths)} files: {skipped_file_paths}.")
+    demisto.debug(f"List of all files raw data: {raw_data_files}.")
+    RAW_RESPONSE = [list(raw_data_file.values()) for raw_data_file in raw_data_files]
     return raw_data_files
 
 
-def get_commits_files(client: Client, base_commit, head_commit, is_first_fetch: bool) -> tuple[list, str]:
+def get_commits_files(client: Client, base_commit, head_commit, is_first_fetch: bool) -> tuple[list[dict], str]:
     """
     Retrieves relevant files modified between commits and the current repository head.
 
@@ -142,7 +150,7 @@ def get_commits_files(client: Client, base_commit, head_commit, is_first_fetch: 
         last_commit_fetch (str): The SHA of the last fetched commit.
 
     Returns:
-        tuple: A tuple containing a list of relevant file URLs and the SHA of the current repository head.
+        tuple[list[dict], str]: A tuple containing a list of relevant file information and the SHA of the current repository head.
     """
     try:
         all_commits_files, current_repo_head_sha = client.get_files_between_commits(base_commit, head_commit, is_first_fetch)
