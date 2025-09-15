@@ -1286,22 +1286,22 @@ Creates a snapshot of an EBS volume and stores it in Amazon S3. You can use snap
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.EC2.Snapshots.DataEncryptionKeyId | string | The data encryption key identifier for the snapshot. |
-| AWS.EC2.Snapshots.Description | string | The description for the snapshot. |
-| AWS.EC2.Snapshots.Encrypted | number | Indicates whether the snapshot is encrypted. |
-| AWS.EC2.Snapshots.KmsKeyId | string | The full ARN of the AWS Key Management Service \(AWS KMS\) customer master key \(CMK\) that was used to protect the volume encryption key for the parent volume. |
-| AWS.EC2.Snapshots.OwnerId | string | The AWS account ID of the EBS snapshot owner. |
-| AWS.EC2.Snapshots.Progress | string | The progress of the snapshot, as a percentage. |
-| AWS.EC2.Snapshots.SnapshotId | string | The ID of the snapshot. |
-| AWS.EC2.Snapshots.StartTime | date | The time stamp when the snapshot was initiated. |
-| AWS.EC2.Snapshots.State | string | The snapshot state. |
-| AWS.EC2.Snapshots.StateMessage | string | this field displays error state details to help you diagnose why the error occurred. |
-| AWS.EC2.Snapshots.VolumeId | string | The ID of the volume that was used to create the snapshot. |
-| AWS.EC2.Snapshots.VolumeSize | number | The size of the volume, in GiB. |
-| AWS.EC2.Snapshots.OwnerAlias | string | Value from an Amazon-maintained list of snapshot owners. |
-| AWS.EC2.Snapshots.Tags.Key | string | The key of the tag. |
-| AWS.EC2.Snapshots.Tags.Value | string | The value of the tag. |
-| AWS.EC2.Snapshots.AccountId | string | The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided. |
+| AWS.EC2.Snapshot.DataEncryptionKeyId | string | The data encryption key identifier for the snapshot. |
+| AWS.EC2.Snapshot.Description | string | The description for the snapshot. |
+| AWS.EC2.Snapshot.Encrypted | number | Indicates whether the snapshot is encrypted. |
+| AWS.EC2.Snapshot.KmsKeyId | string | The full ARN of the AWS Key Management Service \(AWS KMS\) customer master key \(CMK\) that was used to protect the volume encryption key for the parent volume. |
+| AWS.EC2.Snapshot.OwnerId | string | The AWS account ID of the EBS snapshot owner. |
+| AWS.EC2.Snapshot.Progress | string | The progress of the snapshot, as a percentage. |
+| AWS.EC2.Snapshot.SnapshotId | string | The ID of the snapshot. |
+| AWS.EC2.Snapshot.StartTime | date | The time stamp when the snapshot was initiated. |
+| AWS.EC2.Snapshot.State | string | The snapshot state. |
+| AWS.EC2.Snapshot.StateMessage | string | this field displays error state details to help you diagnose why the error occurred. |
+| AWS.EC2.Snapshot.VolumeId | string | The ID of the volume that was used to create the snapshot. |
+| AWS.EC2.Snapshot.VolumeSize | number | The size of the volume, in GiB. |
+| AWS.EC2.Snapshot.OwnerAlias | string | Value from an Amazon-maintained list of snapshot owners. |
+| AWS.EC2.Snapshot.Tags.Key | string | The key of the tag. |
+| AWS.EC2.Snapshot.Tags.Value | string | The value of the tag. |
+| AWS.EC2.Snapshot.AccountId | string | The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided. |
 
 ### aws-ec2-modify-snapshot-permission
 
