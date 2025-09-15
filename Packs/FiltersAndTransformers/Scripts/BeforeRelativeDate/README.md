@@ -22,4 +22,4 @@ Checks the given datetime has occurred before the provided relative time.
 ## Outputs
 
 ---
-There are no outputs for this script.
+The script returns a boolean value (`true` or `false`) indicating if the date is before the relative time.
