@@ -71,10 +71,10 @@ class EntryResult:
 
     def to_entry(self) -> dict[str, Any]:
         return {
-            "args": self.args,
-            "brand": self.brand,
-            "status": self.status.value,
-            "message": self.message,
+            "Arguments": self.args,
+            "Brand": self.brand,
+            "Status": self.status.value,
+            "Message": self.message,
         }
 
 
@@ -376,7 +376,7 @@ class ContextBuilder:
             final_context[Common.DBotScore.CONTEXT_PATH] = self.dbot_context
         final_context.update(self.other_context)
 
-        return remove_empty_elements_with_exceptions(final_context, exceptions={"MaxCVSS", "MaxSeverity"})
+        return remove_empty_elements_with_exceptions(final_context, exceptions={"TIMCVSS","Status","ModifiedTime"})
 
     def create_indicator(self) -> list[dict]:
         """
@@ -396,9 +396,14 @@ class ContextBuilder:
         for indicator_value, tim_context_result in self.tim_context.items():
             current_indicator: dict[str, Any] = {"Value": indicator_value}
             if tim_indicator := [indicator for indicator in tim_context_result if indicator.get("Brand") == "TIM"]:
-                current_indicator.update({"TIMScore": tim_indicator[0].get("Score"), "Status": tim_indicator[0].get("Status")})
-            indicators = [indicator for indicator in tim_context_result if indicator.get("Brand") != "TIM"]
-            current_indicator["Results"] = indicators
+                if "Score" in self.indicator.context_output_mapping:
+                    
+                    current_indicator.update({"TIMScore": tim_indicator[0].get("Score"),
+                                              "Status": pop_dict_value(tim_indicator[0], "Status"),
+                                              "ModifiedTime": pop_dict_value(tim_indicator[0], "ModifiedTime")})
+                if "CVSS" in self.indicator.context_output_mapping:
+                    current_indicator.update({"TIMCVSS": tim_indicator[0].get("CVSS")})
+            current_indicator["Results"] = tim_context_result
             results.append(current_indicator)
 
         return results
@@ -415,8 +420,8 @@ class ContextBuilder:
             if "Score" in self.indicator.context_output_mapping:
                 indicator["MaxScore"] = max_score
                 indicator["MaxVerdict"] = DBOT_SCORE_TO_VERDICT.get(max_score, "Unknown")
-            if "CVSS" in self.indicator.context_output_mapping:
-                self.compute_cvss_fields(indicator)
+            # if "CVSS" in self.indicator.context_output_mapping:
+            #     self.compute_cvss_fields(indicator)
 
     def compute_cvss_fields(self, indicator: ContextResult) -> None:
         """
@@ -757,7 +762,8 @@ class ReputationAggregatedCommand(AggregatedCommand):
             demisto.debug(f"Processing TIM indicators from brand: {brand}")
             score = brand_data.get("score", 0)
             context = brand_data.get("context", {})
-            parsed_indicators = self.parse_indicator(context, brand, score)
+            reliability = brand_data.get("reliability", "")
+            parsed_indicators = self.parse_indicator(context, brand, reliability, score)
             if parsed_indicators:
                 found_brands.append(brand)
             all_parsed_indicators.extend(parsed_indicators)
@@ -779,11 +785,22 @@ class ReputationAggregatedCommand(AggregatedCommand):
         Returns:
             dict[str, Any]: The TIM indicator.
         """
-        return {
+        
+        customFields = ioc.get("CustomFields", {})
+        lower_mapping = {k.lower(): v for k, v in self.indicator.context_output_mapping.items()}
+        mapped_indicator = self.map_command_context(customFields.copy(), lower_mapping, is_indicator=True)
+        
+        if "Score" in self.indicator.context_output_mapping:
+            mapped_indicator.update({"Score": ioc.get("score", Common.DBotScore.NONE)})
+        if "CVSS" in self.indicator.context_output_mapping:
+            mapped_indicator.update({"CVSS": customFields.get("cvssscore")})
+        mapped_indicator.update({
+            "Data": ioc.get("value"),
             "Brand": "TIM",
-            "Score": ioc.get("score", Common.DBotScore.NONE),
-            "Status": self.get_indicator_status_from_ioc(ioc).value,
-        }
+            "Status": self.get_indicator_status_from_ioc(ioc),
+            "ModifiedTime": ioc.get("modifiedTime")})
+        return mapped_indicator
+        
 
     def get_indicator_status_from_ioc(self, ioc: dict) -> IndicatorStatus:
         """
@@ -796,19 +813,21 @@ class ReputationAggregatedCommand(AggregatedCommand):
         """
         manually_edited_fields = ioc.get("manuallyEditedFields", {})
         if "Score" in manually_edited_fields or "score" in manually_edited_fields:
-            return IndicatorStatus.MANUAL
+            return IndicatorStatus.MANUAL.value
 
         modified_time_str = ioc.get("modifiedTime")
         if modified_time_str:
             try:
                 modified_time = datetime.fromisoformat(modified_time_str.replace("Z", "+00:00"))
             except ValueError:
-                return IndicatorStatus.STALE
+                return IndicatorStatus.STALE.value
 
             if modified_time >= datetime.now(modified_time.tzinfo) - STATUS_FRESHNESS_WINDOW:
-                return IndicatorStatus.FRESH
-
-        return IndicatorStatus.STALE
+                return IndicatorStatus.FRESH.value
+            else:
+                return IndicatorStatus.STALE.value
+            
+        return None
 
     def process_batch_results(
         self,
@@ -919,7 +938,7 @@ class ReputationAggregatedCommand(AggregatedCommand):
         mapped_context: ContextResult = defaultdict()
         demisto.debug(f"Starting context mapping with {len(context_output_mapping)} rules. is_indicator: {is_indicator}")
         for src_path, dst_path in context_output_mapping.items():
-            if value := pop_dict_value(entry_context, src_path):
+            if (value := pop_dict_value(entry_context, src_path)) is not None:
                 set_dict_value(mapped_context, dst_path, value)
 
         if self.additional_fields and is_indicator and entry_context:
@@ -932,6 +951,7 @@ class ReputationAggregatedCommand(AggregatedCommand):
         self,
         entry_context: ContextResult,
         brand: str,
+        reliability: str,
         score: int = Common.DBotScore.NONE,
     ) -> list[ContextResult]:
         """
@@ -964,12 +984,14 @@ class ReputationAggregatedCommand(AggregatedCommand):
         for indicator_data in indicator_entries:
             indicator_value = indicator_data.get(self.indicator.value_field)
             demisto.debug(f"Parsing indicator: {indicator_value}")
+            demisto.debug(f"Indicator data: {json.dumps(indicator_data, indent=4)}")
             mapped_indicator = self.map_command_context(indicator_data, self.indicator.context_output_mapping, is_indicator=True)
-
+            demisto.debug(f"Mapped indicator: {json.dumps(mapped_indicator, indent=4)}")
             if "Score" in self.indicator.context_output_mapping:
                 mapped_indicator["Score"] = score
                 mapped_indicator["Verdict"] = DBOT_SCORE_TO_VERDICT.get(score, "Unknown")
             mapped_indicator["Brand"] = brand
+            mapped_indicator["Reliability"] = reliability
             indicators_context.append(mapped_indicator)
             demisto.debug(f"Parsed indicator '{indicator_value}' from brand '{brand}'")
 
@@ -1013,7 +1035,7 @@ class ReputationAggregatedCommand(AggregatedCommand):
         human_readable = tableToMarkdown(
             "Final Results",
             t=[entry.to_entry() for entry in entries],
-            headers=["brand", "args", "status", "message"],
+            headers=["Brand", "Arguments", "Status", "Message"],
         )
         if self.verbose and verbose_outputs:
             demisto.debug("Adding verbose outputs to human readable.")
