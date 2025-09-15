@@ -795,13 +795,8 @@ class ReputationAggregatedCommand(AggregatedCommand):
         - Else → "stale"
         """
         manually_edited_fields = ioc.get("manuallyEditedFields", {})
-        if isinstance(manually_edited_fields, dict):
-            if "Score" in manually_edited_fields:
-                return IndicatorStatus.MANUAL
-        elif isinstance(manually_edited_fields, list):
-            for item in manually_edited_fields:
-                if "Score" in item:
-                    return IndicatorStatus.MANUAL
+        if "Score" in manually_edited_fields or "score" in manually_edited_fields:
+            return IndicatorStatus.MANUAL
 
         modified_time_str = ioc.get("modifiedTime")
         if modified_time_str:
@@ -1070,7 +1065,7 @@ def extract_indicators(data: list[str], type: str) -> list[str]:
         raise ValueError("No data provided to enrich")
 
     demisto.debug("Validating input using extract indicator")
-    results = execute_command("extractIndicators", {"text": ",".join(data)}, extract_contents=False)
+    results = execute_command("extractIndicators", {"text": data}, extract_contents=False)
 
     if not results:
         raise DemistoException("Failed to Validate input using extract indicator.")
