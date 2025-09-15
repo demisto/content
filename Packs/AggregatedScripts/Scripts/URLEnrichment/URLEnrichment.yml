@@ -1,7 +1,14 @@
 args:
-- description: A comma-separated list of URLs to enrich.
+- description: >
+    Accepts a list of URLs to enrich.
+
+    - From CLI: Provide a comma-separated list.  
+      If a URL itself contains a comma, wrap the URLs in a JSON array.  
+      Example: "[\"https://example.com/search?tags=red,yellow,green\"]".
+    - From Context: Pass JSON arrays directly, without modification.
   name: url_list
   required: true
+  isArray: true
 - name: external_enrichment
   description: When set to 'true', the script runs reputation commands using all available external integrations. This is ignored if the 'brands' argument is used, as 'brands' provides an explicit list of integrations to run.
   auto: PREDEFINED
@@ -19,19 +26,32 @@ args:
   defaultValue: 'false'
   required: false
 - name: brands
-  description: |-
-    A comma-separated list of specific integration brands to use for enrichment, e.g., "VirusTotal,CrowdStrike". If left empty, the script runs on all enabled integrations according to the 'external_enrichment' flag. 
-    Run !ProvidesCommand command=url to see available integrations.
-    Add WildfFire-v2 in order to run wildfire-get-verdict.
+  description: >
+    A list of integration brands to run enrichment against.  
+    Example: `"VirusTotal,CrowdStrike"`.  
+
+    - If provided, only the selected brands are used. 
+
+    - If left empty, the script runs enrichment on all enabled integrations,
+      depending on the `external_enrichment` flag.  
+
+    To see the available brands for the `url` command, run: `!ProvidesCommand command=url`.
   isArray: true
   required: false
 - name: additional_fields
-  description: Whether to return secondary fields to the context output under "AdditionalFields".
+  description: >
+    When set to true, the output will also include an `AdditionalFields` object
+    for each of the indicator result.  
+    `AdditionalFields` contains all fields returned by TIM or the integrations
+    that are not part of the standard output keys: `Data`, `DetectionEngines`, 
+    `PositiveDetections`, `Score`, and `Brand`.  
+    When set to false, only the standard keys are returned.
   auto: PREDEFINED
   predefined:
   - 'true'
   - 'false'
   required: false
+  defaultValue: 'false'
 comment: This script gathers url reputation data from multiple integrations and returns a "URLEnrichment" object with consolidated information to the context output.
 commonfields:
   id: url-enrichment

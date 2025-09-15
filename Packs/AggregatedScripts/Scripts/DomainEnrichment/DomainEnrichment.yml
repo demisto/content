@@ -2,6 +2,7 @@ args:
 - description: A comma-separated list of domains to enrich.
   name: domain_list
   required: true
+  isArray: true
 - name: external_enrichment
   description: When set to 'true', the script runs reputation commands using all available external integrations. This is ignored if the 'brands' argument is used, as 'brands' provides an explicit list of integrations to run.
   auto: PREDEFINED

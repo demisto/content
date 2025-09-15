@@ -2,6 +2,7 @@ args:
 - description: A comma-separated list of IPs to enrich.
   name: ip_list
   required: true
+  isArray: true
 - name: external_enrichment
   description: When set to 'true', the script runs reputation commands using all available external integrations. This is ignored if the 'brands' argument is used, as 'brands' provides an explicit list of integrations to run.
   auto: PREDEFINED
@@ -19,10 +20,18 @@ args:
   defaultValue: 'false'
   required: false
 - name: brands
-  description: |-
-    A comma-separated list of specific integration brands to use for enrichment, e.g., "VirusTotal,CrowdStrike". If left empty, the script runs on all enabled integrations according to the 'external_enrichment' flag.
-    Run !ProvidesCommand command=ip to see available integrations.
-    Add Cortex Core - IR to run core-get-IP-analytics-prevalence or Script to run get-endpoint-data.
+  description: >
+    A list of integration brands to use for IP enrichment.  
+    Example: `"VirusTotal,CrowdStrike"`.  
+
+    - If provided, only the selected brands are used.  
+    - If left empty, the script runs enrichment on all enabled integrations,
+      depending on the `external_enrichment` flag.  
+    - To see available integrations for the `ip` command, run:  
+      `!ProvidesCommand command=ip`.  
+    - To include internal commands:  
+      use **"Cortex Core - IR"** to run `core-get-IP-analytics-prevalence`,  
+      or **"Core"** to run `get-endpoint-data`.
   isArray: true
   required: false
 - name: additional_fields
