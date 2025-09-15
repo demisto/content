@@ -24,9 +24,9 @@ def set_indicator_if_exist(args: dict):
 
     success_results = ""
     error_result = ""
-    
-    related_issues = argToList(args.pop("related_issues", ''))
-    
+
+    related_issues = argToList(args.pop("related_issues", ""))
+
     # Set indicator with provided properties
     if any(key in args for key in ["type", "verdict", "tags"]):
         demisto.debug("running setIndicator command.")
@@ -69,9 +69,7 @@ def set_indicator_if_exist(args: dict):
             )
         )
     if error_result:
-        final_results.append(
-            CommandResults(readable_output=error_result, entry_type=4)
-        )
+        final_results.append(CommandResults(readable_output=error_result, entry_type=4))
 
     return final_results
 

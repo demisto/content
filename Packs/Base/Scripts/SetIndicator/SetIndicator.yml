@@ -27,10 +27,10 @@ outputs:
   type: String
 comment: Updates the properties of an existing indicator and associates the indicator with related issues if they exist.
 commonfields:
-  id: SetIndicator
+  id: SetIndicatorAgentix
   version: -1
 enabled: true
-name: SetIndicator
+name: SetIndicatorAgentix
 script: '-'
 system: false
 timeout: '0'
