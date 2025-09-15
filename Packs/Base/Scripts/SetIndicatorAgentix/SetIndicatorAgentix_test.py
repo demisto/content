@@ -1,6 +1,6 @@
 import pytest
 from unittest.mock import patch
-from SetIndicator import set_indicator_if_exist
+from SetIndicatorAgentix import set_indicator_if_exist
 
 
 class TestSetIndicator:
