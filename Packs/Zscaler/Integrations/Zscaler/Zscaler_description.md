@@ -33,6 +33,7 @@ In this stage, you will register the Cortex application within your organization
 
 1. Log in to the administrative console of your OAuth provider (e.g., Zscaler, Okta, Microsoft Entra ID, PingFederate).
 2. Follow the official Zscaler guide for your specific provider to register a new client application, define the required Zscaler API scope, and generate credentials:
+   - #TODO add here a link for Zscaler OneAPI (https://your-vanity.zslogin.net/oauth2/v1/token)
    - 📄 [Configuration Guide for Microsoft Entra ID](https://help.zscaler.com/zia/oauth-2.0-configuration-guide-microsoft-entra-id)
    - 📄 [Configuration Guide for Okta](https://help.zscaler.com/zia/oauth-2.0-configuration-guide-okta)
    - 📄 [Configuration Guide for PingFederate](https://help.zscaler.com/zia/oauth-2-0-configuration-guide-pingfederate)
