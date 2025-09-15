@@ -827,11 +827,12 @@ class QuarantineOrchestrator:
         self.args = args
         self.verbose = argToBoolean(args.get("verbose", False))
         self.verbose_results: list[CommandResults] = []
-        demisto_context = demisto.context()
-        self.pending_jobs = list(demisto.get(demisto_context, self.CONTEXT_PENDING_JOBS, []))
+        # demisto_context = demisto.context()
+        # load pending jobs if they exist from args
+        self.pending_jobs = list(args.get("pending_jobs", []))
         # Load results from context, ensuring they are dictionaries
         self.completed_results: list[QuarantineResult] = [
-            QuarantineResult(**res) for res in (demisto.get(demisto_context, self.CONTEXT_COMPLETED_RESULTS) or [])
+            QuarantineResult(**res) for res in (args.get("completed_results", []))
         ]
         demisto.debug(
             f"[Orchestrator] Loaded state. Pending jobs: {len(self.pending_jobs)}, "
@@ -963,6 +964,7 @@ class QuarantineOrchestrator:
         Returns:
             bool: True if there are no pending jobs in the context, False otherwise.
         """
+
         return not self.pending_jobs
 
     def _job_is_still_polling(self, metadata: dict) -> bool:
@@ -1021,11 +1023,12 @@ class QuarantineOrchestrator:
         # After work is done, decide whether to continue polling or finish.
         if self.pending_jobs:
             demisto.debug(f"[Orchestrator] {len(self.pending_jobs)} jobs still pending. Saving state and scheduling next poll.")
-            demisto.setContext(self.CONTEXT_PENDING_JOBS, self.pending_jobs)
-            demisto.setContext(self.CONTEXT_COMPLETED_RESULTS, QuarantineResult.to_context_entry(self.completed_results))
+            args_for_next_run = {"pending_jobs" : self.pending_jobs, "completed_results" : QuarantineResult.to_context_entry(self.completed_results), **self.args}
+            # demisto.setContext(self.CONTEXT_PENDING_JOBS, self.pending_jobs)
+            # demisto.setContext(self.CONTEXT_COMPLETED_RESULTS, QuarantineResult.to_context_entry(self.completed_results))
             interim_results = CommandResults(readable_output="Quarantine operations are still in progress...")
             return PollResult(
-                response=interim_results, continue_to_poll=True, args_for_next_run=self.args, partial_result=interim_results
+                response=interim_results, continue_to_poll=True, args_for_next_run=args_for_next_run, partial_result=interim_results
             )
         else:
             demisto.debug("[Orchestrator] No pending jobs remain. Finishing.")
@@ -1152,12 +1155,12 @@ class QuarantineOrchestrator:
         """
         demisto.debug("[Orchestrator] Formatting final results.")
         # Clean up the context keys before returning the final result
-        demisto.debug("[Orchestrator] Deleting context keys.")
-        demisto.executeCommand(
-            "DeleteContext",
-            {"key": f"{QuarantineOrchestrator.CONTEXT_PENDING_JOBS},{QuarantineOrchestrator.CONTEXT_COMPLETED_RESULTS}"},
-        )
-        demisto.debug("[Orchestrator] Successfully deleted context keys.")
+        # demisto.debug("[Orchestrator] Deleting context keys.")
+        # demisto.executeCommand(
+        #     "DeleteContext",
+        #     {"key": f"{QuarantineOrchestrator.CONTEXT_PENDING_JOBS},{QuarantineOrchestrator.CONTEXT_COMPLETED_RESULTS}"},
+        # )
+        # demisto.debug("[Orchestrator] Successfully deleted context keys.")
 
         results_list = QuarantineResult.to_context_entry(self.completed_results)
         # Build final report
@@ -1224,12 +1227,12 @@ def main():
         args["polling"] = True
         return_results(quarantine_file_script(args))
     except Exception as e:
-        demisto.debug("Deleting context keys.")
-        demisto.executeCommand(
-            "DeleteContext",
-            {"key": f"{QuarantineOrchestrator.CONTEXT_PENDING_JOBS},{QuarantineOrchestrator.CONTEXT_COMPLETED_RESULTS}"},
-        )
-        demisto.debug("[Orchestrator] Successfully deleted context keys.")
+        # demisto.debug("Deleting context keys.")
+        # demisto.executeCommand(
+        #     "DeleteContext",
+        #     {"key": f"{QuarantineOrchestrator.CONTEXT_PENDING_JOBS},{QuarantineOrchestrator.CONTEXT_COMPLETED_RESULTS}"},
+        # )
+        # demisto.debug("[Orchestrator] Successfully deleted context keys.")
         demisto.error(f"--- Unhandled Exception in quarantine-file script: {traceback.format_exc()} ---")
 
         return_error(f"Failed to execute quarantine-file script. Error: {str(e)}")
