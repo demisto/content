@@ -708,12 +708,12 @@ def executeCommand(command, args):
 
     return ""
 
-def executeCommandBatch(commands_list:list[dict[str,Any]]):
+def executeCommandBatch(commands_list:list[dict[str,any]]):
     """(Script only)
     Execute list of commands in the following format {"command_name":args}
 
     Args:
-      commands_list (list[dict[str,Any]]): list of dicts each represent a command.
+      commands_list (list[dict[str,any]]): list of dicts each represent a command.
 
     Returns:
       list[Union[dict, list]]: list of the Command execution response wrapped in Demisto entry object.
