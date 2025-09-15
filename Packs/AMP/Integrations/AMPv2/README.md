@@ -5196,7 +5196,12 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoAMP.LicenseInformation.license_information | String | Tenant license information. |
+| CiscoAMP.LicenseInformation.number_of_connectors_registered | Number | The number of currently registered connectors. |
+| CiscoAMP.LicenseInformation.number_of_connectors_seen_in_the_last_30_days | Number | The number of recently seen connectors in the last 30 days. |
+| CiscoAMP.LicenseInformation.license_summaries.end_date | String | The end date of the license. |
+| CiscoAMP.LicenseInformation.license_summaries.start_date | String | The start date of the license. |
+| CiscoAMP.LicenseInformation.license_summaries.licensed_seats_count | Number | The number of licensed seats. |
+| CiscoAMP.LicenseInformation.license_summaries.tier | String | The tier type of the license. |
 
 #### Command example
 
@@ -5207,17 +5212,17 @@ There are no input arguments for this command.
 ```json
 {
     "CiscoAMP": {
-    "LicenseInformation": {
-      "license_summaries": [
-        {
-          "end_date": "2026-06-15T00:00:00Z",
-          "licensed_seats_count": 1729,
-          "start_date": "2023-06-15T00:00:00Z",
-          "tier": "Essentials"
-        }
-      ],
-      "number_of_connectors_registered": 2075,
-      "number_of_connectors_seen_in_the_last_30_days": 1930
+        "LicenseInformation": {
+            "license_summaries": [
+                {
+                "end_date": "CiscoAMP_LicenseInformation_license_summaries[0]_end_date",
+                "licensed_seats_count": "CiscoAMP_LicenseInformation_license_summaries[0]_licensed_seats_count",
+                "start_date": "CiscoAMP_LicenseInformation_license_summaries[0]_start_date",
+                "tier": "CiscoAMP_LicenseInformation_license_summaries[0]_tier"
+                }
+            ],
+            "number_of_connectors_registered": "CiscoAMP_LicenseInformation_number_of_connectors_registered",
+            "number_of_connectors_seen_in_the_last_30_days": "CiscoAMP_LicenseInformation_number_of_connectors_seen_in_the_last_30_days"
     }
   }
 }
