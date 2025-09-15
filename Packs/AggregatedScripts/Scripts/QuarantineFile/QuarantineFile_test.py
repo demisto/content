@@ -1412,6 +1412,7 @@ class TestQuarantineOrchestrator:
             # Mock context to be empty for a first run
             mocker.patch.object(demisto, "context", return_value={})
             mocker.patch.object(demisto, "setContext")
+            mock_return_error = mocker.patch("QuarantineFile.return_error")
 
             mock_verify_and_get_valid_brands = mocker.patch.object(QuarantineOrchestrator, "_verify_and_get_valid_brands")
             mock_verify_and_get_valid_brands.side_effect = QuarantineException("Invalid argument")
@@ -1428,6 +1429,7 @@ class TestQuarantineOrchestrator:
 
             # Assert initiate_job is not called
             mock_initiate_job.assert_not_called()
+            mock_return_error.assert_called_once_with("Invalid argument")
 
             assert len(result.response.outputs) == 4
             assert result.response.outputs[0]["FilePath"] == "/path"

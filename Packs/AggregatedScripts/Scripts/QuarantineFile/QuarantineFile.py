@@ -1012,7 +1012,7 @@ class QuarantineOrchestrator:
                         )
                     )
 
-                return self._get_final_results(fatal_error_msg = str(e))
+                return self._get_final_results(fatal_error_msg=str(e))
             self._initiate_jobs()
         else:
             demisto.debug("[Orchestrator] Detected polling run.")
@@ -1138,13 +1138,9 @@ class QuarantineOrchestrator:
         Returns:
             bool: True if all jobs have failed, False otherwise.
         """
-        return all(
-            result.Status == QuarantineResult.Statuses.FAILED
-            for result in self.completed_results
-        )
+        return all(result.Status == QuarantineResult.Statuses.FAILED for result in self.completed_results)
 
-
-    def _get_final_results(self, fatal_error_msg = None) -> PollResult:
+    def _get_final_results(self, fatal_error_msg=None) -> PollResult:
         """
         Formats and returns the final report after all jobs are complete.
 
