@@ -153,14 +153,14 @@ script:
     description: Get cases from Exabeam Security Operations Platform as Cortex XSIAM events. This command is supported in Cortex XSIAM only and is intended to be used for debugging purposes as it may result in duplicate events.
     arguments:
     - defaultValue: "1 hour ago"
-      description: The starting date for the case search range.
+      description: "The starting date for the case search range. For example: yyyy-MM-ddThh:mm:ssZ."
       name: start_time
     - defaultValue: "now"
-      description: The ending date for the case search range.
+      description: "The ending date for the case search range. For example: yyyy-MM-ddThh:mm:ssZ."
       name: end_time
     - description: The maximum number of results to return.
       name: limit
-      defaultValue: "50"
+      defaultValue: "10"
     - description: If true, the command will push the events to the Cortex XSIAM dataset. Otherwise, it will only display them.  
       name: should_push_events
       defaultValue: "false"
