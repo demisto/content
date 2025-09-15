@@ -709,15 +709,27 @@ def executeCommand(command, args):
     return ""
 
 def executeCommandBatch(commands_list:list[dict[str,Any]]):
+    """(Script only)
+    Executes given integration command / script and arguments
+
+    Args:
+      command (str): Integration command name or script name to run
+      args (dict): Integration command / script arguments
+
+    Returns:
+      Union[dict, list]: Command execution response wrapped in Demisto entry object
+
+    """
     results = []
     commands = {
         "getIncidents": exampleIncidents,
         "getContext": exampleContext,
         "getUsers": exampleUsers,
     }
-    for command in commands_list:
-        if commands.get(command):
-            results.append(commands.get(command))
+    for command_dict in commands_list:
+        for command in command_dict.keys():
+            if commands.get(command):
+                results.append(commands.get(command))
     if results:
         return results
     return ""
