@@ -2,7 +2,6 @@ import base64
 import copy
 import json
 import re
-from collections import defaultdict
 from collections.abc import Callable
 from operator import itemgetter
 
@@ -3503,37 +3502,39 @@ def polling_get_script_execution_results_command(client: CoreClient, args: Dict)
     """
     command_results = get_script_execution_results_command(client, args)
     action_ids = argToList(args.get("action_id", ""))
-    
+
     # Initialize a list to hold all results
     all_results = []
-    
+
     # Collect all results from each command result
     for result in command_results:
         if result.outputs and isinstance(result.outputs, dict):
             result_data = result.outputs.get("results", [])
             if isinstance(result_data, list):
                 all_results.extend(result_data)
-    
+
     # Create a proper table structure for the readable output
     readable_output = []
     for result in all_results:
-        readable_output.append({
-            'Status': result.get('execution_status', ''),
-            'Endpoint ID': result.get('endpoint_id', ''),
-            'Output': result.get('command_output', '')
-        })
-    
+        readable_output.append(
+            {
+                "Status": result.get("execution_status", ""),
+                "Endpoint ID": result.get("endpoint_id", ""),
+                "Output": result.get("command_output", ""),
+            }
+        )
+
     return CommandResults(
         readable_output=tableToMarkdown(
             f'Script Execution Results - {", ".join(str(i) for i in action_ids)}',
             readable_output,
-            headers=['Status', 'Endpoint ID', 'Output'],
-            headerTransform=string_to_table_header
+            headers=["Status", "Endpoint ID", "Output"],
+            headerTransform=string_to_table_header,
         ),
         outputs_prefix=f'{args.get("integration_context_brand", "CoreApiModule")}.ScriptResult',
         outputs_key_field="action_id",
         outputs=[result.outputs for result in command_results if result.outputs],
-        raw_response=[result.raw_response for result in command_results if hasattr(result, 'raw_response')],
+        raw_response=[result.raw_response for result in command_results if hasattr(result, "raw_response")],
     )
 
 
