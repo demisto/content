@@ -780,9 +780,9 @@ def test_ec2_create_snapshot_command_success(mocker):
 
     result = EC2.create_snapshot_command(mock_client, args)
     assert isinstance(result, CommandResults)
-    assert result.outputs_prefix == "AWS.EC2.Snapshots"
+    assert result.outputs_prefix == "AWS.EC2.Snapshot"
     assert "snap-1234567890abcdef0" in str(result.outputs)
-    assert "AWS EC2 Snapshots" in result.readable_output
+    assert "AWS EC2 Snapshot" in result.readable_output
     mock_client.create_snapshot.assert_called_once()
 
 
