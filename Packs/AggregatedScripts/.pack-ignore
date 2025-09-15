@@ -4,5 +4,5 @@ ignore=PA124
 [file:IsolateEndpoint.yml]
 ignore=SC101
 
-[file:DomainEnrichment.py]
+[file:DomainEnrichment.yml]
 ignore=BA127
