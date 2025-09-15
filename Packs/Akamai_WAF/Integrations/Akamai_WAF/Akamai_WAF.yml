@@ -94,8 +94,9 @@ script:
       predefined:
       - 'true'
       - 'false'
-    description: Returns a list of all network lists available for an authenticated user who belongs to a group.
+    description: Deprecated. Use “akamai-get-client-list” instead.
     name: akamai-get-network-lists
+    deprecated: true
     outputs:
     - contextPath: Akamai.NetworkLists.Lists.Name
       description: The network list name.
@@ -140,8 +141,9 @@ script:
     - description: The network list ID.
       name: network_list_id
       required: true
-    description: Gets a network list by the network list ID.
+    description: Deprecated. Use “akamai-get-client-list” instead.
     name: akamai-get-network-list-by-id
+    deprecated: true
     outputs:
     - contextPath: Akamai.NetworkLists.Lists.Name
       description: The network list name.
@@ -200,8 +202,9 @@ script:
       name: entry_id
     - description: The network list description.
       name: description
-    description: Creates a new network list. Supports TXT file upload for elements.
+    description: Deprecated. Use “akamai-create-client-list” instead.
     name: akamai-create-network-list
+    deprecated: true
     outputs:
     - contextPath: Akamai.NetworkLists.Lists.Name
       description: The network list name.
@@ -222,8 +225,9 @@ script:
     - description: The ID of the network list to delete.
       name: network_list_id
       required: true
-    description: Deletes the specified network list.
+    description: Deprecated. Use “akamai-delete-client-list” instead.
     name: akamai-delete-network-list
+    deprecated: true
   - arguments:
     - description: 'A comma-separated list of network list IDs to activate. For example: list (list1,list2).'
       isArray: true
@@ -241,8 +245,9 @@ script:
     - description: A comma-separated list of email addresses.
       isArray: true
       name: notify
-    description: Activates a network list on the specified environment.
+    description: Deprecated. Use “akamai-activate-client-list” instead.
     name: akamai-activate-network-list
+    deprecated: true
   - arguments:
     - description: The ID of the network in which to add elements.
       name: network_list_id
@@ -252,8 +257,9 @@ script:
     - description: A comma-separated list of elements to add to the network list.
       isArray: true
       name: elements
-    description: Adds elements to the specified network list.
+    description: Deprecated. Use “akamai-add-client-list-entry” instead.
     name: akamai-add-elements-to-network-list
+    deprecated: true
   - arguments:
     - description: The ID of the network list from which to remove elements.
       name: network_list_id
@@ -261,8 +267,9 @@ script:
     - description: The element to remove from the network list.
       name: element
       required: true
-    description: Removes elements from the specified network list.
+    description: Deprecated. Use “akamai-remove-client-list-entry” instead.
     name: akamai-remove-element-from-network-list
+    deprecated: true
   - arguments:
     - description: 'A comma-separated list of network list IDs for which to get the activation status. For example: (support list - list1,list2).'
       isArray: true
@@ -275,8 +282,9 @@ script:
       - PRODUCTION
       - STAGING
       required: true
-    description: Gets the activation status of the specified network list.
+    description: Deprecated. There is no replacement for this command.
     name: akamai-get-network-list-activation-status
+    deprecated: true
     outputs:
     - contextPath: Akamai.NetworkLists.ActivationStatus.UniqueID
       description: The network list ID.
@@ -295,8 +303,9 @@ script:
       isArray: true
       name: elements
       required: true
-    description: Updates list elements of a network list.
+    description: Deprecated. There is no replacement for this command.
     name: akamai-update-network-list-elements
+    deprecated: true
   - arguments:
     - description: Group Name.
       name: checking_group_name
