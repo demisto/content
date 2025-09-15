@@ -418,8 +418,8 @@ class ContextBuilder:
             if "Score" in self.indicator.context_output_mapping:
                 indicator["MaxScore"] = max_score
                 indicator["MaxVerdict"] = DBOT_SCORE_TO_VERDICT.get(max_score, "Unknown")
-            if "CVSS" in self.indicator.context_output_mapping:
-                self.compute_cvss_fields(indicator)
+            # if "CVSS" in self.indicator.context_output_mapping:
+            #     self.compute_cvss_fields(indicator)
 
     def compute_cvss_fields(self, indicator: ContextResult) -> None:
         """
