@@ -32,10 +32,14 @@ This script gathers domain reputation data from multiple integrations and return
 | DomainEnrichment.MaxScore | the max score of all the indicators found. | number |
 | DomainEnrichment.MaxVerdict | the max verdict of all the indicators found. | string |
 | DomainEnrichment.Results | list of all indicators found for the domain. | array |
+| DomainEnrichment.TIMScore | the TIM score of the domain. | number |
+| DomainEnrichment.Status | the status of the indicator. | string |
 | DomainEnrichment.Results.Brand | the brand of the indicator. | string |
 | DomainEnrichment.Results.Score | the score of the indicator. | number |
+| DomainEnrichment.Results.Verdict | the verdict of the indicator. | string |
 | DomainEnrichment.Results.DetectionEngines | the detection engines of the indicator. | number |
 | DomainEnrichment.Results.PositiveDetections | the positive detections of the indicator. | number |
+| DomainEnrichment.Results.Name | the domain it self. | string |
 | DomainEnrichment.Results.AdditionalFields | Unmapped \(secondary\) fields. Only available if the additional_fields argument is set to true. | Object |
 | DomainEnrichment.Results.AdditionalFields.Relationships.EntityA | The source of the relationship. | string |
 | DomainEnrichment.Results.AdditionalFields.Relationships.EntityB | The destination of the relationship. | string |
@@ -77,7 +81,7 @@ This script gathers domain reputation data from multiple integrations and return
 | DomainEnrichment.Results.AdditionalFields.WHOIS.Admin.Name | The name of the domain administrator. | String |
 | DomainEnrichment.Results.AdditionalFields.WHOIS.Admin.Email | The email address of the domain administrator. | String |
 | DomainEnrichment.Results.AdditionalFields.WHOIS.Admin.Phone | The phone number of the domain administrator. | String |
-| DomainEnrichment.Results.AdditionalFields.WHOIS.History | List of Whois object. | String |
+| DomainEnrichment.Results.AdditionalFields.WHOIS.History | List of Whois objects. | String |
 | DomainEnrichment.Results.AdditionalFields.Malicious.Vendor | The vendor reporting the domain as malicious. | String |
 | DomainEnrichment.Results.AdditionalFields.Malicious.Description | A description explaining why the domain was reported as malicious. | String |
 | DomainEnrichment.Results.AdditionalFields.DomainIDNName | The internationalized domain name \(IDN\) of the domain. | String |
