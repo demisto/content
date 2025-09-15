@@ -1292,8 +1292,8 @@ class EC2:
             raise DemistoException(f"Could not decode/encode the raw response - {err_msg}")
         return CommandResults(
             outputs=raw,
-            outputs_prefix="AWS.EC2.Snapshots",
-            readable_output=tableToMarkdown("AWS EC2 Snapshots", data),
+            outputs_prefix="AWS.EC2.Snapshot",
+            readable_output=tableToMarkdown("AWS EC2 Snapshot", data),
             raw_response=raw,
         )
 
