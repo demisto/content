@@ -710,14 +710,13 @@ def executeCommand(command, args):
 
 def executeCommandBatch(commands_list:list[dict[str,Any]]):
     """(Script only)
-    Executes given integration command / script and arguments
+    Execute list of commands in the following format {"command_name":args}
 
     Args:
-      command (str): Integration command name or script name to run
-      args (dict): Integration command / script arguments
+      commands_list (list[dict[str,Any]]): list of dicts each represent a command.
 
     Returns:
-      Union[dict, list]: Command execution response wrapped in Demisto entry object
+      list[Union[dict, list]]: list of the Command execution response wrapped in Demisto entry object.
 
     """
     results = []
