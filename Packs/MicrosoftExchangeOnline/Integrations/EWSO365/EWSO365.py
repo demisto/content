@@ -30,6 +30,7 @@ from exchangelib.errors import (
     RateLimitError,
 )
 from exchangelib.items import Contact, Message
+from exchangelib.properties import Mailbox
 from requests.exceptions import ConnectionError
 
 # Ignore warnings print to stdout
@@ -954,17 +955,53 @@ def handle_template_params(template_params):  # pragma: no cover
     return actual_params
 
 
-def create_message_object(to, cc, bcc, subject, body, additional_headers, from_address, reply_to, importance):
+def create_message_object(to, cc, bcc, subject, body, additional_headers, from_address, reply_to, importance, raw=False):
     """Creates the message object according to the existence of additional custom headers."""
+
+    def create_mailbox_list(emails):
+        """Safely creates a list of Mailbox objects from a list of email strings."""
+        if not isinstance(emails, list):
+            return []
+        mailboxes = []
+        for given_email in emails:
+            if isinstance(email, str) and "@" in email:
+                mailboxes.append(Mailbox(email_address=given_email.strip()))
+        return mailboxes
+
+    def create_mailbox(given_email):
+        """Safely creates a single Mailbox object from an email string."""
+        if isinstance(given_email, str) and "@" in given_email:
+            return Mailbox(email_address=given_email.strip())
+        return None
+
+    # Sanitize all email address inputs BEFORE passing them to the Message constructor
+    safe_to_recipients = create_mailbox_list(to)
+    safe_cc_recipients = create_mailbox_list(cc)
+    safe_bcc_recipients = create_mailbox_list(bcc)
+    safe_author = create_mailbox(from_address)
+    safe_reply_to = create_mailbox_list(reply_to)
+
+    if raw:
+        demisto.debug("create_message_object: received raw message")
+        return Message(
+            to_recipients=safe_to_recipients,
+            cc_recipients=safe_cc_recipients,
+            bcc_recipients=safe_bcc_recipients,
+            body=body,
+            author=safe_author,
+            reply_to=safe_reply_to,
+            importance=importance,
+        )
+
     if additional_headers:
         demisto.debug("create_message_object: received additional headers")
         return Message(
-            to_recipients=to,
-            author=from_address,
-            cc_recipients=cc,
-            bcc_recipients=bcc,
+            to_recipients=safe_to_recipients,
+            author=safe_author,
+            cc_recipients=safe_cc_recipients,
+            bcc_recipients=safe_bcc_recipients,
             subject=subject,
-            reply_to=reply_to,
+            reply_to=safe_reply_to,
             body=body,
             importance=importance,
             **additional_headers,
@@ -972,12 +1009,12 @@ def create_message_object(to, cc, bcc, subject, body, additional_headers, from_a
 
     demisto.debug("create_message_object: received no additional headers")
     return Message(
-        to_recipients=to,
-        author=from_address,
-        cc_recipients=cc,
-        bcc_recipients=bcc,
+        to_recipients=safe_to_recipients,
+        author=safe_author,
+        cc_recipients=safe_cc_recipients,
+        bcc_recipients=safe_bcc_recipients,
         subject=subject,
-        reply_to=reply_to,
+        reply_to=safe_reply_to,
         body=body,
         importance=importance,
     )
@@ -1137,15 +1174,8 @@ def send_email(
     if raw_message:
         try:
             demisto.debug("[send_email]Inside the 'if raw_message' block")
-            message = Message(
-                to_recipients=to,
-                cc_recipients=cc,
-                bcc_recipients=bcc,
-                body=raw_message,
-                author=from_address,
-                reply_to=reply_to,
-                importance=importance,
-            )
+            message = create_message_object(to, cc, bcc, None, raw_message, None, from_address, reply_to, importance, raw=True)
+
         except Exception as e:
             demisto.error(f"[send_email]Failed inside the 'if raw_message' block to create message object: {e}")
             raise
@@ -1183,10 +1213,10 @@ def send_email(
                 importance,
             )
             demisto.debug(f"[send_email]Created message object: {message}. Sending to client")
-            client.send_email(message)
         except Exception as e:
             demisto.error(f"[send_email]Failed inside the 'else' block to create message object: {e}")
             raise
+    client.send_email(message)
 
     results = [CommandResults(entry_type=EntryType.NOTE, raw_response="Mail sent successfully")]
     if render_body:
@@ -1631,6 +1661,7 @@ def fetch_emails_as_incidents(client: EWSClient, last_run, incident_filter, skip
     log_memory()
     last_run = get_last_run(client, last_run)
     demisto.debug(f"get_last_run: {last_run=}")
+    demisto.debug(f"[fetch_emails_as_incidents] last_run: {last_run=}")
     last_fetch_time = last_run.get(LAST_RUN_TIME)
     excluded_ids = last_run.get(LAST_RUN_IDS_DICT_REPRESENTATION)
     try:
@@ -1641,6 +1672,7 @@ def fetch_emails_as_incidents(client: EWSClient, last_run, incident_filter, skip
             excluded_ids,
             incident_filter,
         )
+        demisto.debug(f"Got {len(last_emails)} last emails")
 
         incidents = []
         incident: dict[str, str] = {}
@@ -1660,6 +1692,7 @@ def fetch_emails_as_incidents(client: EWSClient, last_run, incident_filter, skip
                         if incident_filter == RECEIVED_FILTER
                         else item.last_modified_time.ewsformat()
                     )
+                    demisto.debug(f"[fetch_emails_as_incidents] parsing item: {item=}")
                     incident = parse_incident_from_item(item)
                     incidents.append(incident)
 
