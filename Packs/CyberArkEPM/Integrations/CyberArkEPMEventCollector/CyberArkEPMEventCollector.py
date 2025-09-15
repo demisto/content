@@ -281,7 +281,7 @@ def get_events(client_function: Callable, event_type: str, last_run_per_id: dict
         from_date = last_run.get(event_type).get("from_date")
         next_cursor = last_run.get(event_type).get("next_cursor")
 
-        demisto.debug(f"[get_events] set_id={set_id} from_date={from_date} next_cursor={next_cursor} - requesting first page")
+        demisto.debug(f"[get_events] requesting first page - {set_id=}, {from_date=}, {next_cursor=}")
         results = client_function(set_id, from_date, limit, next_cursor)
         demisto.debug(
             f"[get_events] set_id={set_id} received {len(results.get('events', []))} events, nextCursor={results.get('nextCursor')}"
