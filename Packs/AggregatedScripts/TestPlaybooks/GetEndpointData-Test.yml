@@ -1,5 +1,5 @@
 id: GetEndpointData-Test
-version: 10
+version: -1
 vcShouldKeepItemLegacyProdMachine: false
 name: GetEndpointData-Test
 starttaskid: "0"
@@ -2478,3 +2478,7 @@ view: |-
 inputs: []
 outputs: []
 dirtyInputs: true
+marketplaces:
+- platform
+- marketplacev2
+- xsoar
