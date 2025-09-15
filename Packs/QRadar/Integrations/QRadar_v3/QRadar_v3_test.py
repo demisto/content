@@ -970,7 +970,8 @@ def test_outputs_enriches(mocker, enrich_func, mock_func_name, args, mock_respon
     Then:
      - Ensure dict containing the enrichment is as expected.
     """
-    mocker.patch.object(client, mock_func_name, return_value=mock_response)
+    mock_func = mocker.patch.object(client, mock_func_name, return_value=mock_response)
+    mock_func.__name__ = mock_func.__name  # magic mock objects have different attributes from actual functions
     res = enrich_func(**args)
     assert res == expected
 
@@ -2475,6 +2476,7 @@ def test_get_rules_names(mocker):
         {"id": 103, "name": "Malware Detected"},
     ]
     mock_client_rules_list = mocker.patch.object(client, "rules_list", side_effect=[Exception("API Timeout"), mock_api_response])
+    mock_client_rules_list.__name__ = "mock_rules_list"  # magic mock objects have different attributes from actual functions
 
     offenses = [{"id": 1, "rules": [{"id": 101}, {"id": 102}]}, {"id": 2, "rules": [{"id": 102}, {"id": 103}]}]
     rule_id_rule_name_mapping = get_rules_names(client, offenses)

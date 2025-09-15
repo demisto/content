@@ -5,6 +5,7 @@ import uuid
 from enum import Enum
 from ipaddress import ip_address
 from urllib import parse
+from collections.abc import Callable
 from deepmerge import always_merger
 
 
@@ -1437,6 +1438,45 @@ def get_offense_closing_reasons(client: Client, offenses: List[dict]) -> dict:
         return {}
 
 
+def get_names_with_retries(func: Callable, *args, **kwargs) -> Optional[List[dict]]:
+    """
+    A wrapper for retrying API calls with exponential backoff for getting names from IDs.
+
+    Args:
+        func (Callable): The API call to be executed and retried.
+        *args: Positional arguments to pass to the API call.
+        **kwargs: Keyword arguments to pass to the API call.
+
+    Returns:
+        Optional[List[dict]]: The API response, or None if all retries fail.
+    """
+    max_retries = CONNECTION_ERRORS_RETRIES
+    base_delay = CONNECTION_ERRORS_INTERVAL
+    last_exception = None
+    for attempt in range(max_retries):
+        try:
+            demisto.debug(f"Resolution attempt {attempt + 1}/{max_retries} to get names using {func.__name__}.")
+            return func(*args, **kwargs)
+        except Exception as e:
+            last_exception = e
+            attempt_msg = f"Resolution attempt {attempt + 1}/{max_retries} failed to get names using {func.__name__}."
+
+            if attempt < max_retries - 1:
+                delay = base_delay * (2**attempt)
+                demisto.debug(f"{attempt_msg}: {e}. Retrying in {delay} seconds...")
+                time.sleep(delay)
+            else:
+                demisto.error(f"{attempt_msg}: {e}. All retry attempts exhausted.")
+
+    error_msg = f"Requests failed after {max_retries} attempts"
+    if last_exception:
+        error_msg += f". Last error: {last_exception}"
+
+    demisto.error(error_msg)
+    demisto.info(f"Falling back to using IDs instead of names using {func.__name__}.")
+    return None
+
+
 def get_domain_names(client: Client, outputs: List[dict]) -> dict:
     """
     Receives list of outputs, and performs API call to QRadar service to retrieve the domain names
@@ -1456,49 +1496,15 @@ def get_domain_names(client: Client, outputs: List[dict]) -> dict:
 
     domain_ids_str = ",".join(map(str, domain_ids))
     demisto.debug(f"Attempting to resolve domain names for domain IDs: {domain_ids_str}")
+    domains_info = get_names_with_retries(client.domains_list, filter_=f"id in ({domain_ids_str})", fields="id,name")
 
-    # Retry logic with exponential backoff
-    max_retries = CONNECTION_ERRORS_RETRIES  # Use existing constant (5)
-    base_delay = CONNECTION_ERRORS_INTERVAL  # Use existing constant (1)
-
-    last_exception = None
-    # NOTE: Retry logic is essential here to prevent silent failures in domain name resolution.
-    # Without retries, API call failures result in empty dict return, causing domain IDs (e.g., "6")
-    # to be displayed instead of domain names (e.g., "ABC") in the "Domain - Offense" field.
-    for attempt in range(max_retries):
-        try:
-            demisto.debug(f"Domain name resolution attempt {attempt + 1}/{max_retries}")
-            domains_info = client.domains_list(filter_=f"""id in ({domain_ids_str})""", fields="id,name")
-
-            if domains_info:
-                domain_mapping = {domain_info.get("id"): domain_info.get("name") for domain_info in domains_info}
-                demisto.debug(f"Successfully resolved {len(domain_mapping)} domain names: {domain_mapping}")
-                return domain_mapping
-            else:
-                demisto.debug(f"Domain list API returned empty response for domain IDs: {domain_ids_str}")
-                return {}
-
-        except Exception as e:
-            last_exception = e
-            attempt_msg = f"Domain name resolution attempt {attempt + 1}/{max_retries} failed"
-
-            if attempt < max_retries - 1:
-                # Calculate delay with exponential backoff
-                delay = base_delay * (2**attempt)
-                demisto.debug(f"{attempt_msg}: {str(e)}. Retrying in {delay} seconds...")
-                time.sleep(delay)
-            else:
-                demisto.error(f"{attempt_msg}: {str(e)}. All retry attempts exhausted.")
-
-    # If we reach here, all retries failed
-    error_msg = f"Failed to resolve domain names after {max_retries} attempts for domain IDs: {domain_ids_str}"
-    if last_exception:
-        error_msg += f". Last error: {str(last_exception)}"
-
-    demisto.error(error_msg)
-    demisto.info("Falling back to using domain IDs instead of domain names for affected offenses")
-
-    return {}
+    if domains_info:
+        domain_mapping = {domain_info.get("id"): domain_info.get("name") for domain_info in domains_info}
+        demisto.debug(f"Successfully resolved {len(domain_mapping)} domain names: {domain_mapping}")
+        return domain_mapping
+    else:
+        demisto.debug(f"Domain list API returned empty response for domain IDs: {domain_ids_str}")
+        return {}
 
 
 def get_rules_names(client: Client, offenses: List[dict]) -> dict:
@@ -1520,46 +1526,15 @@ def get_rules_names(client: Client, offenses: List[dict]) -> dict:
 
     rules_ids_str = ",".join(map(str, rules_ids))
     demisto.debug(f"Attempting to resolve rule names for rule IDs: {rules_ids_str}")
+    rules = get_names_with_retries(client.rules_list, filter_=f"id in ({rules_ids_str})", fields="id,name")
 
-    # Retry logic with exponential backoff (mirrors domain name resolution approach)
-    max_retries = CONNECTION_ERRORS_RETRIES
-    base_delay = CONNECTION_ERRORS_INTERVAL
-
-    last_exception = None
-    for attempt in range(max_retries):
-        try:
-            demisto.debug(f"Rule name resolution attempt {attempt + 1}/{max_retries}")
-            rules = client.rules_list(None, None, f"id in ({rules_ids_str})", "id,name")
-
-            if rules:
-                mapping = {rule.get("id"): rule.get("name") for rule in rules}
-                demisto.debug(f"Successfully resolved {len(mapping)} rule names")
-                return mapping
-            else:
-                demisto.debug(f"Rules API returned empty response for rule IDs: {rules_ids_str}")
-                return {}
-
-        except Exception as e:
-            last_exception = e
-            if attempt < max_retries - 1:
-                delay = base_delay * (2**attempt)
-                demisto.debug(
-                    f"Rule name resolution attempt {attempt + 1}/{max_retries} failed: {str(e)}. Retrying in {delay} seconds..."
-                )
-                time.sleep(delay)
-            else:
-                demisto.error(
-                    f"Rule name resolution attempt {attempt + 1}/{max_retries} failed: {str(e)}. All retry attempts exhausted."
-                )
-
-    # If we reach here, all retries failed
-    error_msg = f"Failed to resolve rule names after {max_retries} attempts for rule IDs: {rules_ids_str}"
-    if last_exception:
-        error_msg += f". Last error: {str(last_exception)}"
-    demisto.error(error_msg)
-    demisto.info("Falling back to using rule IDs as names for affected offenses")
-
-    return {}
+    if rules:
+        mapping = {rule.get("id"): rule.get("name") for rule in rules}
+        demisto.debug(f"Successfully resolved {len(mapping)} rule names")
+        return mapping
+    else:
+        demisto.debug(f"Rules API returned empty response for rule IDs: {rules_ids_str}")
+        return {}
 
 
 def get_offense_addresses(client: Client, offenses: List[dict], is_destination_addresses: bool) -> dict:
@@ -1598,6 +1573,22 @@ def get_offense_addresses(client: Client, offenses: List[dict], is_destination_a
     }
 
 
+def is_same_numeric(val_a: Any, val_b: Any) -> bool:
+    """Checks if the two values are the same number after attempting to cast both as integers.
+
+    Args:
+        val_a (Any): First value.
+        val_b (Any): Second value.
+
+    Returns:
+        bool: True if both integers are equal, False otherwise.
+    """
+    try:
+        return int(val_a) == int(val_b)
+    except Exception:
+        return False
+
+
 def get_rule_name_from_sources(rule: dict, rules_id_name_dict: dict) -> tuple[str, bool]:
     """
     Decide the best rule name to use for an offense rule item, preferring an existing valid string name, then a mapping lookup,
@@ -1611,24 +1602,17 @@ def get_rule_name_from_sources(rule: dict, rules_id_name_dict: dict) -> tuple[st
     Returns:
         tuple[str,bool]: The chosen rule name and a boolean flag indicating whether we had to fall back to the ID.
     """
-
-    def _is_same_numeric(val: Any, rule_id_val: Any) -> bool:
-        try:
-            return int(val) == int(rule_id_val)
-        except Exception:
-            return False
-
     rule_id = rule.get("id")
     original_name = rule.get("name")
 
     # Prefer existing original name if it looks valid
-    if isinstance(original_name, str) and original_name.strip() and not _is_same_numeric(original_name, rule_id):
+    if isinstance(original_name, str) and original_name.strip() and not is_same_numeric(original_name, rule_id):
         print_debug_msg(f"Using {original_name=} for {rule_id=}.")
         return original_name, False
 
     # Try mapping from API lookup
     mapped_name = rules_id_name_dict.get(rule_id)
-    if isinstance(mapped_name, str) and mapped_name.strip() and not _is_same_numeric(mapped_name, rule_id):
+    if isinstance(mapped_name, str) and mapped_name.strip() and not is_same_numeric(mapped_name, rule_id):
         print_debug_msg(f"Using {mapped_name=} for {rule_id=}.")
         return mapped_name, False
 
