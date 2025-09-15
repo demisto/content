@@ -9904,7 +9904,7 @@ When running from a Panorama instance, the `target` argument must be specified.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| target | Serial number of the firewall on which to run the command. Mandatory for a Panorama instance. | Optional |
+| target | Serial number of the firewall on which to run the command. Mandatory for Panorama instances. | Optional |
 
 #### Context Output
 
