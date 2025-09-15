@@ -401,97 +401,160 @@ def test_client_get_activity_log(mocker):
     }
 
 
-@pytest.mark.parametrize(
-    "events, expected",
-    [
-        pytest.param(
-            # Keeps first by id, preserves order; no-id events always kept
-            [
-                {"id": "A", "event_type": "trace", "n": 1},
-                {"id": "A", "event_type": "trace", "n": 2},  # dup
-                {"id": "B", "event_type": "alert", "n": 3},
-                {"misc": 4},  # no id -> keep
-                {"id": "B", "event_type": "alert", "n": 5},  # dup
-                {"misc": 6},  # no id -> keep
-                {"id": "C", "event_type": "activity", "n": 7},
-            ],
-            [
-                {"id": "A", "event_type": "trace", "n": 1},
-                {"id": "B", "event_type": "alert", "n": 3},
-                {"misc": 4},
-                {"misc": 6},
-                {"id": "C", "event_type": "activity", "n": 7},
-            ],
-            id="basic-dedup-with-no-id-events",
-        ),
-        pytest.param(
-            # All without id -> all kept (content equality does not matter)
-            [{"x": 1}, {"x": 1}, {"y": 2}],
-            [{"x": 1}, {"x": 1}, {"y": 2}],
-            id="no-id-events-all-kept",
-        ),
-        pytest.param(
-            # Empty input
-            [],
-            [],
-            id="empty-input",
-        ),
-        pytest.param(
-            # None id is treated as "no id" -> kept
-            [{"id": None, "n": 1}, {"id": None, "n": 2}],
-            [{"id": None, "n": 1}, {"id": None, "n": 2}],
-            id="none-id-treated-as-no-id",
-        ),
-        pytest.param(
-            # Mixed ordering; ensure stability (first-seen order retained)
-            [
-                {"id": "C", "n": 1},
-                {"id": "A", "n": 2},
-                {"id": "B", "n": 3},
-                {"id": "A", "n": 4},  # dup
-                {"id": "B", "n": 5},  # dup
-                {"id": "C", "n": 6},  # dup
-            ],
-            [
-                {"id": "C", "n": 1},
-                {"id": "A", "n": 2},
-                {"id": "B", "n": 3},
-            ],
-            id="stable-ordering",
-        ),
-    ],
-)
-def test_dedupe_events_by_id_functional(events, expected):
+def _make_trace_evt(i, extra=None):
+    d = {"id": i, "type": "trace", "attributes": {}}
+    if extra:
+        d.update(extra)
+    return d
+
+
+def test_remove_outbound_trace_duplicates_no_outbound():
     """
     Given:
-        - A list of event dicts with a mix of duplicate ids and id-less entries.
+        - Only inbound trace events present (no outbound key in the per-type map).
     When:
-        - Calling dedupe_events_by_id
+        - remove_outbound_trace_duplicates is invoked.
     Then:
-        - Only the first event for each duplicate id remains.
-        - All events without 'id' remain.
-        - Original ordering among kept events is preserved.
+        - No duplicates are reported and inbound list remains unchanged.
     """
-    out = FireEyeETPEventCollector.dedupe_events_by_id(events)
-    assert out == expected
+    per_type = {
+        FireEyeETPEventCollector.TRACE_INBOUND_KEY: [_make_trace_evt("A"), _make_trace_evt("B")],
+        # no outbound key
+    }
+    dups = FireEyeETPEventCollector.remove_outbound_trace_duplicates(per_type)
+    assert dups == set()
+    assert per_type[FireEyeETPEventCollector.TRACE_INBOUND_KEY] == [_make_trace_evt("A"), _make_trace_evt("B")]
 
 
-def test_dedupe_events_by_id_scales_to_10k():
+def test_remove_outbound_trace_duplicates_no_overlap():
     """
     Given:
-        - 10,000 unique events (first pass) followed by 10,000 duplicates (second pass).
+        - Inbound and outbound trace lists with disjoint IDs.
     When:
-        - Calling dedupe_events_by_id
+        - remove_outbound_trace_duplicates is invoked.
     Then:
-        - Exactly the 10,000 first-pass events remain and order is preserved.
+        - No duplicates are reported and outbound list remains unchanged.
     """
-    # Build 10,000 unique events
-    unique = [{"id": f"evt-{i}", "n": i} for i in range(10_000)]
-    # Append duplicates with the same ids
-    dupes = [{"id": f"evt-{i}", "n": i + 10_000} for i in range(10_000)]
-    events = unique + dupes
+    per_type = {
+        FireEyeETPEventCollector.TRACE_INBOUND_KEY: [_make_trace_evt("A"), _make_trace_evt("B")],
+        FireEyeETPEventCollector.TRACE_OUTBOUND_KEY: [_make_trace_evt("C"), _make_trace_evt("D")],
+    }
+    dups = FireEyeETPEventCollector.remove_outbound_trace_duplicates(per_type)
+    assert dups == set()
+    assert per_type[FireEyeETPEventCollector.TRACE_OUTBOUND_KEY] == [_make_trace_evt("C"), _make_trace_evt("D")]
 
-    out = FireEyeETPEventCollector.dedupe_events_by_id(events)
-    assert len(out) == 10_000
-    # Must equal the first-seen (unique) sequence
-    assert out == unique
+
+def test_remove_outbound_trace_duplicates_with_overlap():
+    """
+    Given:
+        - Inbound and outbound trace lists with overlapping IDs {"B", "X"}.
+    When:
+        - remove_outbound_trace_duplicates is invoked.
+    Then:
+        - Overlapping IDs are reported as duplicates and removed only from outbound.
+        - Inbound list remains intact.
+    """
+    per_type = {
+        FireEyeETPEventCollector.TRACE_INBOUND_KEY: [_make_trace_evt("A"), _make_trace_evt("B"), _make_trace_evt("X")],
+        FireEyeETPEventCollector.TRACE_OUTBOUND_KEY: [_make_trace_evt("B"), _make_trace_evt("C"), _make_trace_evt("X")],
+    }
+    dups = FireEyeETPEventCollector.remove_outbound_trace_duplicates(per_type)
+    assert dups == {"B", "X"}
+    # inbound preserved entirely
+    assert [e["id"] for e in per_type[FireEyeETPEventCollector.TRACE_INBOUND_KEY]] == ["A", "B", "X"]
+    # outbound had duplicates removed
+    assert [e["id"] for e in per_type[FireEyeETPEventCollector.TRACE_OUTBOUND_KEY]] == ["C"]
+
+
+def test_remove_outbound_trace_duplicates_ignores_missing_ids():
+    """
+    Given:
+        - Some events in inbound/outbound missing an 'id' field.
+    When:
+        - remove_outbound_trace_duplicates is invoked.
+    Then:
+        - Missing IDs are ignored for dedup purposes.
+        - Only properly identified duplicates are removed from outbound.
+    """
+    per_type = {
+        FireEyeETPEventCollector.TRACE_INBOUND_KEY: [_make_trace_evt(None), _make_trace_evt("A")],
+        FireEyeETPEventCollector.TRACE_OUTBOUND_KEY: [_make_trace_evt(None), _make_trace_evt("A"), _make_trace_evt("B")],
+    }
+    dups = FireEyeETPEventCollector.remove_outbound_trace_duplicates(per_type)
+    assert dups == {"A"}
+    # Outbound keeps the None-id event and drops only the 'A' duplicate
+    assert [e.get("id") for e in per_type[FireEyeETPEventCollector.TRACE_OUTBOUND_KEY]] == [None, "B"]
+
+
+def test_flatten_events_in_configured_order_preserves_order():
+    """
+    Given:
+        - A specific configured event type order: ["alerts", "email_trace", "email_trace_outbound"].
+        - A per-type events map with one or more events per type.
+    When:
+        - _flatten_events_in_configured_order is invoked.
+    Then:
+        - The flattened list preserves the configured event type ordering.
+    """
+    et_in = FireEyeETPEventCollector.EventType(FireEyeETPEventCollector.TRACE_INBOUND_KEY, 10)
+    et_out = FireEyeETPEventCollector.EventType(FireEyeETPEventCollector.TRACE_OUTBOUND_KEY, 10)
+    et_alerts = FireEyeETPEventCollector.EventType("alerts", 10)
+    order = [et_alerts, et_in, et_out]
+
+    per_type = {
+        "alerts": [_make_trace_evt("AL1")],
+        FireEyeETPEventCollector.TRACE_INBOUND_KEY: [_make_trace_evt("IN1"), _make_trace_evt("IN2")],
+        FireEyeETPEventCollector.TRACE_OUTBOUND_KEY: [_make_trace_evt("OUT1")],
+    }
+    flat = FireEyeETPEventCollector._flatten_events_in_configured_order(per_type, order)
+    assert [e["id"] for e in flat] == ["AL1", "IN1", "IN2", "OUT1"]
+
+
+def test_fetch_command_dedups_outbound_trace_duplicates(mocker):
+    """
+    Given:
+        - Collector configured with both email_trace and email_trace_outbound.
+        - Non-first fetch with last-run for both types present.
+        - Overlapping IDs between inbound (A, B, X) and outbound (B, X, C).
+    When:
+        - fetch_command is invoked.
+    Then:
+        - Duplicates (B, X) are removed only from outbound.
+        - Inbound events are preserved.
+        - Final flattened order follows configured event types.
+    """
+    event_types = [
+        FireEyeETPEventCollector.EventType(FireEyeETPEventCollector.TRACE_INBOUND_KEY, 25, outbound=False),
+        FireEyeETPEventCollector.EventType(FireEyeETPEventCollector.TRACE_OUTBOUND_KEY, 25, outbound=True),
+    ]
+    collector = FireEyeETPEventCollector.EventCollector(mock_client(), event_types)
+
+    last_run_both = {
+        "Last Run": {
+            FireEyeETPEventCollector.TRACE_INBOUND_KEY: {
+                "last_fetch_last_ids": [],
+                "last_fetch_timestamp": "2025-09-12T15:00:00.000000",
+            },
+            FireEyeETPEventCollector.TRACE_OUTBOUND_KEY: {
+                "last_fetch_last_ids": [],
+                "last_fetch_timestamp": "2025-09-12T15:00:00.000000",
+            },
+        }
+    }
+
+    inbound_events = [_make_trace_evt("A"), _make_trace_evt("B"), _make_trace_evt("X")]
+    outbound_events = [_make_trace_evt("B"), _make_trace_evt("X"), _make_trace_evt("C")]
+
+    def _get_events_side_effect(event_type, last_run):
+        if event_type.name == FireEyeETPEventCollector.TRACE_INBOUND_KEY:
+            return last_run, inbound_events
+        if event_type.name == FireEyeETPEventCollector.TRACE_OUTBOUND_KEY:
+            return last_run, outbound_events
+        return last_run, []
+
+    mocker.patch.object(collector, "get_events", side_effect=_get_events_side_effect)
+
+    next_run, events = collector.fetch_command(demisto_last_run=last_run_both)
+
+    # Expect duplicates (B, X) removed from outbound; inbound unchanged; order by configured types
+    assert [e["id"] for e in events] == ["A", "B", "X", "C"]
