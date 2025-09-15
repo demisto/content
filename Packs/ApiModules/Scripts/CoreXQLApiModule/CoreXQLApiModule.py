@@ -471,6 +471,8 @@ def start_xql_query(client: CoreClient, args: Dict[str, Any]) -> str:
 
     if "limit" not in query:  # if user did not provide a limit in the query, we will use the default one.
         query = f"{query} \n| limit {DEFAULT_LIMIT!s}"
+
+    query = f"{query} \n| config max_runtime_minutes = {int(args.get('timeout_in_seconds', 600)) // 60}"
     data: Dict[str, Any] = {
         "request_data": {
             "query": query,
