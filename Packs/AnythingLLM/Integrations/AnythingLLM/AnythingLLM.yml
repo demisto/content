@@ -41,12 +41,14 @@ configuration:
   name: airs_apikey
   required: false
   type: 9
-- defaultvalue: 'false'
+- additionalinfo: Have AIRS scan all LLM prompts and throw exeception if BLOCK is returned
+  defaultvalue: 'false'
   display: Sync Scan LLM Prompts with AIRS
   name: airs_scan_prompt
   required: false
   type: 8
-- defaultvalue: 'false'
+- additionalinfo: Have AIRS scan all LLM responses and throw exeception if BLOCK is returned
+  defaultvalue: 'false'
   display: Sync Scan LLM Response with AIRS
   name: airs_scan_response
   required: false
@@ -57,18 +59,21 @@ configuration:
   name: airs_profile
   required: false
   type: 0
-- defaultvalue: anythingllm
+- additionalinfo: Provide an application name to identify XSOAR scan requests in AIRS
+  defaultvalue: anythingllm
   display: AIRS Application Name for Scan Requests
   name: airs_app
   required: false
   type: 0
-- defaultvalue: XSOAR
+- additionalinfo: Provide a user name to include in XSOAR scan requests in AIRS
+  defaultvalue: XSOAR
   display: AIR User for Scan Requests
   name: airs_user
   required: false
   type: 0
-- defaultvalue: llama3_2
-  display: Anything LLM Model in use for Scan Requests
+- additionalinfo: Provide the LLM model being used for scan requests in AIRS
+  defaultvalue: llama3_2
+  display: Anything LLM Model in use
   name: airs_model
   required: false
   type: 0
