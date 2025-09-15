@@ -68,17 +68,14 @@ configuration:
   defaultvalue: 50
   type: 0
   section: Collect
-  advanced: true
   hidden:
     - marketplacev2
     - platform
-- display: Maximum Events Per Fetch
-  additionalinfo: This value should not exceed 30,000.
+- display: Maximum Number of Cases Per Fetch
   name: max_events_fetch  # for fetch-events on XSIAM and PLATFORM
   defaultvalue: 30000
   type: 0
   section: Collect
-  advanced: true
   hidden:
     - xsoar
 - display: Fetch query

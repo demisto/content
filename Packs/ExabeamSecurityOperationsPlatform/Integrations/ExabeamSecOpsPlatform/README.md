@@ -16,7 +16,7 @@ This integration was integrated and tested with version v1.0 of ExabeamSecOpsPla
 | Fetch query | Supported on Cortex XSOAR only. In the `key:value`. For example: `NOT stage:"CLOSED"`. | False |
 | Incident type | Supported on Cortex XSOAR only. | False |
 | Fetch events | Supported on Cortex XSIAM only. | False |
-| Maximum Events Per Fetch | Supported on Cortex XSIAM only. This value should not exceed 30,000. | False |
+| Maximum Number of Cases Per Fetch | Supported on Cortex XSIAM only.| False |
 
 ## Commands
 

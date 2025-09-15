@@ -27,14 +27,12 @@
             "caseId": "A",
             "stage": "NEW",
             "caseCreationTimestamp": 1743728988934673,
-            "caseCreationTimestampFormatted": "2025-04-04T01:09:48Z",
             "_time": "2025-04-04T01:09:48Z"
         },
         {
             "caseId": "B",
             "stage": "CLOSED",
             "caseCreationTimestamp": 1743728991877035,
-            "caseCreationTimestampFormatted": "2025-04-04T01:09:51Z",
             "_time": "2025-04-04T01:09:51Z"
         }
     ],

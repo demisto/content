@@ -623,21 +623,6 @@ def test_last_case_time_and_ids():
     assert last_case_ids == ["B", "C"]
 
 
-def test_format_case():
-    from ExabeamSecOpsPlatform import format_case
-
-    raw_case = {"caseId": "A", "caseCreationTimestamp": 1672531200000000}
-
-    formatted_case = format_case(raw_case)
-
-    assert formatted_case == {
-        "caseId": "A",
-        "caseCreationTimestamp": 1672531200000000,
-        "caseCreationTimestampFormatted": "2023-01-01T00:00:00Z",
-        "_time": "2023-01-01T00:00:00Z",
-    }
-
-
 @pytest.mark.parametrize(
     "mock_response, params, last_run, expected_incidents, expected_last_run",
     [

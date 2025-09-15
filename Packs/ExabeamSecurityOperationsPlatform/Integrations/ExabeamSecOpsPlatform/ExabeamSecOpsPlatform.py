@@ -520,9 +520,9 @@ def get_cases_in_batches(
 
             all_fetched_ids.add(case_id)
             # Format case and add to list of cases
-            case = format_case(row)
-            unique_batch_cases.append(case)
-            all_cases.append(case)
+            row["_time"] = timestamp_to_datestring(row["caseCreationTimestamp"] / 1000, date_format=DATE_FORMAT)
+            unique_batch_cases.append(row)
+            all_cases.append(row)
 
             if len(all_cases) == max_fetch:
                 demisto.debug(f"Reached the desired {max_fetch=}. Stopping iterating over batch rows.")
@@ -641,21 +641,6 @@ def format_incidents(cases: list[dict]) -> list[dict]:
             }
         )
     return incidents
-
-
-def format_case(row: dict) -> dict:
-    """
-    Converts a case into an event with formatted timestamps and `_time` field.
-
-    Args:
-        cases (list): A list of case dictionaries.
-
-    Returns:
-        list: A list event dictionaries with the `_time` field added.
-    """
-    case = convert_all_timestamp_to_datestring(row, key_suffix="Formatted")
-    case["_time"] = case["caseCreationTimestampFormatted"]  # already formatted in DATE_FORMAT from function call above
-    return case
 
 
 def format_record_keys(dict_list):
@@ -1028,11 +1013,6 @@ def fetch_events(client: Client, max_fetch: int, last_run: dict[str, Any]) -> tu
         tuple[list[dict], dict]: List of cases formatted as events, updated last run object.
     """
     demisto.debug(f"Starting to fetch events with {max_fetch=}. Got {last_run=}.")
-
-    # Validate max fetch
-    if max_fetch > MAX_EVENTS_LIMIT:
-        demisto.debug(f"The {max_fetch=} exceeds {MAX_EVENTS_LIMIT}. Using {MAX_EVENTS_LIMIT} instead.")
-        max_fetch = MAX_EVENTS_LIMIT
 
     start_time, end_time = get_fetch_run_time_range(last_run=last_run, first_fetch="1 minute ago", date_format=DATE_FORMAT)
     last_fetched_ids = last_run.get("last_ids", [])

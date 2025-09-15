@@ -32,14 +32,12 @@
             "caseId": "B",
             "priority": "MEDIUM",
             "caseCreationTimestamp": 1743728991877035,
-            "caseCreationTimestampFormatted": "2025-04-04T01:09:51Z",
             "_time": "2025-04-04T01:09:51Z"
         },
         {
             "caseId": "C",
             "priority": "HIGH",
             "caseCreationTimestamp": 1747706110552706,
-            "caseCreationTimestampFormatted": "2025-05-20T01:55:10Z",
             "_time": "2025-05-20T01:55:10Z"
         }
     ],
