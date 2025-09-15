@@ -8,7 +8,6 @@ urllib3.disable_warnings()
 
 """ CONSTANTS """
 
-DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
 CONTEXT_KEY = "CyberArkEPMARR_Context"
 RISK_PLAN_ACTION_ADD = "add"
 RISK_PLAN_ACTION_REMOVE = "remove"
@@ -145,22 +144,22 @@ def search_endpoint_group_id(group_name: str, client: Client) -> str:
     set_id = context.get("set_id")
     url_suffix = f"Sets/{set_id}/Endpoints/Groups/Search"
     result = client._http_request("POST", url_suffix=url_suffix, json_data=data)
-    if result:
+    if result and len(result) > 0:
         endpoint_group_id = result[0].get("id")
         return endpoint_group_id
     return None
 
 
-def add_endpoint_to_group(endpoint_id: str, endpoint_group_id: str, client: Client) -> None:
+def add_endpoint_to_group(endpoint_ids: list[str], endpoint_group_id: str, client: Client) -> None:
     """Adds an endpoint to a specified group.
 
     Args:
-        endpoint_id (str): The ID of the endpoint to add.
+        endpoint_ids (list): The IDs of the endpoints to add.
         endpoint_group_id (str): The ID of the group to add the endpoint to.
         client (Client): The CyberArk EPM client.
     """
     data = {
-        "membersIds": [endpoint_id]
+        "membersIds": endpoint_ids
     }
     context = get_integration_context().get(CONTEXT_KEY, {})
     set_id = context.get("set_id")
@@ -168,21 +167,21 @@ def add_endpoint_to_group(endpoint_id: str, endpoint_group_id: str, client: Clie
     client._http_request("POST", url_suffix=url_suffix, json_data=data)
 
 
-def remove_endpoint_from_group(endpoint_id: str, endpoint_group_id: str, client: Client) -> None:
+def remove_endpoint_from_group(endpoint_ids: list[str], endpoint_group_id: str, client: Client) -> None:
     """Removes an endpoint from a specified group.
 
     Args:
-        endpoint_id (str): The ID of the endpoint to remove.
+        endpoint_ids (list): The IDs of the endpoints to remove.
         endpoint_group_id (str): The ID of the group to remove the endpoint from.
         client (Client): The CyberArk EPM client.
     """
     data = {
-        "membersIds": [endpoint_id]
+        "membersIds": endpoint_ids
     }
     context = get_integration_context().get(CONTEXT_KEY, {})
     set_id = context.get("set_id")
     url_suffix = f"Sets/{set_id}/Endpoints/Groups/{endpoint_group_id}/Members/ids/remove"
-    client._http_request("post", url_suffix=url_suffix, json_data=data)
+    client._http_request("POST", url_suffix=url_suffix, json_data=data)
 
 """ COMMAND FUNCTIONS """
 
@@ -195,31 +194,24 @@ def change_risk_plan_command(
     external_ip = args.get("external_ip")
     action = args.get("action", RISK_PLAN_ACTION_ADD)
 
-    if not risk_plan:
-        return_error("Risk plan is required")
-    if not endpoint_name:
-        return_error("Endpoint name is required")
-    if not external_ip:
-        return_error("External IP is required")
-
     # Search for endpoints
     endpoint_ids = search_endpoints(endpoint_name, external_ip, client)
 
     if not endpoint_ids:
-        return_error(f"No Endpoints not found matching the name: {endpoint_name} and External IP: {external_ip}")
+        raise DemistoException(f"No Endpoints not found matching the name: {endpoint_name} and External IP: {external_ip}")
 
     # Search for endpoint group by risk plan name
     endpoint_group_id = search_endpoint_group_id(risk_plan, client)
     if not endpoint_group_id:
-        return_error(f"No Endpoint Group not found matching the name: {risk_plan}")
+        raise DemistoException(f"No Endpoint Group not found matching the name: {risk_plan}")
 
-    for endpoint_id in endpoint_ids:
-        if action == RISK_PLAN_ACTION_ADD:
-            add_endpoint_to_group(endpoint_id, endpoint_group_id, client)
-        elif action == RISK_PLAN_ACTION_REMOVE:
-            remove_endpoint_from_group(endpoint_id, endpoint_group_id, client)
-        else:
-            return_error(f"Invalid action: {action}")
+
+    if action == RISK_PLAN_ACTION_ADD:
+        add_endpoint_to_group(endpoint_ids, endpoint_group_id, client)
+    elif action == RISK_PLAN_ACTION_REMOVE:
+        remove_endpoint_from_group(endpoint_ids, endpoint_group_id, client)
+    else:
+        raise DemistoException(f"Invalid action: {action}")
 
     human_readable = tableToMarkdown(name="Risk Plan changed successfully",
                                      t={"Endpoint IDs": ",".join(endpoint_ids), "Risk Plan": risk_plan, "Action": action},
@@ -260,7 +252,6 @@ def main():
             password=password,
             application_id=application_id
         )
-        args = demisto.args()
         if command == "test-module":
             result = test_module(client)
         elif command == "cyberarkepm-activate-risk-plan":

@@ -10,25 +10,18 @@ You must add at least a Unit Test function for every XSOAR command
 you are implementing with your integration
 """
 
-from demisto_sdk.commands.common.handlers import JSON_Handler
-
 import json
 import pytest
-
-
-def util_load_json(path):
-    with open(path, encoding="utf-8") as f:
-        return json.load(f)
 
 
 def mocked_client(requests_mock):
     from CyberArkEPMARR import Client
 
     mock_response_sets = {"Sets": [{"Id": "id1", "Name": "set_name1"}]}
-    mock_response_search_endpoints = util_load_json("test_data/search_endpoints.json")
-    mock_response_search_endpoint_group_id = util_load_json("test_data/search_endpoint_group_id.json")
+    mock_response_search_endpoints = {"endpoints": [{"id": "endpoint_id1"}]}
+    mock_response_search_endpoint_group_id = [{"id": "group_id1"}]
 
-    requests_mock.post("https://url.com/EPM/API/Auth/EPM/Logon", json={"ManagerURL": "https://mock.com", "Authorization": "123"})
+    requests_mock.post("https://url.com/EPM/API/Auth/EPM/Logon", json={"ManagerURL": "https://mock.com", "EPMAuthenticationResult": "123"})
     requests_mock.get("https://mock.com/EPM/API/Sets", json=mock_response_sets)
     requests_mock.post("https://mock.com/EPM/API/Sets/id1/Endpoints/Search", json=mock_response_search_endpoints)
     requests_mock.post("https://mock.com/EPM/API/Sets/id1/Endpoints/Groups/Search", json=mock_response_search_endpoint_group_id)

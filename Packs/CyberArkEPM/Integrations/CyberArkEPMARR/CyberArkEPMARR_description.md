@@ -1,70 +1,27 @@
-## CyberArk EPM ARR Help
+## CyberArk EPM Help
 
-This integration allows you to automate risk plan management in CyberArk Endpoint Privilege Manager (EPM) by adding and removing endpoints from specified risk plans.
+### Authentication
+There are two methods to authenticate EPM and SAML (currently only via Okta).
+Every method needs different parameters as show in the following:
 
-## Configure CyberArk EPM ARR on Cortex XSOAR
+* EPM authentication
+    - url: `https://<EPM_server>` (for example: https://login.epm.cyberark.com/login)
+    - username
+    - password
+    - [application ID](https://docs.cyberark.com/Idaptive/Latest/en/Content/Applications/AppsOvw/SpecifyAppID.htm#%23SpecifytheApplicationID)
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for CyberArk EPM ARR.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description**                                                                        |
-    | --- |----------------------------------------------------------------------------------------|
-    | Server URL | The Login URL of CyberArk EPM service.                                                 |
-    | Credentials | The username and password for authentication.                                          |
-    | Application ID | The Application ID for the integration. If not provided, `CyberArkXSOAR` will be used. |
-    | Trust any certificate (not secure) | Select this option to trust self-signed certificates.                                  |
-    | Use system proxy settings | Select this option to use the system's proxy settings.                                 |
 
-4. Click **Test** to validate the URLs, credentials, and connection.
+* SAML authentication (advanced settings) currently supported only via Okta.
+    - url: `https://login.epm.cyberark.com/SAML/Logon`
+    - username
+    - password
+    - authentication URL [Okta example](https://developer.okta.com/docs/reference/api/authn/#authentication-operations): `https://[COMPANY_NAME].okta.com/api/v1/authn`
+    - application URL: `https://[COMPANY_NAME].okta.com/home/[APP_NAME]/[APP_ID]`
 
-## Commands
+### Endpoint Information
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
-After you successfully execute a command, a DBot message appears in the War Room with the command details.
-
-### cyberarkepm-activate-risk-plan
-
-Activates a risk plan for a specified endpoint.
-
-#### Base Command
-
-`cyberarkepm-activate-risk-plan`
-
-#### Input
-
-| **Argument** | **Description** | **Required** |
-| --- | --- | --- |
-| risk_plan | The name of the risk plan to activate. | Required |
-| endpoint_name | The name of the endpoint to target. | Required |
-| external_ip | The external IP address of the endpoint. | Required |
-
-#### Context Output
-
-| **Path**                    | **Type** | **Description**                                 |
-|-----------------------------| --- |-------------------------------------------------|
-| CyberArkEPMARR.Endpoint.IDs | String | The IDs of the endpoint added to the risk plan. |
-| CyberArkEPMARR.Risk.Plan    | String | Name of Risk Plan endpoints were added to.      |
-
-### cyberarkepm-deactivate-risk-plan
-
-Deactivates a risk plan for a specified endpoint.
-
-#### Base Command
-
-`cyberarkepm-deactivate-risk-plan`
-
-#### Input
-
-| **Argument** | **Description** | **Required** |
-| --- | --- | --- |
-| risk_plan | The name of the risk plan to deactivate. | Required |
-| endpoint_name | The name of the endpoint to target. | Required |
-| external_ip | The external IP address of the endpoint. | Required |
-
-#### Context Output
-
-| **Path**                    | **Type** | **Description**                                     |
-|-----------------------------| --- |-----------------------------------------------------|
-| CyberArkEPMARR.Endpoint.IDs | String | The IDs of the endpoint removed from the risk plan. |
-| CyberArkEPMARR.Risk.Plan    | String | Name of Risk Plan endpoints were removed from.      |
+- To uniquely identify an endpoint the following command arguments are used: 
+    * Endpoint name.
+    * Endpoint External IP.
+  In addition to that a pre-defined risk plan must be provided (i.e. `Medium_Risk_Plan`)
