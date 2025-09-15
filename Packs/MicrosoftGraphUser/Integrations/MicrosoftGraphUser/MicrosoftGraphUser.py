@@ -182,7 +182,7 @@ class MsGraphClient:
             password_method_id_response = self.ms_client.http_request(
                 method="GET", url_suffix=f"users/{quote(user)}/authentication/passwordMethods"
             )
-            password_method_id = password_method_id_response.get("value", [])[0]["id"] # There is only one password method object
+            password_method_id = password_method_id_response.get("value", [])[0]["id"]  # There is only one password method object
         except (IndexError, KeyError) as e:
             raise DemistoException("Failed getting passwordMethod id", exception=e, res=password_method_id_response)
         return password_method_id

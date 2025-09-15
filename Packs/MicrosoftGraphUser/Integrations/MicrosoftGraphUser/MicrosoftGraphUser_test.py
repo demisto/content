@@ -797,7 +797,7 @@ def test_change_on_premise_password_success(requests_mock, password_field: str):
         "https://graph.microsoft.com/v1.0/users/user/authentication/passwordMethods", json={"value": [{"id": "id"}]}
     )
     mocked_password_change_request = requests_mock.post(
-        "https://graph.microsoft.com/v1.0/users/user/authentication/passwordMethods/id/resetPassword", json={}, status_code=202
+        "https://graph.microsoft.com/v1.0/users/user/authentication/methods/id/resetPassword", json={}, status_code=202
     )
 
     client = MsGraphClient(
