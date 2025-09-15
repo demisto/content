@@ -272,7 +272,7 @@ def get_events(client_function: Callable, event_type: str, last_run_per_id: dict
         (dict) A dict of {'set_id': {'events' [list events associated with a list of set names], 'next_cursor': '123456'}}.
     """
     demisto.debug(
-        f"get_events called with event_type={event_type}, limit={limit}, last_run_set_ids={list(last_run_per_id.keys())}"
+        f"[get_events] called with event_type={event_type}, limit={limit}, last_run_set_ids={list(last_run_per_id.keys())}"
     )
     events: dict[str, dict[str, str | list]] = {}
 
