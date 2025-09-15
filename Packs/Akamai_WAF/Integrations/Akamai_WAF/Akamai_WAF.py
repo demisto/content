@@ -343,6 +343,122 @@ class Client(BaseClient):
             method="GET", url_suffix=f"/identity-management/v2/user-admin/groups/{group_id}?actions=false", headers=headers
         )
 
+    def get_client_list(self, client_list_id: str = None, name: str = None, include_items: bool = False,
+                        include_deprecated: bool = False, search: str = None, list_type: list = None,
+                        include_network_list: bool = False, sort: str = 'ASC', page: int = 0,
+                        page_size: int = 50, limit: int = 50) -> dict:
+        """
+        Get client list.
+        Args:
+            client_list_id: client list id
+            name: name
+            include_items: include items
+            include_deprecated: include deprecated
+            search: search
+            list_type: type
+            include_network_list: include network list
+            sort: sort
+            page: page
+            page_size: page size
+            limit: limit
+        Returns:
+            Json response as dictionary
+        """
+        params = {
+            'name': name,
+            'includeItems': include_items,
+            'includeDeprecated': include_deprecated,
+            'search': search,
+            'type': list_type,
+            'includeNetworkLists': include_network_list,
+            'sort': sort,
+            'page': page,
+            'pageSize': page_size,
+            'limit': limit
+        }
+        if client_list_id:
+            return self._http_request(method="GET", url_suffix=f"/client-list/v1/lists/{client_list_id}", params=params)
+        return self._http_request(method="GET", url_suffix="/client-list/v1/lists", params=params)
+
+    def create_client_list(self, list_name: str, list_type: str, description: str = None, tags: list = None,
+                         items: list = None, group_id: int = None) -> dict:
+        """
+        Create a client list.
+        Args:
+            list_name: The name of the client list.
+            list_type: The type of the client list.
+            description: A description of the client list.
+            tags: A list of tags to associate with the client list.
+            items: A list of items to include in the client list.
+            group_id: The ID of the group to associate with the client list.
+        Returns:
+            Json response as dictionary
+        """
+        body = {
+            'name': list_name,
+            'type': list_type,
+            'description': description,
+            'tags': tags,
+            'items': items,
+            'groupId': group_id
+        }
+        return self._http_request(method="POST", url_suffix="/client-list/v1/lists", json_data=body)
+
+    def delete_client_list(self, client_list_id: str) -> requests.Response:
+        """
+        Delete a client list.
+        Args:
+            client_list_id: The ID of the client list to delete.
+        Returns:
+            Response object
+        """
+        return self._http_request(method="DELETE", url_suffix=f"/client-list/v1/lists/{client_list_id}", resp_type='response')
+
+    def activate_client_list(self, client_list_id: str, network: str, comments: str = None, notification_recipients: list = None) -> requests.Response:
+        """
+        Activate a client list.
+        Args:
+            client_list_id: The ID of the client list to activate.
+            network: The network to activate the client list on.
+            comments: A description for the activation.
+            notification_recipients: A list of email addresses to notify of the activation.
+        Returns:
+            Response object
+        """
+        body = {
+            'comments': comments,
+            'notificationRecipients': notification_recipients
+        }
+        return self._http_request(method="POST", url_suffix=f"/client-list/v1/lists/{client_list_id}/environments/{network}/activate", json_data=body, resp_type='response')
+
+    def add_client_list_entry(self, client_list_id: str, items: list) -> requests.Response:
+        """
+        Add an entry to a client list.
+        Args:
+            client_list_id: The ID of the client list to add an entry to.
+            items: A list of items to add to the client list.
+        Returns:
+            Response object
+        """
+        body = {
+            'items': items
+        }
+        return self._http_request(method="POST", url_suffix=f"/client-list/v1/lists/{client_list_id}/append", json_data=body, resp_type='response')
+
+    def remove_client_list_entry(self, client_list_id: str, items: list) -> requests.Response:
+        """
+        Remove an entry from a client list.
+        Args:
+            client_list_id: The ID of the client list to remove an entry from.
+            items: A list of items to remove from the client list.
+        Returns:
+            Response object
+        """
+        body = {
+            'items': items
+        }
+        return self._http_request(method="POST", url_suffix=f"/client-list/v1/lists/{client_list_id}/items/delete-request", json_data=body, resp_type='response')
+
     # Created by C.L.
 
     def create_group(self, group_id: int = 0, groupname: str = "") -> dict:
@@ -3315,6 +3431,135 @@ def list_groups_command(client: Client) -> tuple[object, dict, Union[list, dict]
 
 
 # Created by C.L.
+
+
+@logger
+def get_client_list_command(client: Client, client_list_id: str = None, name: str = None, include_items: bool = False,
+                           include_deprecated: bool = False, search: str = None, list_type: list = None,
+                           include_network_list: bool = False, sort: str = 'ASC', page: int = 0,
+                           page_size: int = 50, limit: int = 50) -> tuple[str, dict, dict]:
+    """
+    Gets the client list.
+    Args:
+        client: Akamai WAF client
+        client_list_id: client list id
+        name: name
+        include_items: include items
+        include_deprecated: include deprecated
+        search: search
+        list_type: type
+        include_network_list: include network list
+        sort: sort
+        page: page
+        page_size: page size
+        limit: limit
+    Returns:
+        Human readable, context entry, raw response
+    """
+    raw_response = client.get_client_list(client_list_id, name, include_items, include_deprecated, search, list_type,
+                                        include_network_list, sort, page, page_size, limit)
+    human_readable = tableToMarkdown("Akamai WAF Client Lists", raw_response.get("lists"))
+    context_entry = {
+        f"{INTEGRATION_CONTEXT_NAME}.ClientList": raw_response
+    }
+    return human_readable, context_entry, raw_response
+
+
+@logger
+def create_client_list_command(client: Client, list_name: str, list_type: str, description: str = None, tags: list = None,
+                            items: list = None, group_id: int = None) -> tuple[str, dict, dict]:
+    """
+    Creates a client list.
+    Args:
+        client: Akamai WAF client
+        list_name: The name of the client list.
+        list_type: The type of the client list.
+        description: A description of the client list.
+        tags: A list of tags to associate with the client list.
+        items: A list of items to include in the client list.
+        group_id: The ID of the group to associate with the client list.
+    Returns:
+        Human readable, context entry, raw response
+    """
+    raw_response = client.create_client_list(list_name, list_type, description, tags, items, group_id)
+    human_readable = tableToMarkdown(f"Akamai WAF Client List {list_name} created successfully", raw_response)
+    context_entry = {
+        f"{INTEGRATION_CONTEXT_NAME}.ClientList": raw_response
+    }
+    return human_readable, context_entry, raw_response
+
+
+@logger
+def delete_client_list_command(client: Client, client_list_id: str) -> tuple[str, dict, dict]:
+    """
+    Deletes a client list.
+    Args:
+        client: Akamai WAF client
+        client_list_id: The ID of the client list to delete.
+    Returns:
+        Human readable, context entry, raw response
+    """
+    raw_response = client.delete_client_list(client_list_id)
+    if raw_response.status_code == 204:
+        human_readable = f"Akamai WAF Client List {client_list_id} deleted successfully."
+        return human_readable, {}, {}
+    return f"Akamai WAF Client List {client_list_id} was not deleted.", {}, {}
+
+
+@logger
+def activate_client_list_command(client: Client, client_list_id: str, network: str, comments: str = None, notification_recipients: list = None) -> tuple[str, dict, dict]:
+    """
+    Activates a client list.
+    Args:
+        client: Akamai WAF client
+        client_list_id: The ID of the client list to activate.
+        network: The network to activate the client list on.
+        comments: A description for the activation.
+        notification_recipients: A list of email addresses to notify of the activation.
+    Returns:
+        Human readable, context entry, raw response
+    """
+    raw_response = client.activate_client_list(client_list_id, network, comments, notification_recipients)
+    if raw_response.status_code == 204:
+        human_readable = f"Akamai WAF Client List {client_list_id} activated successfully on {network}."
+        return human_readable, {}, {}
+    return f"Akamai WAF Client List {client_list_id} was not activated on {network}.", {}, {}
+
+
+@logger
+def add_client_list_entry_command(client: Client, client_list_id: str, items: list) -> tuple[str, dict, dict]:
+    """
+    Adds an entry to a client list.
+    Args:
+        client: Akamai WAF client
+        client_list_id: The ID of the client list to add an entry to.
+        items: A list of items to add to the client list.
+    Returns:
+        Human readable, context entry, raw response
+    """
+    raw_response = client.add_client_list_entry(client_list_id, items)
+    if raw_response.status_code == 204:
+        human_readable = f"Items successfully added to Akamai WAF Client List {client_list_id}."
+        return human_readable, {}, {}
+    return f"Failed to add items to Akamai WAF Client List {client_list_id}.", {}, {}
+
+
+@logger
+def remove_client_list_entry_command(client: Client, client_list_id: str, items: list) -> tuple[str, dict, dict]:
+    """
+    Removes an entry from a client list.
+    Args:
+        client: Akamai WAF client
+        client_list_id: The ID of the client list to remove an entry from.
+        items: A list of items to remove from the client list.
+    Returns:
+        Human readable, context entry, raw response
+    """
+    raw_response = client.remove_client_list_entry(client_list_id, items)
+    if raw_response.status_code == 204:
+        human_readable = f"Items successfully removed from Akamai WAF Client List {client_list_id}."
+        return human_readable, {}, {}
+    return f"Failed to remove items from Akamai WAF Client List {client_list_id}.", {}, {}
 
 
 @logger
@@ -6641,6 +6886,12 @@ def main():
         f"{INTEGRATION_COMMAND_NAME}-check-group": check_group_command,
         f"{INTEGRATION_COMMAND_NAME}-create-group": create_group_command,
         f"{INTEGRATION_COMMAND_NAME}-get-group": get_group_command,
+        f"{INTEGRATION_COMMAND_NAME}-get-client-list": get_client_list_command,
+        f"{INTEGRATION_COMMAND_NAME}-create-client-list": create_client_list_command,
+        f"{INTEGRATION_COMMAND_NAME}-delete-client-list": delete_client_list_command,
+        f"{INTEGRATION_COMMAND_NAME}-activate-client-list": activate_client_list_command,
+        f"{INTEGRATION_COMMAND_NAME}-add-client-list-entry": add_client_list_entry_command,
+        f"{INTEGRATION_COMMAND_NAME}-remove-client-list-entry": remove_client_list_entry_command,
         f"{INTEGRATION_COMMAND_NAME}-clone-papi-property": clone_papi_property_command,
         f"{INTEGRATION_COMMAND_NAME}-add-papi-property-hostname": add_papi_property_hostname_command,
         f"{INTEGRATION_COMMAND_NAME}-list-papi-edgehostname-bygroup": list_papi_edgehostname_bygroup_command,

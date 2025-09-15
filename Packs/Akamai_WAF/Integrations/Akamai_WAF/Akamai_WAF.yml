@@ -573,6 +573,124 @@ script:
       required: true
     description: Get group.
     name: akamai-get-group
+  - arguments:
+    - name: client_list_id
+      description: An optional URL parameter to get a specific client list.
+    - name: name
+      description: Filters the output to lists matching a name.
+    - name: include_items
+      description: Include items in the response.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
+    - name: include_deprecated
+      description: Include deprecated lists in the response.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
+    - name: search
+      description: Returns results that match the specified substring in any client list's details or entry details.
+    - name: type
+      description: Filters the output to lists of specified types. Repeat the parameter to filter on more than one type.
+      isArray: true
+    - name: include_network_list
+      description: Include network lists in the response.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
+    - name: sort
+      description: Sort order.
+      auto: PREDEFINED
+      predefined:
+      - ASC
+      - DESC
+      defaultValue: ASC
+    - name: page
+      description: Page number.
+      defaultValue: '0'
+    - name: page_size
+      description: Page size.
+      defaultValue: '50'
+    - name: limit
+      description: Limit.
+      defaultValue: '50'
+    name: akamai-get-client-list
+    outputs:
+    - contextPath: Akamai.ClientList
+      description: The client list.
+      type: unknown
+  - arguments:
+    - name: list_name
+      required: true
+      description: The name of the client list.
+    - name: list_type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - IP
+      - GEO
+      description: The type of the client list.
+    - name: description
+      description: A description of the client list.
+    - name: tags
+      isArray: true
+      description: A list of tags to associate with the client list.
+    - name: items
+      isArray: true
+      description: A list of items to include in the client list.
+    - name: group_id
+      description: The ID of the group to associate with the client list.
+    name: akamai-create-client-list
+    outputs:
+    - contextPath: Akamai.ClientList
+      description: The created client list.
+      type: unknown
+  - arguments:
+    - name: client_list_id
+      required: true
+      description: The ID of the client list to delete.
+    name: akamai-delete-client-list
+  - arguments:
+    - name: client_list_id
+      required: true
+      description: The ID of the client list to activate.
+    - name: network
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - STAGING
+      - PRODUCTION
+      description: The network to activate the client list on.
+    - name: comments
+      description: A description for the activation.
+    - name: notification_recipients
+      isArray: true
+      description: A list of email addresses to notify of the activation.
+    name: akamai-activate-client-list
+  - arguments:
+    - name: client_list_id
+      required: true
+      description: The ID of the client list to add an entry to.
+    - name: items
+      isArray: true
+      required: true
+      description: A list of items to add to the client list.
+    name: akamai-add-client-list-entry
+  - arguments:
+    - name: client_list_id
+      required: true
+      description: The ID of the client list to remove an entry from.
+    - name: items
+      isArray: true
+      required: true
+      description: A list of items to remove from the client list.
+    name: akamai-remove-client-list-entry
   - arguments: []
     description: Get Google Tag Manager (GTM) domains.
     name: akamai-get-domains
