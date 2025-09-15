@@ -5902,6 +5902,10 @@
                 "palo_alto_panorama_11_fw_test"
             ],
             "timeout": 600
+        },
+        {
+            "integrations": "Unit42Intelligence",
+            "playbookID": "Unit42Intelligence_Test"
         }
     ],
     "skipped_tests": {
