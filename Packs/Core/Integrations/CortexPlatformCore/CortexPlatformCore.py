@@ -8,32 +8,79 @@ urllib3.disable_warnings()
 TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 INTEGRATION_CONTEXT_BRAND = "Core"
 INTEGRATION_NAME = "Cortex Platform Core"
+MAX_GET_INCIDENTS_LIMIT = 100
 
 
-def issue_to_alert(args) -> dict:
-    for key in list(args.keys()):
-        if "issue" in key:
-            alert_key = key.replace("issue", "alert")
-            args[alert_key] = args.pop(key)
+def replace_substring(data: dict | str, original: str, new: str) -> str | dict:
+    """
+    Replace all occurrences of a substring in the keys of a dictionary with a new substring or in a string.
 
+    Args:
+        data (dict | str): The dictionary to replace keys in.
+        original (str): The substring to be replaced.
+        new (str): The substring to replace with.
+
+    Returns:
+        dict: The dictionary with all occurrences of `original` replaced by `new` in its keys.
+    """
+
+    if isinstance(data, str):
+        return data.replace(original, new)
+    if isinstance(data, dict):
+        for key in list(data.keys()):
+            if isinstance(key, str) and original in key:
+                new_key = key.replace(original, new)
+                data[new_key] = data.pop(key)
+    return data
+
+
+def issue_to_alert(args: dict | str) -> dict | str:
+    return replace_substring(args, "issue", "alert")
+
+
+def alert_to_issue(output: dict | str) -> dict | str:
+    return replace_substring(output, "alert", "issue")
+
+
+def incident_to_case(output: dict | str) -> dict | str:
+    return replace_substring(output, "incident", "case")
+
+
+def case_to_incident(args: dict | str) -> dict | str:
+    return replace_substring(args, "case", "incident")
+
+
+def preprocess_get_cases_args(args: dict):
+    demisto.debug(f"original args: {args}")
+    args["limit"] = min(int(args.get("limit", MAX_GET_INCIDENTS_LIMIT)), MAX_GET_INCIDENTS_LIMIT)
+    args = issue_to_alert(case_to_incident(args))
+    demisto.debug(f"after preprocess_get_cases_args args: {args}")
     return args
 
 
-def alert_to_issue(outputs):
-    """
-    Convert alert dictionary keys to issue keys by replacing 'alert' with 'issue'
+def preprocess_get_cases_outputs(outputs: list | dict):
+    def process(output: dict | str):
+        return alert_to_issue(incident_to_case(output))
 
-    Args:
-        args (dict): Dictionary containing alert keys
+    if isinstance(outputs, list):
+        return [process(o) for o in outputs]
+    return process(outputs)
 
-    Returns:
-        dict: Dictionary with keys converted to issue format
-    """
-    for key in list(outputs.keys()):
-        if "alert" in key:
-            issue_key = key.replace("alert", "issue")
-            outputs[issue_key] = outputs.pop(key)
-    return outputs
+
+def preprocess_get_case_extra_data_outputs(outputs: list | dict):
+    def process(output: dict | str):
+        if isinstance(output, dict):
+            if "incident" in output:
+                output["incident"] = alert_to_issue(incident_to_case(output.get("incident", {})))
+            alerts_data = output.get("alerts", {}).get("data", {})
+            modified_alerts_data = [alert_to_issue(incident_to_case(alert)) for alert in alerts_data]
+            if "alerts" in output and isinstance(output["alerts"], dict):
+                output["alerts"]["data"] = modified_alerts_data
+        return alert_to_issue(incident_to_case(output))
+
+    if isinstance(outputs, list):
+        return [process(o) for o in outputs]
+    return process(outputs)
 
 
 def filter_context_fields(output_keys: list, context: list):
@@ -103,6 +150,49 @@ def get_asset_details_command(client: Client, args: dict) -> CommandResults:
     )
 
 
+def get_cases_command(client, args):
+    """
+    Retrieve a list of Cases from XDR, filtered by some filters.
+    """
+    args = preprocess_get_cases_args(args)
+    _, _, raw_incidents = get_incidents_command(client, args)
+    mapped_raw_cases = preprocess_get_cases_outputs(raw_incidents)
+    return CommandResults(
+        readable_output=tableToMarkdown("Cases", mapped_raw_cases, headerTransform=string_to_table_header),
+        outputs_prefix="Core.Case",
+        outputs_key_field="case_id",
+        outputs=mapped_raw_cases,
+        raw_response=mapped_raw_cases,
+    )
+
+
+def get_extra_data_for_case_id_command(client, args):
+    """
+    Retrieves extra data for a specific case ID.
+
+    Args:
+        client (Client): The client instance used to send the request.
+        args (dict): Dictionary containing the arguments for the command.
+                     Expected to include:
+                         - case_id (str): The ID of the case to retrieve extra data for.
+                         - issues_limit (int): The maximum number of issues to return per case. Default is 1000.
+
+    Returns:
+        CommandResults: Object containing the formatted extra data,
+                        raw response, and outputs for integration context.
+    """
+    case_id = args.get("case_id")
+    issues_limit = min(int(args.get("issues_limit", 1000)), 1000)
+    response = client.get_incident_data(case_id, issues_limit)
+    mapped_response = preprocess_get_case_extra_data_outputs(response)
+    return CommandResults(
+        readable_output=tableToMarkdown("Case", mapped_response, headerTransform=string_to_table_header),
+        outputs_prefix="Core.CaseExtraData",
+        outputs=mapped_response,
+        raw_response=mapped_response,
+    )
+
+
 def main():  # pragma: no cover
     """
     Executes an integration command
@@ -155,6 +245,12 @@ def main():  # pragma: no cover
                 issues_command_results.outputs = filter_context_fields(output_keys, issues_command_results.outputs)  # type: ignore[attr-defined,arg-type]
 
             return_results(issues_command_results)
+
+        elif command == "core-get-cases":
+            return_results(get_cases_command(client, args))
+
+        elif command == "core-get-case-extra-data":
+            return_results(get_extra_data_for_case_id_command(client, args))
 
     except Exception as err:
         demisto.error(traceback.format_exc())
