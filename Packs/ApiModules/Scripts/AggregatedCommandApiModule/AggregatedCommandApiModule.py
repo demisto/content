@@ -396,7 +396,10 @@ class ContextBuilder:
         for indicator_value, tim_context_result in self.tim_context.items():
             current_indicator: dict[str, Any] = {"Value": indicator_value}
             if tim_indicator := [indicator for indicator in tim_context_result if indicator.get("Brand") == "TIM"]:
-                current_indicator.update({"TIMScore": tim_indicator[0].get("Score"), "Status": tim_indicator[0].get("Status")})
+                if "Score" in self.indicator.context_output_mapping:
+                    current_indicator.update({"TIMScore": tim_indicator[0].get("Score"), "Status": tim_indicator[0].get("Status")})
+                if "CVSS" in self.indicator.context_output_mapping:
+                    current_indicator.update({"TIMCVSS": tim_indicator[0].get("CVSS")})
             indicators = [indicator for indicator in tim_context_result if indicator.get("Brand") != "TIM"]
             current_indicator["Results"] = indicators
             results.append(current_indicator)
@@ -779,9 +782,15 @@ class ReputationAggregatedCommand(AggregatedCommand):
         Returns:
             dict[str, Any]: The TIM indicator.
         """
+        if "Score" in self.indicator.context_output_mapping:
+            return {
+                "Brand": "TIM",
+                "Score": ioc.get("score", Common.DBotScore.NONE),
+                "Status": self.get_indicator_status_from_ioc(ioc).value,
+            }
         return {
             "Brand": "TIM",
-            "Score": ioc.get("score", Common.DBotScore.NONE),
+            "CVSS": ioc.get("CustomFields", {}).get("cvssscore"),
             "Status": self.get_indicator_status_from_ioc(ioc).value,
         }
 
