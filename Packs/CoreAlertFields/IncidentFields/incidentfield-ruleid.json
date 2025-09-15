@@ -35,5 +35,6 @@
             "type": "shortText",
             "name": "Chronicle Rule ID"
         }
-    ]
+    ],
+    "toVersion": "8.11.9"
 }

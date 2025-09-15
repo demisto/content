@@ -35,5 +35,6 @@
             "type": "shortText",
             "name": "GoogleCloudSCC Finding SourceProperties AppCategory"
         }
-    ]
+    ],
+    "toVersion": "8.11.9"
 }

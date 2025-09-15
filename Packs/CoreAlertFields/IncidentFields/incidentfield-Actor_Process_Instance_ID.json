@@ -28,5 +28,6 @@
     "useAsKpi": false,
     "version": -1,
     "fromVersion": "6.10.0",
-    "x2_fields": "actor_process_instance_id"
+    "x2_fields": "actor_process_instance_id",
+    "toVersion": "8.11.9"
 }
