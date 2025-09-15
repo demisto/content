@@ -238,39 +238,52 @@ def fetch_oauth_token():
     # Prepare Basic Auth header for client credentials
     credentials = base64.b64encode(f"{CLIENT_ID}:{CLIENT_SECRET}".encode()).decode()
     demisto.debug(f"[DEBUG] Generated Basic Auth credentials: {credentials[:20]}...")
-    
-    headers = {
-        "Authorization": f"Basic {credentials}",
-        "Content-Type": "application/x-www-form-urlencoded"
-    }
-    #TODO if fails, considre using "content-type": "application/json"
+
+    headers = {"Authorization": f"Basic {credentials}", "Content-Type": "application/x-www-form-urlencoded"}
+    # TODO if fails, considre using "content-type": "application/json"
     demisto.debug(f"[DEBUG] Request headers: {dict(headers)}")
     
     # Construct scope in the format: {cloud_name}::{org_id}::{api_role}
     scope = f"{CLOUD_NAME}::{ORG_ID}::{API_ROLE}"
     demisto.debug(f"[DEBUG] OAuth scope: {scope}")
-    
-    data = {
-        "grant_type": "client_credentials",
-        "scope": scope
-    }
+
+    data = {"grant_type": "client_credentials", "scope": scope}
     demisto.debug(f"[DEBUG] Request data: {data}")
-    
+
     try:
         demisto.debug("[DEBUG] Making OAuth token request...")
+        # TODO: Remove URL parsing once CommonServerPython fix is merged
+        # START: Remove this entire section and replace with simplified version below
+        # Split the OAuth token URL into base URL and path to avoid urljoin trailing slash issue
+        from urllib.parse import urlparse
+        parsed_url = urlparse(OAUTH_TOKEN_URL)
+        base_url = f"{parsed_url.scheme}://{parsed_url.netloc}"
+        url_path = parsed_url.path
+        
         result = generic_http_request(
             method="POST",
-            server_url=OAUTH_TOKEN_URL,
+            server_url=base_url,
+            url_suffix=url_path,
             timeout=REQUEST_TIMEOUT,
             verify=USE_SSL,
             proxy=PROXY,
             headers=headers,
-            #TODO remove after fixing Base
-            url_suffix="",
             data=data,
             ok_codes=(200,),
             resp_type="json"
         )
+        # END: Replace above with:
+        # result = generic_http_request(
+        #     method="POST",
+        #     server_url=OAUTH_TOKEN_URL,
+        #     timeout=REQUEST_TIMEOUT,
+        #     verify=USE_SSL,
+        #     proxy=PROXY,
+        #     headers=headers,
+        #     data=data,
+        #     ok_codes=(200,),
+        #     resp_type="json"
+        # )
         demisto.debug(f"[DEBUG] OAuth token response: {result}")
         
         access_token = result.get("access_token")

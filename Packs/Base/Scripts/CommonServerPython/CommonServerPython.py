@@ -9585,7 +9585,7 @@ if 'requests' in sys.modules:
             """
             try:
                 # Replace params if supplied
-                address = full_url if full_url else urljoin(self._base_url, url_suffix)
+                address = full_url if full_url else (self._base_url if not url_suffix else urljoin(self._base_url, url_suffix))
                 headers = headers if headers else self._headers
                 auth = auth if auth else self._auth
                 if retries:
@@ -9846,7 +9846,7 @@ def generic_http_request(method,
                          proxy=False,
                          client_headers=None,
                          headers=None,
-                         url_suffix="",
+                         url_suffix=None,
                          data=None,
                          ok_codes=None,
                          auth=None,
