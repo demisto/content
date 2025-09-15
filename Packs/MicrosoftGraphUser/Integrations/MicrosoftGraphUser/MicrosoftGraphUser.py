@@ -182,7 +182,7 @@ class MsGraphClient:
             password_method_id_response = self.ms_client.http_request(
                 method="GET", url_suffix=f"users/{quote(user)}/authentication/passwordMethods"
             )
-            password_method_id = password_method_id_response.get("value", [])[0]["id"]
+            password_method_id = password_method_id_response.get("value", [])[0]["id"] # There is only one password method object
         except (IndexError, KeyError) as e:
             raise DemistoException("Failed getting passwordMethod id", exception=e, res=password_method_id_response)
         return password_method_id
@@ -193,7 +193,7 @@ class MsGraphClient:
         """
         self.ms_client.http_request(
             method="POST",
-            url_suffix=f"users/{quote(user)}/authentication/passwordMethods/{password_method_id}/resetPassword",
+            url_suffix=f"users/{quote(user)}/authentication/methods/{password_method_id}/resetPassword",
             ok_codes=(202,),
             json_data={"newPassword": password},
             return_empty_response=True,
@@ -482,6 +482,7 @@ def change_password_user_on_premise_command(client: MsGraphClient, args: dict[st
         raise DemistoException("Password cannot be empty. Use the password or non_sensitive_password argument.")
 
     password_method_id = client.fetch_password_method_id(user)
+    demisto.debug("Got password method id")
 
     client.password_change_user_on_premise(user, password, password_method_id)
 
