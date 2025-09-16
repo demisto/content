@@ -1438,7 +1438,7 @@ def get_offense_closing_reasons(client: Client, offenses: List[dict]) -> dict:
         return {}
 
 
-def get_names_with_retries(func: Callable, *args, **kwargs) -> Optional[List[dict]]:
+def get_names_with_retries(func: Callable, *args, **kwargs) -> dict:
     """
     A wrapper for retrying API calls with exponential backoff for getting names from IDs.
 
@@ -1448,11 +1448,16 @@ def get_names_with_retries(func: Callable, *args, **kwargs) -> Optional[List[dic
         **kwargs: Keyword arguments to pass to the API call.
 
     Returns:
-        Optional[List[dict]]: The API response, or None if all retries fail.
+        dict: Dictionary of {id: name} from the API response, or an empty dictionary if all retries fail.
     """
-    max_retries = CONNECTION_ERRORS_RETRIES
-    base_delay = CONNECTION_ERRORS_INTERVAL
+    # Retry logic with exponential backoff
+    max_retries = CONNECTION_ERRORS_RETRIES  # Use existing constant (5)
+    base_delay = CONNECTION_ERRORS_INTERVAL  # Use existing constant (1)
+
     last_exception = None
+    # NOTE: Retry logic is essential here to prevent silent failures in name resolution.
+    # Without retries, API call failures result in empty dict return, causing IDs (e.g., "6")
+    # to be displayed instead of names (e.g., "ABC") in the relevant field.
     for attempt in range(max_retries):
         try:
             demisto.debug(f"Resolution attempt {attempt + 1}/{max_retries} to get names using {func.__name__}.")
@@ -1462,19 +1467,21 @@ def get_names_with_retries(func: Callable, *args, **kwargs) -> Optional[List[dic
             attempt_msg = f"Resolution attempt {attempt + 1}/{max_retries} failed to get names using {func.__name__}."
 
             if attempt < max_retries - 1:
+                # Calculate delay with exponential backoff
                 delay = base_delay * (2**attempt)
-                demisto.debug(f"{attempt_msg}: {e}. Retrying in {delay} seconds...")
+                demisto.debug(f"{attempt_msg}: {str(e)}. Retrying in {delay} seconds...")
                 time.sleep(delay)
             else:
-                demisto.error(f"{attempt_msg}: {e}. All retry attempts exhausted.")
+                demisto.error(f"{attempt_msg}: {str(e)}. All retry attempts exhausted.")
 
+    # If we reach here, all retries failed
     error_msg = f"Requests failed after {max_retries} attempts"
     if last_exception:
-        error_msg += f". Last error: {last_exception}"
+        error_msg += f". Last error: {str(last_exception)}"
 
     demisto.error(error_msg)
-    demisto.info(f"Falling back to using IDs instead of names using {func.__name__}.")
-    return None
+    demisto.info(f"Falling back to using IDs instead of names from {func.__name__}.")
+    return {}
 
 
 def get_domain_names(client: Client, outputs: List[dict]) -> dict:
