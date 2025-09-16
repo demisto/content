@@ -9,7 +9,11 @@ args:
   required: true
   isArray: true
 - name: external_enrichment
-  description: When set to 'true', the script enriches the indicators using all available external integrations. This is ignored if the 'brands' argument is used, as 'brands' provides an explicit list of integrations to run.
+  description: |
+    Whether to call external integrations for enrichment.
+    - 'true': run all enabled external integrations (e.g., VirusTotal, CrowdStrike) in addition to internal/TIM data.
+    - 'false': use only internal/TIM data; skip external integrations.
+    If the 'brands' argument is provided, this flag is ignored and only the listed brands are called.
   auto: PREDEFINED
   predefined:
   - 'true'
