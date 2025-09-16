@@ -808,8 +808,9 @@ def navigate_to_path(browser, tab: pychrome.Tab, path, wait_time, navigation_tim
         demisto.debug(f"Waiting for tab_ready_event on {tab.id=}, {path=}")
 
         if not tab_ready_event.wait(navigation_timeout):
-            return_error(
-                f"Rasterize failed to navigate to the specified path due to a timeout of {navigation_timeout} seconds.\n{path=}"
+            return_warning(
+                f"Warning: Rasterize failed to navigate to the specified path due to a timeout of {navigation_timeout} seconds,"
+                f" some content might be missing .\n{path=}"
             )
 
         demisto.debug(f"After waiting for tab_ready_event on {tab.id=}, {path=}")
