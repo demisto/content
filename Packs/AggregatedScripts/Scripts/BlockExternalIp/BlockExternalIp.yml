@@ -33,7 +33,7 @@ args:
   defaultValue: 'xsiam-blocked-external-ip'
 - description: |-
     Which integrations brands to run the command for. If not provided, the command will run for all available integrations.
-    For multi-select provide a comma-separated list. For example: "Palo Alto Networks - Prisma SASE,Panorama,CheckPointFirewall_v2".
+    For multi-select provide a comma-separated list. The possible values are: Palo Alto Networks - Prisma SASE,Panorama,FortiGate,F5Silverline,Cisco ASA,Zscaler.
   isArray: true
   name: brands
   required: false
