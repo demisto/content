@@ -1026,8 +1026,6 @@ class ReputationAggregatedCommand(AggregatedCommand):
 
 
 """HELPER FUNCTIONS"""
-
-
 def extract_indicators(data: list[str], type: str) -> list[str]:
     """
     Validate the provided `self.data` list to ensure all items are valid indicators
@@ -1171,73 +1169,6 @@ def is_debug_entry(execute_command_result) -> bool:
                 return True
 
     return isinstance(execute_command_result, dict) and execute_command_result["Type"] == entryTypes["debug"]
-
-
-def extract_cvss_score(value) -> float | None:
-    """
-    Extract the numerical Score from a CVSS object.
-    If no numerical score is found, return None.
-
-    Returns:
-        float: CVSS score (0.0 - 10.0)
-    """
-
-    # Handle dict case: {"Score": ...}
-    if isinstance(value, dict) and "Score" in value:
-        return extract_cvss_score(value["Score"])
-
-    # Handle "N/A"
-    if isinstance(value, str) and value.strip().upper() == "N/A":
-        return None
-
-    # Handle numbers (int, float, str)
-    try:
-        score = float(value)
-        if 0.0 <= score <= 10.0:
-            return score
-    except (TypeError, ValueError):
-        pass
-
-    return None
-
-
-def extract_cvss_rating(value) -> str | None:
-    """
-    Get the severity rating from a CVSS Object.
-    Turn numerical to string rating.
-    """
-    # Dict with nested score
-    if isinstance(value, dict) and "Score" in value:
-        return extract_cvss_rating(value["Score"])
-
-    # Numeric → map to rating
-    score = extract_cvss_score(value)
-    if score is not None:
-        return convert_cvss_score_to_rating(score)
-
-    # String severity
-    if isinstance(value, str):
-        val = value.strip().capitalize()
-        if val in SEVERITY_ORDER:
-            return val
-
-    return None
-
-
-def convert_cvss_score_to_rating(score: float) -> str:
-    """
-    Given a CVSS numeric score (0.0 - 10.0),
-    return the corresponding severity rating.
-    Args:
-        score (float): The CVSS numeric score.
-    Returns:
-        str: The severity rating. "Unknown" if the score is not in the range (0.0 - 10.0).
-    """
-    for rating, (low, high) in CVSS_TO_VERDICT.items():
-        if low <= score <= high:
-            return rating
-
-    return "Unknown"
 
 
 def remove_empty_elements_with_exceptions(d, exceptions: set[str] | None = None) -> Any:
