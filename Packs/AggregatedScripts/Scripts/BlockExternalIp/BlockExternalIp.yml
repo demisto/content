@@ -60,10 +60,10 @@ args:
   hidden: true
 comment: The script blocks a list of IP addresses in supported integrations.
 commonfields:
-  id: block-external-ip-shelly
+  id: block-external-ip
   version: -1
 enabled: false
-name: block-external-ip-shelly
+name: block-external-ip
 outputs:
 - contextPath: BlockExternalIPResults.Message
   description: A message concerning the result of the action.
