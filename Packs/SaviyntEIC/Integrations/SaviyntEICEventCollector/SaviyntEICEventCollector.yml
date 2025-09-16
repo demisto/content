@@ -81,7 +81,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Gets events from Saviynt EIC.
+    description: Gets events from Saviynt EIC. This command is supported in Cortex XSIAM only and is intended to be used for debugging purposes as it may result in duplicate events.
     execution: false
     name: saviynt-eic-get-events
   dockerimage: demisto/python3:3.12.11.4819260
