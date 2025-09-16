@@ -114,7 +114,7 @@ The payload can then be mapped. For more information see:
 
 ## Authorization headers
 
-For Cortex XSOAR 6.x users, you can use the special `_header:<HEADER-NAME>` syntax to authenticate requests using custom headers from your third-party service. This helps prevent unauthorized creation of incidents/alerts/issues. To configure this, set the username field in the integration to _header:&lt;HEADER-NAME&gt; and provide the header value in the password field.
+For Cortex XSOAR 6.x users, you can use the special `_header:<HEADER-NAME>` syntax to authenticate requests using custom headers from your third-party service. This helps prevent unauthorized creation of incidents/alerts/issues. To configure this, set the username field in the integration to `_header:<HEADER-NAME>` and provide the header value in the password field.
 Example: If the request included in the `Authorization` header the value `Bearer XXX`, then the username should be set to `_header:Authorization` and the password should be set to `Bearer XXX`.
 
 ### Troubleshooting authorization headers
