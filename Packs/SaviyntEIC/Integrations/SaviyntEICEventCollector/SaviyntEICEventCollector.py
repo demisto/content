@@ -4,7 +4,7 @@ import math
 import threading
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 
 import urllib3
@@ -16,7 +16,7 @@ from CommonServerPython import *  # noqa: F401
 urllib3.disable_warnings()
 
 # Python 3.10 compatibility: datetime.UTC added in 3.11; use timezone.utc instead
-UTC = timezone.utc
+UTC = UTC
 
 """ CONSTANTS """
 
@@ -61,7 +61,16 @@ class Client(BaseClient):
             raise DemistoException(f"[Client.__init__] failed to obtain access token: {e}")
 
     def _create_access_token(self):
-        """Create an access token using self._credentials and update integration context and headers."""
+        """
+        Create an access token and update integration context and client headers.
+
+        This method authenticates using the configured credentials, then stores the
+        resulting access and refresh tokens in the integration context and applies
+        the Authorization header on the client for immediate use.
+
+        Returns:
+            None
+        """
         demisto.debug("[Client._create_access_token] creating access token")
         data = {
             "username": self._credentials["identifier"],
@@ -93,7 +102,18 @@ class Client(BaseClient):
         demisto.debug(f"[Client._create_access_token] created token successfully (expires_at={expires_at})")
 
     def _refresh_access_token(self, refresh_token: str):
-        """Refresh an access token using the refresh token and update integration context and headers."""
+        """
+        Refresh the access token using the provided refresh token.
+
+        Args:
+            refresh_token: The refresh token to exchange for a new access token.
+
+        Returns:
+            None
+
+        Notes:
+            Updates both the integration context and the client's Authorization header.
+        """
         demisto.debug("[Client._refresh_access_token] attempting to refresh access token")
         data = {
             "grant_type": "refresh_token",
@@ -126,10 +146,18 @@ class Client(BaseClient):
 
     def obtain_token(self, force_refresh: bool = False) -> None:
         """
-        Ensure a valid access token using the integration context cache, Sets request headers and updates integration context.
-        - If force_refresh is True, attempt a refresh (or create) regardless of current cache state.
-        - If no integration context is found, create a new access token.
-        - If the access token is expired or is about to expire, refresh it using refresh token.
+        Ensure a valid access token and set request headers.
+
+        This method uses the integration context as a cache. If the token is close
+        to expiry or if `force_refresh` is True, it refreshes or re-creates the
+        token as needed, and updates the client's Authorization header.
+
+        Args:
+            force_refresh: Whether to force a refresh or creation of the token
+                regardless of cache state.
+
+        Returns:
+            None
         """
         demisto.debug(f"[Client.obtain_token] start (force_refresh={force_refresh})")
         try:
@@ -173,16 +201,18 @@ class Client(BaseClient):
         Fetch events for a single Analytics Runtime Control.
 
         Args:
-            analytics_name: event type to fetch (e.g., "SIEMAuditLogs").
-            time_frame_minutes: Time frame in minutes to fetch events from.
-            max_results: Maximum number of results to request in this call (capped by server to 10,000).
-            offset: Optional paging offset.
+            analytics_name: The event type to fetch (for example, `"SIEMAuditLogs"`).
+            time_frame_minutes: The time frame in minutes to fetch events from.
+            max_results: The maximum number of results to request in this call
+                (the server may cap this value, typically at 10,000).
+            offset: The paging offset to start from, if any.
 
         Returns:
-            A dict JSON response from the API.
+            dict[str, Any]: The JSON response returned by the API.
 
-        Behavior:
-            On authentication failure (401/Forbidden/invalid token), forces a token refresh and retries once.
+        Notes:
+            On authentication failure (401/Forbidden/invalid token), the client
+            refreshes the token under a lock and retries the request once.
         """
         body: dict[str, Any] = {
             "analyticsname": analytics_name,
@@ -191,6 +221,13 @@ class Client(BaseClient):
         }
         if offset:
             body["offset"] = str(offset)
+
+        # Log the executing worker/thread to aid concurrent diagnostics
+        worker_name = threading.current_thread().name
+        demisto.debug(
+            f"[Client.fetch_events] worker={worker_name} analytics={analytics_name} "
+            f"time_frame_minutes={time_frame_minutes} max_results={max_results} offset={offset}"
+        )
 
         try:
             return self._http_request(
@@ -220,10 +257,13 @@ class Client(BaseClient):
 
 def add_time_to_events(events: list[dict[str, Any]]):
     """
-    Add the '_time' key to events based on their creation or occurrence timestamp.
+    Add the `_time` field to events based on their occurrence timestamp.
 
     Args:
-        events (list[dict[str, Any]]): A list of events.
+        events: The events to enrich in-place.
+
+    Returns:
+        None
     """
     for event in events:
         create_time = arg_to_datetime(arg=event.get("Event Time"))
@@ -232,8 +272,16 @@ def add_time_to_events(events: list[dict[str, Any]]):
 
 def generate_event_hash(event: dict[str, Any]) -> str:
     """
-    Generate a stable SHA-256 hash for a single event from vendor content.
-    Excludes integration-only/transient fields so the hash remains stable across runs.
+    Generate a stable SHA-256 hash for a single event.
+
+    The hash excludes integration-only/transient fields so that it remains stable
+    across runs.
+
+    Args:
+        event: The event object to hash.
+
+    Returns:
+        str: The hexadecimal SHA-256 hash of the event payload.
     """
     excluded = {"_time", "event_hash"}
     event_for_hash = {k: v for k, v in event.items() if k not in excluded}
@@ -248,13 +296,22 @@ def generate_event_hash(event: dict[str, Any]) -> str:
 
 def compute_effective_time_frame_minutes(time_frame_minutes: int | None, last_run: dict[str, Any]) -> int:
     """
-    Compute the effective time frame in minutes to use in the fetch events request.
+    Compute the effective time frame (minutes) for the fetch request.
 
-    - If time_frame_minutes is an int, it means the saviynt-eic-get-events command was called with a time frame.
-    - If time_frame_minutes is None, it means the fetch-events command was called:
-      - First fetch run: return DEFAULT_FETCH_TIME_FRAME_MINUTES.
-      - Not first fetch run: If last_run has a valid LAST_RUN_TIMESTAMP, compute minutes between now (UTC) and that timestamp
-        using datetime arithmetic.
+    If `time_frame_minutes` is provided (e.g., via the `saviynt-eic-get-events` command),
+    it is used as-is. Otherwise, for the `fetch-events` command, the value is derived from
+    `last_run` as follows:
+
+    - First run (no timestamp): return `DEFAULT_FETCH_TIME_FRAME_MINUTES`.
+    - Subsequent runs: compute the minutes between now (UTC) and the recorded timestamp.
+
+    Args:
+        time_frame_minutes: The requested time frame in minutes, or `None` to compute
+            it from the last run timestamp.
+        last_run: The persistence object storing the previous run metadata.
+
+    Returns:
+        int: The effective time frame in minutes to use for the API request.
     """
     if time_frame_minutes is None:
         previous_ts = last_run.get(LAST_RUN_TIMESTAMP)
@@ -287,10 +344,20 @@ def compute_effective_time_frame_minutes(time_frame_minutes: int | None, last_ru
 
 def deduplicate_events(events: list[dict[str, Any]], last_run: dict[str, Any]) -> tuple[dict[str, Any], list[dict[str, Any]]]:
     """
-    Previous-run-only policy:
-    - Drop events whose hashes appeared in the immediately previous run.
-    - Persist only this run's unique hashes to lastRun for the next fetch.
-    Also deduplicates within the same run.
+    Deduplicate events using previous-run hashes and within-run uniqueness.
+
+    This function drops events whose hashes appeared in the immediate previous run
+    and ensures uniqueness within the current run. It also prepares the next run's
+    cache of unique hashes (order-preserving).
+
+    Args:
+        events: The events collected in the current run.
+        last_run: The previous run's persisted metadata (including hashes).
+
+    Returns:
+        tuple[dict[str, Any], list[dict[str, Any]]]: A tuple of `(next_run, deduplicated_events)` where
+        `next_run` contains the hashes from this run and `deduplicated_events` are the
+        events after de-duplication.
     """
     previous_run_hashes = set(last_run.get(LAST_RUN_EVENT_HASHES, []))
 
@@ -334,10 +401,18 @@ def deduplicate_events(events: list[dict[str, Any]], last_run: dict[str, Any]) -
 
 def update_last_run_timestamp_from_events(next_run: dict[str, Any], events: list[dict[str, Any]]) -> None:
     """
-    Update next_run[LAST_RUN_TIMESTAMP] based on the most recent event timestamp.
+    Update `next_run[LAST_RUN_TIMESTAMP]` from the most recent event time.
 
-    Prefers the enriched "_time" field (ISO string), falls back to vendor "Event Time".
-    Stores the timestamp as epoch seconds. If no timestamps exist, falls back to current time.
+    Prefers the enriched `_time` field (ISO string) and falls back to vendor
+    `Event Time`. The computed timestamp is stored as epoch seconds. If no
+    timestamps are present, the current time is used.
+
+    Args:
+        next_run: The next run metadata dictionary to update.
+        events: The list of events collected in the current run.
+
+    Returns:
+        None
     """
     # Prefer enriched _time values, fallback to vendor 'Event Time'
     candidates: list[str] = [str(t) for e in events if (t := e.get("_time"))] or [
@@ -367,14 +442,24 @@ def _fetch_analytics_pages_concurrently(
     effective_time_frame_minutes: int,
     overall_max_events: int,
     page_size: int,
-    page_workers: int = 4,
+    page_workers: int = 5,
 ) -> list[dict[str, Any]]:
     """
-    Fetch events for a single analytics name (event type) using concurrent page requests.
+    Fetch events for a single analytics name using concurrent page requests.
 
-    Steps:
-      1) Fetch first page to learn totalcount.
-      2) Fan-out remaining offsets with a bounded thread pool.
+    The function first fetches the first page to determine the server-reported
+    `totalcount` and then fans out remaining offsets with a bounded thread pool.
+
+    Args:
+        client: The Saviynt EIC client.
+        analytics_name: The analytics name (event type) to fetch.
+        effective_time_frame_minutes: The effective time frame to query (in minutes).
+        overall_max_events: The maximum total number of events to return.
+        page_size: The per-request maximum number of results.
+        page_workers: The maximum number of concurrent page requests (# of threads).
+
+    Returns:
+        list[dict[str, Any]]: The collected events.
     """
     # First page (no offset)
     demisto.debug(f"[_fetch_analytics_pages_concurrently] {analytics_name}: fetching first page")
@@ -393,8 +478,10 @@ def _fetch_analytics_pages_concurrently(
     remaining = max(0, max_needed - collected)
     remaining_offsets = math.ceil(remaining / page_size) if remaining > 0 else 0
     demisto.debug(
-        f"[_fetch_analytics_pages_concurrently] {analytics_name}: first_page_size={collected}, total_count_from_api={total_count}, "
-        f"overall_max_events={overall_max_events}, request_page_size={page_size}, remaining_offsets={remaining_offsets}"
+        f"[_fetch_analytics_pages_concurrently] {analytics_name}: "
+        f"first_page_size={collected}, total_count_from_api={total_count}, "
+        f"overall_max_events={overall_max_events}, request_page_size={page_size}, "
+        f"remaining_offsets={remaining_offsets}"
     )
     if remaining == 0:
         return results
@@ -403,7 +490,11 @@ def _fetch_analytics_pages_concurrently(
     offsets = list(range(collected, max_needed, page_size))
 
     # Fan-out remaining pages
-    with ThreadPoolExecutor(max_workers=page_workers) as executor:
+    demisto.debug(
+        f"[_fetch_analytics_pages_concurrently] {analytics_name}: starting fan-out "
+        f"with page_workers={page_workers}, offset_count={len(offsets)}"
+    )
+    with ThreadPoolExecutor(max_workers=page_workers, thread_name_prefix=f"saviynt-pager-{analytics_name}") as executor:
         future_to_offset = {
             executor.submit(
                 client.fetch_events,
@@ -443,7 +534,18 @@ def _fetch_analytics_pages_concurrently(
 
 
 def test_module(client: Client) -> str:
-    """Tests API connectivity and authentication by ensuring a token can be obtained/refreshed."""
+    """
+    Test API connectivity and authentication.
+
+    This command ensures a token can be obtained or refreshed successfully by
+    performing a simple API request.
+
+    Args:
+        client: The Saviynt EIC client to use for the test.
+
+    Returns:
+        str: "ok" if the test succeeded, otherwise raises an exception.
+    """
     try:
         # example fetch
         client.fetch_events(
@@ -466,11 +568,25 @@ def fetch_events(
     max_events: int,
     time_frame_minutes: int | None,
 ) -> tuple[dict[str, Any], list[dict[str, Any]]]:
-    """Fetch events for XSIAM ingest.
+    """
+    Fetch events across one or more analytics types (event types).
 
-    If time_frame_minutes is None, the function will compute it based on last_run timestamp:
-    - First run (no timestamp): use DEFAULT_FETCH_TIME_FRAME_MINUTES
-    - Subsequent runs: compute minutes between now and last_run timestamp (ceil to minutes, min 1)
+    If `time_frame_minutes` is `None` (the `fetch-events` command), the function
+    derives the effective time window from `last_run`. Otherwise, the provided
+    value is used (e.g., for `saviynt-eic-get-events`).
+
+    Args:
+        client: The Saviynt EIC client to use for HTTP requests.
+        last_run: The previous run metadata including the last timestamp and hashes.
+        analytics_name_list: The list of analytics names (event types) to fetch.
+        max_events: The per-analytics maximum number of events to collect.
+        time_frame_minutes: The time frame to query in minutes, or `None` to compute
+            it from `last_run`.
+
+    Returns:
+        tuple[dict[str, Any], list[dict[str, Any]]]: A tuple of `(next_run, events)` where
+        `next_run` is the metadata for the next run and `events` are the collected
+        events after de-duplication and enrichment.
     """
     effective_time_frame_minutes = compute_effective_time_frame_minutes(time_frame_minutes, last_run)
 
@@ -487,7 +603,8 @@ def fetch_events(
     for analytics_name in analytics_name_list:
         demisto.debug(
             f"[fetch_events] concurrent pages for analytics_name={analytics_name} "
-            f"time_frame_minutes={effective_time_frame_minutes} request_page_size={page_size} overall_number_of_events_to_fetch={max_events}"  # noqa: E501
+            f"time_frame_minutes={effective_time_frame_minutes} "
+            f"request_page_size={page_size} overall_number_of_events_to_fetch={max_events}"
         )
         events_per_analytics_name = _fetch_analytics_pages_concurrently(
             client=client,
@@ -498,7 +615,8 @@ def fetch_events(
             page_workers=4,
         )
         demisto.debug(
-            f"[fetch_events] {analytics_name}: collected={len(events_per_analytics_name)} for analytics_name={analytics_name} (concurrent)"  # noqa: E501
+            f"[fetch_events] {analytics_name}: collected={len(events_per_analytics_name)} "
+            f"for analytics_name={analytics_name} (concurrent)"
         )
         events.extend(events_per_analytics_name)
 
