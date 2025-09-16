@@ -1212,7 +1212,7 @@ script:
       - description: The name of the zone for this request.
         name: zone
         required: true
-      - description: 'An object containing a list of "key": value pairs. Example: key=abc,value=123;key=ABC,value=321.'
+      - description: 'An object containing a list of "key": value pairs, without spaces. Example: key=abc,value=123;key=ABC,value=321.'
         name: labels
         required: true
       - description: Fingerprint of the previous set of labels for this resource, used to prevent conflicts. Provide the latest fingerprint value when making a request to add or change labels.

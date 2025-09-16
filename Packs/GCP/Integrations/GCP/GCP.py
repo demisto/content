@@ -297,11 +297,11 @@ def handle_permission_error(e: HttpError, project_id: str, command_name: str):
     status_code = e.resp.status
     if e.resp.get("content-type", "").startswith("application/json"):
         content = json.loads(e.content)
-        reason = json.loads(e.content).get("error").get("errors")[0].get("reason")
-        message = f"{reason=}, {content.get('error', {}).get('message', '')}"
+        reason = json.loads(e.content).get("error", {}).get("errors", [{}])[0].get("reason", "")
+        message = f"{content.get('error', {}).get('message', '')} {reason=}"
 
         possible_permissions_list: list[str]
-        _, possible_permissions_list = COMMAND_REQUIREMENTS.get(command_name) or None, []
+        possible_permissions_list = COMMAND_REQUIREMENTS[command_name][1]
 
         permission_names = []
         for permission in possible_permissions_list:
@@ -1026,12 +1026,12 @@ def gcp_compute_instances_list_command(creds: Credentials, args: dict[str, Any])
     """
     project_id = args.get("project_id")
     zone = extract_zone_name(args.get("zone"))
-    limit = arg_to_number(args.get("limit")) or 500
+    limit = (arg_to_number(args.get("limit")) or 500) if args.get("limit", "500") != "0" else 0
     filters = args.get("filters")
     order_by = args.get("order_by")
     page_token = args.get("page_token")
 
-    if limit and (limit > 500 or limit < 1):
+    if not limit or (limit and (limit > 500 or limit < 1)):
         raise DemistoException(
             f"The acceptable values of the argument limit are 1 to 500, inclusive. Currently the value is {limit}"
         )
@@ -1053,8 +1053,14 @@ def gcp_compute_instances_list_command(creds: Credentials, args: dict[str, Any])
     if limit < 500:
         metadata = f"{metadata} {limit=}"
 
+    if next_page_token:
+        response["InstancesNextPageToken"] = response.pop("nextPageToken")
+
+    if response.get("items"):
+        response["Instances"] = response.pop("items")
+
     hr_data = []
-    for instance in response["Instances"]:
+    for instance in response.get("Instances", [{}]):
         d = {
             "id": instance.get("id"),
             "name": instance.get("name"),
@@ -1076,11 +1082,8 @@ def gcp_compute_instances_list_command(creds: Credentials, args: dict[str, Any])
         metadata=metadata,
     )
 
-    if next_page_token:
-        response["InstancesNextPageToken"] = response.pop("nextPageToken")
-    response["Instances"] = response.pop("items")
     outputs = {
-        "GCP.Compute.Instances(val.id && val.id == obj.id)": response["Instances"],
+        "GCP.Compute.Instances(val.id && val.id == obj.id)": response.get("Instances", []),
         "GCP.Compute(true)": {
             "InstancesNextPageToken": response.get("InstancesNextPageToken"),
             "InstancesSelfLink": response.get("selfLink"),
