@@ -32,14 +32,10 @@ args:
   description: |
     A list of integration brands to run enrichment against.  
     Example: `"VirusTotal (API v3), AlienVault OTX v2"`.
-
     - If provided, only the selected brands are used.
-
     - If left empty, the script runs enrichment on all enabled integrations,
       depending on the `external_enrichment` flag.
-        
     - In order to run core-get-IP-analytics-prevalence, add Cortex Core - IR to the brands list.
-    
     To see the available brands for the `ip` command, run: `!ProvidesCommand command=ip`.
   isArray: true
   required: false
