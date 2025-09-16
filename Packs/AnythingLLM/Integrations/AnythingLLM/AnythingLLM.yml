@@ -47,6 +47,7 @@ configuration:
   display: Sync Scan LLM Prompts with AIRS
   name: airs_scan_prompt
   required: false
+  section: Collect
   type: 8
 - additionalinfo: Have AIRS scan all LLM responses and throw exeception if BLOCK is returned
   defaultvalue: 'false'
