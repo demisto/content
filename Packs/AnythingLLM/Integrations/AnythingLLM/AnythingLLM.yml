@@ -54,6 +54,7 @@ configuration:
   display: Sync Scan LLM Response with AIRS
   name: airs_scan_response
   required: false
+  section: Collect
   type: 8
 - additionalinfo: The profile must be created in the AIRS console
   defaultvalue: anythingllm
