@@ -32,12 +32,9 @@ args:
   description: |
     A list of integration brands to run enrichment against.  
     Example: `"VirusTotal (API v3), AlienVault OTX v2"`.  
-
     - If provided, only the selected brands are used. 
-
     - If left empty, the script runs enrichment on all enabled integrations,
-      depending on the `external_enrichment` flag.  
-
+      depending on the `external_enrichment` flag.
     To see the available brands for the `url` command, run: `!ProvidesCommand command=url`.
   isArray: true
   required: false
