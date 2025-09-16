@@ -981,6 +981,8 @@ def create_message_object(to, cc, bcc, subject, body, additional_headers, from_a
     safe_author = create_mailbox(from_address)
     safe_reply_to = create_mailbox_list(reply_to)
 
+    demisto.debug(f"{safe_to_recipients=}\n{safe_cc_recipients=}\n{safe_bcc_recipients=}\n{safe_author=}" f"{safe_reply_to}")
+
     if raw:
         demisto.debug("create_message_object: received raw message")
         return Message(
