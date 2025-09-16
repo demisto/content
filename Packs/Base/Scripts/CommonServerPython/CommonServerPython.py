@@ -2957,6 +2957,24 @@ def is_ipv6_valid(address):
         return False
     return True
 
+def is_ip_address_internal(ip):
+    """
+    Checks if an IP address is an internal (RFC 1918) IP, Available from python3.
+
+    :return: True if the given IP address is an internal.
+    :rtype: ``bool``
+    """
+    if IS_PY3:
+        # pylint: disable=import-error
+        import ipaddress
+        # pylint: enable=import-error
+        try:
+            ip_obj = ipaddress.ip_address(ip)
+            return ip_obj.is_private
+        except ValueError:
+            return False
+    else:
+        return False
 
 def is_ip_valid(s, accept_v6_ips=False):
     """
