@@ -284,7 +284,7 @@ def perform_long_running_loop(connections: list[EventConnection], fetch_interval
         # clear the context after sending the events
         for connection in connections:
             set_the_integration_context(connection.event_type, [])
-    except Exception:
+    except Exception as e:
         demisto.error(f"Failed to send events to XSIAM. Error: {traceback.format_exc()}")
         # save the events to the context so we can send them again in the next execution
         demisto.setIntegrationContext(integration_context)
