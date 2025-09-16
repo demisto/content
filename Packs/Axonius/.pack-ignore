@@ -4,5 +4,11 @@ ignore=RM104
 [file:Axonius_image.png]
 ignore=IM111,IM112
 
+[file:Axonius.yml]
+ignore=IN100
+
+[file:fetch_email.yml]
+ignore=IN111
+
 [known_words]
 axonius
