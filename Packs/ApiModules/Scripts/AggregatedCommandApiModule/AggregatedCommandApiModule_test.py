@@ -2,7 +2,7 @@ import pytest
 import demistomock as demisto
 from CommonServerPython import DemistoException, entryTypes, Common
 from AggregatedCommandApiModule import *
-from datetime import datetime, timedelta, UTC
+from datetime import datetime, timedelta, timezone
 
 
 # =================================================================================================
@@ -27,14 +27,6 @@ def stub_modules(mocker, modules_list):
     fake = {f"m{i}": m for i, m in enumerate(modules_list)}
     mocker.patch.object(demisto, "getModules", return_value=fake)
 
-
-def make_entry(indicators: list[ContextResult] = [], dbots: list[ContextResult] = []):
-    """The expected entry result under the context from each command result."""
-    return {
-        "Indicator(val.Data && val.Data == obj.Data)": indicators,
-        # Use the canonical DBotScore context path
-        Common.DBotScore.CONTEXT_PATH: dbots,
-    }
 
 
 def build_ioc(
@@ -361,92 +353,6 @@ def test_remove_empty_elements_with_exceptions(data, exceptions, expected):
     assert result == expected
 
 
-@pytest.mark.parametrize(
-    "cvss_input, expected_score",
-    [
-        (7.5, 7.5),
-        ("8.2", 8.2),
-        (0, 0.0),
-        ({"Score": 9.1}, 9.1),
-        ("Critical", None),
-        ({"Score": "Critical"}, None),
-        ("N/A", None),
-        ("garbage", None),
-        (None, None),
-    ],
-)
-def test_extract_cvss_score(cvss_input, expected_score):
-    """
-    Given:
-        - Various formats for a CVSS score.
-    When:
-        - extract_cvss_score is called.
-    Then:
-        - It should return the numeric score if possible, otherwise None.
-    """
-    assert extract_cvss_score(cvss_input) == expected_score
-
-
-@pytest.mark.parametrize(
-    "score, expected_rating",
-    [
-        (0.0, "None"),
-        (3.5, "Low"),
-        (4.0, "Medium"),
-        (6.9, "Medium"),
-        (7.5, "High"),
-        (9.0, "Critical"),
-        (10.0, "Critical"),
-        (-1.0, "Unknown"),
-        (11.0, "Unknown"),
-    ],
-)
-def test_convert_cvss_score_to_rating(score, expected_rating):
-    """
-    Given:
-        - A numeric CVSS score.
-    When:
-        - convert_cvss_score_to_rating is called.
-    Then:
-        - It should return the correct severity string or 'Unknown' if out of bounds.
-    """
-    assert convert_cvss_score_to_rating(score) == expected_rating
-
-
-@pytest.mark.parametrize(
-    "cvss_input, expected_rating",
-    [
-        # Numeric values → mapped to rating
-        (0.0, "None"),
-        (2.5, "Low"),
-        (7.0, "High"),
-        (9.8, "Critical"),
-        # Dict with nested score
-        ({"Score": 5.5}, "Medium"),
-        ({"Score": "9.9"}, "Critical"),
-        # Textual severity strings
-        ("high", "High"),
-        ("Critical", "Critical"),
-        ("medium", "Medium"),
-        ("none", "None"),
-        # Special/invalid
-        ("N/A", None),
-        ("garbage", None),
-        (None, None),
-    ],
-)
-def test_extract_cvss_rating(cvss_input, expected_rating):
-    """
-    Given:
-        - Various CVSS inputs (numeric, dict, textual, invalid).
-    When:
-        - extract_cvss_rating is called.
-    Then:
-        - It should return the correct severity string or None if invalid.
-    """
-    assert extract_cvss_rating(cvss_input) == expected_rating
-
-
 # -------------------------------------------------------------------------------------------------
 # -- Level 2: Core Class Units (Command + EntryResult)
 # -------------------------------------------------------------------------------------------------
@@ -470,10 +376,10 @@ def test_entry_result_to_entry():
     )
     entry = entry_result.to_entry()
     assert entry == {
-        "args": {"arg1": "value1"},
-        "brand": "test-brand",
-        "status": "Success",
-        "message": "test-message",
+        "Arguments": {"arg1": "value1"},
+        "Brand": "test-brand",
+        "Status": "Success",
+        "Message": "test-message",
     }
 
 
@@ -551,7 +457,48 @@ def test_batch_executer_process_results_various(results, commands_list, expected
 # -------------------------------------------------------------------------------------------------
 # -- Level 3: Core Class Units (ContextBuilder)
 # -------------------------------------------------------------------------------------------------
+def test_create_indicator_lifts_tim_fields_and_pops_from_tim_result():
+    """
+    Given:
+        - tim_context with one indicator value containing a TIM result and two other brand results.
+        - Indicator mapping includes both "Score" and "CVSS".
+        - TIM result has Score, CVSS, Status, ModifiedTime.
+    When:
+        - create_indicator() is called.
+    Then:
+        - The returned item has top-level Value, TIMScore, TIMCVSS, Status, ModifiedTime.
+        - The TIM entry inside "Results" had its Status and ModifiedTime popped out.
+        - Non-TIM entries are unchanged.
+    """
+    indicator = Indicator(
+        type="url",
+        value_field="Data",
+        context_path_prefix="URL(",
+        context_output_mapping={"Score": "Score", "CVSS": "CVSS"},
+    )
+    builder = ContextBuilder(indicator=indicator, final_context_path="X")
+    tim = {"Brand": "TIM", "Score": 2, "CVSS": {"Score": 7.1}, "Status": "Fresh", "ModifiedTime": "2025-09-01T00:00:00Z"}
+    brand_a = {"Brand": "A", "Score": 3, "Data": "a.com"}
+    brand_b = {"Brand": "B", "Score": 1, "Data": "b.com"}
+    builder.tim_context = {"indicator1": [tim, brand_a, brand_b]}
 
+    out = builder.create_indicator()
+    assert len(out) == 1
+    item = out[0]
+    # Top-level lifted fields
+    assert item["Value"] == "indicator1"
+    assert item["TIMScore"] == 2
+    assert item["TIMCVSS"] == {"Score": 7.1}
+    assert item["Status"] == "Fresh"
+    assert item["ModifiedTime"] == "2025-09-01T00:00:00Z"
+    # TIM result had Status/ModifiedTime popped
+    tim_after = item["Results"][0]
+    assert tim_after["Brand"] == "TIM"
+    assert "Status" not in tim_after
+    assert "ModifiedTime" not in tim_after
+    # Non-TIM results untouched
+    assert item["Results"][1] == brand_a
+    assert item["Results"][2] == brand_b
 
 def test_add_tim_context():
     """
@@ -588,7 +535,25 @@ def test_add_other_commands_results():
 
     assert builder.other_context == {"Command1": {"data": "value1"}, "Command2": {"data": "value2"}}
 
+def test_build_preserves_exception_keys_when_empty():
+    indicator = Indicator(type="url", value_field="Data", context_path_prefix="URL(", context_output_mapping={"Score": "Score", "CVSS":"CVSS"})
+    builder = ContextBuilder(indicator=indicator, final_context_path="Test.Path")
 
+    # TIM entry where TIM has no CVSS and explicit None ModifiedTime
+    tim_ctx = {"v1": [{"Brand": "TIM", "Score": 2, "ModifiedTime": None, "CVSS": None, "Status": None}]}
+    builder.add_tim_context(tim_ctx, dbot_scores=[])
+
+    final_context = builder.build()
+    item = final_context["Test.Path(val.Value && val.Value == obj.Value)"][0]
+    # Exceptions set in build(): {"TIMCVSS","Status","ModifiedTime"}
+    # "ModifiedTime" is None → should be kept
+    assert "ModifiedTime" in item
+    assert item["ModifiedTime"] is None
+    assert "TIMCVSS" in item
+    assert item["TIMCVSS"] is None
+    assert "Status" in item
+    assert item["Status"] is None
+    
 # --- Tests for the build() method and its helpers ---
 def test_build_extract_tim_score():
     """
@@ -700,84 +665,6 @@ def test_build_assembles_all_context_types():
     assert final_context[Common.DBotScore.CONTEXT_PATH][0]["Vendor"] == "TIM"
     assert "Command1" in final_context
     assert final_context["Command1"]["data"] == "value1"
-
-
-@pytest.mark.parametrize(
-    "results, expected_max_cvss, expected_max_severity",
-    [
-        (
-            # Case 1: mixed numeric + textual + dict + N/A
-            [{"CVSS": 7.5}, {"CVSS": "High"}, {"CVSS": {"Score": 9.8}}, {"CVSS": "N/A"}],
-            9.8,  # MaxCVSS From All numerical
-            "Critical",  # MaxSeverity From All
-        ),
-        (
-            # Case 2: only textual ratings
-            [
-                {"CVSS": "Low"},
-                {"CVSS": "Medium"},
-                {"CVSS": "High"},
-            ],
-            None,  # no numeric scores
-            "High",
-        ),
-        (
-            # Case 3: invalid values
-            [
-                {"CVSS": "N/A"},
-                {"CVSS": "garbage"},
-                {"CVSS": None},
-            ],
-            None,  # no numeric
-            None,  # no valid rating
-        ),
-    ],
-)
-def test_builder_enriches_with_cvss_variants(results, expected_max_cvss, expected_max_severity):
-    """
-    Given:
-        - Indicator results with various CVSS formats (numeric, textual, dict, invalid).
-    When:
-        - The builder processes enrichment.
-    Then:
-        - MaxCVSS should reflect the highest numeric score (or None if absent).
-        - MaxSeverity should reflect the highest severity rating (or None if none valid).
-    """
-    indicator = Indicator(type="cve", value_field="ID", context_path_prefix="CVE(", context_output_mapping={"CVSS": "CVSS"})
-    builder = ContextBuilder(indicator=indicator, final_context_path="FinalEnrichment")
-
-    tim_ctx = {"CVE-TEST": results}
-    builder.add_tim_context(tim_ctx, dbot_scores=[])
-
-    final_context = builder.build()
-    final_indicator = final_context["FinalEnrichment(val.Value && val.Value == obj.Value)"][0]
-
-    assert final_indicator["MaxCVSS"] == expected_max_cvss
-    assert final_indicator["MaxSeverity"] == expected_max_severity
-
-
-def test_builder_create_indicator():
-    """
-    Given:
-        - Indicator results with various CVSS formats (numeric, textual, dict, invalid).
-    When:
-        - The builder processes enrichment.
-    Then:
-        - MaxCVSS should reflect the highest numeric score (or None if absent).
-        - MaxSeverity should reflect the highest severity rating (or None if none valid).
-    """
-    indicator = Indicator(type="cve", value_field="ID", context_path_prefix="CVE(", context_output_mapping={"CVSS": "CVSS"})
-    builder = ContextBuilder(indicator=indicator, final_context_path="FinalEnrichment")
-
-    tim_ctx = {"CVE-TEST": [{"CVSS": 7.5}, {"CVSS": "High"}, {"CVSS": {"Score": 9.8}}, {"CVSS": "N/A"}]}
-    builder.add_tim_context(tim_ctx, dbot_scores=[])
-
-    final_context = builder.build()
-    final_indicator = final_context["FinalEnrichment(val.Value && val.Value == obj.Value)"][0]
-
-    assert final_indicator["MaxCVSS"] == 9.8
-    assert final_indicator["MaxSeverity"] == "Critical"
-
 
 # -------------------------------------------------------------------------------------------------
 # -- Level 4: Core Class Units (BrandManager)
@@ -1169,8 +1056,8 @@ def test_get_indicators_from_tim_success_passthrough(module_factory, mocker):
                 value="ioc.example.com",
                 score=2,
                 scores={
-                    "BrandA": {"score": 2, "context": {"data": "A"}},
-                    "BrandB": {"score": 3, "context": {"data": "B"}},
+                    "BrandA": {"score": 2, "context": {"data": "A"}, "Releiability": "High"},
+                    "BrandB": {"score": 3, "context": {"data": "B"}, "Releiability": "Medium"},
                 },
             ),
             {"Brand": "TIM", "Score": 2},
@@ -1190,22 +1077,6 @@ def test_get_indicators_from_tim_success_passthrough(module_factory, mocker):
             {"Brand": "TIM", "Score": 1},
             {},
             [{"Brand": "TIM", "Score": 1}],
-            "No matching indicators found.",
-        ),
-        (
-            build_ioc(value="evil.com", scores={"BrandC": {"score": 3, "context": {}}}),
-            None,  # create_tim_indicator can return None
-            {"BrandC": ([{"Value": "from_brand_c"}])},
-            # FIX: The original code appends the None result before extending with brand results.
-            [None, {"Value": "from_brand_c"}],
-            "Found indicator from brands: BrandC.",
-        ),
-        (
-            build_ioc(value="nothing.here", scores={}),
-            None,  # create_tim_indicator returns None
-            {},
-            # FIX: The original code still appends None to the list.
-            [None],
             "No matching indicators found.",
         ),
     ],
@@ -1233,7 +1104,7 @@ def test_process_single_tim_ioc(
     module = module_factory()
     mocker.patch.object(module, "create_tim_indicator", return_value=mock_tim_indicator_return)
 
-    def side_effect(context, brand, score):
+    def side_effect(entry_context, brand, reliability, score):
         # The tuple return is based on the original code's signature for parse_indicator
         return mock_parse_indicator_side_effect.get(brand, [])
 
@@ -1350,33 +1221,33 @@ def test_create_tim_indicator_uses_score_and_status(module_factory, mocker):
         - Returns a dict with Brand='TIM', the provided Score, and Status from get_indicator_status_from_ioc.
     """
     mod = module_factory()
-    ioc = {"score": 2}
+    ioc = {"score": 2, "value": "indicator1"}
 
-    status_mock = mocker.patch.object(mod, "get_indicator_status_from_ioc", return_value=IndicatorStatus.FRESH)
+    status_mock = mocker.patch.object(mod, "get_indicator_status_from_ioc", return_value=IndicatorStatus.FRESH.value)
 
     res = mod.create_tim_indicator(ioc)
 
     status_mock.assert_called_once_with(ioc)
-    assert res == {
-        "Brand": "TIM",
-        "Score": 2,
-        "Status": IndicatorStatus.FRESH.value,
-    }
+    assert res["Status"] == IndicatorStatus.FRESH.value
+    assert res["Brand"] == "TIM"
+    assert res["Score"] == 2
+    assert res["Data"] == "indicator1"
+    assert res["ModifiedTime"] is None
 
 
 @pytest.mark.parametrize(
     "has_manual, modified_mode, expected_status",
     [
         # Manual overrides anything (even recent modification)
-        (True, "fresh", IndicatorStatus.MANUAL),
+        (True, "fresh", IndicatorStatus.MANUAL.value),
         # Fresh if modified within STATUS_FRESHNESS_WINDOW
-        (False, "fresh", IndicatorStatus.FRESH),
+        (False, "fresh", IndicatorStatus.FRESH.value),
         # Stale if modified long ago
-        (False, "stale", IndicatorStatus.STALE),
-        # Invalid timestamp string → Stale
-        (False, "invalid", IndicatorStatus.STALE),
-        # No modifiedTime and not manual → Stale
-        (False, "none", IndicatorStatus.STALE),
+        (False, "stale", IndicatorStatus.STALE.value),
+        # Invalid timestamp string → None
+        (False, "invalid", None),
+        # No modifiedTime and not manual → None
+        (False, "none", None),
     ],
 )
 def test_get_indicator_status_from_ioc_various(module_factory, has_manual, modified_mode, expected_status):
@@ -1391,7 +1262,7 @@ def test_get_indicator_status_from_ioc_various(module_factory, has_manual, modif
         - Else STALE (including invalid/no modifiedTime).
     """
     mod = module_factory()
-    now = datetime.now(UTC)
+    now = datetime.now(timezone.utc)
 
     def iso(dt: datetime) -> str:
         # Code under test accepts 'Z' or '+00:00'; it replaces Z → +00:00, so we emit 'Z' here.
@@ -1425,11 +1296,11 @@ def test_get_indicator_status_from_ioc_boundary_freshness_window(module_factory)
         - Returns FRESH at the boundary (minus 1 second).
     """
     mod = module_factory()
-    now = datetime.now(UTC)
+    now = datetime.now(timezone.utc)
     boundary_time = now - STATUS_FRESHNESS_WINDOW + timedelta(hours=1)
 
     ioc = {"modifiedTime": boundary_time.isoformat().replace("+00:00", "Z")}
-    assert mod.get_indicator_status_from_ioc(ioc) == IndicatorStatus.FRESH
+    assert mod.get_indicator_status_from_ioc(ioc) == IndicatorStatus.FRESH.value
 
 
 def test_get_indicator_status_from_ioc_boundary_stale(module_factory):
@@ -1442,11 +1313,11 @@ def test_get_indicator_status_from_ioc_boundary_stale(module_factory):
         - Returns STALE at the boundary (plus 1 second).
     """
     mod = module_factory()
-    now = datetime.now(UTC)
+    now = datetime.now(timezone.utc)
     boundary_time = now - STATUS_FRESHNESS_WINDOW - timedelta(seconds=1)
 
     ioc = {"modifiedTime": boundary_time.isoformat().replace("+00:00", "Z")}
-    assert mod.get_indicator_status_from_ioc(ioc) == IndicatorStatus.STALE
+    assert mod.get_indicator_status_from_ioc(ioc) == IndicatorStatus.STALE.value
 
 
 # --- Summarize Command Results Tests ---
@@ -1521,9 +1392,9 @@ def test_summarize_command_results_appends_unsupported_enrichment_row(module_fac
     args, kwargs = tbl.call_args
     table_rows = kwargs.get("t", args[1] if len(args) > 1 else None)
     assert any(
-        row.get("brand") == "X,Y"
-        and row.get("status") == Status.FAILURE.value
-        and "Unsupported Command" in (row.get("message") or "")
+        row.get("Brand") == "X,Y"
+        and row.get("Status") == Status.FAILURE.value
+        and "Unsupported Command" in (row.get("Message") or "")
         for row in table_rows
     )
 
@@ -1601,6 +1472,14 @@ def test_map_command_context_basic(module_factory, mapping, entry, expected):
     entry_copy = {k: (v.copy() if isinstance(v, dict) else v) for k, v in entry.items()}
     result = module.map_command_context(entry_copy, mapping, is_indicator=False)
     assert result == expected
+
+@pytest.mark.parametrize("val", [0, 0.0, "", False])
+def test_map_command_context_preserves_falsy_values(module_factory, val):
+    module = module_factory(additional_fields=False)
+    mapping = {"a..b": "x..y"}
+    entry = {"a": {"b": val}}
+    out = module.map_command_context(entry, mapping, is_indicator=True)
+    assert out == {"x": {"y": val}}
 
 
 @pytest.mark.parametrize(
