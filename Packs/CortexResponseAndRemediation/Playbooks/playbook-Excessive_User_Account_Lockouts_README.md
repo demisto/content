@@ -1,4 +1,4 @@
-This playbook is designed to handle the following alerts:
+This playbook addresses the following alerts:
 
 - Excessive user account lockouts
 - Excessive account lockouts on suspicious users
@@ -10,7 +10,7 @@ Playbook Stages:
 
 Triage:
 
-- Enriches the alert with details about the lockout events.
+- The playbook enriches the alert with details about the lockout events.
 
 Investigation:
 
@@ -36,21 +36,21 @@ This playbook does not use any sub-playbooks.
 
 ### Integrations
 
-* CortexCoreIR
+This playbook does not use any integrations.
 
 ### Scripts
 
 * AnalyzeTimestampIntervals
+* IncreaseAlertSeverity
 * SearchAlertsV2
 * SetAndHandleEmpty
+* get-endpoint-data
 
 ### Commands
 
 * closeInvestigation
 * core-get-cloud-original-alerts
-* core-get-endpoints
 * core-isolate-endpoint
-* core-list-risky-hosts
 
 ## Playbook Inputs
 
