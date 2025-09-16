@@ -1,0 +1,26 @@
+{
+  "is_auto_enabled": true,
+  "trigger_id": "XQL_TEST",
+  "playbook_id": "XQL_TESTING",
+  "suggestion_reason": "Test",
+  "description": "This trigger is responsible for handling Test alerts",
+  "trigger_name": "Trigger_-XQL_TESTING",
+  "alerts_filter": {
+    "filter": {
+      "AND": [
+        {
+            "SEARCH_FIELD": "alert_name",
+            "SEARCH_TYPE": "EQ",
+            "SEARCH_VALUE": "TestXQL"
+        }
+      ]
+    }
+  },
+  "supportedModules": [
+      "X1",
+      "X3",
+      "X5",
+      "ENT_PLUS"
+  ]
+}
+

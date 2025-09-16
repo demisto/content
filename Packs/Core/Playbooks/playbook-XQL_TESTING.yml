@@ -1,0 +1,90 @@
+id: XQL_TESTING
+version: 5
+vcShouldKeepItemLegacyProdMachine: false
+name: XQL_TESTING
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: fc92b411-8e4b-4646-8bb3-478ec051ff28
+    type: start
+    task:
+      id: fc92b411-8e4b-4646-8bb3-478ec051ff28
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 61f8728f-c28c-4ce2-aaa3-fff4be8f5ffa
+    type: regular
+    task:
+      id: 61f8728f-c28c-4ce2-aaa3-fff4be8f5ffa
+      version: -1
+      name: XQL Query
+      description: |-
+        Execute an XQL query and retrieve results of an executed XQL query API. The command will be executed every 10 seconds until results are retrieved or until a timeout error is raised.
+        When more than 1000 results are retrieved, the command will return a compressed gzipped JSON format file,
+        unless the argument 'parse_result_file_to_context' is set to true and then the results will be extracted to the context.
+      script: '|||xdr-xql-generic-query'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      query:
+        simple: 'dataset = auth_logs | limit 10 | fields dfe_labels '
+      query_name:
+        simple: Test
+      time_frame:
+        simple: 1 day ago
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 200,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+quiet: false
+fromversion: 8.9.0
