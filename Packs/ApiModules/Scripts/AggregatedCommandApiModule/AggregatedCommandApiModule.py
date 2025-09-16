@@ -24,16 +24,7 @@ DBOT_SCORE_TO_VERDICT = {
     3: "Malicious",
 }
 
-CVSS_TO_VERDICT = {
-    "None": (0.0, 0.0),
-    "Low": (0.1, 3.9),
-    "Medium": (4.0, 6.9),
-    "High": (7.0, 8.9),
-    "Critical": (9.0, 10.0),
-}
-SEVERITY_ORDER = ["None", "Low", "Medium", "High", "Critical"]
-
-
+# --- Core Enumerations and Data Classes ---
 class Status(Enum):
     """Enum for command status."""
 
@@ -49,7 +40,6 @@ class IndicatorStatus(Enum):
     MANUAL = "Manual"
 
 
-# --- Core Enumerations and Data Classes ---
 class EntryResult:
     """
     Captures a single command's summarized outcome for the final HR table.
@@ -126,7 +116,7 @@ class Command:
         ignore_using_brand (bool): Whether to add the using-brand parameter to the args.
         is_multi_input (bool): Whether the command accepts multiple inputs. Relevant for HumanReadable output.
         is_aggregated_output (bool): Whether the command return one output for multiple inputs. Relevant for HumanReadable output.
-            When multi input and aggregated output will create a single entry for each of the args in order of the input list.
+            When is_multi_input is True and not is_aggregated_output is True, will split the data list one per result entry.
         context_output_mapping (dict[str, str]):
             Mapping rules from source context to target; the separator is `".."`.
             - {"Name": "Value"}             -> flat key rename.
@@ -398,11 +388,10 @@ class ContextBuilder:
         for indicator_value, tim_context_result in self.tim_context.items():
             current_indicator: dict[str, Any] = {"Value": indicator_value}
             if tim_indicator := [indicator for indicator in tim_context_result if indicator.get("Brand") == "TIM"]:
+                current_indicator.update({"Status": pop_dict_value(tim_indicator[0], "Status"),
+                                          "ModifiedTime": pop_dict_value(tim_indicator[0], "ModifiedTime")})
                 if "Score" in self.indicator.context_output_mapping:
-                    
-                    current_indicator.update({"TIMScore": tim_indicator[0].get("Score"),
-                                              "Status": pop_dict_value(tim_indicator[0], "Status"),
-                                              "ModifiedTime": pop_dict_value(tim_indicator[0], "ModifiedTime")})
+                    current_indicator.update({"TIMScore": tim_indicator[0].get("Score")})
                 if "CVSS" in self.indicator.context_output_mapping:
                     current_indicator.update({"TIMCVSS": tim_indicator[0].get("CVSS")})
             current_indicator["Results"] = tim_context_result
