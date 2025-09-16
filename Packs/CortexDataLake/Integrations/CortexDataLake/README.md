@@ -975,7 +975,7 @@ Searches the URL table
 | page_size | Number of entries per page. Defaults to 50 (in case only page was provided). | Optional |
 | ip | IP address. Enter an IP address or an array of IP addresses for which to search, for example 1.1.1.1,2.2.2.2. | Optional |
 | port | Port utilized by the session. Enter a port or array of ports to search. | Optional |
-| url | This argument allows to perform a LIKE search of the specified values on the Url and Uri fields An example value will be paloaltonetworks.com,demisto which will provide results like <https://apps.paloaltonetworks.com> and <https://demisto.com> | Optional |
+| url | This argument allows to perform a LIKE search of the specified values on the Url and Uri fields An example value will be paloaltonetworks.com,demisto which will provide results like &lt;https://apps.paloaltonetworks.com&gt; and &lt;https://demisto.com&gt; | Optional |
 
 #### Context Output
 
@@ -1686,7 +1686,7 @@ Runs a query on the Cortex logging service, according to preset queries.
 
 ##### Command Example
 
-```!-get-critical-threat-logs limit="1" time_range="10 days"```
+```!sls-get-critical-threat-logs limit="1" time_range="10 days"```
 
 ##### Context Example
 
@@ -2089,7 +2089,7 @@ Runs a query on the firewall.traffic table. Traffic logs contain entries for the
 | to_zone | A destination zone name or an array of zone names to search. | Optional |
 | source_port | Source port utilized by the session. Can be port number or an array of destination port numbers to search. For example '443' or '443,445' | Optional |
 | action | An action name or an array of action names to search. | Optional |
-| query | A free-text query for which to search. This forms the WHERE part of the query, for example, !cdl-query-traffic-logs query="source_ip.value LIKE '192.168.1.*' AND dest_ip.value='8.8.8.8' And dest_port=1234" | Optional |
+| query | A free-text query for which to search. This forms the WHERE part of the query, for example, !sls-query-traffic-logs query="source_ip.value LIKE '192.168.1.*' AND dest_ip.value='8.8.8.8' And dest_port=1234" | Optional |
 | fields | The fields that are selected in the query. Selection can be "all" (same as *) or a comma separated list of specific fields in the table.  | Optional |
 | start_time | The query start time. For example, start_time="2018-04-26 00:00:00" | Optional |
 | end_time | The query end time. For example, end_time="2018-04-26 00:00:00". | Optional |
@@ -2225,7 +2225,7 @@ Searches the firewall.threat table, which is the threat logs table for PAN-OS/Pa
 | action | The action that the firewall took for the network traffic. Enter an action or array of actions to search. | Optional |
 | file_sha_256 | The binary hash (SHA256) of the file. Enter a SHA256 hash or array of SHA256 hashes to search. | Optional |
 | file_name | The name of the file that is blocked. Enter a file name or array of file names to search. | Optional |
-| query | Free input query to search. This is the WHERE part of the query. so an example will be !cdl-query-traffic-logs query="source_ip.value LIKE '192.168.1.*' AND dst = '192.168.1.12'" | Optional |
+| query | Free input query to search. This is the WHERE part of the query. so an example will be !sls-query-traffic-logs query="source_ip.value LIKE '192.168.1.*' AND dst = '192.168.1.12'" | Optional |
 | fields | The fields that are selected in the query. Selection can be "all" (same as *) or listing of specific fields in the table. List of fields can be found after viewing all the outputted fields with all. | Optional |
 | start_time | The query start time. For example, start_time="2018-04-26 00:00:00" | Optional |
 | end_time | The query end time. For example, end_time="2018-04-26 00:00:00" | Optional |
@@ -2378,7 +2378,7 @@ Searches the firewall.url table
 | source_port | Source port utilized by the session. Enter a port or array of ports to search. | Optional |
 | dest_port | Network traffic's destination port. Enter a port or array of ports to search. | Optional |
 | action | The action that the firewall took for the network traffic. Enter an action or array of actions to search. | Optional |
-| query | Free input query to search. This is the WHERE part of the query. so an example will be !cdl-query-url-logs query="source_ip.value LIKE '192.168.1.*' AND dest_ip.value = '192.168.1.12'" | Optional |
+| query | Free input query to search. This is the WHERE part of the query. so an example will be !sls-query-url-logs query="source_ip.value LIKE '192.168.1.*' AND dest_ip.value = '192.168.1.12'" | Optional |
 | fields | The fields that are selected in the query. Selection can be "all" (same as *) or listing of specific fields in the table. List of fields can be found after viewing all the outputted fields with all. | Optional |
 | start_time | The query start time. For example, start_time="2018-04-26 00:00:00" | Optional |
 | end_time | The query end time. For example, end_time="2018-04-26 00:00:00" | Optional |
@@ -2420,15 +2420,12 @@ Searches the firewall.url table
 | SLS.Logging.URL.Url | String | The name of the internet domain that was visited in this session. |
 | SLS.Logging.URL.Uri | String | The URI address |
 | SLS.Logging.URL.ContentType | String | Content type of the HTTP response data. |
-| SLS.Logging.URL.HTTPMethod | String | The HTTP Method used
-in the web request |
+| SLS.Logging.URL.HTTPMethod | String | The HTTP Method used in the web request |
 | SLS.Logging.URL.Severity | String | Severity associated with the event. |
-| SLS.Logging.URL.UserAgent | String | The web browser that the user
-used to access the URL. |
+| SLS.Logging.URL.UserAgent | String | The web browser that the user used to access the URL. |
 | SLS.Logging.URL.RefererProtocol | Number | The protocol used in the HTTP REFERER header field. |
 | SLS.Logging.URL.RefererPort | Number | The port used in the HTTP REFERER header field. |
-| SLS.Logging.URL.RefererFQDN | String | The full domain name used in the HTTP REFERER
-header field. |
+| SLS.Logging.URL.RefererFQDN | String | The full domain name used in the HTTP REFERER header field. |
 | SLS.Logging.URL.RefererURL | String | The url used in the HTTP REFERER header field. |
 | SLS.Logging.URL.SrcUser | String | The username that initiated the network traffic. |
 | SLS.Logging.URL.SrcUserInfo | String | The initiated user info. |
@@ -2753,7 +2750,7 @@ its standard port. |
 >|---|---|---|---|---|---|---|---|---|
 >| alert | web-browsing | 2.2.2.2 | 52270 | ANindV94kHC673w9zWXj8TY | Google Chrome Extension File | INTERNET | 10.10.10.101 | 2020-04-21T18:47:12 |
 
-### 19. cdl-query-gp-logs
+### 19. sls-query-gp-logs
 
 ***
 Searches the firewall.globalprotect log table.

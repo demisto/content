@@ -1406,7 +1406,7 @@ def query_file_data_command(args: dict, client: Client) -> tuple[str, dict, list
 
 def query_file_data_sls_command(args: dict, client: Client) -> tuple[str, dict, list[dict[str, Any]]]:
     """
-    The function of the command that queries firewall.url table
+    The function of the command that queries firewall.file_data table
 
         Returns: XSOAR entry with all the parsed data
     """
