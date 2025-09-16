@@ -2038,10 +2038,12 @@ def convert_dict_to_actual_values(input_dict: dict) -> dict[str, Any]:
             output_dict[key] = convert_list_to_actual_values(value)
         elif isinstance(value, str):
             try:
-                output_dict[key] = argToBoolean(value)
+                # output_dict[key] = argToBoolean(value)
+                output_dict[key] = arg_to_real_number(value)
             except ValueError:
                 try:
-                    output_dict[key] = arg_to_real_number(value)
+                    # output_dict[key] = arg_to_real_number(value)
+                    output_dict[key] = argToBoolean(value)
                 except ValueError:
                     output_dict[key] = value
         else:
