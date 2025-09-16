@@ -22,7 +22,7 @@ Perform the following steps to set up permissions:
 2. Change the password for the user. For more information, see [Administrator Functions](https://docs.saviyntcloud.com/bundle/EIC-Admin-25/page/Content/Chapter07-General-Administrator/Administrator-Functions.htm).
 3. Create a SAV role, for example, `ROLE_SIEM`.
 4. Assign permissions to the newly created SAV role.
-   1. Assign the permission to access the web service URL of the Saviynt [fetchRuntimeControlsDataV2 API](https://docs.saviyntcloud.com/bundle/EIC-Admin-25/page/Content/Chapter09-SAV-Roles/Understanding-the-SAV-Role-Parameters.htm). For more information, see Understanding the SAV Role Parameters.
+   1. Assign the permission to access the web service URL of the Saviynt fetchRuntimeControlsDataV2 API. For more information, see [Understanding the SAV Role Parameters](https://docs.saviyntcloud.com/bundle/EIC-Admin-25/page/Content/Chapter09-SAV-Roles/Understanding-the-SAV-Role-Parameters.htm).
    2. Assign the permission to verify the analytics record that you created. For more information, see [Understanding the SAV Role Parameters](https://docs.saviyntcloud.com/bundle/EIC-Admin-25/page/Content/Chapter09-SAV-Roles/Understanding-the-SAV-Role-Parameters.htm).
 5. Associate the SAV role with the user created in Step 1. For more information, see [Understanding the SAV Role Parameters](https://docs.saviyntcloud.com/bundle/EIC-Admin-25/page/Content/Chapter09-SAV-Roles/Understanding-the-SAV-Role-Parameters.htm).
 
