@@ -1046,7 +1046,7 @@ def gcp_compute_instances_list_command(creds: Credentials, args: dict[str, Any])
     next_page_token = response.get("nextPageToken", "")
     metadata = (
         "Run the following command to retrieve the next batch of instances:\n"
-        f"!gcp-compute-instances-list {project_id=} {zone=} page_token={next_page_token}"
+        f"!gcp-compute-instances-list project_id={project_id} zone={zone} page_token={next_page_token}"
         if next_page_token
         else None
     )

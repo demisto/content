@@ -1611,7 +1611,7 @@ def test_gcp_compute_instances_list_command_with_pagination(mocker):
     assert "nextPageToken" not in result.raw_response
     assert (
         "Run the following command to retrieve the next batch of instances:\n!gcp-compute-instances-list "
-        "project_id='test-project' zone='us-central1-a' page_token=next-page-token-123 limit=1\n" in result.readable_output
+        "project_id=test-project zone=us-central1-a page_token=next-page-token-123 limit=1\n" in result.readable_output
     )
 
 
@@ -2382,8 +2382,10 @@ def test_parse_labels_complex_valid_format():
     """
     from GCP import parse_labels
 
-    input_str = ("key=app-name,value=my-web-app;key=version_tag,value=v1.2.3-beta;key=environment,value=STAGING;key=owner.team,"
-                 "value=Platform_Team")
+    input_str = (
+        "key=app-name,value=my-web-app;key=version_tag,value=v1.2.3-beta;key=environment,value=STAGING;key=owner.team,"
+        "value=Platform_Team"
+    )
     expected = {"app-name": "my-web-app", "version_tag": "v1.2.3-beta", "environment": "staging", "owner.team": "platform_team"}
 
     result = parse_labels(input_str)
