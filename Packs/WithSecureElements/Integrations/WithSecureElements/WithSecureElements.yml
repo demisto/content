@@ -14,11 +14,12 @@ configuration:
   required: true
   section: Connect
   type: 0
-- display: Client Secret
-  name: client_secret
+- displaypassword: API Key
+  additionalinfo: Client Secret
+  name: credentials
   required: true
-  section: Connect
-  type: 4
+  hiddenusername: true
+  type: 9
 - defaultvalue: connect.api.read connect.api.write
   display: API Scope
   name: scope
