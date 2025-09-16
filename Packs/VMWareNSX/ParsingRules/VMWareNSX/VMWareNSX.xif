@@ -21,6 +21,16 @@ call VMWARE_NSX_PARSE_TIMESTAMP
 [RULE: Log_sample_2]
 //Log sample 2
 call VMWARE_NSX_PARSE_TIMESTAMP 
+/*Amit checks*/
+| alter 
+    header = regextract(_raw_log, "\S+\d{2}:\d{2}:\d{2}\S*\s+\S+\s\S+\s+\S+\s+\S+\s+"),
+    raw_data = regextract(_raw_log, "\S+\d{2}:\d{2}:\d{2}\S*\s+\S+\s\S+\s+\S+\s+\S+\s+(.*)"),
+    keys_from_raw_data = regextract(raw_data, "(?:\(|\s|,|\(\s|\s\w+\s)(\w+)=")
+| alter 
+    headers = arrayconcat()
+/*end amit checkes*/
+
+
 | alter tmp_keys = arrayconcat(arraycreate("timestamp", "hostname","pid","description"),regextract(_raw_log, "((?:\(|\s|\,|\,\s\w+\s)\w+)\=")),
     tmp_values = arraystring(arrayconcat(regextract(_raw_log, "(\d{4}\-\d{2}\-\d{2}T\d{2}\:\d{2}\:\d{2}\.\d+Z)"), regextract(_raw_log, "\d{4}\-\d{2}\-\d{2}T\d{2}\:\d{2}\:\d{2}\.\d+Z\s([^\s]+)\s"),regextract(_raw_log,"\S+\d{2}:\d{2}:\d{2}\S*\s+\S+\s\S+\s+(\S+)\s+\S+\s+"),regextract(_raw_log ,"\S+\d{2}:\d{2}:\d{2}\S*\s+\S+\s\S+\s+\S+\s+\S+\s+(\[.*)"), regextract(_raw_log, "(?:\(|\s|\,|\,\s\w+\s)\w+\=(?:\"|\[|\[\")?([^\"\,\)]+)")), "|")
 | alter
