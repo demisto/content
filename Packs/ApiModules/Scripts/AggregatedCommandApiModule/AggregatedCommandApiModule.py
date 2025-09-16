@@ -93,7 +93,7 @@ class Indicator:
             - {"Name..Value": "Value"}      -> nested extract {"Name":{"Value":x}} -> {"Value":x}.
             - Append "[]" to make the destination a list.
             - If "Score" is among mapped keys, we compute MaxScore/MaxVerdict/TIMScore.
-            - If "CVSS" is among mapped keys, we compute MaxCVSS/MaxSeverity.
+            - If "CVSS" is among mapped keys, we Extract TIMCVSS.
     """
 
     type: str
@@ -132,7 +132,7 @@ class Command:
             - {"Name..Value": "Value"}      -> nested extract {"Name":{"Value":x}} -> {"Value":x}.
             - Append "[]" to make the destination a list.
             - If "Score" is among mapped keys, we compute MaxScore/MaxVerdict/TIMScore.
-            - If "CVSS" is among mapped keys, we compute MaxCVSS/MaxSeverity.
+            - If "CVSS" is among mapped keys, we extract TIMCVSS.
     """
 
     def __init__(
@@ -161,7 +161,7 @@ class Command:
         """
         return f"Command(name='{self.name}', args={self.args}, type={self.command_type.value})"
 
-    def to_batch_item(self, brands_to_run: list[str] = []) -> dict[str, dict[str, Any]]:
+    def to_batch_item(self, brands_to_run: list[str] | None = None) -> dict[str, dict[str, Any]]:
         """
         Converts the command object to the format required by `executeCommandBatch`.
         inject using-brand to args if brands_to_run is not empty and ignore_using_brand is False.
@@ -236,7 +236,7 @@ class BatchExecutor:
     def execute_batch(
         self,
         commands: list[Command],
-        brands_to_run: list[str] = [],
+        brands_to_run: list[str] | None = None,
         verbose: bool = False,
     ) -> list[list[tuple[ContextResult, str, str]]]:
         """
@@ -249,6 +249,7 @@ class BatchExecutor:
         Returns:
             list[list[tuple[ContextResult, str, str]]]: List of lists of tuples (result, hr_output, error_message).
         """
+        brands_to_run = brands_to_run or []
         commands_to_execute = [command.to_batch_item(brands_to_run) for command in commands]
         demisto.debug(f"Executing batch: {len(commands_to_execute)} commands; brands={brands_to_run or 'all'}")
         results = demisto.executeCommandBatch(commands_to_execute)  # Results is list of lists, for each command list of results
@@ -258,7 +259,7 @@ class BatchExecutor:
     def execute_list_of_batches(
         self,
         list_of_batches: list[list[Command]],
-        brands_to_run: list[str] = [],
+        brands_to_run: list[str] | None = None,
         verbose: bool = False,
     ) -> list[list[list[tuple[ContextResult, str, str]]]]:
         """
@@ -340,9 +341,8 @@ class ContextBuilder:
                     "Value":"Example",
                     "MaxScore":1, //Optional
                     "MaxVerdict":"Malicious", //Optional
-                    "MaxCVSS":1, //Optional
-                    "MaxSeverity":"Malicious", //Optional
                     "TIMScore":1, //Optional
+                    "TIMCVSS":1, //Optional
                     "Status": "Stale"/"Fresh"/"Manual",
                     "Results": [{
                         "Brand": "Brand1",
@@ -415,9 +415,9 @@ class ContextBuilder:
             indicator_list (list[dict]): The list of indicators to enrich.
         """
         for indicator in indicator_list:
-            all_scores = [res.get("Score", 0) for res in indicator.get("Results", [])] + [indicator.get("TIMScore", 0)]
-            max_score = max(all_scores or [0])
             if "Score" in self.indicator.context_output_mapping:
+                all_scores = [res.get("Score", 0) for res in indicator.get("Results", [])] + [indicator.get("TIMScore", 0)]
+                max_score = max(all_scores or [0])
                 indicator["MaxScore"] = max_score
                 indicator["MaxVerdict"] = DBOT_SCORE_TO_VERDICT.get(max_score, "Unknown")
             # if "CVSS" in self.indicator.context_output_mapping:
@@ -572,7 +572,7 @@ class ReputationAggregatedCommand(AggregatedCommand):
         external_enrichment: bool = False,
         additional_fields: bool = False,
         verbose: bool = False,
-        commands: list[list[Command]] = [],
+        commands: list[list[Command]] | None = None,
     ):
         """
         Initializes the reputation aggregated command.
@@ -777,9 +777,8 @@ class ReputationAggregatedCommand(AggregatedCommand):
 
     def create_tim_indicator(self, ioc: dict[str, Any]) -> dict[str, Any]:
         """
-        Creates a TIM indicator from a TIM IOC.
+        Creates a TIM indicator from a TIM IOC CustomFields and Main Fields.
         Relevant for extracting the score and status from the TIM IOC to the main context.
-        This indicator will be removed from the final results array of the indicator.
         Args:
             ioc (dict[str, Any]): The TIM IOC to create a TIM indicator from.
         Returns:
@@ -802,7 +801,7 @@ class ReputationAggregatedCommand(AggregatedCommand):
         return mapped_indicator
         
 
-    def get_indicator_status_from_ioc(self, ioc: dict) -> IndicatorStatus:
+    def get_indicator_status_from_ioc(self, ioc: dict) -> str | None:
         """
         Determine the status of a dict based on manual edits and modification time.
 
@@ -820,7 +819,7 @@ class ReputationAggregatedCommand(AggregatedCommand):
             try:
                 modified_time = datetime.fromisoformat(modified_time_str.replace("Z", "+00:00"))
             except ValueError:
-                return IndicatorStatus.STALE.value
+                return None
 
             if modified_time >= datetime.now(modified_time.tzinfo) - STATUS_FRESHNESS_WINDOW:
                 return IndicatorStatus.FRESH.value
@@ -1287,7 +1286,7 @@ def convert_cvss_score_to_rating(score: float) -> str:
     return "Unknown"
 
 
-def remove_empty_elements_with_exceptions(d, exceptions: set[str] = set()) -> Any:
+def remove_empty_elements_with_exceptions(d, exceptions: set[str] | None = None) -> Any:
     """
     Recursively remove empty lists, empty dicts, or None elements from a dictionary,
     unless their key is in the `exceptions` set.
