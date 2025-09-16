@@ -61,6 +61,7 @@ configuration:
   display: AIRS Profile Name for Scan Requests
   name: airs_profile
   required: false
+  section: Collect
   type: 0
 - additionalinfo: Provide an application name to identify XSOAR scan requests in AIRS
   defaultvalue: anythingllm
