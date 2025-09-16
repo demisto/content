@@ -12,7 +12,7 @@ This integration was integrated and tested with version v1.0 of ExabeamSecOpsPla
 | Use system proxy settings | | False |
 | Fetch incidents | Supported on Cortex XSOAR only. | False |
 | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) | Supported on Cortex XSOAR only. | False |
-| Maximum Incidents Per Fetch | Supported on Cortex XSOAR only. This value should not exceed 3,000. | False |
+| Maximum Incidents Per Fetch | Supported on Cortex XSOAR only. This value should not exceed 3,000 due to product's API limitations. | False |
 | Fetch query | Supported on Cortex XSOAR only. In the `key:value`. For example: `NOT stage:"CLOSED"`. | False |
 | Incident type | Supported on Cortex XSOAR only. | False |
 | Fetch events | Supported on Cortex XSIAM only. | False |
