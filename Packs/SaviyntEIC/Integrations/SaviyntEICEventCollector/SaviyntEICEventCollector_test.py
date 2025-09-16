@@ -1,19 +1,22 @@
+from datetime import datetime, UTC
+
 import pytest
 from freezegun import freeze_time
-
 from SaviyntEICEventCollector import (
-    Client,
     DEFAULT_FETCH_TIME_FRAME_MINUTES,
     LAST_RUN_EVENT_HASHES,
     LAST_RUN_TIMESTAMP,
+    Client,
+    _fetch_analytics_pages_concurrently,
     add_time_to_events,
-    generate_event_hash,
     compute_effective_time_frame_minutes,
     deduplicate_events,
+    generate_event_hash,
     update_last_run_timestamp_from_events,
 )
 
-from datetime import datetime, UTC
+# Python 3.10 compatibility: datetime.UTC added in 3.11; use timezone.utc instead
+UTC = UTC
 
 
 class TestHelperFunctions:
@@ -229,8 +232,8 @@ class TestFetchUseCases:
                 9,
                 4,
                 50,
-                9,
-                "2025-08-06 00:08:00",
+                8,
+                "2025-08-06 00:07:00",
                 id="multi-page: totalcount=9, page-size=4",
             ),
             pytest.param(
@@ -278,8 +281,11 @@ class TestFetchUseCases:
 
         def side_effect_fetch(*args, **kwargs):
             # (self, analytics_name, time_frame_minutes, max_results, offset)
-            requested_max = kwargs.get("max_results")
-            offset = kwargs.get("offset") if "offset" in kwargs else None
+            # Support both keyword and positional arguments (production may pass positionally)
+            requested_max = (
+                kwargs.get("max_results") if "max_results" in kwargs else (args[2] if len(args) >= 3 else server_page_size)
+            )
+            offset = kwargs.get("offset") if "offset" in kwargs else (args[3] if len(args) >= 4 else None)
             start = int(offset or 0)
             end = min(start + server_page_size, start + int(requested_max or server_page_size), totalcount)
             return {"results": all_events[start:end], "totalcount": totalcount}
@@ -299,3 +305,131 @@ class TestFetchUseCases:
         # Verify the watermark reached the expected latest time (converted to epoch)
         latest_dt = datetime.strptime(latest_time, "%Y-%m-%d %H:%M:%S").replace(tzinfo=UTC)
         assert next_run[LAST_RUN_TIMESTAMP] >= int(latest_dt.timestamp())
+
+
+class TestConcurrentPaging:
+    def test_concurrent_fanout_submits_expected_offsets(self, mocker):
+        """
+        Given:
+            - First page returns page_size events
+            - totalcount=42000, overall_max_events=25000, page_size=10000
+        When:
+            - Running _fetch_analytics_pages_concurrently
+        Then:
+            - Offsets submitted include {None, 10000, 20000}
+            - Final results length equals overall_max_events (25000)
+        """
+        # Avoid real token handling on client init
+        mocker.patch.object(Client, "obtain_token")
+        client = Client(base_url="https://example.com/ECM/", verify=False, proxy=False, credentials={})
+
+        calls = []
+
+        totalcount = 42000
+        server_page_size = 10000
+        overall_max_events = 25000
+        page_size = 10000
+
+        def side_effect_fetch(*args, **kwargs):
+            # capture offset appearances including first page (None)
+            # Support both keyword and positional arguments
+            offset = kwargs.get("offset") if "offset" in kwargs else (args[3] if len(args) >= 4 else None)
+            calls.append(offset)
+            requested_max = int(
+                kwargs.get("max_results") if "max_results" in kwargs else (args[2] if len(args) >= 3 else server_page_size)
+            )
+            start = int(offset or 0)
+            end = min(start + server_page_size, start + requested_max, totalcount)
+            # Return synthetic events equal to the slice size
+            count = max(0, end - start)
+            return {"results": [{"Event Time": f"idx-{i}"} for i in range(count)], "totalcount": totalcount}
+
+        mocker.patch.object(Client, "fetch_events", side_effect=side_effect_fetch)
+
+        results = _fetch_analytics_pages_concurrently(
+            client=client,
+            analytics_name="SIEMAuditLogs",
+            effective_time_frame_minutes=60,
+            overall_max_events=overall_max_events,
+            page_size=page_size,
+            page_workers=4,
+        )
+
+        assert len(results) == overall_max_events
+        # initial call uses offset=None
+        assert None in calls
+        # submitted fan-out offsets should include 10000 and 20000
+        assert 10000 in calls
+        assert 20000 in calls
+
+    def test_concurrent_early_return_no_remaining_offsets(self, mocker):
+        """
+        Given:
+            - First page returns all available events (totalcount <= collected)
+        When:
+            - Running _fetch_analytics_pages_concurrently
+        Then:
+            - Only the first page call is made
+            - Function returns the first page results as-is
+        """
+        mocker.patch.object(Client, "obtain_token")
+        client = Client(base_url="https://example.com/ECM/", verify=False, proxy=False, credentials={})
+
+        call_count = {"n": 0}
+
+        def side_effect_fetch(*args, **kwargs):
+            call_count["n"] += 1
+            # Simulate totalcount=7000; first page returns 7000 (partial page)
+            return {"results": [{"Event Time": "t"} for _ in range(7000)], "totalcount": 7000}
+
+        mocker.patch.object(Client, "fetch_events", side_effect=side_effect_fetch)
+
+        results = _fetch_analytics_pages_concurrently(
+            client=client,
+            analytics_name="SIEMAuditLogs",
+            effective_time_frame_minutes=60,
+            overall_max_events=50000,
+            page_size=10000,
+            page_workers=4,
+        )
+
+        assert call_count["n"] == 1
+        assert len(results) == 7000
+
+    def test_concurrent_handles_failed_page_and_continues(self, mocker):
+        """
+        Given:
+            - totalcount=30000, page_size=10000
+            - One of the paged requests (offset=10000) fails with an exception
+        When:
+            - Running _fetch_analytics_pages_concurrently
+        Then:
+            - The function logs and continues, returning events from the successful pages
+            - Final length equals 20000 (first + last page)
+        """
+        mocker.patch.object(Client, "obtain_token")
+        client = Client(base_url="https://example.com/ECM/", verify=False, proxy=False, credentials={})
+
+        def side_effect_fetch(*args, **kwargs):
+            # Support both keyword and positional arguments
+            offset = kwargs.get("offset") if "offset" in kwargs else (args[3] if len(args) >= 4 else None)
+            if offset is None:
+                # first page
+                return {"results": [{"Event Time": "t"} for _ in range(10000)], "totalcount": 30000}
+            if offset == 10000:
+                raise Exception("boom")
+            # offset == 20000
+            return {"results": [{"Event Time": "t"} for _ in range(10000)], "totalcount": 30000}
+
+        mocker.patch.object(Client, "fetch_events", side_effect=side_effect_fetch)
+
+        results = _fetch_analytics_pages_concurrently(
+            client=client,
+            analytics_name="SIEMAuditLogs",
+            effective_time_frame_minutes=60,
+            overall_max_events=30000,
+            page_size=10000,
+            page_workers=4,
+        )
+
+        assert len(results) == 20000

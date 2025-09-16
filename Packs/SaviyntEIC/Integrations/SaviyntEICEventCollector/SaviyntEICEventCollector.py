@@ -1,8 +1,10 @@
 import hashlib
 import json
 import math
+import threading
 import time
-from datetime import UTC, datetime
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from datetime import datetime, timezone
 from typing import Any
 
 import urllib3
@@ -13,6 +15,9 @@ from CommonServerPython import *  # noqa: F401
 # Disable insecure warnings
 urllib3.disable_warnings()
 
+# Python 3.10 compatibility: datetime.UTC added in 3.11; use timezone.utc instead
+UTC = timezone.utc
+
 """ CONSTANTS """
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
@@ -21,7 +26,7 @@ PRODUCT = "eic"
 TOKEN_SAFETY_BUFFER = 300  # seconds to refresh token before actual expiry
 MAX_EVENTS = 50000
 LAST_RUN_EVENT_HASHES = "recent_event_hashes"
-DEFAULT_FETCH_TIME_FRAME_MINUTES = 1
+DEFAULT_FETCH_TIME_FRAME_MINUTES = 6000  # TODO: return to 1 after debugging
 LAST_RUN_TIMESTAMP = "last_fetch_timestamp"
 MAX_EVENTS_PER_REQUEST = 10000
 
@@ -47,6 +52,9 @@ class Client(BaseClient):
     ):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
         self._credentials = credentials or {}
+        # Protects token refresh and header updates when multiple threads fetch pages concurrently.
+        # Used in _post_fetch_with_retry during 401/Forbidden refresh to avoid races.
+        self._auth_lock = threading.Lock()
         try:
             self.obtain_token()
         except Exception as e:
@@ -195,8 +203,9 @@ class Client(BaseClient):
             # Attempt one retry on auth failure
             if any(x in str(e) for x in ("401", "Forbidden", "invalid token")):
                 demisto.debug(f"Access token may be invalid/expired. Attempting to refresh and retry fetch. Error: {e}")
-                # Force refresh token and retry
-                self.obtain_token(force_refresh=True)
+                # Force refresh token and retry under an auth lock to avoid races across threads
+                with self._auth_lock:
+                    self.obtain_token(force_refresh=True)
                 return self._http_request(
                     method="POST",
                     url_suffix="api/v5/fetchRuntimeControlsDataV2",
@@ -352,6 +361,84 @@ def update_last_run_timestamp_from_events(next_run: dict[str, Any], events: list
     demisto.debug(f"[update_last_run_timestamp_from_events] no event timestamps found; using now={now_epoch_end}")
 
 
+def _fetch_analytics_pages_concurrently(
+    client: "Client",
+    analytics_name: str,
+    effective_time_frame_minutes: int,
+    overall_max_events: int,
+    page_size: int,
+    page_workers: int = 4,
+) -> list[dict[str, Any]]:
+    """
+    Fetch events for a single analytics name (event type) using concurrent page requests.
+
+    Steps:
+      1) Fetch first page to learn totalcount.
+      2) Fan-out remaining offsets with a bounded thread pool.
+    """
+    # First page (no offset)
+    demisto.debug(f"[_fetch_analytics_pages_concurrently] {analytics_name}: fetching first page")
+    first_res = client.fetch_events(
+        analytics_name=analytics_name,
+        time_frame_minutes=effective_time_frame_minutes,
+        max_results=page_size,
+        offset=None,
+    )
+    results: list[dict[str, Any]] = first_res.get("results", []) or []
+    total_count = int(first_res.get("totalcount", 0))
+    collected = len(results)
+
+    # Compute summary and decide whether to paginate
+    max_needed = min(total_count, overall_max_events)
+    remaining = max(0, max_needed - collected)
+    remaining_offsets = math.ceil(remaining / page_size) if remaining > 0 else 0
+    demisto.debug(
+        f"[_fetch_analytics_pages_concurrently] {analytics_name}: first_page_size={collected}, total_count_from_api={total_count}, "
+        f"overall_max_events={overall_max_events}, request_page_size={page_size}, remaining_offsets={remaining_offsets}"
+    )
+    if remaining == 0:
+        return results
+
+    # Build remaining offsets
+    offsets = list(range(collected, max_needed, page_size))
+
+    # Fan-out remaining pages
+    with ThreadPoolExecutor(max_workers=page_workers) as executor:
+        future_to_offset = {
+            executor.submit(
+                client.fetch_events,
+                analytics_name,
+                effective_time_frame_minutes,
+                page_size,
+                offset,
+            ): offset
+            for offset in offsets
+        }
+        for future in as_completed(future_to_offset):
+            offset = future_to_offset[future]
+            try:
+                response = future.result()
+                page_results = response.get("results", []) or []
+                results.extend(page_results)
+                if len(results) >= overall_max_events:
+                    demisto.debug(
+                        f"[_fetch_analytics_pages_concurrently] {analytics_name}: reached overall max events at offset={offset}"
+                    )
+                    break
+            except Exception as error:
+                demisto.debug(
+                    f"[_fetch_analytics_pages_concurrently] {analytics_name}: page fetch failed offset={offset} err={error}"
+                )
+
+    if len(results) > overall_max_events:
+        results = results[:overall_max_events]
+    demisto.debug(
+        f"[_fetch_analytics_pages_concurrently] {analytics_name}: collected={len(results)} "
+        f"(overall_max_events={overall_max_events})"
+    )
+    return results
+
+
 """ COMMAND FUNCTIONS """
 
 
@@ -395,49 +482,24 @@ def fetch_events(
     )
 
     events = []
+    page_size = min(max_events, MAX_EVENTS_PER_REQUEST)
 
     for analytics_name in analytics_name_list:
-        events_per_analytics_name = []
-        collected_count = 0  # total number of events collected so far
-        max_results = min(max_events, MAX_EVENTS_PER_REQUEST)
-
         demisto.debug(
-            f"[fetch_events] fetching analytics_name={analytics_name} offset=None "
-            f"time_frame_minutes={effective_time_frame_minutes}"
+            f"[fetch_events] concurrent pages for analytics_name={analytics_name} "
+            f"time_frame_minutes={effective_time_frame_minutes} request_page_size={page_size} overall_number_of_events_to_fetch={max_events}"  # noqa: E501
         )
-        response = client.fetch_events(
+        events_per_analytics_name = _fetch_analytics_pages_concurrently(
+            client=client,
             analytics_name=analytics_name,
-            time_frame_minutes=effective_time_frame_minutes,
-            max_results=max_results,
-            offset=None,
+            effective_time_frame_minutes=effective_time_frame_minutes,
+            overall_max_events=max_events,
+            page_size=page_size,
+            page_workers=4,
         )
-
-        raw_results = response.get("results", [])
-        # total number of available events in the time frame, provided by the API
-        total_count = int(response.get("totalcount", 0))
-        demisto.debug(f"[fetch_events] {analytics_name}: initial_page_size={len(raw_results)} total_count={total_count}")
-
-        events_per_analytics_name.extend(raw_results)
-        collected_count += len(raw_results)
-
-        while collected_count < total_count and collected_count < max_events:
-            offset = collected_count
-            demisto.debug(f"[fetch_events] {analytics_name}: paginating offset={offset} current_collected={collected_count}")
-            response = client.fetch_events(
-                analytics_name=analytics_name,
-                time_frame_minutes=effective_time_frame_minutes,
-                max_results=max_results,
-                offset=offset,
-            )
-            raw_results = response.get("results", [])
-            page_batch_size = len(raw_results)
-            demisto.debug(
-                f"[fetch_events] {analytics_name}: page_batch_size={page_batch_size} total collected so far={collected_count + page_batch_size}"  # noqa: E501
-            )
-            events_per_analytics_name.extend(raw_results)
-            collected_count += page_batch_size
-
-        demisto.debug(f"[fetch_events] {analytics_name}: finished collection. total collected={collected_count}")
+        demisto.debug(
+            f"[fetch_events] {analytics_name}: collected={len(events_per_analytics_name)} for analytics_name={analytics_name} (concurrent)"  # noqa: E501
+        )
         events.extend(events_per_analytics_name)
 
     demisto.debug(f"[fetch_events] total events collected before dedup={len(events)}")
