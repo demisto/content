@@ -1114,7 +1114,6 @@ def gcp_compute_instance_get_command(creds: Credentials, args: dict[str, Any]) -
 
     compute = GCPServices.COMPUTE.build(creds)
     response = compute.instances().get(project=project_id, zone=zone, instance=instance).execute()
-    demisto.debug(f"the {response=}")
 
     hr_data = {
         "id": response.get("id"),
@@ -1160,12 +1159,9 @@ def gcp_compute_instance_label_set_command(creds: Credentials, args: dict[str, A
 
     body = {"labels": labels, "labelFingerprint": label_fingerprint}
 
-    demisto.debug(f"The {body=}")
-
     compute = GCPServices.COMPUTE.build(creds)
     response = compute.instances().setLabels(project=project_id, zone=zone, instance=instance, body=body).execute()
 
-    demisto.debug(f"A response returned {response}")
     data_res = {
         "status": response.get("status"),
         "kind": response.get("kind"),
