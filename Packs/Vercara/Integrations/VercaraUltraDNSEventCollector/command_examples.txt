@@ -1,0 +1,5 @@
+vercara-ultradns-get-events should_push_events=false
+# Preview UltraDNS events without pushing them to XSIAM.
+
+vercara-ultradns-get-events should_push_events=true
+# Preview and push UltraDNS events to XSIAM immediately.
