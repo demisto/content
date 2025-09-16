@@ -8,7 +8,7 @@ This script gathers URL reputation data from multiple integrations and returns a
 | --- | --- |
 | Script Type | python3 |
 | Tags | basescript |
-| Cortex XSOAR Version | 6.1.0 |
+| Cortex XSOAR Version | 6.10.0 |
 
 ## Inputs
 
