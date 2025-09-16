@@ -32,9 +32,11 @@ from QRadar_v3 import (
     MIRRORED_OFFENSES_FETCHED_CTX_KEY,
     MIRRORED_OFFENSES_FINISHED_CTX_KEY,
     MIRRORED_OFFENSES_QUERIED_CTX_KEY,
+    SAMPLE_INCIDENTS_KEY,
     OFFENSE_OLD_NEW_NAMES_MAP,
     REFERENCE_SETS_RAW_FORMATTED,
     USECS_ENTRIES,
+    SAMPLE_SIZE,
     Client,
     EntryFormat,
     EntryType,
@@ -1355,6 +1357,7 @@ def test_get_modified_with_events(mocker):
         LAST_MIRROR_KEY: 3444,
         MIRRORED_OFFENSES_FETCHED_CTX_KEY: {},
         LAST_MIRROR_CLOSED_KEY: 3444,
+        SAMPLE_INCIDENTS_KEY: [],
     }
     set_integration_context(context_data)
     status = {"123": {"status": "COMPLETED"}, "456": {"status": "WAIT"}, "555": {"status": "PENDING"}}
@@ -1537,12 +1540,12 @@ def test_integration_context_during_run(test_case_data, mocker):
             MIRRORED_OFFENSES_FINISHED_CTX_KEY: {},
             MIRRORED_OFFENSES_FETCHED_CTX_KEY: {},
             LAST_FETCH_KEY: init_context.get(LAST_FETCH_KEY, 0),
-            "samples": init_context.get("samples", []),
+            SAMPLE_INCIDENTS_KEY: init_context.get(SAMPLE_INCIDENTS_KEY, []),
         }
     else:
         init_context |= {
             LAST_FETCH_KEY: init_context.get(LAST_FETCH_KEY, 0),
-            "samples": init_context.get("samples", []),
+            SAMPLE_INCIDENTS_KEY: init_context.get(SAMPLE_INCIDENTS_KEY, []),
         }
 
     set_integration_context(init_context)
@@ -1592,8 +1595,8 @@ def test_integration_context_during_run(test_case_data, mocker):
         )
         if LAST_FETCH_KEY not in expected_ctx_first_loop:
             expected_ctx_first_loop[LAST_FETCH_KEY] = 0
-        if "samples" not in expected_ctx_first_loop:
-            expected_ctx_first_loop["samples"] = []
+        if SAMPLE_INCIDENTS_KEY not in expected_ctx_first_loop:
+            expected_ctx_first_loop[SAMPLE_INCIDENTS_KEY] = []
 
     current_context = get_integration_context()
 
@@ -1611,19 +1614,19 @@ def test_integration_context_during_run(test_case_data, mocker):
         enrich_mock = mocker.patch.object(QRadar_v3, "enrich_offense_with_events")
         enrich_mock.side_effect = second_loop_offenses_with_events
         expected_ctx_second_loop = ctx_test_data["context_data_second_loop_default"].copy()
-        # The samples from the first loop are preserved and second loop samples are appended
+        # The samples from the first loop are preserved and second loop samples are appended and sliced by SAMPLE_SIZE
         if is_offenses_first_loop:
-            expected_ctx_second_loop["samples"] = expected_ctx_first_loop.get("samples", []) + expected_ctx_second_loop.get(
-                "samples", []
-            )
+            expected_ctx_second_loop[SAMPLE_INCIDENTS_KEY] = (
+                expected_ctx_first_loop.get(SAMPLE_INCIDENTS_KEY, []) + expected_ctx_second_loop.get(SAMPLE_INCIDENTS_KEY, [])
+            )[:SAMPLE_SIZE]
     else:
         mocker.patch.object(client, "offenses_list", return_value=[])
         expected_ctx_second_loop = expected_ctx_first_loop.copy()
-        # When no new offenses in second loop, the existing samples are re-added due to deepmerge append behavior
-        if expected_ctx_first_loop.get("samples"):
-            expected_ctx_second_loop["samples"] = expected_ctx_first_loop.get("samples", []) + expected_ctx_first_loop.get(
-                "samples", []
-            )
+        # When no new offenses in second loop, the existing samples are appended and sliced by SAMPLE_SIZE
+        if expected_ctx_first_loop.get(SAMPLE_INCIDENTS_KEY):
+            expected_ctx_second_loop[SAMPLE_INCIDENTS_KEY] = (
+                expected_ctx_first_loop.get(SAMPLE_INCIDENTS_KEY, []) + expected_ctx_first_loop.get(SAMPLE_INCIDENTS_KEY, [])
+            )[:SAMPLE_SIZE]
     perform_long_running_loop(
         client=client,
         offenses_per_fetch=2,
@@ -1654,8 +1657,8 @@ def test_integration_context_during_run(test_case_data, mocker):
         )
         if LAST_FETCH_KEY not in expected_ctx_second_loop:
             expected_ctx_second_loop[LAST_FETCH_KEY] = 0
-        if "samples" not in expected_ctx_second_loop:
-            expected_ctx_second_loop["samples"] = []
+        if SAMPLE_INCIDENTS_KEY not in expected_ctx_second_loop:
+            expected_ctx_second_loop[SAMPLE_INCIDENTS_KEY] = []
 
     current_context = get_integration_context()
 
@@ -1678,13 +1681,13 @@ def test_convert_ctx():
         MIRRORED_OFFENSES_FETCHED_CTX_KEY: {},
         LAST_FETCH_KEY: 15,
         LAST_MIRROR_KEY: 0,
-        "samples": [],
+        SAMPLE_INCIDENTS_KEY: [],
     }
     assert new_context == expected
 
 
 def test_convert_ctx_to_new_structure():
-    context = {LAST_FETCH_KEY: "15", LAST_MIRROR_KEY: "0", "samples": "[]"}
+    context = {LAST_FETCH_KEY: "15", LAST_MIRROR_KEY: "0", SAMPLE_INCIDENTS_KEY: "[]"}
     set_integration_context(context)
     validate_integration_context()
     assert get_integration_context() == {
@@ -1693,7 +1696,7 @@ def test_convert_ctx_to_new_structure():
         MIRRORED_OFFENSES_FETCHED_CTX_KEY: {},
         LAST_FETCH_KEY: 15,
         LAST_MIRROR_KEY: 0,
-        "samples": [],
+        SAMPLE_INCIDENTS_KEY: [],
     }
 
 
@@ -2072,6 +2075,12 @@ def test_dict_converter():
     Then:
         - Verify that the outputted dictionary contains the expected values.
     """
+    input_dict = {"age": "0"}
+    expected_output = {"age": 0}
+    converted_dict = convert_dict_to_actual_values(input_dict)
+    assert not isinstance(converted_dict["age"], bool)
+    assert converted_dict == expected_output
+
     input_dict = {"enabled": "true", "year": "2024", "name": "Moshe"}
     expected_output = {"enabled": True, "year": 2024, "name": "Moshe"}
     assert convert_dict_to_actual_values(input_dict) == expected_output
@@ -2357,3 +2366,102 @@ def test_is_incident_size_acceptable_false():
         result = QRadar_v3.is_incident_size_acceptable(large_incident)
         assert result is False
         assert any("exceeds maximum sample size" in call.args[0] for call in mock_debug.call_args_list)
+
+
+@pytest.mark.parametrize(
+    "current_samples, new_samples, expected_samples",
+    [
+        pytest.param(
+            ["sample1", "sample2"],
+            ["sample3", "sample4"],
+            ["sample1", "sample2"],
+            id="Two new samples with two existing samples",
+        ),
+        pytest.param(
+            [],
+            ["sample3", "sample4", "sample5"],
+            ["sample3", "sample4"],
+            id="No new samples with existing samples list",
+        ),
+        pytest.param(
+            '["sample1"]',
+            ["sample2", "sample3", "sample4"],
+            ["sample2", "sample3"],
+            id="Handling legacy string format",
+        ),
+        pytest.param(
+            ["sample1"],
+            ["sample2"],
+            ["sample1", "sample2"],
+            id="One new sample with one existing sample",
+        ),
+        pytest.param(
+            [],
+            [],
+            [],
+            id="No samples",
+        ),
+    ],
+)
+def test_merge_samples(current_samples: list, new_samples: list, expected_samples: list):
+    """
+    Given samples in the existing integration contex and new samples in the changes to be merged
+    When calling merge_samples
+    Then ensure merged samples do not exceed `SAMPLE_SIZE`
+    """
+    from QRadar_v3 import merge_samples
+
+    initial_ctx = copy.deepcopy({SAMPLE_INCIDENTS_KEY: current_samples})
+    changes = copy.deepcopy({SAMPLE_INCIDENTS_KEY: new_samples})
+
+    merge_samples(initial_ctx, changes)
+
+    assert initial_ctx == {SAMPLE_INCIDENTS_KEY: expected_samples}
+
+
+@pytest.mark.parametrize(
+    "current_ctx, changes, override_keys, expected_ctx",
+    [
+        pytest.param(
+            {"a": 1, "b": 2, "c": 3},
+            {"b": 99, "d": 4},
+            ["a", "b", "c"],
+            {"a": 1, "c": 3},
+            id="Key 'b' in current_ctx and changes removed",
+        ),
+        pytest.param(
+            {"a": 1, "b": 2, "c": 3},
+            {"d": 4, "e": 5},
+            ["a", "b", "c"],
+            {"a": 1, "b": 2, "c": 3},
+            id="No common keys in current_ctx and changes",
+        ),
+        pytest.param(
+            {"a": 1, "b": 2},
+            {"a": 99},
+            [],
+            {"a": 1, "b": 2},
+            id="No override keys",
+        ),
+        pytest.param(
+            {"k1": 1, "k2": 2, "k3": 3},
+            {"k2": "val", "k3": "another_val"},
+            ["k1", "k2", "k3"],
+            {"k1": 1},
+            id="Keys 'k1' and 'k3' in current_ctx and changes removed",
+        ),
+    ],
+)
+def test_remove_context_keys(current_ctx, changes, override_keys, expected_ctx):
+    """
+    Given current_ctx and changes to be merged
+    When calling remove_context_keys with override_keys
+    Then ensure common keys in the override_keys list are removed from current_ctx
+    """
+    from QRadar_v3 import remove_context_keys
+
+    initial_ctx = copy.deepcopy(current_ctx)
+
+    remove_context_keys(initial_ctx, changes, override_keys)
+
+    assert initial_ctx == expected_ctx
