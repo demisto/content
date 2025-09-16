@@ -1359,7 +1359,6 @@ def test_summarize_command_results_error_condition(module_factory, mocker, entri
         - Returns a success entry if at least one command was successful.
     """
     mod = module_factory()
-    mocker.patch.object(mod, "raise_non_enabled_brands_error")
     mocker.patch("AggregatedCommandApiModule.tableToMarkdown", return_value="TBL")
 
     res = mod.summarize_command_results(entries, verbose_outputs=[], final_context={"ctx": 1})
@@ -1380,8 +1379,6 @@ def test_summarize_command_results_appends_unsupported_enrichment_row(module_fac
     # Make the property return our list
     mod.brand_manager.unsupported_external = lambda _commands: ["X", "Y"]
 
-    # Avoid raising inside summarize
-    mocker.patch.object(mod, "raise_non_enabled_brands_error")
     tbl = mocker.patch("AggregatedCommandApiModule.tableToMarkdown", return_value="TBL")
 
     entries = [make_entry_result("c1", "A", Status.SUCCESS, "")]
@@ -1397,47 +1394,6 @@ def test_summarize_command_results_appends_unsupported_enrichment_row(module_fac
         and "Unsupported Command" in (row.get("Message") or "")
         for row in table_rows
     )
-
-
-# === Test raise_non_enabled_brands_error ===
-def test_raise_non_enabled_brands_error_raises_when_all_unsupported(module_factory):
-    """
-    Given:
-        - A list of entries where all non-TIM commands failed due to being an unsupported brand.
-    When:
-        - raise_non_enabled_brands_error is called.
-    Then:
-        - A DemistoException is raised with the specific message.
-    """
-    module = module_factory()
-    entries = [
-        make_entry_result("cmd1", "BrandA", Status.FAILURE, "Unsupported Command : ..."),
-        make_entry_result("cmd2", "BrandB", Status.FAILURE, "Unsupported Command : ..."),
-    ]
-
-    with pytest.raises(DemistoException, match="None of the commands correspond to an enabled integration instance"):
-        module.raise_non_enabled_brands_error(entries)
-
-
-def test_raise_non_enabled_brands_error_does_not_raise_on_other_failures(module_factory):
-    """
-    Given:
-        - A list of entries with a mix of failures (not all 'Unsupported Command').
-    When:
-        - raise_non_enabled_brands_error is called.
-    Then:
-        - No exception is raised.
-    """
-    module = module_factory()
-    entries = [
-        make_entry_result("cmd1", "BrandA", Status.FAILURE, "Unsupported Command : ..."),
-        make_entry_result("cmd2", "BrandB", Status.FAILURE, "A different API error"),  # A different error
-    ]
-
-    try:
-        module.raise_non_enabled_brands_error(entries)
-    except DemistoException:
-        pytest.fail("raise_non_enabled_brands_error raised an exception unexpectedly.")
 
 
 # -- Context Mapping --

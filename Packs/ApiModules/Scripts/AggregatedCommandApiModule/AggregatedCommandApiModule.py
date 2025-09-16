@@ -55,9 +55,9 @@ class EntryResult:
     Captures a single command's summarized outcome for the final HR table.
 
     Attributes:
-        command_name (str): Executed command name.
+        command_name (str): Executed command name. (Not visible in HR)
         args (Any): The args passed (dict or string); kept for HR visibility.
-        brand (str): Integration brand (or TIM/builtin/VirusTotal).
+        brand (str): Integration brand (or TIM/Core/VirusTotal).
         status (Status): Success/Failure.
         message (str): Short message (e.g., error text or brand summary).
     """
@@ -126,6 +126,7 @@ class Command:
         ignore_using_brand (bool): Whether to add the using-brand parameter to the args.
         is_multi_input (bool): Whether the command accepts multiple inputs. Relevant for HumanReadable output.
         is_aggregated_output (bool): Whether the command return one output for multiple inputs. Relevant for HumanReadable output.
+            When multi input and aggregated output will create a single entry for each of the args in order of the input list.
         context_output_mapping (dict[str, str]):
             Mapping rules from source context to target; the separator is `".."`.
             - {"Name": "Value"}             -> flat key rename.
@@ -318,7 +319,7 @@ class ContextBuilder:
             dbot_scores (DBotScoreList): The DBot scores.
         """
         if tim_ctx:
-            self.tim_context = tim_ctx
+            self.tim_context.update(tim_ctx)
         if dbot_scores:
             self.dbot_context.extend(dbot_scores)
 
@@ -344,6 +345,7 @@ class ContextBuilder:
                     "TIMScore":1, //Optional
                     "TIMCVSS":1, //Optional
                     "Status": "Stale"/"Fresh"/"Manual",
+                    "ModifiedTime": "2022-01-01T00:00:00Z",
                     "Results": [{
                         "Brand": "Brand1",
                         "Score": 1,
@@ -359,9 +361,8 @@ class ContextBuilder:
                         "PositiveDetections": 2,
                         "Data": "Example",
                         }]
-            },
+                },
             ],
-            "DBotScore": DBotScoreList,
             "OtherCommandsResults": ContextResult,
             }
         Returns:
@@ -386,6 +387,7 @@ class ContextBuilder:
         Result:
         [{
             "Value": "https://example.com",
+            "Other Fields": ...
             "Results": [{"Brand": "Brand1","Data": "Example"},
                         {"Brand": "Brand2","Data": "Example"}]
         }]
@@ -420,36 +422,6 @@ class ContextBuilder:
                 max_score = max(all_scores or [0])
                 indicator["MaxScore"] = max_score
                 indicator["MaxVerdict"] = DBOT_SCORE_TO_VERDICT.get(max_score, "Unknown")
-            # if "CVSS" in self.indicator.context_output_mapping:
-            #     self.compute_cvss_fields(indicator)
-
-    def compute_cvss_fields(self, indicator: ContextResult) -> None:
-        """
-        Update indicator with MaxCVSS (float | None) and MaxSeverity (str | None).
-        MaxCVSS is the maximum numerical Score found in CVSS.
-        MaxSeverity computed from all numerical and string CVSS values found in the indicator.
-        If no numerical score is found, MaxCVSS will remain None.
-        If no CVSS values found at all (not numerical or string), MaxSeverity will remain None.
-        """
-        values = [res.get("CVSS") for res in indicator.get("Results", [])]
-
-        # compute max numerical score
-        scores = [extract_cvss_score(v) for v in values]
-        scores = [s for s in scores if s is not None]
-        indicator["MaxCVSS"] = max(scores) if scores else None
-
-        # compute max severity
-        ratings = [extract_cvss_rating(v) for v in values]
-        ratings = [r for r in ratings if r is not None]
-
-        if indicator["MaxCVSS"] is not None:
-            ratings.append(convert_cvss_score_to_rating(indicator["MaxCVSS"]))
-
-        if ratings:
-            # pick the one with highest order
-            indicator["MaxSeverity"] = max(ratings, key=lambda r: SEVERITY_ORDER.index(r))
-        else:
-            indicator["MaxSeverity"] = None
 
 
 class BrandManager:
@@ -735,9 +707,7 @@ class ReputationAggregatedCommand(AggregatedCommand):
         for ioc in iocs:
             demisto.debug(f"Processing TIM results for indicator: {ioc.get('value')}")
             parsed_indicators, entry = self._process_single_tim_ioc(ioc)
-
-            if value := ioc.get("value"):
-                final_tim_context[value].extend(parsed_indicators)
+            final_tim_context[ioc.get("value")].extend(parsed_indicators)
             final_result_entries.append(entry)
 
         return dict(final_tim_context), final_result_entries
@@ -778,7 +748,7 @@ class ReputationAggregatedCommand(AggregatedCommand):
     def create_tim_indicator(self, ioc: dict[str, Any]) -> dict[str, Any]:
         """
         Creates a TIM indicator from a TIM IOC CustomFields and Main Fields.
-        Relevant for extracting the score and status from the TIM IOC to the main context.
+        Relevant for extracting the Score/Status/ModifiedTime from the TIM IOC to the main context.
         Args:
             ioc (dict[str, Any]): The TIM IOC to create a TIM indicator from.
         Returns:
@@ -955,7 +925,7 @@ class ReputationAggregatedCommand(AggregatedCommand):
     ) -> list[ContextResult]:
         """
         Parse the indicator context and complete missing fields such as brand, score, verdict if needed.
-        indicator_object is used to map the indicator context to the final context.
+        self.indicator.context_output_mapping is used to map the indicator context to the final context.
         What is not mapped is added to the AdditionalFields if AdditionalFields is enabled.
         Final indicator is saved under the following structure:
         {indicator_value: {brand: [indicator]}}
@@ -983,9 +953,7 @@ class ReputationAggregatedCommand(AggregatedCommand):
         for indicator_data in indicator_entries:
             indicator_value = indicator_data.get(self.indicator.value_field)
             demisto.debug(f"Parsing indicator: {indicator_value}")
-            demisto.debug(f"Indicator data: {json.dumps(indicator_data, indent=4)}")
             mapped_indicator = self.map_command_context(indicator_data, self.indicator.context_output_mapping, is_indicator=True)
-            demisto.debug(f"Mapped indicator: {json.dumps(mapped_indicator, indent=4)}")
             if "Score" in self.indicator.context_output_mapping:
                 mapped_indicator["Score"] = score
                 mapped_indicator["Verdict"] = DBOT_SCORE_TO_VERDICT.get(score, "Unknown")
@@ -1029,7 +997,7 @@ class ReputationAggregatedCommand(AggregatedCommand):
                     message="Unsupported Command: Verify you have proper integrations enabled to support it",
                 )
             )
-        self.raise_non_enabled_brands_error(entries)
+        # Remove Entries from non brands command such as CreateNewIndicator and EnrichIndicator
         entries = [entry for entry in entries if entry.brand != ""]
         human_readable = tableToMarkdown(
             "Final Results",
@@ -1055,20 +1023,6 @@ class ReputationAggregatedCommand(AggregatedCommand):
 
         demisto.debug("All commands succeeded. Returning a success entry.")
         return CommandResults(readable_output=human_readable, outputs=final_context)
-
-    def raise_non_enabled_brands_error(self, entries: list[EntryResult]) -> None:
-        """
-        Raises an exception if all commands failed due to unsupported brand.
-        If no other commands supplied, raise an exception.
-        Args:
-            entries (list[EntryResult]): The list of entry results.
-        """
-        non_tim_entries = [entry for entry in entries if entry.brand != "TIM"]
-        if non_tim_entries and all(entry.message.startswith("Unsupported Command") for entry in non_tim_entries):
-            raise DemistoException(
-                "None of the commands correspond to an enabled integration instance. "
-                "Please ensure relevant brands are enabled."
-            )
 
 
 """HELPER FUNCTIONS"""
