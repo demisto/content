@@ -2,7 +2,7 @@ import pytest
 import demistomock as demisto
 from CommonServerPython import DemistoException, entryTypes, Common
 from AggregatedCommandApiModule import *
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, UTC
 
 
 # =================================================================================================
@@ -26,7 +26,6 @@ def stub_modules(mocker, modules_list):
     """
     fake = {f"m{i}": m for i, m in enumerate(modules_list)}
     mocker.patch.object(demisto, "getModules", return_value=fake)
-
 
 
 def build_ioc(
@@ -500,6 +499,7 @@ def test_create_indicator_lifts_tim_fields_and_pops_from_tim_result():
     assert item["Results"][1] == brand_a
     assert item["Results"][2] == brand_b
 
+
 def test_add_tim_context():
     """
     Given:
@@ -535,8 +535,11 @@ def test_add_other_commands_results():
 
     assert builder.other_context == {"Command1": {"data": "value1"}, "Command2": {"data": "value2"}}
 
+
 def test_build_preserves_exception_keys_when_empty():
-    indicator = Indicator(type="url", value_field="Data", context_path_prefix="URL(", context_output_mapping={"Score": "Score", "CVSS":"CVSS"})
+    indicator = Indicator(
+        type="url", value_field="Data", context_path_prefix="URL(", context_output_mapping={"Score": "Score", "CVSS": "CVSS"}
+    )
     builder = ContextBuilder(indicator=indicator, final_context_path="Test.Path")
 
     # TIM entry where TIM has no CVSS and explicit None ModifiedTime
@@ -553,7 +556,8 @@ def test_build_preserves_exception_keys_when_empty():
     assert item["TIMCVSS"] is None
     assert "Status" in item
     assert item["Status"] is None
-    
+
+
 # --- Tests for the build() method and its helpers ---
 def test_build_extract_tim_score():
     """
@@ -665,6 +669,7 @@ def test_build_assembles_all_context_types():
     assert final_context[Common.DBotScore.CONTEXT_PATH][0]["Vendor"] == "TIM"
     assert "Command1" in final_context
     assert final_context["Command1"]["data"] == "value1"
+
 
 # -------------------------------------------------------------------------------------------------
 # -- Level 4: Core Class Units (BrandManager)
@@ -1262,7 +1267,7 @@ def test_get_indicator_status_from_ioc_various(module_factory, has_manual, modif
         - Else STALE (including invalid/no modifiedTime).
     """
     mod = module_factory()
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
 
     def iso(dt: datetime) -> str:
         # Code under test accepts 'Z' or '+00:00'; it replaces Z → +00:00, so we emit 'Z' here.
@@ -1296,7 +1301,7 @@ def test_get_indicator_status_from_ioc_boundary_freshness_window(module_factory)
         - Returns FRESH at the boundary (minus 1 second).
     """
     mod = module_factory()
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     boundary_time = now - STATUS_FRESHNESS_WINDOW + timedelta(hours=1)
 
     ioc = {"modifiedTime": boundary_time.isoformat().replace("+00:00", "Z")}
@@ -1313,7 +1318,7 @@ def test_get_indicator_status_from_ioc_boundary_stale(module_factory):
         - Returns STALE at the boundary (plus 1 second).
     """
     mod = module_factory()
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     boundary_time = now - STATUS_FRESHNESS_WINDOW - timedelta(seconds=1)
 
     ioc = {"modifiedTime": boundary_time.isoformat().replace("+00:00", "Z")}
@@ -1428,6 +1433,7 @@ def test_map_command_context_basic(module_factory, mapping, entry, expected):
     entry_copy = {k: (v.copy() if isinstance(v, dict) else v) for k, v in entry.items()}
     result = module.map_command_context(entry_copy, mapping, is_indicator=False)
     assert result == expected
+
 
 @pytest.mark.parametrize("val", [0, 0.0, "", False])
 def test_map_command_context_preserves_falsy_values(module_factory, val):
