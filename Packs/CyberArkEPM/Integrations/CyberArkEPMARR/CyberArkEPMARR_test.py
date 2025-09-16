@@ -70,4 +70,3 @@ def test_deactivate_risk_plan_command(requests_mock, mocker):
 
     assert result.readable_output == "### Risk Plan changed successfully\n|Endpoint IDs|Risk Plan|Action|\n|---|---|---|\n| endpoint_id1 | risk_plan1 | remove |\n"
 
-# TODO: ADD HERE unit tests for every command
