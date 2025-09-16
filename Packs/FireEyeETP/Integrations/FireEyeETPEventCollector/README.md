@@ -37,6 +37,7 @@ The rate limit applies to the customer as a whole. This means that if the custom
 ## Event Direction & “Shared Content” Across Event Types
 
 ### What you may see
+
 In XSIAM you may notice that the *same email content* (e.g., subject/message-ID) appears as multiple events, sometimes with different directions (inbound vs outbound) or even in different event types (e.g., both **Email Trace** and **Alert**). This is expected:
 
 - **Inbound vs Outbound of the same conversation**  
@@ -47,6 +48,7 @@ In XSIAM you may notice that the *same email content* (e.g., subject/message-ID)
   Some environments also produce “internal/domain-internal” transactions scanned by the gateway. (See note below about the `direction_source` field.)
 
 ### How this collector annotates direction
+
 To make the direction explicit in XSIAM, the collector adds a synthetic field:
 
 | Field | Applies to | Values | Notes |
@@ -57,7 +59,9 @@ To make the direction explicit in XSIAM, the collector adds a synthetic field:
 > **Important:** `direction_source` reflects the *collector source* (inbound vs outbound feeds). If your tenant emits “internal” email_trace transactions, that native notion of “internal” is not surfaced via `direction_source` and should be inferred from the raw payload fields (e.g., sender/recipient domains) if required.
 
 ### “Shared content” across event types
+
 A single email can legitimately produce:
+
 - An **Email Trace** record (transport/flow metadata), and
 - An **Alert** record (security finding on that message).
 
