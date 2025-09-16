@@ -5,6 +5,7 @@
           {
             "value": "1.1.1.1",
             "score": 3,
+            "manuallyEditedFields": ["Score"],
             "CustomFields": {
               "detectionengines": 70,
               "positivedetections": 37
@@ -13,6 +14,7 @@
               "scores": {
                 "brand1": {
                   "score": 2,
+                  "reliability": "High",
                   "context": {
                     "IP(val.Address && val.Address == obj.Address)": [
                       {
@@ -28,6 +30,7 @@
                 },
                 "brand2": {
                   "score": 3,
+                  "reliability": "Medium",
                   "context": {
                     "DBotScore(val.Indicator && val.Vendor)": [
                       {
@@ -64,6 +67,7 @@
               "scores": {
                 "brand3": {
                   "score": 1,
+                  "reliability": "Low",
                   "context": {
                     "DBotScore(val.Indicator && val.Vendor)": [
                       {
