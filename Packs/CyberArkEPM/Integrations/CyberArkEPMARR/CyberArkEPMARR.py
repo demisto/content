@@ -87,7 +87,7 @@ class Client(BaseClient):
         data = {"SAMLResponse": self.get_saml_response()}
         result = self._http_request("POST", url_suffix="/SAML/Logon", headers=headers, data=data)
         if result.get("IsPasswordExpired"):
-            return_error("CyberArk is reporting that the user password is expired. Terminating script.")
+            raise DemistoException("CyberArk is reporting that the user password is expired. Terminating script.")
         self._base_url = urljoin(result.get("ManagerURL"), "/EPM/API/")
         self._headers["Authorization"] = f"basic {result.get('EPMAuthenticationResult')}"
 
