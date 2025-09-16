@@ -55,72 +55,6 @@ OUTBOUND_EVENT_TYPES = [
     EventType("alerts_outbound", 200, outbound=False, api_request_max=200),
 ]
 ALL_EVENTS = EVENT_TYPES + OUTBOUND_EVENT_TYPES
-TRACE_INBOUND_KEY = "email_trace"
-TRACE_OUTBOUND_KEY = "email_trace_outbound"
-
-
-""" HELPER FUNCTIONS """
-
-
-def remove_outbound_trace_duplicates(per_type_events: Dict[str, List[dict]]) -> set[str]:
-    """
-    Deduplicate *only* between inbound email_trace and email_trace_outbound.
-    Keeps inbound; drops duplicates from outbound.
-
-    Returns:
-        set[str]: The set of duplicate IDs that were removed from the outbound list.
-    """
-    inbound = per_type_events.get(TRACE_INBOUND_KEY, []) or []
-    outbound = per_type_events.get(TRACE_OUTBOUND_KEY, []) or []
-
-    if not inbound or not outbound:
-        return set()
-
-    # Collect only string IDs to ensure comparability and satisfy type checking
-    inbound_ids: set[str] = set()
-    for e in inbound:
-        v = e.get("id")
-        if isinstance(v, str) and v:
-            inbound_ids.add(v)
-
-    outbound_ids: set[str] = set()
-    for e in outbound:
-        v = e.get("id")
-        if isinstance(v, str) and v:
-            outbound_ids.add(v)
-
-    dup_ids: set[str] = inbound_ids & outbound_ids
-    if not dup_ids:
-        return set()
-
-    # Drop duplicates from outbound
-    new_outbound: list[dict] = []
-    for e in outbound:
-        v = e.get("id")
-        if isinstance(v, str) and v in dup_ids:
-            continue
-        new_outbound.append(e)
-    per_type_events[TRACE_OUTBOUND_KEY] = new_outbound
-
-    # Log succinctly (cap examples to avoid noisy logs)
-    example_ids = sorted(dup_ids)[:10]
-    demisto.debug(
-        f"{LOG_LINE} dedup: found {len(dup_ids)} duplicate trace events across "
-        f"{TRACE_INBOUND_KEY} & {TRACE_OUTBOUND_KEY}; "
-        f"dropping from '{TRACE_OUTBOUND_KEY}'. examples={example_ids}"
-    )
-    return dup_ids
-
-
-def _flatten_events_in_configured_order(per_type_events: Dict[str, List[dict]], event_types_order: List[EventType]) -> List[dict]:
-    """
-    Flattens events by the configured event type order to preserve previous behavior.
-    """
-    flat: List[dict] = []
-    for et in event_types_order:
-        flat.extend(per_type_events.get(et.name, []) or [])
-    return flat
-
 
 """ CLIENT """
 
@@ -267,7 +201,7 @@ class EventCollector:
         self.event_types_to_run_on = events_to_run_on if events_to_run_on else []
 
     def fetch_command(self, demisto_last_run: dict, first_fetch: None | datetime = None):
-        per_type_events: dict[str, list] = {}
+        events: list = []
 
         if not demisto_last_run:  # First fetch
             first_fetch = first_fetch if first_fetch else datetime.now()
@@ -286,13 +220,12 @@ class EventCollector:
                 demisto.debug(f"{LOG_LINE} getting events of type {event_type.name}")
                 if event_type.client_max_fetch > 0:
                     next_run, new_events = self.get_events(event_type=event_type, last_run=next_run)
-                    per_type_events[event_type.name] = new_events
-
-            # Targeted dedup: only between inbound/outbound email traces
-            remove_outbound_trace_duplicates(per_type_events)
-
-        # Flatten by configured order to retain previous ordering semantics
-        events = _flatten_events_in_configured_order(per_type_events, self.event_types_to_run_on)
+                    # annotate direction for non-activity events
+                    if event_type.name != "activity_log":
+                        direction = "outbound" if event_type in OUTBOUND_EVENT_TYPES else "inbound"
+                        for evt in new_events:
+                            evt.setdefault("direction_source", direction)
+                    events += new_events
 
         demisto.debug(f"{LOG_LINE} fetched {len(events)} to load. Setting last_run")
 
@@ -510,6 +443,11 @@ class EventCollector:
                 last_run_time = parse_special_iso_format(next_run_time)
             case _:
                 raise DemistoException("Event's type format is undefined.")
+
+        if event_type.name != "activity_log":
+            direction = "outbound" if event_type in OUTBOUND_EVENT_TYPES else "inbound"
+            for evt in events:
+                evt["direction_source"] = direction
 
         demisto.debug(f"{LOG_LINE} Got {len(events)} events to load with type {event_type.name}. Setting last_run")
         last_run.get_last_run_event(event_type.name).set_ids(last_run_ids)

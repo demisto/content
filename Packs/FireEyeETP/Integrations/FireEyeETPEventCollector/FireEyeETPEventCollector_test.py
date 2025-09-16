@@ -104,7 +104,7 @@ def test_fetch_alerts(mocker, hide_sensitive, alert_expected, trace_expected, ac
     """
     Given: mocked client, mocked responses and expected event structure,
     When: fetching incidents
-    Then: Testing the formatted events are as required.
+    Then: Testing the formatted events are as required, and direction_source is set for non-activity events.
     """
     client = mock_client()
     client.hide_sensitive = hide_sensitive
@@ -136,8 +136,20 @@ def test_fetch_alerts(mocker, hide_sensitive, alert_expected, trace_expected, ac
         demisto_last_run=LAST_RUN_MULTIPLE_EVENT,
         first_fetch=datetime.now(),
     )
-    assert events[0] == mocked_alert_data[alert_expected]
-    assert events[1] == mocked_trace_data[trace_expected]
+
+    # Validate new direction_source field
+    assert events[0].get("direction_source") == "inbound"  # alerts
+    assert events[1].get("direction_source") == "inbound"  # email_trace
+    assert "direction_source" not in events[2]  # activity_log
+
+    # Compare payloads ignoring direction_source for non-activity events
+    alert_cmp = dict(events[0])
+    alert_cmp.pop("direction_source", None)
+    trace_cmp = dict(events[1])
+    trace_cmp.pop("direction_source", None)
+
+    assert alert_cmp == mocked_alert_data[alert_expected]
+    assert trace_cmp == mocked_trace_data[trace_expected]
     assert events[2] == mocked_activity_data[activity_expected]
 
 
@@ -181,7 +193,6 @@ def test_parse_special_iso_format(input_str, expected_dt):
     When: trying to convert from response to datetime
     Then: make sure parsing is correct.
     """
-
     assert FireEyeETPEventCollector.parse_special_iso_format(input_str) == expected_dt
 
 
@@ -209,6 +220,11 @@ class TestLastRun:
 
 @freeze_time("2023-07-30 11:34:30")
 def test_get_command(mocker):
+    """
+    Given: mocked client and responses
+    When: running get-events command
+    Then: markdown is returned and direction_source is set on non-activity events.
+    """
     mocked_alert_data = util_load_json("test_data/alerts.json")
     mocked_trace_data = util_load_json("test_data/email_trace.json")
     mocked_activity_data = util_load_json("test_data/activity_log.json")
@@ -233,8 +249,13 @@ def test_get_command(mocker):
         "get_activity_log",
         side_effect=[mocked_activity_data["ok_response"], {"data": []}],
     )
-    next_run, events = collector.get_events_command(start_time=datetime.now() - timedelta(days=20))
-    assert events.readable_output
+    events, md = collector.get_events_command(start_time=datetime.now() - timedelta(days=20))
+    assert md.readable_output
+
+    # Validate direction_source flags in the returned events list
+    assert events[0].get("direction_source") == "inbound"  # alerts
+    assert events[1].get("direction_source") == "inbound"  # email_trace
+    assert "direction_source" not in events[2]  # activity_log
 
 
 PAGINATION_CASES = [
@@ -268,6 +289,7 @@ def test_pagination(mocker, event_name, res_mock_path, func_to_mock, expected_re
     Then: Validate we fetch correct number of results, meaning:
         1. No dups
         2. All events arrived
+        3. direction_source is set only for non-activity events
     """
     collector = FireEyeETPEventCollector.EventCollector(
         mock_client(),
@@ -284,6 +306,10 @@ def test_pagination(mocker, event_name, res_mock_path, func_to_mock, expected_re
     # using timedelta with milliseconds due to a freeze_time issue.
     events, md = collector.get_events_command(start_time=datetime.now() - timedelta(days=2, milliseconds=1))
     assert len(events)
+    if event_name != "activity_log":
+        assert all(e.get("direction_source") == "inbound" for e in events)
+    else:
+        assert all("direction_source" not in e for e in events)
 
 
 @pytest.mark.parametrize(
@@ -357,7 +383,6 @@ def test_limit_zero_skip_fetch_flow(mocker):
     When: running the fetch flow
     Then: validates the flow was only running for the event with limit.
     """
-
     event_types = [
         FireEyeETPEventCollector.EventType("alerts", 0, outbound=False),
         FireEyeETPEventCollector.EventType("email_trace", 0, outbound=False),
@@ -382,7 +407,7 @@ def test_client_get_activity_log(mocker):
     Given:
         - "from" time and a "size".
     When:
-        - Calling `Client.get_activity_log`.
+        - Calling Client.get_activity_log.
     Then:
         - Assert "to" time is set as expected due to API requirement (current UTC time).
     """
@@ -399,162 +424,3 @@ def test_client_get_activity_log(mocker):
         "url_suffix": "/api/v1/users/activitylogs/search",
         "json_data": {"size": size, "attributes": {"time": {"from": from_time, "to": expected_to_time}}},
     }
-
-
-def _make_trace_evt(i, extra=None):
-    d = {"id": i, "type": "trace", "attributes": {}}
-    if extra:
-        d.update(extra)
-    return d
-
-
-def test_remove_outbound_trace_duplicates_no_outbound():
-    """
-    Given:
-        - Only inbound trace events present (no outbound key in the per-type map).
-    When:
-        - remove_outbound_trace_duplicates is invoked.
-    Then:
-        - No duplicates are reported and inbound list remains unchanged.
-    """
-    per_type = {
-        FireEyeETPEventCollector.TRACE_INBOUND_KEY: [_make_trace_evt("A"), _make_trace_evt("B")],
-        # no outbound key
-    }
-    dups = FireEyeETPEventCollector.remove_outbound_trace_duplicates(per_type)
-    assert dups == set()
-    assert per_type[FireEyeETPEventCollector.TRACE_INBOUND_KEY] == [_make_trace_evt("A"), _make_trace_evt("B")]
-
-
-def test_remove_outbound_trace_duplicates_no_overlap():
-    """
-    Given:
-        - Inbound and outbound trace lists with disjoint IDs.
-    When:
-        - remove_outbound_trace_duplicates is invoked.
-    Then:
-        - No duplicates are reported and outbound list remains unchanged.
-    """
-    per_type = {
-        FireEyeETPEventCollector.TRACE_INBOUND_KEY: [_make_trace_evt("A"), _make_trace_evt("B")],
-        FireEyeETPEventCollector.TRACE_OUTBOUND_KEY: [_make_trace_evt("C"), _make_trace_evt("D")],
-    }
-    dups = FireEyeETPEventCollector.remove_outbound_trace_duplicates(per_type)
-    assert dups == set()
-    assert per_type[FireEyeETPEventCollector.TRACE_OUTBOUND_KEY] == [_make_trace_evt("C"), _make_trace_evt("D")]
-
-
-def test_remove_outbound_trace_duplicates_with_overlap():
-    """
-    Given:
-        - Inbound and outbound trace lists with overlapping IDs {"B", "X"}.
-    When:
-        - remove_outbound_trace_duplicates is invoked.
-    Then:
-        - Overlapping IDs are reported as duplicates and removed only from outbound.
-        - Inbound list remains intact.
-    """
-    per_type = {
-        FireEyeETPEventCollector.TRACE_INBOUND_KEY: [_make_trace_evt("A"), _make_trace_evt("B"), _make_trace_evt("X")],
-        FireEyeETPEventCollector.TRACE_OUTBOUND_KEY: [_make_trace_evt("B"), _make_trace_evt("C"), _make_trace_evt("X")],
-    }
-    dups = FireEyeETPEventCollector.remove_outbound_trace_duplicates(per_type)
-    assert dups == {"B", "X"}
-    # inbound preserved entirely
-    assert [e["id"] for e in per_type[FireEyeETPEventCollector.TRACE_INBOUND_KEY]] == ["A", "B", "X"]
-    # outbound had duplicates removed
-    assert [e["id"] for e in per_type[FireEyeETPEventCollector.TRACE_OUTBOUND_KEY]] == ["C"]
-
-
-def test_remove_outbound_trace_duplicates_ignores_missing_ids():
-    """
-    Given:
-        - Some events in inbound/outbound missing an 'id' field.
-    When:
-        - remove_outbound_trace_duplicates is invoked.
-    Then:
-        - Missing IDs are ignored for dedup purposes.
-        - Only properly identified duplicates are removed from outbound.
-    """
-    per_type = {
-        FireEyeETPEventCollector.TRACE_INBOUND_KEY: [_make_trace_evt(None), _make_trace_evt("A")],
-        FireEyeETPEventCollector.TRACE_OUTBOUND_KEY: [_make_trace_evt(None), _make_trace_evt("A"), _make_trace_evt("B")],
-    }
-    dups = FireEyeETPEventCollector.remove_outbound_trace_duplicates(per_type)
-    assert dups == {"A"}
-    # Outbound keeps the None-id event and drops only the 'A' duplicate
-    assert [e.get("id") for e in per_type[FireEyeETPEventCollector.TRACE_OUTBOUND_KEY]] == [None, "B"]
-
-
-def test_flatten_events_in_configured_order_preserves_order():
-    """
-    Given:
-        - A specific configured event type order: ["alerts", "email_trace", "email_trace_outbound"].
-        - A per-type events map with one or more events per type.
-    When:
-        - _flatten_events_in_configured_order is invoked.
-    Then:
-        - The flattened list preserves the configured event type ordering.
-    """
-    et_in = FireEyeETPEventCollector.EventType(FireEyeETPEventCollector.TRACE_INBOUND_KEY, 10)
-    et_out = FireEyeETPEventCollector.EventType(FireEyeETPEventCollector.TRACE_OUTBOUND_KEY, 10)
-    et_alerts = FireEyeETPEventCollector.EventType("alerts", 10)
-    order = [et_alerts, et_in, et_out]
-
-    per_type = {
-        "alerts": [_make_trace_evt("AL1")],
-        FireEyeETPEventCollector.TRACE_INBOUND_KEY: [_make_trace_evt("IN1"), _make_trace_evt("IN2")],
-        FireEyeETPEventCollector.TRACE_OUTBOUND_KEY: [_make_trace_evt("OUT1")],
-    }
-    flat = FireEyeETPEventCollector._flatten_events_in_configured_order(per_type, order)
-    assert [e["id"] for e in flat] == ["AL1", "IN1", "IN2", "OUT1"]
-
-
-def test_fetch_command_dedups_outbound_trace_duplicates(mocker):
-    """
-    Given:
-        - Collector configured with both email_trace and email_trace_outbound.
-        - Non-first fetch with last-run for both types present.
-        - Overlapping IDs between inbound (A, B, X) and outbound (B, X, C).
-    When:
-        - fetch_command is invoked.
-    Then:
-        - Duplicates (B, X) are removed only from outbound.
-        - Inbound events are preserved.
-        - Final flattened order follows configured event types.
-    """
-    event_types = [
-        FireEyeETPEventCollector.EventType(FireEyeETPEventCollector.TRACE_INBOUND_KEY, 25, outbound=False),
-        FireEyeETPEventCollector.EventType(FireEyeETPEventCollector.TRACE_OUTBOUND_KEY, 25, outbound=True),
-    ]
-    collector = FireEyeETPEventCollector.EventCollector(mock_client(), event_types)
-
-    last_run_both = {
-        "Last Run": {
-            FireEyeETPEventCollector.TRACE_INBOUND_KEY: {
-                "last_fetch_last_ids": [],
-                "last_fetch_timestamp": "2025-09-12T15:00:00.000000",
-            },
-            FireEyeETPEventCollector.TRACE_OUTBOUND_KEY: {
-                "last_fetch_last_ids": [],
-                "last_fetch_timestamp": "2025-09-12T15:00:00.000000",
-            },
-        }
-    }
-
-    inbound_events = [_make_trace_evt("A"), _make_trace_evt("B"), _make_trace_evt("X")]
-    outbound_events = [_make_trace_evt("B"), _make_trace_evt("X"), _make_trace_evt("C")]
-
-    def _get_events_side_effect(event_type, last_run):
-        if event_type.name == FireEyeETPEventCollector.TRACE_INBOUND_KEY:
-            return last_run, inbound_events
-        if event_type.name == FireEyeETPEventCollector.TRACE_OUTBOUND_KEY:
-            return last_run, outbound_events
-        return last_run, []
-
-    mocker.patch.object(collector, "get_events", side_effect=_get_events_side_effect)
-
-    next_run, events = collector.fetch_command(demisto_last_run=last_run_both)
-
-    # Expect duplicates (B, X) removed from outbound; inbound unchanged; order by configured types
-    assert [e["id"] for e in events] == ["A", "B", "X", "C"]
