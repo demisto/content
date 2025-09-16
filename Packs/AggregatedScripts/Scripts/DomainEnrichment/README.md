@@ -1,4 +1,4 @@
-This script gathers domain reputation data from multiple integrations and returns a "DomainEnrichment" object with consolidated information to the context output.
+This script enriches domain data with information from multiple integrations and returns a "DomainEnrichment" object with consolidated information to the context output.
 
 ## Script Data
 
@@ -16,11 +16,11 @@ This script gathers domain reputation data from multiple integrations and return
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| domain_list | A comma-separated list of domains to enrich. |
-| external_enrichment | When set to 'true', the script runs reputation commands using all available external integrations. This is ignored if the 'brands' argument is used, as 'brands' provides an explicit list of integrations to run. |
+| domain_list | Accepts a list of domains to enrich.<br/>- From CLI: Provide a comma-separated list.  <br/>  If a domain itself contains a comma, wrap the domains in a JSON array.  <br/>  Example: "\[\\"example.com/search:yellow,red\\", \\"example2.com\\"\]".<br/>- From Context: Pass JSON arrays directly, without modification.<br/> |
+| external_enrichment | Whether to call external integrations for enrichment.<br/>- 'true': enrich using enabled external integrations \(e.g., VirusTotal \(API v3\), AlienVault OTX v2\) and run internal commands.<br/>- 'false': use only existing TIM data and run internal commands; skip external integrations.<br/>If the 'brands' argument is provided, this flag is ignored and enrichment/internal commands will run only on the brands provided.<br/> |
 | verbose | Whether to retrieve a human-readable entry for every command. When set to false, human-readable will only summarize the final result and suppress error entries from commands. |
-| brands | A comma-separated list of specific integration brands to use for enrichment, e.g., "VirusTotal,CrowdStrike". If left empty, the script runs on all enabled integrations according to the 'external_enrichment' flag.<br/>Run \!ProvidesCommand command=domain to see available integrations.<br/>Add Cortex Core - IR to run core-get-domain-analytics-prevalence. |
-| additional_fields | Whether to return secondary fields to the context output under "AdditionalFields". |
+| brands | A list of integration brands to run enrichment against.  <br/>Example: \`"VirusTotal \(API v3\), AlienVault OTX v2"\`.<br/><br/>- If provided, only the selected brands are used.<br/><br/>- If left empty, the script runs enrichment on all enabled integrations,<br/>  depending on the \`external_enrichment\` flag.<br/>    <br/>- In order to run core-get-IP-analytics-prevalence, add Cortex Core - IR to the brands list.<br/><br/>To see the available brands for the \`ip\` command, run: \`\!ProvidesCommand command=ip\`.<br/> |
+| additional_fields | When set to true, the output will also include an \`AdditionalFields\` object<br/>for each of the indicator result.  <br/>\`AdditionalFields\` contains all fields returned by TIM or the integrations<br/>that are not part of the standard output keys: \`Name\`, \`Brand\`, \`Score\`, \`Verdict\`, \`DetectionEngines\`, <br/>\`PositiveDetections\`.  <br/>When set to false, only the standard keys are returned.<br/> |
 
 ## Outputs
 
@@ -28,18 +28,19 @@ This script gathers domain reputation data from multiple integrations and return
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| DomainEnrichment.Value | the domain it self. | string |
-| DomainEnrichment.MaxScore | the max score of all the indicators found. | number |
-| DomainEnrichment.MaxVerdict | the max verdict of all the indicators found. | string |
-| DomainEnrichment.Results | list of all indicators found for the domain. | array |
-| DomainEnrichment.TIMScore | the TIM score of the domain. | number |
-| DomainEnrichment.Status | the status of the indicator. | string |
-| DomainEnrichment.Results.Brand | the brand of the indicator. | string |
-| DomainEnrichment.Results.Score | the score of the indicator. | number |
-| DomainEnrichment.Results.Verdict | the verdict of the indicator. | string |
-| DomainEnrichment.Results.DetectionEngines | the detection engines of the indicator. | number |
-| DomainEnrichment.Results.PositiveDetections | the positive detections of the indicator. | number |
-| DomainEnrichment.Results.Name | the domain it self. | string |
+| DomainEnrichment.Value | The domain it self. | string |
+| DomainEnrichment.MaxScore | The max score of all the indicators found. | number |
+| DomainEnrichment.MaxVerdict | The max verdict of all the indicators found. | string |
+| DomainEnrichment.Results | List of all indicators found for the domain. | array |
+| DomainEnrichment.TIMScore | The TIM score of the domain. | number |
+| DomainEnrichment.Status | The status of the indicator. If Score changed manually, the status will be "Manual". If modified less then 1 week, the status will be "Fresh". Otherwise, the status will be "Stale". If not modified at all, the status will be None. | string |
+| DomainEnrichment.ModifiedTime | The time the indicator was last modified. | Date |
+| DomainEnrichment.Results.Brand | The brand of the indicator. | string |
+| DomainEnrichment.Results.Score | The score of the indicator. | number |
+| DomainEnrichment.Results.Verdict | The verdict of the indicator. | string |
+| DomainEnrichment.Results.DetectionEngines | The detection engines of the indicator. | number |
+| DomainEnrichment.Results.PositiveDetections | The positive detections of the indicator. | number |
+| DomainEnrichment.Results.Name | The domain it self. | string |
 | DomainEnrichment.Results.AdditionalFields | Unmapped \(secondary\) fields. Only available if the additional_fields argument is set to true. | Object |
 | DomainEnrichment.Results.AdditionalFields.Relationships.EntityA | The source of the relationship. | string |
 | DomainEnrichment.Results.AdditionalFields.Relationships.EntityB | The destination of the relationship. | string |
@@ -90,7 +91,7 @@ This script gathers domain reputation data from multiple integrations and return
 | DomainEnrichment.Results.AdditionalFields.Category | The category associated with the indicator. | String |
 | DomainEnrichment.Results.AdditionalFields.Campaign | The campaign associated with the domain. | String |
 | DomainEnrichment.Results.AdditionalFields.TrafficLightProtocol | The Traffic Light Protocol \(TLP\) color that is suitable for the domain. | String |
-| DomainEnrichment.Results.AdditionalFields.ThreatTypes.threatcategory | The threat category associated to this indicator by the source vendor. For example, Phishing, Control, TOR, etc. | String |
+| DomainEnrichment.Results.AdditionalFields.ThreatTypes.threatcategory | The threat category associated to this indicator by the source vendor, for example, Phishing, Control, TOR, etc. | String |
 | DomainEnrichment.Results.AdditionalFields.ThreatTypes.threatcategoryconfidence | Threat Category Confidence is the confidence level provided by the vendor for the threat type category For example a confidence of 90 for threat type category 'malware' means that the vendor rates that this is 90% confidence of being a malware. | String |
 | DomainEnrichment.Results.AdditionalFields.Geo.Location | The geolocation where the domain address is located, in the format: latitude:longitude. | String |
 | DomainEnrichment.Results.AdditionalFields.Geo.Country | The country in which the domain address is located. | String |
@@ -106,11 +107,6 @@ This script gathers domain reputation data from multiple integrations and return
 | DomainEnrichment.Results.AdditionalFields.Publications.link | A link to the original article. | String |
 | DomainEnrichment.Results.AdditionalFields.Publications.timestamp | The time in which the article was published. | Date |
 | DomainEnrichment.Results.AdditionalFields.Billing | The billing address of the domain. | String |
-| DBotScore.Indicator | The indicator value. | string |
-| DBotScore.Type | The indicator type. | string |
-| DBotScore.Vendor | Vendor used to calculate the score. | string |
-| DBotScore.Score | The actual score. | number |
-| DBotScore.Reliability | The reliability of the score. | string |
 | Core.AnalyticsPrevalence.Domain.value | Whether the domain is prevalent or not. | Boolean |
 | Core.AnalyticsPrevalence.Domain.data.global_prevalence.value | The global prevalence of the domain. | Number |
 | Core.AnalyticsPrevalence.Domain.data.local_prevalence.value | The local prevalence of the domain. | Number |

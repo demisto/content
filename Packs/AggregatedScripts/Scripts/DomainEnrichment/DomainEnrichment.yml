@@ -11,9 +11,9 @@ args:
 - name: external_enrichment
   description: |
     Whether to call external integrations for enrichment.
-    - 'true': run all enabled external integrations (e.g., VirusTotal, CrowdStrike) in addition to internal/TIM data.
-    - 'false': use only internal/TIM data; skip external integrations.
-    If the 'brands' argument is provided, this flag is ignored and only the listed brands are called.
+    - 'true': enrich using enabled external integrations (e.g., VirusTotal (API v3), AlienVault OTX v2) and run internal commands.
+    - 'false': use only existing TIM data and run internal commands; skip external integrations.
+    If the 'brands' argument is provided, this flag is ignored and enrichment/internal commands will run only on the brands provided.
   auto: PREDEFINED
   predefined:
   - 'true'
@@ -30,15 +30,17 @@ args:
   required: false
 - name: brands
   description: |
-    A list of integration brands to use for Domain enrichment.  
-    Example: `"VirusTotal, AlienVault"`.
+    A list of integration brands to run enrichment against.  
+    Example: `"VirusTotal (API v3), AlienVault OTX v2"`.
+
     - If provided, only the selected brands are used.
+
     - If left empty, the script runs enrichment on all enabled integrations,
       depending on the `external_enrichment` flag.
-    - To see available integrations for the `domain` command, run:  
-      `!ProvidesCommand command=domain`.
-    - To include internal commands:  
-      use **"Cortex Core - IR"** to run `core-get-domain-analytics-prevalence`,  
+        
+    - In order to run core-get-IP-analytics-prevalence, add Cortex Core - IR to the brands list.
+    
+    To see the available brands for the `ip` command, run: `!ProvidesCommand command=ip`.
   isArray: true
   required: false
 - name: additional_fields
