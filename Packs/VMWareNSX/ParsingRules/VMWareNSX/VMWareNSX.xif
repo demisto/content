@@ -27,7 +27,7 @@ call VMWARE_NSX_PARSE_TIMESTAMP
     raw_data = regextract(_raw_log, "\S+\d{2}:\d{2}:\d{2}\S*\s+\S+\s\S+\s+\S+\s+\S+\s+(.*)"),
     keys_from_raw_data = regextract(raw_data, "(?:\(|\s|,|\(\s|\s\w+\s)(\w+)=")
 | alter 
-    headers = arrayconcat()
+    headers = arrayconcat()sss
 /*end amit checkes*/
 
 
