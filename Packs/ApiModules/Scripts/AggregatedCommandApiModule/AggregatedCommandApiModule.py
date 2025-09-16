@@ -34,7 +34,11 @@ class Status(Enum):
 
 
 class IndicatorStatus(Enum):
-    """Enum for indicator status."""
+    """Enum for indicator status.
+    - FRESH: If the indicator modifiedTime is within the freshness window (default is 1 week).
+    - STALE: If the indicator modifiedTime is outside the freshness window.
+    - MANUAL: If the indicator was manually added.
+    """
 
     FRESH = "Fresh"
     STALE = "Stale"
@@ -166,7 +170,10 @@ class Command:
     def execute(self) -> list[dict[str, Any]]:
         """Executes the command and returns the results."""
         demisto.debug(f"[Command.execute] Executing command {self.name} with args: {self.args}")
-        results = execute_command(self.name, self.args)
+        is_failed, results = execute_command(self.name, self.args,fail_on_error=False)
+        if is_failed:
+            demisto.debug(f"[Command.execute] Command {self.name} execution failed with error: {results}")
+            
         demisto.debug(f"[Command.execute] Command {self.name} execution completed with {len(results)} results")
         return results
 
@@ -266,6 +273,16 @@ class BatchExecutor:
             List of corresponding results for each batch.
             Foreach batch list of results list per commands.
             Foreach command list of tuples (ContextResult, str, str) corresponding to (result, hr_output, error_message).
+            Example:
+            [
+                [  # batch 0
+                    [ (result, hr_output, error), ... ],  # command 0 results
+                    [ (result, hr_output, error), ... ],  # command 1 results
+                ],
+                [  # batch 1
+                    ...
+                ]
+            ]
 
         """
         out: list[list[list[tuple[ContextResult, str, str]]]] = []
