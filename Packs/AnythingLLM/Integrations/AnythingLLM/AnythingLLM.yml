@@ -68,6 +68,7 @@ configuration:
   display: AIRS Application Name for Scan Requests
   name: airs_app
   required: false
+  section: Collect
   type: 0
 - additionalinfo: Provide a user name to include in XSOAR scan requests in AIRS
   defaultvalue: XSOAR
