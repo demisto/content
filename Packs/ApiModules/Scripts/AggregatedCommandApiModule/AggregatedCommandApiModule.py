@@ -24,6 +24,7 @@ DBOT_SCORE_TO_VERDICT = {
     3: "Malicious",
 }
 
+
 # --- Core Enumerations and Data Classes ---
 class Status(Enum):
     """Enum for command status."""
@@ -367,7 +368,7 @@ class ContextBuilder:
             final_context[Common.DBotScore.CONTEXT_PATH] = self.dbot_context
         final_context.update(self.other_context)
 
-        return remove_empty_elements_with_exceptions(final_context, exceptions={"TIMCVSS","Status","ModifiedTime"})
+        return remove_empty_elements_with_exceptions(final_context, exceptions={"TIMCVSS", "Status", "ModifiedTime"})
 
     def create_indicator(self) -> list[dict]:
         """
@@ -388,8 +389,12 @@ class ContextBuilder:
         for indicator_value, tim_context_result in self.tim_context.items():
             current_indicator: dict[str, Any] = {"Value": indicator_value}
             if tim_indicator := [indicator for indicator in tim_context_result if indicator.get("Brand") == "TIM"]:
-                current_indicator.update({"Status": pop_dict_value(tim_indicator[0], "Status"),
-                                          "ModifiedTime": pop_dict_value(tim_indicator[0], "ModifiedTime")})
+                current_indicator.update(
+                    {
+                        "Status": pop_dict_value(tim_indicator[0], "Status"),
+                        "ModifiedTime": pop_dict_value(tim_indicator[0], "ModifiedTime"),
+                    }
+                )
                 if "Score" in self.indicator.context_output_mapping:
                     current_indicator.update({"TIMScore": tim_indicator[0].get("Score")})
                 if "CVSS" in self.indicator.context_output_mapping:
@@ -696,7 +701,8 @@ class ReputationAggregatedCommand(AggregatedCommand):
         for ioc in iocs:
             demisto.debug(f"Processing TIM results for indicator: {ioc.get('value')}")
             parsed_indicators, entry = self._process_single_tim_ioc(ioc)
-            final_tim_context[ioc.get("value")].extend(parsed_indicators)
+            if value:=ioc.get("value"):
+                final_tim_context[value].extend(parsed_indicators)
             final_result_entries.append(entry)
 
         return dict(final_tim_context), final_result_entries
@@ -743,22 +749,24 @@ class ReputationAggregatedCommand(AggregatedCommand):
         Returns:
             dict[str, Any]: The TIM indicator.
         """
-        
+
         customFields = ioc.get("CustomFields", {})
         lower_mapping = {k.lower(): v for k, v in self.indicator.context_output_mapping.items()}
         mapped_indicator = self.map_command_context(customFields.copy(), lower_mapping, is_indicator=True)
-        
+
         if "Score" in self.indicator.context_output_mapping:
             mapped_indicator.update({"Score": ioc.get("score", Common.DBotScore.NONE)})
         if "CVSS" in self.indicator.context_output_mapping:
             mapped_indicator.update({"CVSS": customFields.get("cvssscore")})
-        mapped_indicator.update({
-            "Data": ioc.get("value"),
-            "Brand": "TIM",
-            "Status": self.get_indicator_status_from_ioc(ioc),
-            "ModifiedTime": ioc.get("modifiedTime")})
+        mapped_indicator.update(
+            {
+                "Data": ioc.get("value"),
+                "Brand": "TIM",
+                "Status": self.get_indicator_status_from_ioc(ioc),
+                "ModifiedTime": ioc.get("modifiedTime"),
+            }
+        )
         return mapped_indicator
-        
 
     def get_indicator_status_from_ioc(self, ioc: dict) -> str | None:
         """
@@ -784,7 +792,7 @@ class ReputationAggregatedCommand(AggregatedCommand):
                 return IndicatorStatus.FRESH.value
             else:
                 return IndicatorStatus.STALE.value
-            
+
         return None
 
     def process_batch_results(
@@ -1015,6 +1023,8 @@ class ReputationAggregatedCommand(AggregatedCommand):
 
 
 """HELPER FUNCTIONS"""
+
+
 def extract_indicators(data: list[str], type: str) -> list[str]:
     """
     Validate the provided `self.data` list to ensure all items are valid indicators
@@ -1170,7 +1180,7 @@ def remove_empty_elements_with_exceptions(d, exceptions: set[str] | None = None)
     Returns:
         dict: The dictionary with empty elements removed.
     """
-    exceptions = exceptions or set()
+    exceptions: set[str] = exceptions or set()
 
     def empty(k, v) -> bool:
         """Check if a value is considered empty, unless the key is in exceptions."""
