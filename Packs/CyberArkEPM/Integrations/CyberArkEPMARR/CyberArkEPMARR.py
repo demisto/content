@@ -197,7 +197,7 @@ def change_risk_plan_command(
     endpoint_ids = search_endpoints(endpoint_name, external_ip, client)
 
     if not endpoint_ids:
-        raise DemistoException(f"No Endpoints not found matching the name: {endpoint_name} and External IP: {external_ip}")
+        raise DemistoException(f"No Endpoints found matching the name: {endpoint_name} and External IP: {external_ip}")
 
     # Search for endpoint group by risk plan name
     endpoint_group_id = search_endpoint_group_id(risk_plan, client)
