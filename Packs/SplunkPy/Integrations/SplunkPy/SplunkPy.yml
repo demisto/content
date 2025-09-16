@@ -719,7 +719,6 @@ script:
   script: ''
   subtype: python3
   type: python
-  runonce: false
 tests:
 - SplunkPySearch_Test_default_handler
 - SplunkPy-Test-V2_default_handler
