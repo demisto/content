@@ -433,13 +433,14 @@ Sets labels on an instance.
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| instance | Name of the instance resource to return. | Required |
-| project_id | Project ID that you want to run this command on. | Required |
-| zone | The name of the zone for this request. | Required |
-| labels | An object containing a list of "key": value pairs, without spaces. Example: key=abc,value=123;key=ABC,value=321. | Required |
-| label_fingerprint | Fingerprint of the previous set of labels for this resource, used to prevent conflicts. Provide the latest fingerprint value when making a request to add or change labels. | Required |
+| **Argument Name** | **Description**                                                                                                                                                             | **Required** |
+| --- |-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
+| instance | Name of the instance resource to return.                                                                                                                                    | Required     |
+| project_id | Project ID that you want to run this command on.                                                                                                                            | Required     |
+| zone | The name of the zone for this request.                                                                                                                                      | Required     |
+| labels | An object containing a list of "key": value pairs, without spaces. Example: key=abc,value=123;key=ABC,value=321.                                                            | Required     |
+| label_fingerprint | Fingerprint of the previous set of labels for this resource, used to prevent conflicts. Provide the latest fingerprint value when making a request to add or change labels. | Required     |
+| add_labels | Whether to add the new labels to the existing ones or override the previous labels with the news. True - add, False - override. Default is false.                           | Optional     |
 
 #### Context Output
 
