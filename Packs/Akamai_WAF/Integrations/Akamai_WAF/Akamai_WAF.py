@@ -459,6 +459,14 @@ class Client(BaseClient):
         }
         return self._http_request(method="POST", url_suffix=f"/client-list/v1/lists/{client_list_id}/items/delete-request", json_data=body, resp_type='response')
 
+    def get_contract_group(self) -> dict:
+        """
+        Get contract groups.
+        Returns:
+            Json response as dictionary
+        """
+        return self._http_request(method="GET", url_suffix="/client-list/v1/contracts-groups")
+
     # Created by C.L.
 
     def create_group(self, group_id: int = 0, groupname: str = "") -> dict:
@@ -3560,6 +3568,23 @@ def remove_client_list_entry_command(client: Client, client_list_id: str, items:
         human_readable = f"Items successfully removed from Akamai WAF Client List {client_list_id}."
         return human_readable, {}, {}
     return f"Failed to remove items from Akamai WAF Client List {client_list_id}.", {}, {}
+
+
+@logger
+def get_contract_group_command(client: Client) -> tuple[str, dict, dict]:
+    """
+    Gets the contract groups.
+    Args:
+        client: Akamai WAF client
+    Returns:
+        Human readable, context entry, raw response
+    """
+    raw_response = client.get_contract_group()
+    human_readable = tableToMarkdown("Akamai WAF Contract Groups", raw_response)
+    context_entry = {
+        f"{INTEGRATION_CONTEXT_NAME}.ContractGroup": raw_response
+    }
+    return human_readable, context_entry, raw_response
 
 
 @logger
@@ -6875,7 +6900,7 @@ def main():
         f"{INTEGRATION_COMMAND_NAME}-list-groups": list_groups_command,
         f"{INTEGRATION_COMMAND_NAME}-create-enrollment": create_enrollment_command,
         f"{INTEGRATION_COMMAND_NAME}-list-enrollments": list_enrollments_command,
-        f"{INTEGRATION_COMMAND_NAME}-get-enrollment-by-cn": get_enrollment_by_cn_command,
+            f"{INTEGRATION_COMMAND_NAME}-get-enrollment-by-cn": get_enrollment_by_cn_command,
         f"{INTEGRATION_COMMAND_NAME}-get-domains": get_domains_command,
         f"{INTEGRATION_COMMAND_NAME}-get-domain": get_domain_command,
         f"{INTEGRATION_COMMAND_NAME}-create-domain": create_domain_command,
@@ -6892,6 +6917,7 @@ def main():
         f"{INTEGRATION_COMMAND_NAME}-activate-client-list": activate_client_list_command,
         f"{INTEGRATION_COMMAND_NAME}-add-client-list-entry": add_client_list_entry_command,
         f"{INTEGRATION_COMMAND_NAME}-remove-client-list-entry": remove_client_list_entry_command,
+        f"{INTEGRATION_COMMAND_NAME}-get-contract-group": get_contract_group_command,
         f"{INTEGRATION_COMMAND_NAME}-clone-papi-property": clone_papi_property_command,
         f"{INTEGRATION_COMMAND_NAME}-add-papi-property-hostname": add_papi_property_hostname_command,
         f"{INTEGRATION_COMMAND_NAME}-list-papi-edgehostname-bygroup": list_papi_edgehostname_bygroup_command,

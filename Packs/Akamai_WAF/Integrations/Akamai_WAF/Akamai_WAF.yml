@@ -691,6 +691,13 @@ script:
       required: true
       description: A list of items to remove from the client list.
     name: akamai-remove-client-list-entry
+  - name: akamai-get-contract-group
+    description: Get contract groups.
+    arguments: []
+    outputs:
+      - contextPath: Akamai.ContractGroup
+        description: The contract groups.
+        type: unknown
   - arguments: []
     description: Get Google Tag Manager (GTM) domains.
     name: akamai-get-domains

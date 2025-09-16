@@ -795,6 +795,30 @@ def test_remove_client_list_entry_command(mocker, akamai_waf_client):
     assert expected_human_readable == human_readable
 
 
+def test_get_contract_group_command(mocker, akamai_waf_client):
+    """
+    Given:
+        - A client.
+    When:
+        - running the command get_contract_group_command.
+    Then:
+        - The returned values (human_readable, context_entry, raw_response) are correct.
+    """
+    from Akamai_WAF import get_contract_group_command
+
+    test_data = util_load_json("test_data/get_contract_group_test.json")
+    expected_raw_response = test_data.get("raw_response")
+    expected_human_readable = test_data.get("human_readable")
+    expected_context_entry = test_data.get("context_entry")
+
+    mocker.patch.object(akamai_waf_client, "get_contract_group", return_value=expected_raw_response)
+
+    human_readable, context_entry, raw_response = get_contract_group_command(client=akamai_waf_client)
+    assert expected_raw_response == raw_response
+    assert expected_human_readable == human_readable
+    assert expected_context_entry == context_entry
+
+
 def test_get_datastream_command(requests_mock, akamai_waf_client):
     """
     Given:
