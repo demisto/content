@@ -82,6 +82,7 @@ configuration:
   display: Anything LLM Model in use
   name: airs_model
   required: false
+  section: Collect
   type: 0
 script:
   script: ''
