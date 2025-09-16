@@ -1218,6 +1218,13 @@ script:
       - description: Fingerprint of the previous set of labels for this resource, used to prevent conflicts. Provide the latest fingerprint value when making a request to add or change labels.
         name: label_fingerprint
         required: true
+      - description: Whether to add the new labels to the existing ones or override the previous labels with the news. True - add, False - override.
+        name: add_labels
+        defaultValue: 'false'
+        auto: PREDEFINED
+        predefined:
+          - 'true'
+          - 'false'
     description: Sets labels on an instance.
     name: gcp-compute-instance-labels-set
     outputs:

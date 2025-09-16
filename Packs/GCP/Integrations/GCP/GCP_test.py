@@ -2390,3 +2390,184 @@ def test_parse_labels_complex_valid_format():
 
     result = parse_labels(input_str)
     assert result == expected
+
+
+def test_gcp_compute_instance_label_set_command_add_labels_true(mocker):
+    """
+    Given: Valid arguments with add_labels=true and existing instance labels
+    When: gcp_compute_instance_label_set_command is called
+    Then: The function should merge new labels with existing ones
+    """
+    from GCP import gcp_compute_instance_label_set_command
+
+    # Mock arguments with add_labels=true
+    args = {
+        "project_id": "test-project",
+        "zone": "us-central1-a", 
+        "instance": "test-instance",
+        "label_fingerprint": "abc123fingerprint",
+        "labels": "key=newlabel,value=newvalue;key=app,value=updated",
+        "add_labels": "true"
+    }
+
+    # Mock relevant instance data with current labels
+    mock_instance_response = {
+        "id": "567890",
+        "name": "test-instance",
+        "labels": {"environment": "production", "app": "oldvalue", "team": "backend"}
+    }
+
+    # Mock setLabels operation response
+    mock_operation_response = {
+        "id": "operation-12345",
+        "name": "operation-set-labels",
+        "kind": "compute#operation",
+        "status": "RUNNING",
+        "progress": "0",
+        "operationType": "setLabels"
+    }
+
+    # Mock the GCP API calls
+    mock_compute = mocker.Mock()
+    mock_instances = mocker.Mock()
+    mock_compute.instances.return_value = mock_instances
+    mock_instances.get.return_value.execute.return_value = mock_instance_response
+    mock_instances.setLabels.return_value.execute.return_value = mock_operation_response
+
+    # Mock the build function
+    mock_creds = mocker.Mock(spec=Credentials)
+    mocker.patch("GCP.GCPServices.COMPUTE.build", return_value=mock_compute)
+
+    # Execute the function
+    result = gcp_compute_instance_label_set_command(mock_creds, args)
+
+    # Verify get was called to fetch existing labels
+    mock_instances.get.assert_called_once_with(project="test-project", zone="us-central1-a", instance="test-instance")
+
+    # Verify setLabels was called with merged labels
+    expected_body = {
+        "labels": {
+            "environment": "production", 
+            "team": "backend",
+            "newlabel": "newvalue",
+            "app": "updated"  # Should override existing value
+        },
+        "labelFingerprint": "abc123fingerprint"
+    }
+    mock_instances.setLabels.assert_called_once_with(
+        project="test-project", zone="us-central1-a", instance="test-instance", body=expected_body
+    )
+
+    assert result.outputs == mock_operation_response
+
+
+def test_gcp_compute_instance_label_set_command_add_labels_no_existing(mocker):
+    """
+    Given: Valid arguments with add_labels=true but instance has no existing labels
+    When: gcp_compute_instance_label_set_command is called
+    Then: The function should handle missing labels field gracefully
+    """
+    from GCP import gcp_compute_instance_label_set_command
+
+    # Mock arguments with add_labels=true
+    args = {
+        "project_id": "test-project",
+        "zone": "us-west1-b",
+        "instance": "new-instance", 
+        "label_fingerprint": "xyz789fingerprint",
+        "labels": "key=firstlabel,value=firstvalue",
+        "add_labels": "true"
+    }
+
+    # Mock instance response without labels field
+    mock_instance_response = {
+        "id": "111222333",
+        "name": "new-instance"
+        # No labels field
+    }
+
+    # Mock setLabels operation response
+    mock_operation_response = {
+        "id": "operation-99999",
+        "kind": "compute#operation",
+        "status": "DONE"
+    }
+
+    # Mock the GCP API calls
+    mock_compute = mocker.Mock()
+    mock_instances = mocker.Mock()
+    mock_compute.instances.return_value = mock_instances
+    mock_instances.get.return_value.execute.return_value = mock_instance_response
+    mock_instances.setLabels.return_value.execute.return_value = mock_operation_response
+
+    # Mock the build function
+    mock_creds = mocker.Mock(spec=Credentials)
+    mocker.patch("GCP.GCPServices.COMPUTE.build", return_value=mock_compute)
+
+    # Execute the function
+    result = gcp_compute_instance_label_set_command(mock_creds, args)
+
+    # Verify setLabels was called with only new labels (no existing to merge)
+    expected_body = {
+        "labels": {"firstlabel": "firstvalue"},
+        "labelFingerprint": "xyz789fingerprint"
+    }
+    mock_instances.setLabels.assert_called_once_with(
+        project="test-project", zone="us-west1-b", instance="new-instance", body=expected_body
+    )
+
+    assert result.outputs == mock_operation_response
+
+
+def test_gcp_compute_instance_label_set_command_add_labels_false(mocker):
+    """
+    Given: Valid arguments with add_labels=false (default behavior)
+    When: gcp_compute_instance_label_set_command is called
+    Then: The function should not fetch existing labels and only set new ones
+    """
+    from GCP import gcp_compute_instance_label_set_command
+
+    # Mock arguments with add_labels=false (explicit)
+    args = {
+        "project_id": "test-project",
+        "zone": "europe-west1-c",
+        "instance": "replace-labels-instance",
+        "label_fingerprint": "replace123fingerprint", 
+        "labels": "key=onlylabel,value=onlyvalue",
+        "add_labels": "false"
+    }
+
+    # Mock setLabels operation response
+    mock_operation_response = {
+        "id": "operation-replace",
+        "name": "operation-replace-labels",
+        "kind": "compute#operation",
+        "status": "RUNNING"
+    }
+
+    # Mock the GCP API calls
+    mock_compute = mocker.Mock()
+    mock_instances = mocker.Mock()
+    mock_compute.instances.return_value = mock_instances
+    mock_instances.setLabels.return_value.execute.return_value = mock_operation_response
+
+    # Mock the build function
+    mock_creds = mocker.Mock(spec=Credentials)
+    mocker.patch("GCP.GCPServices.COMPUTE.build", return_value=mock_compute)
+
+    # Execute the function
+    result = gcp_compute_instance_label_set_command(mock_creds, args)
+
+    # Verify get was NOT called (no existing labels fetched)
+    mock_instances.get.assert_not_called()
+
+    # Verify setLabels was called with only new labels
+    expected_body = {
+        "labels": {"onlylabel": "onlyvalue"},
+        "labelFingerprint": "replace123fingerprint"
+    }
+    mock_instances.setLabels.assert_called_once_with(
+        project="test-project", zone="europe-west1-c", instance="replace-labels-instance", body=expected_body
+    )
+
+    assert result.outputs == mock_operation_response
