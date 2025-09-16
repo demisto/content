@@ -1252,14 +1252,14 @@ def safely_update_context_data_partial(
     """
     override_keys = override_keys or []
     changes_size_bytes = {key: calculate_object_size(value) for key, value in changes.items()}
-    print_debug_msg(f"Updating context with changes with {override_keys=}, {changes_size_bytes=}.")
+    print_debug_msg(f"Updating context with {changes=}, {override_keys=}, {changes_size_bytes=}.")
     for _ in range(attempts):
         ctx, version = get_integration_context_with_version()
         merged = copy.deepcopy(ctx)
         deep_merge_context_changes(merged, changes, override_keys=override_keys)
         merged_size_bytes = {key: calculate_object_size(value) for key, value in merged.items()}
         try:
-            print_debug_msg(f"Saving merged context: {merged_size_bytes=}.")
+            print_debug_msg(f"Saving merged context using {version=}, {merged_size_bytes=}.")
             set_integration_context(merged, version=version)
             return  # success
         except Exception as e:
@@ -1580,54 +1580,6 @@ def get_offense_addresses(client: Client, offenses: List[dict], is_destination_a
     }
 
 
-def is_same_numeric(val_a: Any, val_b: Any) -> bool:
-    """Checks if the two values are the same number after attempting to cast both as integers.
-
-    Args:
-        val_a (Any): First value.
-        val_b (Any): Second value.
-
-    Returns:
-        bool: True if both integers are equal, False otherwise.
-    """
-    try:
-        return int(val_a) == int(val_b)
-    except Exception:
-        return False
-
-
-def get_rule_name_from_sources(rule: dict, rules_id_name_dict: dict) -> tuple[str, bool]:
-    """
-    Decide the best rule name to use for an offense rule item, preferring an existing valid string name, then a mapping lookup,
-    and finally falling back to the numeric ID. A "valid" name is any non-empty string that is not numerically equal to the rule
-    ID (to avoid cases where the API or enrichment sets name to the same numeric ID).
-
-    Args:
-        rule (dict): The rule dictionary in an offense.
-        rules_id_name_dict (dict): The {rule_id: rule_name} mapping.
-
-    Returns:
-        tuple[str,bool]: The chosen rule name and a boolean flag indicating whether we had to fall back to the ID.
-    """
-    rule_id = rule.get("id")
-    original_name = rule.get("name")
-
-    # Prefer existing original name if it looks valid
-    if isinstance(original_name, str) and original_name.strip() and not is_same_numeric(original_name, rule_id):
-        print_debug_msg(f"Using {original_name=} for {rule_id=}.")
-        return original_name, False
-
-    # Try mapping from API lookup
-    mapped_name = rules_id_name_dict.get(rule_id)
-    if isinstance(mapped_name, str) and mapped_name.strip() and not is_same_numeric(mapped_name, rule_id):
-        print_debug_msg(f"Using {mapped_name=} for {rule_id=}.")
-        return mapped_name, False
-
-    # Fallback to the id as string (last resort)
-    print_debug_msg(f"Falling back on using {rule_id=} as name.")
-    return (str(rule_id) if rule_id is not None else ""), True
-
-
 def create_single_asset_for_offense_enrichment(asset: dict) -> dict:
     """
     Recieves one asset, and returns the expected asset values for enriching offense.
@@ -1739,19 +1691,14 @@ def enrich_offenses_result(
             else {}
         )
 
-        if RULES_ENRCH_FLG.lower() == "true":
-            rules_list: list[dict] = []
-            for rule in offense.get("rules", []):
-                resolved_name, used_fallback = get_rule_name_from_sources(rule, rules_id_name_dict)
-                if used_fallback:
-                    print_debug_msg(
-                        f"Rule name could not be resolved for offense_id {offense.get('id')}, rule_id {rule.get('id')}. "
-                        f"Using rule id as name."
-                    )
-                rules_list.append({"id": rule.get("id"), "type": rule.get("type"), "name": resolved_name})
-            rules_enrich = {"rules": rules_list}
-        else:
-            rules_enrich = {}
+        rules_enrich = {
+            "rules": [
+                {"id": rule.get("id"), "type": rule.get("type"), "name": rules_id_name_dict.get(rule.get("id"), rule.get("id"))}
+                for rule in offense.get("rules", [])
+            ]
+            if RULES_ENRCH_FLG.lower() == "true"
+            else {}
+        }
 
         source_addresses_enrich = (
             {
@@ -2823,11 +2770,15 @@ def perform_long_running_loop(
     long_running_container_id: str,
 ):
     context_data, version = get_integration_context_with_version()
+    print_debug_msg(f"Got context data with {version=}.")
 
     if is_reset_triggered(context_data, version):
         last_highest_id = 0
+        print_debug_msg("Reset was triggered. Set last highest ID to 0.")
     else:
         last_highest_id = int(context_data.get(LAST_FETCH_KEY, 0))
+        print_debug_msg(f"Got last highest ID in context: {last_highest_id}.")
+
     print_debug_msg(f"Starting fetch loop. Fetch mode: {fetch_mode} on Container:{long_running_container_id}.")
     incidents, new_highest_id = get_incidents_long_running_execution(
         client=client,
@@ -4289,7 +4240,7 @@ def get_remote_data_command(client: Client, params: dict[str, Any], args: dict) 
     demisto.debug(f"Updating offense. Offense last update was {offense_last_update}")
     entries = []
     if offense.get("status") == "CLOSED" and argToBoolean(params.get("close_incident", False)):
-        demisto.debug(f"Offense is closed: {offense}")
+        demisto.debug(f"Offense {offense_id} is closed: {offense}.")
         try:
             if closing_reason := offense.get("closing_reason_id", ""):
                 closing_reason = client.closing_reasons_list(closing_reason).get("text")
