@@ -33,6 +33,7 @@ configuration:
   display: AIRS API URL
   name: airs_url
   required: false
+  section: Connect
   type: 0
 - additionalinfo: Leave blank if AIRS is not being used
   display: ''
