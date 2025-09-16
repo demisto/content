@@ -17,7 +17,8 @@ def test_check_date(left, right, expected_result, test_title):
 
 def test_results(mocker):
     import BeforeRelativeDate
-    mocker.patch.object(demisto,"args", return_value={"left": "2025-09-12T12:00:00", "right": "1 day ago"})
+
+    mocker.patch.object(demisto, "args", return_value={"left": "2025-09-12T12:00:00", "right": "1 day ago"})
     mocker.patch("BeforeRelativeDate.check_date", return_value=True)
     mocker.patch.object(BeforeRelativeDate, "return_results")
     main()
@@ -25,17 +26,18 @@ def test_results(mocker):
     call = BeforeRelativeDate.return_results.call_args_list
     command_results = call[0].args[0]
 
-    assert command_results.outputs == True
+    assert command_results.outputs
+
 
 def test_error_results(mocker):
     import BeforeRelativeDate
 
-    mocker.patch.object(demisto,"args", return_value={"value": "", "right": "1 day ago"})
+    mocker.patch.object(demisto, "args", return_value={"value": "", "right": "1 day ago"})
     mocker.patch("BeforeRelativeDate.check_date", return_value=True)
     mocker.patch.object(BeforeRelativeDate, "return_error")
     main()
     call = BeforeRelativeDate.return_error.call_args_list
     command_results = call[0]
 
-    assert "Error Occured" in command_results.kwargs['message']
-    assert "A required input is missing or malformed." in command_results.kwargs['error']
+    assert "Error Occured" in command_results.kwargs["message"]
+    assert "A required input is missing or malformed." in command_results.kwargs["error"]
