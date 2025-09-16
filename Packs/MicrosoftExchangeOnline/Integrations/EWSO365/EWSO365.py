@@ -964,7 +964,7 @@ def create_message_object(to, cc, bcc, subject, body, additional_headers, from_a
             return []
         mailboxes = []
         for given_email in emails:
-            if isinstance(email, str) and "@" in email:
+            if isinstance(given_email, str) and "@" in given_email:
                 mailboxes.append(Mailbox(email_address=given_email.strip()))
         return mailboxes
 
