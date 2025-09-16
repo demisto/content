@@ -2403,18 +2403,18 @@ def test_gcp_compute_instance_label_set_command_add_labels_true(mocker):
     # Mock arguments with add_labels=true
     args = {
         "project_id": "test-project",
-        "zone": "us-central1-a", 
+        "zone": "us-central1-a",
         "instance": "test-instance",
         "label_fingerprint": "abc123fingerprint",
         "labels": "key=newlabel,value=newvalue;key=app,value=updated",
-        "add_labels": "true"
+        "add_labels": "true",
     }
 
     # Mock relevant instance data with current labels
     mock_instance_response = {
         "id": "567890",
         "name": "test-instance",
-        "labels": {"environment": "production", "app": "oldvalue", "team": "backend"}
+        "labels": {"environment": "production", "app": "oldvalue", "team": "backend"},
     }
 
     # Mock setLabels operation response
@@ -2424,7 +2424,7 @@ def test_gcp_compute_instance_label_set_command_add_labels_true(mocker):
         "kind": "compute#operation",
         "status": "RUNNING",
         "progress": "0",
-        "operationType": "setLabels"
+        "operationType": "setLabels",
     }
 
     # Mock the GCP API calls
@@ -2447,12 +2447,12 @@ def test_gcp_compute_instance_label_set_command_add_labels_true(mocker):
     # Verify setLabels was called with merged labels
     expected_body = {
         "labels": {
-            "environment": "production", 
+            "environment": "production",
             "team": "backend",
             "newlabel": "newvalue",
-            "app": "updated"  # Should override existing value
+            "app": "updated",  # Should override existing value
         },
-        "labelFingerprint": "abc123fingerprint"
+        "labelFingerprint": "abc123fingerprint",
     }
     mock_instances.setLabels.assert_called_once_with(
         project="test-project", zone="us-central1-a", instance="test-instance", body=expected_body
@@ -2473,25 +2473,21 @@ def test_gcp_compute_instance_label_set_command_add_labels_no_existing(mocker):
     args = {
         "project_id": "test-project",
         "zone": "us-west1-b",
-        "instance": "new-instance", 
+        "instance": "new-instance",
         "label_fingerprint": "xyz789fingerprint",
         "labels": "key=firstlabel,value=firstvalue",
-        "add_labels": "true"
+        "add_labels": "true",
     }
 
     # Mock instance response without labels field
     mock_instance_response = {
         "id": "111222333",
-        "name": "new-instance"
+        "name": "new-instance",
         # No labels field
     }
 
     # Mock setLabels operation response
-    mock_operation_response = {
-        "id": "operation-99999",
-        "kind": "compute#operation",
-        "status": "DONE"
-    }
+    mock_operation_response = {"id": "operation-99999", "kind": "compute#operation", "status": "DONE"}
 
     # Mock the GCP API calls
     mock_compute = mocker.Mock()
@@ -2508,10 +2504,7 @@ def test_gcp_compute_instance_label_set_command_add_labels_no_existing(mocker):
     result = gcp_compute_instance_label_set_command(mock_creds, args)
 
     # Verify setLabels was called with only new labels (no existing to merge)
-    expected_body = {
-        "labels": {"firstlabel": "firstvalue"},
-        "labelFingerprint": "xyz789fingerprint"
-    }
+    expected_body = {"labels": {"firstlabel": "firstvalue"}, "labelFingerprint": "xyz789fingerprint"}
     mock_instances.setLabels.assert_called_once_with(
         project="test-project", zone="us-west1-b", instance="new-instance", body=expected_body
     )
@@ -2532,9 +2525,9 @@ def test_gcp_compute_instance_label_set_command_add_labels_false(mocker):
         "project_id": "test-project",
         "zone": "europe-west1-c",
         "instance": "replace-labels-instance",
-        "label_fingerprint": "replace123fingerprint", 
+        "label_fingerprint": "replace123fingerprint",
         "labels": "key=onlylabel,value=onlyvalue",
-        "add_labels": "false"
+        "add_labels": "false",
     }
 
     # Mock setLabels operation response
@@ -2542,7 +2535,7 @@ def test_gcp_compute_instance_label_set_command_add_labels_false(mocker):
         "id": "operation-replace",
         "name": "operation-replace-labels",
         "kind": "compute#operation",
-        "status": "RUNNING"
+        "status": "RUNNING",
     }
 
     # Mock the GCP API calls
@@ -2562,10 +2555,7 @@ def test_gcp_compute_instance_label_set_command_add_labels_false(mocker):
     mock_instances.get.assert_not_called()
 
     # Verify setLabels was called with only new labels
-    expected_body = {
-        "labels": {"onlylabel": "onlyvalue"},
-        "labelFingerprint": "replace123fingerprint"
-    }
+    expected_body = {"labels": {"onlylabel": "onlyvalue"}, "labelFingerprint": "replace123fingerprint"}
     mock_instances.setLabels.assert_called_once_with(
         project="test-project", zone="europe-west1-c", instance="replace-labels-instance", body=expected_body
     )

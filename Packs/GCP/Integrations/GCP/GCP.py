@@ -1160,11 +1160,12 @@ def gcp_compute_instance_label_set_command(creds: Credentials, args: dict[str, A
 
     current_labels = {}
     if add_labels:
-        instance_info = gcp_compute_instance_get_command(creds, args)
-        current_labels = instance_info.outputs.get("labels", {})
-        demisto.debug(f"Adding the new labels {labels=} to the current ones {current_labels}")
+        instance_info = gcp_compute_instance_get_command(creds, args).outputs
+        if isinstance(instance_info, dict):
+            current_labels = instance_info.get("labels", {})
+            demisto.debug(f"Adding the new labels {labels=} to the current ones {current_labels}")
 
-    body = {"labels": labels | current_labels, "labelFingerprint": label_fingerprint}
+    body = {"labels": current_labels | labels, "labelFingerprint": label_fingerprint}
 
     compute = GCPServices.COMPUTE.build(creds)
     response = compute.instances().setLabels(project=project_id, zone=zone, instance=instance, body=body).execute()
