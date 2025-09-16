@@ -837,9 +837,252 @@ script:
       description: "A JSON representation of the VPC configuration used by the cluster control plane. For example \"{'subnetIds': ['string'], 'securityGroupIds': ['string'], 'endpointPublicAccess': True, 'endpointPrivateAccess': True, 'publicAccessCidrs': ['string']}\"."
       required: false
 
+  - name: aws-eks-describe-cluster
+    description: Describes an Amazon EKS cluster.
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: cluster_name
+      description: The name of the cluster to describe.
+      required: true
+    - name: region
+      description: 'The AWS Region.'
+      auto: PREDEFINED
+      required: true
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+    outputs:
+    - contextPath: AWS.EKS.Cluster.name
+      description: The name of your cluster.
+      type: String
+    - contextPath: AWS.EKS.Cluster.arn
+      description: The Amazon Resource Name (ARN) of the cluster.
+      type: String
+    - contextPath: AWS.EKS.Cluster.createdAt
+      description: The creation date of the object.
+      type: String
+    - contextPath: AWS.EKS.Cluster.version
+      description: The Kubernetes server version for the cluster.
+      type: String
+    - contextPath: AWS.EKS.Cluster.endpoint
+      description: The endpoint for your Kubernetes API server.
+      type: String
+    - contextPath: AWS.EKS.Cluster.roleArn
+      description: The Amazon Resource Name (ARN) of the IAM role that provides permissions for the Kubernetes control plane to make calls to Amazon Web Services API operations on your behalf.
+      type: String
+    - contextPath: AWS.EKS.Cluster.resourcesVpcConfig.subnetIds
+      description: The subnets associated with your cluster.
+      type: List
+    - contextPath: AWS.EKS.Cluster.resourcesVpcConfig.securityGroupIds
+      description: The security groups associated with the cross-account elastic network interfaces that are used to allow communication between your nodes and the Kubernetes control plane.
+      type: List
+    - contextPath: AWS.EKS.Cluster.resourcesVpcConfig.clusterSecurityGroupId
+      description: The cluster security group that was created by Amazon EKS for the cluster. Managed node groups use this security group for control-plane-to-data-plane communication.
+      type: String
+    - contextPath: AWS.EKS.Cluster.resourcesVpcConfig.vpcId
+      description: The VPC associated with your cluster.
+      type: String
+    - contextPath: AWS.EKS.Cluster.resourcesVpcConfig.endpointPublicAccess
+      description: Whether the public API server endpoint is enabled.
+      type: Boolean
+    - contextPath: AWS.EKS.Cluster.resourcesVpcConfig.endpointPrivateAccess
+      description: This parameter indicates whether the Amazon EKS private API server endpoint is enabled.
+      type: Boolean
+    - contextPath: AWS.EKS.Cluster.resourcesVpcConfig.publicAccessCidrs
+      description: The CIDR blocks that are allowed access to your cluster’s public Kubernetes API server endpoint.
+      type: List
+    - contextPath: AWS.EKS.Cluster.kubernetesNetworkConfig.serviceIpv4Cidr
+      description: The CIDR block that Kubernetes Pod and Service object IP addresses are assigned from.
+      type: String
+    - contextPath: AWS.EKS.Cluster.kubernetesNetworkConfig.serviceIpv6Cidr
+      description: The CIDR block that Kubernetes Pod and Service IP addresses are assigned from if you created a 1.21 or later cluster with version 1.10.1 or later of the Amazon VPC CNI add-on and specified ipv6 for ipFamily when you created the cluster.
+      type: String
+    - contextPath: AWS.EKS.Cluster.kubernetesNetworkConfig.ipFamily
+      description: The IP family used to assign Kubernetes Pod and Service objects IP addresses.
+      type: String
+    - contextPath: AWS.EKS.Cluster.logging.clusterLogging
+      description: The cluster control plane logging configuration for your cluster.
+      type: Object
+    - contextPath: AWS.EKS.Cluster.identity
+      description: The identity provider information for the cluster.
+      type: Object
+    - contextPath: AWS.EKS.Cluster.status
+      description: The current status of the cluster.
+      type: String
+    - contextPath: AWS.EKS.Cluster.certificateAuthority.data
+      description: The Base64-encoded certificate data required to communicate with your cluster.
+      type: String
+    - contextPath: AWS.EKS.Cluster.clientRequestToken
+      description: A unique, case-sensitive identifier that you provide to ensure the idempotency of the request.
+      type: String
+    - contextPath: AWS.EKS.Cluster.platformVersion
+      description: The platform version of your Amazon EKS cluster.
+      type: String
+    - contextPath: AWS.EKS.Cluster.tags
+      description: A dictionary containing metadata for categorization and organization.
+      type: Object
+    - contextPath: AWS.EKS.Cluster.encryptionConfig.resources
+      description: Specifies the resources to be encrypted. The only supported value is secrets.
+      type: List
+    - contextPath: AWS.EKS.Cluster.encryptionConfig.provider
+      description: Key Management Service (KMS) key.
+      type: Object
+    - contextPath: AWS.EKS.Cluster.connectorConfig.activationId
+      description: A unique ID associated with the cluster for registration purposes.
+      type: String
+    - contextPath: AWS.EKS.Cluster.connectorConfig.activationCode
+      description: A unique code associated with the cluster for registration purposes.
+      type: String
+    - contextPath: AWS.EKS.Cluster.connectorConfig.activationExpiry
+      description: The expiration time of the connected cluster.
+      type: String
+    - contextPath: AWS.EKS.Cluster.connectorConfig.provider
+      description: The cluster’s cloud service provider.
+      type: String
+    - contextPath: AWS.EKS.Cluster.connectorConfig.roleArn
+      description: The Amazon Resource Name (ARN) of the role to communicate with services from the connected Kubernetes cluster.
+      type: String
+    - contextPath: AWS.EKS.Cluster.id
+      description: The ID of your local Amazon EKS cluster on an Amazon Web Services Outpost.
+      type: String
+    - contextPath: AWS.EKS.Cluster.health.issues
+      description: An object representing the health issues of your local Amazon EKS cluster on an Amazon Web Services Outpost.
+      type: List
+    - contextPath: AWS.EKS.Cluster.outpostConfig.outpostArns
+      description: An object representing the configuration of your local Amazon EKS cluster on an Amazon Web Services Outpost.
+      type: Object
+    - contextPath: AWS.EKS.Cluster.outpostConfig.controlPlaneInstanceType
+      description: The Amazon EC2 instance type used for the control plane.
+      type: String
+    - contextPath: AWS.EKS.Cluster.outpostConfig.controlPlanePlacement
+      description: An object representing the placement configuration for all the control plane instances of your local Amazon EKS cluster on an Amazon Web Services Outpost.
+      type: Object
+    - contextPath: AWS.EKS.Cluster.accessConfig.bootstrapClusterCreatorAdminPermissions
+      description: Specifies whether or not the cluster creator IAM principal was set as a cluster admin access entry during cluster creation time.
+      type: Boolean
+    - contextPath: AWS.EKS.Cluster.accessConfig.authenticationMode
+      description: The current authentication mode of the cluster.
+      type: String
+
+  - name: aws-eks-associate-access-policy
+    description: Associates an access policy and its scope to an access entry.
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: cluster_name
+      description: The name of the cluster for which to create an access entry.
+      required: true
+    - name: principal_arn
+      description: 'The Amazon Resource Name (ARN) of the IAM user or role for the AccessEntry that you’re associating the access policy to.'
+      required: true
+    - name: policy_arn
+      description: 'The ARN of the AccessPolicy that you’re associating.'
+      required: true
+    - name: type
+      description: 'The scope type of an access policy.'
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - cluster
+      - namespace
+    - name: namespaces
+      description: 'A comma-separated list of Kubernetes namespaces that an access policy is scoped to. A value is required if you specified namespace for type.'
+      required: false
+    - auto: PREDEFINED
+      description: The AWS Region.
+      name: region
+      required: true
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+    outputs:
+    - contextPath: AWS.EKS.AssociatedAccessPolicy.clusterName
+      description: The name of your cluster.
+      type: String
+    - contextPath: AWS.EKS.AssociatedAccessPolicy.principalArn
+      description: The ARN of the IAM principal for the AccessEntry.
+      type: String
+    - contextPath: AWS.EKS.AssociatedAccessPolicy.policyArn
+      description: The ARN of the AccessPolicy.
+      type: String
+    - contextPath: AWS.EKS.AssociatedAccessPolicy.accessScope.type
+      description: The scope type of an access policy.
+      type: String
+    - contextPath: AWS.EKS.AssociatedAccessPolicy.accessScope.namespaces
+      description: A Kubernetes namespace that an access policy is scoped to.
+      type: String
+    - contextPath: AWS.EKS.AssociatedAccessPolicy.associatedAt
+      description: The date and time the AccessPolicy was associated with an AccessEntry.
+      type: String
+    - contextPath: AWS.EKS.AssociatedAccessPolicy.modifiedAt
+      description: The date and time for the last modification to the object.
+      type: String
 
   - name: aws-rds-db-cluster-modify
-    description: Modifies settings for an Amazon RDS DB cluster. Allows you to update cluster settings such as port, master credentials, VPC security groups, deletion protection, and other configuration options.
+    description: "Modifies settings for an Amazon RDS DB cluster. Allows you to update cluster settings such as port, master credentials, VPC security groups, deletion protection, and other configuration options."
     arguments:
     - name: account_id
       description: The AWS account ID.
@@ -952,6 +1195,7 @@ script:
       description: 'A CSV list of DB cluster snapshot attributes to add to the attribute specified by AttributeName.'
       required: false
 
+
   - name: aws-rds-db-instance-modify
     description: "Modifies an Amazon RDS DB instance. Allows changing various settings of an existing DB instance, such as instance class, storage capacity, security groups, and other configuration parameters."
     arguments:
@@ -995,6 +1239,7 @@ script:
       - me-south-1
       - me-central-1
       - sa-east-1
+
     - name: db_instance_identifier
       description: 'The identifier of DB instance to modify. This value is stored as a lowercase string.'
       required: true
@@ -1022,6 +1267,7 @@ script:
     - name: backup_retention_period
       description: 'The number of days to retain automated backups. Setting this parameter to a positive number enables backups. Setting this parameter to 0 disables automated backups.'
       required: false
+
     - name: enable_iam_database_authentication
       description: 'Weather to enable mapping of Amazon Web Services Identity and Access Management (IAM) accounts to database accounts. By default, mapping isn’t enabled.'
       required: false
@@ -1051,7 +1297,7 @@ script:
       - 'true'
       - 'false'
   - name: aws-rds-db-snapshot-attribute-modify
-    description: Adds or removes permission for the specified AWS account ID to restore the specified DB snapshot.
+    description: 'Adds or removes permission for the specified AWS account ID to restore the specified DB snapshot.'
     arguments:
     - name: account_id
       description: The AWS account ID.
@@ -1093,6 +1339,7 @@ script:
       - me-south-1
       - me-central-1
       - sa-east-1
+
     - name: db_snapshot_identifier
       description: 'The identifier for the DB snapshot to modify the attributes for.'
       required: true
@@ -1105,10 +1352,8 @@ script:
       isArray: true
     - name: values_to_remove
       description: 'A list of DB snapshot attributes to remove from the attribute specified by AttributeName.'
-      isArray: true
       required: false
-
-
+      isArray: true
   - name: aws-ec2-security-group-ingress-revoke
     description: 'Revokes one or more ingress rules in a security group.'
     arguments:
@@ -1285,8 +1530,8 @@ script:
       required: false
     - name: ip_permissions
       description: 'The sets of IP permissions to revoke, in JSON format. Use this for complex rule configurations or when revoking multiple rules. Cannot be used together with protocol/port/cidr arguments.'
-      required: false
 
+      required: false
   - name: aws-ec2-snapshot-attribute-modify
     description: 'Adds or removes permission settings for the specified snapshot. Note: snapshots encrypted with the AWS-managed default key (alias/aws/ebs) cannot be shared—use unencrypted snapshots or those encrypted with a customer-managed KMS key to allow permission modifications.'
     arguments:
@@ -1360,11 +1605,11 @@ script:
   - name: aws-ec2-instance-attribute-modify
     description: Modifies the specified attribute of the specified instance. You can specify only one attribute at a time.
     arguments:
-    - name: account_id
-      description: The AWS account ID.
+    - description: The AWS account ID.
+      name: account_id
       required: true
-    - name: region
-      description: The AWS region.
+    - description: The AWS region.
+      name: region
       required: true
       auto: PREDEFINED
       predefined:
@@ -1400,17 +1645,16 @@ script:
       - me-south-1
       - me-central-1
       - sa-east-1
-
-    - name: instance_id
-      description: 'The ID of the instance.'
+    - description: The ID of the instance.
+      name: instance_id
       required: true
-    - name: disable_api_stop
-      description: Whether an instance is enabled for stop protection.
+    - description: Whether an instance is enabled for stop protection.
+      name: disable_api_stop
       predefined:
       - 'true'
       - 'false'
-    - name: groups
-      description: "A comma-separated list of security groups to replace the instance's current security groups. You must specify the ID of at least one security group, even if it’s just the default security group for the VPC."
+    - description: "A comma-separated list of security groups to replace the instance's current security groups. You must specify the ID of at least one security group, even if it’s just the default security group for the VPC."
+      name: groups
     - name: attribute
       description: 'The name of the attribute to modify. Possible values: sourceDestCheck, groupSet, ebsOptimized, sriovNetSupport, enaSupport, enclaveOptions, disableApiStop.'
       predefined:
@@ -1476,7 +1720,6 @@ script:
       - me-south-1
       - me-central-1
       - sa-east-1
-
     - name: image_id
       description: 'The ID of the AMI.'
       required: true
@@ -1495,25 +1738,24 @@ script:
       - 'add'
       - 'remove'
     - name: user_ids
-      isArray: true
       description: 'The AWS account IDs to add to or remove from the list of users that have launch permissions for the AMI.'
       required: false
-    - name: user_groups
       isArray: true
+    - name: user_groups
       description: 'The user groups to add to or remove from the list of user groups that have launch permissions for the AMI.'
       required: false
+      isArray: true
     - name: description
       description: 'A new description for the AMI.'
       required: false
-
   - name: aws-ec2-instance-metadata-options-modify
     description: Modify the EC2 instance metadata parameters on a running or stopped instance.
     arguments:
-    - description: The AWS account ID.
-      name: account_id
+    - name: account_id
+      description: The AWS account ID.
       required: true
-    - description: The AWS region.
-      name: region
+    - name: region
+      description: The AWS region.
       required: true
       auto: PREDEFINED
       predefined:
@@ -1549,9 +1791,10 @@ script:
       - me-south-1
       - me-central-1
       - sa-east-1
-    - description: The ID of the instance.
-      name: instance_id
+    - name: instance_id
+      description: 'The ID of the instance.'
       required: true
+
     - description: Whether IMDSv2 is required.
       auto: PREDEFINED
       name: http_tokens
@@ -1565,6 +1808,224 @@ script:
       - 'disabled'
       - 'enabled'
 
+  - name: aws-ec2-create-snapshot
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - description: The ID of the EBS volume.
+      name: volume_id
+      required: true
+    - description: A description for the snapshot.
+      name: description
+    - description: The tags to apply to the snapshot during creation.
+      name: tags
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+    description: Creates a snapshot of an EBS volume and stores it in Amazon S3. You can use snapshots for backups, to make copies of EBS volumes, and to save data before shutting down an instance.
+    outputs:
+    - contextPath: AWS.EC2.Snapshot.DataEncryptionKeyId
+      description: The data encryption key identifier for the snapshot.
+      type: string
+    - contextPath: AWS.EC2.Snapshot.Description
+      description: The description for the snapshot.
+      type: string
+    - contextPath: AWS.EC2.Snapshot.Encrypted
+      description: Indicates whether the snapshot is encrypted.
+      type: number
+    - contextPath: AWS.EC2.Snapshot.KmsKeyId
+      description: The full ARN of the AWS Key Management Service (AWS KMS) customer master key (CMK) that was used to protect the volume encryption key for the parent volume.
+      type: string
+    - contextPath: AWS.EC2.Snapshot.OwnerId
+      description: The AWS account ID of the EBS snapshot owner.
+      type: string
+    - contextPath: AWS.EC2.Snapshot.Progress
+      description: The progress of the snapshot, as a percentage.
+      type: string
+    - contextPath: AWS.EC2.Snapshot.SnapshotId
+      description: The ID of the snapshot.
+      type: string
+    - contextPath: AWS.EC2.Snapshot.StartTime
+      description: The time stamp when the snapshot was initiated.
+      type: date
+    - contextPath: AWS.EC2.Snapshot.State
+      description: The snapshot state.
+      type: string
+    - contextPath: AWS.EC2.Snapshot.StateMessage
+      description: this field displays error state details to help you diagnose why the error occurred.
+      type: string
+    - contextPath: AWS.EC2.Snapshot.VolumeId
+      description: The ID of the volume that was used to create the snapshot.
+      type: string
+    - contextPath: AWS.EC2.Snapshot.VolumeSize
+      description: The size of the volume, in GiB.
+      type: number
+    - contextPath: AWS.EC2.Snapshot.OwnerAlias
+      description: Value from an Amazon-maintained list of snapshot owners.
+      type: string
+    - contextPath: AWS.EC2.Snapshot.Tags.Key
+      description: The key of the tag.
+      type: string
+    - contextPath: AWS.EC2.Snapshot.Tags.Value
+      description: The value of the tag.
+      type: string
+    - contextPath: AWS.EC2.Snapshot.AccountId
+      description: The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided.
+      type: string
+
+  - name: aws-ec2-modify-snapshot-permission
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - description: The ID of the EBS snapshot.
+      name: snapshot_id
+      required: true
+    - auto: PREDEFINED
+      predefined:
+      - 'add'
+      - 'remove'
+      description: The operation type, add or remove.
+      name: operation_type
+      required: true
+    - description: CSV of security group names. This parameter can be used only when UserIds not provided.
+      name: group_names
+    - description: CSV of AWS account IDs. This parameter can be used only when groupNames not provided.
+      name: user_ids
+    - auto: PREDEFINED
+      description: Checks whether you have the required permissions for the action, without actually making the request, and provides an error response.
+      name: dry_run
+      predefined:
+      - 'True'
+      - 'False'
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+    description: Adds or removes permission settings for the specified snapshot.
+
+  - name: aws-ecs-update-cluster-settings
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - description: The name of the cluster.
+      name: cluster_name
+      required: true
+    - description: The value of the containerInsights setting to update.
+      name: value
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - 'enabled'
+      - 'disabled'
+      - 'enhanced'
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+    description: Updates the containerInsights setting of an ECS cluster.
 
   - name: aws-cloudtrail-trail-update
     description: 'Updates trail settings that control what events you are logging, and how to handle log files. Changes to a trail do not require stopping the CloudTrail service. Use this action to designate an existing bucket for log delivery. If the existing bucket has previously been a target for CloudTrail log files, an IAM policy exists for the bucket. UpdateTrail must be called from the Region in which the trail was created; otherwise, an InvalidHomeRegionException is thrown.'
