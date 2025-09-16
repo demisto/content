@@ -170,10 +170,10 @@ class Command:
     def execute(self) -> list[dict[str, Any]]:
         """Executes the command and returns the results."""
         demisto.debug(f"[Command.execute] Executing command {self.name} with args: {self.args}")
-        is_failed, results = execute_command(self.name, self.args,fail_on_error=False)
+        is_failed, results = execute_command(self.name, self.args, fail_on_error=False)
         if is_failed:
             demisto.debug(f"[Command.execute] Command {self.name} execution failed with error: {results}")
-            
+
         demisto.debug(f"[Command.execute] Command {self.name} execution completed with {len(results)} results")
         return results
 
@@ -718,7 +718,7 @@ class ReputationAggregatedCommand(AggregatedCommand):
         for ioc in iocs:
             demisto.debug(f"Processing TIM results for indicator: {ioc.get('value')}")
             parsed_indicators, entry = self._process_single_tim_ioc(ioc)
-            if value:=ioc.get("value"):
+            if value := ioc.get("value"):
                 final_tim_context[value].extend(parsed_indicators)
             final_result_entries.append(entry)
 
@@ -1203,7 +1203,7 @@ def remove_empty_elements_with_exceptions(d, exceptions: set[str] | None = None)
         """Check if a value is considered empty, unless the key is in exceptions."""
         if isinstance(v, (dict, list)):
             return not v  # empty dict or list
-        return v is None and k not in exceptions
+        return v is None and (k not in exceptions if exceptions else True)
 
     if isinstance(d, list):
         return [v for v in (remove_empty_elements_with_exceptions(v, exceptions) for v in d) if v not in (None, {}, [])]
