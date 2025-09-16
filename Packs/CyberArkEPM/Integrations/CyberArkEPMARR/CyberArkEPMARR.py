@@ -113,7 +113,6 @@ def search_endpoints(endpoint_name: str, external_ip: str, client: Client) -> li
     }
     sets = client.get_sets()
     set_ids = [set["Id"] for set in sets.get("Sets", [])]
-    _ = get_integration_context().get(CONTEXT_KEY, {})
     for set_id in set_ids:
         url_suffix = f"Sets/{set_id}/Endpoints/Search"
         result = client._http_request("POST", url_suffix=url_suffix, json_data=data)
