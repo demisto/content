@@ -75,6 +75,7 @@ configuration:
   display: AIR User for Scan Requests
   name: airs_user
   required: false
+  section: Collect
   type: 0
 - additionalinfo: Provide the LLM model being used for scan requests in AIRS
   defaultvalue: llama3_2
