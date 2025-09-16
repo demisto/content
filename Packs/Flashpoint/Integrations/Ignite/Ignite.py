@@ -14,7 +14,7 @@ from CommonServerUserPython import *  # noqa
 urllib3.disable_warnings()
 
 """ CONSTANTS """
-INTEGRATION_VERSION = "2.0.4"
+INTEGRATION_VERSION = get_pack_version()
 INTEGRATION_PLATFORM = "Cortex XSOAR"
 DEFAULT_API_PATH = "api.flashpoint.io"
 DEFAULT_PLATFORM_PATH = "https://app.flashpoint.io"
@@ -1709,6 +1709,9 @@ def ip_lookup_command(client: Client, ip: str) -> CommandResults:
     """
     if not is_ip_valid(ip, True):
         raise ValueError(MESSAGES["INVALID_IP_ADDRESS"].format(ip))
+
+    if is_ip_address_internal(ip):
+        return CommandResults(readable_output=f"Skipping internal IP: {ip}")
 
     if is_ipv6_valid(ip):
         response = client.get_indicator(ip, "ipv6")

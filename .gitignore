@@ -106,3 +106,6 @@ Packs/**/ModelingRules/**/**/*_testdata.json
 .cache/
 .npm/
 pipeline_jobs_folder/
+
+# Ignore windsurf config
+.windsurf

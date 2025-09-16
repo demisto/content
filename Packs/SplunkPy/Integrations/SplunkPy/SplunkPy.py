@@ -15,7 +15,6 @@ from splunklib.data import Record
 
 INTEGRATION_LOG = "Splunk- "
 OUTPUT_MODE_JSON = "json"  # type of response from splunk-sdk query (json/csv/xml)
-INDEXES_REGEX = r"""["'][\s]*index[\s]*["'][\s]*:[\s]*["']([^"']+)["']"""
 # Define utf8 as default encoding
 params = demisto.params()
 SPLUNK_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
@@ -1842,11 +1841,20 @@ def get_modified_remote_data_command(
     Returns:
         SplunkGetModifiedRemoteDataResponse: The response containing the list of notables changed
     """
-    modified_notables_map = {}
-    entries: list[dict] = []
     remote_args = GetModifiedRemoteDataArgs(args)
-    demisto.debug(f"Original last_update before 1 minute reduction: {get_last_update_in_splunk_time(remote_args.last_update)}")
-    # Subtract 1 minute (60 seconds) to allow indexing
+
+    # Caching Mechanism for Handling Splunk Indexing Delays:
+    # 1. A 60-second buffer is subtracted from the last run time to create an overlapping query window.
+    #    This ensures we catch events that were indexed late by Splunk and missed in the previous run.
+    # 2. To prevent processing duplicate events from this overlap, we cache the unique key (notable_id:timestamp)
+    #    of every event processed in the current run.
+    # 3. This cache is stored in the integration context and loaded at the start of the next run.
+    # 4. Any fetched event whose key exists in the cache is skipped as a duplicate.
+    integration_context = get_integration_context()
+    processed_events_cache = set(integration_context.get("processed_mirror_in_events_cache", []))
+    demisto.debug(f"Loaded {len(processed_events_cache)} processed events from cache.")
+
+    # Build the query with the 60-second look-behind buffer.
     last_update_splunk_timestamp = get_last_update_in_splunk_time(remote_args.last_update) - SPLUNK_INDEXING_TIME
     incident_review_search = (
         "|`incident_review` "
@@ -1855,17 +1863,36 @@ def get_modified_remote_data_command(
         "| fields - _time,time "
         "| expandtoken"
     )
+
+    modified_notables_map = {}
+    entries: list[dict] = []
+    current_run_processed_events = set()
+
     demisto.debug(f"mirror-in: performing `incident_review` search with query: {incident_review_search}.")
     for item in results.JSONResultsReader(
         service.jobs.oneshot(query=incident_review_search, count=MIRROR_LIMIT, output_mode=OUTPUT_MODE_JSON)
     ):
         if handle_message(item):
             continue
+
         updated_notable = parse_notable(item, to_dict=True)
-        notable_id = updated_notable["rule_id"]  # in the `incident_review` macro - the ID are in the rule_id key
+        notable_id = updated_notable.get("rule_id")
+        last_modified = updated_notable.get("last_modified_timestamp")
 
+        if not notable_id or not last_modified:
+            continue
+
+        # Create a unique key for the event and check against the cache of previously processed events.
+        event_key = f"{notable_id}:{last_modified}"
+        if event_key in processed_events_cache:
+            extensive_log(f"mirror-in: Skipping already processed event: {event_key}")
+            continue
+
+        # This is a new event. Add it to the map for processing and to the cache for the next run.
         modified_notables_map[notable_id] = updated_notable
+        current_run_processed_events.add(event_key)
 
+        # If the update contains a new comment, create a corresponding entry.
         if (comment := updated_notable.get("comment")) and COMMENT_MIRRORED_FROM_XSOAR not in comment:
             # comment, here in the `incident_review` macro results, hold only the updated comment
             # Creating a note
@@ -1879,6 +1906,10 @@ def get_modified_remote_data_command(
                     "Note": True,
                 }
             )
+
+    # Persist the cache of events processed in this run for the next iteration.
+    integration_context["processed_mirror_in_events_cache"] = list(current_run_processed_events)
+    set_integration_context(integration_context)
 
     if modified_notables_map:
         notable_ids_with_quotes = [f'"{notable_id}"' for notable_id in modified_notables_map]
@@ -3218,16 +3249,6 @@ def splunk_submit_event_command(service: client.Service, args: dict):
         return_results(f"Event was created in Splunk index: {r.name}")
 
 
-def validate_indexes(indexes, service):
-    """Validates that all provided Splunk indexes exist within the Splunk service instance."""
-    real_indexes = service.indexes
-    real_indexes_names_set = set()
-    for real_index in real_indexes:
-        real_indexes_names_set.add(real_index.name)
-    indexes_set = set(indexes)
-    return indexes_set.issubset(real_indexes_names_set)
-
-
 def get_events_from_file(entry_id):
     """
     Retrieves event data from a file in Demisto based on a specified entry ID as a string.
@@ -3269,24 +3290,6 @@ def parse_fields(fields):
     return None
 
 
-def extract_indexes(events: str | dict):
-    """
-    Extracts indexes from the provided events.
-
-    Args:
-        events (str | dict): The input events from which indexes will be extracted.
-        For example: "{"index": "index1", "event": "something happened1"} {"index": "index2", "event": "something happened2"}"
-
-    Returns:
-        List[str]: A list of extracted indexes.
-        For example: ["index1", "index2"]
-
-    """
-    events_str = str(events)
-    indexes = re.findall(INDEXES_REGEX, events_str)
-    return indexes
-
-
 def splunk_submit_event_hec(
     hec_token: str | None,
     baseurl: str,
@@ -3318,12 +3321,6 @@ def splunk_submit_event_hec(
         events = assign_params(
             event=event, host=host, fields=parsed_fields, index=index, sourcetype=source_type, source=source, time=time_
         )
-    indexes = extract_indexes(events)
-
-    if not validate_indexes(indexes, service):
-        raise DemistoException("Index name does not exist in your splunk instance")
-
-    demisto.debug("All indexes are valid, sending events to Splunk.")
 
     headers = {
         "Authorization": f"Splunk {hec_token}",

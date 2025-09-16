@@ -64,7 +64,8 @@ After you successfully execute a command, a DBot message appears in the War Room
 ***
 Disables a user from all Office 365 applications, and prevents sign in. Note: This command disables user,
 but does not terminate an existing session. Supported only in a self deployed app flow with the
-Permission: Directory.AccessAsUser.All(Delegated)
+**Permission**: Directory.AccessAsUser.All(Delegated).
+**Permission For disabling an admin/privileged user**: User.EnableDisableAccount.All (Application).
 
 #### Base Command
 
@@ -103,7 +104,8 @@ Unblock a user.
 
 ***
 Updates the properties of a user object.
-Permissions: - User.ReadWrite (Delegated & Application)
+**Permissions**: - User.ReadWrite (Delegated & Application)
+**Permission For unblocking an admin/privileged user**: User.EnableDisableAccount.All (Application).
 
 #### Base Command
 
@@ -181,7 +183,7 @@ Permissions: - User.ReadWrite (Delegated & Application)
 
 ***
 Deletes an existing user.
-Permissions: - Directory.AccessAsUser.All (Delegated) - User.ReadWrite.All (Application)
+**Permissions**: Directory.AccessAsUser.All (Delegated), User.ReadWrite.All (Application)
 
 #### Base Command
 
@@ -197,7 +199,7 @@ Permissions: - Directory.AccessAsUser.All (Delegated) - User.ReadWrite.All (Appl
 
 ***
 Creates a new user.
-Permissions: - User.ReadWrite.All (Delegated & Application)
+**Permissions**: User.ReadWrite.All (Delegated & Application)
 
 #### Base Command
 
@@ -243,7 +245,7 @@ Permissions: - User.ReadWrite.All (Delegated & Application)
 
 ***
 Retrieves the properties and relationships of a user object. For more information, visit: https://learn.microsoft.com/en-us/graph/api/user-get?view=graph-rest-1.0&tabs=http.
-Permissions: - User.Read (Delegated) - User.Read.All (Application).
+**Permissions**: User.Read (Delegated), User.Read.All (Application).
 
 #### Base Command
 
@@ -328,7 +330,7 @@ Permissions: - User.Read (Delegated) - User.Read.All (Application).
 
 ***
 Retrieves a list of user objects.
-Permissions: - User.ReadBasic.All (Delegated) - User.Read.All (Application)
+**Permissions**: User.ReadBasic.All (Delegated), User.Read.All (Application)
 
 #### Base Command
 
@@ -739,7 +741,7 @@ There is no context output for this command.
 
 ***
 Deletes a specific TAP policy.
-Permissions: - UserAuthenticationMethod.ReadWrite.All (Delegated) - UserAuthenticationMethod.ReadWrite.All (Application).
+**Permissions**: UserAuthenticationMethod.ReadWrite.All (Delegated), UserAuthenticationMethod.ReadWrite.All (Application).
 
 #### Base Command
 
@@ -766,7 +768,7 @@ There is no context output for this command.
 Create a new TAP policy for a user.
 During the command execution, a password-protected zip file will be generated, including the new TAP password. You can download the file, use your password to unlock it, and get the TAP password.
 A user can only have one Temporary Access Pass that's usable within its specified lifetime.
-Permissions: - UserAuthenticationMethod.ReadWrite.All (Delegated) - UserAuthenticationMethod.ReadWrite.All (Application).
+**Permissions**: UserAuthenticationMethod.ReadWrite.All (Delegated), UserAuthenticationMethod.ReadWrite.All (Application).
 
 #### Base Command
 
@@ -803,7 +805,7 @@ Permissions: - UserAuthenticationMethod.ReadWrite.All (Delegated) - UserAuthenti
 ***
 Lists all TAP policies for a user.
 This command will only return a single object in the collection as a user can have only one Temporary Access Pass (TAP) method.
-Permissions: - UserAuthenticationMethod.Read.All (Delegated) - UserAuthenticationMethod.Read.All (Application).
+**Permissions**: UserAuthenticationMethod.Read.All (Delegated), UserAuthenticationMethod.Read.All (Application).
 
 #### Base Command
 

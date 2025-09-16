@@ -729,6 +729,7 @@ def test_vectra_entity_list_valid_arguments(requests_mock, client):
         result_hr = f.read()
     args = {
         "entity_type": "account",
+        "name": "name",
         "state": "active",
         "ordering": "name",
         "page": "1",
@@ -769,6 +770,7 @@ def test_vectra_entity_list_when_response_is_empty(mocker, client):
     mocker.patch.object(client, "list_entities_request", return_value=empty_response)
     args = {
         "tags": "invalid_tag",
+        "name": "invalid_name",
     }
 
     # Call the function
@@ -2840,7 +2842,7 @@ def test_update_remote_system(client, requests_mock, mocker):
     mocker.patch.object(client, "list_entity_tags_request", return_value={})
     mocker.patch.object(client, "add_entity_note_request", return_value={})
 
-    remote_incident_id = update_remote_system_command(client, mock_args)
+    remote_incident_id = update_remote_system_command(client, mock_args, {})
     assert remote_incident_id == "123"
 
 
@@ -2866,7 +2868,7 @@ def test_update_remote_system_remove_tags(client, mocker):
     # Modify mock_args to remove tags
     mock_args["delta"]["tags"] = []
 
-    remote_incident_id = update_remote_system_command(client, mock_args)
+    remote_incident_id = update_remote_system_command(client, mock_args, {})
     assert remote_incident_id == "123"
 
 
@@ -2893,7 +2895,7 @@ def test_update_remote_system_closing_notes(client, mocker):
     mocker.patch.object(client, "list_entity_tags_request", return_value={})
     mocker.patch.object(client, "add_entity_note_request", return_value={})
 
-    remote_incident_id = update_remote_system_command(client, mock_args)
+    remote_incident_id = update_remote_system_command(client, mock_args, {})
     assert remote_incident_id == "123"
 
 
@@ -3214,11 +3216,12 @@ def test_get_modified_remote_command_successful_retrieval(client):
     - Calling the 'get_modified_remote_data_command' function with the provided client and arguments.
     """
     # Mock dateparser, get_last_mirror_run, list_entities_request, and set_last_mirror_run
-    with (patch("VectraXDR.dateparser.parse", return_value=datetime(2023, 9, 20, 10)),
-          patch("VectraXDR.get_last_mirror_run", return_value={"lastMirrorRun": "2023-09-20T10:00:00+00:00"}),
-          patch("VectraXDR.VectraClient.list_entities_request", return_value={"results": [], "next_url": None}),
-          patch("VectraXDR.set_last_mirror_run")
-          ):
+    with (
+        patch("VectraXDR.dateparser.parse", return_value=datetime(2023, 9, 20, 10)),
+        patch("VectraXDR.get_last_mirror_run", return_value={"lastMirrorRun": "2023-09-20T10:00:00+00:00"}),
+        patch("VectraXDR.VectraClient.list_entities_request", return_value={"results": [], "next_url": None}),
+        patch("VectraXDR.set_last_mirror_run"),
+    ):
         args = {"lastUpdate": "2023-09-20T10:00:00+00:00"}
         get_modified_remote_data_command(client, args)
 
@@ -3244,15 +3247,19 @@ def test_get_modified_remote_command_max_mirroring_limit_reached(client):
     - Calling the 'get_modified_remote_data_command' function with the provided client and arguments.
     """
     # Mock dateparser, get_last_mirror_run, list_entities_request, and set_last_mirror_run
-    with (patch("VectraXDR.dateparser.parse", return_value=datetime(2023, 9, 20, 10)),
-          patch("VectraXDR.get_last_mirror_run", return_value={"lastMirrorRun": "2023-09-20T10:00:00+00:00"}),
-          patch("VectraXDR.VectraClient.list_entities_request",
-                return_value={"results": [{"id": 1, "type": "account"}] * 10000,
-                              "next_url": "http://serverurl.com/api/v3.3/entities?page=2&page_size=500"
-                              "&last_modified_timestamp_gte=2023-09-20T10%3A00%3A00Z",
-                              }),
-          patch("VectraXDR.set_last_mirror_run")
-          ):
+    with (
+        patch("VectraXDR.dateparser.parse", return_value=datetime(2023, 9, 20, 10)),
+        patch("VectraXDR.get_last_mirror_run", return_value={"lastMirrorRun": "2023-09-20T10:00:00+00:00"}),
+        patch(
+            "VectraXDR.VectraClient.list_entities_request",
+            return_value={
+                "results": [{"id": 1, "type": "account"}] * 10000,
+                "next_url": "http://serverurl.com/api/v3.3/entities?page=2&page_size=500"
+                "&last_modified_timestamp_gte=2023-09-20T10%3A00%3A00Z",
+            },
+        ),
+        patch("VectraXDR.set_last_mirror_run"),
+    ):
         args = {"lastUpdate": "2023-09-20T10:00:00+00:00"}
         get_modified_remote_data_command(client, args)
 
@@ -3304,7 +3311,7 @@ def test_get_remote_data_command_when_detections_found(mocker, client):
     mocker.patch.object(client, "list_assignments_request", return_value={})
     args = {"id": "334-account", "lastUpdate": "2023-06-20T10:00:00+00:00"}
 
-    get_remote_response = get_remote_data_command(client, args)
+    get_remote_response = get_remote_data_command(client, args, {})
     assert get_remote_response.entries == [
         {"Type": EntryType.NOTE, "Contents": {"dbotIncidentReopen": True}, "ContentsFormat": EntryFormat.JSON}
     ]
@@ -3337,7 +3344,7 @@ def test_get_remote_data_command_entity_needs_update(capfd, client, mocker):
     mocker.patch("VectraXDR.VectraClient.list_detections_request", return_value={"results": []})
     mocker.patch("VectraXDR.VectraClient.list_assignments_request", return_value={"results": [{"host_id": 1}]})
 
-    result = get_remote_data_command(client, args)
+    result = get_remote_data_command(client, args, {})
     # For Account
     assert result.entries == []
     args = {"id": "1-account", "lastUpdate": "2023-09-20T10:00:00+00:00"}
@@ -3356,7 +3363,7 @@ def test_get_remote_data_command_entity_needs_update(capfd, client, mocker):
     mocker.patch("VectraXDR.VectraClient.list_assignments_request", return_value={})
 
     with capfd.disabled():
-        result = get_remote_data_command(client, args)
+        result = get_remote_data_command(client, args, {})
 
     assert result.entries == []
     assert result.mirrored_object["assignment_details"] == VectraXDR.EMPTY_ASSIGNMENT
@@ -3399,7 +3406,7 @@ def test_get_remote_data_command_entity_needs_update_notes(client, mocker):
     )
     mocker.patch("VectraXDR.VectraClient.list_assignments_request", return_value={})
 
-    result = get_remote_data_command(client, args)
+    result = get_remote_data_command(client, args, {})
     assert len(result.entries) == 1
     assert result.mirrored_object["urgency_score_based_severity"] == 4
 
@@ -3420,5 +3427,203 @@ def test_get_remote_data_command_entity_not_needs_update(client, mocker):
     mocker.patch("VectraXDR.VectraClient.get_entity_request", return_value={})
     mocker.patch("VectraXDR.VectraClient.list_assignments_request", return_value={})
 
-    result = get_remote_data_command(client, args)
+    result = get_remote_data_command(client, args, {})
     assert result == "Incident was not found."
+
+
+@pytest.mark.parametrize(
+    "integration_context", [({"refetch_ids": ["334-host", "335-account", "1017-account"]}), ({"refetch_ids": []}), ({})]
+)
+def test_fetch_incidents_with_refetch_ids_scenarios(mocker, client, integration_context):
+    """
+    Test fetch_incidents with different integration context scenarios.
+
+    Given:
+    - A client object.
+    - A mocked 'getLastRun' method that returns a dictionary with already_fetched IDs.
+    - Different integration context scenarios (with refetch_ids, empty refetch_ids, no refetch_ids).
+
+    When:
+    - Fetching incidents with different integration context states.
+
+    Then:
+    - Assert that the integration context is updated correctly.
+    - Assert that already_fetched is handled correctly based on the scenario.
+    - Assert that incidents are processed correctly.
+    """
+    # Setup test data
+    last_run = {"time": "2023-05-15T09:39:09Z", "already_fetched": ["1017-account"]}
+
+    # Mock the API responses
+    entity_data = util_load_json(f"{TEST_DATA_DIR}/list_entity_response.json")
+
+    # Setup mocks
+    mocker.patch.object(demisto, "getLastRun", return_value=last_run)
+    set_last_run_mock = mocker.patch.object(demisto, "setLastRun")
+    mocker.patch.object(demisto, "debug")
+
+    # Mock the integration context functions
+    mocker.patch.object(VectraXDR, "get_integration_context", return_value=integration_context)
+    set_integration_context_mock = mocker.patch.object(VectraXDR, "set_integration_context")
+
+    # Mock the API client methods
+    mocker.patch.object(client, "list_entities_request", return_value=entity_data)
+    mocker.patch.object(client, "list_detections_request", return_value={})
+    mocker.patch.object(client, "list_assignments_request", return_value={})
+
+    params = {
+        "isFetch": True,
+        "first_fetch": "1 hour",
+        "max_fetch": "200",
+    }
+
+    # Call the function
+    incidents = fetch_incidents(client, params)
+
+    # Get the updated values
+    updated_last_run = set_last_run_mock.call_args[0][0]
+    updated_last_run = json.loads(updated_last_run.get("value", "{}"))
+    updated_context = set_integration_context_mock.call_args[0][0] if set_integration_context_mock.called else {}
+    expected_already_fetched = ["334-host", "335-account", "337-account", "339-account"]
+
+    # Assertions
+    assert updated_context == {"refetch_ids": []}
+    assert updated_last_run.get("already_fetched") == expected_already_fetched
+    assert len(incidents) == len(entity_data.get("results"))
+
+
+def test_update_remote_system_closing_notes_refetch(client, mocker):
+    """
+    Given:
+    - A client object.
+    - A mocker for patching client functions.
+    - Mocked arguments with JSON data from a test file, including closing notes and related data.
+    - refetch_closed_incidents is True
+
+    When:
+    - Calling the 'update_remote_system_command' function with arguments indicating the closure of an incident.
+
+    Then:
+    - Assert that the remote incident ID returned matches the expected value.
+    - Assert that the {entity ID}-{entity Type} is added to refetch_ids in integration context.
+    """
+    mock_args = util_load_json(f"{TEST_DATA_DIR}/update_remote_system_args.json")
+
+    mock_args["data"]["closeNotes"] = "Closing notes"
+    mock_args["data"]["closeReason"] = "Closed due to testing"
+    mock_args["delta"]["closingUserId"] = "user2"
+    mock_args["data"]["vectraxdrentityid"] = "1017"
+    mock_args["data"]["vectraxdrentitytype"] = "host"
+
+    # Mock integration context
+    mocker.patch.object(VectraXDR, "get_integration_context", return_value={"refetch_ids": []})
+    set_integration_context = mocker.patch.object(VectraXDR, "set_integration_context")
+
+    mocker.patch.object(client, "update_entity_tags_request", return_value={})
+    mocker.patch.object(client, "list_entity_tags_request", return_value={})
+    mocker.patch.object(client, "add_entity_note_request", return_value={})
+
+    params = {"refetch_closed_incidents": "true"}
+    remote_incident_id = update_remote_system_command(client, mock_args, params)
+    assert remote_incident_id == "123"
+
+    # Verify entity ID was added to refetch_ids
+    expected_refetch_id = f"{mock_args['data']['vectraxdrentityid']}-{mock_args['data']['vectraxdrentitytype']}"
+    set_integration_context.assert_called_once_with({"refetch_ids": [expected_refetch_id]})
+
+
+def test_update_remote_system_closing_notes_refetch_invalid_id(client, mocker):
+    """
+    Given:
+    - A client object.
+    - A mocker for patching client functions.
+    - Mocked arguments with JSON data from a test file, including closing notes and related data.
+    - refetch_closed_incidents is True
+
+    When:
+    - Calling the 'update_remote_system_command' function with arguments indicating the closure of an incident.
+
+    Then:
+    - Assert that the function raises a ValueError.
+    - Assert that the raised error message matches the expected error message.
+    """
+    mock_args = util_load_json(f"{TEST_DATA_DIR}/update_remote_system_args.json")
+
+    mock_args["data"]["closeNotes"] = "Closing notes"
+    mock_args["data"]["closeReason"] = "Closed due to testing"
+    mock_args["delta"]["closingUserId"] = "user2"
+
+    mocker.patch.object(client, "update_entity_tags_request", return_value={})
+    mocker.patch.object(client, "list_entity_tags_request", return_value={})
+    mocker.patch.object(client, "add_entity_note_request", return_value={})
+
+    params = {"refetch_closed_incidents": "true"}
+
+    with pytest.raises(ValueError) as exception:
+        update_remote_system_command(client, mock_args, params)
+
+    assert str(exception.value) == "Both 'entity_id' and 'entity_type' arguments are required."
+
+
+def test_update_remote_system_closing_notes_reopen(client, mocker):
+    """
+    Given:
+    - A client object.
+    - A mocker for patching client functions.
+    - Mocked arguments with JSON data from a test file, including closing notes and related data.
+    - refetch_closed_incidents is False
+
+    When:
+    - Calling the 'update_remote_system_command' function with arguments indicating the closure of an incident.
+
+    Then:
+    - Assert that the remote incident ID returned matches the expected value.
+    - Assert that the {entity ID}-{entity Type} is NOT added to refetch_ids in integration context.
+    """
+    mock_args = util_load_json(f"{TEST_DATA_DIR}/update_remote_system_args.json")
+
+    mock_args["data"]["closeNotes"] = "Closing notes"
+    mock_args["data"]["closeReason"] = "Closed due to testing"
+    mock_args["delta"]["closingUserId"] = "user2"
+
+    mocker.patch.object(client, "update_entity_tags_request", return_value={})
+    mocker.patch.object(client, "list_entity_tags_request", return_value={})
+    mocker.patch.object(client, "add_entity_note_request", return_value={})
+
+    params = {"refetch_closed_incidents": "false"}
+    remote_incident_id = update_remote_system_command(client, mock_args, params)
+    assert remote_incident_id == "123"
+
+
+@pytest.mark.parametrize("refetch_closed_incidents", ["invalid", ""])
+def test_update_remote_system_closing_notes_refetch_invalid(client, mocker, refetch_closed_incidents):
+    """
+    Given:
+    - A client object.
+    - A mocker for patching client functions.
+    - Mocked arguments with JSON data from a test file, including closing notes and related data.
+    - refetch_closed_incidents is invalid or empty
+
+    When:
+    - Calling the 'update_remote_system_command' function with arguments indicating the closure of an incident.
+
+    Then:
+    - Assert that the function raises a ValueError.
+    - Assert that the raised error message matches the expected error message.
+    """
+    mock_args = util_load_json(f"{TEST_DATA_DIR}/update_remote_system_args.json")
+
+    mock_args["data"]["closeNotes"] = "Closing notes"
+    mock_args["data"]["closeReason"] = "Closed due to testing"
+    mock_args["delta"]["closingUserId"] = "user2"
+
+    mocker.patch.object(client, "update_entity_tags_request", return_value={})
+    mocker.patch.object(client, "list_entity_tags_request", return_value={})
+    mocker.patch.object(client, "add_entity_note_request", return_value={})
+
+    params = {"refetch_closed_incidents": refetch_closed_incidents}
+
+    with pytest.raises(ValueError) as exception:
+        update_remote_system_command(client, mock_args, params)
+
+    assert str(exception.value) == "Argument does not contain a valid boolean-like value"

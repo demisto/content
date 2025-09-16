@@ -1,23 +1,23 @@
 This playbook addresses the following alerts:
- 
+
 - Suspicious local administrator login
- 
+
 Playbook Stages:
- 
+
 Investigation:
- 
+
 - Retrieves the name of the process image involved in the alert.
 - Checks for related Powershell/Command and Scripting/WMI alerts in the incident.
 - Retrieves the host risk score.
- 
+
 Containment:
- 
+
 - Provide a manual task for an analyst to review the findings and decide the next steps.
 - Possible actions:
   - Disable user.
   - Take no action.
- 
-Requirements: 
+
+Requirements:
 
 - For response actions, the following integration is required: Core - IR.
 

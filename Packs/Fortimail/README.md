@@ -1,4 +1,4 @@
-# Fortimail
+# FortiMail
 
 This pack includes Cortex XSIAM content.
 

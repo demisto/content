@@ -1,10 +1,8 @@
 id: Detonate File From URL - ANYRUN
 version: -1
 name: Detonate File From URL - ANYRUN
-description: |-
-  Detonates one or more remote files using the ANYRUN sandbox integration.
-  Returns relevant reports to the War Room and file reputations to the context data.
-  This type of analysis works only for direct download links.
+deprecated: true
+description: Deprecated. Use ANY.RUN Detonate File [Windows, Linux, Android] instead.
 fromversion: 5.0.0
 starttaskid: "0"
 tasks:
