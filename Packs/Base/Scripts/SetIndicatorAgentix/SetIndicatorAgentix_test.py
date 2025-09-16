@@ -18,7 +18,7 @@ class TestSetIndicator:
         with pytest.raises(SystemExit):
             set_indicator_if_exist(args)
 
-    @patch("SetIndicator.execute_command")
+    @patch("SetIndicatorAgentix.execute_command")
     def test_indicator_does_not_exist(self, mock_execute):
         """Test that function returns error when indicator does not exist"""
         args = {"value": "nonexistent.com", "type": "Domain"}
@@ -29,7 +29,7 @@ class TestSetIndicator:
 
         mock_execute.assert_called_once_with("findIndicators", {"value": "nonexistent.com"})
 
-    @patch("SetIndicator.execute_command")
+    @patch("SetIndicatorAgentix.execute_command")
     def test_set_indicator_type_only(self, mock_execute):
         """Test setting indicator type only"""
         args = {"value": "1.1.1.1", "type": "IP"}
@@ -49,7 +49,7 @@ class TestSetIndicator:
         mock_execute.assert_any_call("findIndicators", {"value": "1.1.1.1"})
         mock_execute.assert_any_call("setIndicator", args)
 
-    @patch("SetIndicator.execute_command")
+    @patch("SetIndicatorAgentix.execute_command")
     def test_set_indicator_verdict_only(self, mock_execute):
         """Test setting indicator verdict only"""
         args = {"value": "example.com", "verdict": "malicious"}
@@ -64,7 +64,7 @@ class TestSetIndicator:
         assert "Successfully set indicator properties" in results[0].readable_output
         assert results[0].outputs["Value"] == "example.com"
 
-    @patch("SetIndicator.execute_command")
+    @patch("SetIndicatorAgentix.execute_command")
     def test_set_indicator_tags_only(self, mock_execute):
         """Test setting indicator tags only"""
         args = {"value": "1.1.1.1", "tags": "malware,botnet"}
@@ -79,8 +79,8 @@ class TestSetIndicator:
         assert "Successfully set indicator properties" in results[0].readable_output
         assert results[0].outputs["Value"] == "1.1.1.1"
 
-    @patch("SetIndicator.execute_command")
-    @patch("SetIndicator.argToList")
+    @patch("SetIndicatorAgentix.execute_command")
+    @patch("SetIndicatorAgentix.argToList")
     def test_associate_with_existing_issues(self, mock_arg_to_list, mock_execute):
         """Test associating indicator with existing issues"""
         args = {"value": "1.1.1.1", "related_issues": "123,456"}
@@ -105,8 +105,8 @@ class TestSetIndicator:
         mock_execute.assert_any_call("associateIndicatorsToAlert", {"issueId": "123", "indicatorsValues": "1.1.1.1"})
         mock_execute.assert_any_call("associateIndicatorsToAlert", {"issueId": "456", "indicatorsValues": "1.1.1.1"})
 
-    @patch("SetIndicator.execute_command")
-    @patch("SetIndicator.argToList")
+    @patch("SetIndicatorAgentix.execute_command")
+    @patch("SetIndicatorAgentix.argToList")
     def test_associate_with_nonexistent_issues(self, mock_arg_to_list, mock_execute):
         """Test associating indicator with issues that don't exist"""
         args = {"value": "1.1.1.1", "related_issues": "123,999"}
@@ -132,8 +132,8 @@ class TestSetIndicator:
         error_result = next(r for r in results if "don't exist" in r.readable_output)
         assert error_result.entry_type == 4
 
-    @patch("SetIndicator.execute_command")
-    @patch("SetIndicator.argToList")
+    @patch("SetIndicatorAgentix.execute_command")
+    @patch("SetIndicatorAgentix.argToList")
     def test_comprehensive_update(self, mock_arg_to_list, mock_execute):
         """Test updating all properties and associating with issues"""
         args = {
@@ -166,8 +166,8 @@ class TestSetIndicator:
         # Verify setIndicator was called with all args
         mock_execute.assert_any_call("setIndicator", args)
 
-    @patch("SetIndicator.execute_command")
-    @patch("SetIndicator.argToList")
+    @patch("SetIndicatorAgentix.execute_command")
+    @patch("SetIndicatorAgentix.argToList")
     def test_mixed_existing_and_nonexistent_issues(self, mock_arg_to_list, mock_execute):
         """Test associating with mix of existing and non-existing issues"""
         args = {"value": "example.com", "related_issues": "123,456,999"}
@@ -192,8 +192,8 @@ class TestSetIndicator:
         assert "The following issues were provided as related issues but don't exist: {'999'}" in error_result.readable_output
         assert error_result.entry_type == 4
 
-    @patch("SetIndicator.execute_command")
-    @patch("SetIndicator.argToList")
+    @patch("SetIndicatorAgentix.execute_command")
+    @patch("SetIndicatorAgentix.argToList")
     def test_all_issues_nonexistent(self, mock_arg_to_list, mock_execute):
         """Test when all provided issues don't exist"""
         args = {"value": "1.1.1.1", "related_issues": "999,888"}
@@ -212,8 +212,8 @@ class TestSetIndicator:
         assert "888" in results[0].readable_output
         assert "999" in results[0].readable_output
 
-    @patch("SetIndicator.execute_command")
-    @patch("SetIndicator.argToList")
+    @patch("SetIndicatorAgentix.execute_command")
+    @patch("SetIndicatorAgentix.argToList")
     def test_empty_related_issues_list(self, mock_arg_to_list, mock_execute):
         """Test when related_issues argument is provided but empty"""
         args = {"value": "1.1.1.1", "type": "IP", "related_issues": ""}
@@ -230,12 +230,12 @@ class TestSetIndicator:
         assert "Successfully set indicator properties" in results[0].readable_output
         assert "associated" not in results[0].readable_output
 
-    @patch("SetIndicator.execute_command")
+    @patch("SetIndicatorAgentix.execute_command")
     def test_only_related_issues_argument(self, mock_execute):
         """Test with only related_issues argument (no type, verdict, or tags)"""
         args = {"value": "example.com", "related_issues": "123"}
 
-        with patch("SetIndicator.argToList") as mock_arg_to_list:
+        with patch("SetIndicatorAgentix.argToList") as mock_arg_to_list:
             mock_arg_to_list.return_value = ["123"]
 
             mock_execute.side_effect = [
@@ -252,7 +252,7 @@ class TestSetIndicator:
             assert "Successfully associated indicator to the following issues ['123']" in results[0].readable_output
             assert "Successfully set indicator properties" not in results[0].readable_output
 
-    @patch("SetIndicator.execute_command")
+    @patch("SetIndicatorAgentix.execute_command")
     def test_multiple_properties_update(self, mock_execute):
         """Test updating multiple properties without related issues"""
         args = {"value": "1.1.1.1", "type": "IP", "verdict": "malicious", "tags": "botnet,malware"}
@@ -271,8 +271,8 @@ class TestSetIndicator:
         # Verify setIndicator was called with all properties
         mock_execute.assert_any_call("setIndicator", args)
 
-    @patch("SetIndicator.execute_command")
-    @patch("SetIndicator.argToList")
+    @patch("SetIndicatorAgentix.execute_command")
+    @patch("SetIndicatorAgentix.argToList")
     def test_core_get_issues_returns_none_alerts(self, mock_arg_to_list, mock_execute):
         """Test when core-get-issues returns structure without alerts key"""
         args = {"value": "1.1.1.1", "related_issues": "123"}
@@ -289,8 +289,8 @@ class TestSetIndicator:
         assert results[0].entry_type == 4
         assert "The following issues were provided as related issues but don't exist: {'123'}" in results[0].readable_output
 
-    @patch("SetIndicator.execute_command")
-    @patch("SetIndicator.argToList")
+    @patch("SetIndicatorAgentix.execute_command")
+    @patch("SetIndicatorAgentix.argToList")
     def test_issue_without_internal_id(self, mock_arg_to_list, mock_execute):
         """Test when issue response doesn't have internal_id field"""
         args = {"value": "example.com", "related_issues": "123"}
