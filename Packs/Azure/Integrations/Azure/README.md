@@ -831,8 +831,8 @@ Run this command to update an specific blob container.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| subscription_id | The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'. | Required |
-| resource_group_name | The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name'. | Required |
+| subscription_id | The subscription ID. | Required |
+| resource_group_name | The resource group name. | Required |
 | account_name | The name of the storage account. | Required |
 | container_name | The name of the container. | Required |
 | default_encryption_scope | Default the container to use specified encryption scope for all writes. | Optional |
@@ -864,8 +864,8 @@ Run this command to get the blob service properties of a specific account storag
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| subscription_id | The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'. | Required |
-| resource_group_name | The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name'. | Required |
+| subscription_id | The subscription ID. | Required |
+| resource_group_name | The resource group name. | Required |
 | account_name | The name of the storage account. | Required |
 
 #### Context Output

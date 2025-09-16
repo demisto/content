@@ -7,8 +7,8 @@
       "corsRules": [
         {
           "allowedOrigins": [
-            "http://www.contoso.com",
-            "http://www.fabrikam.com"
+            "http://www.test.com",
+            "http://www.testtest.com"
           ],
           "allowedMethods": [
             "GET",
@@ -45,8 +45,8 @@
         },
         {
           "allowedOrigins": [
-            "http://www.abc23.com",
-            "https://www.fabrikam.com/*"
+            "http://www.test.com",
+            "https://www.testtest.com/*"
           ],
           "allowedMethods": [
             "GET",

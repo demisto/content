@@ -1261,6 +1261,29 @@ def format_rule(rule_json: dict | list, security_rule_name: str):
     return CommandResults(outputs_prefix="Azure.NSGRule", outputs_key_field="id", outputs=rule_json, readable_output=hr)
 
 
+def extract_azure_resource_info(resource_id: str) -> tuple[str | None, str | None, str | None]:
+    """Extract subscription ID, resource group, and account name from Azure resource ID.
+
+    Args:
+        resource_id: Azure resource ID string
+
+    Returns:
+        Tuple of (subscription_id, resource_group, account_name)
+    """
+    patterns = {
+        "subscription_id": r"subscriptions/(.+?)/resourceGroups",
+        "resource_group": r"resourceGroups/(.+?)/providers",
+        "account_name": r"storageAccounts/(.+?)/blobServices",
+    }
+
+    results = {}
+    for key, pattern in patterns.items():
+        match = re.search(pattern, resource_id)
+        results[key] = match.group(1) if match else None
+
+    return results["subscription_id"], results["resource_group"], results["account_name"]
+
+
 """ COMMAND FUNCTIONS """
 
 
@@ -1488,14 +1511,7 @@ def storage_blob_containers_update_command(client: AzureClient, params: dict, ar
         subscription_id=subscription_id, resource_group_name=resource_group_name, args=args, method="PATCH"
     )
 
-    if subscription_id := re.search("subscriptions/(.+?)/resourceGroups", response.get("id", "")):
-        subscription_id = subscription_id.group(1)  # type: ignore
-
-    if resource_group := re.search("resourceGroups/(.+?)/providers", response.get("id", "")):
-        resource_group = resource_group.group(1)  # type: ignore
-
-    if account_name := re.search("storageAccounts/(.+?)/blobServices", response.get("id", "")):
-        account_name = account_name.group(1)  # type: ignore
+    subscription_id, resource_group, account_name = extract_azure_resource_info(response.get("id", ""))
 
     readable_output = {
         "Name": response.get("name", ""),
@@ -1535,14 +1551,7 @@ def storage_blob_service_properties_get_command(client: AzureClient, params: dic
     response = client.storage_blob_service_properties_get_request(
         account_name=account_name, resource_group_name=resource_group_name, subscription_id=subscription_id
     )
-    if subscription_id := re.search("subscriptions/(.+?)/resourceGroups", response.get("id", "")):
-        subscription_id = subscription_id.group(1)  # type: ignore
-
-    if resource_group := re.search("resourceGroups/(.+?)/providers", response.get("id", "")):
-        resource_group = resource_group.group(1)  # type: ignore
-
-    if account_name := re.search("storageAccounts/(.+?)/blobServices", response.get("id", "")):
-        account_name = account_name.group(1)  # type: ignore
+    subscription_id, resource_group, account_name = extract_azure_resource_info(response.get("id", ""))
 
     readable_output = {
         "Name": response.get("name", ""),
