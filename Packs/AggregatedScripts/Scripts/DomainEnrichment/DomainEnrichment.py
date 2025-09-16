@@ -65,7 +65,6 @@ def domain_enrichment_script(
         [core_domain_analytics_cmd] + enrich_indicator_commands,
     ]
 
-    demisto.debug(f"Data list: {domain_list}")
 
     domain_reputation = ReputationAggregatedCommand(
         brands=enrichment_brands or [],

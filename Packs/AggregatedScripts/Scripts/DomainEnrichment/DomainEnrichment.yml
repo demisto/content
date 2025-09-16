@@ -36,7 +36,7 @@ args:
     - If left empty, the script runs enrichment on all enabled integrations,
       depending on the `external_enrichment` flag.
     - In order to run core-get-IP-analytics-prevalence, add Cortex Core - IR to the brands list.
-    To see the available brands for the `ip` command, run: `!ProvidesCommand command=ip`.
+    To see the available brands for the `domain` command, run: `!ProvidesCommand command=domain`.
   isArray: true
   required: false
 - name: additional_fields
@@ -321,9 +321,10 @@ timeout: '0'
 type: python
 subtype: python3
 dockerimage: demisto/python3:3.12.11.4819260
-fromversion: 6.1.0
+fromversion: 6.10.0
 marketplaces:
 - xsoar
+- platform
 - marketplacev2
 tests:
 - DomainEnrichment-Test
