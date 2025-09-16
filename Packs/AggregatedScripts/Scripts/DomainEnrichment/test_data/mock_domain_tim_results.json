@@ -5,8 +5,9 @@
           {
             "value": "example.com",
             "score": 3,
+            "manuallyEditedFields": ["Score"],
+            "modifiedTime": "2025-09-01T00:00:00Z",
             "CustomFields": {
-              "name": "example.com",
               "detectionengines": 70,
               "positivedetections": 37,
               "score": 3
@@ -15,6 +16,7 @@
               "scores": {
                 "brand1": {
                   "score": 2,
+                  "reliability": "High",
                   "context": {
                     "Domain(val.Name && val.Name == obj.Name)": [
                       {
@@ -29,6 +31,7 @@
                 },
                 "brand2": {
                   "score": 3,
+                  "reliability": "Medium",
                   "context": {
                     "DBotScore(val.Indicator && val.Vendor)": [
                       {
@@ -54,6 +57,7 @@
           {
             "value": "example2.com",
             "score": 1,
+            "modifiedTime": "2025-08-20T00:00:00Z",
             "CustomFields": {
               "name": "example2.com",
               "detectionengines": 10,
@@ -64,6 +68,7 @@
               "scores": {
                 "brand3": {
                   "score": 1,
+                  "reliability": "Low",
                   "context": {
                     "DBotScore(val.Indicator && val.Vendor)": [
                       {
