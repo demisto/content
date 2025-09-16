@@ -1101,7 +1101,7 @@ def main():
 
     base_url = params.get('url', 'https://api.connect.withsecure.com')
     client_id = params.get('client_id')
-    client_secret = params.get('client_secret')
+    client_secret = params.get('credentials', {}).get('password')
     scope = params.get('scope', 'connect.api.read connect.api.write')
     verify = not params.get('insecure', False)
     proxy = params.get('proxy', False)
