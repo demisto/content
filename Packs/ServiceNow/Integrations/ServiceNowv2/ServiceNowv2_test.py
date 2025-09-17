@@ -3997,12 +3997,15 @@ def test_delete_ticket_command_success(mock_client: MagicMock):
 
     args = {"id": "12345", "ticket_type": "incident"}
 
-    message, context, result, success = delete_ticket_command(mock_client, args)
+    result = delete_ticket_command(mock_client, args)
 
-    assert success is True
-    assert message == "Ticket with ID 12345 was successfully deleted from incident table."
-    assert context == {"ServiceNow.Ticket(val.ID===obj.ID)": {"ID": "12345", "DeleteMessage": message}}
-    assert result == ""
+    assert "Ticket with ID 12345 was successfully deleted from incident table." in result.readable_output
+    assert result.outputs is not None
+    assert result.outputs["ServiceNow.Ticket(val.ID===obj.ID)"]["ID"] == "12345"
+    assert (
+        "Ticket with ID 12345 was successfully deleted from incident table."
+        in result.outputs["ServiceNow.Ticket(val.ID===obj.ID)"]["DeleteMessage"]
+    )
 
 
 def test_delete_ticket_command_not_found(mock_client: MagicMock):
@@ -4015,9 +4018,12 @@ def test_delete_ticket_command_not_found(mock_client: MagicMock):
     mock_client.get_table_name.return_value = "incident"
     args = {"id": "99999", "ticket_type": "incident"}
 
-    message, context, result, success = delete_ticket_command(mock_client, args)
+    result = delete_ticket_command(mock_client, args)
 
-    assert success is False
-    assert message == "Failed to delete ticket 99999 from incident table. Record may not exist."
-    assert context == {"ServiceNow.Ticket(val.ID===obj.ID)": {"ID": "99999", "DeleteMessage": message}}
-    assert result == {"result": []}
+    assert "Failed to delete ticket 99999 from incident table. Record may not exist." in result.readable_output
+    assert result.outputs is not None
+    assert result.outputs["ServiceNow.Ticket(val.ID===obj.ID)"]["ID"] == "99999"
+    assert (
+        "Failed to delete ticket 99999 from incident table. Record may not exist."
+        in result.outputs["ServiceNow.Ticket(val.ID===obj.ID)"]["DeleteMessage"]
+    )

@@ -1586,12 +1586,8 @@ def delete_ticket_command(client: Client, args: dict) -> CommandResults:
         human_readable = f"Failed to delete ticket {ticket_id} from {ticket_type} table. Record may not exist."
     # Create entry context
     entry_context = {"ServiceNow.Ticket(val.ID===obj.ID)": {"ID": ticket_id, "DeleteMessage": human_readable}}
-    
-    return CommandResults(
-        readable_output=human_readable,
-        outputs=entry_context,
-        raw_response=result
-    )
+
+    return CommandResults(readable_output=human_readable, outputs=entry_context, raw_response=result)
 
 
 def query_tickets_command(client: Client, args: dict) -> tuple[str, dict, dict, bool]:
