@@ -621,6 +621,7 @@ class FeedIndicatorType(object):
     Malware = "Malware"
     Identity = "Identity"
     Location = "Location"
+    GeoCountry = "Geo Country"
     Software = "Software"
     X509 = "X509 Certificate"
 

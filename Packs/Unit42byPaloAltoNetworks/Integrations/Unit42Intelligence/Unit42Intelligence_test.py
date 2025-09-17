@@ -10,6 +10,9 @@ from Unit42Intelligence import (
     extract_response_data,
     create_context_data,
     create_dbot_score,
+    extract_tags_from_threat_objects,
+    extract_malware_families_from_threat_objects,
+    create_threat_object_indicators,
 )
 from CommonServerPython import *
 
@@ -42,7 +45,7 @@ def test_ip_command_malicious(client, mocker):
         - Running ip_command with create_relationships enabled
     Then:
         - Returns CommandResults with malicious verdict
-        - Creates proper IP indicator with DBotScore
+        - Creates proper IP indicator with DBotScore, tags, and malware families
         - Extracts threat object names as tags
         - Creates relationships with threat actors and malware families
     """
@@ -56,7 +59,7 @@ def test_ip_command_malicious(client, mocker):
         "source": ["source1", "source2"],
         "counts": [],
         "threat_object_association": [
-            {"name": "APT29", "threat_object_class": "actor"},
+            {"name": "APT29", "threat_object_class": "actor", "aliases": ["Cozy Bear"]},
             {"name": "Cobalt Strike", "threat_object_class": "malware_family"},
         ],
     }
@@ -75,6 +78,12 @@ def test_ip_command_malicious(client, mocker):
     assert result.indicator.ip == "1.2.3.4"
     assert result.indicator.dbot_score.score == Common.DBotScore.BAD
     assert result.indicator.dbot_score.malicious_description == "Unit 42 Intelligence classified this ip as malicious"
+    
+    # Test enriched indicator fields
+    assert "APT29" in result.indicator.tags
+    assert "Cobalt Strike" in result.indicator.tags
+    assert "Cozy Bear" in result.indicator.tags  # Alias should be included
+    assert result.indicator.malware_family == "Cobalt Strike"  # First malware family
 
 
 def test_domain_command_benign(client, mocker):
@@ -165,7 +174,7 @@ def test_file_command_malicious(client, mocker):
         - Running file_command with create_relationships enabled
     Then:
         - Returns CommandResults with malicious verdict
-        - Creates proper File indicator with SHA256 hash and bad DBotScore
+        - Creates proper File indicator with SHA256 hash, tags, malware families and bad DBotScore
         - Sets malicious description for file type
     """
     test_hash = "a" * 64  # SHA256 hash
@@ -178,7 +187,10 @@ def test_file_command_malicious(client, mocker):
         "last_seen": "2023-12-31T23:59:59Z",
         "source": ["wildfire", "source2"],
         "counts": [],
-        "threat_object_association": [{"name": "Zeus", "threat_object_class": "malware_family"}],
+        "threat_object_association": [
+            {"name": "Zeus", "threat_object_class": "malware_family", "aliases": ["Zbot"]},
+            {"name": "APT28", "threat_object_class": "actor"}
+        ],
     }
 
     mock_response_obj = mocker.Mock()
@@ -194,6 +206,12 @@ def test_file_command_malicious(client, mocker):
     assert result.indicator.sha256 == test_hash
     assert result.indicator.dbot_score.score == Common.DBotScore.BAD
     assert result.indicator.dbot_score.malicious_description == "Unit 42 Intelligence classified this file as malicious"
+    
+    # Test enriched indicator fields
+    assert "Zeus" in result.indicator.tags
+    assert "APT28" in result.indicator.tags
+    assert "Zbot" in result.indicator.tags  # Alias should be included
+    assert result.indicator.malware_family == "Zeus"  # First malware family
 
 
 def test_test_module_success(client, mocker):
@@ -240,7 +258,7 @@ def test_ip_command_404(client, mocker):
     When:
         - Running ip_command
     Then:
-        - Returns CommandResults with 'Indicator not found' message
+        - Returns CommandResults with proper 'not found' message
     """
     mock_response_obj = mocker.Mock()
     mock_response_obj.status_code = 404
@@ -249,7 +267,7 @@ def test_ip_command_404(client, mocker):
     args = {"ip": "1.2.3.4", "create_relationships": True}
     result = ip_command(client, args)
 
-    assert result.readable_output == "Indicator not found"
+    assert "The IP indicator: 1.2.3.4 was not found in Unit 42 Intelligence" in result.readable_output
 
 
 def test_domain_command_404(client, mocker):
@@ -260,7 +278,7 @@ def test_domain_command_404(client, mocker):
     When:
         - Running domain_command
     Then:
-        - Returns CommandResults with 'Indicator not found' message
+        - Returns CommandResults with proper 'not found' message
     """
     mock_response_obj = mocker.Mock()
     mock_response_obj.status_code = 404
@@ -269,7 +287,7 @@ def test_domain_command_404(client, mocker):
     args = {"domain": "example.com", "create_relationships": True}
     result = domain_command(client, args)
 
-    assert result.readable_output == "Indicator not found"
+    assert "The domain indicator: example.com was not found in Unit 42 Intelligence" in result.readable_output
 
 
 def test_url_command_404(client, mocker):
@@ -280,7 +298,7 @@ def test_url_command_404(client, mocker):
     When:
         - Running url_command
     Then:
-        - Returns CommandResults with 'Indicator not found' message
+        - Returns CommandResults with proper 'not found' message
     """
     mock_response_obj = mocker.Mock()
     mock_response_obj.status_code = 404
@@ -289,7 +307,7 @@ def test_url_command_404(client, mocker):
     args = {"url": "http://example.com", "create_relationships": True}
     result = url_command(client, args)
 
-    assert result.readable_output == "Indicator not found"
+    assert "The URL indicator: http://example.com was not found in Unit 42 Intelligence" in result.readable_output
 
 
 def test_file_command_404(client, mocker):
@@ -300,19 +318,20 @@ def test_file_command_404(client, mocker):
     When:
         - Running file_command
     Then:
-        - Returns CommandResults with 'Indicator not found' message
+        - Returns CommandResults with proper 'not found' message
     """
     mock_response_obj = mocker.Mock()
     mock_response_obj.status_code = 404
     mocker.patch.object(client, "lookup_indicator", return_value=mock_response_obj)
 
-    args = {"file": "a" * 64, "create_relationships": True}
+    test_hash = "a" * 64
+    args = {"file": test_hash, "create_relationships": True}
     result = file_command(client, args)
 
-    assert result.readable_output == "Indicator not found"
+    assert f"The file indicator: {test_hash} was not found in Unit 42 Intelligence" in result.readable_output
 
 
-def test_client_initialization():
+def test_client_initialization(mocker):
     """
     Given:
         - Client configuration parameters
@@ -321,17 +340,20 @@ def test_client_initialization():
     Then:
         - Sets correct base URL, reliability, and authorization header
     """
+    license_id = "test_license"
+    # Mock demisto.getLicenseID within the Unit42Intelligence module
+    mocker.patch("Unit42Intelligence.demisto.getLicenseID", return_value=license_id)
+    
     client = Client(
-        base_url="https://api.unit42.paloaltonetworks.com",
+        base_url="https://api.unit42.paloaltonetworks.com/",
         verify=True,
         proxy=False,
-        reliability="B - Usually reliable",
+        reliability=DBotScoreReliability.B
     )
 
-    assert client._base_url == "https://api.unit42.paloaltonetworks.com"
-    assert client.reliability == "B - Usually reliable"
-    # Authorization header uses demisto.getLicenseID() which returns empty string in tests
-    assert "Bearer" in client._headers["Authorization"]
+    assert client.base_url == "https://api.unit42.paloaltonetworks.com/"
+    assert client.reliability == DBotScoreReliability.B
+    assert client.session.headers["Authorization"] == f"Bearer {license_id}"
 
 
 def test_create_dbot_score_malicious():
@@ -712,7 +734,7 @@ def test_file_hash_detection():
     mock_response_obj.json.return_value = mock_response
 
     with unittest.mock.patch.object(client, "lookup_indicator", return_value=mock_response_obj):
-        args = {"file": sha256_hash, "create_relationships": True}
+        args = {"file": sha256_hash, "create_relationships": True, "create_threat_object_indicators": False}
         result = file_command(client, args)
         assert result.indicator.sha256 == sha256_hash
         assert result.indicator.md5 is None
@@ -809,3 +831,238 @@ def test_create_context_data_empty_threat_objects():
     assert result["Verdict"] == "Benign"
     assert result["VerdictCategory"] == ["Legitimate"]
     assert result["EnrichedThreatObjectAssociation"] == []
+
+
+def test_extract_tags_from_threat_objects():
+    """
+    Given:
+        - Threat objects with names and aliases
+    When:
+        - extract_tags_from_threat_objects is called
+    Then:
+        - Returns list of unique tag names including aliases
+        - Removes duplicates and None values
+    """
+    threat_objects = [
+        {"name": "APT29", "aliases": ["Cozy Bear", "The Dukes"]},
+        {"name": "Cobalt Strike", "aliases": []},
+        {"name": "Zeus", "aliases": ["Zbot", None]},  # Test None handling
+        {"aliases": ["Orphan Alias"]},  # Test missing name
+    ]
+    
+    tags = extract_tags_from_threat_objects(threat_objects)
+    
+    assert "APT29" in tags
+    assert "Cozy Bear" in tags
+    assert "The Dukes" in tags
+    assert "Cobalt Strike" in tags
+    assert "Zeus" in tags
+    assert "Zbot" in tags
+    assert "Orphan Alias" in tags
+    assert None not in tags
+    assert len(tags) == len(set(tags))  # No duplicates
+
+
+def test_extract_malware_families_from_threat_objects():
+    """
+    Given:
+        - Threat objects with various threat classes including malware_family
+    When:
+        - extract_malware_families_from_threat_objects is called
+    Then:
+        - Returns only names of threat objects with malware_family class
+        - Ignores other threat classes
+    """
+    threat_objects = [
+        {"name": "APT29", "threat_object_class": "actor"},
+        {"name": "Cobalt Strike", "threat_object_class": "malware_family"},
+        {"name": "Zeus", "threat_object_class": "malware_family"},
+        {"name": "Operation Ghost", "threat_object_class": "campaign"},
+        {"threat_object_class": "malware_family"},  # Missing name
+    ]
+    
+    malware_families = extract_malware_families_from_threat_objects(threat_objects)
+    
+    assert "Cobalt Strike" in malware_families
+    assert "Zeus" in malware_families
+    assert "APT29" not in malware_families
+    assert "Operation Ghost" not in malware_families
+    assert len(malware_families) == 2
+
+
+def test_create_threat_object_indicators():
+    """
+    Given:
+        - Threat objects with various threat classes and detailed information
+    When:
+        - create_threat_object_indicators is called
+    Then:
+        - Creates indicator data for each valid threat object
+        - Includes proper rawJSON with threat object details
+        - Maps threat classes to correct indicator types
+    """
+    threat_objects = [
+        {
+            "name": "APT29",
+            "threat_object_class": "actor",
+            "description": "Advanced persistent threat group",
+            "aliases": ["Cozy Bear"],
+            "publications": [{"title": "APT29 Report", "url": "http://example.com"}]
+        },
+        {
+            "name": "Cobalt Strike",
+            "threat_object_class": "malware_family",
+            "source": "Unit42"
+        },
+        {
+            "name": "Unknown Class",
+            "threat_object_class": "unknown_class"  # Should be skipped
+        },
+        {
+            "threat_object_class": "actor"  # Missing name, should be skipped
+        }
+    ]
+    
+    indicators = create_threat_object_indicators(threat_objects, "A - Completely reliable")
+    
+    assert len(indicators) == 2  # Only valid threat objects
+    
+    # Check APT29 indicator
+    apt29_indicator = next(ind for ind in indicators if ind["value"] == "APT29")
+    assert apt29_indicator["type"] == ThreatIntel.ObjectsNames.THREAT_ACTOR
+    assert apt29_indicator["rawJSON"]["description"] == "Advanced persistent threat group"
+    assert apt29_indicator["rawJSON"]["aliases"] == ["Cozy Bear"]
+    assert apt29_indicator["source"] == "Unit 42 Intelligence"
+    
+    # Check Cobalt Strike indicator
+    cs_indicator = next(ind for ind in indicators if ind["value"] == "Cobalt Strike")
+    assert cs_indicator["type"] == ThreatIntel.ObjectsNames.MALWARE
+    assert cs_indicator["rawJSON"]["source"] == "Unit42"
+
+
+def test_extract_tags_from_threat_objects_empty():
+    """
+    Given:
+        - Empty threat objects list
+    When:
+        - extract_tags_from_threat_objects is called
+    Then:
+        - Returns empty list
+    """
+    tags = extract_tags_from_threat_objects([])
+    assert tags == []
+
+
+def test_extract_malware_families_from_threat_objects_empty():
+    """
+    Given:
+        - Empty threat objects list
+    When:
+        - extract_malware_families_from_threat_objects is called
+    Then:
+        - Returns empty list
+    """
+    malware_families = extract_malware_families_from_threat_objects([])
+    assert malware_families == []
+
+
+def test_create_threat_object_indicators_empty():
+    """
+    Given:
+        - Empty threat objects list
+    When:
+        - create_threat_object_indicators is called
+    Then:
+        - Returns empty list
+    """
+    indicators = create_threat_object_indicators([], "A - Completely reliable")
+    assert indicators == []
+
+
+def test_ip_command_with_threat_object_indicators(client, mocker):
+    """
+    Given:
+        - A Unit42Intelligence client
+        - A mock API response with threat objects
+        - create_threat_object_indicators parameter set to True
+    When:
+        - Running ip_command
+    Then:
+        - Returns CommandResults with IP indicator and processes threat objects
+    """
+    mock_response = {
+        "data": {
+            "indicator": {
+                "indicatorValue": "1.2.3.4",
+                "indicatorType": "IP",
+                "summaryGenerationTs": 1640995200000,
+                "firstSeenTsGlobal": 1640995200000,
+                "lastSeenTsGlobal": 1640995200000,
+                "latestPanVerdicts": {"PAN-DB": "MALWARE"},
+                "seenBy": ["PAN-DB"],
+                "wildfireRelatedSampleVerdictCounts": {},
+                "relationships": [
+                    {
+                        "name": "test-malware",
+                        "threat_object_class": "malware_family"
+                    }
+                ]
+            }
+        }
+    }
+    
+    mock_response_obj = mocker.Mock()
+    mock_response_obj.status_code = 200
+    mock_response_obj.json.return_value = mock_response
+    mocker.patch.object(client, "lookup_indicator", return_value=mock_response_obj)
+    
+    # Mock demisto.createIndicators to avoid import issues
+    mocker.patch("demisto.createIndicators")
+    
+    args = {"ip": "1.2.3.4", "create_relationships": True, "create_threat_object_indicators": True}
+    result = ip_command(client, args)
+    
+    # Verify the command returns proper results
+    assert result.outputs["Value"] == "1.2.3.4"
+    assert result.indicator.ip == "1.2.3.4"
+    assert "test-malware" in result.indicator.tags
+
+
+def test_file_command_unsupported_hash_type(client):
+    """
+    Given:
+        - A Unit42Intelligence client
+        - A non-SHA256 hash (MD5 - 32 characters)
+    When:
+        - Running file_command
+    Then:
+        - Returns CommandResults with error message about unsupported hash type
+        - Does not make API call
+    """
+    md5_hash = "a" * 32  # MD5 hash
+    
+    args = {"file": md5_hash, "create_relationships": True}
+    result = file_command(client, args)
+    
+    assert "Unit 42 Intelligence only supports SHA256 hashes" in result.readable_output
+    assert "md5" in result.readable_output
+
+
+def test_file_command_sha1_unsupported(client):
+    """
+    Given:
+        - A Unit42Intelligence client
+        - A SHA1 hash (40 characters)
+    When:
+        - Running file_command
+    Then:
+        - Returns CommandResults with error message about unsupported hash type
+        - Does not make API call
+    """
+    sha1_hash = "a" * 40  # SHA1 hash
+    
+    args = {"file": sha1_hash, "create_relationships": True}
+    result = file_command(client, args)
+    
+    assert "Unit 42 Intelligence only supports SHA256 hashes" in result.readable_output
+    assert "sha1" in result.readable_output

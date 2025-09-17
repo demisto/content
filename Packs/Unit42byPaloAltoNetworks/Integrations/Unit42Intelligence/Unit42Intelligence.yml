@@ -7,6 +7,7 @@ commonfields:
   version: -1
 configuration:
 - display: Server URL
+  defaultvalue: https://xdr-tas-api.crtx.us.paloaltonetworks.com/
   name: url
   required: true
   type: 0
@@ -17,6 +18,7 @@ configuration:
   additionalinfo: Reliability of the source providing the intelligence data.
   type: 15
   options:
+  - A++ - 1st party feed and enrichment
   - A+ - 3rd party enrichment
   - A - Completely reliable
   - B - Usually reliable
@@ -24,7 +26,7 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  defaultvalue: A+ - 3rd party enrichment
+  defaultvalue: A++ - ?????
   required: false
   section: Collect
   advanced: true
@@ -36,9 +38,9 @@ configuration:
   required: false
   section: Collect
   advanced: true
-- display: Create indicators from relationships
-  name: create_indicators_from_relationships
-  additionalinfo: Whether to create indicators from relationships, When selected, the relationships will be created as indicators
+- display: Create threat objects as separate indicators
+  name: create_threat_object_indicators
+  additionalinfo: Whether to create threat objects (malware families, actors, campaigns, etc.) as separate XSOAR indicators
   type: 8
   defaultvalue: 'false'
   required: false
