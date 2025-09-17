@@ -4,7 +4,14 @@ from CommonServerUserPython import *
 from AggregatedCommandApiModule import *
 
 
-def url_enrichment_script(url_list, external_enrichment=False, verbose=False, enrichment_brands=None, additional_fields=False):
+def url_enrichment_script(
+    url_list: list[str],
+    external_enrichment: bool = False,
+    verbose: bool = False,
+    enrichment_brands: list[str] = [],
+    additional_fields: bool = False,
+    args: dict[str, Any] = {},
+) -> CommandResults:
     """
     Enriches URL data with information from various integrations
     Args:
@@ -17,7 +24,7 @@ def url_enrichment_script(url_list, external_enrichment=False, verbose=False, en
         CommandResult: The result of the command.
     """
     url_list = extract_indicators(url_list, "url")
-    
+
     indicator_mapping = {
         "Data": "Data",
         "DetectionEngines": "DetectionEngines",
@@ -55,7 +62,7 @@ def url_enrichment_script(url_list, external_enrichment=False, verbose=False, en
         additional_fields=additional_fields,
         external_enrichment=external_enrichment,
         final_context_path="URLEnrichment",
-        args=demisto.args(),
+        args=args,
         data=url_list,
         indicator=url_indicator,
     )
@@ -70,12 +77,12 @@ def main():  # pragma: no cover
     url_list = argToList(args.get("url_list"))
     external_enrichment = argToBoolean(args.get("external_enrichment", False))
     verbose = argToBoolean(args.get("verbose", False))
-    brands = argToList(args.get("brands"))
+    brands = argToList(args.get("brands", []))
     additional_fields = argToBoolean(args.get("additional_fields", False))
     demisto.debug(f"Data list: {url_list}")
     demisto.debug(f"Brands: {brands}")
     try:
-        return_results(url_enrichment_script(url_list, external_enrichment, verbose, brands, additional_fields))
+        return_results(url_enrichment_script(url_list, external_enrichment, verbose, brands, additional_fields, args))
     except Exception as ex:
         return_error(f"Failed to execute !url-enrichment. Error: {str(ex)}")
 

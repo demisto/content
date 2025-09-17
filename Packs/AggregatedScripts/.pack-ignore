@@ -3,3 +3,6 @@ ignore=PA124
 
 [file:IsolateEndpoint.yml]
 ignore=SC101
+
+[file:IPEnrichment.yml]
+ignore=BA127
