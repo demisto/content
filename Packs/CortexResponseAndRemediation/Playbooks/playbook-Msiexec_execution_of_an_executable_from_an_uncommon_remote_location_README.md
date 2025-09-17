@@ -52,22 +52,22 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Integrations
 
-* CortexCoreIR
+This playbook does not use any integrations.
 
 ### Scripts
 
 * CommandLineAnalysis
 * SearchIncidentsV2
+* isolate-endpoint
+* url-enrichment
 
 ### Commands
 
 * closeInvestigation
 * core-get-IP-analytics-prevalence
 * core-get-domain-analytics-prevalence
-* core-isolate-endpoint
 * core-terminate-causality
 * extractIndicators
-* wildfire-get-verdict
 
 ## Playbook Inputs
 
