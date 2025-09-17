@@ -90,8 +90,28 @@ script:
     - contextPath: Sixgill.CVE.rawJSON
       type: String
       description: The raw JSON of the CVE entich information.
-
-  dockerimage: demisto/sixgill:1.0.0.3557591
+  - arguments:
+    - default: true
+      isArray: true
+      name: cve_id
+      description: 'cves id list.'
+      required: true
+    description: Returns remediation for each CVE in the input list.
+    name: cybersixgill-cve-remediation
+    outputs:
+    - contextPath: Sixgill.CVE.value
+      description: CVE ID.
+      type: String
+    - contextPath: Sixgill.CVE.Description
+      description: Description of the given DVE remediation.
+      type: String
+    - contextPath: Sixgill.CVE.Solutions
+      description: Possible remediation solutions for the CVE ID.
+      type: String
+    - contextPath: Sixgill.CVE.rawJSON
+      description: The raw JSON of the CVE entich information.
+      type: String
+  dockerimage: demisto/sixgill:1.0.0.4664484
   runonce: false
   script: '-'
   subtype: python3
