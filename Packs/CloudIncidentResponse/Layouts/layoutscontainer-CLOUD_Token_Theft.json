@@ -215,7 +215,7 @@
                         "minH": 1,
                         "moved": false,
                         "name": "Alert Extended Information",
-                        "query": "CortexXDRAdditionalAlertInformationWidget",
+                        "query": "XCloudAdditionalAlertInformationWidget",
                         "queryType": "script",
                         "static": false,
                         "type": "dynamic",
@@ -232,7 +232,7 @@
                         "minH": 1,
                         "moved": false,
                         "name": "Cloud Provider",
-                        "query": "CortexXDRCloudProviderWidget",
+                        "query": "XCloudProviderWidget",
                         "queryType": "script",
                         "static": false,
                         "type": "dynamic",
@@ -252,7 +252,7 @@
                         "displayType": "ROW",
                         "h": 2,
                         "hideName": false,
-                        "i": "caseinfoid-be53e110-3992-11ed-9adb-83e728f46893",
+                        "i": "xmrrsnmlfj-caseinfoid-be53e110-3992-11ed-9adb-83e728f46893",
                         "items": [
                             {
                                 "dropEffect": "move",
@@ -323,13 +323,13 @@
                     {
                         "h": 1,
                         "hideName": false,
-                        "i": "caseinfoid-90fd3b10-3e3f-11ed-ba28-af31a2402b20",
+                        "i": "xmrrsnmlfj-caseinfoid-90fd3b10-3e3f-11ed-ba28-af31a2402b20",
                         "items": [],
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
                         "name": "Regions",
-                        "query": "EntryWidgetNumberRegionsXCLOUD",
+                        "query": "EntryWidgetRegionNameXCLOUD",
                         "queryType": "script",
                         "static": false,
                         "type": "dynamic",
@@ -339,7 +339,7 @@
                     },
                     {
                         "h": 3,
-                        "i": "caseinfoid-944f47f0-3fce-11ed-81fb-f98f11f06b6f",
+                        "i": "xmrrsnmlfj-caseinfoid-944f47f0-3fce-11ed-81fb-f98f11f06b6f",
                         "items": [],
                         "maxW": 3,
                         "minH": 1,
@@ -356,7 +356,7 @@
                     {
                         "h": 1,
                         "hideName": false,
-                        "i": "caseinfoid-4d1a5360-4a0b-11ed-b8e1-8fa90b5d349b",
+                        "i": "xmrrsnmlfj-caseinfoid-4d1a5360-4a0b-11ed-b8e1-8fa90b5d349b",
                         "items": [],
                         "maxW": 3,
                         "minH": 1,
@@ -374,7 +374,7 @@
                         "description": "",
                         "h": 3,
                         "hideName": true,
-                        "i": "caseinfoid-270d9710-ffbc-11ed-91cb-b704c053731a",
+                        "i": "xmrrsnmlfj-caseinfoid-270d9710-ffbc-11ed-91cb-b704c053731a",
                         "items": [],
                         "maxW": 3,
                         "minH": 1,
@@ -391,7 +391,7 @@
                     {
                         "h": 2,
                         "hideName": true,
-                        "i": "caseinfoid-eb9e4280-ffbe-11ed-8455-4ba42b17a94b",
+                        "i": "xmrrsnmlfj-caseinfoid-eb9e4280-ffbe-11ed-8455-4ba42b17a94b",
                         "items": [],
                         "maxW": 3,
                         "minH": 1,
@@ -407,16 +407,14 @@
                     },
                     {
                         "h": 3,
-                        "i": "caseinfoid-738a28d0-ffd3-11ed-94b9-ab17767bb4e7",
+                        "i": "xmrrsnmlfj-caseinfoid-738a28d0-ffd3-11ed-94b9-ab17767bb4e7",
                         "items": [],
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
                         "name": "Hunting Results",
                         "query": {
-                            "categories": [
-                                "tags"
-                            ],
+                            "categories": [],
                             "preDefinedFilters": true,
                             "tags": [
                                 "PersistenceHunting"
@@ -432,7 +430,7 @@
                     {
                         "description": "The indicators extracted from the threat hunting results.",
                         "h": 3,
-                        "i": "caseinfoid-494706a0-063c-11ee-b283-eb5063f641e1",
+                        "i": "xmrrsnmlfj-caseinfoid-494706a0-063c-11ee-b283-eb5063f641e1",
                         "items": [],
                         "maxW": 3,
                         "minH": 1,
@@ -460,16 +458,29 @@
                 "type": "workPlan"
             },
             {
+                "hidden": false,
                 "id": "canvas",
                 "name": "Canvas",
-                "type": "canvas",
-                "hidden": false
+                "type": "canvas"
             }
         ]
     },
+    "edit": null,
+    "fromServerVersion": "",
     "group": "incident",
-    "id": "CLOUD Token Theft",
-    "name": "CLOUD Token Theft",
+    "id": "CLOUD Token Theft - no XDR Fields",
+    "indicatorsDetails": null,
+    "indicatorsQuickView": null,
+    "isOverridable": false,
+    "itemVersion": "",
+    "locked": false,
+    "mobile": null,
+    "name": "CLOUD Token Theft - no XDR Fields",
+    "packID": "",
+    "packName": "",
+    "propagationLabels": [
+        "all"
+    ],
     "quickView": {
         "sections": [
             {
