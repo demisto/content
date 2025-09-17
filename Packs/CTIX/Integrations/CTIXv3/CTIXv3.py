@@ -722,6 +722,8 @@ def to_dbot_score(ctix_score: int) -> int:
     """
     Maps CTIX Score to DBotScore
     """
+    if isinstance(ctix_score, str):
+        ctix_score = 10
     if ctix_score == 0:
         dbot_score = Common.DBotScore.NONE  # unknown
     elif ctix_score <= 30:

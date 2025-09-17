@@ -89,6 +89,10 @@ DETECTION_DATE_FORMAT = IOM_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 DEFAULT_TIMEOUT = 30
 LEGACY_VERSION = PARAMS.get("legacy_version", False)
 
+DEFAULT_TIMEOUT_ON_GENERIC_HTTP_REQUEST = 60
+TOTAL_RETRIES_ON_ENRICHMENT = 0
+TIMEOUT_ON_ENRICHMENT = 15
+
 """ KEY DICTIONARY """
 
 LEGACY_DETECTIONS_BASE_KEY_MAP = {
@@ -323,7 +327,10 @@ CS_FALCON_DETECTION_INCOMING_ARGS = [
     "composite_id",
     "display_name",
     "tags",
+    "comments",
+    "assigned_to_uid",
 ]
+CS_FALCON_DETECTION_INCOMING_ARGS_IDP = ["status", "id", "tags", "comments", "assigned_to_uid"]
 CS_FALCON_INCIDENT_INCOMING_ARGS = [
     "state",
     "fine_score",
@@ -334,12 +341,13 @@ CS_FALCON_INCIDENT_INCOMING_ARGS = [
     "tags",
     "hosts.hostname",
     "incident_id",
+    "assigned_to_uid",
+    "assigned_to_name",
 ]
 
 MIRROR_DIRECTION_DICT = {"None": None, "Incoming": "In", "Outgoing": "Out", "Incoming And Outgoing": "Both"}
 
 HOST_STATUS_DICT = {"online": "Online", "offline": "Offline", "unknown": "Unknown"}
-
 
 QUARANTINE_FILES_OUTPUT_HEADERS = [
     "id",
@@ -370,7 +378,6 @@ CPU_UTILITY_INT_TO_STR_KEY_MAP = {
     5: "Highest",
 }
 CPU_UTILITY_STR_TO_INT_KEY_MAP = {value: key for key, value in CPU_UTILITY_INT_TO_STR_KEY_MAP.items()}
-
 
 SCHEDULE_INTERVAL_STR_TO_INT = {
     "never": 0,
@@ -423,7 +430,6 @@ class IncidentType(Enum):
 
 MIRROR_DIRECTION = MIRROR_DIRECTION_DICT.get(demisto.params().get("mirror_direction"))
 INTEGRATION_INSTANCE = demisto.integrationInstance()
-
 
 """ HELPER FUNCTIONS """
 
@@ -584,7 +590,13 @@ def http_request(
         demisto.debug(f"In http_request {get_token_flag=} updated retries, status_list_to_retry, valid_status_codes")
 
     headers["User-Agent"] = "PANW-XSOAR"
-    int_timeout = int(timeout) if timeout else 60  # 60 is the default in generic_http_request
+
+    if is_time_sensitive():
+        demisto.debug("Changing timeout to 15 seconds and retries to 0 due to time_sensitive=True")
+        retries = TOTAL_RETRIES_ON_ENRICHMENT
+        request_timeout = TIMEOUT_ON_ENRICHMENT
+    else:
+        request_timeout = int(timeout) if timeout else DEFAULT_TIMEOUT_ON_GENERIC_HTTP_REQUEST
 
     # Handling a case when we want to return an entry for 404 status code.
     if status_code:
@@ -608,7 +620,7 @@ def http_request(
             verify=USE_SSL,
             error_handler=error_handler,
             json_data=json,
-            timeout=int_timeout,
+            timeout=request_timeout,
             ok_codes=valid_status_codes,
             retries=retries,
             status_list_to_retry=status_list_to_retry,
@@ -628,7 +640,7 @@ def http_request(
                 demisto.debug(f"Try to create a new token because {res.status_code=}")
                 token = get_token(new_token=True)
                 headers["Authorization"] = f"Bearer {token}"
-                demisto.debug("calling generic_http_request with retries=5 and status_list_to_retry=[429]")
+                demisto.debug(f"calling generic_http_request with retries={retries} and status_list_to_retry=[429]")  # noqa: E501
                 res = generic_http_request(
                     method=method,
                     server_url=SERVER,
@@ -643,7 +655,7 @@ def http_request(
                     resp_type="response",
                     error_handler=error_handler,
                     json_data=json,
-                    timeout=int_timeout,
+                    timeout=request_timeout,
                     ok_codes=valid_status_codes,
                 )
                 demisto.debug(f"In http_request after the second call to generic_http_request {res=} {res.status_code=}")
@@ -2144,19 +2156,20 @@ def get_username_uuid(username: str):
     :param username: Username to get UUID of.
     :return: The user UUID
     """
-    response = http_request("GET", "/users/queries/user-uuids-by-email/v1", params={"uid": username})
+    response = http_request("GET", "/user-management/queries/users/v1", params={"uid": username})
     resources: list = response.get("resources", [])
     if not resources:
         raise ValueError(f"User {username} was not found")
     return resources[0]
 
 
-def resolve_detection(ids, status, assigned_to_uuid, show_in_ui, comment, tag):
+def resolve_detection(ids, status, assigned_to_uuid, username, show_in_ui, comment, tag):
     """
     Sends a resolve detection request
     :param ids: Single or multiple ids in an array string format.
     :param status: New status of the detection.
     :param assigned_to_uuid: uuid to assign the detection to.
+    :param username: Username to assign the detection to.
     :param show_in_ui: Boolean flag in string format (true/false).
     :param comment: Optional comment to add to the detection.
     :param The tag to add.
@@ -2176,6 +2189,7 @@ def resolve_detection(ids, status, assigned_to_uuid, show_in_ui, comment, tag):
         # modify the payload to match the Raptor API
         ids = payload.pop("ids")
         payload["assign_to_uuid"] = payload.pop("assigned_to_uuid") if "assigned_to_uuid" in payload else None
+        payload["assign_to_user_id"] = username if username else None
         payload["update_status"] = payload.pop("status") if "status" in payload else None
         payload["append_comment"] = payload.pop("comment") if "comment" in payload else None
         if tag:
@@ -2301,7 +2315,9 @@ def update_detection_request(ids: list[str], status: str) -> dict:
     list_of_stats = LEGACY_DETECTION_STATUS if LEGACY_VERSION else STATUS_LIST_FOR_MULTIPLE_DETECTION_TYPES
     if status not in list_of_stats:
         raise DemistoException(f"CrowdStrike Falcon Error: Status given is {status} and it is not in {list_of_stats}")
-    return resolve_detection(ids=ids, status=status, assigned_to_uuid=None, show_in_ui=None, comment=None, tag=None)
+    return resolve_detection(
+        ids=ids, status=status, assigned_to_uuid=None, username=None, show_in_ui=None, comment=None, tag=None
+    )
 
 
 def update_request_for_multiple_detection_types(ids: list[str], status: str) -> dict:
@@ -2634,7 +2650,7 @@ def get_remote_detection_data_for_multiple_types(remote_incident_id):
     if "idp" in mirrored_data["product"]:
         updated_object = {"incident_type": IDP_DETECTION}
         detection_type = "IDP"
-        mirroring_fields.append("id")
+        mirroring_fields = CS_FALCON_DETECTION_INCOMING_ARGS_IDP
     if "mobile" in mirrored_data["product"]:
         updated_object = {"incident_type": MOBILE_DETECTION}
         detection_type = "Mobile"
@@ -4758,7 +4774,8 @@ def resolve_detection_command():
     comment = args.get("comment")
     if username and assigned_to_uuid:
         raise ValueError("Only one of the arguments assigned_to_uuid or username should be provided, not both.")
-    if username:
+
+    if username and LEGACY_VERSION:
         assigned_to_uuid = get_username_uuid(username)
 
     status = args.get("status")
@@ -4768,7 +4785,7 @@ def resolve_detection_command():
         raise DemistoException("Please provide at least one argument to resolve the detection with.")
     if LEGACY_VERSION and tag:
         raise DemistoException("tag argument is only relevant when running with API V3.")
-    raw_res = resolve_detection(ids, status, assigned_to_uuid, show_in_ui, comment, tag)
+    raw_res = resolve_detection(ids, status, assigned_to_uuid, username, show_in_ui, comment, tag)
     args.pop("ids")
     hr = f"Detection {str(ids)[1:-1]} updated\n"
     hr += "With the following values:\n"
@@ -5635,8 +5652,10 @@ def resolve_incident_command(
             "At least one of the following arguments must be provided:"
             "status, assigned_to_uuid, username, add_tag, remove_tag, add_comment"
         )
+    if user_name and user_uuid:
+        raise DemistoException("Only one of the following arguments can be provided: assigned_to_uuid, username")
 
-    if user_name and not user_uuid:
+    if user_name and LEGACY_VERSION:
         user_uuid = get_username_uuid(username=user_name)
 
     action_parameters = {}
@@ -5649,6 +5668,10 @@ def resolve_incident_command(
     if user_uuid:
         action_parameters["update_assigned_to_v2"] = user_uuid
         readable_output += f"Assigned user has been updated to '{user_uuid}'.\n"
+
+    if user_name and not LEGACY_VERSION:
+        action_parameters["update_assigned_to_v2"] = user_name
+        readable_output += f"Assigned user has been updated to '{user_name}'.\n"
 
     if add_tag:
         action_parameters["add_tag"] = add_tag
@@ -7024,7 +7047,7 @@ def make_create_scan_request_body(args: dict, is_scheduled: bool) -> dict:
 def ODS_create_scan_request(args: dict, is_scheduled: bool) -> dict:
     body = make_create_scan_request_body(args, is_scheduled)
     remove_nulls_from_dictionary(body)
-    return http_request("POST", f'/ods/entities/{"scheduled-"*is_scheduled}scans/v1', json=body)
+    return http_request("POST", f'/ods/entities/{"scheduled-" * is_scheduled}scans/v1', json=body)
 
 
 def ODS_verify_create_scan_command(args: dict) -> None:
@@ -7520,6 +7543,7 @@ def handle_resolve_detections(args: dict[str, Any], hr_template: str) -> Command
     update_status = args.get("update_status", "")
     assign_to_name = args.get("assign_to_name", "")
     assign_to_uuid = args.get("assign_to_uuid", "")
+    assign_to_user_id = args.get("assign_to_user_id", "")
 
     # This argument is sent to the API in the form of a string, having the values 'true' or 'false'
     unassign = args.get("unassign", "")
@@ -7532,11 +7556,16 @@ def handle_resolve_detections(args: dict[str, Any], hr_template: str) -> Command
     show_in_ui = args.get("show_in_ui", "")
     # We pass the arguments in the form of **kwargs, since we also need the arguments' names for the API,
     # and it easier to achieve that using **kwargs
+
+    if sum(map(bool, [assign_to_uuid, assign_to_name, assign_to_user_id])) > 1:
+        raise ValueError("Only one of the arguments assign_to_uuid, assign_to_name, assign_to_user_id should be provided.")
+
     resolve_detections_request(
         ids=ids,
         update_status=update_status,
         assign_to_name=assign_to_name,
         assign_to_uuid=assign_to_uuid,
+        assign_to_user_id=assign_to_user_id,
         unassign=unassign,
         append_comment=append_comment,
         add_tag=add_tag,
