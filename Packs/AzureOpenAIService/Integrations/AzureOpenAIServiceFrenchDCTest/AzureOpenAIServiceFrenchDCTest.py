@@ -189,8 +189,6 @@ def main() -> None:
     """
     params = demisto.params()
     server_url = params.get('url')
-    if not server_url:
-        raise ValueError("The Endpoint URL is not configured. Please set it in the integration instance settings.")
 
     api_key_details = params.get('credentials').get('password')
     api_key = api_key_details.get('password') if isinstance(api_key_details, dict) else api_key_details
