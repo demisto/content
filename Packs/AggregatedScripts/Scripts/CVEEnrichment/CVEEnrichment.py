@@ -10,9 +10,21 @@ def cve_enrichment_script(
     verbose: bool = False,
     enrichment_brands: list[str] | None = None,
     additional_fields: bool = False,
-):
+)->CommandResults:
     """
     Enriches CVE data with information from various integrations.
+    
+    Args:
+        cve_list (list[str]): A list of CVEs to enrich.
+        external_enrichment (bool, optional): Whether to call external integrations for enrichment. Defaults to False.
+        verbose (bool, optional): Whether to retrieve a human-readable entry for every command.
+        When set to false, human-readable will only summarize the final result and suppress error entries from commands.
+        enrichment_brands (list[str], optional): A list of integration brands to run enrichment against. Defaults to None.
+        additional_fields (bool, optional): When set to true, the output will also include an
+        `AdditionalFields` object for each of the indicator result.
+    
+    Returns:
+        CommandResults: The enriched CVE data.
     """
     cve_list = extract_indicators(cve_list, "cve")
 
@@ -56,8 +68,6 @@ def cve_enrichment_script(
         create_new_indicator_commands,
         enrich_indicator_commands,
     ]
-
-    demisto.debug(f"Data list: {cve_list}")
 
     cve_reputation = ReputationAggregatedCommand(
         brands=enrichment_brands or [],

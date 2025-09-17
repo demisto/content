@@ -1,6 +1,5 @@
 import json
 import demistomock as demisto
-from CommonServerPython import Common
 from CVEEnrichment import cve_enrichment_script
 
 
@@ -25,7 +24,6 @@ def test_cve_enrichment_script_end_to_end_with_batch_file(mocker):
         - For CVE-2024-0001:
             * Results include TIM + brand1 + brand2 (3 items).
               - TIM row has no Status/ModifiedTime (popped to top-level).
-            * MaxCVSS = 9.8 and MaxSeverity = "Critical" (from vendor CVSS).
             * TIMScore == 2; Status == "Manual"; ModifiedTime == fixture value.
         - For CVE-2023-9999:
             * Results include TIM + brand3 (2 items), with brand3 Reliability == "Low".
@@ -120,9 +118,15 @@ def test_cve_enrichment_script_end_to_end_with_batch_file(mocker):
     # TIM summarization
     assert cve1.get("Status") == "Manual"
     assert cve1.get("ModifiedTime") == "2025-09-01T00:00:00Z"
+    assert cve1.get("TIMCVSS") == 7.5
 
     # Second CVE: TIM + brand3, reliability Low
     cve2 = enrichment_map["CVE-2023-9999"]
     assert {r.get("Brand") for r in cve2["Results"]} == {"TIM", "brand3"}
     b3 = next(r for r in cve2["Results"] if r["Brand"] == "brand3")
     assert b3.get("Reliability") == "Low"
+    
+    # TIM summarization
+    assert cve2.get("Status") is None
+    assert cve2.get("ModifiedTime") is None
+    assert cve2.get("TIMCVSS") == 1.2
