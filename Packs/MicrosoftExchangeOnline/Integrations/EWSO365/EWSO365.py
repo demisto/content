@@ -1673,8 +1673,11 @@ def fetch_emails_as_incidents(client: EWSClient, last_run, incident_filter, skip
     demisto.debug(f"get_last_run: {last_run=}")
     demisto.debug(f"[fetch_emails_as_incidents] last_run: {last_run=}")
     last_fetch_time = last_run.get(LAST_RUN_TIME)
+    demisto.debug(f"{last_fetch_time=}")
     excluded_ids = last_run.get(LAST_RUN_IDS_DICT_REPRESENTATION)
+    demisto.debug(f"excluded_ids: {excluded_ids=}")
     try:
+        demisto.debug("Calling fetch_last_emails")
         last_emails = fetch_last_emails(
             client,
             client.folder_name,
@@ -1682,7 +1685,9 @@ def fetch_emails_as_incidents(client: EWSClient, last_run, incident_filter, skip
             excluded_ids,
             incident_filter,
         )
+        demisto.debug("Finished calling fetch_last_emails")
         demisto.debug(f"Got {len(last_emails)} last emails")
+        demisto.debug(f"{last_emails=}")
 
         incidents = []
         incident: dict[str, str] = {}
@@ -1794,6 +1799,7 @@ def fetch_last_emails(
     :param (Optional) exclude_ids: exclude ids from fetch
     :return: list of exchangelib.Items
     """
+    demisto.debug("[fetch_last_emails]: Start")
     qs = client.get_folder_by_path(folder_name, is_public=client.is_public_folder)
     demisto.debug(f"Finished getting the folder named {folder_name} by path")
     log_memory()
