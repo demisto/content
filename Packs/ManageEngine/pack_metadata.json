@@ -9,9 +9,16 @@
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": [],
-    "useCases": [],
-    "keywords": [],
+    "tags": [
+        "IT"
+    ],
+    "useCases": [
+        "Asset Management"
+    ],
+    "keywords": [
+        "Desktop Central",
+        "Endpoint Central"
+    ],
     "marketplaces": [
         "marketplacev2",
         "platform"
