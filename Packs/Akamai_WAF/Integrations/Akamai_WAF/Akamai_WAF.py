@@ -4275,18 +4275,6 @@ def test_module_command(client: Client, *_) -> tuple[None, None, str]:
     raise DemistoException(f"Test module failed, {results}")
 
 
-                human_readable += f"{INTEGRATION_NAME} - network list **{network_list_id}** canot be found\n"
-        except requests.exceptions.RequestException:
-            human_readable += f"{INTEGRATION_NAME} - Could not find any results for given query\n"
-
-    if env == "PRODUCTION":
-        context_entry = {f"{INTEGRATION_CONTEXT_NAME}.NetworkLists.ActivationStatus(val.UniqueID == obj.UniqueID)": ecs}
-    elif env == "STAGING":
-        context_entry = {f"{INTEGRATION_CONTEXT_NAME}.NetworkLists.ActivationStatus(val.UniqueID == obj.UniqueID)": ecs}
-
-    return human_readable, context_entry, raws
-
-
 # Created by D.S.
 def clone_papi_property_command(
     client: Client,
