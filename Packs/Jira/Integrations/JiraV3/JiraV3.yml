@@ -1,9 +1,6 @@
 commonfields:
   id: Jira V3
   version: -1
-sectionOrder:
-- Connect
-- Collect
 name: Jira V3
 display: Atlassian Jira v3
 category: Case Management
@@ -1829,7 +1826,7 @@ script:
       type: String
   - name: jira-reset-timezone-cache
     description: Clears the cached Jira user timezone used for fetching incidents and mirroring from the internal cache. Use if the timezone settings tied to the chosen authentication method were changed.
-  dockerimage: demisto/btfl-soup:1.0.1.4649489
+  dockerimage: demisto/btfl-soup:1.0.1.4885491
   isfetch: true
   ismappable: true
   isremotesyncin: true
@@ -1844,3 +1841,6 @@ defaultmapperin: classifier-mapper-incoming-JiraV3
 supportsquickactions: true
 defaultmapperout: JiraV3 Outgoing Mapper
 fromversion: 6.8.0
+sectionorder:
+- Connect
+- Collect
