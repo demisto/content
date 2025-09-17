@@ -1,7 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401  # pylint: disable=import-error
 from CommonServerUserPython import *  # noqa: F401  # pylint: disable=import-error
-
+import requests
 from datetime import datetime
 import dateparser
 from typing import Any
@@ -97,6 +97,80 @@ class Client(BaseClient):
             timeout=self.timeout,
         )
 
+def _wrap_simple_output(prefix: str, raw: dict, key_field: str = "") -> CommandResults:
+
+    flat: dict[str, Any] = {}
+    data_obj = raw.get("data", {}) if isinstance(raw.get("data"), dict) else {}
+
+    def extract_scan_id() -> Any:
+        # prefer data.scan_id, else top-level
+        return data_obj.get("scan_id", raw.get("scan_id"))
+
+    def extract_progress() -> Any:
+        if "scan_percentage" in data_obj:
+            return data_obj.get("scan_percentage")
+        if "scan_percentage" in raw:
+            return raw.get("scan_percentage")
+        if "progress" in data_obj:
+            return data_obj.get("progress")
+        if "progress" in raw:
+            return raw.get("progress")
+        if "percentage" in data_obj:
+            return data_obj.get("percentage")
+        if "percentage" in raw:
+            return raw.get("percentage")
+        # sometimes 'state' only (running/done/etc.)
+        state = (raw.get("state") or data_obj.get("state") or "").lower()
+        if state in {"done", "completed", "complete", "finished", "success"}:
+            return 100
+        if state in {"running", "in_progress", "scanning", "queued"}:
+            return 0
+        return None
+
+
+    if prefix in {"CriminalIP.Full_Scan", "CriminalIP.Domain_Lite"}:
+        scan_id = extract_scan_id()
+        flat["scan_id"] = scan_id
+
+        flat["data"] = {"scan_id": scan_id}
+
+    elif prefix in {"CriminalIP.Full_Scan_Status", "CriminalIP.Domain_Lite_Status"}:
+        pct = extract_progress()
+        if pct is not None:
+            flat["scan_percentage"] = pct
+            flat["data"] = {"scan_percentage": pct}
+     
+        if "status" in raw:
+            flat["status"] = raw["status"]
+        if "state" in raw:
+            flat["state"] = raw["state"]
+
+    elif prefix == "CriminalIP.Domain_Quick":
+     
+        if "risk_score" in raw:
+            flat["risk_score"] = raw["risk_score"]
+        elif "summary" in raw and isinstance(raw["summary"], dict):
+            rs = raw["summary"].get("risk_score")
+            if rs is not None:
+                flat["risk_score"] = rs
+    
+        if "domain" in raw:
+            flat["domain"] = raw["domain"]
+    
+        flat["raw"] = raw
+
+    elif prefix in {"CriminalIP.Domain_Lite_Result", "CriminalIP.Full_Scan_Result"}:
+        flat = raw
+    else:
+        flat = raw
+
+    return CommandResults(
+        readable_output=tableToMarkdown(prefix, [flat]),
+        outputs_prefix=prefix,
+        outputs_key_field=key_field or "",
+        outputs=flat,
+        raw_response=raw,
+    )
 
 def get_ip_report(client: Client, args: dict[str, Any]) -> CommandResults:
     ip = args.get("ip")
@@ -378,12 +452,50 @@ def micro_asm(client: Client, args: dict[str, Any]) -> CommandResults:
     )
 
 
-def _wrap_simple_output(prefix: str, raw: dict, key_field: str = "") -> CommandResults:
+def make_email_body(client: Client, args: dict[str, Any]) -> CommandResults:
+    domain, scan_id = args.get("domain"), args.get("scan_id")
+    if not scan_id:
+        raise ValueError("scan_id argument is required")
+
+    raw = client.domain_full_scan_result(scan_id)
+    summary_data = (raw.get("data") or {}).get("summary", {})
+
+    results: list[str] = []
+    now = datetime.now(timezone.utc)
+
+    if summary_data.get("punycode"):
+        results.append("Has punycode")
+    if summary_data.get("dga_score", 0) >= 8:
+        results.append(f"DGA score {summary_data['dga_score']}")
+    if summary_data.get("newborn_domain"):
+        nd = _to_aware_utc(dateparser.parse(summary_data.get("newborn_domain")))
+        if nd and (now - nd).days < 30:
+            results.append(f"Newborn: {summary_data['newborn_domain']}")
+
+    if not results:
+        summary = "No suspicious element"
+        readable_output = "No suspicious element"
+        body_output = ""
+    else:
+        summary = f"Domain {domain} scan summary:\n- " + "\n- ".join(results)
+        readable_output = f"===== {domain} =====\n{summary}"
+        body_output = readable_output
+
+    summary = readable_output
+
+    outputs = {
+        "domain": domain,
+        "scan_id": scan_id,
+        "summary": summary,
+        "body": body_output,
+        "raw": raw,
+    }
+
     return CommandResults(
-        readable_output=tableToMarkdown(prefix, [raw]),
-        outputs_prefix=prefix,
-        outputs_key_field=key_field or "",
-        outputs=raw,
+        readable_output=readable_output,
+        outputs_prefix="CriminalIP.Email_Body",
+        outputs_key_field="scan_id",
+        outputs=outputs,
         raw_response=raw,
     )
 
