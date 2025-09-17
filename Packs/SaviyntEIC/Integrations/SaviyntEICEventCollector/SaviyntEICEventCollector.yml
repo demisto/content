@@ -54,7 +54,7 @@ script:
       - 'true'
       - 'false'
       required: false
-    -  name: limit
+    - name: limit
       default: false
       description: Maximum number of results to return (max 10000).
       isArray: false
