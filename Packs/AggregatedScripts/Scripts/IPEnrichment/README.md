@@ -28,12 +28,12 @@ This script gathers IP reputation data from multiple integrations and returns an
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| IPEnrichment.Value | The ip address. | string |
+| IPEnrichment.Value | The IP address. | string |
 | IPEnrichment.MaxScore | The max score of all the indicators found. | number |
 | IPEnrichment.MaxVerdict | The max verdict of all the indicators found. | string |
-| IPEnrichment.TIMScore | The TIM score of the IP. | number |
-| IPEnrichment.Results | A list of all indicators found for the IP. | array |
-| IPEnrichment.Status | The status of the indicator. If Score changed manually, the status will be "Manual". If modified less then 1 week, the status will be "Fresh". Otherwise, the status will be "Stale". If not modified at all, the status will be None. | string |
+| IPEnrichment.TIMScore | The TIM score of the IP address. | number |
+| IPEnrichment.Results | A list of all indicators found for the IP address. | array |
+| IPEnrichment.Status | The status of the indicator. If the Score changed manually, the status will be "Manual". If modified by less than one week, the status will be "Fresh". Otherwise, the status will be "Stale". If not modified at all, the status will be None. | string |
 | IPEnrichment.ModifiedTime | The time the indicator was last modified. | Date |
 | IPEnrichment.Results.Source | The source of the indicator. | string |
 | IPEnrichment.Results.Brand | The brand of the indicator. | string |

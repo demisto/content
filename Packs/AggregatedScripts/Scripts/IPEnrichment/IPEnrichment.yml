@@ -58,7 +58,7 @@ name: ip-enrichment
 outputs:
 # IPEnrichment
 - contextPath: IPEnrichment.Value
-  description: The ip address.
+  description: The IP address.
   type: string
 - contextPath: IPEnrichment.MaxScore
   description: The max score of all the indicators found.
@@ -67,13 +67,13 @@ outputs:
   description: The max verdict of all the indicators found.
   type: string
 - contextPath: IPEnrichment.TIMScore
-  description: The TIM score of the IP.
+  description: The TIM score of the IP address.
   type: number
 - contextPath: IPEnrichment.Results
-  description: A list of all indicators found for the IP.
+  description: A list of all indicators found for the IP address.
   type: array
 - contextPath: IPEnrichment.Status
-  description: The status of the indicator. If Score changed manually, the status will be "Manual". If modified less then 1 week, the status will be "Fresh". Otherwise, the status will be "Stale". If not modified at all, the status will be None.
+  description: The status of the indicator. If the Score changed manually, the status will be "Manual". If modified by less than one week, the status will be "Fresh". Otherwise, the status will be "Stale". If not modified at all, the status will be None.
   type: string
 - contextPath: IPEnrichment.ModifiedTime
   description: The time the indicator was last modified.
@@ -222,7 +222,7 @@ outputs:
   description: The threat category associated to this indicator by the source vendor, for example, Phishing, Control, TOR, etc.
   type: String
 - contextPath: IPEnrichment.Results.AdditionalFields.ThreatTypes.threatcategoryconfidence
-  description: Threat Category Confidence is the confidence level provided by the vendor for the threat type category For example a confidence of 90 for threat type category 'malware' means that the vendor rates that this is 90% confidence of being a malware.
+  description: Threat Category Confidence is the confidence level provided by the vendor for the threat type category. For example, a confidence level of 90 for the 'malware' threat type category means that the vendor is confident that its 90% malware.
   type: String
 # Core.AnalyticsPrevalence
 - contextPath: Core.AnalyticsPrevalence.Ip.value
