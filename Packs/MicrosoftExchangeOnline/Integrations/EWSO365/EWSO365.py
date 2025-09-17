@@ -2019,8 +2019,12 @@ def sub_main():  # pragma: no cover
                 "Office365 is undergoing load balancing operations. As a result, the service is temporarily unavailable."
             )
             if demisto.command() == "fetch-incidents":
+                demisto.debug("caught exception in fetch incidents")
+                demisto.debug("logging the log_message:")
                 demisto.info(log_message)
+                demisto.debug("setting incidents to empty list")
                 demisto.incidents([])
+                demisto.debug("exiting the process")
                 sys.exit(0)
             if is_test_module:
                 demisto.results(log_message + " Please retry the instance configuration test.")
@@ -2053,6 +2057,7 @@ def sub_main():  # pragma: no cover
             error_message += "\nFull debug log:\n" + debug_log
 
         if demisto.command() == "fetch-incidents":
+            demisto.debug("caught exception when command is fetch, re-raising")
             raise
         if demisto.command() == "ews-search-mailbox" and isinstance(e, ValueError):
             return_error(
@@ -2071,11 +2076,16 @@ def sub_main():  # pragma: no cover
             )
         demisto.error(f"{e.__class__.__name__}: {error_message}")
     finally:
+        demisto.debug("[sub_main] finally clause")
+
         exchangelib_cleanup()
         if log_stream:
             try:
+                demisto.debug("[sub_main] finally clause in the if log_stream")
                 logging.getLogger().removeHandler(log_handler)  # type: ignore
+                demisto.debug("[sub_main] finally clause in the if log_stream removed the handler")
                 log_stream.close()
+                demisto.debug("[sub_main] finally clause in the if log_stream closed the stream")
             except Exception as ex:
                 demisto.error(f"EWS: unexpected exception when trying to remove log handler: {ex}")
 
