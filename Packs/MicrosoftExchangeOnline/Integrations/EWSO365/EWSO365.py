@@ -2032,16 +2032,21 @@ def sub_main():  # pragma: no cover
             error_message_simple = log_message + " Please retry your request."
 
         if isinstance(e, ConnectionError):
+            demisto.debug("caught exception in connection error")
             error_message_simple = f"Could not connect to the server.\nAdditional information: {e!s}"
         else:
+            demisto.debug("caught exception, not a ConnectionError")
             if is_test_module and isinstance(e, MalformedResponseError):
+                demisto.debug("caught exception in malformed response")
                 error_message_simple = "Got invalid response from the server.\n"
 
         # Legacy error handling
         if "Status code: 401" in debug_log:
+            demisto.debug("caught exception in 401 status code")
             error_message_simple = "Got unauthorized from the server. "
 
         if "Status code: 503" in debug_log:
+            demisto.debug("caught exception in 503 status code")
             error_message_simple = "Got timeout from the server. Probably the server is not reachable with the current settings. "
 
         if not error_message_simple:
@@ -2058,6 +2063,7 @@ def sub_main():  # pragma: no cover
 
         if demisto.command() == "fetch-incidents":
             demisto.debug("caught exception when command is fetch, re-raising")
+            demisto.debug(f"logging the log_message: {error_message}")
             raise
         if demisto.command() == "ews-search-mailbox" and isinstance(e, ValueError):
             return_error(
