@@ -6,7 +6,7 @@ from collections import defaultdict
 from CommonServerPython import *
 
 """ CONSTANTS """
-DEFAULT_TIMEOUT = 300
+DEFAULT_TIMEOUT = 60
 
 
 class Brands(StrEnum):
@@ -829,10 +829,10 @@ class QuarantineOrchestrator:
         self.verbose_results: list[CommandResults] = []
         # demisto_context = demisto.context()
         # load pending jobs if they exist from args
-        self.pending_jobs = list(args.get("pending_jobs", []))
+        self.pending_jobs = argToList(args.get("pending_jobs", []))
         # Load results from context, ensuring they are dictionaries
         self.completed_results: list[QuarantineResult] = [
-            QuarantineResult(**res) for res in (args.get("completed_results", []))
+            QuarantineResult(**res) for res in (argToList(args.get("completed_results", [])))
         ]
         demisto.debug(
             f"[Orchestrator] Loaded state. Pending jobs: {len(self.pending_jobs)}, "
@@ -965,7 +965,7 @@ class QuarantineOrchestrator:
             bool: True if there are no pending jobs in the context, False otherwise.
         """
 
-        return not self.pending_jobs
+        return not argToList(self.args.get("pending_jobs", []))
 
     def _job_is_still_polling(self, metadata: dict) -> bool:
         """
@@ -1023,12 +1023,39 @@ class QuarantineOrchestrator:
         # After work is done, decide whether to continue polling or finish.
         if self.pending_jobs:
             demisto.debug(f"[Orchestrator] {len(self.pending_jobs)} jobs still pending. Saving state and scheduling next poll.")
-            args_for_next_run = {"pending_jobs" : self.pending_jobs, "completed_results" : QuarantineResult.to_context_entry(self.completed_results), **self.args}
+
             # demisto.setContext(self.CONTEXT_PENDING_JOBS, self.pending_jobs)
             # demisto.setContext(self.CONTEXT_COMPLETED_RESULTS, QuarantineResult.to_context_entry(self.completed_results))
+            if self._is_first_run() and self.completed_results:
+                demisto.debug("Returning the failed quarantine operations from the kick-off stage to war room")
+                hr = tableToMarkdown(
+                    name=f"Unable to Quarantine the file hash: {self.args.get(self.FILE_HASH_ARG)} "
+                    f"for the following endpoints:",
+                    headers=["EndpointID", "Status", "Message", "Brand"],
+                    t=QuarantineResult.to_context_entry(self.completed_results),
+                    removeNull=True,
+                )
+                interim_results = CommandResults(
+                    outputs_prefix="QuarantineFile",
+                    outputs_key_field=["EndpointID", "FilePath", "FileHash"],
+                    readable_output=hr,
+                    outputs=QuarantineResult.to_context_entry(self.completed_results),
+                )
+                return_results(interim_results)
+
             interim_results = CommandResults(readable_output="Quarantine operations are still in progress...")
+            args_for_next_run = {
+                "pending_jobs": self.pending_jobs,
+                "completed_results": QuarantineResult.to_context_entry(self.completed_results),
+                **self.args,
+            }
+            demisto.debug(f"[Orchestrator] Initiating polling with args: {args_for_next_run}")
+
             return PollResult(
-                response=interim_results, continue_to_poll=True, args_for_next_run=args_for_next_run, partial_result=interim_results
+                response=interim_results,
+                continue_to_poll=True,
+                args_for_next_run=args_for_next_run,
+                partial_result=interim_results,
             )
         else:
             demisto.debug("[Orchestrator] No pending jobs remain. Finishing.")
@@ -1179,7 +1206,17 @@ class QuarantineOrchestrator:
         )
 
         if fatal_error_msg or self._all_jobs_have_failed():
-            return_error(fatal_error_msg or "Could not quarantine file on all endpoints.")
+            demisto.debug("Before the return_error")
+            demisto.results(
+                {
+                    "Type": entryTypes["error"],
+                    "ContentsFormat": formats["text"],
+                    "Contents": fatal_error_msg or "Could not quarantine file on all endpoints.",
+                    "EntryContext": {},
+                }
+            )
+            # return_error(fatal_error_msg or "Could not quarantine file on all endpoints.")
+            demisto.debug("After the return_error")
 
         # Prepend verbose results if the flag is set
         if self.verbose:
