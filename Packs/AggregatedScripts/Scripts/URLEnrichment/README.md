@@ -16,7 +16,7 @@ This script gathers URL reputation data from multiple integrations and returns a
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| url_list | Accepts a list of URLs to enrich.<br/>- From CLI: Provide a comma-separated list.  <br/>  If a URL itself contains a comma, wrap the URLs in a JSON array.  <br/>  Example: "\[\\"https://example.com/search?tags=red,yellow,green\", \\"https://example2.com\"]".<br/>- From Context: Pass JSON arrays directly, without modification.<br/> |
+| url_list | Accepts a list of URLs to enrich.<br/>- From CLI: Provide a comma-separated list.  <br/>  If a URL contains a comma, wrap the URLs in a JSON array.  <br/>  Example: "\[\\"https://example.com/search?tags=red,yellow,green\", \\"https://example2.com\"]".<br/>- From Context: Pass JSON arrays directly, without modification.<br/> |
 | external_enrichment | Whether to call external integrations for enrichment.<br/>- 'true': run all enabled external integrations \(e.g., VirusTotal \(API v3\), AlienVault OTX v2\) in addition to TIM data.<br/>- 'false': use only TIM data; skip external integrations.<br/>If the 'brands' argument is provided, this flag is ignored and enrichment is run only on the brands provided.<br/> |
 | verbose | Whether to retrieve a human-readable entry for every command. When set to false, human-readable will only summarize the final result and suppress error entries from commands. |
 | brands | A list of integration brands to run enrichment against.  <br/>Example: \`"VirusTotal \(API v3\), AlienVault OTX v2"\`.  <br/>- If provided, only the selected brands are used. <br/>- If left empty, the script runs enrichment on all enabled integrations,<br/>  depending on the \`external_enrichment\` flag.  <br/>To see the available brands for the \`url\` command, run: \`\!ProvidesCommand command=url\`.<br/> |
@@ -28,7 +28,7 @@ This script gathers URL reputation data from multiple integrations and returns a
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| URLEnrichment.Value | The URL it self. | string |
+| URLEnrichment.Value | The URL. | string |
 | URLEnrichment.MaxScore | The max score of all the indicators found. | number |
 | URLEnrichment.MaxVerdict | The max verdict of all the indicators found. | string |
 | URLEnrichment.Results | List of all indicators found for the URL. | array |

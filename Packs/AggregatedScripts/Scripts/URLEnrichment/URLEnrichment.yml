@@ -2,7 +2,7 @@ args:
 - description: |
     Accepts a list of URLs to enrich.
     - From CLI: Provide a comma-separated list.  
-      If a URL itself contains a comma, wrap the URLs in a JSON array.  
+      If a URL contains a comma, wrap the URLs in a JSON array.  
       Example: "[\"https://example.com/search?tags=red,yellow,green\", \"https://example2.com\"]".
     - From Context: Pass JSON arrays directly, without modification.
   name: url_list
@@ -61,7 +61,7 @@ name: url-enrichment
 outputs:
 # URLEnrichment
 - contextPath: URLEnrichment.Value
-  description: The URL it self.
+  description: The URL.
   type: string
 - contextPath: URLEnrichment.MaxScore
   description: The max score of all the indicators found.
