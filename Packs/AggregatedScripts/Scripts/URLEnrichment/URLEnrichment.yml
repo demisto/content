@@ -76,7 +76,7 @@ outputs:
   description: The TIM score of the URL.
   type: number
 - contextPath: URLEnrichment.Status
-  description: The status of the indicator. If Score changed manually, the status will be "Manual". If modified less then 1 week, the status will be "Fresh". Otherwise, the status will be "Stale". If not modified at all, the status will be None.
+  description: The status of the indicator. If the Score changed manually, the status will be "Manual". If modified by less than one week, the status will be "Fresh". Otherwise, the status will be "Stale". If not modified at all, the status will be None.
   type: string
 - contextPath: URLEnrichment.ModifiedTime
   description: The time the indicator was last modified.
