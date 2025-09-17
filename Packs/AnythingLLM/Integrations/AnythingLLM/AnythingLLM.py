@@ -222,14 +222,14 @@ class Client(BaseClient):
     def workspace_thread_chat(self, workspace: str, thread: str, message: str, mode: str):
         if demisto.params().get("airs_scan_prompt"):
             result = self.airs_client.airs_sync_scan_prompt(message)
-            if result['action'] == "block":
+            if result["action"] == "block":
                 msg = f"AnythingLLM: workspace_thread_chat: prompt blocked [{result.get('prompt_detected')}]"
                 demisto.debug(msg)
                 raise Exception(msg)
         response = self._tchat(workspace, thread, message, mode, "chat")
         if demisto.params().get("airs_scan_response"):
-            result = self.airs_client.airs_sync_scan_response(response['textResponse'])
-            if result['action'] == "block":
+            result = self.airs_client.airs_sync_scan_response(response["textResponse"])
+            if result["action"] == "block":
                 msg = f"AnythingLLM: workspace_thread_chat: response blocked [{result.get('response_detected')}]"
                 demisto.debug(msg)
                 raise Exception(msg)
@@ -304,14 +304,14 @@ class Client(BaseClient):
             slug = workspace_slug(workspace, self.workspace_list())
             if demisto.params().get("airs_scan_prompt"):
                 result = self.airs_client.airs_sync_scan_prompt(message)
-                if result['action'] == "block":
+                if result["action"] == "block":
                     msg = f"AnythingLLM: _chat: prompt blocked [{result.get('prompt_detected')}]"
                     demisto.debug(msg)
                     raise Exception(msg)
             response = self._http_request(method="POST", url_suffix=f"/v1/workspace/{slug}/{ttype}", json_data=data)
             if demisto.params().get("airs_scan_response"):
                 result = self.airs_client.airs_sync_scan_response(response.get("textResponse"))
-                if result['action'] == "block":
+                if result["action"] == "block":
                     msg = f"AnythingLLM: _chat: response blocked [{result.get('response_detected')}]"
                     demisto.debug(msg)
                     raise Exception(msg)
@@ -398,7 +398,7 @@ class AirsClient(BaseClient):
             "ai_model": self.params.get("airs_model"),
             "app_name": self.params.get("airs_app"),
             "app_user": self.params.get("airs_user"),
-            "user_ip": ""
+            "user_ip": "",
         }
         return self.airs_sync_scan(new_args)
 
@@ -413,32 +413,33 @@ class AirsClient(BaseClient):
             "ai_model": self.params.get("airs_model"),
             "app_name": self.params.get("airs_app"),
             "app_user": self.params.get("airs_user"),
-            "user_ip": ""
+            "user_ip": "",
         }
         return self.airs_sync_scan(new_args)
 
     def airs_sync_scan(self, args: dict) -> dict:
         data = {
-            "ai_profile": {
-                "profile_name": args.get("profile_name")
-            },
-            "contents": [{
-                "code_prompt": args.get("code_prompt"),
-                "code_response": args.get("code_response"),
-                "prompt": args.get("prompt"),
-                "response": args.get("response"),
-                "context": args.get("context")
-            }], "metadata": {
+            "ai_profile": {"profile_name": args.get("profile_name")},
+            "contents": [
+                {
+                    "code_prompt": args.get("code_prompt"),
+                    "code_response": args.get("code_response"),
+                    "prompt": args.get("prompt"),
+                    "response": args.get("response"),
+                    "context": args.get("context"),
+                }
+            ],
+            "metadata": {
                 "ai_model": args.get("ai_model"),
                 "app_name": args.get("app_name"),
                 "app_user": args.get("app_user"),
-                "user_ip": args.get("user_ip")
+                "user_ip": args.get("user_ip"),
             },
-            "tr_id": ""
+            "tr_id": "",
         }
         headers = self._headers
-        headers['Content-Type'] = 'application/json'
-        response = self._http_request('POST', 'v1/scan/sync/request', json_data=data, headers=headers)
+        headers["Content-Type"] = "application/json"
+        response = self._http_request("POST", "v1/scan/sync/request", json_data=data, headers=headers)
 
         return response
 
@@ -749,10 +750,7 @@ def workspace_thread_delete_command(client: Client, args: dict) -> CommandResult
 
 def airs_sync_scan_command(airs_client: AirsClient, args: dict) -> CommandResults:
     response = airs_client.airs_sync_scan(args)
-    command_results = CommandResults(
-        outputs=response,
-        raw_response=response
-    )
+    command_results = CommandResults(outputs=response, raw_response=response)
 
     return command_results
 
@@ -783,20 +781,20 @@ def main() -> None:  # pragma: no cover
             base_url=params.get("url") + "/api",
             verify=not params.get("insecure", False),
             headers=headers,
-            proxy=params.get("proxy", False)
+            proxy=params.get("proxy", False),
         )
 
         # The AIRS Client
         if params.get("airs_url", "") != "":
             airs_headers = {}
-            airs_headers['Accept'] = "application/json"
-            airs_headers['x-pan-token'] = params.get("airs_apikey", {}).get("password")
+            airs_headers["Accept"] = "application/json"
+            airs_headers["x-pan-token"] = params.get("airs_apikey", {}).get("password")
             airs_client = AirsClient(
                 base_url=params.get("airs_url", ""),
                 verify=not params.get("insecure", False),
                 proxy=params.get("proxy", False),
                 headers=airs_headers,
-                auth=None
+                auth=None,
             )
             # Register the AIRS client with the Anything LLM client so it can scan prompts and responses with AIRS
             client.set_airs_client(airs_client)
@@ -806,8 +804,8 @@ def main() -> None:  # pragma: no cover
             # This is the call made when pressing the integration Test button.
             result = test_module(client)
             if result == "ok" and params.get("airs_url", "") != "":
-                    airs_client.test_module()
-            return_results('ok')
+                airs_client.test_module()
+            return_results("ok")
 
         # elif command == "anyllm-list":
         #    return_results(list_command(client, args))
