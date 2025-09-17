@@ -1575,7 +1575,7 @@ def delete_ticket_command(client: Client, args: dict) -> CommandResults:
     ticket_type = client.get_table_name(str(args.get("ticket_type", "")))
 
     result = client.delete(ticket_type, ticket_id)
-    
+
     demisto.debug(f"Ticket deletion result: {result}")
     is_success = result == ""
 
