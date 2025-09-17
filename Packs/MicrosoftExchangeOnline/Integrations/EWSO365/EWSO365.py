@@ -30,7 +30,6 @@ from exchangelib.errors import (
     RateLimitError,
 )
 from exchangelib.items import Contact, Message
-from exchangelib.properties import Mailbox
 from requests.exceptions import ConnectionError
 
 # Ignore warnings print to stdout
@@ -957,61 +956,32 @@ def handle_template_params(template_params):  # pragma: no cover
 
 def create_message_object(to, cc, bcc, subject, body, additional_headers, from_address, reply_to, importance, raw=False):
     """Creates the message object according to the existence of additional custom headers."""
-
-    def create_mailbox_list(emails):
-        """Safely creates a list of Mailbox objects from a list of email strings."""
-        if not isinstance(emails, list):
-            return []
-        mailboxes = []
-        for given_email in emails:
-            if isinstance(given_email, str) and "@" in given_email:
-                mailboxes.append(Mailbox(email_address=given_email.strip()))
-        return mailboxes
-
-    def create_mailbox(given_email):
-        """Safely creates a single Mailbox object from an email string."""
-        if isinstance(given_email, str) and "@" in given_email:
-            return Mailbox(email_address=given_email.strip())
-        return None
-
     demisto.debug(
-        f"create_message_object Before sanitize: {to=}\n{cc=}\n{bcc=}\n{subject=}\n{body=}\n{additional_headers=}"
+        f"create_message_object params: {to=}\n{cc=}\n{bcc=}\n{subject=}\n{body=}\n{additional_headers=}"
         f"\n{from_address=}\n{reply_to=}\n{importance=}\n{raw=}"
-    )
-
-    # Sanitize all email address inputs BEFORE passing them to the Message constructor
-    safe_to_recipients = create_mailbox_list(to)
-    safe_cc_recipients = create_mailbox_list(cc)
-    safe_bcc_recipients = create_mailbox_list(bcc)
-    safe_author = create_mailbox(from_address)
-    safe_reply_to = create_mailbox_list(reply_to)
-
-    demisto.debug(
-        f"create_message_object After Sanitize: {safe_to_recipients=}\n{safe_cc_recipients=}\n"
-        f"{safe_bcc_recipients=}\n{safe_author=}\n{safe_reply_to}"
     )
 
     if raw:
         demisto.debug("create_message_object: received raw message")
         return Message(
-            to_recipients=safe_to_recipients,
-            cc_recipients=safe_cc_recipients,
-            bcc_recipients=safe_bcc_recipients,
+            to_recipients=to,
+            cc_recipients=cc,
+            bcc_recipients=bcc,
             body=body,
-            author=safe_author,
-            reply_to=safe_reply_to,
+            author=from_address,
+            reply_to=reply_to,
             importance=importance,
         )
 
     if additional_headers:
         demisto.debug("create_message_object: received additional headers")
         return Message(
-            to_recipients=safe_to_recipients,
-            author=safe_author,
-            cc_recipients=safe_cc_recipients,
-            bcc_recipients=safe_bcc_recipients,
+            to_recipients=to,
+            author=from_address,
+            cc_recipients=cc,
+            bcc_recipients=bcc,
             subject=subject,
-            reply_to=safe_reply_to,
+            reply_to=reply_to,
             body=body,
             importance=importance,
             **additional_headers,
@@ -1019,12 +989,12 @@ def create_message_object(to, cc, bcc, subject, body, additional_headers, from_a
 
     demisto.debug("create_message_object: received no additional headers")
     return Message(
-        to_recipients=safe_to_recipients,
-        author=safe_author,
-        cc_recipients=safe_cc_recipients,
-        bcc_recipients=safe_bcc_recipients,
+        to_recipients=to,
+        author=from_address,
+        cc_recipients=cc,
+        bcc_recipients=bcc,
         subject=subject,
-        reply_to=safe_reply_to,
+        reply_to=reply_to,
         body=body,
         importance=importance,
     )
@@ -1800,6 +1770,7 @@ def fetch_last_emails(
     :return: list of exchangelib.Items
     """
     demisto.debug("[fetch_last_emails]: Start")
+    demisto.debug(f"Calling fetch_folder_by_path with {folder_name=} and is_public={client.is_public_folder}")
     qs = client.get_folder_by_path(folder_name, is_public=client.is_public_folder)
     demisto.debug(f"Finished getting the folder named {folder_name} by path")
     log_memory()
@@ -2130,3 +2101,4 @@ def log_memory():
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
+    demisto.debug("After main of EWSO365")
