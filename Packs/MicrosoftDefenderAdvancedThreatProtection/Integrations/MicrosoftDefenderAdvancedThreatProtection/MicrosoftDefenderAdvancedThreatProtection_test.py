@@ -439,7 +439,7 @@ GET_FILE_API_RESPONSE = {
     "signerHash": "6c3245d4a9bc0244d99dff27af259cbbae2e2d16",
     "isValidCertificate": False,
     "determinationType": "Pua",
-    "determinationValue": "PUA:Win32/FusionCore"
+    "determinationValue": "PUA:Win32/FusionCore",
 }
 
 FILE_STATISTICS_API_RESPONSE = {
@@ -3842,7 +3842,6 @@ def test_file_command(mocker):
     - Assert correct context output and raw response
     """
     from MicrosoftDefenderAdvancedThreatProtection import file_command, get_file_data
-    
 
     # Set
     response = GET_FILE_API_RESPONSE
@@ -3855,26 +3854,19 @@ def test_file_command(mocker):
     entry_context = results[0].to_context()["EntryContext"]
 
     assert results[0].raw_response == get_file_data(response)
-    assert entry_context ==  {
-        "File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || val.SHA256 && val.SHA256 == obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512 || val.CRC32 && val.CRC32 == obj.CRC32 || val.CTPH && val.CTPH == obj.CTPH || val.SSDeep && val.SSDeep == obj.SSDeep)": [
+    assert entry_context == {
+        "File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 ||"
+        "val.SHA256 && val.SHA256 == obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512 ||"
+        "val.CRC32 && val.CRC32 == obj.CRC32 || val.CTPH && val.CTPH == obj.CTPH || val.SSDeep && val.SSDeep == obj.SSDeep)": [
             {
                 "Hashes": [
-                    {
-                        "type": "SHA1",
-                        "value": "4388963aaa83afe2042a46a3c017ad50bdcdafb3"
-                    },
-                    {
-                        "type": "SHA256",
-                        "value": "413c58c8267d2c8648d8f6384bacc2ae9c929b2b96578b6860b5087cd1bd6462"
-                    }
+                    {"type": "SHA1", "value": "4388963aaa83afe2042a46a3c017ad50bdcdafb3"},
+                    {"type": "SHA256", "value": "413c58c8267d2c8648d8f6384bacc2ae9c929b2b96578b6860b5087cd1bd6462"},
                 ],
                 "SHA1": "4388963aaa83afe2042a46a3c017ad50bdcdafb3",
                 "SHA256": "413c58c8267d2c8648d8f6384bacc2ae9c929b2b96578b6860b5087cd1bd6462",
                 "Type": "APP",
-                "Malicious": {
-                    "Vendor": "Microsoft Defender ATP",
-                    "Description": None
-                }
+                "Malicious": {"Vendor": "Microsoft Defender ATP", "Description": None},
             }
         ],
         "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": [
@@ -3882,7 +3874,7 @@ def test_file_command(mocker):
                 "Indicator": "4388963aaa83afe2042a46a3c017ad50bdcdafb3",
                 "Type": "file",
                 "Vendor": "Microsoft Defender ATP",
-                "Score": 3
+                "Score": 3,
             }
         ],
         "MicrosoftATP.File(val.Sha1 && val.Sha1 == obj.Sha1)": {
@@ -3902,6 +3894,6 @@ def test_file_command(mocker):
             "SignerHash": "6c3245d4a9bc0244d99dff27af259cbbae2e2d16",
             "IsValidCertificate": False,
             "DeterminationType": "Pua",
-            "DeterminationValue": "PUA:Win32/FusionCore"
-        }
+            "DeterminationValue": "PUA:Win32/FusionCore",
+        },
     }
