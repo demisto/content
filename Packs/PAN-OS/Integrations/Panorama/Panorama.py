@@ -6608,13 +6608,9 @@ def panorama_check_latest_dynamic_update_command(args: dict):
             result = panorama_check_latest_dynamic_update_content(update_type, target)
 
             if "result" in result["response"] and result["response"]["@status"] == "success":
-                versions = result.get("response", {}).get("result", {}).get("content-updates", {}).get("entry",{})
+                versions = result.get("response", {}).get("result", {}).get("content-updates", {}).get("entry",[])
                 if not versions: # firewall probably doesn't have app/threat or Antivirus or WildFire or GP installed 
-                    command_results = CommandResults(
-                        readable_output="No available updates (firewall probably doesn't have any app/threat or Antivirus or WildFire"
-                        " or GP installed).",
-                        )
-                    return_results(command_results)
+                    demisto.debug(f"No available updates (Firewall probably doesn't have any {update_type.value} installed).")
                     
                 # Ensure versions is a list even if there's only one entry
                 if not isinstance(versions, list):
@@ -6642,7 +6638,9 @@ def panorama_check_latest_dynamic_update_command(args: dict):
                             latest_version = entry
 
                 # Check if currently installed is the most recent available
-                is_up_to_date = current_version.get("version") == latest_version.get("version")
+                is_up_to_date = False
+                if current_version and latest_version:
+                    is_up_to_date = current_version.get("version") == latest_version.get("version") 
 
                 context_prefix = DynamicUpdateContextPrefixMap.get(update_type)
 
@@ -6664,14 +6662,15 @@ def panorama_check_latest_dynamic_update_command(args: dict):
         except Exception as e:
             if "There is no Global Protext Gateway license on the box" in str(e):
                outputs["GP"] = {
-                    "LatestAvailable": "An Error received from Panorama API: 'There is no Global Protect Gateway license on the box.'",
-                    "CurrentlyInstalled": "N/A",
-                    "IsUpToDate": "N/A",
+                    "LatestAvailable": {"version": "An Error received from Panorama API: 'There is no Global Protect Gateway license on the box.'"},
+                    "CurrentlyInstalled": {},
+                    "IsUpToDate": False,
                 }
                continue
             else:
                raise e
-                
+           
+     
     outputs["ContentTypesOutOfDate"] = {"Count": outdated_item_count}
 
     # Create summary table for human-readable output
