@@ -726,7 +726,7 @@ def executeCommandBatch(commands_list:list[dict[str,any]]):
         "getUsers": exampleUsers,
     }
     for command_dict in commands_list:
-        for command in command_dict.keys():
+        for command in command_dict:
             if commands.get(command):
                 results.append(commands.get(command))
     if results:
