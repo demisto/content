@@ -10,7 +10,7 @@
   - Analyze the reputation of the initiating user IP addresses.
 - **Azure Detection Analysis**:
   - Investigate recent Azure security alerts for the initiating user to detect additional suspicious activity.
-  - If any detections found, investigate the related user agent. 
+  - If any detections found, investigate the related user agent.
 - **User Risk Analysis**:
   - Assess the risk level of the initiating user based on XSIAM Core and Azure risk score.
   - Investigate reasons behind any identified risks, including recent detections.
@@ -23,7 +23,7 @@
 - **Search for suspicious MFA activity**:
   - Search for a policy change that indicates on disabling the need in MFA
 - **Search for suspicious guest user activity**:
-  - Search for a policy change that indicates on allowing 
+  - Search for a policy change that indicates on allowing
 **Verdict & Containment**:
 - If any suspicious evidence found during the user investigation phase and the integration "Microsoft Graph User" integration is enabled, the playbook will revoke the sessions of the initiating user and the destination user. If the integration is not enabled, the playbook will recommend to perform the same action but manually.
 - If the initiating user IP is malicious, or the initiating user risk is HIGH, or more than one suspicious evidence found during the Azure detection analysis and the CA policy investigation phase, and the integration "Microsoft Graph User" is enabled, the playbook will revoke the sessions of the initiating user and the destination user and will recommend manually to disable either one of the users or both of the users. If the integration is not enabled, the playbook will recommend to perform the same action but manually.
