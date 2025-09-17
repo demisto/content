@@ -3709,8 +3709,7 @@ Remove custom MD5 malware hashes.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | The name that will be attached to the MD5 records. | Required | 
-| md5 | A comma-separated list of MD5 hashes to be added. | Required | 
+| md5 | The MD5 value to be removed from Prisma. | Required | 
 
 #### Context Output
 

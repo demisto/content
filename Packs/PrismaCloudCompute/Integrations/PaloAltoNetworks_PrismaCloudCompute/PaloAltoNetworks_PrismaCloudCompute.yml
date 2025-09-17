@@ -76,7 +76,7 @@ description: Use the Prisma Cloud Compute integration to fetch incidents from yo
 display: Palo Alto Networks - Prisma Cloud Compute
 name: PaloAltoNetworks_PrismaCloudCompute
 script:
-  dockerimage: demisto/python3:3.12.11.4417419
+  dockerimage: demisto/python3:3.12.11.4819260
   isfetch: true
   runonce: false
   script: ''
@@ -2882,15 +2882,9 @@ script:
       description: The audited event modified time.
       type: Date
   - arguments:
-    - description: The name that will be attached to the MD5 records.
-      name: name
-      required: true
-      type: unknown
-    - description: A comma-separated list of MD5 hashes to be added.
-      isArray: true
+    - description: The MD5 value to be removed from Prisma.
       name: md5
       required: true
-      type: unknown
     description: Remove custom MD5 malware hashes.
     name: prisma-cloud-compute-custom-feeds-malware-remove
 tests:
