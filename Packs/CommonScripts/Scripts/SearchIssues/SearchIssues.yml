@@ -131,7 +131,7 @@ args:
   - description: The assignee of the issue.
     isArray: true
     name: assignee
-  - description: "A comma seperated list of all relevant SHA256 hash fields for processes and file macros involved in the issue: Initiator SHA256 actor process image, CGO SHA256 hash of causality actor process image, Target process SHA256 of action process image, OS Parent SHA256 hash of the OS actor process image, File Macro SHA256 hash of the action file macro."
+  - description: "A comma-seperated list of all relevant SHA256 hash fields for processes and file macros involved in the issue: Initiator SHA256 actor process image, CGO SHA256 hash of causality actor process image, Target process SHA256 of action process image, OS Parent SHA256 hash of the OS actor process image, File Macro SHA256 hash of the action file macro."
     isArray: true
     name: sha256
 comment: Searches Cortex Issues.

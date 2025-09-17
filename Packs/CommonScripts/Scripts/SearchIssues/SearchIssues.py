@@ -28,8 +28,11 @@ OUTPUT_KEYS = [
     "source_insert_ts",
 ]
 
-SEARCH_TYPE_EQUAL_SHA256_FIELDS = ["actor_process_image_sha256", "causality_actor_process_image_sha256",
-                                   "action_process_image_sha256"]
+SEARCH_TYPE_EQUAL_SHA256_FIELDS = [
+    "actor_process_image_sha256",
+    "causality_actor_process_image_sha256",
+    "action_process_image_sha256",
+]
 SEARCH_TYPE_CONTAINS_SHA256_FIELDS = ["os_actor_process_image_sha256", "action_file_macro_sha256"]
 
 
@@ -99,13 +102,10 @@ class AlertFilterArg:
 
 
 def create_sha_search_field_query(sha_search_field, search_type, sha_list) -> dict:
-    """
-    """
+    """ """
     or_operator_list = []
     for sha in sha_list:
-        or_operator_list.append(
-            {"SEARCH_FIELD": sha_search_field, "SEARCH_TYPE": search_type, "SEARCH_VALUE": sha}
-        )
+        or_operator_list.append({"SEARCH_FIELD": sha_search_field, "SEARCH_TYPE": search_type, "SEARCH_VALUE": sha})
     return {"AND": [{"OR": or_operator_list}]}
 
 
@@ -122,7 +122,7 @@ def prepare_sha256_custom_field(args: dict):
         or_operator_list.append(create_sha_search_field_query(sha_search_field, EQ, sha256))
     for sha_search_field in SEARCH_TYPE_CONTAINS_SHA256_FIELDS:
         or_operator_list.append(create_sha_search_field_query(sha_search_field, CONTAINS, sha256))
-    args['custom_filter'] = json.dumps({"OR": or_operator_list})
+    args["custom_filter"] = json.dumps({"OR": or_operator_list})
 
 
 def main():  # pragma: no cover
