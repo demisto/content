@@ -5851,14 +5851,6 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score.
       type: Number
-    - contextPath: File.MD5
-      description: Bad MD5 hash.
-    - contextPath: File.MD5
-      description: Bad MD5 hash.
-    - contextPath: File.SHA1
-      description: Bad SHA1 hash.
-    - contextPath: File.SHA256
-      description: Bad SHA256 hash.
   - arguments:
     - description: The machine ID. Can be retrieved by running the 'microsoft-atp-get-machines' command.
       name: machine_id
