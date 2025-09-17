@@ -12,7 +12,7 @@ configuration:
   display: Trust any certificate (not secure)
   required: false
 - name: api_key
-  type: 0
+  type: 4
   display: API key (plaintext)
   required: false
 - name: url
@@ -42,7 +42,7 @@ configuration:
   required: false
 - name: events_endpoint
   display: Events/Audit endpoint path
-  additionalinfo: Relative path for the UltraDNS events/audit API. For example: /v2/report/auditlogs
+  additionalinfo: 'Relative path for the UltraDNS events/audit API. For example: /v2/report/auditlogs'
   required: false
   type: 0
 
