@@ -1561,7 +1561,7 @@ def create_ticket_command(client: Client, args: dict, is_quick_action: bool = Fa
     return human_readable, entry_context, result, True
 
 
-def delete_ticket_command(client: Client, args: dict) -> tuple[str, dict, dict, bool]:
+def delete_ticket_command(client: Client, args: dict) -> CommandResults:
     """Delete a ticket.
 
     Args:
@@ -1569,7 +1569,7 @@ def delete_ticket_command(client: Client, args: dict) -> tuple[str, dict, dict, 
         args: Usually demisto.args()
 
     Returns:
-        Demisto Outputs.
+        CommandResults object.
     """
     ticket_id = str(args.get("id", ""))
     ticket_type = client.get_table_name(str(args.get("ticket_type", "")))
@@ -1577,21 +1577,21 @@ def delete_ticket_command(client: Client, args: dict) -> tuple[str, dict, dict, 
     result = client.delete(ticket_type, ticket_id)
 
     demisto.debug(f"Ticket deletion result: {result}")
-
     # Determine success based on result
     is_success = result == ""
-
-    demisto.debug(f"Ticket deletion success status: {is_success}")
-
     # Generate human readable message
     if is_success:
         human_readable = f"Ticket with ID {ticket_id} was successfully deleted from {ticket_type} table."
     else:
         human_readable = f"Failed to delete ticket {ticket_id} from {ticket_type} table. Record may not exist."
-
     # Create entry context
     entry_context = {"ServiceNow.Ticket(val.ID===obj.ID)": {"ID": ticket_id, "DeleteMessage": human_readable}}
-    return human_readable, entry_context, result, is_success
+    
+    return CommandResults(
+        readable_output=human_readable,
+        outputs=entry_context,
+        raw_response=result
+    )
 
 
 def query_tickets_command(client: Client, args: dict) -> tuple[str, dict, dict, bool]:
@@ -3960,7 +3960,6 @@ def main():
             "servicenow-oauth-login": login_command,
             "servicenow-update-ticket": update_ticket_command,
             "servicenow-create-ticket": create_ticket_command,
-            "servicenow-delete-ticket": delete_ticket_command,
             "servicenow-query-tickets": query_tickets_command,
             "servicenow-add-link": add_link_command,
             "servicenow-add-comment": add_comment_command,
@@ -3988,6 +3987,8 @@ def main():
             demisto.incidents(incidents)
         elif command == "servicenow-get-ticket":
             demisto.results(get_ticket_command(client, args))
+        elif command == "servicenow-delete-ticket":
+            return_results(delete_ticket_command(client, args))
         elif command == "servicenow-generic-api-call":
             return_results(generic_api_call_command(client, args))
         elif command == "get-remote-data":

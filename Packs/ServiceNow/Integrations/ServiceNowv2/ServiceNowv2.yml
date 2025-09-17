@@ -948,7 +948,7 @@ script:
       description: Ticket ID.
       type: string
     - contextPath: ServiceNow.Ticket.DeleteMessage
-      description: Message indicating the result of the ticket deletion operation.
+      description: A Message indicating the result of the ticket deletion operation.
       type: string
   - arguments:
     - description: Attachment File ID.
