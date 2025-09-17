@@ -7,7 +7,6 @@ This is the default integration for this content pack when configured by the Dat
 
 ## Configure Generic API Event Collector (Beta) in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Server URL |  | True |
@@ -41,7 +40,6 @@ This is the default integration for this content pack when configured by the Dat
 | Number of incidents to fetch per fetch. |  | False |
 | Fetch Events |  | False |
 | Events Fetch Interval |  | False |
-
 
 ## How to configure the event collector
 

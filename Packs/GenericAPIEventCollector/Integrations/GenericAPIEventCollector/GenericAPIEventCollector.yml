@@ -159,7 +159,7 @@ configuration:
     additionalinfo: 'Next page field in JSON response, e.g., "cursor", "next_page"'
   - display: Next Page Handling
     name: next_page_handling
-    type: 4
+    type: 9
     section: Collect
     options:
       - "navigate to it"  # Navigate to the URL directly
@@ -257,7 +257,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.11.4819260
 fromversion: 6.8.0
 marketplaces:
   - marketplacev2

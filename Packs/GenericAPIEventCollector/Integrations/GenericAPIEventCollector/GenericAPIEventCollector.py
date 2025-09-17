@@ -139,8 +139,14 @@ class Client(BaseClient):
     Most calls use _http_request() that handles proxy, SSL verification, etc.
     """
 
-    def search_events(self, endpoint: str, http_method: str, request_data: RequestData, ok_codes: list[int],
-                      next_page_handling: str = "move it as a JSON") -> dict[Any, Any]:
+    def search_events(
+        self,
+        endpoint: str,
+        http_method: str,
+        request_data: RequestData,
+        ok_codes: list[int],
+        next_page_handling: str = "move it as a JSON",
+    ) -> dict[Any, Any]:
         """
         Searches for events using the API endpoint.
         All the parameters are passed directly to the API as HTTP POST parameters in the request
@@ -233,8 +239,11 @@ def fetch_events(
 
     while pagination_needed:
         raw_events = client.search_events(
-            endpoint=endpoint, http_method=http_method, request_data=request_data, ok_codes=ok_codes,
-            next_page_handling=params.get("next_page_handling", "move it as a JSON")
+            endpoint=endpoint,
+            http_method=http_method,
+            request_data=request_data,
+            ok_codes=ok_codes,
+            next_page_handling=params.get("next_page_handling", "move it as a JSON"),
         )
         events_list = organize_events_to_xsiam_format(raw_events, events_keys)
         all_events_list.extend(events_list)
