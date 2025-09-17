@@ -17,7 +17,7 @@ def url_enrichment_script(url_list, external_enrichment=False, verbose=False, en
         CommandResult: The result of the command.
     """
     url_list = extract_indicators(url_list, "url")
-
+    
     indicator_mapping = {
         "Data": "Data",
         "DetectionEngines": "DetectionEngines",
