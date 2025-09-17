@@ -157,6 +157,16 @@ configuration:
     type: 0
     required: false
     additionalinfo: 'Next page field in JSON response, e.g., "cursor", "next_page"'
+  - display: Next Page Handling
+    name: next_page_handling
+    type: 4
+    section: Collect
+    options:
+      - "navigate to it"  # Navigate to the URL directly
+      - "move it as a JSON"  # Extract JSON from the URL
+    defaultvalue: "move it as a JSON"
+    required: false
+    additionalinfo: "How to handle the next page value. 'navigate to it' - follow the URL directly, 'move it as a JSON' - send the next page value as a json in the request's body."
   - name: pagination_flag
     section: Collect
     display: Pagination flag
