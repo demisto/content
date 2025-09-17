@@ -123,6 +123,11 @@ class Client(BaseClient):
         filter_params = f"arrivalTime GE {from_date}"
         if self.raw_events_event_type:
             filter_params += f' AND eventType IN {",".join(self.raw_events_event_type)}'
+        demisto.debug(
+            f"[Client.get_events] set_id={set_id}, from_date={from_date}, limit={limit}, next_cursor={next_cursor}, "
+            f"raw_events_event_type={self.raw_events_event_type}"
+        )
+        demisto.debug(f"[Client.get_events] url_suffix={url_suffix} filter={filter_params}")
         data = assign_params(
             filter=filter_params,
         )
@@ -437,7 +442,8 @@ def main():  # pragma: no cover
     demisto.info(f"Command being called is {command}")
     demisto.debug(
         f"[main] parsed params: enable_admin_audits={enable_admin_audits}, max_fetch={max_fetch}, "
-        f"max_limit={max_limit}, set_names={set_names}"
+        f"max_limit={max_limit}, set_names={set_names}, "
+        f"policy_audits_event_type={policy_audits_event_type}, raw_events_event_type={raw_events_event_type}"
     )
 
     try:
@@ -470,18 +476,34 @@ def main():  # pragma: no cover
             return_results(result)
 
         elif command == "cyberarkepm-get-admin-audits":
+            demisto.debug(
+                f"[main] executing cyberarkepm-get-admin-audits with limit={max_limit}, "
+                f"from_date={args.get('from_date')}, "
+                f"should_push_events={argToBoolean(args.get('should_push_events', False))}"
+            )
             events, command_result = get_events_command(client, "admin_audits", last_run, max_limit)  # type: ignore
             if argToBoolean(args.get("should_push_events", False)):
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
             return_results(command_result)
 
         elif command == "cyberarkepm-get-policy-audits":
+            demisto.debug(
+                f"[main] executing cyberarkepm-get-policy-audits with limit={max_limit}, "
+                f"from_date={args.get('from_date')}, "
+                f"should_push_events={argToBoolean(args.get('should_push_events', False))}"
+            )
             events, command_result = get_events_command(client, "policy_audits", last_run, max_limit)  # type: ignore
             if argToBoolean(args.get("should_push_events", False)):
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
             return_results(command_result)
 
         elif command == "cyberarkepm-get-events":
+            demisto.debug(
+                f"[main] executing cyberarkepm-get-events with limit={max_limit}, "
+                f"from_date={args.get('from_date')}, "
+                f"raw_events_event_type={raw_events_event_type}, "
+                f"should_push_events={argToBoolean(args.get('should_push_events', False))}"
+            )
             events, command_result = get_events_command(client, "detailed_events", last_run, max_limit)  # type: ignore
             if argToBoolean(args.get("should_push_events", False)):
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
