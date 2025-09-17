@@ -594,8 +594,8 @@ script:
       defaultValue: 'false'
     - name: search
       description: Returns results that match the specified substring in any client list's details or entry details.
-    - name: type
-      description: Filters the output to lists of specified types. Repeat the parameter to filter on more than one type.
+    - name: type_list
+      description: 'Filters the output to lists of specified types. Repeat the parameter to filter on more than one type. Valid values: IP, GEO, ASN, TLS_FINGERPRINT,FILE_HASH.'
       isArray: true
     - name: include_network_list
       description: Include network lists in the response.

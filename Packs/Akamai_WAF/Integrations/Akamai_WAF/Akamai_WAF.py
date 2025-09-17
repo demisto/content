@@ -350,12 +350,12 @@ class Client(BaseClient):
         """
         Get client list.
         Args:
-            client_list_id: client list id
-            name: name
+            client_list_id: An optional URL parameter to get a specific client list. 
+            name: Filters the output to lists matching a name.
             include_items: include items
             include_deprecated: include deprecated
             search: search
-            list_type: type
+            list_type: filter by these types
             include_network_list: include network list
             sort: sort
             page: page
@@ -364,21 +364,25 @@ class Client(BaseClient):
         Returns:
             Json response as dictionary
         """
+        res = []
         params = {
             'name': name,
             'includeItems': include_items,
             'includeDeprecated': include_deprecated,
             'search': search,
-            'type': list_type,
             'includeNetworkLists': include_network_list,
-            'sort': sort,
             'page': page,
             'pageSize': page_size,
             'limit': limit
         }
-        if client_list_id:
-            return self._http_request(method="GET", url_suffix=f"/client-list/v1/lists/{client_list_id}", params=params)
-        return self._http_request(method="GET", url_suffix="/client-list/v1/lists", params=params)
+        # 'sort': sort # TODO: implement sorting after get results
+        for filter_type in list_type:
+            params['type'] = filter_type
+            if client_list_id:
+                raw_res = self._http_request(method="GET", url_suffix=f"/client-list/v1/lists/{client_list_id}", params=params)
+            raw_res = self._http_request(method="GET", url_suffix="/client-list/v1/lists", params=params)
+            res += raw_res['content']
+        return res
 
     def create_client_list(self, name: str, type: str, contract_id: str, group_id: int, notes: str = None,
                          tags: list = None, entry_value: str = None, entry_description: str = None,
@@ -3524,7 +3528,7 @@ def list_groups_command(client: Client) -> tuple[object, dict, Union[list, dict]
 
 @logger
 def get_client_list_command(client: Client, client_list_id: str = None, name: str = None, include_items: bool = False,
-                           include_deprecated: bool = False, search: str = None, list_type: list = None,
+                           include_deprecated: bool = False, search: str = None, type_list: list = None,
                            include_network_list: bool = False, sort: str = 'ASC', page: int = 0,
                            page_size: int = 50, limit: int = 50) -> tuple[str, dict, dict]:
     """
@@ -3536,7 +3540,7 @@ def get_client_list_command(client: Client, client_list_id: str = None, name: st
         include_items: include items
         include_deprecated: include deprecated
         search: search
-        list_type: type
+        type_list: list of types
         include_network_list: include network list
         sort: sort
         page: page
@@ -3545,9 +3549,9 @@ def get_client_list_command(client: Client, client_list_id: str = None, name: st
     Returns:
         Human readable, context entry, raw response
     """
-    raw_response = client.get_client_list(client_list_id, name, include_items, include_deprecated, search, list_type,
+    raw_response = client.get_client_list(client_list_id, name, include_items, include_deprecated, search, type_list,
                                         include_network_list, sort, page, page_size, limit)
-    human_readable = tableToMarkdown("Akamai WAF Client Lists", raw_response.get("lists"))
+    human_readable = tableToMarkdown("Akamai WAF Client Lists", raw_response)
     context_entry = {
         f"{INTEGRATION_CONTEXT_NAME}.ClientList": raw_response
     }
@@ -7152,5 +7156,5 @@ def main():
         return_error(err_msg, error=e)
 
 
-if __name__ == "builtins":
+if __name__ == "__main__":
     main()
