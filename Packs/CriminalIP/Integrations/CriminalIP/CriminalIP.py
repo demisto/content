@@ -112,36 +112,30 @@ def get_ip_report(client: Client, args: dict[str, Any]) -> CommandResults:
 
     summary = {
         "IP": raw.get("ip"),
-        "Inbound Score": raw.get("score", {}).get("inbound"),
-        "Outbound Score": raw.get("score", {}).get("outbound"),
+        "InboundScore": raw.get("score", {}).get("inbound"),
+        "OutboundScore": raw.get("score", {}).get("outbound"),
         "Issues": ", ".join([k for k, v in (raw.get("issues") or {}).items() if v]) or "None",
-        "Protected IPs": raw.get("protected_ip", {}).get("count", 0),
-        "Related Domains": raw.get("domain", {}).get("count", 0),
+        "ProtectedIPs": raw.get("protected_ip", {}).get("count", 0),
+        "RelatedDomains": raw.get("domain", {}).get("count", 0),
         "ASN": first_whois.get("as_no"),
-        "AS Name": first_whois.get("as_name"),
+        "ASName": first_whois.get("as_name"),
         "Org": first_whois.get("org_name"),
         "Country": first_whois.get("org_country_code"),
         "Hostname": first_hostname.get("domain_name_full"),
-        "Open Ports": len(raw.get("port", {}).get("data", [])),
-        "Top Port": first_port.get("open_port_no"),
-        "Top Service": first_port.get("app_name"),
+        "OpenPorts": len(raw.get("port", {}).get("data", [])),
+        "TopPort": first_port.get("open_port_no"),
+        "TopService": first_port.get("app_name"),
         "Vulnerabilities": len(raw.get("vulnerability", {}).get("data", [])),
-        "Top CVE": first_vuln.get("cve_id"),
-        "Top CVSS": first_vuln.get("cvssv3_score"),
+        "TopCVE": first_vuln.get("cve_id"),
+        "TopCVSS": first_vuln.get("cvssv3_score"),
     }
 
     return CommandResults(
-        readable_output=tableToMarkdown("Criminal IP - IP Report (Extended Summary)", [summary]),
+        readable_output=tableToMarkdown("CriminalIP - IP Report (Extended Summary)", [summary]),
         outputs_prefix="CriminalIP.IP",
-        outputs_key_field="IP",
+        outputs_key_field="ip",
         outputs=summary,
         raw_response=raw,
-    )
-    return CommandResults(
-        readable_output=tableToMarkdown("Criminal IP - IP Report (Summary)", [summary]),
-        outputs_prefix="CriminalIP.IP",
-        outputs_key_field="IP",
-        outputs=summary,
     )
 
 
@@ -170,10 +164,18 @@ def check_malicious_ip(client: Client, args: dict[str, Any]) -> CommandResults:
         "ip": ip,
         "malicious": malicious,
         "real_ip_list": real_ip_list,
+        "raw": data,
     }
 
+    # Extract IP addresses from the list of dictionaries
+    real_ips_str = ", ".join([item.get("ip_address", "") for item in real_ip_list]) if real_ip_list else "None"
+
+    readable_output = (
+        f"### CriminalIP - Malicious IP Check\n" f"- IP: {ip}\n" f"- Malicious: {malicious}\n" f"- Real IPs: {real_ips_str}"
+    )
+
     return CommandResults(
-        readable_output=f"Malicious: {malicious}, Protected IPs: {real_ip_list}",
+        readable_output=readable_output,
         outputs_prefix="CriminalIP.Mal_IP",
         outputs_key_field="ip",
         outputs=outputs,
@@ -198,7 +200,7 @@ def check_last_scan_date(client: Client, args: dict[str, Any]) -> CommandResults
     reports = (raw.get("data") or {}).get("reports", [])
 
     if not reports:
-        outputs = {"scaned": False, "scanned": False, "scan_id": ""}
+        outputs = {"domain": domain, "scanned": False, "scan_id": "", "raw": raw}
         return CommandResults(
             readable_output="No scan result",
             outputs_prefix="CriminalIP.Scan_Date",
@@ -212,10 +214,22 @@ def check_last_scan_date(client: Client, args: dict[str, Any]) -> CommandResults
     now = datetime.now(timezone.utc)
     scanned_bool = bool(reg_dt and (now - reg_dt).days <= 7)
 
-    outputs = {"scaned": scanned_bool, "scanned": scanned_bool, "scan_id": report.get("scan_id", "")}
+    outputs = {
+        "domain": domain,
+        "scanned": scanned_bool,
+        "scan_id": report.get("scan_id", ""),
+        "raw": raw,
+    }
+
+    readable_output = (
+        f"### CriminalIP - Last Scan Date Check\n"
+        f"- Domain: {domain}\n"
+        f"- Scanned in last 7 days: {scanned_bool}\n"
+        f"- Scan ID: {outputs['scan_id']}"
+    )
 
     return CommandResults(
-        readable_output=f"Scanned in 7 days: {scanned_bool}",
+        readable_output=readable_output,
         outputs_prefix="CriminalIP.Scan_Date",
         outputs_key_field="scan_id",
         outputs=outputs,
@@ -229,34 +243,41 @@ def make_email_body(client: Client, args: dict[str, Any]) -> CommandResults:
         raise ValueError("scan_id argument is required")
 
     raw = client.domain_full_scan_result(scan_id)
-    summary = (raw.get("data") or {}).get("summary", {})
+    summary_data = (raw.get("data") or {}).get("summary", {})
 
-    body: list[str] = []
-    if summary.get("punycode"):
-        body.append("Has punycode")
-    if summary.get("dga_score", 0) >= 8:
-        body.append(f"DGA score {summary['dga_score']}")
-
+    results: list[str] = []
     now = datetime.now(timezone.utc)
-    if summary.get("newborn_domain"):
-        nd = _to_aware_utc(dateparser.parse(summary.get("newborn_domain")))
+
+    if summary_data.get("punycode"):
+        results.append("Has punycode")
+    if summary_data.get("dga_score", 0) >= 8:
+        results.append(f"DGA score {summary_data['dga_score']}")
+    if summary_data.get("newborn_domain"):
+        nd = _to_aware_utc(dateparser.parse(summary_data.get("newborn_domain")))
         if nd and (now - nd).days < 30:
-            body.append(f"Newborn: {summary['newborn_domain']}")
+            results.append(f"Newborn: {summary_data['newborn_domain']}")
 
-    if not body:
-        outputs = {"domain": domain, "scan_id": scan_id, "body": ""}
-        return CommandResults(
-            readable_output="No suspicious element",
-            outputs_prefix="CriminalIP.Email_Body",
-            outputs_key_field="scan_id",
-            outputs=outputs,
-            raw_response=raw,
-        )
+    if not results:
+        summary = "No suspicious element"
+        readable_output = "No suspicious element"
+        body_output = ""
+    else:
+        summary = f"Domain {domain} scan summary:\n- " + "\n- ".join(results)
+        readable_output = f"===== {domain} =====\n{summary}"
+        body_output = readable_output
 
-    body_text = f"Domain {domain} scan summary:\n- " + "\n- ".join(body)
-    outputs = {"domain": domain, "scan_id": scan_id, "body": body_text}
+    summary = readable_output
+
+    outputs = {
+        "domain": domain,
+        "scan_id": scan_id,
+        "summary": summary,
+        "body": body_output,
+        "raw": raw,
+    }
+
     return CommandResults(
-        readable_output=body_text,
+        readable_output=readable_output,
         outputs_prefix="CriminalIP.Email_Body",
         outputs_key_field="scan_id",
         outputs=outputs,
@@ -271,38 +292,85 @@ def micro_asm(client: Client, args: dict[str, Any]) -> CommandResults:
 
     raw = client.domain_full_scan_result(scan_id)
     data = raw.get("data", {})
-
     results: list[str] = []
+    suspicious_findings: list[str] = []
     now = datetime.now(timezone.utc)
 
-    for cert in data.get("certificates", []):
-        vto = cert.get("valid_to")
+    certs = data.get("certificates", [])
+    if certs:
+        vto = certs[0].get("valid_to")
+        results.append(f"Certificate valid_to: {vto}")
         dt = _to_aware_utc(dateparser.parse(vto) if vto else None)
         if dt and (dt - now).days < 30:
             results.append("Certificate expiring soon")
+            suspicious_findings.append("Certificate expiring soon")
 
-    abuse = (data.get("network_logs") or {}).get("abuse_record", {})
-    if abuse.get("critical", 0) or abuse.get("dangerous", 0):
-        results.append(f"Abuse records: {abuse}")
+    domain_score = (data.get("main_domain_info") or {}).get("domain_score", {})
+    if domain_score:
+        score_label = domain_score.get("score")
+        results.append(f"Domain score: {score_label}")
+        if score_label in ("Critical", "Dangerous"):
+            suspicious_findings.append(f"Domain score: {score_label}")
+    else:
+        results.append("Domain score: N/A")
 
-    logs = (data.get("network_logs") or {}).get("data", [])
-    if any((log.get("url") or "").endswith(".exe") for log in logs):
-        results.append("Found .exe URL in logs")
+    phishing_prob = (data.get("summary") or {}).get("url_phishing_prob")
+    if phishing_prob is not None:
+        results.append(f"Phishing probability: {phishing_prob}%")
+        if phishing_prob >= 80:
+            suspicious_findings.append(f"High phishing probability: {phishing_prob}%")
+    else:
+        results.append("Phishing probability: N/A")
 
-    if not results:
-        outputs = {"domain": domain, "scan_id": scan_id, "result": ""}
-        return CommandResults(
-            readable_output="No suspicious element",
-            outputs_prefix="CriminalIP.Micro_ASM",
-            outputs_key_field="scan_id",
-            outputs=outputs,
-            raw_response=raw,
-        )
+    summary_info = data.get("summary", {})
+    hidden = summary_info.get("hidden_element", 0)
+    obfuscated = summary_info.get("js_obfuscated", 0)
+    results.append(f"Suspicious elements: hidden_element={hidden}, js_obfuscated={obfuscated}")
+    if hidden > 0 or obfuscated > 0:
+        suspicious_findings.append(f"Suspicious elements detected: hidden={hidden}, obfuscated={obfuscated}")
 
-    text = f"===== {domain} =====\n" + "\n".join(results)
-    outputs = {"domain": domain, "scan_id": scan_id, "result": text}
+    abuse_record = (data.get("network_logs") or {}).get("abuse_record", {})
+    if abuse_record and (abuse_record.get("critical", 0) > 0 or abuse_record.get("dangerous", 0) > 0):
+        results.append("Abuse records detected")
+        suspicious_findings.append("Abuse records detected")
+
+    urls = (data.get("network_logs") or {}).get("data", [])
+    for entry in urls:
+        if entry.get("url", "").endswith(".exe"):
+            results.append("Found .exe URL in logs")
+            suspicious_findings.append("Found .exe URL in logs")
+            break
+
+    main_ip_info = (data.get("connected_ip_info") or [{}])[0] if data.get("connected_ip_info") else {}
+    if main_ip_info and main_ip_info.get("ip"):
+        ip = main_ip_info.get("ip", "N/A")
+        results.append(f"Main IP: {ip}")
+    else:
+        results.append("Main IP: not found")
+
+    vulnerable = (data.get("ssl_detail") or {}).get("vulnerable", {})
+    if vulnerable and any(v for v in vulnerable.values()):
+        vulns = [k for k, v in vulnerable.items() if v]
+        results.append(f"SSL vulnerabilities: {', '.join(vulns)}")
+        suspicious_findings.append(f"SSL vulnerabilities: {', '.join(vulns)}")
+    else:
+        results.append("SSL vulnerabilities: none detected")
+
+    # Show "No suspicious element" only if there are no suspicious findings
+    if not suspicious_findings:
+        readable_output = "No suspicious element"
+    else:
+        readable_output = f"===== {domain} =====\n" + "\n".join(results)
+
+    outputs = {
+        "domain": domain,
+        "scan_id": scan_id,
+        "summary": readable_output,
+        "raw": raw,
+    }
+
     return CommandResults(
-        readable_output=text,
+        readable_output=readable_output,
         outputs_prefix="CriminalIP.Micro_ASM",
         outputs_key_field="scan_id",
         outputs=outputs,
@@ -311,9 +379,6 @@ def micro_asm(client: Client, args: dict[str, Any]) -> CommandResults:
 
 
 def _wrap_simple_output(prefix: str, raw: dict, key_field: str = "") -> CommandResults:
-    """
-    Helper to return CommandResults with a consistent outputs_prefix so README/YML/validator가 좋아함.
-    """
     return CommandResults(
         readable_output=tableToMarkdown(prefix, [raw]),
         outputs_prefix=prefix,

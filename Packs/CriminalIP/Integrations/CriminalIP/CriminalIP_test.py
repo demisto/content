@@ -4,7 +4,7 @@ from freezegun import freeze_time
 import CriminalIP  # the module under test
 
 # Define BASE_URL locally for testing instead of referencing CriminalIP.BASE_URL
-BASE_URL = "https://api.criminalip.io"
+BASE_URL = "https://example.com"
 
 
 def make_client():
@@ -281,7 +281,7 @@ def test_micro_asm_with_findings(requests_mock):
             "certificates": [{"valid_to": "2025-09-05T00:00:00Z"}],  # expiring soon
             "network_logs": {
                 "abuse_record": {"critical": 1, "dangerous": 0},
-                "data": [{"url": "http://bad.host/payload.exe"}],
+                "data": [{"url": "http://localhost/payload.exe"}],
             },
         }
     }
@@ -292,7 +292,7 @@ def test_micro_asm_with_findings(requests_mock):
     assert "Certificate expiring soon" in res.readable_output
     assert "Abuse records" in res.readable_output
     assert "Found .exe URL in logs" in res.readable_output
-    assert res.outputs["result"] != ""
+    assert res.outputs["summary"] != ""
 
 
 @freeze_time("2025-08-22 12:00:00")
@@ -312,7 +312,7 @@ def test_micro_asm_no_findings(requests_mock):
 
     res = CriminalIP.micro_asm(client, {"domain": domain, "scan_id": scan_id})
     assert res.readable_output == "No suspicious element"
-    assert res.outputs["result"] == ""
+    assert res.outputs["summary"] == "No suspicious element"
 
 
 # ---------------------- smoke: client.domain_reports ----------------------

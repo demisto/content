@@ -2,9 +2,9 @@ This playbook accepts a list of domains as input. For each individual domain, it
 
 The results of the Micro ASM analysis are stored in the playbook’s context.
 
-This playbook is intended to be used as a sub-playbook within the "Criminal IP Micro ASM" playbook.
+This playbook is intended to be used as a sub-playbook within the "Criminal_IP_Micro_Asm" playbook.
 
-For additional information, please refer to the documentation of the "Criminal IP Micro ASM" playbook.
+For additional information, please refer to the documentation of the "Criminal_IP_Micro_Asm" playbook.
 
 ## Dependencies
 

@@ -297,8 +297,12 @@ Builds an email body summarizing notable findings from a completed Full Scan.
 #### Context Output
 
 | Path | Type | Description |
-|---|---|---|
-| CriminalIP.Email_Body | String | Generated email body string |
+| --- | --- | --- |
+| CriminalIP.Email_Body.domain | String | Domain analyzed |
+| CriminalIP.Email_Body.scan_id | String | Scan ID used for generating the email body |
+| CriminalIP.Email_Body.summary | String | Generated email summary string |
+| CriminalIP.Email_Body.body | String | Generated email body text (for email notifications) |
+| CriminalIP.Email_Body.raw | Unknown | Full raw response from Criminal IP API |
 
 #### Example
 

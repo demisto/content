@@ -48,7 +48,7 @@ description: |
   It enables organizations to detect malicious indicators, assess asset reputation, and enhance threat detection by integrating enriched threat data directly into security operations via the XSOAR interface.
 
 name: CriminalIP
-display: Criminal IP
+display: CriminalIP
 
 script:
   type: python
@@ -120,12 +120,12 @@ script:
       description: Example CVSS v3 score of detected vulnerability.
       type: Number
     - contextPath: CriminalIP.IP.raw
-      description: Full raw response from Criminal IP API.
+      description: Full raw response from CriminalIP API.
       type: Unknown
 
-  # --- Check Malicious IP ---
+    # --- Check Malicious IP ---
   - name: criminal-ip-check-malicious-ip
-    description: Determines whether an IP is malicious or safe through Criminal IP Asset Search.
+    description: Determines whether an IP is malicious or safe through CriminalIP Asset Search.
     arguments:
     - name: ip
       description: IP Address to check.
@@ -133,19 +133,45 @@ script:
       default: true
       type: String
     outputs:
-    - contextPath: CriminalIP.Mal_IP.result
-      description: Malicious / Safe decision.
+    - contextPath: CriminalIP.Mal_IP.ip
+      description: Queried IP address.
       type: String
-    - contextPath: CriminalIP.Mal_IP.real_ip
-      description: Real IP if detected.
-      type: String
+    - contextPath: CriminalIP.Mal_IP.malicious
+      description: Whether the IP was detected as malicious.
+      type: Boolean
+    - contextPath: CriminalIP.Mal_IP.real_ip_list
+      description: List of real IPs if protected IP was detected.
+      type: Unknown
     - contextPath: CriminalIP.Mal_IP.raw
       description: Full raw response.
       type: Unknown
 
-  # --- Domain Quick Scan ---
+    # --- Check Last Scan Date ---
+  - name: criminal-ip-check-last-scan-date
+    description: Checks if the domain has been scanned within the last 7 days.
+    arguments:
+    - name: domain
+      description: The domain to check last scan date for.
+      required: true
+      default: true
+      type: String
+    outputs:
+    - contextPath: CriminalIP.Scan_Date.domain
+      description: Queried Domain.
+      type: String
+    - contextPath: CriminalIP.Scan_Date.scan_id
+      description: The last scan ID of the domain.
+      type: String
+    - contextPath: CriminalIP.Scan_Date.scanned
+      description: Whether the domain was scanned within the last 7 days.
+      type: Boolean
+    - contextPath: CriminalIP.Scan_Date.raw
+      description: Full raw response from CriminalIP API.
+      type: Unknown
+
+    # --- Domain Quick Scan ---
   - name: criminal-ip-domain-quick-scan
-    description: Performs a Domain Quick Scan using Criminal IP's API.
+    description: Performs a Domain Quick Scan using CriminalIP's API.
     arguments:
     - name: domain
       description: The domain to perform Quick Scan.
@@ -163,7 +189,7 @@ script:
       description: Full raw response.
       type: Unknown
 
-  # --- Domain Lite Scan ---
+    # --- Domain Lite Scan ---
   - name: criminal-ip-domain-lite-scan
     description: Initiates a Domain Lite Scan and returns a scan_id.
     arguments:
@@ -215,7 +241,7 @@ script:
       description: Full raw response.
       type: Unknown
 
-  # --- Domain Full Scan ---
+    # --- Domain Full Scan ---
   - name: criminal-ip-domain-full-scan
     description: Initiates a Domain Full Scan and returns a scan_id.
     arguments:
@@ -270,7 +296,7 @@ script:
       description: Full raw response.
       type: Unknown
 
-  # --- Full Scan Email Body ---
+# --- Full Scan Email Body ---
   - name: criminal-ip-domain-full-scan-make-email-body
     description: Builds an email body summarizing notable findings from a completed Full Scan.
     arguments:
@@ -284,9 +310,21 @@ script:
       required: true
       type: String
     outputs:
-    - contextPath: CriminalIP.Email_Body
-      description: Generated email body string.
+    - contextPath: CriminalIP.Email_Body.domain
+      description: Domain analyzed.
       type: String
+    - contextPath: CriminalIP.Email_Body.scan_id
+      description: Scan ID used for generating the email body.
+      type: String
+    - contextPath: CriminalIP.Email_Body.summary
+      description: Generated email summary string.
+      type: String
+    - contextPath: CriminalIP.Email_Body.body
+      description: Generated email body text (for email notifications).
+      type: String
+    - contextPath: CriminalIP.Email_Body.raw
+      description: Full raw response from Criminal IP API.
+      type: Unknown
 
   # --- Micro ASM ---
   - name: criminal-ip-micro-asm
@@ -302,11 +340,17 @@ script:
       required: true
       type: String
     outputs:
+    - contextPath: CriminalIP.Micro_ASM.domain
+      description: Domain analyzed.
+      type: String
+    - contextPath: CriminalIP.Micro_ASM.scan_id
+      description: Scan ID used for Micro ASM.
+      type: String
     - contextPath: CriminalIP.Micro_ASM.summary
-      description: Concise summary string of notable findings.
+      description: Concise summary string of notable findings (certificate expiry, domain score, phishing probability, suspicious elements, main IP, SSL vulnerabilities).
       type: String
     - contextPath: CriminalIP.Micro_ASM.raw
-      description: Full raw response.
+      description: Full raw response from CriminalIP API.
       type: Unknown
 
 tests:

@@ -58,7 +58,7 @@ tasks:
       - "99"
     scriptarguments:
       brandname:
-        simple: Criminal IP
+        simple: CriminalIP
       integrationInstance:
         simple: ${inputs.IntegrationInstanceName}
     separatecontext: false
@@ -86,7 +86,7 @@ tasks:
       id: 43e01b99-88ef-4ebc-875b-f0e7777d0e50
       version: -1
       name: |-
-        Criminal IP
+        CriminalIP
         Quick Scan
       description: Title - Quick Scan phase
       type: title
@@ -119,7 +119,7 @@ tasks:
     task:
       id: 2c847672-f9a0-4624-886f-39c496f194bc
       version: -1
-      name: "Criminal IP \nLite Scan"
+      name: "CriminalIP \nLite Scan"
       description: Title - Lite Scan phase
       type: title
       iscommand: false
@@ -152,7 +152,7 @@ tasks:
       id: d18c0700-8f0c-48af-8cd2-0d30d0afd096
       version: -1
       name: |-
-        Criminal IP
+        CriminalIP
         Full Scan
       description: Title - Full Scan phase
       type: title
@@ -237,24 +237,24 @@ tasks:
     conditions:
     - label: Safe
       condition:
-      - - operator: isEqualString
+      - - operator: lessThanOrEqual
           left:
             value:
-              simple: CriminalIP.Domain_Quick.data.result
+              simple: CriminalIP.Domain_Quick.risk_score
             iscontext: true
           right:
             value:
-              simple: safe
+              simple: "20"
     - label: malicious
       condition:
-      - - operator: isEqualString
+      - - operator: greaterThanOrEqual
           left:
             value:
-              simple: CriminalIP.Domain_Quick.data.result
+              simple: CriminalIP.Domain_Quick.risk_score
             iscontext: true
           right:
             value:
-              simple: malicious
+              simple: "80"
     continueonerrortype: ""
     view: |-
       {
@@ -362,40 +362,26 @@ tasks:
     conditions:
     - label: malicious
       condition:
-      - - operator: containsString
+      - - operator: greaterThanOrEqual
           left:
             value:
-              simple: CriminalIP.Domain_Lite.data.domain_score
-            iscontext: true
-          right:
-            value:
-              simple: Critical
-        - operator: isEqualString
-          left:
-            value:
-              simple: CriminalIP.Domain_Lite.data.domain_score
-            iscontext: true
-          right:
-            value:
-              simple: Dangerous
-        - operator: greaterThanOrEqual
-          left:
-            value:
-              simple: CriminalIP.Domain_Lite.data.summary.url_phishing_prob
+              simple: CriminalIP.Domain_Lite_Result.summary.url_phishing_prob
             iscontext: true
           right:
             value:
               simple: "80"
-    - label: Safe
-      condition:
-      - - operator: containsString
+      - - operator: isNotEmpty
           left:
             value:
-              simple: CriminalIP.Domain_Lite.data.domain_score
+              simple: CriminalIP.Domain_Lite_Result.vulns
             iscontext: true
-          right:
+    - label: Safe
+      condition:
+      - - operator: isEmpty
+          left:
             value:
-              simple: Safe
+              simple: CriminalIP.Domain_Lite_Result.vulns
+            iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -411,6 +397,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+
 
   "28":
     id: "28"
@@ -730,7 +717,7 @@ tasks:
           right:
             value:
               simple: Dangerous
-        - operator: greaterThanOrEqual
+      - - operator: greaterThanOrEqual
           left:
             value:
               simple: CriminalIP.Full_Scan_Result.data.summary.url_phishing_prob
@@ -939,7 +926,7 @@ tasks:
       body:
         simple: ${CriminalIP.Email_Body.body}
       subject:
-        simple: Criminal IP Full Scan Result of ${inputs.Domain}
+        simple: CriminalIP Full Scan Result of ${inputs.Domain}
     separatecontext: false
     continueonerrortype: ""
     view: |-
