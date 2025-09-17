@@ -109,7 +109,7 @@ tasks:
       {
         "position": {
           "x": 1022.5,
-          "y": 710
+          "y": 880
         }
       }
     note: false
@@ -163,7 +163,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1220
+          "y": 1390
         }
       }
     note: false
@@ -193,7 +193,7 @@ tasks:
       {
         "position": {
           "x": 1115,
-          "y": 1390
+          "y": 1560
         }
       }
     note: false
@@ -273,7 +273,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 1220
+          "y": 1390
         }
       }
     note: false
@@ -359,7 +359,7 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 1220
+          "y": 1390
         }
       }
     note: false
@@ -400,7 +400,7 @@ tasks:
       {
         "position": {
           "x": 1340,
-          "y": 1220
+          "y": 1390
         }
       }
     note: false
@@ -430,7 +430,7 @@ tasks:
       {
         "position": {
           "x": 1115,
-          "y": 2570
+          "y": 2740
         }
       }
     note: false
@@ -460,7 +460,7 @@ tasks:
       {
         "position": {
           "x": 1237.5,
-          "y": 3410
+          "y": 3580
         }
       }
     note: false
@@ -490,7 +490,7 @@ tasks:
       {
         "position": {
           "x": 1237.5,
-          "y": 4250
+          "y": 4420
         }
       }
     note: false
@@ -515,7 +515,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "5"
+      - "88"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -568,7 +568,7 @@ tasks:
       {
         "position": {
           "x": 1115,
-          "y": 1890
+          "y": 2060
         }
       }
     note: false
@@ -600,7 +600,7 @@ tasks:
       {
         "position": {
           "x": 1115,
-          "y": 1720
+          "y": 1890
         }
       }
     note: false
@@ -674,7 +674,7 @@ tasks:
       {
         "position": {
           "x": 255,
-          "y": 2400
+          "y": 2570
         }
       }
     note: false
@@ -724,7 +724,7 @@ tasks:
       {
         "position": {
           "x": 685,
-          "y": 2400
+          "y": 2570
         }
       }
     note: false
@@ -765,7 +765,7 @@ tasks:
       {
         "position": {
           "x": 1115,
-          "y": 2400
+          "y": 2570
         }
       }
     note: false
@@ -813,7 +813,7 @@ tasks:
       {
         "position": {
           "x": 1115,
-          "y": 3070
+          "y": 3240
         }
       }
     note: false
@@ -845,7 +845,7 @@ tasks:
       {
         "position": {
           "x": 1115,
-          "y": 2900
+          "y": 3070
         }
       }
     note: false
@@ -899,7 +899,7 @@ tasks:
       {
         "position": {
           "x": 592.5,
-          "y": 3240
+          "y": 3410
         }
       }
     note: false
@@ -949,7 +949,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 3240
+          "y": 3410
         }
       }
     note: false
@@ -990,7 +990,7 @@ tasks:
       {
         "position": {
           "x": 1022.5,
-          "y": 3240
+          "y": 3410
         }
       }
     note: false
@@ -1030,7 +1030,7 @@ tasks:
       {
         "position": {
           "x": 1115,
-          "y": 1550
+          "y": 1720
         }
       }
     note: false
@@ -1070,7 +1070,7 @@ tasks:
       {
         "position": {
           "x": 1115,
-          "y": 2730
+          "y": 2900
         }
       }
     note: false
@@ -1115,7 +1115,7 @@ tasks:
       {
         "position": {
           "x": 1237.5,
-          "y": 3910
+          "y": 4080
         }
       }
     note: false
@@ -1147,7 +1147,7 @@ tasks:
       {
         "position": {
           "x": 1237.5,
-          "y": 3740
+          "y": 3910
         }
       }
     note: false
@@ -1201,7 +1201,7 @@ tasks:
       {
         "position": {
           "x": 807.5,
-          "y": 4080
+          "y": 4250
         }
       }
     note: false
@@ -1251,7 +1251,7 @@ tasks:
       {
         "position": {
           "x": 377.5,
-          "y": 4080
+          "y": 4250
         }
       }
     note: false
@@ -1290,7 +1290,7 @@ tasks:
       {
         "position": {
           "x": 1237.5,
-          "y": 4080
+          "y": 4250
         }
       }
     note: false
@@ -1330,7 +1330,7 @@ tasks:
       {
         "position": {
           "x": 1237.5,
-          "y": 3570
+          "y": 3740
         }
       }
     note: false
@@ -1374,7 +1374,7 @@ tasks:
       {
         "position": {
           "x": 1882.5,
-          "y": 880
+          "y": 1050
         }
       }
     note: false
@@ -1410,7 +1410,7 @@ tasks:
       {
         "position": {
           "x": 1770,
-          "y": 1050
+          "y": 1220
         }
       }
     note: false
@@ -1448,7 +1448,7 @@ tasks:
       {
         "position": {
           "x": 1770,
-          "y": 1220
+          "y": 1390
         }
       }
     note: false
@@ -1492,7 +1492,7 @@ tasks:
       {
         "position": {
           "x": 1657.5,
-          "y": 2060
+          "y": 2230
         }
       }
     note: false
@@ -1528,7 +1528,7 @@ tasks:
       {
         "position": {
           "x": 1545,
-          "y": 2230
+          "y": 2400
         }
       }
     note: false
@@ -1566,7 +1566,7 @@ tasks:
       {
         "position": {
           "x": 1545,
-          "y": 2400
+          "y": 2570
         }
       }
     note: false
@@ -1604,7 +1604,7 @@ tasks:
       {
         "position": {
           "x": 1452.5,
-          "y": 3240
+          "y": 3410
         }
       }
     note: false
@@ -1690,7 +1690,7 @@ tasks:
       {
         "position": {
           "x": 1995,
-          "y": 2400
+          "y": 2570
         }
       }
     note: false
@@ -1776,7 +1776,7 @@ tasks:
       {
         "position": {
           "x": 1882.5,
-          "y": 3240
+          "y": 3410
         }
       }
     note: false
@@ -1862,7 +1862,7 @@ tasks:
       {
         "position": {
           "x": 1667.5,
-          "y": 4080
+          "y": 4250
         }
       }
     note: false
@@ -1892,7 +1892,7 @@ tasks:
       {
         "position": {
           "x": 1237.5,
-          "y": 5080
+          "y": 5250
         }
       }
     note: false
@@ -1932,7 +1932,7 @@ tasks:
       {
         "position": {
           "x": 1237.5,
-          "y": 5240
+          "y": 5410
         }
       }
     note: false
@@ -1977,7 +1977,7 @@ tasks:
       {
         "position": {
           "x": 1237.5,
-          "y": 5410
+          "y": 5580
         }
       }
     note: false
@@ -2007,7 +2007,7 @@ tasks:
       {
         "position": {
           "x": 827.5,
-          "y": 5580
+          "y": 5750
         }
       }
     note: false
@@ -2044,7 +2044,7 @@ tasks:
       {
         "position": {
           "x": 1237.5,
-          "y": 6080
+          "y": 6250
         }
       }
     note: false
@@ -2084,7 +2084,7 @@ tasks:
       {
         "position": {
           "x": 827.5,
-          "y": 5740
+          "y": 5910
         }
       }
     note: false
@@ -2131,7 +2131,7 @@ tasks:
       {
         "position": {
           "x": 827.5,
-          "y": 5910
+          "y": 6080
         }
       }
     note: false
@@ -2158,7 +2158,7 @@ tasks:
       {
         "position": {
           "x": 807.5,
-          "y": 6085
+          "y": 6255
         }
       }
     note: false
@@ -2202,7 +2202,7 @@ tasks:
       {
         "position": {
           "x": 1237.5,
-          "y": 4580
+          "y": 4750
         }
       }
     note: false
@@ -2241,7 +2241,7 @@ tasks:
       {
         "position": {
           "x": 592.5,
-          "y": 4750
+          "y": 4920
         }
       }
     note: false
@@ -2281,7 +2281,7 @@ tasks:
       {
         "position": {
           "x": 1237.5,
-          "y": 4410
+          "y": 4580
         }
       }
     note: false
@@ -2397,7 +2397,7 @@ tasks:
       {
         "position": {
           "x": 1022.5,
-          "y": 4750
+          "y": 4920
         }
       }
     note: false
@@ -2427,7 +2427,7 @@ tasks:
       {
         "position": {
           "x": 1237.5,
-          "y": 4920
+          "y": 5090
         }
       }
     note: false
@@ -2543,7 +2543,42 @@ tasks:
       {
         "position": {
           "x": 1452.5,
-          "y": 4750
+          "y": 4920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "88":
+    id: "88"
+    taskid: 9282308c-0ec7-44ba-93c5-4192deea78d0
+    type: regular
+    task:
+      id: 9282308c-0ec7-44ba-93c5-4192deea78d0
+      version: -1
+      name: Add Virus Total To TIM
+      description: Checks the reputation of an IP address.
+      script: VirusTotal (API v3)|||ip
+      type: regular
+      iscommand: true
+      brand: VirusTotal (API v3)
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      ip:
+        simple: ${CrowdStrike.Device.[0].ExternalIP}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1022.5,
+          "y": 710
         }
       }
     note: false
@@ -2560,7 +2595,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 6100,
+        "height": 6270,
         "width": 2325,
         "x": 50,
         "y": 50
