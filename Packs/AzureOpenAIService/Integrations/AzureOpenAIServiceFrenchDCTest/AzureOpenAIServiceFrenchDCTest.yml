@@ -34,6 +34,7 @@ script:
   - arguments:
     - description: The message you would like to send.
       name: message
+      required: true
     description: Send message to Azure Open AI.
     name: azure-openai-send-message
   dockerimage: demisto/python3:3.12.11.4284848
