@@ -1,6 +1,7 @@
 import json
 import demistomock as demisto
-from CVEEnrichment import cve_enrichment_script  # <-- adjust if your file name differs
+from CommonServerPython import Common
+from CVEEnrichment import cve_enrichment_script
 
 
 def util_load_json(path: str):
@@ -10,23 +11,25 @@ def util_load_json(path: str):
 
 # End-to-end: TIM + enrichIndicators (batch data from file)
 def test_cve_enrichment_script_end_to_end_with_batch_file(mocker):
-    """
+    r"""
     Given:
         - Two CVEs.
-        - TIM returns pages from mock_cve_tim_results.json (with CVSS data in brand contexts).
+        - TIM returns pages from mock_cve_tim_results.json (with reliability + manual edit + modifiedTime).
         - Batches:
             * createNewIndicator (no-op)
-            * enrichIndicators per CVE (DBotScore only for CVE-2024-0001 / brand1; not surfaced by current mapping)
+            * enrichIndicators per CVE (DBotScore only for CVE-2024-0001 / brand1; not surfaced by mapping)
     When:
-        - cve_enrichment_script runs end-to-end.
+        - cve_enrichment_script runs end-to-end (external_enrichment=True).
     Then:
         - CVEEnrichment contains both CVEs.
         - For CVE-2024-0001:
-            * Results include brand1 + brand2 (2 items) — TIM is summarized via TIMScore/Status.
-            * MaxCVSS = 9.8 and MaxSeverity = "Critical".
-            * No MaxScore/MaxVerdict (Score not in mapping).
-            * TIMScore exists (summarized from TIM).
-        - (DBotScore vendor checks omitted: enrichIndicators has no context_output_mapping.)
+            * Results include TIM + brand1 + brand2 (3 items).
+              - TIM row has no Status/ModifiedTime (popped to top-level).
+            * MaxCVSS = 9.8 and MaxSeverity = "Critical" (from vendor CVSS).
+            * TIMScore == 2; Status == "Manual"; ModifiedTime == fixture value.
+        - For CVE-2023-9999:
+            * Results include TIM + brand3 (2 items), with brand3 Reliability == "Low".
+        - We don't assert DBotScore path (not mapped in outputs).
     """
     tim_pages = util_load_json("test_data/mock_cve_tim_results.json")["pages"]
     batch_data = util_load_json("test_data/mock_cve_batch_results.json")
@@ -50,7 +53,7 @@ def test_cve_enrichment_script_end_to_end_with_batch_file(mocker):
 
     mocker.patch("AggregatedCommandApiModule.IndicatorsSearcher", return_value=_MockSearcher(tim_pages))
 
-    # Enabled brands
+    # Enabled brands (external enrich runs for these)
     mocker.patch.object(
         demisto,
         "getModules",
@@ -61,13 +64,8 @@ def test_cve_enrichment_script_end_to_end_with_batch_file(mocker):
         },
     )
 
-    # Helper: wrap raw entries into processed tuples [(entry, hr, err)]
-    def _wrap_each_as_command(entries, hr=""):
-        # N commands, each with one entry
-        return [[(e, hr, "")] for e in entries]
-
+    # Helpers
     def _wrap_all_in_one_command(entries, hr=""):
-        # 1 command that yields N entries
         return [[(e, hr, "") for e in entries]]
 
     # Batch executor mock → map fixtures to command batches
@@ -75,29 +73,12 @@ def test_cve_enrichment_script_end_to_end_with_batch_file(mocker):
         out = []
 
         # ----- Batch 1: createNewIndicator -----
-        b1_cmds = list_of_batches[0]
         b1_entries = batch_data["batch1_createNewIndicator"]
-
-        if len(b1_cmds) == 1:
-            # aggregated: one command returns both entries
-            out.append(_wrap_all_in_one_command(b1_entries))
-        else:
-            # per-CVE: N commands, each returns one entry
-            assert len(b1_entries) == len(b1_cmds), "batch1 size mismatch vs fixture"
-            out.append(_wrap_each_as_command(b1_entries))
+        out.append(_wrap_all_in_one_command(b1_entries))
 
         # ----- Batch 2: enrichIndicators -----
-        b2_cmds = list_of_batches[1]
         enrich_entries = batch_data["batch2_enrichIndicators"]
-        enrich_cmds_count = sum(1 for c in b2_cmds if c.name == "enrichIndicators")
-
-        if enrich_cmds_count == 1:
-            # aggregated: one enrichIndicators command yields multiple entries
-            out.append(_wrap_all_in_one_command(enrich_entries))
-        else:
-            # per-CVE: one enrichIndicators command per entry
-            assert len(enrich_entries) == enrich_cmds_count, "enrichIndicators size mismatch vs fixture"
-            out.append(_wrap_each_as_command(enrich_entries))
+        out.append(_wrap_all_in_one_command(enrich_entries))
 
         return out
 
@@ -114,18 +95,34 @@ def test_cve_enrichment_script_end_to_end_with_batch_file(mocker):
     outputs = res.outputs
 
     # CVEEnrichment indicators
-    enrichment_list = outputs.get("CVEEnrichment(val.Value && val.Value == obj.Value)", [])
+    key = "CVEEnrichment(val.Value && val.Value == obj.Value)"
+    enrichment_list = outputs.get(key, [])
     enrichment_map = {item["Value"]: item for item in enrichment_list}
     assert set(enrichment_map.keys()) == set(cve_list)
 
     cve1 = enrichment_map["CVE-2024-0001"]
 
-    # TIM is summarized (TIMScore/Status), not included in Results
-    assert len(cve1["Results"]) == 2  # brand1 + brand2
+    # Results contains TIM + vendor rows
+    assert {r.get("Brand") for r in cve1["Results"]} == {"TIM", "brand1", "brand2"}
+    assert len(cve1["Results"]) == 3
 
-    # MaxCVSS/MaxSeverity computed from mapped CVSS values
-    assert "MaxScore" not in cve1
-    assert "MaxVerdict" not in cve1
-    assert "TIMScore" in cve1  # summarized from TIM presence
-    assert cve1["MaxCVSS"] == 9.8
-    assert cve1["MaxSeverity"] == "Critical"
+    # TIM row present but Status/ModifiedTime popped to top-level
+    tim_row = next(r for r in cve1["Results"] if r["Brand"] == "TIM")
+    assert "Status" not in tim_row
+    assert "ModifiedTime" not in tim_row
+
+    # Vendor reliabilities
+    b1 = next(r for r in cve1["Results"] if r["Brand"] == "brand1")
+    assert b1.get("Reliability") == "High"
+    b2 = next(r for r in cve1["Results"] if r["Brand"] == "brand2")
+    assert b2.get("Reliability") == "Medium"
+
+    # TIM summarization
+    assert cve1.get("Status") == "Manual"
+    assert cve1.get("ModifiedTime") == "2025-09-01T00:00:00Z"
+
+    # Second CVE: TIM + brand3, reliability Low
+    cve2 = enrichment_map["CVE-2023-9999"]
+    assert {r.get("Brand") for r in cve2["Results"]} == {"TIM", "brand3"}
+    b3 = next(r for r in cve2["Results"] if r["Brand"] == "brand3")
+    assert b3.get("Reliability") == "Low"

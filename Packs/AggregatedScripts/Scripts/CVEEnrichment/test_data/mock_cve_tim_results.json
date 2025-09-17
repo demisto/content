@@ -5,6 +5,8 @@
           {
             "value": "CVE-2024-0001",
             "score": 2,
+            "manuallyEditedFields": { "Score": true },
+            "modifiedTime": "2025-09-01T00:00:00Z",
             "CustomFields": {
               "id": "CVE-2024-0001",
               "cvss": "7.5",
@@ -15,6 +17,7 @@
               "scores": {
                 "brand1": {
                   "score": 2,
+                  "reliability": "High",
                   "context": {
                     "DBotScore(val.Indicator && val.Vendor)": [
                       { "Indicator": "CVE-2024-0001", "Vendor": "brand1", "Score": 2 }
@@ -32,6 +35,7 @@
                 },
                 "brand2": {
                   "score": 3,
+                  "reliability": "Medium",
                   "context": {
                     "DBotScore(val.Indicator && val.Vendor)": [
                       { "Indicator": "CVE-2024-0001", "Vendor": "brand2", "Score": 3 }
@@ -53,6 +57,7 @@
           {
             "value": "CVE-2023-9999",
             "score": 1,
+            "modifiedTime": "2025-08-20T00:00:00Z",
             "CustomFields": {
               "id": "CVE-2023-9999",
               "cvss": 1.2,
@@ -63,6 +68,7 @@
               "scores": {
                 "brand3": {
                   "score": 1,
+                  "reliability": "Low",
                   "context": {
                     "DBotScore(val.Indicator && val.Vendor)": [
                       { "Indicator": "CVE-2023-9999", "Vendor": "brand3", "Score": 1 }

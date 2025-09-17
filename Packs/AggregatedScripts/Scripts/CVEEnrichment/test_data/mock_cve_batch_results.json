@@ -15,6 +15,7 @@
       },
       {
         "Type": 1,
+        "Metadata": { "brand": "brand2" },
         "EntryContext": {}
       }
     ]

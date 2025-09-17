@@ -2,8 +2,13 @@ args:
 - description: A comma-separated list of CVEs to enrich.
   name: cve_list
   required: true
+  isArray: true
 - name: external_enrichment
-  description: When set to 'true', the script runs reputation commands using all available external integrations. This is ignored if the 'brands' argument is used, as 'brands' provides an explicit list of integrations to run.
+  description: |
+    Whether to call external integrations for enrichment.
+    - 'true': enrich using enabled external integrations (e.g., VirusTotal (API v3), AlienVault OTX v2).
+    - 'false': use only existing TIM data; skip external integrations.
+    If the 'brands' argument is provided, this flag is ignored and enrichment is run only on the brands provided.
   auto: PREDEFINED
   predefined:
   - 'true'
@@ -19,18 +24,29 @@ args:
   defaultValue: 'false'
   required: false
 - name: brands
-  description: |-
-    A comma-separated list of specific integration brands to use for enrichment, e.g., "VirusTotal,CrowdStrike". If left empty, the script runs on all enabled integrations according to the 'external_enrichment' flag. 
-    Run !ProvidesCommand command=cve to see available integrations.
+  description: |
+    A list of integration brands to run enrichment against.  
+    Example: `"VirusTotal (API v3), AlienVault OTX v2"`.  
+    - If provided, only the selected brands are used. 
+    - If left empty, the script runs enrichment on all enabled integrations,
+      depending on the `external_enrichment` flag.
+    To see the available brands for the `cve` command, run: `!ProvidesCommand command=cve`.
   isArray: true
   required: false
 - name: additional_fields
-  description: Whether to return secondary fields to the context output under "AdditionalFields".
+  description: |
+    When set to true, the output will also include an `AdditionalFields` object
+    for each of the indicator result.  
+    `AdditionalFields` contains all fields returned by TIM or the integrations
+    that are not part of the standard output keys: `ID`, `Brand`, `CVSS`, 
+    `Description`, `Published`, `CVSS`.  
+    When set to false, only the standard keys are returned.
   auto: PREDEFINED
   predefined:
   - 'true'
   - 'false'
   required: false
+  defaultValue: 'false'
 comment: This script gathers CVE reputation data from multiple integrations and returns a "CVEEnrichment" object with consolidated information to the context output.
 commonfields:
   id: cve-enrichment
@@ -40,34 +56,39 @@ name: cve-enrichment
 outputs:
 # CVEEnrichment
 - contextPath: CVEEnrichment.Value
-  description: the cve it self.
+  description: The CVE.
   type: string
 - contextPath: CVEEnrichment.MaxCVSS
-  description: the max CVSS of the indicator.
+  description: The max CVSS of the indicator.
   type: number
 - contextPath: CVEEnrichment.MaxCVSSRating
-  description: the max CVSS rating of the indicator.
+  description: The max CVSS rating of the indicator.
   type: string
 - contextPath: CVEEnrichment.Results
-  description: list of all indicators found for the cve.
+  description: List of all indicators found for the cve.
   type: array
 - contextPath: CVEEnrichment.Status
-  description: the status of the indicator.
+  description: The status of the indicator.
   type: string
 # CVEEnrichment Main Keys
 - contextPath: CVEEnrichment.Results.Brand
-  description: the brand of the indicator.
+  description: The brand of the indicator.
   type: string
 - contextPath: CVEEnrichment.Results.CVSS
-  description: the CVSS of the indicator.
+  description: The CVSS of the indicator.
   type: number
 - contextPath: CVEEnrichment.Results.Description
-  description: the description of the indicator.
+  description: The description of the indicator.
   type: string
 - contextPath: CVEEnrichment.Results.Published
-  description: the published date of the indicator.
+  description: The published date of the indicator.
   type: string
-  
+- contextPath: CVEEnrichment.Results.Status
+  description: The status of the indicator. If the Score changed manually, the status will be "Manual". If modified by less than one week, the status will be "Fresh". Otherwise, the status will be "Stale". If not modified at all, the status will be None.
+  type: string
+- contextPath: CVEEnrichment.Results.ModifiedTime
+  description: The time the indicator was last modified.
+  type: Date
 # CVEEnrichment Additional Fields
 - contextPath: CVEEnrichment.Results.AdditionalFields
   description: Unmapped (secondary) fields. Only available if the additional_fields argument is set to true.
@@ -90,22 +111,6 @@ outputs:
 - contextPath: CVEEnrichment.Results.AdditionalFields.Modified
   description: The timestamp of when the CVE was last modified.
   type: Date
-# DBotScore
-- contextPath: DBotScore.Indicator
-  description: The indicator value.
-  type: string
-- contextPath: DBotScore.Type
-  description: The indicator type.
-  type: string
-- contextPath: DBotScore.Vendor
-  description: Vendor used to calculate the score.
-  type: string
-- contextPath: DBotScore.Score
-  description: The actual score.
-  type: number
-- contextPath: DBotScore.Reliability
-  description: The reliability of the score.
-  type: string
 script: '-'
 system: false
 tags:
