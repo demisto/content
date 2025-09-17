@@ -5,7 +5,7 @@ name: Zoom Mail
 display: Zoom Mail
 category: Email
 description: Enables interaction with the Zoom Mail API.
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 configuration:

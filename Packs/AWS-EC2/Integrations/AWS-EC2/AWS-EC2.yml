@@ -4140,6 +4140,6 @@ script:
 tests:
 - AWS - EC2 Test Playbook
 fromversion: 5.0.0
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
