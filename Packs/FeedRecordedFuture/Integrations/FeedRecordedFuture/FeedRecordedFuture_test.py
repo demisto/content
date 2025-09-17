@@ -364,7 +364,7 @@ def test_fetch_indicators_command(mocker):
             "recordedfuturefeedthreatassessment": "",
             "fieldrecordedfutureriskrules": "",
         },
-        "rawJSON": {"Name": "192.168.0.1", "a": "3", "type": "IP", "value": "192.168.0.1"},
+        "rawJSON": {},
         "score": 0,
         "type": "IP",
         "value": "192.168.0.1",
@@ -385,7 +385,9 @@ def test_fetch_indicators_risk_threshold_command(mocker):
      - Verify the fetch does not returns indicators with lower score than the threshold.
     """
     indicator_type = "ip"
-    client = Client(indicator_type=indicator_type, api_token="dummytoken", services=["fusion"], risk_score_threshold=40)
+    client = Client(
+        indicator_type=indicator_type, api_token="dummytoken", services=["fusion"], risk_score_threshold=40, performance=False
+    )
     mocker.patch("FeedRecordedFuture.Client.build_iterator")
     mocker.patch(
         "FeedRecordedFuture.Client.get_batches_from_file",

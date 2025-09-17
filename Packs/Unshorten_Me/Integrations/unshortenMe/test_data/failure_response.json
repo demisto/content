@@ -1,0 +1,6 @@
+{
+  "success": false,
+  "error_code": 2,
+  "error_message": "URL is not valid",
+  "requested_url": "invalid-url"
+}
