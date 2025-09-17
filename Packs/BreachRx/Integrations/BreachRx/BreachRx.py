@@ -116,11 +116,11 @@ class BreachRxClient:
         self.client = Client(transport=transport, fetch_schema_from_transport=False)
 
     def get_incident_severities(self):
-        request = GraphQLRequest(document=get_incident_severities)
+        request = GraphQLRequest(get_incident_severities)
         return self.client.execute(request)["incidentSeverities"]
 
     def get_incident_types(self):
-        request = GraphQLRequest(document=get_incident_types)
+        request = GraphQLRequest(get_incident_types)
         return self.client.execute(request)["types"]
 
     def create_incident(self, name: Optional[str], description: Optional[str]):
@@ -133,12 +133,14 @@ class BreachRxClient:
             "type": types[0]["name"],
             "description": description,
         }
-        request = GraphQLRequest(document=create_incident_mutation, variable_values=params)
+        create_incident_mutation.variable_values = params
+        request = GraphQLRequest(create_incident_mutation)
         return self.client.execute(request)["createIncident"]
 
     def get_incident(self, name: Optional[str], identifier: Optional[str]):
         params = {"name": name, "identifier": identifier}
-        request = GraphQLRequest(document=get_incident_by_name, variable_values=params)
+        get_incident_by_name.variable_values = params
+        request = GraphQLRequest(get_incident_by_name)
         results = self.client.execute(request)["incidents"]
 
         if results:
@@ -148,7 +150,8 @@ class BreachRxClient:
 
     def get_actions_for_incident(self, incident_id):
         params = {"incidentId": incident_id}
-        request = GraphQLRequest(document=get_actions_for_incident, variable_values=params)
+        get_actions_for_incident.variable_values = params
+        request = GraphQLRequest(get_actions_for_incident)
         return self.client.execute(request)["actions"]
 
 

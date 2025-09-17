@@ -36,7 +36,8 @@ def execute_query(client: Client, args: dict) -> CommandResults:
         elif variable_value.lower() in {"true", "false"}:
             variable_value = bool(variable_value)
         variables[variable_name] = variable_value
-    request = GraphQLRequest(document=query, variable_values=variables)
+    query.variable_values = variables
+    request = GraphQLRequest(query)
     result = client.execute(request)
     if (result_size := sys.getsizeof(result)) > (max_result_size := float(args.get("max_result_size", 10))) * 10000:
         raise ValueError(f"Result size {result_size / 10000} KBs is larger than max result size {max_result_size} KBs")
