@@ -91,7 +91,7 @@ outputs:
   type: Date
 # CVEEnrichment Additional Fields
 - contextPath: CVEEnrichment.Results.AdditionalFields
-  description: Unmapped (secondary) fields. Only available if the additional_fields argument is set to true.
+  description: All fields extracted from the indicator other then the main keys ("ID", "Brand", "CVSS", "Description", "Published", "CVSS").
   type: Object
 - contextPath: CVEEnrichment.Results.AdditionalFields.Relationships.EntityA
   description: The source of the relationship.
