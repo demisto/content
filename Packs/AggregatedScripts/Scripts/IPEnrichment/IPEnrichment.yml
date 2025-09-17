@@ -101,7 +101,7 @@ outputs:
   description: The verdict of the indicator.
   type: string
 - contextPath: IPEnrichment.Results.Address
-  description: The ip address of the indicator.
+  description: The IP address of the indicator.
   type: string
 # IPEnrichment results additional fields
 - contextPath: IPEnrichment.Results.AdditionalFields

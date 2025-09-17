@@ -42,7 +42,7 @@ This script gathers IP reputation data from multiple integrations and returns an
 | IPEnrichment.Results.ASOwner | Registered owner of the Autonomous System announcing the IP prefix. | string |
 | IPEnrichment.Results.Score | The score of the indicator. | number |
 | IPEnrichment.Results.Verdict | The verdict of the indicator. | string |
-| IPEnrichment.Results.Address | The ip address of the indicator. | string |
+| IPEnrichment.Results.Address | The IP address of the indicator. | string |
 | IPEnrichment.Results.AdditionalFields | Unmapped \(secondary\) fields. Only available if the additional_fields argument is set to true. | list |
 | IPEnrichment.Results.AdditionalFields.Relationships.EntityA | The source of the relationship. | string |
 | IPEnrichment.Results.AdditionalFields.Relationships.EntityB | The destination of the relationship. | string |
