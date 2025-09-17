@@ -390,7 +390,7 @@ def find_matching_dbot_score(dbot_scores: list[dict], file_context: dict[str, An
     Returns:
         dict: The matching "DBotScore" object if found, otherwise an empty dictionary.
     """
-    hashes_in_context = {file_context.get(hash_type, "").casefold() for hash_type in HASH_TYPES if hash_type in file_context}
+    hashes_in_context = {(file_context.get(hash_type) or "").casefold() for hash_type in HASH_TYPES if hash_type in file_context}
 
     for dbot_score in dbot_scores:
         indicator = dbot_score.get("Indicator")
