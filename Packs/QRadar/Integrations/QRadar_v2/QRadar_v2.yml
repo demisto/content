@@ -943,7 +943,7 @@ script:
     - contextPath: QRadar.Properties.username
       description: The owner of the event regex property.
       type: String
-  dockerimage: demisto/python3:3.12.11.4508456
+  dockerimage: demisto/python3:3.12.11.4819260
   longRunning: true
   runonce: false
   script: '-'
