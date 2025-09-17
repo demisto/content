@@ -1,11 +1,8 @@
 import demistomock as demisto  # noqa: F401
-import urllib3
 from CommonServerPython import *  # noqa: F401
 from IAMApiModule import *  # noqa: E402
 from ZoomApiModule import *  # noqa: E402
 
-# Disable insecure warnings
-urllib3.disable_warnings()
 
 DEFAULT_OUTGOING_MAPPER = "User Profile - SCIM (Outgoing)"
 DEFAULT_INCOMING_MAPPER = "User Profile - SCIM (Incoming)"
