@@ -305,14 +305,14 @@ def main():
         users, hr_get = get_users(args)
         outputs, hr_disable = disable_users(users)
 
-        if argToBoolean(args.get("verbose")):
+        if argToBoolean(args.get("verbose", "false")):
             verbose_hr = "\n\n".join(("", hr_get, hr_disable))
 
         if any(res["Disabled"] for res in outputs):
             return_results(
                 CommandResults(
                     outputs_prefix="DisableUser",
-                    outputs_key_field="UserProfile.Email",
+                    outputs_key_field=["UserProfile.Email", "UserProfile.ID", "UserProfile.Username", "Disabled", "Instance"],
                     outputs=outputs,
                     readable_output=tableToMarkdown(
                         "Disable User",

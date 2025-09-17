@@ -504,8 +504,8 @@ class Client(BaseClient):
     For this  implementation, no special attributes defined
     """
 
-    def __init__(self, api_key: str, account_id: int, base_url: str, verify: bool):
-        super().__init__(base_url=base_url, verify=verify)
+    def __init__(self, api_key: str, account_id: int, base_url: str, verify: bool, proxy: bool):
+        super().__init__(base_url=base_url, verify=verify, proxy=proxy)
 
         self.base_url = base_url
         self.api_key = api_key
@@ -4836,6 +4836,7 @@ def main() -> None:
         account_id=demisto.params().get("account_id"),
         base_url=demisto.params().get("base_url"),
         verify=demisto.params().get("verify"),
+        proxy=demisto.params().get("proxy"),
     )
     demisto.debug(f"Command being called is {demisto.command()}")
     try:
