@@ -1232,6 +1232,171 @@ def get_credentials(args: dict, params: dict) -> Credentials:
         raise DemistoException(f"Failed to authenticate with GCP: {str(e)}")
 
 
+def gcp_compute_network_get_command(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Returns the specified network.
+
+    Args:
+        creds (Credentials): GCP credentials with admin directory security scope.
+
+        args (dict[str, Any]): _description_
+
+    Returns:
+        CommandResults: _description_
+    """
+    # endpoints args
+    project = args.get("project_id")
+    network = args.get("network")
+
+    compute = GCPServices.COMPUTE.build(creds)
+    response = compute.networks().get(project=project, network=network).execute()
+
+    data_res = {"name": response.get("name"), "id": response.get("id")}
+
+    headers = ["id", "name"]
+
+    readable_output = tableToMarkdown(f"GCP network {network}", data_res, headers=headers, removeNull=True)
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="GoogleCloudCompute.Networks",  # maybe gcp.compute.Networks
+        outputs_key_field="id",
+        outputs=response,
+        raw_response=response,
+    )
+
+
+def gcp_compute_image_get(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """_summary_
+
+    Args:
+        creds (Credentials): _description_
+        args (dict[str, Any]): _description_
+
+    Returns:
+        CommandResults: _description_
+    """
+    project = args.get("project")
+    image = args.get("image")
+
+    compute = GCPServices.COMPUTE.build(creds)
+    response = compute.images().get(project=project, image=image).execute()
+
+    data_res = {"id": response.get("id"), "name": response.get("name")}
+    headers = ["id", "name"]
+
+    readable_output = tableToMarkdown(f"GCP images {image}", data_res, headers=headers, removeNull=True)
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="GoogleCloudCompute.Images",  # maybe gcp.compute.images
+        outputs_key_field="id",
+        outputs=response,
+    )
+
+
+def gcp_compute_region_get(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """_summary_
+
+    Args:
+        creds (Credentials): _description_
+        args (dict[str, Any]): _description_
+
+    Returns:
+        CommandResults: _description_
+    """
+    project = args.get("project")
+    region = args.get("region")
+
+    compute = GCPServices.COMPUTE.build(creds)
+    response = compute.regions().get(project=project, region=region).execute()
+
+    data_res = {"id": response.get("id"), "name": response.get("name"), "status": response.get("status")}
+    headers = ["id", "name", "status"]
+
+    readable_output = tableToMarkdown(f"GCP region {region}", data_res, headers=headers, removeNull=True)
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="GoogleCloudCompute.Regions",  # maybe gcp.compute.region
+        outputs_key_field="id",
+        outputs=response,
+    )
+
+
+def gcp_compute_instance_group_get(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """_summary_
+
+    Args:
+        creds (Credentials): _description_
+        args (dict[str, Any]): _description_
+
+    Returns:
+        CommandResults: _description_
+    """
+    project = args.get("project")
+    instance_group = args.get("instanceGroup")
+    zone = args.get("zone")
+
+    compute = GCPServices.COMPUTE.build(creds)
+    response = compute.instanceGroups().get(project=project, zone=zone, instanceGroups=instance_group).execute()
+
+    data_res = {
+        "id": response.get("id"),
+        "name": response.get("name"),
+        "zone": response.get("zone"),
+        "network": response.get("network"),
+    }
+    headers = ["id", "name", "zone", "network"]
+
+    readable_output = tableToMarkdown(f"GCP instanceGroups {instance_group}", data_res, headers=headers, removeNull=True)
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="GoogleCloudCompute.InstanceGroups",  # maybe gcp.compute.instanceGroups
+        outputs_key_field="id",
+        outputs=response,
+    )
+
+
+def gcp_compute_zone_get(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """_summary_
+
+    Args:
+        creds (Credentials): _description_
+        args (dict[str, Any]): _description_
+
+    Returns:
+        CommandResults: _description_
+    """
+    project = args.get("project")
+    name = args.get("name")
+    zone = args.get("zone")
+
+    compute = GCPServices.COMPUTE.build(creds)
+    response = compute.instanceGroups().get(project=project, zone=zone, operation=name).execute()
+
+    data_res = {
+        "status": response.get("status"),
+        "kind": response.get("kind"),
+        "name": response.get("name"),
+        "id": response.get("id"),
+        "progress": response.get("progress"),
+        "operationType": response.get("operationType"),
+    }
+
+    headers = ["status", "kind", "id", "progress", "operationType", "name"]
+
+    readable_output = tableToMarkdown(f"GCP zone {zone}", data_res, headers=headers, removeNull=True)
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="GoogleCloudCompute.Zones",  # maybe gcp.compute.Zones
+        outputs_key_field="id",
+        outputs=response,
+    )
+
+
 def main():  # pragma: no cover
     """
     Main function to route commands and execute logic.
@@ -1253,6 +1418,10 @@ def main():  # pragma: no cover
             "gcp-compute-instance-service-account-remove": compute_instance_service_account_remove,
             "gcp-compute-instance-start": compute_instance_start,
             "gcp-compute-instance-stop": compute_instance_stop,
+            "gcp-compute-network-get": gcp_compute_network_get_command,
+            "gcp-compute-image-get": gcp_compute_image_get,
+            "gcp-compute-region-get": gcp_compute_region_get,
+            "gcp-compute-instance-group-get": gcp_compute_instance_group_get,
             # Storage commands
             "gcp-storage-bucket-policy-delete": storage_bucket_policy_delete,
             "gcp-storage-bucket-metadata-update": storage_bucket_metadata_update,
