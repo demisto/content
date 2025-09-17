@@ -8707,9 +8707,9 @@ class TestFetchWithLookBack:
         from CommonServerPython import remove_old_incidents_ids
 
         assert remove_old_incidents_ids(
-            {"inc1": "2020-01-01T00:00:00Z", "inc2": "2020-01-02T00:00:00Z", "inc3": "2020-01-03T00:00:00Z"}, 1800000000, 1) == {"inc3": "2020-01-03T00:00:00Z"}
+            {"inc1": 1, "inc2": 2, "inc3": 3}, 100, 1) == {"inc3": 3}
         assert remove_old_incidents_ids(
-            {"inc1": "2020-01-01T00:00:00Z", "inc2": "2020-01-02T00:00:00Z", "inc3": "2020-01-02T00:00:00Z"}, 1800000000, 2) == {"inc2": "2020-01-02T00:00:00Z", "inc3": "2020-01-02T00:00:00Z"}
+            {"inc1": 1, "inc2": 2, "inc3": 2}, 100, 1) == {"inc2": 2, "inc3": 2}
 
 
 class TestTracebackLineNumberAdgustment:
