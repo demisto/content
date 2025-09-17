@@ -31,6 +31,7 @@ from typing import Any, Dict, Iterable, List, Optional, Tuple
 
 import jwt  # PyJWT
 import httpx
+import random
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import (  # noqa: F401
@@ -216,7 +217,7 @@ class AsyncRetryClient:
             Exception: For other unexpected errors
         """
         attempt = 0
-        backoff = RETRY_BASE_SLEEP
+        backoff = Constants.RETRY_BASE_SLEEP
         
         while True:
             attempt += 1
@@ -238,7 +239,7 @@ class AsyncRetryClient:
 
                 # Handle retryable status codes
                 if resp.status_code in (408, 429) or 500 <= resp.status_code < 600:
-                    if attempt >= RETRY_MAX:
+                    if attempt >= Constants.RETRY_MAX:
                         resp.raise_for_status()
                         
                     # Calculate backoff with jitter
@@ -246,15 +247,15 @@ class AsyncRetryClient:
                     if retry_after and retry_after.isdigit():
                         sleep_s = float(retry_after)
                     else:
-                        sleep_s = min(backoff * (1 + 0.1 * (random.random() - 0.5)), RETRY_MAX_SLEEP)
+                        sleep_s = min(backoff * (1 + 0.1 * (random.random() - 0.5)), Constants.RETRY_MAX_SLEEP)
                         
                     demisto.debug(
                         f"[Docusign] Retryable HTTP {resp.status_code} {url}; "
-                        f"sleep {sleep_s:.2f}s (attempt {attempt}/{RETRY_MAX})"
+                        f"sleep {sleep_s:.2f}s (attempt {attempt}/{Constants.RETRY_MAX})"
                     )
                     
                     await asyncio.sleep(sleep_s)
-                    backoff = min(backoff * 2, RETRY_MAX_SLEEP)
+                    backoff = min(backoff * 2, Constants.RETRY_MAX_SLEEP)
                     continue
 
                 # For non-retryable errors, raise immediately
@@ -263,20 +264,20 @@ class AsyncRetryClient:
             except (httpx.ConnectTimeout, httpx.ReadTimeout, 
                    httpx.ConnectError, httpx.RemoteProtocolError) as e:
                 # Handle network-related errors with retries
-                if attempt >= RETRY_MAX:
+                if attempt >= Constants.RETRY_MAX:
                     demisto.error(
-                        f"[Docusign] Max retries ({RETRY_MAX}) exceeded for {method} {url}: {e}"
+                        f"[Docusign] Max retries ({Constants.RETRY_MAX}) exceeded for {method} {url}: {e}"
                     )
                     raise
                     
-                sleep_s = min(backoff * (1 + 0.1 * (random.random() - 0.5)), RETRY_MAX_SLEEP)
+                sleep_s = min(backoff * (1 + 0.1 * (random.random() - 0.5)), Constants.RETRY_MAX_SLEEP)
                 demisto.debug(
                     f"[Docusign] Network error {type(e).__name__} on {method} {url}; "
-                    f"sleep {sleep_s:.2f}s (attempt {attempt}/{RETRY_MAX}): {e}"
+                    f"sleep {sleep_s:.2f}s (attempt {attempt}/{Constants.RETRY_MAX}): {e}"
                 )
                 
                 await asyncio.sleep(sleep_s)
-                backoff = min(backoff * 2, RETRY_MAX_SLEEP)
+                backoff = min(backoff * 2, Constants.RETRY_MAX_SLEEP)
 
     async def aclose(self) -> None:
         """Close the underlying HTTP client and release resources.
@@ -330,7 +331,7 @@ class DocuSignAuthAsync:
         self.integration_key = integration_key
         self.user_id = user_id
         self.private_key_pem = private_key_pem
-        self.http = AsyncRetryClient(verify=verify, proxies=proxies, timeout=DEFAULT_TIMEOUT, limits=DEFAULT_LIMITS)
+        self.http = AsyncRetryClient(verify=verify, proxies=proxies, timeout=Constants.DEFAULT_TIMEOUT, limits=Constants.DEFAULT_LIMITS)
 
     def _jwt(self, scopes: str) -> str:
         """Generate a JWT for authentication.
@@ -385,7 +386,7 @@ class DocuSignAuthAsync:
         expires_in = int(js.get("expires_in", 3600))
         if not access_token:
             raise DemistoException("DocuSign: Token exchange failed (no access_token).")
-        expires_at = int(time.time()) + max(1, expires_in - TOKEN_SKEW_SECONDS)
+        expires_at = int(time.time()) + max(1, expires_in - Constants.TOKEN_SKEW_SECONDS)
         return TokenInfo(access_token=access_token, expires_at=expires_at, env=self.env)
 
     async def _userinfo(self, token: str) -> str:
@@ -447,13 +448,13 @@ class DocuSignAuthAsync:
             DemistoException: If authentication fails at any step
         """
         ctx = get_integration_context() or {}
-        dctx = ctx.get(CTX_KEY, {})
+        dctx = ctx.get(Constants.CTX_KEY, {})
         
         # Ensure dctx is a dictionary, not a string or other type
         if not isinstance(dctx, dict):
             dctx = {}
             
-        cache = dctx.get(CTX_TOKEN_CACHE) or {}
+        cache = dctx.get(Constants.CTX_TOKEN_CACHE) or {}
         now = int(time.time())
 
         # Return cached token if valid
@@ -479,9 +480,9 @@ class DocuSignAuthAsync:
 
         # Update cache
         set_to_integration_context_with_retries({
-            CTX_KEY: {
+            Constants.CTX_KEY: {
                 **dctx,
-                CTX_TOKEN_CACHE: {
+                Constants.CTX_TOKEN_CACHE: {
                     "access_token": ti.access_token,
                     "expires_at": ti.expires_at,
                     "env": ti.env,
@@ -510,7 +511,7 @@ class DocuSignClientAsync:
             proxies: Optional proxy configuration
         """
         self.auth = auth
-        self.http = AsyncRetryClient(verify=verify, proxies=proxies, timeout=DEFAULT_TIMEOUT, limits=DEFAULT_LIMITS)
+        self.http = AsyncRetryClient(verify=verify, proxies=proxies, timeout=Constants.DEFAULT_TIMEOUT, limits=Constants.DEFAULT_LIMITS)
 
     async def monitor_stream(
         self,
@@ -533,7 +534,7 @@ class DocuSignClientAsync:
         """
         ti = await self.auth.get_token(scopes)
         base = _monitor_base(ti.env)
-        params: Dict[str, Any] = {"limit": min(limit, MAX_MONITOR_PAGE_LIMIT)}
+        params: Dict[str, Any] = {"limit": min(limit, Constants.MAX_MONITOR_PAGE_LIMIT)}
         if cursor:
             params["cursor"] = cursor
         url = f"{base}/api/v2.0/datasets/monitor/stream"
@@ -579,7 +580,7 @@ class DocuSignClientAsync:
         else:
             base = _admin_base(ti.env)
             url = f"{base}/management/v2/organizations/{organization_id}/users"
-            params = {"account_id": account_id, "take": min(take, MAX_ADMIN_TAKE)}
+            params = {"account_id": account_id, "take": min(take, Constants.MAX_ADMIN_TAKE)}
             if start is not None:
                 params["start"] = start
             if last_modified_since:
@@ -979,7 +980,7 @@ async def get_audit_users_once(
 async def _async_send_to_xsiam(events: List[Dict[str, Any]], multiple_threads: bool) -> None:
     loop = asyncio.get_running_loop()
     # Offload blocking call
-    await loop.run_in_executor(None, send_events_to_xsiam, events, VENDOR, PRODUCT, None, None, multiple_threads)
+    await loop.run_in_executor(None, send_events_to_xsiam, events, Constants.VENDOR, Constants.PRODUCT, None, None, multiple_threads)
 
 async def monitor_producer(
     queue: asyncio.Queue, 
@@ -1104,6 +1105,7 @@ async def monitor_producer(
         # Update state with the final cursor position
         state[Constants.CTX_CUSTOMER_CURSOR] = cursor
         total_duration = time.time() - start_time
+        state["__metrics_customer_produced"] = produced
         
         demisto.info(
             f"{Constants.LOG_PREFIX} Completed: {produced} events produced across "
@@ -1125,69 +1127,79 @@ async def _bounded_gather(coros: Iterable, limit: int) -> List[Any]:
 
 async def audit_producer(
     queue: asyncio.Queue,
-    client: DocuSignClientAsync,
-    config: Config,
+    client: "DocuSignClientAsync",
+    config: "Config",
     ctx: Dict[str, Any],
-    state: Dict[str, Any]
+    state: Dict[str, Any],
 ) -> None:
-    """Producer for audit user data.
-    
-    Fetches audit users from DocuSign in pages, enriches them with additional data,
-    and adds them to the queue for processing.
-    
-    Args:
-        queue: Queue to add events to
-        client: Initialized DocuSign client
-        config: Configuration object
-        ctx: Integration context
-        state: State dictionary to update with pagination info
     """
-    # Validate required parameters
-    ensure_ids_for_audit(config.organization_id, config.account_id)
-    
-    # Initialize scopes and pagination
-    scopes = _user_scopes(False, True)
-    total_limit = max(0, config.max_user_data_per_fetch)
-    last_modified_since = ctx.get(Constants.CTX_AUDIT_LAST_MOD_SINCE) or _iso_z(_utcnow())
-    next_url = ctx.get(Constants.CTX_AUDIT_NEXT_URL) or ""
-    start = None if next_url else 0
-    take = min(Constants.MAX_ADMIN_TAKE, total_limit) if total_limit else Constants.MAX_ADMIN_TAKE
+    Producer for DocuSign audit users.
 
-    # Log producer start
+    Fetches audit users in pages, optionally enriches with eSign details, and enqueues
+    normalized events. Uses either `paging.next` URLs (server-driven paging) or `start/take`
+    on first call. Advances `last_modified_since` to the max modified timestamp processed.
+
+    Args:
+        queue: asyncio queue to push events into
+        client: initialized DocuSign client (async)
+        config: configuration object (must expose organization_id, account_id,
+                max_user_data_per_fetch, user_detail_concurrency)
+        ctx: integration context (persisted across runs)
+        state: dict to be updated with CTX_AUDIT_NEXT_URL / CTX_AUDIT_LAST_MOD_SINCE
+    """
+    # --- validate inputs ---
+    ensure_ids_for_audit(config.organization_id, config.account_id)
+
+    # --- initial paging setup ---
+    scopes = _user_scopes(False, True)
+    total_limit: int = max(0, int(getattr(config, "max_user_data_per_fetch", 0) or 0))
+    last_modified_since: str = ctx.get(Constants.CTX_AUDIT_LAST_MOD_SINCE) or _iso_z(_utcnow())
+    next_url: str = ctx.get(Constants.CTX_AUDIT_NEXT_URL) or ""
+    start: Optional[int] = None if next_url else 0
+    page_take_default = int(min(Constants.MAX_ADMIN_TAKE, total_limit)) if total_limit else int(Constants.MAX_ADMIN_TAKE)
+
     demisto.info(
-        f"{Constants.LOG_PREFIX} Starting user data producer - "
-        f"total_limit: {total_limit}, last_modified_since: {last_modified_since}, "
-        f"next_url: {next_url}, take: {take}"
+        f"{Constants.LOG_PREFIX} audit_producer begin | "
+        f"limit={total_limit} lms={last_modified_since} next_url={bool(next_url)} take={page_take_default}"
     )
 
+    # --- get auth / base_uri ---
     try:
-        # Get authentication token and base URI
         ti = await client.auth.get_token(scopes)
         base_uri = ti.base_uri or ""
-        demisto.debug(f"{Constants.LOG_PREFIX} Got token, base_uri: {base_uri}")
+        demisto.debug(f"{Constants.LOG_PREFIX} token ok | base_uri={base_uri!r}")
     except Exception as e:
-        demisto.error(f"{Constants.LOG_PREFIX} Failed to get authentication token: {e}")
+        demisto.error(f"{Constants.LOG_PREFIX} auth failure: {e}")
         raise
 
-    # Initialize counters and timers
+    # --- metrics ---
     produced = 0
     page_count = 0
     start_time = time.time()
-    total_enrichment_time = 0
-    
+    total_enrichment_time = 0.0
+    max_seen_modified_iso: Optional[str] = None  # track max modifiedDate observed this run
+
     try:
-        # Fetch users in pages until we reach the limit or run out of data
         while True:
             page_count += 1
             page_start_time = time.time()
-            
+
+            # Respect remaining limit when asking for this page size (best effort).
+            if total_limit:
+                remaining = max(0, total_limit - produced)
+                if remaining == 0:
+                    demisto.debug(f"{Constants.LOG_PREFIX} limit reached pre-fetch; stopping")
+                    break
+                take = min(page_take_default, remaining)
+            else:
+                take = page_take_default
+
             demisto.debug(
-                f"{Constants.LOG_PREFIX} Page {page_count}: fetching users - "
-                f"start: {start}, take: {take}, next_url: {next_url}"
+                f"{Constants.LOG_PREFIX} page {page_count} fetch | start={start} take={take} next_url={bool(next_url)} lms={last_modified_since}"
             )
-            
+
+            # --- fetch a page ---
             try:
-                # Fetch a page of users
                 resp = await client.admin_list_users(
                     scopes=scopes,
                     organization_id=config.organization_id or "",
@@ -1195,93 +1207,118 @@ async def audit_producer(
                     start=start,
                     take=take,
                     last_modified_since=last_modified_since,
-                    next_url=next_url or None
+                    next_url=next_url or None,
                 )
             except Exception as e:
-                demisto.error(
-                    f"{Constants.LOG_PREFIX} Failed to fetch users on page {page_count}: {e}"
-                )
+                demisto.error(f"{Constants.LOG_PREFIX} page {page_count} fetch failed: {e}")
                 raise
-                
-            # Process the response
-            page_fetch_duration = time.time() - page_start_time
-            users = resp.get("users") or resp.get("data") or []
+
+            fetch_dt = time.time() - page_start_time
+            users: List[Dict[str, Any]] = (
+                resp.get("users") or resp.get("data") or []
+            )
             paging = resp.get("paging") or {}
             next_url = paging.get("next") or resp.get("next") or ""
 
             demisto.debug(
-                f"{Constants.LOG_PREFIX} Page {page_count}: fetched {len(users)} users in "
-                f"{page_fetch_duration:.2f}s, next_url: {next_url}"
+                f"{Constants.LOG_PREFIX} page {page_count} fetched {len(users)} users in {fetch_dt:.2f}s | next={bool(next_url)}"
             )
 
-        # Enrich details concurrently (bounded)
-        ids = [u.get("id") or u.get("user_id") for u in users if (u.get("id") or u.get("user_id"))]
-        details: List[Dict[str, Any]] = []
-        
-        if ids:
-            enrichment_start_time = time.time()
-            demisto.debug(f"[AUDIT_PRODUCER] Page {page_count}: enriching details for {len(ids)} users with concurrency {params.user_detail_concurrency}")
-            
-            try:
-                coros = [client.esign_user_detail(scopes, base_uri, params.account_id or "", str(uid)) for uid in ids]
-                details = await _bounded_gather(coros, params.user_detail_concurrency)
-                enrichment_duration = time.time() - enrichment_start_time
-                total_enrichment_time += enrichment_duration
-                
-                demisto.debug(f"[AUDIT_PRODUCER] Page {page_count}: enriched {len(details)} user details in {enrichment_duration:.2f}s")
-            except Exception as e:
-                demisto.error(f"[AUDIT_PRODUCER] Failed to enrich user details on page {page_count}: {e}")
-                # Continue without enrichment rather than failing completely
-                details = []
-                
-        by_id = {str(d.get("userId") or d.get("user_id") or d.get("id")): d for d in details if d}
-        demisto.debug(f"[AUDIT_PRODUCER] Page {page_count}: mapped {len(by_id)} enriched user details")
+            # --- enrich user details concurrently (bounded) ---
+            ids = [str(u.get("id") or u.get("user_id")) for u in users if (u.get("id") or u.get("user_id"))]
+            details: List[Dict[str, Any]] = []
+            if ids:
+                detail_start = time.time()
+                conc = int(getattr(config, "user_detail_concurrency", 5) or 5)
+                demisto.debug(
+                    f"{Constants.LOG_PREFIX} page {page_count} enrich {len(ids)} users | conc={conc}"
+                )
+                try:
+                    coros = [
+                        client.esign_user_detail(scopes, base_uri, config.account_id or "", uid)
+                        for uid in ids
+                    ]
+                    details = await _bounded_gather(coros, conc)
+                except Exception as e:
+                    demisto.error(f"{Constants.LOG_PREFIX} page {page_count} enrich failed: {e}")
+                    details = []  # proceed without enrichment
+                finally:
+                    enr_dt = time.time() - detail_start
+                    total_enrichment_time += enr_dt
+                    demisto.debug(
+                        f"{Constants.LOG_PREFIX} page {page_count} enrich done | {len(details)} items in {enr_dt:.2f}s"
+                    )
 
-        queue_put_count = 0
-        for u in users:
-            ev: Dict[str, Any] = {"source_log_type": "auditusers", "user": u}
-            mod = u.get("modifiedDate") or ""
-            ev["_time"] = mod or _iso_z(_utcnow())
-            dtp = _parse_time_maybe(mod)
-            if dtp:
-                ev["_time_iso"] = _iso_z(dtp)
-            uid = str(u.get("id") or u.get("user_id") or "")
-            if uid and uid in by_id:
-                ev["esign_detail"] = by_id[uid]
-                
-            try:
+            by_id = {
+                str(d.get("userId") or d.get("user_id") or d.get("id")): d
+                for d in details
+                if d
+            }
+
+            # --- queue events ---
+            queued_this_page = 0
+            for u in users:
+                ev: Dict[str, Any] = {"source_log_type": "auditusers", "user": u}
+
+                # timestamps
+                mod = u.get("modifiedDate") or u.get("modified_date") or ""
+                ev["_time"] = mod or _iso_z(_utcnow())
+                dtp = _parse_time_maybe(mod)
+                if dtp:
+                    ev["_time_iso"] = _iso_z(dtp)
+                    # track max modified seen
+                    if max_seen_modified_iso is None or _parse_time_maybe(max_seen_modified_iso) < dtp:
+                        max_seen_modified_iso = _iso_z(dtp)
+
+                # attach enrichment
+                uid = str(u.get("id") or u.get("user_id") or "")
+                if uid and uid in by_id:
+                    ev["esign_detail"] = by_id[uid]
+
                 await queue.put(ev)
-                queue_put_count += 1
+                queued_this_page += 1
                 produced += 1
-                
+
                 if total_limit and produced >= total_limit:
-                    demisto.debug(f"[AUDIT_PRODUCER] Reached total limit {total_limit}, stopping")
+                    demisto.debug(f"{Constants.LOG_PREFIX} limit {total_limit} reached during queueing")
                     break
-            except Exception as e:
-                demisto.error(f"[AUDIT_PRODUCER] Failed to put user event in queue: {e}")
-                raise
 
-        demisto.debug(f"[AUDIT_PRODUCER] Page {page_count}: queued {queue_put_count} user events, total produced: {produced}")
+            demisto.debug(
+                f"{Constants.LOG_PREFIX} page {page_count} queued={queued_this_page} produced_total={produced}"
+            )
 
-        if total_limit and produced >= total_limit:
-            demisto.info(f"[AUDIT_PRODUCER] Reached total limit {total_limit} after {page_count} pages")
-            break
-        if not next_url:
-            last_modified_since = _iso_z(_utcnow())
-            demisto.info(f"[AUDIT_PRODUCER] No more pages available, updated last_modified_since: {last_modified_since}")
-            break
-        start = None  # when next_url provided, server drives paging
+            # stop conditions
+            if total_limit and produced >= total_limit:
+                demisto.info(f"{Constants.LOG_PREFIX} reached limit after {page_count} pages")
+                break
 
-    total_duration = time.time() - start_time
-    state[CTX_AUDIT_NEXT_URL] = next_url
-    state[CTX_AUDIT_LAST_MOD_SINCE] = last_modified_since
-    
-    demisto.info(f"[AUDIT_PRODUCER] Completed: {produced} user events produced across {page_count} pages in {total_duration:.2f}s (enrichment: {total_enrichment_time:.2f}s), final next_url: {next_url}, last_modified_since: {last_modified_since}")
+            if not next_url:
+                # no more pages; advance LMS to max seen (fallback to now if none)
+                last_modified_since = max_seen_modified_iso or _iso_z(_utcnow())
+                demisto.info(f"{Constants.LOG_PREFIX} end of pages; lms-> {last_modified_since}")
+                break
+
+            # when using server-provided next URLs, server drives paging
+            start = None
+
+    except Exception as e:
+        demisto.error(f"{Constants.LOG_PREFIX} unexpected error after page {page_count}: {e}")
+        raise
+    finally:
+        # persist pagination cursors
+        state[Constants.CTX_AUDIT_NEXT_URL] = next_url
+        state[Constants.CTX_AUDIT_LAST_MOD_SINCE] = last_modified_since
+        state["__metrics_audit_produced"] = produced
+        total_dt = time.time() - start_time
+        demisto.info(
+            f"{Constants.LOG_PREFIX} audit_producer done | produced={produced} pages={page_count} "
+            f"total={total_dt:.2f}s enrich={total_enrichment_time:.2f}s next={bool(next_url)} lms={last_modified_since}"
+        )
 
 async def consumer_worker(
-    name: str, 
-    queue: asyncio.Queue, 
-    config: Config
+    name: str,
+    queue: asyncio.Queue,
+    config: Config,
 ) -> None:
     """Consumer worker that processes events from the queue and sends them to XSIAM.
     
@@ -1294,92 +1331,68 @@ async def consumer_worker(
     total_processed = 0
     total_batches_sent = 0
     start_time = time.time()
-    
-    # Get configuration values
+
     batch_size = config.send_batch_size
     multiple_threads_send = config.multiple_threads_send
-    
-    demisto.info(
-        f"{Constants.LOG_PREFIX} [{name}] Starting consumer worker - "
-        f"batch_size: {batch_size}, multiple_threads_send: {multiple_threads_send}"
-    )
-    
+
+    demisto.info(f"{Constants.LOG_PREFIX} [{name}] start | batch_size={batch_size} multi_send={multiple_threads_send}")
+
     try:
         while True:
             try:
-                # Get an item from the queue with a timeout
                 try:
                     item = await asyncio.wait_for(queue.get(), timeout=1.0)
                 except asyncio.TimeoutError:
-                    # Check for shutdown condition
-                    if queue.empty() and queue._unfinished_tasks == 0:  # type: ignore
-                        demisto.debug(f"{Constants.LOG_PREFIX} [{name}] Queue empty and no tasks remaining, shutting down")
-                        break
+                    # Stay alive; producers may still be working.
                     continue
-                    
-                # Check for shutdown signal
-                if item is None:
-                    demisto.info(f"{Constants.LOG_PREFIX} [{name}] Received shutdown signal")
+
+                if item is None:  # explicit shutdown
+                    queue.task_done()
+                    demisto.info(f"{Constants.LOG_PREFIX} [{name}] shutdown signal received")
                     break
-                    
-                # Add item to batch
+
                 if isinstance(item, dict):
                     batch.append(item)
                     total_processed += 1
-                    
-                    # Log batch status periodically
-                    if total_processed % 10 == 0:
-                        demisto.debug(
-                            f"{Constants.LOG_PREFIX} [{name}] Added event to batch "
-                            f"(batch size: {len(batch)}/{batch_size}, "
-                            f"queue size: {queue.qsize()}, "
-                            f"total processed: {total_processed})"
-                        )
-                    
-                    # Send batch if we've reached the batch size
+
                     if len(batch) >= batch_size:
                         await _process_batch(
                             name=name,
                             batch=batch,
                             batch_number=total_batches_sent + 1,
-                            multiple_threads_send=multiple_threads_send
+                            multiple_threads_send=multiple_threads_send,
                         )
                         total_batches_sent += 1
                         batch = []
-                
-                # Mark task as done
+
                 queue.task_done()
-                
+
             except Exception as e:
-                demisto.error(f"{Constants.LOG_PREFIX} [{name}] Error processing item: {e}")
-                # Continue processing next item even if one fails
+                demisto.error(f"{Constants.LOG_PREFIX} [{name}] item error: {e}")
                 continue
-                
-        # Send any remaining events in the final batch
+
+        # flush remainder
         if batch:
             await _process_batch(
                 name=name,
                 batch=batch,
                 batch_number=total_batches_sent + 1,
                 multiple_threads_send=multiple_threads_send,
-                is_final=True
+                is_final=True,
             )
             total_batches_sent += 1
-            
+
     except Exception as e:
-        demisto.error(f"{Constants.LOG_PREFIX} [{name}] Fatal error in consumer worker: {e}")
+        demisto.error(f"{Constants.LOG_PREFIX} [{name}] fatal consumer error: {e}")
         raise
-        
     finally:
-        # Log completion metrics
         total_duration = time.time() - start_time
-        events_per_sec = total_processed / total_duration if total_duration > 0 else 0
-        
+        eps = (total_processed / total_duration) if total_duration > 0 else 0.0
         demisto.info(
-            f"{Constants.LOG_PREFIX} [{name}] Completed: Processed {total_processed} events "
-            f"in {total_batches_sent} batches in {total_duration:.2f}s "
-            f"({events_per_sec:.2f} events/sec)"
+            f"{Constants.LOG_PREFIX} [{name}] done | events={total_processed} "
+            f"batches={total_batches_sent} dur={total_duration:.2f}s eps={eps:.2f}"
         )
+
 
 async def _process_batch(
     name: str,
@@ -1421,105 +1434,99 @@ async def _process_batch(
         )
         raise
 
-async def run_pipeline(client: DocuSignClientAsync, params: Params) -> None:
-    if not params.fetch_events:
-        demisto.info("[PIPELINE] Fetch events disabled, skipping pipeline")
+async def run_pipeline(client: DocuSignClientAsync, config: Config) -> None:
+    if not config.fetch_events:
+        demisto.info("[PIPELINE] Fetch events disabled")
         return
 
-    demisto.info("[PIPELINE] Starting producer-consumer pipeline")
-    pipeline_start_time = time.time()
+    demisto.info("[PIPELINE] starting")
+    pipeline_start = time.time()
 
     full_ctx = get_integration_context() or {}
-    dctx: Dict[str, Any] = full_ctx.get(CTX_KEY, {})
-    # Ensure dctx is a dictionary, not a string or other type
+    dctx: Dict[str, Any] = full_ctx.get(Constants.CTX_KEY, {})
     if not isinstance(dctx, dict):
-        demisto.warning("[PIPELINE] Integration context data was not a dict, resetting to empty dict")
+        demisto.warning("[PIPELINE] integration context not a dict; resetting")
         dctx = {}
     state_updates: Dict[str, Any] = {}
 
-    demisto.debug(f"[PIPELINE] Loaded integration context - customer_cursor: {dctx.get(CTX_CUSTOMER_CURSOR)}, audit_next_url: {dctx.get(CTX_AUDIT_NEXT_URL)}, audit_last_modified_since: {dctx.get(CTX_AUDIT_LAST_MOD_SINCE)}")
+    demisto.debug(
+        f"[PIPELINE] ctx | customer_cursor={dctx.get(Constants.CTX_CUSTOMER_CURSOR)} "
+        f"audit_next={dctx.get(Constants.CTX_AUDIT_NEXT_URL)} "
+        f"audit_lms={dctx.get(Constants.CTX_AUDIT_LAST_MOD_SINCE)}"
+    )
 
-    queue: asyncio.Queue = asyncio.Queue(maxsize=params.queue_maxsize)
-    demisto.info(f"[PIPELINE] Created queue with maxsize: {params.queue_maxsize}")
-    
-    # Create consumer tasks
-    consumer_tasks = [
-        asyncio.create_task(consumer_worker(f"consumer-{i}", queue, params.send_batch_size, params.multiple_threads_send))
-        for i in range(params.consumer_workers)
-    ]
-    demisto.info(f"[PIPELINE] Started {len(consumer_tasks)} consumer workers with batch_size: {params.send_batch_size}")
-    
+    queue: asyncio.Queue = asyncio.Queue(maxsize=config.queue_maxsize)
+    demisto.info(f"[PIPELINE] queue maxsize={config.queue_maxsize}")
+
+    consumer_tasks = [asyncio.create_task(consumer_worker(f"consumer-{i}", queue, config))
+                      for i in range(config.consumer_workers)]
+    demisto.info(f"[PIPELINE] consumers started={len(consumer_tasks)} batch_size={config.send_batch_size}")
+
     producers: List[asyncio.Task] = []
-
-    # Start producers based on configuration
-    if params.fetch_customer_events:
-        producer_task = asyncio.create_task(monitor_producer(queue, client, params, dctx, state_updates))
-        producers.append(producer_task)
-        demisto.info("[PIPELINE] Started monitor producer for customer events")
-        
-    if params.fetch_user_data:
-        producer_task = asyncio.create_task(audit_producer(queue, client, params, dctx, state_updates))
-        producers.append(producer_task)
-        demisto.info("[PIPELINE] Started audit producer for user data")
+    if config.fetch_customer_events:
+        producers.append(asyncio.create_task(monitor_producer(queue, client, config, dctx, state_updates)))
+        demisto.info("[PIPELINE] monitor producer enabled")
+    if config.fetch_user_data:
+        producers.append(asyncio.create_task(audit_producer(queue, client, config, dctx, state_updates)))
+        demisto.info("[PIPELINE] audit producer enabled")
 
     if not producers:
-        demisto.warning("[PIPELINE] No producers configured, shutting down consumers")
-        # signal consumers to stop immediately
+        demisto.info("[PIPELINE] no producers; signal consumers to stop")
         for _ in consumer_tasks:
             await queue.put(None)
         await asyncio.gather(*consumer_tasks)
         return
 
-    demisto.info(f"[PIPELINE] Running {len(producers)} producers and {len(consumer_tasks)} consumers")
-    
-    try:
-        # Wait for all producers to complete
-        producer_start_time = time.time()
-        await asyncio.gather(*producers)
-        producer_duration = time.time() - producer_start_time
-        demisto.info(f"[PIPELINE] All producers completed in {producer_duration:.2f}s")
-        
-        # Check final queue size before shutdown
-        queue_size = queue.qsize()
-        if queue_size > 0:
-            demisto.info(f"[PIPELINE] Queue has {queue_size} events remaining, waiting for consumers to process")
-        else:
-            demisto.debug("[PIPELINE] Queue is empty, proceeding with consumer shutdown")
-            
-    except Exception as e:
-        demisto.error(f"[PIPELINE] Producer error occurred: {e}")
-        raise
-    finally:
-        # signal consumers to stop
-        consumer_shutdown_start = time.time()
-        demisto.debug(f"[PIPELINE] Sending shutdown signals to {len(consumer_tasks)} consumers")
-        
-        for i in range(len(consumer_tasks)):
-            await queue.put(None)
-            demisto.debug(f"[PIPELINE] Sent shutdown signal to consumer {i}")
-            
-        # Wait for all consumers to finish
-        try:
-            await asyncio.gather(*consumer_tasks)
-            consumer_shutdown_duration = time.time() - consumer_shutdown_start
-            demisto.info(f"[PIPELINE] All consumers shut down gracefully in {consumer_shutdown_duration:.2f}s")
-        except Exception as e:
-            demisto.error(f"[PIPELINE] Error during consumer shutdown: {e}")
-            raise
+    demisto.info(f"[PIPELINE] running producers={len(producers)} consumers={len(consumer_tasks)}")
 
-    # persist state
-    context_save_start = time.time()
+    producer_failed: Optional[BaseException] = None
+    try:
+        prod_start = time.time()
+        results = await asyncio.gather(*producers, return_exceptions=True)
+        for r in results:
+            if isinstance(r, BaseException):
+                producer_failed = r
+        demisto.info(f"[PIPELINE] producers completed in {time.time() - prod_start:.2f}s")
+
+        # ---- Summary (this is what you asked for) ----
+        cust = int(state_updates.get("__metrics_customer_produced", 0) or 0)
+        aud  = int(state_updates.get("__metrics_audit_produced", 0) or 0)
+        total = cust + aud
+        if total == 0:
+            demisto.info("[PIPELINE] No new events returned by DocuSign in this run.")
+        else:
+            demisto.info(f"[PIPELINE] Produced {total} events "
+                         f"(customer={cust}, audit={aud}).")
+
+    except BaseException as e:
+        producer_failed = e
+        demisto.error(f"[PIPELINE] producer failure or cancellation: {type(e).__name__}: {e}")
+        for t in producers:
+            if not t.done():
+                t.cancel()
+        await asyncio.gather(*producers, return_exceptions=True)
+    finally:
+        # Always signal consumers to finish.
+        demisto.debug(f"[PIPELINE] sending {len(consumer_tasks)} shutdown signals")
+        for _ in consumer_tasks:
+            await queue.put(None)
+        await asyncio.gather(*consumer_tasks, return_exceptions=True)
+
+    # Persist state if possible (even on producer failure we keep cursors that advanced)
     try:
         dctx.update(state_updates)
-        set_to_integration_context_with_retries({CTX_KEY: dctx})
-        context_save_duration = time.time() - context_save_start
-        demisto.debug(f"[PIPELINE] Saved integration context in {context_save_duration:.2f}s - updates: {list(state_updates.keys())}")
+        set_to_integration_context_with_retries({Constants.CTX_KEY: dctx})
+        demisto.debug(f"[PIPELINE] context saved: {list(state_updates.keys())}")
     except Exception as e:
-        demisto.error(f"[PIPELINE] Failed to save integration context: {e}")
-        raise
-        
-    pipeline_duration = time.time() - pipeline_start_time
-    demisto.info(f"[PIPELINE] Pipeline completed successfully in {pipeline_duration:.2f}s")
+        demisto.error(f"[PIPELINE] context save failed: {e}")
+        # keep going; failure to save state shouldn't mask original error
+
+    if producer_failed:
+        # Re-raise so the platform prints the error.
+        raise producer_failed
+
+    demisto.info(f"[PIPELINE] completed in {time.time() - pipeline_start:.2f}s")
+
 
 # -------------------- Commands --------------------
 
@@ -1683,6 +1690,20 @@ def run_async(coro):
     # XSOAR executes sync entrypoints; wrap async with asyncio.run
     return asyncio.run(coro)
 
+
+async def _run_and_close(awaitable, client: DocuSignClientAsync):
+    try:
+        return await awaitable
+    finally:
+        await client.aclose()
+
+
+async def _pipeline_and_close(client: DocuSignClientAsync, config: Config):
+    try:
+        await run_pipeline(client, config)
+    finally:
+        await client.aclose()
+
 # -------------------- Main --------------------
 
 def main() -> None:
@@ -1720,23 +1741,28 @@ def main() -> None:
         
         # Route command to appropriate handler
         if cmd == "test-module":
-            res = run_async(command_test_module_async(client, config))
+            res = run_async(_run_and_close(command_test_module_async(client, config), client))
             return_results(res)
-            
+
         elif cmd == "docusign-generate-consent-url":
-            return_results(command_generate_consent_url(config))
-            
+            # no async calls used; still close client cleanly once
+            try:
+                return_results(command_generate_consent_url(config))
+            finally:
+                # close via event loop to avoid loop mismatch
+                run_async(client.aclose())
+
         elif cmd == "docusign-get-customer-events":
-            res = run_async(command_get_customer_events_async(client, config, args))
+            res = run_async(_run_and_close(command_get_customer_events_async(client, config, args), client))
             return_results(res)
-            
+
         elif cmd == "docusign-get-audit-users":
-            res = run_async(command_get_audit_users_async(client, config, args))
+            res = run_async(_run_and_close(command_get_audit_users_async(client, config, args), client))
             return_results(res)
-            
+
         elif cmd == "fetch-events":
-            run_async(run_pipeline(client, config))
-            
+            run_async(_pipeline_and_close(client, config))
+
         else:
             raise DemistoException(f"Command '{cmd}' is not implemented.")
             
@@ -1744,14 +1770,7 @@ def main() -> None:
         error_msg = f"{Constants.LOG_PREFIX} Error in {Constants.INTEGRATION_NAME} integration: {str(e)}"
         demisto.error(f"{error_msg}\n{traceback.format_exc()}")
         return_error(error_msg)
-        
-    finally:
-        # Ensure resources are properly cleaned up
-        try:
-            if 'client' in locals():
-                run_async(client.aclose())
-        except Exception as e:
-            demisto.error(f"{Constants.LOG_PREFIX} Error during cleanup: {str(e)}")
+
 
 if __name__ in ("__main__", "builtin", "builtins"):
     main()
