@@ -16,15 +16,7 @@ configuration:
   required: true
   type: 9
   section: Connect
-- display: Analytics Name
-  name: analytics_name
-  required: true
-  type: 16
-  defaultvalue: SIEMAuditLogs
-  options:
-  - SIEMAuditLogs
-  section: Collect
-- defaultvalue: '50000'
+- defaultvalue: '30000'
   section: Collect
   display: Maximum number of events per fetch
   name: max_fetch
@@ -48,7 +40,7 @@ configuration:
   type: 8
   section: Connect
 description: Collector for Saviynt Enterprise Identity Cloud (EIC) audit logs using Analytics Runtime Control V2.
-display: Saviynt EIC Event Collector
+display: Saviynt Enterprise Identity Cloud
 name: SaviyntEICEventCollector
 script:
   commands:

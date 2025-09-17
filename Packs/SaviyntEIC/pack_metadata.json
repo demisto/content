@@ -1,5 +1,5 @@
 {
-    "name": "Saviynt Enterprise Identity Cloud (EIC)",
+    "name": "Saviynt Enterprise Identity Cloud",
     "description": "Saviynt Enterprise Identity Cloud (EIC) is a cloud-based platform that converges identity governance, administration, and privileged access management into a single, intelligent solution to help organizations secure and manage user identities.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
@@ -13,7 +13,8 @@
     "useCases": [],
     "keywords": [],
     "marketplaces": [
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
     ],
     "supportedModules": [
         "X1",

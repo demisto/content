@@ -1,6 +1,6 @@
 **Important:** This integration is supported by Palo Alto Networks.
 
-## Saviynt EIC Event Collector
+## Saviynt Enterprise Identity Cloud
 
 Collector for Saviynt Enterprise Identity Cloud (EIC) audit logs.
 This integration was integrated and tested with the [API Reference for Amsterdam GA Release](https://documenter.getpostman.com/view/40843358/2sAYdctCto) (v5).

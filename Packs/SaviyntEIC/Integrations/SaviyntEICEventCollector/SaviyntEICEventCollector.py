@@ -29,6 +29,7 @@ LAST_RUN_EVENT_HASHES = "recent_event_hashes"
 DEFAULT_FETCH_TIME_FRAME_MINUTES = 1
 LAST_RUN_TIMESTAMP = "last_fetch_timestamp"
 MAX_EVENTS_PER_REQUEST = 10000
+EVENT_TYPE_TO_FETCH = "SIEMAuditLogs"
 
 """ CLIENT CLASS """
 
@@ -234,6 +235,7 @@ class Client(BaseClient):
                 url_suffix="api/v5/fetchRuntimeControlsDataV2",
                 headers=self._headers,
                 json_data=body,
+                timeout=120,
             )
         except Exception as e:
             # Attempt one retry on auth failure
@@ -247,6 +249,7 @@ class Client(BaseClient):
                     url_suffix="api/v5/fetchRuntimeControlsDataV2",
                     headers=self._headers,
                     json_data=body,
+                    timeout=120,
                 )
             raise
 
@@ -441,7 +444,7 @@ def _fetch_analytics_pages_concurrently(
     effective_time_frame_minutes: int,
     overall_max_events: int,
     page_size: int,
-    page_workers: int = 5,
+    page_workers: int = 3,
 ) -> list[dict[str, Any]]:
     """
     Fetch events for a single analytics name using concurrent page requests.
@@ -548,7 +551,7 @@ def test_module(client: Client) -> str:
     try:
         # example fetch
         client.fetch_events(
-            analytics_name="SIEMAuditLogs",
+            analytics_name=EVENT_TYPE_TO_FETCH,
             time_frame_minutes=1,
             max_results=1,
         )
@@ -563,12 +566,11 @@ def test_module(client: Client) -> str:
 def fetch_events(
     client: Client,
     last_run: dict[str, Any],
-    analytics_name_list: list[str],
     max_events: int,
     time_frame_minutes: int | None,
 ) -> tuple[dict[str, Any], list[dict[str, Any]]]:
     """
-    Fetch events across one or more analytics types (event types).
+    Fetch events for the fixed analytics type defined by `EVENT_TYPE_TO_FETCH`.
 
     If `time_frame_minutes` is `None` (the `fetch-events` command), the function
     derives the effective time window from `last_run`. Otherwise, the provided
@@ -577,8 +579,7 @@ def fetch_events(
     Args:
         client: The Saviynt EIC client to use for HTTP requests.
         last_run: The previous run metadata including the last timestamp and hashes.
-        analytics_name_list: The list of analytics names (event types) to fetch.
-        max_events: The per-analytics maximum number of events to collect.
+        max_events: The maximum number of events to collect.
         time_frame_minutes: The time frame to query in minutes, or `None` to compute
             it from `last_run`.
 
@@ -591,33 +592,28 @@ def fetch_events(
 
     previous_run_event_hash_count = len(last_run.get(LAST_RUN_EVENT_HASHES, []))
     demisto.debug(
-        f"[fetch_events] start: analytics={analytics_name_list}, max_events={max_events}, "
+        f"[fetch_events] start: analytics={EVENT_TYPE_TO_FETCH}, max_events={max_events}, "
         f"time_frame_minutes_input={time_frame_minutes}, effective_time_frame_minutes={effective_time_frame_minutes}, "
         f"previous_run_event_hash_count={previous_run_event_hash_count}"
     )
 
-    events = []
     page_size = min(max_events, MAX_EVENTS_PER_REQUEST)
 
-    for analytics_name in analytics_name_list:
-        demisto.debug(
-            f"[fetch_events] concurrent pages for analytics_name={analytics_name} "
-            f"time_frame_minutes={effective_time_frame_minutes} "
-            f"request_page_size={page_size} overall_number_of_events_to_fetch={max_events}"
-        )
-        events_per_analytics_name = _fetch_analytics_pages_concurrently(
-            client=client,
-            analytics_name=analytics_name,
-            effective_time_frame_minutes=effective_time_frame_minutes,
-            overall_max_events=max_events,
-            page_size=page_size,
-            page_workers=4,
-        )
-        demisto.debug(
-            f"[fetch_events] {analytics_name}: collected={len(events_per_analytics_name)} "
-            f"for analytics_name={analytics_name} (concurrent)"
-        )
-        events.extend(events_per_analytics_name)
+    demisto.debug(
+        f"[fetch_events] concurrent pages for analytics_name={EVENT_TYPE_TO_FETCH} "
+        f"time_frame_minutes={effective_time_frame_minutes} "
+        f"request_page_size={page_size} overall_number_of_events_to_fetch={max_events}"
+    )
+    events = _fetch_analytics_pages_concurrently(
+        client=client,
+        analytics_name=EVENT_TYPE_TO_FETCH,
+        effective_time_frame_minutes=effective_time_frame_minutes,
+        overall_max_events=max_events,
+        page_size=page_size,
+    )
+    demisto.debug(
+        f"[fetch_events] {EVENT_TYPE_TO_FETCH}: collected={len(events)} for analytics_name={EVENT_TYPE_TO_FETCH} (concurrent)"
+    )
 
     demisto.debug(f"[fetch_events] total events collected before dedup={len(events)}")
     # Deduplicate by comparing to previous run's hashes and persist only current run's hashes
@@ -642,7 +638,6 @@ def main():  # pragma: no cover
     verify = not params.get("insecure", False)
     proxy = params.get("proxy", False)
     credentials = params.get("credentials")
-    analytics_name_list = argToList(params.get("analytics_name", []))
     max_events = int(params.get("max_fetch", MAX_EVENTS))
 
     demisto.debug(f"Command being called is {command}")
@@ -664,7 +659,6 @@ def main():  # pragma: no cover
             _, events = fetch_events(
                 client=client,
                 last_run={},
-                analytics_name_list=analytics_name_list,
                 max_events=arg_to_number(args.get("limit")) or MAX_EVENTS,
                 time_frame_minutes=arg_to_number(args.get("time_frame")) or DEFAULT_FETCH_TIME_FRAME_MINUTES,
             )
@@ -680,7 +674,6 @@ def main():  # pragma: no cover
             next_run, events = fetch_events(
                 client=client,
                 last_run=last_run,
-                analytics_name_list=analytics_name_list,
                 max_events=max_events,
                 time_frame_minutes=None,
             )

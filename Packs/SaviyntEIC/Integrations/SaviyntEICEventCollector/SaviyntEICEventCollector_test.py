@@ -295,7 +295,6 @@ class TestFetchUseCases:
         next_run, events = module_fetch_events(
             client=client,
             last_run={},
-            analytics_name_list=["SIEMAuditLogs"],
             max_events=max_events,
             time_frame_minutes=None,
         )
