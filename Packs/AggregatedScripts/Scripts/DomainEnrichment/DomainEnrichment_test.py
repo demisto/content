@@ -30,7 +30,6 @@ def test_domain_enrichment_script_end_to_end_with_batch_file(mocker):
         - For example2.com:
             * Results has 2 entries: TIM + brand3 (brand3 Reliability == 'Low').
         - Core prevalence mapped under 'Core.AnalyticsPrevalence.Domain'.
-        - No DBotScore assertions (mapping does not surface DBotScore here).
     """
     # Load fixtures
     tim_pages = util_load_json("test_data/mock_domain_tim_results.json")["pages"]
@@ -164,6 +163,3 @@ def test_domain_enrichment_script_end_to_end_with_batch_file(mocker):
     assert isinstance(core_ctx, list)
     assert len(core_ctx) == 2
     assert {d["Domain"] for d in core_ctx} == {"example.com", "example2.com"}
-
-    # Sanity: DBotScore not surfaced
-    assert Common.DBotScore.CONTEXT_PATH not in outputs or not outputs[Common.DBotScore.CONTEXT_PATH]

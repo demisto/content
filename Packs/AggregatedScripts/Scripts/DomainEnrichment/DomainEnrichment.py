@@ -10,9 +10,19 @@ def domain_enrichment_script(
     verbose: bool = False,
     enrichment_brands: list[str] | None = None,
     additional_fields: bool = False,
-):
+)-> CommandResults:
     """
     Enriches Domain data with information from various integrations.
+    
+    Args:
+        domain_list (list[str]): List of domains to enrich.
+        external_enrichment (bool): Whether to perform external enrichment.
+        verbose (bool): Whether to print verbose output.
+        enrichment_brands (list[str]): List of brands to enrich.
+        additional_fields (bool): Whether to include additional fields in the output.
+    
+    Returns:
+        CommandResults: The results of the command.
     """
     domain_list = extract_indicators(domain_list, "domain")
     # Mapping for the final indicator objects (what you want to surface on each result)

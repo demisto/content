@@ -2,7 +2,7 @@ args:
 - description: |
     Accepts a list of domains to enrich.
     - From CLI: Provide a comma-separated list.  
-      If a domain itself contains a comma, wrap the domains in a JSON array.  
+      If a Domain contains a comma, wrap the domains in a JSON array.  
       Example: "[\"example.com/search:yellow,red\", \"example2.com\"]".
     - From Context: Pass JSON arrays directly, without modification.
   name: domain_list
@@ -53,7 +53,7 @@ args:
   - 'false'
   required: false
   defaultValue: 'false'
-comment: This script enriches domain data with information from multiple integrations and returns a "DomainEnrichment" object with consolidated information to the context output.
+comment: This script enriches Domains data with information from multiple integrations and returns a "DomainEnrichment" object with consolidated information to the context output.
 commonfields:
   id: domain-enrichment
   version: -1
@@ -62,7 +62,7 @@ name: domain-enrichment
 outputs:
 # DomainEnrichment
 - contextPath: DomainEnrichment.Value
-  description: The domain it self.
+  description: The Domain.
   type: string
 - contextPath: DomainEnrichment.MaxScore
   description: The max score of all the indicators found.
@@ -77,7 +77,7 @@ outputs:
   description: The TIM score of the domain.
   type: number
 - contextPath: DomainEnrichment.Status
-  description: The status of the indicator. If Score changed manually, the status will be "Manual". If modified less then 1 week, the status will be "Fresh". Otherwise, the status will be "Stale". If not modified at all, the status will be None.
+  description: The status of the indicator. If the Score changed manually, the status will be "Manual". If modified by less than one week, the status will be "Fresh". Otherwise, the status will be "Stale". If not modified at all, the status will be None.
   type: string
 - contextPath: DomainEnrichment.ModifiedTime
   description: The time the indicator was last modified.
@@ -99,7 +99,7 @@ outputs:
   description: The positive detections of the indicator.
   type: number
 - contextPath: DomainEnrichment.Results.Name
-  description: The domain it self.
+  description: The Domain.
   type: string
 # DomainEnrichment Additional Fields
 - contextPath: DomainEnrichment.Results.AdditionalFields
