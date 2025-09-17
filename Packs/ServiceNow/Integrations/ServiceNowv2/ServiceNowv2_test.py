@@ -4011,7 +4011,7 @@ DEFAULT_DELTA = {'key': 'value'}
     (None, "incident", None, False),         # Given missing state and no custom close state
 ])
 @patch("ServiceNowv2.add_default_closure_fields_to_delta")
-def test_set_default_fields_behavior(mock_debug, mock_add_defaults, state, ticket_type, custom_state, should_patch):
+def test_set_default_fields_behavior(mock_add_defaults, state, ticket_type, custom_state, should_patch):
     """
         GIVEN: an UpdateRemoteSystemArgs object with a delta containing various 'state' values,
         AND different combinations of ticket_type and custom_state,
@@ -4033,9 +4033,7 @@ def test_set_default_fields_behavior(mock_debug, mock_add_defaults, state, ticke
 
     if should_patch:
         mock_add_defaults.assert_called_once_with(initial_delta)
-        mock_debug.assert_called_once()
         assert result.delta == modified_delta
     else:
         mock_add_defaults.assert_not_called()
-        mock_debug.assert_not_called()
         assert result.delta == initial_delta
