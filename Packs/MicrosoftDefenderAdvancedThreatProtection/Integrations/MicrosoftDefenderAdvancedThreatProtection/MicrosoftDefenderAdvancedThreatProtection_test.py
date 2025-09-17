@@ -423,6 +423,26 @@ ALERT_RELATED_USER_API_RESPONSE = {
     "isOnlyNetworkUser": "false",
 }
 
+GET_FILE_API_RESPONSE = {
+    "@odata.context": "https://api.security.microsoft.com/api/$metadata#Files/$entity",
+    "sha1": "4388963aaa83afe2042a46a3c017ad50bdcdafb3",
+    "sha256": "413c58c8267d2c8648d8f6384bacc2ae9c929b2b96578b6860b5087cd1bd6462",
+    "globalPrevalence": 180022,
+    "globalFirstObserved": "2017-09-19T03:51:27.6785431Z",
+    "globalLastObserved": "2020-01-06T03:59:21.3229314Z",
+    "size": 22139496,
+    "fileType": "APP",
+    "isPeFile": True,
+    "filePublisher": "CHENGDU YIWO Tech Development Co., Ltd.",
+    "fileProductName": "EaseUS MobiSaver for Android",
+    "signer": "CHENGDU YIWO Tech Development Co., Ltd.",
+    "issuer": "VeriSign Class 3 Code Signing 2010 CA",
+    "signerHash": "6c3245d4a9bc0244d99dff27af259cbbae2e2d16",
+    "isValidCertificate": False,
+    "determinationType": "Pua",
+    "determinationValue": "PUA:Win32/FusionCore"
+}
+
 FILE_STATISTICS_API_RESPONSE = {
     "@odata.context": "https://api.security.microsoft.com/api/$metadata#microsoft.windowsDefenderATP.api.InOrgFileStats",
     "sha1": "0991a395da64e1c5fbe8732ed11e6be064081d9f",
@@ -3807,3 +3827,52 @@ def test_list_auth_permissions_command(mocker):
     command_results = list_auth_permissions_command(client_mocker)
 
     assert command_results.readable_output == "### Permissions\nEvent.Write\nUser.Read"
+
+
+def test_file_command(mocker):
+    """
+    Given:
+    - SHA1 File hash
+
+    When:
+    - Calling the file_command function
+
+    Then:
+    - Assert correct context output and raw response
+    """
+    from MicrosoftDefenderAdvancedThreatProtection import file_command
+    
+
+    # Set
+    response = GET_FILE_API_RESPONSE
+    mocker.patch.object(client_mocker, "get_file_data", return_value=response)
+
+    # Arrange
+    mocker.patch.object(demisto, "args", return_value={"file": "4388963aaa83afe2042a46a3c017ad50bdcdafb3"})
+    results = file_command(client_mocker, args=demisto.args())
+
+    context_output = results.outputs
+
+    assert context_output["Sha1"] == response["sha1"]
+    assert results.raw_response == response
+    context = results[0].to_context()["EntryContext"]
+    assert context ==  {
+    "File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 ||"
+    " val.SHA256 && val.SHA256 == obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512 ||"
+    " val.CRC32 && val.CRC32 == obj.CRC32 || val.CTPH && val.CTPH == obj.CTPH ||"
+    " val.SSDeep && val.SSDeep == obj.SSDeep)": {
+        "SHA1": "4388963aaa83afe2042a46a3c017ad50bdcdafb3",
+        "SHA256": "413c58c8267d2c8648d8f6384bacc2ae9c929b2b96578b6860b5087cd1bd6462",
+        "Size": "22139496",
+        "Type": "APP",
+    },
+    "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": [
+        {
+            "Indicator": "4388963aaa83afe2042a46a3c017ad50bdcdafb3",
+            "Type": "file",
+            "Vendor": "Microsoft Defender Advanced Threat Protection",
+            "Score": 1,
+            "Reliability": "C - Fairly reliable",
+        }
+    ],
+}
