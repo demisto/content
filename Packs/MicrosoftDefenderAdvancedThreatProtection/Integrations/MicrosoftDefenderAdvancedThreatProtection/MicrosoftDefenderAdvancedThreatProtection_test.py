@@ -3841,7 +3841,7 @@ def test_file_command(mocker):
     Then:
     - Assert correct context output and raw response
     """
-    from MicrosoftDefenderAdvancedThreatProtection import file_command
+    from MicrosoftDefenderAdvancedThreatProtection import file_command, get_file_data
     
 
     # Set
@@ -3854,24 +3854,54 @@ def test_file_command(mocker):
 
     entry_context = results[0].to_context()["EntryContext"]
 
-    assert results[0].raw_response == response
+    assert results[0].raw_response == get_file_data(response)
     assert entry_context ==  {
-    "File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 ||"
-    " val.SHA256 && val.SHA256 == obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512 ||"
-    " val.CRC32 && val.CRC32 == obj.CRC32 || val.CTPH && val.CTPH == obj.CTPH ||"
-    " val.SSDeep && val.SSDeep == obj.SSDeep)": {
-        "SHA1": "4388963aaa83afe2042a46a3c017ad50bdcdafb3",
-        "SHA256": "413c58c8267d2c8648d8f6384bacc2ae9c929b2b96578b6860b5087cd1bd6462",
-        "Size": "22139496",
-        "Type": "APP",
-    },
-    "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": [
-        {
-            "Indicator": "4388963aaa83afe2042a46a3c017ad50bdcdafb3",
-            "Type": "file",
-            "Vendor": "Microsoft Defender Advanced Threat Protection",
-            "Score": 1,
-            "Reliability": "C - Fairly reliable",
+        "File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || val.SHA256 && val.SHA256 == obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512 || val.CRC32 && val.CRC32 == obj.CRC32 || val.CTPH && val.CTPH == obj.CTPH || val.SSDeep && val.SSDeep == obj.SSDeep)": [
+            {
+                "Hashes": [
+                    {
+                        "type": "SHA1",
+                        "value": "4388963aaa83afe2042a46a3c017ad50bdcdafb3"
+                    },
+                    {
+                        "type": "SHA256",
+                        "value": "413c58c8267d2c8648d8f6384bacc2ae9c929b2b96578b6860b5087cd1bd6462"
+                    }
+                ],
+                "SHA1": "4388963aaa83afe2042a46a3c017ad50bdcdafb3",
+                "SHA256": "413c58c8267d2c8648d8f6384bacc2ae9c929b2b96578b6860b5087cd1bd6462",
+                "Type": "APP",
+                "Malicious": {
+                    "Vendor": "Microsoft Defender ATP",
+                    "Description": None
+                }
+            }
+        ],
+        "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": [
+            {
+                "Indicator": "4388963aaa83afe2042a46a3c017ad50bdcdafb3",
+                "Type": "file",
+                "Vendor": "Microsoft Defender ATP",
+                "Score": 3
+            }
+        ],
+        "MicrosoftATP.File(val.Sha1 && val.Sha1 == obj.Sha1)": {
+            "Sha1": "4388963aaa83afe2042a46a3c017ad50bdcdafb3",
+            "Size": 22139496,
+            "Sha256": "413c58c8267d2c8648d8f6384bacc2ae9c929b2b96578b6860b5087cd1bd6462",
+            "GlobalPrevalence": 180022,
+            "GlobalFirstObserved": "2017-09-19T03:51:27.6785431Z",
+            "GlobalLastObserved": "2020-01-06T03:59:21.3229314Z",
+            "SizeInBytes": 22139496,
+            "FileType": "APP",
+            "IsPeFile": True,
+            "FilePublisher": "CHENGDU YIWO Tech Development Co., Ltd.",
+            "FileProductName": "EaseUS MobiSaver for Android",
+            "Signer": "CHENGDU YIWO Tech Development Co., Ltd.",
+            "Issuer": "VeriSign Class 3 Code Signing 2010 CA",
+            "SignerHash": "6c3245d4a9bc0244d99dff27af259cbbae2e2d16",
+            "IsValidCertificate": False,
+            "DeterminationType": "Pua",
+            "DeterminationValue": "PUA:Win32/FusionCore"
         }
-    ],
-}
+    }
