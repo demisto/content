@@ -103,8 +103,6 @@ def send_message_command(client: Client, args: dict) -> CommandResults:
     Executes the command to send a message and process the structured response.
     """
     message = args.get('message', '')
-    if not message:
-        raise ValueError("The 'message' argument cannot be empty.")
 
     demisto.debug(f"Sending message to Azure OpenAI: '{message}'")
     # FIX: Call send_message *with* the requirement for a JSON response.
