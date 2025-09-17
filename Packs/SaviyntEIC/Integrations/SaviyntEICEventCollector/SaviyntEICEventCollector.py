@@ -26,7 +26,7 @@ PRODUCT = "eic"
 TOKEN_SAFETY_BUFFER = 300  # seconds to refresh token before actual expiry
 MAX_EVENTS = 50000
 LAST_RUN_EVENT_HASHES = "recent_event_hashes"
-DEFAULT_FETCH_TIME_FRAME_MINUTES = 6000  # TODO: return to 1 after debugging
+DEFAULT_FETCH_TIME_FRAME_MINUTES = 1
 LAST_RUN_TIMESTAMP = "last_fetch_timestamp"
 MAX_EVENTS_PER_REQUEST = 10000
 
@@ -123,7 +123,6 @@ class Client(BaseClient):
             method="POST",
             url_suffix="oauth/access_token",
             data=data,
-            timeout=60,
             resp_type="json",
         )
         access_token = res.get("access_token")
