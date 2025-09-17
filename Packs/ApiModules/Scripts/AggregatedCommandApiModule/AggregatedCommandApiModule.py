@@ -35,7 +35,7 @@ class Status(Enum):
 
 class IndicatorStatus(Enum):
     """Enum for indicator status.
-    - FRESH: If the indicator modifiedTime is within the freshness window (default is 1 week).
+    - FRESH: If the indicator modifiedTime is within the freshness window (default is one week).
     - STALE: If the indicator modifiedTime is outside the freshness window.
     - MANUAL: If the indicator was manually added.
     """
