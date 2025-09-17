@@ -626,26 +626,40 @@ script:
       description: The client list.
       type: unknown
   - arguments:
-    - name: list_name
+    - name: name
       required: true
-      description: The name of the client list.
-    - name: list_type
+      description: The name for the new client list.
+    - name: type
       required: true
       auto: PREDEFINED
       predefined:
       - IP
       - GEO
-      description: The type of the client list.
-    - name: description
-      description: A description of the client list.
+      - ASN
+      - TLS_FINGERPRINT
+      - FILE_HASH
+      - USER
+      description: The type of client list.
+    - name: contract_id
+      required: true
+      description: The contract ID. This value can be retrieved by running the `akamai-get-contract-group` command.
+    - name: group_id
+      required: true
+      description: The group ID. This value can be retrieved by running the `akamai-get-contract-group` command.
+    - name: notes
+      description: A description for the client list.
     - name: tags
       isArray: true
       description: A list of tags to associate with the client list.
-    - name: items
+    - name: entry_value
+      description: The value for a single entry in the client list. Will be sent as a single object in the `items` array.
+    - name: entry_description
+      description: A description for the entry.
+    - name: entry_expiration_date
+      description: The expiration date for the entry.
+    - name: entry_tags
       isArray: true
-      description: A list of items to include in the client list.
-    - name: group_id
-      description: The ID of the group to associate with the client list.
+      description: A list of tags for the entry.
     name: akamai-create-client-list
     outputs:
     - contextPath: Akamai.ClientList
@@ -656,47 +670,124 @@ script:
       required: true
       description: The ID of the client list to delete.
     name: akamai-delete-client-list
-  - arguments:
-    - name: client_list_id
-      required: true
-      description: The ID of the client list to activate.
-    - name: network
-      required: true
-      auto: PREDEFINED
-      predefined:
-      - STAGING
-      - PRODUCTION
-      description: The network to activate the client list on.
-    - name: comments
-      description: A description for the activation.
-    - name: notification_recipients
-      isArray: true
-      description: A list of email addresses to notify of the activation.
-    name: akamai-activate-client-list
-  - arguments:
-    - name: client_list_id
-      required: true
-      description: The ID of the client list to add an entry to.
-    - name: items
-      isArray: true
-      required: true
-      description: A list of items to add to the client list.
-    name: akamai-add-client-list-entry
-  - arguments:
-    - name: client_list_id
-      required: true
-      description: The ID of the client list to remove an entry from.
-    - name: items
-      isArray: true
-      required: true
-      description: A list of items to remove from the client list.
-    name: akamai-remove-client-list-entry
+  - name: akamai-activate-client-list
+    description: Activates a client list.
+    arguments:
+      - name: list_id
+        required: true
+        description: The ID of the client list to activate.
+      - name: network_environment
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - STAGING
+          - PRODUCTION
+        description: The network environment to activate the list on.
+      - name: comments
+        description: A description for the activation.
+      - name: notification_recipients
+        isArray: true
+        description: A list of email addresses to notify.
+      - name: siebel_ticket_id
+        description: A Siebel ticket ID.
+    outputs:
+      - contextPath: Akamai.Activation
+        description: The activation details.
+        type: unknown
+  - name: akamai-add-client-list-entry
+    description: Adds an entry to a client list.
+    arguments:
+      - name: list_id
+        required: true
+        description: The ID of the client list.
+      - name: value
+        required: true
+        description: The value for the new entry.
+      - name: description
+        description: A description for the new entry.
+      - name: expiration_date
+        description: The expiration date for the new entry.
+      - name: tags
+        isArray: true
+        description: A list of tags for the new entry.
+  - name: akamai-remove-client-list-entry
+    description: Removes an entry from a client list.
+    arguments:
+      - name: list_id
+        required: true
+        description: The ID of the client list.
+      - name: value
+        isArray: true
+        required: true
+        description: A list of values to remove from the client list.
   - name: akamai-get-contract-group
     description: Get contract groups.
     arguments: []
     outputs:
       - contextPath: Akamai.ContractGroup
         description: The contract groups.
+        type: unknown
+  - name: akamai-update-client-list
+    description: Updates a client list.
+    arguments:
+      - name: list_id
+        required: true
+        description: The ID of the client list to update.
+      - name: name
+        required: true
+        description: The new name for the client list.
+      - name: notes
+        description: The new description for the client list.
+      - name: tags
+        isArray: true
+        description: The new tags for the client list.
+    outputs:
+      - contextPath: Akamai.ClientList
+        description: The updated client list.
+        type: unknown
+  - name: akamai-deactivate-client-list
+    description: Deactivates a client list.
+    arguments:
+      - name: list_id
+        required: true
+        description: The ID of the client list to deactivate.
+      - name: network_environment
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - STAGING
+          - PRODUCTION
+        description: The network environment to deactivate the list on.
+      - name: comments
+        description: A description for the deactivation.
+      - name: notification_recipients
+        isArray: true
+        description: A list of email addresses to notify.
+      - name: siebel_ticket_id
+        description: A Siebel ticket ID.
+    outputs:
+      - contextPath: Akamai.Activation
+        description: The deactivation details.
+        type: unknown
+  - name: akamai-update-client-list-entry
+    description: Updates an entry in a client list.
+    arguments:
+      - name: list_id
+        required: true
+        description: The ID of the client list.
+      - name: value
+        required: true
+        description: The value of the entry to update.
+      - name: description
+        description: The new description for the entry.
+      - name: expiration_date
+        description: The new expiration date for the entry.
+      - name: tags
+        isArray: true
+        description: The new tags for the entry.
+    outputs:
+      - contextPath: Akamai.ClientList
+        description: The updated client list.
         type: unknown
   - arguments: []
     description: Get Google Tag Manager (GTM) domains.
