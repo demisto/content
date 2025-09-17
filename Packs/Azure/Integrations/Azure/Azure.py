@@ -288,7 +288,7 @@ class AzureClient:
 
         elif ("403" in error_msg or "forbidden" in error_msg) or ("401" in error_msg or "unauthorized" in error_msg):
             demisto.debug("Permission error, trying to find the missing permission.")
-            found_permission = None
+            found_permission = []
             # If we have api_function_name, use the reverse mapping for O(1) lookup
             if api_function_name in API_FUNCTION_TO_PERMISSIONS:
                 found_permission = get_permissions_from_api_function_name(api_function_name, error_msg)
@@ -296,15 +296,10 @@ class AzureClient:
             if not found_permission:
                 found_permission = get_permissions_from_required_role_permissions_list(error_msg)
 
-            if not found_permission:
-                demisto.debug("Didn't find the missing permission, raising a regular exception.")
-                # if didn't find permission, raise regular exception
-                if "403" in error_msg or "forbidden" in error_msg:
-                    raise DemistoException(f'Insufficient permissions to access {resource_type} "{resource_name}". {str(e)}')
-                if "401" in error_msg or "unauthorized" in error_msg:
-                    raise DemistoException(f'Authentication failed when accessing {resource_type} "{resource_name}". {str(e)}')
+            error_entries = []
+            for perm in found_permission:
+                error_entries.append({"account_id": subscription_id, "message": error_msg, "name": perm})
 
-            error_entries = [{"account_id": subscription_id, "message": error_msg, "name": found_permission}]
             demisto.debug(f"Calling return_multiple_permissions_error function with {error_entries=}")
             return_multiple_permissions_error(error_entries)
 
@@ -1304,22 +1299,22 @@ class AzureClient:
             f"/providers/Microsoft.Network/networkSecurityGroups/{security_group_name}"
             f"/securityRules/{security_rule_name}"
         )
-        response = self.http_request(method="DELETE", full_url=full_url, resp_type="response")
-        if response.status_code in (200, 202, 204):  # type: ignore[union-attr]
-            return response
-        else:
-            demisto.debug("Failed to delete security rule.")
-            try:
+        try:
+            response = self.http_request(method="DELETE", full_url=full_url, resp_type="response")
+            if response.status_code in (200, 202, 204):  # type: ignore[union-attr]
+                return response
+            else:
+                demisto.debug("Failed to delete security rule.")
                 response.raise_for_status()  # type: ignore[union-attr]
-            except Exception as e:
-                self.handle_azure_error(
-                    e=e,
-                    resource_name=f"{security_group_name}/{security_rule_name}",
-                    resource_type="Security Group",
-                    api_function_name="delete_rule",
-                    subscription_id=subscription_id,
-                    resource_group_name=resource_group_name,
-                )
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=f"{security_group_name}/{security_rule_name}",
+                resource_type="Security Group",
+                api_function_name="delete_rule",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name,
+            )
 
     def list_resource_groups_request(self, subscription_id: str, filter_by_tag: str, limit: str):
         """
@@ -1413,7 +1408,7 @@ class AzureClient:
 """ HELPER FUNCTIONS """
 
 
-def get_permissions_from_api_function_name(api_function_name: str, error_msg: str) -> str | None:
+def get_permissions_from_api_function_name(api_function_name: str, error_msg: str) -> list:
     """
     Extract a missing permission by checking command-to-permissions mapping against an error message.
     Iterates over the permissions mapped to a specific API function and returns the first permission
@@ -1424,16 +1419,17 @@ def get_permissions_from_api_function_name(api_function_name: str, error_msg: st
         error_msg (str): The error message string to check for missing permissions.
 
     Returns:
-        str: The matching permission if found, otherwise None.
+        list: The matching permission names if found, otherwise an empty list.
     """
+    permission_names = []
     for permission in API_FUNCTION_TO_PERMISSIONS[api_function_name]:
         if permission.lower() in error_msg.lower():
             demisto.debug(f"Found missing permission via command mapping: {permission}")
-            return permission
-    return None
+            permission_names.append(permission)
+    return permission_names
 
 
-def get_permissions_from_required_role_permissions_list(error_msg: str) -> str | None:
+def get_permissions_from_required_role_permissions_list(error_msg: str) -> list:
     """
     Extract a missing permission by searching the required role permissions list against an error message.
     Iterates over the predefined required role permissions and returns the first permission
@@ -1443,14 +1439,19 @@ def get_permissions_from_required_role_permissions_list(error_msg: str) -> str |
         error_msg (str): The error message string to check for missing permissions.
 
     Returns:
-        str: The matching permission if found, otherwise None.
+        list: The matching permission names if found, otherwise an empty list.
     """
+    permission_names = []
     permissions_to_check = set(REQUIRED_ROLE_PERMISSIONS)
     for permission in permissions_to_check:
         if permission.lower() in error_msg.lower():
             demisto.debug(f"Found missing permission via fallback search: {permission}")
-            return permission
-    return None
+            permission_names.append(permission)
+
+    if not permission_names:
+        permission_names.append("N/A")
+
+    return permission_names
 
 
 def format_rule(rule_json: dict | list, security_rule_name: str):
@@ -2291,7 +2292,7 @@ def nsg_security_rule_get_command(client: AzureClient, params: dict[str, Any], a
     security_group_name = args.get("security_group_name", "")
     security_rule_name = args.get("security_rule_name", "")
 
-    if not security_rule_name or not security_group_name:
+    if not security_rule_name and not security_group_name:
         return_error("Please provide security_group_name and security_rule_name.")
 
     rule = client.get_rule(
@@ -2339,7 +2340,7 @@ def nsg_security_rule_create_command(client: AzureClient, params: dict[str, Any]
     destination_ports = args.get("destination_ports", "*")
     description = args.get("description", "")
 
-    if not security_rule_name or not security_group_name or not direction or not priority:
+    if not security_rule_name and not security_group_name and not direction and not priority:
         return_error("Please provide security_group_name, security_rule_name, direction and priority.")
 
     # The reason for using 'Any' as default instead of '*' is to adhere to the standards in the UI.
@@ -2387,7 +2388,12 @@ def nsg_security_rule_create_command(client: AzureClient, params: dict[str, Any]
     # cleans up the tag, remove the "W/\" prefix and the "\" suffix.
     rule["etag"] = rule.get("etag", "")[3:-1]
 
-    hr = tableToMarkdown(name=f"Rules {security_rule_name}", t=rule, removeNull=True, headerTransform=pascalToSpace)
+    hr = tableToMarkdown(
+        name=f"The security rule {security_rule_name} was created successfully",
+        t=rule,
+        removeNull=True,
+        headerTransform=pascalToSpace,
+    )
 
     return CommandResults(outputs_prefix="Azure.NSGRule", outputs_key_field="id", outputs=rule, readable_output=hr)
 
@@ -2407,7 +2413,7 @@ def nsg_security_rule_delete_command(client: AzureClient, params: dict[str, Any]
     security_group_name = args.get("security_group_name", "")
     security_rule_name = args.get("security_rule_name", "")
 
-    if not security_rule_name or not security_group_name:
+    if not security_rule_name and not security_group_name:
         return_error("Please provide security_group_name and security_rule_name.")
 
     rule_deleted = client.delete_rule(
@@ -2472,14 +2478,7 @@ def nsg_resource_group_list_command(client: AzureClient, params: dict[str, Any],
 
 def nsg_network_interfaces_list_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]) -> CommandResults:
     """
-    List all network interfaces in a resource group. Extract those fields to main dict:
-                properties.ipConfigurations.name as ipConfigurationName,
-                properties.ipConfigurations.id as ipConfigurationID,
-                properties.ipConfigurations.properties as ipConfigurationsProperties,
-                properties.ipConfigurations.properties.privateIPAddress as ipConfigurationPrivateIPAddress,
-                properties.ipConfigurations.properties.publicIPAddress as ipConfigurationPublicIPAddress,
-                properties.ipConfiguration.properties.publicIPAddress.id as ipConfigurationPublicIPAddressName,
-                properties.dnsSettings.dnsServers as dnsServers
+    List all network interfaces in a resource group.
     Args:
         client (AzureClient): Azure Client.
         args (Dict[str, Any]): command arguments.
@@ -2522,7 +2521,7 @@ def nsg_network_interfaces_list_command(client: AzureClient, params: dict[str, A
 
 def nsg_public_ip_addresses_list_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]) -> CommandResults:
     """
-    List all network interfaces in a resource group. Extract those fields to main dict:
+    List all network interfaces in a resource group.
 
     Args:
         client (AzureClient): Azure client.

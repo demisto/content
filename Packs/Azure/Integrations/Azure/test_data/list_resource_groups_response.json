@@ -1,11 +1,15 @@
 {
-  "id": "/subscriptions/subscription1/resourceGroups/resourceGroup1",
-  "name": "resourceGroup1",
-  "location": "centralus",
-  "tags": {
-    "Owner": "owner"
-  },
-  "properties": {
-    "provisioningState": "Succeeded"
-  }
+    "value": [
+        {
+            "id": "/subscriptions/subscription1/resourceGroups/resourceGroup1",
+            "name": "resourceGroup1",
+            "location": "centralus",
+            "tags": {
+                "Owner": "owner"
+            },
+            "properties": {
+            "provisioningState": "Succeeded"
+          }
+        }
+    ]
 }
