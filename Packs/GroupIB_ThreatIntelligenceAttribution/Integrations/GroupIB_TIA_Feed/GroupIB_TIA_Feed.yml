@@ -1,5 +1,5 @@
 category: Data Enrichment & Threat Intelligence
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -217,7 +217,7 @@ script:
     name: gibtia-get-indicators
     deprecated: false
     execution: false
-  dockerimage: demisto/vendors-sdk:1.0.0.4577311
+  dockerimage: demisto/vendors-sdk:1.0.0.4821574
   feed: true
   runonce: false
   script: '-'
