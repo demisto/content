@@ -8,7 +8,7 @@ This script gathers CVE reputation data from multiple integrations and returns a
 | --- | --- |
 | Script Type | python3 |
 | Tags | basescript |
-| Cortex XSOAR Version | 6.1.0 |
+| Cortex XSOAR Version | 6.10.0 |
 
 ## Inputs
 
@@ -39,7 +39,7 @@ This script gathers CVE reputation data from multiple integrations and returns a
 | CVEEnrichment.Results.Published | The published date of the indicator. | string |
 | CVEEnrichment.Results.Status | The status of the indicator. If the Score changed manually, the status will be "Manual". If modified by less than one week, the status will be "Fresh". Otherwise, the status will be "Stale". If not modified at all, the status will be None. | string |
 | CVEEnrichment.Results.ModifiedTime | The time the indicator was last modified. | Date |
-| CVEEnrichment.Results.AdditionalFields | Unmapped \(secondary\) fields. Only available if the additional_fields argument is set to true. | Object |
+| CVEEnrichment.Results.AdditionalFields | All fields extracted from the indicator other then the main keys \("ID", "Brand", "CVSS", "Description", "Published", "CVSS"\). | Object |
 | CVEEnrichment.Results.AdditionalFields.Relationships.EntityA | The source of the relationship. | string |
 | CVEEnrichment.Results.AdditionalFields.Relationships.EntityB | The destination of the relationship. | string |
 | CVEEnrichment.Results.AdditionalFields.Relationships.Relationship | The name of the relationship. | string |
