@@ -23,7 +23,7 @@ args:
 scripttarget: 0
 subtype: python3
 runonce: false
-dockerimage: devdemisto/pysigma:1.0.0.4848077
+dockerimage: demisto/pysigma:1.0.0.4905038
 runas: DBotWeakRole
 engineinfo: {}
 tests:
