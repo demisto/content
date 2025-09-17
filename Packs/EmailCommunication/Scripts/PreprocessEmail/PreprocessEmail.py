@@ -59,11 +59,12 @@ def remove_html_conversation_history(email_html):
     return email_html
 
 
-def create_email_html(email_html="", entry_id_list=[]):
+def create_email_html(email_html="", entry_id_list=[], use_web_urls=False):
     """Modify the email's html body to use entry IDs instead of CIDs and remove the original message body if exists.
     Args:
         email_html (str): The attachments of the email.
         entry_id_list (list): The files entry ids list.
+        use_web_urls (bool): If True, generate web-accessible URLs instead of entry download links.
     Returns:
         str. Email Html.
     """
@@ -71,25 +72,35 @@ def create_email_html(email_html="", entry_id_list=[]):
     # Replacing the images' sources
     for image_name, image_entry_id in entry_id_list:
         saas_xsoar_xsiam_prefix = "xsoar/" if is_xsiam_or_xsoar_saas() else ""
+
+        if use_web_urls:
+            # Generate web-accessible URL
+            server_url = demisto.demistoUrls().get('server', '')
+            if server_url:
+                image_url = f"{server_url}/{saas_xsoar_xsiam_prefix}entry/download/{image_entry_id}"
+            else:
+                # Fallback to relative URL
+                image_url = f"{saas_xsoar_xsiam_prefix}entry/download/{image_entry_id}"
+        else:
+            image_url = f"{saas_xsoar_xsiam_prefix}entry/download/{image_entry_id}"
+
         if "-attachmentName-" in image_name:
             content_id = image_name.split("-attachmentName-", 1)[0]
         if re.search(rf'(src="cid:{content_id}")', email_html):
             email_html = re.sub(
-                f'src="cid:{content_id}"', f"src={saas_xsoar_xsiam_prefix}entry/download/{image_entry_id}", email_html
+                f'src="cid:{content_id}"', f"src={image_url}", email_html
             )
         elif re.search(f'src="[^>]+"(?=[^>]+alt="{image_name}")', email_html):
             email_html = re.sub(
                 f'src="[^>]+"(?=[^>]+alt="{image_name}")',
-                f"src={saas_xsoar_xsiam_prefix}entry/download/{image_entry_id}",
+                f"src={image_url}",
                 email_html,
             )
         # Handling inline attachments from Outlook mailboxes
-        # Note: when tested, entry id list and inline attachments were in the same order, so there was no need in
-        # special validation that the right src was being replaced.
         else:
             email_html = re.sub(
                 '(src="cid(.*?"))',
-                f"src={saas_xsoar_xsiam_prefix}entry/download/{image_entry_id}",
+                f"src={image_url}",
                 email_html,
                 count=1,
             )
