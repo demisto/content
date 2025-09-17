@@ -1,7 +1,7 @@
 commonfields:
   id: SEKOIAIntelligenceCenter
   version: -1
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 name: SEKOIAIntelligenceCenter
@@ -49,8 +49,8 @@ configuration:
   - E - Unreliable
   - F - Reliability cannot be judged
   type: 15
-  section: Collect
   required: false
+  section: Collect
 script:
   commands:
   - arguments:
@@ -1263,7 +1263,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/py3-tools:1.0.0.4649374
+  dockerimage: demisto/py3-tools:1.0.0.4880124
 fromversion: 6.2.0
 tests:
 - No tests (auto formatted)
