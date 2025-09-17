@@ -6,7 +6,7 @@ import urllib3
 import traceback
 from urllib.parse import urlparse
 
-from gql import gql, Client
+from gql import gql, Client, GraphQLRequest
 from gql.transport.requests import RequestsHTTPTransport
 from requests.auth import HTTPBasicAuth
 
@@ -116,21 +116,30 @@ class BreachRxClient:
         self.client = Client(transport=transport, fetch_schema_from_transport=False)
 
     def get_incident_severities(self):
-        return self.client.execute(get_incident_severities)["incidentSeverities"]
+        request = GraphQLRequest(document=get_incident_severities)
+        return self.client.execute(request)["incidentSeverities"]
 
     def get_incident_types(self):
-        return self.client.execute(get_incident_types)["types"]
+        request = GraphQLRequest(document=get_incident_types)
+        return self.client.execute(request)["types"]
 
     def create_incident(self, name: Optional[str], description: Optional[str]):
         severities = self.get_incident_severities()
         types = self.get_incident_types()
 
-        params = {"severity": severities[0]["name"], "name": name, "type": types[0]["name"], "description": description}
-        return self.client.execute(create_incident_mutation, params)["createIncident"]
+        params = {
+            "severity": severities[0]["name"],
+            "name": name,
+            "type": types[0]["name"],
+            "description": description,
+        }
+        request = GraphQLRequest(document=create_incident_mutation, variable_values=params)
+        return self.client.execute(request)["createIncident"]
 
     def get_incident(self, name: Optional[str], identifier: Optional[str]):
         params = {"name": name, "identifier": identifier}
-        results = self.client.execute(get_incident_by_name, params)["incidents"]
+        request = GraphQLRequest(document=get_incident_by_name, variable_values=params)
+        results = self.client.execute(request)["incidents"]
 
         if results:
             return results.pop()
@@ -139,8 +148,8 @@ class BreachRxClient:
 
     def get_actions_for_incident(self, incident_id):
         params = {"incidentId": incident_id}
-
-        return self.client.execute(get_actions_for_incident, params)["actions"]
+        request = GraphQLRequest(document=get_actions_for_incident, variable_values=params)
+        return self.client.execute(request)["actions"]
 
 
 def test_module(client: BreachRxClient):

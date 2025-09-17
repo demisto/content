@@ -4,7 +4,7 @@ from itertools import zip_longest
 import demistomock as demisto  # noqa: F401
 import urllib3
 from CommonServerPython import *  # noqa: F401
-from gql import Client, gql
+from gql import Client, gql, GraphQLRequest
 from gql.transport.requests import RequestsHTTPTransport
 
 from CommonServerUserPython import *
@@ -26,7 +26,7 @@ def execute_query(client: Client, args: dict) -> CommandResults:
     variables_values = argToList(args.get("variables_values", ""))
     variables_types = argToList(args.get("variables_types", ""))
     if len(variables_names) != len(variables_values) or (variables_types and len(variables_types) != len(variables_values)):
-        raise ValueError("The variable lists are not in the same length")
+        raise ValueError("The variable lists are not the same length")
     variables = {}
     for variable_name, variable_value, variable_type in zip_longest(variables_names, variables_values, variables_types):
         if variable_type:
@@ -36,17 +36,21 @@ def execute_query(client: Client, args: dict) -> CommandResults:
         elif variable_value.lower() in {"true", "false"}:
             variable_value = bool(variable_value)
         variables[variable_name] = variable_value
-    result = client.execute(query, variable_values=variables)
+    request = GraphQLRequest(document=query, variable_values=variables)
+    result = client.execute(request)
     if (result_size := sys.getsizeof(result)) > (max_result_size := float(args.get("max_result_size", 10))) * 10000:
-        raise ValueError(f"Result size {result_size / 10000} KBs is larger then max result size {max_result_size} KBs")
+        raise ValueError(f"Result size {result_size / 10000} KBs is larger than max result size {max_result_size} KBs")
+
     command_results_args = {
         "readable_output": tableToMarkdown("GraphQL Query Results", result),
         "raw_response": result,
         "outputs": result if argToBoolean(args.get("populate_context_data")) else None,
         "outputs_prefix": "GraphQL",
     }
+
     if args.get("outputs_key_field"):
         command_results_args["outputs_key_field"] = args.get("outputs_key_field")
+
     return CommandResults(**command_results_args)
 
 
@@ -72,6 +76,7 @@ def main() -> None:
         fetch_schema_from_transport = params.get("fetch_schema_from_transport", True)
         if fetch_schema_from_transport is None:
             fetch_schema_from_transport = True
+
         client = Client(
             transport=transport,
             fetch_schema_from_transport=fetch_schema_from_transport,
@@ -82,12 +87,10 @@ def main() -> None:
             with client as session:
                 session.fetch_schema()
             return_results("ok")
-        elif command == "graphql-query":
-            return_results(execute_query(client, demisto.args()))
-        elif command == "graphql-mutation":
+        elif command in ("graphql-query", "graphql-mutation"):
             return_results(execute_query(client, demisto.args()))
         else:
-            raise NotImplementedError(f"Received an un-supported command: {command}")
+            raise NotImplementedError(f"Received an unsupported command: {command}")
     except Exception as e:
         return_error(f"Failed to execute {command} command. Error: {e!s}")
 
