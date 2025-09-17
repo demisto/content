@@ -181,7 +181,6 @@ configuration:
   displaypassword: HEC Token (HTTP Event Collector)
   hiddenusername: true
   required: false
-  display: ''
 - display: 'HEC Token (HTTP Event Collector)'
   name: hec_token
   type: 4
