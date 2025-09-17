@@ -17,6 +17,7 @@ def ip_enrichment_script(
     verbose: bool = False,
     enrichment_brands: list[str] | None = None,
     additional_fields: bool = False,
+    args: dict[str, Any] = {},
 ) -> CommandResults:
     """
     Enrich IP indicators.
@@ -101,7 +102,7 @@ def ip_enrichment_script(
         additional_fields=additional_fields,
         external_enrichment=external_enrichment,
         final_context_path="IPEnrichment",
-        args=demisto.args(),
+        args=args,
         data=ip_list,
         indicator=ip_indicator,
     )
@@ -122,7 +123,7 @@ def main():
     demisto.debug(f"Brands: {brands}")
 
     try:
-        return_results(ip_enrichment_script(ip_list, external_enrichment, verbose, brands, additional_fields))
+        return_results(ip_enrichment_script(ip_list, external_enrichment, verbose, brands, additional_fields, args))
     except Exception as ex:
         return_error(f"Failed to execute !ip-enrichment. Error: {str(ex)}")
 
