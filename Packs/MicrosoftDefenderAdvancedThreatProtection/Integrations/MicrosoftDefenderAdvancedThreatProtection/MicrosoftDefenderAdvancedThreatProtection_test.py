@@ -3852,10 +3852,10 @@ def test_file_command(mocker):
     mocker.patch.object(demisto, "args", return_value={"file": "4388963aaa83afe2042a46a3c017ad50bdcdafb3"})
     results = file_command(client_mocker, args=demisto.args())
 
-    context = results[0].to_context()["EntryContext"]
+    entry_context = results[0].to_context()["EntryContext"]
 
-    assert results.raw_response == response
-    assert context ==  {
+    assert results[0].raw_response == response
+    assert entry_context ==  {
     "File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 ||"
     " val.SHA256 && val.SHA256 == obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512 ||"
     " val.CRC32 && val.CRC32 == obj.CRC32 || val.CTPH && val.CTPH == obj.CTPH ||"
