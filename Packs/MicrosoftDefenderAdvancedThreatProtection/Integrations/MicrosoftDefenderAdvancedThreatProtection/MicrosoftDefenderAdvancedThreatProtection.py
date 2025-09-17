@@ -5612,7 +5612,7 @@ def build_file_error_output(error_message, file_hash):
 
     indicator = get_dbot_indicator(dbot_type=DBotScoreType.FILE, dbot_score=dbot_score, value=file_hash)
 
-    readable_output = f"Something went wrong: {error_message}"
+    readable_output = f"Unable to create indicator for file hash: {file_hash!r}.\nError: {error_message!r}"
 
     result = CommandResults(readable_output=readable_output, indicator=indicator)
     return result
