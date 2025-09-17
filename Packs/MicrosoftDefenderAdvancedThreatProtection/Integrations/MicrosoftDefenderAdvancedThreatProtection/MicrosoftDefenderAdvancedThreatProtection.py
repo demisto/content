@@ -5610,18 +5610,11 @@ def build_file_error_output(error_message, file_hash):
         score=Common.DBotScore.NONE,
     )
 
-    indicator = get_dbot_indicator(
-        dbot_type=DBotScoreType.FILE,
-        dbot_score=dbot_score,
-        value=file_hash
-    )
+    indicator = get_dbot_indicator(dbot_type=DBotScoreType.FILE, dbot_score=dbot_score, value=file_hash)
 
     readable_output = f"Something went wrong: {error_message}"
 
-    result = CommandResults(
-        readable_output=readable_output,
-        indicator=indicator
-    )
+    result = CommandResults(readable_output=readable_output, indicator=indicator)
     return result
 
 
