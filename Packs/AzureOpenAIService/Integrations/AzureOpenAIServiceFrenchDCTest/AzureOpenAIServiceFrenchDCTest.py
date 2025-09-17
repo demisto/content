@@ -1,8 +1,5 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-# Demisto-SDK-Contributions:
-# - Demisto-SDK-Contributions:
-# - Demisto-SDK-Contributions:
 """
 Cortex XSOAR Integration for Azure OpenAI
 """
