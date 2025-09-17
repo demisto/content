@@ -27,7 +27,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### anyllm-document-upload-file
 
 ***
-Uploads an XSOAR file entry to the custom-documents folder
+Uploads an XSOAR file entry to the custom-documents folder.
 
 #### Base Command
 
