@@ -1938,17 +1938,66 @@ script:
         type: String
 
   - name: azure-billing-forecast-list
-    description: Returns the cost forecast for a subscription over a given time range.
+    description: Returns cost forecast for a subscription over a given time range.
     arguments:
       - name: subscription_id
-        description: Azure sub to run the command on.
+        description: Azure subscription ID (required).
         required: true
-      - name: filter
-        description: Optional filter for the API. API argument - $filter.
+        type: String
+      - name: type
+        description: Forecast type (required).
+        required: true
+        type: String
+        auto: PREDEFINED
+        predefined:
+        - Usage
+        - ActualCost
+        - AmortizedCost
+      - name: aggregation_function_name
+        description: The name of the column to aggregate (required).
+        required: true
+        type: String
+        auto: PREDEFINED
+        predefined:
+        - PreTaxCostUSD
+        - Cost
+        - CostUSD
+        - PreTaxCost
+      - name: aggregation_function_type
+        description: The name of the aggregation function to use.
         required: false
+        type: String
+        defaultValue: Sum
+      - name: granularity
+        description: The granularity of the forecast.
+        required: false
+        type: String
+        defaultValue: Daily
+      - name: start_date
+        description: Start date for the forecast. Default value current time.
+        required: false
+        type: String
+      - name: end_date
+        description: End date for the forecast. Default value 7 days from current time.
+        required: false
+        type: String
+      - name: filter
+        description: A URL parameter to filter forecasts by properties/usageDate (Utc time), properties/chargeType or properties/grain. The filter supports 'eq', 'lt', 'gt', 'le', 'ge', and 'and'. It does not currently support 'ne', 'or', or 'not'.
+        required: false
+        type: String
+      - name: include_actual_cost
+        description: Include actual cost data.
+        required: false
+        type: Boolean
+        defaultValue: false
+      - name: include_fresh_partial_cost
+        description: Include fresh partial cost data.
+        required: false
+        type: Boolean
+        defaultValue: false
     outputs:
       - contextPath: Azure.Billing.Forecast
-        description: List of forecast details from Azure Consumption API.
+        description: Complete Azure Cost Management API response with forecast data.
       - contextPath: Azure.Billing.Forecast.id
         description: Fully qualified resource ID for the forecast.
         type: String
@@ -1956,28 +2005,41 @@ script:
         description: Name of the forecast resource.
         type: String
       - contextPath: Azure.Billing.Forecast.type
-        description: Resource type (Microsoft.Consumption/forecasts).
+        description: Resource type (Microsoft.CostManagement/query).
         type: String
-      - contextPath: Azure.Billing.Forecast.properties.usageDate
-        description: Usage date for the forecast.
-        type: Date
-      - contextPath: Azure.Billing.Forecast.properties.grain
-        description: Time granularity (Daily, Monthly).
+      - contextPath: Azure.Billing.Forecast.location
+        description: Location of the forecast resource.
         type: String
-      - contextPath: Azure.Billing.Forecast.properties.charge
-        description: Forecasted charge amount.
+      - contextPath: Azure.Billing.Forecast.eTag
+        description: ETag for the forecast resource.
+        type: String
+      - contextPath: Azure.Billing.Forecast.properties
+        description: Properties object containing forecast data.
+      - contextPath: Azure.Billing.Forecast.properties.nextLink
+        description: Next link for pagination.
+        type: String
+      - contextPath: Azure.Billing.Forecast.properties.forecasts
+        description: Array of forecast data entries.
+      - contextPath: Azure.Billing.Forecast.properties.forecasts.PreTaxCostUSD
+        description: Pre-tax cost in USD.
         type: Number
-      - contextPath: Azure.Billing.Forecast.properties.currency
+      - contextPath: Azure.Billing.Forecast.properties.forecasts.Cost
+        description: Cost amount.
+        type: Number
+      - contextPath: Azure.Billing.Forecast.properties.forecasts.CostUSD
+        description: Cost in USD.
+        type: Number
+      - contextPath: Azure.Billing.Forecast.properties.forecasts.PreTaxCost
+        description: Pre-tax cost amount.
+        type: Number
+      - contextPath: Azure.Billing.Forecast.properties.forecasts.UsageDate
+        description: Usage date for the forecast (YYYY-MM-DD format).
+        type: String
+      - contextPath: Azure.Billing.Forecast.properties.forecasts.CostStatus
+        description: Cost status (Forecast, Actual).
+        type: String
+      - contextPath: Azure.Billing.Forecast.properties.forecasts.Currency
         description: Currency code for the forecast.
-        type: String
-      - contextPath: Azure.Billing.Forecast.properties.chargeType
-        description: Type of charge (Actual, Forecast).
-        type: String
-      - contextPath: Azure.Billing.Forecast.properties.confidenceLevel
-        description: Confidence level of the forecast.
-        type: String
-      - contextPath: Azure.Billing.Forecast.properties.forecastType
-        description: Type of forecast (ActualCost, AmortizedCost).
         type: String
 
   - name: azure-billing-budgets-list

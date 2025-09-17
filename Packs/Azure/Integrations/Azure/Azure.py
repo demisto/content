@@ -6,6 +6,7 @@ from MicrosoftApiModule import *  # noqa: E402
 from COOCApiModule import *
 from requests.exceptions import ConnectionError, Timeout
 from urllib.parse import parse_qs, urlparse, urlencode, urlunparse
+import copy
 
 
 # Disable insecure warnings
@@ -1153,6 +1154,179 @@ class AzureClient:
             method="DELETE", full_url=f"{PREFIX_URL_MS_GRAPH}/groups/{group_id}/members/{user_id}/$ref", resp_type="text"
         )
 
+    def billing_usage_list(
+        self,
+        subscription_id: str,
+        expand: str = None,
+        filter_: str = None,
+        metric: str = None,
+        max_results: int = 50,
+        next_page_token: str = None,
+    ):
+        """
+        Retrieves actual usage and cost details from Azure Consumption API.
+
+        Args:
+            subscription_id (str): Azure subscription ID.
+            expand (str): Expand usage details with additional properties.
+            filter_ (str): OData filter expression for filtering results.
+            metric (str): Specific metric to retrieve (e.g., ActualCost, UsageQuantity).
+            max_results (int): Maximum number of results to return (default: 50).
+            next_page_token (str): Token for pagination.
+
+        Returns:
+            dict: The response from the Azure Consumption API.
+
+        Raises:
+            DemistoException: If Azure API call fails, subscription not found, or invalid parameters provided
+        """
+        scope = f"/{subscription_id}"
+        url = f"{scope}/providers/Microsoft.Consumption/usageDetails"
+        api_version = "2021-10-01"
+        params_ = {}
+        if expand:
+            params_["$expand"] = expand
+        if filter_:
+            params_["$filter"] = filter_
+        if metric:
+            params_["metric"] = metric.lower().replace(" ", "")
+        params_["api-version"] = api_version
+        params_["$top"] = max_results
+        
+        try:
+            if next_page_token:
+                new_url = remove_query_param_from_url(next_page_token, "api-version")
+                demisto.debug(f"Azure billing usage request (pagination): {new_url}")
+                return self.http_request("GET", full_url=new_url, params={"api-version": api_version})
+            else:
+                demisto.debug(f"Azure billing usage request: {url}, params: {params_}")
+                return self.http_request("GET", url_suffix=url, params=params_)
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=subscription_id,
+                resource_type="Usage Details",
+                subscription_id=subscription_id,
+            )
+
+    def billing_forecast_list(
+        self,
+        subscription_id: str,
+        forecast_type: str,
+        aggregation_function_name: str,
+        aggregation_function_type: str = "Sum",
+        granularity: str = "Daily",
+        start_date: str = None,
+        end_date: str = None,
+        filter_param: str = None,
+        include_actual_cost: bool = False,
+        include_fresh_partial_cost: bool = False,
+    ):
+        """
+        Returns cost forecast for a subscription over a given time range.
+
+        Args:
+            subscription_id (str): Azure subscription ID.
+            forecast_type (str): Forecast type (Usage, ActualCost, AmortizedCost).
+            aggregation_function_name (str): Aggregation function name.
+            aggregation_function_type (str): Aggregation function type (default: "Sum").
+            granularity (str): Data granularity (default: "Daily").
+            start_date (str): Start date for the forecast.
+            end_date (str): End date for the forecast.
+            filter_param (str): URL parameter to filter forecasts.
+            include_actual_cost (bool): Include actual cost data (default: False).
+            include_fresh_partial_cost (bool): Include fresh partial cost data (default: False).
+
+        Returns:
+            dict: The response from the Azure Cost Management API.
+
+        Raises:
+            DemistoException: If Azure API call fails, subscription not found, or invalid parameters provided
+        """
+        from datetime import datetime, timedelta
+        
+        if not start_date:
+            start_date = datetime.now().strftime("%Y-%m-%dT00:00:00Z")
+        if not end_date:
+            end_date = (datetime.now() + timedelta(days=7)).strftime("%Y-%m-%dT23:59:59Z")
+
+        url = f"{subscription_id}/providers/Microsoft.CostManagement/forecast"
+        api_version = "2025-03-01"
+
+        body = {
+            "type": forecast_type,
+            "timeframe": "Custom",
+            "timePeriod": {
+                "from": start_date,
+                "to": end_date
+            },
+            "dataset": {
+                "granularity": granularity,
+                "aggregation": {
+                    "totalCost": {
+                        "function": aggregation_function_type,
+                        "name": aggregation_function_name
+                    }
+                }
+            },
+            "includeActualCost": include_actual_cost,
+            "includeFreshPartialCost": include_fresh_partial_cost
+        }
+        
+        if filter_param:
+            body["dataset"]["filter"] = filter_param
+            
+        demisto.debug(f"Azure billing forecast \nrequest body: \n{body}")
+        params_ = {"api-version": api_version}
+        
+        try:
+            return self.http_request("POST", url_suffix=url, params=params_, json_data=body)
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=subscription_id,
+                resource_type="Cost Forecast",
+                subscription_id=subscription_id,
+            )
+
+    def billing_budgets_list(
+        self,
+        subscription_id: str,
+        budget_name: str = None,
+    ):
+        """
+        Retrieves budget information from Azure Consumption API.
+
+        Args:
+            subscription_id (str): Azure subscription ID.
+            budget_name (str): Optional specific budget name to retrieve.
+
+        Returns:
+            dict: The response from the Azure Consumption API.
+
+        Raises:
+            DemistoException: If Azure API call fails, subscription not found, or invalid parameters provided
+        """
+        scope = f"/{subscription_id}"
+        if budget_name:
+            url = f"{scope}/providers/Microsoft.Consumption/budgets/{budget_name}"
+        else:
+            url = f"{scope}/providers/Microsoft.Consumption/budgets"
+        
+        api_version = "2021-10-01"
+        params_ = {"api-version": api_version}
+        
+        demisto.debug(f"Azure billing budgets request: {url}, params: {params_}")
+        try:
+            return self.http_request("GET", url_suffix=url, params=params_)
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=budget_name or subscription_id,
+                resource_type="Budget",
+                subscription_id=subscription_id,
+            )
+
 
 """ HELPER FUNCTIONS """
 
@@ -1976,25 +2150,14 @@ def azure_billing_usage_list_command(client: AzureClient, params: dict, args: di
     max_results = int(args.get("max_results", 50))
     next_page_token = args.get("next_page_token")
 
-    scope = f"/{subscription_id}"
-    url = f"{scope}/providers/Microsoft.Consumption/usageDetails"
-    api_version = "2021-10-01"
-    params_ = {}
-    if expand:
-        params_["$expand"] = expand
-    if filter_:
-        params_["$filter"] = filter_
-    if metric:
-        params_["metric"] = metric.lower().replace(" ", "")
-    params_["api-version"] = api_version
-    params_["$top"] = max_results
-    if next_page_token:
-        new_url = remove_query_param_from_url(next_page_token, "api-version")
-        demisto.debug(f"Azure billing usage request (pagination): {new_url}")
-        res = client.http_request("GET", full_url=new_url, params={"api-version": api_version})
-    else:
-        demisto.debug(f"Azure billing usage request: {url}, params: {params_}")
-        res = client.http_request("GET", url_suffix=url, params=params_)
+    res = client.billing_usage_list(
+        subscription_id=subscription_id,
+        expand=expand,
+        filter_=filter_,
+        metric=metric,
+        max_results=max_results,
+        next_page_token=next_page_token
+    )
 
     response_data = res.json() if hasattr(res, "json") else res
     items = response_data.get("value", [])
@@ -2030,128 +2193,90 @@ def azure_billing_usage_list_command(client: AzureClient, params: dict, args: di
 
 def azure_billing_forecast_list_command(client: AzureClient, params: dict, args: dict) -> CommandResults:
     """
-    Retrieves cost forecast data from Azure Cost Management API.
-
-    This command provides forecasted cost information for Azure resources based on historical usage patterns.
-    It uses Azure's machine learning algorithms to predict future spending and helps with budget planning.
-    The forecast includes charge amounts, currency information, and time granularity details.
+    Returns cost forecast for a subscription over a given time range.
+    
+    This command retrieves cost forecast data from Azure Cost Management API using the Forecasts - Usage endpoint.
+    It provides forecasted cost information for Azure resources based on historical usage patterns.
 
     Args:
         client (AzureClient): Azure client instance for API communication
         params (dict): Configuration parameters from integration settings
         args (dict): Command arguments containing:
             - subscription_id: Azure subscription ID (required)
-            - timeframe: Time frame for the forecast (Custom, MonthToDate, BillingMonthToDate, etc.)
-            - from_date: Start date for custom timeframe (YYYY-MM-DDTHH:MM:SSZ format)
-            - to_date: End date for custom timeframe (YYYY-MM-DDTHH:MM:SSZ format)
-            - granularity: Data granularity (Daily, Monthly)
-            - include_actual_cost: Include actual cost data (boolean)
-            - include_fresh_partial_cost: Include fresh partial cost data (boolean)
+            - type: Forecast type (Usage, Actual Cost, Amortized Cost) (required)
+            - aggregation_function_name: Aggregation function name (Pre Tax Cost USD, Cost, Cost USD, Pre Tax Cost) (required)
+            - aggregation_function_type: Aggregation function type (default: "Sum")
+            - granularity: Data granularity (default: "Daily")
+            - start_date: Start date (default: 7 days ago)
+            - end_date: End date (default: current time)
+            - filter: URL parameter to filter forecasts
+            - include_actual_cost: Include actual cost data (default: False)
+            - include_fresh_partial_cost: Include fresh partial cost data (default: False)
 
     Returns:
-        CommandResults: Contains forecast data with predicted charges, currency information,
-                      and time periods for future cost planning
+        CommandResults: Contains forecast data with Name, Time Period, Charge, Currency, and Grain information
 
     Raises:
         DemistoException: If Azure API call fails, subscription not found, or invalid parameters provided
-    """
-    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
-    
-    # Get parameters with defaults
-    timeframe = args.get("timeframe", "Custom")
-    from_date = args.get("from_date")
-    to_date = args.get("to_date")
+    """    
+    # Get required parameters
+    subscription_id = args.get("subscription_id")
+    forecast_type = args.get("type", "")
+    aggregation_function_name = args.get("aggregation_function_name", "")
+
+    # Get optional parameters with defaults
+    aggregation_function_type = args.get("aggregation_function_type", "Sum")
     granularity = args.get("granularity", "Daily")
-    include_actual_cost = args.get("include_actual_cost", False)
-    include_fresh_partial_cost = args.get("include_fresh_partial_cost", False)
+    include_actual_cost = argToBoolean(args.get("include_actual_cost", False))
+    include_fresh_partial_cost = argToBoolean(args.get("include_fresh_partial_cost", False))
+    filter_param = args.get("filter")
+    start_date = args.get("start_date")
+    end_date = args.get("end_date")
+
+    response = client.billing_forecast_list(
+        subscription_id=subscription_id,
+        forecast_type=forecast_type,
+        aggregation_function_name=aggregation_function_name,
+        aggregation_function_type=aggregation_function_type,
+        granularity=granularity,
+        start_date=start_date,
+        end_date=end_date,
+        filter_param=filter_param,
+        include_actual_cost=include_actual_cost,
+        include_fresh_partial_cost=include_fresh_partial_cost
+    )
+    demisto.debug(f"Azure response:\n {response}\n")
+
+    parsed_data = parse_forecast_table_to_dict(response)
+    demisto.debug(f"Parsed data:\n {parsed_data}\n")
     
-    # Use the new Cost Management API endpoint
-    url = f"/{subscription_id}/providers/Microsoft.CostManagement/forecast"
-    api_version = "2025-03-01"
-    
-    # Build request body according to new API specification
-    body = {
-        "type": "Usage",
-        "timeframe": timeframe,
-        "dataset": {
-            "granularity": granularity,
-            "aggregation": {
-                "totalCost": {
-                    "name": "Cost",
-                    "function": "Sum"
-                }
-            }
-        },
-        "includeActualCost": include_actual_cost,
-        "includeFreshPartialCost": include_fresh_partial_cost
-    }
-    
-    # Add time period for custom timeframe
-    if timeframe == "Custom":
-        if not from_date or not to_date:
-            # Set default dates if not provided
-            from datetime import datetime, timedelta
-            now = datetime.now()
-            from_date = from_date or now.strftime("%Y-%m-%dT00:00:00Z")
-            to_date = to_date or (now + timedelta(days=30)).strftime("%Y-%m-%dT23:59:59Z")
-        
-        body["timePeriod"] = {
-            "from": from_date,
-            "to": to_date
+    results = [
+        {
+            aggregation_function_name: obj.get(aggregation_function_name),
+            "UsageDate": datetime.strptime(str(obj.get("UsageDate")), "%Y%m%d").strftime("%Y-%m-%d"),
+            "CostStatus": obj.get("CostStatus"),
+            "Currency": obj.get("Currency"),
         }
+        for obj in parsed_data
+    ]
+    
+    outputs = copy.deepcopy(response)
+    properties = {k: v for k, v in response.get("properties", {}).items() if k not in ["columns", "rows"]}
+    properties["forecasts"] = results
+    outputs["properties"] = properties
 
-    params_ = {"api-version": api_version}
-    
-    demisto.debug(f"Azure billing forecast request: {url}, params: {params_}")
-    demisto.debug(f"Azure billing forecast request body: {body}")
-
-    res = client.http_request("POST", url_suffix=url, params=params_, json_data=body)
-    demisto.debug(f"Azure response:\n {res}\n")
-    
-    # Handle response according to new API format
-    response_data = res.json() if hasattr(res, "json") else res
-    properties = response_data.get("properties", {})
-    columns = properties.get("columns", [])
-    rows = properties.get("rows", [])
-    
-    demisto.debug(f"Azure billing forecast response - columns: {len(columns)}, rows: {len(rows)}")
-
-    # Parse the new API response format
-    results = []
-    
-    # Create column name to index mapping
-    column_map = {}
-    for i, column in enumerate(columns):
-        column_map[column.get("name", "")] = i
-    
-    # Process each row of data
-    for row in rows:
-        forecast_item = {
-            "PreTaxCost": row[column_map.get("PreTaxCost", 0)] if "PreTaxCost" in column_map else None,
-            "UsageDate": row[column_map.get("UsageDate", 1)] if "UsageDate" in column_map else None,
-            "CostStatus": row[column_map.get("CostStatus", 2)] if "CostStatus" in column_map else None,
-            "Currency": row[column_map.get("Currency", 3)] if "Currency" in column_map else None,
-        }
-        
-        # Format usage date if it's a number (YYYYMMDD format)
-        if forecast_item["UsageDate"] and isinstance(forecast_item["UsageDate"], int | float):
-            date_str = str(int(forecast_item["UsageDate"]))
-            if len(date_str) == 8:
-                forecast_item["UsageDate"] = f"{date_str[:4]}-{date_str[4:6]}-{date_str[6:8]}"
-        
-        results.append(forecast_item)
-    
-    outputs = {"Azure.Billing.Forecast": results}
+    context = {"Azure.Billing.Forecast": outputs}
     readable = tableToMarkdown(
         "Azure Billing Forecast",
         results,
-        headers=["PreTaxCost", "UsageDate", "CostStatus", "Currency"]
+        headers=[aggregation_function_name, "UsageDate", "CostStatus", "Currency"],
+        removeNull=True
     )
-    
+
     return CommandResults(
         readable_output=readable,
-        outputs=outputs,
-        raw_response=response_data,
+        outputs=context,
+        raw_response=response,
     )
 
 
@@ -2179,23 +2304,21 @@ def azure_billing_budgets_list_command(client: AzureClient, params: dict, args: 
     """
     subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
     budget_name = args.get("budget_name")
-    scope = f"/{subscription_id}"
-    demisto.debug(f"{scope=}")
-    api_version = "2021-10-01"
+
+    res = client.billing_budgets_list(
+        subscription_id=subscription_id,
+        budget_name=budget_name
+    )
+    
+    response_data = res.json() if hasattr(res, "json") else res
     if budget_name:
         # Single budget response
-        url = f"{scope}/providers/Microsoft.Consumption/budgets/{budget_name}"
-        res = client.http_request("GET", url_suffix=url, params={"api-version": api_version})
-        response_data = res.json() if hasattr(res, "json") else res
         items = [response_data]
-        demisto.debug(f"Azure billing budgets response - single budget: {response_data.get('name', '')}, request url: {url}")
+        demisto.debug(f"Azure billing budgets response - single budget: {response_data.get('name', '')}")
     else:
         # List of budgets response
-        url = f"{scope}/providers/Microsoft.Consumption/budgets"
-        res = client.http_request("GET", url_suffix=url, params={"api-version": api_version})
-        response_data = res.json() if hasattr(res, "json") else res
         items = response_data.get("value", [])
-        demisto.debug(f"Azure billing budgets response - budgets count: {len(items)}, request url: {url}")
+        demisto.debug(f"Azure billing budgets response - budgets count: {len(items)}")
 
     results = []
     for item in items:
@@ -2223,6 +2346,44 @@ def azure_billing_budgets_list_command(client: AzureClient, params: dict, args: 
         outputs=outputs,
         raw_response=res,
     )
+    
+    
+def parse_forecast_table_to_dict(response: dict) -> list[dict]:
+    """
+    Parses a generic Azure table-like API response and organizes the data into a list of dictionaries.
+
+    Args:
+        response (dict): The raw JSON response from the Azure API.
+    
+    Returns:
+        list[dict]: A list of dictionaries, where each dictionary represents a row
+                    and maps column names to their corresponding values.
+                    
+    Raises:
+        DemistoException: If the response is not in the expected format.
+    """
+    try:
+        properties = response.get("properties", {})
+        columns = [column["name"] for column in properties.get("columns", [])]
+        rows = properties.get("rows", [])
+        
+        parsed_data = []
+        for row in rows:
+            if len(row) != len(columns):
+                # This check ensures data integrity.
+                demisto.warning(
+                    f"Mismatched data: Found {len(row)} values for {len(columns)} columns. Skipping row."
+                )
+                continue
+            
+            # Map column names to row values to create a dictionary for each row.
+            row_dict = dict(zip(columns, row))
+            parsed_data.append(row_dict)
+            
+        return parsed_data
+        
+    except (KeyError, TypeError) as e:
+        raise DemistoException(f"Failed to parse API response. Malformed data structure: {e}")
 
 
 def remove_member_from_role(client: AzureClient, args: dict) -> CommandResults:
@@ -2411,3 +2572,61 @@ def main():
 
 if __name__ in ("__main__", "__builtin__", "builtins"):  # pragma: no cover
     main()
+
+
+# # Handle response according to API format
+# response_data = res.json() if hasattr(res, "json") else res
+# properties = response_data.get("properties", {})
+# columns = properties.get("columns", [])
+# rows = properties.get("rows", [])
+
+# demisto.debug(f"Azure billing forecast response - columns: {len(columns)}, rows: {len(rows)}")
+
+# # Parse the API response format
+# results = []
+
+# # Create column name to index mapping
+# column_map = {}
+# for i, column in enumerate(columns):
+#     column_map[column.get("name", "")] = i
+
+# # Process each row of data
+# for row in rows:
+#     # Extract data based on common column names
+#     charge = None
+#     currency = None
+#     time_period = None
+#     grain = granularity
+#     name = f"{forecast_type} Forecast"
+
+#     # Try to get charge from various possible column names
+#     for charge_col in ["PreTaxCost", "Cost", "totalCost", "Amount"]:
+#         if charge_col in column_map and len(row) > column_map[charge_col]:
+#             charge = row[column_map[charge_col]]
+#             break
+
+#     # Try to get currency
+#     if "Currency" in column_map and len(row) > column_map["Currency"]:
+#         currency = row[column_map["Currency"]]
+
+#     # Try to get time period/date
+#     for date_col in ["UsageDate", "Date", "Period"]:
+#         if date_col in column_map and len(row) > column_map[date_col]:
+#             time_period = row[column_map[date_col]]
+#             break
+
+#     # Format date if it's a number (YYYYMMDD format)
+#     if time_period and isinstance(time_period, int | float):
+#         date_str = str(int(time_period))
+#         if len(date_str) == 8:
+#             time_period = f"{date_str[:4]}-{date_str[4:6]}-{date_str[6:8]}"
+
+#     forecast_item = {
+#         "Name": name,
+#         "TimePeriod": time_period,
+#         "Charge": charge,
+#         "Currency": currency,
+#         "Grain": grain
+#     }
+
+#     results.append(forecast_item)
