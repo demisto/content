@@ -3,13 +3,13 @@ This playbook is designed to handle the alert "Scheduled task created with HTTP 
 The playbook executes the following stages:
 
 Analysis:
-- Extracts the Indicators from action command line
+- Extracts indicators from the action command line
 - Checks the IP and the URL reputation.
 
 Investigation:
 During the alert investigation, the playbook will perform the following:
-- Checks if the IP and the URL reputation is malicious.
-- Checks the CGO process is unsigned.
+- Checks if the IP and the URL reputation are malicious.
+- Checks if the CGO process is unsigned.
 - Searches for related alerts to determine if the creation of the scheduled task is part of an attack pattern.
 
 Remediation:
