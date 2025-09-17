@@ -36,8 +36,9 @@ RequestData = namedtuple(
         "request_data",
         "request_json",
         "query_params",
+        "next_page_is_url"
     ),
-    defaults=(True, None, None),
+    defaults=(True, None, None, False),
 )
 
 
@@ -152,16 +153,21 @@ class Client(BaseClient):
         Returns:
             dict: The raw response returned by the API.
         """
-        demisto.debug(f"Searching events for {endpoint}")
 
-        return self._http_request(  # type: ignore
-            method=http_method,
-            url_suffix=endpoint,
-            json_data=request_data.request_json,
-            ok_codes=tuple(ok_codes),
-            data=request_data.request_data,
-            params=request_data.query_params,
-        )
+        common_kwargs = {
+            "method": http_method,
+            "ok_codes": tuple(ok_codes),
+            "data": request_data.request_data,
+            "params": request_data.query_params,
+        }
+
+        if request_data.next_page_is_url:
+            full_url = next(iter(request_data.request_json.values()))  # in this case there is only one value in the json
+            demisto.debug(f"Fetching next page of events: {full_url}")
+            return self._http_request(full_url=full_url, **common_kwargs)  # type: ignore
+
+        demisto.debug(f"Fetching events from endpoint: {endpoint}")
+        return self._http_request(url_suffix=endpoint, json_data=request_data.request_json, **common_kwargs)  # type: ignore
 
 
 def organize_events_to_xsiam_format(raw_events: Any, events_keys: list[str]) -> list[dict[str, Any]]:
@@ -178,19 +184,27 @@ def get_time_field_from_event_to_dt(event: dict[str, Any], timestamp_field_confi
     return timestamp_format_to_datetime(timestamp_str, timestamp_field_config.timestamp_format)
 
 
-def is_pagination_needed(events: dict[Any, Any], pagination_logic: PaginationLogic) -> tuple[bool, Any]:
+def is_pagination_needed(events: dict[Any, Any], pagination_logic: PaginationLogic) -> tuple[bool, Any, bool]:
     next_page_value = None
+    next_page_is_url = False
     if pagination_needed := pagination_logic.pagination_needed:
         if dict_safe_get(events, pagination_logic.pagination_flag):
             pagination_needed = True
             next_page_value = dict_safe_get(events, pagination_logic.pagination_field_name)
             demisto.debug(f"Pagination needed - Next page value: {next_page_value}")
+            if (
+                next_page_value is not None
+                and isinstance(next_page_value, str)
+                and (next_page_value.startswith(('http://', 'https://')))
+            ):
+                demisto.debug("Detected URL in next page value, using it as-is")
+                next_page_is_url = True
         else:
             demisto.debug("Pagination not detected in the response")
             pagination_needed = False
     else:
         demisto.debug("Pagination not configured")
-    return pagination_needed, next_page_value
+    return pagination_needed, next_page_value, next_page_is_url
 
 
 def fetch_events(
@@ -231,10 +245,10 @@ def fetch_events(
         events_list = organize_events_to_xsiam_format(raw_events, events_keys)
         all_events_list.extend(events_list)
         demisto.debug(f"{len(all_events_list)} events fetched")
-        pagination_needed, next_page_value = is_pagination_needed(raw_events, pagination_logic)
+        pagination_needed, next_page_value, next_page_is_url = is_pagination_needed(raw_events, pagination_logic)
         if pagination_needed:
-            request_json = {pagination_logic.pagination_field_name: next_page_value}
-            request_data = RequestData(request_data.request_data, request_json, request_data.query_params)
+            request_json = {".".join(pagination_logic.pagination_field_name): next_page_value}
+            request_data = RequestData(request_data.request_data, request_json, request_data.query_params, next_page_is_url)
 
     # endregion
 
@@ -360,7 +374,7 @@ def setup_search_events(
     return (
         last_fetched_datetime,
         pagination_logic,
-        RequestData(substitutions_request_data, substitutions_request_json, substitutions_query_params),
+        RequestData(substitutions_request_data, substitutions_request_json, substitutions_query_params, False),
     )
 
 
