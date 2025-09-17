@@ -13,7 +13,8 @@ configuration:
   required: true
   hiddenusername: true
   type: 9
-- additionalinfo: Reliability of the source providing the intelligence data.
+- section: Collect
+  additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: A - Completely reliable
   display: Source Reliability
   name: integrationReliability

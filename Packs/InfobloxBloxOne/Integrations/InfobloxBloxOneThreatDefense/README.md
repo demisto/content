@@ -940,13 +940,13 @@ Gets the comprehensive IP reputation and threat intelligence from Infoblox Threa
 >
 >|Batch Id|Class|Confidence|Confidence Score|Confidence Score Rating|Confidence Score Vector|Detected|Expiration|Extended|Id|Imported|IP|Profile|Property|Received|Risk Score|Risk Score Rating|Risk Score Vector|Threat Level|Threat Score|Threat Score Rating|Threat Score Vector|Type|Up|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| 00000000-0000-0000-0000-000000000000 | APT | 100 | 0.1 | Unconfirmed | simple_confidence_vector | 2025-07-29T09:29:18.721Z | 2042-11-01T09:29:18.721Z | ***cyberint_guid***: simple_cyberint_guid<br>***notes***: Malware Download associated with the APT group | 00000000-0000-0000-0000-000000000000 | 2025-07-29T09:31:39.329Z | 0.0.0.1 | IID | APT_Malware | 2025-07-29T09:31:39.329Z | 9.9 | Critical | simple_risk_vector | 100 | 10 | Critical | simple_threat_vector | IP | true |
+>| 00000000-0000-0000-0000-000000000000 | APT | 100 | 0.1 | Unconfirmed | simple_confidence_vector | 2025-07-29T09:29:18.721Z | 2042-11-01T09:29:18.721Z | ***cyberint_guid***: simple_cyberint_guid<br/>***notes***: Malware Download associated with the APT group | 00000000-0000-0000-0000-000000000000 | 2025-07-29T09:31:39.329Z | 0.0.0.1 | IID | APT_Malware | 2025-07-29T09:31:39.329Z | 9.9 | Critical | simple_risk_vector | 100 | 10 | Critical | simple_threat_vector | IP | true |
 >
 >### Address Information
 >
 >|Address|Comment|Compartment Id|Created At|Disable Dhcp|External Keys|Host|Hwaddr|Id|Interface|Names|Parent|Protocol|Range|Space|State|Tags|Updated At|Usage|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| 0.0.0.1 | comment | 00000000-0000-0000-0000-000000000000 | 2025-06-27T13:07:21.476126Z | False | ***e3***: 3e3 | ipam/host/00000000-0000-0000-0000-000000000000 | 00:00:00:00:00:00 | ipam/address/00000000-0000-0000-0000-000000000000 | interface | **-** ***name***: name<br> ***type***: user | ipam/subnet/00000000-0000-0000-0000-000000000000 | ip4 | ipam/range/00000000-0000-0000-0000-000000000000 | ipam/ip_space/00000000-0000-0000-0000-000000000000 | used | ***temp***: true | 2025-06-27T13:07:21.429056Z | ***values***: IPAM RESERVED |
+>| 0.0.0.1 | comment | 00000000-0000-0000-0000-000000000000 | 2025-06-27T13:07:21.476126Z | False | ***e3***: 3e3 | ipam/host/00000000-0000-0000-0000-000000000000 | 00:00:00:00:00:00 | ipam/address/00000000-0000-0000-0000-000000000000 | interface | **-** ***name***: name<br/> ***type***: user | ipam/subnet/00000000-0000-0000-0000-000000000000 | ip4 | ipam/range/00000000-0000-0000-0000-000000000000 | ipam/ip_space/00000000-0000-0000-0000-000000000000 | used | ***temp***: true | 2025-06-27T13:07:21.429056Z | ***values***: IPAM RESERVED |
 
 ### domain
 
@@ -1202,13 +1202,13 @@ Gets the comprehensive domain/host reputation and threat intelligence from Infob
 >
 >|Batch Id|Class|Confidence|Detected|Dga|Domain|Expiration|Extended|Host|Id|Imported|Profile|Property|Received|Threat Level|Tld|Type|Up|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| 00000000-0000-0000-0000-000000000001 | Phishing | 100 | 2025-05-08T16:39:38.959Z | false | test.com | 2025-09-05T16:39:38.959Z | ***cyberint_guid***: simple_cyberint_guid<br>***notes***: cyber actors, possibly associated with the APT group Agent Serpens, created a fake website mimicking a modeling agency to collect detailed visitor. | test.com | 00000000-0000-0000-0000-000000000001 | 2025-05-08T16:41:37.894Z | IID | Phishing_Lookalike | 2025-05-08T16:41:37.894Z | 100 | com | HOST | true |
+>| 00000000-0000-0000-0000-000000000001 | Phishing | 100 | 2025-05-08T16:39:38.959Z | false | test.com | 2025-09-05T16:39:38.959Z | ***cyberint_guid***: simple_cyberint_guid<br/>***notes***: cyber actors, possibly associated with the APT group Agent Serpens, created a fake website mimicking a modeling agency to collect detailed visitor. | test.com | 00000000-0000-0000-0000-000000000001 | 2025-05-08T16:41:37.894Z | IID | Phishing_Lookalike | 2025-05-08T16:41:37.894Z | 100 | com | HOST | true |
 >
 >### Address Information
 >
 >|Addresses|Auto Generate Records|Comment|Created At|Host Names|Id|Name|Updated At|
 >|---|---|---|---|---|---|---|---|
->| **-** ***address***: 0.0.0.1<br> ***ref***: ipam/address/00000000-0000-0000-0000-000000000000<br> ***space***: ipam/ip_space/00000000-0000-0000-0000-000000000000 | True | comment | 2025-07-22T05:26:46.834693Z | **-** ***alias***: False<br> ***name***: test.com<br> ***primary_name***: True<br> ***zone***: dns/auth_zone/8ce66502-8d4b-439e-8690-0c59d3122b9f | ipam/host/00000000-0000-0000-0000-000000000000 | test.com | 2025-07-22T05:26:57.219235Z |
+>| **-** ***address***: 0.0.0.1<br/> ***ref***: ipam/address/00000000-0000-0000-0000-000000000000<br/> ***space***: ipam/ip_space/00000000-0000-0000-0000-000000000000 | True | comment | 2025-07-22T05:26:46.834693Z | **-** ***alias***: False<br/> ***name***: test.com<br/> ***primary_name***: True<br/> ***zone***: dns/auth_zone/8ce66502-8d4b-439e-8690-0c59d3122b9f | ipam/host/00000000-0000-0000-0000-000000000000 | test.com | 2025-07-22T05:26:57.219235Z |
 
 ### url
 
@@ -1382,7 +1382,7 @@ Gets the comprehensive URL reputation and threat intelligence from Infoblox Thre
 >
 >|Batch Id|Class|Confidence|Detected|Domain|Expiration|Extended|Host|Id|Imported|Profile|Property|Received|Threat Level|Tld|Type|Up|URL|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| 00000000-0000-0000-0000-000000000000 | Scam | 100 | 2025-06-07T12:12:00.22Z | test.com | 2025-10-05T12:12:00.22Z | ***cyberint_guid***: simple_cyberint_guid<br>***notes***: Scam advertised. Lures victims to put their money into fake investments.<br>***protocol***: https<br>***references***: https://test.com | test.com | 00000000-0000-0000-0000-000000000001 | 2025-06-07T12:16:32.337Z | IID | Scam_Generic | 2025-06-07T12:16:32.337Z | 100 | com | URL | true | https://test.com |
+>| 00000000-0000-0000-0000-000000000000 | Scam | 100 | 2025-06-07T12:12:00.22Z | test.com | 2025-10-05T12:12:00.22Z | ***cyberint_guid***: simple_cyberint_guid<br/>***notes***: Scam advertised. Lures victims to put their money into fake investments.<br/>***protocol***: https<br/>***references***: https://test.com | test.com | 00000000-0000-0000-0000-000000000001 | 2025-06-07T12:16:32.337Z | IID | Scam_Generic | 2025-06-07T12:16:32.337Z | 100 | com | URL | true | https://test.com |
 >
 
 ### infobloxcloud-mac-enrich
@@ -1461,7 +1461,7 @@ Enrich a MAC address with DHCP lease information.
 >
 >|Address|Client Id|Ends|Fingerprint|Fingerprint Processed|Hardware|Host|Hostname|Iaid|Last Updated|Options|Preferred Lifetime|Space|Starts|State|Type|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| 0.0.0.1 | 01:00:00:00:00:00:01 | 2025-07-01T19:25:24Z | VMware:Virtual Machine:Windows: | processed | 00:00:00:00:00:01 | dhcp/host/123456 | test-host01 | 0 | 2025-07-01T18:25:24.792Z | **-** ***Code***: 57<br> ***Value***: test<br>**-** ***Code***: 61<br> ***Value***: sample<br>**-** ***Code***: 53<br> ***Value***: world<br>**-** ***Code***: 55<br> ***Value***: bar | 2025-07-01T18:25:24Z | ipam/ip_space/12345678-1234-1234-1234-123456789012 | 2025-07-01T18:25:24Z | used | DHCPv4 |
+>| 0.0.0.1 | 01:00:00:00:00:00:01 | 2025-07-01T19:25:24Z | VMware:Virtual Machine:Windows: | processed | 00:00:00:00:00:01 | dhcp/host/123456 | test-host01 | 0 | 2025-07-01T18:25:24.792Z | **-** ***Code***: 57<br/> ***Value***: test<br/>**-** ***Code***: 61<br/> ***Value***: sample<br/>**-** ***Code***: 53<br/> ***Value***: world<br/>**-** ***Code***: 55<br/> ***Value***: bar | 2025-07-01T18:25:24Z | ipam/ip_space/12345678-1234-1234-1234-123456789012 | 2025-07-01T18:25:24Z | used | DHCPv4 |
 
 ### infobloxcloud-insights-list
 

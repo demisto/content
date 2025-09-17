@@ -1,5 +1,5 @@
 [file:InfobloxBloxOneThreatDefense.yml]
-ignore=MR108
+ignore=MR108,IN124
 
 [file:incidentfield-Infoblox_Cloud_Insight_Spreading_Time.json]
 ignore=IF113,IF115
