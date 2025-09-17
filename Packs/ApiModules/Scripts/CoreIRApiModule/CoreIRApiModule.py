@@ -3799,9 +3799,9 @@ def get_alerts_by_filter_command(client: CoreClient, args: Dict) -> CommandResul
     custom_filter_str = args.pop("custom_filter", None)
 
     if custom_filter_str:
-        for arg in args:
-            if arg not in ["time_frame", "start_time", "end_time"]:
-                raise DemistoException('Please provide either "custom_filter" argument or other filter arguments but not both.')
+        # for arg in args:
+        #     if arg not in ["time_frame", "start_time", "end_time"]:
+        #         raise DemistoException('Please provide either "custom_filter" argument or other filter arguments but not both.')
         try:
             custom_filter = json.loads(custom_filter_str)
 
