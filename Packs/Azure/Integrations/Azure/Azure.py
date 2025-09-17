@@ -1410,9 +1410,9 @@ class AzureClient:
 
 def get_permissions_from_api_function_name(api_function_name: str, error_msg: str) -> list:
     """
-    Extract a missing permission by checking command-to-permissions mapping against an error message.
-    Iterates over the permissions mapped to a specific API function and returns the first permission
-    that appears in the given error message.
+    Extract the relevant missing permission by checking command-to-permissions mapping against an error message.
+    Iterates over the permissions mapped to a specific API function and returns the relevant permissions
+    that appear in the given error message.
 
     Args:
         api_function_name (str): The name of the API function used for permission lookup.
@@ -1431,9 +1431,9 @@ def get_permissions_from_api_function_name(api_function_name: str, error_msg: st
 
 def get_permissions_from_required_role_permissions_list(error_msg: str) -> list:
     """
-    Extract a missing permission by searching the required role permissions list against an error message.
-    Iterates over the predefined required role permissions and returns the first permission
-    that appears in the given error message.
+    Extract the relevant missing permission by searching the required role permissions list against an error message.
+    Iterates over the predefined required role permissions and returns the relevant permissions
+    that appear in the given error message.
 
     Args:
         error_msg (str): The error message string to check for missing permissions.
