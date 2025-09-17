@@ -1,12 +1,12 @@
 {
-  "EncounteredError": false,
-  "OriginalURL": "https://short.url/a",
+  "OriginalURL": "short.url/a",
   "RedirectCount": 2,
   "RedirectHistory": [
-    "https://short.url/a",
+    "short.url/a",
     "https://short.url/b",
     "https://xsoar.pan.dev/"
   ],
   "ResolvedURL": "https://xsoar.pan.dev/",
-  "ServiceName": "longurl.in"
+  "ServiceName": "Built-In",
+  "EncounteredError": false
 }
