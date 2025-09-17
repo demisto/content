@@ -64,9 +64,6 @@ name: SpiderSilk
 script:
   commands:
   - arguments: []
-    description: Tests API connectivity and authentication using the /stats endpoint.
-    name: test-module
-  - arguments: []
     description: Fetches dark web credential exposures as incidents from the /darkweb_credentials endpoint.
     name: fetch-incidents
   - arguments:
