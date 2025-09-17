@@ -2,9 +2,6 @@ category: Network Security
 commonfields:
   id: Akamai WAF
   version: -1
-sectionOrder:
-- Connect
-- Collect
 configuration:
 - defaultvalue: https://example.net
   display: Server URL (e.g., https://example.net)
@@ -1807,7 +1804,7 @@ script:
       name: with_metrics
     description: Akamai Generic API Call.
     name: akamai-generic-api-call-command
-  dockerimage: demisto/auth-utils:1.0.0.4578605
+  dockerimage: demisto/auth-utils:1.0.0.4885715
   script: ''
   subtype: python3
   type: python
@@ -1815,3 +1812,6 @@ script:
 tests:
 - Akamai_WAF-Test
 fromversion: 5.0.0
+sectionorder:
+- Connect
+- Collect
