@@ -192,8 +192,6 @@ def main() -> None:
 
     api_key_details = params.get('credentials').get('password')
     api_key = api_key_details.get('password') if isinstance(api_key_details, dict) else api_key_details
-    if not api_key:
-        raise ValueError("The API Key is not configured. Please set it in the instance settings.")
 
     instruction = params.get('instruction')
     if not instruction or '{' not in instruction:
