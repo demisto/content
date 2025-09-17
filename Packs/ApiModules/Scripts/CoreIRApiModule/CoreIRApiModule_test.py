@@ -2599,6 +2599,73 @@ def test_get_dynamic_analysis(requests_mock):
     assert dynamic_analysis.get("causalityId") == "AAA"
 
 
+def test_polling_get_script_execution_results_command(mocker):
+    """Test polling_get_script_execution_results_command with a single action ID."""
+    from CoreIRApiModule import polling_get_script_execution_results_command
+    import CoreIRApiModule
+    from CommonServerPython import CommandResults
+
+    mock_results = [
+        CommandResults(
+            outputs_prefix="CoreIRApiModule.Action",
+            outputs={
+                "action_id": 12345,
+                "results": [
+                    {
+                        "endpoint_name": "endpoint_name",
+                        "endpoint_ip_address": ["1.1.1.1"],
+                        "endpoint_status": "endpoint_status",
+                        "domain": "env",
+                        "endpoint_id": "1",
+                        "execution_status": "COMPLETED_SUCCESSFULLY",
+                        "standard_output": 'Running command "command_executed"',
+                        "retrieved_files": 0,
+                        "failed_files": 0,
+                        "retention_date": None,
+                    },
+                ],
+            }, ),
+                CommandResults(
+            outputs_prefix="CoreIRApiModule.Action",
+            outputs={
+                "action_id": 12345,
+                "results": [
+                    {
+                        "endpoint_name": "endpoint_name",
+                        "endpoint_ip_address": ["2.2.2.2"],
+                        "endpoint_status": "endpoint_status",
+                        "domain": "env",
+                        "endpoint_id": "2",
+                        "execution_status": "FAILED",
+                        "standard_output": '',
+                        "retrieved_files": 0,
+                        "failed_files": 0,
+                        "retention_date": None,
+                    },
+                ],
+            }, )
+    ]
+
+    mocker.patch.object(
+        CoreIRApiModule,
+        "get_script_execution_results_command",
+        return_value=mock_results,
+    )
+    # Call the function
+    args = {
+        "action_id": "12345",
+        "integration_context_brand": "TestBrand"
+    }
+    result = polling_get_script_execution_results_command(test_client, args)
+    
+    # Verify the results
+    assert result.outputs[0]["action_id"] == 12345
+    assert len(result.outputs) == 2
+    assert "Script Execution Results - 12345" in result.readable_output
+    assert "COMPLETED" in result.readable_output
+    assert "FAILED" in result.readable_output
+
+
 def test_parse_get_script_execution_results():
     from CoreIRApiModule import parse_get_script_execution_results
 

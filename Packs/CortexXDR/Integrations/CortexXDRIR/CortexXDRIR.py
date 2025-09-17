@@ -1812,8 +1812,8 @@ def main():  # pragma: no cover
                     cmd="xdr-file-exist-script-execute",
                     command_function=run_script_file_exists_command,
                     command_decision_field="action_id",
-                    results_function=action_status_get_command,
-                    polling_field="status",
+                    results_function=polling_get_script_execution_results_command,
+                    polling_field="execution_status",
                     polling_value=["PENDING", "IN_PROGRESS", "PENDING_ABORT"],
                 )
             )
