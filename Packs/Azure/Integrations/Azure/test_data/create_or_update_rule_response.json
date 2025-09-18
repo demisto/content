@@ -7,8 +7,8 @@
     "protocol": "*",
     "sourcePortRange": "*",
     "destinationPortRange": "8080",
-    "sourceAddressPrefix": "10.0.0.0/8",
-    "destinationAddressPrefix": "11.0.0.0/8",
+    "sourceAddressPrefix": "0.0.0.0/0",
+    "destinationAddressPrefix": "1.1.1.1/1",
     "access": "Deny",
     "priority": 100,
     "direction": "Outbound"

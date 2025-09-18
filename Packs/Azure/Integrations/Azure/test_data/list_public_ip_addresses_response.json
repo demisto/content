@@ -35,7 +35,7 @@
       "location": "westus",
       "properties": {
         "provisioningState": "Succeeded",
-        "ipAddress": "40.85.154.247",
+        "ipAddress": "1.1.1.1",
         "publicIPAddressVersion": "IPv4",
         "publicIPAllocationMethod": "Dynamic",
         "idleTimeoutInMinutes": 4,
@@ -58,7 +58,7 @@
       "location": "westus",
       "properties": {
         "provisioningState": "Succeeded",
-        "ipAddress": "40.85.154.248",
+        "ipAddress": "2.2.2.2",
         "publicIPAddressVersion": "IPv4",
         "publicIPAllocationMethod": "Dynamic",
         "idleTimeoutInMinutes": 4,
