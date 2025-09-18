@@ -73,9 +73,9 @@ class Client(BaseClient):
 
         url_path = urljoin(self._base_url, end_point) if not is_retry else end_point
 
-        demisto.info(f"[SpyCloud] Calling API endpoint: {url_path}")
+        demisto.debug(f"[SpyCloud] Calling API endpoint: {url_path}")
         if params:
-            demisto.info(f"[SpyCloud] With query params: {params}")
+            demisto.debug(f"[SpyCloud] With query params: {params}")
 
         retries = None
         status_list_to_retry = None
@@ -177,37 +177,37 @@ def fetch_domain_or_watchlist_data(client: Client, args: dict, base_args: dict) 
             endpoint += f"{delimiter}type={type_param}"
         return endpoint
 
+    def fetch_paginated(endpoint_url: str) -> None:
+        cursor = None
+        while True:
+            try:
+                params = dict(base_args)
+                if cursor:
+                    params["cursor"] = cursor
+                response = client.query_spy_cloud_api(endpoint_url, params)
+
+                results.extend(response.get("results", []))
+                cursor = response.get("cursor")
+                if not cursor:
+                    break
+            except Exception as e:
+                demisto.error(f"[SpyCloud] Failed to fetch data from {endpoint_url}: {e}")
+                break
+
     if domain_search:
         required_types = {"email_domain", "target_domain"}
         current_types = set(type_param.split(",")) if type_param else set()
-        updated_types = current_types | required_types
-        type_param = ",".join(updated_types)
+        type_param = ",".join(sorted(current_types | required_types))
 
         domains = [d.strip() for d in domain_search.split(",") if d.strip()]
         demisto.debug(f"[SpyCloud] Detected domain_search values: {domains}")
 
         for domain in domains:
             endpoint = build_endpoint(DOMAIN_ENDPOINT, domain)
-            cursor = " "
-            while cursor:
-                try:
-                    response = client.query_spy_cloud_api(endpoint, {**base_args, "cursor": cursor})
-                    results.extend(response.get("results", []))
-                    cursor = response.get("cursor", "")
-                except Exception as e:
-                    demisto.error(f"[SpyCloud] Failed to fetch data for domain {domain}: {str(e)}")
-                    break
+            fetch_paginated(endpoint)
     else:
         endpoint = build_endpoint(WATCHLIST_ENDPOINT)
-        cursor = " "
-        while cursor:
-            try:
-                response = client.query_spy_cloud_api(endpoint, {**base_args, "cursor": cursor})
-                results.extend(response.get("results", []))
-                cursor = response.get("cursor", "")
-            except Exception as e:
-                demisto.error(f"[SpyCloud] Failed to fetch data from watchlist: {str(e)}")
-                break
+        fetch_paginated(endpoint)
     return results
 
 
