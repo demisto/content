@@ -483,7 +483,8 @@ def main():  # pragma: no cover
             )
             events, command_result = get_events_command(client, "admin_audits", last_run, max_limit)  # type: ignore
             if argToBoolean(args.get("should_push_events", False)):
-                send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+                # send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+                demisto.debug(f"[cyberarkepm-get-admin-audits] send_events_to_xsiam: {events=}")
             return_results(command_result)
 
         elif command == "cyberarkepm-get-policy-audits":
@@ -494,7 +495,8 @@ def main():  # pragma: no cover
             )
             events, command_result = get_events_command(client, "policy_audits", last_run, max_limit)  # type: ignore
             if argToBoolean(args.get("should_push_events", False)):
-                send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+                # send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+                demisto.debug(f"[cyberarkepm-get-policy-audits] send_events_to_xsiam: {events=}")
             return_results(command_result)
 
         elif command == "cyberarkepm-get-events":
@@ -506,12 +508,14 @@ def main():  # pragma: no cover
             )
             events, command_result = get_events_command(client, "detailed_events", last_run, max_limit)  # type: ignore
             if argToBoolean(args.get("should_push_events", False)):
-                send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+                # send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+                demisto.debug(f"[cyberarkepm-get-events] send_events_to_xsiam: {events=}")
             return_results(command_result)
 
         elif command in "fetch-events":
             events, next_run = fetch_events(client, last_run, max_fetch, enable_admin_audits)  # type: ignore
-            send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+            # send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+            demisto.debug(f"[fetch-events] send_events_to_xsiam: {events=}")
             demisto.setLastRun(next_run)
 
     except Exception as e:
