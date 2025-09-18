@@ -704,10 +704,9 @@ def create_threat_object_indicators(
             "industrysectors": [
                 string_to_table_header(industry) for industry in demisto.get(threat_obj, "battlecard_details.industries", [])
             ],
-            "primarymotivation": [
-                string_to_table_header(motivation)
-                for motivation in demisto.get(threat_obj, "battlecard_details.primary_motivation", [])
-            ],
+            "primarymotivation": string_to_table_header(
+                demisto.get(threat_obj, "battlecard_details.threat_actor_details.primary_motivation", "")
+            ),
             "publications": create_publications(threat_obj.get("publications", [])),
             "geocountry": demisto.get(threat_obj, "battlecard_details.threat_actor_details.origin", "").upper(),
         }

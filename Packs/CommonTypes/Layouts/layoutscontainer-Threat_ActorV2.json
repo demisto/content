@@ -131,7 +131,7 @@
                             {
                                 "endCol": 2,
                                 "fieldId": "timestamp",
-                                "height": 26,
+                                "height": 22,
                                 "id": "073e9340-7e8e-11ec-b2d8-df6cde2557c8",
                                 "index": 0,
                                 "sectionItemType": "field",
@@ -140,7 +140,7 @@
                             {
                                 "endCol": 2,
                                 "fieldId": "modified",
-                                "height": 26,
+                                "height": 22,
                                 "id": "ee1e0630-8a4e-11ec-a1ef-6369524b39c7",
                                 "index": 1,
                                 "sectionItemType": "field",
@@ -156,12 +156,23 @@
                                 "startCol": 0
                             },
                             {
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "reportedby",
+								"height": 22,
+								"id": "3de7d2c0-94c0-11f0-b563-1f3868fa5824",
+								"index": 3,
+								"listId": "f6n7qgpsje-d48d2ff1-66e0-4ad8-8e41-6fa4efd4ce14-f6n7qgpsje-14a72590-b30c-11eb-941c-e725acf1fbbc",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+                            {
                                 "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "aliases",
-                                "height": 26,
+                                "height": 22,
                                 "id": "8a3ff980-b30c-11eb-941c-e725acf1fbbc",
-                                "index": 3,
+                                "index": 4,
                                 "listId": "f6n7qgpsje-14a72590-b30c-11eb-941c-e725acf1fbbc",
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -169,9 +180,9 @@
                             {
                                 "endCol": 2,
                                 "fieldId": "threatactortypes",
-                                "height": 26,
+                                "height": 22,
                                 "id": "86e47270-b30c-11eb-941c-e725acf1fbbc",
-                                "index": 4,
+                                "index": 5,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -179,9 +190,9 @@
                                 "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "goals",
-                                "height": 26,
+                                "height": 22,
                                 "id": "99762b90-b30c-11eb-941c-e725acf1fbbc",
-                                "index": 5,
+                                "index": 6,
                                 "listId": "f6n7qgpsje-14a72590-b30c-11eb-941c-e725acf1fbbc",
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -189,9 +200,9 @@
                             {
                                 "endCol": 2,
                                 "fieldId": "geocountry",
-                                "height": 26,
+                                "height": 22,
                                 "id": "8fc676e0-b30c-11eb-941c-e725acf1fbbc",
-                                "index": 6,
+                                "index": 7,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -199,9 +210,9 @@
                                 "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "primarymotivation",
-                                "height": 26,
+                                "height": 22,
                                 "id": "a9c21360-b30c-11eb-941c-e725acf1fbbc",
-                                "index": 7,
+                                "index": 8,
                                 "listId": "f6n7qgpsje-14a72590-b30c-11eb-941c-e725acf1fbbc",
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -210,9 +221,9 @@
                                 "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "secondarymotivations",
-                                "height": 26,
+                                "height": 22,
                                 "id": "ac046240-b30c-11eb-941c-e725acf1fbbc",
-                                "index": 8,
+                                "index": 9,
                                 "listId": "f6n7qgpsje-14a72590-b30c-11eb-941c-e725acf1fbbc",
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -220,27 +231,27 @@
                             {
                                 "endCol": 2,
                                 "fieldId": "sophistication",
-                                "height": 26,
+                                "height": 22,
                                 "id": "9f10a620-b30c-11eb-941c-e725acf1fbbc",
-                                "index": 9,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "resourcelevel",
-                                "height": 26,
-                                "id": "a6cec400-b30c-11eb-941c-e725acf1fbbc",
                                 "index": 10,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "tags",
-                                "height": 26,
-                                "id": "f72ca610-b30c-11eb-941c-e725acf1fbbc",
+                                "fieldId": "resourcelevel",
+                                "height": 22,
+                                "id": "a6cec400-b30c-11eb-941c-e725acf1fbbc",
                                 "index": 11,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "tags",
+                                "height": 22,
+                                "id": "f72ca610-b30c-11eb-941c-e725acf1fbbc",
+                                "index": 12,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -248,9 +259,9 @@
 								"dropEffect": "move",
 								"endCol": 2,
 								"fieldId": "industrysectors",
-								"height": 26,
+								"height": 22,
 								"id": "9eb5e473-9ebc-4bb1-b0af-5e3a9813670f",
-								"index": 12,
+								"index": 13,
 								"listId": "f6n7qgpsje-14a72590-b30c-11eb-941c-e725acf1fbbc",
 								"sectionItemType": "field",
 								"startCol": 0
