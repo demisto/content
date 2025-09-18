@@ -415,18 +415,25 @@ def filter_id_timestamps_by_lookback_window(id_timestamps: dict, current_date: s
         return id_timestamps
 
     current_datetime = arg_to_datetime(current_date, required=True)
-    lookback_cutoff = current_datetime - timedelta(minutes=look_back)  # type: ignore
+    # Add 1 minute buffer to lookback for better cache retention
+    retention_minutes = look_back + 1 if look_back > 0 else look_back
+    lookback_cutoff = current_datetime - timedelta(minutes=retention_minutes)  # type: ignore
     
     demisto.debug(f"Lookback window: {lookback_cutoff.strftime(DATE_FORMAT)} to {current_datetime.strftime(DATE_FORMAT)}")
 
     filtered_id_timestamps = {}
     removed_count = 0
+    removed_ids = []
     for event_id, timestamp in id_timestamps.items():
         event_datetime = arg_to_datetime(timestamp, required=True)
         if event_datetime >= lookback_cutoff:  # type: ignore
             filtered_id_timestamps[event_id] = timestamp
         else:
             removed_count += 1
+            removed_ids.append(event_id)
+    
+    if removed_ids:
+        demisto.debug(f"Removing {removed_count} event IDs from cache: {removed_ids}")
     
     demisto.debug(f"Lookback filtering: kept {len(filtered_id_timestamps)} IDs, removed {removed_count} older IDs")
     return filtered_id_timestamps
