@@ -255,8 +255,10 @@ def test_main_with_sha256_filter(monkeypatch, sha_values):
 
     assert "custom_filter" in called_args, "custom_filter not found in args"
 
-    actual_custom_filter = json.loads(called_args["custom_filter"])
-    assert actual_custom_filter == expected_custom_filter, "custom_filter structure does not match expected"
+    expected_dict = json.loads(expected_custom_filter)
+    actual_dict = json.loads(called_args["custom_filter"])
+
+    assert actual_dict == expected_dict , "custom_filter structure does not match expected"
 
     # Validate result context
     assert result.outputs == [{"internal_id": "test123", "severity": "high"}]
