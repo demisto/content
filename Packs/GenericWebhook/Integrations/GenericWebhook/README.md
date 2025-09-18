@@ -83,25 +83,24 @@ The Generic Webhook integration accepts POST HTTP queries, with the following op
 
 Basic authentication can be used in three ways with the same username/password configured in the integration:
 
-Using -u flag:<br><br>
+Using -u flag:<br>
 `curl -X POST https://ext-companyname.crtx.eu.paloaltonetworks.com/xsoar/instance/execute/my_instance_01 -u "<Username:Password>" -H "Content-Type: application/json" -d '{"name":"incident created via generic webhook","rawJson":{"some_field":"some_value"}}'`
 
-Using Authorization header (where the header value is base64 encoded username:password):<br><br>
+Using Authorization header (where the header value is base64 encoded username:password):<br>
 `curl -X POST https://ext-companyname.crtx.eu.paloaltonetworks.com/xsoar/instance/execute/my_instance_01 -H "Authorization: Basic MTIzOjEyMw==" -H "Content-Type: application/json" -d '{"name":"incident created via generic webhook","rawJson":{"some_field":"some_value"}}'`
+**Note**: `MTIzOjEyMw==` is Base64 encoded username:password example.
 
-#TODO: (MTIzOjEyMw== is a Base64 example of an encoded username and password.)
 
-
-Or embedding credentials directly in the URL:<br><br>
+Or embedding credentials directly in the URL:<br>
 `curl -X POST https://username:password@ext-companyname.crtx.eu.paloaltonetworks.com/xsoar/instance/execute/my_instance_01 -H "Content-Type: application/json" -d '{"name":"incident created via generic webhook","rawJson":{"some_field":"some_value"}}'`
 
-The request payload does not have to contain the fields mentioned above, and may include any JSON fields and values:<br><br>
+The request payload does not have to contain the fields mentioned above, and may include any JSON fields and values:<br>
 `curl -X POST https://ext-companyname.crtx.eu.paloaltonetworks.com/xsoar/instance/execute/my_instance_01 -u "<Username:Password>" -H "Content-Type: application/json" -d '{"string_field":"string_field_value","array_field":["item1","item2"]}'`
 
-Multiple incidents, alerts, or issues can be created in one request by sending an array as the request body:<br><br>
+Multiple incidents, alerts, or issues can be created in one request by sending an array as the request body:<br>
 `curl -X POST https://ext-companyname.crtx.eu.paloaltonetworks.com/xsoar/instance/execute/my_instance_01 -u "<Username:Password>" -H "Content-Type: application/json" -d '[{"name":"incident1","rawJson":{"some_field":"some_value"}}, {"name":"incident2","rawJson":{"some_field":"some_value"}}]'`
 
-Using custom header authentication (Cortex XSOAR 6.x only). In this example, the username in the integration instance is set to _header:Authorization and the password in the integration instance is set to  Basic MYIvOkEyMw== :<br><br>
+Using custom header authentication (Cortex XSOAR 6.x only). In this example, the username in the integration instance is set to _header:Authorization and the password in the integration instance is set to  `Basic MYIvOkEyMw==` :<br>
 `curl -X POST https://ext-companyname.crtx.eu.paloaltonetworks.com/xsoar/instance/execute/my_instance_01 -H "Authorization: Basic MYIvOkEyMw==" -H "Content-Type: application/json" -d '{"name":"incident created via generic webhook","rawJson":{"some_field":"some_value"}}' -v`
 
 The response is an array containing an object with the created incident metadata, such as the incident ID.
@@ -117,7 +116,7 @@ The payload can then be mapped. For more information see:
 
 ## Authorization headers
 
-For Cortex XSOAR 6.x users, you can use the special `_header:<HEADER-NAME>` syntax to authenticate requests using custom headers from your third-party service. This helps prevent unauthorized creation of incidents. Set the username field in the integration to `_header:<HEADER-NAME>`**** and provide the header value in the password field.
+For Cortex XSOAR 6.x users, you can use the special `_header:<HEADER-NAME>` syntax to authenticate requests using custom headers from your third-party service. This helps prevent unauthorized creation of incidents. Set the username field in the integration to `_header:<HEADER-NAME>` and provide the header value in the password field.
 Example: If the request included in the `Authorization` header the value `Bearer XXX`, then the username should be set to `_header:Authorization` and the password should be set to `Bearer XXX`.
 
 ### Troubleshooting authorization headers
