@@ -53,7 +53,11 @@ class Client(BaseClient):
         super().__init__(base_url=base_url, headers=headers, verify=verify, proxy=proxy)
 
     def get_indicators(
-        self, indicator_types: str | None = None, limit: int = 100, start_time: str | None = None, next_page_token: str | None = None
+        self,
+        indicator_types: str | None = None,
+        limit: int = 100,
+        start_time: str | None = None,
+        next_page_token: str | None = None,
     ) -> dict:
         """Get indicators from the Unit 42 feed.
 
@@ -68,7 +72,7 @@ class Client(BaseClient):
         """
         params = {}
         if indicator_types and indicator_types != "All":
-            params["indicator_types"] = indicator_types.lower()
+            params["indicator_types"] = ",".join(indicator_types)
         if limit:
             params["limit"] = limit
         if start_time:
@@ -516,8 +520,8 @@ def main():
 
     command = demisto.command()
     demisto.debug(f"Command being called is {command}")
-    
-    headers = {"Authorization": f'Bearer {demisto.getLicenseID()}'}
+
+    headers = {"Authorization": f"Bearer {demisto.getLicenseID()}"}
 
     try:
         client = Client(base_url=url, headers=headers, verify=verify_certificate, proxy=proxy)
@@ -531,7 +535,7 @@ def main():
             for b in batch(indicators, batch_size=2000):
                 demisto.createIndicators(b)
             demisto.setLastRun({"last_successful_run": now})
-            demisto.info(f"Fetch-indicators completed. Next run will fetch from: {now.strftime(DATE_FORMAT)}")
+            demisto.info(f"Fetch-indicators completed. Next run will fetch from: {now}")
 
         elif command == "unit42-get-indicators":
             return_results(get_indicators_command(client, demisto.args(), feed_tags, tlp_color))
