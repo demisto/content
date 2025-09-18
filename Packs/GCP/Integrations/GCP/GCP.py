@@ -297,12 +297,14 @@ def handle_permission_error(e: HttpError, project_id: str, command_name: str):
     status_code = e.resp.status
     if e.resp.get("content-type", "").startswith("application/json"):
         content = json.loads(e.content)
-        reason = json.loads(e.content).get("error", {}).get("errors", [{}])[0].get("reason", "")
+        reason = content.get("error", {}).get("errors", [{}])[0].get("reason", "")
         message = f"{content.get('error', {}).get('message', '')} {reason=}"
 
+        # get the relevant permissions for the relevant command
         possible_permissions_list: list[str]
         possible_permissions_list = COMMAND_REQUIREMENTS[command_name][1]
 
+        # find out which permissions are relevant for the current execution failure from the list of command permissions.
         permission_names = []
         for permission in possible_permissions_list:
             if permission.lower() in message.lower():
@@ -311,6 +313,8 @@ def handle_permission_error(e: HttpError, project_id: str, command_name: str):
             permission_names.append("N/A")
 
         demisto.debug(f"The info {status_code=} {message=} {permission_names=} {content=}")
+
+        # create an error entry for each missing permission.
         error_entries = []
         for perm in permission_names:
             error_entries.append({"account_id": project_id, "message": message, "name": perm})
