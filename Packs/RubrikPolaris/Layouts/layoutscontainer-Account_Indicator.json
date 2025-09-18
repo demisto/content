@@ -408,9 +408,7 @@
                         "i": "default-main-47ba2af0-a9b1-11ea-8355-9d16c102e609",
                         "items": [
                             {
-                                "args": {
-
-                                },
+                                "args": {},
                                 "endCol": 1,
                                 "fieldId": "",
                                 "height": 44,
@@ -422,9 +420,7 @@
                                 "startCol": 0
                             },
                             {
-                                "args": {
-
-                                },
+                                "args": {},
                                 "endCol": 2,
                                 "fieldId": "",
                                 "height": 44,
@@ -514,9 +510,7 @@
                     {
                         "h": 2,
                         "i": "default-main-302ebde0-dbb3-11ea-894b-59859b6b5482",
-                        "items": [
-
-                        ],
+                        "items": [],
                         "maxW": 3,
                         "minH": 1,
                         "minW": 1,

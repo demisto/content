@@ -58,8 +58,7 @@ tasks:
       id: 3fc02302-4a03-4255-8734-e7e0ff56a942
       version: -1
       name: Disable the offending FW rule
-      description: Updates the specified firewall rule with the data included in the
-        request.
+      description: Updates the specified firewall rule with the data included in the request.
       script: Google Cloud Compute|||gcp-compute-patch-firewall
       type: regular
       iscommand: true
@@ -471,8 +470,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: 21, 80, 27017, 3306, 1521, 5432, 3389, 22, 23, 53, 445, 139,
-                110, 25
+              simple: 21, 80, 27017, 3306, 1521, 5432, 3389, 22, 23, 53, 445, 139, 110, 25
     view: |-
       {
         "position": {
@@ -572,9 +570,7 @@ tasks:
       id: 41bb8983-af56-4858-856f-946ba9880276
       version: -1
       name: Check default FW for HTTP/HTTPS rules
-      description: Check the default firewall rule for the web ports; 80 and 443.  If
-        the firewall rule contains either one, or both of these ports, manually update
-        the rule.
+      description: Check the default firewall rule for the web ports; 80 and 443.  If the firewall rule contains either one, or both of these ports, manually update the rule.
       type: condition
       iscommand: false
       brand: ""
@@ -858,9 +854,3 @@ inputs:
 outputs: []
 tests:
 - No Test
-supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
-- agentix

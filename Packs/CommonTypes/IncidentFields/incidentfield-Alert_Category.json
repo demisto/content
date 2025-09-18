@@ -25,6 +25,6 @@
     "threshold": 72,
     "fromVersion": "5.5.0",
     "marketplaces": [
-		"xsoar"
-	]
+        "xsoar"
+    ]
 }

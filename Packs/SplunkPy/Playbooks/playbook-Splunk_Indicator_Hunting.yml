@@ -4125,3 +4125,6 @@ tests:
 - Splunk Indicator Hunting Test
 - SplunkPy-Test-V2
 fromversion: 5.0.0
+supportedModules:
+- agentix
+- xsiam

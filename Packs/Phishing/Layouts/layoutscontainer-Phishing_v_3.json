@@ -1213,7 +1213,7 @@
                     }
                 ],
                 "isVisible": true,
-                "name": "Timeline \u0026 SLA",
+                "name": "Timeline & SLA",
                 "query": null,
                 "queryType": "",
                 "readOnly": false,

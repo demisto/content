@@ -11,9 +11,7 @@
     "scheduled": false,
     "name": "IQ-Hub Report",
     "description": "Confluera Iqhub report",
-    "tags": [
-
-    ],
+    "tags": [],
     "createdBy": "DBot",
     "type": "pdf",
     "system": false,
@@ -30,9 +28,7 @@
                 "rowPos": 2,
                 "sign": "",
                 "signAlignment": "left",
-                "style": {
-
-                },
+                "style": {},
                 "w": 6
             },
             "query": {
@@ -183,9 +179,7 @@
                 "rowPos": 2,
                 "sign": "",
                 "signAlignment": "left",
-                "style": {
-
-                },
+                "style": {},
                 "w": 6
             },
             "query": {
@@ -316,9 +310,7 @@
             "titleStyle": null
         }
     ],
-    "recipients": [
-
-    ],
+    "recipients": [],
     "orientation": "landscape",
     "paperSize": "A4",
     "runOnce": false,

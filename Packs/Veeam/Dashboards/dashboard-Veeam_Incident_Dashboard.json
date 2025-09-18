@@ -205,7 +205,7 @@
                 "isPredefined": false,
                 "itemVersion": "",
                 "modified": "2024-04-11T14:30:10.361059512Z",
-                "name": "Veeam Backup \u0026 Replication Active Incidents",
+                "name": "Veeam Backup & Replication Active Incidents",
                 "packID": "",
                 "packName": "",
                 "params": {
@@ -270,7 +270,7 @@
                 "isPredefined": false,
                 "itemVersion": "",
                 "modified": "2024-04-11T14:30:10.361059512Z",
-                "name": "Latest Veeam Backup \u0026 Replication Incidents",
+                "name": "Latest Veeam Backup & Replication Incidents",
                 "packID": "",
                 "packName": "",
                 "params": {

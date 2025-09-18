@@ -73,8 +73,7 @@ tasks:
       id: 7098bb05-a1f5-4697-852a-d59496cba130
       version: -1
       name: Execute remediation
-      description: Execute the appropriate remediation task using the Prisma Cloud
-        policy Id.
+      description: Execute the appropriate remediation task using the Prisma Cloud policy Id.
       type: condition
       iscommand: false
       brand: ""
@@ -195,8 +194,7 @@ tasks:
       id: 5d417179-2b35-4255-8b78-50adcd0a9bed
       version: -1
       name: Is Azure Storage integration enabled?
-      description: Returns 'yes' if integration brand is available. Otherwise returns
-        'no'
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -518,9 +516,3 @@ inputs:
 outputs: []
 tests:
 - No Test
-supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
-- agentix

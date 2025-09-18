@@ -51,8 +51,7 @@ tasks:
       id: de4a37f6-af95-43b4-8956-107dd5fac3ad
       version: -1
       name: Check if Panorama connected
-      description: Check whether the values provided in arguments are equal. If either
-        of the arguments are missing, no is returned.
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
       type: condition
       iscommand: false
       brand: ""
@@ -307,8 +306,7 @@ tasks:
       Timeout:
         simple: "10"
       dt:
-        simple: Panorama.PANOS.Install(val.Status !== 'Completed' && val.Status !==
-          'Failed').JobID
+        simple: Panorama.PANOS.Install(val.Status !== 'Completed' && val.Status !== 'Failed').JobID
     separatecontext: false
     loop:
       iscommand: false
@@ -392,3 +390,4 @@ supportedModules:
 - X5
 - ENT_PLUS
 - agentix
+- xsiam

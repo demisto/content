@@ -89,13 +89,13 @@
                                 "startCol": 0
                             },
                             {
-                              "fieldId": "wizdetectionurl",
-                              "height": 22,
-                              "id": "6fd428b0-ebd1-11ec-840b-d17131d3a6aa",
-                              "index": 6,
-                              "sectionItemType": "field",
-                              "startCol": 0,
-                              "endCol": 2
+                                "fieldId": "wizdetectionurl",
+                                "height": 22,
+                                "id": "6fd428b0-ebd1-11ec-840b-d17131d3a6aa",
+                                "index": 6,
+                                "sectionItemType": "field",
+                                "startCol": 0,
+                                "endCol": 2
                             },
                             {
                                 "endCol": 2,
@@ -473,5 +473,7 @@
     "version": -1,
     "fromVersion": "6.0.0",
     "description": "",
-    "marketplaces": ["xsoar"]
+    "marketplaces": [
+        "xsoar"
+    ]
 }

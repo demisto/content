@@ -45,8 +45,7 @@ tasks:
       id: 6bba7b71-f758-459b-8f30-ed324bd0e5bb
       version: -1
       name: Disable VM instance serial port access
-      description: Sets metadata for the specified instance to the data included in
-        the request.
+      description: Sets metadata for the specified instance to the data included in the request.
       script: Google Cloud Compute|||gcp-compute-set-instance-metadata
       type: regular
       iscommand: true
@@ -119,8 +118,7 @@ tasks:
       id: 485101a7-fbb8-40d9-867f-a755d6d8bd93
       version: -1
       name: Get VM instance details
-      description: Returns the specified instance resource. Gets a list of available
-        instances by making a list() request.
+      description: Returns the specified instance resource. Gets a list of available instances by making a list() request.
       script: Google Cloud Compute|||gcp-compute-get-instance
       type: regular
       iscommand: true
@@ -301,8 +299,7 @@ tasks:
       id: b4fa01a0-fa10-4536-80dc-615a024331d7
       version: -1
       name: Block project wide ssh-key access
-      description: Sets metadata for the specified instance to the data included in
-        the request.
+      description: Sets metadata for the specified instance to the data included in the request.
       script: Google Cloud Compute|||gcp-compute-set-instance-metadata
       type: regular
       iscommand: true
@@ -378,8 +375,7 @@ tasks:
       id: da424dcd-472b-403e-88cb-724e14f0ba16
       version: -1
       name: Add VM instance metadata
-      description: Sets metadata for the specified instance to the data included in
-        the request.
+      description: Sets metadata for the specified instance to the data included in the request.
       script: Google Cloud Compute|||gcp-compute-set-instance-metadata
       type: regular
       iscommand: true
@@ -505,9 +501,3 @@ inputs:
 outputs: []
 tests:
 - No Test
-supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
-- agentix

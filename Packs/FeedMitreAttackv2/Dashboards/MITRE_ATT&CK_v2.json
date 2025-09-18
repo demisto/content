@@ -1,5 +1,5 @@
 {
-    "id": "MITRE ATT\u0026CK v2",
+    "id": "MITRE ATT&CK v2",
     "version": -1,
     "fromDate": "0001-01-01T00:00:00Z",
     "toDate": "0001-01-01T00:00:00Z",
@@ -12,7 +12,7 @@
         "field": ""
     },
     "fromDateLicense": "0001-01-01T00:00:00Z",
-    "name": "MITRE ATT\u0026CK",
+    "name": "MITRE ATT&CK",
     "layout": [
         {
             "id": "8b8478b0-9f31-11ea-9d1e-efa455bba3f4",
@@ -41,7 +41,7 @@
                 "prevName": "",
                 "dataType": "incidents",
                 "widgetType": "number",
-                "query": "-status:closed -category:job indicator.killchainphases:\"Initial Access\" -incident.type:\"MITRE ATT\u0026CK CoA\"",
+                "query": "-status:closed -category:job indicator.killchainphases:\"Initial Access\" -incident.type:\"MITRE ATT&CK CoA\"",
                 "isPredefined": false,
                 "dateRange": {
                     "fromDate": "0001-01-01T00:00:00Z",
@@ -111,7 +111,7 @@
                 "prevName": "",
                 "dataType": "incidents",
                 "widgetType": "number",
-                "query": "-status:closed -category:job indicator.killchainphases:\"Execution\" -incident.type:\"MITRE ATT\u0026CK CoA\"",
+                "query": "-status:closed -category:job indicator.killchainphases:\"Execution\" -incident.type:\"MITRE ATT&CK CoA\"",
                 "isPredefined": false,
                 "dateRange": {
                     "fromDate": "0001-01-01T00:00:00Z",
@@ -181,7 +181,7 @@
                 "prevName": "",
                 "dataType": "incidents",
                 "widgetType": "number",
-                "query": "-status:closed -category:job indicator.killchainphases:\"Persistence\" -incident.type:\"MITRE ATT\u0026CK CoA\"",
+                "query": "-status:closed -category:job indicator.killchainphases:\"Persistence\" -incident.type:\"MITRE ATT&CK CoA\"",
                 "isPredefined": false,
                 "dateRange": {
                     "fromDate": "0001-01-01T00:00:00Z",
@@ -251,7 +251,7 @@
                 "prevName": "",
                 "dataType": "incidents",
                 "widgetType": "number",
-                "query": "-status:closed -category:job indicator.killchainphases:\"Privilege Escalation\" -incident.type:\"MITRE ATT\u0026CK CoA\"",
+                "query": "-status:closed -category:job indicator.killchainphases:\"Privilege Escalation\" -incident.type:\"MITRE ATT&CK CoA\"",
                 "isPredefined": false,
                 "dateRange": {
                     "fromDate": "0001-01-01T00:00:00Z",
@@ -321,7 +321,7 @@
                 "prevName": "",
                 "dataType": "incidents",
                 "widgetType": "number",
-                "query": "-status:closed -category:job indicator.killchainphases:\"Defense Evasion\" -incident.type:\"MITRE ATT\u0026CK CoA\"",
+                "query": "-status:closed -category:job indicator.killchainphases:\"Defense Evasion\" -incident.type:\"MITRE ATT&CK CoA\"",
                 "isPredefined": false,
                 "dateRange": {
                     "fromDate": "0001-01-01T00:00:00Z",
@@ -391,7 +391,7 @@
                 "prevName": "",
                 "dataType": "incidents",
                 "widgetType": "number",
-                "query": "-status:closed -category:job indicator.killchainphases:\"Discovery\" -incident.type:\"MITRE ATT\u0026CK CoA\"",
+                "query": "-status:closed -category:job indicator.killchainphases:\"Discovery\" -incident.type:\"MITRE ATT&CK CoA\"",
                 "isPredefined": false,
                 "dateRange": {
                     "fromDate": "0001-01-01T00:00:00Z",
@@ -461,7 +461,7 @@
                 "prevName": "",
                 "dataType": "incidents",
                 "widgetType": "number",
-                "query": "-status:closed -category:job indicator.killchainphases:\"Lateral Movement\" -incident.type:\"MITRE ATT\u0026CK CoA\"",
+                "query": "-status:closed -category:job indicator.killchainphases:\"Lateral Movement\" -incident.type:\"MITRE ATT&CK CoA\"",
                 "isPredefined": false,
                 "dateRange": {
                     "fromDate": "0001-01-01T00:00:00Z",
@@ -531,7 +531,7 @@
                 "prevName": "",
                 "dataType": "incidents",
                 "widgetType": "number",
-                "query": "-status:closed -category:job indicator.killchainphases:\"Collection\" -incident.type:\"MITRE ATT\u0026CK CoA\"",
+                "query": "-status:closed -category:job indicator.killchainphases:\"Collection\" -incident.type:\"MITRE ATT&CK CoA\"",
                 "isPredefined": false,
                 "dateRange": {
                     "fromDate": "0001-01-01T00:00:00Z",
@@ -601,7 +601,7 @@
                 "prevName": "",
                 "dataType": "incidents",
                 "widgetType": "number",
-                "query": "-status:closed -category:job indicator.killchainphases:\"Command \u0026 Control\" -incident.type:\"MITRE ATT\u0026CK CoA\"",
+                "query": "-status:closed -category:job indicator.killchainphases:\"Command & Control\" -incident.type:\"MITRE ATT&CK CoA\"",
                 "isPredefined": false,
                 "dateRange": {
                     "fromDate": "0001-01-01T00:00:00Z",
@@ -671,7 +671,7 @@
                 "prevName": "",
                 "dataType": "incidents",
                 "widgetType": "number",
-                "query": "-status:closed -category:job indicator.killchainphases:\"Exfiltration\" -incident.type:\"MITRE ATT\u0026CK CoA\"",
+                "query": "-status:closed -category:job indicator.killchainphases:\"Exfiltration\" -incident.type:\"MITRE ATT&CK CoA\"",
                 "isPredefined": false,
                 "dateRange": {
                     "fromDate": "0001-01-01T00:00:00Z",
@@ -741,7 +741,7 @@
                 "prevName": "",
                 "dataType": "incidents",
                 "widgetType": "number",
-                "query": "-status:closed -category:job indicator.killchainphases:\"Impact\" -incident.type:\"MITRE ATT\u0026CK CoA\"",
+                "query": "-status:closed -category:job indicator.killchainphases:\"Impact\" -incident.type:\"MITRE ATT&CK CoA\"",
                 "isPredefined": false,
                 "dateRange": {
                     "fromDate": "0001-01-01T00:00:00Z",
@@ -811,7 +811,7 @@
                 "prevName": "",
                 "dataType": "incidents",
                 "widgetType": "number",
-                "query": "-status:closed -category:job indicator.killchainphases:\"Credential Access\" -incident.type:\"MITRE ATT\u0026CK CoA\"",
+                "query": "-status:closed -category:job indicator.killchainphases:\"Credential Access\" -incident.type:\"MITRE ATT&CK CoA\"",
                 "isPredefined": false,
                 "dateRange": {
                     "fromDate": "0001-01-01T00:00:00Z",
@@ -881,7 +881,7 @@
                 "prevName": "",
                 "dataType": "incidents",
                 "widgetType": "number",
-                "query": "-status:closed -category:job indicator.killchainphases:\"Reconnaissance\" -incident.type:\"MITRE ATT\u0026CK CoA\"",
+                "query": "-status:closed -category:job indicator.killchainphases:\"Reconnaissance\" -incident.type:\"MITRE ATT&CK CoA\"",
                 "isPredefined": false,
                 "dateRange": {
                     "fromDate": "0001-01-01T00:00:00Z",
@@ -951,7 +951,7 @@
                 "prevName": "",
                 "dataType": "incidents",
                 "widgetType": "number",
-                "query": "-status:closed -category:job indicator.killchainphases:\"Resource Development\" -incident.type:\"MITRE ATT\u0026CK CoA\"",
+                "query": "-status:closed -category:job indicator.killchainphases:\"Resource Development\" -incident.type:\"MITRE ATT&CK CoA\"",
                 "isPredefined": false,
                 "dateRange": {
                     "fromDate": "0001-01-01T00:00:00Z",
@@ -1270,7 +1270,7 @@
                 "prevName": "Indicators Activity by Type",
                 "dataType": "indicators",
                 "widgetType": "pie",
-                "query": "type:\"Attack Pattern\"  and investigationsCount:\u003e0",
+                "query": "type:\"Attack Pattern\"  and investigationsCount:>0",
                 "isPredefined": false,
                 "dateRange": {
                     "fromDate": "0001-01-01T00:00:00Z",

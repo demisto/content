@@ -202,4 +202,4 @@ view: |-
 inputs: []
 outputs: []
 marketplaces:
-  - xsoar
+- xsoar

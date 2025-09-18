@@ -40,10 +40,7 @@ tasks:
       id: 8feee596-903b-4489-86b1-389dc3226a76
       version: -1
       name: autofocus-search-samples
-      description: Searches for samples in AutoFocus. To view results, run the autofocus-samples-search-results
-        command with the returned AF Cookie. The AF Cookie expires 120 seconds after
-        the search completes. `Autofocus Query Samples, Sessions and Tags` Playbook
-        is recommended for querying and polling.
+      description: Searches for samples in AutoFocus. To view results, run the autofocus-samples-search-results command with the returned AF Cookie. The AF Cookie expires 120 seconds after the search completes. `Autofocus Query Samples, Sessions and Tags` Playbook is recommended for querying and polling.
       script: AutoFocus V2|||autofocus-search-samples
       type: regular
       iscommand: true
@@ -55,8 +52,7 @@ tasks:
       artifact:
         simple: "true"
       query:
-        simple: '{"operator":"all","children":[{"field":"sample.malware","operator":"is","value":1},{"field":"sample.tag","operator":"is
-          in the list","value":["Unit42.RunOnce"]}]}'
+        simple: '{"operator":"all","children":[{"field":"sample.malware","operator":"is","value":1},{"field":"sample.tag","operator":"is in the list","value":["Unit42.RunOnce"]}]}'
       scope:
         simple: Public
     separatecontext: false
@@ -82,10 +78,7 @@ tasks:
       id: 26d362cd-0772-4d1b-8dcf-3ec9319e9d48
       version: -1
       name: autofocus-search-sessions
-      description: Searches for sessions in AutoFocus. To view results, run the autofocus-sessions-search-results
-        command with the returned AF Cookie. The AF Cookie expires 120 seconds after
-        the search completes. `Autofocus Query Samples, Sessions and Tags` Playbook
-        is recommended for querying and polling.
+      description: Searches for sessions in AutoFocus. To view results, run the autofocus-sessions-search-results command with the returned AF Cookie. The AF Cookie expires 120 seconds after the search completes. `Autofocus Query Samples, Sessions and Tags` Playbook is recommended for querying and polling.
       script: AutoFocus V2|||autofocus-search-sessions
       type: regular
       iscommand: true
@@ -95,8 +88,7 @@ tasks:
       - "4"
     scriptarguments:
       query:
-        simple: '{"operator": "all","children": [{"field": "sample.malware","operator":
-          "is","value": "1"}]}'
+        simple: '{"operator": "all","children": [{"field": "sample.malware","operator": "is","value": "1"}]}'
     separatecontext: false
     view: |-
       {
@@ -1102,10 +1094,7 @@ tasks:
       id: 717d8872-9924-432c-86cd-e8178e81d8dc
       version: -1
       name: autofocus-search-samples
-      description: Searches for samples in AutoFocus. To view results, run the autofocus-samples-search-results
-        command with the returned AF Cookie. The AF Cookie expires 120 seconds after
-        the search completes. `Autofocus Query Samples, Sessions and Tags` Playbook
-        is recommended for querying and polling.
+      description: Searches for samples in AutoFocus. To view results, run the autofocus-samples-search-results command with the returned AF Cookie. The AF Cookie expires 120 seconds after the search completes. `Autofocus Query Samples, Sessions and Tags` Playbook is recommended for querying and polling.
       script: AutoFocus V2|||autofocus-search-samples
       type: regular
       iscommand: true
@@ -1141,10 +1130,7 @@ tasks:
       id: c6642c19-fea6-460c-840d-4bbd732dec62
       version: -1
       name: autofocus-search-sessions
-      description: Searches for sessions in AutoFocus. To view results, run the autofocus-sessions-search-results
-        command with the returned AF Cookie. The AF Cookie expires 120 seconds after
-        the search completes. `Autofocus Query Samples, Sessions and Tags` Playbook
-        is recommended for querying and polling.
+      description: Searches for sessions in AutoFocus. To view results, run the autofocus-sessions-search-results command with the returned AF Cookie. The AF Cookie expires 120 seconds after the search completes. `Autofocus Query Samples, Sessions and Tags` Playbook is recommended for querying and polling.
       script: AutoFocus V2|||autofocus-search-sessions
       type: regular
       iscommand: true
@@ -1246,8 +1232,7 @@ tasks:
       id: fbd5a3be-966e-4cfc-8d03-ea04ae9b95e8
       version: -1
       name: autofocus-samples-search-results
-      description: Returns results of a previous samples search. `Autofocus Query
-        Samples, Sessions and Tags` Playbook is recommended for querying and polling.
+      description: Returns results of a previous samples search. `Autofocus Query Samples, Sessions and Tags` Playbook is recommended for querying and polling.
       script: AutoFocus V2|||autofocus-samples-search-results
       type: regular
       iscommand: true
@@ -1365,8 +1350,7 @@ tasks:
       id: dae09fd9-2f3b-4c7f-8a3e-ea051eee309c
       version: -1
       name: autofocus-sessions-search-results
-      description: Returns results of a previous sessions search. `Autofocus Query
-        Samples, Sessions and Tags` Playbook is recommended for querying and polling.
+      description: Returns results of a previous sessions search. `Autofocus Query Samples, Sessions and Tags` Playbook is recommended for querying and polling.
       script: AutoFocus V2|||autofocus-sessions-search-results
       type: regular
       iscommand: true
@@ -2337,10 +2321,7 @@ tasks:
       id: 1b5494d9-0fff-487f-883e-f41fdc8db4c3
       version: -1
       name: autofocus-search-sessions
-      description: Searches for sessions in AutoFocus. To view results, run the autofocus-sessions-search-results
-        command with the returned AF Cookie. The AF Cookie expires 120 seconds after
-        the search completes. `Autofocus Query Samples, Sessions and Tags` Playbook
-        is recommended for querying and polling.
+      description: Searches for sessions in AutoFocus. To view results, run the autofocus-sessions-search-results command with the returned AF Cookie. The AF Cookie expires 120 seconds after the search completes. `Autofocus Query Samples, Sessions and Tags` Playbook is recommended for querying and polling.
       script: AutoFocus V2|||autofocus-search-sessions
       type: regular
       iscommand: true
@@ -2378,10 +2359,7 @@ tasks:
       id: 3a002af7-4cb4-43ca-8265-4c31ec201940
       version: -1
       name: autofocus-search-samples
-      description: Searches for samples in AutoFocus. To view results, run the autofocus-samples-search-results
-        command with the returned AF Cookie. The AF Cookie expires 120 seconds after
-        the search completes. `Autofocus Query Samples, Sessions and Tags` Playbook
-        is recommended for querying and polling.
+      description: Searches for samples in AutoFocus. To view results, run the autofocus-samples-search-results command with the returned AF Cookie. The AF Cookie expires 120 seconds after the search completes. `Autofocus Query Samples, Sessions and Tags` Playbook is recommended for querying and polling.
       script: AutoFocus V2|||autofocus-search-samples
       type: regular
       iscommand: true

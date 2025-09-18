@@ -624,4 +624,4 @@ inputs: []
 outputs: []
 description: ''
 marketplaces:
-  - xsoar
+- xsoar

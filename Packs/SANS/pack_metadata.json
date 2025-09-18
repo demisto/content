@@ -1,6 +1,6 @@
 {
     "name": "SANS",
-    "description": "This SANS Content Pack helps you streamline incident response according to SANS guidelines as outlined in the SANS Incident Handler’s Handbook.",
+    "description": "This SANS Content Pack helps you streamline incident response according to SANS guidelines as outlined in the SANS Incident Handler\u2019s Handbook.",
     "support": "xsoar",
     "currentVersion": "1.1.7",
     "author": "Cortex XSOAR",
@@ -69,6 +69,7 @@
         "X3",
         "X5",
         "ENT_PLUS",
-        "agentix"
+        "agentix",
+        "xsiam"
     ]
 }

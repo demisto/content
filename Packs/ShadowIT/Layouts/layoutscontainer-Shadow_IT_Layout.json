@@ -609,9 +609,7 @@
                     {
                         "h": 4,
                         "i": "rpue9k9tpz-936762f0-1a0f-11eb-8034-ef5ed48c7b58",
-                        "items": [
-
-                        ],
+                        "items": [],
                         "maxW": 3,
                         "minH": 1,
                         "minW": 1,
@@ -806,5 +804,7 @@
     "version": -1,
     "fromVersion": "6.0.0",
     "description": "",
-    "marketplaces": ["xsoar"]
+    "marketplaces": [
+        "xsoar"
+    ]
 }

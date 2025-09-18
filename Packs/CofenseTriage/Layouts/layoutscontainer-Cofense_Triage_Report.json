@@ -561,7 +561,7 @@
                         "minH": 1,
                         "minW": 1,
                         "moved": false,
-                        "name": "Date \u0026 Time Information",
+                        "name": "Date & Time Information",
                         "static": false,
                         "w": 1,
                         "x": 0,
@@ -715,5 +715,7 @@
     "system": false,
     "version": -1,
     "fromVersion": "6.0.0",
-    "marketplaces": ["xsoar"]
+    "marketplaces": [
+        "xsoar"
+    ]
 }

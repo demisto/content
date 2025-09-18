@@ -757,7 +757,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-        - "3"
+      - "3"
     separatecontext: true
     continueonerrortype: ""
     view: |-
@@ -768,7 +768,7 @@ tasks:
         }
       }
     note: false
-    timertriggers: [ ]
+    timertriggers: []
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
@@ -789,7 +789,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-        - "3"
+      - "3"
     separatecontext: true
     continueonerrortype: ""
     view: |-
@@ -800,7 +800,7 @@ tasks:
         }
       }
     note: false
-    timertriggers: [ ]
+    timertriggers: []
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
@@ -821,7 +821,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-        - "3"
+      - "3"
     separatecontext: true
     continueonerrortype: ""
     view: |-
@@ -988,14 +988,13 @@ inputs:
     simple: windows
   required: false
   description: 'Specify ANY.RUN operation system type. Supports: windows, linux, android'
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: incident
   value:
     simple: ${incident}
   required: false
-  description: Information about the active incident where the found indicators will
-    be linked
-  playbookInputQuery: null
+  description: Information about the active incident where the found indicators will be linked
+  playbookInputQuery:
 inputSections:
 - inputs:
   - EntryID
@@ -2478,9 +2477,3 @@ tests:
 - Detonate File - Generic Test
 contentitemexportablefields:
   contentitemfields: {}
-supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
-- agentix

@@ -226,9 +226,3 @@ description: |-
   Retrieves the details of the owner of a given cloud account from the following playbooks:
     - Get Cloud Account Owner - Generic
     - Prisma Cloud - Get Owner By Namespace
-supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
-- agentix

@@ -22,5 +22,9 @@
     ],
     "githubUser": [
         "TerminalFIN"
+    ],
+    "supportedModules": [
+        "agentix",
+        "xsiam"
     ]
 }
