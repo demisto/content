@@ -5,8 +5,6 @@ from CommonServerPython import *  # noqa: F401
 import dateparser
 
 EQ = "EQ"
-CONTAINS = "CONTAINS"
-
 OUTPUT_KEYS = [
     "internal_id",
     "severity",
@@ -109,7 +107,7 @@ def prepare_sha256_custom_field(args: dict):
     The function:
     - Extracts the 'sha256' argument (as a string or list).
     - For each predefined SHA256 search field, constructs a query block:
-        - Uses 'EQ' (equals) or 'CONTAINS' based on the field type.
+        - Uses 'EQ'
         - Each SHA is mapped to an OR clause per field.
     - Combines all field-specific queries under a top-level OR.
     - Adds the final query as a JSON string to args['custom_filter'].
