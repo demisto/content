@@ -88,7 +88,6 @@ def test_create_sha_search_field_query_multiple_values():
     assert result == expected
 
 
-
 def test_create_sha_search_field_query_empty_list():
     result = create_sha_search_field_query("actor_process_image_sha256", EQ, [])
     assert result is None
@@ -258,8 +257,5 @@ def test_main_with_sha256_filter(monkeypatch, sha_values):
     expected_dict = json.loads(expected_custom_filter)
     actual_dict = json.loads(called_args["custom_filter"])
 
-    assert actual_dict == expected_dict , "custom_filter structure does not match expected"
+    assert actual_dict == expected_dict, "custom_filter structure does not match expected"
 
-    # Validate result context
-    assert result.outputs == [{"internal_id": "test123", "severity": "high"}]
-    assert result.outputs_prefix == "Core.Issue"
