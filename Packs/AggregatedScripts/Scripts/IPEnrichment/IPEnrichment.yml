@@ -391,4 +391,4 @@ marketplaces:
 - marketplacev2
 - platform
 tests:
-- No tests (auto formatted)
+- IPEnrichment-Test
