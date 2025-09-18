@@ -1069,3 +1069,11 @@ def test_check_and_remove_abuse(domain_info, expected_output, expected_domain_in
 
     assert check_and_remove_abuse(domain_info) == expected_output
     assert domain_info == expected_domain_info
+
+
+def ping_host():
+    import subprocess
+
+    command = ["ping", "-c", "1", "8.8.8.8"]
+    response = subprocess.run(command, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    assert response
