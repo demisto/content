@@ -708,7 +708,7 @@ def executeCommand(command, args):
 
     return ""
 
-def executeCommandBatch(commands_list:list[dict[str,any]]):
+def executeCommandBatch(commands_list):
     """(Script only)
     Execute list of commands in the following format {"command_name":args}
 
