@@ -10,7 +10,6 @@ args:
   isArray: true
 - name: external_enrichment
   description: "Whether to call external integrations for enrichment:
-    Whether to call external integrations for enrichment.
     - 'true': enrich using enabled external integrations (e.g., VirusTotal (API v3), AlienVault OTX v2) and run internal commands.
     - 'false': use only existing TIM data and run internal commands; skip external integrations.
     If the 'brands' argument is provided, this flag is ignored and enrichment/internal commands will run only on the brands provided."
