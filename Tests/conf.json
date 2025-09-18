@@ -5927,7 +5927,8 @@
             "playbookID": "IPEnrichment-Test",
             "integrations": [
                 "VirusTotal (API v3)",
-                "AlienVault OTX v2"
+                "AlienVault OTX v2",
+                "CrowdstrikeFalcon"
             ],
             "instance_names": [
                 "virus_total_v3"
