@@ -240,7 +240,7 @@ tasks:
       id: 22e0517b-6243-4c61-8ad9-ca3103d32770
       version: -1
       name: Core Returned
-      description: Make sure Context output from wildfire
+      description: Ensure that the context output from WildFire is available.
       type: condition
       iscommand: false
       brand: ""
