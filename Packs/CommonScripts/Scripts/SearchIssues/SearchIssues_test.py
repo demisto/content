@@ -85,6 +85,8 @@ def test_create_sha_search_field_query_multiple_values():
             }
         ]
     }
+    assert result == expected
+
 
 
 def test_create_sha_search_field_query_empty_list():
@@ -233,7 +235,7 @@ def test_main_with_sha256_filter(monkeypatch, sha_values):
             "Core.Issue(val.internal_id && val.internal_id == obj.internal_id)": [{"internal_id": "test123", "severity": "high"}]
         },
         "HumanReadable": "Sample Issue Result",
-        'Type' : 1
+        "Type": 1,
     }
 
     execute_command_mock = MagicMock(return_value=[fake_response])
