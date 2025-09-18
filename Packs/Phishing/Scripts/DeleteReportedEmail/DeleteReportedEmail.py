@@ -274,6 +274,7 @@ def delete_email(
         delete_args = delete_args_function(search_result, search_args)  # type: ignore
     else:
         delete_args = delete_args_function(search_args)  # type: ignore
+    demisto.info(f"DeleteReportedEmails nbensalmon delete_args: {delete_function=} {delete_args=}")
     resp = execute_command(delete_function, delete_args)
     if deletion_error_condition(resp):
         raise DeletionFailed(resp)
@@ -379,6 +380,7 @@ def main():
                 "Agari Phishing Defense": (None, DeletionArgs.agari, "apd-remediate-message"),
                 "MicrosoftGraphMail": ("msgraph-mail-list-emails", DeletionArgs.msgraph, "msgraph-mail-delete-email"),
             }
+            demisto.info(f"DeleteReportedEmails nbensalmon {integrations_dict=} {search_args=}")
             result = delete_email(search_args, *integrations_dict[delete_from_brand])  # type: ignore
 
     except MissingEmailException as e:
