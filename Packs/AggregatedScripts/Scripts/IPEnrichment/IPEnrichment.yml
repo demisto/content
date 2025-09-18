@@ -4,11 +4,10 @@ args:
   required: true
   isArray: true
 - name: external_enrichment
-  description: |
-    Whether to call external integrations for enrichment.
+  description: "Whether to call external integrations for enrichment:
     - 'true': enrich using enabled external integrations (e.g., VirusTotal (API v3), AlienVault OTX v2) and run internal commands.
     - 'false': use only existing TIM data and run internal commands; skip external integrations.
-    If the 'brands' argument is provided, this flag is ignored and enrichment/internal commands will run only on the brands provided.
+    If the 'brands' argument is provided, this flag is ignored and enrichment/internal commands will run only on the brands provided."
   auto: PREDEFINED
   predefined:
   - 'true'
@@ -16,7 +15,7 @@ args:
   defaultValue: 'false'
   required: false
 - name: verbose
-  description: Whether to retrieve a human-readable entry for every command. When set to false, human-readable will only summarize the final result and suppress error entries from commands.
+  description: Retrieve a human-readable entry for each command; if false, only the final result is summarized and errors are suppressed.
   auto: PREDEFINED
   predefined:
   - 'true'
@@ -37,7 +36,7 @@ args:
   required: false
 - name: additional_fields
   description: |
-    When set to true, the output will also include an `AdditionalFields` object
+    When set to true, the output includes an `AdditionalFields` object
     for each of the indicator result.  
     `AdditionalFields` contains all fields returned by TIM or the integrations
     that are not part of the standard output keys: `Address`, `DetectionEngines`, 
@@ -49,7 +48,7 @@ args:
   - 'false'
   required: false
   defaultValue: 'false'
-comment: This script gathers IP reputation data from multiple integrations and returns an IP entity with consolidated information to the context.
+comment: This script gathers IP reputation data from multiple integrations and returns an IP entity with consolidated information in the context.
 commonfields:
   id: ip-enrichment
   version: -1
@@ -73,7 +72,7 @@ outputs:
   description: A list of all indicators found for the IP address.
   type: array
 - contextPath: IPEnrichment.Status
-  description: The status of the indicator. If the Score changed manually, the status will be "Manual". If modified by less than one week, the status will be "Fresh". Otherwise, the status will be "Stale". If not modified at all, the status will be None.
+  description: 'The status of the indicator: "Manual" if the score was changed manually, "Fresh" if modified within the last week, "Stale" if modified more than a week ago, and "None" if never modified.'
   type: string
 - contextPath: IPEnrichment.ModifiedTime
   description: The time the indicator was last modified.
@@ -105,7 +104,7 @@ outputs:
   type: string
 # IPEnrichment results additional fields
 - contextPath: IPEnrichment.Results.AdditionalFields
-  description: Unmapped (secondary) fields. Only available if the additional_fields argument is set to true.
+  description: All fields extracted from the indicator other then the main keys ("Brand", "Score", "Verdict", "DetectionEngines", "PositiveDetections", "Address").
   type: list
 - contextPath: IPEnrichment.Results.AdditionalFields.Relationships.EntityA
   description: The source of the relationship.
@@ -361,22 +360,6 @@ outputs:
 - contextPath: EndpointData.Vendor.source
   description: The vendor from which the Vendor of this endpoint was retrieved.
   type: String
-# DBotScore
-- contextPath: DBotScore.Indicator
-  description: The indicator value.
-  type: string
-- contextPath: DBotScore.Type
-  description: The indicator type.
-  type: string
-- contextPath: DBotScore.Vendor
-  description: Vendor used to calculate the score.
-  type: string
-- contextPath: DBotScore.Score
-  description: The actual score.
-  type: number
-- contextPath: DBotScore.Reliability
-  description: The reliability of the score.
-  type: string
 script: '-'
 system: false
 tags:

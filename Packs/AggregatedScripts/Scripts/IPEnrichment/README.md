@@ -1,4 +1,4 @@
-This script gathers IP reputation data from multiple integrations and returns an IP entity with consolidated information to the context.
+This script gathers IP reputation data from multiple integrations and returns an IP entity with consolidated information in the context.
 
 ## Script Data
 
@@ -17,10 +17,10 @@ This script gathers IP reputation data from multiple integrations and returns an
 | **Argument Name** | **Description** |
 | --- | --- |
 | ip_list | A comma-separated list of IPs to enrich. |
-| external_enrichment | Whether to call external integrations for enrichment.<br/>- 'true': enrich using enabled external integrations \(e.g., VirusTotal \(API v3\), AlienVault OTX v2\) and run internal commands.<br/>- 'false': use only existing TIM data and run internal commands; skip external integrations.<br/>If the 'brands' argument is provided, this flag is ignored and enrichment/internal commands will run only on the brands provided.<br/> |
-| verbose | Whether to retrieve a human-readable entry for every command. When set to false, human-readable will only summarize the final result and suppress error entries from commands. |
+| external_enrichment | Whether to call external integrations for enrichment: - 'true': enrich using enabled external integrations \(e.g., VirusTotal \(API v3\), AlienVault OTX v2\) and run internal commands. - 'false': use only existing TIM data and run internal commands; skip external integrations. If the 'brands' argument is provided, this flag is ignored and enrichment/internal commands will run only on the brands provided. |
+| verbose | Retrieve a human-readable entry for each command; if false, only the final result is summarized and errors are suppressed. |
 | brands | A list of integration brands to run enrichment against.  <br/>Example: \`"VirusTotal \(API v3\), AlienVault OTX v2"\`.<br/>- If provided, only the selected brands are used.<br/>- If left empty, the script runs enrichment on all enabled integrations,<br/>  depending on the \`external_enrichment\` flag.<br/>- In order to run get-endpoint-data add Core to the brands list.<br/>- In order to run core-get-IP-analytics-prevalence, add Cortex Core - IR to the brands list.<br/>To see the available brands for the \`ip\` command, run: \`\!ProvidesCommand command=ip\`.<br/> |
-| additional_fields | When set to true, the output will also include an \`AdditionalFields\` object<br/>for each of the indicator result.  <br/>\`AdditionalFields\` contains all fields returned by TIM or the integrations<br/>that are not part of the standard output keys: \`Address\`, \`DetectionEngines\`, <br/>\`PositiveDetections\`, \`Score\`, and \`Brand\`.  <br/>When set to false, only the standard keys are returned.<br/> |
+| additional_fields | When set to true, the output includes an \`AdditionalFields\` object<br/>for each of the indicator result.  <br/>\`AdditionalFields\` contains all fields returned by TIM or the integrations<br/>that are not part of the standard output keys: \`Address\`, \`DetectionEngines\`, <br/>\`PositiveDetections\`, \`Score\`, and \`Brand\`.  <br/>When set to false, only the standard keys are returned.<br/> |
 
 ## Outputs
 
@@ -33,7 +33,7 @@ This script gathers IP reputation data from multiple integrations and returns an
 | IPEnrichment.MaxVerdict | The max verdict of all the indicators found. | string |
 | IPEnrichment.TIMScore | The TIM score of the IP address. | number |
 | IPEnrichment.Results | A list of all indicators found for the IP address. | array |
-| IPEnrichment.Status | The status of the indicator. If the Score changed manually, the status will be "Manual". If modified by less than one week, the status will be "Fresh". Otherwise, the status will be "Stale". If not modified at all, the status will be None. | string |
+| IPEnrichment.Status | The status of the indicator: "Manual" if the score was changed manually, "Fresh" if modified within the last week, "Stale" if modified more than a week ago, and "None" if never modified. | string |
 | IPEnrichment.ModifiedTime | The time the indicator was last modified. | Date |
 | IPEnrichment.Results.Source | The source of the indicator. | string |
 | IPEnrichment.Results.Brand | The brand of the indicator. | string |
@@ -43,7 +43,7 @@ This script gathers IP reputation data from multiple integrations and returns an
 | IPEnrichment.Results.Score | The score of the indicator. | number |
 | IPEnrichment.Results.Verdict | The verdict of the indicator. | string |
 | IPEnrichment.Results.Address | The IP address of the indicator. | string |
-| IPEnrichment.Results.AdditionalFields | Unmapped \(secondary\) fields. Only available if the additional_fields argument is set to true. | list |
+| IPEnrichment.Results.AdditionalFields | All fields extracted from the indicator other then the main keys \("Brand", "Score", "Verdict", "DetectionEngines", "PositiveDetections", "Address"\). | list |
 | IPEnrichment.Results.AdditionalFields.Relationships.EntityA | The source of the relationship. | string |
 | IPEnrichment.Results.AdditionalFields.Relationships.EntityB | The destination of the relationship. | string |
 | IPEnrichment.Results.AdditionalFields.Relationships.Relationship | The name of the relationship. | string |
@@ -82,7 +82,7 @@ This script gathers IP reputation data from multiple integrations and returns an
 | IPEnrichment.Results.AdditionalFields.Publications.link | A link to the original article. | String |
 | IPEnrichment.Results.AdditionalFields.Publications.timestamp | The time in which the article was published. | Date |
 | IPEnrichment.Results.AdditionalFields.ThreatTypes.threatcategory | The threat category associated to this indicator by the source vendor, for example, Phishing, Control, TOR, etc. | String |
-| IPEnrichment.Results.AdditionalFields.ThreatTypes.threatcategoryconfidence | Threat Category Confidence is the confidence level provided by the vendor for the threat type category For example a confidence of 90 for threat type category 'malware' means that the vendor rates that this is 90% confidence of being a malware. | String |
+| IPEnrichment.Results.AdditionalFields.ThreatTypes.threatcategoryconfidence | Threat Category Confidence is the confidence level provided by the vendor for the threat type category. For example, a confidence level of 90 for the 'malware' threat type category means that the vendor is confident that its 90% malware. | String |
 | Core.AnalyticsPrevalence.Ip.value | Whether the IP address is prevalent or not. | Boolean |
 | Core.AnalyticsPrevalence.Ip.data.global_prevalence.value | The global prevalence of the IP. | Number |
 | Core.AnalyticsPrevalence.Ip.data.local_prevalence.value | The local prevalence of the IP. | Number |
@@ -128,8 +128,3 @@ This script gathers IP reputation data from multiple integrations and returns an
 | EndpointData.Status.source | The vendor from which the status of this endpoint was retrieved. | String |
 | EndpointData.Vendor.value | The integration name of the endpoint vendor. | String |
 | EndpointData.Vendor.source | The vendor from which the Vendor of this endpoint was retrieved. | String |
-| DBotScore.Indicator | The indicator value. | string |
-| DBotScore.Type | The indicator type. | string |
-| DBotScore.Vendor | Vendor used to calculate the score. | string |
-| DBotScore.Score | The actual score. | number |
-| DBotScore.Reliability | The reliability of the score. | string |

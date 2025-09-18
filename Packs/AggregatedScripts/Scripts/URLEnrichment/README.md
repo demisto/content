@@ -1,4 +1,4 @@
-This script gathers URL reputation data from multiple integrations and returns a "URLEnrichment" object with consolidated information to the context output.
+This script gathers URL reputation data from multiple integrations and returns a "URLEnrichment" object with consolidated information in the context output.
 
 ## Script Data
 
@@ -16,11 +16,11 @@ This script gathers URL reputation data from multiple integrations and returns a
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| url_list | Accepts a list of URLs to enrich.<br/>- From CLI: Provide a comma-separated list.  <br/>  If a URL contains a comma, wrap the URLs in a JSON array.  <br/>  Example: "\[\\"https://example.com/search?tags=red,yellow,green\", \\"https://example2.com\"]".<br/>- From Context: Pass JSON arrays directly, without modification.<br/> |
-| external_enrichment | Whether to call external integrations for enrichment.<br/>- 'true': run all enabled external integrations \(e.g., VirusTotal \(API v3\), AlienVault OTX v2\) in addition to TIM data.<br/>- 'false': use only TIM data; skip external integrations.<br/>If the 'brands' argument is provided, this flag is ignored and enrichment is run only on the brands provided.<br/> |
-| verbose | Whether to retrieve a human-readable entry for every command. When set to false, human-readable will only summarize the final result and suppress error entries from commands. |
-| brands | A list of integration brands to run enrichment against.  <br/>Example: \`"VirusTotal \(API v3\), AlienVault OTX v2"\`.  <br/>- If provided, only the selected brands are used. <br/>- If left empty, the script runs enrichment on all enabled integrations,<br/>  depending on the \`external_enrichment\` flag.  <br/>To see the available brands for the \`url\` command, run: \`\!ProvidesCommand command=url\`.<br/> |
-| additional_fields | When set to true, the output will also include an \`AdditionalFields\` object<br/>for each of the indicator result.  <br/>\`AdditionalFields\` contains all fields returned by TIM or the integrations<br/>that are not part of the standard output keys: \`Data\`, \`DetectionEngines\`, <br/>\`PositiveDetections\`, \`Score\`, and \`Brand\`.  <br/>When set to false, only the standard keys are returned.<br/> |
+| url_list | Accepts a list of URLs to enrich.<br/>- From CLI: Provide a comma-separated list.  <br/>  If a URL contains a comma, wrap the URLs in a JSON array.  <br/>  Example: "\[\\"https://example.com/search?tags=red,yellow,green\\", \\"https://example2.com\\"\]".<br/>- From Context: Pass JSON arrays directly, without modification.<br/> |
+| external_enrichment | Whether to call external integrations for enrichment: - 'true': enrich using enabled external integrations \(e.g., VirusTotal \(API v3\), AlienVault OTX v2\). - 'false': use only existing TIM data; skip external integrations. If the 'brands' argument is provided, this flag is ignored and enrichment is run only on the brands provided. |
+| verbose | Retrieve a human-readable entry for each command; if false, only the final result is summarized and errors are suppressed. |
+| brands | A list of integration brands to run enrichment against.  <br/>Example: \`"VirusTotal \(API v3\), AlienVault OTX v2"\`.  <br/>- If provided, only the selected brands are used. <br/>- If left empty, the script runs enrichment on all enabled integrations,<br/>  depending on the \`external_enrichment\` flag.<br/>To see the available brands for the \`url\` command, run: \`\!ProvidesCommand command=url\`.<br/> |
+| additional_fields | When set to true, the output includes an \`AdditionalFields\` object<br/>for each of the indicator result.  <br/>\`AdditionalFields\` contains all fields returned by TIM or the integrations<br/>that are not part of the standard output keys: \`Data\`, \`DetectionEngines\`, <br/>\`PositiveDetections\`, \`Score\`, and \`Brand\`.  <br/>When set to false, only the standard keys are returned.<br/> |
 
 ## Outputs
 
@@ -33,7 +33,7 @@ This script gathers URL reputation data from multiple integrations and returns a
 | URLEnrichment.MaxVerdict | The max verdict of all the indicators found. | string |
 | URLEnrichment.Results | List of all indicators found for the URL. | array |
 | URLEnrichment.TIMScore | The TIM score of the URL. | number |
-| URLEnrichment.Status | The status of the indicator. If Score changed manually, the status will be "Manual". If modified less then 1 week, the status will be "Fresh". Otherwise, the status will be "Stale". If not modified at all, the status will be None. | string |
+| URLEnrichment.Status | The status of the indicator: "Manual" if the score was changed manually, "Fresh" if modified within the last week, "Stale" if modified more than a week ago, and "None" if never modified. | string |
 | URLEnrichment.ModifiedTime | The time the indicator was last modified. | Date |
 | URLEnrichment.Results.Brand | The brand of the indicator. | string |
 | URLEnrichment.Results.Score | The score of the indicator. | number |
