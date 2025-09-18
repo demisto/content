@@ -102,6 +102,9 @@ outputs:
 - contextPath: IPEnrichment.Results.Address
   description: The IP address of the indicator.
   type: string
+- contextPath: IPEnrichment.Results.Reliability
+  description: The reliability of the Brand.
+  type: string
 # IPEnrichment results additional fields
 - contextPath: IPEnrichment.Results.AdditionalFields
   description: All fields extracted from the indicator other then the main keys ("Brand", "Score", "Verdict", "DetectionEngines", "PositiveDetections", "Address").

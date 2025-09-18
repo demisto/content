@@ -100,6 +100,9 @@ outputs:
 - contextPath: DomainEnrichment.Results.Name
   description: The Domain.
   type: string
+- contextPath: DomainEnrichment.Results.Reliability
+  description: The reliability of the Brand.
+  type: string
 # DomainEnrichment Additional Fields
 - contextPath: DomainEnrichment.Results.AdditionalFields
   description: All fields extracted from the indicator other then the main keys ("Brand", "Score", "Verdict", "DetectionEngines", "PositiveDetections", "Name").

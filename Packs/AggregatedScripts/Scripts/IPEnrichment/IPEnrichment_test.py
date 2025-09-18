@@ -38,6 +38,8 @@ def test_ip_enrichment_script_end_to_end_with_batch_file(mocker):
     ip_list = ["1.1.1.1", "8.8.8.8"]
     mocker.patch.object(demisto, "args", return_value={"ip_list": ",".join(ip_list)})
 
+    # is_xsiam
+    mocker.patch("IPEnrichment.is_xsiam", return_value=True)
     # extractIndicators -> validates input
     mocker.patch(
         "AggregatedCommandApiModule.execute_command",

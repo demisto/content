@@ -35,6 +35,7 @@ def ip_enrichment_script(
           - DBotScore: [...]
           - passthrough results (e.g., Core endpoint data, prevalence)
     """
+    demisto.debug("Extracting indicators")
     ip_list = extract_indicators(ip_list, "ip")
 
     indicator_mapping = {
@@ -52,7 +53,7 @@ def ip_enrichment_script(
         context_path_prefix="IP(",
         context_output_mapping=indicator_mapping,
     )
-
+    demisto.debug("Creating commands")
     create_new_indicator_commands = [
         Command(
             name="CreateNewIndicatorsOnly",
@@ -81,19 +82,27 @@ def ip_enrichment_script(
             brand="Core",
             context_output_mapping={ENDPOINT_PATH: ENDPOINT_PATH},
         ),
-        Command(
-            name="core-get-IP-analytics-prevalence",
-            args={"ip_address": ip_list},
-            command_type=CommandType.INTERNAL,
-            brand="Cortex Core - IR",
-            context_output_mapping={"Core.AnalyticsPrevalence.Ip": "Core.AnalyticsPrevalence.Ip"},
-        ),
     ]
+    if is_xsiam():
+        internal_core_commands.append(
+            Command(
+                name="core-get-IP-analytics-prevalence",
+                args={"ip_address": ip_list},
+                command_type=CommandType.INTERNAL,
+                brand="Cortex Core - IR",
+                context_output_mapping={"Core.AnalyticsPrevalence.Ip": "Core.AnalyticsPrevalence.Ip"},
+            ),
+        )
 
     commands: list[list[Command]] = [
         create_new_indicator_commands,
         internal_core_commands + enrich_indicator_commands,
     ]
+    demisto.debug("Commands: ")
+    for i, batch in enumerate(commands):
+        demisto.debug(f"Batch {i}")
+        for j, cmd in enumerate(batch):
+            demisto.debug(f"Command {j}: {cmd}")
 
     ip_enrichment = ReputationAggregatedCommand(
         brands=enrichment_brands or [],

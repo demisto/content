@@ -23,6 +23,7 @@ def url_enrichment_script(
     Returns:
         CommandResult: The result of the command.
     """
+    demisto.debug("Extracting indicators")
     url_list = extract_indicators(url_list, "url")
 
     indicator_mapping = {
@@ -54,6 +55,11 @@ def url_enrichment_script(
     ]
 
     commands = [create_new_indicator_commands, enrich_indicator_commands]
+    demisto.debug("Commands: ")
+    for i, batch in enumerate(commands):
+        demisto.debug(f"Batch {i}")
+        for j, cmd in enumerate(batch):
+            demisto.debug(f"Command {j}: {cmd}")
 
     url_reputation = ReputationAggregatedCommand(
         brands=enrichment_brands,

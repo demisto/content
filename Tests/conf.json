@@ -5918,7 +5918,8 @@
             "integrations": ["VirusTotal (API v3)","AlienVault OTX v2"],
             "instance_names": [
                 "virus_total_v3"
-            ]
+            ],
+            "fromversion": "6.10.0"
         },
         {
             "playbookID": "URLEnrichment-Test",
@@ -5939,7 +5940,8 @@
             ],
             "instance_names": [
                 "virus_total_v3"
-            ]
+            ],
+            "fromversion": "6.10.0"
         }
     ],
     "skipped_tests": {

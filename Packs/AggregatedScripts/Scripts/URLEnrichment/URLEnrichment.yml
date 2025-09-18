@@ -99,6 +99,9 @@ outputs:
 - contextPath: URLEnrichment.Results.Data
   description: The URL it self.
   type: string
+- contextPath: URLEnrichment.Results.Reliability
+  description: The reliability of the Brand.
+  type: string
 # URLEnrichment Additional Fields
 - contextPath: URLEnrichment.Results.AdditionalFields
   description: All fields extracted from the indicator other then the main keys ("Brand", "Score", "Verdict", "DetectionEngines", "PositiveDetections", "Data").

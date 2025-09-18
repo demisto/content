@@ -24,7 +24,9 @@ def domain_enrichment_script(
     Returns:
         CommandResults: The results of the command.
     """
+    demisto.debug("Extracting indicators")
     domain_list = extract_indicators(domain_list, "domain")
+    demisto.debug(f"Data list after extract_indicators: {domain_list}")
     # Mapping for the final indicator objects (what you want to surface on each result)
     indicator_mapping = {
         "Name": "Name",
@@ -42,6 +44,7 @@ def domain_enrichment_script(
     )
 
     # --- Batch 1: create indicators (BUILTIN) ---
+    demisto.debug("Creating commands")
     create_new_indicator_commands = [
         Command(
             name="CreateNewIndicatorsOnly",
@@ -70,11 +73,24 @@ def domain_enrichment_script(
     ]
 
     # Important: commands are a list of *batches* (each batch is a list[Command])
-    commands: list[list[Command]] = [
-        create_new_indicator_commands,
-        [core_domain_analytics_cmd] + enrich_indicator_commands,
-    ]
+    commands: list[list[Command]] = []
+    if is_xsiam():
+        commands = [
+            create_new_indicator_commands,
+            [core_domain_analytics_cmd] + enrich_indicator_commands,
+        ]
+    else:
+        commands = [
+            create_new_indicator_commands,
+            enrich_indicator_commands,
+        ]
+    demisto.debug("Commands:")
+    for i, batch in enumerate(commands):
+        demisto.debug(f"Batch {i}")
+        for j, cmd in enumerate(batch):
+            demisto.debug(f"Command {j}: {cmd}")
 
+    demisto.debug("Running ReputationAggregatedCommand")
     domain_reputation = ReputationAggregatedCommand(
         brands=enrichment_brands or [],
         verbose=verbose,

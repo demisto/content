@@ -37,6 +37,7 @@ def test_domain_enrichment_script_end_to_end_with_batch_file(mocker):
     domain_list = ["example.com", "example2.com"]
     mocker.patch.object(demisto, "args", return_value={"domain_list": ",".join(domain_list)})
 
+    mocker.patch("DomainEnrichment.is_xsiam", return_value=True)
     # extractIndicators -> validates input
     mocker.patch(
         "AggregatedCommandApiModule.execute_command",
