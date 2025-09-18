@@ -25,7 +25,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### cybersixgill-cve-enrich
 
 ***
-Returns information for each CVE in the input list
+Returns information for each CVE in the input list.
 
 #### Base Command
 
@@ -35,34 +35,53 @@ Returns information for each CVE in the input list
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| cve_id | A comma-separated list of CVEs to check. | Required |
+| cve_id | comma separated list of cves id. | Required | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Sixgill.CVE.value | String | The value of the CVE. |
-| Sixgill.CVE.Description | String | Description of the given DVE ID. |
-| Sixgill.CVE.Created | Date | The creation date of the CVE. |
-| Sixgill.CVE.Modified | Date | The modified date of the CVE. |
-| Sixgill.CVE.Cybersixgill_DVE_score_current | String | The current Cybersixgill DVE Score. |
-| Sixgill.CVE.Cybersixgill_DVE_score_highest_ever_date | String | The date on which Sixgill's highest DVE score ever reported. |
-| Sixgill.CVE.Cybersixgill_DVE_score_highest_ever | String | Sixgill's highest DVE score ever reported. |
-| Sixgill.CVE.Cybersixgill_Previously_exploited_probability | String | Sixgill's score of previously exploited probability. |
-| Sixgill.CVE.Previous_Level | String | Previous level of the CVE ID. |
-| Sixgill.CVE.CVSS_3_1_score | String | CVSS 3.1 score. |
-| Sixgill.CVE.CVSS_3_1_severity | String | CVSS 3.1 severity. |
-| Sixgill.CVE.NVD_Link | String | NVD link. |
-| Sixgill.CVE.NVD_last_modified_date | Date | NVD last modified date. |
-| Sixgill.CVE.NVD_publication_date | Date | NVD publication date. |
-| Sixgill.CVE.CVSS_2_0_score | String | CVSS 2.0 score. |
-| Sixgill.CVE.CVSS_2_0_severity | String | CVSS 2.0 severity. |
-| Sixgill.CVE.NVD_Vector_V2_0 | String | NVD vector v2.0. |
-| Sixgill.CVE.NVD_Vector_V3_1 | String | NVD vector v3.1. |
-| Sixgill.CVE.rawJSON | String | The raw JSON of the CVE entich information. |
+| Sixgill.CVE.value | String | CVE ID. | 
+| Sixgill.CVE.Description | String | Description of the given DVE ID. | 
+| Sixgill.CVE.Created | Date | The creation date of the CVE. | 
+| Sixgill.CVE.Modified | Date | The modified date of the CVE. | 
+| Sixgill.CVE.Cybersixgill_DVE_score_current | String | The current Sixgill DVE Score. | 
+| Sixgill.CVE.Cybersixgill_DVE_score_highest_ever_date | Date | The date on which Sixgill's highest DVE score ever reported. | 
+| Sixgill.CVE.Cybersixgill_DVE_score_highest_ever | String | Sixgill's highest DVE score ever reported. | 
+| Sixgill.CVE.Cybersixgill_Previously_exploited_probability | String | Sixgill's score of previously exploited probability. | 
+| Sixgill.CVE.Previous_Level | String | Previous level of the CVE ID. | 
+| Sixgill.CVE.CVSS_3_1_score | String | CVSS 3.1 score. | 
+| Sixgill.CVE.CVSS_3_1_severity | String | CVSS 3.1 severity. | 
+| Sixgill.CVE.NVD_Link | String | NVD link. | 
+| Sixgill.CVE.NVD_last_modified_date | Date | NVD last modified date. | 
+| Sixgill.CVE.NVD_publication_date | Date | NVD publication date. | 
+| Sixgill.CVE.CVSS_2_0_score | String | CVSS 2.0 score. | 
+| Sixgill.CVE.CVSS_2_0_severity | String | CVSS 2.0 severity. | 
+| Sixgill.CVE.NVD_Vector_V2_0 | String | NVD vector v2.0. | 
+| Sixgill.CVE.NVD_Vector_V3_1 | String | NVD vector v3.1. | 
+| Sixgill.CVE.rawJSON | String | The raw JSON of the CVE entich information. | 
 
-#### Command Example
+### cybersixgill-cve-remediation
 
-``````
+***
+Returns remediation for each CVE in the input list.
 
-#### Human Readable Output
+#### Base Command
+
+`cybersixgill-cve-remediation`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| cve_id | comma separated list of cves id. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Sixgill.CVE.value | String | CVE ID. | 
+| Sixgill.CVE.Description | String | Description of the given DVE remediation. | 
+| Sixgill.CVE.Solutions | String | Possible remediation solutions for the CVE ID. | 
+| Sixgill.CVE.rawJSON | String | The raw JSON of the CVE entich information. | 
+
