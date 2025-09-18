@@ -214,7 +214,7 @@ def fetch_events(client: Client, limit: int, look_back: int, last_run: dict) -> 
     
     # Fetch events in batches with deduplication
     all_events, updated_dedup_cache = _fetch_events_batch(
-        client, limit, last_fetched_creation_date, previous_id_timestamps
+        client, limit, last_fetched_creation_date, previous_id_timestamps, last_run.get("prev_date")
     )
     
     # Build next_run with filtered deduplication cache
@@ -229,7 +229,7 @@ def fetch_events(client: Client, limit: int, look_back: int, last_run: dict) -> 
 
 
 def _fetch_events_batch(
-    client: Client, limit: int, from_date: str, previous_id_timestamps: dict = None
+    client: Client, limit: int, from_date: str, previous_id_timestamps: dict = None, prev_date: str = None
 ) -> tuple[List[Dict], dict]:
     """
     Fetches events in batches with deduplication until limit is reached or no more events.
@@ -239,6 +239,7 @@ def _fetch_events_batch(
         limit: Maximum number of events to fetch total
         from_date: Start date for fetching events
         previous_id_timestamps: Dict of previous event IDs to timestamps (for merging)
+        prev_date: Previous progression date for lookback analysis
         
     Returns:
         Tuple of (deduplicated events list, updated dedup_cache dict with timestamps)
@@ -274,7 +275,7 @@ def _fetch_events_batch(
             should_break_after_processing = False
         
         events_before_dedup = len(events)
-        events = dedup_events(events, dedup_cache.keys(), last_run.get("prev_date"))
+        events = dedup_events(events, dedup_cache.keys(), prev_date)
         demisto.debug(f"After dedup: {events_before_dedup} -> {len(events)} events.")
         
         if events:
