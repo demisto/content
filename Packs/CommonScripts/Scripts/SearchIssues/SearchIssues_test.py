@@ -128,7 +128,101 @@ def test_prepare_sha256_custom_field_empty_list():
 ])
 def test_main_with_sha256_filter(monkeypatch, sha_values):
 
-    expected_custom_filter = "{'OR': [{'AND': [{'OR': [{'SEARCH_FIELD': 'actor_process_image_sha256', 'SEARCH_TYPE': 'EQ', 'SEARCH_VALUE': 'abc123'}, {'SEARCH_FIELD': 'actor_process_image_sha256', 'SEARCH_TYPE': 'EQ', 'SEARCH_VALUE': 'xyz456'}]}]}, {'AND': [{'OR': [{'SEARCH_FIELD': 'causality_actor_process_image_sha256', 'SEARCH_TYPE': 'EQ', 'SEARCH_VALUE': 'abc123'}, {'SEARCH_FIELD': 'causality_actor_process_image_sha256', 'SEARCH_TYPE': 'EQ', 'SEARCH_VALUE': 'xyz456'}]}]}, {'AND': [{'OR': [{'SEARCH_FIELD': 'action_process_image_sha256', 'SEARCH_TYPE': 'EQ', 'SEARCH_VALUE': 'abc123'}, {'SEARCH_FIELD': 'action_process_image_sha256', 'SEARCH_TYPE': 'EQ', 'SEARCH_VALUE': 'xyz456'}]}]}, {'AND': [{'OR': [{'SEARCH_FIELD': 'os_actor_process_image_sha256', 'SEARCH_TYPE': 'EQ', 'SEARCH_VALUE': 'abc123'}, {'SEARCH_FIELD': 'os_actor_process_image_sha256', 'SEARCH_TYPE': 'EQ', 'SEARCH_VALUE': 'xyz456'}]}]}, {'AND': [{'OR': [{'SEARCH_FIELD': 'action_file_macro_sha256', 'SEARCH_TYPE': 'EQ', 'SEARCH_VALUE': 'abc123'}, {'SEARCH_FIELD': 'action_file_macro_sha256', 'SEARCH_TYPE': 'EQ', 'SEARCH_VALUE': 'xyz456'}]}]}]}"
+    expected_custom_filter  = """{
+  "OR": [
+    {
+      "AND": [
+        {
+          "OR": [
+            {
+              "SEARCH_FIELD": "actor_process_image_sha256",
+              "SEARCH_TYPE": "EQ",
+              "SEARCH_VALUE": "abc123"
+            },
+            {
+              "SEARCH_FIELD": "actor_process_image_sha256",
+              "SEARCH_TYPE": "EQ",
+              "SEARCH_VALUE": "xyz456"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "AND": [
+        {
+          "OR": [
+            {
+              "SEARCH_FIELD": "causality_actor_process_image_sha256",
+              "SEARCH_TYPE": "EQ",
+              "SEARCH_VALUE": "abc123"
+            },
+            {
+              "SEARCH_FIELD": "causality_actor_process_image_sha256",
+              "SEARCH_TYPE": "EQ",
+              "SEARCH_VALUE": "xyz456"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "AND": [
+        {
+          "OR": [
+            {
+              "SEARCH_FIELD": "action_process_image_sha256",
+              "SEARCH_TYPE": "EQ",
+              "SEARCH_VALUE": "abc123"
+            },
+            {
+              "SEARCH_FIELD": "action_process_image_sha256",
+              "SEARCH_TYPE": "EQ",
+              "SEARCH_VALUE": "xyz456"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "AND": [
+        {
+          "OR": [
+            {
+              "SEARCH_FIELD": "os_actor_process_image_sha256",
+              "SEARCH_TYPE": "EQ",
+              "SEARCH_VALUE": "abc123"
+            },
+            {
+              "SEARCH_FIELD": "os_actor_process_image_sha256",
+              "SEARCH_TYPE": "EQ",
+              "SEARCH_VALUE": "xyz456"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "AND": [
+        {
+          "OR": [
+            {
+              "SEARCH_FIELD": "action_file_macro_sha256",
+              "SEARCH_TYPE": "EQ",
+              "SEARCH_VALUE": "abc123"
+            },
+            {
+              "SEARCH_FIELD": "action_file_macro_sha256",
+              "SEARCH_TYPE": "EQ",
+              "SEARCH_VALUE": "xyz456"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}"""
+
     # Mock demisto.args()
     monkeypatch.setattr(SearchIssues.demisto, "args", lambda: {
         "sha256": ",".join(sha_values),
