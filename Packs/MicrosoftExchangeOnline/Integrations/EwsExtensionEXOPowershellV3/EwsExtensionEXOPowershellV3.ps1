@@ -228,6 +228,8 @@ class ExchangeOnlinePowershellV3Client
     DisconnectSession()
     {
         Disconnect-ExchangeOnline -Confirm:$false -WarningAction:SilentlyContinue 6>$null | Out-Null
+        # Remove any lingering tmpEXO_ directories to prevent filling the disk
+        Remove-Item -Path "/tmp/tmpEXO_*" -Recurse -Force
     }
     [PSObject]
     GetEXOCASMailbox(
