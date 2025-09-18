@@ -6,10 +6,10 @@ We recommend that you use Cortex XSOAR server rerouting when using this integrat
 </~XSOAR_ON_PREM>
 
 
-**Note**: The **Listen Port**, when configurable, needs to be available, which means it has to be unique for each integration instance. It cannot be used by other long-running integrations.For more information about long-running integrations, check out the <~XSIAM>[Forward requests to long-running integrations](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/Forward-Requests-to-Long-Running-Integrations) article.</~XSIAM> <~XSOAR_SAAS>Forward Requests to Long-Running Integrations article: [Cortex XSOAR 8 Cloud](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Forward-Requests-to-Long-Running-Integrations) or [Cortex XSOAR 8 On-prem](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Integration-commands-in-the-CLI) documentation.</~XSOAR_SAAS>
+**Note**: The **Listen Port**, when configurable, needs to be available, which means it has to be unique for each integration instance. It cannot be used by other long-running integrations. For more information about long-running integrations, see the <~XSIAM>[Forward requests to long-running integrations](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/Forward-Requests-to-Long-Running-Integrations) article.</~XSIAM> <~XSOAR_SAAS>Forward Requests to Long-Running Integrations article: [Cortex XSOAR 8 Cloud](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Forward-Requests-to-Long-Running-Integrations) or [Cortex XSOAR 8 On-prem](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Integration-commands-in-the-CLI) documentation.</~XSOAR_SAAS>
 
 #### Security
-- We recommend using authentication to validate the requests sent from your app, even if it's not required. If you do not use authentication it might result in incident creation from unexpected requests.
+- We recommend using authentication to validate the requests sent from your app, even if it's not required. Not using authentication could result in non-authorized parties creating incidents/issues in your system.
 
 - To validate an incident request creation you can use the *Username/Password* integration parameters<~XSOAR_ON_PREM> for one of the following</~XSOAR_ON_PREM>:
      * Basic authentication using the username and password fields to validate incoming webhook requests

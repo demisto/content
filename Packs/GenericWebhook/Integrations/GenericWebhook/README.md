@@ -41,7 +41,7 @@ Authentication options depend on the product and version.
 | --- | --- | --- |
 | Cortex XSOAR 8 Cloud tenant | Yes                          | - Basic authentication (username and password)  |
 | Cortex XSIAM tenant | Yes  | - Basic authentication (username and password) |
-| Cortex XSOAR 8 On-prem | No | - Basic authentication (username and password) <br><br> - Custom certificate <br> **NOTE**: For more information about setting up custom certificates for Cortex XSOAR 8 On-prem, see [HTTPS with a signed certificate](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.9/Cortex-XSOAR-On-prem-Documentation/HTTPS-with-a-signed-certificate). |
+| Cortex XSOAR 8 On-prem | No | - Basic authentication (username and password) <br><br> - Custom certificate <br> **NOTE**: For more information about setting up custom certificates for Cortex XSOAR 8 On-prem, see [HTTPS with a signed certificate](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.10/Cortex-XSOAR-On-prem-Documentation/HTTPS-with-a-signed-certificate). |
 | Cortex XSOAR 6.x | No| - Basic authentication (username and password) <br><br> - Header-based authentication using `_header:<HEADER-NAME>` syntax <br><br> - Custom certificate <br> **NOTE**: For more information about setting up custom certificates for Cortex XSOAR 6.x, see [HTTPS with a signed certificate](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.14/Cortex-XSOAR-Administrator-Guide/HTTPS-with-a-Signed-Certificate).  |
 | Engines (Cortex XSOAR 8 Cloud, Cortex XSOAR 8 On-Prem, Cortex XSIAM, Cortex 6.x) | No | - Basic authentication (username and password) <br><br> - Header-based authentication using `_header:<HEADER-NAME>` syntax (Cortex XSOAR 6.x only) <br><br> - Custom certificate <br> **NOTE**: For more information about setting up custom certificates for engines, see [Configure an engine to use custom certificates](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Configure-an-engine-to-use-custom-certificates). |
 
@@ -117,7 +117,7 @@ The payload can then be mapped. For more information see:
 
 ## Authorization headers
 
-For Cortex XSOAR 6.x users, you can use the special `_header:<HEADER-NAME>` syntax to authenticate requests using custom headers from your third-party service. This helps prevent unauthorized creation of incidents/alerts/issues. To configure this, set the username field in the integration to `_header:<HEADER-NAME>`**** and provide the header value in the password field.
+For Cortex XSOAR 6.x users, you can use the special `_header:<HEADER-NAME>` syntax to authenticate requests using custom headers from your third-party service. This helps prevent unauthorized creation of incidents. Set the username field in the integration to `_header:<HEADER-NAME>`**** and provide the header value in the password field.
 Example: If the request included in the `Authorization` header the value `Bearer XXX`, then the username should be set to `_header:Authorization` and the password should be set to `Bearer XXX`.
 
 ### Troubleshooting authorization headers
