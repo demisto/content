@@ -1137,7 +1137,7 @@ def init_rtr_single_session(host_id: str, queue_offline: bool = False) -> str:
 def init_rtr_batch_session(host_ids: list, offline=False) -> str:
     """
     Start a session with one or more hosts
-    :param host_ids: List of host agent ID's to initialize a RTR session on.
+    :param host_ids: List of host agent ID’s to initialize a RTR session on.
     :return: The session batch ID to execute the command on
     """
     endpoint_url = "/real-time-response/combined/batch-init-session/v1"
@@ -1251,7 +1251,7 @@ def run_batch_get_cmd(
       Batch executes `get` command across hosts to retrieve files.
       After this call is made `/real-time-response/combined/batch-get-command/v1` is used to query for the results.
 
-    :param host_ids: List of host agent ID's to run RTR command on.
+    :param host_ids: List of host agent ID’s to run RTR command on.
     :param file_path: Full path to the file that is to be retrieved from each host in the batch.
     :param optional_hosts: List of a subset of hosts we want to run the command on.
                            If this list is supplied, only these hosts will receive the command.
@@ -2152,7 +2152,7 @@ def behavior_to_entry_context(behavior):
 
 def get_username_uuid(username: str):
     """
-    Obtain CrowdStrike user's UUId by email.
+    Obtain CrowdStrike user’s UUId by email.
     :param username: Username to get UUID of.
     :return: The user UUID
     """
@@ -4605,7 +4605,7 @@ def enrich_groups(all_group_ids) -> dict[str, Any]:
 
 def get_status(device_ids):
     """
-    Get the online status for one or more hosts by specifying each host's unique ID (up to 100 max).
+    Get the online status for one or more hosts by specifying each host’s unique ID (up to 100 max).
     The status can be online, offline, or unknown.
     Args:
         device_ids: list of device ids.
