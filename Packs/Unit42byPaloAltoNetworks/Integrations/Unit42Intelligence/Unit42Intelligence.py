@@ -241,19 +241,19 @@ def build_threat_object_description(threat_obj: dict[str, Any]) -> str:
     # Add highlights section if available
     highlights = demisto.get(threat_obj, "battlecard_details.highlights", "").replace("\\n", "\n")
     if highlights:
-        description += "\n\n### Highlights\n"
+        description += "\n\n##"
         description += highlights
     
     # Add methods section if available (for threat actors)
     methods = demisto.get(threat_obj, "battlecard_details.threat_actor_details.methods", "").replace("\\n", "\n")
     if methods:
-        description += "\n\n### Methods\n"
+        description += "\n\n##"
         description += methods
     
     # Add targets section if available (for threat actors)
     targets = demisto.get(threat_obj, "battlecard_details.threat_actor_details.targets", "").replace("\\n", "\n")
     if targets:
-        description += "\n\n### Targets\n"
+        description += "\n\n##"
         description += targets
     
     return description
@@ -317,7 +317,69 @@ def extract_actor_associations(threat_obj: dict[str, Any]) -> list[dict[str, str
     return actor_relationships
 
 
-def create_location_and_geo_indicators_and_relationships(
+def map_publications(threat_obj: dict[str, Any]) -> list[dict[str, str]]:
+    """
+    Map publications data structure from threat object
+    
+    Args:
+        threat_obj: The threat object data
+        
+    Returns:
+        List of mapped publication objects with Timestamp, title, and link
+    """
+    mapped_publications = []
+    publications = demisto.get(threat_obj, "battlecard_details.publications", [])
+    
+    for publication in publications:
+        if isinstance(publication, dict):
+            mapped_pub = {}
+            
+            # Map created_at to Timestamp
+            if publication.get("created_at"):
+                mapped_pub["Timestamp"] = publication["created_at"]
+            
+            # Map title to title
+            if publication.get("title"):
+                mapped_pub["title"] = publication["title"]
+            
+            # Map url to link
+            if publication.get("url"):
+                mapped_pub["link"] = publication["url"]
+            
+            if mapped_pub:  # Only add if we have at least one field
+                mapped_publications.append(mapped_pub)
+    
+    return mapped_publications
+
+
+def create_malware_relationships(threat_obj: dict[str, Any], threat_actor_name: str, threat_class: str) -> list[dict[str, Any]]:
+    """
+    Create malware relationships from malware_associations
+    
+    Args:
+        threat_obj: The threat object data
+        threat_actor_name: Name of the threat actor
+        threat_class: The threat object class
+        
+    Returns:
+        List of malware relationship objects
+    """
+    return [
+        {
+            "name": "uses",
+            "reverseName": "used-by",
+            "type": "IndicatorToIndicator",
+            "entityA": threat_actor_name,
+            "entityAFamily": "Indicator",
+            "entityAType": INDICATOR_TYPE_MAPPING[threat_class],
+            "entityB": relationship.get("aliases")[0] if relationship.get("aliases") else relationship.get("name"),
+            "entityBFamily": "Indicator",
+            "entityBType": "Malware",
+        } for relationship in demisto.get(threat_obj, "battlecard_details.threat_actor_details.malware_associations", [])
+    ]
+
+
+def create_location_indicators_and_relationships(
     threat_obj: dict[str, Any],
     threat_actor_name: str
 ) -> list[dict[str, Any]]:
@@ -359,32 +421,7 @@ def create_location_and_geo_indicators_and_relationships(
                 "rawJSON": {"region": region, "source": "Unit42Intelligence"}
             }
             location_indicators.append(location_indicator)
-    
-    # Handle origin field
-    origin = demisto.get(threat_obj, "battlecard_details.threat_actor_details.origin", "")
-    if origin and isinstance(origin, str) and origin.strip():
-        origin_indicator = {
-            "value": origin.strip(),
-            "type": FeedIndicatorType.GeoCountry,
-            "score": Common.DBotScore.NONE,
-            "service": INTEGRATION_NAME,
-            "relationships": [{
-                "name": "originates-from",
-                "reverseName": "origin-of",
-                "type": "IndicatorToIndicator",
-                "entityA": threat_actor_name,
-                "entityAType": ThreatIntel.ObjectsNames.THREAT_ACTOR,
-                "entityB": origin.strip(),
-                "entityBType": FeedIndicatorType.GeoCountry
-            }],
-            "fields": {
-                "geocountry": origin.strip(),
-                "tags": ["origin-country"]
-            },
-            "rawJSON": {"origin": origin, "source": "Unit42Intelligence"}
-        }
-        location_indicators.append(origin_indicator)
-    
+
     return location_indicators
 
 
@@ -398,10 +435,10 @@ def get_threat_object_score(threat_class: str) -> int:
     Returns:
         Appropriate ThreatIntel score or Common.DBotScore.NONE as default
     """
-    if threat_class not in THREAT_INTEL_TYPE_MAPPING:
+    if threat_class not in INDICATOR_TYPE_MAPPING:
         return Common.DBotScore.NONE
         
-    threat_type = THREAT_INTEL_TYPE_MAPPING[threat_class]
+    threat_type = INDICATOR_TYPE_MAPPING[threat_class]
     
     if threat_type == ThreatIntel.ObjectsNames.MALWARE:
         return ThreatIntel.ObjectsScore.MALWARE
@@ -439,6 +476,7 @@ def create_threat_object_indicators(
         relationships += demisto.get(threat_obj, "battlecard_details.campaigns", [])
         relationships += extract_malware_associations(threat_obj)
         relationships += extract_actor_associations(threat_obj)
+        relationships += create_malware_relationships(threat_obj, name)
         
         if not name or threat_class not in INDICATOR_TYPE_MAPPING:
             continue
@@ -464,6 +502,7 @@ def create_threat_object_indicators(
             "tags": threat_obj.get("threat_object_group_names", []),
             "industrysectors": demisto.get(threat_obj, "battlecard_details.industries", []),
             "primarymotivation": demisto.get(threat_obj, "battlecard_details.primary_motivation", []),
+            "publications": demisto.get(threat_obj, "battlecard_details.publications", []),
         }
         
         indicator_data = {
@@ -478,9 +517,9 @@ def create_threat_object_indicators(
         
         indicators.append(indicator_data)
         
-        # Create location and GEO indicators from affected regions
-        location_and_geo_indicators = create_location_and_geo_indicators_and_relationships(threat_obj, name)
-        indicators.extend(location_and_geo_indicators)
+        # Create location indicators from affected regions
+        location_indicators = create_location_indicators_and_relationships(threat_obj, name)
+        indicators.extend(location_indicators)
     
     return indicators
 
@@ -778,12 +817,11 @@ def file_command(client: Client, args: dict[str, Any]) -> CommandResults:
     malware_families = extract_malware_families_from_threat_objects(threat_objects)
 
     # Create enriched File indicator with proper hash field assignment
-    hash_val_arg = {hash_type: file_hash}
     file_indicator = Common.File(
+        sha256=file_hash,
         dbot_score=dbot_score,
         tags=tags,
-        malware_family=malware_families
-        **hash_val_arg
+        malware_family=malware_families,
     )
 
     # Create relationships
