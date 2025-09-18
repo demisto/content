@@ -5919,7 +5919,7 @@
             "instance_names": [
                 "virus_total_v3"
             ]
-        }.
+        },
         {
             "playbookID": "URLEnrichment-Test",
             "integrations": [
