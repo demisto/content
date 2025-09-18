@@ -171,12 +171,12 @@ def get_client_from_params(params: dict) -> EWSClient:
     folder = params.get("folder", "Inbox")
     is_public_folder = argToBoolean(params.get("is_public_folder", False))
     request_timeout = int(params.get("request_timeout", 120))
-    mark_as_read = False
+    mark_as_read = params.get("mark_as_read", False)
     incident_filter = IncidentFilter(
         params.get("incidentFilter", IncidentFilter.RECEIVED_FILTER) or IncidentFilter.RECEIVED_FILTER
     )
     self_deployed = argToBoolean(params.get("self_deployed", False))
-    insecure = argToBoolean(params.get("insecure", False))
+    insecure = True
     proxy = params.get("proxy", False)
 
     return EWSClient(
