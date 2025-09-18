@@ -100,6 +100,7 @@ ITEMS_RESULTS_HEADERS = [
 LEGACY_NAME = argToBoolean(demisto.params().get("legacy_name", False))
 UTF_8 = "utf-8"
 
+
 # If you are modifying this probably also need to modify in other files
 
 
@@ -111,7 +112,7 @@ def exchangelib_cleanup():  # pragma: no cover
         exchangelib.close_connections()
         demisto.debug("Successfully closed the connections")
     except Exception as ex:
-        demisto.debug(f"Failed to close the connections, logging the error")
+        demisto.debug("Failed to close the connections, logging the error")
         demisto.error(f"Error was found in exchangelib cleanup, ignoring: {ex}")
     for key, (protocol, _) in key_protocols:
         try:
@@ -122,7 +123,9 @@ def exchangelib_cleanup():  # pragma: no cover
             else:
                 demisto.info(f"Thread pool not found (ignoring terminate) in protocol dict: {dir(protocol.__dict__)}")
         except Exception as ex:
+            demisto.debug("Exception in exchangelib cleanup, will log the error")
             demisto.error(f"Error with thread_pool.terminate, ignoring: {ex}")
+            demisto.debug("After logging the exchangelib cleanup exception")
 
 
 """ LOGGING """
@@ -543,9 +546,10 @@ def get_entry_for_item_attachment(item_id, attachment, target_email):  # pragma:
     item = attachment.item
     dict_result = parse_attachment_as_dict(item_id, attachment)
     dict_result.update(parse_item_as_dict(item, target_email, camel_case=True, compact_fields=True))
+    att = get_attachment_name(attachment_name=attachment.name, content_id=attachment.content_id, is_inline=attachment.is_inline)
     title = (
-        f'EWS get attachment got item for "{target_email}", '
-        f'"{get_attachment_name(attachment_name=attachment.name, content_id=attachment.content_id, is_inline=attachment.is_inline)}"'  # noqa: E501
+        f'EWS get attachment got item for "{target_email}", ' f'"{att}"'
+        # noqa: E501
     )
 
     return get_entry_for_object(
@@ -1162,6 +1166,7 @@ def send_email(
             message = create_message_object(to, cc, bcc, None, raw_message, None, from_address, reply_to, importance, raw=True)
 
         except Exception as e:
+            demisto.debug("[send_email]Failed inside the 'if raw_message' block, will log error")
             demisto.error(f"[send_email]Failed inside the 'if raw_message' block to create message object: {e}")
             raise
 
@@ -1199,6 +1204,7 @@ def send_email(
             )
             demisto.debug(f"[send_email]Created message object: {message}. Sending to client")
         except Exception as e:
+            demisto.debug("[send_email]Failed inside the 'else' block will log error message")
             demisto.error(f"[send_email]Failed inside the 'else' block to create message object: {e}")
             raise
     client.send_email(message)
@@ -1321,6 +1327,7 @@ def handle_attached_email_with_incorrect_message_id(attached_email: Message):
                 # That being said, we do expect the header to be in a known format.
                 # If this function encounters a header format which is not in the known format and can't be fixed,
                 # the header will be ignored completely to prevent crashing the fetch command.
+                demisto.debug("[handle_attached...] failed. will log the error")
                 demisto.debug(f"Invalid {message_id=}, Error: {e}")
                 break
             break
@@ -1351,6 +1358,7 @@ def handle_attached_email_with_incorrect_from_header(attached_email: Message):
                     demisto.debug(f"From header fixed, new value: {new_value}")
 
             except Exception as e:
+                demisto.debug("[handle_attached_email_with_incorrect_from_header] failed. will log the error")
                 demisto.debug(f"Error processing From header: {e}")
             break
     return attached_email
@@ -1488,6 +1496,7 @@ def parse_incident_from_item(item):  # pragma: no cover
 
                         # check for error
                         if file_result["Type"] == entryTypes["error"]:
+                            demisto.debug("[parse_incident_from_item] failed, will log the error")
                             demisto.error(file_result["Contents"])
                             raise Exception(file_result["Contents"])
 
@@ -1510,6 +1519,7 @@ def parse_incident_from_item(item):  # pragma: no cover
                 except SAXParseException as e:
                     # TODO: When a fix is released, we will need to bump the library version.
                     #  https://github.com/ecederstrand/exchangelib/issues/1200
+                    demisto.debug("[parse_incident_from_item] SAXParseException failure, will log")
                     demisto.debug(
                         f"An XML error occurred while loading an attachments content."
                         f"\nMessage ID is {item.id}"
@@ -1574,6 +1584,7 @@ def parse_incident_from_item(item):  # pragma: no cover
                 if file_result:
                     # check for error
                     if file_result["Type"] == entryTypes["error"]:
+                        demisto.debug("[parse_incident_from_item] the fail type is error, will log")
                         demisto.error(file_result["Contents"])
                         raise Exception(file_result["Contents"])
 
@@ -1700,6 +1711,7 @@ def fetch_emails_as_incidents(client: EWSClient, last_run, incident_filter, skip
                     demisto.debug(f"Skipped item: item with no message_id {item=}")
             except Exception as e:
                 if not skip_unparsable_emails:  # default is to raise and exception and fail the command
+                    demisto.debug("Got an exception in fetch_emails_as_incidents, and wont skip unparsable. so raising")
                     raise
 
                 # when the skip param is `True`, we log the exceptions and move on instead of failing the whole fetch
@@ -1943,7 +1955,9 @@ def sub_main():  # pragma: no cover
                 demisto.debug(f"The incidents are: {incidents}")
                 demisto.incidents(incidents)
             except Exception as e:
+                demisto.debug("Caught exception in fetch-incidents. logging it and raising")
                 demisto.error(f"Failed to fetch incidents. Error: {e}")
+                demisto.debug("The error was logged, now re-raising")
                 raise
 
         elif command == "send-mail":
@@ -1984,7 +1998,9 @@ def sub_main():  # pragma: no cover
                 return_results(output)
 
     except Exception as e:
+        demisto.debug("Failed in sub main, logging the error")
         demisto.error(f"got exception {e}")
+        demisto.debug("after the error logging")
         start_logging()
         debug_log = log_stream.getvalue()  # type: ignore[union-attr]
         error_message_simple = ""
@@ -2073,7 +2089,9 @@ def sub_main():  # pragma: no cover
                 log_stream.close()
                 demisto.debug("[sub_main] finally clause in the if log_stream closed the stream")
             except Exception as ex:
+                demisto.debug("Exception dealing with the logstream. logging the error")
                 demisto.error(f"EWS: unexpected exception when trying to remove log handler: {ex}")
+                demisto.debug("After logging the stream error")
 
 
 def process_main():
