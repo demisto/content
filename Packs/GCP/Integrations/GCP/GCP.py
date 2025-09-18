@@ -296,7 +296,7 @@ def handle_permission_error(e: HttpError, project_id: str, command_name: str):
     status_code = e.resp.status
     if int(status_code) in [403, 401] and e.resp.get("content-type", "").startswith("application/json"):
         message_content = json.loads(e.content)
-        error_message = message_content.get('error', {}).get('message', '')
+        error_message = message_content.get("error", {}).get("message", "")
 
         # get the relevant permissions for the relevant command
         command_permissions: list[str]

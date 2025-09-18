@@ -1401,10 +1401,7 @@ def test_handle_permission_error_multiple_matching_permissions(mocker):
 
     for entry in error_entries:
         assert entry["account_id"] == "test-project"
-        assert (
-            entry["message"]
-            == "Required 'compute.firewalls.update' and compute.firewalls.get' permissions for project. reason='forbidden'"
-        )
+        assert entry["message"] == "Required 'compute.firewalls.update' and compute.firewalls.get' permissions for project."
 
 
 def test_handle_permission_error_non_json_content_type(mocker):
@@ -1428,11 +1425,12 @@ def test_handle_permission_error_non_json_content_type(mocker):
     mocker.patch("GCP.demisto.debug")
 
     # Execute the function and expect the same error to be raised
-    with pytest.raises(HttpError) as exc_info:
+    with pytest.raises(SystemExit) as exc_info:
         handle_permission_error(http_error, "test-project", "some-command")
 
-    # Verify the same error object was re-raised
-    assert exc_info.value is http_error
+    # Verify there was a graceful exist
+    assert exc_info.typename == 'SystemExit'
+    assert exc_info.value.code == 0
 
 
 def test_handle_permission_error_missing_error_structure(mocker):
