@@ -8657,7 +8657,6 @@ class TestDynamicUpdateCommands:
         # VSYS global variable is set to '' by default, which means we are simulating a run from a Panorama instance.
 
         mocker.patch("Panorama.VSYS", "")
-        #Panorama.VSYS = None  # this a Panorama instance
 
         with pytest.raises(DemistoException) as e:
             panorama_check_latest_dynamic_update_command({"target": ""})
