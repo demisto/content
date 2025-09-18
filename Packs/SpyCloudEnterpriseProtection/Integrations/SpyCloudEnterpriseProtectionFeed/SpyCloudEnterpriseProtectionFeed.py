@@ -58,6 +58,14 @@ SEVERITY_VALUE = {
 
 
 class Client(BaseClient):
+    """
+    This Client implements API calls, and does not contain any XSOAR logic.
+    Should only do requests and return data.
+    It inherits from BaseClient defined in CommonServer Python.
+    Most calls use _http_request() that handles proxy, SSL verification, etc.
+    For this implementation, no special attributes defined
+    """
+
     def __init__(self, base_url: str, apikey: str, verify=None, proxy=None):
         headers = {"Accept": "application/json", "X-API-Key": apikey, "User-Agent": "paloalto_xsoar_v1.5.0"}
         super().__init__(
@@ -68,6 +76,14 @@ class Client(BaseClient):
         )
 
     def query_spy_cloud_api(self, end_point: str, params: dict[Any, Any] = None, is_retry: bool = False) -> dict:
+        """
+        Args:
+         end_point (str): SpyCloud endpoint.
+         params (dict): Params.
+         is_retry (bool): Boolean Variable to check whether retry required.
+        Returns:
+         Return the raw API response from SpyCloud API.
+        """
         if params is None:
             params = {}
 
@@ -99,6 +115,13 @@ class Client(BaseClient):
         return response
 
     def spy_cloud_error_handler(self, response: Response):
+        """
+        Error Handler for SpyCloud
+        Args:
+            response (response): SpyCloud response
+        Raise:
+             DemistoException
+        """
         response_headers = response.headers
         err_msg = response.json().get("message") or response.json().get("errorMessage")
         if response.status_code == 429:
@@ -118,15 +141,32 @@ class Client(BaseClient):
 
     @staticmethod
     def set_last_run():
+        """
+        sets the last run
+        """
         current_date = datetime.now(UTC)
         demisto.setLastRun({"lastRun": current_date.strftime(DATE_TIME_FORMAT)})
 
     @staticmethod
     def get_last_run() -> str:
+        """
+        Gets last run time in timestamp
+        Returns:
+            last run in timestamp, or '' if no last run
+        """
         return demisto.getLastRun().get("lastRun")
 
 
 def create_spycloud_args(args: dict, client: Client) -> dict:
+    """
+    This function creates a dictionary of the arguments sent to the SpyCloud
+    API based on the demisto.args().
+    Args:
+        args: demisto.args()
+        client: Client class
+    Returns:
+        Return arguments dict.
+    """
     now = datetime.now(UTC)
     last_run = client.get_last_run()
 
@@ -164,6 +204,14 @@ def create_spycloud_args(args: dict, client: Client) -> dict:
 
 
 def fetch_domain_or_watchlist_data(client: Client, args: dict, base_args: dict) -> list:
+    """
+    Args:
+         client (Client): Client class object.
+         args (dict): demisto.args().
+         base_args (dict): Custom Param.
+        Returns:
+         Return Watchlist or domain specific data.
+    """
     domain_search = (args.get("domain_search") or "").strip()
     type_param = (args.pop("type", "") or "").strip()
     results = []
@@ -212,6 +260,14 @@ def fetch_domain_or_watchlist_data(client: Client, args: dict, base_args: dict) 
 
 
 def build_iterators(client: Client, results: list) -> list:
+    """
+    Function to parse data and create relationship.
+    Args:
+        client: Client class
+        results: API response.
+    Returns:
+        list of incidents
+    """
     incident_record = []
     for item in results:
         source_id = item.get("source_id")
@@ -232,12 +288,24 @@ def build_iterators(client: Client, results: list) -> list:
 
 
 def remove_duplicate(since_response: list, modified_response: list) -> list:
+    """
+    Function to remove duplicate record from two different calls.
+    Args:
+        since_response: response when only since parameter given.
+        modified_response: response when only since parameter given.
+    """
     id_set = {rec["document_id"] for rec in modified_response}
     modified_response.extend(res for res in since_response if res["document_id"] not in id_set)
     return modified_response
 
 
 def fetch_incident(client: Client, args: dict):
+    """
+    Function to create Incident and Indicator to XSOAR platform.
+    Args:
+        client(Client): Client class object
+        args: demisto.args()
+    """
     left_results = demisto.getIntegrationContext().get("results")
 
     try:
@@ -276,12 +344,24 @@ def fetch_incident(client: Client, args: dict):
 
 
 def test_module(client: Client, params: dict) -> str:
+    """
+    Tests API connectivity and authentication
+    When 'ok' is returned it indicates the integration works like
+    it is supposed to and connection to the service is successful.
+    Args:
+        client(Client): Client class object
+    Returns:
+        Connection ok
+    """
     args = create_spycloud_args(params, client)
     client.query_spy_cloud_api(WATCHLIST_ENDPOINT, args)
     return "ok"
 
 
 def main():
+    """
+    PARSE AND VALIDATE INTEGRATION PARAMS
+    """
     params = demisto.params()
     apikey = params.get("apikey")
     verify_certificate = not params.get("insecure", False)
