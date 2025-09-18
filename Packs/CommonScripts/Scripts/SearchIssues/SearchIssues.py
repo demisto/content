@@ -100,7 +100,7 @@ def create_sha_search_field_query(sha_search_field: str, search_type: str, sha_l
     return {"AND": [{"OR": or_operator_list}]}
 
 
-def prepare_sha256_custom_field(args: dict):
+def prepare_sha256_custom_field(args: dict) -> Optional[str]:
     """
     Builds a structured query from a list of SHA256 values and assigns it to the 'custom_filter' field in the given args.
 
@@ -150,7 +150,7 @@ def prepare_sha256_custom_field(args: dict):
     or_operator_list: list[dict] = []
     for sha_search_field in SEARCH_SHA256_FIELDS:
         or_operator_list.append(create_sha_search_field_query(sha_search_field, EQ, sha256))
-    args["custom_filter"] = json.dumps({"OR": or_operator_list})
+    return json.dumps({"OR": or_operator_list})
 
 
 def main():  # pragma: no cover
@@ -163,7 +163,9 @@ def main():  # pragma: no cover
 
         # Return only specific fields to the context.
         args["output_keys"] = ",".join(OUTPUT_KEYS)
-        prepare_sha256_custom_field(args)
+        sha256_custom_field = prepare_sha256_custom_field(args)
+        if sha256_custom_field:
+            args["custom_filter"] = sha256_custom_field
         args = remove_empty_string_values(args)
         demisto.debug(f"Calling core-get-issues with arguments: {args}")
         results: dict = demisto.executeCommand("core-get-issues", args)[0]  # type: ignore
