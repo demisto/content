@@ -23,6 +23,7 @@ from ServiceNowv2 import (
     Client,
     ServiceNowClient,
     add_comment_command,
+    add_link_command,
     add_tag_command,
     check_assigned_to_field,
     convert_to_notes_result,
@@ -83,6 +84,7 @@ from test_data.response_constants import (
     MIRROR_ENTRIES_WITH_EMPTY_USERNAME,
     OAUTH_PARAMS,
     RESPONSE_ADD_COMMENT,
+    RESPONSE_ADD_LINK,
     RESPONSE_ADD_TAG,
     RESPONSE_ASSIGNMENT_GROUP,
     RESPONSE_CLOSING_TICKET_MIRROR_CLOSED,
@@ -128,6 +130,7 @@ from test_data.response_constants import (
 )
 from test_data.result_constants import (
     EXPECTED_ADD_COMMENT_HR,
+    EXPECTED_ADD_LINK_HR,
     EXPECTED_ADD_TAG,
     EXPECTED_CREATE_ITEM_ORDER,
     EXPECTED_CREATE_RECORD,
@@ -827,6 +830,13 @@ def test_commands(command, args, response, expected_result, expected_auto_extrac
 @pytest.mark.parametrize(
     "command, args, response, expected_hr, expected_auto_extract",
     [
+        (
+            add_link_command,
+            {"id": "1234", "link": "http://www.demisto.com", "text": "demsito_link"},
+            RESPONSE_ADD_LINK,
+            EXPECTED_ADD_LINK_HR,
+            True,
+        ),
         (add_comment_command, {"id": "1234", "comment": "Nice work!"}, RESPONSE_ADD_COMMENT, EXPECTED_ADD_COMMENT_HR, True),
         (
             delete_record_command,
