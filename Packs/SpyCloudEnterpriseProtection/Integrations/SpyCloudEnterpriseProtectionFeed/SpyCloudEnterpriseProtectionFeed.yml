@@ -1,4 +1,9 @@
 category: Data Enrichment & Threat Intelligence
+sectionorder:
+  - Connect
+  - Collect
+  - Optimize
+  - Result
 commonfields:
   id: SpyCloudEnterpriseProtectionFeed
   version: -1
