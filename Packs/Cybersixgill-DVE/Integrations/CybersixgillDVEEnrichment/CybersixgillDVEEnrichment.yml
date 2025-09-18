@@ -28,7 +28,7 @@ script:
     - default: true
       isArray: true
       name: cve_id
-      description: 'cves id list.'
+      description: 'comma separated list of cves id.'
       required: true
     description: Returns information for each CVE in the input list.
     name: cybersixgill-cve-enrich

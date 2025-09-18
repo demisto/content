@@ -65,8 +65,6 @@ def stix_to_indicator(stix_obj):
 
 def cve_enrich_command(client: SixgillEnrichClient, args) -> List[CommandResults]:
     cve_ids = argToList(args.get("cve_id"))
-    if len(cve_ids) == 0:
-        raise ValueError("CVE_ID(s) not specified")
 
     command_results: List[CommandResults] = []
     final_data_list = []
