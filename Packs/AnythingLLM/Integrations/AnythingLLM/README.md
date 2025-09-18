@@ -499,9 +499,9 @@ The context data returned from a scan request is:
 
 | **Key** | **Value** |
 | --- | --- |
-| action | block or allow | 
+| action | block or allow |
 | category | malicious etc |
-| profile_id | ID of the AIRS profile used | 
+| profile_id | ID of the AIRS profile used |
 | profile_name | Name of the AIRS profile used |
 | prompt_detected | Details of a prompt detection - dictionary |
 | response_detected | Details of a response detection - dictionary |
