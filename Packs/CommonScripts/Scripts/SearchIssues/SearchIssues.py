@@ -31,7 +31,7 @@ SEARCH_SHA256_FIELDS = [
     "causality_actor_process_image_sha256",
     "action_process_image_sha256",
     "os_actor_process_image_sha256",
-    "action_file_macro_sha256"
+    "action_file_macro_sha256",
 ]
 
 

@@ -123,12 +123,9 @@ def test_prepare_sha256_custom_field_empty_list():
     assert "custom_filter" not in args
 
 
-@pytest.mark.parametrize("sha_values", [
-    ["abc123", "xyz456"]
-])
+@pytest.mark.parametrize("sha_values", [["abc123", "xyz456"]])
 def test_main_with_sha256_filter(monkeypatch, sha_values):
-
-    expected_custom_filter  = """{
+    expected_custom_filter = """{
   "OR": [
     {
       "AND": [
@@ -224,20 +221,19 @@ def test_main_with_sha256_filter(monkeypatch, sha_values):
 }"""
 
     # Mock demisto.args()
-    monkeypatch.setattr(SearchIssues.demisto, "args", lambda: {
-        "sha256": ",".join(sha_values),
-        "start_time": "2024-01-01",
-        "end_time": "2024-01-02"
-    })
+    monkeypatch.setattr(
+        SearchIssues.demisto,
+        "args",
+        lambda: {"sha256": ",".join(sha_values), "start_time": "2024-01-01", "end_time": "2024-01-02"},
+    )
 
     # Mock demisto.executeCommand()
     fake_response = {
         "EntryContext": {
-            "Core.Issue(val.internal_id && val.internal_id == obj.internal_id)": [
-                {"internal_id": "test123", "severity": "high"}
-            ]
+            "Core.Issue(val.internal_id && val.internal_id == obj.internal_id)": [{"internal_id": "test123", "severity": "high"}]
         },
-        "HumanReadable": "Sample Issue Result"
+        "HumanReadable": "Sample Issue Result",
+        'Type' : 1
     }
 
     execute_command_mock = MagicMock(return_value=[fake_response])
