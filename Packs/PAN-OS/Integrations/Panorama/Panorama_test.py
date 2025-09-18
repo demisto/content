@@ -8638,7 +8638,7 @@ class TestDynamicUpdateCommands:
         assert returned_commandresults.outputs == expected_returned_output
         assert returned_commandresults.readable_output == expected_returned_readable
 
-    def test_panorama_check_latest_dynamic_update_panorama_instance(self, mocker):
+    def test_panorama_check_latest_dynamic_update_panorama_instance(self):
         """
         Given:
             - A panorama instance (VSYS instance parameter is set to '').
@@ -8656,11 +8656,9 @@ class TestDynamicUpdateCommands:
 
         # VSYS global variable is set to '' by default, which means we are simulating a run from a Panorama instance.
 
-        mocker.patch("Panorama.panorama_check_latest_dynamic_update_content", return_value={})
-
         with pytest.raises(DemistoException) as e:
             panorama_check_latest_dynamic_update_command({"target": ""})
-            assert "When running from a Panorama instance, you must specify the target argument." in str(e.value)
+        assert "When running from a Panorama instance, you must specify the target argument." in str(e.value)
 
     def test_panorama_check_latest_dynamic_update_command_empty_response(self, mocker):
         """
