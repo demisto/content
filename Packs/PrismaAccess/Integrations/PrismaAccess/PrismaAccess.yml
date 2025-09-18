@@ -106,3 +106,8 @@ script:
 fromversion: 5.0.0
 tests:
 - No tests (auto formatted)
+supportedModules:
+- agentix
+- cloud
+- cloud_posture
+- xsiam

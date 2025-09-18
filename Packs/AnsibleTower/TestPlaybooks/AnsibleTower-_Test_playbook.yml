@@ -121,21 +121,20 @@ inputs:
     simple: "5"
   required: false
   description: Job template to launch
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: credentials_id
   value:
     simple: "1"
   required: false
-  description: 'Credentials that allows Tower to access the nodes this job will be
-    run against '
-  playbookInputQuery: null
+  description: 'Credentials that allows Tower to access the nodes this job will be run against '
+  playbookInputQuery:
 - key: inventory_id
   value:
     simple: "1"
   required: false
   description: Inventory containing the hosts you want this job to manage
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
 fromversion: 5.0.0
 marketplaces:
-  - xsoar
+- xsoar

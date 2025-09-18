@@ -1,6 +1,6 @@
 {
     "name": "PassiveTotal",
-    "description": "Analyze and understand threat infrastructure from a variety of sources–passive DNS, active DNS, WHOIS, SSL certificates and more–without devoting resources to time-intensive manual threat research and analysis",
+    "description": "Analyze and understand threat infrastructure from a variety of sources\u2013passive DNS, active DNS, WHOIS, SSL certificates and more\u2013without devoting resources to time-intensive manual threat research and analysis",
     "support": "community",
     "currentVersion": "2.1.21",
     "author": "RiskIQ",
@@ -25,6 +25,7 @@
         "X3",
         "X5",
         "ENT_PLUS",
-        "agentix"
+        "agentix",
+        "xsiam"
     ]
 }

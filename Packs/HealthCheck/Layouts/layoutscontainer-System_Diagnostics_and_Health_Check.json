@@ -409,7 +409,7 @@
             {
                 "hidden": false,
                 "id": "nowlmpv4ir",
-                "name": "Custom Content \u0026 Packs",
+                "name": "Custom Content & Packs",
                 "sections": [
                     {
                         "displayType": "ROW",
@@ -1049,5 +1049,7 @@
     "version": -1,
     "fromVersion": "6.0.0",
     "description": "",
-    "marketplaces": ["xsoar"]
+    "marketplaces": [
+        "xsoar"
+    ]
 }

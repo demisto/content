@@ -36,7 +36,7 @@
     "validationRegex": "",
     "version": -1,
     "fromVersion": "5.0.0",
-	"marketplaces": [
-		"xsoar"
-	]
+    "marketplaces": [
+        "xsoar"
+    ]
 }

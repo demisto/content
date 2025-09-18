@@ -25,5 +25,10 @@
         "marketplacev2",
         "xpanse",
         "platform"
+    ],
+    "supportedModules": [
+        "exposure_management",
+        "edr",
+        "xsiam"
     ]
 }

@@ -4301,7 +4301,7 @@ script:
       hidden: true
     polling: true
     name: core-block-ip
-    description: Block malicious or suspicious IP addresses.  
+    description: Block malicious or suspicious IP addresses.
     outputs:
     - contextPath: Core.ip_block_results
       description: List of Dictionaries, each containing ip_address, end_point, and reason (status and error message).
@@ -4315,12 +4315,3 @@ tests:
 - No tests
 supportsquickactions: true
 fromversion: 6.2.0
-supportedModules:
-- C3
-- X0
-- X1
-- X3
-- X5
-- ENT_PLUS
-- asm
-- exposure_management

@@ -1241,11 +1241,11 @@ script:
     description: Revoke a user's Zoom SSO session. Use the zoom-list-users command to get the user ID or user email.
     execution: true
     arguments:
-      - name: user_id
-        description: Email or unique identifier of the user.
-        required: true
-        type: string
-    outputs: [ ]
+    - name: user_id
+      description: Email or unique identifier of the user.
+      required: true
+      type: string
+    outputs: []
   - name: send-notification
     description: Send a message using a chatbot app.
     arguments:
@@ -1309,9 +1309,3 @@ script:
 fromversion: 5.0.0
 tests:
 - No tests (auto formatted)
-supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
-- agentix

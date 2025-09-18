@@ -71,8 +71,7 @@ tasks:
       id: f4d879d4-6e75-4a88-8843-690ab682538f
       version: -1
       name: Predict Tag1 (from_scratch)
-      description: Predict text label using a pre-trained machine learning phishing
-        model, and get the most important words used in the classification decision.
+      description: Predict text label using a pre-trained machine learning phishing model, and get the most important words used in the classification decision.
       scriptName: DBotPredictPhishingWords
       type: regular
       iscommand: false
@@ -82,9 +81,7 @@ tasks:
       - "15"
     scriptarguments:
       emailSubject:
-        simple: closed church squeamish squeamish moaning closed closed closed church
-          squeamish squeamish moaning closed closed closed church squeamish squeamish
-          moaning closed closed
+        simple: closed church squeamish squeamish moaning closed closed closed church squeamish squeamish moaning closed closed closed church squeamish squeamish moaning closed closed
       labelProbabilityThreshold:
         simple: "0"
       minTextLength:
@@ -314,8 +311,7 @@ tasks:
       id: 0c4048de-7da9-48cb-8159-a7799c832064
       version: -1
       name: Predict Tag2 (from_scratch)
-      description: Predict text label using a pre-trained machine learning phishing
-        model, and get the most important words used in the classification decision.
+      description: Predict text label using a pre-trained machine learning phishing model, and get the most important words used in the classification decision.
       scriptName: DBotPredictPhishingWords
       type: regular
       iscommand: false
@@ -325,9 +321,7 @@ tasks:
       - "16"
     scriptarguments:
       emailSubject:
-        simple: ntidy boy substance faulty waves type boat argument ntidy boy substance
-          faulty waves type boat argument ntidy boy substance faulty waves type boat
-          argument
+        simple: ntidy boy substance faulty waves type boat argument ntidy boy substance faulty waves type boat argument ntidy boy substance faulty waves type boat argument
       labelProbabilityThreshold:
         simple: "0"
       minTextLength:
@@ -420,8 +414,7 @@ tasks:
       id: 2fdcf3a1-6ad2-4cef-8d20-d8d7a0bbf064
       version: -1
       name: build phishing classifier from_scratch
-      description: Create a phishing classifier using machine learning technique,
-        based on email content.
+      description: Create a phishing classifier using machine learning technique, based on email content.
       scriptName: DBotBuildPhishingClassifier
       type: regular
       iscommand: false
@@ -469,8 +462,7 @@ tasks:
       id: 40ac4c76-92c1-40b6-87e0-34ba27d16a12
       version: -1
       name: build phishing classifier fine_tuning
-      description: Create a phishing classifier using machine learning technique,
-        based on email content.
+      description: Create a phishing classifier using machine learning technique, based on email content.
       scriptName: DBotBuildPhishingClassifier
       type: regular
       iscommand: false
@@ -589,8 +581,7 @@ tasks:
       id: 82f7162c-19a4-4f32-8633-2e7ed35a5d17
       version: -1
       name: Predict Tag2 (fine_tune)
-      description: Predict text label using a pre-trained machine learning phishing
-        model, and get the most important words used in the classification decision.
+      description: Predict text label using a pre-trained machine learning phishing model, and get the most important words used in the classification decision.
       scriptName: DBotPredictPhishingWords
       type: regular
       iscommand: false
@@ -600,9 +591,7 @@ tasks:
       - "29"
     scriptarguments:
       emailSubject:
-        simple: ntidy boy substance faulty waves type boat argument ntidy boy substance
-          faulty waves type boat argument ntidy boy substance faulty waves type boat
-          argument
+        simple: ntidy boy substance faulty waves type boat argument ntidy boy substance faulty waves type boat argument ntidy boy substance faulty waves type boat argument
       labelProbabilityThreshold:
         simple: "0"
       minTextLength:
@@ -670,8 +659,7 @@ tasks:
       id: 4ff7b196-9fb0-45ad-8fc5-35f93039ac4e
       version: -1
       name: Predict Tag1 (fine_tune)
-      description: Predict text label using a pre-trained machine learning phishing
-        model, and get the most important words used in the classification decision.
+      description: Predict text label using a pre-trained machine learning phishing model, and get the most important words used in the classification decision.
       scriptName: DBotPredictPhishingWords
       type: regular
       iscommand: false
@@ -681,9 +669,7 @@ tasks:
       - "26"
     scriptarguments:
       emailSubject:
-        simple: closed church squeamish squeamish moaning closed closed closed church
-          squeamish squeamish moaning closed closed closed church squeamish squeamish
-          moaning closed closed
+        simple: closed church squeamish squeamish moaning closed closed closed church squeamish squeamish moaning closed closed closed church squeamish squeamish moaning closed closed
       labelProbabilityThreshold:
         simple: "0"
       minTextLength:
@@ -740,8 +726,7 @@ tasks:
       id: 2073fbc1-34df-4a76-8ba8-ffeb641f30c1
       version: -1
       name: Load evaluation docker
-      description: Finds a threshold for ML model, and performs an evaluation based
-        on it
+      description: Finds a threshold for ML model, and performs an evaluation based on it
       scriptName: GetMLModelEvaluation
       type: regular
       iscommand: false

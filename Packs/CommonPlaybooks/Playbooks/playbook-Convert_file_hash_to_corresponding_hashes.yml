@@ -846,9 +846,3 @@ outputs:
   description: Output for detected hashes.
 tests:
 - Test Convert file hash to corresponding hashes
-supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
-- agentix

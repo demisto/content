@@ -197,8 +197,7 @@ tasks:
       id: 4dbc18f2-3905-4773-81ad-6fc103bc2705
       version: -1
       name: Print user credential report
-      description: Outputs user's credential report which contains access key attributes
-        and  user login profile
+      description: Outputs user's credential report which contains access key attributes and  user login profile
       scriptName: Print
       type: regular
       iscommand: false
@@ -237,8 +236,7 @@ tasks:
       id: a171957c-457e-4879-81a8-d964e4755796
       version: -1
       name: List user access keys
-      description: Returns information about the access key IDs associated with the
-        specified IAM user.
+      description: Returns information about the access key IDs associated with the specified IAM user.
       script: '|||aws-iam-list-access-keys-for-user'
       type: regular
       iscommand: true
@@ -280,8 +278,7 @@ tasks:
       id: 5f088cbd-ac91-4bc4-8e79-d8f7173e5869
       version: -1
       name: Reset IAM password
-      description: Changes the password for the specified IAM user and requires user
-        to change password.
+      description: Changes the password for the specified IAM user and requires user to change password.
       script: '|||aws-iam-update-login-profile'
       type: regular
       iscommand: true
@@ -431,14 +428,14 @@ tasks:
     timertriggers: []
     ignoreworker: false
     message:
-      to: null
-      subject: null
+      to:
+      subject:
       body:
         simple: Quarantine IAM user?
       methods: []
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -522,11 +519,5 @@ inputs:
     - no: an analyst will be prompted for action
 outputs: []
 tests:
-  - No test
+- No test
 fromversion: 5.0.0
-supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
-- agentix

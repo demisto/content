@@ -5,7 +5,7 @@ description: |-
   This playbook handles incidents related to dozens of Prisma Cloud public VM alerts.
   It determines the severity of the ingested alert based on data returned from Cortex XSOAR commands interacting with the Prisma Cloud API and creates new issues in either Slack or Jira, with all of the relevant information.
   The playbook updates the Cortex XSOAR incident’s layout with information the analyst can use to investigate the alert. It also extracts and enriches indicators using existing configured integrations and then closes the investigation.
-  
+
   The flow of this playbook is as following:
   1) Check the CSP type.
   2) Check whether there's a public IP associated to the instance. In case there is, it will continue to other steps, if not, it will set the severity of the incident to "Low" and will close the incident.
@@ -18,7 +18,7 @@ description: |-
     - Critical - Public IP was found and both of the other checks returned results.
   6) Notifications and ticketing with 3rd party systems.
   7) Close the incident.
-  
+
   This playbook will run when a new incident is created with the **Prisma Cloud - VM Alert Prioritization** incident type which also includes a dedicated layout.
 starttaskid: "0"
 tasks:
@@ -1511,9 +1511,3 @@ outputs: []
 tests:
 - No tests (auto formatted)
 fromversion: 6.8.0
-supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
-- agentix

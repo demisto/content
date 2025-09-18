@@ -1,8 +1,8 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-		"CrowdStrike Falcon Detection"
-	],
+        "CrowdStrike Falcon Detection"
+    ],
     "caseInsensitive": true,
     "cliName": "crowdstrikefalconbehaviourpatterndispositiondetails",
     "closeForm": false,

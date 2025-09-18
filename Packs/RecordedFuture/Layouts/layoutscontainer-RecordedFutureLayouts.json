@@ -313,5 +313,7 @@
     "version": -1,
     "fromVersion": "6.0.0",
     "description": "Deprecated. Custom layout for Recorded Future Incident type.",
-    "marketplaces": ["xsoar"]
+    "marketplaces": [
+        "xsoar"
+    ]
 }

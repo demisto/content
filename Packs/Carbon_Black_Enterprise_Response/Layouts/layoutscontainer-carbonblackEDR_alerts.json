@@ -1136,5 +1136,7 @@
     "system": false,
     "version": -1,
     "description": "",
-    "marketplaces": ["xsoar"]
+    "marketplaces": [
+        "xsoar"
+    ]
 }

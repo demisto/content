@@ -77,9 +77,7 @@
                         },
                         "type": "above"
                     },
-                    "tableColumns": [
-
-                    ]
+                    "tableColumns": []
                 },
                 "size": 0,
                 "category": ""
@@ -246,9 +244,7 @@
                         },
                         "type": "above"
                     },
-                    "tableColumns": [
-
-                    ]
+                    "tableColumns": []
                 },
                 "size": 0,
                 "category": ""

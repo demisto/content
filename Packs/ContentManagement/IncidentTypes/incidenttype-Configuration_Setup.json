@@ -7,9 +7,7 @@
     "detached": false,
     "disabled": false,
     "extractSettings": {
-        "fieldCliNameToExtractSettings": {
-
-        },
+        "fieldCliNameToExtractSettings": {},
         "mode": "Specific"
     },
     "hours": 0,
@@ -27,5 +25,7 @@
     "weeks": 0,
     "weeksR": 0,
     "fromVersion": "5.0.0",
-    "marketplaces": ["xsoar"]
+    "marketplaces": [
+        "xsoar"
+    ]
 }

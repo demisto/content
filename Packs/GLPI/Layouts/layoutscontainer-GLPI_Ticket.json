@@ -810,5 +810,7 @@
     "version": -1,
     "fromVersion": "6.2.0",
     "description": "GLPI Ticket Layout",
-    "marketplaces": ["xsoar"]
+    "marketplaces": [
+        "xsoar"
+    ]
 }

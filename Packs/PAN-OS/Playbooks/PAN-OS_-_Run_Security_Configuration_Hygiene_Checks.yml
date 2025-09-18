@@ -30,7 +30,7 @@ inputs:
 
     When connected to Panorama, leaving this blank will run the checks against Panorama configuration as well as all currently connected managed firewalls.
   key: targetDevice
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
 name: PAN-OS - Run Security Configuration Hygiene Checks
@@ -42,14 +42,10 @@ outputSections:
   - PANOS.ConfigurationHygiene.Result
 outputs:
 - contextPath: PANOS.ConfigurationHygiene.Summary
-  description: A list of hygiene check summaries (constructed as dictionaries) describing
-    the overall result of hygiene checks and how many issues of each type were found,
-    if any.
+  description: A list of hygiene check summaries (constructed as dictionaries) describing the overall result of hygiene checks and how many issues of each type were found, if any.
   type: unknown
 - contextPath: PANOS.ConfigurationHygiene.Result
-  description: A list of hygiene check results (constructed as dictionaries) including
-    a description of the issue found, the configuration location (container name),
-    and the name of the object affected by the issue.
+  description: A list of hygiene check results (constructed as dictionaries) including a description of the issue found, the configuration location (container name), and the name of the object affected by the issue.
   type: unknown
 starttaskid: "0"
 tasks:
@@ -101,8 +97,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Checks that at least one log forwarding profile is configured according
-        to best practices.
+      description: Checks that at least one log forwarding profile is configured according to best practices.
       id: a1a350a4-fee2-4577-a09d-5cd8ddcbf7a9
       iscommand: true
       name: Check Log Forwarding
@@ -209,8 +204,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Checks the configured anti-spyware profiles to ensure at least
-        one meets best practices.
+      description: Checks the configured anti-spyware profiles to ensure at least one meets best practices.
       id: da4a28ec-6f5a-4daf-a1ec-f5abd92fcf9e
       iscommand: true
       name: Check Spyware Profiles
@@ -247,8 +241,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Checks the configured URL filtering profiles to ensure at least
-        one meets best practices.
+      description: Checks the configured URL filtering profiles to ensure at least one meets best practices.
       id: cfe7ecd9-26d7-4b73-ade4-26216c0ca5c4
       iscommand: true
       name: Check URL Filtering Profiles
@@ -285,8 +278,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Checks the configured vulnerability profiles to ensure at least
-        one meets best practices.
+      description: Checks the configured vulnerability profiles to ensure at least one meets best practices.
       id: ecfe90f2-1b42-4212-9943-4d84df7e993b
       iscommand: true
       name: Check Vulnerability Profiles
@@ -512,8 +504,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Prints an error entry for no active Panorama integration instances
-        found.
+      description: Prints an error entry for no active Panorama integration instances found.
       id: a5e72e6f-8c87-44f2-869c-3dfa3c639331
       iscommand: false
       name: No active Panorama Integration instance
@@ -551,5 +542,6 @@ view: |-
 fromversion: 6.10.0
 supportedModules:
 - agentix
+- xsiam
 marketplaces:
 - platform

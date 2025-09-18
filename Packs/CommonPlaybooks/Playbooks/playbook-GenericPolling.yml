@@ -307,9 +307,11 @@ tests:
 contentitemexportablefields:
   contentitemfields: {}
 supportedModules:
-- X0
+- agentix
+- ENT_PLUS
+- X5
 - X1
 - X3
-- X5
-- ENT_PLUS
-- agentix
+- cloud
+- X0
+- xsiam
