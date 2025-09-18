@@ -61,3 +61,75 @@ def test_prepare_start_end_time_preserves_existing_args():
     assert args["end_time"] == "2023-01-01T12:00:00"
     assert args["existing_param"] == "existing_value"
     assert args["another_param"] == 123
+
+
+def test_create_sha_search_field_query_single_value():
+    result = create_sha_search_field_query("actor_process_image_sha256", EQ, ["abc123"])
+    expected = {
+        "AND": [{
+            "OR": [
+                {
+                    "SEARCH_FIELD": "actor_process_image_sha256",
+                    "SEARCH_TYPE": "EQ",
+                    "SEARCH_VALUE": "abc123"
+                }
+            ]
+        }]
+    }
+    assert result == expected
+
+
+def test_create_sha_search_field_query_multiple_values():
+    result = create_sha_search_field_query("actor_process_image_sha256", EQ, ["abc123", "def456"])
+    expected = {
+        "AND": [{
+            "OR": [
+                {
+                    "SEARCH_FIELD": "actor_process_image_sha256",
+                    "SEARCH_TYPE": "EQ",
+                    "SEARCH_VALUE": "abc123"
+                },
+                {
+                    "SEARCH_FIELD": "actor_process_image_sha256",
+                    "SEARCH_TYPE": "EQ",
+                    "SEARCH_VALUE": "def456"
+                }
+            ]
+        }]
+    }
+
+
+def test_create_sha_search_field_query_empty_list():
+    result = create_sha_search_field_query("actor_process_image_sha256", EQ, [])
+    assert result is None
+
+
+def test_prepare_sha256_custom_field_populates_custom_filter():
+    args = {"sha256": ["hash1", "hash2"]}
+    prepare_sha256_custom_field(args)
+    assert "custom_filter" in args
+    filter_obj = json.loads(args["custom_filter"])
+    assert "OR" in filter_obj
+    # Should contain queries for 2 equal fields + 3 contains fields = 5 queries
+    assert len(filter_obj["OR"]) == 5
+
+
+def test_prepare_sha256_custom_field_empty_input():
+    args = {"sha256": None}
+    result = prepare_sha256_custom_field(args)
+    assert result is None
+    assert "custom_filter" not in args
+
+
+def test_prepare_sha256_custom_field_single_value_str():
+    args = {"sha256": "onlyonehash"}
+    prepare_sha256_custom_field(args)
+    assert "custom_filter" in args
+    filter_obj = json.loads(args["custom_filter"])
+    assert len(filter_obj["OR"]) == 5
+
+
+def test_prepare_sha256_custom_field_empty_list():
+    args = {"sha256": ""}
+    prepare_sha256_custom_field(args)
+    assert "custom_filter" not in args

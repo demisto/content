@@ -86,23 +86,9 @@ def prepare_start_end_time(args: dict):
         args["end_time"] = end_time
 
 
-class AlertFilterArg:
-    def __init__(self, search_field: str, search_type: str, arg_type: str, option_mapper: dict = {}):
-        self.search_field: str = search_field
-        self.search_type: str = search_type
-        self.arg_type: str = arg_type
-        self.option_mapper: dict = option_mapper
-
-    def get_search_value(self, value: str) -> str:
-        """Returns the value based on option mapping or original value."""
-        if self.option_mapper:
-            return self.option_mapper.get(value, value)
-
-        return value
-
-
-def create_sha_search_field_query(sha_search_field, search_type, sha_list) -> dict:
-    """ """
+def create_sha_search_field_query(sha_search_field, search_type, sha_list) -> Optional[dict]:
+    if not sha_list:
+        return None
     or_operator_list = []
     for sha in sha_list:
         or_operator_list.append({"SEARCH_FIELD": sha_search_field, "SEARCH_TYPE": search_type, "SEARCH_VALUE": sha})
@@ -114,7 +100,7 @@ def prepare_sha256_custom_field(args: dict):
     given a list of values, builds a query of this form:
 
     """
-    sha256 = argToList(args.get("sha256"))
+    sha256 = argToList(args.pop("sha256", ""))
     if not sha256:
         return
     or_operator_list: list[dict] = []
