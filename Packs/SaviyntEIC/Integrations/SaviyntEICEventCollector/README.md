@@ -32,7 +32,7 @@ Gets events from Saviynt EIC.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| should_push_events | If true, the command will create events, otherwise it will only display them. Possible values are: true, false. Default is false. | Required |
+| should_push_events | If true, the command creates events, otherwise, it only displays them. Possible values are: true, false. Default is false. | Required |
 | limit | Maximum number of results to return (max 10000). | Required |
 | time_frame | Time frame in minutes back from now to query. | Optional |
 | offset | Offset for paging. | Optional |
