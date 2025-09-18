@@ -196,6 +196,11 @@ def fetch_events(client: Client, limit: int, look_back: int, last_run: dict) -> 
         previous_id_timestamps = last_run["last_fetched_id_timestamps"]
         cached_ids_for_dedup = list(previous_id_timestamps.keys())
         demisto.debug(f"Using new timestamped format with {len(cached_ids_for_dedup)} cached IDs")
+        
+        # Log progression point for lookback analysis
+        prev_date = last_run.get("prev_date")
+        if prev_date:
+            demisto.debug(f"LOOKBACK ANALYSIS: Current progression point is {prev_date}")
     elif "last_fetched_ids" in last_run:
         # Legacy format: use old IDs as-is for this cycle, no timestamps available
         previous_id_timestamps = {}
@@ -209,7 +214,7 @@ def fetch_events(client: Client, limit: int, look_back: int, last_run: dict) -> 
     
     # Fetch events in batches with deduplication
     all_events, updated_dedup_cache = _fetch_events_batch(
-        client, limit, last_fetched_creation_date, cached_ids_for_dedup, previous_id_timestamps
+        client, limit, last_fetched_creation_date, previous_id_timestamps
     )
     
     # Build next_run with filtered deduplication cache
@@ -224,7 +229,7 @@ def fetch_events(client: Client, limit: int, look_back: int, last_run: dict) -> 
 
 
 def _fetch_events_batch(
-    client: Client, limit: int, from_date: str, cached_ids: list, previous_id_timestamps: dict = None
+    client: Client, limit: int, from_date: str, previous_id_timestamps: dict = None
 ) -> tuple[List[Dict], dict]:
     """
     Fetches events in batches with deduplication until limit is reached or no more events.
@@ -233,7 +238,6 @@ def _fetch_events_batch(
         client: API client for fetching events
         limit: Maximum number of events to fetch total
         from_date: Start date for fetching events
-        cached_ids: List of cached event IDs for deduplication
         previous_id_timestamps: Dict of previous event IDs to timestamps (for merging)
         
     Returns:
@@ -270,7 +274,7 @@ def _fetch_events_batch(
             should_break_after_processing = False
         
         events_before_dedup = len(events)
-        events = dedup_events(events, dedup_cache)
+        events = dedup_events(events, dedup_cache.keys(), last_run.get("prev_date"))
         demisto.debug(f"After dedup: {events_before_dedup} -> {len(events)} events.")
         
         if events:
@@ -374,7 +378,7 @@ def _filter_dedup_cache(id_timestamps: dict, most_recent_timestamp: str, look_ba
     return id_timestamps
 
 
-def dedup_events(events: List[Dict], last_fetched_ids: list) -> List[Dict]:
+def dedup_events(events: List[Dict], last_fetched_ids: list, prev_date: str = None) -> List[Dict]:
     """
     Dedupes the events fetched based on the last fetched ids and creation date.
     This process is based on the assumption that the events are sorted by creation date.
@@ -392,8 +396,42 @@ def dedup_events(events: List[Dict], last_fetched_ids: list) -> List[Dict]:
     demisto.debug(f"Starting deduping. Events before: {len(events)}, cached ids: {len(last_fetched_ids)}")
 
     last_fetched_ids_set = set(last_fetched_ids)
-    deduped_events = [event for event in events if event["id"] not in last_fetched_ids_set]
-
+    deduped_events = []
+    filtered_ids = []
+    kept_ids = []
+    
+    for event in events:
+        if event["id"] not in last_fetched_ids_set:
+            deduped_events.append(event)
+            kept_ids.append(event["id"])
+        else:
+            filtered_ids.append(event["id"])
+    
+    if filtered_ids:
+        demisto.debug(f"Filtered out {len(filtered_ids)} duplicate event IDs: {filtered_ids}")
+    
+    if kept_ids:
+        demisto.debug(f"Kept {len(kept_ids)} new event IDs: {kept_ids}")
+        # Log timestamps to analyze lookback necessity
+        event_timestamps = [event["created"] for event in deduped_events]
+        if event_timestamps:
+            demisto.debug(f"Event timestamps range: {min(event_timestamps)} to {max(event_timestamps)}")
+            
+            # Check if any events would be missed without lookback
+            if prev_date:
+                prev_datetime = arg_to_datetime(prev_date, required=True)
+                lookback_rescued_events = []
+                for event in deduped_events:
+                    event_datetime = arg_to_datetime(event["created"], required=True)
+                    if event_datetime < prev_datetime:  # Event older than progression point
+                        lookback_rescued_events.append(event["id"])
+                
+                if lookback_rescued_events:
+                    demisto.debug(f"🔍 LOOKBACK RESCUED: {len(lookback_rescued_events)} events would be "
+                                f"MISSED without lookback: {lookback_rescued_events}")
+                else:
+                    demisto.debug("✅ LOOKBACK NOT NEEDED: All events are newer than progression point")
+    
     demisto.debug(f"Done deduping. Number of events after deduping: {len(deduped_events)}")
     return deduped_events
 
