@@ -35,7 +35,7 @@ class Status(Enum):
 
 class IndicatorStatus(Enum):
     """Enum for indicator status.
-    - FRESH: If the indicator modifiedTime is within the freshness window (default is 1 week).
+    - FRESH: If the indicator modifiedTime is within the freshness window (default is one week).
     - STALE: If the indicator modifiedTime is outside the freshness window.
     - MANUAL: If the indicator was manually added.
     """
@@ -1201,7 +1201,7 @@ def remove_empty_elements_with_exceptions(d, exceptions: set[str] | None = None)
 
     def empty(k, v) -> bool:
         """Check if a value is considered empty, unless the key is in exceptions."""
-        if isinstance(v, (dict, list)):
+        if isinstance(v, dict | list):
             return not v  # empty dict or list
         return v is None and (k not in exceptions if exceptions else True)
 

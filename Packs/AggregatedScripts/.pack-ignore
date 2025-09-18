@@ -6,3 +6,6 @@ ignore=SC101
 
 [file:DomainEnrichment.yml]
 ignore=BA127
+
+[file:IPEnrichment.yml]
+ignore=BA127

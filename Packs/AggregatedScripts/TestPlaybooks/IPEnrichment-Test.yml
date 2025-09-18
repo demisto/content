@@ -1,0 +1,2683 @@
+id: IPEnrichment-Test
+version: -1
+vcShouldKeepItemLegacyProdMachine: false
+name: IPEnrichment-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 6b888dd8-618c-4bed-8fa6-454211e665f8
+    type: start
+    task:
+      id: 6b888dd8-618c-4bed-8fa6-454211e665f8
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1022.5,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 4b477aba-0838-477f-8a0e-933a842890d2
+    type: regular
+    task:
+      id: 4b477aba-0838-477f-8a0e-933a842890d2
+      version: -1
+      name: DeleteContext
+      description: "Delete field from context.\n\nThis automation runs using the default
+        Limited User role, unless you explicitly change the permissions.\nFor more
+        information, see the section about permissions here:\n- For Cortex XSOAR 6
+        see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
+        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "36"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1022.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 9116c873-3cec-435c-88b9-b7161d629485
+    type: regular
+    task:
+      id: 9116c873-3cec-435c-88b9-b7161d629485
+      version: -1
+      name: Run ip enrichment script
+      description: This script gathers ip reputation data from multiple integrations
+        and returns an ip entity with consolidated information to the context.
+      scriptName: ip-enrichment
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+      - "13"
+      - "14"
+      - "15"
+      - "60"
+    scriptarguments:
+      additional_fields:
+        simple: "false"
+      external_enrichment:
+        simple: "false"
+      ip_list:
+        simple: ${CrowdStrike.Device.[0].ExternalIP}
+      verbose:
+        simple: "false"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1022.5,
+          "y": 880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: d1e059ec-e986-420f-88b7-a27d8de5e20c
+    type: condition
+    task:
+      id: d1e059ec-e986-420f-88b7-a27d8de5e20c
+      version: -1
+      name: Virus Total Indicator Exists
+      description: Make sure the Virus Total indicator returned from tim
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: IPEnrichment
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: IPEnrichment.Value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: CrowdStrike.Device.[0].ExternalIP
+                      iscontext: true
+                accessor: Results.Brand
+            iscontext: true
+          right:
+            value:
+              simple: VirusTotal (API v3)
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: f2d6e10c-ee07-4e97-8b54-e74e73538285
+    type: title
+    task:
+      id: f2d6e10c-ee07-4e97-8b54-e74e73538285
+      version: -1
+      name: Case 2 - External Enrichment
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "51"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1115,
+          "y": 1560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 050ab55a-e481-4272-8669-0975bd5e80f5
+    type: title
+    task:
+      id: 050ab55a-e481-4272-8669-0975bd5e80f5
+      version: -1
+      name: Case 1 - Base
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1022.5,
+          "y": 210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 75649124-0a35-460a-8755-1349bae070ee
+    type: condition
+    task:
+      id: 75649124-0a35-460a-8755-1349bae070ee
+      version: -1
+      name: Endpoint Data Returned
+      description: Make sure Context output from wildfire
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: EndpointData.IPAddress
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: EndpointData.IPAddress
+                      iscontext: true
+                    right:
+                      value:
+                        simple: ${CrowdStrike.Device.[0].LocalIP}
+                      iscontext: true
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 0009428f-2133-4773-88b6-9e4695e4838d
+    type: condition
+    task:
+      id: 0009428f-2133-4773-88b6-9e4695e4838d
+      version: -1
+      name: Main Keys Exists
+      description: MaxScore And MaxVerdict enriched for https://google.com
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: IPEnrichment.Value
+            iscontext: true
+          right:
+            value:
+              simple: ${CrowdStrike.Device.[0].ExternalIP}
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: IPEnrichment
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: IPEnrichment.Value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: CrowdStrike.Device.[0].ExternalIP
+                      iscontext: true
+                accessor: MaxScore
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: IPEnrichment
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: IPEnrichment.Value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: CrowdStrike.Device.[0].ExternalIP
+                      iscontext: true
+                accessor: MaxVerdict
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: IPEnrichment.Status
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: IPEnrichment.TIMScore
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: bd979fee-5815-4e08-8727-60c3fc187e97
+    type: condition
+    task:
+      id: bd979fee-5815-4e08-8727-60c3fc187e97
+      version: -1
+      name: No additional fields
+      description: Additional fields empty
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotExists
+          left:
+            value:
+              simple: IPEnrichment.Results.AdditionalFields
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 1179cd52-becd-4360-8dcf-517835f3ffc7
+    type: title
+    task:
+      id: 1179cd52-becd-4360-8dcf-517835f3ffc7
+      version: -1
+      name: Case 3 - Brands No Internal
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "52"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1115,
+          "y": 2740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: 6bf9b7a0-81f1-4d3f-8c48-e1b9fc1ffdda
+    type: title
+    task:
+      id: 6bf9b7a0-81f1-4d3f-8c48-e1b9fc1ffdda
+      version: -1
+      name: Case 4 - External Enrichment + Additional Fields
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "59"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1237.5,
+          "y": 3580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: e90b36ff-a0e8-494a-89e9-df0e40882dde
+    type: title
+    task:
+      id: e90b36ff-a0e8-494a-89e9-df0e40882dde
+      version: -1
+      name: Case 5 Multiple Inputs
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "84"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1237.5,
+          "y": 4420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: a03bf198-44a5-4a50-80e1-b96613d490ba
+    type: regular
+    task:
+      id: a03bf198-44a5-4a50-80e1-b96613d490ba
+      version: -1
+      name: Get Endpoint IP Address
+      description: Gets the list of host group members.
+      script: '|||cs-falcon-list-host-group-members'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "88"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1022.5,
+          "y": 540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: 82d11bba-31c9-480a-85ea-ad6c5c128e32
+    type: regular
+    task:
+      id: 82d11bba-31c9-480a-85ea-ad6c5c128e32
+      version: -1
+      name: Run ip enrichment script
+      description: This script gathers ip reputation data from multiple integrations
+        and returns an ip entity with consolidated information to the context.
+      scriptName: ip-enrichment
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "40"
+      - "41"
+      - "43"
+      - "63"
+      - "67"
+    scriptarguments:
+      additional_fields:
+        simple: "false"
+      external_enrichment:
+        simple: "true"
+      ip_list:
+        simple: ${CrowdStrike.Device.[0].ExternalIP}
+      verbose:
+        simple: "false"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1115,
+          "y": 2060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: 7d5a8f6b-403d-4ddb-8fa2-c045b41ca581
+    type: regular
+    task:
+      id: 7d5a8f6b-403d-4ddb-8fa2-c045b41ca581
+      version: -1
+      name: Get Endpoint IP Address
+      description: Gets the list of host group members.
+      script: '|||cs-falcon-list-host-group-members'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1115,
+          "y": 1890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: 2c778274-9ecc-4c82-82b8-5899842865bf
+    type: condition
+    task:
+      id: 2c778274-9ecc-4c82-82b8-5899842865bf
+      version: -1
+      name: Both Indicator Exists
+      description: Make sure the Virus Total indicator returned from tim
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: IPEnrichment
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: IPEnrichment.Value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: CrowdStrike.Device.[0].ExternalIP
+                      iscontext: true
+                accessor: Results.Brand
+            iscontext: true
+          right:
+            value:
+              simple: VirusTotal (API v3)
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: IPEnrichment
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: IPEnrichment.Value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: CrowdStrike.Device.[0].ExternalIP
+                      iscontext: true
+                accessor: Results.Brand
+            iscontext: true
+          right:
+            value:
+              simple: AlienVault OTX v2
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 255,
+          "y": 2570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: 3279cad7-834b-4c1d-8f17-ab6d7e28311c
+    type: condition
+    task:
+      id: 3279cad7-834b-4c1d-8f17-ab6d7e28311c
+      version: -1
+      name: Endpoint Data Returned
+      description: Make sure Context output from wildfire
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: EndpointData.IPAddress
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: EndpointData.IPAddress
+                      iscontext: true
+                    right:
+                      value:
+                        simple: ${CrowdStrike.Device.[0].LocalIP}
+                      iscontext: true
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 685,
+          "y": 2570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: 2b744a32-1766-4541-8140-de2d8f1969a4
+    type: condition
+    task:
+      id: 2b744a32-1766-4541-8140-de2d8f1969a4
+      version: -1
+      name: No additional fields
+      description: Additional fields empty
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotExists
+          left:
+            value:
+              simple: IPEnrichment.Results.AdditionalFields
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1115,
+          "y": 2570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: 76b4540b-ad5e-4a17-8339-2f0309951716
+    type: regular
+    task:
+      id: 76b4540b-ad5e-4a17-8339-2f0309951716
+      version: -1
+      name: Run ip enrichment script
+      description: This script gathers ip reputation data from multiple integrations
+        and returns an ip entity with consolidated information to the context.
+      scriptName: ip-enrichment
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "48"
+      - "47"
+      - "50"
+      - "66"
+      - "68"
+    scriptarguments:
+      additional_fields:
+        simple: "false"
+      brands:
+        simple: VirusTotal (API v3)
+      external_enrichment:
+        simple: "false"
+      ip_list:
+        simple: ${CrowdStrike.Device.[0].ExternalIP}
+      verbose:
+        simple: "false"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1115,
+          "y": 3240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: a0030c5a-465c-455a-851c-0fa74cbcbafd
+    type: regular
+    task:
+      id: a0030c5a-465c-455a-851c-0fa74cbcbafd
+      version: -1
+      name: Get Endpoint IP Address
+      description: Gets the list of host group members.
+      script: '|||cs-falcon-list-host-group-members'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "45"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1115,
+          "y": 3070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "47":
+    id: "47"
+    taskid: b0b9702e-42d0-46c7-8de4-71bb3da80783
+    type: condition
+    task:
+      id: b0b9702e-42d0-46c7-8de4-71bb3da80783
+      version: -1
+      name: Virus Total Indicator Exists
+      description: Make sure the Virus Total indicator returned from tim
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "28"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: IPEnrichment
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: IPEnrichment.Value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: CrowdStrike.Device.[0].ExternalIP
+                      iscontext: true
+                accessor: Results.Brand
+            iscontext: true
+          right:
+            value:
+              simple: VirusTotal (API v3)
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 3410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "48":
+    id: "48"
+    taskid: 589a91fe-0c9a-49f1-8025-c571ada3a9e9
+    type: condition
+    task:
+      id: 589a91fe-0c9a-49f1-8025-c571ada3a9e9
+      version: -1
+      name: No Endpoint Data Returned
+      description: Make sure Context output from wildfire
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "28"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotExists
+          left:
+            value:
+              complex:
+                root: EndpointData.IPAddress
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: EndpointData.IPAddress
+                      iscontext: true
+                    right:
+                      value:
+                        simple: ${CrowdStrike.Device.[0].LocalIP}
+                      iscontext: true
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 3410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "50":
+    id: "50"
+    taskid: a934fe48-5d31-477b-877f-55387305c2d0
+    type: condition
+    task:
+      id: a934fe48-5d31-477b-877f-55387305c2d0
+      version: -1
+      name: No additional fields
+      description: Additional fields empty
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "28"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotExists
+          left:
+            value:
+              simple: IPEnrichment.Results.AdditionalFields
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1022.5,
+          "y": 3410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "51":
+    id: "51"
+    taskid: 25979c07-459a-4b11-8b57-d4084dc9c0ae
+    type: regular
+    task:
+      id: 25979c07-459a-4b11-8b57-d4084dc9c0ae
+      version: -1
+      name: DeleteContext
+      description: "Delete field from context.\n\nThis automation runs using the default
+        Limited User role, unless you explicitly change the permissions.\nFor more
+        information, see the section about permissions here:\n- For Cortex XSOAR 6
+        see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
+        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1115,
+          "y": 1720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "52":
+    id: "52"
+    taskid: 67b71793-0fba-488d-8331-457cecb7aaa5
+    type: regular
+    task:
+      id: 67b71793-0fba-488d-8331-457cecb7aaa5
+      version: -1
+      name: DeleteContext
+      description: "Delete field from context.\n\nThis automation runs using the default
+        Limited User role, unless you explicitly change the permissions.\nFor more
+        information, see the section about permissions here:\n- For Cortex XSOAR 6
+        see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
+        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "46"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1115,
+          "y": 2900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "53":
+    id: "53"
+    taskid: 6c0fc52c-c305-4717-849b-e7c08e527d3e
+    type: regular
+    task:
+      id: 6c0fc52c-c305-4717-849b-e7c08e527d3e
+      version: -1
+      name: Run ip enrichment script
+      description: This script gathers ip reputation data from multiple integrations
+        and returns an ip entity with consolidated information to the context.
+      scriptName: ip-enrichment
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "56"
+      - "55"
+      - "58"
+      - "69"
+    scriptarguments:
+      additional_fields:
+        simple: "true"
+      external_enrichment:
+        simple: "true"
+      ip_list:
+        simple: ${CrowdStrike.Device.[0].ExternalIP}
+      verbose:
+        simple: "false"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1237.5,
+          "y": 4080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "54":
+    id: "54"
+    taskid: cafc66ab-267d-4e3d-8d33-2ad7ae87b4cb
+    type: regular
+    task:
+      id: cafc66ab-267d-4e3d-8d33-2ad7ae87b4cb
+      version: -1
+      name: Get Endpoint IP Address
+      description: Gets the list of host group members.
+      script: '|||cs-falcon-list-host-group-members'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "53"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1237.5,
+          "y": 3910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "55":
+    id: "55"
+    taskid: 168c0c52-8de5-4721-8027-efb5c60ea9ec
+    type: condition
+    task:
+      id: 168c0c52-8de5-4721-8027-efb5c60ea9ec
+      version: -1
+      name: Virus Total Indicator Exists
+      description: Make sure the Virus Total indicator returned from tim
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "35"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: IPEnrichment
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: IPEnrichment.Value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: CrowdStrike.Device.[0].ExternalIP
+                      iscontext: true
+                accessor: Results.Brand
+            iscontext: true
+          right:
+            value:
+              simple: VirusTotal (API v3)
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 807.5,
+          "y": 4250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "56":
+    id: "56"
+    taskid: 3269ccaf-a0be-4f43-8038-1228d8815c01
+    type: condition
+    task:
+      id: 3269ccaf-a0be-4f43-8038-1228d8815c01
+      version: -1
+      name: Endpoint Data Returned
+      description: Make sure Context output from wildfire
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "35"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: EndpointData.IPAddress
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: EndpointData.IPAddress
+                      iscontext: true
+                    right:
+                      value:
+                        simple: ${CrowdStrike.Device.[0].LocalIP}
+                      iscontext: true
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 4250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "58":
+    id: "58"
+    taskid: b7054204-8e62-4292-848a-51b763a91d40
+    type: condition
+    task:
+      id: b7054204-8e62-4292-848a-51b763a91d40
+      version: -1
+      name: additional fields Exists
+      description: Additional fields empty
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "35"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: IPEnrichment.Results.AdditionalFields
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1237.5,
+          "y": 4250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "59":
+    id: "59"
+    taskid: 2c5dad2a-1e34-4ae0-8eef-7dfbced60aff
+    type: regular
+    task:
+      id: 2c5dad2a-1e34-4ae0-8eef-7dfbced60aff
+      version: -1
+      name: DeleteContext
+      description: "Delete field from context.\n\nThis automation runs using the default
+        Limited User role, unless you explicitly change the permissions.\nFor more
+        information, see the section about permissions here:\n- For Cortex XSOAR 6
+        see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
+        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "54"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1237.5,
+          "y": 3740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "60":
+    id: "60"
+    taskid: ab743ce7-22f0-411f-8cc1-b2cffae00708
+    type: condition
+    task:
+      id: ab743ce7-22f0-411f-8cc1-b2cffae00708
+      version: -1
+      name: Core Returned
+      description: Make sure Context output from wildfire
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "61"
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Core.AnalyticsPrevalence.Ip
+            iscontext: true
+          right:
+            value:
+              simple: https://google.com
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1882.5,
+          "y": 1050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "61":
+    id: "61"
+    taskid: a53edaa1-b409-4b50-83ef-04443b041104
+    type: regular
+    task:
+      id: a53edaa1-b409-4b50-83ef-04443b041104
+      version: -1
+      name: Run core-get-IP-analytics-prevalence
+      description: Get the prevalence of an ip, identified by ip_address.
+      script: '|||core-get-IP-analytics-prevalence'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "62"
+    scriptarguments:
+      ip_address:
+        simple: ${CrowdStrike.Device.[0].ExternalIP}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 1220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "62":
+    id: "62"
+    taskid: bd19441b-63f6-4f1e-8e6b-ef1b671b1718
+    type: condition
+    task:
+      id: bd19441b-63f6-4f1e-8e6b-ef1b671b1718
+      version: -1
+      name: Make sure analytics not exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotExists
+          left:
+            value:
+              simple: Core.AnalyticsPrevalence.Ip
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "63":
+    id: "63"
+    taskid: a2bb3bb9-3495-4e19-8370-9bd31c366b89
+    type: condition
+    task:
+      id: a2bb3bb9-3495-4e19-8370-9bd31c366b89
+      version: -1
+      name: Core Returned
+      description: Make sure Context output from wildfire
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "64"
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Core.AnalyticsPrevalence.Ip
+            iscontext: true
+          right:
+            value:
+              simple: https://google.com
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1657.5,
+          "y": 2230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "64":
+    id: "64"
+    taskid: c88b30f5-0153-493d-827b-7ea1938af7b6
+    type: regular
+    task:
+      id: c88b30f5-0153-493d-827b-7ea1938af7b6
+      version: -1
+      name: Run core-get-IP-analytics-prevalence
+      description: Get the prevalence of an ip, identified by ip_address.
+      script: '|||core-get-IP-analytics-prevalence'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "65"
+    scriptarguments:
+      ip_address:
+        simple: ${CrowdStrike.Device.[0].ExternalIP}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 1545,
+          "y": 2400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "65":
+    id: "65"
+    taskid: 4073e7f4-6606-41ff-8ee6-fe3af053ad20
+    type: condition
+    task:
+      id: 4073e7f4-6606-41ff-8ee6-fe3af053ad20
+      version: -1
+      name: Make sure analytics not exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotExists
+          left:
+            value:
+              simple: Core.AnalyticsPrevalence.Ip
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1545,
+          "y": 2570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "66":
+    id: "66"
+    taskid: 5b62a2e6-7244-4828-82e9-d3c09c2ada32
+    type: condition
+    task:
+      id: 5b62a2e6-7244-4828-82e9-d3c09c2ada32
+      version: -1
+      name: Make sure analytics not exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "28"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotExists
+          left:
+            value:
+              simple: Core.AnalyticsPrevalence.Ip
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1452.5,
+          "y": 3410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "67":
+    id: "67"
+    taskid: 8db1f752-9532-4d5a-83c0-c21ef6d2fa71
+    type: condition
+    task:
+      id: 8db1f752-9532-4d5a-83c0-c21ef6d2fa71
+      version: -1
+      name: Main Keys Exists
+      description: MaxScore And MaxVerdict enriched for https://google.com
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: IPEnrichment.Value
+            iscontext: true
+          right:
+            value:
+              simple: ${CrowdStrike.Device.[0].ExternalIP}
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: IPEnrichment
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: IPEnrichment.Value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: CrowdStrike.Device.[0].ExternalIP
+                      iscontext: true
+                accessor: MaxScore
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: IPEnrichment
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: IPEnrichment.Value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: CrowdStrike.Device.[0].ExternalIP
+                      iscontext: true
+                accessor: MaxVerdict
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: IPEnrichment.Status
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: IPEnrichment.TIMScore
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1995,
+          "y": 2570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "68":
+    id: "68"
+    taskid: 834554b3-e481-4ad0-87ec-ae9131b50ee5
+    type: condition
+    task:
+      id: 834554b3-e481-4ad0-87ec-ae9131b50ee5
+      version: -1
+      name: Main Keys Exists
+      description: MaxScore And MaxVerdict enriched for https://google.com
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "28"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: IPEnrichment.Value
+            iscontext: true
+          right:
+            value:
+              simple: ${CrowdStrike.Device.[0].ExternalIP}
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: IPEnrichment
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: IPEnrichment.Value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: CrowdStrike.Device.[0].ExternalIP
+                      iscontext: true
+                accessor: MaxScore
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: IPEnrichment
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: IPEnrichment.Value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: CrowdStrike.Device.[0].ExternalIP
+                      iscontext: true
+                accessor: MaxVerdict
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: IPEnrichment.Status
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: IPEnrichment.TIMScore
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1882.5,
+          "y": 3410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "69":
+    id: "69"
+    taskid: d523071f-1665-4382-89b0-b9cf47c9d2e7
+    type: condition
+    task:
+      id: d523071f-1665-4382-89b0-b9cf47c9d2e7
+      version: -1
+      name: Main Keys Exists
+      description: MaxScore And MaxVerdict enriched for https://google.com
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "35"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: IPEnrichment.Value
+            iscontext: true
+          right:
+            value:
+              simple: ${CrowdStrike.Device.[0].ExternalIP}
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: IPEnrichment
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: IPEnrichment.Value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: CrowdStrike.Device.[0].ExternalIP
+                      iscontext: true
+                accessor: MaxScore
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: IPEnrichment
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: IPEnrichment.Value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: CrowdStrike.Device.[0].ExternalIP
+                      iscontext: true
+                accessor: MaxVerdict
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: IPEnrichment.Status
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: IPEnrichment.TIMScore
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1667.5,
+          "y": 4250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "70":
+    id: "70"
+    taskid: 6931523c-d21f-4206-8b28-72a2b70a348b
+    type: title
+    task:
+      id: 6931523c-d21f-4206-8b28-72a2b70a348b
+      version: -1
+      name: Case 1 - Bad Input
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "72"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1237.5,
+          "y": 5420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "72":
+    id: "72"
+    taskid: b9b0585b-ab04-427c-8a48-7bfe5655a6d1
+    type: regular
+    task:
+      id: b9b0585b-ab04-427c-8a48-7bfe5655a6d1
+      version: -1
+      name: DeleteContext
+      description: "Delete field from context.\n\nThis automation runs using the default
+        Limited User role, unless you explicitly change the permissions.\nFor more
+        information, see the section about permissions here:\n- For Cortex XSOAR 6
+        see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
+        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "73"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1237.5,
+          "y": 5580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "73":
+    id: "73"
+    taskid: 897184bf-a9f7-4924-80f6-f47fa139100f
+    type: regular
+    task:
+      id: 897184bf-a9f7-4924-80f6-f47fa139100f
+      version: -1
+      name: Run ip enrichment script
+      description: This script gathers ip reputation data from multiple integrations
+        and returns an ip entity with consolidated information to the context.
+      scriptName: ip-enrichment
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "74"
+      '#none#':
+      - "75"
+    scriptarguments:
+      additional_fields:
+        simple: "true"
+      external_enrichment:
+        simple: "true"
+      ip_list:
+        simple: asdasd
+      verbose:
+        simple: "false"
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 1237.5,
+          "y": 5750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "74":
+    id: "74"
+    taskid: 93967009-8621-46ee-8a90-475e38a6cc59
+    type: title
+    task:
+      id: 93967009-8621-46ee-8a90-475e38a6cc59
+      version: -1
+      name: Case 2 - Bad Brand
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "76"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 827.5,
+          "y": 5920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "75":
+    id: "75"
+    taskid: 1ad3e232-b217-4897-814e-4f23763d7095
+    type: condition
+    task:
+      id: 1ad3e232-b217-4897-814e-4f23763d7095
+      version: -1
+      name: Failure
+      type: condition
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: "1"
+          right:
+            value:
+              simple: "2"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1237.5,
+          "y": 6420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "76":
+    id: "76"
+    taskid: 13986d60-1e32-461a-8a17-a45a4faab345
+    type: regular
+    task:
+      id: 13986d60-1e32-461a-8a17-a45a4faab345
+      version: -1
+      name: DeleteContext
+      description: "Delete field from context.\n\nThis automation runs using the default
+        Limited User role, unless you explicitly change the permissions.\nFor more
+        information, see the section about permissions here:\n- For Cortex XSOAR 6
+        see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
+        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "77"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 827.5,
+          "y": 6080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "77":
+    id: "77"
+    taskid: ed62d53c-f5f5-40be-8edc-b914d111d207
+    type: regular
+    task:
+      id: ed62d53c-f5f5-40be-8edc-b914d111d207
+      version: -1
+      name: Run ip enrichment script
+      description: This script gathers ip reputation data from multiple integrations
+        and returns an ip entity with consolidated information to the context.
+      scriptName: ip-enrichment
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "78"
+      '#none#':
+      - "75"
+    scriptarguments:
+      additional_fields:
+        simple: "true"
+      brands:
+        simple: asdasd
+      external_enrichment:
+        simple: "true"
+      ip_list:
+        simple: ${CrowdStrike.Device.[0].ExternalIP}
+      verbose:
+        simple: "false"
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 827.5,
+          "y": 6250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "78":
+    id: "78"
+    taskid: 4d15fd2a-e86b-4666-84bf-d377056c4385
+    type: title
+    task:
+      id: 4d15fd2a-e86b-4666-84bf-d377056c4385
+      version: -1
+      name: Pass
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 807.5,
+          "y": 6425
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "79":
+    id: "79"
+    taskid: ab3605d5-e4f2-4f7d-b278-f8ba975dfad4
+    type: regular
+    task:
+      id: ab3605d5-e4f2-4f7d-b278-f8ba975dfad4
+      version: -1
+      name: Run ip enrichment script
+      description: This script gathers ip reputation data from multiple integrations
+        and returns an ip entity with consolidated information to the context.
+      scriptName: ip-enrichment
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "83"
+      - "85"
+      - "87"
+    scriptarguments:
+      additional_fields:
+        simple: "true"
+      external_enrichment:
+        simple: "true"
+      ip_list:
+        simple: 20.2.2.2,8.8.8.8
+      verbose:
+        simple: "false"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1237.5,
+          "y": 4920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "83":
+    id: "83"
+    taskid: 6e345bf6-4795-44e6-8aa1-07ba089d0276
+    type: condition
+    task:
+      id: 6e345bf6-4795-44e6-8aa1-07ba089d0276
+      version: -1
+      name: additional fields Exists
+      description: Additional fields empty
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "86"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: IPEnrichment.Results.AdditionalFields
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 5090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "84":
+    id: "84"
+    taskid: e7fe860e-830d-4813-82b5-ab37ff4efb19
+    type: regular
+    task:
+      id: e7fe860e-830d-4813-82b5-ab37ff4efb19
+      version: -1
+      name: DeleteContext
+      description: "Delete field from context.\n\nThis automation runs using the default
+        Limited User role, unless you explicitly change the permissions.\nFor more
+        information, see the section about permissions here:\n- For Cortex XSOAR 6
+        see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
+        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "89"
+      - "90"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1237.5,
+          "y": 4580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "85":
+    id: "85"
+    taskid: c726ca66-2f72-46f4-a250-edd9f998dfc7
+    type: condition
+    task:
+      id: c726ca66-2f72-46f4-a250-edd9f998dfc7
+      version: -1
+      name: Main Keys For 20.2.2.2
+      description: MaxScore And MaxVerdict enriched for https://google.com
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "86"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: IPEnrichment.Value
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: IPEnrichment.Value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: 20.2.2.2
+            iscontext: true
+          right:
+            value:
+              simple: 20.2.2.2
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: IPEnrichment
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: IPEnrichment.Value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: 20.2.2.2
+                accessor: MaxScore
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: IPEnrichment
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: IPEnrichment.Value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: 20.2.2.2
+                accessor: MaxVerdict
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: IPEnrichment
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: IPEnrichment.Value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: 20.2.2.2
+                accessor: Status
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: IPEnrichment
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: IPEnrichment.Value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: 20.2.2.2
+                accessor: TIMScore
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1022.5,
+          "y": 5090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "86":
+    id: "86"
+    taskid: 43dec3e0-4670-44b3-82a9-39916cc5d501
+    type: title
+    task:
+      id: 43dec3e0-4670-44b3-82a9-39916cc5d501
+      version: -1
+      name: Sad Flows
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "70"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1237.5,
+          "y": 5260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "87":
+    id: "87"
+    taskid: 80c50101-6827-4aa4-8e30-8ec9ba0505ee
+    type: condition
+    task:
+      id: 80c50101-6827-4aa4-8e30-8ec9ba0505ee
+      version: -1
+      name: Main Keys For 8.8.8.8
+      description: MaxScore And MaxVerdict enriched for https://google.com
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "86"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: IPEnrichment.Value
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: IPEnrichment.Value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: 8.8.8.8
+            iscontext: true
+          right:
+            value:
+              simple: 8.8.8.8
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: IPEnrichment
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: IPEnrichment.Value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: 8.8.8.8
+                accessor: MaxScore
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: IPEnrichment
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: IPEnrichment.Value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: 8.8.8.8
+                accessor: MaxVerdict
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: IPEnrichment
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: IPEnrichment.Value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: 8.8.8.8
+                accessor: Status
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: IPEnrichment
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: IPEnrichment.Value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: 8.8.8.8
+                accessor: TIMScore
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1452.5,
+          "y": 5090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "88":
+    id: "88"
+    taskid: b7fb6743-3afe-4863-8781-e4cc805561cb
+    type: regular
+    task:
+      id: b7fb6743-3afe-4863-8781-e4cc805561cb
+      version: -1
+      name: Add Virus Total To TIM
+      description: Checks the reputation of an IP address.
+      script: VirusTotal (API v3)|||ip
+      type: regular
+      iscommand: true
+      brand: VirusTotal (API v3)
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      ip:
+        simple: ${CrowdStrike.Device.[0].ExternalIP}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1022.5,
+          "y": 710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "89":
+    id: "89"
+    taskid: 428df83e-fff1-47db-8b92-8129f5f64143
+    type: regular
+    task:
+      id: 428df83e-fff1-47db-8b92-8129f5f64143
+      version: -1
+      name: Add 20.2.2.2 To TIM
+      description: Checks the reputation of an IP address.
+      script: VirusTotal (API v3)|||ip
+      type: regular
+      iscommand: true
+      brand: VirusTotal (API v3)
+    nexttasks:
+      '#none#':
+      - "79"
+    scriptarguments:
+      ip:
+        simple: 20.2.2.2
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 960,
+          "y": 4760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "90":
+    id: "90"
+    taskid: f7d158ca-419c-42a1-a62d-1e75a736e258
+    type: regular
+    task:
+      id: f7d158ca-419c-42a1-a62d-1e75a736e258
+      version: -1
+      name: Add 8.8.8.8 To TIM
+      description: Checks the reputation of an IP address.
+      script: VirusTotal (API v3)|||ip
+      type: regular
+      iscommand: true
+      brand: VirusTotal (API v3)
+    nexttasks:
+      '#none#':
+      - "79"
+    scriptarguments:
+      ip:
+        simple: 8.8.8.8
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1495,
+          "y": 4760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "62_7_yes": 0.76
+    },
+    "paper": {
+      "dimensions": {
+        "height": 6440,
+        "width": 2325,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+sourceplaybookid: 110f76de-5574-4854-853e-8675a01d8eb0
+dirtyInputs: true
+marketplaces:
+- xsoar
+- platform
+- marketplacev2
