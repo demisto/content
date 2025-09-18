@@ -11699,10 +11699,13 @@ def remove_old_incidents_ids(found_incidents_ids, current_time, look_back):
     new_found_incidents_ids = {}
     latest_incident_time = max(found_incidents_ids.values() or [current_time])
     demisto.debug('lb: latest_incident_time is {}'.format(latest_incident_time))
-    
+
     for inc_id, addition_time in found_incidents_ids.items():
 
-        if current_time - addition_time <= deletion_threshold_in_seconds or addition_time == latest_incident_time:
+        if (
+            current_time - addition_time <= deletion_threshold_in_seconds
+            or addition_time == latest_incident_time  # The latest IDs must be kept to avoid duplicate incidents
+        ):
             new_found_incidents_ids[inc_id] = addition_time
             demisto.debug('lb: Adding incident id: {}, its addition time: {}, deletion_threshold_in_seconds: {}'.format(
                 inc_id, addition_time, deletion_threshold_in_seconds))
