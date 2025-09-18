@@ -1429,7 +1429,7 @@ def test_handle_permission_error_non_json_content_type(mocker):
         handle_permission_error(http_error, "test-project", "some-command")
 
     # Verify there was a graceful exist
-    assert exc_info.typename == 'SystemExit'
+    assert exc_info.typename == "SystemExit"
     assert exc_info.value.code == 0
 
 
