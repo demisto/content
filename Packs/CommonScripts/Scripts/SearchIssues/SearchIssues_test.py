@@ -244,7 +244,7 @@ def test_main_with_sha256_filter(monkeypatch, sha_values):
     monkeypatch.setattr(SearchIssues, "return_results", lambda x: x)
     monkeypatch.setattr(SearchIssues.demisto, "debug", lambda x: None)
 
-    result = SearchIssues.main()
+    SearchIssues.main()
 
     # Ensure core-get-issues was called
     assert execute_command_mock.called, "core-get-issues was not called"
