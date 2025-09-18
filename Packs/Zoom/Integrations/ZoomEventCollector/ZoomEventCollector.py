@@ -2,10 +2,13 @@ from datetime import UTC, datetime, timedelta
 from typing import Any
 
 import demistomock as demisto
+import urllib3
 from CommonServerPython import *
 from dateutil import relativedelta
 from ZoomApiModule import *
 
+# Disable insecure warnings
+urllib3.disable_warnings()
 
 """ CONSTANTS """
 
