@@ -293,35 +293,26 @@ def handle_permission_error(e: HttpError, project_id: str, command_name: str):
     Returns:
         Returns the labels dictionary with the extracted key & value pairs.
     """
-    demisto.debug(f"{e.resp=}")
     status_code = e.resp.status
-    if e.resp.get("content-type", "").startswith("application/json"):
-        content = json.loads(e.content)
-        reason = content.get("error", {}).get("errors", [{}])[0].get("reason", "")
-        message = f"{content.get('error', {}).get('message', '')} {reason=}"
+    if int(status_code) in [403, 401] and e.resp.get("content-type", "").startswith("application/json"):
+        message_content = json.loads(e.content)
+        error_message = message_content.get('error', {}).get('message', '')
 
         # get the relevant permissions for the relevant command
-        possible_permissions_list: list[str]
-        possible_permissions_list = COMMAND_REQUIREMENTS[command_name][1]
+        command_permissions: list[str]
+        command_permissions = COMMAND_REQUIREMENTS[command_name][1]
 
         # find out which permissions are relevant for the current execution failure from the list of command permissions.
-        permission_names = []
-        for permission in possible_permissions_list:
-            if permission.lower() in message.lower():
-                permission_names.append(permission)
-        if not permission_names:
-            permission_names.append("N/A")
+        found_permissions = [perm for perm in command_permissions if perm.lower() in error_message.lower()] or ["N/A"]
 
-        demisto.debug(f"The info {status_code=} {message=} {permission_names=} {content=}")
+        demisto.debug(f"The info {error_message=} {found_permissions=} {message_content=}")
 
         # create an error entry for each missing permission.
-        error_entries = []
-        for perm in permission_names:
-            error_entries.append({"account_id": project_id, "message": message, "name": perm})
+        error_entries = [{"account_id": project_id, "message": error_message, "name": perm} for perm in found_permissions]
 
         return_multiple_permissions_error(error_entries)
-    else:
-        raise e
+    else:  # Return the original error if it's not a 403, 401 or doesn't have a JSON body
+        return_error(f"Failed to execute command {demisto.command()}. Error: {str(e)}")
 
 
 ##########
@@ -1532,12 +1523,8 @@ def main():  # pragma: no cover
             raise NotImplementedError(f"Command not implemented: {command}")
 
     except HttpError as e:
-        demisto.info(f"The error is {e}")
-        if e.resp.status in [403, 401]:
-            project_id = args.get("project_id") or args.get("folder_id") or "N/A"
-            handle_permission_error(e, project_id, command)
-        else:
-            return_error(f"Failed to execute command {demisto.command()}. Error: {str(e)}")
+        project_id = args.get("project_id") or args.get("folder_id") or "N/A"
+        handle_permission_error(e, project_id, command)
 
     except Exception as e:
         return_error(f"Failed to execute command {demisto.command()}. Error: {str(e)}")
