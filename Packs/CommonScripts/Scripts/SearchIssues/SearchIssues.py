@@ -35,7 +35,6 @@ SEARCH_TYPE_EQUAL_SHA256_FIELDS = [
 ]
 SEARCH_TYPE_CONTAINS_SHA256_FIELDS = ["os_actor_process_image_sha256", "action_file_macro_sha256"]
 
-
 def remove_empty_string_values(args):
     """Remove empty string values from the args dictionary."""
     return {key: value for key, value in args.items() if value != ""}
@@ -86,7 +85,13 @@ def prepare_start_end_time(args: dict):
         args["end_time"] = end_time
 
 
-def create_sha_search_field_query(sha_search_field, search_type, sha_list) -> Optional[dict]:
+def create_sha_search_field_query(sha_search_field: str, search_type: str, sha_list: list[str]) -> Optional[dict]:
+    """
+    Given a list of sha256 values, builds a query of this form: { "AND": [ { {"OR": [{"SEARCH_FIELD": sha_search_field,
+    "SEARCH_TYPE": search_type ,"SEARCH_VALUE": sha_list[0]} , .... , {"SEARCH_FIELD": sha_search_field,"SEARCH_TYPE":
+    search_type ,"SEARCH_VALUE": sha_list[-1]} ]} } ] }
+
+    """
     if not sha_list:
         return None
     or_operator_list = []
@@ -97,9 +102,48 @@ def create_sha_search_field_query(sha_search_field, search_type, sha_list) -> Op
 
 def prepare_sha256_custom_field(args: dict):
     """
-    given a list of values, builds a query of this form:
+       Builds a structured query from a list of SHA256 values and assigns it to the 'custom_filter' field in the given args.
 
-    """
+       The function:
+       - Extracts the 'sha256' argument (as a string or list).
+       - For each predefined SHA256 search field, constructs a query block:
+           - Uses 'EQ' (equals) or 'CONTAINS' based on the field type.
+           - Each SHA is mapped to an OR clause per field.
+       - Combines all field-specific queries under a top-level OR.
+       - Adds the final query as a JSON string to args['custom_filter'].
+
+       Example structure added to args["custom_filter"]:
+       {
+           "OR": [
+               {
+                   "AND": [
+                       {
+                           "OR": [
+                               {
+                                   "SEARCH_FIELD": "actor_process_image_sha256",
+                                   "SEARCH_TYPE": "EQ",
+                                   "SEARCH_VALUE": "abc"
+                               }
+                           ]
+                       }
+                   ]
+               },
+               {
+                   "AND": [
+                       {
+                           "OR": [
+                               {
+                                   "SEARCH_FIELD": "causality_actor_process_image_sha256",
+                                   "SEARCH_TYPE": "EQ",
+                                   "SEARCH_VALUE": "xyz"
+                               }
+                           ]
+                       }
+                   ]
+               }
+           ]
+       }
+       """
     sha256 = argToList(args.pop("sha256", ""))
     if not sha256:
         return
