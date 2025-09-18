@@ -135,6 +135,34 @@ COMMAND_REQUIREMENTS = {
             "compute.networks.list",
         ],
     ),
+    "gcp-storage-bucket-list": (
+        GCPServices.STORAGE,
+        ["storage.buckets.list"],
+    ),
+    "gcp-storage-bucket-get": (
+        GCPServices.STORAGE,
+        ["storage.buckets.get"],
+    ),
+    "gcp-storage-bucket-objects-list": (
+        GCPServices.STORAGE,
+        ["storage.objects.list"],
+    ),
+    "gcp-storage-bucket-policy-get": (
+        GCPServices.STORAGE,
+        ["storage.buckets.getIamPolicy"],
+    ),
+    "gcp-storage-bucket-policy-set": (
+        GCPServices.STORAGE,
+        ["storage.buckets.setIamPolicy"],
+    ),
+    "gcp-storage-bucket-object-policy-get": (
+        GCPServices.STORAGE,
+        ["storage.objects.getIamPolicy"],
+    ),
+    "gcp-storage-bucket-object-policy-set": (
+        GCPServices.STORAGE,
+        ["storage.objects.setIamPolicy"],
+    ),
     "gcp-compute-subnet-update": (
         GCPServices.COMPUTE,
         [
@@ -540,6 +568,362 @@ def container_cluster_security_update(creds: Credentials, args: dict[str, Any]) 
     )
 
     return CommandResults(readable_output=hr, outputs_prefix="GCP.Container.Operations", outputs=response)
+
+
+def storage_bucket_list(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Retrieves the list of buckets in the project associated with the client.
+
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): Command arguments including optional project_id, max_results, prefix, page_token.
+
+    Returns:
+        CommandResults: List of buckets with their metadata.
+    """
+    project_id = args.get("project_id") or get_project_id()
+    max_results = argToNumber(args.get("max_results"))
+    prefix = args.get("prefix")
+    page_token = args.get("page_token")
+
+    storage = GCPServices.STORAGE.build(creds)
+    
+    # Build request parameters
+    request_params = {
+        "project": project_id,
+        "maxResults": max_results,
+        "prefix": prefix,
+        "pageToken": page_token
+    }
+    remove_nulls_from_dictionary(request_params)
+
+    response = storage.buckets().list(**request_params).execute()  # pylint: disable=E1101
+    
+    buckets = response.get("items", [])
+    bucket_data = []
+    
+    for bucket in buckets:
+        bucket_info = {
+            "Name": bucket.get("name"),
+            "TimeCreated": bucket.get("timeCreated"),
+            "TimeUpdated": bucket.get("updated"),
+            "OwnerID": bucket.get("owner", {}).get("entityId", ""),
+            "Location": bucket.get("location"),
+            "StorageClass": bucket.get("storageClass")
+        }
+        bucket_data.append(bucket_info)
+
+    hr = tableToMarkdown("GCP Storage Buckets", bucket_data, removeNull=True)
+    
+    return CommandResults(
+        readable_output=hr,
+        outputs_prefix="GCP.Bucket",
+        outputs=bucket_data,
+        outputs_key_field="Name"
+    )
+
+
+def storage_bucket_get(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Retrieves information about a specific bucket.
+
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): Command arguments including required bucket_name.
+
+    Returns:
+        CommandResults: Bucket information.
+    """
+    bucket_name = args.get("bucket_name")
+    if not bucket_name:
+        raise DemistoException("Missing required parameter: bucket_name")
+
+    storage = GCPServices.STORAGE.build(creds)
+    
+    response = storage.buckets().get(bucket=bucket_name).execute()  # pylint: disable=E1101
+    
+    bucket_info = {
+        "Name": response.get("name"),
+        "TimeCreated": response.get("timeCreated"),
+        "TimeUpdated": response.get("updated"),
+        "OwnerID": response.get("owner", {}).get("entityId", ""),
+        "Location": response.get("location"),
+        "StorageClass": response.get("storageClass")
+    }
+
+    hr = tableToMarkdown(f"GCP Storage Bucket: {bucket_name}", bucket_info, removeNull=True)
+    
+    return CommandResults(
+        readable_output=hr,
+        outputs_prefix="GCP.Bucket",
+        outputs=bucket_info,
+        outputs_key_field="Name"
+    )
+
+
+def storage_bucket_objects_list(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Retrieves the list of objects in a bucket.
+
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): Command arguments including required bucket_name and optional filters.
+
+    Returns:
+        CommandResults: List of objects in the bucket.
+    """
+    bucket_name = args.get("bucket_name")
+    if not bucket_name:
+        raise DemistoException("Missing required parameter: bucket_name")
+    
+    prefix = args.get("prefix")
+    delimiter = args.get("delimiter")
+    max_results = args.get("max_results")
+    page_token = args.get("page_token")
+
+    storage = GCPServices.STORAGE.build(creds)
+    
+    # Build request parameters
+    request_params = {"bucket": bucket_name}
+    if prefix:
+        request_params["prefix"] = prefix
+    if delimiter:
+        request_params["delimiter"] = delimiter
+    if max_results:
+        request_params["maxResults"] = int(max_results)
+    if page_token:
+        request_params["pageToken"] = page_token
+
+    response = storage.objects().list(**request_params).execute()  # pylint: disable=E1101
+    
+    objects = response.get("items", [])
+    object_data = []
+    
+    for obj in objects:
+        object_info = {
+            "Name": obj.get("name"),
+            "Bucket": obj.get("bucket"),
+            "ContentType": obj.get("contentType"),
+            "Size": obj.get("size"),
+            "TimeCreated": obj.get("timeCreated"),
+            "TimeUpdated": obj.get("updated"),
+            "MD5Hash": obj.get("md5Hash"),
+            "CRC32c": obj.get("crc32c")
+        }
+        object_data.append(object_info)
+
+    hr = tableToMarkdown(f"Objects in bucket: {bucket_name}", object_data, removeNull=True)
+    
+    return CommandResults(
+        readable_output=hr,
+        outputs_prefix="GCP.BucketObject",
+        outputs=object_data,
+        outputs_key_field="Name"
+    )
+
+
+def storage_bucket_policy_get(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Retrieves the IAM policy for a bucket.
+
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): Command arguments including required bucket_name and optional requested_policy_version.
+
+    Returns:
+        CommandResults: IAM policy for the bucket.
+    """
+    bucket_name = args.get("bucket_name")
+    if not bucket_name:
+        raise DemistoException("Missing required parameter: bucket_name")
+    
+    requested_policy_version = args.get("requested_policy_version")
+
+    storage = GCPServices.STORAGE.build(creds)
+    
+    # Build request parameters
+    request_params = {"bucket": bucket_name}
+    if requested_policy_version:
+        request_params["optionsRequestedPolicyVersion"] = int(requested_policy_version)
+
+    response = storage.buckets().getIamPolicy(**request_params).execute()  # pylint: disable=E1101
+    
+    # Format bindings for human readable output
+    bindings_hr = []
+    for binding in response.get("bindings", []):
+        role = binding.get("role", "")
+        members = binding.get("members", [])
+        bindings_hr.append(f"**{role}**: {', '.join(members)}")
+    
+    policy_info = {
+        "Bucket": bucket_name,
+        "Version": response.get("version"),
+        "ETag": response.get("etag"),
+        "Bindings": bindings_hr
+    }
+
+    hr = tableToMarkdown(f"IAM Policy for bucket: {bucket_name}", policy_info, removeNull=True)
+    
+    return CommandResults(
+        readable_output=hr,
+        outputs_prefix="GCP.BucketPolicy",
+        outputs=response,
+        outputs_key_field="etag"
+    )
+
+
+def storage_bucket_policy_set(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Sets the IAM policy for a bucket.
+
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): Command arguments including required bucket_name and policy.
+
+    Returns:
+        CommandResults: Result of the policy update operation.
+    """
+    bucket_name = args.get("bucket_name")
+    policy_json = args.get("policy")
+    
+    if not bucket_name:
+        raise DemistoException("Missing required parameter: bucket_name")
+    if not policy_json:
+        raise DemistoException("Missing required parameter: policy")
+
+    try:
+        policy = json.loads(policy_json)
+    except json.JSONDecodeError as e:
+        raise DemistoException(f"Invalid JSON format for policy: {str(e)}")
+
+    storage = GCPServices.STORAGE.build(creds)
+    
+    response = storage.buckets().setIamPolicy(bucket=bucket_name, body=policy).execute()  # pylint: disable=E1101
+    
+    result_info = {
+        "Bucket": bucket_name,
+        "PolicyUpdatedSuccessfully": True,
+        "NewPolicyVersion": response.get("version")
+    }
+
+    hr = tableToMarkdown(f"IAM Policy updated for bucket: {bucket_name}", result_info, removeNull=True)
+    
+    return CommandResults(
+        readable_output=hr,
+        outputs_prefix="GCP.BucketPolicy",
+        outputs=response,
+        outputs_key_field="etag"
+    )
+
+
+def storage_bucket_object_policy_get(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Retrieves the IAM policy for a specific object in a bucket.
+
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): Command arguments including required bucket_name, object_name and optional generation.
+
+    Returns:
+        CommandResults: IAM policy for the object.
+    """
+    bucket_name = args.get("bucket_name")
+    object_name = args.get("object_name")
+    
+    if not bucket_name:
+        raise DemistoException("Missing required parameter: bucket_name")
+    if not object_name:
+        raise DemistoException("Missing required parameter: object_name")
+    
+    generation = args.get("generation")
+
+    storage = GCPServices.STORAGE.build(creds)
+    
+    # Build request parameters
+    request_params = {"bucket": bucket_name, "object": object_name}
+    if generation:
+        request_params["generation"] = int(generation)
+
+    response = storage.objects().getIamPolicy(**request_params).execute()  # pylint: disable=E1101
+    
+    # Format bindings for human readable output
+    bindings_hr = []
+    for binding in response.get("bindings", []):
+        role = binding.get("role", "")
+        members = binding.get("members", [])
+        bindings_hr.append(f"**{role}**: {', '.join(members)}")
+    
+    policy_info = {
+        "Bucket": bucket_name,
+        "Object": object_name,
+        "Version": response.get("version"),
+        "ETag": response.get("etag"),
+        "Bindings": bindings_hr
+    }
+
+    hr = tableToMarkdown(f"IAM Policy for object: {object_name} in bucket: {bucket_name}", policy_info, removeNull=True)
+    
+    return CommandResults(
+        readable_output=hr,
+        outputs_prefix="GCP.BucketObjectPolicy",
+        outputs=response,
+        outputs_key_field="etag"
+    )
+
+
+def storage_bucket_object_policy_set(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Sets the IAM policy for a specific object in a bucket.
+
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): Command arguments including required bucket_name, object_name, policy and optional generation.
+
+    Returns:
+        CommandResults: Result of the policy update operation.
+    """
+    bucket_name = args.get("bucket_name")
+    object_name = args.get("object_name")
+    policy_json = args.get("policy")
+    
+    if not bucket_name:
+        raise DemistoException("Missing required parameter: bucket_name")
+    if not object_name:
+        raise DemistoException("Missing required parameter: object_name")
+    if not policy_json:
+        raise DemistoException("Missing required parameter: policy")
+
+    try:
+        policy = json.loads(policy_json)
+    except json.JSONDecodeError as e:
+        raise DemistoException(f"Invalid JSON format for policy: {str(e)}")
+    
+    generation = args.get("generation")
+
+    storage = GCPServices.STORAGE.build(creds)
+    
+    # Build request parameters
+    request_params = {"bucket": bucket_name, "object": object_name, "body": policy}
+    if generation:
+        request_params["generation"] = int(generation)
+
+    response = storage.objects().setIamPolicy(**request_params).execute()  # pylint: disable=E1101
+    
+    result_info = {
+        "Bucket": bucket_name,
+        "Object": object_name,
+        "PolicyUpdatedSuccessfully": True,
+        "NewPolicyVersion": response.get("version")
+    }
+
+    hr = tableToMarkdown(f"IAM Policy updated for object: {object_name} in bucket: {bucket_name}", result_info, removeNull=True)
+    
+    return CommandResults(
+        readable_output=hr,
+        outputs_prefix="GCP.BucketObjectPolicy",
+        outputs=response,
+        outputs_key_field="etag"
+    )
 
 
 def storage_bucket_metadata_update(creds: Credentials, args: dict[str, Any]) -> CommandResults:
@@ -950,6 +1334,15 @@ def compute_instance_stop(creds: Credentials, args: dict[str, Any]) -> CommandRe
 #     return CommandResults(readable_output=hr)
 
 
+def get_project_id():
+    connector_id = get_connector_id()
+    accounts = get_accounts_by_connector_id(connector_id)
+    if not accounts:
+        demisto.debug(f"[GCP: get_project_id] No accounts found for connector ID: {connector_id}")
+        return None
+    return accounts[0]["account_id"]
+
+
 def _get_commands_for_requirement(requirement: str, req_type: str) -> list[str]:
     """
     Find which commands require a specific API or permission.
@@ -1254,6 +1647,13 @@ def main():  # pragma: no cover
             "gcp-compute-instance-start": compute_instance_start,
             "gcp-compute-instance-stop": compute_instance_stop,
             # Storage commands
+            "gcp-storage-bucket-list": storage_bucket_list,
+            "gcp-storage-bucket-get": storage_bucket_get,
+            "gcp-storage-bucket-objects-list": storage_bucket_objects_list,
+            "gcp-storage-bucket-policy-get": storage_bucket_policy_get,
+            "gcp-storage-bucket-policy-set": storage_bucket_policy_set,
+            "gcp-storage-bucket-object-policy-get": storage_bucket_object_policy_get,
+            "gcp-storage-bucket-object-policy-set": storage_bucket_object_policy_set,
             "gcp-storage-bucket-policy-delete": storage_bucket_policy_delete,
             "gcp-storage-bucket-metadata-update": storage_bucket_metadata_update,
             # Container (GKE) commands
