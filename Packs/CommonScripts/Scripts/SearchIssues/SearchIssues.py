@@ -28,12 +28,13 @@ OUTPUT_KEYS = [
     "source_insert_ts",
 ]
 
-SEARCH_TYPE_EQUAL_SHA256_FIELDS = [
+SEARCH_SHA256_FIELDS = [
     "actor_process_image_sha256",
     "causality_actor_process_image_sha256",
     "action_process_image_sha256",
+    "os_actor_process_image_sha256",
+    "action_file_macro_sha256"
 ]
-SEARCH_TYPE_CONTAINS_SHA256_FIELDS = ["os_actor_process_image_sha256", "action_file_macro_sha256"]
 
 
 def remove_empty_string_values(args):
@@ -149,10 +150,8 @@ def prepare_sha256_custom_field(args: dict):
     if not sha256:
         return
     or_operator_list: list[dict] = []
-    for sha_search_field in SEARCH_TYPE_EQUAL_SHA256_FIELDS:
+    for sha_search_field in SEARCH_SHA256_FIELDS:
         or_operator_list.append(create_sha_search_field_query(sha_search_field, EQ, sha256))
-    for sha_search_field in SEARCH_TYPE_CONTAINS_SHA256_FIELDS:
-        or_operator_list.append(create_sha_search_field_query(sha_search_field, CONTAINS, sha256))
     args["custom_filter"] = json.dumps({"OR": or_operator_list})
 
 
