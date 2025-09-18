@@ -90,7 +90,6 @@ Using Authorization header (where the header value is base64 encoded username:pa
 `curl -X POST https://ext-companyname.crtx.eu.paloaltonetworks.com/xsoar/instance/execute/my_instance_01 -H "Authorization: Basic MTIzOjEyMw==" -H "Content-Type: application/json" -d '{"name":"incident created via generic webhook","rawJson":{"some_field":"some_value"}}'`
 **Note**: `MTIzOjEyMw==` is Base64 encoded username:password example.
 
-
 Or embedding credentials directly in the URL:<br>
 `curl -X POST https://username:password@ext-companyname.crtx.eu.paloaltonetworks.com/xsoar/instance/execute/my_instance_01 -H "Content-Type: application/json" -d '{"name":"incident created via generic webhook","rawJson":{"some_field":"some_value"}}'`
 
