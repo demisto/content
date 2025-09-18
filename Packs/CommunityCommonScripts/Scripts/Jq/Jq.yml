@@ -5,7 +5,7 @@ args:
 - description: JQ compatible query.
   name: query
   required: true
-comment: "Deprecated. Use JMESPath transformer from the FiltersAndTransformers pack instead."
+comment: "Deprecated. Use JMESPath transformer from the Filters and Transformers content pack instead."
 commonfields:
   id: jq
   version: -1
