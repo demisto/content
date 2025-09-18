@@ -1007,7 +1007,7 @@ script:
         description: Informational warning message.
         type: Object
   - arguments:
-    - description: The project ID on which to run this command.
+    - description: GCP project ID.
       name: project_id
       required: true
     - description: The name of the zone for this request.
@@ -1206,7 +1206,7 @@ script:
       - description: Name of the instance resource to return.
         name: instance
         required: true
-      - description: The project ID on which to run this command.
+      - description: GCP project ID.
         name: project_id
         required: true
       - description: The name of the zone for this request.
