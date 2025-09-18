@@ -757,7 +757,7 @@ tasks:
       id: 79cc057c-8e69-41a0-8c8e-6b0c3b94958c
       version: -1
       name: Both Indicator Exists
-      description: Make sure the Virus Total indicator returned from tim
+      description: Verify that the VirusTotal indicator from TIM exists
       type: condition
       iscommand: false
       brand: ""
