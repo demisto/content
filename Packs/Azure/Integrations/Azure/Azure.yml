@@ -105,11 +105,11 @@ script:
       name: source
     - description: The priority by which the rules will be processed. The lower the number, the higher the priority. We recommend leaving gaps between rules - 100, 200, 300, etc. - so that it is easier to add new rules without having to edit existing rules. Default is "4096".
       name: priority
-    - description: The source ports from which traffic will be allowed or denied by this rule. Provide a single port, such as 80; a port range, such as 1024-65535; or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535. Use an asterisk (*) to allow traffic on any port. Default is "*".
+    - description: The source ports from which traffic is allowed or denied by this rule. Provide a single port, such as 80; a port range, such as 1024-65535; or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535. Use an asterisk (*) to allow traffic on any port. Default is "*".
       name: source_ports
-    - description: The specific destination IP address range for outgoing traffic that will be allowed or denied by this rule. The destination filter can be "Any", an IP address range, an application security group, or a default tag.
+    - description: The destination IP address range for outgoing traffic that is allowed or denied by this rule. The destination filter can be "Any", an IP address range, an application security group, or a default tag.
       name: destination
-    - description: The destination ports for which traffic will be allowed or denied by this rule. Provide a single port, such as 80; a port range, such as 1024-65535; or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535. Use an asterisk (*) to allow traffic on any port.
+    - description: The destination ports from which traffic is allowed or denied by this rule. Provide a single port, such as 80; a port range, such as 1024-65535; or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535. Use an asterisk (*) to allow traffic on any port.
       name: destination_ports
     - description: A description to add to the rule.
       name: description
@@ -138,7 +138,7 @@ script:
       description: The rule's provisioning state.
       type: String
     - contextPath: Azure.NSGRule.protocol
-      description: The protocol. Can be "TCP", "UDP", "ICMP", "*".
+      description: The protocol, which can be "TCP", "UDP", "ICMP", or "*".
       type: String
     - contextPath: Azure.NSGRule.sourcePortRange
       description: For a single port, the source port or a range of ports. Note that for multiple ports, `sourcePortRanges` will appear instead.
@@ -1776,7 +1776,7 @@ script:
         type: List
     arguments:
       - name: subscription_id
-        description: "The subscription ID."
+        description: The subscription ID.
         type: String
         required: true
       - name: resource_group_name
@@ -1805,19 +1805,19 @@ script:
         description: The rule's provisioning state.
         type: String
       - contextPath: Azure.NSGRule.properties.protocol
-        description: The protocol. Can be "TCP", "UDP", "ICMP", "*".
+        description: The protocol, which can be "TCP", "UDP", "ICMP", or "*".
         type: String
       - contextPath: Azure.NSGRule.properties.sourcePortRange
-        description: For a single port, the source port or a range of ports. Note that for multiple ports, `sourcePortRanges` will appear instead.
+        description: For a single port, the source port or a range of ports. For multiple ports, `sourcePortRanges` is used instead.
         type: String
       - contextPath: Azure.NSGRule.properties.sourcePortRanges
-        description: For multiple ports, a list of these ports. Note that for single ports, `sourcePortRange` will appear instead.
+        description: For multiple ports, a list of ports. For a single port, `sourcePortRange` is used instead.
         type: String
       - contextPath: Azure.NSGRule.properties.destinationPortRange
-        description: For a single port, the destination port or range of ports. Note that for multiple ports, `destinationPortRanges` will appear instead.
+        description: For a single port, the destination port or range of ports. For multiple ports, `destinationPortRanges` is used instead.
         type: String
       - contextPath: Azure.NSGRule.properties.destinationPortRanges
-        description: For multiple ports, a list of destination ports. Note that for single ports, `destinationPortRange` will appear instead.
+        description: For multiple ports, a list of destination ports. For a single port, `destinationPortRange` is used instead.
         type: String
       - contextPath: Azure.NSGRule.properties.sourceAddressPrefix
         description: The source address.
@@ -1829,17 +1829,17 @@ script:
         description: The rule's access. Can be "Allow" or "Deny".
         type: String
       - contextPath: Azure.NSGRule.properties.priority
-        description: The rule's priority. Can be from 100 to 4096.
+        description: The rule’s priority, ranging from 100 to 4096.
         type: Number
       - contextPath: Azure.NSGRule.properties.direction
-        description: The rule's direction. Can be "Inbound" or "Outbound".
+        description: The rule's direction, which can be "Inbound" or "Outbound".
         type: String
     arguments:
-      - description: "The subscription ID."
+      - description: The subscription ID.
         name: subscription_id
         type: String
         required: true
-      - description: "The name of the resource group."
+      - description: Resource group name.
         name: resource_group_name
         type: String
         required: true
@@ -1869,19 +1869,19 @@ script:
         description: The rule's provisioning state.
         type: String
       - contextPath: Azure.NSGRule.properties.protocol
-        description: The protocol. Can be "TCP", "UDP", "ICMP", or "*".
+        description: The protocol, which can be "TCP", "UDP", "ICMP", or "*".
         type: String
       - contextPath: Azure.NSGRule.properties.sourcePortRange
-        description: For a single port, the source port or a range of ports. Note that for multiple ports, `sourcePortRanges` will appear instead.
+        description: For a single port, the source port or a range of ports. For multiple ports, `sourcePortRanges` is used instead.
         type: String
       - contextPath: Azure.NSGRule.properties.sourcePortRanges
-        description: For multiple ports, a list of these ports. Note that for single ports, `sourcePortRange` will appear instead.
+        description: For multiple ports, a list of ports. For a single port, `sourcePortRange` is used instead.
         type: String
       - contextPath: Azure.NSGRule.properties.destinationPortRange
-        description: For a single port, the destination port or range of ports. Note that for multiple ports, `destinationPortRanges` will appear instead.
+        description: For a single port, the destination port or range of ports. For multiple ports, `destinationPortRanges` is used instead.
         type: String
       - contextPath: Azure.NSGRule.properties.destinationPortRanges
-        description: For multiple ports, a list of destination ports. Note that for single ports, `destinationPortRange` will appear instead.
+        description: For multiple ports, a list of destination ports. For a single port, `destinationPortRange` is used instead.
         type: String
       - contextPath: Azure.NSGRule.properties.sourceAddressPrefix
         description: The source address.
@@ -1893,25 +1893,25 @@ script:
         description: The rule's access. Can be "Allow" or "Deny".
         type: String
       - contextPath: Azure.NSGRule.properties.priority
-        description: The rule's priority. Can be from 100 to 4096.
+        description: The rule’s priority, ranging from 100 to 4096.
         type: Number
       - contextPath: Azure.NSGRule.properties.direction
-        description: The rule's direction. Can be "Inbound" or "Outbound".
+        description: The rule's direction, which can be "Inbound" or "Outbound".
         type: String
     arguments:
-      - description: "The subscription ID."
+      - description: The subscription ID.
         name: subscription_id
         type: String
         required: true
-      - description: "The name of the resource group."
+      - description: Resource group name.
         name: resource_group_name
         type: String
         required: true
-      - description: 'The name of the security group.'
+      - description: The name of the security group.
         name: security_group_name
         required: true
         type: String
-      - description: 'The name of the rule to be created.'
+      - description: The name of the rule to create.
         name: security_rule_name
         required: true
         type: String
@@ -1940,23 +1940,23 @@ script:
           - ICMP
         defaultValue: Any
         type: String
-      - description: The source IP address range from which incoming traffic will be allowed or denied by this rule. Possible values are "Any", an IP address range, an application security group, or a default tag. Default is "Any".
+      - description: The source IP address range from which incoming traffic is allowed or denied by this rule. Possible values are "Any", an IP address range, an application security group, or a default tag. Default is "Any".
         name: source
         defaultValue: Any
         type: String
-      - description: The priority of the rule. The value can be between 100 and 4096. The priority number must be unique for each rule in the collection. The lower the priority number, the higher the priority of the rule.
+      - description: The priority of the rule, with a value between 100 and 4096. Each rule in the collection must have a unique priority number. Lower numbers indicate higher priority.
         name: priority
         required: true
         type: Number
-      - description: The source ports from which traffic will be allowed or denied by this rule. Provide a single port, such as 80; a port range, such as 1024-65535; or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535. Use an asterisk (*) to allow traffic on any port. Default is "*".
+      - description: The source ports from which traffic is allowed or denied by this rule. Provide a single port, such as 80; a port range, such as 1024-65535; or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535. Use an asterisk (*) to allow traffic on any port. Default is "*".
         name: source_ports
         defaultValue: '*'
         type: String
-      - description: The specific destination IP address range for outgoing traffic that will be allowed or denied by this rule. The destination filter can be "Any", an IP address range, an application security group, or a default tag.
+      - description: The destination IP address range for outgoing traffic that is allowed or denied by this rule. The destination filter can be "Any", an IP address range, an application security group, or a default tag.
         name: destination
         defaultValue: Any
         type: String
-      - description: The destination ports for which traffic will be allowed or denied by this rule. Provide a single port, such as 80; a port range, such as 1024-65535; or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535. Use an asterisk (*) to allow traffic on any port.
+      - description: The destination ports from which traffic is allowed or denied by this rule. Provide a single port, such as 80; a port range, such as 1024-65535; or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535. Use an asterisk (*) to allow traffic on any port.
         name: destination_ports
         defaultValue: '*'
         type: String
@@ -1965,24 +1965,24 @@ script:
   - description: Delete a security rule.
     name: azure-nsg-security-rule-delete
     arguments:
-      - description: "The subscription ID."
+      - description: The subscription ID.
         name: subscription_id
         type: String
         required: true
-      - description: "The name of the resource group."
+      - description: Resource group name.
         name: resource_group_name
         type: String
         required: true
       - description: The name of the security group.
         name: security_group_name
         required: true
-      - description: The name of the rule to be deleted.
+      - description: The name of the rule to delete.
         name: security_rule_name
         required: true
   - description: Gets all resource groups for a subscription.
     name: azure-nsg-resource-group-list
     arguments:
-      - description: "The subscription ID."
+      - description: The subscription ID.
         name: subscription_id
         type: String
         required: true
@@ -2043,7 +2043,7 @@ script:
         description: The kind of the network interface.
         type: String
       - contextPath: Azure.NSGNetworkInterfaces.etag
-        description: The etag of the network interface.
+        description: The ETag of the network interface.
         type: String
       - contextPath: Azure.NSGNetworkInterfaces.location
         description: The location of the network interface.
@@ -2064,7 +2064,7 @@ script:
         description: The IP configuration resource ID.
         type: List
       - contextPath: Azure.NSGNetworkInterfaces.properties.ipConfigurations.etag
-        description: The etag of the IP configuration.
+        description: The ETag of the IP configuration.
         type: List
       - contextPath: Azure.NSGNetworkInterfaces.properties.ipConfigurations.type
         description: The type of the IP configuration resource.
@@ -2083,7 +2083,7 @@ script:
         name: resource_group_name
         type: String
         required: true
-      - description: "The subscription ID."
+      - description: The subscription ID.
         name: subscription_id
         type: String
         required: true
@@ -2092,7 +2092,7 @@ script:
         defaultValue: 50
         type: Number
       - name: all_results
-        description: Whether to retrieve all the results by overriding the default limit.
+        description: Whether to retrieve all results by overriding the default limit.
         default: false
         auto: PREDEFINED
         predefined:
@@ -2117,7 +2117,7 @@ script:
         description: The type of the public IP address.
         type: String
       - contextPath: Azure.NSGPublicIPAddress.etag
-        description: The public IP address's etag.
+        description: The public IP address's ETag.
         type: String
       - contextPath: Azure.NSGPublicIPAddress.properties.provisioningState
         description: The public IP address's provisioning state.
@@ -2151,7 +2151,7 @@ script:
         name: resource_group_name
         type: String
         required: true
-      - description: "The subscription ID."
+      - description: The subscription ID.
         name: subscription_id
         type: String
         required: true
@@ -2160,7 +2160,7 @@ script:
         defaultValue: 50
         type: Number
       - name: all_results
-        description: Whether to retrieve all the results by overriding the default limit.
+        description: Whether to retrieve all results by overriding the default limit.
         default: false
         auto: PREDEFINED
         predefined:
