@@ -289,11 +289,12 @@ def create_publications(publications_data: list) -> list:
     publications = []
 
     for data in publications_data:
-        timestamp = data.get("created_at", "")
+        timestamp = data.get("created", "")
         title = data.get("title", "")
         url = data.get("url", "")
+        source = data.get("source", "")
 
-        publications.append({"link": url, "title": title, "timestamp": timestamp, "source": INTEGRATION_NAME})
+        publications.append({"link": url, "title": title, "timestamp": timestamp, "source": source})
 
     return publications
 
