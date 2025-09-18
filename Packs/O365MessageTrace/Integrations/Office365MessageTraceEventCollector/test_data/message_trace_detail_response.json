@@ -1,0 +1,12 @@
+{
+  "value": [
+    {
+      "MessageTraceId": "123456-78901-abcdef",
+      "MessageId": "<ABC123@contoso.com>",
+      "EventId": "RECEIVE",
+      "Source": "SMTP",
+      "Timestamp": "2023-07-01T12:00:00Z",
+      "Detail": "Received message from 192.168.1.1"
+    }
+  ]
+}
