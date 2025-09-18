@@ -15,7 +15,9 @@
         "Network",
         "IT"
     ],
-    "useCases": [],
+    "useCases": [
+        "Network Security"
+    ],
     "keywords": [
         "microsoft",
         "windows"
