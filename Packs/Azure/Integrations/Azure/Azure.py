@@ -296,9 +296,7 @@ class AzureClient:
             if not found_permission:
                 found_permission = get_permissions_from_required_role_permissions_list(error_msg)
 
-            error_entries = []
-            for perm in found_permission:
-                error_entries.append({"account_id": subscription_id, "message": error_msg, "name": perm})
+            error_entries = [{"account_id": subscription_id, "message": error_msg, "name": perm} for perm in found_permission]
 
             demisto.debug(f"Calling return_multiple_permissions_error function with {error_entries=}")
             return_multiple_permissions_error(error_entries)
