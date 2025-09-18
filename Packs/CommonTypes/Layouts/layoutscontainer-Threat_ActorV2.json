@@ -149,7 +149,7 @@
                             {
                                 "endCol": 2,
                                 "fieldId": "stixid",
-                                "height": 26,
+                                "height": 22,
                                 "id": "842ca570-b30c-11eb-941c-e725acf1fbbc",
                                 "index": 2,
                                 "sectionItemType": "field",
