@@ -491,7 +491,7 @@ tasks:
       version: -1
       name: Run domain enrichment script
       description: This script gathers domain reputation data from multiple integrations
-        and returns a "DomainEnrichment" object with consolidated information to the
+        and returns a "DomainEnrichment" object with consolidated information in the
         context output.
       scriptName: domain-enrichment
       type: regular
