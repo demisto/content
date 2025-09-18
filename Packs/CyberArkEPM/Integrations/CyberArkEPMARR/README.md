@@ -2,16 +2,13 @@ This integration allows you to automate risk plan management in CyberArk Endpoin
 
 ## Configure CyberArk EPM Adaptive Risk Reduction (ARR) in Cortex
 
-| **Parameter** | **Description** | **Required** |
-| --- | --- | --- |
-| SAML/EPM Logon URL | SAML example: https://login.epm.cyberark.com/SAML/Logon. | True |
-| Username |  | True |
-| Password |  | True |
-| Application ID | Required for local\(EPM\) authentication only. | False |
-| Authentication URL | Required for SAML authentication only, Example for PAN OKTA: https://paloaltonetworks.okta.com/api/v1/authn. | False |
-| Application URL | Required for SAML authentication only, Example for PAN OKTA: https://paloaltonetworks.okta.com/home/\[APP_NAME\]/\[APP_ID\]. | False |
-| Trust any certificate (not secure) |  | False |
-| Use system proxy settings |  | False |
+| **Parameter** | **Description**                                                                                                   | **Required** |
+| --- |-------------------------------------------------------------------------------------------------------------------| --- |
+| EPM Logon URL | Example: https://login.epm.cyberark.com.                                                                          | True |
+| Username |                                                                                                                   | True |
+| Password |                                                                                                                   | True |
+| Application ID | Required for local\(EPM\) authentication only.                                                                    | False |
+| Use system proxy settings |                                                                                                                   | False |
 
 ## Commands
 

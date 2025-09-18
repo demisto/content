@@ -1,10 +1,10 @@
 category: Endpoint
 commonfields:
-  id: CyberArkEPMARR
+  id: CyberArkEPMARR_test
   version: -1
 configuration:
-- additionalinfo: 'SAML example: https://login.epm.cyberark.com/SAML/Logon.'
-  display: SAML/EPM Logon URL
+- additionalinfo: 'Example: https://login.epm.cyberark.com'
+  display: EPM Logon URL
   name: url
   required: true
   type: 0
@@ -13,32 +13,15 @@ configuration:
   required: true
   type: 9
 - display: Set name
-  additionalinfo: A comma-separated list of set names.
+  additionalinfo: The name of the set to target. If not provided, endpoint will be searched across all sets.
   name: set_name
-  required: true
+  required: false
   type: 0
 - additionalinfo: 'Required for local(EPM) authentication only. See how to get the application ID https://docs.cyberark.com/Idaptive/Latest/en/Content/Applications/AppsOvw/SpecifyAppID.htm#%23SpecifytheApplicationID'
   display: Application ID
   name: application_id
   required: false
   type: 0
-- additionalinfo: 'Required for SAML authentication only, Example for OKTA: https://[COMPANY_NAME].okta.com/api/v1/authn. See how to get the Authentication URL https://developer.okta.com/docs/reference/api/authn/#authentication-operations'
-  advanced: true
-  display: Authentication URL
-  name: authentication_url
-  required: false
-  type: 0
-- additionalinfo: 'Required for SAML authentication only, Example for OKTA: https://[COMPANY_NAME].okta.com/home/[APP_NAME]/[APP_ID].'
-  advanced: true
-  display: Application URL
-  name: application_url
-  required: false
-  type: 0
-- display: Trust any certificate (not secure)
-  advanced: true
-  name: insecure
-  required: false
-  type: 8
 - display: Use system proxy settings
   advanced: true
   name: proxy
@@ -46,7 +29,7 @@ configuration:
   type: 8
 description: This integration allows you to activate and deactivate CyberArk EPM risk plans for specific endpoints.
 display: CyberArk EPM ARR
-name: CyberArkEPMARR
+name: CyberArkEPMARR_test
 script:
   commands:
   - arguments:

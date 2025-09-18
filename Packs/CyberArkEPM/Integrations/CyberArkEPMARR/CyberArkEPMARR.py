@@ -23,8 +23,7 @@ class Client(BaseClient):
         username,
         password,
         application_id,
-        authentication_url=None,
-        application_url=None,
+        set_name=None,
         verify=True,
         proxy=False
     ):
@@ -36,12 +35,8 @@ class Client(BaseClient):
         self.username = username
         self.password = password
         self.application_id = application_id
-        self.authentication_url = authentication_url
-        self.application_url = application_url
-        if self.authentication_url and self.application_url:
-            self.saml_auth_to_cyber_ark()
-        else:
-            self.epm_auth_to_cyber_ark()
+        self.set_name = set_name
+        self.epm_auth_to_cyber_ark()
 
 
     def epm_auth_to_cyber_ark(self):  # pragma: no cover
@@ -54,40 +49,6 @@ class Client(BaseClient):
 
         if result.get("IsPasswordExpired"):
             return_error("CyberArk is reporting that the user password is expired. Terminating script.")
-        self._base_url = urljoin(result.get("ManagerURL"), "/EPM/API/")
-        self._headers["Authorization"] = f"basic {result.get('EPMAuthenticationResult')}"
-
-    def get_session_token(self) -> str:  # pragma: no cover
-        # Reference: https://developer.okta.com/docs/reference/api/authn/#primary-authentication
-        data = {
-            "username": self.username,
-            "password": self.password,
-        }
-        result = self._http_request("POST", full_url=self.authentication_url, json_data=data)
-        demisto.debug(f"result is: {result}")
-        if result.get("status", "") != "SUCCESS":
-            raise DemistoException(
-                f"Retrieving session token returned status: {result.get('status')},"
-                f" Check your credentials and make sure the user is not blocked by a role."
-            )
-        return result.get("sessionToken")
-
-    def get_saml_response(self) -> str:  # pragma: no cover
-        # Reference: https://devforum.okta.com/t/how-to-get-saml-assertion-through-an-api/24580
-        full_url = f"{self.application_url}?onetimetoken={self.get_session_token()}"
-        result = self._http_request("POST", full_url=full_url, resp_type="response")
-        soup = BeautifulSoup(result.text, features="html.parser")
-        saml_response = soup.find("input", {"name": "SAMLResponse"}).get("value")
-
-        return saml_response
-
-    def saml_auth_to_cyber_ark(self):  # pragma: no cover
-        # Reference: https://docs.cyberark.com/EPM/Latest/en/Content/WebServices/SAMLAuthentication.htm
-        headers = {"Content-Type": "application/x-www-form-urlencoded"}
-        data = {"SAMLResponse": self.get_saml_response()}
-        result = self._http_request("POST", url_suffix="/SAML/Logon", headers=headers, data=data)
-        if result.get("IsPasswordExpired"):
-            raise DemistoException("CyberArk is reporting that the user password is expired. Terminating script.")
         self._base_url = urljoin(result.get("ManagerURL"), "/EPM/API/")
         self._headers["Authorization"] = f"basic {result.get('EPMAuthenticationResult')}"
 
@@ -112,7 +73,10 @@ def search_endpoints(endpoint_name: str, external_ip: str, client: Client) -> li
         "filter": f"name EQ {endpoint_name} and ip EQ {external_ip}"
     }
     sets = client.get_sets()
-    set_ids = [set["Id"] for set in sets.get("Sets", [])]
+    if client.set_name:
+        set_ids = [set["Id"] for set in sets.get("Sets", []) if  client.set_name in set.get("Name")]
+    else:
+        set_ids = [set["Id"] for set in sets.get("Sets", [])]
     for set_id in set_ids:
         url_suffix = f"Sets/{set_id}/Endpoints/Search"
         result = client._http_request("POST", url_suffix=url_suffix, json_data=data)
@@ -244,12 +208,14 @@ def main():
     application_id = params.get("application_id")
     username = params.get("credentials").get("identifier")
     password = params.get("credentials").get("password")
+    set_name = params.get("set_name")
     try:
         client = Client(
             base_url=base_url,
             username=username,
             password=password,
-            application_id=application_id
+            application_id=application_id,
+            set_name=set_name
         )
         if command == "test-module":
             result = test_module(client)
