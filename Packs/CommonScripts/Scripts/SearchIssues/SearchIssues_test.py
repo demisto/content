@@ -127,31 +127,8 @@ def test_prepare_sha256_custom_field_empty_list():
     ["abc123", "xyz456"]
 ])
 def test_main_with_sha256_filter(monkeypatch, sha_values):
-    # Prepare expected structure of the custom_filter
-    expected_custom_filter = {
-        "OR": []
-    }
 
-    for field in SearchIssues.SEARCH_TYPE_EQUAL_SHA256_FIELDS:
-        expected_custom_filter["OR"].append({
-            "AND": [{
-                "OR": [
-                    {"SEARCH_FIELD": field, "SEARCH_TYPE": SearchIssues.EQ, "SEARCH_VALUE": sha}
-                    for sha in sha_values
-                ]
-            }]
-        })
-
-    for field in SearchIssues.SEARCH_TYPE_CONTAINS_SHA256_FIELDS:
-        expected_custom_filter["OR"].append({
-            "AND": [{
-                "OR": [
-                    {"SEARCH_FIELD": field, "SEARCH_TYPE": SearchIssues.CONTAINS, "SEARCH_VALUE": sha}
-                    for sha in sha_values
-                ]
-            }]
-        })
-
+    expected_custom_filter = "{'OR': [{'AND': [{'OR': [{'SEARCH_FIELD': 'actor_process_image_sha256', 'SEARCH_TYPE': 'EQ', 'SEARCH_VALUE': 'abc123'}, {'SEARCH_FIELD': 'actor_process_image_sha256', 'SEARCH_TYPE': 'EQ', 'SEARCH_VALUE': 'xyz456'}]}]}, {'AND': [{'OR': [{'SEARCH_FIELD': 'causality_actor_process_image_sha256', 'SEARCH_TYPE': 'EQ', 'SEARCH_VALUE': 'abc123'}, {'SEARCH_FIELD': 'causality_actor_process_image_sha256', 'SEARCH_TYPE': 'EQ', 'SEARCH_VALUE': 'xyz456'}]}]}, {'AND': [{'OR': [{'SEARCH_FIELD': 'action_process_image_sha256', 'SEARCH_TYPE': 'EQ', 'SEARCH_VALUE': 'abc123'}, {'SEARCH_FIELD': 'action_process_image_sha256', 'SEARCH_TYPE': 'EQ', 'SEARCH_VALUE': 'xyz456'}]}]}, {'AND': [{'OR': [{'SEARCH_FIELD': 'os_actor_process_image_sha256', 'SEARCH_TYPE': 'EQ', 'SEARCH_VALUE': 'abc123'}, {'SEARCH_FIELD': 'os_actor_process_image_sha256', 'SEARCH_TYPE': 'EQ', 'SEARCH_VALUE': 'xyz456'}]}]}, {'AND': [{'OR': [{'SEARCH_FIELD': 'action_file_macro_sha256', 'SEARCH_TYPE': 'EQ', 'SEARCH_VALUE': 'abc123'}, {'SEARCH_FIELD': 'action_file_macro_sha256', 'SEARCH_TYPE': 'EQ', 'SEARCH_VALUE': 'xyz456'}]}]}]}"
     # Mock demisto.args()
     monkeypatch.setattr(SearchIssues.demisto, "args", lambda: {
         "sha256": ",".join(sha_values),
