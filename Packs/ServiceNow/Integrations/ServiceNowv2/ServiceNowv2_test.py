@@ -3995,37 +3995,43 @@ def test_get_remote_data_preview_success_with_list_response(mock_client: MagicMo
     assert result.outputs["title"] == "Network printer offline"
     assert result.outputs["status"] == "New"
 
+
 class UpdateRemoteSystemArgs:
     def __init__(self, delta):
         self.delta = delta
 
-# Sample delta dict to test mutation
-DEFAULT_DELTA = {'key': 'value'}
 
-@pytest.mark.parametrize("state,ticket_type,custom_state,should_patch", [
-    ("7", "incident", None, True),           # Given closed state (7)
-    ("6", "incident", None, True),           # Given resolved state (6)
-    ("9", "incident", "9", True),            # Given custom close state (match) and type incident
-    ("9", "problem", "9", False),            # Given custom state match but non-incident type
-    ("5", "incident", "9", False),           # Given wrong state
-    (None, "incident", None, False),         # Given missing state and no custom close state
-])
+# Sample delta dict to test mutation
+DEFAULT_DELTA = {"key": "value"}
+
+
+@pytest.mark.parametrize(
+    "state,ticket_type,custom_state,should_patch",
+    [
+        ("7", "incident", None, True),  # Given closed state (7)
+        ("6", "incident", None, True),  # Given resolved state (6)
+        ("9", "incident", "9", True),  # Given custom close state (match) and type incident
+        ("9", "problem", "9", False),  # Given custom state match but non-incident type
+        ("5", "incident", "9", False),  # Given wrong state
+        (None, "incident", None, False),  # Given missing state and no custom close state
+    ],
+)
 @patch("ServiceNowv2.add_default_closure_fields_to_delta")
 def test_set_default_fields_behavior(mock_add_defaults, state, ticket_type, custom_state, should_patch):
     """
-        GIVEN: an UpdateRemoteSystemArgs object with a delta containing various 'state' values,
-        AND different combinations of ticket_type and custom_state,
+    GIVEN: an UpdateRemoteSystemArgs object with a delta containing various 'state' values,
+    AND different combinations of ticket_type and custom_state,
 
-        WHEN: set_default_fields is called,
+    WHEN: set_default_fields is called,
 
-        THEN: it should call add_default_closure_fields_to_delta and log a debug message
-             only if the state is "6", "7", or matches custom_state and ticket_type is "incident".
-        """
-    initial_delta = {'state': state} if state is not None else {}
+    THEN: it should call add_default_closure_fields_to_delta and log a debug message
+         only if the state is "6", "7", or matches custom_state and ticket_type is "incident".
+    """
+    initial_delta = {"state": state} if state is not None else {}
     args = UpdateRemoteSystemArgs(delta=initial_delta.copy())
     modified_delta = initial_delta.copy()
-    modified_delta['close_code'] = 'default_code'
-    modified_delta['close_notes'] = 'default_notes'
+    modified_delta["close_code"] = "default_code"
+    modified_delta["close_notes"] = "default_notes"
 
     mock_add_defaults.return_value = modified_delta
 
