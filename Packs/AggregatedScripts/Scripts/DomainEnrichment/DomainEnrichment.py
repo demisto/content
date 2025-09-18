@@ -10,17 +10,17 @@ def domain_enrichment_script(
     verbose: bool = False,
     enrichment_brands: list[str] | None = None,
     additional_fields: bool = False,
-)-> CommandResults:
+) -> CommandResults:
     """
     Enriches Domain data with information from various integrations.
-    
+
     Args:
         domain_list (list[str]): List of domains to enrich.
         external_enrichment (bool): Whether to perform external enrichment.
         verbose (bool): Whether to print verbose output.
         enrichment_brands (list[str]): List of brands to enrich.
         additional_fields (bool): Whether to include additional fields in the output.
-    
+
     Returns:
         CommandResults: The results of the command.
     """
@@ -74,7 +74,6 @@ def domain_enrichment_script(
         create_new_indicator_commands,
         [core_domain_analytics_cmd] + enrich_indicator_commands,
     ]
-
 
     domain_reputation = ReputationAggregatedCommand(
         brands=enrichment_brands or [],

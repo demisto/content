@@ -1,6 +1,5 @@
 import json
 import demistomock as demisto
-from CommonServerPython import Common
 from DomainEnrichment import domain_enrichment_script
 
 
