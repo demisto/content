@@ -78,7 +78,7 @@ def test_ip_command_malicious(client, mocker):
     assert result.indicator.ip == "1.2.3.4"
     assert result.indicator.dbot_score.score == Common.DBotScore.BAD
     assert result.indicator.dbot_score.malicious_description == "Unit 42 Intelligence classified this ip as malicious"
-    
+
     # Test enriched indicator fields
     assert "APT29" in result.indicator.tags
     assert "Cobalt Strike" in result.indicator.tags
@@ -189,7 +189,7 @@ def test_file_command_malicious(client, mocker):
         "counts": [],
         "threat_object_association": [
             {"name": "Zeus", "threat_object_class": "malware_family", "aliases": ["Zbot"]},
-            {"name": "APT28", "threat_object_class": "actor"}
+            {"name": "APT28", "threat_object_class": "actor"},
         ],
     }
 
@@ -206,7 +206,7 @@ def test_file_command_malicious(client, mocker):
     assert result.indicator.sha256 == test_hash
     assert result.indicator.dbot_score.score == Common.DBotScore.BAD
     assert result.indicator.dbot_score.malicious_description == "Unit 42 Intelligence classified this file as malicious"
-    
+
     # Test enriched indicator fields
     assert "Zeus" in result.indicator.tags
     assert "APT28" in result.indicator.tags
@@ -343,12 +343,9 @@ def test_client_initialization(mocker):
     license_id = "test_license"
     # Mock demisto.getLicenseID within the Unit42Intelligence module
     mocker.patch("Unit42Intelligence.demisto.getLicenseID", return_value=license_id)
-    
+
     client = Client(
-        base_url="https://api.unit42.paloaltonetworks.com/",
-        verify=True,
-        proxy=False,
-        reliability=DBotScoreReliability.B
+        base_url="https://api.unit42.paloaltonetworks.com/", verify=True, proxy=False, reliability=DBotScoreReliability.B
     )
 
     assert client.base_url == "https://api.unit42.paloaltonetworks.com/"
@@ -849,9 +846,9 @@ def test_extract_tags_from_threat_objects():
         {"name": "Zeus", "aliases": ["Zbot", None]},  # Test None handling
         {"aliases": ["Orphan Alias"]},  # Test missing name
     ]
-    
+
     tags = extract_tags_from_threat_objects(threat_objects)
-    
+
     assert "APT29" in tags
     assert "Cozy Bear" in tags
     assert "The Dukes" in tags
@@ -880,9 +877,9 @@ def test_extract_malware_families_from_threat_objects():
         {"name": "Operation Ghost", "threat_object_class": "campaign"},
         {"threat_object_class": "malware_family"},  # Missing name
     ]
-    
+
     malware_families = extract_malware_families_from_threat_objects(threat_objects)
-    
+
     assert "Cobalt Strike" in malware_families
     assert "Zeus" in malware_families
     assert "APT29" not in malware_families
@@ -907,33 +904,29 @@ def test_create_threat_object_indicators():
             "threat_object_class": "actor",
             "description": "Advanced persistent threat group",
             "aliases": ["Cozy Bear"],
-            "publications": [{"title": "APT29 Report", "url": "http://example.com"}]
+            "publications": [{"title": "APT29 Report", "url": "http://example.com"}],
         },
-        {
-            "name": "Cobalt Strike",
-            "threat_object_class": "malware_family",
-            "source": "Unit42"
-        },
+        {"name": "Cobalt Strike", "threat_object_class": "malware_family", "source": "Unit42"},
         {
             "name": "Unknown Class",
-            "threat_object_class": "unknown_class"  # Should be skipped
+            "threat_object_class": "unknown_class",  # Should be skipped
         },
         {
             "threat_object_class": "actor"  # Missing name, should be skipped
-        }
+        },
     ]
-    
+
     indicators = create_threat_object_indicators(threat_objects, "A - Completely reliable")
-    
+
     assert len(indicators) == 2  # Only valid threat objects
-    
+
     # Check APT29 indicator
     apt29_indicator = next(ind for ind in indicators if ind["value"] == "APT29")
     assert apt29_indicator["type"] == ThreatIntel.ObjectsNames.THREAT_ACTOR
     assert apt29_indicator["rawJSON"]["description"] == "Advanced persistent threat group"
     assert apt29_indicator["rawJSON"]["aliases"] == ["Cozy Bear"]
     assert apt29_indicator["source"] == "Unit 42 Intelligence"
-    
+
     # Check Cobalt Strike indicator
     cs_indicator = next(ind for ind in indicators if ind["value"] == "Cobalt Strike")
     assert cs_indicator["type"] == ThreatIntel.ObjectsNames.MALWARE
@@ -1001,27 +994,22 @@ def test_ip_command_with_threat_object_indicators(client, mocker):
                 "latestPanVerdicts": {"PAN-DB": "MALWARE"},
                 "seenBy": ["PAN-DB"],
                 "wildfireRelatedSampleVerdictCounts": {},
-                "relationships": [
-                    {
-                        "name": "test-malware",
-                        "threat_object_class": "malware_family"
-                    }
-                ]
+                "relationships": [{"name": "test-malware", "threat_object_class": "malware_family"}],
             }
         }
     }
-    
+
     mock_response_obj = mocker.Mock()
     mock_response_obj.status_code = 200
     mock_response_obj.json.return_value = mock_response
     mocker.patch.object(client, "lookup_indicator", return_value=mock_response_obj)
-    
+
     # Mock demisto.createIndicators to avoid import issues
     mocker.patch("demisto.createIndicators")
-    
+
     args = {"ip": "1.2.3.4", "create_relationships": True, "create_threat_object_indicators": True}
     result = ip_command(client, args)
-    
+
     # Verify the command returns proper results
     assert result.outputs["Value"] == "1.2.3.4"
     assert result.indicator.ip == "1.2.3.4"
@@ -1040,10 +1028,10 @@ def test_file_command_unsupported_hash_type(client):
         - Does not make API call
     """
     md5_hash = "a" * 32  # MD5 hash
-    
+
     args = {"file": md5_hash, "create_relationships": True}
     result = file_command(client, args)
-    
+
     assert "Unit 42 Intelligence only supports SHA256 hashes" in result.readable_output
     assert "md5" in result.readable_output
 
@@ -1060,9 +1048,9 @@ def test_file_command_sha1_unsupported(client):
         - Does not make API call
     """
     sha1_hash = "a" * 40  # SHA1 hash
-    
+
     args = {"file": sha1_hash, "create_relationships": True}
     result = file_command(client, args)
-    
+
     assert "Unit 42 Intelligence only supports SHA256 hashes" in result.readable_output
     assert "sha1" in result.readable_output
