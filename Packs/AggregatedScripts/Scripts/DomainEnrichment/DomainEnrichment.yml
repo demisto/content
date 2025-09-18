@@ -9,11 +9,11 @@ args:
   required: true
   isArray: true
 - name: external_enrichment
-  description: |
+  description: "Whether to call external integrations for enrichment:
     Whether to call external integrations for enrichment.
     - 'true': enrich using enabled external integrations (e.g., VirusTotal (API v3), AlienVault OTX v2) and run internal commands.
     - 'false': use only existing TIM data and run internal commands; skip external integrations.
-    If the 'brands' argument is provided, this flag is ignored and enrichment/internal commands will run only on the brands provided.
+    If the 'brands' argument is provided, this flag is ignored and enrichment/internal commands will run only on the brands provided."
   auto: PREDEFINED
   predefined:
   - 'true'
@@ -21,7 +21,7 @@ args:
   defaultValue: 'false'
   required: false
 - name: verbose
-  description: Whether to retrieve a human-readable entry for every command. When set to false, human-readable will only summarize the final result and suppress error entries from commands.
+  description: Retrieve a human-readable entry for each command; if false, only the final result is summarized and errors are suppressed.
   auto: PREDEFINED
   predefined:
   - 'true'
@@ -41,7 +41,7 @@ args:
   required: false
 - name: additional_fields
   description: |
-    When set to true, the output will also include an `AdditionalFields` object
+    When set to true, the output includes an `AdditionalFields` object  
     for each of the indicator result.  
     `AdditionalFields` contains all fields returned by TIM or the integrations
     that are not part of the standard output keys: `Name`, `Brand`, `Score`, `Verdict`, `DetectionEngines`, 
@@ -53,7 +53,7 @@ args:
   - 'false'
   required: false
   defaultValue: 'false'
-comment: This script enriches Domains data with information from multiple integrations and returns a "DomainEnrichment" object with consolidated information to the context output.
+comment: This script enriches Domains data with information from multiple integrations and returns a "DomainEnrichment" object with consolidated information in the context output.
 commonfields:
   id: domain-enrichment
   version: -1
@@ -77,7 +77,7 @@ outputs:
   description: The TIM score of the domain.
   type: number
 - contextPath: DomainEnrichment.Status
-  description: The status of the indicator. If the Score changed manually, the status will be "Manual". If modified by less than one week, the status will be "Fresh". Otherwise, the status will be "Stale". If not modified at all, the status will be None.
+  description: 'The status of the indicator: "Manual" if the score was changed manually, "Fresh" if modified within the last week, "Stale" if modified more than a week ago, and "None" if never modified.'
   type: string
 - contextPath: DomainEnrichment.ModifiedTime
   description: The time the indicator was last modified.
@@ -103,7 +103,8 @@ outputs:
   type: string
 # DomainEnrichment Additional Fields
 - contextPath: DomainEnrichment.Results.AdditionalFields
-  description: Unmapped (secondary) fields. Only available if the additional_fields argument is set to true.
+  description: All fields extracted from the indicator other then the main keys ("Brand", "Score", "Verdict", "DetectionEngines", "PositiveDetections", "Name").
+
   type: Object
 - contextPath: DomainEnrichment.Results.AdditionalFields.Relationships.EntityA
   description: The source of the relationship.
@@ -124,10 +125,10 @@ outputs:
   description: A list of IP objects resolved by DNS.
   type: String
 - contextPath: DomainEnrichment.Results.AdditionalFields.CreationDate
-  description: The date that the domain was created.
+  description: The date when the domain was created.
   type: Date
 - contextPath: DomainEnrichment.Results.AdditionalFields.UpdatedDate
-  description: The date that the domain was last updated.
+  description: The date when the domain was last updated.
   type: String
 - contextPath: DomainEnrichment.Results.AdditionalFields.ExpirationDate
   description: The expiration date of the domain.
@@ -166,7 +167,7 @@ outputs:
   description: The name of the registrant.
   type: String
 - contextPath: DomainEnrichment.Results.AdditionalFields.Registrant.Phone
-  description: The phone number for receiving abuse reports.
+  description: The phone number to receive abuse reports.  
   type: String
 - contextPath: DomainEnrichment.Results.AdditionalFields.Tags
   description: (List) Tags of the domain.
@@ -208,13 +209,13 @@ outputs:
   description: The phone number of the registrant.
   type: String
 - contextPath: DomainEnrichment.Results.AdditionalFields.WHOIS.Registrar.Name
-  description: The name of the registrar, for example GoDaddy.
+  description: The name of the registrar, for example, GoDaddy.
   type: String
 - contextPath: DomainEnrichment.Results.AdditionalFields.WHOIS.Registrar.AbuseEmail
-  description: The email address of the contact for reporting abuse.
+  description: The email address of the contact to report abuse.
   type: String
 - contextPath: DomainEnrichment.Results.AdditionalFields.WHOIS.Registrar.AbusePhone
-  description: The phone number of contact for reporting abuse.
+  description: The phone number of the contact to report abuse.
   type: String
 - contextPath: DomainEnrichment.Results.AdditionalFields.WHOIS.Admin.Name
   description: The name of the domain administrator.
@@ -232,16 +233,16 @@ outputs:
   description: The vendor reporting the domain as malicious.
   type: String
 - contextPath: DomainEnrichment.Results.AdditionalFields.Malicious.Description
-  description: A description explaining why the domain was reported as malicious.
+  description: Reason the domain was reported as malicious.
   type: String
 - contextPath: DomainEnrichment.Results.AdditionalFields.DomainIDNName
   description: The internationalized domain name (IDN) of the domain.
   type: String
 - contextPath: DomainEnrichment.Results.AdditionalFields.Port
-  description: Ports that are associated with the domain.
+  description: Ports associated with the domain.
   type: String
 - contextPath: DomainEnrichment.Results.AdditionalFields.Internal
-  description: Whether or not the domain is internal or external.
+  description: Whether the domain is internal or external.
   type: Bool
 - contextPath: DomainEnrichment.Results.AdditionalFields.Category
   description: The category associated with the indicator.
@@ -256,7 +257,7 @@ outputs:
   description: The threat category associated to this indicator by the source vendor, for example, Phishing, Control, TOR, etc.
   type: String
 - contextPath: DomainEnrichment.Results.AdditionalFields.ThreatTypes.threatcategoryconfidence
-  description: Threat Category Confidence is the confidence level provided by the vendor for the threat type category For example a confidence of 90 for threat type category 'malware' means that the vendor rates that this is 90% confidence of being a malware.
+  description: Threat Category Confidence is the confidence level provided by the vendor for the threat type category. For example, a confidence of 90 for the threat type category 'malware' means the vendor estimates a 90% likelihood that it is malware.  
   type: String
 - contextPath: DomainEnrichment.Results.AdditionalFields.Geo.Location
   description: 'The geolocation where the domain address is located, in the format: latitude:longitude.'
@@ -283,10 +284,10 @@ outputs:
   description: Notes on the domain that were given by the community.
   type: String
 - contextPath: DomainEnrichment.Results.AdditionalFields.CommunityNotes.timestamp
-  description: The time in which the note was published.
+  description: Time the note was published.  
   type: Date
 - contextPath: DomainEnrichment.Results.AdditionalFields.Publications.source
-  description: The source in which the article was published.
+  description: The source where the article was published.  
   type: String
 - contextPath: DomainEnrichment.Results.AdditionalFields.Publications.title
   description: The name of the article.
@@ -295,10 +296,10 @@ outputs:
   description: A link to the original article.
   type: String
 - contextPath: DomainEnrichment.Results.AdditionalFields.Publications.timestamp
-  description: The time in which the article was published.
+  description: Time the article was published.  
   type: Date
 - contextPath: DomainEnrichment.Results.AdditionalFields.Billing
-  description: The billing address of the domain.
+  description: Billing address of the domain.  
   type: String
 # Core.AnalyticsPrevalence
 - contextPath: Core.AnalyticsPrevalence.Domain.value
