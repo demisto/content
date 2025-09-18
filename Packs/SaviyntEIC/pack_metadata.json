@@ -1,26 +1,22 @@
 {
-    "name": "Microsoft Exchange Online",
-    "description": "Exchange Online and Office 365 (mail)",
+    "name": "Saviynt Enterprise Identity Cloud",
+    "description": "Saviynt Enterprise Identity Cloud (EIC) is a cloud-based platform that converges identity governance, administration, and privileged access management into a single, intelligent solution to help organizations secure and manage user identities.",
     "support": "xsoar",
-    "currentVersion": "1.6.22",
+    "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "categories": [
-        "Email"
+        "Analytics & SIEM"
     ],
     "tags": [],
     "useCases": [],
     "keywords": [],
     "marketplaces": [
-        "xsoar",
         "marketplacev2",
         "platform"
     ],
     "supportedModules": [
-        "C1",
-        "C3",
-        "X0",
         "X1",
         "X3",
         "X5",
