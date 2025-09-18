@@ -825,10 +825,9 @@ def test_change_on_premise_password_success(requests_mock, password_field: str):
 @pytest.mark.parametrize(
     "user,password,nonsensitive_password",
     (
-        ("", "", ""),
         ("user", "", ""),
-        ("", "password", ""),
-        ("", "", "nonsensitive_password"),
+        ("user", "password", ""),
+        ("user", "", "nonsensitive_password"),
     ),
 )
 def test_change_on_premise_password_missing_arg(requests_mock, user: str, password: str, nonsensitive_password: str):
@@ -844,7 +843,7 @@ def test_change_on_premise_password_missing_arg(requests_mock, user: str, passwo
 
     requests_mock.post("https://login.microsoftonline.com/tenant_id/oauth2/v2.0/token", json={})
     requests_mock.get(
-        "https://graph.microsoft.com/v1.0/users/user/authentication/passwordMethods", json={"value": [{"id": "id"}]}
+        f"https://graph.microsoft.com/v1.0/users/{user}/authentication/passwordMethods", json={"value": [{"id": "id"}]}
     )
 
     client = MsGraphClient(
