@@ -345,7 +345,7 @@ class Client(BaseClient):
 
     def get_client_list(self, client_list_id: str = None, name: str = None, include_items: bool = False,
                         include_deprecated: bool = False, search: str = None, list_type: list = None,
-                        include_network_list: bool = False, sort: str = 'ASC', page: int = 0,
+                        include_network_list: bool = False, page: int = 0,
                         page_size: int = 50, limit: int = 50) -> dict:
         """
         Get client list.
@@ -357,7 +357,6 @@ class Client(BaseClient):
             search: search
             list_type: filter by these types
             include_network_list: include network list
-            sort: sort
             page: page
             page_size: page size
             limit: limit
@@ -375,7 +374,6 @@ class Client(BaseClient):
             'pageSize': page_size,
             'limit': limit
         }
-        # 'sort': sort # TODO: implement sorting after get results
         for filter_type in list_type:
             params['type'] = filter_type
             if client_list_id:
@@ -423,15 +421,15 @@ class Client(BaseClient):
 
         return self._http_request(method="POST", url_suffix="/client-list/v1/lists", json_data=body)
 
-    def delete_client_list(self, client_list_id: str) -> requests.Response:
+    def delete_client_list(self, list_id: str) -> requests.Response:
         """
         Delete a client list.
         Args:
-            client_list_id: The ID of the client list to delete.
+            list_id: The ID of the client list to delete.
         Returns:
             Response object
         """
-        return self._http_request(method="DELETE", url_suffix=f"/client-list/v1/lists/{client_list_id}", resp_type='response')
+        return self._http_request(method="DELETE", url_suffix=f"/client-list/v1/lists/{list_id}", resp_type='response')
 
     def activate_client_list(self, list_id: str, network_environment: str, comments: str = None, notification_recipients: list = None, siebel_ticket_id: str = None) -> dict:
         """
@@ -3529,7 +3527,7 @@ def list_groups_command(client: Client) -> tuple[object, dict, Union[list, dict]
 @logger
 def get_client_list_command(client: Client, client_list_id: str = None, name: str = None, include_items: bool = False,
                            include_deprecated: bool = False, search: str = None, type_list: list = None,
-                           include_network_list: bool = False, sort: str = 'ASC', page: int = 0,
+                           include_network_list: bool = False, page: int = 0,
                            page_size: int = 50, limit: int = 50) -> tuple[str, dict, dict]:
     """
     Gets the client list.
@@ -3542,7 +3540,6 @@ def get_client_list_command(client: Client, client_list_id: str = None, name: st
         search: search
         type_list: list of types
         include_network_list: include network list
-        sort: sort
         page: page
         page_size: page size
         limit: limit
@@ -3550,7 +3547,7 @@ def get_client_list_command(client: Client, client_list_id: str = None, name: st
         Human readable, context entry, raw response
     """
     raw_response = client.get_client_list(client_list_id, name, include_items, include_deprecated, search, type_list,
-                                        include_network_list, sort, page, page_size, limit)
+                                        include_network_list, page, page_size, limit)
     human_readable = tableToMarkdown("Akamai WAF Client Lists", raw_response)
     context_entry = {
         f"{INTEGRATION_CONTEXT_NAME}.ClientList": raw_response
@@ -3589,20 +3586,20 @@ def create_client_list_command(client: Client, name: str, type: str, contract_id
 
 
 @logger
-def delete_client_list_command(client: Client, client_list_id: str) -> tuple[str, dict, dict]:
+def delete_client_list_command(client: Client, list_id: str) -> tuple[str, dict, dict]:
     """
     Deletes a client list.
     Args:
         client: Akamai WAF client
-        client_list_id: The ID of the client list to delete.
+        list_id: The ID of the client list to delete.
     Returns:
         Human readable, context entry, raw response
     """
-    raw_response = client.delete_client_list(client_list_id)
+    raw_response = client.delete_client_list(list_id)
     if raw_response.status_code == 204:
-        human_readable = f"Akamai WAF Client List {client_list_id} deleted successfully."
+        human_readable = f"Akamai WAF Client List {list_id} deleted successfully."
         return human_readable, {}, {}
-    return f"Akamai WAF Client List {client_list_id} was not deleted.", {}, {}
+    return f"Akamai WAF Client List {list_id} was not deleted.", {}, {}
 
 
 @logger

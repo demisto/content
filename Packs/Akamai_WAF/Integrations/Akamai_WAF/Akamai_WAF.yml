@@ -604,13 +604,6 @@ script:
       - 'true'
       - 'false'
       defaultValue: 'false'
-    - name: sort
-      description: Sort order.
-      auto: PREDEFINED
-      predefined:
-      - ASC
-      - DESC
-      defaultValue: ASC
     - name: page
       description: Page number.
       defaultValue: '0'
