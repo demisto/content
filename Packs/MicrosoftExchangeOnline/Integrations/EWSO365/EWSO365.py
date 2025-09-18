@@ -104,10 +104,14 @@ UTF_8 = "utf-8"
 
 
 def exchangelib_cleanup():  # pragma: no cover
+    demisto.debug("In the exchagelib cleanup")
     key_protocols = list(exchangelib.protocol.CachingProtocol._protocol_cache.items())
     try:
+        demisto.debug("Closing the connections")
         exchangelib.close_connections()
+        demisto.debug("Successfully closed the connections")
     except Exception as ex:
+        demisto.debug(f"Failed to close the connections, logging the error")
         demisto.error(f"Error was found in exchangelib cleanup, ignoring: {ex}")
     for key, (protocol, _) in key_protocols:
         try:
@@ -176,7 +180,7 @@ def get_client_from_params(params: dict) -> EWSClient:
         params.get("incidentFilter", IncidentFilter.RECEIVED_FILTER) or IncidentFilter.RECEIVED_FILTER
     )
     self_deployed = argToBoolean(params.get("self_deployed", False))
-    insecure = True
+    insecure = argToBoolean(params.get("insecure", False))
     proxy = params.get("proxy", False)
 
     return EWSClient(
@@ -956,6 +960,7 @@ def handle_template_params(template_params):  # pragma: no cover
 
 def create_message_object(to, cc, bcc, subject, body, additional_headers, from_address, reply_to, importance, raw=False):
     """Creates the message object according to the existence of additional custom headers."""
+    demisto.debug("In the create_message_object function")
     demisto.debug(
         f"create_message_object params: {to=}\n{cc=}\n{bcc=}\n{subject=}\n{body=}\n{additional_headers=}"
         f"\n{from_address=}\n{reply_to=}\n{importance=}\n{raw=}"
@@ -2030,6 +2035,7 @@ def sub_main():  # pragma: no cover
             error_message += "\nFull stacktrace:\n" + stacktrace
 
         if debug_log:
+            demisto.debug("There is a debug log")
             error_message += "\nFull debug log:\n" + debug_log
 
         if demisto.command() == "fetch-incidents":
@@ -2044,6 +2050,8 @@ def sub_main():  # pragma: no cover
         if is_test_module:
             demisto.results(error_message_simple)
         else:
+            demisto.debug("We are not in test module. returning results")
+            demisto.debug(f"The results contents: {error_message_simple}")
             demisto.results(
                 {
                     "Type": entryTypes["error"],
@@ -2051,10 +2059,11 @@ def sub_main():  # pragma: no cover
                     "Contents": error_message_simple,
                 }
             )
+        demisto.debug("Returning error message")
+        demisto.debug(f"The error message: {error_message}")
         demisto.error(f"{e.__class__.__name__}: {error_message}")
     finally:
         demisto.debug("[sub_main] finally clause")
-
         exchangelib_cleanup()
         if log_stream:
             try:
