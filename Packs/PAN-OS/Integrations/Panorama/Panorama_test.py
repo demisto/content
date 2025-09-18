@@ -8660,8 +8660,7 @@ class TestDynamicUpdateCommands:
 
         with pytest.raises(DemistoException) as e:
             panorama_check_latest_dynamic_update_command({"target": ""})
-
-        assert "When running from a Panorama instance, you must specify the target argument." in str(e.value)
+            assert "When running from a Panorama instance, you must specify the target argument." in str(e.value)
 
     def test_panorama_check_latest_dynamic_update_command_empty_response(self, mocker):
         """
