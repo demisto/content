@@ -191,11 +191,11 @@ def extract_response_data(response: dict[str, Any]) -> dict[str, Any]:
         "indicator_type": response.get("indicator_type", ""),
         "counts": response.get("counts", []),
         "verdict": response.get("verdict", "unknown"),
-        "verdict_category": [item.get("value") for item in response.get("verdict_category", [])],
+        "verdict_categories": [item.get("value") for item in response.get("verdict_categories", [])],
         "first_seen": response.get("first_seen", ""),
         "last_seen": response.get("last_seen", ""),
-        "seen_by": response.get("source", []),
-        "relationships": response.get("threat_object_association", []),
+        "seen_by": response.get("sources", []),
+        "relationships": response.get("threat_object_associations", []),
     }
 
 
@@ -744,7 +744,7 @@ def create_context_data(response_data: dict[str, Any]) -> dict[str, Any]:
         "Value": response_data["indicator_value"],
         "Type": INDICATOR_TYPE_MAPPING.get(response_data["indicator_type"]),
         "Verdict": string_to_table_header(response_data["verdict"]),
-        "VerdictCategory": list({string_to_table_header(item) for item in response_data["verdict_category"]}),
+        "VerdictCategory": list({string_to_table_header(item) for item in response_data["verdict_categories"]}),
         "Counts": response_data["counts"],
         "FirstSeen": response_data["first_seen"],
         "LastSeen": response_data["last_seen"],
