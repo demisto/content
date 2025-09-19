@@ -16,7 +16,7 @@
     "useCases": [],
     "keywords": [
         "SLS",
-        "Strata Logging Service XSOAR Connector 2"
+        "Strata Logging Service XSOAR Connector"
     ],
     "marketplaces": [
         "xsoar"
