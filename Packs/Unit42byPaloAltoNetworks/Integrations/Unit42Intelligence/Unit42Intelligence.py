@@ -744,7 +744,7 @@ def create_context_data(response_data: dict[str, Any]) -> dict[str, Any]:
         "Value": response_data["indicator_value"],
         "Type": INDICATOR_TYPE_MAPPING.get(response_data["indicator_type"]),
         "Verdict": string_to_table_header(response_data["verdict"]),
-        "VerdictCategory": list({string_to_table_header(item) for item in response_data["verdict_categories"]}),
+        "VerdictCategories": list({string_to_table_header(item) for item in response_data["verdict_categories"]}),
         "Counts": response_data["counts"],
         "FirstSeen": response_data["first_seen"],
         "LastSeen": response_data["last_seen"],
@@ -826,7 +826,7 @@ def ip_command(client: Client, args: dict[str, Any]) -> CommandResults:
     readable_output = tableToMarkdown(
         f"Unit 42 Intelligence results for IP: {ip}",
         context_data,
-        headers=["Value", "Verdict", "VerdictCategory", "SeenBy", "FirstSeen", "LastSeen"],
+        headers=["Value", "Verdict", "VerdictCategories", "SeenBy", "FirstSeen", "LastSeen"],
         headerTransform=pascalToSpace,
         removeNull=True,
     )
@@ -890,7 +890,7 @@ def domain_command(client: Client, args: dict[str, Any]) -> CommandResults:
     readable_output = tableToMarkdown(
         f"Unit 42 Intelligence results for Domain: {domain}",
         context_data,
-        headers=["Value", "Verdict", "VerdictCategory", "SeenBy", "FirstSeen", "LastSeen"],
+        headers=["Value", "Verdict", "VerdictCategories", "SeenBy", "FirstSeen", "LastSeen"],
         headerTransform=pascalToSpace,
         removeNull=True,
     )
@@ -954,7 +954,7 @@ def url_command(client: Client, args: dict[str, Any]) -> CommandResults:
     readable_output = tableToMarkdown(
         f"Unit 42 Intelligence results for URL: {url}",
         context_data,
-        headers=["Value", "Verdict", "VerdictCategory", "SeenBy", "FirstSeen", "LastSeen"],
+        headers=["Value", "Verdict", "VerdictCategories", "SeenBy", "FirstSeen", "LastSeen"],
         headerTransform=pascalToSpace,
         removeNull=True,
     )
@@ -1030,7 +1030,7 @@ def file_command(client: Client, args: dict[str, Any]) -> CommandResults:
     readable_output = tableToMarkdown(
         f"Unit 42 Intelligence results for File: {file_hash}",
         context_data,
-        headers=["Value", "Verdict", "VerdictCategory", "SeenBy", "FirstSeen", "LastSeen"],
+        headers=["Value", "Verdict", "VerdictCategories", "SeenBy", "FirstSeen", "LastSeen"],
         headerTransform=pascalToSpace,
         removeNull=True,
     )
