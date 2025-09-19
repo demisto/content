@@ -698,7 +698,7 @@ def create_threat_object_indicators(
         # Create fields with threat object details
         fields = {
             "description": build_threat_object_description(threat_obj),
-            "reportedby": threat_obj.get("source"),
+            "reportedby": threat_obj.get("sources"),
             "aliases": [string_to_table_header(alias) for alias in threat_obj.get("aliases", [])],
             "tags": [string_to_table_header(tag) for tag in threat_obj.get("threat_object_group_names", [])],
             "industrysectors": [
