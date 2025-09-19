@@ -248,13 +248,12 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         """
 
     # Query Requests
-    def run_query(self, query_params: Dict[str, Any], use_old_endpoint: bool = False) -> Dict[str, Any]:
+    def run_query(self, query_params: Dict[str, Any]) -> Dict[str, Any]:
         """This method is in charge of running a JQL (Jira Query Language), and retrieving its results.
 
         Args:
             query_params (Dict[str, Any]): The query parameters, which will hold the query string itself,
             and any pagination data (using startAt and maxResults, as required by the API)
-            use_old_endpoint (bool, optional): Whether to use the old deprecated endpoint for backwards compatibility.
 
         Returns:
             Dict[str, Any]: The query results, which will hold the issues acquired from the query.
@@ -264,7 +263,12 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         # content in HTML format, using a 3rd party package, rather than complex format.
         # We also supply the fields: *all to return all the fields from an issue (specifically the field that holds
         # data about the attachments in the issue), otherwise, it won't get returned in the query.
-        url_suffix = f"rest/api/{self.api_version}/search" if use_old_endpoint else f"rest/api/{self.api_version}/search/jql"
+        if self.api_version == "2" or "startAt" in query_params:
+            # Use old endpoint for backwards compatibility and for on-prem instances
+            url_suffix = f"rest/api/{self.api_version}/search"
+        else:
+            url_suffix = f"rest/api/{self.api_version}/search/jql"
+
         query_params |= {"expand": "renderedFields,transitions,names", "fields": ["*all"]}
         return self.http_request(method="GET", url_suffix=url_suffix, params=query_params)
 
@@ -1511,20 +1515,23 @@ def create_query_params(
         Dict[str, Any]: The query parameters to be sent when issuing a query request to the API.
     """
     max_results = max_results or DEFAULT_PAGE_SIZE
-    demisto.debug(f"Querying with: {jql_query}\nnext_page_token: {next_page_token}\nmax_results: {max_results}\n")
-    if start_at and not next_page_token:
-        # Old endpoint call, kept for backwards compatibility
-        return {
-            "jql": jql_query,
-            "startAt": start_at,
-            "maxResults": max_results,
-        }
-
-    return {
+    demisto.debug(
+        f"Querying with: {jql_query}\n"
+        f"next_page_token: {next_page_token}\n"
+        f"max_results: {max_results}\n"
+        f"startAt: {start_at}"
+    )
+    query = {
         "jql": jql_query,
-        "nextPageToken": next_page_token,
         "maxResults": max_results,
     }
+    if next_page_token:
+        query["nextPageToken"] = next_page_token
+    elif start_at:
+        # Old endpoint call, kept for backwards compatibility and on-prem
+        query["startAt"] = start_at
+
+    return query
 
 
 def get_issue_fields_id_to_name_mapping(client: JiraBaseClient) -> Dict[str, str]:
@@ -2074,16 +2081,15 @@ def issue_query_command(client: JiraBaseClient, args: Dict[str, str]) -> list[Co
     headers = args.get("headers", "")
     specific_fields = argToList(args.get("fields", ""))
 
-    if start_at and not next_page_token:
-        # Backward compatibility, use the old endpoint if start_at is being used for pagination
-        query_params = create_query_params(jql_query=jql_query, start_at=start_at, max_results=max_results)
-        use_old_endpoint = True
-    else:
-        query_params = create_query_params(jql_query=jql_query, next_page_token=next_page_token, max_results=max_results)
-        use_old_endpoint = False
+    if client.api_version == "2" and next_page_token:
+        raise DemistoException("The next_page_token argument is not supported for Jira OnPrem instances.")
+
+    query_params = create_query_params(
+        jql_query=jql_query, start_at=start_at, max_results=max_results, next_page_token=next_page_token
+    )
 
     try:
-        res = client.run_query(query_params=query_params, use_old_endpoint=use_old_endpoint)
+        res = client.run_query(query_params=query_params)
 
     except DemistoException as e:
         if start_at and "Error in API call [410]" in str(e):
