@@ -458,7 +458,7 @@ def filter_id_timestamps_by_lookback_window(id_timestamps: dict, current_date: s
     retention_minutes = look_back + 1 if look_back > 0 else look_back
     lookback_cutoff = current_datetime - timedelta(minutes=retention_minutes)  # type: ignore
     
-    demisto.debug(f"Lookback window: {lookback_cutoff.strftime(DATE_FORMAT)} to {current_datetime.strftime(DATE_FORMAT)}")
+    demisto.debug(f"Lookback window: from {current_datetime.strftime(DATE_FORMAT)} to {lookback_cutoff.strftime(DATE_FORMAT)}")
 
     filtered_id_timestamps = {}
     removed_count = 0
