@@ -235,7 +235,7 @@ def map_threat_object(threat_object: dict, feed_tags: list = [], tlp_color: str 
     result: dict = {
         "value": name,
         "type": xsoar_type,
-        "score": get_threat_object_score(threat_class),
+        "score": get_threat_object_score(obj_class),
         "service": INTEGRATION_NAME,
         "rawJSON": threat_object,
         "fields": {
