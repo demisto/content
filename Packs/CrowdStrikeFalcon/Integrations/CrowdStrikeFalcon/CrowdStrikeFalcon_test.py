@@ -4451,6 +4451,60 @@ def test_get_remote_detection_data_for_multiple_types(mocker, detection_type, in
     }
 
 
+@pytest.mark.parametrize("function_name, num_ids, expected_calls", [
+    ("get_detections_entities", 0, 0),  # Edge case: no IDs
+    ("get_detections_entities", 500, 1),  # Less than the limit
+    ("get_detections_entities", 1000, 1),  # Exactly the limit
+    ("get_detections_entities", 1001, 2),  # More than the limit (specific request)
+    ("get_detections_entities", 2001, 3),  # More than the limit (many calls)
+    ("get_detection_entities", 0, 0),
+    ("get_detection_entities", 500, 1),
+    ("get_detection_entities", 1000, 1),
+    ("get_detection_entities", 1001, 2),
+    ("get_detections_entities", 2001, 3)  # More than the limit (many calls)
+])
+def test_get_detections_entities_batches_requests(mocker, function_name, num_ids, expected_calls):
+    """
+    Given
+        - Number of ID's to fetch from the CrowdStrike Falcon Entity API.
+    When
+        - Running fetch detections entities functions with the ID's list
+    Then
+        - Return the number of calls to http_request based on the number of IDs provided.
+        - Return the number of resources based on the number of IDs provided.
+    """
+    import CrowdStrikeFalcon
+    mock_http_request = mocker.patch.object(CrowdStrikeFalcon, "http_request")
+
+    # Configure a side effect to return responses with the correct number of resources
+    def side_effect(method, url, data):
+        data_dict = json.loads(data)
+        # Use 'composite_ids' for the new code, 'ids' for legacy.
+        ids_count = len(data_dict.get('composite_ids') or data_dict.get('ids'))
+        return {
+            "meta": {"trace_id": "test_trace"},
+            "resources": [{"id": f"resource_{i}"} for i in range(ids_count)]
+        }
+
+    mock_http_request.side_effect = side_effect
+
+    # Get the function to test dynamically
+    function_to_test = getattr(CrowdStrikeFalcon, function_name)
+
+    # Generate a list of mock IDs
+    detections_ids = [f"id_{i}" for i in range(num_ids)]
+
+    # Call the function with the mock IDs
+    result = function_to_test(detections_ids)
+
+    # Check that the number of http_request calls matches the expectation
+    assert mock_http_request.call_count == expected_calls
+
+    # Check that the number of resources returned matches the number of IDs
+    if "resources" in result:
+        assert len(result["resources"]) == num_ids
+
+
 @pytest.mark.parametrize("updated_object, entry_content, close_incident", input_data.set_xsoar_incident_entries_args)
 def test_set_xsoar_entries__incident(mocker, updated_object, entry_content, close_incident):
     """

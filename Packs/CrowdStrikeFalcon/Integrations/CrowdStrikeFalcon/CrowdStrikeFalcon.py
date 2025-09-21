@@ -1717,7 +1717,7 @@ def get_detections_entities(detections_ids: List[str]):
 
     url = "/detects/entities/summaries/GET/v1" if LEGACY_VERSION else "/alerts/entities/alerts/v2"
 
-    # Iterate through the detections_ids list in chunks of 1000.
+    # Iterate through the detections_ids list in chunks of 1000 (According to API documentation).
     for i in range(0, len(detections_ids), MAX_FETCH_DETECTION_PER_API_CALL_ENTITY):
         batch_ids = detections_ids[i:i + MAX_FETCH_DETECTION_PER_API_CALL_ENTITY]
 
