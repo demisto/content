@@ -4451,18 +4451,21 @@ def test_get_remote_detection_data_for_multiple_types(mocker, detection_type, in
     }
 
 
-@pytest.mark.parametrize("function_name, num_ids, expected_calls", [
-    ("get_detections_entities", 0, 0),  # Edge case: no IDs
-    ("get_detections_entities", 500, 1),  # Less than the limit
-    ("get_detections_entities", 1000, 1),  # Exactly the limit
-    ("get_detections_entities", 1001, 2),  # More than the limit (specific request)
-    ("get_detections_entities", 2500, 3),  # More than the limit (many calls)
-    ("get_detection_entities", 0, 0),
-    ("get_detection_entities", 500, 1),
-    ("get_detection_entities", 1000, 1),
-    ("get_detection_entities", 1001, 2),
-    ("get_detections_entities", 2500, 3)  # More than the limit (many calls)
-])
+@pytest.mark.parametrize(
+    "function_name, num_ids, expected_calls",
+    [
+        ("get_detections_entities", 0, 0),  # Edge case: no IDs
+        ("get_detections_entities", 500, 1),  # Less than the limit
+        ("get_detections_entities", 1000, 1),  # Exactly the limit
+        ("get_detections_entities", 1001, 2),  # More than the limit (specific request)
+        ("get_detections_entities", 2500, 3),  # More than the limit (many calls)
+        ("get_detection_entities", 0, 0),
+        ("get_detection_entities", 500, 1),
+        ("get_detection_entities", 1000, 1),
+        ("get_detection_entities", 1001, 2),
+        ("get_detections_entities", 2500, 3),  # More than the limit (many calls)
+    ],
+)
 def test_get_detections_entities_batches_requests(mocker, function_name, num_ids, expected_calls):
     """
     Given
@@ -4474,16 +4477,14 @@ def test_get_detections_entities_batches_requests(mocker, function_name, num_ids
         - Return the number of resources based on the number of IDs provided.
     """
     import CrowdStrikeFalcon
+
     mock_http_request = mocker.patch.object(CrowdStrikeFalcon, "http_request")
 
     # Configure a side effect to return responses with the correct number of resources
     def side_effect(method, url, data):
         data_dict = json.loads(data)
-        ids_in_batch = data_dict.get('composite_ids') or data_dict.get('ids')
-        return {
-            "meta": {"trace_id": "test_trace"},
-            "resources": [{"id": i} for i in ids_in_batch]
-        }
+        ids_in_batch = data_dict.get("composite_ids") or data_dict.get("ids")
+        return {"meta": {"trace_id": "test_trace"}, "resources": [{"id": i} for i in ids_in_batch]}
 
     mock_http_request.side_effect = side_effect
 

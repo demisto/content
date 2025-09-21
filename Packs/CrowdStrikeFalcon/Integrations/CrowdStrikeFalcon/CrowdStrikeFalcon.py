@@ -69,9 +69,9 @@ USE_SSL = not PARAMS.get("insecure", False)
 FETCH_TIME = "now" if demisto.command() == "fetch-events" else PARAMS.get("fetch_time", "3 days")
 
 MAX_FETCH_SIZE = 10000
-MAX_FETCH_DETECTION_PER_API_CALL = 10000 # fetch limit for get ids call
-MAX_FETCH_DETECTION_PER_API_CALL_ENTITY = 1000 # fetch limit for get entities call
-MAX_FETCH_INCIDENT_PER_API_CALL = 500 # fetch limit for get ids call
+MAX_FETCH_DETECTION_PER_API_CALL = 10000  # fetch limit for get ids call
+MAX_FETCH_DETECTION_PER_API_CALL_ENTITY = 1000  # fetch limit for get entities call
+MAX_FETCH_INCIDENT_PER_API_CALL = 500  # fetch limit for get ids call
 
 BYTE_CREDS = f"{CLIENT_ID}:{SECRET}".encode()
 
@@ -1703,7 +1703,7 @@ def get_fetch_detections(
     return response
 
 
-def get_detections_entities(detections_ids: List[str]):
+def get_detections_entities(detections_ids: list):
     """
     Sends detection entities request
     :param detections_ids: IDs of the requested detections.
@@ -1719,11 +1719,12 @@ def get_detections_entities(detections_ids: List[str]):
 
     # Iterate through the detections_ids list in chunks of 1000 (According to API documentation).
     for i in range(0, len(detections_ids), MAX_FETCH_DETECTION_PER_API_CALL_ENTITY):
-        batch_ids = detections_ids[i:i + MAX_FETCH_DETECTION_PER_API_CALL_ENTITY]
+        batch_ids = detections_ids[i : i + MAX_FETCH_DETECTION_PER_API_CALL_ENTITY]
 
         ids_json = {"ids": batch_ids} if LEGACY_VERSION else {"composite_ids": batch_ids}
-        demisto.debug(f"Getting detections entities from {url} with {ids_json=} "
-                      f"with batch_ids len {len(batch_ids)}. {LEGACY_VERSION=}")
+        demisto.debug(
+            f"Getting detections entities from {url} with {ids_json=} " f"with batch_ids len {len(batch_ids)}. {LEGACY_VERSION=}"
+        )
 
         # Make the API call with the current batch.
         response = http_request("POST", url, data=json.dumps(ids_json))
@@ -1821,7 +1822,7 @@ def get_detection_entities(incidents_ids: list):
     url = f"/alerts/entities/alerts/{url_endpoint_version}"
 
     for i in range(0, len(incidents_ids), MAX_FETCH_DETECTION_PER_API_CALL_ENTITY):
-        batch_ids = incidents_ids[i:i + MAX_FETCH_DETECTION_PER_API_CALL_ENTITY]
+        batch_ids = incidents_ids[i : i + MAX_FETCH_DETECTION_PER_API_CALL_ENTITY]
 
         ids_json = {"ids": batch_ids} if LEGACY_VERSION else {"composite_ids": batch_ids}
         demisto.debug(f"In get_detection_entities: Getting detection entities from\
