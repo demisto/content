@@ -1118,11 +1118,13 @@ def gcp_compute_instance_get_command(creds: Credentials, args: dict[str, Any]) -
         "description": response.get("description"),
         "status": response.get("status"),
         "machineType": response.get("machineType"),
+        "labels": response.get("labels"),
+        "labelFingerprint": response.get("labelFingerprint")
     }
     readable_output = tableToMarkdown(
         f"GCP Instance {instance} from zone {zone}",
         hr_data,
-        headers=["id", "name", "kind", "creationTimestamp", "description", "status", "machineType"],
+        headers=["id", "name", "kind", "creationTimestamp", "description", "status", "machineType", "labels", "labelFingerprint"],
         headerTransform=pascalToSpace,
         removeNull=True,
     )
