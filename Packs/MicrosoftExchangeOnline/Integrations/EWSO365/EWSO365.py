@@ -1149,10 +1149,7 @@ def send_email(
 
     # Basic validation - we allow pretty much everything but you have to have at least a recipient
     # We allow messages without subject and also without body
-    demisto.debug(
-        f"EWS_SEND_MAIL_VALIDATION: Raw 'to' is {to!r}, Raw 'cc' is {cc!r}, "
-        f"Raw 'bcc' is {bcc!r}, Raw 'from_address' is {from_address!r}, Raw 'reply_to' is {reply_to!r}"
-    )
+
     demisto.debug(
         f"send_email: \nReceived to: {to}\nReceived cc: {cc}\nReceived bcc: "
         f"{bcc}\nReceived reply_to: {reply_to}\nReceived importance: {importance}"
@@ -2105,8 +2102,6 @@ def main():  # pragma: no cover
     # collector. `separate_process` flag will run the integration on a separate process that will prevent
     # memory leakage.
     demisto.debug(f"Running EWS065 with command: {demisto.command()}")
-    demisto.debug(f"Running EWS065 with params: {demisto.params()}")
-    demisto.debug(f"Running EWS065 with args: {demisto.args()}")
     separate_process = demisto.params().get("separate_process", False)
     demisto.debug(f"Running as separate_process: {separate_process}")
     if separate_process:
