@@ -8987,6 +8987,99 @@ def censor_request_logs(request_log):
     return censored_string
 
 
+def log_additional_debug_info(msg: str):
+    """
+    Logs additional debug information that doesn't duplicate what's already in log_start_debug.
+    This function excludes environment variables, Docker image, integration brand/instance,
+    and parameters which are already logged by the existing log_start_debug function.
+
+    :return: No data returned
+    :rtype: ``None``
+    """
+    if not is_debug_mode():
+        return
+
+    try:
+        # Platform and Version Information
+        try:
+            msg += "\n" + "-" * 40
+            msg += "\nPLATFORM AND VERSION INFORMATION"
+            msg += "\n" + "-" * 40
+
+            version_info = get_demisto_version()
+            msg += f"\n#### Platform Version Details: {version_info}"
+            platform = version_info.get('platform', '').lower()
+            tenant_type = 'XSIAM' if platform == 'xsiam' else 'XSOAR'
+            msg += f"\n#### Tenant Type: {tenant_type}"
+            msg += f"\n#### Platform: {platform}"
+            msg += f"\n#### Build Number: {version_info.get('buildNumber', 'Unknown')}"
+
+            license_info = version_info.get('license', {})
+            msg += f"\n#### License: {license_info}"
+            msg += f"\n#### License Type: {license_info.get('type', 'Unknown')}"
+            msg += f"\n#### License ID: {demisto.getLicenseID()}"
+            msg += f"\n#### Deployment Type: {version_info.get('deploymentType', 'Unknown')}"
+            msg += f"\n#### Is Docker Image: {version_info.get('isDocker', False)}"
+
+        except Exception as e:
+            msg += f"\n#### Error getting version info: {str(e)}"
+
+        # Engine Information
+        try:
+            msg += "\n" + "-" * 40
+            msg += "\nENGINE CONTEXT"
+            msg += "\n" + "-" * 40
+
+            using_engine = is_using_engine()
+            msg += f"\n#### Platform Using Engine: {using_engine}"
+
+            if using_engine:
+                engine_id = is_integration_instance_running_on_engine()
+                if engine_id:
+                    msg += f"\n#### Integration Running on Engine: True"
+                    msg += f"\n#### Engine ID: {engine_id}"
+                    msg += f"\n#### Engine Base URL: {get_engine_base_url(engine_id)}"
+                else:
+                    msg += f"\n#### Integration Running on Engine: False"
+
+        except Exception as e:
+            msg += f"\n#### Error getting engine info: {str(e)}"
+
+        # Incident Context
+        try:
+            msg += "\n" + "-" * 40
+            msg += "\nINCIDENT CONTEXT"
+            msg += "\n" + "-" * 40
+
+            incident = demisto.incident()
+            msg += f"\n#### Incident: {incident}"
+            if incident:
+                incident_id = incident.get('id', 'N/A')
+                incident_type = incident.get('type', 'N/A')
+                msg += f"\n#### Incident ID: {incident_id}"
+                msg += f"\n#### Incident Type: {incident_type}"
+            else:
+                msg += "\n#### Incident ID: N/A (Not running in incident context)"
+
+        except Exception as e:
+            msg += f"\n#### Error getting incident context: {str(e)}"
+
+        # User Context
+        try:
+            msg += "\n" + "-" * 40
+            msg += "\nUSER CONTEXT"
+            msg += "\n" + "-" * 40
+
+            user_name = demisto.findUser()
+            msg += f"\n#### User: {user_name}"
+
+        except Exception as e:
+            msg += f"\n#### Error getting user context: {str(e)}"
+
+    except Exception as e:
+        msg += f"\n#### Error in log_additional_debug_info: {str(e)}"
+
+
 class DebugLogger(object):
     """
         Wrapper to initiate logging at logging.DEBUG level.
@@ -9061,6 +9154,8 @@ class DebugLogger(object):
                                        sm.get('start_date'),
                                        sm.get('end_date')
                                        )
+        # Add additional debug information
+        log_additional_debug_info(msg)
         self.int_logger.write(msg)
 
 
