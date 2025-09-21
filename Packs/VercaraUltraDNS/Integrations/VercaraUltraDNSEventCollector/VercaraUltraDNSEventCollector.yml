@@ -54,14 +54,14 @@ script:
       - 'true'
       - 'false'
       required: true
-    - description: Maximum number of results to return.
+    - description: Maximum number of results to return. Maximum is 2,500.
       name: limit
       required: false
       defaultvalue: '50'
-    - description: Start time for fetching events (e.g., "2023-01-01T00:00:00Z").
+    - description: Start time for fetching events (e.g., "2023-01-01T00:00:00").
       name: start_time
       required: true
-    - description: End time for fetching events (e.g., "2023-01-01T23:59:59Z") or now if not provided.
+    - description: End time for fetching events (e.g., "2023-01-01T23:59:59") or now if not provided.
       name: end_time
     description: Gets audit events from Vercara UltraDNS.
     name: vercara-ultradns-get-events
