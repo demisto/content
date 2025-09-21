@@ -4463,7 +4463,7 @@ def test_get_remote_detection_data_for_multiple_types(mocker, detection_type, in
         ("get_detection_entities", 500, 1),
         ("get_detection_entities", 1000, 1),
         ("get_detection_entities", 1001, 2),
-        ("get_detections_entities", 2500, 3),
+        ("get_detection_entities", 2500, 3),
     ],
 )
 def test_get_detections_entities_batches_requests(mocker, function_name, num_ids, expected_calls):
