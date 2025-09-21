@@ -1,0 +1,23 @@
+{
+    "name": "Cisco UCM",
+    "description": "Parsing and modeling rules for Cisco UCM logs forwarded via Syslog",
+    "support": "xsoar",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "categories": [
+        "Analytics & SIEM"
+    ],
+    "tags": ["Network",
+             "IoT"],
+    "useCases": ["Network Security"],
+    "keywords": ["Cisco",
+        "CUCM",
+        "Call Mangaer",
+        "UCM",
+        "Telephony"],
+    "marketplaces": [
+        "marketplacev2"
+    ]
+}

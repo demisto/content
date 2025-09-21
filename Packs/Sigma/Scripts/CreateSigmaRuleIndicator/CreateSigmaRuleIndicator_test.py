@@ -15,7 +15,7 @@ from CreateSigmaRuleIndicator import (
     create_relationship,
     main,
     tim_create_indicators,
-    extract_rules_from_zip
+    extract_rules_from_zip,
 )
 from sigma.rule import SigmaRule, SigmaRuleTag
 
@@ -120,13 +120,13 @@ def test_main(mock_executeCommand, mock_return_results, mock_args):
     main()
     mock_return_results.assert_called_once()
     args, kwargs = mock_return_results.call_args
-    assert args[0].readable_output == '1 Sigma Rule(s) Created.\n1 Relationship(s) Created.'
+    assert args[0].readable_output == "1 Sigma Rule(s) Created.\n1 Relationship(s) Created."
 
 
-@patch('CreateSigmaRuleIndicator.execute_command')
-@patch('CreateSigmaRuleIndicator.create_indicator_relationships')
-@patch('CreateSigmaRuleIndicator.demisto.debug')
-@patch('CreateSigmaRuleIndicator.time.time')
+@patch("CreateSigmaRuleIndicator.execute_command")
+@patch("CreateSigmaRuleIndicator.create_indicator_relationships")
+@patch("CreateSigmaRuleIndicator.demisto.debug")
+@patch("CreateSigmaRuleIndicator.time.time")
 def test_tim_create_indicators(mock_time, mock_debug, mock_create_relationships, mock_execute_command):
     sample_indicators = [
         {
@@ -156,19 +156,44 @@ def test_tim_create_indicators(mock_time, mock_debug, mock_create_relationships,
     # Mock relationships that would be created
     mock_create_relationships.side_effect = [
         [
-            EntityRelationship(entity_a="Test Sigma Rule 1", entity_a_type="Sigma Rule Indicator",
-                               name="related-to", entity_b="Windows", entity_b_type="Software"),
-            EntityRelationship(entity_a="Test Sigma Rule 1", entity_a_type="Sigma Rule Indicator",
-                               name="detects", entity_b="T1562 - Impair Defenses", entity_b_type="Attack Pattern"),
-            EntityRelationship(entity_a="Test Sigma Rule 1", entity_a_type="Sigma Rule Indicator",
-                               name="detects", entity_b="CVE-2021-44228", entity_b_type="CVE")
+            EntityRelationship(
+                entity_a="Test Sigma Rule 1",
+                entity_a_type="Sigma Rule Indicator",
+                name="related-to",
+                entity_b="Windows",
+                entity_b_type="Software",
+            ),
+            EntityRelationship(
+                entity_a="Test Sigma Rule 1",
+                entity_a_type="Sigma Rule Indicator",
+                name="detects",
+                entity_b="T1562 - Impair Defenses",
+                entity_b_type="Attack Pattern",
+            ),
+            EntityRelationship(
+                entity_a="Test Sigma Rule 1",
+                entity_a_type="Sigma Rule Indicator",
+                name="detects",
+                entity_b="CVE-2021-44228",
+                entity_b_type="CVE",
+            ),
         ],
         [
-            EntityRelationship(entity_a="Test Sigma Rule 2", entity_a_type="Sigma Rule Indicator",
-                               name="related-to", entity_b="Linux", entity_b_type="Software"),
-            EntityRelationship(entity_a="Test Sigma Rule 2", entity_a_type="Sigma Rule Indicator",
-                               name="detects", entity_b="S0601 - Cobalt Strike", entity_b_type="Tool")
-        ]
+            EntityRelationship(
+                entity_a="Test Sigma Rule 2",
+                entity_a_type="Sigma Rule Indicator",
+                name="related-to",
+                entity_b="Linux",
+                entity_b_type="Software",
+            ),
+            EntityRelationship(
+                entity_a="Test Sigma Rule 2",
+                entity_a_type="Sigma Rule Indicator",
+                name="detects",
+                entity_b="S0601 - Cobalt Strike",
+                entity_b_type="Tool",
+            ),
+        ],
     ]
 
     # Execute the function
@@ -194,7 +219,7 @@ def test_tim_create_indicators(mock_time, mock_debug, mock_create_relationships,
 def create_zip_mock(file_contents, file_names):
     """Helper to create a mock zipfile"""
     zip_buffer = io.BytesIO()
-    with zipfile.ZipFile(zip_buffer, 'w') as zip_file:
+    with zipfile.ZipFile(zip_buffer, "w") as zip_file:
         for name, content in zip(file_names, file_contents):
             zip_file.writestr(name, content)
     return zip_buffer.getvalue()
@@ -202,7 +227,7 @@ def create_zip_mock(file_contents, file_names):
 
 @pytest.fixture
 def valid_sigma_rule():
-    return '''
+    return """
 title: Test Rule
 id: 12345678-1234-1234-1234-123456789012
 status: test
@@ -221,35 +246,35 @@ tags:
     - attack.t1055
     - attack.s0001
     - cve.2023.1234
-'''
+"""
 
 
 @pytest.fixture
 def invalid_sigma_rule():
-    return '''
+    return """
 title: Invalid Rule
 status: test
 # Missing required fields like id, detection, etc.
-'''
+"""
 
 
-@patch('zipfile.ZipFile')
+@patch("zipfile.ZipFile")
 def test_extract_rules_from_zip_successful(mock_zipfile, valid_sigma_rule):
     """Test extracting valid rules from a zip file"""
 
     # Setup mock zipfile with valid rules
     mock_zip_instance = MagicMock()
     mock_zipfile.return_value.__enter__.return_value = mock_zip_instance
-    mock_zip_instance.namelist.return_value = ['rule1.yml', 'rule2.yml', '__pycache__/ignored.yml', '.hidden.yml']
+    mock_zip_instance.namelist.return_value = ["rule1.yml", "rule2.yml", "__pycache__/ignored.yml", ".hidden.yml"]
 
     # Mock file content reading
     mock_file = MagicMock()
-    mock_file.read.return_value = valid_sigma_rule.encode('utf-8')
+    mock_file.read.return_value = valid_sigma_rule.encode("utf-8")
     mock_zip_instance.open.return_value.__enter__.return_value = mock_file
 
     # Mock parse_and_create_indicator to return a predetermined value
     expected_indicator = {"indicator": {"value": "Test Rule"}, "relationships": []}
-    with patch('CreateSigmaRuleIndicator.parse_and_create_indicator', return_value=expected_indicator):
+    with patch("CreateSigmaRuleIndicator.parse_and_create_indicator", return_value=expected_indicator):
         result = extract_rules_from_zip("test.zip")
 
     # Assertions
@@ -258,28 +283,29 @@ def test_extract_rules_from_zip_successful(mock_zipfile, valid_sigma_rule):
     assert result[1] == expected_indicator
 
     # Verify correct files were processed
-    mock_zip_instance.open.assert_any_call('rule1.yml')
-    mock_zip_instance.open.assert_any_call('rule2.yml')
+    mock_zip_instance.open.assert_any_call("rule1.yml")
+    mock_zip_instance.open.assert_any_call("rule2.yml")
     assert mock_zip_instance.open.call_count == 2
 
 
-@patch('zipfile.ZipFile')
+@patch("zipfile.ZipFile")
 def test_extract_rules_from_zip_with_errors(mock_zipfile, valid_sigma_rule, invalid_sigma_rule, capfd):
     """Test handling errors during rule extraction"""
 
     # Setup mock zipfile with mixed valid and invalid rules
     mock_zip_instance = MagicMock()
     mock_zipfile.return_value.__enter__.return_value = mock_zip_instance
-    mock_zip_instance.namelist.return_value = ['valid.yml', 'invalid.yml']
+    mock_zip_instance.namelist.return_value = ["valid.yml", "invalid.yml"]
 
     # Setup mock file reading to return different content based on filename
     def mock_open_file(filename):
         from unittest.mock import MagicMock
+
         mock_file = MagicMock()
-        if filename == 'valid.yml':
-            mock_file.read.return_value = valid_sigma_rule.encode('utf-8')
+        if filename == "valid.yml":
+            mock_file.read.return_value = valid_sigma_rule.encode("utf-8")
         else:
-            mock_file.read.return_value = invalid_sigma_rule.encode('utf-8')
+            mock_file.read.return_value = invalid_sigma_rule.encode("utf-8")
         return mock_file
 
     mock_zip_instance.open.side_effect = lambda filename: MagicMock(__enter__=lambda x: mock_open_file(filename))
@@ -295,8 +321,10 @@ def test_extract_rules_from_zip_with_errors(mock_zipfile, valid_sigma_rule, inva
     # Mock parse_and_create_indicator for the valid rule
     expected_indicator = {"indicator": {"value": "Test Rule"}, "relationships": []}
 
-    with patch('sigma.rule.SigmaRule.from_yaml', side_effect=mock_from_yaml), \
-            patch('CreateSigmaRuleIndicator.parse_and_create_indicator', return_value=expected_indicator):
+    with (
+        patch("sigma.rule.SigmaRule.from_yaml", side_effect=mock_from_yaml),
+        patch("CreateSigmaRuleIndicator.parse_and_create_indicator", return_value=expected_indicator),
+    ):
         result = extract_rules_from_zip("test.zip")
 
     # Assertions
@@ -306,13 +334,13 @@ def test_extract_rules_from_zip_with_errors(mock_zipfile, valid_sigma_rule, inva
     assert out == 'SGM: Error parsing Sigma rule from file "invalid.yml": Invalid rule format\n'
 
 
-@patch('zipfile.ZipFile')
+@patch("zipfile.ZipFile")
 def test_extract_rules_from_zip_empty(mock_zipfile):
     """Test extracting rules from a zip file with no valid rules"""
     # Setup mock zipfile with no valid rules
     mock_zip_instance = MagicMock()
     mock_zipfile.return_value.__enter__.return_value = mock_zip_instance
-    mock_zip_instance.namelist.return_value = ['__pycache__/ignored.yml', '.hidden.yml', 'not_a_rule.txt']
+    mock_zip_instance.namelist.return_value = ["__pycache__/ignored.yml", ".hidden.yml", "not_a_rule.txt"]
 
     result = extract_rules_from_zip("test.zip")
 
