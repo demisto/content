@@ -7,6 +7,65 @@ from typing import Any
 urllib3.disable_warnings()
 
 
+#### DBotScoreReliability ####
+class DBotScoreReliability:
+    """
+    Enum: Source reliability levels
+    Values are case sensitive
+
+    :return: None
+    :rtype: ``None``
+    """
+
+    A_PLUS_PLUS = "A++ - Reputation script"
+    A_PLUS = "A+ - 3rd party enrichment"
+    A = "A - Completely reliable"
+    B = "B - Usually reliable"
+    C = "C - Fairly reliable"
+    D = "D - Not usually reliable"
+    E = "E - Unreliable"
+    F = "F - Reliability cannot be judged"
+
+    def __init__(self):
+        # required to create __init__ for create_server_docs.py purpose
+        pass
+
+    @staticmethod
+    def is_valid_type(_type):
+        # type: (str) -> bool
+
+        return _type in (
+            DBotScoreReliability.A_PLUS_PLUS,
+            DBotScoreReliability.A_PLUS,
+            DBotScoreReliability.A,
+            DBotScoreReliability.B,
+            DBotScoreReliability.C,
+            DBotScoreReliability.D,
+            DBotScoreReliability.E,
+            DBotScoreReliability.F,
+        )
+
+    @staticmethod
+    def get_dbot_score_reliability_from_str(reliability_str):  # pragma: no cover
+        if reliability_str == DBotScoreReliability.A_PLUS_PLUS:
+            return DBotScoreReliability.A_PLUS_PLUS
+        if reliability_str == DBotScoreReliability.A_PLUS:
+            return DBotScoreReliability.A_PLUS
+        elif reliability_str == DBotScoreReliability.A:
+            return DBotScoreReliability.A
+        elif reliability_str == DBotScoreReliability.B:
+            return DBotScoreReliability.B
+        elif reliability_str == DBotScoreReliability.C:
+            return DBotScoreReliability.C
+        elif reliability_str == DBotScoreReliability.D:
+            return DBotScoreReliability.D
+        elif reliability_str == DBotScoreReliability.E:
+            return DBotScoreReliability.E
+        elif reliability_str == DBotScoreReliability.F:
+            return DBotScoreReliability.F
+        raise Exception("Please use supported reliability only.")
+
+
 #### CONSTANTS ####
 
 INTEGRATION_NAME = "Unit 42 Intelligence"
@@ -102,7 +161,7 @@ def create_dbot_score(
     indicator: str,
     indicator_type: str,
     verdict: str,
-    reliability: str = "A++ - 1st party feed and enrichment",
+    reliability: str = "A++ - Reputation script",
 ) -> Common.DBotScore:
     """
     Create DBotScore object
@@ -665,7 +724,7 @@ def get_threat_object_score(threat_class: str) -> int:
 
 
 def create_threat_object_indicators(
-    threat_objects: list[dict[str, Any]], reliability: str = "A++ - 1st party feed and enrichment"
+    threat_objects: list[dict[str, Any]], reliability: str = "A++ - Reputation script"
 ) -> list[dict[str, Any]]:
     """
     Create threat object indicators from threat object associations
@@ -1059,7 +1118,7 @@ def main() -> None:
     base_url = params.get("url", "").rstrip("/")
     verify_certificate = not argToBoolean(params.get("insecure", False))
     proxy = argToBoolean(params.get("proxy", False))
-    reliability = params.get("integration_reliability", "A++ - 1st party feed and enrichment")
+    reliability = params.get("integration_reliability", "A++ - Reputation script")
     create_relationships = argToBoolean(params.get("create_relationships", True))
     create_threat_object_indicators = argToBoolean(params.get("create_threat_object_indicators", False))
 

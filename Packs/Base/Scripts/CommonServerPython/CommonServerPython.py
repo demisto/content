@@ -520,7 +520,7 @@ class DBotScoreReliability(object):
     :rtype: ``None``
     """
 
-    A_PLUS_PLUS = 'A++ - 1st party feed and enrichment'
+    A_PLUS_PLUS = 'A++ - Reputation script'
     A_PLUS = 'A+ - 3rd party enrichment'
     A = 'A - Completely reliable'
     B = 'B - Usually reliable'

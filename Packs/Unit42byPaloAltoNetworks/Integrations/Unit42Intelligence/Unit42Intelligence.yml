@@ -18,7 +18,7 @@ configuration:
   additionalinfo: Reliability of the source providing the intelligence data.
   type: 15
   options:
-  - A++ - 1st party feed and enrichment
+  - A++ - Reputation script
   - A+ - 3rd party enrichment
   - A - Completely reliable
   - B - Usually reliable
@@ -26,7 +26,7 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  defaultvalue: A++ - 1st party feed and enrichment
+  defaultvalue: A++ - Reputation script
   required: false
   section: Collect
   advanced: true
