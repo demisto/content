@@ -6,6 +6,7 @@ import requests
 requests.packages.urllib3.disable_warnings()
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
+INTEGRATION_NAME = "Unit42Feed"
 
 # Mapping from API indicator types to XSOAR indicator types
 INDICATOR_TYPE_MAP = {
@@ -32,11 +33,12 @@ class ThreatTypes:
 
 # Mapping from API threat object classes to XSOAR threat types
 THREAT_OBJECT_CLASS_MAP = {
-    "malware": ThreatTypes.Malware,
-    "campaign": ThreatTypes.Campaign,
-    "threat-actor": ThreatTypes.Actor,
-    "tool": ThreatTypes.Tool,
-    "report": ThreatTypes.Report,
+    "malware_family": ThreatIntel.ObjectsNames.MALWARE,
+    "campaign": ThreatIntel.ObjectsNames.CAMPAIGN,
+    "threat_actor": ThreatIntel.ObjectsNames.THREAT_ACTOR,
+    "malicious_behavior": Common.Indicator,
+    "exploit": FeedIndicatorType.CVE,
+    "attack_pattern": ThreatIntel.ObjectsNames.ATTACK_PATTERN
 }
 
 
@@ -80,16 +82,8 @@ class Client(BaseClient):
         if next_page_token:
             params["next_page_token"] = next_page_token
 
-        # Use params_parser to control URL encoding - don't encode colons in timestamps
-        def custom_quote(string, safe="", encoding=None, errors=None):
-            """Custom quote function that doesn't encode colons in timestamps"""
-            import urllib.parse
-
-            # Don't encode colons for timestamp parameters
-            return urllib.parse.quote(string, safe=safe + ":", encoding=encoding, errors=errors)
-
         response = self._http_request(
-            method="GET", url_suffix="/api/v1/feeds/indicators", params=params, params_parser=custom_quote
+            method="GET", url_suffix="/api/v1/feeds/indicators", params=params
         )
 
         return response
@@ -114,6 +108,31 @@ class Client(BaseClient):
 
         return response
 
+def get_threat_object_score(threat_class: str) -> int:
+    """
+    Get the appropriate score for a threat object based on its class
+
+    Args:
+        threat_class: The threat object class (lowercase)
+
+    Returns:
+        Appropriate ThreatIntel score or Common.DBotScore.NONE as default
+    """
+    if threat_class not in INDICATOR_TYPE_MAP:
+        return Common.DBotScore.NONE
+
+    threat_type = INDICATOR_TYPE_MAP[threat_class]
+
+    if threat_type == ThreatIntel.ObjectsNames.MALWARE:
+        return ThreatIntel.ObjectsScore.MALWARE
+    elif threat_type == ThreatIntel.ObjectsNames.THREAT_ACTOR:
+        return ThreatIntel.ObjectsScore.THREAT_ACTOR
+    elif threat_type == ThreatIntel.ObjectsNames.CAMPAIGN:
+        return ThreatIntel.ObjectsScore.CAMPAIGN
+    elif threat_type == ThreatIntel.ObjectsNames.ATTACK_PATTERN:
+        return ThreatIntel.ObjectsScore.ATTACK_PATTERN
+
+    return Common.DBotScore.NONE
 
 def map_indicator(indicator_data: dict, feed_tags: list = [], tlp_color: str | None = None) -> dict:
     """Map an indicator from the Unit 42 API to XSOAR format.
@@ -216,6 +235,8 @@ def map_threat_object(threat_object: dict, feed_tags: list = [], tlp_color: str 
     result: dict = {
         "value": name,
         "type": xsoar_type,
+        "score": get_threat_object_score(threat_class),
+        "service": INTEGRATION_NAME,
         "rawJSON": threat_object,
         "fields": {
             "updateddate": threat_object.get("updated_at"),
@@ -368,7 +389,7 @@ def fetch_indicators(
     """
     # Get indicator types from params
     indicator_types = ",".join(params.get("indicator_types", ["All"]))
-    start_time = demisto.getLastRun().get("last_successful_run", (current_time - timedelta(hours=4)).strftime(DATE_FORMAT))
+    start_time = demisto.getLastRun().get("last_successful_run", (current_time - timedelta(hours=12)).strftime(DATE_FORMAT))
 
     # Get indicators from the API
     response = client.get_indicators(indicator_types=indicator_types, start_time=start_time)
