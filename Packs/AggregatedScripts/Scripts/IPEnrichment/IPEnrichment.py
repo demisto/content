@@ -53,6 +53,8 @@ def ip_enrichment_script(
         context_path_prefix="IP",
         context_output_mapping=indicator_mapping,
     )
+
+    # --- Command Batch 1: create indicators (BUILTIN) ---
     demisto.debug("Command Batch 1: Creating new indicators")
     command_batch1: list[Command] = [
         Command(
@@ -64,8 +66,8 @@ def ip_enrichment_script(
         )
     ]
 
+    # --- Command Batch 2: external enrichment + internal commands ---
     command_batch2: list[Command] = []
-
     demisto.debug("Command Batch 2: Internal commands")
     command_batch2.append(
         Command(

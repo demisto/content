@@ -39,6 +39,8 @@ def url_enrichment_script(
         context_path_prefix="URL(",  # add ( to prefix to distinct from URLhaus integration context path
         context_output_mapping=indicator_mapping,
     )
+
+    # --- Command Batch 1: create indicators (BUILTIN) ---
     demisto.debug("Creating commands - Batch 1: Creating new indicators")
     command_batch1: list[Command] = [
         Command(
@@ -49,6 +51,8 @@ def url_enrichment_script(
             ignore_using_brand=True,
         )
     ]
+
+    # --- Command Batch 2: external enrichment ---
     demisto.debug("Creating commands - Batch 2: Enriching indicators")
     command_batch2: list[Command] = [
         Command(
