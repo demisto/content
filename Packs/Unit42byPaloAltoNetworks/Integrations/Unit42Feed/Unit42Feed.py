@@ -422,11 +422,11 @@ def get_indicators_command(client: Client, args: dict, feed_tags: list = [], tlp
         Demisto Outputs.
     """
     limit = arg_to_number(args.get("limit", "10")) or 10  # Default to 10 if None
-    indicator_type = args.get("indicator_type", "All")
+    indicator_types = args.get("indicator_types", "All")
     next_page_token = args.get("next_page_token")
 
     # Get indicators from the API
-    response = client.get_indicators(indicator_type=indicator_type, limit=limit, next_page_token=next_page_token)
+    response = client.get_indicators(indicator_types=indicator_types, limit=limit, next_page_token=next_page_token)
 
     indicators = []
     if response and isinstance(response, dict) and response.get("data"):

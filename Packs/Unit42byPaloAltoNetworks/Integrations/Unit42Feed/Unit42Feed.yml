@@ -1,12 +1,13 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: Unit42 Feed TDP
+  id: Unit42 Feed
   version: -1
 sectionOrder:
 - Connect
 - Collect
 configuration:
 - display: Server URL
+  defaultvalue: https://xdr-tas-api.crtx.us.paloaltonetworks.com
   name: url
   required: true
   type: 0
@@ -139,7 +140,7 @@ configuration:
   advanced: true
 description: Unit 42 Feed integration provides threat intelligence from Palo Alto Networks Unit 42 research team.
 display: Unit 42 Feed
-name: Unit42 Feed TDP
+name: Unit42 Feed
 script:
   commands:
   - arguments:
