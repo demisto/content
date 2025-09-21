@@ -20,7 +20,7 @@
 
 **Containment**:
 - The playbook checks if soft remediation is needed, if yes, it will check if the integration "Microsoft Graph User" is enabled, the playbook will revoke the sessions of the user.
-- The playbook checks if hard remediation is needed, if yes, 
+- The playbook checks if hard remediation is needed, if yes,
 a manual task will be displayed for an analyst to review the findings and decide the next steps.
 - Possible actions:
   - Disable the user.
