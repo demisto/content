@@ -832,3 +832,25 @@ This command will only return a single object in the collection as a user can ha
 #### Command example
 
 ```!msgraph-user-tap-policy-list user_id=123456-abcd-7890-erty-987qwe987```
+
+### msgraph-user-change-password-on-premise
+
+***
+Changes the password of an on-premise user. Requires the UserAuthenticationMethod.Read.All permission.
+Providing a password is required (password auto-generation is not supported).
+
+#### Base Command
+
+`msgraph-user-change-password-on-premise`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user | User ID or userPrincipalName to update password for. | Required |
+| password | The new password. | Optional |
+| nonsensitive_password | The new password. This argument can eb used in playbooks, but note its value will NOT be hidden in logs. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
