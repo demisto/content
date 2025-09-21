@@ -72,7 +72,7 @@ class Client(BaseClient):
         """
         params = {}
         if indicator_types and indicator_types != "All":
-            params["indicator_types"] = ",".join(indicator_types)
+            params["indicator_types"] = indicator_types
         if limit:
             params["limit"] = limit
         if start_time:
@@ -80,7 +80,16 @@ class Client(BaseClient):
         if next_page_token:
             params["next_page_token"] = next_page_token
 
-        response = self._http_request(method="GET", url_suffix="/api/v1/feeds/indicators", params=params)
+        # Use params_parser to control URL encoding - don't encode colons in timestamps
+        def custom_quote(string, safe='', encoding=None, errors=None):
+            """Custom quote function that doesn't encode colons in timestamps"""
+            import urllib.parse
+            # Don't encode colons for timestamp parameters
+            return urllib.parse.quote(string, safe=safe + ':', encoding=encoding, errors=errors)
+
+        response = self._http_request(
+            method="GET", url_suffix="/api/v1/feeds/indicators", params=params, params_parser=custom_quote
+        )
 
         return response
 
@@ -96,7 +105,7 @@ class Client(BaseClient):
         """
         params = {}
         if limit:
-            params["limit"] = str(limit)  # Convert int to str for API parameters
+            params["limit"] = limit
         if next_page_token:
             params["next_page_token"] = next_page_token
 
@@ -342,7 +351,9 @@ def test_module(client: Client) -> str:
     return "Failed to connect to Unit 42 API. Check your Server URL and License."
 
 
-def fetch_indicators(client: Client, params: dict, feed_tags: list = [], tlp_color: str | None = None) -> list:
+def fetch_indicators(
+    client: Client, params: dict, feed_tags: list = [], tlp_color: str | None = None, current_time: str | None = None
+) -> list:
     """Retrieves indicators from the feed
 
     Args:
@@ -350,12 +361,13 @@ def fetch_indicators(client: Client, params: dict, feed_tags: list = [], tlp_col
         params: demisto.params()
         feed_tags: feed tags.
         tlp_color: Traffic Light Protocol color.
+        current_time: The current fetch time.
     Returns:
         List. Processed indicators from feed.
     """
     # Get indicator types from params
-    indicator_types = params.get("indicator_types")
-    start_time = demisto.getLastRun().get("last_successful_run")
+    indicator_types = ",".join(params.get("indicator_types", ["All"]))
+    start_time = demisto.getLastRun().get("last_successful_run", (current_time - timedelta(hours=4)).strftime(DATE_FORMAT))
 
     # Get indicators from the API
     response = client.get_indicators(indicator_types=indicator_types, start_time=start_time)
@@ -383,29 +395,32 @@ def fetch_indicators(client: Client, params: dict, feed_tags: list = [], tlp_col
                     break
 
     # Get threat objects twice a day (every 12 hours)
-    if start_time and (datetime.now(timezone.utc) - datetime.strptime(start_time, DATE_FORMAT)).total_seconds() >= 6 * 3600:
-        response = client.get_threat_objects(limit=limit)
+    if start_time:
+        start_time_utc = datetime.strptime(start_time, DATE_FORMAT).replace(tzinfo=timezone.utc)
+        time_diff = (datetime.now(timezone.utc) - start_time_utc).total_seconds()
+        if time_diff >= 6 * 3600:
+            response = client.get_threat_objects()
 
-        # Parse threat objects
-        if response and isinstance(response, dict) and response.get("data"):
-            data = response.get("data", [])
-            if isinstance(data, list):
-                indicators.extend(parse_threat_objects(data, feed_tags, tlp_color))
+            # Parse threat objects
+            if response and isinstance(response, dict) and response.get("data"):
+                data = response.get("data", [])
+                if isinstance(data, list):
+                    indicators.extend(parse_threat_objects(data, feed_tags, tlp_color))
 
-                # Handle pagination if needed
-                metadata = response.get("metadata", {})
-                next_page_token = metadata.get("next_page_token") if isinstance(metadata, dict) else None
-                while next_page_token:
-                    # Get next page of threat objects
-                    response = client.get_threat_objects(limit=limit, next_page_token=next_page_token)
-                    if response and isinstance(response, dict) and response.get("data"):
-                        data = response.get("data", [])
-                        if isinstance(data, list):
-                            indicators.extend(parse_threat_objects(data, feed_tags, tlp_color))
-                        metadata = response.get("metadata", {})
-                        next_page_token = metadata.get("next_page_token") if isinstance(metadata, dict) else None
-                    else:
-                        break
+                    # Handle pagination if needed
+                    metadata = response.get("metadata", {})
+                    next_page_token = metadata.get("next_page_token") if isinstance(metadata, dict) else None
+                    while next_page_token:
+                        # Get next page of threat objects
+                        response = client.get_threat_objects(next_page_token=next_page_token)
+                        if response and isinstance(response, dict) and response.get("data"):
+                            data = response.get("data", [])
+                            if isinstance(data, list):
+                                indicators.extend(parse_threat_objects(data, feed_tags, tlp_color))
+                            metadata = response.get("metadata", {})
+                            next_page_token = metadata.get("next_page_token") if isinstance(metadata, dict) else None
+                        else:
+                            break
 
     return indicators
 
@@ -422,7 +437,7 @@ def get_indicators_command(client: Client, args: dict, feed_tags: list = [], tlp
         Demisto Outputs.
     """
     limit = arg_to_number(args.get("limit", "10")) or 10  # Default to 10 if None
-    indicator_types = args.get("indicator_types", "All")
+    indicator_types = ",".join(args.get("indicator_types", ["All"]))
     next_page_token = args.get("next_page_token")
 
     # Get indicators from the API
@@ -529,13 +544,13 @@ def main():
         if command == "test-module":
             return_results(test_module(client))
 
-        elif command == "fetch-indicators":
-            now = datetime.now(timezone.utc).strftime(DATE_FORMAT)  # save the time we started fetching indicators.
-            indicators = fetch_indicators(client, params, feed_tags, tlp_color)
+        elif command == "fetch-indicators" or command == "unit42-fetch-indicators":
+            now = datetime.now()
+            indicators = fetch_indicators(client, params, feed_tags, tlp_color, now)
             for b in batch(indicators, batch_size=2000):
                 demisto.createIndicators(b)
-            demisto.setLastRun({"last_successful_run": now})
-            demisto.info(f"Fetch-indicators completed. Next run will fetch from: {now}")
+            demisto.setLastRun({"last_successful_run": now.strftime(DATE_FORMAT)})
+            demisto.info(f"Fetch-indicators completed. Next run will fetch from: {now.strftime(DATE_FORMAT)}")
 
         elif command == "unit42-get-indicators":
             return_results(get_indicators_command(client, demisto.args(), feed_tags, tlp_color))

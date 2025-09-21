@@ -42,13 +42,15 @@ configuration:
   name: feedReliability
   type: 15  
   options:
+  - A++ - Reputation script
+  - A+ - 3rd party enrichment
   - A - Completely reliable
   - B - Usually reliable
   - C - Fairly reliable
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  defaultvalue: A - Completely reliable
+  defaultvalue: A++ - Reputation script
   required: false
   section: Collect
   advanced: true
@@ -160,6 +162,8 @@ script:
       name: limit
     description: Gets indicators from the feed.
     name: unit42-get-indicators
+  - description: Gets indicators from the feed.
+    name: unit42-fetch-indicators
   - arguments:
     - defaultValue: '10'
       description: The maximum number of threat objects to return. The default is 10.
