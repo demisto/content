@@ -69,9 +69,9 @@ USE_SSL = not PARAMS.get("insecure", False)
 FETCH_TIME = "now" if demisto.command() == "fetch-events" else PARAMS.get("fetch_time", "3 days")
 
 MAX_FETCH_SIZE = 10000
-MAX_FETCH_DETECTION_PER_API_CALL = 10000  # fetch limit for get ids call
-MAX_FETCH_DETECTION_PER_API_CALL_ENTITY = 1000  # fetch limit for get entities call
-MAX_FETCH_INCIDENT_PER_API_CALL = 500  # fetch limit for get ids call
+MAX_FETCH_DETECTION_PER_API_CALL = 10000  # fetch limit for get ids call - detections
+MAX_FETCH_DETECTION_PER_API_CALL_ENTITY = 1000  # fetch limit for get entities call - detections
+MAX_FETCH_INCIDENT_PER_API_CALL = 500  # fetch limit for get ids call - incidents 
 
 BYTE_CREDS = f"{CLIENT_ID}:{SECRET}".encode()
 
@@ -1738,7 +1738,7 @@ def get_detections_entities(detections_ids: list):
             combined_meta = response["meta"]
 
     # Return the combined result.
-    return {"meta": combined_meta, "resources": combined_resources}
+    return {"resources": combined_resources}
 
 
 def get_incidents_ids(
@@ -1840,7 +1840,7 @@ def get_detection_entities(incidents_ids: list):
             combined_meta = raw_res["meta"]
 
     # Return the combined result.
-    return {"meta": combined_meta, "resources": combined_resources}
+    return {"resources": combined_resources}
 
 
 def get_users(offset: int, limit: int, query_filter: str | None = None) -> dict:

@@ -4454,6 +4454,7 @@ def test_get_remote_detection_data_for_multiple_types(mocker, detection_type, in
 @pytest.mark.parametrize(
     "function_name, num_ids, expected_calls",
     [
+        # These are two different functions - calling both of them to verify the call architecture applies to both.
         ("get_detections_entities", 0, 0),  # Edge case: no IDs
         ("get_detections_entities", 500, 1),  # Less than the limit
         ("get_detections_entities", 1000, 1),  # Exactly the limit
