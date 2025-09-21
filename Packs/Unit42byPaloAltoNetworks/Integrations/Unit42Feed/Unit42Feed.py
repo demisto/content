@@ -81,11 +81,12 @@ class Client(BaseClient):
             params["next_page_token"] = next_page_token
 
         # Use params_parser to control URL encoding - don't encode colons in timestamps
-        def custom_quote(string, safe='', encoding=None, errors=None):
+        def custom_quote(string, safe="", encoding=None, errors=None):
             """Custom quote function that doesn't encode colons in timestamps"""
             import urllib.parse
+
             # Don't encode colons for timestamp parameters
-            return urllib.parse.quote(string, safe=safe + ':', encoding=encoding, errors=errors)
+            return urllib.parse.quote(string, safe=safe + ":", encoding=encoding, errors=errors)
 
         response = self._http_request(
             method="GET", url_suffix="/api/v1/feeds/indicators", params=params, params_parser=custom_quote
