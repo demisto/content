@@ -79,15 +79,6 @@ def ip_enrichment_script(
         )
     )
 
-    demisto.debug("Command Batch 2: Enriching indicators")
-    command_batch2.append(
-        Command(
-            name="enrichIndicators",
-            args={"indicatorsValues": ip_list},
-            command_type=CommandType.EXTERNAL,
-        )
-    )
-
     if is_xsiam():
         demisto.debug("Command Batch 2: Internal commands (for XSIAM)")
         command_batch2.append(
@@ -99,6 +90,15 @@ def ip_enrichment_script(
                 context_output_mapping={"Core.AnalyticsPrevalence.Ip": "Core.AnalyticsPrevalence.Ip"},
             )
         )
+
+    demisto.debug("Command Batch 2: Enriching indicators")
+    command_batch2.append(
+        Command(
+            name="enrichIndicators",
+            args={"indicatorsValues": ip_list},
+            command_type=CommandType.EXTERNAL,
+        )
+    )
 
     commands: list[list[Command]] = [
         command_batch1,
