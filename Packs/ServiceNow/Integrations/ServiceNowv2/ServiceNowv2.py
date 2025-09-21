@@ -3353,7 +3353,7 @@ def set_default_fields(
         UpdateRemoteSystemArgs: The parsed arguments with default closure fields if they were missing.
     """
     state = parsed_args.delta.get("state")
-    if (state in {"7", "6"}) or (state == close_custom_state and ticket_type == "incident"):
+    if (state in {"7", "6"}) or (ticket_type == "incident" and close_custom_state and state == close_custom_state):
         demisto.debug(
             f"State {state} is 7 or 6 or custom {close_custom_state} and ticket type is incident - Setting default "
             f"closure fields if missing"
