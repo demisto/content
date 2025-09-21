@@ -217,8 +217,12 @@ def test_generate_authentication_headers_invalid_auth(mock_error, mock_return_er
 
 
 def test_extract_pagination_params():
-    params = {"pagination_needed": "true", "pagination_response_field": "next_page",
-              "pagination_request_field": "next_page", "pagination_flag": "has_more"}
+    params = {
+        "pagination_needed": "true",
+        "pagination_response_field": "next_page",
+        "pagination_request_field": "next_page",
+        "pagination_flag": "has_more",
+    }
     pagination_logic = extract_pagination_params(params)
     assert pagination_logic.pagination_needed is True
     assert pagination_logic.pagination_response_field == ["next_page"]
@@ -477,7 +481,7 @@ def test_extract_pagination_params_with_response_and_request_fields():
         "pagination_needed": "true",
         "pagination_response_field": "next_page_token",
         "pagination_request_field": "page_token",
-        "pagination_flag": "has_more"
+        "pagination_flag": "has_more",
     }
     result = extract_pagination_params(params)
     assert result.pagination_needed is True
@@ -488,15 +492,12 @@ def test_extract_pagination_params_with_response_and_request_fields():
 
 def test_is_pagination_needed_with_response_field():
     """Test is_pagination_needed with response field."""
-    events = {
-        "next_page_token": "abc123",
-        "has_more": True
-    }
+    events = {"next_page_token": "abc123", "has_more": True}
     pagination_logic = PaginationLogic(
         pagination_needed=True,
         pagination_response_field=["next_page_token"],
         pagination_request_field="page_token",
-        pagination_flag=["has_more"]
+        pagination_flag=["has_more"],
     )
     result, next_page = is_pagination_needed(events, pagination_logic)
     assert result is True
@@ -505,17 +506,12 @@ def test_is_pagination_needed_with_response_field():
 
 def test_is_pagination_needed_with_nested_response_field():
     """Test is_pagination_needed with nested response field."""
-    events = {
-        "pagination": {
-            "next_page": "def456",
-            "has_more": True
-        }
-    }
+    events = {"pagination": {"next_page": "def456", "has_more": True}}
     pagination_logic = PaginationLogic(
         pagination_needed=True,
         pagination_response_field=["pagination", "next_page"],
         pagination_request_field="page",
-        pagination_flag=["pagination", "has_more"]
+        pagination_flag=["pagination", "has_more"],
     )
     result, next_page = is_pagination_needed(events, pagination_logic)
     assert result is True
@@ -524,15 +520,12 @@ def test_is_pagination_needed_with_nested_response_field():
 
 def test_is_pagination_needed_no_more_pages():
     """Test is_pagination_needed when there are no more pages."""
-    events = {
-        "next_page_token": "abc123",
-        "has_more": False
-    }
+    events = {"next_page_token": "abc123", "has_more": False}
     pagination_logic = PaginationLogic(
         pagination_needed=True,
         pagination_response_field=["next_page_token"],
         pagination_request_field="page_token",
-        pagination_flag=["has_more"]
+        pagination_flag=["has_more"],
     )
     result, next_page = is_pagination_needed(events, pagination_logic)
     assert result is False
@@ -546,7 +539,7 @@ def test_is_pagination_needed_pagination_not_needed():
         pagination_needed=False,
         pagination_response_field=["next_page"],
         pagination_request_field="page",
-        pagination_flag=["has_more"]
+        pagination_flag=["has_more"],
     )
     result, next_page = is_pagination_needed(events, pagination_logic)
     assert result is False

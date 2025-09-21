@@ -7,6 +7,7 @@ This is the default integration for this content pack when configured by the Dat
 
 ## Configure Generic API Event Collector (Beta) in Cortex
 
+
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Server URL |  | True |
@@ -28,9 +29,10 @@ This is the default integration for this content pack when configured by the Dat
 | Query parameters | If required to filter the results using query parameters please add it here in dictionary format \{unique_field : 286\}. If there's a need to add more then one, use it in this format: \{'field-1': value_example, 'field-2': value_2, 'field-3': value_3\} | False |
 | Initial query parameters | If the product requires a different initial query parameters for the first fetch call, add it here in dictionary format \{unique_field : 286\}. If there's a need to add more then one, use it in this format: \{'field-1': value_example, 'field-2': value_2, 'field-3': value_3\} | False |
 | Is pagination needed | If the API JSON response supports events pagination. |  |
-| Pagination field name | Next page field in JSON response, e.g., "cursor", "next_page" | False |
+| Pagination Response Field | Field in the response that contains the next page value, e.g., "next_page_token", "cursor" | False |
+| Pagination Request Field | Field name to use in the request for the next page, e.g., "page_token", "cursor" | False |
 | Next Page Handling | How to handle the next page value. 'navigate to it' - follow the URL directly, 'move it as a JSON' - send the next page value as a json in the request's body. | False |
-| Pagination flag | Next page existence in JSON response e.g., "has_more", "next" | False |
+| Pagination flag | Field that indicates if there are more pages, e.g., "has_more", "next" | False |
 | Timestamp format of the event creation time or "epoch". | Python compatible datetime formatting \(e.g., "%Y-%m-%dT%H:%M:%S.%fZ" or "%Y.%m.%d %H:%M:%S"\) or "epoch" to use UNIX epoch time. | False |
 | Timestamp field | The name of the event creation time in the response data, e.g., "timestamp" or "created_at". | True |
 | Events lookup path in the response JSON, dot-separated, e.g. ,"data.items". | Where within the response object to find the events list. | False |
@@ -40,6 +42,7 @@ This is the default integration for this content pack when configured by the Dat
 | Number of incidents to fetch per fetch. |  | False |
 | Fetch Events |  | False |
 | Events Fetch Interval |  | False |
+
 
 ## How to configure the event collector
 

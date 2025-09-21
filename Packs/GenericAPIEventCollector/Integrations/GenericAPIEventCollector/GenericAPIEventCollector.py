@@ -18,8 +18,8 @@ PaginationLogic = namedtuple(
     (
         "pagination_needed",
         "pagination_response_field",  # Field to extract from response
-        "pagination_request_field",   # Field to use in next request
-        "pagination_flag",            # Field that indicates if more pages exist
+        "pagination_request_field",  # Field to use in next request
+        "pagination_flag",  # Field that indicates if more pages exist
     ),
     defaults=(False, [], "", []),
 )
@@ -527,14 +527,9 @@ def extract_pagination_params(params: dict[str, str]) -> PaginationLogic:
     pagination_response_field: list[str] = argToList(params.get("pagination_response_field"), ".")
     pagination_request_field: str = params.get("pagination_request_field", "")
     pagination_flag: list[str] = argToList(params.get("pagination_flag"), ".")
-    
-    pagination_logic = PaginationLogic(
-        pagination_needed, 
-        pagination_response_field,
-        pagination_request_field,
-        pagination_flag
-    )
-    
+
+    pagination_logic = PaginationLogic(pagination_needed, pagination_response_field, pagination_request_field, pagination_flag)
+
     if pagination_logic.pagination_needed:
         demisto.debug(
             "Pagination logic - Pagination Needed, "
@@ -550,7 +545,7 @@ def extract_pagination_params(params: dict[str, str]) -> PaginationLogic:
             return_error("Pagination flag is missing")
     else:
         demisto.debug("Pagination logic - Pagination Not Needed")
-    
+
     return pagination_logic
 
 
