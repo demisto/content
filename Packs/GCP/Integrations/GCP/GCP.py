@@ -5,6 +5,7 @@ from googleapiclient.discovery import build
 from google.oauth2 import service_account as google_service_account
 import urllib3
 from COOCApiModule import *
+from googleapiclient.errors import HttpError
 
 urllib3.disable_warnings()
 
@@ -124,7 +125,7 @@ class GCPServices(Enum):
 
 
 # Command requirements mapping: (GCP_Service_Enum, [Required_Permissions])
-COMMAND_REQUIREMENTS = {
+COMMAND_REQUIREMENTS: dict[str, tuple[GCPServices, list[str]]] = {
     "gcp-compute-firewall-patch": (
         GCPServices.COMPUTE,
         [
@@ -154,6 +155,9 @@ COMMAND_REQUIREMENTS = {
     ),
     "gcp-compute-instance-start": (GCPServices.COMPUTE, ["compute.instances.start"]),
     "gcp-compute-instance-stop": (GCPServices.COMPUTE, ["compute.instances.stop"]),
+    "gcp-compute-instances-list": (GCPServices.COMPUTE, ["compute.instances.list"]),
+    "gcp-compute-instance-get": (GCPServices.COMPUTE, ["compute.instances.get"]),
+    "gcp-compute-instance-labels-set": (GCPServices.COMPUTE, ["compute.instances.setLabels"]),
     "gcp-storage-bucket-policy-delete": (GCPServices.STORAGE, ["storage.buckets.getIamPolicy", "storage.buckets.setIamPolicy"]),
     "gcp-storage-bucket-metadata-update": (GCPServices.STORAGE, ["storage.buckets.update"]),
     "gcp-container-cluster-security-update": (
@@ -186,7 +190,7 @@ COMMAND_REQUIREMENTS = {
 OPERATION_TABLE = ["id", "kind", "name", "operationType", "progress", "zone", "status"]
 # taken from GoogleCloudCompute
 FIREWALL_RULE_REGEX = re.compile(r"ipprotocol=([\w\d_:.-]+),ports=([ /\w\d@_,.\*-]+)", flags=re.I)
-METADATA_ITEM_REGEX = re.compile(r"key=([\w\d_:.-]+),value=([ /\w\d@_,.\*-]+)", flags=re.I)
+KEY_VALUE_ITEM_REGEX = re.compile(r"key=([\w\d_:.-]+),value=([ /\w\d@_,.\*-]+)", flags=re.I)
 
 
 def parse_firewall_rule(rule_str: str) -> list[dict[str, list[str] | str]]:
@@ -225,7 +229,7 @@ def parse_metadata_items(tags_str: str) -> list[dict[str, str]]:
     """
     tags = []
     for f in tags_str.split(";"):
-        match = METADATA_ITEM_REGEX.match(f)
+        match = KEY_VALUE_ITEM_REGEX.match(f)
         if match is None:
             raise ValueError(
                 f"Could not parse field: {f}. Please make sure you provided like so: key=abc,value=123;key=fed,value=456"
@@ -254,6 +258,61 @@ def extract_zone_name(zone_input: str | None) -> str:
     if "/" in zone_input:
         return zone_input.strip().split("/")[-1]
     return zone_input.strip()
+
+
+def parse_labels(labels_str: str) -> dict:
+    """
+    Transforms a string of multiple inputs to a dictionary
+    Args:
+        labels_str (str): The actual string to parse to a key & value pair.
+
+    Returns:
+        Returns the labels dictionary with the extracted key & value pairs.
+    """
+    labels = {}
+    for f in labels_str.strip().split(";"):
+        if f:
+            match = KEY_VALUE_ITEM_REGEX.match(f)
+            if match is None:
+                raise ValueError(
+                    f"Could not parse field: {f}. Please make sure you provided like so: key=abc,value=123;key=def,value=456"
+                )
+
+            labels.update({match.group(1).lower(): match.group(2).lower()})
+    return labels
+
+
+def handle_permission_error(e: HttpError, project_id: str, command_name: str):
+    """
+    Given an error, extract the relevant information (account_id & message & permission name) to report to the backend.
+    Args:
+        e (HttpError): The error object.
+        project_id (str): The project identifier.
+        command_name (str): The name of the command that was executed.
+
+    Returns:
+        Returns the labels dictionary with the extracted key & value pairs.
+    """
+    status_code = e.resp.status
+    if int(status_code) in [403, 401] and e.resp.get("content-type", "").startswith("application/json"):
+        message_content = json.loads(e.content)
+        error_message = message_content.get("error", {}).get("message", "")
+
+        # get the relevant permissions for the relevant command
+        command_permissions: list[str]
+        command_permissions = COMMAND_REQUIREMENTS[command_name][1]
+
+        # find out which permissions are relevant for the current execution failure from the list of command permissions.
+        found_permissions = [perm for perm in command_permissions if perm.lower() in error_message.lower()] or ["N/A"]
+
+        demisto.debug(f"The info {error_message=} {found_permissions=} {message_content=}")
+
+        # create an error entry for each missing permission.
+        error_entries = [{"account_id": project_id, "message": error_message, "name": perm} for perm in found_permissions]
+
+        return_multiple_permissions_error(error_entries)
+    else:  # Return the original error if it's not a 403, 401 or doesn't have a JSON body
+        return_error(f"Failed to execute command {demisto.command()}. Error: {str(e)}")
 
 
 ##########
@@ -950,6 +1009,186 @@ def compute_instance_stop(creds: Credentials, args: dict[str, Any]) -> CommandRe
 #     return CommandResults(readable_output=hr)
 
 
+def gcp_compute_instances_list_command(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Retrieves the list of instances contained within the specified zone.
+    Args:
+        creds (Credentials): GCP credentials with admin directory security scope.
+        args (dict[str, Any]): Must include 'resource_name'.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    project_id = args.get("project_id")
+    zone = extract_zone_name(args.get("zone"))
+    limit = (arg_to_number(args.get("limit")) or 500) if args.get("limit", "500") != "0" else 0
+    filters = args.get("filters")
+    order_by = args.get("order_by")
+    page_token = args.get("page_token")
+
+    if not limit or (limit and (limit > 500 or limit < 1)):
+        raise DemistoException(
+            f"The acceptable values of the argument limit are 1 to 500, inclusive. Currently the value is {limit}"
+        )
+
+    compute = GCPServices.COMPUTE.build(creds)
+    response = (
+        compute.instances()
+        .list(project=project_id, zone=zone, filter=filters, maxResults=limit, orderBy=order_by, pageToken=page_token)
+        .execute()
+    )
+
+    next_page_token = response.get("nextPageToken", "")
+    metadata = (
+        "Run the following command to retrieve the next batch of instances:\n"
+        f"!gcp-compute-instances-list project_id={project_id} zone={zone} page_token={next_page_token}"
+        if next_page_token
+        else None
+    )
+    if limit < 500:
+        metadata = f"{metadata} {limit=}"
+
+    if next_page_token:
+        response["InstancesNextPageToken"] = response.pop("nextPageToken")
+
+    if response.get("items"):
+        response["Instances"] = response.pop("items")
+
+    hr_data = []
+    for instance in response.get("Instances", [{}]):
+        d = {
+            "id": instance.get("id"),
+            "name": instance.get("name"),
+            "kind": instance.get("kind"),
+            "creationTimestamp": instance.get("creationTimestamp"),
+            "description": instance.get("description"),
+            "status": instance.get("status"),
+            "machineType": instance.get("machineType"),
+            "zone": instance.get("zone"),
+        }
+        hr_data.append(d)
+
+    readable_output = tableToMarkdown(
+        "GCP Instances",
+        hr_data,
+        headers=["id", "name", "kind", "creationTimestamp", "description", "status", "machineType", "zone"],
+        headerTransform=pascalToSpace,
+        removeNull=True,
+        metadata=metadata,
+    )
+
+    outputs = {
+        "GCP.Compute.Instances(val.id && val.id == obj.id)": response.get("Instances", []),
+        "GCP.Compute(true)": {
+            "InstancesNextPageToken": response.get("InstancesNextPageToken"),
+            "InstancesSelfLink": response.get("selfLink"),
+            "InstancesWarning": response.get("warning"),
+        },
+    }
+    remove_empty_elements(outputs)
+    return CommandResults(
+        readable_output=readable_output,
+        outputs=outputs,
+        raw_response=response,
+    )
+
+
+def gcp_compute_instance_get_command(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Returns the specified Instance resource.
+    Args:
+        creds (Credentials): GCP credentials with admin directory security scope.
+        args (dict[str, Any]): Must include 'resource_name'.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    project_id = args.get("project_id")
+    zone = extract_zone_name(args.get("zone"))
+    instance = args.get("instance")
+
+    compute = GCPServices.COMPUTE.build(creds)
+    response = compute.instances().get(project=project_id, zone=zone, instance=instance).execute()
+
+    hr_data = {
+        "id": response.get("id"),
+        "name": response.get("name"),
+        "kind": response.get("kind"),
+        "creationTimestamp": response.get("creationTimestamp"),
+        "description": response.get("description"),
+        "status": response.get("status"),
+        "machineType": response.get("machineType"),
+        "labels": response.get("labels"),
+        "labelFingerprint": response.get("labelFingerprint"),
+    }
+    readable_output = tableToMarkdown(
+        f"GCP Instance {instance} from zone {zone}",
+        hr_data,
+        headers=["id", "name", "kind", "creationTimestamp", "description", "status", "machineType", "labels", "labelFingerprint"],
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="GCP.Compute.Instances",
+        outputs_key_field="id",
+        outputs=response,
+        raw_response=response,
+    )
+
+
+def gcp_compute_instance_label_set_command(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Sets labels on an instance.
+    Args:
+        creds (Credentials): GCP credentials with admin directory security scope.
+        args (dict[str, Any]): Must include 'resource_name'.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    project_id = args.get("project_id")
+    zone = extract_zone_name(args.get("zone"))
+    instance = args.get("instance")
+    label_fingerprint = args.get("label_fingerprint", "")
+    add_labels = argToBoolean(args.get("add_labels", False))
+    labels = parse_labels(args.get("labels", ""))
+    demisto.debug(f"The parsed {labels=}")
+
+    current_labels = {}
+    if add_labels:
+        instance_info = gcp_compute_instance_get_command(creds, args).outputs
+        if isinstance(instance_info, dict):
+            current_labels = instance_info.get("labels", {})
+            demisto.debug(f"Adding the new labels {labels=} to the current ones {current_labels}")
+
+    body = {"labels": current_labels | labels, "labelFingerprint": label_fingerprint}
+
+    compute = GCPServices.COMPUTE.build(creds)
+    response = compute.instances().setLabels(project=project_id, zone=zone, instance=instance, body=body).execute()
+
+    data_res = {
+        "status": response.get("status"),
+        "kind": response.get("kind"),
+        "name": response.get("name"),
+        "id": response.get("id"),
+        "progress": response.get("progress"),
+        "operationType": response.get("operationType"),
+    }
+
+    headers = ["id", "name", "kind", "status", "progress", "operationType"]
+
+    readable_output = tableToMarkdown(f"GCP instance {instance} labels update", data_res, headers=headers, removeNull=True)
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="GCP.Compute.Operations",
+        outputs_key_field="id",
+        outputs=response,
+        raw_response=response,
+    )
+
+
 def _get_commands_for_requirement(requirement: str, req_type: str) -> list[str]:
     """
     Find which commands require a specific API or permission.
@@ -1239,11 +1478,11 @@ def main():  # pragma: no cover
     This function processes the incoming command, sets up the appropriate credentials,
     and routes the execution to the corresponding handler function.
     """
-    try:
-        command = demisto.command()
-        args = demisto.args()
-        params = demisto.params()
+    command = demisto.command()
+    args = demisto.args()
+    params = demisto.params()
 
+    try:
         command_map = {
             "test-module": test_module,
             # Compute Engine commands
@@ -1253,6 +1492,9 @@ def main():  # pragma: no cover
             "gcp-compute-instance-service-account-remove": compute_instance_service_account_remove,
             "gcp-compute-instance-start": compute_instance_start,
             "gcp-compute-instance-stop": compute_instance_stop,
+            "gcp-compute-instances-list": gcp_compute_instances_list_command,
+            "gcp-compute-instance-get": gcp_compute_instance_get_command,
+            "gcp-compute-instance-labels-set": gcp_compute_instance_label_set_command,
             # Storage commands
             "gcp-storage-bucket-policy-delete": storage_bucket_policy_delete,
             "gcp-storage-bucket-metadata-update": storage_bucket_metadata_update,
@@ -1281,6 +1523,10 @@ def main():  # pragma: no cover
             return_results(command_map[command](creds, args))
         else:
             raise NotImplementedError(f"Command not implemented: {command}")
+
+    except HttpError as e:
+        project_id = args.get("project_id") or args.get("folder_id") or "N/A"
+        handle_permission_error(e, project_id, command)
 
     except Exception as e:
         return_error(f"Failed to execute command {demisto.command()}. Error: {str(e)}")
