@@ -1,0 +1,18 @@
+{
+    "GoogleChronicleBackstory.DataTableRows(val.name == obj.name)": [
+        {
+            "name": "projects/dummy_project_id/locations/dummy_location/instances/dummy_instance_id/dataTables/test_table/dataTableRows/row1",
+            "values": {
+                "column_1": "value1",
+                "column_2": "value2"
+            }
+        },
+        {
+            "name": "projects/dummy_project_id/locations/dummy_location/instances/dummy_instance_id/dataTables/test_table/dataTableRows/row2",
+            "values": {
+                "column_1": "value3",
+                "column_2": "value4"
+            }
+        }
+    ]
+}
