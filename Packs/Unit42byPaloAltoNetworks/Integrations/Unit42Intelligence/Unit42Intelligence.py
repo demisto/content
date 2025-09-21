@@ -191,10 +191,10 @@ def extract_response_data(response: dict[str, Any]) -> dict[str, Any]:
         "indicator_type": response.get("indicator_type", ""),
         "counts": response.get("counts", []),
         "verdict": response.get("verdict", "unknown"),
-        "verdict_category": [item.get("value") for item in response.get("verdict_category", [])],
+        "verdict_categories": [item.get("value") for item in response.get("verdict_categories", [])],
         "first_seen": response.get("first_seen", ""),
         "last_seen": response.get("last_seen", ""),
-        "seen_by": response.get("source", []),
+        "seen_by": response.get("sources", []),
         "relationships": response.get("threat_object_association", []),
     }
 
@@ -699,7 +699,7 @@ def create_threat_object_indicators(
         # Create fields with threat object details
         fields = {
             "description": build_threat_object_description(threat_obj),
-            "reportedby": threat_obj.get("source"),
+            "reportedby": threat_obj.get("sources"),
             "aliases": [string_to_table_header(alias) for alias in threat_obj.get("aliases", [])],
             "industrysectors": [
                 string_to_table_header(industry) for industry in demisto.get(threat_obj, "battlecard_details.industries", [])
@@ -744,7 +744,7 @@ def create_context_data(response_data: dict[str, Any]) -> dict[str, Any]:
         "Value": response_data["indicator_value"],
         "Type": INDICATOR_TYPE_MAPPING.get(response_data["indicator_type"]),
         "Verdict": string_to_table_header(response_data["verdict"]),
-        "VerdictCategory": list({string_to_table_header(item) for item in response_data["verdict_category"]}),
+        "VerdictCategories": list({string_to_table_header(item) for item in response_data["verdict_categories"]}),
         "Counts": response_data["counts"],
         "FirstSeen": response_data["first_seen"],
         "LastSeen": response_data["last_seen"],
@@ -826,7 +826,7 @@ def ip_command(client: Client, args: dict[str, Any]) -> CommandResults:
     readable_output = tableToMarkdown(
         f"Unit 42 Intelligence results for IP: {ip}",
         context_data,
-        headers=["Value", "Verdict", "VerdictCategory", "SeenBy", "FirstSeen", "LastSeen"],
+        headers=["Value", "Verdict", "VerdictCategories", "SeenBy", "FirstSeen", "LastSeen"],
         headerTransform=pascalToSpace,
         removeNull=True,
     )
@@ -890,7 +890,7 @@ def domain_command(client: Client, args: dict[str, Any]) -> CommandResults:
     readable_output = tableToMarkdown(
         f"Unit 42 Intelligence results for Domain: {domain}",
         context_data,
-        headers=["Value", "Verdict", "VerdictCategory", "SeenBy", "FirstSeen", "LastSeen"],
+        headers=["Value", "Verdict", "VerdictCategories", "SeenBy", "FirstSeen", "LastSeen"],
         headerTransform=pascalToSpace,
         removeNull=True,
     )
@@ -954,7 +954,7 @@ def url_command(client: Client, args: dict[str, Any]) -> CommandResults:
     readable_output = tableToMarkdown(
         f"Unit 42 Intelligence results for URL: {url}",
         context_data,
-        headers=["Value", "Verdict", "VerdictCategory", "SeenBy", "FirstSeen", "LastSeen"],
+        headers=["Value", "Verdict", "VerdictCategories", "SeenBy", "FirstSeen", "LastSeen"],
         headerTransform=pascalToSpace,
         removeNull=True,
     )
@@ -1030,7 +1030,7 @@ def file_command(client: Client, args: dict[str, Any]) -> CommandResults:
     readable_output = tableToMarkdown(
         f"Unit 42 Intelligence results for File: {file_hash}",
         context_data,
-        headers=["Value", "Verdict", "VerdictCategory", "SeenBy", "FirstSeen", "LastSeen"],
+        headers=["Value", "Verdict", "VerdictCategories", "SeenBy", "FirstSeen", "LastSeen"],
         headerTransform=pascalToSpace,
         removeNull=True,
     )
