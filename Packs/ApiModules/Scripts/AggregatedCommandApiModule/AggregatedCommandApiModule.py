@@ -1011,11 +1011,10 @@ class ReputationAggregatedCommand(AggregatedCommand):
                     message="Unsupported Command: Verify you have proper integrations enabled to support it",
                 )
             )
-        # Remove Entries from non brands command such as CreateNewIndicator and EnrichIndicator
-        entries = [entry for entry in entries if entry.brand != ""]
         human_readable = tableToMarkdown(
             "Final Results",
-            t=[entry.to_entry() for entry in entries],
+            # Remove Entries from non brands command such as CreateNewIndicator and EnrichIndicator
+            t=[entry.to_entry() for entry in entries if entry.brand != ""],
             headers=["Brand", "Arguments", "Status", "Message"],
         )
         if self.verbose and verbose_outputs:

@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: aaf2c15f-8e4b-4719-8296-789c29ab487c
+    taskid: 37583ebd-9402-4956-83cf-f2d2de0af66c
     type: start
     task:
-      id: aaf2c15f-8e4b-4719-8296-789c29ab487c
+      id: 37583ebd-9402-4956-83cf-f2d2de0af66c
       version: -1
       name: ""
       iscommand: false
@@ -22,7 +22,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
+          "x": 582.5,
           "y": 50
         }
       }
@@ -35,10 +35,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 95e29254-64b9-4a4a-8721-7c2b67954833
+    taskid: dc5fa6df-891f-4e0e-8f83-4be6bb4de1a3
     type: regular
     task:
-      id: 95e29254-64b9-4a4a-8721-7c2b67954833
+      id: dc5fa6df-891f-4e0e-8f83-4be6bb4de1a3
       version: -1
       name: DeleteContext
       description: "Delete field from context.\n\nThis automation runs using the default
@@ -62,7 +62,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
+          "x": 582.5,
           "y": 370
         }
       }
@@ -75,10 +75,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 4f6eaaab-88cc-4eff-a489-6443ce905628
+    taskid: 878d8941-5fcb-41e7-912c-24fc45bf5133
     type: regular
     task:
-      id: 4f6eaaab-88cc-4eff-a489-6443ce905628
+      id: 878d8941-5fcb-41e7-912c-24fc45bf5133
       version: -1
       name: Run domain enrichment script
       description: This script gathers domain reputation data from multiple integrations
@@ -90,15 +90,12 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "6"
       - "14"
       - "15"
       - "13"
     scriptarguments:
       additional_fields:
         simple: "false"
-      brands:
-        simple: VirusTotal (API v3), Cortex Core - IR
       domain_list:
         simple: google.com
       external_enrichment:
@@ -110,61 +107,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
+          "x": 582.5,
           "y": 540
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "6":
-    id: "6"
-    taskid: 8f837824-3227-4196-aa82-083af42cd960
-    type: condition
-    task:
-      id: 8f837824-3227-4196-aa82-083af42cd960
-      version: -1
-      name: Virus Total Indicator Exists
-      description: Make sure the Virus Total indicator returned from tim
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "7"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: DomainEnrichment
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: DomainEnrichment.Value
-                      iscontext: true
-                    right:
-                      value:
-                        simple: google.com
-                accessor: Results.Brand
-            iscontext: true
-          right:
-            value:
-              simple: VirusTotal (API v3)
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1050
         }
       }
     note: false
@@ -176,12 +120,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 372abe04-f2b5-4777-8278-ef79802ba5a2
+    taskid: d352e1ff-70fa-4819-b293-15fdf77c338d
     type: title
     task:
-      id: 372abe04-f2b5-4777-8278-ef79802ba5a2
+      id: d352e1ff-70fa-4819-b293-15fdf77c338d
       version: -1
-      name: Case 2 - Base Unknown URL
+      name: Case 2 - Brand
       type: title
       iscommand: false
       brand: ""
@@ -193,7 +137,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 807.5,
+          "x": 695,
           "y": 1220
         }
       }
@@ -206,12 +150,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: a5715f46-60fe-4b72-88c7-2c182dbe7716
+    taskid: e7a5de69-2e1b-4e3d-8da8-e759a8d10418
     type: title
     task:
-      id: a5715f46-60fe-4b72-88c7-2c182dbe7716
+      id: e7a5de69-2e1b-4e3d-8da8-e759a8d10418
       version: -1
-      name: Case 1 - Base Make Sure Internal is running
+      name: Case 1 - Base
       type: title
       iscommand: false
       brand: ""
@@ -223,7 +167,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
+          "x": 582.5,
           "y": 210
         }
       }
@@ -236,10 +180,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: b498492e-2e1d-4788-83e7-ccccc83aa8bf
+    taskid: 49393b2b-723d-4bb2-8bc7-5abfd564aaf5
     type: condition
     task:
-      id: b498492e-2e1d-4788-83e7-ccccc83aa8bf
+      id: 49393b2b-723d-4bb2-8bc7-5abfd564aaf5
       version: -1
       name: Core Returned
       description: Make sure Context output from wildfire
@@ -267,7 +211,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1452.5,
+          "x": 1125,
           "y": 710
         }
       }
@@ -280,10 +224,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 6af06c2b-0e4b-4f10-83b9-2bfdf45af26b
+    taskid: 2da12ad5-bfc0-433b-979f-14cb5e0b45db
     type: condition
     task:
-      id: 6af06c2b-0e4b-4f10-83b9-2bfdf45af26b
+      id: 2da12ad5-bfc0-433b-979f-14cb5e0b45db
       version: -1
       name: Is Indicator Enrichment
       description: MaxScore And MaxVerdict enriched for https://google.com
@@ -337,11 +281,6 @@ tasks:
                         simple: google.com
                 accessor: MaxVerdict
             iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: DomainEnrichment.Status
-            iscontext: true
       - - operator: isEqualString
           left:
             value:
@@ -364,7 +303,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 152.5,
           "y": 1050
         }
       }
@@ -377,10 +316,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 44ff341b-5a51-4756-838c-96228e85080d
+    taskid: 5b68022c-96ad-4393-81d4-ee6c131a49f2
     type: condition
     task:
-      id: 44ff341b-5a51-4756-838c-96228e85080d
+      id: 5b68022c-96ad-4393-81d4-ee6c131a49f2
       version: -1
       name: No additional fields
       description: Additional fields empty
@@ -403,7 +342,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 582.5,
           "y": 1050
         }
       }
@@ -416,130 +355,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: cbdb9f9d-17d5-4d38-885e-b5b3eef4c6a1
+    taskid: 926fb5b0-5981-48d9-b247-b8aeab10f202
     type: title
     task:
-      id: cbdb9f9d-17d5-4d38-885e-b5b3eef4c6a1
+      id: 926fb5b0-5981-48d9-b247-b8aeab10f202
       version: -1
-      name: Case 5 - Brands No Internal
-      type: title
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "21"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 910,
-          "y": 2900
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "21":
-    id: "21"
-    taskid: 97ae99d6-ca6c-46de-80d4-105856cdab93
-    type: regular
-    task:
-      id: 97ae99d6-ca6c-46de-80d4-105856cdab93
-      version: -1
-      name: DeleteContext
-      description: "Delete field from context.\n\nThis automation runs using the default
-        Limited User role, unless you explicitly change the permissions.\nFor more
-        information, see the section about permissions here:\n- For Cortex XSOAR 6
-        see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
-        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
-        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "23"
-    scriptarguments:
-      all:
-        simple: "yes"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 910,
-          "y": 3060
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "23":
-    id: "23"
-    taskid: a31b161c-406d-4c38-8d18-76597a9caf40
-    type: regular
-    task:
-      id: a31b161c-406d-4c38-8d18-76597a9caf40
-      version: -1
-      name: Run domain enrichment script
-      description: This script gathers domain reputation data from multiple integrations
-        and returns a "DomainEnrichment" object with consolidated information to the
-        context output.
-      scriptName: domain-enrichment
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "46"
-      - "45"
-      - "47"
-      - "48"
-    scriptarguments:
-      additional_fields:
-        simple: "false"
-      brands:
-        simple: AlienVault OTX v2
-      domain_list:
-        simple: google.com
-      external_enrichment:
-        simple: "true"
-      verbose:
-        simple: "false"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 910,
-          "y": 3230
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "28":
-    id: "28"
-    taskid: 6881d01a-bc89-4611-8540-50c892987986
-    type: title
-    task:
-      id: 6881d01a-bc89-4611-8540-50c892987986
-      version: -1
-      name: Case 6 - External Enrichment + Additional Fields
+      name: Case 4 - External Enrichment + Additional Fields
       type: title
       iscommand: false
       brand: ""
@@ -551,8 +372,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 3570
+          "x": 797.5,
+          "y": 2900
         }
       }
     note: false
@@ -564,10 +385,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: a2a771b4-9d3c-4bf7-8ed8-f260fd87e40a
+    taskid: 1d5dede1-7cfa-4a3d-8968-c2eba73987da
     type: regular
     task:
-      id: a2a771b4-9d3c-4bf7-8ed8-f260fd87e40a
+      id: 1d5dede1-7cfa-4a3d-8968-c2eba73987da
       version: -1
       name: DeleteContext
       description: "Delete field from context.\n\nThis automation runs using the default
@@ -591,8 +412,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 3730
+          "x": 797.5,
+          "y": 3060
         }
       }
     note: false
@@ -604,10 +425,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: b5230880-2ccc-4ff3-85b9-39ae125896c3
+    taskid: 8954f856-0d6b-4275-bd03-d58224108759
     type: regular
     task:
-      id: b5230880-2ccc-4ff3-85b9-39ae125896c3
+      id: 8954f856-0d6b-4275-bd03-d58224108759
       version: -1
       name: Run domain enrichment script
       description: This script gathers domain reputation data from multiple integrations
@@ -636,8 +457,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 3900
+          "x": 797.5,
+          "y": 3230
         }
       }
     note: false
@@ -649,12 +470,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: 58033556-6a49-4c61-8758-999fc1144eb7
+    taskid: 74e58f91-dc85-45e9-b9ba-884eb168e272
     type: title
     task:
-      id: 58033556-6a49-4c61-8758-999fc1144eb7
+      id: 74e58f91-dc85-45e9-b9ba-884eb168e272
       version: -1
-      name: Case 7 - Multiple Inputs
+      name: Case 5 - Multiple Inputs
       type: title
       iscommand: false
       brand: ""
@@ -666,8 +487,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 4240
+          "x": 797.5,
+          "y": 3570
         }
       }
     note: false
@@ -679,10 +500,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "36":
     id: "36"
-    taskid: a3719cac-6352-49f7-84de-1f61beafef7a
+    taskid: 99c6f7a0-5b15-4414-8f11-4aab1b0f49cd
     type: regular
     task:
-      id: a3719cac-6352-49f7-84de-1f61beafef7a
+      id: 99c6f7a0-5b15-4414-8f11-4aab1b0f49cd
       version: -1
       name: Run core-get-domain-analytics-prevalence
       description: Get the prevalence of a domain, identified by domain_name.
@@ -702,7 +523,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1340,
+          "x": 1012.5,
           "y": 880
         }
       }
@@ -715,10 +536,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "38":
     id: "38"
-    taskid: 0d9ef80d-28ee-4988-88c5-8b0328a7e5a3
+    taskid: 78961d50-1459-469a-87f9-a455057e8faa
     type: condition
     task:
-      id: 0d9ef80d-28ee-4988-88c5-8b0328a7e5a3
+      id: 78961d50-1459-469a-87f9-a455057e8faa
       version: -1
       name: Make sure analytics not exists
       type: condition
@@ -740,229 +561,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1340,
+          "x": 1012.5,
           "y": 1050
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "45":
-    id: "45"
-    taskid: f1d10336-6001-4fb7-8bc6-d369ad3e1df9
-    type: condition
-    task:
-      id: f1d10336-6001-4fb7-8bc6-d369ad3e1df9
-      version: -1
-      name: Both Indicator Exists
-      description: Make sure the Virus Total indicator returned from tim
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "28"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: DomainEnrichment.Results.Brand
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: DomainEnrichment.Results.Brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: AlienVault OTX v2
-            iscontext: true
-          right:
-            value:
-              simple: AlienVault OTX v2
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: DomainEnrichment.Results.Brand
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: DomainEnrichment.Results.Brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: VirusTotal (API v3)
-            iscontext: true
-          right:
-            value:
-              simple: VirusTotal (API v3)
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 592.5,
-          "y": 3400
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "46":
-    id: "46"
-    taskid: 5d934e6f-a5d3-40f5-87b7-589f6a125b97
-    type: condition
-    task:
-      id: 5d934e6f-a5d3-40f5-87b7-589f6a125b97
-      version: -1
-      name: Is Indicator Enrichment
-      description: MaxScore And MaxVerdict enriched for https://google.com
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "28"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: DomainEnrichment.Value
-            iscontext: true
-          right:
-            value:
-              simple: google.com
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: DomainEnrichment
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: DomainEnrichment.Value
-                      iscontext: true
-                    right:
-                      value:
-                        simple: google.com
-                accessor: MaxScore
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: DomainEnrichment
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: DomainEnrichment.Value
-                      iscontext: true
-                    right:
-                      value:
-                        simple: google.com
-                accessor: MaxVerdict
-            iscontext: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 3400
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "47":
-    id: "47"
-    taskid: cce71197-8ec0-4b9b-89eb-12481aeeb749
-    type: condition
-    task:
-      id: cce71197-8ec0-4b9b-89eb-12481aeeb749
-      version: -1
-      name: No additional fields
-      description: Additional fields empty
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "28"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotExists
-          left:
-            value:
-              simple: DomainEnrichment.Results.AdditionalFields
-            iscontext: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1022.5,
-          "y": 3400
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "48":
-    id: "48"
-    taskid: ab8473bd-3537-43b5-8e78-5ff1a6a18751
-    type: condition
-    task:
-      id: ab8473bd-3537-43b5-8e78-5ff1a6a18751
-      version: -1
-      name: Make sure analytics not exists
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "28"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotExists
-          left:
-            value:
-              simple: Core.AnalyticsPrevalence.Domain
-            iscontext: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1452.5,
-          "y": 3400
         }
       }
     note: false
@@ -974,10 +574,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "49":
     id: "49"
-    taskid: 837f1fa2-cb5d-44d5-8e8b-e40987fd21d1
+    taskid: 5c484fa9-f84a-4ea3-83db-0c359410a2cf
     type: condition
     task:
-      id: 837f1fa2-cb5d-44d5-8e8b-e40987fd21d1
+      id: 5c484fa9-f84a-4ea3-83db-0c359410a2cf
       version: -1
       name: Both Indicator Exists
       description: Make sure the Virus Total indicator returned from tim
@@ -1031,8 +631,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 807.5,
-          "y": 4070
+          "x": 695,
+          "y": 3400
         }
       }
     note: false
@@ -1044,10 +644,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "50":
     id: "50"
-    taskid: c3ab09a2-0bfe-4acb-87be-7157217f6d54
+    taskid: 58cba67d-2e1c-461b-a411-b5a5a927dde5
     type: condition
     task:
-      id: c3ab09a2-0bfe-4acb-87be-7157217f6d54
+      id: 58cba67d-2e1c-461b-a411-b5a5a927dde5
       version: -1
       name: Is Indicator Enrichment
       description: MaxScore And MaxVerdict enriched for https://google.com
@@ -1105,8 +705,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 377.5,
-          "y": 4070
+          "x": 265,
+          "y": 3400
         }
       }
     note: false
@@ -1118,10 +718,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "51":
     id: "51"
-    taskid: 01a9015b-7844-4a08-8fc5-d94f86e30238
+    taskid: 0d4f641d-a013-4aa1-8d77-71f316fc7429
     type: condition
     task:
-      id: 01a9015b-7844-4a08-8fc5-d94f86e30238
+      id: 0d4f641d-a013-4aa1-8d77-71f316fc7429
       version: -1
       name: Additional fields Exists
       description: Additional fields empty
@@ -1144,8 +744,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1237.5,
-          "y": 4070
+          "x": 1125,
+          "y": 3400
         }
       }
     note: false
@@ -1157,10 +757,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "58":
     id: "58"
-    taskid: 6d89dbe8-bff4-43ea-8ef3-26f46a540042
+    taskid: 906e1ea2-993b-413a-884a-10362e0570d4
     type: regular
     task:
-      id: 6d89dbe8-bff4-43ea-8ef3-26f46a540042
+      id: 906e1ea2-993b-413a-884a-10362e0570d4
       version: -1
       name: Delete Context
       description: "Delete field from context.\n\nThis automation runs using the default
@@ -1184,7 +784,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 807.5,
+          "x": 695,
           "y": 1380
         }
       }
@@ -1197,10 +797,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "59":
     id: "59"
-    taskid: cbfd20ac-a2a8-4433-851a-2fe21b51f9e8
+    taskid: 95db9071-a3d4-4969-8ac0-5b311992b7dd
     type: regular
     task:
-      id: cbfd20ac-a2a8-4433-851a-2fe21b51f9e8
+      id: 95db9071-a3d4-4969-8ac0-5b311992b7dd
       version: -1
       name: Get Time
       description: |
@@ -1217,7 +817,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 807.5,
+          "x": 695,
           "y": 1550
         }
       }
@@ -1230,10 +830,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "60":
     id: "60"
-    taskid: bd275d96-8100-464b-ad44-90dadf758e6e
+    taskid: 2bcf3adb-c62e-4747-b5b9-1b6ecc03ad47
     type: regular
     task:
-      id: bd275d96-8100-464b-ad44-90dadf758e6e
+      id: 2bcf3adb-c62e-4747-b5b9-1b6ecc03ad47
       version: -1
       name: Run Domain Enrichment
       description: This script gathers domain reputation data from multiple integrations
@@ -1272,7 +872,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 807.5,
+          "x": 695,
           "y": 1720
         }
       }
@@ -1285,12 +885,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "61":
     id: "61"
-    taskid: 3753b4c6-e743-40ab-8440-2cd33b340a24
+    taskid: 63effc8f-787e-4e18-bc55-66c097c077d5
     type: condition
     task:
-      id: 3753b4c6-e743-40ab-8440-2cd33b340a24
+      id: 63effc8f-787e-4e18-bc55-66c097c077d5
       version: -1
-      name: Main Keys Exists With No Results
+      name: Main Keys Exists With Results
       type: condition
       iscommand: false
       brand: ""
@@ -1350,7 +950,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 367.5,
           "y": 1890
         }
       }
@@ -1363,10 +963,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "62":
     id: "62"
-    taskid: 96b0962e-5bf5-4d5d-8cc4-e13d63953c68
+    taskid: 0216587a-801d-49d5-8d41-82c1e5eba665
     type: condition
     task:
-      id: 96b0962e-5bf5-4d5d-8cc4-e13d63953c68
+      id: 0216587a-801d-49d5-8d41-82c1e5eba665
       version: -1
       name: No Additional Fields
       type: condition
@@ -1388,7 +988,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 797.5,
           "y": 1890
         }
       }
@@ -1401,12 +1001,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "63":
     id: "63"
-    taskid: 80e15bf0-894f-4154-8549-d63a840f3b39
+    taskid: 7d843128-a606-4702-8f26-21e974f2aeaf
     type: condition
     task:
-      id: 80e15bf0-894f-4154-8549-d63a840f3b39
+      id: 7d843128-a606-4702-8f26-21e974f2aeaf
       version: -1
-      name: AlienVault OTX v2 Result Only Exists
+      name: VirusTotal (API v3) Result Only Exists
       type: condition
       iscommand: false
       brand: ""
@@ -1489,7 +1089,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1340,
+          "x": 1227.5,
           "y": 1890
         }
       }
@@ -1502,12 +1102,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "64":
     id: "64"
-    taskid: 99c67aa1-9d7c-4c0b-a905-46d8043fed82
+    taskid: 92f1a81a-a35a-4d8f-9b44-96ca23dee3fe
     type: title
     task:
-      id: 99c67aa1-9d7c-4c0b-a905-46d8043fed82
+      id: 92f1a81a-a35a-4d8f-9b44-96ca23dee3fe
       version: -1
-      name: "Case 4 - \nknown Domain External Enrichment"
+      name: Case 3 - External Enrichment
       type: title
       iscommand: false
       brand: ""
@@ -1519,7 +1119,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 807.5,
+          "x": 695,
           "y": 2060
         }
       }
@@ -1532,10 +1132,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "65":
     id: "65"
-    taskid: 95f18855-eac6-43dc-8850-8a0a3b250b9f
+    taskid: a40d36e5-8344-4fb2-83f4-de3fd0995e43
     type: regular
     task:
-      id: 95f18855-eac6-43dc-8850-8a0a3b250b9f
+      id: a40d36e5-8344-4fb2-83f4-de3fd0995e43
       version: -1
       name: Delete Context
       description: "Delete field from context.\n\nThis automation runs using the default
@@ -1550,7 +1150,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "66"
+      - "87"
     scriptarguments:
       all:
         simple: "yes"
@@ -1559,41 +1159,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 807.5,
+          "x": 695,
           "y": 2220
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "66":
-    id: "66"
-    taskid: 4319ad26-c35c-40af-8295-bcc86f8e17a9
-    type: regular
-    task:
-      id: 4319ad26-c35c-40af-8295-bcc86f8e17a9
-      version: -1
-      name: Get Time
-      description: |
-        Retrieves the current date and time.
-      scriptName: GetTime
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "67"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 807.5,
-          "y": 2390
         }
       }
     note: false
@@ -1605,10 +1172,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "67":
     id: "67"
-    taskid: 0ed20dbb-6a0e-4fd3-b7d3-a66f45a465fa
+    taskid: 1384cc88-82d3-4dfb-aa9c-05482c5880a1
     type: regular
     task:
-      id: 0ed20dbb-6a0e-4fd3-b7d3-a66f45a465fa
+      id: 1384cc88-82d3-4dfb-aa9c-05482c5880a1
       version: -1
       name: Run Domain Enrichment
       description: This script gathers domain reputation data from multiple integrations
@@ -1628,7 +1195,15 @@ tasks:
       additional_fields:
         simple: "false"
       domain_list:
-        simple: google.com
+        complex:
+          root: TimeNowUnix
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: .com
       external_enrichment:
         simple: "true"
       verbose:
@@ -1638,7 +1213,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 807.5,
+          "x": 695,
           "y": 2560
         }
       }
@@ -1651,12 +1226,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "68":
     id: "68"
-    taskid: 81394217-969a-417e-a826-20102eb0feae
+    taskid: 46b90e70-e2e7-4dc9-bf08-e8fa78375508
     type: condition
     task:
-      id: 81394217-969a-417e-a826-20102eb0feae
+      id: 46b90e70-e2e7-4dc9-bf08-e8fa78375508
       version: -1
-      name: Main Keys Exists
+      name: Main Keys Exists + Fresh
       type: condition
       iscommand: false
       brand: ""
@@ -1674,7 +1249,16 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: google.com
+              complex:
+                root: TimeNowUnix
+                transformers:
+                - operator: concat
+                  args:
+                    prefix: {}
+                    suffix:
+                      value:
+                        simple: .com
+            iscontext: true
       - - operator: isExists
           left:
             value:
@@ -1707,7 +1291,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 50,
           "y": 2730
         }
       }
@@ -1720,10 +1304,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "69":
     id: "69"
-    taskid: fe9480c3-7bca-4211-8748-dd01967ae596
+    taskid: 0e02e922-7326-4ecf-a4ea-e85734208e17
     type: condition
     task:
-      id: fe9480c3-7bca-4211-8748-dd01967ae596
+      id: 0e02e922-7326-4ecf-a4ea-e85734208e17
       version: -1
       name: No Additional Fields
       type: condition
@@ -1741,11 +1325,13 @@ tasks:
             value:
               simple: DomainEnrichment.Results.AdditionalFields
             iscontext: true
+          right:
+            value: {}
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 695,
+          "x": 480,
           "y": 2730
         }
       }
@@ -1758,10 +1344,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "70":
     id: "70"
-    taskid: 0ebd71e8-bdf3-4676-bc44-3369f20f7956
+    taskid: dffebe20-dd52-495a-9d50-ca30a88d89a8
     type: condition
     task:
-      id: 0ebd71e8-bdf3-4676-bc44-3369f20f7956
+      id: dffebe20-dd52-495a-9d50-ca30a88d89a8
       version: -1
       name: AlienVault OTX v2 Result Exists
       type: condition
@@ -1792,7 +1378,16 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: google.com
+              complex:
+                root: TimeNowUnix
+                transformers:
+                - operator: concat
+                  args:
+                    prefix: {}
+                    suffix:
+                      value:
+                        simple: .com
+            iscontext: true
       - - operator: isExists
           left:
             value:
@@ -1829,7 +1424,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1125,
+          "x": 910,
           "y": 2730
         }
       }
@@ -1842,10 +1437,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "71":
     id: "71"
-    taskid: e87b4ad4-9e5f-4890-8b14-24eba0cd3a89
+    taskid: 4f26fd15-aad2-4a32-a42a-fbb6ed14c0b6
     type: condition
     task:
-      id: e87b4ad4-9e5f-4890-8b14-24eba0cd3a89
+      id: 4f26fd15-aad2-4a32-a42a-fbb6ed14c0b6
       version: -1
       name: VirusTotal (API v3) Result Exists
       type: condition
@@ -1876,7 +1471,15 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: google.com
+              complex:
+                root: TimeNowUnix
+                transformers:
+                - operator: concat
+                  args:
+                    prefix: {}
+                    suffix:
+                      value:
+                        simple: .com
             iscontext: true
       - - operator: isExists
           left:
@@ -1914,7 +1517,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1555,
+          "x": 1340,
           "y": 2730
         }
       }
@@ -1927,10 +1530,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "72":
     id: "72"
-    taskid: 782e4d7e-d3df-4bad-8f63-22b09a59bb80
+    taskid: 88a5a3ab-cb97-4fd2-89c8-891e0ffc8fcf
     type: regular
     task:
-      id: 782e4d7e-d3df-4bad-8f63-22b09a59bb80
+      id: 88a5a3ab-cb97-4fd2-89c8-891e0ffc8fcf
       version: -1
       name: DeleteContext
       description: "Delete field from context.\n\nThis automation runs using the default
@@ -1954,8 +1557,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 5230
+          "x": 797.5,
+          "y": 4560
         }
       }
     note: false
@@ -1967,10 +1570,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "73":
     id: "73"
-    taskid: 13476ee3-def7-46c0-8783-0e96e801ad94
+    taskid: 9e9f9790-29a9-46b8-804c-c683e92f1c15
     type: regular
     task:
-      id: 13476ee3-def7-46c0-8783-0e96e801ad94
+      id: 9e9f9790-29a9-46b8-804c-c683e92f1c15
       version: -1
       name: Run domain enrichment script
       description: This script gathers domain reputation data from multiple integrations
@@ -2000,8 +1603,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 5400
+          "x": 797.5,
+          "y": 4730
         }
       }
     note: false
@@ -2013,10 +1616,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "74":
     id: "74"
-    taskid: 9bea50b8-398d-4e44-82cf-8545272b07ca
+    taskid: 9fc0a758-6347-43d2-81bc-025037d8db32
     type: title
     task:
-      id: 9bea50b8-398d-4e44-82cf-8545272b07ca
+      id: 9fc0a758-6347-43d2-81bc-025037d8db32
       version: -1
       name: Case 1 - Bad Input
       type: title
@@ -2030,8 +1633,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 5070
+          "x": 797.5,
+          "y": 4400
         }
       }
     note: false
@@ -2043,10 +1646,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "75":
     id: "75"
-    taskid: 8f76ef65-1123-4067-8f7f-fc5f0e46c9c9
+    taskid: 5f96bd0c-815a-4b8e-8124-a1538c46751c
     type: condition
     task:
-      id: 8f76ef65-1123-4067-8f7f-fc5f0e46c9c9
+      id: 5f96bd0c-815a-4b8e-8124-a1538c46751c
       version: -1
       name: Failure
       type: condition
@@ -2067,8 +1670,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1022.5,
-          "y": 6070
+          "x": 910,
+          "y": 5400
         }
       }
     note: false
@@ -2080,10 +1683,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "76":
     id: "76"
-    taskid: 366e870e-3bce-4b93-8714-79a27f58160f
+    taskid: 896841fe-f414-4794-85b8-9ed4f1a3f9f0
     type: title
     task:
-      id: 366e870e-3bce-4b93-8714-79a27f58160f
+      id: 896841fe-f414-4794-85b8-9ed4f1a3f9f0
       version: -1
       name: Case 2 - Bad Brand
       type: title
@@ -2097,8 +1700,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 612.5,
-          "y": 5570
+          "x": 500,
+          "y": 4900
         }
       }
     note: false
@@ -2110,10 +1713,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "77":
     id: "77"
-    taskid: 1befc3bd-f2e6-40e2-895f-2b25a80525c7
+    taskid: 67bc4985-ffcf-4c80-8c03-243b58d7416a
     type: regular
     task:
-      id: 1befc3bd-f2e6-40e2-895f-2b25a80525c7
+      id: 67bc4985-ffcf-4c80-8c03-243b58d7416a
       version: -1
       name: DeleteContext
       description: "Delete field from context.\n\nThis automation runs using the default
@@ -2137,8 +1740,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 612.5,
-          "y": 5730
+          "x": 500,
+          "y": 5060
         }
       }
     note: false
@@ -2150,10 +1753,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "78":
     id: "78"
-    taskid: 118eeaf1-ade5-4b6b-8538-aef3576ded54
+    taskid: 05b18f05-bbbb-4cd8-8f6a-dfa3d9f84a03
     type: regular
     task:
-      id: 118eeaf1-ade5-4b6b-8538-aef3576ded54
+      id: 05b18f05-bbbb-4cd8-8f6a-dfa3d9f84a03
       version: -1
       name: Run domain enrichment script
       description: This script gathers domain reputation data from multiple integrations
@@ -2185,8 +1788,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 612.5,
-          "y": 5900
+          "x": 500,
+          "y": 5230
         }
       }
     note: false
@@ -2198,10 +1801,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "79":
     id: "79"
-    taskid: 49e44145-d649-431d-8277-8a97913a5644
+    taskid: 493988f1-a0f0-4abd-80b7-aa7753b7c853
     type: title
     task:
-      id: 49e44145-d649-431d-8277-8a97913a5644
+      id: 493988f1-a0f0-4abd-80b7-aa7753b7c853
       version: -1
       name: Pass
       type: title
@@ -2212,8 +1815,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 592.5,
-          "y": 6075
+          "x": 480,
+          "y": 5405
         }
       }
     note: false
@@ -2225,10 +1828,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "80":
     id: "80"
-    taskid: 36fd6d57-32fa-4d2b-8adf-9ff8bdebb547
+    taskid: 26658c2b-cf18-4d9e-8bfb-a5bdbf6cc6d8
     type: regular
     task:
-      id: 36fd6d57-32fa-4d2b-8adf-9ff8bdebb547
+      id: 26658c2b-cf18-4d9e-8bfb-a5bdbf6cc6d8
       version: -1
       name: DeleteContext
       description: "Delete field from context.\n\nThis automation runs using the default
@@ -2252,8 +1855,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 4400
+          "x": 797.5,
+          "y": 3730
         }
       }
     note: false
@@ -2265,10 +1868,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "81":
     id: "81"
-    taskid: 801d544a-a48d-4858-846e-5a85fc116e37
+    taskid: 0c0d9c2e-be4d-4e79-bf03-43cc147632f0
     type: regular
     task:
-      id: 801d544a-a48d-4858-846e-5a85fc116e37
+      id: 0c0d9c2e-be4d-4e79-bf03-43cc147632f0
       version: -1
       name: Run domain enrichment script
       description: This script gathers domain reputation data from multiple integrations
@@ -2281,15 +1884,14 @@ tasks:
     nexttasks:
       '#none#':
       - "83"
-      - "84"
       - "86"
     scriptarguments:
       additional_fields:
-        simple: "true"
+        simple: "false"
       domain_list:
         simple: google.com,facebook.com
       external_enrichment:
-        simple: "true"
+        simple: "false"
       verbose:
         simple: "false"
     separatecontext: false
@@ -2297,8 +1899,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 4570
+          "x": 797.5,
+          "y": 3900
         }
       }
     note: false
@@ -2310,10 +1912,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "83":
     id: "83"
-    taskid: 99db5166-4c37-4481-85a1-f17ad8268ced
+    taskid: 09592adb-309f-49a0-bf20-c1e7ba7ceb2f
     type: condition
     task:
-      id: 99db5166-4c37-4481-85a1-f17ad8268ced
+      id: 09592adb-309f-49a0-bf20-c1e7ba7ceb2f
       version: -1
       name: Facebook exists
       description: MaxScore And MaxVerdict enriched for https://google.com
@@ -2382,47 +1984,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 377.5,
-          "y": 4740
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "84":
-    id: "84"
-    taskid: d34adeef-5813-4522-89c4-8c608f99c4eb
-    type: condition
-    task:
-      id: d34adeef-5813-4522-89c4-8c608f99c4eb
-      version: -1
-      name: Additional fields Exists
-      description: Additional fields empty
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "85"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              simple: DomainEnrichment.Results.AdditionalFields
-            iscontext: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 807.5,
-          "y": 4740
+          "x": 480,
+          "y": 4070
         }
       }
     note: false
@@ -2434,10 +1997,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "85":
     id: "85"
-    taskid: 0dee2b79-0877-4312-83a8-00cd89b8cb69
+    taskid: 2664f86e-4114-492a-8308-31ca610c6d4d
     type: title
     task:
-      id: 0dee2b79-0877-4312-83a8-00cd89b8cb69
+      id: 2664f86e-4114-492a-8308-31ca610c6d4d
       version: -1
       name: Sad Flows
       type: title
@@ -2451,8 +2014,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 4910
+          "x": 797.5,
+          "y": 4240
         }
       }
     note: false
@@ -2464,10 +2027,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "86":
     id: "86"
-    taskid: b8a79f9e-155d-4449-81a7-cb41576327db
+    taskid: 8bc07bd8-86cd-40ae-95b3-4670bd60f6ec
     type: condition
     task:
-      id: b8a79f9e-155d-4449-81a7-cb41576327db
+      id: 8bc07bd8-86cd-40ae-95b3-4670bd60f6ec
       version: -1
       name: Google exists
       description: MaxScore And MaxVerdict enriched for https://google.com
@@ -2535,8 +2098,41 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1237.5,
-          "y": 4740
+          "x": 910,
+          "y": 4070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "87":
+    id: "87"
+    taskid: 524d32a7-031e-4c9a-8716-a4a85a11a9f4
+    type: regular
+    task:
+      id: 524d32a7-031e-4c9a-8716-a4a85a11a9f4
+      version: -1
+      name: Get Time
+      description: |
+        Retrieves the current date and time.
+      scriptName: GetTime
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "67"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 2390
         }
       }
     note: false
@@ -2551,8 +2147,8 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 6090,
-        "width": 1885,
+        "height": 5420,
+        "width": 1670,
         "x": 50,
         "y": 50
       }

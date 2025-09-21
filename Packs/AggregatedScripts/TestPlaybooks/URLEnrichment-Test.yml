@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: f843a036-0245-4699-8726-402de484700f
+    taskid: 2d95cfce-5074-486b-8e44-b61162450c72
     type: start
     task:
-      id: f843a036-0245-4699-8726-402de484700f
+      id: 2d95cfce-5074-486b-8e44-b61162450c72
       version: -1
       name: ""
       iscommand: false
@@ -35,10 +35,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 60d00d6d-86ac-4566-8bcd-42383f88dee1
+    taskid: 87cc1eaa-fdca-40b5-82d7-07d59271bca1
     type: regular
     task:
-      id: 60d00d6d-86ac-4566-8bcd-42383f88dee1
+      id: 87cc1eaa-fdca-40b5-82d7-07d59271bca1
       version: -1
       name: DeleteContext
       description: "Delete field from context.\n\nThis automation runs using the default
@@ -75,10 +75,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 8f1e3683-8812-44c9-8e09-83e353b668df
+    taskid: 342591d0-82be-412e-86bb-44fdda172516
     type: regular
     task:
-      id: 8f1e3683-8812-44c9-8e09-83e353b668df
+      id: 342591d0-82be-412e-86bb-44fdda172516
       version: -1
       name: Run url enrichment script
       description: |-
@@ -119,10 +119,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: e615671e-d8af-418d-ba6e-bb10cba93827
+    taskid: b37ca6d1-382c-471e-87bc-075f5ffc474e
     type: condition
     task:
-      id: e615671e-d8af-418d-ba6e-bb10cba93827
+      id: b37ca6d1-382c-471e-87bc-075f5ffc474e
       version: -1
       name: TIM Result exists
       description: Make sure the Virus Total indicator returned from tim
@@ -168,10 +168,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 3feb8c32-01cd-4081-8b22-7313f277498d
+    taskid: 177cadb6-ef8a-43aa-82a5-4c061bf0b73e
     type: title
     task:
-      id: 3feb8c32-01cd-4081-8b22-7313f277498d
+      id: 177cadb6-ef8a-43aa-82a5-4c061bf0b73e
       version: -1
       name: Case 2 - One Brand
       type: title
@@ -198,10 +198,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 68fab6b7-a43b-4485-87fe-42debaf2ce43
+    taskid: f1eb19b7-83b9-4460-87e7-a8b63d2284fa
     type: regular
     task:
-      id: 68fab6b7-a43b-4485-87fe-42debaf2ce43
+      id: f1eb19b7-83b9-4460-87e7-a8b63d2284fa
       version: -1
       name: DeleteContext
       description: "Delete field from context.\n\nThis automation runs using the default
@@ -238,10 +238,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 8fa187b6-ddd8-4d62-8fca-afcc5340e3b7
+    taskid: 3749e5a2-c586-4226-8374-1c179283f367
     type: title
     task:
-      id: 8fa187b6-ddd8-4d62-8fca-afcc5340e3b7
+      id: 3749e5a2-c586-4226-8374-1c179283f367
       version: -1
       name: Case 1 - Base
       type: title
@@ -268,10 +268,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 3f62f122-152d-430d-ae63-3cb32558effb
+    taskid: 4165407c-b775-4187-8d18-c22fc304926c
     type: condition
     task:
-      id: 3f62f122-152d-430d-ae63-3cb32558effb
+      id: 4165407c-b775-4187-8d18-c22fc304926c
       version: -1
       name: Indicator Main Keys Exists
       description: MaxScore And MaxVerdict enriched for https://google.com
@@ -341,10 +341,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 47e84b7b-d346-40b3-8ffc-02edd21a5b7c
+    taskid: 611d01ce-6a02-49b6-85e6-dc1f43a7f224
     type: condition
     task:
-      id: 47e84b7b-d346-40b3-8ffc-02edd21a5b7c
+      id: 611d01ce-6a02-49b6-85e6-dc1f43a7f224
       version: -1
       name: No additional fields
       description: Additional fields empty
@@ -380,10 +380,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 773ebebd-fad5-4af0-85bf-b8a63d3faae2
+    taskid: ae1ad98c-4690-474f-87b4-f9fc15760c98
     type: title
     task:
-      id: 773ebebd-fad5-4af0-85bf-b8a63d3faae2
+      id: ae1ad98c-4690-474f-87b4-f9fc15760c98
       version: -1
       name: Case 3 - External Enrichment
       type: title
@@ -410,10 +410,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: 011031d6-d7be-4626-8ed7-81a41a355f8e
+    taskid: 81e75c38-f3d3-4366-8dcd-dd8351db15ee
     type: regular
     task:
-      id: 011031d6-d7be-4626-8ed7-81a41a355f8e
+      id: 81e75c38-f3d3-4366-8dcd-dd8351db15ee
       version: -1
       name: DeleteContext
       description: "Delete field from context.\n\nThis automation runs using the default
@@ -450,10 +450,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: 95512d74-1a26-46d0-81f1-1d03d9939fb6
+    taskid: 8ba19624-1587-489c-80f6-ee854c98da25
     type: regular
     task:
-      id: 95512d74-1a26-46d0-81f1-1d03d9939fb6
+      id: 8ba19624-1587-489c-80f6-ee854c98da25
       version: -1
       name: Run url enrichment script
       description: |-
@@ -506,10 +506,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: bab65c99-fcd8-4024-8ef2-e3ddeb0ce01a
+    taskid: 534b2676-7810-409f-8456-9c52b457eb49
     type: title
     task:
-      id: bab65c99-fcd8-4024-8ef2-e3ddeb0ce01a
+      id: 534b2676-7810-409f-8456-9c52b457eb49
       version: -1
       name: Case 4 - External Enrichment + Additional Fields
       type: title
@@ -536,10 +536,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: c9bc1959-e4e3-4ca8-8e92-dbc428bb0d61
+    taskid: 3aa3ad40-a438-43e7-8cc5-2c43d78680a8
     type: regular
     task:
-      id: c9bc1959-e4e3-4ca8-8e92-dbc428bb0d61
+      id: 3aa3ad40-a438-43e7-8cc5-2c43d78680a8
       version: -1
       name: DeleteContext
       description: "Delete field from context.\n\nThis automation runs using the default
@@ -576,10 +576,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: c26b4d3e-d6a6-4d86-869f-45f46195dff3
+    taskid: a80a7232-0b87-4496-806b-bdca92a5e665
     type: title
     task:
-      id: c26b4d3e-d6a6-4d86-869f-45f46195dff3
+      id: a80a7232-0b87-4496-806b-bdca92a5e665
       version: -1
       name: Case 5 - Multiple Inputs
       type: title
@@ -606,10 +606,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "36":
     id: "36"
-    taskid: e7653d0f-5973-4808-8f32-17be7f63e1b5
+    taskid: 16decc15-a882-4d23-8d8c-1f5cb917747a
     type: regular
     task:
-      id: e7653d0f-5973-4808-8f32-17be7f63e1b5
+      id: 16decc15-a882-4d23-8d8c-1f5cb917747a
       version: -1
       name: Get Time
       description: |
@@ -639,10 +639,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "37":
     id: "37"
-    taskid: 22b3a5f5-92e4-4528-8e61-7a5f5c18b521
+    taskid: 30dea97e-e7f0-41bb-8ee5-31ab2c15bef8
     type: regular
     task:
-      id: 22b3a5f5-92e4-4528-8e61-7a5f5c18b521
+      id: 30dea97e-e7f0-41bb-8ee5-31ab2c15bef8
       version: -1
       name: Get Time
       description: |
@@ -672,10 +672,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "38":
     id: "38"
-    taskid: 497b5e3a-a01a-4359-8b2b-b0fa4241f8b8
+    taskid: 235c555b-c23d-4c1b-8f57-a72667079e0c
     type: regular
     task:
-      id: 497b5e3a-a01a-4359-8b2b-b0fa4241f8b8
+      id: 235c555b-c23d-4c1b-8f57-a72667079e0c
       version: -1
       name: Run url enrichment script
       description: |-
@@ -719,10 +719,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "39":
     id: "39"
-    taskid: 172a672d-a63d-43bd-8bea-085ffc1dac32
+    taskid: f3ddf9aa-4041-4631-89d2-bc781a748b39
     type: condition
     task:
-      id: 172a672d-a63d-43bd-8bea-085ffc1dac32
+      id: f3ddf9aa-4041-4631-89d2-bc781a748b39
       version: -1
       name: AlienVault OTX v2 Result Only
       description: Make sure the Virus Total indicator returned from tim
@@ -823,10 +823,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "40":
     id: "40"
-    taskid: 43ac7df5-a063-40aa-82d7-b855504f76a2
+    taskid: b997f0d8-2d83-417c-802e-f2398154727d
     type: condition
     task:
-      id: 43ac7df5-a063-40aa-82d7-b855504f76a2
+      id: b997f0d8-2d83-417c-802e-f2398154727d
       version: -1
       name: Indicator Main Keys Exists
       description: MaxScore And MaxVerdict enriched for https://google.com
@@ -899,10 +899,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "41":
     id: "41"
-    taskid: ed438a2b-d7df-47c0-8824-2499d5c0e3b7
+    taskid: 96e9a6a3-36aa-4e7c-8ea5-54b4cf7d4efb
     type: regular
     task:
-      id: ed438a2b-d7df-47c0-8824-2499d5c0e3b7
+      id: 96e9a6a3-36aa-4e7c-8ea5-54b4cf7d4efb
       version: -1
       name: Get Time
       description: |
@@ -932,10 +932,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "42":
     id: "42"
-    taskid: 8a48e81f-2a3d-487d-80ca-0db73a71f4c3
+    taskid: f0e7e76b-7d35-4c0d-8450-a7136126c33f
     type: condition
     task:
-      id: 8a48e81f-2a3d-487d-80ca-0db73a71f4c3
+      id: f0e7e76b-7d35-4c0d-8450-a7136126c33f
       version: -1
       name: Indicator Main Keys Exists
       description: MaxScore And MaxVerdict enriched for https://google.com
@@ -1008,10 +1008,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "45":
     id: "45"
-    taskid: ea5e4b8b-b0c0-4bec-8f93-a527fcad6e52
+    taskid: bdfbd6fa-4ec7-4e59-82f6-37c460f9276a
     type: condition
     task:
-      id: ea5e4b8b-b0c0-4bec-8f93-a527fcad6e52
+      id: bdfbd6fa-4ec7-4e59-82f6-37c460f9276a
       version: -1
       name: AlienVault OTX v2 Result
       description: Make sure the Virus Total indicator returned from tim
@@ -1104,10 +1104,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "46":
     id: "46"
-    taskid: acba43d7-09f1-4f81-8af4-d3f0091d2be1
+    taskid: 2034e221-3038-453f-8f8b-cfd65d8b0b18
     type: condition
     task:
-      id: acba43d7-09f1-4f81-8af4-d3f0091d2be1
+      id: 2034e221-3038-453f-8f8b-cfd65d8b0b18
       version: -1
       name: VirusTotal (API v3) Result
       description: Make sure the Virus Total indicator returned from tim
@@ -1202,10 +1202,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "47":
     id: "47"
-    taskid: e90d6a9a-c79d-49c1-85f8-4dc7e3d70dde
+    taskid: a7c8fdd7-057f-47b5-8b23-404dbd5dec5e
     type: condition
     task:
-      id: e90d6a9a-c79d-49c1-85f8-4dc7e3d70dde
+      id: a7c8fdd7-057f-47b5-8b23-404dbd5dec5e
       version: -1
       name: Indicator Main Keys Exists
       description: MaxScore And MaxVerdict enriched for https://google.com
@@ -1278,10 +1278,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "48":
     id: "48"
-    taskid: 12c50b3f-7f15-44ac-87cb-bb06a2611f22
+    taskid: e3c5b5dd-123c-4d92-8d2d-4abe1b68f9d9
     type: condition
     task:
-      id: 12c50b3f-7f15-44ac-87cb-bb06a2611f22
+      id: e3c5b5dd-123c-4d92-8d2d-4abe1b68f9d9
       version: -1
       name: AlienVault OTX v2 Result
       description: Make sure the Virus Total indicator returned from tim
@@ -1374,10 +1374,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "49":
     id: "49"
-    taskid: 6d60600c-4624-43bc-8227-6be55eecb0af
+    taskid: c98a94c2-1f9a-43c6-8abd-436b34a3af70
     type: condition
     task:
-      id: 6d60600c-4624-43bc-8227-6be55eecb0af
+      id: c98a94c2-1f9a-43c6-8abd-436b34a3af70
       version: -1
       name: VirusTotal (API v3) Result
       description: Make sure the Virus Total indicator returned from tim
@@ -1472,10 +1472,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "50":
     id: "50"
-    taskid: caf2bb84-3ca1-4ff9-82e9-88ffa0a5ae9d
+    taskid: 5e20c5f0-a24b-46e8-8438-c4c8ce8011cb
     type: regular
     task:
-      id: caf2bb84-3ca1-4ff9-82e9-88ffa0a5ae9d
+      id: 5e20c5f0-a24b-46e8-8438-c4c8ce8011cb
       version: -1
       name: Run url enrichment script
       description: |-
@@ -1528,10 +1528,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "51":
     id: "51"
-    taskid: 4074b66a-0ec3-4667-80ff-61ed073824cc
+    taskid: 67941d27-b73e-4b62-83f3-8cbaeb215571
     type: regular
     task:
-      id: 4074b66a-0ec3-4667-80ff-61ed073824cc
+      id: 67941d27-b73e-4b62-83f3-8cbaeb215571
       version: -1
       name: Get Time
       description: |
@@ -1561,10 +1561,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "52":
     id: "52"
-    taskid: 9b022e6a-ede6-4b13-8c0a-e0841c8892e7
+    taskid: 5e663223-bf6e-4ae5-8e2f-ddb0cf0a94bb
     type: title
     task:
-      id: 9b022e6a-ede6-4b13-8c0a-e0841c8892e7
+      id: 5e663223-bf6e-4ae5-8e2f-ddb0cf0a94bb
       version: -1
       name: Case 1 - Wrong Brand
       type: title
@@ -1591,10 +1591,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "53":
     id: "53"
-    taskid: 8d4c7d7e-d1ed-42d5-8b0c-5e8cc9e39ac0
+    taskid: f253c8f6-7538-49e1-8063-1f09496aa111
     type: regular
     task:
-      id: 8d4c7d7e-d1ed-42d5-8b0c-5e8cc9e39ac0
+      id: f253c8f6-7538-49e1-8063-1f09496aa111
       version: -1
       name: DeleteContext
       description: "Delete field from context.\n\nThis automation runs using the default
@@ -1631,10 +1631,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "54":
     id: "54"
-    taskid: 9e8a56f1-4e82-4b1a-83a2-21ec48e14ad1
+    taskid: 297a91de-1e91-49ab-83e5-c7b5555b3933
     type: regular
     task:
-      id: 9e8a56f1-4e82-4b1a-83a2-21ec48e14ad1
+      id: 297a91de-1e91-49ab-83e5-c7b5555b3933
       version: -1
       name: Run url enrichment script
       description: |-
@@ -1689,10 +1689,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "55":
     id: "55"
-    taskid: a1139cf7-5c4f-4e4d-82cb-de294adb7fe1
+    taskid: 43ec7afb-2cf2-43e2-8160-f253c5c4cd1b
     type: title
     task:
-      id: a1139cf7-5c4f-4e4d-82cb-de294adb7fe1
+      id: 43ec7afb-2cf2-43e2-8160-f253c5c4cd1b
       version: -1
       name: Case 2 - Wrong Input
       type: title
@@ -1719,10 +1719,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "56":
     id: "56"
-    taskid: 9466d28c-4d8e-49ea-800b-62f2cc663ff0
+    taskid: eb8b4dad-e540-410a-8e7e-975c6a4b6fd6
     type: regular
     task:
-      id: 9466d28c-4d8e-49ea-800b-62f2cc663ff0
+      id: eb8b4dad-e540-410a-8e7e-975c6a4b6fd6
       version: -1
       name: DeleteContext
       description: "Delete field from context.\n\nThis automation runs using the default
@@ -1759,10 +1759,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "57":
     id: "57"
-    taskid: d3aa4d82-0617-418b-8394-ae0ea49e5e5c
+    taskid: a795a0b7-7933-4181-8263-84a1c70bf26e
     type: regular
     task:
-      id: d3aa4d82-0617-418b-8394-ae0ea49e5e5c
+      id: a795a0b7-7933-4181-8263-84a1c70bf26e
       version: -1
       name: Run url enrichment script
       description: |-
@@ -1805,10 +1805,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "58":
     id: "58"
-    taskid: 30c3997a-2f05-4e37-873d-021acb1a56f4
+    taskid: 9a2fba74-3bbe-4e01-83dd-23111932b144
     type: condition
     task:
-      id: 30c3997a-2f05-4e37-873d-021acb1a56f4
+      id: 9a2fba74-3bbe-4e01-83dd-23111932b144
       version: -1
       name: Failure
       type: condition
@@ -1842,10 +1842,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "59":
     id: "59"
-    taskid: 20ce5e11-608c-4e9f-856a-783a6566a3c3
+    taskid: bc9a64c5-5323-4275-875f-34b1cf106f16
     type: title
     task:
-      id: 20ce5e11-608c-4e9f-856a-783a6566a3c3
+      id: bc9a64c5-5323-4275-875f-34b1cf106f16
       version: -1
       name: Pass
       type: title
@@ -1869,10 +1869,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "60":
     id: "60"
-    taskid: 9e5e24c9-9380-4eda-875e-adce1dbb5795
+    taskid: c337e3cb-5e1d-4c65-876b-691c8162bc79
     type: condition
     task:
-      id: 9e5e24c9-9380-4eda-875e-adce1dbb5795
+      id: c337e3cb-5e1d-4c65-876b-691c8162bc79
       version: -1
       name: No additional fields
       description: Additional fields empty
@@ -1908,10 +1908,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "61":
     id: "61"
-    taskid: d3b7aa1c-f0df-4459-8de4-1fcc290c8d70
+    taskid: 151af615-5b96-44fb-8436-529eabe46fad
     type: condition
     task:
-      id: d3b7aa1c-f0df-4459-8de4-1fcc290c8d70
+      id: 151af615-5b96-44fb-8436-529eabe46fad
       version: -1
       name: Additional Fields Exists
       description: Additional fields empty
@@ -1947,10 +1947,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "62":
     id: "62"
-    taskid: b03df13d-af0e-4474-81a1-313b7008bf68
+    taskid: 76db3bbc-67e2-40f9-8757-c1a6e00c293b
     type: regular
     task:
-      id: b03df13d-af0e-4474-81a1-313b7008bf68
+      id: 76db3bbc-67e2-40f9-8757-c1a6e00c293b
       version: -1
       name: DeleteContext
       description: "Delete field from context.\n\nThis automation runs using the default
@@ -1987,10 +1987,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "63":
     id: "63"
-    taskid: e7cd0314-59ea-45ce-a2da-613fb815148d
+    taskid: ac24a91b-5a23-46f1-8b32-37eae0fc0a2f
     type: regular
     task:
-      id: e7cd0314-59ea-45ce-a2da-613fb815148d
+      id: ac24a91b-5a23-46f1-8b32-37eae0fc0a2f
       version: -1
       name: Run url enrichment script
       description: |-
@@ -2031,10 +2031,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "69":
     id: "69"
-    taskid: 9263a4bf-5b16-427f-8ed6-ce5aa7c532ed
+    taskid: ba853917-2ac0-4f42-880d-26186bd0443a
     type: title
     task:
-      id: 9263a4bf-5b16-427f-8ed6-ce5aa7c532ed
+      id: ba853917-2ac0-4f42-880d-26186bd0443a
       version: -1
       name: Sad Flows
       type: title
@@ -2061,10 +2061,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "70":
     id: "70"
-    taskid: d74ec23c-13ba-4675-8c17-832fe59249ec
+    taskid: acf28d72-fa4e-4024-a831-1368d307718b
     type: condition
     task:
-      id: d74ec23c-13ba-4675-8c17-832fe59249ec
+      id: acf28d72-fa4e-4024-a831-1368d307718b
       version: -1
       name: Google Exists
       type: condition
@@ -2127,22 +2127,6 @@ tasks:
                         simple: https://google.com
                 accessor: TIMScore
             iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: URLEnrichment
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: URLEnrichment.Value
-                      iscontext: true
-                    right:
-                      value:
-                        simple: https://google.com
-                accessor: Status
-            iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -2160,10 +2144,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "71":
     id: "71"
-    taskid: 6e056265-3b7d-4c2f-809b-1bbbd15a1e69
+    taskid: bf7791ff-b62b-4fd7-ba19-a27b61cddebf
     type: condition
     task:
-      id: 6e056265-3b7d-4c2f-809b-1bbbd15a1e69
+      id: bf7791ff-b62b-4fd7-ba19-a27b61cddebf
       version: -1
       name: Facebook Exists
       type: condition
@@ -2226,22 +2210,6 @@ tasks:
                         simple: https://facebook.com
                 accessor: TIMScore
             iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: URLEnrichment
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: URLEnrichment.Value
-                      iscontext: true
-                    right:
-                      value:
-                        simple: https://facebook.com
-                accessor: Status
-            iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -2276,5 +2244,3 @@ marketplaces:
 - platform
 - marketplacev2
 - xsoar
-
-

@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 6b888dd8-618c-4bed-8fa6-454211e665f8
+    taskid: e701f0d0-6334-4271-8a44-04c0e088d0c3
     type: start
     task:
-      id: 6b888dd8-618c-4bed-8fa6-454211e665f8
+      id: e701f0d0-6334-4271-8a44-04c0e088d0c3
       version: -1
       name: ""
       iscommand: false
@@ -35,10 +35,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 4b477aba-0838-477f-8a0e-933a842890d2
+    taskid: fee0cf2c-917a-4920-82a1-e264cf622601
     type: regular
     task:
-      id: 4b477aba-0838-477f-8a0e-933a842890d2
+      id: fee0cf2c-917a-4920-82a1-e264cf622601
       version: -1
       name: DeleteContext
       description: "Delete field from context.\n\nThis automation runs using the default
@@ -75,10 +75,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 9116c873-3cec-435c-88b9-b7161d629485
+    taskid: 1960d7ed-a66e-40e1-8d44-0d00bdc204c1
     type: regular
     task:
-      id: 9116c873-3cec-435c-88b9-b7161d629485
+      id: 1960d7ed-a66e-40e1-8d44-0d00bdc204c1
       version: -1
       name: Run ip enrichment script
       description: This script gathers ip reputation data from multiple integrations
@@ -89,7 +89,6 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "6"
       - "13"
       - "14"
       - "15"
@@ -109,61 +108,7 @@ tasks:
       {
         "position": {
           "x": 1022.5,
-          "y": 880
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "6":
-    id: "6"
-    taskid: d1e059ec-e986-420f-88b7-a27d8de5e20c
-    type: condition
-    task:
-      id: d1e059ec-e986-420f-88b7-a27d8de5e20c
-      version: -1
-      name: Virus Total Indicator Exists
-      description: Make sure the Virus Total indicator returned from tim
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "7"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: IPEnrichment
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: IPEnrichment.Value
-                      iscontext: true
-                    right:
-                      value:
-                        simple: CrowdStrike.Device.[0].ExternalIP
-                      iscontext: true
-                accessor: Results.Brand
-            iscontext: true
-          right:
-            value:
-              simple: VirusTotal (API v3)
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1390
+          "y": 710
         }
       }
     note: false
@@ -175,10 +120,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: f2d6e10c-ee07-4e97-8b54-e74e73538285
+    taskid: d33d2374-51a8-4544-8110-dc7ebd198cef
     type: title
     task:
-      id: f2d6e10c-ee07-4e97-8b54-e74e73538285
+      id: d33d2374-51a8-4544-8110-dc7ebd198cef
       version: -1
       name: Case 2 - External Enrichment
       type: title
@@ -193,7 +138,7 @@ tasks:
       {
         "position": {
           "x": 1115,
-          "y": 1560
+          "y": 1390
         }
       }
     note: false
@@ -205,10 +150,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 050ab55a-e481-4272-8669-0975bd5e80f5
+    taskid: 7705f95e-9ca7-4b89-846e-1658f117a9d1
     type: title
     task:
-      id: 050ab55a-e481-4272-8669-0975bd5e80f5
+      id: 7705f95e-9ca7-4b89-846e-1658f117a9d1
       version: -1
       name: Case 1 - Base
       type: title
@@ -235,10 +180,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 75649124-0a35-460a-8755-1349bae070ee
+    taskid: 9d3655db-5069-4fc0-8cb0-c3a66682abad
     type: condition
     task:
-      id: 75649124-0a35-460a-8755-1349bae070ee
+      id: 9d3655db-5069-4fc0-8cb0-c3a66682abad
       version: -1
       name: Endpoint Data Returned
       description: Make sure Context output from wildfire
@@ -273,7 +218,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 1390
+          "y": 1220
         }
       }
     note: false
@@ -285,10 +230,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 0009428f-2133-4773-88b6-9e4695e4838d
+    taskid: fe9a9470-9fd3-4a39-82b2-89b539b29677
     type: condition
     task:
-      id: 0009428f-2133-4773-88b6-9e4695e4838d
+      id: fe9a9470-9fd3-4a39-82b2-89b539b29677
       version: -1
       name: Main Keys Exists
       description: MaxScore And MaxVerdict enriched for https://google.com
@@ -347,11 +292,6 @@ tasks:
       - - operator: isExists
           left:
             value:
-              simple: IPEnrichment.Status
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
               simple: IPEnrichment.TIMScore
             iscontext: true
     continueonerrortype: ""
@@ -359,7 +299,7 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 1390
+          "y": 1220
         }
       }
     note: false
@@ -371,10 +311,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: bd979fee-5815-4e08-8727-60c3fc187e97
+    taskid: c3b4a71b-8175-451b-8847-685174b51bc5
     type: condition
     task:
-      id: bd979fee-5815-4e08-8727-60c3fc187e97
+      id: c3b4a71b-8175-451b-8847-685174b51bc5
       version: -1
       name: No additional fields
       description: Additional fields empty
@@ -400,7 +340,7 @@ tasks:
       {
         "position": {
           "x": 1340,
-          "y": 1390
+          "y": 1220
         }
       }
     note: false
@@ -412,10 +352,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 1179cd52-becd-4360-8dcf-517835f3ffc7
+    taskid: 0bed4b91-4612-4e60-8136-95f5f3b91ef6
     type: title
     task:
-      id: 1179cd52-becd-4360-8dcf-517835f3ffc7
+      id: 0bed4b91-4612-4e60-8136-95f5f3b91ef6
       version: -1
       name: Case 3 - Brands No Internal
       type: title
@@ -430,7 +370,7 @@ tasks:
       {
         "position": {
           "x": 1115,
-          "y": 2740
+          "y": 2570
         }
       }
     note: false
@@ -442,10 +382,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: 6bf9b7a0-81f1-4d3f-8c48-e1b9fc1ffdda
+    taskid: 9a5ddb38-39e3-4c1e-8118-00fead568a3e
     type: title
     task:
-      id: 6bf9b7a0-81f1-4d3f-8c48-e1b9fc1ffdda
+      id: 9a5ddb38-39e3-4c1e-8118-00fead568a3e
       version: -1
       name: Case 4 - External Enrichment + Additional Fields
       type: title
@@ -460,7 +400,7 @@ tasks:
       {
         "position": {
           "x": 1237.5,
-          "y": 3580
+          "y": 3410
         }
       }
     note: false
@@ -472,10 +412,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: e90b36ff-a0e8-494a-89e9-df0e40882dde
+    taskid: 87ad9b3f-7e79-459c-861b-35f89d76bed5
     type: title
     task:
-      id: e90b36ff-a0e8-494a-89e9-df0e40882dde
+      id: 87ad9b3f-7e79-459c-861b-35f89d76bed5
       version: -1
       name: Case 5 Multiple Inputs
       type: title
@@ -490,7 +430,7 @@ tasks:
       {
         "position": {
           "x": 1237.5,
-          "y": 4420
+          "y": 4250
         }
       }
     note: false
@@ -502,10 +442,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "36":
     id: "36"
-    taskid: a03bf198-44a5-4a50-80e1-b96613d490ba
+    taskid: bfe7c77b-7365-47c0-87cb-556a651dac43
     type: regular
     task:
-      id: a03bf198-44a5-4a50-80e1-b96613d490ba
+      id: bfe7c77b-7365-47c0-87cb-556a651dac43
       version: -1
       name: Get Endpoint IP Address
       description: Gets the list of host group members.
@@ -515,7 +455,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "88"
+      - "5"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -534,10 +474,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "38":
     id: "38"
-    taskid: 82d11bba-31c9-480a-85ea-ad6c5c128e32
+    taskid: c47639ba-75df-4a44-8bf7-6b56511d1dcb
     type: regular
     task:
-      id: 82d11bba-31c9-480a-85ea-ad6c5c128e32
+      id: c47639ba-75df-4a44-8bf7-6b56511d1dcb
       version: -1
       name: Run ip enrichment script
       description: This script gathers ip reputation data from multiple integrations
@@ -568,7 +508,7 @@ tasks:
       {
         "position": {
           "x": 1115,
-          "y": 2060
+          "y": 1890
         }
       }
     note: false
@@ -580,10 +520,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "39":
     id: "39"
-    taskid: 7d5a8f6b-403d-4ddb-8fa2-c045b41ca581
+    taskid: 81be5600-1f0d-4d46-87b2-63867514ad94
     type: regular
     task:
-      id: 7d5a8f6b-403d-4ddb-8fa2-c045b41ca581
+      id: 81be5600-1f0d-4d46-87b2-63867514ad94
       version: -1
       name: Get Endpoint IP Address
       description: Gets the list of host group members.
@@ -600,7 +540,7 @@ tasks:
       {
         "position": {
           "x": 1115,
-          "y": 1890
+          "y": 1720
         }
       }
     note: false
@@ -612,10 +552,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "40":
     id: "40"
-    taskid: 2c778274-9ecc-4c82-82b8-5899842865bf
+    taskid: e2f2896c-83c4-456f-836a-a291a876dc47
     type: condition
     task:
-      id: 2c778274-9ecc-4c82-82b8-5899842865bf
+      id: e2f2896c-83c4-456f-836a-a291a876dc47
       version: -1
       name: Both Indicator Exists
       description: Make sure the Virus Total indicator returned from tim
@@ -674,7 +614,7 @@ tasks:
       {
         "position": {
           "x": 255,
-          "y": 2570
+          "y": 2400
         }
       }
     note: false
@@ -686,10 +626,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "41":
     id: "41"
-    taskid: 3279cad7-834b-4c1d-8f17-ab6d7e28311c
+    taskid: 3c87cc95-0eda-467b-83a4-c6a66405dfc8
     type: condition
     task:
-      id: 3279cad7-834b-4c1d-8f17-ab6d7e28311c
+      id: 3c87cc95-0eda-467b-83a4-c6a66405dfc8
       version: -1
       name: Endpoint Data Returned
       description: Make sure Context output from wildfire
@@ -724,7 +664,7 @@ tasks:
       {
         "position": {
           "x": 685,
-          "y": 2570
+          "y": 2400
         }
       }
     note: false
@@ -736,10 +676,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "43":
     id: "43"
-    taskid: 2b744a32-1766-4541-8140-de2d8f1969a4
+    taskid: 6e5b5bcb-512e-4390-8337-18006e1bf1ee
     type: condition
     task:
-      id: 2b744a32-1766-4541-8140-de2d8f1969a4
+      id: 6e5b5bcb-512e-4390-8337-18006e1bf1ee
       version: -1
       name: No additional fields
       description: Additional fields empty
@@ -765,7 +705,7 @@ tasks:
       {
         "position": {
           "x": 1115,
-          "y": 2570
+          "y": 2400
         }
       }
     note: false
@@ -777,10 +717,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "45":
     id: "45"
-    taskid: 76b4540b-ad5e-4a17-8339-2f0309951716
+    taskid: 057eca65-f14b-499f-8c12-6362eada87d4
     type: regular
     task:
-      id: 76b4540b-ad5e-4a17-8339-2f0309951716
+      id: 057eca65-f14b-499f-8c12-6362eada87d4
       version: -1
       name: Run ip enrichment script
       description: This script gathers ip reputation data from multiple integrations
@@ -813,7 +753,7 @@ tasks:
       {
         "position": {
           "x": 1115,
-          "y": 3240
+          "y": 3070
         }
       }
     note: false
@@ -825,10 +765,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "46":
     id: "46"
-    taskid: a0030c5a-465c-455a-851c-0fa74cbcbafd
+    taskid: 66f17d8b-9a2b-4c09-8829-b7bdcab2cc0c
     type: regular
     task:
-      id: a0030c5a-465c-455a-851c-0fa74cbcbafd
+      id: 66f17d8b-9a2b-4c09-8829-b7bdcab2cc0c
       version: -1
       name: Get Endpoint IP Address
       description: Gets the list of host group members.
@@ -845,7 +785,7 @@ tasks:
       {
         "position": {
           "x": 1115,
-          "y": 3070
+          "y": 2900
         }
       }
     note: false
@@ -857,10 +797,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "47":
     id: "47"
-    taskid: b0b9702e-42d0-46c7-8de4-71bb3da80783
+    taskid: a08dcafe-d7b3-4353-8430-1dd23dcfa8d9
     type: condition
     task:
-      id: b0b9702e-42d0-46c7-8de4-71bb3da80783
+      id: a08dcafe-d7b3-4353-8430-1dd23dcfa8d9
       version: -1
       name: Virus Total Indicator Exists
       description: Make sure the Virus Total indicator returned from tim
@@ -899,7 +839,7 @@ tasks:
       {
         "position": {
           "x": 592.5,
-          "y": 3410
+          "y": 3240
         }
       }
     note: false
@@ -911,10 +851,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "48":
     id: "48"
-    taskid: 589a91fe-0c9a-49f1-8025-c571ada3a9e9
+    taskid: f36ad019-5a80-46dc-8a80-9f219dbcea11
     type: condition
     task:
-      id: 589a91fe-0c9a-49f1-8025-c571ada3a9e9
+      id: f36ad019-5a80-46dc-8a80-9f219dbcea11
       version: -1
       name: No Endpoint Data Returned
       description: Make sure Context output from wildfire
@@ -949,7 +889,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 3410
+          "y": 3240
         }
       }
     note: false
@@ -961,10 +901,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "50":
     id: "50"
-    taskid: a934fe48-5d31-477b-877f-55387305c2d0
+    taskid: c8bdb931-433b-4d2e-816c-793c27c1e411
     type: condition
     task:
-      id: a934fe48-5d31-477b-877f-55387305c2d0
+      id: c8bdb931-433b-4d2e-816c-793c27c1e411
       version: -1
       name: No additional fields
       description: Additional fields empty
@@ -990,7 +930,7 @@ tasks:
       {
         "position": {
           "x": 1022.5,
-          "y": 3410
+          "y": 3240
         }
       }
     note: false
@@ -1002,10 +942,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "51":
     id: "51"
-    taskid: 25979c07-459a-4b11-8b57-d4084dc9c0ae
+    taskid: f26f80af-afec-4ce9-842f-f19451972184
     type: regular
     task:
-      id: 25979c07-459a-4b11-8b57-d4084dc9c0ae
+      id: f26f80af-afec-4ce9-842f-f19451972184
       version: -1
       name: DeleteContext
       description: "Delete field from context.\n\nThis automation runs using the default
@@ -1030,7 +970,7 @@ tasks:
       {
         "position": {
           "x": 1115,
-          "y": 1720
+          "y": 1550
         }
       }
     note: false
@@ -1042,10 +982,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "52":
     id: "52"
-    taskid: 67b71793-0fba-488d-8331-457cecb7aaa5
+    taskid: 590d31dc-4329-485c-8db9-2eafb12795ac
     type: regular
     task:
-      id: 67b71793-0fba-488d-8331-457cecb7aaa5
+      id: 590d31dc-4329-485c-8db9-2eafb12795ac
       version: -1
       name: DeleteContext
       description: "Delete field from context.\n\nThis automation runs using the default
@@ -1070,7 +1010,7 @@ tasks:
       {
         "position": {
           "x": 1115,
-          "y": 2900
+          "y": 2730
         }
       }
     note: false
@@ -1082,10 +1022,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "53":
     id: "53"
-    taskid: 6c0fc52c-c305-4717-849b-e7c08e527d3e
+    taskid: b34e73cf-1e03-4729-8ee3-5532360894a6
     type: regular
     task:
-      id: 6c0fc52c-c305-4717-849b-e7c08e527d3e
+      id: b34e73cf-1e03-4729-8ee3-5532360894a6
       version: -1
       name: Run ip enrichment script
       description: This script gathers ip reputation data from multiple integrations
@@ -1115,7 +1055,7 @@ tasks:
       {
         "position": {
           "x": 1237.5,
-          "y": 4080
+          "y": 3910
         }
       }
     note: false
@@ -1127,10 +1067,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "54":
     id: "54"
-    taskid: cafc66ab-267d-4e3d-8d33-2ad7ae87b4cb
+    taskid: fa80f04c-1b91-4263-8cf4-e592d67866cd
     type: regular
     task:
-      id: cafc66ab-267d-4e3d-8d33-2ad7ae87b4cb
+      id: fa80f04c-1b91-4263-8cf4-e592d67866cd
       version: -1
       name: Get Endpoint IP Address
       description: Gets the list of host group members.
@@ -1147,7 +1087,7 @@ tasks:
       {
         "position": {
           "x": 1237.5,
-          "y": 3910
+          "y": 3740
         }
       }
     note: false
@@ -1159,10 +1099,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "55":
     id: "55"
-    taskid: 168c0c52-8de5-4721-8027-efb5c60ea9ec
+    taskid: f251d7f1-7830-4357-80c0-330ccd0e0f2b
     type: condition
     task:
-      id: 168c0c52-8de5-4721-8027-efb5c60ea9ec
+      id: f251d7f1-7830-4357-80c0-330ccd0e0f2b
       version: -1
       name: Virus Total Indicator Exists
       description: Make sure the Virus Total indicator returned from tim
@@ -1201,7 +1141,7 @@ tasks:
       {
         "position": {
           "x": 807.5,
-          "y": 4250
+          "y": 4080
         }
       }
     note: false
@@ -1213,10 +1153,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "56":
     id: "56"
-    taskid: 3269ccaf-a0be-4f43-8038-1228d8815c01
+    taskid: d5ac41b1-2ff3-48ec-883a-792c92d6938d
     type: condition
     task:
-      id: 3269ccaf-a0be-4f43-8038-1228d8815c01
+      id: d5ac41b1-2ff3-48ec-883a-792c92d6938d
       version: -1
       name: Endpoint Data Returned
       description: Make sure Context output from wildfire
@@ -1251,7 +1191,7 @@ tasks:
       {
         "position": {
           "x": 377.5,
-          "y": 4250
+          "y": 4080
         }
       }
     note: false
@@ -1263,10 +1203,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "58":
     id: "58"
-    taskid: b7054204-8e62-4292-848a-51b763a91d40
+    taskid: 37d78d7c-5ca7-4e69-85fc-573c4e5fbf47
     type: condition
     task:
-      id: b7054204-8e62-4292-848a-51b763a91d40
+      id: 37d78d7c-5ca7-4e69-85fc-573c4e5fbf47
       version: -1
       name: additional fields Exists
       description: Additional fields empty
@@ -1290,7 +1230,7 @@ tasks:
       {
         "position": {
           "x": 1237.5,
-          "y": 4250
+          "y": 4080
         }
       }
     note: false
@@ -1302,10 +1242,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "59":
     id: "59"
-    taskid: 2c5dad2a-1e34-4ae0-8eef-7dfbced60aff
+    taskid: 911a09b5-a7a9-4a3e-8e4e-452fd6f09589
     type: regular
     task:
-      id: 2c5dad2a-1e34-4ae0-8eef-7dfbced60aff
+      id: 911a09b5-a7a9-4a3e-8e4e-452fd6f09589
       version: -1
       name: DeleteContext
       description: "Delete field from context.\n\nThis automation runs using the default
@@ -1330,7 +1270,7 @@ tasks:
       {
         "position": {
           "x": 1237.5,
-          "y": 3740
+          "y": 3570
         }
       }
     note: false
@@ -1342,10 +1282,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "60":
     id: "60"
-    taskid: ab743ce7-22f0-411f-8cc1-b2cffae00708
+    taskid: 03c2c8a7-cad0-4866-8a5e-066e1620fe22
     type: condition
     task:
-      id: ab743ce7-22f0-411f-8cc1-b2cffae00708
+      id: 03c2c8a7-cad0-4866-8a5e-066e1620fe22
       version: -1
       name: Core Returned
       description: Make sure Context output from wildfire
@@ -1374,7 +1314,7 @@ tasks:
       {
         "position": {
           "x": 1882.5,
-          "y": 1050
+          "y": 880
         }
       }
     note: false
@@ -1386,10 +1326,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "61":
     id: "61"
-    taskid: a53edaa1-b409-4b50-83ef-04443b041104
+    taskid: af17a5d3-4dd1-42fd-87e7-9e190c4dcfec
     type: regular
     task:
-      id: a53edaa1-b409-4b50-83ef-04443b041104
+      id: af17a5d3-4dd1-42fd-87e7-9e190c4dcfec
       version: -1
       name: Run core-get-IP-analytics-prevalence
       description: Get the prevalence of an ip, identified by ip_address.
@@ -1410,7 +1350,7 @@ tasks:
       {
         "position": {
           "x": 1770,
-          "y": 1220
+          "y": 1050
         }
       }
     note: false
@@ -1422,10 +1362,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "62":
     id: "62"
-    taskid: bd19441b-63f6-4f1e-8e6b-ef1b671b1718
+    taskid: 453b3dda-dbd4-4741-8148-5027a6086933
     type: condition
     task:
-      id: bd19441b-63f6-4f1e-8e6b-ef1b671b1718
+      id: 453b3dda-dbd4-4741-8148-5027a6086933
       version: -1
       name: Make sure analytics not exists
       type: condition
@@ -1448,7 +1388,7 @@ tasks:
       {
         "position": {
           "x": 1770,
-          "y": 1390
+          "y": 1220
         }
       }
     note: false
@@ -1460,10 +1400,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "63":
     id: "63"
-    taskid: a2bb3bb9-3495-4e19-8370-9bd31c366b89
+    taskid: e2af38c6-0f1e-4d35-87c4-a91f0c3b1d0f
     type: condition
     task:
-      id: a2bb3bb9-3495-4e19-8370-9bd31c366b89
+      id: e2af38c6-0f1e-4d35-87c4-a91f0c3b1d0f
       version: -1
       name: Core Returned
       description: Make sure Context output from wildfire
@@ -1492,7 +1432,7 @@ tasks:
       {
         "position": {
           "x": 1657.5,
-          "y": 2230
+          "y": 2060
         }
       }
     note: false
@@ -1504,10 +1444,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "64":
     id: "64"
-    taskid: c88b30f5-0153-493d-827b-7ea1938af7b6
+    taskid: c41c6a49-a93d-4e82-8ef3-ec33ca563435
     type: regular
     task:
-      id: c88b30f5-0153-493d-827b-7ea1938af7b6
+      id: c41c6a49-a93d-4e82-8ef3-ec33ca563435
       version: -1
       name: Run core-get-IP-analytics-prevalence
       description: Get the prevalence of an ip, identified by ip_address.
@@ -1528,7 +1468,7 @@ tasks:
       {
         "position": {
           "x": 1545,
-          "y": 2400
+          "y": 2230
         }
       }
     note: false
@@ -1540,10 +1480,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "65":
     id: "65"
-    taskid: 4073e7f4-6606-41ff-8ee6-fe3af053ad20
+    taskid: fad567ac-8e5f-47b3-8b08-468685d87041
     type: condition
     task:
-      id: 4073e7f4-6606-41ff-8ee6-fe3af053ad20
+      id: fad567ac-8e5f-47b3-8b08-468685d87041
       version: -1
       name: Make sure analytics not exists
       type: condition
@@ -1566,7 +1506,7 @@ tasks:
       {
         "position": {
           "x": 1545,
-          "y": 2570
+          "y": 2400
         }
       }
     note: false
@@ -1578,10 +1518,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "66":
     id: "66"
-    taskid: 5b62a2e6-7244-4828-82e9-d3c09c2ada32
+    taskid: c46442b7-d2fb-40f1-8ec3-8c2f71bee134
     type: condition
     task:
-      id: 5b62a2e6-7244-4828-82e9-d3c09c2ada32
+      id: c46442b7-d2fb-40f1-8ec3-8c2f71bee134
       version: -1
       name: Make sure analytics not exists
       type: condition
@@ -1604,7 +1544,7 @@ tasks:
       {
         "position": {
           "x": 1452.5,
-          "y": 3410
+          "y": 3240
         }
       }
     note: false
@@ -1616,10 +1556,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "67":
     id: "67"
-    taskid: 8db1f752-9532-4d5a-83c0-c21ef6d2fa71
+    taskid: 7c3e6694-7352-44d0-814c-697d1d1731e3
     type: condition
     task:
-      id: 8db1f752-9532-4d5a-83c0-c21ef6d2fa71
+      id: 7c3e6694-7352-44d0-814c-697d1d1731e3
       version: -1
       name: Main Keys Exists
       description: MaxScore And MaxVerdict enriched for https://google.com
@@ -1690,7 +1630,7 @@ tasks:
       {
         "position": {
           "x": 1995,
-          "y": 2570
+          "y": 2400
         }
       }
     note: false
@@ -1702,10 +1642,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "68":
     id: "68"
-    taskid: 834554b3-e481-4ad0-87ec-ae9131b50ee5
+    taskid: 4e7a7b61-edff-4510-8a1b-20e78caaa2d4
     type: condition
     task:
-      id: 834554b3-e481-4ad0-87ec-ae9131b50ee5
+      id: 4e7a7b61-edff-4510-8a1b-20e78caaa2d4
       version: -1
       name: Main Keys Exists
       description: MaxScore And MaxVerdict enriched for https://google.com
@@ -1776,7 +1716,7 @@ tasks:
       {
         "position": {
           "x": 1882.5,
-          "y": 3410
+          "y": 3240
         }
       }
     note: false
@@ -1788,10 +1728,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "69":
     id: "69"
-    taskid: d523071f-1665-4382-89b0-b9cf47c9d2e7
+    taskid: 92a95a6d-b073-4a0e-8ed6-4bc4950c756c
     type: condition
     task:
-      id: d523071f-1665-4382-89b0-b9cf47c9d2e7
+      id: 92a95a6d-b073-4a0e-8ed6-4bc4950c756c
       version: -1
       name: Main Keys Exists
       description: MaxScore And MaxVerdict enriched for https://google.com
@@ -1862,7 +1802,7 @@ tasks:
       {
         "position": {
           "x": 1667.5,
-          "y": 4250
+          "y": 4080
         }
       }
     note: false
@@ -1874,10 +1814,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "70":
     id: "70"
-    taskid: 6931523c-d21f-4206-8b28-72a2b70a348b
+    taskid: 3505c3ba-b666-4cb5-82be-e98fe54337d2
     type: title
     task:
-      id: 6931523c-d21f-4206-8b28-72a2b70a348b
+      id: 3505c3ba-b666-4cb5-82be-e98fe54337d2
       version: -1
       name: Case 1 - Bad Input
       type: title
@@ -1892,7 +1832,7 @@ tasks:
       {
         "position": {
           "x": 1237.5,
-          "y": 5420
+          "y": 5080
         }
       }
     note: false
@@ -1904,10 +1844,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "72":
     id: "72"
-    taskid: b9b0585b-ab04-427c-8a48-7bfe5655a6d1
+    taskid: f4f8d8c1-e360-4138-8836-7118f7a0d147
     type: regular
     task:
-      id: b9b0585b-ab04-427c-8a48-7bfe5655a6d1
+      id: f4f8d8c1-e360-4138-8836-7118f7a0d147
       version: -1
       name: DeleteContext
       description: "Delete field from context.\n\nThis automation runs using the default
@@ -1932,7 +1872,7 @@ tasks:
       {
         "position": {
           "x": 1237.5,
-          "y": 5580
+          "y": 5240
         }
       }
     note: false
@@ -1944,10 +1884,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "73":
     id: "73"
-    taskid: 897184bf-a9f7-4924-80f6-f47fa139100f
+    taskid: 8cd46a5f-a49d-4276-8ba9-68a2db83f43b
     type: regular
     task:
-      id: 897184bf-a9f7-4924-80f6-f47fa139100f
+      id: 8cd46a5f-a49d-4276-8ba9-68a2db83f43b
       version: -1
       name: Run ip enrichment script
       description: This script gathers ip reputation data from multiple integrations
@@ -1977,7 +1917,7 @@ tasks:
       {
         "position": {
           "x": 1237.5,
-          "y": 5750
+          "y": 5410
         }
       }
     note: false
@@ -1989,10 +1929,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "74":
     id: "74"
-    taskid: 93967009-8621-46ee-8a90-475e38a6cc59
+    taskid: f15bacae-9993-40f9-8287-d195449ec426
     type: title
     task:
-      id: 93967009-8621-46ee-8a90-475e38a6cc59
+      id: f15bacae-9993-40f9-8287-d195449ec426
       version: -1
       name: Case 2 - Bad Brand
       type: title
@@ -2007,7 +1947,7 @@ tasks:
       {
         "position": {
           "x": 827.5,
-          "y": 5920
+          "y": 5580
         }
       }
     note: false
@@ -2019,10 +1959,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "75":
     id: "75"
-    taskid: 1ad3e232-b217-4897-814e-4f23763d7095
+    taskid: 6f7b1f08-4cc5-41a7-8cd3-ffb0f177a776
     type: condition
     task:
-      id: 1ad3e232-b217-4897-814e-4f23763d7095
+      id: 6f7b1f08-4cc5-41a7-8cd3-ffb0f177a776
       version: -1
       name: Failure
       type: condition
@@ -2044,7 +1984,7 @@ tasks:
       {
         "position": {
           "x": 1237.5,
-          "y": 6420
+          "y": 6080
         }
       }
     note: false
@@ -2056,10 +1996,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "76":
     id: "76"
-    taskid: 13986d60-1e32-461a-8a17-a45a4faab345
+    taskid: 89e23a18-ecbf-4b85-8634-69a768574721
     type: regular
     task:
-      id: 13986d60-1e32-461a-8a17-a45a4faab345
+      id: 89e23a18-ecbf-4b85-8634-69a768574721
       version: -1
       name: DeleteContext
       description: "Delete field from context.\n\nThis automation runs using the default
@@ -2084,7 +2024,7 @@ tasks:
       {
         "position": {
           "x": 827.5,
-          "y": 6080
+          "y": 5740
         }
       }
     note: false
@@ -2096,10 +2036,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "77":
     id: "77"
-    taskid: ed62d53c-f5f5-40be-8edc-b914d111d207
+    taskid: 1f2712e6-6d56-4ea2-8fb3-63fafe57ae56
     type: regular
     task:
-      id: ed62d53c-f5f5-40be-8edc-b914d111d207
+      id: 1f2712e6-6d56-4ea2-8fb3-63fafe57ae56
       version: -1
       name: Run ip enrichment script
       description: This script gathers ip reputation data from multiple integrations
@@ -2131,7 +2071,7 @@ tasks:
       {
         "position": {
           "x": 827.5,
-          "y": 6250
+          "y": 5910
         }
       }
     note: false
@@ -2143,10 +2083,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "78":
     id: "78"
-    taskid: 4d15fd2a-e86b-4666-84bf-d377056c4385
+    taskid: 1eed142a-b25e-4d64-8895-ca646d143ed9
     type: title
     task:
-      id: 4d15fd2a-e86b-4666-84bf-d377056c4385
+      id: 1eed142a-b25e-4d64-8895-ca646d143ed9
       version: -1
       name: Pass
       type: title
@@ -2158,7 +2098,7 @@ tasks:
       {
         "position": {
           "x": 807.5,
-          "y": 6425
+          "y": 6085
         }
       }
     note: false
@@ -2170,10 +2110,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "79":
     id: "79"
-    taskid: ab3605d5-e4f2-4f7d-b278-f8ba975dfad4
+    taskid: 25b42dcb-43a1-4d93-8bd9-70e4fbda7507
     type: regular
     task:
-      id: ab3605d5-e4f2-4f7d-b278-f8ba975dfad4
+      id: 25b42dcb-43a1-4d93-8bd9-70e4fbda7507
       version: -1
       name: Run ip enrichment script
       description: This script gathers ip reputation data from multiple integrations
@@ -2193,7 +2133,7 @@ tasks:
       external_enrichment:
         simple: "true"
       ip_list:
-        simple: 20.2.2.2,8.8.8.8
+        simple: 1.1.1.1,8.8.8.8
       verbose:
         simple: "false"
     separatecontext: false
@@ -2202,7 +2142,7 @@ tasks:
       {
         "position": {
           "x": 1237.5,
-          "y": 4920
+          "y": 4580
         }
       }
     note: false
@@ -2214,10 +2154,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "83":
     id: "83"
-    taskid: 6e345bf6-4795-44e6-8aa1-07ba089d0276
+    taskid: 0f4aea93-7f79-4075-8027-d432c7c5c771
     type: condition
     task:
-      id: 6e345bf6-4795-44e6-8aa1-07ba089d0276
+      id: 0f4aea93-7f79-4075-8027-d432c7c5c771
       version: -1
       name: additional fields Exists
       description: Additional fields empty
@@ -2241,7 +2181,7 @@ tasks:
       {
         "position": {
           "x": 592.5,
-          "y": 5090
+          "y": 4750
         }
       }
     note: false
@@ -2253,10 +2193,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "84":
     id: "84"
-    taskid: e7fe860e-830d-4813-82b5-ab37ff4efb19
+    taskid: 52de41e0-6289-424e-8563-fe90bdf03a50
     type: regular
     task:
-      id: e7fe860e-830d-4813-82b5-ab37ff4efb19
+      id: 52de41e0-6289-424e-8563-fe90bdf03a50
       version: -1
       name: DeleteContext
       description: "Delete field from context.\n\nThis automation runs using the default
@@ -2271,8 +2211,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "89"
-      - "90"
+      - "79"
     scriptarguments:
       all:
         simple: "yes"
@@ -2282,7 +2221,7 @@ tasks:
       {
         "position": {
           "x": 1237.5,
-          "y": 4580
+          "y": 4410
         }
       }
     note: false
@@ -2294,12 +2233,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "85":
     id: "85"
-    taskid: c726ca66-2f72-46f4-a250-edd9f998dfc7
+    taskid: 26559a02-a000-4c16-8c17-9075ed861a97
     type: condition
     task:
-      id: c726ca66-2f72-46f4-a250-edd9f998dfc7
+      id: 26559a02-a000-4c16-8c17-9075ed861a97
       version: -1
-      name: Main Keys For 20.2.2.2
+      name: Main Keys For 1.1.1.1
       description: MaxScore And MaxVerdict enriched for https://google.com
       type: condition
       iscommand: false
@@ -2324,11 +2263,11 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: 20.2.2.2
+                        simple: 1.1.1.1
             iscontext: true
           right:
             value:
-              simple: 20.2.2.2
+              simple: 1.1.1.1
       - - operator: isExists
           left:
             value:
@@ -2342,7 +2281,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: 20.2.2.2
+                        simple: 1.1.1.1
                 accessor: MaxScore
             iscontext: true
       - - operator: isExists
@@ -2358,7 +2297,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: 20.2.2.2
+                        simple: 1.1.1.1
                 accessor: MaxVerdict
             iscontext: true
       - - operator: isExists
@@ -2374,7 +2313,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: 20.2.2.2
+                        simple: 1.1.1.1
                 accessor: Status
             iscontext: true
       - - operator: isExists
@@ -2390,7 +2329,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: 20.2.2.2
+                        simple: 1.1.1.1
                 accessor: TIMScore
             iscontext: true
     continueonerrortype: ""
@@ -2398,7 +2337,7 @@ tasks:
       {
         "position": {
           "x": 1022.5,
-          "y": 5090
+          "y": 4750
         }
       }
     note: false
@@ -2410,10 +2349,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "86":
     id: "86"
-    taskid: 43dec3e0-4670-44b3-82a9-39916cc5d501
+    taskid: b2dbb1c8-6915-4d1f-8b00-6a79e50ac180
     type: title
     task:
-      id: 43dec3e0-4670-44b3-82a9-39916cc5d501
+      id: b2dbb1c8-6915-4d1f-8b00-6a79e50ac180
       version: -1
       name: Sad Flows
       type: title
@@ -2428,7 +2367,7 @@ tasks:
       {
         "position": {
           "x": 1237.5,
-          "y": 5260
+          "y": 4920
         }
       }
     note: false
@@ -2440,10 +2379,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "87":
     id: "87"
-    taskid: 80c50101-6827-4aa4-8e30-8ec9ba0505ee
+    taskid: 9762a46b-6b0d-4915-8073-262332146640
     type: condition
     task:
-      id: 80c50101-6827-4aa4-8e30-8ec9ba0505ee
+      id: 9762a46b-6b0d-4915-8073-262332146640
       version: -1
       name: Main Keys For 8.8.8.8
       description: MaxScore And MaxVerdict enriched for https://google.com
@@ -2544,112 +2483,7 @@ tasks:
       {
         "position": {
           "x": 1452.5,
-          "y": 5090
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "88":
-    id: "88"
-    taskid: b7fb6743-3afe-4863-8781-e4cc805561cb
-    type: regular
-    task:
-      id: b7fb6743-3afe-4863-8781-e4cc805561cb
-      version: -1
-      name: Add Virus Total To TIM
-      description: Checks the reputation of an IP address.
-      script: VirusTotal (API v3)|||ip
-      type: regular
-      iscommand: true
-      brand: VirusTotal (API v3)
-    nexttasks:
-      '#none#':
-      - "5"
-    scriptarguments:
-      ip:
-        simple: ${CrowdStrike.Device.[0].ExternalIP}
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1022.5,
-          "y": 710
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "89":
-    id: "89"
-    taskid: 428df83e-fff1-47db-8b92-8129f5f64143
-    type: regular
-    task:
-      id: 428df83e-fff1-47db-8b92-8129f5f64143
-      version: -1
-      name: Add 20.2.2.2 To TIM
-      description: Checks the reputation of an IP address.
-      script: VirusTotal (API v3)|||ip
-      type: regular
-      iscommand: true
-      brand: VirusTotal (API v3)
-    nexttasks:
-      '#none#':
-      - "79"
-    scriptarguments:
-      ip:
-        simple: 20.2.2.2
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 960,
-          "y": 4760
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "90":
-    id: "90"
-    taskid: f7d158ca-419c-42a1-a62d-1e75a736e258
-    type: regular
-    task:
-      id: f7d158ca-419c-42a1-a62d-1e75a736e258
-      version: -1
-      name: Add 8.8.8.8 To TIM
-      description: Checks the reputation of an IP address.
-      script: VirusTotal (API v3)|||ip
-      type: regular
-      iscommand: true
-      brand: VirusTotal (API v3)
-    nexttasks:
-      '#none#':
-      - "79"
-    scriptarguments:
-      ip:
-        simple: 8.8.8.8
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1495,
-          "y": 4760
+          "y": 4750
         }
       }
     note: false
@@ -2666,9 +2500,9 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 6440,
-        "width": 2325,
-        "x": 50,
+        "height": 6100,
+        "width": 2212.5,
+        "x": 162.5,
         "y": 50
       }
     }
@@ -2678,6 +2512,6 @@ outputs: []
 sourceplaybookid: 110f76de-5574-4854-853e-8675a01d8eb0
 dirtyInputs: true
 marketplaces:
-- xsoar
 - platform
 - marketplacev2
+- xsoar
