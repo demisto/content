@@ -8,7 +8,6 @@ from __future__ import print_function
 
 import base64
 import binascii
-from crypt import methods
 import gc
 import json
 import logging
