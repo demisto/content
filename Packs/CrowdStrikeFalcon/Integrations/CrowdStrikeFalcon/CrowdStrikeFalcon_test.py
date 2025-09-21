@@ -4456,12 +4456,12 @@ def test_get_remote_detection_data_for_multiple_types(mocker, detection_type, in
     ("get_detections_entities", 500, 1),  # Less than the limit
     ("get_detections_entities", 1000, 1),  # Exactly the limit
     ("get_detections_entities", 1001, 2),  # More than the limit (specific request)
-    ("get_detections_entities", 2001, 3),  # More than the limit (many calls)
+    ("get_detections_entities", 2500, 3),  # More than the limit (many calls)
     ("get_detection_entities", 0, 0),
     ("get_detection_entities", 500, 1),
     ("get_detection_entities", 1000, 1),
     ("get_detection_entities", 1001, 2),
-    ("get_detections_entities", 2001, 3)  # More than the limit (many calls)
+    ("get_detections_entities", 2500, 3)  # More than the limit (many calls)
 ])
 def test_get_detections_entities_batches_requests(mocker, function_name, num_ids, expected_calls):
     """
@@ -4479,11 +4479,10 @@ def test_get_detections_entities_batches_requests(mocker, function_name, num_ids
     # Configure a side effect to return responses with the correct number of resources
     def side_effect(method, url, data):
         data_dict = json.loads(data)
-        # Use 'composite_ids' for the new code, 'ids' for legacy.
-        ids_count = len(data_dict.get('composite_ids') or data_dict.get('ids'))
+        ids_in_batch = data_dict.get('composite_ids') or data_dict.get('ids')
         return {
             "meta": {"trace_id": "test_trace"},
-            "resources": [{"id": f"resource_{i}"} for i in range(ids_count)]
+            "resources": [{"id": i} for i in ids_in_batch]
         }
 
     mock_http_request.side_effect = side_effect
@@ -4491,8 +4490,9 @@ def test_get_detections_entities_batches_requests(mocker, function_name, num_ids
     # Get the function to test dynamically
     function_to_test = getattr(CrowdStrikeFalcon, function_name)
 
-    # Generate a list of mock IDs
-    detections_ids = [f"id_{i}" for i in range(num_ids)]
+    # Load and slice the IDs list from the JSON file
+    id_list_full = load_json("./test_data/mock_detections_id_list.json").get("Ids", {})[:num_ids]
+    detections_ids = id_list_full[:num_ids]
 
     # Call the function with the mock IDs
     result = function_to_test(detections_ids)
