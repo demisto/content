@@ -16,6 +16,6 @@ args:
   description: Entries with the given tag will be marked as notes.
 scripttarget: 0
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.12.8.3296088
+dockerimage: demisto/python3:3.12.11.4819260
 tests:
 - No tests (auto formatted)

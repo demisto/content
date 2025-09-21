@@ -526,7 +526,7 @@ script:
     - contextPath: Slack.Thread.ID
       description: The Slack thread ID.
       type: String
-  dockerimage: demisto/slackv3:1.0.0.4127314
+  dockerimage: demisto/slackv3:1.0.0.4859004
   longRunning: true
   runonce: false
   script: '-'
