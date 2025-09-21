@@ -1,8 +1,7 @@
 id: forcepoint test
 version: -1
 name: forcepoint test
-description: Deprecated. No available replacement.
-deprecated: true
+description: No available replacement.
 starttaskid: "0"
 tasks:
   '0':
