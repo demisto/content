@@ -110,7 +110,7 @@ def test_prepare_sha256_custom_field_empty_input():
 @pytest.mark.parametrize("sha_values", [["abc123", "xyz456"]])
 def test_main_with_sha256_filter(monkeypatch, sha_values):
     expected_custom_filter = """{
-  "OR": [
+  "OR": [  
     {
       "AND": [
         {
