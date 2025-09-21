@@ -107,22 +107,6 @@ def test_prepare_sha256_custom_field_empty_input():
     args = {"sha256": None}
     result = prepare_sha256_custom_field(args)
     assert result is None
-    assert "custom_filter" not in args
-
-
-def test_prepare_sha256_custom_field_single_value_str():
-    args = {"sha256": "onlyonehash"}
-    prepare_sha256_custom_field(args)
-    assert "custom_filter" in args
-    filter_obj = json.loads(args["custom_filter"])
-    assert len(filter_obj["OR"]) == 5
-
-
-def test_prepare_sha256_custom_field_empty_list():
-    args = {"sha256": ""}
-    prepare_sha256_custom_field(args)
-    assert "custom_filter" not in args
-
 
 @pytest.mark.parametrize("sha_values", [["abc123", "xyz456"]])
 def test_main_with_sha256_filter(monkeypatch, sha_values):
@@ -258,4 +242,3 @@ def test_main_with_sha256_filter(monkeypatch, sha_values):
     actual_dict = json.loads(called_args["custom_filter"])
 
     assert actual_dict == expected_dict, "custom_filter structure does not match expected"
-

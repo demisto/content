@@ -146,7 +146,7 @@ def prepare_sha256_custom_field(args: dict) -> Optional[str]:
     """
     sha256 = argToList(args.pop("sha256", ""))
     if not sha256:
-        return
+        return None
     or_operator_list: list[dict] = []
     for sha_search_field in SEARCH_SHA256_FIELDS:
         or_operator_list.append(create_sha_search_field_query(sha_search_field, EQ, sha256))
