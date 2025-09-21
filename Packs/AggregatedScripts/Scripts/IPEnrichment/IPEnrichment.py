@@ -50,11 +50,11 @@ def ip_enrichment_script(
     ip_indicator = Indicator(
         type="ip",
         value_field="Address",
-        context_path_prefix="IP(",
+        context_path_prefix="IP",
         context_output_mapping=indicator_mapping,
     )
-    demisto.debug("Creating commands")
-    create_new_indicator_commands = [
+    demisto.debug("Command Batch 1: Creating new indicators")
+    command_batch1: list[Command] = [
         Command(
             name="CreateNewIndicatorsOnly",
             args={"indicator_values": ip_list, "type": "IP"},
@@ -64,39 +64,43 @@ def ip_enrichment_script(
         )
     ]
 
-    # External Enrichment
-    enrich_indicator_commands = [
-        Command(
-            name="enrichIndicators",
-            args={"indicatorsValues": ip_list},
-            command_type=CommandType.EXTERNAL,
-        )
-    ]
+    command_batch2: list[Command] = []
 
-    # Internal Commands
-    internal_core_commands = [
+    demisto.debug("Command Batch 2: Internal commands")
+    command_batch2.append(
         Command(
             name="get-endpoint-data",
             args={"endpoint_ip": ip_list},
             command_type=CommandType.INTERNAL,
             brand="Core",
             context_output_mapping={ENDPOINT_PATH: ENDPOINT_PATH},
-        ),
-    ]
+        )
+    )
+
+    demisto.debug("Command Batch 2: Enriching indicators")
+    command_batch2.append(
+        Command(
+            name="enrichIndicators",
+            args={"indicatorsValues": ip_list},
+            command_type=CommandType.EXTERNAL,
+        )
+    )
+
     if is_xsiam():
-        internal_core_commands.append(
+        demisto.debug("Command Batch 2: Internal commands (for XSIAM)")
+        command_batch2.append(
             Command(
                 name="core-get-IP-analytics-prevalence",
                 args={"ip_address": ip_list},
                 command_type=CommandType.INTERNAL,
                 brand="Cortex Core - IR",
                 context_output_mapping={"Core.AnalyticsPrevalence.Ip": "Core.AnalyticsPrevalence.Ip"},
-            ),
+            )
         )
 
     commands: list[list[Command]] = [
-        create_new_indicator_commands,
-        internal_core_commands + enrich_indicator_commands,
+        command_batch1,
+        command_batch2,
     ]
     demisto.debug("Commands: ")
     for i, batch in enumerate(commands):

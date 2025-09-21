@@ -34,10 +34,13 @@ def url_enrichment_script(
         "Brand": "Brand",
     }
     url_indicator = Indicator(
-        type="url", value_field="Data", context_path_prefix="URL(", context_output_mapping=indicator_mapping
+        type="url",
+        value_field="Data",
+        context_path_prefix="URL(",  # add ( to prefix to distinct from URLhaus integration context path
+        context_output_mapping=indicator_mapping,
     )
-
-    create_new_indicator_commands = [
+    demisto.debug("Creating commands - Batch 1: Creating new indicators")
+    command_batch1: list[Command] = [
         Command(
             name="CreateNewIndicatorsOnly",
             args={"indicator_values": url_list, "type": "URL"},
@@ -46,7 +49,8 @@ def url_enrichment_script(
             ignore_using_brand=True,
         )
     ]
-    enrich_indicator_commands = [
+    demisto.debug("Creating commands - Batch 2: Enriching indicators")
+    command_batch2: list[Command] = [
         Command(
             name="enrichIndicators",
             args={"indicatorsValues": url_list},
@@ -54,7 +58,7 @@ def url_enrichment_script(
         )
     ]
 
-    commands = [create_new_indicator_commands, enrich_indicator_commands]
+    commands = [command_batch1, command_batch2]
     demisto.debug("Commands: ")
     for i, batch in enumerate(commands):
         demisto.debug(f"Batch {i}")

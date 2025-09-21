@@ -39,13 +39,13 @@ def domain_enrichment_script(
     domain_indicator = Indicator(
         type="domain",
         value_field="Name",
-        context_path_prefix="Domain(",
+        context_path_prefix="Domain",
         context_output_mapping=indicator_mapping,
     )
 
-    # --- Batch 1: create indicators (BUILTIN) ---
-    demisto.debug("Creating commands")
-    create_new_indicator_commands = [
+    # --- Command Batch 1: create indicators (BUILTIN) ---
+    demisto.debug("Command Batch 1: Creating new indicators")
+    command_batch1: list[Command] = [
         Command(
             name="CreateNewIndicatorsOnly",
             args={"indicator_values": domain_list, "type": "Domain"},
@@ -55,35 +55,33 @@ def domain_enrichment_script(
         )
     ]
 
-    # --- Batch 2: internal analytics + external enrichment ---
-    core_domain_analytics_cmd = Command(
-        name="core-get-domain-analytics-prevalence",
-        args={"domain_name": domain_list},
-        command_type=CommandType.INTERNAL,
-        brand="Cortex Core - IR",  # keep the brand you use elsewhere
-        context_output_mapping={"Core.AnalyticsPrevalence.Domain": "Core.AnalyticsPrevalence.Domain"},
-    )
-
-    enrich_indicator_commands = [
+    # --- Command Batch 2: internal analytics + external enrichment ---
+    command_batch2: list[Command] = []
+    if is_xsiam():
+        demisto.debug("Command Batch 2: Internal commands (for XSIAM)")
+        command_batch2.append(
+            Command(
+                name="core-get-domain-analytics-prevalence",
+                args={"domain_name": domain_list},
+                command_type=CommandType.INTERNAL,
+                brand="Cortex Core - IR",  # keep the brand you use elsewhere
+                context_output_mapping={"Core.AnalyticsPrevalence.Domain": "Core.AnalyticsPrevalence.Domain"},
+            )
+        )
+    demisto.debug("Command Batch 2: Enriching indicators")
+    command_batch2.append(
         Command(
             name="enrichIndicators",
             args={"indicatorsValues": domain_list},
             command_type=CommandType.EXTERNAL,
         )
-    ]
+    )
 
     # Important: commands are a list of *batches* (each batch is a list[Command])
-    commands: list[list[Command]] = []
-    if is_xsiam():
-        commands = [
-            create_new_indicator_commands,
-            [core_domain_analytics_cmd] + enrich_indicator_commands,
-        ]
-    else:
-        commands = [
-            create_new_indicator_commands,
-            enrich_indicator_commands,
-        ]
+    commands = [
+        command_batch1,
+        command_batch2,
+    ]
     demisto.debug("Commands:")
     for i, batch in enumerate(commands):
         demisto.debug(f"Batch {i}")
