@@ -71,7 +71,7 @@ FETCH_TIME = "now" if demisto.command() == "fetch-events" else PARAMS.get("fetch
 MAX_FETCH_SIZE = 10000
 MAX_FETCH_DETECTION_PER_API_CALL = 10000  # fetch limit for get ids call - detections
 MAX_FETCH_DETECTION_PER_API_CALL_ENTITY = 1000  # fetch limit for get entities call - detections
-MAX_FETCH_INCIDENT_PER_API_CALL = 500  # fetch limit for get ids call - incidents 
+MAX_FETCH_INCIDENT_PER_API_CALL = 500  # fetch limit for get ids call - incidents
 
 BYTE_CREDS = f"{CLIENT_ID}:{SECRET}".encode()
 
@@ -1713,7 +1713,6 @@ def get_detections_entities(detections_ids: list):
         return detections_ids
 
     combined_resources = []
-    combined_meta = {}
 
     url = "/detects/entities/summaries/GET/v1" if LEGACY_VERSION else "/alerts/entities/alerts/v2"
 
@@ -1732,10 +1731,6 @@ def get_detections_entities(detections_ids: list):
         if "resources" in response:
             # Combine the resources from each response.
             combined_resources.extend(response["resources"])
-
-        if "meta" in response:
-            # use the meta from the last successful call.
-            combined_meta = response["meta"]
 
     # Return the combined result.
     return {"resources": combined_resources}
@@ -1816,7 +1811,6 @@ def get_detection_entities(incidents_ids: list):
     :rtype ``dict``
     """
     combined_resources = []
-    combined_meta = {}
 
     url_endpoint_version = "v1" if LEGACY_VERSION else "v2"
     url = f"/alerts/entities/alerts/{url_endpoint_version}"
@@ -1834,10 +1828,6 @@ def get_detection_entities(incidents_ids: list):
         if "resources" in raw_res:
             # Combine the resources from each response.
             combined_resources.extend(raw_res["resources"])
-
-        if "meta" in raw_res:
-            # use the meta from the last successful call
-            combined_meta = raw_res["meta"]
 
     # Return the combined result.
     return {"resources": combined_resources}
