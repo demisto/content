@@ -17,10 +17,11 @@ PaginationLogic = namedtuple(
     "PaginationLogic",
     (
         "pagination_needed",
-        "pagination_field_name",
-        "pagination_flag",
+        "pagination_response_field",  # Field to extract from response
+        "pagination_request_field",   # Field to use in next request
+        "pagination_flag",            # Field that indicates if more pages exist
     ),
-    defaults=(False, "", ""),
+    defaults=(False, [], "", []),
 )
 TimestampFieldConfig = namedtuple(
     "TimestampFieldConfig",
@@ -196,7 +197,7 @@ def is_pagination_needed(events: dict[Any, Any], pagination_logic: PaginationLog
     if pagination_needed := pagination_logic.pagination_needed:
         if dict_safe_get(events, pagination_logic.pagination_flag):
             pagination_needed = True
-            next_page_value = dict_safe_get(events, pagination_logic.pagination_field_name)
+            next_page_value = dict_safe_get(events, pagination_logic.pagination_response_field)
             demisto.debug(f"Pagination needed - Next page value: {next_page_value}")
         else:
             demisto.debug("Pagination not detected in the response")
@@ -250,7 +251,7 @@ def fetch_events(
         demisto.debug(f"{len(all_events_list)} events fetched")
         pagination_needed, next_page_value = is_pagination_needed(raw_events, pagination_logic)
         if pagination_needed:
-            request_json = {".".join(pagination_logic.pagination_field_name): next_page_value}
+            request_json = {pagination_logic.pagination_request_field: next_page_value}
             request_data = RequestData(request_data.request_data, request_json, request_data.query_params)
 
     # endregion
@@ -523,21 +524,33 @@ def get_events_command(
 
 def extract_pagination_params(params: dict[str, str]) -> PaginationLogic:
     pagination_needed: bool = argToBoolean(params.get("pagination_needed", False))
-    pagination_field_name: list[str] | None = argToList(params.get("pagination_field_name"), ".")
-    pagination_flag: list[str] | None = argToList(params.get("pagination_flag"), ".")
-    pagination_logic = PaginationLogic(pagination_needed, pagination_field_name, pagination_flag)
+    pagination_response_field: list[str] = argToList(params.get("pagination_response_field"), ".")
+    pagination_request_field: str = params.get("pagination_request_field", "")
+    pagination_flag: list[str] = argToList(params.get("pagination_flag"), ".")
+    
+    pagination_logic = PaginationLogic(
+        pagination_needed, 
+        pagination_response_field,
+        pagination_request_field,
+        pagination_flag
+    )
+    
     if pagination_logic.pagination_needed:
         demisto.debug(
             "Pagination logic - Pagination Needed, "
-            f"pagination_field_name: {pagination_logic.pagination_field_name}, "
+            f"pagination_response_field: {pagination_logic.pagination_response_field}, "
+            f"pagination_request_field: {pagination_logic.pagination_request_field}, "
             f"pagination_flag: {pagination_logic.pagination_flag}"
         )
-        if not pagination_logic.pagination_field_name:
-            return_error("Pagination field name is missing")
+        if not pagination_logic.pagination_response_field:
+            return_error("Pagination response field is missing")
+        if not pagination_logic.pagination_request_field:
+            return_error("Pagination request field is missing")
         if not pagination_logic.pagination_flag:
             return_error("Pagination flag is missing")
     else:
         demisto.debug("Pagination logic - Pagination Not Needed")
+    
     return pagination_logic
 
 

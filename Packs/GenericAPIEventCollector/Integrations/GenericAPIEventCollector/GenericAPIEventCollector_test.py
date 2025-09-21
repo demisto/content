@@ -76,7 +76,7 @@ def test_is_pagination_needed():
 
 def test_is_pagination_not_needed():
     events = {"has_more": False}
-    pagination_logic = PaginationLogic(True, ["next_page"], ["has_more"])
+    pagination_logic = PaginationLogic(True, ["next_page"], "next_page", ["has_more"])
     needed, next_page = is_pagination_needed(events, pagination_logic)
     assert needed is False
     assert next_page is None
@@ -217,10 +217,12 @@ def test_generate_authentication_headers_invalid_auth(mock_error, mock_return_er
 
 
 def test_extract_pagination_params():
-    params = {"pagination_needed": "true", "pagination_field_name": "next_page", "pagination_flag": "has_more"}
+    params = {"pagination_needed": "true", "pagination_response_field": "next_page",
+              "pagination_request_field": "next_page", "pagination_flag": "has_more"}
     pagination_logic = extract_pagination_params(params)
     assert pagination_logic.pagination_needed is True
-    assert pagination_logic.pagination_field_name == ["next_page"]
+    assert pagination_logic.pagination_response_field == ["next_page"]
+    assert pagination_logic.pagination_request_field == "next_page"
     assert pagination_logic.pagination_flag == ["has_more"]
 
 
@@ -232,7 +234,8 @@ def test_setup_search_events():
         "request_json": '{"json_key": "json_value"}',
         "query_params": '{"param_key": "param_value"}',
         "pagination_needed": "true",
-        "pagination_field_name": "next_page",
+        "pagination_response_field": "next_page",
+        "pagination_request_field": "next_page",
         "pagination_flag": "has_more",
         "timestamp_field_name": "timestamp",
         "timestamp_format": "%Y-%m-%dT%H:%M:%SZ",
@@ -244,7 +247,7 @@ def test_setup_search_events():
     )
 
     assert last_fetched_datetime == first_fetch_datetime
-    assert pagination_logic == PaginationLogic(True, ["next_page"], ["has_more"])
+    assert pagination_logic == PaginationLogic(True, ["next_page"], "next_page", ["has_more"])
     assert request_data == RequestData({"key": "value"}, {"json_key": "json_value"}, {"param_key": "param_value"})
 
 
@@ -256,7 +259,8 @@ def test_setup_search_events_with_last_run():
         "request_json": '{"json_key": "json_value"}',
         "query_params": '{"param_key": "param_value"}',
         "pagination_needed": "true",
-        "pagination_field_name": "next_page",
+        "pagination_response_field": "next_page",
+        "pagination_request_field": "next_page",
         "pagination_flag": "has_more",
         "timestamp_field_name": "timestamp",
         "timestamp_format": "%Y-%m-%dT%H:%M:%SZ",
@@ -268,7 +272,7 @@ def test_setup_search_events_with_last_run():
     )
 
     assert last_fetched_datetime == datetime(2023, 1, 2, 0, 0, 0)
-    assert pagination_logic == PaginationLogic(True, ["next_page"], ["has_more"])
+    assert pagination_logic == PaginationLogic(True, ["next_page"], "next_page", ["has_more"])
     assert request_data == RequestData({"key": "value"}, {"json_key": "json_value"}, {"param_key": "param_value"})
 
 
@@ -280,14 +284,16 @@ def test_setup_search_events_first_fetch():
         "request_json": '{"json_key": "json_value"}',
         "query_params": '{"param_key": "param_value"}',
         "pagination_needed": "true",
-        "pagination_field_name": "next_page",
+        "pagination_response_field": "next_page",
+        "pagination_request_field": "next_page",
         "pagination_flag": "has_more",
         "timestamp_field_name": "timestamp",
         "timestamp_format": "%Y-%m-%dT%H:%M:%SZ",
         "initial_query_params": '{"initial_param_key": "initial_param_value"}',
         "initial_pagination_params": {
             "pagination_needed": "true",
-            "pagination_field_name": "next_page",
+            "pagination_response_field": "next_page",
+            "pagination_request_field": "next_page",
             "pagination_flag": "has_more",
         },
         "initial_request_data": '{"initial_key": "initial_value"}',
@@ -300,7 +306,7 @@ def test_setup_search_events_first_fetch():
     )
 
     assert last_fetched_datetime == first_fetch_datetime
-    assert pagination_logic == PaginationLogic(True, ["next_page"], ["has_more"])
+    assert pagination_logic == PaginationLogic(True, ["next_page"], "next_page", ["has_more"])
     assert request_data == RequestData(
         {"initial_key": "initial_value"}, {"initial_json_key": "initial_json_value"}, {"initial_param_key": "initial_param_value"}
     )
@@ -463,3 +469,85 @@ def test_convert_epoch_to_timestamp_boundary_conditions(mock_debug):
     expected_16 = datetime.fromtimestamp(float(epoch_16_chars) / 1_000_000)
 
     assert result_16 == expected_16
+
+
+def test_extract_pagination_params_with_response_and_request_fields():
+    """Test extract_pagination_params with both response and request fields."""
+    params = {
+        "pagination_needed": "true",
+        "pagination_response_field": "next_page_token",
+        "pagination_request_field": "page_token",
+        "pagination_flag": "has_more"
+    }
+    result = extract_pagination_params(params)
+    assert result.pagination_needed is True
+    assert result.pagination_response_field == ["next_page_token"]
+    assert result.pagination_request_field == "page_token"
+    assert result.pagination_flag == ["has_more"]
+
+
+def test_is_pagination_needed_with_response_field():
+    """Test is_pagination_needed with response field."""
+    events = {
+        "next_page_token": "abc123",
+        "has_more": True
+    }
+    pagination_logic = PaginationLogic(
+        pagination_needed=True,
+        pagination_response_field=["next_page_token"],
+        pagination_request_field="page_token",
+        pagination_flag=["has_more"]
+    )
+    result, next_page = is_pagination_needed(events, pagination_logic)
+    assert result is True
+    assert next_page == "abc123"
+
+
+def test_is_pagination_needed_with_nested_response_field():
+    """Test is_pagination_needed with nested response field."""
+    events = {
+        "pagination": {
+            "next_page": "def456",
+            "has_more": True
+        }
+    }
+    pagination_logic = PaginationLogic(
+        pagination_needed=True,
+        pagination_response_field=["pagination", "next_page"],
+        pagination_request_field="page",
+        pagination_flag=["pagination", "has_more"]
+    )
+    result, next_page = is_pagination_needed(events, pagination_logic)
+    assert result is True
+    assert next_page == "def456"
+
+
+def test_is_pagination_needed_no_more_pages():
+    """Test is_pagination_needed when there are no more pages."""
+    events = {
+        "next_page_token": "abc123",
+        "has_more": False
+    }
+    pagination_logic = PaginationLogic(
+        pagination_needed=True,
+        pagination_response_field=["next_page_token"],
+        pagination_request_field="page_token",
+        pagination_flag=["has_more"]
+    )
+    result, next_page = is_pagination_needed(events, pagination_logic)
+    assert result is False
+    assert next_page is None
+
+
+def test_is_pagination_needed_pagination_not_needed():
+    """Test is_pagination_needed when pagination is not needed."""
+    events = {"data": [1, 2, 3]}
+    pagination_logic = PaginationLogic(
+        pagination_needed=False,
+        pagination_response_field=["next_page"],
+        pagination_request_field="page",
+        pagination_flag=["has_more"]
+    )
+    result, next_page = is_pagination_needed(events, pagination_logic)
+    assert result is False
+    assert next_page is None
