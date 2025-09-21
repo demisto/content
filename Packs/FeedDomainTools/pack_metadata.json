@@ -2,7 +2,7 @@
     "name": "DomainTools Feed",
     "description": "Indicators feed from DomainTools",
     "support": "partner",
-    "currentVersion": "1.0.3",
+    "currentVersion": "1.0.4",
     "author": "DomainTools",
     "url": "https://www.domaintools.com/support/",
     "email": "memberservices@domaintools.com",
