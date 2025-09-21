@@ -701,7 +701,6 @@ def create_threat_object_indicators(
             "description": build_threat_object_description(threat_obj),
             "reportedby": threat_obj.get("source"),
             "aliases": [string_to_table_header(alias) for alias in threat_obj.get("aliases", [])],
-            "tags": [string_to_table_header(tag) for tag in threat_obj.get("threat_object_group_names", [])],
             "industrysectors": [
                 string_to_table_header(industry) for industry in demisto.get(threat_obj, "battlecard_details.industries", [])
             ],
