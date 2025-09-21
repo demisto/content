@@ -26,7 +26,7 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  defaultvalue: A++ - ?????
+  defaultvalue: A++ - 1st party feed and enrichment
   required: false
   section: Collect
   advanced: true

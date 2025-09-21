@@ -9,7 +9,7 @@ This integration requires a Unit 42 Intelligence license. Contact your Palo Alto
 ### Configuration Parameters
 
 - **Server URL**: The base URL for the Unit 42 Intelligence API service
-- **Source Reliability**: Configure the reliability level for threat intelligence data (default: A - Completely reliable)
+- **Source Reliability**: Configure the reliability level for threat intelligence data (default: A++ - 1st party feed and enrichment)
 - **Create Relationships**: Enable automatic creation of relationships between indicators and threat objects
 - **Create Indicators from Relationships**: Enable automatic creation of indicators from relationships
 
