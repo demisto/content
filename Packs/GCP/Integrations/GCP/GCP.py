@@ -1119,7 +1119,7 @@ def gcp_compute_instance_get_command(creds: Credentials, args: dict[str, Any]) -
         "status": response.get("status"),
         "machineType": response.get("machineType"),
         "labels": response.get("labels"),
-        "labelFingerprint": response.get("labelFingerprint")
+        "labelFingerprint": response.get("labelFingerprint"),
     }
     readable_output = tableToMarkdown(
         f"GCP Instance {instance} from zone {zone}",

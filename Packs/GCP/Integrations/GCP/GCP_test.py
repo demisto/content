@@ -1952,7 +1952,17 @@ def test_gcp_compute_instance_get_command_table_generation(mocker):
     assert table_data["status"] == "TERMINATED"
 
     # Check headers
-    expected_headers = ["id", "name", "kind", "creationTimestamp", "description", "status", "machineType"]
+    expected_headers = [
+        "id",
+        "name",
+        "kind",
+        "creationTimestamp",
+        "description",
+        "status",
+        "machineType",
+        "labels",
+        "labelFingerprint",
+    ]
     assert table_call_args[1]["headers"] == expected_headers
 
     # Check other parameters
