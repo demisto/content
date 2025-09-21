@@ -418,7 +418,7 @@ script:
       description: Value of the threat indicator.
       type: string
     description: Threat Indicators that are designated by analysts as malicious, suspicious or benign.
-  dockerimage: demisto/chromium:131.0.6778.117810
+  dockerimage: demisto/chromium:136.0.7103.3456100
   isfetch: true
 tests:
 - No test - partner integration (test pb exists - Cofense Triage Test)
