@@ -32,6 +32,7 @@ configuration:
   required: true
   type: 9
   section: Connect
+  hiddenusername: true
 - display: Account ID (optional)
   name: account_id
   required: false
