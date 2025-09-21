@@ -2916,6 +2916,12 @@ script:
     - contextPath: PrismaCloudCompute.Policies.RuntimeContainerPolicy.modified
       description: The audited event modified time.
       type: Date
+  - name: prisma-cloud-compute-custom-feeds-malware-remove
+    arguments:
+    - description: The MD5 value to be removed from Prisma.
+      name: md5
+      required: true
+    description: Remove custom MD5 malware hashes.
 tests:
 - PaloAltoNetworks_PrismaCloudCompute-Test
 fromversion: 5.0.0
