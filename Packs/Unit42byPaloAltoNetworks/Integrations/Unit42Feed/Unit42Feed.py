@@ -38,7 +38,7 @@ THREAT_OBJECT_CLASS_MAP = {
     "threat_actor": ThreatIntel.ObjectsNames.THREAT_ACTOR,
     "malicious_behavior": Common.Indicator,
     "exploit": FeedIndicatorType.CVE,
-    "attack_pattern": ThreatIntel.ObjectsNames.ATTACK_PATTERN
+    "attack_pattern": ThreatIntel.ObjectsNames.ATTACK_PATTERN,
 }
 
 
@@ -82,9 +82,7 @@ class Client(BaseClient):
         if next_page_token:
             params["next_page_token"] = next_page_token
 
-        response = self._http_request(
-            method="GET", url_suffix="/api/v1/feeds/indicators", params=params
-        )
+        response = self._http_request(method="GET", url_suffix="/api/v1/feeds/indicators", params=params)
 
         return response
 
@@ -107,6 +105,7 @@ class Client(BaseClient):
         response = self._http_request(method="GET", url_suffix="/api/v1/feeds/threat_objects", params=params)
 
         return response
+
 
 def get_threat_object_score(threat_class: str) -> int:
     """
@@ -133,6 +132,7 @@ def get_threat_object_score(threat_class: str) -> int:
         return ThreatIntel.ObjectsScore.ATTACK_PATTERN
 
     return Common.DBotScore.NONE
+
 
 def map_indicator(indicator_data: dict, feed_tags: list = [], tlp_color: str | None = None) -> dict:
     """Map an indicator from the Unit 42 API to XSOAR format.
