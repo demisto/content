@@ -1,0 +1,210 @@
+args:
+- description: |
+    Accepts a list of URLs to enrich.
+    - From CLI: Provide a comma-separated list.  
+      If a URL contains a comma, wrap the URLs in a JSON array.  
+      Example: "[\"https://example.com/search?tags=red,yellow,green\", \"https://example2.com\"]".
+    - From Context: Pass JSON arrays directly, without modification.
+  name: url_list
+  required: true
+  isArray: true
+- name: external_enrichment
+  description: "Whether to call external integrations for enrichment:
+    - 'true': enrich using enabled external integrations (e.g., VirusTotal (API v3), AlienVault OTX v2).
+    - 'false': use only existing TIM data; skip external integrations.
+    If the 'brands' argument is provided, this flag is ignored and enrichment is run only on the brands provided."
+  auto: PREDEFINED
+  predefined:
+  - 'true'
+  - 'false'
+  defaultValue: 'false'
+  required: false
+- name: verbose
+  description: Retrieve a human-readable entry for each command; if false, only the final result is summarized and errors are suppressed.
+  auto: PREDEFINED
+  predefined:
+  - 'true'
+  - 'false'
+  defaultValue: 'false'
+  required: false
+- name: brands
+  description: |
+    A list of integration brands to run enrichment against.  
+    Example: `"VirusTotal (API v3), AlienVault OTX v2"`.  
+    - If provided, only the selected brands are used. 
+    - If left empty, the script runs enrichment on all enabled integrations,
+      depending on the `external_enrichment` flag.
+    To see the available brands for the `url` command, run: `!ProvidesCommand command=url`.
+  isArray: true
+  required: false
+- name: additional_fields
+  description: |
+    When set to true, the output includes an `AdditionalFields` object
+    for each of the indicator result.  
+    `AdditionalFields` contains all fields returned by TIM or the integrations
+    that are not part of the standard output keys: `Data`, `DetectionEngines`, 
+    `PositiveDetections`, `Score`, and `Brand`.  
+    When set to false, only the standard keys are returned.
+  auto: PREDEFINED
+  predefined:
+  - 'true'
+  - 'false'
+  required: false
+  defaultValue: 'false'
+comment: This script gathers URL reputation data from multiple integrations and returns a "URLEnrichment" object with consolidated information in the context output.
+commonfields:
+  id: url-enrichment
+  version: -1
+enabled: false
+name: url-enrichment
+outputs:
+# URLEnrichment
+- contextPath: URLEnrichment.Value
+  description: The URL.
+  type: string
+- contextPath: URLEnrichment.MaxScore
+  description: The max score of all the indicators found.
+  type: number
+- contextPath: URLEnrichment.MaxVerdict
+  description: The max verdict of all the indicators found.
+  type: string
+- contextPath: URLEnrichment.Results
+  description: List of all indicators found for the URL.
+  type: array
+- contextPath: URLEnrichment.TIMScore
+  description: The TIM score of the URL.
+  type: number
+- contextPath: URLEnrichment.Status
+  description: 'The status of the indicator: "Manual" if the score was changed manually, "Fresh" if modified within the last week, "Stale" if modified more than a week ago, and "None" if never modified.'
+  type: string
+- contextPath: URLEnrichment.ModifiedTime
+  description: The time the indicator was last modified.
+  type: Date
+# URLEnrichment Main Keys
+- contextPath: URLEnrichment.Results.Brand
+  description: The brand of the indicator.
+  type: string
+- contextPath: URLEnrichment.Results.Score
+  description: The score of the indicator.
+  type: number
+- contextPath: URLEnrichment.Results.Verdict
+  description: The verdict of the indicator.
+  type: string
+- contextPath: URLEnrichment.Results.DetectionEngines
+  description: The detection engines of the indicator.
+  type: number
+- contextPath: URLEnrichment.Results.PositiveDetections
+  description: The positive detections of the indicator.
+  type: number
+- contextPath: URLEnrichment.Results.Data
+  description: The URL it self.
+  type: string
+- contextPath: URLEnrichment.Results.Reliability
+  description: The reliability of the Brand.
+  type: string
+# URLEnrichment Additional Fields
+- contextPath: URLEnrichment.Results.AdditionalFields
+  description: All fields extracted from the indicator other then the main keys ("Brand", "Score", "Verdict", "DetectionEngines", "PositiveDetections", "Data").
+  type: Object
+- contextPath: URLEnrichment.Results.AdditionalFields.Relationships.EntityA
+  description: The source of the relationship.
+  type: string
+- contextPath: URLEnrichment.Results.AdditionalFields.Relationships.EntityB
+  description: The destination of the relationship.
+  type: string
+- contextPath: URLEnrichment.Results.AdditionalFields.Relationships.Relationship
+  description: The name of the relationship.
+  type: string
+- contextPath: URLEnrichment.Results.AdditionalFields.Relationships.EntityAType
+  description: The type of the source of the relationship.
+  type: string
+- contextPath: URLEnrichment.Results.AdditionalFields.Relationships.EntityBType
+  description: The type of the destination of the relationship.
+  type: string
+- contextPath: URLEnrichment.Results.AdditionalFields.Category
+  description: The category associated with the indicator.
+  type: String
+- contextPath: URLEnrichment.Results.AdditionalFields.Malicious.Vendor
+  description: The vendor reporting the URL as malicious.
+  type: String
+- contextPath: URLEnrichment.Results.AdditionalFields.Malicious.Description
+  description: A description of the malicious URL.
+  type: String
+- contextPath: URLEnrichment.Results.AdditionalFields.Tags
+  description: (List) Tags of the URL.
+  type: Unknown
+- contextPath: URLEnrichment.Results.AdditionalFields.FeedRelatedIndicators.value
+  description: Indicators that are associated with the URL.
+  type: String
+- contextPath: URLEnrichment.Results.AdditionalFields.FeedRelatedIndicators.type
+  description: The type of the indicators that are associated with the URL.
+  type: String
+- contextPath: URLEnrichment.Results.AdditionalFields.FeedRelatedIndicators.description
+  description: The description of the indicators that are associated with the URL.
+  type: String
+- contextPath: URLEnrichment.Results.AdditionalFields.MalwareFamily
+  description: The malware family associated with the URL.
+  type: String
+- contextPath: URLEnrichment.Results.AdditionalFields.Port
+  description: Ports that are associated with the URL.
+  type: String
+- contextPath: URLEnrichment.Results.AdditionalFields.Internal
+  description: Whether or not the URL is internal or external.
+  type: Bool
+- contextPath: URLEnrichment.Results.AdditionalFields.Campaign
+  description: The campaign associated with the URL.
+  type: String
+- contextPath: URLEnrichment.Results.AdditionalFields.TrafficLightProtocol
+  description: The Traffic Light Protocol (TLP) color that is suitable for the URL.
+  type: String
+- contextPath: URLEnrichment.Results.AdditionalFields.ThreatTypes.threatcategory
+  description: The threat category associated to this indicator by the source vendor. For example, Phishing, Control, TOR, etc.
+  type: String
+- contextPath: URLEnrichment.Results.AdditionalFields.ThreatTypes.threatcategoryconfidence
+  description: Threat Category Confidence is the confidence level provided by the vendor for the threat type category For example a confidence of 90 for threat type category 'malware' means that the vendor rates that this is 90% confidence of being a malware.
+  type: String
+- contextPath: URLEnrichment.Results.AdditionalFields.ASN
+  description: "The autonomous system name for the URL, for example: 'AS8948'."
+  type: String
+- contextPath: URLEnrichment.Results.AdditionalFields.ASOwner
+  description: The autonomous system owner of the URL.
+  type: String
+- contextPath: URLEnrichment.Results.AdditionalFields.GeoCountry
+  description: The country in which the URL is located.
+  type: String
+- contextPath: URLEnrichment.Results.AdditionalFields.Organization
+  description: The organization of the URL.
+  type: String
+- contextPath: URLEnrichment.Results.AdditionalFields.CommunityNotes.note
+  description: Notes on the URL that were given by the community.
+  type: String
+- contextPath: URLEnrichment.Results.AdditionalFields.CommunityNotes.timestamp
+  description: The time in which the note was published.
+  type: Date
+- contextPath: URLEnrichment.Results.AdditionalFields.Publications.source
+  description: The source in which the article was published.
+  type: String
+- contextPath: URLEnrichment.Results.AdditionalFields.Publications.title
+  description: The name of the article.
+  type: String
+- contextPath: URLEnrichment.Results.AdditionalFields.Publications.link
+  description: A link to the original article.
+  type: String
+- contextPath: URLEnrichment.Results.AdditionalFields.Publications.timestamp
+  description: The time in which the article was published.
+  type: Date
+script: '-'
+system: false
+tags:
+- basescript
+timeout: '0'
+type: python
+subtype: python3
+dockerimage: demisto/python3:3.12.11.4819260
+fromversion: 6.10.0
+marketplaces:
+- xsoar
+- platform
+- marketplacev2
+tests:
+- URLEnrichment-Test
