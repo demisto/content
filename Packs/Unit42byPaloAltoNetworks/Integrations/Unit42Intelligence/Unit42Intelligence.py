@@ -195,7 +195,7 @@ def extract_response_data(response: dict[str, Any]) -> dict[str, Any]:
         "first_seen": response.get("first_seen", ""),
         "last_seen": response.get("last_seen", ""),
         "seen_by": response.get("sources", []),
-        "relationships": response.get("threat_object_association", []),
+        "relationships": response.get("threat_object_associations", []),
     }
 
 
