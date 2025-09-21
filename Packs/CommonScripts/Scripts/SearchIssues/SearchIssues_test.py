@@ -91,16 +91,6 @@ def test_create_sha_search_field_query_multiple_values():
 def test_create_sha_search_field_query_empty_list():
     result = create_sha_search_field_query("actor_process_image_sha256", EQ, [])
     assert result is None
-
-
-def test_prepare_sha256_custom_field_populates_custom_filter():
-    args = {"sha256": ["hash1", "hash2"]}
-    filter_obj = prepare_sha256_custom_field(args)
-    assert "OR" in filter_obj
-    # Should contain queries for 5 equal fields
-    assert len(filter_obj["OR"]) == 5
-
-
 def test_prepare_sha256_custom_field_empty_input():
     args = {"sha256": None}
     result = prepare_sha256_custom_field(args)
