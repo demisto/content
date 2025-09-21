@@ -2,11 +2,10 @@ commonfields:
   id: CalculateTimeDifference
   version: -1
 name: CalculateTimeDifference
-type: python
-subtype: python3
+type: javascript
 tags:
 - Utilities
-comment: Calculate the time difference, in minutes
+comment: Calculate the time difference, in minutes.
 enabled: true
 script: '-'
 args:
@@ -28,4 +27,3 @@ runas: DBotWeakRole
 tests:
 - Impossible Traveler - Test
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.12.8.3296088
