@@ -351,7 +351,7 @@ def create_publications(publications_data: list) -> list:
         timestamp = data.get("created", "")
         title = data.get("title", "")
         url = data.get("url", "")
-        source = data.get("source", "")
+        source = data.get("source", INTEGRATION_NAME)
 
         publications.append({"link": url, "title": title, "timestamp": timestamp, "source": source})
 
@@ -492,11 +492,23 @@ def create_malware_relationships(
     malware_associations = demisto.get(threat_obj, "battlecard_details.threat_actor_details.malware_associations", [])
 
     for relationship in malware_associations:
-        aliases = relationship.get("aliases", [])
         name = relationship.get("name")
+        aliases = relationship.get("aliases", [])
 
-        if aliases:
-            # Create a relationship for each alias
+        if name:
+            # Create a relationship using the name
+            entity_relationship = EntityRelationship(
+                name=EntityRelationship.Relationships.USES,
+                entity_a=threat_actor_name,
+                entity_a_type=INDICATOR_TYPE_MAPPING[threat_class],
+                entity_b=string_to_table_header(name),
+                entity_b_type=ThreatIntel.ObjectsNames.MALWARE,
+                source_reliability=DBotScoreReliability.A_PLUS_PLUS,
+                brand=INTEGRATION_NAME,
+            )
+            relationships.append(entity_relationship.to_entry())
+        elif aliases:
+            # Create a relationship for each alias if no name exists
             for alias in aliases:
                 entity_relationship = EntityRelationship(
                     name=EntityRelationship.Relationships.USES,
@@ -508,18 +520,6 @@ def create_malware_relationships(
                     brand=INTEGRATION_NAME,
                 )
                 relationships.append(entity_relationship.to_entry())
-        elif name:
-            # Create a relationship using the name if no aliases exist
-            entity_relationship = EntityRelationship(
-                name=EntityRelationship.Relationships.USES,
-                entity_a=threat_actor_name,
-                entity_a_type=INDICATOR_TYPE_MAPPING[threat_class],
-                entity_b=string_to_table_header(name),
-                entity_b_type=ThreatIntel.ObjectsNames.MALWARE,
-                source_reliability=DBotScoreReliability.A_PLUS_PLUS,
-                brand=INTEGRATION_NAME,
-            )
-            relationships.append(entity_relationship.to_entry())
 
     return relationships
 
@@ -688,7 +688,6 @@ def create_location_indicators_and_relationships(threat_obj: dict[str, Any], thr
                 "relationships": [entity_relationship.to_entry()],
                 "fields": {
                     "geocountry": standardized_region,
-                    "tags": ["affected-region"],
                 },
             }
             location_indicators.append(location_indicator)
