@@ -91,6 +91,8 @@ def test_create_sha_search_field_query_multiple_values():
 def test_create_sha_search_field_query_empty_list():
     result = create_sha_search_field_query("actor_process_image_sha256", EQ, [])
     assert result is None
+
+
 def test_prepare_sha256_custom_field_empty_input():
     args = {"sha256": None}
     result = prepare_sha256_custom_field(args)
