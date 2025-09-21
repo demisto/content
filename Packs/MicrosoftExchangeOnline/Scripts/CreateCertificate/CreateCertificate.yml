@@ -33,7 +33,7 @@ tags:
 - basescript
 timeout: '0'
 type: powershell
-dockerimage: demisto/pwsh-exchange:1.0.0.116826
+dockerimage: demisto/pwsh-exchange:1.0.0.4904905
 fromversion: 5.5.0
 tests:
 - CreateCertificate-Test
