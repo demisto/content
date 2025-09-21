@@ -267,17 +267,25 @@ def delete_email(
     Returns:
         Success if the deletion succeeded, fails otherwise
     """
-    if search_function:
-        search_result = execute_command(search_function, search_args)
-        if not search_result or isinstance(search_result, str):
-            raise MissingEmailException
-        delete_args = delete_args_function(search_result, search_args)  # type: ignore
-    else:
-        delete_args = delete_args_function(search_args)  # type: ignore
-    demisto.info(f"DeleteReportedEmails nbensalmon delete_args: {delete_function=} {delete_args=}")
-    resp = execute_command(delete_function, delete_args)
-    if deletion_error_condition(resp):
-        raise DeletionFailed(resp)
+    mailboxes = []
+
+    if "target-mailbox" in search_args:
+        mailboxes = [mailbox.strip() for mailbox in search_args["target-mailbox"].split(",")]
+
+
+    for mailbox in mailboxes:
+        search_args["target-mailbox"] = mailbox
+        if search_function:
+            search_result = execute_command(search_function, search_args)
+            if not search_result or isinstance(search_result, str):
+                raise MissingEmailException
+            delete_args = delete_args_function(search_result, search_args)  # type: ignore
+        else:
+            delete_args = delete_args_function(search_args)  # type: ignore
+        resp = execute_command(delete_function, delete_args)
+        if deletion_error_condition(resp):
+            raise DeletionFailed(resp)
+
     return "Success"
 
 
@@ -380,7 +388,6 @@ def main():
                 "Agari Phishing Defense": (None, DeletionArgs.agari, "apd-remediate-message"),
                 "MicrosoftGraphMail": ("msgraph-mail-list-emails", DeletionArgs.msgraph, "msgraph-mail-delete-email"),
             }
-            demisto.info(f"DeleteReportedEmails nbensalmon {integrations_dict=} {search_args=}")
             result = delete_email(search_args, *integrations_dict[delete_from_brand])  # type: ignore
 
     except MissingEmailException as e:
