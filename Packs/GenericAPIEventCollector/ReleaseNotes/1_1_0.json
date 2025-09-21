@@ -1,5 +1,5 @@
 {
     "breakingChanges": true,
-    "breakingChangesNotes": "The 'pagination_field_name' parameter has been replaced with 'pagination_response_field' and 'pagination_request_field'."
+    "breakingChangesNotes": "The 'Pagination field name' parameter has been replaced with 'Pagination Response Field' and 'Pagination Request Field'."
 
 }
