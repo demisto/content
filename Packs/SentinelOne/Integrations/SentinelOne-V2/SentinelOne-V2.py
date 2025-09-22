@@ -3356,10 +3356,11 @@ def get_blocklist(client: Client, args: dict) -> CommandResults:
     group_ids = args.get("group_ids", None)
     site_ids = args.get("site_ids", None)
     account_ids = args.get("account_ids", None)
-    # Accept sha1 or sha256 as argument
+    # Accept legacy 'hash' argument, fallback to sha1 or sha256
+    legacy_hash = args.get("hash")
     sha1 = args.get("sha1")
     sha256 = args.get("sha256Value")
-    value_contains = sha1 or sha256  # search by whichever is provided
+    value_contains = legacy_hash or sha1 or sha256
 
     contents = []
 

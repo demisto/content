@@ -1649,6 +1649,8 @@ script:
     - defaultValue: "1000"
       description: The maximum number of records to return.
       name: limit
+    - description: SHA1 or SHA256 hash to search for in the blocklist.
+      name: hash
     - description: SHA1 hash to search for in the blocklist.
       name: sha1
     - description: SHA256 hash to search for in the blocklist.
