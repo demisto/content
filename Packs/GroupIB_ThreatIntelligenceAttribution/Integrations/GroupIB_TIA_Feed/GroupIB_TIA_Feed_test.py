@@ -116,7 +116,7 @@ def test_fetch_indicators_command(mocker, session_fixture):
           - The first indicator in the indicators list contains a "fields" dictionary with
             a "gibid" key, verifying that each indicator has the expected structure.
       - This test ensures that fetch_indicators_command retrieves data according to each
-        collection’s parameters and formats the output consistently.
+        collection's parameters and formats the output consistently.
     """
     collection_name, client = session_fixture
     if collection_name == "compromised/mule":

@@ -743,7 +743,7 @@ class TrustarClient:
         enclaves the user making the request has READ access to.
 
         :param indicators: indicators list to search the corresponding metadata.
-        :param enclave_ids: list of enclave IDs to restrict to. By default, uses all of the user’s enclaves.
+        :param enclave_ids: list of enclave IDs to restrict to. By default, uses all of the user's enclaves.
 
         :return: Entry context with indicators metadata.
         """
@@ -808,7 +808,7 @@ class TrustarClient:
 
     def get_whitelist(self, limit=None):
         """
-        Gets a list of indicators that the user’s company has whitelisted.
+        Gets a list of indicators that the user's company has whitelisted.
 
         :param limit: Maximum number of whitelisted indicators to return.
         :return: Entry context with whitelisted indicators.

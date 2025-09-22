@@ -282,7 +282,7 @@ def stub_get_access_token(mocker):
 @pytest.fixture
 def http_mocker(mocker):
     """
-    Stub out HTTP and auth for a universe of 100 events (0–99).
+    Stub out HTTP and auth for a universe of 100 events (0-99).
     """
     http_mocker = HttpRequestsMocker(100)
     mocker.patch.object(Client, "_http_request", side_effect=http_mocker.valid_http_request_side_effect)
@@ -335,7 +335,7 @@ def test_returns_first_n_events_when_limit_less_than_total(http_mocker):
     - search_events(0, 100, 30) is called.
 
     Then:
-    - 30 events are returned (timestamps 0–29).
+    - 30 events are returned (timestamps 0-29).
     """
     events = _run_search(0, 99, 30)
     assert len(events) == 30
@@ -379,7 +379,7 @@ def test_page_limit_greater_fetch_limit_less_total(http_mocker, mocker):
     - search_events(0, 100, 50) is called.
 
     Then:
-    - 50 events are returned (timestamps 0–49).
+    - 50 events are returned (timestamps 0-49).
     """
     import ManageEngineEventCollector
 

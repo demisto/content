@@ -151,7 +151,7 @@ def test_build_query_for_indicator_values_chunk_counts(n, expected_chunks):
     assert isinstance(result, list)
     assert len(result) == expected_chunks
 
-    # Optionally, verify each chunk’s size by counting " OR " occurrences (+1 = items in chunk)
+    # Optionally, verify each chunk's size by counting " OR " occurrences (+1 = items in chunk)
     # because our stub joins values with " OR " and build_query wraps with parentheses.
     remaining = n
     for chunk_str in result:

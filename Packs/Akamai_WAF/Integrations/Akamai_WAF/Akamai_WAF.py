@@ -602,7 +602,7 @@ class Client(BaseClient):
         """
             Get network lists
         Args:
-            search: Only list items that match the specified substring in any network list’s name or list of items.
+            search: Only list items that match the specified substring in any network list's name or list of items.
             list_type: Filters the output to lists of only the given type of network lists if provided, either IP or GEO
             extended: Whether to return extended details in the response
             include_elements: Whether to return all list items.
@@ -681,11 +681,11 @@ class Client(BaseClient):
             ]
         }
 
-        We have everything except syncPoint. To make sure different API clients don’t overwrite each other’s
+        We have everything except syncPoint. To make sure different API clients don't overwrite each other's
         data, their API supports optimistic concurrency control for any modifications to network lists.
-        Whenever you run the Get a network list GET operation, you need to retain the value of the response’s
+        Whenever you run the Get a network list GET operation, you need to retain the value of the response's
         syncPoint and pass it back in when you subsequently run the Update a network list PUT operation. The update
-        operation only succeeds if there haven’t been any interim updates by other API clients. If the update fails,
+        operation only succeeds if there haven't been any interim updates by other API clients. If the update fails,
         you get a 409 error response.
 
         """
@@ -3846,7 +3846,7 @@ def get_network_lists_command(
 
     Args:
         client: Client object with request
-        search: Only list items that match the specified substring in any network list’s name or list of items.
+        search: Only list items that match the specified substring in any network list's name or list of items.
         list_type: Filters the output to lists of only the given type of network lists if provided, either IP or GEO.
         extended: Whether to return extended details in the response
         include_elements: Whether to return all list items.

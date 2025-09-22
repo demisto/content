@@ -1426,7 +1426,7 @@ def test_module(client: Client) -> str:
     Returns:
         str: 'ok' if test passed, anything else will raise an exception and will fail the test.
     """
-    # Check a JWT token’s validity
+    # Check a JWT token's validity
     # https://docs.sekoia.io/develop/rest_api/identity_and_authentication/#tag/User-Authentication/operation/get_validate_resource
 
     try:
