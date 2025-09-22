@@ -27,7 +27,7 @@ commonfields:
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: "6.0.0"
-dockerimage: demisto/docxpy:1.0.0.4821271
+dockerimage: demisto/docxpy:1.0.0.4889310
 enabled: true
 name: CreatePlbkDoc
 runas: DBotWeakRole
