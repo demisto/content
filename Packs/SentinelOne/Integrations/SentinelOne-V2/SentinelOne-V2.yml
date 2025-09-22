@@ -2851,7 +2851,7 @@ script:
     - contextPath: SentinelOne.Notes.UpdatedAt
       description: The note updated time.
       type: string
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.11.4819260
   isfetch: true
   ismappable: true
   isremotesyncin: true
