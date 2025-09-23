@@ -828,21 +828,22 @@ if __name__ in ("__main__", "__builtin__", "builtins"):  # pragma: no cover
 
     demisto.debug("Executing command: " + demisto.command())
     if USERNAME and PASSWORD:
-        if not CACHE_TOKEN:
-            if TOKEN:
-                return_error("You can only specify one login method, please choose username and password or authentication token")
-            TOKEN = login()
+        if TOKEN:
+            return_error("You can only specify one login method, please choose username and password or authentication token")
         else:
-            lease_expiration = integration_context.get("lease_expiration")
-            if not lease_expiration:
-                demisto.debug("No existing lease; creating a new one.")
-                TOKEN = login()
-            elif lease_expiration < int(time.time()) - TIME_BUFFER:
-                demisto.debug("Existing lease expired; creating a new one.")
+            if not CACHE_TOKEN:
                 TOKEN = login()
             else:
-                demisto.debug("Existing lease still available; reusing it.")
-                TOKEN = integration_context.get("auth_token")
+                lease_expiration = integration_context.get("lease_expiration")
+                if not lease_expiration:
+                    demisto.debug("No existing lease; creating a new one.")
+                    TOKEN = login()
+                elif lease_expiration < int(time.time()) - TIME_BUFFER:
+                    demisto.debug("Existing lease expired; creating a new one.")
+                    TOKEN = login()
+                else:
+                    demisto.debug("Existing lease still available; reusing it.")
+                    TOKEN = integration_context.get("auth_token")
     elif not TOKEN:
         return_error("Either an authentication token or user credentials must be provided")
 
