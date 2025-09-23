@@ -33,6 +33,7 @@ configuration:
   defaultvalue: "false"
   type: 8
   required: false
+  section: Connect
 - display: Authentication token
   name: token
   defaultvalue: ""

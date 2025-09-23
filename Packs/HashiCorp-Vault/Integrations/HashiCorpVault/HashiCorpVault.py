@@ -68,7 +68,7 @@ def login():  # pragma: no cover
     integration_context.update(
         {
             "lease_expiration": int(time.time()) + int(auth_res["auth"]["lease_duration"]),
-            "auth_token": auth_res["auth"]["client_token"]
+            "auth_token": auth_res["auth"]["client_token"],
         }
     )
     set_integration_context(integration_context)
@@ -833,7 +833,7 @@ if __name__ in ("__main__", "__builtin__", "builtins"):  # pragma: no cover
                 return_error("You can only specify one login method, please choose username and password or authentication token")
             TOKEN = login()
         else:
-            lease_expiration = integration_context.get('lease_expiration')
+            lease_expiration = integration_context.get("lease_expiration")
             if not lease_expiration:
                 demisto.debug("No existing lease; creating a new one.")
                 TOKEN = login()
@@ -842,7 +842,7 @@ if __name__ in ("__main__", "__builtin__", "builtins"):  # pragma: no cover
                 TOKEN = login()
             else:
                 demisto.debug("Existing lease still available; reusing it.")
-                TOKEN = integration_context.get('auth_token')
+                TOKEN = integration_context.get("auth_token")
     elif not TOKEN:
         return_error("Either an authentication token or user credentials must be provided")
 
