@@ -215,6 +215,56 @@ class Client(BaseClient):
         self.reset_failure_times()
         return oproxy_response
 
+    def _get_refresh_token_expiry(self) -> dict:
+        try:
+            token = get_encrypted(self.refresh_token, self.enc_key)
+            if self.use_fr_token_headers:
+                demisto.debug("Using FedRAMP resource token request headers.")
+                data = {"encrypted_token": token, "registration_id": self.registration_id}
+            else:
+                demisto.debug("Using standard resource token request headers.")
+                data = {"token": token}
+            oproxy_response = self._http_request(
+                "POST",
+                "/cdl-token-expiry",
+                json_data=data,
+                timeout=(60 * 3, 60 * 3),
+                retries=3,
+                backoff_factor=10,
+                status_list_to_retry=[400],
+            )
+        except DemistoException as e:
+            if re.match(BAD_REQUEST_REGEX, str(e)):
+                demisto.error("The request to retrieve the refresh token expiry has failed with 400 status code.")
+            raise e
+
+        return oproxy_response
+
+    def _generate_refresh_token(self) -> dict:
+        try:
+            token = get_encrypted(self.refresh_token, self.enc_key)
+            if self.use_fr_token_headers:
+                demisto.debug("Using FedRAMP resource token request headers.")
+                data = {"encrypted_token": token, "registration_id": self.registration_id}
+            else:
+                demisto.debug("Using standard resource token request headers.")
+                data = {"token": token}
+            oproxy_response = self._http_request(
+                "POST",
+                "/cdl-token-generate",
+                json_data=data,
+                timeout=(60 * 3, 60 * 3),
+                retries=3,
+                backoff_factor=10,
+                status_list_to_retry=[400],
+            )
+        except DemistoException as e:
+            if re.match(BAD_REQUEST_REGEX, str(e)):
+                demisto.error("The request to generate refresh token has failed with 400 status code.")
+            raise e
+
+        return oproxy_response
+
     @staticmethod
     def _cache_failure_times(integration_context: dict) -> dict:
         """Updates the failure times in case of an error with 400 status code.
@@ -1389,6 +1439,13 @@ def fetch_incidents(
     demisto.debug(f"CortexDataLake - Number of incidents after filtering: {len(incidents)}")
     return next_run, incidents
 
+def generate_refresh_token(client: Client):
+    raw_results = client._generate_refresh_token()
+    return raw_results, {}, raw_results
+
+def get_refresh_token_expiry(client: Client):
+    raw_results = client._get_refresh_token_expiry()
+    return raw_results, {}, raw_results
 
 """ EXECUTION CODE """
 
@@ -1431,6 +1488,10 @@ def main():
                 params.get("firewall_severity"),
                 params.get("first_fetch_timestamp", "24 hours").strip(),
             )
+        elif command == "cdl-generate-refresh-token":
+            return_outputs(*generate_refresh_token(client))
+        elif command == "cdl-get-refresh-token-expiry":
+            return_outputs(*get_refresh_token_expiry(client))
         elif command == "cdl-query-logs":
             return_outputs(*query_logs_command(args, client))
         elif command == "cdl-get-critical-threat-logs":
