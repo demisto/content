@@ -2,7 +2,7 @@
     "name": "DuoAuth",
     "description": "The Duo Auth API lets developers integrate with Duo Security's platform at a low level. Must have access to the auth api in order to use this",
     "support": "community",
-    "currentVersion": "1.0.2",
+    "currentVersion": "1.1.0",
     "author": "Mihovil Magdic",
     "url": "",
     "email": "",
