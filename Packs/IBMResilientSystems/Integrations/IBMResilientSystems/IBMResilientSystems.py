@@ -1617,6 +1617,31 @@ def add_custom_task_command(client: SimpleClient, args: dict) -> CommandResults:
     return CommandResults(readable_output=f"Could not create a new task: {response.get('message')}")
 
 
+def list_incidents_command(client: SimpleClient, args: dict) -> CommandResults:
+    """
+    Lists all incidents.
+    """
+    incidents = search_incidents(client, args)
+    if not incidents:
+        return CommandResults(readable_output="No results found.")
+
+    pretty_incidents = prettify_incidents(client, incidents)
+    result_incidents = createContext(pretty_incidents, id=None, keyTransform=underscoreToCamelCase, removeNull=True)
+
+    human_readable = tableToMarkdown(
+        "QRadar SOAR Incidents",
+        result_incidents,
+        headers=["Id", "Name", "PlanStatus", "CreatedDate", "DiscoveredDate", "Owner", "Phase"],
+        removeNull=True,
+    )
+
+    return CommandResults(
+        outputs_prefix="Resilient.Incidents",
+        outputs_key_field="Id",
+        outputs=result_incidents,
+        readable_output=human_readable,
+    )
+
 def get_modified_remote_data_command(client: SimpleClient, args: dict) -> GetModifiedRemoteDataResponse:
     remote_args = GetModifiedRemoteDataArgs(args)
     last_update = validate_iso_time_format(remote_args.last_update)  # In the first run, this value will be set to 1 minute
@@ -1892,6 +1917,8 @@ def main():  # pragma: no cover
             return_results(update_remote_system_command(client, args, tag_to_ibm))
         elif command == "get-mapping-fields":
             return_results(get_mapping_fields_command())
+        elif command == "rs-list-incidents":
+            return_results(list_incidents_command(client, args))
     except Exception as e:
         LOG(str(e))
         LOG.print_log()
