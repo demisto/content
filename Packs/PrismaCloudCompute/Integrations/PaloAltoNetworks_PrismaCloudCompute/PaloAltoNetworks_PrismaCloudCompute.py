@@ -1403,6 +1403,8 @@ def remove_custom_malware_feeds(client: PrismaCloudComputeClient, args) -> Comma
                 readable_output="Successfully removed the md5 hash value " + md5 + " from custom md5 malware feed."
             )
 
+    return CommandResults(readable_output=f"Could not find {md5} in the custom malware feeds.")
+
 
 def get_cves(client: PrismaCloudComputeClient, args: dict, reliability: str = "B - Usually reliable") -> List[CommandResults]:
     """
