@@ -158,6 +158,8 @@ script:
       - "noh"
       - "domainrdap"
       - "domaindiscovery"
+      - "domainrisk"
+      - "domainhotlist"
       defaultValue: "nod"
       description: The DomainTools integration feed type to fetch.
       isArray: false
