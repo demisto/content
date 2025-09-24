@@ -1,4 +1,6 @@
 category: IT Services
+sectionorder:
+- Connect
 commonfields:
   id: Google Cloud Storage
   version: -1
