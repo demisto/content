@@ -1,0 +1,46 @@
+{
+    "mock_responses": [
+        {
+            "rows": [
+                {
+                    "caseId": "A",
+                    "priority": "MEDIUM",
+                    "caseCreationTimestamp": 1743728988934673
+                },
+                {
+                    "caseId": "B",
+                    "priority": "MEDIUM",
+                    "caseCreationTimestamp": 1743728991877035
+                },
+                {
+                    "caseId": "B",
+                    "priority": "LOW",
+                    "caseCreationTimestamp": 1743728991877035
+                },
+                {
+                    "caseId": "C",
+                    "priority": "HIGH",
+                    "caseCreationTimestamp": 1747706110552706
+                }
+            ]
+        }
+    ],
+    "prev_last_fetched_ids": ["A"],
+    "max_fetch": 3,
+    "expected_events": [
+        {
+            "caseId": "B",
+            "priority": "MEDIUM",
+            "caseCreationTimestamp": 1743728991877035,
+            "_time": "2025-04-04T01:09:51Z"
+        },
+        {
+            "caseId": "C",
+            "priority": "HIGH",
+            "caseCreationTimestamp": 1747706110552706,
+            "_time": "2025-05-20T01:55:10Z"
+        }
+    ],
+    "expected_new_start_time": "2025-05-20T01:55:10Z",
+    "expected_new_last_fetched_ids": ["C"]
+}
