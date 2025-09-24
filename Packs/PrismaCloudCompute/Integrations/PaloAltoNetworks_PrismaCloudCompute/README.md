@@ -5207,6 +5207,7 @@ Retrieves the runtime policy for containers protected by Defender. A policy cons
 
 * Do not use the reset last run button as it will cause incidents duplications to the instance.
 * In case you pressed reset last run button and you get duplicated incidents, run **prisma-cloud-compute-unstuck-fetch-stream** command.
+
 ### prisma-cloud-compute-custom-feeds-malware-remove
 
 ***
@@ -5220,7 +5221,7 @@ Remove custom MD5 malware hashes.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| md5 | The MD5 value to be removed from Prisma. | Required | 
+| md5 | The MD5 value to be removed from Prisma. | Required |
 
 #### Context Output
 
