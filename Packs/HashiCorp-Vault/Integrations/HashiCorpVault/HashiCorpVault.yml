@@ -27,8 +27,8 @@ configuration:
   type: 9
   required: false
   section: Connect
-- display: Cache the authentication token. Relevant for Username/Password,
-    or AppRole combinations.
+- display: Cache the authentication token
+  additionalinfo: Is relevant only for Username/Password, or AppRole combinations.
   name: cache_token
   defaultvalue: "false"
   type: 8
