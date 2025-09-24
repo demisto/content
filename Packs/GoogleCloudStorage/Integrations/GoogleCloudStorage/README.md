@@ -1026,3 +1026,22 @@
 <pre>gcs-block-public-access-bucket source_bucket_name="my-bucket" public_access_prevention="enforced"</pre>
 <h5>Human Readable Output</h5>
 <p>Public access prevention is set to enforced for my-bucket.</p>
+### gcs-delete-file
+
+***
+Deletes a file (object) from a bucket
+
+#### Base Command
+
+`gcs-delete-file`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| object_name | No description provided. | Required | 
+| bucket_name | No description provided. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
