@@ -1,6 +1,5 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-import base64
 
 
 """ GLOBAL VARS """
@@ -235,20 +234,18 @@ def fetch_oauth_token():
     demisto.debug(f"[DEBUG] Client ID: {CLIENT_ID[:10]}...")
     demisto.debug(f"[DEBUG] Client Secret: {'*' * 10}...")
     
-    # Prepare Basic Auth header for client credentials
-    credentials = base64.b64encode(f"{CLIENT_ID}:{CLIENT_SECRET}".encode()).decode()
-    demisto.debug(f"[DEBUG] Generated Basic Auth credentials: {credentials[:20]}...")
-
-    headers = {"Authorization": f"Basic {credentials}", "Content-Type": "application/x-www-form-urlencoded"}
-    # TODO if fails, considre using "content-type": "application/json"
+    # Headers for OAuth token request (no Basic Auth, just content type)
+    headers = {"Content-Type": "application/x-www-form-urlencoded"}
     demisto.debug(f"[DEBUG] Request headers: {dict(headers)}")
     
-    # Construct scope in the format: {cloud_name}::{org_id}::{api_role}
-    scope = f"{CLOUD_NAME}::{ORG_ID}::{API_ROLE}"
-    demisto.debug(f"[DEBUG] OAuth scope: {scope}")
-
-    data = {"grant_type": "client_credentials", "scope": scope}
-    demisto.debug(f"[DEBUG] Request data: {data}")
+    # Request body data as per Zscaler team specification
+    data = {
+        "grant_type": "client_credentials",
+        "client_id": CLIENT_ID,
+        "client_secret": CLIENT_SECRET,
+        "audience": "https://api.zscaler.com"
+    }
+    demisto.debug(f"[DEBUG] Request data: {[(k, v if k != 'client_secret' else '*' * 10) for k, v in data.items()]}")
 
     try:
         demisto.debug("[DEBUG] Making OAuth token request...")
