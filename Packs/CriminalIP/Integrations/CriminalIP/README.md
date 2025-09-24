@@ -1,7 +1,7 @@
 Criminal IP is a comprehensive cyber threat intelligence solution that provides actionable insights into IP addresses, domains, and connected assets across the internet.
 It enables organizations to detect malicious indicators, assess asset reputation, and enhance threat detection by integrating enriched threat data directly into security operations via the XSOAR interface.
 
-This integration was integrated and tested with version 1.0 of CriminalIP.
+This integration was integrated and tested with version 1.0.0 of CriminalIP.
 
 ## Configure CriminalIP in Cortex
 
@@ -56,6 +56,12 @@ Provides detailed information about an IP address using Criminal IP's API.
 | CriminalIP.IP.TopCVSS | Number | Example CVSS v3 score of detected vulnerability. |
 | CriminalIP.IP.raw | Unknown | Full raw response from CriminalIP API. |
 
+#### Example
+
+```text
+!criminal-ip-ip-report ip=8.8.8.8
+```
+
 ### criminal-ip-check-malicious-ip
 
 ***
@@ -80,6 +86,12 @@ Determines whether an IP is malicious or safe through CriminalIP Asset Search.
 | CriminalIP.Mal_IP.real_ip_list | Unknown | List of real IPs if protected IP was detected. |
 | CriminalIP.Mal_IP.raw | Unknown | Full raw response. |
 
+#### Example
+
+```text
+!criminal-ip-check-malicious-ip ip=192.168.1.1
+```
+
 ### criminal-ip-check-last-scan-date
 
 ***
@@ -102,7 +114,14 @@ Checks if the domain has been scanned within the last 7 days.
 | CriminalIP.Scan_Date.domain | String | Queried Domain. |
 | CriminalIP.Scan_Date.scan_id | String | The last scan ID of the domain. |
 | CriminalIP.Scan_Date.scanned | Boolean | Whether the domain was scanned within the last 7 days. |
+| CriminalIP.Scan_Date.scan_date | String | The last scan date in ISO format. |
 | CriminalIP.Scan_Date.raw | Unknown | Full raw response from CriminalIP API. |
+
+#### Example
+
+```text
+!criminal-ip-check-last-scan-date domain=example.com
+```
 
 ### criminal-ip-domain-quick-scan
 
@@ -125,7 +144,16 @@ Performs a Domain Quick Scan using CriminalIP's API.
 | --- | --- | --- |
 | CriminalIP.Domain_Quick.domain | String | Queried Domain. |
 | CriminalIP.Domain_Quick.risk_score | Number | Risk Score. |
+| CriminalIP.Domain_Quick.reg_dtime | String | Domain registration time. |
+| CriminalIP.Domain_Quick.result | String | Quick scan result string. |
+| CriminalIP.Domain_Quick.type | String | Domain type classification. |
 | CriminalIP.Domain_Quick.raw | Unknown | Full raw response. |
+
+#### Example
+
+```text
+!criminal-ip-domain-quick-scan domain=example.com
+```
 
 ### criminal-ip-domain-lite-scan
 
@@ -149,6 +177,12 @@ Initiates a Domain Lite Scan and returns a scan_id.
 | CriminalIP.Domain_Lite.scan_id | String | Scan ID returned for Lite Scan. |
 | CriminalIP.Domain_Lite.raw | Unknown | Full raw response. |
 
+#### Example
+
+```text
+!criminal-ip-domain-lite-scan domain=example.com
+```
+
 ### criminal-ip-domain-lite-scan-status
 
 ***
@@ -169,7 +203,14 @@ Checks the progress of the Lite Scan.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | CriminalIP.Domain_Lite_Status.status | String | Lite Scan status. |
+| CriminalIP.Domain_Lite_Status.scan_percentage | Number | Scan percentage progress. |
 | CriminalIP.Domain_Lite_Status.raw | Unknown | Full raw response. |
+
+#### Example
+
+```text
+!criminal-ip-domain-lite-scan-status scan_id=abc123def456
+```
 
 ### criminal-ip-domain-lite-scan-result
 
@@ -191,8 +232,25 @@ Returns the Lite Scan results for the given scan_id.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | CriminalIP.Domain_Lite_Result.domain | String | Queried Domain. |
+| CriminalIP.Domain_Lite_Result.created | String | Domain creation date. |
+| CriminalIP.Domain_Lite_Result.registrar | String | Domain registrar. |
+| CriminalIP.Domain_Lite_Result.score | String | Domain risk score. |
+| CriminalIP.Domain_Lite_Result.report_time | String | Report generation time. |
+| CriminalIP.Domain_Lite_Result.phishing_prob | Number | Phishing probability. |
+| CriminalIP.Domain_Lite_Result.dga_score | Number | DGA score. |
+| CriminalIP.Domain_Lite_Result.abuse_critical | Number | Critical abuse record count. |
+| CriminalIP.Domain_Lite_Result.abuse_dangerous | Number | Dangerous abuse record count. |
+| CriminalIP.Domain_Lite_Result.a_records | String | A records resolved. |
+| CriminalIP.Domain_Lite_Result.ns_records | String | NS records resolved. |
+| CriminalIP.Domain_Lite_Result.mapped_ips | String | Mapped IP list. |
 | CriminalIP.Domain_Lite_Result.vulns | Unknown | CVEs detected. |
 | CriminalIP.Domain_Lite_Result.raw | Unknown | Full raw response. |
+
+#### Example
+
+```text
+!criminal-ip-domain-lite-scan-result scan_id=abc123def456
+```
 
 ### criminal-ip-domain-full-scan
 
@@ -216,6 +274,12 @@ Initiates a Domain Full Scan and returns a scan_id.
 | CriminalIP.Full_Scan.scan_id | String | Scan ID returned for Full Scan. |
 | CriminalIP.Full_Scan.raw | Unknown | Full raw response. |
 
+#### Example
+
+```text
+!criminal-ip-domain-full-scan domain=example.com
+```
+
 ### criminal-ip-domain-full-scan-status
 
 ***
@@ -236,7 +300,14 @@ Checks the progress of the Full Scan.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | CriminalIP.Full_Scan_Status.status | String | Full Scan status. |
+| CriminalIP.Full_Scan_Status.scan_percentage | Number | Scan percentage progress. |
 | CriminalIP.Full_Scan_Status.raw | Unknown | Full raw response. |
+
+#### Example
+
+```text
+!criminal-ip-domain-full-scan-status scan_id=xyz789abc123
+```
 
 ### criminal-ip-domain-full-scan-result
 
@@ -258,9 +329,28 @@ Returns the Full Scan results for the given scan_id.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | CriminalIP.Full_Scan_Result.domain | String | Queried Domain. |
+| CriminalIP.Full_Scan_Result.created | String | Domain creation date. |
+| CriminalIP.Full_Scan_Result.registrar | String | Domain registrar. |
+| CriminalIP.Full_Scan_Result.score | String | Domain risk score. |
+| CriminalIP.Full_Scan_Result.report_time | String | Report generation time. |
+| CriminalIP.Full_Scan_Result.phishing_prob | Number | Phishing probability. |
+| CriminalIP.Full_Scan_Result.dga_score | Number | DGA score. |
+| CriminalIP.Full_Scan_Result.punycode | Boolean | Whether punycode detected. |
+| CriminalIP.Full_Scan_Result.fake_https | Boolean | Whether fake HTTPS detected. |
+| CriminalIP.Full_Scan_Result.abuse_critical | Number | Critical abuse record count. |
+| CriminalIP.Full_Scan_Result.abuse_dangerous | Number | Dangerous abuse record count. |
+| CriminalIP.Full_Scan_Result.cert_valid_to | String | Certificate valid until date. |
+| CriminalIP.Full_Scan_Result.connected_ips | String | Connected IP list. |
+| CriminalIP.Full_Scan_Result.ssl_vulns | String | SSL vulnerabilities detected. |
 | CriminalIP.Full_Scan_Result.certificates | Unknown | Certificate Information. |
 | CriminalIP.Full_Scan_Result.vulns | Unknown | CVEs detected in Full Scan. |
 | CriminalIP.Full_Scan_Result.raw | Unknown | Full raw response. |
+
+#### Example
+
+```text
+!criminal-ip-domain-full-scan-result scan_id=xyz789abc123
+```
 
 ### criminal-ip-domain-full-scan-make-email-body
 
@@ -288,6 +378,12 @@ Builds an email body summarizing notable findings from a completed Full Scan.
 | CriminalIP.Email_Body.body | String | Generated email body text \(for email notifications\). |
 | CriminalIP.Email_Body.raw | Unknown | Full raw response from Criminal IP API. |
 
+#### Example
+
+```text
+!criminal-ip-domain-full-scan-make-email-body scan_id=xyz789abc123 domain=example.com
+```
+
 ### criminal-ip-micro-asm
 
 ***
@@ -310,5 +406,29 @@ Performs a micro ASM-style summary for a domain with a completed Full Scan.
 | --- | --- | --- |
 | CriminalIP.Micro_ASM.domain | String | Domain analyzed. |
 | CriminalIP.Micro_ASM.scan_id | String | Scan ID used for Micro ASM. |
-| CriminalIP.Micro_ASM.summary | String | Concise summary string of notable findings \(certificate expiry, domain score, phishing probability, suspicious elements, main IP, SSL vulnerabilities\). |
+| CriminalIP.Micro_ASM.domain_score | String | Domain score. |
+| CriminalIP.Micro_ASM.phishing_prob | Number | Phishing probability. |
+| CriminalIP.Micro_ASM.dga_score | Number | DGA score. |
+| CriminalIP.Micro_ASM.registrar | String | Domain registrar. |
+| CriminalIP.Micro_ASM.created | String | Domain creation date. |
+| CriminalIP.Micro_ASM.report_time | String | Report generation time. |
+| CriminalIP.Micro_ASM.abuse_critical | Number | Critical abuse record count. |
+| CriminalIP.Micro_ASM.abuse_dangerous | Number | Dangerous abuse record count. |
+| CriminalIP.Micro_ASM.fake_https | Boolean | Whether fake HTTPS detected. |
+| CriminalIP.Micro_ASM.punycode | Boolean | Whether punycode detected. |
+| CriminalIP.Micro_ASM.cert_valid_to | String | Certificate expiration date. |
+| CriminalIP.Micro_ASM.connected_ips | String | Connected IP addresses (comma-separated). |
+| CriminalIP.Micro_ASM.ssl_vulns | String | SSL vulnerabilities detected. |
+| CriminalIP.Micro_ASM.readable_output | String | Pre-formatted Micro ASM report (email-ready). |
 | CriminalIP.Micro_ASM.raw | Unknown | Full raw response from CriminalIP API. |
+
+#### Example
+
+```text
+!criminal-ip-micro-asm scan_id=xyz789abc123 domain=example.com
+```
+
+## Resources
+
+- [Criminal IP](https://www.criminalip.io/)  
+- [Criminal IP Blog](https://blog.criminalip.io/)

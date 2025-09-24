@@ -1,6 +1,6 @@
 # Criminal IP Integration for Palo Alto XSOAR
 
-This integration was integrated and tested with Criminal IP API version 1.0
+This integration was integrated and tested with Criminal IP API version 1.0.0
 
 ## About
 

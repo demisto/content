@@ -21,7 +21,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-        - "10"
+      - "10"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -54,9 +54,9 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-        - "2"
+      - "2"
       "no":
-        - "99"
+      - "99"
     scriptarguments:
       brandname:
         simple: CriminalIP
@@ -94,7 +94,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-        - "3"
+      - "3"
     scriptarguments:
       Domain:
         simple: ${item}
@@ -128,7 +128,7 @@ tasks:
       id: 7425fc60-ea8c-45e8-a418-447b12d27c20
       version: -1
       name: Mail Body Check
-      description: Checks if Micro ASM result exists.
+      description: Checks if Micro ASM results exist.
       type: condition
       iscommand: false
       brand: ""
@@ -144,7 +144,7 @@ tasks:
           - - operator: isNotEmpty
               left:
                 value:
-                  simple: CriminalIP.Micro_ASM.summary
+                  simple: CriminalIP.Micro_ASM.readable_output
                 iscontext: true
     continueonerrortype: ""
     view: |-
@@ -162,6 +162,8 @@ tasks:
     isoversize: false
     isautoswitchedtoquietmode: false
 
+
+
   "4":
     id: "4"
     taskid: a5e5aa38-ca32-4dd9-b794-98b95a144643
@@ -177,13 +179,12 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-        - "99"
+      - "99"
     scriptarguments:
       body:
-        simple: ${CriminalIP.Micro_ASM.summary}
+        simple: ${CriminalIP.Micro_ASM.readable_output}
       subject:
         simple: CriminalIP Micro ASM Report
-      # NOTE: configure recipients as needed (to/cc/bcc/html/bodyType/etc.)
       to:
         simple: you@example.com
     separatecontext: false
@@ -193,8 +194,7 @@ tasks:
         "position": {
           "x": 200,
           "y": 640
-        }
-      }
+        }}
     note: false
     timertriggers: []
     ignoreworker: false
@@ -246,34 +246,37 @@ view: |-
   }
 
 inputs:
-  - key: Domains
-    value: {}
-    required: true
-    description: |-
-      A list of domains that require Micro ASM analysis.
-      ex)
-      [
-        "www.example.com",
-        "www.criminalip.io"
-      ]
-  - key: IntegrationInstanceName
-    value: {}
-    required: false
-    description: "Optional - Specific CriminalIP instance name to check availability"
+- key: Domains
+  value: {}
+  required: true
+  description: |-
+    A list of domains that require Micro ASM analysis.
+    ex)
+    [
+      "www.example.com",
+      "www.criminalip.io"
+    ]
+- key: IntegrationInstanceName
+  value: {}
+  required: false
+  description: "Optional - Specific CriminalIP instance name to check availability"
 
 outputs:
-  - contextPath: CriminalIP.Micro_ASM.summary
-    description: Micro ASM analysis results (concise string).
-    type: String
-  - contextPath: CriminalIP.Micro_ASM.domain
-    description: Domain analyzed.
-    type: String
-  - contextPath: CriminalIP.Micro_ASM.scan_id
-    description: Scan ID used for analysis.
-    type: String
-  - contextPath: CriminalIP.Micro_ASM.raw
-    description: Full raw response from CriminalIP API.
-    type: Unknown
+- contextPath: CriminalIP.Micro_ASM.domain
+  description: Domain analyzed.
+  type: String
+- contextPath: CriminalIP.Micro_ASM.summary
+  description: Micro ASM analysis results (concise string).
+  type: String
+- contextPath: CriminalIP.Micro_ASM.suspicious_findings
+  description: Detailed list of suspicious findings (if any).
+  type: String
+- contextPath: CriminalIP.Micro_ASM.scan_id
+  description: Scan ID used for analysis.
+  type: String
+- contextPath: CriminalIP.Micro_ASM.raw
+  description: Full raw response from CriminalIP API.
+  type: Unknown
 
 tests:
-  - Test-CriminalIP
+- Test-CriminalIP

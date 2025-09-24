@@ -141,7 +141,7 @@ tasks:
       PollingCommandName:
         simple: criminal-ip-domain-full-scan-status
       Timeout:
-        simple: "10"
+        simple: "30"
       dt:
         simple: CriminalIP.Full_Scan_Status(val.scan_percentage < 100)
     separatecontext: false

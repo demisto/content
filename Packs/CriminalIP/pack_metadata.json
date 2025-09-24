@@ -17,5 +17,19 @@
         "xsoar",
         "marketplacev2"
     ],
-    "certification": "certified"
+    "certification": "certified",
+    "dependencies": {
+        "Base": {
+            "mandatory": true,
+            "display_name": "Base"
+        },
+        "CommonScripts": {
+            "mandatory": true,
+            "display_name": "Common Scripts"
+        },
+        "CommonPlaybooks": {
+            "mandatory": true,
+            "display_name": "Common Playbooks"
+        }
+    }
 }

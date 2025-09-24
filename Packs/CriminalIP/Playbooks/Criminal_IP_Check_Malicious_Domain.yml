@@ -237,24 +237,24 @@ tasks:
     conditions:
     - label: Safe
       condition:
-      - - operator: lessThanOrEqual
+      - - operator: isEqualString
           left:
             value:
-              simple: CriminalIP.Domain_Quick.risk_score
+              simple: CriminalIP.Domain_Quick.result
             iscontext: true
           right:
             value:
-              simple: "20"
+              simple: safe
     - label: malicious
       condition:
-      - - operator: greaterThanOrEqual
+      - - operator: isEqualString
           left:
             value:
-              simple: CriminalIP.Domain_Quick.risk_score
+              simple: CriminalIP.Domain_Quick.result
             iscontext: true
           right:
             value:
-              simple: "80"
+              simple: malicious
     continueonerrortype: ""
     view: |-
       {
@@ -365,23 +365,37 @@ tasks:
       - - operator: greaterThanOrEqual
           left:
             value:
-              simple: CriminalIP.Domain_Lite_Result.summary.url_phishing_prob
+              simple: CriminalIP.Domain_Lite_Result.phishing_prob
             iscontext: true
           right:
             value:
               simple: "80"
-      - - operator: isNotEmpty
+        - operator: greaterThan
           left:
             value:
-              simple: CriminalIP.Domain_Lite_Result.vulns
+              simple: CriminalIP.Domain_Lite_Result.abuse_dangerous
             iscontext: true
+          right:
+            value:
+              simple: "0"
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: CriminalIP.Domain_Lite_Result.score
+            iscontext: true
+          right:
+            value:
+              simple: "80"
     - label: Safe
       condition:
-      - - operator: isEmpty
+      - - operator: lessThan
           left:
             value:
-              simple: CriminalIP.Domain_Lite_Result.vulns
+              simple: CriminalIP.Domain_Lite_Result.phishing_prob
             iscontext: true
+          right:
+            value:
+              simple: "20"
     continueonerrortype: ""
     view: |-
       {
@@ -397,7 +411,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-
 
   "28":
     id: "28"
@@ -488,14 +501,16 @@ tasks:
     conditions:
     - label: not scanned
       condition:
-      - - operator: isEqualString
+      - - operator: isEmpty
           left:
             value:
-              simple: CriminalIP.Scan_Date.scanned
+              simple: CriminalIP.Scan_Date.scan_date
             iscontext: true
-          right:
+      - - operator: isEmpty
+          left:
             value:
-              simple: false
+              simple: CriminalIP.Scan_Date.scan_id
+            iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -575,7 +590,7 @@ tasks:
       - "33"
     scriptarguments:
       Ids:
-        simple: ${CriminalIP.Full_Scan.data.scan_id}
+        simple: ${CriminalIP.Full_Scan.scan_id}
       Interval:
         simple: "1"
       PollingCommandArgName:
@@ -585,8 +600,8 @@ tasks:
       Timeout:
         simple: "10"
       dt:
-        simple: CriminalIP.Full_Scan_Status.data(val.scan_percentage != 100)
-    separatecontext: true
+        simple: CriminalIP.Full_Scan_Status.data(val.scan_percentage < 100)
+    separatecontext: false
     continueonerrortype: ""
     loop:
       iscommand: false
@@ -626,7 +641,7 @@ tasks:
       - "40"
     scriptarguments:
       scan_id:
-        simple: ${CriminalIP.Full_Scan.data.scan_id}
+        simple: ${CriminalIP.Full_Scan.scan_id}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -701,26 +716,18 @@ tasks:
     conditions:
     - label: Malicious
       condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: CriminalIP.Full_Scan_Result.data.main_domain_info.domain_score.score
-            iscontext: true
-          right:
-            value:
-              simple: Critical
-        - operator: isEqualString
-          left:
-            value:
-              simple: CriminalIP.Full_Scan_Result.data.main_domain_info.domain_score.score
-            iscontext: true
-          right:
-            value:
-              simple: Dangerous
       - - operator: greaterThanOrEqual
           left:
             value:
-              simple: CriminalIP.Full_Scan_Result.data.summary.url_phishing_prob
+              simple: CriminalIP.Full_Scan_Result.score
+            iscontext: true
+          right:
+            value:
+              simple: "80"
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: CriminalIP.Full_Scan_Result.phishing_prob
             iscontext: true
           right:
             value:
@@ -729,7 +736,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 290.5,
+          "x": 531,
           "y": 2730
         }
       }
@@ -761,7 +768,7 @@ tasks:
       - "38"
     scriptarguments:
       Ids:
-        simple: ${CriminalIP.Domain_Lite.data.scan_id}
+        simple: ${CriminalIP.Domain_Lite.scan_id}
       Interval:
         simple: "1"
       PollingCommandArgName:
@@ -771,8 +778,8 @@ tasks:
       Timeout:
         simple: "10"
       dt:
-        simple: CriminalIP.Domain_Lite_Status.data(val.scan_percentage != 100)
-    separatecontext: true
+        simple: CriminalIP.Domain_Lite_Status.data(val.scan_percentage < 100)
+    separatecontext: false
     continueonerrortype: ""
     loop:
       iscommand: false
@@ -812,7 +819,7 @@ tasks:
       - "26"
     scriptarguments:
       scan_id:
-        simple: ${CriminalIP.Domain_Lite.data.scan_id}
+        simple: ${CriminalIP.Domain_Lite.scan_id}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -850,7 +857,7 @@ tasks:
       domain:
         simple: ${inputs.Domain}
       scan_id:
-        simple: ${CriminalIP.Full_Scan.data.scan_id}
+        simple: ${CriminalIP.Full_Scan.scan_id}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -924,7 +931,7 @@ tasks:
       - "46"
     scriptarguments:
       body:
-        simple: ${CriminalIP.Email_Body.body}
+        simple: ${CriminalIP.Email_Body.readable_output}
       subject:
         simple: CriminalIP Full Scan Result of ${inputs.Domain}
     separatecontext: false
@@ -968,14 +975,13 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: ${CriminalIP.Email_Body.body}
+              simple: CriminalIP.Email_Body.readable_output
             iscontext: true
-          ignorecase: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 240.5,
+          "x": 531,
           "y": 2900
         }
       }
@@ -986,6 +992,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+
 
   "45":
     id: "45"

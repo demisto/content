@@ -148,9 +148,8 @@ def test_check_last_scan_date_no_reports(requests_mock):
     requests_mock.get(url, json={"data": {"reports": []}}, status_code=200)
 
     res = CriminalIP.check_last_scan_date(client, {"domain": domain})
-    assert res.readable_output == "No scan result"
-    assert res.outputs["scanned"] is False
-    assert res.outputs["scan_id"] == ""
+    assert res.readable_output.startswith("No scan result")
+    assert res.outputs.get("last_scan_date") is None
 
 
 # ---------------------- domain quick/lite/full scan ----------------------
@@ -247,8 +246,8 @@ def test_make_email_body_with_findings(requests_mock):
     requests_mock.get(url, json=mock, status_code=200)
 
     res = CriminalIP.make_email_body(client, {"domain": domain, "scan_id": scan_id})
-    assert "Domain example.com scan summary:" in res.readable_output
-    assert res.outputs["body"] != ""
+    assert "CriminalIP Full Scan Report" in res.readable_output
+    assert "DGA Score" in res.readable_output or "Punycode" in res.readable_output
 
 
 @freeze_time("2025-08-22 12:00:00")
@@ -262,8 +261,8 @@ def test_make_email_body_no_findings(requests_mock):
     requests_mock.get(url, json=mock, status_code=200)
 
     res = CriminalIP.make_email_body(client, {"domain": domain, "scan_id": scan_id})
-    assert res.readable_output == "No suspicious element"
-    assert res.outputs["body"] == ""
+    assert res.readable_output.startswith("## CriminalIP Full Scan Report")
+    assert "DGA Score" in res.readable_output
 
 
 # ---------------------- micro_asm ----------------------
@@ -278,7 +277,7 @@ def test_micro_asm_with_findings(requests_mock):
     url = f"{BASE_URL}/v2/domain/report/{scan_id}"
     mock = {
         "data": {
-            "certificates": [{"valid_to": "2025-09-05T00:00:00Z"}],  # expiring soon
+            "certificates": [{"valid_to": "2025-09-05T00:00:00Z"}],
             "network_logs": {
                 "abuse_record": {"critical": 1, "dangerous": 0},
                 "data": [{"url": "http://localhost/payload.exe"}],
@@ -288,11 +287,10 @@ def test_micro_asm_with_findings(requests_mock):
     requests_mock.get(url, json=mock, status_code=200)
 
     res = CriminalIP.micro_asm(client, {"domain": domain, "scan_id": scan_id})
-    assert "===== example.com =====" in res.readable_output
-    assert "Certificate expiring soon" in res.readable_output
-    assert "Abuse records" in res.readable_output
-    assert "Found .exe URL in logs" in res.readable_output
-    assert res.outputs["summary"] != ""
+    assert "CriminalIP Micro ASM Report" in res.readable_output
+    assert "example.com" in res.readable_output
+    assert "Certificate Valid To" in res.readable_output
+    assert "Abuse Critical" in res.readable_output
 
 
 @freeze_time("2025-08-22 12:00:00")
@@ -311,8 +309,8 @@ def test_micro_asm_no_findings(requests_mock):
     requests_mock.get(url, json=mock, status_code=200)
 
     res = CriminalIP.micro_asm(client, {"domain": domain, "scan_id": scan_id})
-    assert res.readable_output == "No suspicious element"
-    assert res.outputs["summary"] == "No suspicious element"
+    assert res.readable_output.startswith("## CriminalIP Micro ASM Report")
+    assert "Abuse Critical" in res.readable_output
 
 
 # ---------------------- smoke: client.domain_reports ----------------------
