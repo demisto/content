@@ -11,7 +11,7 @@ alter
     );
 
 
-[INGEST:vendor = "commvault", product = "backupsolution", target_dataset = "commvault_backupsolution_raw", no_hit = drop]
+[INGEST:vendor = "commvault", product = "backupsolution", target_dataset = "commvault_backupsolution_raw", no_hit = keep]
 // Alert
 filter alert_id != null and (alerttime != null or UTC_Timestamp != null)
 | alter
