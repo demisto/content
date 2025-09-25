@@ -143,7 +143,12 @@ def start_logging():
         log_handler = logging.StreamHandler(stream=log_stream)
         log_handler.setFormatter(logging.Formatter(logging.BASIC_FORMAT))
         logger = logging.getLogger()
+        demisto.debug(f"DIAGNOSTIC: Handlers BEFORE clearing: {logger.handlers}")
+        for handler in logger.handlers[:]:
+            logger.removeHandler(handler)
+        demisto.debug(f"DIAGNOSTIC: Handlers AFTER clearing: {logger.handlers}")
         logger.addHandler(log_handler)
+        demisto.debug(f"DIAGNOSTIC: Handlers after adding our own: {logger.handlers}")
         logger.setLevel(logging.DEBUG)
 
 
