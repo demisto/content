@@ -1437,7 +1437,7 @@ class MsClient:
 
         Args:
             machine_id (str): Machine ID
-            comment (str): 	Comment to associate with the action
+            comment (str): Comment to associate with the action
             scan_type (str): Defines the type of the Scan (Quick, Full)
 
         Notes:
@@ -5592,6 +5592,76 @@ def get_file_context(file_info_response: dict[str, str], headers: list):
     return {key.capitalize(): value for (key, value) in file_info_response.items() if key in headers}
 
 
+def get_dbot_score(determination_type):
+    if determination_type == "Clean":
+        verdict = Common.DBotScore.GOOD
+    elif determination_type == "Unknown":
+        verdict = Common.DBotScore.NONE
+    else:
+        verdict = Common.DBotScore.BAD
+    return verdict
+
+
+def build_file_error_output(error_message, file_hash):
+    dbot_score = Common.DBotScore(
+        indicator=file_hash,
+        indicator_type=DBotScoreType.FILE,
+        integration_name=INTEGRATION_NAME,
+        score=Common.DBotScore.NONE,
+    )
+
+    indicator = get_dbot_indicator(dbot_type=DBotScoreType.FILE, dbot_score=dbot_score, value=file_hash)
+
+    readable_output = f"Unable to create indicator for file hash: {file_hash!r}.\nError: {error_message!r}"
+
+    result = CommandResults(readable_output=readable_output, indicator=indicator)
+    return result
+
+
+def build_file_output(raw_response, file_hash):
+    dbot_score = Common.DBotScore(
+        indicator=file_hash,
+        indicator_type=DBotScoreType.FILE,
+        integration_name=INTEGRATION_NAME,
+        score=get_dbot_score(raw_response.get("DeterminationType")),
+    )
+
+    file_object = Common.File(
+        md5=raw_response.get("Md5"),
+        sha1=raw_response.get("Sha1"),
+        sha256=raw_response.get("Sha256"),
+        file_type=raw_response.get("FileType"),
+        dbot_score=dbot_score,
+    )
+
+    result = CommandResults(
+        outputs_prefix="MicrosoftATP.File",
+        outputs_key_field="Sha1",
+        outputs=raw_response,
+        raw_response=raw_response,
+        indicator=file_object,
+    )
+    return result
+
+
+def file_command(client: MsClient, args: dict) -> list[CommandResults]:
+    """Returns verdict for files
+
+    Returns:
+        CommandResults list.
+    """
+    file_hashes = argToList(args["file"])
+    results = []
+    for file_hash in file_hashes:
+        try:
+            file_info_response = client.get_file_data(file_hash)
+            results.append(build_file_output(get_file_data(file_info_response), file_hash))
+        except DemistoException as f:
+            error_message = f.res.json().get("error", {}).get("message", "")
+            results.append(build_file_error_output(error_message, file_hash))
+    return results
+
+
 def get_file_info_command(client: MsClient, args: dict):
     """Retrieves file info by a file hash (Sha1 or Sha256).
 
@@ -6356,6 +6426,9 @@ def main():  # pragma: no cover
 
         elif command == "endpoint":
             return_results(endpoint_command(client, args))
+
+        elif command == "file":
+            return_results(file_command(client, args))
 
         elif command in ("microsoft-atp-indicator-list", "microsoft-atp-indicator-get-by-id"):
             return_outputs(*list_indicators_command(client, args))
