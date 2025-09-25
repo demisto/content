@@ -7,7 +7,9 @@
     "url": "",
     "email": "jegarcia@paloaltonetworks.com",
     "created": "2025-07-25T14:23:23Z",
-    "categories": [],
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
     "tags": [],
     "useCases": [],
     "keywords": [],
