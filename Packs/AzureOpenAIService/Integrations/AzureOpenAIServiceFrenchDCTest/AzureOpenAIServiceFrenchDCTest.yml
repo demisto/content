@@ -1,6 +1,6 @@
 category: Utilities
 commonfields:
-  id: Azure Open AI Service - French DC Test
+  id: Azure Open AI Service
   version: -1
 configuration:
 - defaultvalue: https://openai-jegarcia.openai.azure.com/
