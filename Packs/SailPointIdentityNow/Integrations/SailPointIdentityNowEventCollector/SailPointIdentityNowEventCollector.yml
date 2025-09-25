@@ -33,6 +33,14 @@ configuration:
   required: false
   type: 8
   section: Connect
+- display: Minutes to look back when fetching
+  name: look_back
+  additionalinfo: May help avoid missing events in case of vendor-side indexing delays.
+  required: false
+  defaultvalue: 0
+  type: 0
+  section: Collect
+  advanced: true
 description: This is the SailPoint IdentityNow event collector integration for Cortex XSIAM.
 display: SailPoint IdentityNow Event Collector
 name: SailPointIdentityNowEventCollector
