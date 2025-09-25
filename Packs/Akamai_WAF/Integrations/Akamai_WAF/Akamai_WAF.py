@@ -426,15 +426,15 @@ class Client(BaseClient):
 
         return self._http_request(method="POST", url_suffix="/client-list/v1/lists", json_data=body)
 
-    def delete_client_list(self, list_id: str) -> requests.Response:
+    def delete_client_list(self, client_list_id: str) -> requests.Response:
         """
         Delete a client list.
         Args:
-            list_id: The ID of the client list to delete.
+            client_list_id: The ID of the client list to delete.
         Returns:
             Response object
         """
-        return self._http_request(method="DELETE", url_suffix=f"/client-list/v1/lists/{list_id}", resp_type='response')
+        return self._http_request(method="DELETE", url_suffix=f"/client-list/v1/lists/{client_list_id}", resp_type='response')
 
     def activate_client_list(self, list_id: str, network_environment: str, comments: str = None, notification_recipients: list = None, siebel_ticket_id: str = None) -> dict:
         """
@@ -3604,20 +3604,20 @@ def create_client_list_command(client: Client, name: str, type: str, contract_id
 
 
 @logger
-def delete_client_list_command(client: Client, list_id: str) -> tuple[str, dict, dict]:
+def delete_client_list_command(client: Client, client_list_id: str) -> tuple[str, dict, dict]:
     """
     Deletes a client list.
     Args:
         client: Akamai WAF client
-        list_id: The ID of the client list to delete.
+        client_list_id: The ID of the client list to delete.
     Returns:
         Human readable, context entry, raw response
     """
-    raw_response = client.delete_client_list(list_id)
+    raw_response = client.delete_client_list(client_list_id)
     if raw_response.status_code == 204:
-        human_readable = f"Akamai WAF Client List {list_id} deleted successfully."
+        human_readable = f"Akamai WAF Client List {client_list_id} deleted successfully."
         return human_readable, {}, {}
-    return f"Akamai WAF Client List {list_id} was not deleted.", {}, {}
+    return f"Akamai WAF Client List {client_list_id} was not deleted.", {}, {}
 
 
 @polling_function(
