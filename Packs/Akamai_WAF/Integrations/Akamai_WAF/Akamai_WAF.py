@@ -481,6 +481,7 @@ class Client(BaseClient):
         Returns:
             Json response as dictionary
         """
+        tags = tags.split(",") if tags else []
         entry = {
             'value': value,
             'description': description,
