@@ -1029,7 +1029,7 @@
 ### gcs-delete-file
 
 ***
-Deletes a file (object) from a bucket
+Deletes a file (object) from a bucket.
 
 #### Base Command
 
@@ -1039,8 +1039,8 @@ Deletes a file (object) from a bucket
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| object_name | No description provided. | Required | 
-| bucket_name | No description provided. | Optional | 
+| object_name | Name of the file to delete. | Required | 
+| bucket_name | Name of the bucket that stores the file to delete. | Optional | 
 
 #### Context Output
 
