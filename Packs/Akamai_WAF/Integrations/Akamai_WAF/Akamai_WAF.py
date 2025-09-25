@@ -458,17 +458,17 @@ class Client(BaseClient):
         }
         return self._http_request(method="POST", url_suffix=f"/client-list/v1/lists/{list_id}/activations", json_data=body)
 
-    def get_client_list_activation_status(self, list_id: str) -> dict:
+    def get_client_list_activation_status(self, list_id: str, network_environment: str) -> dict:
         """
         Get activation status for a client list.
         Returns a list of activation items including activationStatus and activationId.
         Args:
             list_id: The client list ID
-
+            network_environment: The network environment.
         Returns:
             Json response as dictionary
         """
-        return self._http_request(method="GET", url_suffix=f"/client-list/v1/lists/{list_id}/activations")
+        return self._http_request(method="GET", url_suffix=f"/client-list/v1/lists/{list_id}/environments/{network_environment}/status")
 
     def add_client_list_entry(self, list_id: str, value: str, description: str = None, expiration_date: str = None, tags: list = None) -> dict:
         """
@@ -3628,12 +3628,47 @@ def delete_client_list_command(client: Client, client_list_id: str) -> tuple[str
     return f"Akamai WAF Client List {client_list_id} was not deleted.", {}, {}
 
 
-@polling_function(
-    name=f"{INTEGRATION_COMMAND_NAME}-activate-client-list",
-    interval=arg_to_number(demisto.args().get("interval_in_seconds", 30)),
-    timeout=arg_to_number(demisto.args().get("timeout", 1800)),
-    requires_polling_arg=False,
-)
+def check_activation_status(client:Client, list_id: str, network_environment: str, pending_status: str):
+    timeout_seconds = 180 if timeout_seconds > 180 else timeout_seconds
+    interval_seconds = 30
+    latest_status = pending_status
+    activation_id = None
+    start_time = time.time()
+    while latest_status == pending_status and (time.time() - start_time) < timeout_seconds:
+        status_resp = client.get_client_list_activation_status(list_id, network_environment)
+        if isinstance(status_resp, dict):
+            items = []
+            if 'activations' in status_resp and isinstance(status_resp['activations'], dict):
+                items = status_resp['activations'].get('items') or []
+            elif 'items' in status_resp and isinstance(status_resp['items'], list):
+                items = status_resp['items']
+            # Use the first item as latest
+            if items:
+                latest = items[0]
+                latest_status = latest.get('activationStatus') or latest.get('status')
+                activation_id = latest.get('activationId')
+                network = latest.get('network')
+            else:
+                latest_status = status_resp.get('activationStatus') or status_resp.get('status')
+                activation_id = status_resp.get('activationId')
+                network = status_resp.get('network')
+        if latest_status and latest_status != pending_status:
+            notice = "activation" if pending_status == "PENDING_ACTIVATION" else "deactivation"
+            hr = tableToMarkdown(
+                f"Akamai WAF Client List {list_id} {notice} completed with status {latest_status}",
+                {
+                    'activationId': activation_id,
+                    'network': network or network_environment,
+                    'status': latest_status,
+                },
+            )
+            return hr, f"{INTEGRATION_CONTEXT_NAME}.Activation: {status_resp}", status_resp
+        else:
+            elapsed_time = time.time() - start_time
+            demisto.debug(f"check_activation_status: is '{latest_status}'. Elapsed time: {elapsed_time:.2f}s.")
+            demisto.debug(f"check_activation_status Sleeping for {interval_seconds} seconds...\n")
+            time.sleep(interval_seconds)
+
 def activate_client_list_command(
     client: Client,
     list_id: str,
@@ -3641,99 +3676,29 @@ def activate_client_list_command(
     comments: str | None = None,
     notification_recipients: list | None = None,
     siebel_ticket_id: str | None = None,
-    include_polling: str = 'true',
-    interval_in_seconds: str = '30',
-    activation_started: str = 'false',
-) -> PollResult:
+    include_polling: str = "true",
+) -> CommandResults:
     """
+     Args:
+        client: Akamai WAF client
+        list_id: The ID of the client list to activate.
+        network_environment: The network environment to activate the list on.
+        comments: A description for the activation.
+        notification_recipients: A list of email addresses to notify.
+        siebel_ticket_id: A Siebel ticket ID.
+        include_polling: Whether to poll activation status until completion.
+    Returns:
+        CommandResults
     Activates a client list, optionally polling until activation completes.
     When include_polling is true, the command will keep polling the activation status until it changes from PENDING_ACTIVATION.
     """
-    # If user opted out of polling, perform single activation call and return immediately
+    raw_response = client.activate_client_list(list_id, network_environment, comments, notification_recipients, siebel_ticket_id)
     if str(include_polling).lower() != 'true':
-        raw_response = client.activate_client_list(list_id, network_environment, comments, notification_recipients, siebel_ticket_id)
-        human_readable = tableToMarkdown(f"Akamai WAF Client List {list_id} activated successfully", raw_response)
+        human_readable = tableToMarkdown(f"Akamai WAF Client List {list_id} activation submitted successfully", raw_response)
         context_entry = {f"{INTEGRATION_CONTEXT_NAME}.Activation": raw_response}
-        return PollResult(CommandResults(readable_output=human_readable, outputs=context_entry))
-
-    # First run: trigger activation and set activation_started flag
-    if str(activation_started).lower() != 'true':
-        client.activate_client_list(list_id, network_environment, comments, notification_recipients, siebel_ticket_id)
-        # Partial message while polling
-        return PollResult(
-            response=None,
-            partial_result=CommandResults(
-                readable_output=f"Activation for client list {list_id} submitted. Waiting for status...",
-            ),
-            continue_to_poll=True,
-            args_for_next_run={
-                'list_id': list_id,
-                'network_environment': network_environment,
-                'comments': comments,
-                'notification_recipients': notification_recipients,
-                'siebel_ticket_id': siebel_ticket_id,
-                'include_polling': include_polling,
-                'interval_in_seconds': interval_in_seconds,
-                'activation_started': 'true',
-            },
-        )
-
-    # Subsequent runs: check status
-    status_resp = client.get_client_list_activation_status(list_id)
-    latest_status = None
-    activation_id = None
-    network = None
-    if isinstance(status_resp, dict):
-        items = []
-        if 'activations' in status_resp and isinstance(status_resp['activations'], dict):
-            items = status_resp['activations'].get('items') or []
-        elif 'items' in status_resp and isinstance(status_resp['items'], list):
-            items = status_resp['items']
-        # Use the first item as latest
-        if items:
-            latest = items[0]
-            latest_status = latest.get('activationStatus') or latest.get('status')
-            activation_id = latest.get('activationId')
-            network = latest.get('network')
-        else:
-            latest_status = status_resp.get('activationStatus') or status_resp.get('status')
-            activation_id = status_resp.get('activationId')
-            network = status_resp.get('network')
-
-    if latest_status and latest_status != 'PENDING_ACTIVATION':
-        # Done polling
-        hr = tableToMarkdown(
-            f"Akamai WAF Client List {list_id} activation completed with status {latest_status}",
-            {
-                'activationId': activation_id,
-                'network': network or network_environment,
-                'status': latest_status,
-            },
-        )
-        return PollResult(CommandResults(
-            readable_output=hr,
-            outputs={f"{INTEGRATION_CONTEXT_NAME}.Activation": status_resp},
-            raw_response=status_resp,
-        ))
-
-    # Keep polling if still pending or unknown
-    return PollResult(
-        response=None,
-        partial_result=CommandResults(
-            readable_output=f"Activation for client list {list_id} is still pending...",
-        ),
-        continue_to_poll=True,
-        args_for_next_run={
-            'list_id': list_id,
-            'network_environment': network_environment,
-            'comments': comments,
-            'notification_recipients': notification_recipients,
-            'siebel_ticket_id': siebel_ticket_id,
-            'include_polling': include_polling,
-            'interval_in_seconds': interval_in_seconds,
-            'activation_started': 'true',
-        },
-    )
+        return human_readable, context_entry, raw_response
+    else:
+        return check_activation_status(client, list_id, network_environment, "PENDING_ACTIVATION")
 
 
 @logger
@@ -3809,12 +3774,6 @@ def update_client_list_command(client: Client, list_id: str, name: str, notes: s
     return human_readable, context_entry, raw_response
 
 
-@polling_function(
-    name=f"{INTEGRATION_COMMAND_NAME}-deactivate-client-list",
-    interval=arg_to_number(demisto.args().get("interval_in_seconds", 30)),
-    timeout=arg_to_number(demisto.args().get("timeout", 1800)),
-    requires_polling_arg=False,
-)
 def deactivate_client_list_command(
     client: Client,
     list_id: str,
@@ -3822,97 +3781,29 @@ def deactivate_client_list_command(
     comments: str | None = None,
     notification_recipients: list | None = None,
     siebel_ticket_id: str | None = None,
-    include_polling: str = 'true',
-    interval_in_seconds: str = '30',
-    deactivation_started: str = 'false',
-) -> PollResult:
+    include_polling: str = "true")  -> CommandResults:
     """
+    Args:
+        client: Akamai WAF client
+        list_id: The ID of the client list to activate.
+        network_environment: The network environment to activate the list on.
+        comments: A description for the activation.
+        notification_recipients: A list of email addresses to notify.
+        siebel_ticket_id: A Siebel ticket ID.
+        include_polling: Whether to poll activation status until completion.
+    Returns:
+        CommandResults
     Deactivates a client list, optionally polling until deactivation completes.
     When include_polling is true, the command polls the activation status until it changes from PENDING_DEACTIVATION.
-    """
-    # If user opted out of polling, perform single deactivation call and return immediately
+    """    
+    raw_response = client.deactivate_client_list(list_id, network_environment, comments, notification_recipients, siebel_ticket_id)
     if str(include_polling).lower() != 'true':
-        raw_response = client.deactivate_client_list(list_id, network_environment, comments, notification_recipients, siebel_ticket_id)
-        human_readable = tableToMarkdown(f"Akamai WAF Client List {list_id} deactivated successfully", raw_response)
+        human_readable = tableToMarkdown(f"Akamai WAF Client List {list_id} triggered deactivation successfully", raw_response)
         context_entry = {f"{INTEGRATION_CONTEXT_NAME}.Activation": raw_response}
-        return PollResult(CommandResults(readable_output=human_readable, outputs=context_entry))
-
-    # First run: trigger deactivation and set flag
-    if str(deactivation_started).lower() != 'true':
-        client.deactivate_client_list(list_id, network_environment, comments, notification_recipients, siebel_ticket_id)
-        return PollResult(
-            response=None,
-            partial_result=CommandResults(
-                readable_output=f"Deactivation for client list {list_id} submitted. Waiting for status...",
-            ),
-            continue_to_poll=True,
-            args_for_next_run={
-                'list_id': list_id,
-                'network_environment': network_environment,
-                'comments': comments,
-                'notification_recipients': notification_recipients,
-                'siebel_ticket_id': siebel_ticket_id,
-                'include_polling': include_polling,
-                'interval_in_seconds': interval_in_seconds,
-                'deactivation_started': 'true',
-            },
-        )
-
-    # Subsequent runs: check status
-    status_resp = client.get_client_list_activation_status(list_id)
-    latest_status = None
-    activation_id = None
-    network = None
-    if isinstance(status_resp, dict):
-        items = []
-        if 'activations' in status_resp and isinstance(status_resp['activations'], dict):
-            items = status_resp['activations'].get('items') or []
-        elif 'items' in status_resp and isinstance(status_resp['items'], list):
-            items = status_resp['items']
-        if items:
-            latest = items[0]
-            latest_status = latest.get('activationStatus') or latest.get('status')
-            activation_id = latest.get('activationId')
-            network = latest.get('network')
-        else:
-            latest_status = status_resp.get('activationStatus') or status_resp.get('status')
-            activation_id = status_resp.get('activationId')
-            network = status_resp.get('network')
-
-    if latest_status and latest_status != 'PENDING_DEACTIVATION':
-        hr = tableToMarkdown(
-            f"Akamai WAF Client List {list_id} deactivation completed with status {latest_status}",
-            {
-                'activationId': activation_id,
-                'network': network or network_environment,
-                'status': latest_status,
-            },
-        )
-        return PollResult(CommandResults(
-            readable_output=hr,
-            outputs={f"{INTEGRATION_CONTEXT_NAME}.Activation": status_resp},
-            raw_response=status_resp,
-        ))
-
-    # Keep polling
-    return PollResult(
-        response=None,
-        partial_result=CommandResults(
-            readable_output=f"Deactivation for client list {list_id} is still pending...",
-        ),
-        continue_to_poll=True,
-        args_for_next_run={
-            'list_id': list_id,
-            'network_environment': network_environment,
-            'comments': comments,
-            'notification_recipients': notification_recipients,
-            'siebel_ticket_id': siebel_ticket_id,
-            'include_polling': include_polling,
-            'interval_in_seconds': interval_in_seconds,
-            'deactivation_started': 'true',
-        },
-    )
-
+        return human_readable, context_entry, raw_response
+    
+    else:
+        return check_activation_status(client, list_id, network_environment, "PENDING_DEACTIVATION")
 
 @logger
 def update_client_list_entry_command(client: Client, list_id: str, value: str, description: str = None, expiration_date: str = None, tags: list = None, is_override: bool = False) -> tuple[str, dict, dict]:
@@ -7351,17 +7242,13 @@ def main():
         f"{INTEGRATION_COMMAND_NAME}-generic-api-call-command": generic_api_call_command,
     }
     try:
-        if command in (f"{INTEGRATION_COMMAND_NAME}-activate-client-list", f"{INTEGRATION_COMMAND_NAME}-deactivate-client-list"):
-            # Polling command returns CommandResults (handled by @polling_function)
-            return_results(commands[command](client=client, **demisto.args()))
-        else:
-            readable_output, outputs, raw_response = commands[command](client=client, **demisto.args())
-            return_outputs(readable_output, outputs, raw_response)
+        readable_output, outputs, raw_response = commands[command](client=client, **demisto.args())
+        return_outputs(readable_output, outputs, raw_response)
 
     except Exception as e:
         err_msg = f"Error in {INTEGRATION_NAME} Integration [{e}]"
         return_error(err_msg, error=e)
 
 
-if __name__ == "builtins":
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

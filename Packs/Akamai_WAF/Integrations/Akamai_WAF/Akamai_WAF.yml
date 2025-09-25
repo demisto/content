@@ -672,6 +672,7 @@ script:
       description: The ID of the client list to delete.
     name: akamai-delete-client-list
   - name: akamai-activate-client-list
+    polling: true
     description: Activates a client list.
     arguments:
       - name: list_id
@@ -698,9 +699,12 @@ script:
           - 'true'
           - 'false'
         defaultValue: 'true'
-      - name: interval_in_seconds
+      - name: interval
         description: Interval in seconds between polling attempts.
         defaultValue: '30'
+      - name: timeout
+        description: Timeout in seconds for polling.
+        defaultValue: '60'
     outputs:
       - contextPath: Akamai.Activation
         description: The activation details.
@@ -757,6 +761,7 @@ script:
         description: The updated client list.
         type: unknown
   - name: akamai-deactivate-client-list
+    polling: true
     description: Deactivates a client list.
     arguments:
       - name: list_id
@@ -783,9 +788,12 @@ script:
           - 'true'
           - 'false'
         defaultValue: 'true'
-      - name: interval_in_seconds
+      - name: interval
         description: Interval in seconds between polling attempts.
         defaultValue: '30'
+      - name: timeout
+        description: Timeout in seconds for polling.
+        defaultValue: '1800'
     outputs:
       - contextPath: Akamai.Activation
         description: The deactivation details.
