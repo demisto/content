@@ -90,7 +90,7 @@ class Client(BaseClient):
 
         self.access_token = response.get("accessToken")
         self.refresh_token = response.get("refreshToken")
-        self.token_expires_in = response.get("expiresIn")
+        self.token_expires_in = int(response.get("expiresIn", 3600))
         self.token_obtained_time = datetime.now()
 
         if not self.access_token:
@@ -120,7 +120,7 @@ class Client(BaseClient):
         # Refresh token might be renewed
         if "refreshToken" in response:
             self.refresh_token = response.get("refreshToken")
-        self.token_expires_in = response.get("expiresIn")
+        self.token_expires_in = int(response.get("expiresIn", 3600))
         self.token_obtained_time = datetime.now()
 
         if not self.access_token:
