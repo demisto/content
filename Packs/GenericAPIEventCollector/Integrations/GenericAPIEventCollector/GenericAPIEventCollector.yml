@@ -151,18 +151,34 @@ configuration:
     display: Is pagination needed
     type: 8
     additionalinfo: 'If the API JSON response supports events pagination.'
-  - name: pagination_field_name
+  - name: pagination_response_field
     section: Collect
-    display: Pagination field name
+    display: Pagination Response Field
     type: 0
     required: false
-    additionalinfo: 'Next page field in JSON response, e.g., "cursor", "next_page"'
+    additionalinfo: 'Field in the response that contains the next page value, e.g., "next_page_token", "cursor"'
+  - name: pagination_request_field
+    section: Collect
+    display: Pagination Request Field
+    type: 0
+    required: false
+    additionalinfo: 'Field name to use in the request for the next page, e.g., "page_token", "cursor"'
+  - display: Next Page Handling
+    name: next_page_handling
+    type: 15
+    section: Collect
+    options:
+      - "navigate to it"  # Navigate to the URL directly
+      - "move it as a JSON"  # Extract JSON from the URL
+    defaultvalue: "move it as a JSON"
+    required: false
+    additionalinfo: "How to handle the next page value. 'navigate to it' - follow the URL directly, 'move it as a JSON' - send the next page value as a json in the request's body."
   - name: pagination_flag
     section: Collect
     display: Pagination flag
     type: 0
     required: false
-    additionalinfo: 'Next page existence in JSON response e.g., "has_more", "next"'
+    additionalinfo: 'Field that indicates if there are more pages, e.g., "has_more", "next"'
   - name: timestamp_format
     section: Collect
     display: 'Timestamp format of the event creation time or "epoch".'
@@ -247,7 +263,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.11.4819260
 fromversion: 6.8.0
 marketplaces:
   - marketplacev2

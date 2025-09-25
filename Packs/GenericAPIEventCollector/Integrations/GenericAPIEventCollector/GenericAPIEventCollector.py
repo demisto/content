@@ -17,10 +17,11 @@ PaginationLogic = namedtuple(
     "PaginationLogic",
     (
         "pagination_needed",
-        "pagination_field_name",
-        "pagination_flag",
+        "pagination_response_field",  # Field to extract from response
+        "pagination_request_field",  # Field to use in next request
+        "pagination_flag",  # Field that indicates if more pages exist
     ),
-    defaults=(False, "", ""),
+    defaults=(False, [], "", []),
 )
 TimestampFieldConfig = namedtuple(
     "TimestampFieldConfig",
@@ -139,7 +140,14 @@ class Client(BaseClient):
     Most calls use _http_request() that handles proxy, SSL verification, etc.
     """
 
-    def search_events(self, endpoint: str, http_method: str, request_data: RequestData, ok_codes: list[int]) -> dict[Any, Any]:
+    def search_events(
+        self,
+        endpoint: str,
+        http_method: str,
+        request_data: RequestData,
+        ok_codes: list[int],
+        next_page_handling: str = "move it as a JSON",
+    ) -> dict[Any, Any]:
         """
         Searches for events using the API endpoint.
         All the parameters are passed directly to the API as HTTP POST parameters in the request
@@ -149,19 +157,25 @@ class Client(BaseClient):
             http_method: HTTP method to use in the request.
             request_data: data to send in the body of the request.
             ok_codes: list of allowed response codes.
+            next_page_handling: If to move the value as a json or navigate directly to the URL.
         Returns:
             dict: The raw response returned by the API.
         """
-        demisto.debug(f"Searching events for {endpoint}")
 
-        return self._http_request(  # type: ignore
-            method=http_method,
-            url_suffix=endpoint,
-            json_data=request_data.request_json,
-            ok_codes=tuple(ok_codes),
-            data=request_data.request_data,
-            params=request_data.query_params,
-        )
+        common_kwargs = {
+            "method": http_method,
+            "ok_codes": tuple(ok_codes),
+            "data": request_data.request_data,
+            "params": request_data.query_params,
+        }
+
+        if next_page_handling == "navigate to it":
+            full_url = next(iter(request_data.request_json.values()))  # in this case there is only one value in the json
+            demisto.debug(f"Fetching next page of events: {full_url}")
+            return self._http_request(full_url=full_url, **common_kwargs)  # type: ignore
+
+        demisto.debug(f"Fetching events from endpoint: {endpoint}")
+        return self._http_request(url_suffix=endpoint, json_data=request_data.request_json, **common_kwargs)  # type: ignore
 
 
 def organize_events_to_xsiam_format(raw_events: Any, events_keys: list[str]) -> list[dict[str, Any]]:
@@ -183,7 +197,7 @@ def is_pagination_needed(events: dict[Any, Any], pagination_logic: PaginationLog
     if pagination_needed := pagination_logic.pagination_needed:
         if dict_safe_get(events, pagination_logic.pagination_flag):
             pagination_needed = True
-            next_page_value = dict_safe_get(events, pagination_logic.pagination_field_name)
+            next_page_value = dict_safe_get(events, pagination_logic.pagination_response_field)
             demisto.debug(f"Pagination needed - Next page value: {next_page_value}")
         else:
             demisto.debug("Pagination not detected in the response")
@@ -226,14 +240,18 @@ def fetch_events(
 
     while pagination_needed:
         raw_events = client.search_events(
-            endpoint=endpoint, http_method=http_method, request_data=request_data, ok_codes=ok_codes
+            endpoint=endpoint,
+            http_method=http_method,
+            request_data=request_data,
+            ok_codes=ok_codes,
+            next_page_handling=params.get("next_page_handling", "move it as a JSON"),
         )
         events_list = organize_events_to_xsiam_format(raw_events, events_keys)
         all_events_list.extend(events_list)
         demisto.debug(f"{len(all_events_list)} events fetched")
         pagination_needed, next_page_value = is_pagination_needed(raw_events, pagination_logic)
         if pagination_needed:
-            request_json = {pagination_logic.pagination_field_name: next_page_value}
+            request_json = {pagination_logic.pagination_request_field: next_page_value}
             request_data = RequestData(request_data.request_data, request_json, request_data.query_params)
 
     # endregion
@@ -506,21 +524,28 @@ def get_events_command(
 
 def extract_pagination_params(params: dict[str, str]) -> PaginationLogic:
     pagination_needed: bool = argToBoolean(params.get("pagination_needed", False))
-    pagination_field_name: list[str] | None = argToList(params.get("pagination_field_name"), ".")
-    pagination_flag: list[str] | None = argToList(params.get("pagination_flag"), ".")
-    pagination_logic = PaginationLogic(pagination_needed, pagination_field_name, pagination_flag)
+    pagination_response_field: list[str] = argToList(params.get("pagination_response_field"), ".")
+    pagination_request_field: str = params.get("pagination_request_field", "")
+    pagination_flag: list[str] = argToList(params.get("pagination_flag"), ".")
+
+    pagination_logic = PaginationLogic(pagination_needed, pagination_response_field, pagination_request_field, pagination_flag)
+
     if pagination_logic.pagination_needed:
         demisto.debug(
             "Pagination logic - Pagination Needed, "
-            f"pagination_field_name: {pagination_logic.pagination_field_name}, "
+            f"pagination_response_field: {pagination_logic.pagination_response_field}, "
+            f"pagination_request_field: {pagination_logic.pagination_request_field}, "
             f"pagination_flag: {pagination_logic.pagination_flag}"
         )
-        if not pagination_logic.pagination_field_name:
-            return_error("Pagination field name is missing")
+        if not pagination_logic.pagination_response_field:
+            return_error("Pagination response field is missing")
+        if not pagination_logic.pagination_request_field:
+            return_error("Pagination request field is missing")
         if not pagination_logic.pagination_flag:
             return_error("Pagination flag is missing")
     else:
         demisto.debug("Pagination logic - Pagination Not Needed")
+
     return pagination_logic
 
 
