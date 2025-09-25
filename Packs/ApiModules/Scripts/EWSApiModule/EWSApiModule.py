@@ -513,7 +513,10 @@ class EWSClient:
         :return: exchangelib Account
         """
         if not target_mailbox:
+            demisto.debug("Target mailbox not given")
             target_mailbox = self.account_email
+            demisto.debug(f"Set target mailbox to: {target_mailbox}")
+
 
         if self.auto_discover:
             return self.get_account_autodiscover(target_mailbox, time_zone)
@@ -669,12 +672,16 @@ class EWSClient:
 
         :return: exchangelib Folder
         """
+        demisto.debug(f"Retrieving folder by path: {path}")
         if account is None:
+            demisto.debug("Account is None, retrieving it")
             account = self.get_account()
+            demisto.debug("Account retrieved")
         # handle exchange folder id
         if len(path) == FOLDER_ID_LEN:
             folders_map = account.root._folders_map
             if path in folders_map:
+                demisto.debug("[get_folder_by_path] returning exchange folder ID")
                 return account.root._folders_map[path]
 
         if is_public:
@@ -685,9 +692,10 @@ class EWSClient:
         else:
             # Default, contains all of the standard folders (Inbox, Calendar, trash, etc.)
             folder = account.root.tois
-
+        demisto.debug("[get_folder_by_path] constructing the path")
         path = path.replace("/", "\\")
         path_parts = path.split("\\")
+        demisto.debug("[get_folder_by_path] Iterating over the path parts.")
         for part in path_parts:
             try:
                 demisto.debug(f"resolving {part=} {path_parts=}")
@@ -695,6 +703,7 @@ class EWSClient:
             except Exception as e:
                 demisto.debug(f"got error {e}")
                 raise ValueError(f"No such folder {path_parts}")
+        demisto.debug(f"[get_folder_by_path] Returning the folder.")
         return folder
 
     def send_email(self, message: Message):

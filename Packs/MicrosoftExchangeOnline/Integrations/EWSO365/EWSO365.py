@@ -143,12 +143,7 @@ def start_logging():
         log_handler = logging.StreamHandler(stream=log_stream)
         log_handler.setFormatter(logging.Formatter(logging.BASIC_FORMAT))
         logger = logging.getLogger()
-        demisto.debug(f"DIAGNOSTIC: Handlers BEFORE clearing: {logger.handlers}")
-        for handler in logger.handlers[:]:
-            logger.removeHandler(handler)
-        demisto.debug(f"DIAGNOSTIC: Handlers AFTER clearing: {logger.handlers}")
         logger.addHandler(log_handler)
-        demisto.debug(f"DIAGNOSTIC: Handlers after adding our own: {logger.handlers}")
         logger.setLevel(logging.DEBUG)
 
 
@@ -1794,16 +1789,20 @@ def fetch_last_emails(
     demisto.debug(f"Finished getting the folder named {folder_name} by path")
     log_memory()
     if since_datetime:
+        demisto.debug("[fetch_last_emails] in if since_datetime")
         if incident_filter == RECEIVED_FILTER:
             qs = qs.filter(datetime_received__gte=since_datetime)
         else:
             qs = qs.filter(last_modified_time__gte=since_datetime)
     else:
+        demisto.debug("[fetch_last_emails] NOT in if since_datetime")
         tz = EWSTimeZone("UTC")
         first_fetch_datetime = dateparser.parse(FETCH_TIME)
+        demisto.debug("[fetch_last_emails] asserting")
         assert first_fetch_datetime is not None
+        demisto.debug("[fetch_last_emails] done asserting")
         first_fetch_ews_datetime = EWSDateTime.from_datetime(first_fetch_datetime.replace(tzinfo=tz))
-        demisto.debug(f"{first_fetch_ews_datetime=}")
+        demisto.debug(f"[fetch_last_emails]{first_fetch_ews_datetime=}")
         if incident_filter == RECEIVED_FILTER:
             qs = qs.filter(datetime_received__gte=first_fetch_ews_datetime)
         else:
@@ -1825,6 +1824,9 @@ def fetch_last_emails(
     for item in qs:
         demisto.debug("next iteration of the queryset in fetch-incidents")
         if isinstance(item, Message):
+            demisto.debug("[fetch_last_emails] handling email item")
+            demisto.debug(f"[fetch_last_emails] handling email item with subject: {item.subject}")
+            demisto.debug(f"[fetch_last_emails] handling email item: {item}")
             if item.message_id in exclude_ids:
                 received_time = item.datetime_created.ewsformat()
                 modified_time = item.last_modified_time.ewsformat()
@@ -2122,8 +2124,11 @@ def main():  # pragma: no cover
 
 
 def log_memory():
+    demisto.debug("Checking if debug mode to log memory")
     if is_debug_mode():
+        demisto.debug("Logging memory")
         demisto.debug(f'memstat\n{subprocess.check_output(["ps", "-opid,comm,rss,vsz"])!s}')
+        demisto.debug("Finished logging memory")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
