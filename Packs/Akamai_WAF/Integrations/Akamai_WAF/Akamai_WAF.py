@@ -386,14 +386,14 @@ class Client(BaseClient):
             url_suffix += f"type={filter_type}"
         return self._http_request(method="GET", url_suffix=url_suffix, params=params)
 
-    def create_client_list(self, name: str, type: str, contract_id: str, group_id: int, notes: str = None,
+    def create_client_list(self, name: str, client_list_type: str, contract_id: str, group_id: int, notes: str = None,
                          tags: list = None, entry_value: str = None, entry_description: str = None,
                          entry_expiration_date: str = None, entry_tags: list = None) -> dict:
         """
         Create a client list.
         Args:
             name: The name for the new client list.
-            type: The type of client list.
+            client_list_type: The type of client list.
             contract_id: The contract ID.
             group_id: The group ID.
             notes: A description for the client list.
@@ -405,9 +405,10 @@ class Client(BaseClient):
         Returns:
             Json response as dictionary
         """
+        entry_tags = entry_tags.split(",") if entry_tags else []
         body = {
             'name': name,
-            'type': type,
+            'type': client_list_type,
             'contractId': contract_id,
             'groupId': group_id,
             'notes': notes,
@@ -524,6 +525,7 @@ class Client(BaseClient):
         Returns:
             Json response as dictionary
         """
+        tags = tags.split(",") if tags else []
         body = {
             'name': name,
             'notes': notes,
