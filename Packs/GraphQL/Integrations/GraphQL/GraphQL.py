@@ -74,13 +74,10 @@ def main() -> None:
 
         transport = RequestsHTTPTransport(**request_params)
         handle_proxy()
-        fetch_schema_from_transport = params.get("fetch_schema_from_transport", True)
-        if fetch_schema_from_transport is None:
-            fetch_schema_from_transport = True
 
         client = Client(
             transport=transport,
-            fetch_schema_from_transport=fetch_schema_from_transport,
+            fetch_schema_from_transport=False,
         )
 
         demisto.debug(f"Command being called is {command}")

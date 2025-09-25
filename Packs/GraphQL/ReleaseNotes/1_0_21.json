@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "The argument fetch_schema_from_transport is deprecated. schema validation is no longer supported. "
+}
