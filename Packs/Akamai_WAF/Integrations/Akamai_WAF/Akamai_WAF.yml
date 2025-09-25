@@ -806,6 +806,10 @@ script:
       - name: tags
         isArray: true
         description: The new tags for the entry.
+      - name: is_override
+        type: boolean
+        default: False
+        description: Whether to override missing entries.
     outputs:
       - contextPath: Akamai.ClientList
         description: The updated client list.

@@ -376,14 +376,15 @@ class Client(BaseClient):
             "pageSize": page_size,
             "limit": limit,
         }
-        if isinstance(list_type, str):
-            list_type = list_type.split(",")
-        for i, filter_type in enumerate(list_type):
-            if i == 0:
-                url_suffix += "?"
-            else:
-                url_suffix += "&"
-            url_suffix += f"type={filter_type}"
+        if list_type:
+            if isinstance(list_type, str):
+                list_type = list_type.split(",")
+            for i, filter_type in enumerate(list_type):
+                if i == 0:
+                    url_suffix += "?"
+                else:
+                    url_suffix += "&"
+                url_suffix += f"type={filter_type}"
         return self._http_request(method="GET", url_suffix=url_suffix, params=params)
 
     def create_client_list(self, name: str, client_list_type: str, contract_id: str, group_id: int, notes: str = None,
@@ -3914,7 +3915,7 @@ def deactivate_client_list_command(
 
 
 @logger
-def update_client_list_entry_command(client: Client, list_id: str, value: str, description: str = None, expiration_date: str = None, tags: list = None) -> tuple[str, dict, dict]:
+def update_client_list_entry_command(client: Client, list_id: str, value: str, description: str = None, expiration_date: str = None, tags: list = None, is_override: bool = False) -> tuple[str, dict, dict]:
     """
     Updates an entry in a client list.
     Args:
@@ -3924,23 +3925,34 @@ def update_client_list_entry_command(client: Client, list_id: str, value: str, d
         description: The new description for the entry.
         expiration_date: The new expiration date for the entry.
         tags: The new tags for the entry.
+        is_override: Whether to override missing entries.
     Returns:
         Human readable, context entry, raw response
     """
-    # Get the existing list to avoid overwriting values
-    existing_list = client.get_client_list(client_list_id=list_id, include_items=True)
-    items = existing_list.get('items', [])
     updated_item = None
-    for item in items:
-        if item.get('value') == value:
-            if description:
-                item['description'] = description
-            if expiration_date:
-                item['expirationDate'] = expiration_date
-            if tags:
-                item['tags'] = tags
-            updated_item = item
-            break
+    tags = tags.split(',') if tags else []
+    if is_override:
+        demisto.debug("Update_client_list_entry: Override missing entry")
+        updated_item = {
+            'value': value,
+            'description': description,
+            'expirationDate': expiration_date,
+            'tags': tags,
+        }
+    else:
+        demisto.debug("Update_client_list_entry: Get the existing list to avoid overwriting values")
+        existing_list = client.get_client_list(client_list_id=list_id, include_items=True)
+        items = existing_list.get('items', [])
+        for item in items:
+            if item.get('value') == value:
+                if description:
+                    item['description'] = description
+                if expiration_date:
+                    item['expirationDate'] = expiration_date
+                if tags:
+                    item['tags'] = tags
+                updated_item = item
+                break
 
     if not updated_item:
         raise DemistoException(f"Entry with value '{value}' not found in client list '{list_id}'.")
@@ -7351,6 +7363,5 @@ def main():
         return_error(err_msg, error=e)
 
 
-# if __name__ == "__main__":
 if __name__ == "builtins":
     main()
