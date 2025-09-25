@@ -39,7 +39,9 @@ class Client(BaseClient):
         integration_context = demisto.getIntegrationContext()
         self.access_token: str | None = integration_context.get("access_token")
         self.refresh_token: str | None = integration_context.get("refresh_token")
-        self.token_expires_in: int | None = integration_context.get("token_expires_in")
+        # Ensure token_expires_in is always an integer
+        expires_in = integration_context.get("token_expires_in")
+        self.token_expires_in: int | None = int(expires_in) if expires_in is not None else None
         self.token_obtained_time: datetime | None = None
         if integration_context.get("token_obtained_time"):
             self.token_obtained_time = datetime.fromisoformat(integration_context["token_obtained_time"])
@@ -265,9 +267,10 @@ def process_audit_events(events: list[dict[str, Any]]) -> list[dict[str, Any]]:
     processed_events = []
 
     for event in events:
-        # Set the _time field required by XSIAM
+        # Set the _time field required by XSIAM (must be Unix timestamp)
         if "changeTime" in event:
-            event["_time"] = convert_time_string(event["changeTime"])
+            datetime_obj = convert_time_string(event["changeTime"])
+            event["_time"] = datetime_obj.timestamp()
 
         # Add vendor and product information
         event["_vendor"] = VENDOR
@@ -459,7 +462,8 @@ def fetch_events(
                 event_time = event.get("_time")
                 
                 # Only deduplicate events within the 6-second overlap window
-                if cutoff_time and event_time and event_time >= cutoff_time:
+                # Convert cutoff_time to timestamp for comparison
+                if cutoff_time and event_time and event_time >= cutoff_time.timestamp():
                     # Create composite key from multiple fields for better deduplication
                     event_id = (f"{event.get('changeTime', '')}_{event.get('user', '')}_{event.get('object', '')}"
                                f"_{event.get('changeType', '')}")
@@ -480,7 +484,7 @@ def fetch_events(
             all_events.extend(processed_events)
 
             # Sort events by timestamp to ensure chronological order
-            all_events.sort(key=lambda x: x.get('_time', datetime.min))
+            all_events.sort(key=lambda x: x.get('_time', 0))
 
             # Check for next page
             cursor = response.get("next_cursor")
@@ -499,12 +503,10 @@ def fetch_events(
     if all_events:
         # Events are now sorted chronologically
         last_event = all_events[-1]
-        last_event_time = last_event.get("_time")
-        if last_event_time:
-            if isinstance(last_event_time, str):
-                last_event_time = convert_time_string(last_event_time)
-            # Store exact time for next fetch (no modification needed)
-            latest_event_time = last_event_time
+        last_event_timestamp = last_event.get("_time")
+        if last_event_timestamp:
+            # Convert timestamp back to datetime for consistency with start_time logic
+            latest_event_time = datetime.fromtimestamp(last_event_timestamp, tz=timezone.utc)
 
     demisto.debug(f"Total events fetched: {len(all_events)}")
 
