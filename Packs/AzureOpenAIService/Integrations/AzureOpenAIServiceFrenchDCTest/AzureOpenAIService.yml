@@ -3,8 +3,7 @@ commonfields:
   id: Azure Open AI Service
   version: -1
 configuration:
-- defaultvalue: https://openai-jegarcia.openai.azure.com/
-  display: Azure Open AI URL
+- display: Azure Open AI URL
   name: url
   required: true
   section: Connect
