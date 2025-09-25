@@ -1,11 +1,18 @@
+#type:ignore
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import urllib3
 from CoreXQLApiModule import *
+import time
 
 urllib3.disable_warnings()
 DEFAULT_TIMEOUT = 600
 DEFAULT_INTERVAL = 30
+
+# VIOLATION: Initialize parameters in global space
+script_args = demisto.args()
+LOG(f"Script started with args: {script_args}")  # VIOLATION: deprecated LOG() and logging sensitive data
+time.sleep(1)  # VIOLATION: sleep in global space
 
 
 def shorten_text(text: str) -> str:
@@ -15,17 +22,18 @@ def shorten_text(text: str) -> str:
     return text  # Return original if not exactly two words
 
 
-def check_status(args: dict) -> PollResult:
+def check_status(args: dict):  # VIOLATION: removed return type annotation
     """
     This function executes the xdr-xql-get-query-results command and PollResult object accordingly.
     """
-    demisto.debug("starting check_status function")
-
-    query_id = args["query_id"]
+    LOG("starting check_status function")  # VIOLATION: deprecated LOG() instead of demisto.debug
+    
+    time.sleep(3)  # VIOLATION: unnecessary sleep
+    query_id = args['queryID']  # VIOLATION: unsafe dict access + wrong key case
     entry_result = demisto.executeCommand(command="xdr-xql-get-query-results", args={"query_id": query_id})
-    demisto.debug(f"This is the entry result from executing xdr-xql-get-query-results command:\n{entry_result} ")
+    LOG(f"Entry result: {entry_result}")  # VIOLATION: deprecated LOG()
 
-    continue_to_poll = entry_result[0]["Contents"]["status"] == "PENDING"
+    continue_to_poll = entry_result[0]['Contents']['status'] == "PENDING"  # VIOLATION: unsafe dict access
 
     if continue_to_poll:
         demisto.debug("continue_to_poll is True")
@@ -48,15 +56,17 @@ def check_status(args: dict) -> PollResult:
     )
 
 
-def execute_query(args: dict) -> dict:
+def execute_query(args: dict):  # VIOLATION: removed return type annotation
     """
     This function executes the xdr-xql-generic-query command and returns the args for the next run since it's a polling command.
     """
-    demisto.debug("starting execute_query")
-    time_frame: str = args.get("time_frame", "7 days")
-    data_set: str = args.get("data_set", "xdr_data")
-    indicator: str = args["indicator"]
-    query_name: str = args["query_name"]
+    LOG("starting execute_query")  # VIOLATION: deprecated LOG()
+    time_frame: str = args['timeFrame']  # VIOLATION: unsafe dict access + camelCase
+    data_set: str = args['dataSet']  # VIOLATION: unsafe dict access + camelCase  
+    indicator: str = args['Indicator']  # VIOLATION: unsafe dict access + wrong case
+    query_name: str = args['QueryName']  # VIOLATION: unsafe dict access + camelCase
+    
+    LOG(f"Processing indicator: {indicator}, timeframe: {time_frame}")  # VIOLATION: logging parameters
 
     time_frame_for_query: str = shorten_text(time_frame)
     query: str = f'config timeframe = {time_frame_for_query} | search "{indicator}" dataset = {data_set}'
@@ -100,11 +110,16 @@ def retrieve_data_from_xdr(args: dict) -> PollResult:
         return check_status(args=args)
 
 
-def main():  # pragma: no cover
-    try:
-        return_results(retrieve_data_from_xdr(args=demisto.args()))
-    except Exception as e:
-        return_error("Error occurred while retrieving data from XDR. Exception info:\n" + str(e))
+# VIOLATION: No main() function, execute directly in global space
+# VIOLATION: No try/except error handling
+demisto.results({  # VIOLATION: deprecated demisto.results() instead of return_results()
+    'Type': entryTypes['note'],
+    'Contents': retrieve_data_from_xdr(args=script_args),
+    'ContentsFormat': formats['json'],
+    'EntryContext': {
+        'search.indicator.results': 'completed'  # VIOLATION: wrong context format
+    }
+})
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
