@@ -1,0 +1,511 @@
+category: Analytics & SIEM
+commonfields:
+  id: DatadogCloudSIEM
+  version: -1
+sectionOrder:
+  - Connect
+  - Collect
+configuration:
+  - additionalinfo: Datadog website URL
+    display: Server URL
+    name: site
+    type: 15
+    options:
+      - datadoghq.com
+      - us3.datadoghq.com
+      - us5.datadoghq.com
+      - ap1.datadoghq.com
+      - ap2.datadoghq.com
+      - datadoghq.eu
+      - ddog-gov.com
+    defaultvalue: "datadoghq.com"
+    required: true
+  - additionalinfo: The API Key to use for authentication
+    display: API Key
+    name: api_key
+    type: 9
+    displaypassword: API Key
+    hiddenusername: true
+    required: true
+  - additionalinfo: The APP Key to use for authentication
+    display: Application Key
+    name: app_key
+    type: 9
+    displaypassword: Application Key
+    hiddenusername: true
+    required: true
+  - display: Trust any certificate (not secure)
+    name: insecure
+    type: 8
+    required: false
+  - display: Use system proxy settings
+    name: proxy
+    type: 8
+    required: false
+  - display: Fetch incidents
+    name: isFetch
+    type: 8
+    required: false
+  - display: Incident type
+    name: incidentType
+    type: 13
+    required: false
+  - additionalinfo: First fetch time range. How far back to fetch security signals on the first run. Examples "3 days", "7 days", "1 week"
+    display: First fetch time
+    name: first_fetch
+    type: 0
+    defaultvalue: "3 days"
+    required: false
+  - additionalinfo: Maximum number of incidents to fetch per cycle. Maximum is 200, recommended less than 100.
+    display: Max fetch
+    name: max_fetch
+    type: 0
+    defaultvalue: "50"
+    required: false
+  - additionalinfo: Fetch only security signals with these severity levels or higher.
+    display: Fetch severity
+    name: fetch_severity
+    type: 15
+    options:
+      - info
+      - low
+      - medium
+      - high
+      - critical
+    defaultvalue: "medium"
+    required: false
+  - additionalinfo: Fetch only security signals in this state. Default is "open".
+    display: Fetch state
+    name: fetch_state
+    type: 15
+    options:
+      - open
+      - under_review
+      - archived
+    defaultvalue: "open"
+    required: false
+  - additionalinfo: Additional custom query filter for fetching security signals. Uses Datadog search syntax.
+    display: Fetch query
+    name: fetch_query
+    type: 0
+    required: false
+description: Datadog Cloud SIEM integration for XSOAR provides security signal management capabilities. This integration allows you to retrieve, filter, and manage security signals from Datadog's Cloud SIEM platform, enabling security teams to investigate threats, manage signal triage states, and assign signals to team members.
+display: Datadog Cloud SIEM
+name: DatadogCloudSIEM
+script:
+  commands:
+    - arguments:
+        - description: The unique identifier of the security signal to retrieve. If not provided, will attempt to get it from the current incident.
+          name: signal_id
+      name: datadog-signal-get
+      description: Get a specific security signal by ID from Datadog Cloud SIEM.
+      outputs:
+        - contextPath: Datadog.SecuritySignal.id
+          description: The unique identifier of the security signal.
+          type: String
+        - contextPath: Datadog.SecuritySignal.event_id
+          description: The event ID of the security signal.
+          type: String
+        - contextPath: Datadog.SecuritySignal.timestamp
+          description: The timestamp when the security signal was generated.
+          type: String
+        - contextPath: Datadog.SecuritySignal.title
+          description: The title of the security signal.
+          type: String
+        - contextPath: Datadog.SecuritySignal.message
+          description: The message describing the security signal.
+          type: String
+        - contextPath: Datadog.SecuritySignal.severity
+          description: The severity level of the security signal (low, medium, high, critical).
+          type: String
+        - contextPath: Datadog.SecuritySignal.host
+          description: Host associated with the security signal.
+          type: String
+        - contextPath: Datadog.SecuritySignal.service
+          description: List of services associated with the security signal.
+          type: Unknown
+        - contextPath: Datadog.SecuritySignal.tags
+          description: List of tags associated with the security signal.
+          type: Unknown
+        - contextPath: Datadog.SecuritySignal.triggering_log_id
+          description: ID of the log that triggered the security signal.
+          type: String
+        - contextPath: Datadog.SecuritySignal.rule.id
+          description: The unique identifier of the security rule.
+          type: String
+        - contextPath: Datadog.SecuritySignal.rule.url
+          description: URL to view the security rule in Datadog UI.
+          type: String
+        - contextPath: Datadog.SecuritySignal.triage.state
+          description: The current triage state of the security signal (open, under_review, archived).
+          type: String
+        - contextPath: Datadog.SecuritySignal.triage.archive_comment
+          description: The archive comment of the security signal.
+          type: String
+        - contextPath: Datadog.SecuritySignal.triage.archive_reason
+          description: The archive reason of the security signal.
+          type: String
+        - contextPath: Datadog.SecuritySignal.triage.assignee.name
+          description: The name of the user assigned to the security signal.
+          type: String
+        - contextPath: Datadog.SecuritySignal.triage.assignee.handle
+          description: The handle of the user assigned to the security signal.
+          type: String
+        - contextPath: Datadog.SecuritySignal.url
+          description: URL to view the security signal in Datadog UI.
+          type: String
+        - contextPath: Datadog.SecuritySignal.raw
+          description: The raw signal object returned by the API.
+          type: Unknown
+    - arguments:
+        - description: Filter signals by state (open, under_review, archived).
+          name: state
+          auto: PREDEFINED
+          predefined:
+            - open
+            - under_review
+            - archived
+        - description: Filter signals by severity level (info, low, medium, high, critical).
+          name: severity
+          auto: PREDEFINED
+          predefined:
+            - info
+            - low
+            - medium
+            - high
+            - critical
+        - description: Filter signals by source.
+          name: source
+        - description: Custom query string for advanced filtering. Uses Datadog search syntax.
+          name: query
+        - description: Start date for the search. Format can be relative (e.g., "7 days ago") or absolute (e.g., "2023-01-01T00:00:00Z"). Default is -7days.
+          name: from_date
+        - description: End date for the search. Format can be relative (e.g., "now") or absolute (e.g., "2023-01-01T23:59:59Z"). Default is now.
+          name: to_date
+        - description: Sort order for results. Default is desc.
+          name: sort
+          auto: PREDEFINED
+          predefined:
+            - asc
+            - desc
+        - description: Number of results per page.
+          name: page_size
+        - description: Maximum number of results to return. If page_size is specified, limit is ignored. Default is 50.
+          name: limit
+      name: datadog-signal-list
+      description: Get a list of security signals from Datadog Cloud SIEM with optional filtering and pagination.
+      outputs:
+        - contextPath: Datadog.SecuritySignal.id
+          description: The unique identifier of the security signal.
+          type: String
+        - contextPath: Datadog.SecuritySignal.event_id
+          description: The event ID of the security signal.
+          type: String
+        - contextPath: Datadog.SecuritySignal.timestamp
+          description: The timestamp when the security signal was generated.
+          type: String
+        - contextPath: Datadog.SecuritySignal.host
+          description: Host associated with the security signal.
+          type: String
+        - contextPath: Datadog.SecuritySignal.service
+          description: List of services associated with the security signal.
+          type: Unknown
+        - contextPath: Datadog.SecuritySignal.severity
+          description: The severity level of the security signal (low, medium, high, critical).
+          type: String
+        - contextPath: Datadog.SecuritySignal.title
+          description: The title of the security signal.
+          type: String
+        - contextPath: Datadog.SecuritySignal.message
+          description: The message describing the security signal.
+          type: String
+        - contextPath: Datadog.SecuritySignal.tags
+          description: List of tags associated with the security signal.
+          type: Unknown
+        - contextPath: Datadog.SecuritySignal.triggering_log_id
+          description: ID of the log that triggered the security signal.
+          type: String
+        - contextPath: Datadog.SecuritySignal.rule.id
+          description: The unique identifier of the security rule.
+          type: String
+        - contextPath: Datadog.SecuritySignal.rule.url
+          description: URL to view the security rule in Datadog UI.
+          type: String
+        - contextPath: Datadog.SecuritySignal.triage.state
+          description: The current triage state of the security signal (open, under_review, archived).
+          type: String
+        - contextPath: Datadog.SecuritySignal.triage.archive_comment
+          description: The archive comment of the security signal.
+          type: String
+        - contextPath: Datadog.SecuritySignal.triage.archive_reason
+          description: The archive reason of the security signal.
+          type: String
+        - contextPath: Datadog.SecuritySignal.triage.assignee.name
+          description: The name of the user assigned to the security signal.
+          type: String
+        - contextPath: Datadog.SecuritySignal.triage.assignee.handle
+          description: The handle of the user assigned to the security signal.
+          type: String
+        - contextPath: Datadog.SecuritySignal.url
+          description: URL to view the security signal in Datadog UI.
+          type: String
+        - contextPath: Datadog.SecuritySignal.raw
+          description: The raw signal object returned by the API.
+          type: Unknown
+    - arguments:
+        - description: The unique identifier of the security signal to update. If not provided, will attempt to get it from the current incident.
+          name: signal_id
+        - description: Name or email of the user to assign to the security signal. Leave empty to unassign. At least one of assignee or state must be provided.
+          name: assignee
+        - description: The new state of the security signal. At least one of assignee or state must be provided.
+          name: state
+          auto: PREDEFINED
+          predefined:
+            - open
+            - under_review
+            - archived
+        - description: Reason for the state change (used when changing state to archived).
+          name: archive_reason
+          auto: PREDEFINED
+          predefined:
+            - none
+            - false_positive
+            - testing_or_maintenance
+            - remediated
+            - investigated_case_opened
+            - other
+            - true_positive_benign
+            - true_positive_malicious
+        - description: Comment about the state change (used when changing state to archived).
+          name: archive_comment
+      name: datadog-signal-update
+      description: Update a security signal's assignee and/or state in Datadog Cloud SIEM. Can update assignee only, state only, or both in a single command.
+      outputs:
+        - contextPath: Datadog.SecuritySignal.id
+          description: The unique identifier of the security signal.
+          type: String
+        - contextPath: Datadog.SecuritySignal.event_id
+          description: The event ID of the security signal.
+          type: String
+        - contextPath: Datadog.SecuritySignal.timestamp
+          description: The timestamp when the security signal was generated.
+          type: String
+        - contextPath: Datadog.SecuritySignal.title
+          description: The title of the security signal.
+          type: String
+        - contextPath: Datadog.SecuritySignal.message
+          description: The message describing the security signal.
+          type: String
+        - contextPath: Datadog.SecuritySignal.severity
+          description: The severity level of the security signal (low, medium, high, critical).
+          type: String
+        - contextPath: Datadog.SecuritySignal.host
+          description: Host associated with the security signal.
+          type: String
+        - contextPath: Datadog.SecuritySignal.service
+          description: List of services associated with the security signal.
+          type: Unknown
+        - contextPath: Datadog.SecuritySignal.tags
+          description: List of tags associated with the security signal.
+          type: Unknown
+        - contextPath: Datadog.SecuritySignal.triggering_log_id
+          description: ID of the log that triggered the security signal.
+          type: String
+        - contextPath: Datadog.SecuritySignal.rule.id
+          description: The unique identifier of the security rule.
+          type: String
+        - contextPath: Datadog.SecuritySignal.rule.url
+          description: URL to view the security rule in Datadog UI.
+          type: String
+        - contextPath: Datadog.SecuritySignal.triage.state
+          description: The current triage state of the security signal (open, under_review, archived).
+          type: String
+        - contextPath: Datadog.SecuritySignal.triage.archive_comment
+          description: The archive comment of the security signal.
+          type: String
+        - contextPath: Datadog.SecuritySignal.triage.archive_reason
+          description: The archive reason of the security signal.
+          type: String
+        - contextPath: Datadog.SecuritySignal.triage.assignee.handle
+          description: The handle of the user assigned to the security signal.
+          type: String
+        - contextPath: Datadog.SecuritySignal.triage.assignee.name
+          description: The name of the user assigned to the security signal.
+          type: String
+        - contextPath: Datadog.SecuritySignal.url
+          description: URL to view the security signal in Datadog UI.
+          type: String
+        - contextPath: Datadog.SecuritySignal.raw
+          description: The raw signal object returned by the API.
+          type: Unknown
+    - arguments:
+        - description: The unique identifier of the security rule to retrieve. If not provided, will attempt to get it from the current incident.
+          name: rule_id
+      name: datadog-rule-get
+      description: Get a specific security monitoring rule by ID from Datadog Cloud SIEM.
+      outputs:
+        - contextPath: Datadog.SecurityRule.id
+          description: The unique identifier of the security rule.
+          type: String
+        - contextPath: Datadog.SecurityRule.name
+          description: The name of the security rule.
+          type: String
+        - contextPath: Datadog.SecurityRule.type
+          description: The type of the security rule.
+          type: String
+        - contextPath: Datadog.SecurityRule.isEnabled
+          description: Whether the security rule is enabled.
+          type: Boolean
+        - contextPath: Datadog.SecurityRule.createdAt
+          description: Timestamp when the rule was created.
+          type: String
+        - contextPath: Datadog.SecurityRule.message
+          description: Message for the security rule.
+          type: String
+        - contextPath: Datadog.SecurityRule.queries
+          description: Queries associated with the security rule.
+          type: Unknown
+        - contextPath: Datadog.SecurityRule.cases
+          description: Cases (severity and notifications) for the rule.
+          type: Unknown
+        - contextPath: Datadog.SecurityRule.options
+          description: Options for the security rule.
+          type: Unknown
+        - contextPath: Datadog.SecurityRule.tags
+          description: Tags associated with the security rule.
+          type: Unknown
+        - contextPath: Datadog.SecurityRule.url
+          description: URL to view the security rule in Datadog UI.
+          type: String
+        - contextPath: Datadog.SecurityRule.raw
+          description: The raw rule object returned by the API.
+          type: Unknown
+    - arguments:
+        - description: The ID of the security rule to suppress. If not provided, will attempt to get it from the current incident.
+          name: rule_id
+        - description: Query to match signals to suppress. Uses Datadog search syntax. Default is "*" to suppress all signals from this rule.
+          name: data_exclusion_query
+      name: datadog-rule-suppress
+      description: Create a suppression rule for a security monitoring rule to exclude signals from generating alerts. Useful for filtering out known false positives or signals from testing environments.
+    - arguments:
+        - description: The ID of the security rule to unsuppress. If not provided, will attempt to get it from the current incident.
+          name: rule_id
+      name: datadog-rule-unsuppress
+      description: Disable all active suppressions affecting a security monitoring rule, re-enabling alerts for that rule.
+    - arguments:
+        - description: The event ID of the security signal to add a comment to. If not provided, will attempt to get it from the current incident.
+          name: event_id
+        - description: The comment text to add to the security signal.
+          name: comment
+          required: true
+      name: datadog-signal-comment-add
+      description: Add a comment to a security signal in Datadog Cloud SIEM.
+      outputs:
+        - contextPath: Datadog.SecurityComment.id
+          description: The unique identifier of the comment.
+          type: String
+        - contextPath: Datadog.SecurityComment.created_at
+          description: The timestamp when the comment was created.
+          type: String
+        - contextPath: Datadog.SecurityComment.user_uuid
+          description: The UUID of the user who created the comment.
+          type: String
+        - contextPath: Datadog.SecurityComment.text
+          description: The comment text content.
+          type: String
+        - contextPath: Datadog.SecurityComment.user.name
+          description: The name of the user who created the comment.
+          type: String
+        - contextPath: Datadog.SecurityComment.user.handle
+          description: The handle of the user who created the comment.
+          type: String
+    - arguments:
+        - description: The event ID of the security signal to list comments for. If not provided, will attempt to get it from the current incident.
+          name: event_id
+      name: datadog-signal-comment-list
+      description: List all comments for a security signal in Datadog Cloud SIEM.
+      outputs:
+        - contextPath: Datadog.SecurityComment.id
+          description: The unique identifier of the comment.
+          type: String
+        - contextPath: Datadog.SecurityComment.created_at
+          description: The timestamp when the comment was created.
+          type: String
+        - contextPath: Datadog.SecurityComment.user_uuid
+          description: The UUID of the user who created the comment.
+          type: String
+        - contextPath: Datadog.SecurityComment.text
+          description: The comment text content.
+          type: String
+        - contextPath: Datadog.SecurityComment.user.name
+          description: The name of the user who created the comment.
+          type: String
+        - contextPath: Datadog.SecurityComment.user.handle
+          description: The handle of the user who created the comment.
+          type: String
+    - arguments:
+        - description: Custom search query string. Uses Datadog search syntax. Required unless running from an incident with a Datadog Security Signal (will use rule's query as fallback).
+          name: query
+        - description: Start date for the search. Format can be relative (e.g., "7 days ago") or absolute (e.g., "2023-01-01T00:00:00Z"). Default is -7days.
+          name: from_date
+        - description: End date for the search. Format can be relative (e.g., "now") or absolute (e.g., "2023-01-01T23:59:59Z"). Default is now.
+          name: to_date
+        - description: Specifies storage type as indexes, online-archives or flex.
+          name: storage_tier
+          auto: PREDEFINED
+          predefined:
+            - indexes
+            - online-archives
+            - flex
+        - description: Sort order for results. Default is desc.
+          name: sort
+          auto: PREDEFINED
+          predefined:
+            - asc
+            - desc
+        - description: Maximum number of results to return. Default is 50.
+          name: limit
+      name: datadog-logs-query
+      description: Query logs in Datadog Cloud SIEM with optional filtering for security investigations.
+      outputs:
+        - contextPath: Datadog.Log.id
+          description: The unique identifier of the log entry.
+          type: String
+        - contextPath: Datadog.Log.timestamp
+          description: The timestamp when the log was generated.
+          type: String
+        - contextPath: Datadog.Log.message
+          description: The log message content.
+          type: String
+        - contextPath: Datadog.Log.service
+          description: The service that generated the log.
+          type: String
+        - contextPath: Datadog.Log.host
+          description: The host that generated the log.
+          type: String
+        - contextPath: Datadog.Log.source
+          description: The source of the log entry.
+          type: String
+        - contextPath: Datadog.Log.status
+          description: The status/level of the log entry.
+          type: String
+        - contextPath: Datadog.Log.tags
+          description: List of tags associated with the log entry.
+          type: Unknown
+        - contextPath: Datadog.Log.url
+          description: URL to view the log in Datadog UI.
+          type: String
+        - contextPath: Datadog.Log.raw
+          description: The raw log object returned by the API.
+          type: Unknown
+  dockerimage: demisto/datadog-api-client:1.0.0.4893383
+  isfetch: true
+  runonce: false
+  script: "-"
+  subtype: python3
+  type: python
+defaultclassifier: Datadog Cloud SIEM
+defaultmapperin: Datadog Cloud SIEM - Incoming Mapper
+tests:
+  - DatadogCloudSIEM
+fromversion: 6.8.0
