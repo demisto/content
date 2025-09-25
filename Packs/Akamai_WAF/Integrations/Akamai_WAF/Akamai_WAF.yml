@@ -597,6 +597,14 @@ script:
     - name: type_list
       description: 'Filters the output to lists of specified types. Repeat the parameter to filter on more than one type. Valid values: IP, GEO, ASN, TLS_FINGERPRINT,FILE_HASH.'
       isArray: true
+      auto: PREDEFINED
+      predefined:
+      - IP
+      - GEO
+      - ASN
+      - TLS_FINGERPRINT
+      - FILE_HASH
+      - USER
     - name: include_network_list
       description: Include network lists in the response.
       auto: PREDEFINED
@@ -683,6 +691,16 @@ script:
         description: A list of email addresses to notify.
       - name: siebel_ticket_id
         description: A Siebel ticket ID.
+      - name: include_polling
+        description: Whether to poll deactivation status until completion.
+        auto: PREDEFINED
+        predefined:
+          - 'true'
+          - 'false'
+        defaultValue: 'true'
+      - name: interval_in_seconds
+        description: Interval in seconds between polling attempts.
+        defaultValue: '30'
     outputs:
       - contextPath: Akamai.Activation
         description: The activation details.
@@ -758,6 +776,16 @@ script:
         description: A list of email addresses to notify.
       - name: siebel_ticket_id
         description: A Siebel ticket ID.
+      - name: include_polling
+        description: Whether to poll deactivation status until completion.
+        auto: PREDEFINED
+        predefined:
+          - 'true'
+          - 'false'
+        defaultValue: 'true'
+      - name: interval_in_seconds
+        description: Interval in seconds between polling attempts.
+        defaultValue: '30'
     outputs:
       - contextPath: Akamai.Activation
         description: The deactivation details.
