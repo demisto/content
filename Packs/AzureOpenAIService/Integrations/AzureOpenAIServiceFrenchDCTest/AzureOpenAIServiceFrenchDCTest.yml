@@ -27,8 +27,8 @@ configuration:
   required: false
   type: 0
 description: Azure Open AI ServiceAI.
-display: Azure Open AI Service - French DC Test
-name: Azure Open AI Service - French DC Test
+display: Azure Open AI Service
+name: Azure Open AI Service
 script:
   commands:
   - arguments:
