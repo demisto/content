@@ -3,7 +3,7 @@ sectionOrder:
 - Connect
 - Collect
 commonfields:
-  id: CyberArkEPMEventCollector
+  id: CyberArkEPMEventCollectorDebug
   version: -1
 configuration:
 - additionalinfo: 'SAML example: https://login.epm.cyberark.com/SAML/Logon.'
@@ -114,8 +114,8 @@ configuration:
   - Skipped
   section: Collect
 description: CyberArk EPM Event Collector fetches events.
-display: CyberArk EPM Event Collector
-name: CyberArkEPMEventCollector
+display: CyberArk EPM Event Collector Debug
+name: CyberArkEPMEventCollectorDebug
 script:
   commands:
   - arguments:

@@ -1,5 +1,5 @@
 {
-    "name": "CyberArk Endpoint Privilege Manager",
+    "name": "CyberArk Endpoint Privilege Manager Debug",
     "description": "Endpoint Privilege Manager helps remove local admin rights while improving user experience and optimizing IT operations.",
     "support": "xsoar",
     "currentVersion": "1.0.7",
