@@ -201,7 +201,7 @@ class S3:
     @staticmethod
     def put_public_access_block_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
         """
-        Create or Modify the PublicAccessBlock configuration for an Amazon S3 bucket.
+            Create or Modify the PublicAccessBlock configuration for an Amazon S3 bucket.
 
         Args:
             client (BotoClient): The boto3 client for S3 service
@@ -369,6 +369,19 @@ class S3:
             )
         except Exception as e:
             raise DemistoException(f"Couldn't apply bucket policy to {args.get('bucket')} bucket. Error: {str(e)}")
+
+    # from here
+
+    @staticmethod
+    def delete_bucket_website_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        bucket = args.get("bucket", "")
+        try:
+            response = client.delete_bucket_website(bucket)
+            demisto.debug(f"{response=}")
+            return CommandResults(readable_output=f"{response=}")
+        except Exception as e:
+            raise DemistoException(f"Failed to delete bucket website for {args.get('bucket')}. Error: {str(e)}")
+    # to here
 
 
 class IAM:
@@ -613,6 +626,7 @@ class IAM:
                 )
         except Exception as e:
             raise DemistoException(f"Error updating access key '{access_key_id}' status: {str(e)}")
+
 
 
 class EC2:
@@ -1287,6 +1301,7 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-s3-bucket-logging-put": S3.put_bucket_logging_command,
     "aws-s3-bucket-acl-put": S3.put_bucket_acl_command,
     "aws-s3-bucket-policy-put": S3.put_bucket_policy_command,
+    "aws-s3-delete-bucket-website": S3.delete_bucket_website_command,
     "aws-iam-account-password-policy-get": IAM.get_account_password_policy_command,
     "aws-iam-account-password-policy-update": IAM.update_account_password_policy_command,
     "aws-iam-role-policy-put": IAM.put_role_policy_command,
