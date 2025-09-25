@@ -17,10 +17,6 @@
         "kondor117"
     ],
     "dependencies": {
-        "CortexXDR": {
-            "mandatory": false,
-            "display_name": "Palo Alto Networks Cortex XDR - Investigation and Response"
-        },
         "CortexDataLake": {
             "mandatory": false,
             "display_name": "Cortex Data Lake"
