@@ -1769,9 +1769,11 @@ def get_conversation_from_api_paginated(conversation_to_search):
     """
     body = {"types": "private_channel,public_channel", "exclude_archived": True, "limit": PAGINATED_COUNT}
     response = send_slack_request_sync(CLIENT, "conversations.list", http_verb="GET", body=body)
+    demisto.debug(f"Searching for channel '{conversation_to_search}' via paginated API")
 
     while True:
         conversations = response["channels"] if response and response.get("channels") else []
+        demisto.debug(f"Channels: {conversations}")
         cursor = response.get("response_metadata", {}).get("next_cursor")  # type: ignore
         conversation_filter = list(filter(lambda c: c.get("name").lower() == conversation_to_search, conversations))
         if conversation_filter:
@@ -2739,6 +2741,7 @@ def conversation_history():
     channel_id = args.get("channel_id")
     limit = arg_to_number(args.get("limit"))
     conversation_id = args.get("conversation_id")
+    
     body = (
         {"channel": channel_id, "limit": limit}
         if not conversation_id
