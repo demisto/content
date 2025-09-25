@@ -1,0 +1,509 @@
+{
+    "description": "Datadog Cloud SIEM Incident Layout - Enhanced layout for security signal investigation and triage",
+    "detailsV2": {
+        "tabs": [
+            {
+                "hidden": false,
+                "id": "security-signal-details",
+                "name": "Security Signal Details",
+                "sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 4,
+                        "hideName": false,
+                        "i": "security-signal-details-overview",
+                        "items": [
+                            {
+                                "endCol": 6,
+                                "fieldId": "datadogsecuritysignaltitle",
+                                "height": 22,
+                                "id": "field-datadogsecuritysignaltitle",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 6,
+                                "fieldId": "datadogsecuritysignalurl",
+                                "height": 22,
+                                "id": "field-datadogsecuritysignalurl",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 6,
+                                "fieldId": "datadogsecuritysignalmessage",
+                                "height": 88,
+                                "id": "field-datadogsecuritysignalmessage",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Signal Overview",
+                        "static": false,
+                        "w": 3,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "security-signal-details-signal-info",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "datadogsecuritysignalid",
+                                "height": 22,
+                                "id": "field-datadogsecuritysignalid",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "datadogsecuritysignaltimestamp",
+                                "height": 22,
+                                "id": "field-datadogsecuritysignaltimestamp",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "datadogsecuritysignalseverity",
+                                "height": 22,
+                                "id": "field-datadogsecuritysignalseverity",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "datadogsecuritysignalhost",
+                                "height": 22,
+                                "id": "field-datadogsecuritysignalhost",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+
+                            {
+                                "endCol": 2,
+                                "fieldId": "datadogsecuritysignaltags",
+                                "height": 22,
+                                "id": "field-datadogsecuritysignaltags",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "datadogsecuritysignaltriggeringlogid",
+                                "height": 22,
+                                "id": "field-datadogsecuritysignaltriggeringlogid",
+                                "index": 6,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Signal Information",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 3
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "i": "security-signal-details-rule-info",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "datadogsecuritysignalruleurl",
+                                "height": 22,
+                                "id": "field-datadogsecuritysignalruleurl",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "datadogsecuritysignalruleid",
+                                "height": 22,
+                                "id": "field-datadogsecuritysignalruleid",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Detection Rule Details",
+                        "static": false,
+                        "w": 1,
+                        "x": 1,
+                        "y": 3
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "i": "security-signal-details-triage-info",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "datadogsecuritysignaltriagestate",
+                                "height": 22,
+                                "id": "field-datadogsecuritysignaltriagestate",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "datadogsecuritysignaltriageassigneename",
+                                "height": 22,
+                                "id": "field-datadogsecuritysignaltriageassigneename",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "datadogsecuritysignaltriagearchivereason",
+                                "height": 22,
+                                "id": "field-datadogsecuritysignaltriagearchivereason",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "datadogsecuritysignaltriagearchivecomment",
+                                "height": 44,
+                                "id": "field-datadogsecuritysignaltriagearchivecomment",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Triage Information",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 3
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "id": "caseinfoid",
+                "name": "Incident Info",
+                "sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-case-details",
+                        "isVisible": true,
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "type",
+                                "height": 22,
+                                "id": "incident-type-field",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "severity",
+                                "height": 22,
+                                "id": "incident-severity-field",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "owner",
+                                "height": 22,
+                                "id": "incident-owner-field",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "playbookid",
+                                "height": 22,
+                                "id": "incident-playbookId-field",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sourcebrand",
+                                "height": 22,
+                                "id": "incident-sourceBrand-field",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sourceinstance",
+                                "height": 22,
+                                "id": "incident-sourceInstance-field",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Case Details",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "i": "caseinfoid-timeline",
+                        "items": [
+                            {
+                                "endCol": 1,
+                                "fieldId": "occurred",
+                                "height": 22,
+                                "id": "incident-occurred-field",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotcreated",
+                                "height": 22,
+                                "id": "incident-created-field",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 1
+                            },
+                            {
+                                "endCol": 1,
+                                "fieldId": "dbotmodified",
+                                "height": 22,
+                                "id": "incident-modified-field",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotclosed",
+                                "height": 22,
+                                "id": "incident-closed-field",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 1
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotduedate",
+                                "height": 22,
+                                "id": "incident-dueDate-field",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Timeline Information",
+                        "static": false,
+                        "w": 1,
+                        "x": 1,
+                        "y": 0
+                    },
+                    {
+                        "h": 2,
+                        "i": "caseinfoid-notes",
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Notes",
+                        "static": false,
+                        "type": "notes",
+                        "w": 1,
+                        "x": 2,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "i": "caseinfoid-investigation-data",
+                        "isVisible": true,
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "details",
+                                "height": 66,
+                                "id": "incident-details-field",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Investigation Data",
+                        "static": false,
+                        "w": 2,
+                        "x": 0,
+                        "y": 2
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-workplan",
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Work Plan",
+                        "static": false,
+                        "type": "workplan",
+                        "w": 1,
+                        "x": 2,
+                        "y": 2
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-indicators",
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Indicators",
+                        "query": "",
+                        "queryType": "input",
+                        "static": false,
+                        "type": "indicators",
+                        "w": 3,
+                        "x": 0,
+                        "y": 4
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-closing-info",
+                        "isVisible": true,
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "closereason",
+                                "height": 22,
+                                "id": "incident-closeReason-field",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "closenotes",
+                                "height": 44,
+                                "id": "incident-closeNotes-field",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Closing Information",
+                        "static": false,
+                        "w": 2,
+                        "x": 0,
+                        "y": 6
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-team",
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Team Members",
+                        "static": false,
+                        "type": "team",
+                        "w": 1,
+                        "x": 2,
+                        "y": 6
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "id": "warRoom",
+                "name": "War Room",
+                "type": "warRoom"
+            },
+            {
+                "id": "workPlan",
+                "name": "Work Plan",
+                "type": "workPlan"
+            },
+            {
+                "id": "evidenceBoard",
+                "name": "Evidence Board",
+                "type": "evidenceBoard"
+            },
+            {
+                "id": "relatedIncidents",
+                "name": "Related Incidents",
+                "type": "relatedIncidents"
+            },
+            {
+                "id": "canvas",
+                "name": "Canvas",
+                "type": "canvas",
+                "hidden": false
+            }
+        ]
+    },
+    "group": "incident",
+    "id": "Datadog Cloud SIEM Layout",
+    "name": "Datadog Cloud SIEM Layout",
+    "system": false,
+    "version": -1,
+    "fromVersion": "6.8.0"
+}

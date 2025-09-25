@@ -1,0 +1,63 @@
+{
+    "id": "Datadog Cloud SIEM - Incoming Mapper",
+    "name": "Datadog Cloud SIEM - Incoming Mapper",
+    "type": "mapping-incoming",
+    "description": "Maps incoming Datadog Cloud SIEM security signals to XSOAR incident fields",
+    "mapping": {
+        "Datadog Cloud SIEM": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Datadog Security Signal ID": {
+                    "simple": "id"
+                },
+                "Datadog Security Signal Event ID": {
+                    "simple": "event_id"
+                },
+                "Datadog Security Signal Title": {
+                    "simple": "title"
+                },
+                "Datadog Security Signal Message": {
+                    "simple": "message"
+                },
+                "Datadog Security Signal Timestamp": {
+                    "simple": "timestamp"
+                },
+                "Datadog Security Signal Severity": {
+                    "simple": "severity"
+                },
+                "Datadog Security Signal Host": {
+                    "simple": "host"
+                },
+                "Datadog Security Signal Tags": {
+                    "simple": "tags"
+                },
+                "Datadog Security Signal Triggering Log ID": {
+                    "simple": "triggering_log_id"
+                },
+                "Datadog Security Signal URL": {
+                    "simple": "url"
+                },
+                "Datadog Security Signal Rule ID": {
+                    "simple": "rule.id"
+                },
+                "Datadog Security Signal Rule URL": {
+                    "simple": "rule.url"
+                },
+                "Datadog Security Signal Triage State": {
+                    "simple": "triage.state"
+                },
+                "Datadog Security Signal Triage Archive Comment": {
+                    "simple": "triage.archive_comment"
+                },
+                "Datadog Security Signal Triage Archive Reason": {
+                    "simple": "triage.archive_reason"
+                },
+                "Datadog Security Signal Triage Assignee Name": {
+                    "simple": "triage.assignee.name"
+                }
+            }
+        }
+    },
+    "version": -1,
+    "fromVersion": "6.8.0"
+}

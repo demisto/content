@@ -1,0 +1,19 @@
+!datadog-signal-get signal_id=AZm-wsEuAACEnzdcj-YEigAA
+!datadog-signal-get
+!datadog-signal-list state=open severity=high
+!datadog-signal-list from_date="-3days" to_date="now" limit=10
+!datadog-signal-update signal_id=AZm-wsEuAACEnzdcj-YEigAA state=archived archive_reason=false_positive archive_comment="Not a real threat"
+!datadog-signal-update assignee=user@example.com
+!datadog-signal-update state=under_review
+!datadog-rule-get rule_id=abc-123-def
+!datadog-rule-get
+!datadog-rule-suppress rule_id=abc-123-def data_exclusion_query="env:staging"
+!datadog-rule-suppress data_exclusion_query="host:test-*"
+!datadog-rule-unsuppress rule_id=abc-123-def
+!datadog-rule-unsuppress
+!datadog-signal-comment-add event_id=AZm-wsEuAACEnzdcj-YEigAA comment="Investigating this signal"
+!datadog-signal-comment-add comment="False positive confirmed"
+!datadog-signal-comment-list event_id=AZm-wsEuAACEnzdcj-YEigAA
+!datadog-signal-comment-list
+!datadog-logs-query query="source:nginx status:error" from_date="-1hour" limit=50
+!datadog-logs-query
