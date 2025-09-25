@@ -1,5 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
 """ IMPORTS """
 
 import traceback
@@ -282,11 +283,8 @@ def copy_blob(client, source_bucket_name, destination_bucket_name, source_object
 def delete_blob(client, blob_name, bucket_name):
     bucket = client.get_bucket(bucket_name)
     blob = bucket.blob(blob_name)
-    generation_match_precondition = None
-
-
     blob_delete = blob.delete()
-    return(blob_delete)
+    return blob_delete
 
 
 def gcs_list_bucket_objects(client, default_bucket, args):
@@ -361,7 +359,6 @@ def gcs_delete_file(client, default_bucket, args):
 
     delete_blob(client, blob_name, bucket_name)
 
-
     demisto.results(
         {
             "Type": entryTypes["note"],
@@ -369,6 +366,7 @@ def gcs_delete_file(client, default_bucket, args):
             "Contents": f"File {blob_name} was successfully deleted from bucket {bucket_name}",
         }
     )
+
 
 """ Bucket policy (ACL) """
 
@@ -652,7 +650,7 @@ def main():
             gcs_copy_file(client, default_bucket, args)
 
         elif command == "gcs-delete-file":
-            gcs_delete_file(client,default_bucket, args)
+            gcs_delete_file(client, default_bucket, args)
 
         #
         # Bucket policy (ACL)
@@ -697,4 +695,3 @@ def main():
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
-
