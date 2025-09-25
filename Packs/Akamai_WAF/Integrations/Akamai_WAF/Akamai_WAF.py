@@ -502,8 +502,14 @@ class Client(BaseClient):
         Returns:
             Json response as dictionary
         """
+        values = value.split(",") if value else []
+        delete = []
+        for value in values:
+            delete.append({
+                'value': value
+            })
         body = {
-            'delete': value
+            'delete': delete
         }
         return self._http_request(method="POST", url_suffix=f"/client-list/v1/lists/{list_id}/items", json_data=body)
 
@@ -7345,5 +7351,6 @@ def main():
         return_error(err_msg, error=e)
 
 
+# if __name__ == "__main__":
 if __name__ == "builtins":
     main()
