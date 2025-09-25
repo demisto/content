@@ -660,6 +660,10 @@ script:
     - description: The text of the note.
       name: note
       required: true
+    - name: attachment
+      description: The attachment to add to the note.
+      required: false
+
     outputs:
     - contextPath: Resilient.IncidentNote.type
       description: The type of the note (incident or task).
@@ -1051,6 +1055,9 @@ script:
       - Post-Incident
       - Custom
       - Complete
+    - name: instructions
+      description: Textual instructions for the task. This will override the default instructions for the task.
+      required: false
     - name: status
       description: Changing the status field, completes or re-openes the task.
       auto: PREDEFINED
