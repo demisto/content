@@ -5912,6 +5912,10 @@
             "instance_names": [
                 "virus_total_v3"
             ]
+        },
+        {
+            "integrations": "Unit42Intelligence",
+            "playbookID": "Unit42Intelligence_Test"
         }
     ],
     "skipped_tests": {
