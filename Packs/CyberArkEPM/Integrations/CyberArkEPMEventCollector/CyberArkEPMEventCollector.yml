@@ -61,6 +61,13 @@ configuration:
   required: false
   type: 0
   section: Collect
+- defaultvalue: 3 hours
+  display: First fetch time interval
+  additionalinfo: Time range for the initial fetch (e.g., 3 hours, 1 day, 7 days)
+  name: first_fetch
+  required: false
+  type: 0
+  section: Collect
 - defaultvalue: 'false'
   display: Enable admin audits events
   name: enable_admin_audits
