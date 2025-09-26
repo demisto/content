@@ -7,6 +7,7 @@ requests.packages.urllib3.disable_warnings()
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 INTEGRATION_NAME = "Unit42Feed"
+LIMIT = 5000
 
 # Mapping from API indicator types to XSOAR indicator types
 INDICATOR_TYPE_MAP = {
@@ -57,7 +58,7 @@ class Client(BaseClient):
     def get_indicators(
         self,
         indicator_types: str | None = None,
-        limit: int = 100,
+        limit: int = LIMIT,
         start_time: str | None = None,
         next_page_token: str | None = None,
     ) -> dict:
@@ -80,13 +81,13 @@ class Client(BaseClient):
         if start_time:
             params["start_time"] = start_time
         if next_page_token:
-            params["next_page_token"] = next_page_token
+            params["page_token"] = next_page_token
 
         response = self._http_request(method="GET", url_suffix="/api/v1/feeds/indicators", params=params)
 
         return response
 
-    def get_threat_objects(self, limit: int = 100, next_page_token: str | None = None) -> dict:
+    def get_threat_objects(self, limit: int = LIMIT, next_page_token: str | None = None) -> dict:
         """Get threat objects from the Unit 42 feed.
 
         Args:
@@ -100,10 +101,9 @@ class Client(BaseClient):
         if limit:
             params["limit"] = limit
         if next_page_token:
-            params["next_page_token"] = next_page_token
+            params["page_token"] = next_page_token
 
         response = self._http_request(method="GET", url_suffix="/api/v1/feeds/threat_objects", params=params)
-
         return response
 
 
@@ -389,7 +389,7 @@ def fetch_indicators(
     """
     # Get indicator types from params
     indicator_types = ",".join(params.get("indicator_types", ["All"]))
-    start_time = demisto.getLastRun().get("last_successful_run", (current_time - timedelta(hours=12)).strftime(DATE_FORMAT))
+    start_time = demisto.getLastRun().get("last_successful_run", (current_time - timedelta(hours=24)).strftime(DATE_FORMAT))
 
     # Get indicators from the API
     response = client.get_indicators(indicator_types=indicator_types, start_time=start_time)
@@ -406,7 +406,7 @@ def fetch_indicators(
             next_page_token = metadata.get("next_page_token") if isinstance(metadata, dict) else None
             while next_page_token:
                 # Get next page of indicators
-                response = client.get_indicators(indicator_types=indicator_types, next_page_token=next_page_token)
+                response = client.get_indicators(indicator_types=indicator_types, next_page_token=next_page_token, start_time=start_time)
                 if response and isinstance(response, dict) and response.get("data"):
                     data = response.get("data", [])
                     if isinstance(data, list):
@@ -428,7 +428,6 @@ def fetch_indicators(
                 data = response.get("data", [])
                 if isinstance(data, list):
                     indicators.extend(parse_threat_objects(data, feed_tags, tlp_color))
-
                     # Handle pagination if needed
                     metadata = response.get("metadata", {})
                     next_page_token = metadata.get("next_page_token") if isinstance(metadata, dict) else None
@@ -459,7 +458,7 @@ def get_indicators_command(client: Client, args: dict, feed_tags: list = [], tlp
         Demisto Outputs.
     """
     limit = arg_to_number(args.get("limit", "10")) or 10  # Default to 10 if None
-    indicator_types = ",".join(args.get("indicator_types", ["All"]))
+    indicator_types = args.get("indicator_types", ["All"])
     next_page_token = args.get("next_page_token")
 
     # Get indicators from the API
