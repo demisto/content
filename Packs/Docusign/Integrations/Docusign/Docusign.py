@@ -31,41 +31,16 @@ MAX_CUSTOMER_EVENTS_PER_PAGE = 2000
 
 class Constants:
     """Global constants for the DocuSign integration."""
-    
-    # Integration metadata
-    INTEGRATION_NAME = "Docusign"
 
-    
-    # Timeouts and limits
-    TOKEN_SKEW_SECONDS = 60
-    DEFAULT_TIMEOUT = 60.0  # requests timeout in seconds
-    DEFAULT_LIMITS = 100
-    # Retry configuration
-    RETRY_MAX = 5
-    RETRY_MAX_SLEEP = 20.0
-    
-    # API limits
-    MAX_CUSTOMER_EVENTS_PER_PAGE = 2000
     MAX_ADMIN_TAKE = 250
-    
-    # Default values
-    DEFAULT_SERVER_URL = "https://account-d.docusign.com"
     MAX_CUSTOMER_EVENTS_PER_FETCH = 10000
     DEFAULT_MAX_USER_DATA_EVENTS = 1250
     
     # Integration context keys
     CTX_KEY = "docusign_ctx"
-    CTX_TOKEN_CACHE = "token_cache"  # {access_token, expires_at, env, base_uri}
-    CTX_CUSTOMER_CURSOR = "customer_cursor"
     CTX_AUDIT_NEXT_URL = "audit_next_url"
     CTX_AUDIT_LAST_MOD_SINCE = "audit_last_modified_since"
     
-    # Event types
-    EVENT_TYPE_CUSTOMER = "customer"
-    EVENT_TYPE_USER_DATA = "user"
-    
-    # Log messages
-    LOG_PREFIX = "[Docusign]"
 
 # -------------------- Utilities --------------------
 
@@ -270,6 +245,55 @@ def get_access_token() -> str: # [V] reviewed
         demisto.debug(f"{LOG_PREFIX}Error retrieving access token: {str(e)}")
         raise DemistoException(f"Error retrieving access token: {str(e)}")
 
+
+# [V] reviewed
+def get_customer_events(last_run: dict, limit: int, events_per_page: int, client: CustomerEventsClient) -> tuple[list, dict]:
+    """Fetch customer events from DocuSign Monitor API.
+        
+    Args:
+        client: Initialized DocuSign client
+        last_run: Previous fetch state containing # TODO: containing...?
+        limit: Maximum number of events to fetch
+        events_per_page: Number of events per page
+    Returns:
+        tuple: (events, last_run) where last_run is the updated state and events are the fetched events.
+    """
+    # TODO: change it back before release
+    one_minute_ago = '2025-08-25T14:00:13Z'
+    # one_minute_ago = timestamp_to_datestring(int(time.time() - 60) * 1000, date_format="%Y-%m-%dT%H:%M:%SZ")
+    cursor = last_run.get("cursor") or one_minute_ago
+    
+    total_logs: list = []
+    request_count = 1
+
+    while len(total_logs) < limit:
+        remaining_logs = limit - len(total_logs)
+        events_per_page = min(events_per_page, remaining_logs)
+        
+        demisto.debug(f"{LOG_PREFIX} Request number {request_count}: requesting {events_per_page} events with cursor: {cursor}")
+        try:
+            resp = client.get_customer_events_request(cursor, events_per_page)
+        except Exception as e:
+            demisto.debug(f"{LOG_PREFIX}Exception during get customer events. Exception is {e!s}")
+            raise DemistoException(f"Exception during get customer events. Exception is {e!s}")
+
+        cursor = resp.get("endCursor")
+        fetched_events = resp.get("data") or []
+        total_logs.extend(fetched_events)
+        
+        demisto.debug(
+            f"{LOG_PREFIX}{len(fetched_events)} events fetched from request number {request_count}\n"
+            f"Total customer events fetched: {len(total_logs)}")
+
+        if not fetched_events:
+            demisto.info(f"{LOG_PREFIX} No more data available")
+            break
+        
+        request_count += 1
+
+    last_run["cursor"] = cursor
+    return total_logs, last_run
+
 class CustomerEventsClient(BaseClient):
     """
     DocuSign Monitor API Client for fetching customer events.
@@ -395,40 +419,6 @@ class DocuSignClient(BaseClient):
             proxies: Optional proxy configuration
         """
         self.auth = auth
-        self.http = RetryClient(verify=verify, proxies=proxies, timeout=Constants.DEFAULT_TIMEOUT)
-
-    def get_customer_events_request(
-        self,
-        scopes: str,
-        cursor: Optional[str],
-        limit: int
-    ) -> Dict[str, Any]:
-        """Fetch a stream of monitor events from DocuSign.
-        
-        Args:
-            scopes: OAuth scopes required for the request
-            cursor: Pagination cursor for resuming from a specific point
-            limit: Maximum number of events to return per page (capped at MAX_CUSTOMER_EVENTS_PER_PAGE)
-            
-        Returns:
-            Dict containing monitor events and pagination information
-            
-        Raises:
-            DemistoException: If there's an error fetching the monitor stream
-        """
-        ti = self.auth.get_token(scopes)
-        base = get_monitor_base_url(ti.env)
-        params: Dict[str, Any] = {"limit": min(limit, Constants.MAX_CUSTOMER_EVENTS_PER_PAGE)}
-        if cursor:
-            params["cursor"] = cursor
-        url = f"{base}/api/v2.0/datasets/monitor/stream"
-        resp = self.http.request(
-            "GET",
-            url,
-            headers={"Authorization": f"Bearer {ti.access_token}"},
-            params=params
-        )
-        return resp.json()
 
     def admin_list_users(
         self,
@@ -506,15 +496,6 @@ class DocuSignClient(BaseClient):
             headers={"Authorization": f"Bearer {ti.access_token}"}
         )
         return resp.json()
-
-    def close(self) -> None:
-        """Close all HTTP connections and cleanup resources.
-        
-        This should be called when the client is no longer needed to ensure
-        proper cleanup of connections.
-        """
-        self.http.close()
-        self.auth.http.close()
 
 
 # -------------------- Configuration --------------------
@@ -621,23 +602,6 @@ class Config:
         """Get the list of event types to fetch."""
         return self._params.get("event_types", "")
     
-    def to_dict(self) -> dict[str, Any]:
-        """Convert configuration to a dictionary."""
-        return {
-            "server_url": self.server_url,
-            "integration_key": self.integration_key,
-            "user_id": self.user_id,
-            "redirect_uri": self.redirect_uri,
-            "account_id": self.account_id,
-            "organization_id": self.organization_id,
-            "verify_ssl": self.verify_ssl,
-            "use_proxy": self.use_proxy,
-            "fetch_events": self.fetch_events,
-            "fetch_customer_events": self.fetch_customer_events,
-            "fetch_user_data": self.fetch_user_data,
-            "max_customer_per_fetch": self.max_customer_per_fetch,
-            "max_user_data_per_fetch": self.max_user_data_per_fetch
-        }
 
 # TODO: I dont familiar with this handle_proxy function, I use proxy in the http BaseClient
 def proxies_if_enabled(use_proxy: bool):
@@ -663,62 +627,6 @@ def ensure_ids_for_audit(org_id: Optional[str], account_id: Optional[str]) -> No
     """
     if not org_id or not account_id:
         raise DemistoException("Admin API (audit users) requires both Organization ID and Account ID.")
-
-# -------------------- Single-shot command helpers --------------------
-
-def get_customer_events_once(
-    client: DocuSignClient,
-    config: Config,
-    cursor: str | None,
-    limit: int
-) -> tuple[list[dict[str, Any]], str]:
-    """Fetch a single page of customer events from DocuSign.
-    
-    Args:
-        client: Initialized DocuSign client
-        config: Configuration object
-        cursor: Pagination cursor (optional)
-        limit: Maximum number of events to return
-        
-    Returns:
-        Tuple of (events, next_cursor)
-    """
-    demisto.debug(f"{LOG_PREFIX} Fetching customer events page")
-    
-    # Get required scopes and set default cursor if not provided
-    scopes = user_scopes(True, config.fetch_user_data)
-    if not cursor:
-        cursor = _iso_z(_utcnow())
-    
-    # Fetch events from DocuSign API
-    resp = client.get_customer_events_request(
-        scopes=scopes,
-        cursor=cursor,
-        limit=min(limit, Constants.MAX_CUSTOMER_EVENTS_PER_PAGE)
-    )
-    
-    # Process the response
-    data = resp.get("data") or []
-    next_cursor = resp.get("endCursor") or cursor
-    
-    # Format events with required fields
-    events: list[dict[str, Any]] = []
-    for event in data[:limit]:
-        if not isinstance(event, dict):
-            continue
-            
-        # Ensure required fields are present
-        event["_time"] = event.get("timestamp") or _iso_z(_utcnow())
-        event["source_log_type"] = "eventdata"
-        
-        events.append(event)
-    
-    demisto.debug(
-        f"{LOG_PREFIX} Fetched {len(events)} events, "
-        f"next_cursor={next_cursor[:30]}..." if next_cursor else ""
-    )
-    
-    return events, next_cursor
 
 def get_audit_users_once(
     client: DocuSignClient,
@@ -813,54 +721,6 @@ def get_audit_users_once(
     )
     
     return events, state
-
-# [V] reviewed
-def get_customer_events(last_run: dict, limit: int, events_per_page: int, client: CustomerEventsClient) -> tuple[list, dict]:
-    """Fetch customer events from DocuSign Monitor API.
-        
-    Args:
-        client: Initialized DocuSign client
-        last_run: Previous fetch state containing # TODO: containing...?
-        limit: Maximum number of events to fetch
-        events_per_page: Number of events per page
-    Returns:
-        tuple: (events, last_run) where last_run is the updated state and events are the fetched events.
-    """
-    # TODO: change it back before release
-    one_minute_ago = '2025-08-25T14:00:13Z'
-    # one_minute_ago = timestamp_to_datestring(int(time.time() - 60) * 1000, date_format="%Y-%m-%dT%H:%M:%SZ")
-    cursor = last_run.get("cursor") or one_minute_ago
-    
-    total_logs: list = []
-    request_count = 1
-
-    while len(total_logs) < limit:
-        remaining_logs = limit - len(total_logs)
-        events_per_page = min(events_per_page, remaining_logs)
-        
-        demisto.debug(f"{LOG_PREFIX} Request number {request_count}: requesting {events_per_page} events with cursor: {cursor}")
-        try:
-            resp = client.get_customer_events_request(cursor, events_per_page)
-        except Exception as e:
-            demisto.debug(f"{LOG_PREFIX}Exception during get customer events. Exception is {e!s}")
-            raise DemistoException(f"Exception during get customer events. Exception is {e!s}")
-
-        cursor = resp.get("endCursor")
-        fetched_events = resp.get("data") or []
-        total_logs.extend(fetched_events)
-        
-        demisto.debug(
-            f"{LOG_PREFIX}{len(fetched_events)} events fetched from request number {request_count}\n"
-            f"Total customer events fetched: {len(total_logs)}")
-
-        if not fetched_events:
-            demisto.info(f"{LOG_PREFIX} No more data available")
-            break
-        
-        request_count += 1
-
-    last_run["cursor"] = cursor
-    return total_logs, last_run
 
 
 def fetch_user_data(
@@ -1113,7 +973,6 @@ def fetch_customer_events(last_run: dict) -> tuple[dict, list]: # [V] reviewed
     return last_run, customer_events
 
 
-# TODO: implement this function
 def add_fields_to_events(events: list, event_type: str) -> None:
     """
     Adds the _time and event_type keys to the events.
@@ -1150,7 +1009,7 @@ def fetch_user_data(
         ctx = {}
 
     demisto.debug(
-        f"{LOG_PREFIX} Context | customer_cursor={ctx.get(Constants.CTX_CUSTOMER_CURSOR)} "
+        f"{LOG_PREFIX} Context | customer_cursor={ctx.get("customer_cursor")} "
         f"audit_next={ctx.get(Constants.CTX_AUDIT_NEXT_URL)} "
         f"audit_lms={ctx.get(Constants.CTX_AUDIT_LAST_MOD_SINCE)}"
     )
@@ -1278,55 +1137,10 @@ def command_test_module(client: DocuSignClient, config: Config) -> str:
     demisto.debug(f"{LOG_PREFIX} Test completed successfully")
     return "ok"
 
-def command_get_customer_events(
-    client: DocuSignClient,
-    config: Config,
-    args: dict[str, Any]
-) -> CommandResults:
-    """
-    Fetch customer events from DocuSign.
-    
-    Args:
-        client: Initialized DocuSign client
-        config: Configuration object
-        args: Command arguments
-        
-    Returns:
-        CommandResults: Results to return to Demisto
-    """
-    # Parse arguments
-    limit = min(
-        int(args.get("limit", config.max_customer_per_fetch)),
-        Constants.MAX_CUSTOMER_EVENTS_PER_PAGE
-    )
-    cursor = args.get("cursor")
-    
-    demisto.debug(
-        f"{LOG_PREFIX} Fetching customer events: "
-        f"limit={limit}, cursor={cursor}"
-    )
-    
-    # Fetch events
-    events, next_cursor = get_customer_events_once(client, config, cursor, limit)
-    
-    return CommandResults(
-        readable_output=(
-            f"### Customer Events\n"
-            f"Fetched {len(events)} customer events.\n"
-            f"**Next cursor**: {next_cursor or 'No more events'}"
-        ),
-        raw_response={"events": events, "next_cursor": next_cursor},
-        outputs_prefix="Docusign.CustomerEvents",
-        outputs={
-            "Events": events,
-            "NextCursor": next_cursor,
-            "Count": len(events)
-        },
-    )
 
 def command_get_audit_users(
-    client: DocuSignClient, 
-    config: Config, 
+    client: DocuSignClient,
+    config: Config,
     args: dict[str, Any]
 ) -> CommandResults:
     """Fetch audit user records from DocuSign.
@@ -1392,7 +1206,7 @@ def main() -> None:
         demisto.debug(f"{LOG_PREFIX} Processing command: {command}")
 
         if command == "test-module":
-            res = "TODO: implement this command"
+            res = "# TODO: implement this command"
             # client = DocuSignClient(auth, verify, proxy)
             # res = command_test_module(client)
             return_results(res)
@@ -1410,15 +1224,6 @@ def main() -> None:
             
         elif command == "docusign-generate-consent-url": # [V] reviewed
             return_results(command_generate_consent_url())
-
-        # elif command == "docusign-get-customer-events":
-        #     client = DocuSignClient(auth, verify, proxy)
-        #     res = command_get_customer_events(client, config, args)
-        #     return_results(res)
-        # elif command == "docusign-get-audit-users":
-        #     client = DocuSignClient(auth, verify, proxy)
-        #     res = command_get_audit_users(client, config, args)
-        #     return_results(res)
             
     except Exception as e: # [V] reviewed
         return_error(f"{LOG_PREFIX}Failed to execute {command} command.\nError:\n{str(e)}")
