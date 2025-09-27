@@ -1393,7 +1393,7 @@ def remove_custom_malware_feeds(client: PrismaCloudComputeClient, args) -> Comma
     # populate variable for md5 input
     md5 = args.get("md5")
 
-    # if md5 input is in current feed, remove it
+    # if md5 input is in current feed, remove it.
     for i in range(len(current_md5_feeds) - 1, -1, -1):
         if current_md5_feeds[i].get("md5") == md5:
             current_md5_feeds.pop(i)
