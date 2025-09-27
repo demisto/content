@@ -343,14 +343,23 @@ class Client(BaseClient):
             method="GET", url_suffix=f"/identity-management/v2/user-admin/groups/{group_id}?actions=false", headers=headers
         )
 
-    def get_client_list(self, client_list_id: str = None, name: str = None, include_items: bool = False,
-                        include_deprecated: bool = False, search: str = None, list_type: list = None,
-                        include_network_list: bool = False, page: int = 0,
-                        page_size: int = 50, limit: int = 50) -> dict:
+    def get_client_list(
+        self,
+        client_list_id: str = None,
+        name: str = None,
+        include_items: bool = False,
+        include_deprecated: bool = False,
+        search: str = None,
+        list_type: list = None,
+        include_network_list: bool = False,
+        page: int = 0,
+        page_size: int = 50,
+        limit: int = 50,
+    ) -> dict:
         """
         Get client list.
         Args:
-            client_list_id: An optional URL parameter to get a specific client list. 
+            client_list_id: An optional URL parameter to get a specific client list.
             name: Filters the output to lists matching a name.
             include_items: include items
             include_deprecated: include deprecated
@@ -387,9 +396,19 @@ class Client(BaseClient):
                 url_suffix += f"type={filter_type}"
         return self._http_request(method="GET", url_suffix=url_suffix, params=params)
 
-    def create_client_list(self, name: str, client_list_type: str, contract_id: str, group_id: int, notes: str = None,
-                         tags: list = None, entry_value: str = None, entry_description: str = None,
-                         entry_expiration_date: str = None, entry_tags: list = None) -> dict:
+    def create_client_list(
+        self,
+        name: str,
+        client_list_type: str,
+        contract_id: str,
+        group_id: int,
+        notes: str = None,
+        tags: list = None,
+        entry_value: str = None,
+        entry_description: str = None,
+        entry_expiration_date: str = None,
+        entry_tags: list = None,
+    ) -> dict:
         """
         Create a client list.
         Args:
@@ -408,22 +427,22 @@ class Client(BaseClient):
         """
         entry_tags = entry_tags.split(",") if entry_tags else []
         body = {
-            'name': name,
-            'type': client_list_type,
-            'contractId': contract_id,
-            'groupId': group_id,
-            'notes': notes,
-            'tags': tags,
-            'items': []
+            "name": name,
+            "type": client_list_type,
+            "contractId": contract_id,
+            "groupId": group_id,
+            "notes": notes,
+            "tags": tags,
+            "items": [],
         }
         if entry_value:
             entry = {
-                'value': entry_value,
-                'description': entry_description,
-                'expirationDate': entry_expiration_date,
-                'tags': entry_tags
+                "value": entry_value,
+                "description": entry_description,
+                "expirationDate": entry_expiration_date,
+                "tags": entry_tags,
             }
-            body['items'].append(entry)
+            body["items"].append(entry)
 
         return self._http_request(method="POST", url_suffix="/client-list/v1/lists", json_data=body)
 
@@ -435,9 +454,16 @@ class Client(BaseClient):
         Returns:
             Response object
         """
-        return self._http_request(method="DELETE", url_suffix=f"/client-list/v1/lists/{client_list_id}", resp_type='response')
+        return self._http_request(method="DELETE", url_suffix=f"/client-list/v1/lists/{client_list_id}", resp_type="response")
 
-    def activate_client_list(self, list_id: str, network_environment: str, comments: str = None, notification_recipients: list = None, siebel_ticket_id: str = None) -> dict:
+    def activate_client_list(
+        self,
+        list_id: str,
+        network_environment: str,
+        comments: str = None,
+        notification_recipients: list = None,
+        siebel_ticket_id: str = None,
+    ) -> dict:
         """
         Activate a client list.
         Args:
@@ -450,11 +476,11 @@ class Client(BaseClient):
             Json response as dictionary
         """
         body = {
-            'action': 'ACTIVATE',
-            'network': network_environment,
-            'comments': comments,
-            'notificationRecipients': notification_recipients,
-            'siebelTicketId': siebel_ticket_id
+            "action": "ACTIVATE",
+            "network": network_environment,
+            "comments": comments,
+            "notificationRecipients": notification_recipients,
+            "siebelTicketId": siebel_ticket_id,
         }
         return self._http_request(method="POST", url_suffix=f"/client-list/v1/lists/{list_id}/activations", json_data=body)
 
@@ -468,9 +494,13 @@ class Client(BaseClient):
         Returns:
             Json response as dictionary
         """
-        return self._http_request(method="GET", url_suffix=f"/client-list/v1/lists/{list_id}/environments/{network_environment}/status")
+        return self._http_request(
+            method="GET", url_suffix=f"/client-list/v1/lists/{list_id}/environments/{network_environment}/status"
+        )
 
-    def add_client_list_entry(self, list_id: str, value: str, description: str = None, expiration_date: str = None, tags: list = None) -> dict:
+    def add_client_list_entry(
+        self, list_id: str, value: str, description: str = None, expiration_date: str = None, tags: list = None
+    ) -> dict:
         """
         Add an entry to a client list.
         Args:
@@ -483,15 +513,8 @@ class Client(BaseClient):
             Json response as dictionary
         """
         tags = tags.split(",") if tags else []
-        entry = {
-            'value': value,
-            'description': description,
-            'expirationDate': expiration_date,
-            'tags': tags
-        }
-        body = {
-            'append': [entry]
-        }
+        entry = {"value": value, "description": description, "expirationDate": expiration_date, "tags": tags}
+        body = {"append": [entry]}
         return self._http_request(method="POST", url_suffix=f"/client-list/v1/lists/{list_id}/items", json_data=body)
 
     def remove_client_list_entry(self, list_id: str, value: list) -> dict:
@@ -506,12 +529,8 @@ class Client(BaseClient):
         values = value.split(",") if value else []
         delete = []
         for value in values:
-            delete.append({
-                'value': value
-            })
-        body = {
-            'delete': delete
-        }
+            delete.append({"value": value})
+        body = {"delete": delete}
         return self._http_request(method="POST", url_suffix=f"/client-list/v1/lists/{list_id}/items", json_data=body)
 
     def get_contract_group(self) -> dict:
@@ -534,14 +553,17 @@ class Client(BaseClient):
             Json response as dictionary
         """
         tags = tags.split(",") if tags else []
-        body = {
-            'name': name,
-            'notes': notes,
-            'tags': tags
-        }
+        body = {"name": name, "notes": notes, "tags": tags}
         return self._http_request(method="PUT", url_suffix=f"/client-list/v1/lists/{list_id}", json_data=body)
 
-    def deactivate_client_list(self, list_id: str, network_environment: str, comments: str = None, notification_recipients: list = None, siebel_ticket_id: str = None) -> dict:
+    def deactivate_client_list(
+        self,
+        list_id: str,
+        network_environment: str,
+        comments: str = None,
+        notification_recipients: list = None,
+        siebel_ticket_id: str = None,
+    ) -> dict:
         """
         Deactivate a client list.
         Args:
@@ -554,11 +576,11 @@ class Client(BaseClient):
             Json response as dictionary
         """
         body = {
-            'action': 'DEACTIVATE',
-            'network': network_environment,
-            'comments': comments,
-            'notificationRecipients': notification_recipients,
-            'siebelTicketId': siebel_ticket_id
+            "action": "DEACTIVATE",
+            "network": network_environment,
+            "comments": comments,
+            "notificationRecipients": notification_recipients,
+            "siebelTicketId": siebel_ticket_id,
         }
         return self._http_request(method="POST", url_suffix=f"/client-list/v1/lists/{list_id}/activations", json_data=body)
 
@@ -571,9 +593,7 @@ class Client(BaseClient):
         Returns:
             Json response as dictionary
         """
-        body = {
-            'update': items
-        }
+        body = {"update": items}
         return self._http_request(method="POST", url_suffix=f"/client-list/v1/lists/{list_id}/items", json_data=body)
 
     # Created by C.L.
@@ -3551,10 +3571,19 @@ def list_groups_command(client: Client) -> tuple[object, dict, Union[list, dict]
 
 
 @logger
-def get_client_list_command(client: Client, client_list_id: str = None, name: str = None, include_items: bool = False,
-                           include_deprecated: bool = False, search: str = None, type_list: list = None,
-                           include_network_list: bool = False, page: int = 0,
-                           page_size: int = 50, limit: int = 50) -> tuple[str, dict, dict]:
+def get_client_list_command(
+    client: Client,
+    client_list_id: str = None,
+    name: str = None,
+    include_items: bool = False,
+    include_deprecated: bool = False,
+    search: str = None,
+    type_list: list = None,
+    include_network_list: bool = False,
+    page: int = 0,
+    page_size: int = 50,
+    limit: int = 50,
+) -> tuple[str, dict, dict]:
     """
     Gets the client list.
     Args:
@@ -3572,19 +3601,28 @@ def get_client_list_command(client: Client, client_list_id: str = None, name: st
     Returns:
         Human readable, context entry, raw response
     """
-    raw_response = client.get_client_list(client_list_id, name, include_items, include_deprecated, search, type_list,
-                                        include_network_list, page, page_size, limit)
-    human_readable = tableToMarkdown("Akamai WAF Client Lists", raw_response.get('lists', []))
-    context_entry = {
-        f"{INTEGRATION_CONTEXT_NAME}.ClientList": raw_response
-    }
+    raw_response = client.get_client_list(
+        client_list_id, name, include_items, include_deprecated, search, type_list, include_network_list, page, page_size, limit
+    )
+    human_readable = tableToMarkdown("Akamai WAF Client Lists", raw_response.get("lists", []))
+    context_entry = {f"{INTEGRATION_CONTEXT_NAME}.ClientList": raw_response}
     return human_readable, context_entry, raw_response
 
 
 @logger
-def create_client_list_command(client: Client, name: str, type: str, contract_id: str, group_id: int, notes: str = None,
-                            tags: list = None, entry_value: str = None, entry_description: str = None,
-                            entry_expiration_date: str = None, entry_tags: list = None) -> tuple[str, dict, dict]:
+def create_client_list_command(
+    client: Client,
+    name: str,
+    type: str,
+    contract_id: str,
+    group_id: int,
+    notes: str = None,
+    tags: list = None,
+    entry_value: str = None,
+    entry_description: str = None,
+    entry_expiration_date: str = None,
+    entry_tags: list = None,
+) -> tuple[str, dict, dict]:
     """
     Creates a client list.
     Args:
@@ -3602,12 +3640,11 @@ def create_client_list_command(client: Client, name: str, type: str, contract_id
     Returns:
         Human readable, context entry, raw response
     """
-    raw_response = client.create_client_list(name, type, contract_id, group_id, notes, tags, entry_value,
-                                        entry_description, entry_expiration_date, entry_tags)
+    raw_response = client.create_client_list(
+        name, type, contract_id, group_id, notes, tags, entry_value, entry_description, entry_expiration_date, entry_tags
+    )
     human_readable = tableToMarkdown(f"Akamai WAF Client List {name} created successfully", raw_response)
-    context_entry = {
-        f"{INTEGRATION_CONTEXT_NAME}.ClientList": raw_response
-    }
+    context_entry = {f"{INTEGRATION_CONTEXT_NAME}.ClientList": raw_response}
     return human_readable, context_entry, raw_response
 
 
@@ -3628,7 +3665,9 @@ def delete_client_list_command(client: Client, client_list_id: str) -> tuple[str
     return f"Akamai WAF Client List {client_list_id} was not deleted.", {}, {}
 
 
-def check_activation_status(client:Client, list_id: str, network_environment: str, pending_status: str, interval_seconds: int, timeout_seconds: int):
+def check_activation_status(
+    client: Client, list_id: str, network_environment: str, pending_status: str, interval_seconds: int, timeout_seconds: int
+):
     """
     Args:
         client: Akamai WAF client
@@ -3659,28 +3698,28 @@ def check_activation_status(client:Client, list_id: str, network_environment: st
         status_resp = client.get_client_list_activation_status(list_id, network_environment)
         if isinstance(status_resp, dict):
             items = []
-            if 'activations' in status_resp and isinstance(status_resp['activations'], dict):
-                items = status_resp['activations'].get('items') or []
-            elif 'items' in status_resp and isinstance(status_resp['items'], list):
-                items = status_resp['items']
+            if "activations" in status_resp and isinstance(status_resp["activations"], dict):
+                items = status_resp["activations"].get("items") or []
+            elif "items" in status_resp and isinstance(status_resp["items"], list):
+                items = status_resp["items"]
             # Use the first item as latest
             if items:
                 latest = items[0]
-                latest_status = latest.get('activationStatus') or latest.get('status')
-                activation_id = latest.get('activationId')
-                network = latest.get('network')
+                latest_status = latest.get("activationStatus") or latest.get("status")
+                activation_id = latest.get("activationId")
+                network = latest.get("network")
             else:
-                latest_status = status_resp.get('activationStatus') or status_resp.get('status')
-                activation_id = status_resp.get('activationId')
-                network = status_resp.get('network')
+                latest_status = status_resp.get("activationStatus") or status_resp.get("status")
+                activation_id = status_resp.get("activationId")
+                network = status_resp.get("network")
         if latest_status and latest_status != pending_status:
             notice = "activation" if pending_status == "PENDING_ACTIVATION" else "deactivation"
             hr = tableToMarkdown(
                 f"Akamai WAF Client List {list_id} {notice} completed with status {latest_status}",
                 {
-                    'activationId': activation_id,
-                    'network': network or network_environment,
-                    'status': latest_status,
+                    "activationId": activation_id,
+                    "network": network or network_environment,
+                    "status": latest_status,
                 },
             )
             demisto.debug(f"Finished polling for status status is: {latest_status}")
@@ -3697,13 +3736,13 @@ def check_activation_status(client:Client, list_id: str, network_environment: st
     hr = tableToMarkdown(
         f"Akamai WAF Client List {list_id}. Activation incompleted with status {latest_status}",
         {
-            'activationId': activation_id,
-            'network': network or network_environment,
-            'status': latest_status,
+            "activationId": activation_id,
+            "network": network or network_environment,
+            "status": latest_status,
         },
     )
     return hr, f"{INTEGRATION_CONTEXT_NAME}.Activation: {status_resp}", f"Activation incompleted with status {latest_status}"
-    
+
 
 def activate_client_list_command(
     client: Client,
@@ -3731,7 +3770,7 @@ def activate_client_list_command(
     When include_polling is true, the command will keep polling the activation status until it changes from PENDING_ACTIVATION.
     """
     raw_response = client.activate_client_list(list_id, network_environment, comments, notification_recipients, siebel_ticket_id)
-    if str(include_polling).lower() != 'true':
+    if str(include_polling).lower() != "true":
         human_readable = tableToMarkdown(f"Akamai WAF Client List {list_id} activation submitted successfully", raw_response)
         context_entry = {f"{INTEGRATION_CONTEXT_NAME}.Activation": raw_response}
         return human_readable, context_entry, raw_response
@@ -3740,7 +3779,9 @@ def activate_client_list_command(
 
 
 @logger
-def add_client_list_entry_command(client: Client, list_id: str, value: str, description: str = None, expiration_date: str = None, tags: list = None) -> tuple[str, dict, dict]:
+def add_client_list_entry_command(
+    client: Client, list_id: str, value: str, description: str = None, expiration_date: str = None, tags: list = None
+) -> tuple[str, dict, dict]:
     """
     Adds an entry to a client list.
     Args:
@@ -3785,14 +3826,14 @@ def get_contract_group_command(client: Client) -> tuple[str, dict, dict]:
     """
     raw_response = client.get_contract_group()
     human_readable = tableToMarkdown("Akamai WAF Contract Groups", raw_response)
-    context_entry = {
-        f"{INTEGRATION_CONTEXT_NAME}.ContractGroup": raw_response
-    }
+    context_entry = {f"{INTEGRATION_CONTEXT_NAME}.ContractGroup": raw_response}
     return human_readable, context_entry, raw_response
 
 
 @logger
-def update_client_list_command(client: Client, list_id: str, name: str, notes: str = None, tags: list = None) -> tuple[str, dict, dict]:
+def update_client_list_command(
+    client: Client, list_id: str, name: str, notes: str = None, tags: list = None
+) -> tuple[str, dict, dict]:
     """
     Updates a client list.
     Args:
@@ -3806,9 +3847,7 @@ def update_client_list_command(client: Client, list_id: str, name: str, notes: s
     """
     raw_response = client.update_client_list(list_id, name, notes, tags)
     human_readable = tableToMarkdown(f"Akamai WAF Client List {list_id} updated successfully", raw_response)
-    context_entry = {
-        f"{INTEGRATION_CONTEXT_NAME}.ClientList": raw_response
-    }
+    context_entry = {f"{INTEGRATION_CONTEXT_NAME}.ClientList": raw_response}
     return human_readable, context_entry, raw_response
 
 
@@ -3822,7 +3861,7 @@ def deactivate_client_list_command(
     include_polling: str = "true",
     interval: int = 30,
     timeout: int = 180,
-)  -> tuple[str, dict, dict]:
+) -> tuple[str, dict, dict]:
     """
     Args:
         client: Akamai WAF client
@@ -3836,18 +3875,29 @@ def deactivate_client_list_command(
         Human readable, context entry, raw response
     Deactivates a client list, optionally polling until deactivation completes.
     When include_polling is true, the command polls the activation status until it changes from PENDING_DEACTIVATION.
-    """    
-    raw_response = client.deactivate_client_list(list_id, network_environment, comments, notification_recipients, siebel_ticket_id)
-    if str(include_polling).lower() != 'true':
+    """
+    raw_response = client.deactivate_client_list(
+        list_id, network_environment, comments, notification_recipients, siebel_ticket_id
+    )
+    if str(include_polling).lower() != "true":
         human_readable = tableToMarkdown(f"Akamai WAF Client List {list_id} triggered deactivation successfully", raw_response)
         context_entry = {f"{INTEGRATION_CONTEXT_NAME}.Activation": raw_response}
         return human_readable, context_entry, raw_response
-    
+
     else:
         return check_activation_status(client, list_id, network_environment, "PENDING_DEACTIVATION", interval, timeout)
 
+
 @logger
-def update_client_list_entry_command(client: Client, list_id: str, value: str, description: str = None, expiration_date: str = None, tags: list = None, is_override: bool = False) -> tuple[str, dict, dict]:
+def update_client_list_entry_command(
+    client: Client,
+    list_id: str,
+    value: str,
+    description: str = None,
+    expiration_date: str = None,
+    tags: list = None,
+    is_override: bool = False,
+) -> tuple[str, dict, dict]:
     """
     Updates an entry in a client list.
     Args:
@@ -3862,27 +3912,27 @@ def update_client_list_entry_command(client: Client, list_id: str, value: str, d
         Human readable, context entry, raw response
     """
     updated_item = None
-    tags = tags.split(',') if tags else []
+    tags = tags.split(",") if tags else []
     if is_override:
         demisto.debug("Update_client_list_entry: Override missing entry")
         updated_item = {
-            'value': value,
-            'description': description,
-            'expirationDate': expiration_date,
-            'tags': tags,
+            "value": value,
+            "description": description,
+            "expirationDate": expiration_date,
+            "tags": tags,
         }
     else:
         demisto.debug("Update_client_list_entry: Get the existing list to avoid overwriting values")
         existing_list = client.get_client_list(client_list_id=list_id, include_items=True)
-        items = existing_list.get('items', [])
+        items = existing_list.get("items", [])
         for item in items:
-            if item.get('value') == value:
+            if item.get("value") == value:
                 if description:
-                    item['description'] = description
+                    item["description"] = description
                 if expiration_date:
-                    item['expirationDate'] = expiration_date
+                    item["expirationDate"] = expiration_date
                 if tags:
-                    item['tags'] = tags
+                    item["tags"] = tags
                 updated_item = item
                 break
 
@@ -3891,9 +3941,7 @@ def update_client_list_entry_command(client: Client, list_id: str, value: str, d
 
     raw_response = client.update_client_list_entry(list_id, [updated_item])
     human_readable = tableToMarkdown(f"Entry '{value}' in Akamai WAF Client List {list_id} updated successfully", raw_response)
-    context_entry = {
-        f"{INTEGRATION_CONTEXT_NAME}.ClientList": raw_response
-    }
+    context_entry = {f"{INTEGRATION_CONTEXT_NAME}.ClientList": raw_response}
     return human_readable, context_entry, raw_response
 
 
@@ -7198,7 +7246,7 @@ def main():
         f"{INTEGRATION_COMMAND_NAME}-list-groups": list_groups_command,
         f"{INTEGRATION_COMMAND_NAME}-create-enrollment": create_enrollment_command,
         f"{INTEGRATION_COMMAND_NAME}-list-enrollments": list_enrollments_command,
-            f"{INTEGRATION_COMMAND_NAME}-get-enrollment-by-cn": get_enrollment_by_cn_command,
+        f"{INTEGRATION_COMMAND_NAME}-get-enrollment-by-cn": get_enrollment_by_cn_command,
         f"{INTEGRATION_COMMAND_NAME}-get-domains": get_domains_command,
         f"{INTEGRATION_COMMAND_NAME}-get-domain": get_domain_command,
         f"{INTEGRATION_COMMAND_NAME}-create-domain": create_domain_command,

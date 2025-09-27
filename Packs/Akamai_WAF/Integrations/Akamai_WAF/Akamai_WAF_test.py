@@ -697,7 +697,7 @@ def test_create_client_list_command(mocker, akamai_waf_client):
         tags=["tag1", "tag2"],
         entry_value="1.2.3.4",
         entry_description="Test entry",
-        entry_tags=["entry_tag"]
+        entry_tags=["entry_tag"],
     )
     assert expected_raw_response == raw_response
     assert expected_human_readable == human_readable
@@ -723,9 +723,7 @@ def test_delete_client_list_command(mocker, akamai_waf_client):
     mock_response.status_code = 204
     mocker.patch.object(akamai_waf_client, "delete_client_list", return_value=mock_response)
 
-    human_readable, _, _ = delete_client_list_command(
-        client=akamai_waf_client, client_list_id="12345"
-    )
+    human_readable, _, _ = delete_client_list_command(client=akamai_waf_client, client_list_id="12345")
     assert expected_human_readable == human_readable
 
 
@@ -747,11 +745,7 @@ def test_add_client_list_entry_command(mocker, akamai_waf_client):
     mocker.patch.object(akamai_waf_client, "add_client_list_entry", return_value=expected_raw_response)
 
     human_readable, _, raw_response = add_client_list_entry_command(
-        client=akamai_waf_client,
-        list_id="12345",
-        value="1.2.3.4",
-        description="Test entry",
-        tags=["test_tag"]
+        client=akamai_waf_client, list_id="12345", value="1.2.3.4", description="Test entry", tags=["test_tag"]
     )
     assert expected_raw_response == raw_response
     assert expected_human_readable == human_readable
@@ -775,9 +769,7 @@ def test_remove_client_list_entry_command(mocker, akamai_waf_client):
     mocker.patch.object(akamai_waf_client, "remove_client_list_entry", return_value=expected_raw_response)
 
     human_readable, _, raw_response = remove_client_list_entry_command(
-        client=akamai_waf_client,
-        list_id="12345",
-        value=["1.2.3.4"]
+        client=akamai_waf_client, list_id="12345", value=["1.2.3.4"]
     )
     assert expected_raw_response == raw_response
     assert expected_human_readable == human_readable
@@ -830,7 +822,7 @@ def test_update_client_list_command(mocker, akamai_waf_client):
         list_id="12345",
         name="New Test Client List",
         notes="New test notes",
-        tags=["new_tag1", "new_tag2"]
+        tags=["new_tag1", "new_tag2"],
     )
     assert expected_raw_response == raw_response
     assert expected_human_readable == human_readable
@@ -858,11 +850,7 @@ def test_update_client_list_entry_command(mocker, akamai_waf_client):
     mocker.patch.object(akamai_waf_client, "update_client_list_entry", return_value=expected_raw_response)
 
     human_readable, context_entry, raw_response = update_client_list_entry_command(
-        client=akamai_waf_client,
-        list_id="12345",
-        value="1.2.3.4",
-        description="New description",
-        tags="new_tag"
+        client=akamai_waf_client, list_id="12345", value="1.2.3.4", description="New description", tags="new_tag"
     )
     assert expected_raw_response == raw_response
     assert expected_human_readable == human_readable
