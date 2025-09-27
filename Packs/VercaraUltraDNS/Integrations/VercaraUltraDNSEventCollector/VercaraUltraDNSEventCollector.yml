@@ -54,7 +54,7 @@ script:
       - 'true'
       - 'false'
       required: true
-    - description: Maximum number of results to return. Default is 50, maximum is 2,500.
+    - description: Maximum number of results to return. Maximum is 2,500.
       name: limit
       required: false
       defaultValue: '50'
