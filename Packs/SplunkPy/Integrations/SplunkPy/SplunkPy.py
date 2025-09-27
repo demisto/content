@@ -1870,8 +1870,7 @@ def get_comments_data_new(
         extensive_log(f"get_comments_data_new: notable_comments = {notable_comments}")
         for notable_id, comments in notable_comments.items():
             # Sort comments by update_time (newest first)
-            sorted_comments = sorted(comments, key=lambda x: x["update_time"],
-                                     reverse=True)  # type: ignore[arg-type,return-value]
+            sorted_comments = sorted(comments, key=lambda x: x["update_time"], reverse=True)  # type: ignore[arg-type,return-value]
             # Store comments under 'comment' key for backward compatibility and consistency:
             # Used by Notable.create_incident() during fetch operations and after enriching notables mechanism.
             id_to_notable_map[notable_id]["comment"] = [comment["comment"] for comment in sorted_comments]
@@ -3617,20 +3616,19 @@ def splunk_job_share(service: client.Service, args: dict) -> list[CommandResults
             except HTTPError as error:
                 job_results.append(
                     CommandResults(
-                        readable_output=f"Error increasing TTL for SID: {sid} resulted in the following error {str(error)}")
+                        readable_output=f"Error increasing TTL for SID: {sid} resulted in the following error {str(error)}"
+                    )
                 )
                 ttl_results = False
             try:
                 share_results = True
                 endpoint = f"search/jobs/{sid}/acl"
-                service.post(endpoint, **{
-                    "sharing": "global",
-                    "perms.read": "*"
-                })
+                service.post(endpoint, **{"sharing": "global", "perms.read": "*"})
             except HTTPError as error:
                 job_results.append(
                     CommandResults(
-                        readable_output=f"Error changing permissions for SID: {sid} resulted in the following error {str(error)}")
+                        readable_output=f"Error changing permissions for SID: {sid} resulted in the following error {str(error)}"
+                    )
                 )
                 share_results = False
 
