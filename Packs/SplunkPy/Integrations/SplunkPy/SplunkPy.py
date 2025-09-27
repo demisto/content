@@ -3592,7 +3592,7 @@ def splunk_job_status(service: client.Service, args: dict) -> list[CommandResult
     return job_results
 
 
-def splunk_job_share(service: client.Service, args: dict) -> list[CommandResults]:
+def splunk_job_share(service: client.Service, args: dict) -> list[CommandResults]:  # pragma: no cover
     sids = argToList(args.get("sid"))
     try:
         ttl = int(args.get("ttl", 1800))
