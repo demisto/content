@@ -1,6 +1,6 @@
 Azure Open AI ServiceAI
-## Configure Azure Open AI Service - French DC Test in Cortex
 
+## Configure Azure Open AI Service - French DC Test in Cortex
 
 | **Parameter** | **Required** |
 | --- | --- |
@@ -27,7 +27,7 @@ Send message to Azure Open AI
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| message | The message you would like to send. | Optional | 
+| message | The message you would like to send. | Optional |
 
 #### Context Output
 
