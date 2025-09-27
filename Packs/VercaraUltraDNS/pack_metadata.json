@@ -11,13 +11,9 @@
         "Analytics & SIEM"
     ],
     "tags": [
-        "DNS",
-        "Event Collector",
-        "Audit Logs"
+        "Data Source"
     ],
-    "useCases": [
-        "SIEM"
-    ],
+    "useCases": [],
     "keywords": [
         "vercara",
         "ultradns",
@@ -29,7 +25,6 @@
     "displayedImages": [],
     "githubUser": [],
     "certification": "certified",
-    "vendorName": "Vercara",
     "marketplaces": [
         "marketplacev2",
         "platform"

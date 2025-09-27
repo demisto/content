@@ -57,7 +57,7 @@ script:
     - description: Maximum number of results to return. Default is 50, maximum is 2,500.
       name: limit
       required: false
-      defaultvalue: '50'
+      defaultValue: '50'
     - description: Start time for fetching events. Supports ISO format ("2023-01-01T00:00:00") or natural language ("7 days ago", "yesterday", "1 week ago").
       name: start_time
       required: true
@@ -65,7 +65,7 @@ script:
       name: end_time
     description: Gets audit events from Vercara UltraDNS.
     name: vercara-ultradns-get-events
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.11.4819260
   isfetchevents: true
   runonce: false
   script: '-'

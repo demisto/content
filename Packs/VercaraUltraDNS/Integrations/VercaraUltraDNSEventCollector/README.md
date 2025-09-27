@@ -46,7 +46,6 @@ Gets DNS configuration audit events from Vercara UltraDNS.
 | start_time | Start time for event collection. Supports ISO format ("2023-01-01T00:00:00") or natural language ("7 days ago", "yesterday", "1 week ago"). | Required |
 | end_time | End time for event collection. Supports ISO format ("2023-01-01T23:59:59") or natural language ("2 hours ago", "now"). Default is now if not provided. | Optional |
 
-
 #### Context Output
 
 There is no context output for this command.
