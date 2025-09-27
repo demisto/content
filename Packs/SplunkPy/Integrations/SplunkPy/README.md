@@ -96,11 +96,9 @@ Each query can have more that one API call.
 
 #### Fetch
 
-
 Configured by the instance configuration fetch_limit (behind the scenes an query can made few API calls).
 
 ## Configure SplunkPy in Cortex
-
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -146,7 +144,6 @@ Configured by the instance configuration fetch_limit (behind the scenes an query
 | Incidents Fetch Interval |  | False |
 | Comment tag from Splunk | Add this tag to an entry to mirror it as a comment from Splunk. | False |
 | Comment tag to Splunk | Add this tag to an entry to mirror it as a comment to Splunk. | False |
-
 
 **Note:** To use a Splunk Cloud instance, contact Splunk support to request API access. Use a non-SAML account to access the API.
 
@@ -641,20 +638,21 @@ Sends events to an HTTP Event Collector using the Splunk platform JSON event pro
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| event | Event payload key-value pair.<br/>String example: "event": "Access log test message". | Optional | 
-| fields | Fields for indexing that do not occur in the event payload itself. Accepts multiple, comma-separated, fields. | Optional | 
-| index | The index name. | Optional | 
-| host | The hostname. | Optional | 
-| source_type | User-defined event source type. | Optional | 
-| source | User-defined event source. | Optional | 
-| time | Epoch-formatted time. | Optional | 
-| request_channel | A channel identifier (ID) where to send the request, must be a Globally Unique Identifier (GUID). If the indexer acknowledgment is turned on, a channel is required. | Optional | 
-| batch_event_data | A  batch of events to send to Splunk. For example, `{"event": "something happened at 14/10/2024 12:29", "fields": {"severity": "INFO", "category": "test2, test2"}, "index": "index0","sourcetype": "sourcetype0","source": "/example/something" } {"event": "something happened at 14/10/2024 13:29", "index": "index1", "sourcetype": "sourcetype1","source": "/example/something", "fields":{ "fields" : "severity: INFO, category: test2, test2"}}`. If provided all arguments except of `request_channel` are ignored. | Optional | 
-| entry_id | The entry ID in Cortex XSOAR of the file containing a batch of events. If provided, the arguments related to a single event are ignored. | Optional | 
+| event | Event payload key-value pair.<br/>String example: "event": "Access log test message". | Optional |
+| fields | Fields for indexing that do not occur in the event payload itself. Accepts multiple, comma-separated, fields. | Optional |
+| index | The index name. | Optional |
+| host | The hostname. | Optional |
+| source_type | User-defined event source type. | Optional |
+| source | User-defined event source. | Optional |
+| time | Epoch-formatted time. | Optional |
+| request_channel | A channel identifier (ID) where to send the request, must be a Globally Unique Identifier (GUID). If the indexer acknowledgment is turned on, a channel is required. | Optional |
+| batch_event_data | A  batch of events to send to Splunk. For example, `{"event": "something happened at 14/10/2024 12:29", "fields": {"severity": "INFO", "category": "test2, test2"}, "index": "index0","sourcetype": "sourcetype0","source": "/example/something" } {"event": "something happened at 14/10/2024 13:29", "index": "index1", "sourcetype": "sourcetype1","source": "/example/something", "fields":{ "fields" : "severity: INFO, category: test2, test2"}}`. If provided all arguments except of `request_channel` are ignored. | Optional |
+| entry_id | The entry ID in Cortex XSOAR of the file containing a batch of events. If provided, the arguments related to a single event are ignored. | Optional |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### splunk-job-status
 
 ***
@@ -1299,6 +1297,7 @@ Under **Used for communication between Cortex XSOAR and customer resources**. Ch
 If you encounter fetch issues and you have enriching enabled, the issue may be the result of pressing the `Reset the "last run" timestamp` button.  
 Note that the way to reset the mechanism is to run the `splunk-reset-enriching-fetch-mechanism` command.  
 See [here](#resetting-the-enriching-fetch-mechanism).
+
 ### splunk-job-share
 
 ***
@@ -1312,8 +1311,8 @@ Change job settings to share its results to all Splunk users, and change its TTL
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| sid | Comma-separated list of job IDs to share. | Required | 
-| ttl | Time in seconds for the job's expiry time. Default is 1800. | Optional | 
+| sid | Comma-separated list of job IDs to share. | Required |
+| ttl | Time in seconds for the job's expiry time. Default is 1800. | Optional |
 
 #### Context Output
 
