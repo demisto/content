@@ -96,6 +96,7 @@ Each query can have more that one API call.
 
 #### Fetch
 
+
 Configured by the instance configuration fetch_limit (behind the scenes an query can made few API calls).
 
 ## Configure SplunkPy in Cortex
