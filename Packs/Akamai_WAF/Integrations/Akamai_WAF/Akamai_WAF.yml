@@ -701,10 +701,12 @@ script:
         defaultValue: 'true'
       - name: interval
         description: Interval in seconds between polling attempts.
-        defaultValue: '30'
+        defaultValue: 30
+        type: Number
       - name: timeout
         description: Timeout in seconds for polling.
-        defaultValue: '60'
+        defaultValue: 60
+        type: Number
     outputs:
       - contextPath: Akamai.Activation
         description: The activation details.
@@ -790,10 +792,12 @@ script:
         defaultValue: 'true'
       - name: interval
         description: Interval in seconds between polling attempts.
-        defaultValue: '30'
+        defaultValue: 30
+        type: Number
       - name: timeout
         description: Timeout in seconds for polling.
-        defaultValue: '1800'
+        defaultValue: 180
+        type: Number
     outputs:
       - contextPath: Akamai.Activation
         description: The deactivation details.

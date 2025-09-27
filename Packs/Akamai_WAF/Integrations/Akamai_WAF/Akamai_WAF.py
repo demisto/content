@@ -3628,9 +3628,30 @@ def delete_client_list_command(client: Client, client_list_id: str) -> tuple[str
     return f"Akamai WAF Client List {client_list_id} was not deleted.", {}, {}
 
 
-def check_activation_status(client:Client, list_id: str, network_environment: str, pending_status: str):
-    timeout_seconds = 180 if timeout_seconds > 180 else timeout_seconds
-    interval_seconds = 30
+def check_activation_status(client:Client, list_id: str, network_environment: str, pending_status: str, interval_seconds: int, timeout_seconds: int):
+    """
+    Args:
+        client: Akamai WAF client
+        list_id: The ID of the client list to activate.
+        network_environment: The network environment to activate the list on.
+        pending_status: The pending status to check.
+        interval_seconds: The interval in seconds between polling attempts.
+        timeout_seconds: The timeout in seconds for polling.
+    Returns:
+        Human readable, context entry, raw response
+    """
+    try:
+        timeout_seconds = int(timeout_seconds) if timeout_seconds is not None else 120
+    except (TypeError, ValueError):
+        timeout_seconds = 120
+    try:
+        interval_seconds = int(interval_seconds) if interval_seconds is not None else 30
+    except (TypeError, ValueError):
+        interval_seconds = 30
+
+    timeout_seconds = min(timeout_seconds, 120)
+    # ensure interval is at least 1 second to avoid zero/negative sleep
+    interval_seconds = max(1, min(interval_seconds, 30))
     latest_status = pending_status
     activation_id = None
     start_time = time.time()
@@ -3662,12 +3683,27 @@ def check_activation_status(client:Client, list_id: str, network_environment: st
                     'status': latest_status,
                 },
             )
+            demisto.debug(f"Finished polling for status status is: {latest_status}")
+            demisto.debug(f"hr: {hr}")
+            demisto.debug(f"outputs: {INTEGRATION_CONTEXT_NAME}.Activation: {status_resp}")
+            demisto.debug(f"raw_response: {status_resp}")
             return hr, f"{INTEGRATION_CONTEXT_NAME}.Activation: {status_resp}", status_resp
         else:
             elapsed_time = time.time() - start_time
             demisto.debug(f"check_activation_status: is '{latest_status}'. Elapsed time: {elapsed_time:.2f}s.")
             demisto.debug(f"check_activation_status Sleeping for {interval_seconds} seconds...\n")
             time.sleep(interval_seconds)
+    demisto.debug(f"Stopped polling as of timeout. stastus is: {latest_status}")
+    hr = tableToMarkdown(
+        f"Akamai WAF Client List {list_id}. Activation incompleted with status {latest_status}",
+        {
+            'activationId': activation_id,
+            'network': network or network_environment,
+            'status': latest_status,
+        },
+    )
+    return hr, f"{INTEGRATION_CONTEXT_NAME}.Activation: {status_resp}", f"Activation incompleted with status {latest_status}"
+    
 
 def activate_client_list_command(
     client: Client,
@@ -3677,7 +3713,9 @@ def activate_client_list_command(
     notification_recipients: list | None = None,
     siebel_ticket_id: str | None = None,
     include_polling: str = "true",
-) -> CommandResults:
+    interval: int = 30,
+    timeout: int = 60,
+) -> tuple[str, dict, dict]:
     """
      Args:
         client: Akamai WAF client
@@ -3698,7 +3736,7 @@ def activate_client_list_command(
         context_entry = {f"{INTEGRATION_CONTEXT_NAME}.Activation": raw_response}
         return human_readable, context_entry, raw_response
     else:
-        return check_activation_status(client, list_id, network_environment, "PENDING_ACTIVATION")
+        return check_activation_status(client, list_id, network_environment, "PENDING_ACTIVATION", interval, timeout)
 
 
 @logger
@@ -3781,7 +3819,10 @@ def deactivate_client_list_command(
     comments: str | None = None,
     notification_recipients: list | None = None,
     siebel_ticket_id: str | None = None,
-    include_polling: str = "true")  -> CommandResults:
+    include_polling: str = "true",
+    interval: int = 30,
+    timeout: int = 180,
+)  -> tuple[str, dict, dict]:
     """
     Args:
         client: Akamai WAF client
@@ -3792,7 +3833,7 @@ def deactivate_client_list_command(
         siebel_ticket_id: A Siebel ticket ID.
         include_polling: Whether to poll activation status until completion.
     Returns:
-        CommandResults
+        Human readable, context entry, raw response
     Deactivates a client list, optionally polling until deactivation completes.
     When include_polling is true, the command polls the activation status until it changes from PENDING_DEACTIVATION.
     """    
@@ -3803,7 +3844,7 @@ def deactivate_client_list_command(
         return human_readable, context_entry, raw_response
     
     else:
-        return check_activation_status(client, list_id, network_environment, "PENDING_DEACTIVATION")
+        return check_activation_status(client, list_id, network_environment, "PENDING_DEACTIVATION", interval, timeout)
 
 @logger
 def update_client_list_entry_command(client: Client, list_id: str, value: str, description: str = None, expiration_date: str = None, tags: list = None, is_override: bool = False) -> tuple[str, dict, dict]:
