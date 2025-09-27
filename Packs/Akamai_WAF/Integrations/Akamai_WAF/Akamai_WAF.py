@@ -343,6 +343,259 @@ class Client(BaseClient):
             method="GET", url_suffix=f"/identity-management/v2/user-admin/groups/{group_id}?actions=false", headers=headers
         )
 
+    def get_client_list(
+        self,
+        client_list_id: str = None,
+        name: str = None,
+        include_items: bool = False,
+        include_deprecated: bool = False,
+        search: str = None,
+        list_type: list = None,
+        include_network_list: bool = False,
+        page: int = 0,
+        page_size: int = 50,
+        limit: int = 50,
+    ) -> dict:
+        """
+        Get client list.
+        Args:
+            client_list_id: An optional URL parameter to get a specific client list.
+            name: Filters the output to lists matching a name.
+            include_items: include items
+            include_deprecated: include deprecated
+            search: search
+            list_type: filter by these types
+            include_network_list: include network list
+            page: page
+            page_size: page size
+            limit: limit
+        Returns:
+            Json response as dictionary
+        """
+        url_suffix = "/client-list/v1/lists"
+        if client_list_id:
+            url_suffix += f"/{client_list_id}"
+        params = {
+            "name": name,
+            "includeItems": include_items,
+            "includeDeprecated": include_deprecated,
+            "search": search,
+            "includeNetworkLists": include_network_list,
+            "page": page,
+            "pageSize": page_size,
+            "limit": limit,
+        }
+        if list_type:
+            if isinstance(list_type, str):
+                list_type = list_type.split(",")
+            for i, filter_type in enumerate(list_type):
+                if i == 0:
+                    url_suffix += "?"
+                else:
+                    url_suffix += "&"
+                url_suffix += f"type={filter_type}"
+        return self._http_request(method="GET", url_suffix=url_suffix, params=params)
+
+    def create_client_list(
+        self,
+        name: str,
+        client_list_type: str,
+        contract_id: str,
+        group_id: int,
+        notes: str = None,
+        tags: list = None,
+        entry_value: str = None,
+        entry_description: str = None,
+        entry_expiration_date: str = None,
+        entry_tags: list = None,
+    ) -> dict:
+        """
+        Create a client list.
+        Args:
+            name: The name for the new client list.
+            client_list_type: The type of client list.
+            contract_id: The contract ID.
+            group_id: The group ID.
+            notes: A description for the client list.
+            tags: A list of tags to associate with the client list.
+            entry_value: The value for a single entry in the client list.
+            entry_description: A description for the entry.
+            entry_expiration_date: The expiration date for the entry.
+            entry_tags: A list of tags for the entry.
+        Returns:
+            Json response as dictionary
+        """
+        entry_tags = entry_tags.split(",") if entry_tags else []
+        body = {
+            "name": name,
+            "type": client_list_type,
+            "contractId": contract_id,
+            "groupId": group_id,
+            "notes": notes,
+            "tags": tags,
+            "items": [],
+        }
+        if entry_value:
+            entry = {
+                "value": entry_value,
+                "description": entry_description,
+                "expirationDate": entry_expiration_date,
+                "tags": entry_tags,
+            }
+            body["items"].append(entry)
+
+        return self._http_request(method="POST", url_suffix="/client-list/v1/lists", json_data=body)
+
+    def delete_client_list(self, client_list_id: str) -> requests.Response:
+        """
+        Delete a client list.
+        Args:
+            client_list_id: The ID of the client list to delete.
+        Returns:
+            Response object
+        """
+        return self._http_request(method="DELETE", url_suffix=f"/client-list/v1/lists/{client_list_id}", resp_type="response")
+
+    def activate_client_list(
+        self,
+        list_id: str,
+        network_environment: str,
+        comments: str = None,
+        notification_recipients: list = None,
+        siebel_ticket_id: str = None,
+    ) -> dict:
+        """
+        Activate a client list.
+        Args:
+            list_id: The ID of the client list to activate.
+            network_environment: The network environment.
+            comments: Comments for the activation.
+            notification_recipients: List of email addresses for notification.
+            siebel_ticket_id: Siebel ticket ID.
+        Returns:
+            Json response as dictionary
+        """
+        body = {
+            "action": "ACTIVATE",
+            "network": network_environment,
+            "comments": comments,
+            "notificationRecipients": notification_recipients,
+            "siebelTicketId": siebel_ticket_id,
+        }
+        return self._http_request(method="POST", url_suffix=f"/client-list/v1/lists/{list_id}/activations", json_data=body)
+
+    def get_client_list_activation_status(self, list_id: str, network_environment: str) -> dict:
+        """
+        Get activation status for a client list.
+        Returns a list of activation items including activationStatus and activationId.
+        Args:
+            list_id: The client list ID
+            network_environment: The network environment.
+        Returns:
+            Json response as dictionary
+        """
+        return self._http_request(
+            method="GET", url_suffix=f"/client-list/v1/lists/{list_id}/environments/{network_environment}/status"
+        )
+
+    def add_client_list_entry(
+        self, list_id: str, value: str, description: str = None, expiration_date: str = None, tags: list = None
+    ) -> dict:
+        """
+        Add an entry to a client list.
+        Args:
+            list_id: The ID of the client list.
+            value: The value for the new entry.
+            description: A description for the new entry.
+            expiration_date: The expiration date for the new entry.
+            tags: A list of tags for the new entry.
+        Returns:
+            Json response as dictionary
+        """
+        tags = tags.split(",") if tags else []
+        entry = {"value": value, "description": description, "expirationDate": expiration_date, "tags": tags}
+        body = {"append": [entry]}
+        return self._http_request(method="POST", url_suffix=f"/client-list/v1/lists/{list_id}/items", json_data=body)
+
+    def remove_client_list_entry(self, list_id: str, value: list) -> dict:
+        """
+        Remove an entry from a client list.
+        Args:
+            list_id: The ID of the client list.
+            value: A list of values to remove.
+        Returns:
+            Json response as dictionary
+        """
+        values = value.split(",") if value else []
+        delete = []
+        for value in values:
+            delete.append({"value": value})
+        body = {"delete": delete}
+        return self._http_request(method="POST", url_suffix=f"/client-list/v1/lists/{list_id}/items", json_data=body)
+
+    def get_contract_group(self) -> dict:
+        """
+        Get contract groups.
+        Returns:
+            Json response as dictionary
+        """
+        return self._http_request(method="GET", url_suffix="/client-list/v1/contracts-groups")
+
+    def update_client_list(self, list_id: str, name: str, notes: str = None, tags: list = None) -> dict:
+        """
+        Update a client list.
+        Args:
+            list_id: The ID of the client list to update.
+            name: The new name for the client list.
+            notes: The new description for the client list.
+            tags: The new tags for the client list.
+        Returns:
+            Json response as dictionary
+        """
+        tags = tags.split(",") if tags else []
+        body = {"name": name, "notes": notes, "tags": tags}
+        return self._http_request(method="PUT", url_suffix=f"/client-list/v1/lists/{list_id}", json_data=body)
+
+    def deactivate_client_list(
+        self,
+        list_id: str,
+        network_environment: str,
+        comments: str = None,
+        notification_recipients: list = None,
+        siebel_ticket_id: str = None,
+    ) -> dict:
+        """
+        Deactivate a client list.
+        Args:
+            list_id: The ID of the client list to deactivate.
+            network_environment: The network environment.
+            comments: Comments for the deactivation.
+            notification_recipients: List of email addresses for notification.
+            siebel_ticket_id: Siebel ticket ID.
+        Returns:
+            Json response as dictionary
+        """
+        body = {
+            "action": "DEACTIVATE",
+            "network": network_environment,
+            "comments": comments,
+            "notificationRecipients": notification_recipients,
+            "siebelTicketId": siebel_ticket_id,
+        }
+        return self._http_request(method="POST", url_suffix=f"/client-list/v1/lists/{list_id}/activations", json_data=body)
+
+    def update_client_list_entry(self, list_id: str, items: list) -> dict:
+        """
+        Update an entry in a client list.
+        Args:
+            list_id: The ID of the client list.
+            items: The list of items to update.
+        Returns:
+            Json response as dictionary
+        """
+        body = {"update": items}
+        return self._http_request(method="POST", url_suffix=f"/client-list/v1/lists/{list_id}/items", json_data=body)
+
     # Created by C.L.
 
     def create_group(self, group_id: int = 0, groupname: str = "") -> dict:
@@ -3318,6 +3571,381 @@ def list_groups_command(client: Client) -> tuple[object, dict, Union[list, dict]
 
 
 @logger
+def get_client_list_command(
+    client: Client,
+    client_list_id: str = None,
+    name: str = None,
+    include_items: bool = False,
+    include_deprecated: bool = False,
+    search: str = None,
+    type_list: list = None,
+    include_network_list: bool = False,
+    page: int = 0,
+    page_size: int = 50,
+    limit: int = 50,
+) -> tuple[str, dict, dict]:
+    """
+    Gets the client list.
+    Args:
+        client: Akamai WAF client
+        client_list_id: client list id
+        name: name
+        include_items: include items
+        include_deprecated: include deprecated
+        search: search
+        type_list: list of types
+        include_network_list: include network list
+        page: page
+        page_size: page size
+        limit: limit
+    Returns:
+        Human readable, context entry, raw response
+    """
+    raw_response = client.get_client_list(
+        client_list_id, name, include_items, include_deprecated, search, type_list, include_network_list, page, page_size, limit
+    )
+    human_readable = tableToMarkdown("Akamai WAF Client Lists", raw_response.get("lists", []))
+    context_entry = {f"{INTEGRATION_CONTEXT_NAME}.ClientList": raw_response}
+    return human_readable, context_entry, raw_response
+
+
+@logger
+def create_client_list_command(
+    client: Client,
+    name: str,
+    type: str,
+    contract_id: str,
+    group_id: int,
+    notes: str = None,
+    tags: list = None,
+    entry_value: str = None,
+    entry_description: str = None,
+    entry_expiration_date: str = None,
+    entry_tags: list = None,
+) -> tuple[str, dict, dict]:
+    """
+    Creates a client list.
+    Args:
+        client: Akamai WAF client
+        name: The name for the new client list.
+        type: The type of client list.
+        contract_id: The contract ID.
+        group_id: The group ID.
+        notes: A description for the client list.
+        tags: A list of tags to associate with the client list.
+        entry_value: The value for a single entry in the client list.
+        entry_description: A description for the entry.
+        entry_expiration_date: The expiration date for the entry.
+        entry_tags: A list of tags for the entry.
+    Returns:
+        Human readable, context entry, raw response
+    """
+    raw_response = client.create_client_list(
+        name, type, contract_id, group_id, notes, tags, entry_value, entry_description, entry_expiration_date, entry_tags
+    )
+    human_readable = tableToMarkdown(f"Akamai WAF Client List {name} created successfully", raw_response)
+    context_entry = {f"{INTEGRATION_CONTEXT_NAME}.ClientList": raw_response}
+    return human_readable, context_entry, raw_response
+
+
+@logger
+def delete_client_list_command(client: Client, client_list_id: str) -> tuple[str, dict, dict]:
+    """
+    Deletes a client list.
+    Args:
+        client: Akamai WAF client
+        client_list_id: The ID of the client list to delete.
+    Returns:
+        Human readable, context entry, raw response
+    """
+    raw_response = client.delete_client_list(client_list_id)
+    if raw_response.status_code == 204:
+        human_readable = f"Akamai WAF Client List {client_list_id} deleted successfully."
+        return human_readable, {}, {}
+    return f"Akamai WAF Client List {client_list_id} was not deleted.", {}, {}
+
+
+def check_activation_status(
+    client: Client, list_id: str, network_environment: str, pending_status: str, interval_seconds: int, timeout_seconds: int
+):
+    """
+    Args:
+        client: Akamai WAF client
+        list_id: The ID of the client list to activate.
+        network_environment: The network environment to activate the list on.
+        pending_status: The pending status to check.
+        interval_seconds: The interval in seconds between polling attempts.
+        timeout_seconds: The timeout in seconds for polling.
+    Returns:
+        Human readable, context entry, raw response
+    """
+    try:
+        timeout_seconds = int(timeout_seconds) if timeout_seconds is not None else 120
+    except (TypeError, ValueError):
+        timeout_seconds = 120
+    try:
+        interval_seconds = int(interval_seconds) if interval_seconds is not None else 30
+    except (TypeError, ValueError):
+        interval_seconds = 30
+
+    timeout_seconds = min(timeout_seconds, 120)
+    # ensure interval is at least 1 second to avoid zero/negative sleep
+    interval_seconds = max(1, min(interval_seconds, 30))
+    latest_status = pending_status
+    activation_id = None
+    start_time = time.time()
+    while latest_status == pending_status and (time.time() - start_time) < timeout_seconds:
+        status_resp = client.get_client_list_activation_status(list_id, network_environment)
+        if isinstance(status_resp, dict):
+            items = []
+            if "activations" in status_resp and isinstance(status_resp["activations"], dict):
+                items = status_resp["activations"].get("items") or []
+            elif "items" in status_resp and isinstance(status_resp["items"], list):
+                items = status_resp["items"]
+            # Use the first item as latest
+            if items:
+                latest = items[0]
+                latest_status = latest.get("activationStatus") or latest.get("status")
+                activation_id = latest.get("activationId")
+                network = latest.get("network")
+            else:
+                latest_status = status_resp.get("activationStatus") or status_resp.get("status")
+                activation_id = status_resp.get("activationId")
+                network = status_resp.get("network")
+        if latest_status and latest_status != pending_status:
+            notice = "activation" if pending_status == "PENDING_ACTIVATION" else "deactivation"
+            hr = tableToMarkdown(
+                f"Akamai WAF Client List {list_id} {notice} completed with status {latest_status}",
+                {
+                    "activationId": activation_id,
+                    "network": network or network_environment,
+                    "status": latest_status,
+                },
+            )
+            demisto.debug(f"Finished polling for status status is: {latest_status}")
+            demisto.debug(f"hr: {hr}")
+            demisto.debug(f"outputs: {INTEGRATION_CONTEXT_NAME}.Activation: {status_resp}")
+            demisto.debug(f"raw_response: {status_resp}")
+            return hr, f"{INTEGRATION_CONTEXT_NAME}.Activation: {status_resp}", status_resp
+        else:
+            elapsed_time = time.time() - start_time
+            demisto.debug(f"check_activation_status: is '{latest_status}'. Elapsed time: {elapsed_time:.2f}s.")
+            demisto.debug(f"check_activation_status Sleeping for {interval_seconds} seconds...\n")
+            time.sleep(interval_seconds)
+    demisto.debug(f"Stopped polling as of timeout. stastus is: {latest_status}")
+    hr = tableToMarkdown(
+        f"Akamai WAF Client List {list_id}. Activation incompleted with status {latest_status}",
+        {
+            "activationId": activation_id,
+            "network": network or network_environment,
+            "status": latest_status,
+        },
+    )
+    return hr, f"{INTEGRATION_CONTEXT_NAME}.Activation: {status_resp}", f"Activation incompleted with status {latest_status}"
+
+
+def activate_client_list_command(
+    client: Client,
+    list_id: str,
+    network_environment: str,
+    comments: str | None = None,
+    notification_recipients: list | None = None,
+    siebel_ticket_id: str | None = None,
+    include_polling: str = "true",
+    interval: int = 30,
+    timeout: int = 60,
+) -> tuple[str, dict, dict]:
+    """
+     Args:
+        client: Akamai WAF client
+        list_id: The ID of the client list to activate.
+        network_environment: The network environment to activate the list on.
+        comments: A description for the activation.
+        notification_recipients: A list of email addresses to notify.
+        siebel_ticket_id: A Siebel ticket ID.
+        include_polling: Whether to poll activation status until completion.
+    Returns:
+        CommandResults
+    Activates a client list, optionally polling until activation completes.
+    When include_polling is true, the command will keep polling the activation status until it changes from PENDING_ACTIVATION.
+    """
+    raw_response = client.activate_client_list(list_id, network_environment, comments, notification_recipients, siebel_ticket_id)
+    if str(include_polling).lower() != "true":
+        human_readable = tableToMarkdown(f"Akamai WAF Client List {list_id} activation submitted successfully", raw_response)
+        context_entry = {f"{INTEGRATION_CONTEXT_NAME}.Activation": raw_response}
+        return human_readable, context_entry, raw_response
+    else:
+        return check_activation_status(client, list_id, network_environment, "PENDING_ACTIVATION", interval, timeout)
+
+
+@logger
+def add_client_list_entry_command(
+    client: Client, list_id: str, value: str, description: str = None, expiration_date: str = None, tags: list = None
+) -> tuple[str, dict, dict]:
+    """
+    Adds an entry to a client list.
+    Args:
+        client: Akamai WAF client
+        list_id: The ID of the client list.
+        value: The value for the new entry.
+        description: A description for the new entry.
+        expiration_date: The expiration date for the new entry.
+        tags: A list of tags for the new entry.
+    Returns:
+        Human readable, context entry, raw response
+    """
+    raw_response = client.add_client_list_entry(list_id, value, description, expiration_date, tags)
+    human_readable = f"Entry '{value}' added successfully to Akamai WAF Client List {list_id}."
+    return human_readable, {}, raw_response
+
+
+@logger
+def remove_client_list_entry_command(client: Client, list_id: str, value: list) -> tuple[str, dict, dict]:
+    """
+    Removes an entry from a client list.
+    Args:
+        client: Akamai WAF client
+        list_id: The ID of the client list.
+        value: A list of values to remove.
+    Returns:
+        Human readable, context entry, raw response
+    """
+    raw_response = client.remove_client_list_entry(list_id, value)
+    human_readable = f"Entries successfully removed from Akamai WAF Client List {list_id}."
+    return human_readable, {}, raw_response
+
+
+@logger
+def get_contract_group_command(client: Client) -> tuple[str, dict, dict]:
+    """
+    Gets the contract groups.
+    Args:
+        client: Akamai WAF client
+    Returns:
+        Human readable, context entry, raw response
+    """
+    raw_response = client.get_contract_group()
+    human_readable = tableToMarkdown("Akamai WAF Contract Groups", raw_response)
+    context_entry = {f"{INTEGRATION_CONTEXT_NAME}.ContractGroup": raw_response}
+    return human_readable, context_entry, raw_response
+
+
+@logger
+def update_client_list_command(
+    client: Client, list_id: str, name: str, notes: str = None, tags: list = None
+) -> tuple[str, dict, dict]:
+    """
+    Updates a client list.
+    Args:
+        client: Akamai WAF client
+        list_id: The ID of the client list to update.
+        name: The new name for the client list.
+        notes: The new description for the client list.
+        tags: The new tags for the client list.
+    Returns:
+        Human readable, context entry, raw response
+    """
+    raw_response = client.update_client_list(list_id, name, notes, tags)
+    human_readable = tableToMarkdown(f"Akamai WAF Client List {list_id} updated successfully", raw_response)
+    context_entry = {f"{INTEGRATION_CONTEXT_NAME}.ClientList": raw_response}
+    return human_readable, context_entry, raw_response
+
+
+def deactivate_client_list_command(
+    client: Client,
+    list_id: str,
+    network_environment: str,
+    comments: str | None = None,
+    notification_recipients: list | None = None,
+    siebel_ticket_id: str | None = None,
+    include_polling: str = "true",
+    interval: int = 30,
+    timeout: int = 180,
+) -> tuple[str, dict, dict]:
+    """
+    Args:
+        client: Akamai WAF client
+        list_id: The ID of the client list to activate.
+        network_environment: The network environment to activate the list on.
+        comments: A description for the activation.
+        notification_recipients: A list of email addresses to notify.
+        siebel_ticket_id: A Siebel ticket ID.
+        include_polling: Whether to poll activation status until completion.
+    Returns:
+        Human readable, context entry, raw response
+    Deactivates a client list, optionally polling until deactivation completes.
+    When include_polling is true, the command polls the activation status until it changes from PENDING_DEACTIVATION.
+    """
+    raw_response = client.deactivate_client_list(
+        list_id, network_environment, comments, notification_recipients, siebel_ticket_id
+    )
+    if str(include_polling).lower() != "true":
+        human_readable = tableToMarkdown(f"Akamai WAF Client List {list_id} triggered deactivation successfully", raw_response)
+        context_entry = {f"{INTEGRATION_CONTEXT_NAME}.Activation": raw_response}
+        return human_readable, context_entry, raw_response
+
+    else:
+        return check_activation_status(client, list_id, network_environment, "PENDING_DEACTIVATION", interval, timeout)
+
+
+@logger
+def update_client_list_entry_command(
+    client: Client,
+    list_id: str,
+    value: str,
+    description: str = None,
+    expiration_date: str = None,
+    tags: list = None,
+    is_override: bool = False,
+) -> tuple[str, dict, dict]:
+    """
+    Updates an entry in a client list.
+    Args:
+        client: Akamai WAF client
+        list_id: The ID of the client list.
+        value: The value of the entry to update.
+        description: The new description for the entry.
+        expiration_date: The new expiration date for the entry.
+        tags: The new tags for the entry.
+        is_override: Whether to override missing entries.
+    Returns:
+        Human readable, context entry, raw response
+    """
+    updated_item = None
+    tags = tags.split(",") if tags else []
+    if is_override:
+        demisto.debug("Update_client_list_entry: Override missing entry")
+        updated_item = {
+            "value": value,
+            "description": description,
+            "expirationDate": expiration_date,
+            "tags": tags,
+        }
+    else:
+        demisto.debug("Update_client_list_entry: Get the existing list to avoid overwriting values")
+        existing_list = client.get_client_list(client_list_id=list_id, include_items=True)
+        items = existing_list.get("items", [])
+        for item in items:
+            if item.get("value") == value:
+                if description:
+                    item["description"] = description
+                if expiration_date:
+                    item["expirationDate"] = expiration_date
+                if tags:
+                    item["tags"] = tags
+                updated_item = item
+                break
+
+    if not updated_item:
+        raise DemistoException(f"Entry with value '{value}' not found in client list '{list_id}'.")
+
+    raw_response = client.update_client_list_entry(list_id, [updated_item])
+    human_readable = tableToMarkdown(f"Entry '{value}' in Akamai WAF Client List {list_id} updated successfully", raw_response)
+    context_entry = {f"{INTEGRATION_CONTEXT_NAME}.ClientList": raw_response}
+    return human_readable, context_entry, raw_response
+
+
+@logger
 def get_group_command(client: Client, group_id: int = 0) -> tuple[object, dict, Union[list, dict]]:
     """
         Get the information of a group
@@ -3832,288 +4460,6 @@ def test_module_command(client: Client, *_) -> tuple[None, None, str]:
     if "links" in results:
         return None, None, "ok"
     raise DemistoException(f"Test module failed, {results}")
-
-
-@logger
-def get_network_lists_command(
-    client: Client,
-    search: str = None,
-    list_type: str = None,
-    extended: str = "true",
-    include_elements: str = "true",
-) -> tuple[object, dict, Union[list, dict]]:
-    """Get network lists
-
-    Args:
-        client: Client object with request
-        search: Only list items that match the specified substring in any network list’s name or list of items.
-        list_type: Filters the output to lists of only the given type of network lists if provided, either IP or GEO.
-        extended: Whether to return extended details in the response
-        include_elements: Whether to return all list items.
-
-    Returns:
-        human readable (markdown format), entry context and raw response
-    """
-    raw_response: dict = client.get_network_lists(
-        search=search, list_type=list_type, extended=(extended == "true"), include_elements=(include_elements == "true")
-    )
-    if raw_response:
-        title = f"{INTEGRATION_NAME} - network lists"
-        entry_context, human_readable_ec = get_network_lists_ec(raw_response.get("networkLists"))
-        context_entry: dict = {
-            f"{INTEGRATION_CONTEXT_NAME}.NetworkLists.Lists(val.UniqueID && val.UniqueID == obj.UniqueID && val.UpdateDate &&"
-            f" val.UpdateDate == obj.UpdateDate)": entry_context
-        }
-        human_readable = tableToMarkdown(name=title, t=human_readable_ec, removeNull=True)
-
-        return human_readable, context_entry, raw_response
-    else:
-        return f"{INTEGRATION_NAME} - Could not find any results for given query", {}, {}
-
-
-@logger
-def get_network_list_by_id_command(client: Client, network_list_id: str) -> tuple[object, dict, Union[list, dict]]:
-    """Get network list by ID
-
-    Args:
-        client: Client object with request
-        network_list_id: Unique ID of network list
-
-    Returns:
-        human readable (markdown format), entry context and raw response
-    """
-    raw_response: dict = client.get_network_list_by_id(network_list_id=network_list_id)
-    if raw_response:
-        title = f"{INTEGRATION_NAME} - network list {network_list_id}"
-        entry_context, human_readable_ec = get_network_lists_ec([raw_response])
-        context_entry: dict = {
-            f"{INTEGRATION_CONTEXT_NAME}.NetworkLists.Lists(val.UniqueID && val.UniqueID == obj.UniqueID &&"
-            f" val.UpdateDate && val.UpdateDate == obj.UpdateDate)": entry_context
-        }
-        human_readable = tableToMarkdown(name=title, t=human_readable_ec, removeNull=True)
-
-        return human_readable, context_entry, raw_response
-    else:
-        return f"{INTEGRATION_NAME} - Could not find any results for given query", {}, {}
-
-
-@logger
-def create_network_list_command(
-    client: Client,
-    list_name: str,
-    list_type: str,
-    description: str = None,
-    entry_id: str = None,
-    elements: Union[str, list] = None,
-) -> tuple[object, dict, Union[list, dict]]:
-    """
-        Create network list
-
-    Args:
-        client: Client object with request
-        list_name: Network list name
-        list_type: Network list type IP/GEO
-        description: Network list description
-        entry_id: Entry ID of list file (Each line should have one IP or GEO)
-        elements: Elements separated by commas
-
-    Returns:
-        human readable (markdown format), entry context and raw response
-    """
-    if entry_id:
-        elements = get_list_from_file(entry_id)
-    else:
-        elements = argToList(elements)
-    raw_response: dict = client.create_network_list(
-        list_name=list_name, list_type=list_type, elements=elements, description=description
-    )
-    entry_context, human_readable_ec = get_network_lists_ec([raw_response])
-    if raw_response:
-        title = f"{INTEGRATION_NAME} - network list {list_name} created successfully"
-        context_entry: dict = {
-            f"{INTEGRATION_CONTEXT_NAME}.NetworkLists.Lists(val.UniqueID && val.UniqueID == obj.UniqueID && val.UpdateDate &&"
-            f" val.UpdateDate == obj.UpdateDate)": entry_context
-        }
-        human_readable = tableToMarkdown(name=title, t=human_readable_ec, removeNull=True)
-
-        return human_readable, context_entry, raw_response
-    else:
-        return f"{INTEGRATION_NAME} - Could not find any results for given query", {}, {}
-
-
-@logger
-def delete_network_list_command(client: Client, network_list_id: str) -> tuple[object, dict, Union[list, dict]]:
-    """Delete network list by ID
-
-    Args:
-        client: Client object with request
-        network_list_id: Unique ID of network list
-
-    Returns:
-        human readable (markdown format), entry context and raw response
-    """
-    raw_response = client.delete_network_list(network_list_id=network_list_id)
-    if raw_response:
-        human_readable = f"**{INTEGRATION_NAME} - network list {network_list_id} deleted**"
-        return human_readable, {}, {}
-    else:
-        return f"{INTEGRATION_NAME} - Could not find any results for given query", {}, {}
-
-
-@logger
-def update_network_list_elements_command(
-    client: Client, network_list_id: str, elements: Union[str, list] = None
-) -> tuple[object, dict, Union[list, dict]]:
-    """Update network list by ID
-
-    Args:
-        client: Client object with request
-        network_list_id: Unique ID of network list
-
-    Returns:
-        human readable (markdown format), entry context and raw response
-    """
-
-    elements = argToList(elements)
-    # demisto.results(elements)
-
-    raw_response = client.update_network_list_elements(network_list_id=network_list_id, elements=elements)  # type: ignore # noqa
-
-    if raw_response:
-        human_readable = f"**{INTEGRATION_NAME} - network list {network_list_id} updated**"
-        return human_readable, {}, {}
-    else:
-        return f"{INTEGRATION_NAME} - Could not find any results for given query", {}, {}
-
-
-@logger
-def activate_network_list_command(
-    client: Client, network_list_ids: str, env: str, comment: str = None, notify: str = None
-) -> tuple[object, dict, Union[list, dict]]:
-    """Activate network list by ID
-
-    Args:
-        client: Client object with request
-        network_list_ids: Unique ID of network list
-        env: STAGING or PRODUCTION
-        comment: Comment to be logged
-        notify: Email to notify on activation
-
-    Returns:
-        human readable (markdown format), entry context and raw response
-    """
-    network_list_ids = argToList(network_list_ids)
-    human_readable = ""
-    for network_list_id in network_list_ids:
-        try:
-            raw_response = client.activate_network_list(
-                network_list_id=network_list_id, env=env, comment=comment, notify=argToList(notify)
-            )
-            if raw_response:
-                human_readable += f"{INTEGRATION_NAME} - network list **{network_list_id}** activated on {env} **successfully**\n"
-        except DemistoException as e:
-            if "This list version is already active" in e.args[0]:
-                human_readable += f"**{INTEGRATION_NAME} - network list {network_list_id} already active on {env}**\n"
-        except requests.exceptions.RequestException:
-            human_readable += f"{INTEGRATION_NAME} - Could not find any results for given query\n"
-
-    return human_readable, {}, {}
-
-
-@logger
-def add_elements_to_network_list_command(
-    client: Client, network_list_id: str, entry_id: str = None, elements: Union[str, list] = None
-) -> tuple[object, dict, Union[list, dict]]:
-    """Add elements to network list by ID
-
-    Args:
-        client: Client object with request
-        network_list_id: Unique ID of network list
-        entry_id: Entry ID of list file (Each line should have one IP or GEO)
-        elements: Elements separated by commas
-
-    Returns:
-        human readable (markdown format), entry context and raw response
-    """
-    if entry_id:
-        elements = get_list_from_file(entry_id)
-    else:
-        elements = argToList(elements)
-    raw_response: dict = client.add_elements_to_network_list(network_list_id=network_list_id, elements=elements)
-    if raw_response:
-        title = f"**{INTEGRATION_NAME} - elements added to network list {network_list_id} successfully**"
-        human_readable = tableToMarkdown(name=title, t={"elements": elements}, removeNull=True)
-        return human_readable, {}, {}
-    else:
-        return f"{INTEGRATION_NAME} - Could not find any results for given query", {}, {}
-
-
-@logger
-def remove_element_from_network_list_command(
-    client: Client, network_list_id: str, element: str
-) -> tuple[object, dict, Union[list, dict]]:
-    """Remove element from network list by ID
-
-    Args:
-        client: Client object with request
-        network_list_id: Unique ID of network list
-        element: Element to be removed
-
-    Returns:
-        human readable (markdown format), entry context and raw response
-    """
-    raw_response: dict = client.remove_element_from_network_list(network_list_id=network_list_id, element=element)
-    if raw_response:
-        human_readable = f"**{INTEGRATION_NAME} - element {element} removed from network list {network_list_id} successfully**"
-        return human_readable, {}, {}
-    else:
-        return f"{INTEGRATION_NAME} - Could not find any results for given query", {}, {}
-
-
-@logger
-def get_activation_status_command(
-    client: Client, network_list_ids: Union[str, list], env: str
-) -> tuple[str, dict, Union[list, dict]]:
-    """Get activation status
-
-    Args:
-        client: Client object with request
-        network_list_ids: Unique ID of network list (can be list as a string)
-        env: STAGING or PRODUCTION
-
-    Returns:
-        human readable (markdown format), entry context and raw response
-    """
-    network_list_ids = argToList(network_list_ids)
-    raws = []
-    ecs = []
-    context_entry: dict = {}
-    human_readable = ""
-    for network_list_id in network_list_ids:
-        try:
-            raw_response: dict = client.get_activation_status(network_list_id=network_list_id, env=env)
-            if raw_response:
-                raws.append(raw_response)
-                if env == "PRODUCTION":
-                    ecs.append({"UniqueID": network_list_id, "ProductionStatus": raw_response.get("activationStatus")})
-                elif env == "STAGING":
-                    ecs.append({"UniqueID": network_list_id, "StagingStatus": raw_response.get("activationStatus")})
-                human_readable += (
-                    f"{INTEGRATION_NAME} - network list **{network_list_id}** is "
-                    f"**{raw_response.get('activationStatus')}** in **{env}**\n"
-                )
-        except DemistoException as e:
-            if "The Network List ID should be of the format" in e.args[0]:
-                human_readable += f"{INTEGRATION_NAME} - network list **{network_list_id}** canot be found\n"
-        except requests.exceptions.RequestException:
-            human_readable += f"{INTEGRATION_NAME} - Could not find any results for given query\n"
-
-    if env == "PRODUCTION":
-        context_entry = {f"{INTEGRATION_CONTEXT_NAME}.NetworkLists.ActivationStatus(val.UniqueID == obj.UniqueID)": ecs}
-    elif env == "STAGING":
-        context_entry = {f"{INTEGRATION_CONTEXT_NAME}.NetworkLists.ActivationStatus(val.UniqueID == obj.UniqueID)": ecs}
-
-    return human_readable, context_entry, raws
 
 
 # Created by D.S.
@@ -6897,15 +7243,6 @@ def main():
     demisto.debug(f"Command being called is {command}")
     commands = {
         "test-module": test_module_command,
-        f"{INTEGRATION_COMMAND_NAME}-get-network-lists": get_network_lists_command,
-        f"{INTEGRATION_COMMAND_NAME}-get-network-list-by-id": get_network_list_by_id_command,
-        f"{INTEGRATION_COMMAND_NAME}-create-network-list": create_network_list_command,
-        f"{INTEGRATION_COMMAND_NAME}-delete-network-list": delete_network_list_command,
-        f"{INTEGRATION_COMMAND_NAME}-update-network-list-elements": update_network_list_elements_command,
-        f"{INTEGRATION_COMMAND_NAME}-activate-network-list": activate_network_list_command,
-        f"{INTEGRATION_COMMAND_NAME}-add-elements-to-network-list": add_elements_to_network_list_command,
-        f"{INTEGRATION_COMMAND_NAME}-remove-element-from-network-list": remove_element_from_network_list_command,
-        f"{INTEGRATION_COMMAND_NAME}-get-network-list-activation-status": get_activation_status_command,
         f"{INTEGRATION_COMMAND_NAME}-list-groups": list_groups_command,
         f"{INTEGRATION_COMMAND_NAME}-create-enrollment": create_enrollment_command,
         f"{INTEGRATION_COMMAND_NAME}-list-enrollments": list_enrollments_command,
@@ -6920,6 +7257,16 @@ def main():
         f"{INTEGRATION_COMMAND_NAME}-check-group": check_group_command,
         f"{INTEGRATION_COMMAND_NAME}-create-group": create_group_command,
         f"{INTEGRATION_COMMAND_NAME}-get-group": get_group_command,
+        f"{INTEGRATION_COMMAND_NAME}-get-client-list": get_client_list_command,
+        f"{INTEGRATION_COMMAND_NAME}-create-client-list": create_client_list_command,
+        f"{INTEGRATION_COMMAND_NAME}-delete-client-list": delete_client_list_command,
+        f"{INTEGRATION_COMMAND_NAME}-activate-client-list": activate_client_list_command,
+        f"{INTEGRATION_COMMAND_NAME}-add-client-list-entry": add_client_list_entry_command,
+        f"{INTEGRATION_COMMAND_NAME}-remove-client-list-entry": remove_client_list_entry_command,
+        f"{INTEGRATION_COMMAND_NAME}-get-contract-group": get_contract_group_command,
+        f"{INTEGRATION_COMMAND_NAME}-update-client-list": update_client_list_command,
+        f"{INTEGRATION_COMMAND_NAME}-deactivate-client-list": deactivate_client_list_command,
+        f"{INTEGRATION_COMMAND_NAME}-update-client-list-entry": update_client_list_entry_command,
         f"{INTEGRATION_COMMAND_NAME}-clone-papi-property": clone_papi_property_command,
         f"{INTEGRATION_COMMAND_NAME}-add-papi-property-hostname": add_papi_property_hostname_command,
         f"{INTEGRATION_COMMAND_NAME}-list-papi-edgehostname-bygroup": list_papi_edgehostname_bygroup_command,
@@ -6992,5 +7339,5 @@ def main():
         return_error(err_msg, error=e)
 
 
-if __name__ == "builtins":
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
