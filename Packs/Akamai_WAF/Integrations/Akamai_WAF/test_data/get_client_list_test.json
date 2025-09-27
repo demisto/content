@@ -9,7 +9,7 @@
             }
         ]
     },
-    "human_readable": "### Akamai WAF Client Lists\n| listId | name | type | items |\n| --- | --- | --- | --- |\n| 12345 | Test Client List | IP | 1.2.3.4 |\n",
+    "human_readable": "### Akamai WAF Client Lists\n|items|listId|name|type|\n|---|---|---|---|\n| 1.2.3.4 | 12345 | Test Client List | IP |\n",
     "context_entry": {
         "Akamai.ClientList": {
             "lists": [

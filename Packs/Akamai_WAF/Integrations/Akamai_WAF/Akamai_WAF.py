@@ -3574,7 +3574,7 @@ def get_client_list_command(client: Client, client_list_id: str = None, name: st
     """
     raw_response = client.get_client_list(client_list_id, name, include_items, include_deprecated, search, type_list,
                                         include_network_list, page, page_size, limit)
-    human_readable = tableToMarkdown("Akamai WAF Client Lists", raw_response)
+    human_readable = tableToMarkdown("Akamai WAF Client Lists", raw_response.get('lists', []))
     context_entry = {
         f"{INTEGRATION_CONTEXT_NAME}.ClientList": raw_response
     }

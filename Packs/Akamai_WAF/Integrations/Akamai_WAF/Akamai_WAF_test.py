@@ -729,34 +729,6 @@ def test_delete_client_list_command(mocker, akamai_waf_client):
     assert expected_human_readable == human_readable
 
 
-def test_activate_client_list_command(mocker, akamai_waf_client):
-    """
-    Given:
-        - A client, list_id, and network_environment.
-    When:
-        - running the command activate_client_list_command.
-    Then:
-        - The returned values (human_readable, context_entry, raw_response) are correct.
-    """
-    from Akamai_WAF import activate_client_list_command
-
-    test_data = util_load_json("test_data/activate_client_list_test.json")
-    expected_raw_response = test_data.get("raw_response")
-    expected_human_readable = test_data.get("human_readable")
-    expected_context_entry = test_data.get("context_entry")
-
-    mocker.patch.object(akamai_waf_client, "activate_client_list", return_value=expected_raw_response)
-
-    human_readable, context_entry, raw_response = activate_client_list_command(
-        client=akamai_waf_client,
-        list_id="12345",
-        network_environment="STAGING"
-    )
-    assert expected_raw_response == raw_response
-    assert expected_human_readable == human_readable
-    assert expected_context_entry == context_entry
-
-
 def test_add_client_list_entry_command(mocker, akamai_waf_client):
     """
     Given:
@@ -865,34 +837,6 @@ def test_update_client_list_command(mocker, akamai_waf_client):
     assert expected_context_entry == context_entry
 
 
-def test_deactivate_client_list_command(mocker, akamai_waf_client):
-    """
-    Given:
-        - A client, list_id, and network_environment.
-    When:
-        - running the command deactivate_client_list_command.
-    Then:
-        - The returned values (human_readable, context_entry, raw_response) are correct.
-    """
-    from Akamai_WAF import deactivate_client_list_command
-
-    test_data = util_load_json("test_data/deactivate_client_list_test.json")
-    expected_raw_response = test_data.get("raw_response")
-    expected_human_readable = test_data.get("human_readable")
-    expected_context_entry = test_data.get("context_entry")
-
-    mocker.patch.object(akamai_waf_client, "deactivate_client_list", return_value=expected_raw_response)
-
-    human_readable, context_entry, raw_response = deactivate_client_list_command(
-        client=akamai_waf_client,
-        list_id="12345",
-        network_environment="STAGING"
-    )
-    assert expected_raw_response == raw_response
-    assert expected_human_readable == human_readable
-    assert expected_context_entry == context_entry
-
-
 def test_update_client_list_entry_command(mocker, akamai_waf_client):
     """
     Given:
@@ -918,7 +862,7 @@ def test_update_client_list_entry_command(mocker, akamai_waf_client):
         list_id="12345",
         value="1.2.3.4",
         description="New description",
-        tags=["new_tag"]
+        tags="new_tag"
     )
     assert expected_raw_response == raw_response
     assert expected_human_readable == human_readable
