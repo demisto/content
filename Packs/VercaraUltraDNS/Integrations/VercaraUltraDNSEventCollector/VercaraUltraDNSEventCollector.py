@@ -2,13 +2,11 @@ import demistomock as demisto
 from CommonServerPython import *
 import urllib3
 from typing import Any
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timedelta
 
 urllib3.disable_warnings()
 
-# Constants
-DATE_FORMAT = "%Y%m%d%H%M%S"
-API_DATE_FORMAT = "%Y-%m-%d %H:%M:%S.%f"
+
 VENDOR = "vercara"
 PRODUCT = "ultradns"
 MAX_EVENTS_PER_FETCH = 2500
@@ -16,6 +14,11 @@ PAGINATION_LIMIT = 250
 DEFAULT_GET_EVENTS_LIMIT = 50
 TOKEN_ENDPOINT = "/authorization/token"
 AUDIT_LOG_ENDPOINT = "/reports/dns_configuration/audit"
+DATE_FORMAT = "%Y%m%d%H%M%S"
+API_DATE_FORMAT = "%Y-%m-%d %H:%M:%S.%f"
+MARGIN_TOKEN_EXPIRY_SECONDS = 60
+MARGIN_FETCH_OVERLAP_SECONDS = 3
+MARGIN_DEDUP_SAFETY_SECONDS = 1
 
 
 class Client(BaseClient):
@@ -44,11 +47,6 @@ class Client(BaseClient):
         if context.get("token_obtained_time"):
             self.token_obtained_time = datetime.fromisoformat(context["token_obtained_time"])
 
-        if self.access_token:
-            demisto.debug("Found existing access token in context")
-        else:
-            demisto.debug("No existing access token found, will obtain new token when needed")
-
     def get_access_token(self) -> str:
         """Get valid access token, refreshing if needed.
 
@@ -56,16 +54,18 @@ class Client(BaseClient):
             str: Valid access token for API authentication
         """
         if self._is_token_valid():
+            demisto.debug("Access token is valid, using existing token")
             return self.access_token
 
         if self.refresh_token:
             try:
                 # Try refreshing the token first
+                demisto.debug("Refreshing access token...")
                 return self._request_access_token("refresh_token", refresh_token=self.refresh_token)
             except Exception as e:
                 demisto.debug(f"Token refresh failed: {e}, obtaining new token")
 
-        # If refresh token is not available or refresh fails, obtain a new token
+        # Obtain a new token
         return self._request_access_token("password", username=self.username, password=self.password)
 
     def _is_token_valid(self) -> bool:
@@ -78,42 +78,23 @@ class Client(BaseClient):
             demisto.debug("Token validation failed: missing token, expiration, or obtained time")
             return False
 
-        token_expiry = self.token_obtained_time.timestamp() + self.token_expires_in - 60
+        token_expiry = self.token_obtained_time.timestamp() + self.token_expires_in - MARGIN_TOKEN_EXPIRY_SECONDS
         current_time = datetime.now().timestamp()
         is_valid = current_time < token_expiry
-
-        if is_valid:
-            remaining_seconds = int(token_expiry - current_time)
-            demisto.debug(f"Token is valid, expires in {remaining_seconds}s")
-        else:
-            demisto.debug("Token has expired, will refresh or obtain new token")
 
         return is_valid
 
     def _request_access_token(self, grant_type: str, **token_data) -> str:
-        """Request new access token or refresh existing token via OAuth endpoint.
-        
-        Handles both scenarios:
-        - Getting a new token using username/password (password grant)
-        - Refreshing an existing token using refresh_token (refresh_token grant)
+        """Request new or refresh existing access token.
 
         Args:
-            grant_type: OAuth grant type ('password' for new token, 'refresh_token' for refresh)
-            **token_data: Grant-specific parameters:
-                - For 'password': username, password
-                - For 'refresh_token': refresh_token
+            grant_type: Type of grant ("password" or "refresh_token")
+            **token_data: Additional token data for request (e.g., username, password, or refresh_token)
 
         Returns:
-            str: Valid access token from OAuth response
-
-        Raises:
-            DemistoException: If token request or refresh fails
+            str: New access token
         """
-        action = "Obtaining new" if grant_type == "password" else "Refreshing"
-        demisto.debug(f"{action} access token")
-
         data = {"grant_type": grant_type, **token_data}
-
         response = self._http_request(
             method="POST", url_suffix=TOKEN_ENDPOINT, data=data, headers={"Content-Type": "application/x-www-form-urlencoded"}
         )
@@ -121,18 +102,12 @@ class Client(BaseClient):
         self.access_token = response.get("accessToken")
         if "refreshToken" in response:
             self.refresh_token = response.get("refreshToken")
-            if grant_type == "refresh_token":
-                demisto.debug("Received new refresh token")
         self.token_expires_in = int(response.get("expiresIn", 3600))
         self.token_obtained_time = datetime.now()
 
         if not self.access_token:
-            error_msg = "Failed to obtain access token" if grant_type == "password" else "Failed to refresh access token"
-            demisto.error("OAuth response missing access token")
-            raise DemistoException(error_msg)
+            raise DemistoException("Failed to obtain access token")
 
-        action_past = "obtained new" if grant_type == "password" else "refreshed"
-        demisto.debug(f"Successfully {action_past} access token, expires in {self.token_expires_in}s")
         self._save_tokens_to_context()
         return self.access_token
 
@@ -149,7 +124,7 @@ class Client(BaseClient):
             "token_obtained_time": self.token_obtained_time.isoformat() if self.token_obtained_time else None,
         }
         demisto.setIntegrationContext(context)
-        demisto.debug(f"Saved tokens, expires in {self.token_expires_in}s")
+        demisto.debug(f"Saved new token, expires in {self.token_expires_in}s")
 
     def get_audit_logs(
         self,
@@ -160,20 +135,22 @@ class Client(BaseClient):
     ) -> dict[str, Any]:
         """Fetch audit logs from UltraDNS API.
 
+        Note: API returns audit events in reverse chronological order (newest first).
+
         Args:
             start_time: Start time for audit log query (datetime object)
-            end_time: End time for audit log query (defaults to now if None)
+            end_time: End time for audit log query (defaults is now if None)
             limit: Maximum number of records to fetch (default: PAGINATION_LIMIT)
             cursor: Pagination cursor for next page (optional)
 
         Returns:
-            dict[str, Any]: API response containing auditRecords and pagination info
+            dict[str, Any]: API response with auditRecords in reverse chronological order
 
         Raises:
             DemistoException: If JSON parsing fails
         """
         if not end_time:
-            end_time = datetime.now(timezone.utc)
+            end_time = datetime.utcnow()
 
         start_time_str = start_time.strftime(DATE_FORMAT)
         end_time_str = end_time.strftime(DATE_FORMAT)
@@ -189,9 +166,7 @@ class Client(BaseClient):
         headers = {"Authorization": f"Bearer {self.get_access_token()}", "Accept": "application/json"}
 
         cursor_info = f", cursor: {cursor[:20]}..." if cursor else "first page"
-        demisto.debug(
-            f"Requesting audit logs from UltraDNS API - Date range: {date_range}, limit: {actual_limit}, cursor info: {cursor_info}"
-        )
+        demisto.debug(f"Requesting audit logs - Date range: {date_range}, limit: {actual_limit}, cursor info: {cursor_info}")
 
         response = self._http_request(
             method="GET", url_suffix=AUDIT_LOG_ENDPOINT, params=params, headers=headers, resp_type="response"
@@ -216,33 +191,23 @@ class Client(BaseClient):
         """Parse pagination info from response headers.
 
         Args:
-            headers: HTTP response headers dictionary
+            headers: Response headers from API
 
         Returns:
-            dict[str, Any]: Pagination information including next_cursor, limit, and results
+            dict[str, Any]: Pagination info with next_cursor, limit, and results
         """
+        import re
+
         pagination_info = {}
 
         link_header = headers.get("Link", "")
         if link_header and 'rel="next"' in link_header:
-            import re
-
             cursor_match = re.search(r"cursor=([^&>]+)", link_header)
             if cursor_match:
                 pagination_info["next_cursor"] = cursor_match.group(1)
-                demisto.debug(f"Found next page cursor: {cursor_match.group(1)[:20]}...")
-        else:
-            demisto.debug("No pagination cursor found - this is the last page")
 
         pagination_info["limit"] = headers.get("Limit")
         pagination_info["results"] = headers.get("Results")
-
-        if pagination_info.get("results"):
-            next_cursor_info = pagination_info.get("next_cursor", "None")
-            demisto.debug(
-                f"Page results: {pagination_info['results']}, limit: {pagination_info['limit']}, next cursor: {next_cursor_info}"
-            )
-
         return pagination_info
 
 
@@ -264,103 +229,136 @@ def convert_time_string(time_str: str) -> datetime:
         parsed_time = dateparser.parse(time_str)
         if not parsed_time:
             raise DemistoException(f"Failed to parse time string: {time_str}")
+        # Ensure timezone-naive datetime for consistent comparisons
+        if parsed_time.tzinfo is not None:
+            parsed_time = parsed_time.replace(tzinfo=None)
         return parsed_time
 
 
-def _deduplicate_events(
-    events: list[dict[str, Any]], processed_event_ids: set[str], cutoff_time: datetime | None
-) -> tuple[list[dict[str, Any]], set[str]]:
-    """Deduplicate events using composite ID and cutoff time.
+def _calculate_event_hash(event: dict[str, Any]) -> str:
+    """Calculate hash of event for deduplication.
 
     Args:
-        events: List of processed events to deduplicate
-        processed_event_ids: Set of previously processed event IDs
-        cutoff_time: Cutoff time for deduplication (events before this are not checked)
+        event: Event dictionary to hash
 
     Returns:
-        tuple[list[dict[str, Any]], set[str]]: Deduplicated events and new event IDs
+        str: SHA256 hash of the event content
     """
+    import hashlib
+    import json
+
+    # Create a stable string representation of the event
+    # Sort keys to ensure consistent hashing regardless of dict order
+    event_str = json.dumps(event, sort_keys=True, default=str)
+    return hashlib.sha256(event_str.encode()).hexdigest()
+
+
+def _deduplicate_events(
+    events: list[dict[str, Any]], event_cache: dict[str, str], upper_bound: datetime | None
+) -> list[dict[str, Any]]:
+    """Deduplicate events using hash-based comparison in boundary zone only.
+
+    Args:
+        events: List of processed events in reverse chronological order (newest first)
+        event_cache: Cache of previous events {event_hash: timestamp_str}
+        upper_bound: Only check duplicates for events <= this time (last_event_time + safety_margin)
+
+    Returns:
+        list[dict[str, Any]]: Deduplicated events (maintains original reverse order)
+    """
+    if not events:
+        return []
+
     filtered_events = []
-    new_event_ids = set()
-    duplicates_found = 0
+
+    # Process events from oldest to newest (iterate backwards through array)
+    for i, event in reversed(list(enumerate(events))):
+        # Parse event timestamp
+        event_time_str = event["changeTime"]
+        event_datetime = convert_time_string(event_time_str)
+
+        # If event is newer than upper boundary, add all remaining events and break
+        if upper_bound and event_datetime > upper_bound:
+            remaining_count = i + 1
+            demisto.debug(
+                f"Reached boundary at {event_time_str}, adding {remaining_count} remaining newer events without duplicate check"
+            )
+            filtered_events = events[: i + 1] + filtered_events
+            break
+
+        # Event is in boundary zone - check for duplicates
+        event_hash = _calculate_event_hash(event)
+        if event_hash in event_cache:
+            demisto.debug(f"Duplicate detected - time: {event_time_str}, hash: {event_hash[:12]}..., dropping event {event}")
+            continue
+
+        # Event is unique
+        filtered_events.insert(0, event)
+    return filtered_events
+
+
+def _cache_recent_events(events: list[dict[str, Any]], cache: dict[str, str], cutoff_time: datetime | None) -> None:
+    """Cache recent events for future duplicate detection.
+
+    Args:
+        events: List of events in reverse chronological order (newest first)
+        cache: Cache dictionary to update {event_hash: timestamp_str}
+        cutoff_time: Only cache events newer or equal to this time
+    """
+    if not cutoff_time or not events:
+        return
 
     for event in events:
-        event_time = event.get("_time")
+        event_time_str = event["changeTime"]
+        event_datetime = convert_time_string(event_time_str)
 
-        if cutoff_time and event_time and event_time >= cutoff_time.timestamp():
-            event_id = (
-                f"{event.get('changeTime', '')}_{event.get('user', '')}_{event.get('object', '')}"
-                f"_{event.get('changeType', '')}"
-            )
+        if event_datetime < cutoff_time:
+            break  # Events are newest first, so we can stop here
 
-            if event_id not in processed_event_ids:
-                filtered_events.append(event)
-                new_event_ids.add(event_id)
-            else:
-                duplicates_found += 1
-        else:
-            filtered_events.append(event)
-
-    if duplicates_found > 0:
-        demisto.debug(f"Filtered {duplicates_found} duplicate events")
-
-    return filtered_events, new_event_ids
+        event_hash = _calculate_event_hash(event)
+        cache[event_hash] = event_datetime.strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
-def _cleanup_event_ids(processed_event_ids: set[str], cutoff_time: datetime) -> list[str]:
-    """Clean up old event IDs that are outside the retention window.
+def _cleanup_event_cache(event_cache: dict[str, str], cutoff_time: datetime) -> dict[str, str]:
+    """Clean up old event cache entries that are outside the retention window.
 
     Args:
-        processed_event_ids: Set of all processed event IDs
-        cutoff_time: Time cutoff for retention (6 seconds before latest event)
+        event_cache: Dictionary with event hash as key and ISO timestamp string as value
+        cutoff_time: Time cutoff for retention (overlap + safety margin before latest event)
 
     Returns:
-        list[str]: List of recent event IDs to keep
+        dict[str, str]: Cleaned cache with only recent entries
     """
-    recent_event_ids = []
-    invalid_ids = 0
+    cleaned_cache = {}
+    removed_count = 0
+    cutoff_time_str = cutoff_time.strftime("%Y-%m-%dT%H:%M:%SZ")
 
-    for event_id in processed_event_ids:
-        timestamp_str = event_id.split("_")[0]
+    for event_hash, timestamp_str in event_cache.items():
         try:
-            event_time = convert_time_string(timestamp_str)
-            if event_time >= cutoff_time:
-                recent_event_ids.append(event_id)
+            if timestamp_str >= cutoff_time_str:
+                cleaned_cache[event_hash] = timestamp_str
+            else:
+                removed_count += 1
         except Exception:
-            recent_event_ids.append(event_id)
-            invalid_ids += 1
+            # Keep entries with invalid timestamps to avoid data loss
+            cleaned_cache[event_hash] = timestamp_str
 
-    if invalid_ids > 0:
-        demisto.debug(f"Kept {invalid_ids} event IDs with unparseable timestamps")
+    if removed_count > 0:
+        demisto.debug(f"Cleaned {removed_count} old entries from event cache")
 
-    return recent_event_ids
+    return cleaned_cache
 
 
 def process_events_for_xsiam(events: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    """Process events for XSIAM ingestion - adds _time, _vendor, _product fields.
-
-    Args:
-        events: List of raw audit events from API
-
-    Returns:
-        list[dict[str, Any]]: Processed events with XSIAM required fields
-    """
+    """Process events for XSIAM ingestion - adds _time, _vendor, _product fields."""
     demisto.debug(f"Processing {len(events)} events for XSIAM ingestion")
-    processed_events = []
 
     for event in events:
-        if "changeTime" in event:
-            try:
-                datetime_obj = convert_time_string(event["changeTime"])
-                event["_time"] = datetime_obj.timestamp()
-            except Exception as e:
-                demisto.debug(f"Failed to convert changeTime '{event.get('changeTime')}': {e}")
+        datetime_obj = convert_time_string(event["changeTime"])
+        event["_time"] = datetime_obj.timestamp()
         event["_vendor"] = VENDOR
         event["_product"] = PRODUCT
-        processed_events.append(event)
-
-    demisto.debug(f"Successfully processed {len(processed_events)} events for XSIAM")
-    return processed_events
+    return events
 
 
 def test_module(client: Client, params: dict[str, Any]) -> str:
@@ -382,7 +380,7 @@ def test_module(client: Client, params: dict[str, Any]) -> str:
             return "Authentication failed: Could not obtain access token"
 
         demisto.debug("Authentication successful, testing API connectivity...")
-        end_time = datetime.now(timezone.utc)
+        end_time = datetime.utcnow()
         start_time = end_time.replace(hour=0, minute=0, second=0, microsecond=0)
         response = client.get_audit_logs(start_time=start_time, end_time=end_time, limit=1)
 
@@ -407,12 +405,14 @@ def test_module(client: Client, params: dict[str, Any]) -> str:
 def get_events_command(client: Client, args: dict[str, Any]) -> tuple[list[dict], CommandResults]:
     """Manual command to fetch UltraDNS audit events.
 
+    Note: UltraDNS API returns events in reverse chronological order (newest first).
+
     Args:
         client: UltraDNS client instance
         args: Command arguments dictionary containing limit, start_time, end_time, should_push_events
 
     Returns:
-        tuple[list[dict], CommandResults]: Events list and CommandResults object
+        tuple[list[dict], CommandResults]: Events list (newest first) and CommandResults object
 
     Raises:
         DemistoException: If limit exceeds maximum or date parsing fails
@@ -436,11 +436,10 @@ def get_events_command(client: Client, args: dict[str, Any]) -> tuple[list[dict]
         if not end_time:
             raise DemistoException(f"Invalid end_time format: {end_time_arg}")
     else:
-        end_time = datetime.now(timezone.utc)
+        end_time = datetime.utcnow()
 
     demisto.debug(f"Fetching events from {start_time} to {end_time}")
 
-    # Implement pagination for get-events command
     all_events = []
     cursor = None
     page_count = 0
@@ -476,7 +475,6 @@ def get_events_command(client: Client, args: dict[str, Any]) -> tuple[list[dict]
     command_results = CommandResults(readable_output=hr, outputs_prefix="VercaraUltraDNS.AuditEvents", outputs=events)
 
     if should_push_events:
-        demisto.debug("Processing and pushing events to XSIAM")
         processed_events = process_events_for_xsiam(events)
         send_events_to_xsiam(processed_events, vendor=VENDOR, product=PRODUCT)
         command_results.readable_output += f"\n\nSuccessfully sent {len(processed_events)} events to XSIAM."
@@ -490,96 +488,97 @@ def get_events_command(client: Client, args: dict[str, Any]) -> tuple[list[dict]
 def fetch_events(
     client: Client, last_run: dict[str, Any], max_events_per_fetch: int
 ) -> tuple[dict[str, Any], list[dict[str, Any]]]:
-    """Fetch audit events with deduplication using 5s lookback window.
+    """Fetch audit events with deduplication using hash-based approach.
+
+    Note: UltraDNS API returns events in reverse chronological order (newest first).
 
     Args:
         client: UltraDNS client instance
-        last_run: Previous run state containing last_fetch_time and processed_event_ids
+        last_run: Previous run state containing last_fetch_time and event_cache
         max_events_per_fetch: Maximum number of events to fetch per cycle
 
     Returns:
-        tuple[dict[str, Any], list[dict[str, Any]]]: Next run state and list of events
+        tuple[dict[str, Any], list[dict[str, Any]]]: Next run state and events (newest first)
 
     Raises:
         Exception: If event fetching fails
     """
-    last_fetch_timestamp = last_run.get("last_fetch_time")
-    processed_event_ids = set(last_run.get("processed_event_ids", []))
-    last_event_time = None
-
-    if last_fetch_timestamp:
-        last_event_time = datetime.fromtimestamp(last_fetch_timestamp, tz=timezone.utc)
-        start_time = last_event_time - timedelta(seconds=5)
-        demisto.debug(f"Resuming from {last_event_time} (5s lookback), {len(processed_event_ids)} cached IDs")
+    demisto.debug(f"Starting fetch with last_run: {last_run}")
+    last_fetch_time_str = last_run.get("last_fetch_time")
+    event_cache = last_run.get("event_cache", {})
+    # Determine fetch time window
+    if last_fetch_time_str:
+        last_event_time = convert_time_string(last_fetch_time_str)
+        start_time = last_event_time - timedelta(seconds=MARGIN_FETCH_OVERLAP_SECONDS)
+        demisto.debug(
+            f"Starting fetch from {last_event_time} with adding {MARGIN_FETCH_OVERLAP_SECONDS}s overlap, "
+            f"{len(event_cache)} cached events"
+        )
     else:
-        start_time = datetime.now(timezone.utc) - timedelta(hours=3)
-        demisto.debug("First fetch: starting 3 hours ago")
+        last_event_time = None
+        start_time = datetime.utcnow() - timedelta(hours=3)
+        demisto.debug("First fetch: collecting events from last 3 hours")
 
-    end_time = datetime.now(timezone.utc)
-    limit = max_events_per_fetch
-    all_events = []
+    end_time = datetime.utcnow()
+
+    # Initialize pagination variables
+    raw_events = []
     cursor = None
-    latest_event_time = start_time
+    page_count = 0
+    latest_event_time = last_event_time  # Will be updated with newest event from this fetch
 
-    try:
-        page_count = 0
-        while len(all_events) < limit:
-            page_count += 1
-            remaining_limit = min(limit - len(all_events), PAGINATION_LIMIT)
-            demisto.debug(f"Fetching page {page_count}, remaining limit: {remaining_limit}")
+    while len(raw_events) < max_events_per_fetch:
+        page_count += 1
+        remaining_limit = min(max_events_per_fetch - len(raw_events), PAGINATION_LIMIT)
 
-            response = client.get_audit_logs(start_time=start_time, end_time=end_time, limit=remaining_limit, cursor=cursor)
+        response = client.get_audit_logs(start_time=start_time, end_time=end_time, limit=remaining_limit, cursor=cursor)
 
-            events = response.get("auditRecords", [])
-            if not events:
-                demisto.debug(f"No events returned on page {page_count}, stopping pagination")
-                break
+        events = response.get("auditRecords", [])
+        if not events:
+            demisto.debug(f"No events returned on page {page_count}, stopping pagination")
+            break
 
-            processed_events = process_events_for_xsiam(events)
+        demisto.debug(f"Page {page_count}: collected {len(events)} raw events")
+        raw_events.extend(events)
+        cursor = response.get("next_cursor")
+        if not cursor:
+            break
 
-            # Deduplicate events using the helper function
-            cutoff_time = last_event_time - timedelta(seconds=6) if last_event_time else None
-            filtered_events, new_event_ids = _deduplicate_events(processed_events, processed_event_ids, cutoff_time)
+    demisto.debug(f"Pagination complete: collected {len(raw_events)} total raw events from {page_count} pages")
 
-            processed_event_ids.update(new_event_ids)
-            demisto.debug(f"Page {page_count}: {len(filtered_events)} new events after deduplication")
+    unique_events = []
+    if raw_events:
+        # Remove duplicates only in boundary zone where overlaps can occur
+        duplication_upper_bound = last_event_time + timedelta(seconds=MARGIN_DEDUP_SAFETY_SECONDS) if last_event_time else None
+        unique_events = _deduplicate_events(raw_events, event_cache, duplication_upper_bound)
 
-            all_events.extend(filtered_events)
-            demisto.debug(f"Total events collected so far: {len(all_events)}")
+    # Process unique events (update time, cache, and format for XSIAM)
+    if unique_events:
+        # Update latest event time
+        newest_event = unique_events[0]
+        latest_event_time = convert_time_string(newest_event["changeTime"])
+        demisto.debug(f"Latest event timestamp: {latest_event_time}")
 
-            cursor = response.get("next_cursor")
-            if not cursor:
-                demisto.debug(f"No more pages available after page {page_count}")
-                break
+        # Cache recent events and cleanup old cache entries using same cutoff
+        cache_cutoff_time = latest_event_time - timedelta(seconds=MARGIN_FETCH_OVERLAP_SECONDS + MARGIN_DEDUP_SAFETY_SECONDS)
+        _cache_recent_events(unique_events, event_cache, cache_cutoff_time)
+        cleaned_cache = _cleanup_event_cache(event_cache, cache_cutoff_time)
+        next_run_state = {"last_fetch_time": latest_event_time.strftime("%Y-%m-%dT%H:%M:%SZ"), "event_cache": cleaned_cache}
 
-            demisto.debug(f"Page {page_count} complete, continuing to next page")
+        unique_events = process_events_for_xsiam(unique_events)
 
-    except Exception as e:
-        demisto.error(f"Error fetching events: {e}")
-        raise
-
-    if all_events:
-        last_event = all_events[-1]
-        last_event_timestamp = last_event.get("_time")
-        if last_event_timestamp:
-            latest_event_time = datetime.fromtimestamp(last_event_timestamp, tz=timezone.utc)
-            demisto.debug(f"Latest event timestamp: {latest_event_time}")
+        # Summary for events processed
+        total_processed = len(raw_events)
+        duplicates_filtered = total_processed - len(unique_events)
+        demisto.debug(
+            f"Fetch complete: {len(unique_events)} unique events from {total_processed} total "
+            f"(filtered {duplicates_filtered} duplicates), next fetch from {latest_event_time}"
+        )
     else:
-        demisto.debug("No events fetched, keeping previous latest_event_time")
+        demisto.debug("No new events fetched, keeping last run unchanged")
+        next_run_state = last_run
 
-    # Clean up old event IDs using the helper function
-    cutoff_time = latest_event_time - timedelta(seconds=6)
-    recent_event_ids = _cleanup_event_ids(processed_event_ids, cutoff_time)
-
-    next_run = {"last_fetch_time": latest_event_time.timestamp(), "processed_event_ids": recent_event_ids}
-
-    demisto.debug(
-        f"Fetch complete: {len(all_events)} events collected, "
-        f"cached {len(recent_event_ids)} IDs for deduplication, "
-        f"next fetch starts from {latest_event_time}"
-    )
-
-    return next_run, all_events
+    return next_run_state, unique_events
 
 
 def main() -> None:
@@ -622,18 +621,16 @@ def main() -> None:
 
         elif command == "fetch-events":
             last_run = demisto.getLastRun()
-            demisto.debug(f"Starting fetch-events with max_events_per_fetch={max_events_per_fetch}")
             next_run, events = fetch_events(client=client, last_run=last_run, max_events_per_fetch=max_events_per_fetch)
 
             if events:
-                demisto.debug(f"Sending {len(events)} events to XSIAM")
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
-                demisto.debug("Events successfully sent to XSIAM")
+                demisto.debug(f"Successfully sent {len(events)} events to XSIAM")
             else:
                 demisto.debug("No events to send to XSIAM")
 
             demisto.setLastRun(next_run)
-            demisto.debug("Fetch-events cycle completed successfully")
+            demisto.debug("Fetch-events cycle completed successfully, set last run: ", next_run)
 
         else:
             raise NotImplementedError(f"Command {command} is not implemented.")
