@@ -1,0 +1,21 @@
+{
+    "name": "WithSecure Elements",
+    "description": "This integration has been developed by Thibault Renard and Franck Verstraete. This contribution does not intend to replace partner contribution (coming soon), only here for testing purposes.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Thibault Renard, Franck Verstraete",
+    "url": "",
+    "email": "",
+    "created": "2025-09-09T12:32:50Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "Riderphoenix974"
+    ]
+}
