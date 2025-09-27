@@ -547,7 +547,44 @@ script:
     - contextPath: TaegisXDR.InvestigationEvidenceUpdate
       description: The investigation that received the update.
     description: Add alerts and events to an existing investigation.
-  dockerimage: demisto/python3:3.12.8.3296088
+  - arguments:
+    - description: The investigation ID to close.
+      name: id
+      required: true
+    - description: The title of the investigation.
+      name: title
+    - auto: PREDEFINED
+      description: New status for the investigation.
+      name: status
+      predefined:
+      - CLOSED_AUTHORIZED_ACTIVITY
+      - CLOSED_CONFIRMED_SECURITY_INCIDENT
+      - CLOSED_FALSE_POSITIVE_ALERT
+      - CLOSED_INCONCLUSIVE
+      - CLOSED_INFORMATIONAL
+      - CLOSED_NOT_VULNERABLE
+      - CLOSED_THREAT_MITIGATED
+      required: true
+    - description: Closure reason.
+      name: reason
+      required: true
+    - auto: PREDEFINED
+      description: When closing an investigation that has alerts, an alertsResolutionStatus is required and all associated alerts will have their status updated.
+      name: alertsResolutionStatus
+      predefined:
+      - FALSE_POSITIVE
+      - NOT_ACTIONABLE
+      - OPEN
+      - TRUE_POSITIVE_BENIGN
+      - TRUE_POSITIVE_MALICIOUS
+      - OTHER
+      - SUPPRESSED
+      required: true
+    description: Close an existing investigation.
+    name: taegis-close-investigation
+    outputs:
+    - contextPath: TaegisXDR.InvestigationClose
+  dockerimage: demisto/python3:3.12.11.4819260
   isfetch: true
   runonce: false
   subtype: python3
