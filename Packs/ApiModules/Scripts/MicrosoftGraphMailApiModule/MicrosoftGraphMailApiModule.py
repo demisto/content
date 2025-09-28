@@ -15,7 +15,7 @@ class MsGraphMailBaseClient(MicrosoftClient):
     ITEM_ATTACHMENT = "#microsoft.graph.itemAttachment"
     FILE_ATTACHMENT = "#microsoft.graph.fileAttachment"
     # maximum attachment size to be sent through the api, files larger must be uploaded via upload session
-    MAX_ATTACHMENT_SIZE = 3145728  # 3mb = 3145728 bytes
+    MAX_ATTACHMENT_SIZE = 10  # 3mb = 3145728 bytes
     MAX_FOLDERS_SIZE = 250
     DEFAULT_PAGE_SIZE = 20
     DEFAULT_PAGES_TO_PULL_NUM = 1
@@ -723,7 +723,7 @@ class MsGraphMailBaseClient(MicrosoftClient):
             is_inline=is_inline,
             content_id=content_id,
         )
-        demisto.debug(f"Upload session created Raw Response: {upload_session}")
+        demisto.debug(f"Upload session created Raw Response: {json.dumps(upload_session, indent=4)}")
         demisto.debug(f"Upload session created Status Code: {upload_session.get('status_code')}")
         upload_url = upload_session.get("uploadUrl")
         if not upload_url:
@@ -743,7 +743,7 @@ class MsGraphMailBaseClient(MicrosoftClient):
             attachment_size=attachment_size,
         )
         demisto.debug(f"First chunk uploaded Raw Response: {response}")
-        demisto.debug(f"First chunk uploaded Status Code: {response.get('status_code')}")
+        demisto.debug(f"First chunk uploaded Status Code: {response.status_code}")
         while response.status_code != 201:  # the api returns 201 when the file is created at the draft message
             start_chunk_index = end_chunk_index
             next_chunk = end_chunk_index + self.MAX_ATTACHMENT_SIZE
@@ -787,7 +787,7 @@ class MsGraphMailBaseClient(MicrosoftClient):
         email = email or self._mailbox_to_fetch
         demisto.debug(f"Creating draft email for {email}")
         created_draft = self.create_draft(from_email=email, json_data=json_data, reply_message_id=reply_message_id)
-        demisto.debug(f"Draft created Raw Response: {created_draft}")
+        demisto.debug(f"Draft created Raw Response: {json.dumps(created_draft, indent=4)}")
         demisto.debug(f"Draft created Status Code: {created_draft.get('status_code')}")
         draft_id = created_draft.get("id", "")
         demisto.debug(f"Draft created with ID: {draft_id}")
