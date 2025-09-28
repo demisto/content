@@ -35,7 +35,7 @@ configuration:
   name: create_threat_object_indicators
   additionalinfo: Whether to create threat objects (malware families, actors, campaigns, etc.) as separate XSOAR indicators
   type: 8
-  defaultvalue: 'false'
+  defaultvalue: 'true'
   required: false
   section: Collect
   advanced: true
