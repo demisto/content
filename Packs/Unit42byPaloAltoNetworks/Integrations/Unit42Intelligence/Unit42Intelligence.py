@@ -217,7 +217,7 @@ def create_relationships(
     for threat_obj in threat_objects:
         threat_name = threat_obj.get("name", "")
         threat_class = threat_obj.get("threat_object_class", "").lower()
-        
+
         # Remove MITRE technique ID prefix (e.g., "T1590 - " from "T1590 - Gather Victim Network Information")
         if INDICATOR_TYPE_MAPPING[threat_class] == ThreatIntel.ObjectsNames.ATTACK_PATTERN and " - " in threat_name:
             parts = threat_name.split(" - ", 1)
