@@ -2746,9 +2746,10 @@ def conversation_history():
     if not channel_id and not channel_name:
         return_error("Either channel_id or channel_name must be provided.")
 
-    if not conversation_id:
+    if not channel_id:
         channel = get_conversation_by_name(channel_name)
         channel_id = channel.get("id")
+        demisto.debug(f"Channel id of channel {channel_name} is: {channel_id}")
     
     body = (
         {"channel": channel_id, "limit": limit}
