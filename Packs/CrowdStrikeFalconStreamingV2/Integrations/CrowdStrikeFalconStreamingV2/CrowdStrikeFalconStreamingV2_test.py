@@ -90,7 +90,7 @@ def test_get_sample_events_with_results(mocker):
             },
             "metadata": {
                 "eventCreationTime": 1592479032000,
-                "eventType": "DetectionSummaryEvent",
+                "eventType": "EppDetectionSummaryEvent",
                 "offset": 70628,
                 "version": "1.0",
             },

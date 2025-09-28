@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "The DetectionSummaryEvent event type is deprecated as of September 30th, 2025. Use the EppDetectionSummaryEvent event type instead."
+}

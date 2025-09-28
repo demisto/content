@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "The use_legacy parameter is deprecated as of September 30th, 2025. The following commands are affected: \n- crowdstrike-falcon-detects-list\n- crowdstrike-falcon-detects-get"
+}
