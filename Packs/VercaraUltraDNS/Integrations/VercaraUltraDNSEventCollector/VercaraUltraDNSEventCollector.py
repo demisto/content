@@ -355,12 +355,11 @@ def process_events_for_xsiam(events: list[dict[str, Any]]) -> list[dict[str, Any
     return events
 
 
-def test_module(client: Client, params: dict[str, Any]) -> str:
+def test_module(client: Client) -> str:
     """Test API connectivity and authentication.
 
     Args:
         client: UltraDNS client instance
-        params: Integration parameters dictionary
 
     Returns:
         str: 'ok' if successful, error message if failed
@@ -607,7 +606,7 @@ def main() -> None:
         demisto.debug(f"Client initialized, executing command: {command}")
 
         if command == "test-module":
-            result = test_module(client, params)
+            result = test_module(client)
             return_results(result)
 
         elif command == "vercara-ultradns-get-events":

@@ -42,6 +42,15 @@ def mock_send_events_to_xsiam(events, vendor, product):
     return events, vendor, product
 
 
+@pytest.fixture
+def client() -> Client:
+    """
+    Fixture to create and return a Client instance for testing.
+    Uses mock credentials defined at the top of the file.
+    """
+    return Client(base_url=BASE_URL, username=USERNAME, password=PASSWORD, verify=True, proxy=False)
+
+
 """ TEST FUNCTIONS """
 
 
@@ -463,9 +472,7 @@ class TestMainFunctions:
             mocker.get(AUDIT_LOG_URL, json=audit_response)
 
             client = Client(BASE_URL, USERNAME, PASSWORD)
-            params = {}
-
-            result = test_module(client, params)
+            result = test_module(client)
 
             assert result == "ok"
 
@@ -485,9 +492,8 @@ class TestMainFunctions:
             mocker.post(TOKEN_URL, status_code=401, json={"error": "invalid_credentials"})
 
             client = Client(BASE_URL, USERNAME, PASSWORD)
-            params = {}
 
-            result = test_module(client, params)
+            result = test_module(client)
 
             assert "Connection failed:" in result
 
