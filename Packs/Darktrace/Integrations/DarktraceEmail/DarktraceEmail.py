@@ -201,7 +201,7 @@ class Client(BaseClient):
 
         page = 0
         all_emails = []
-        while True:
+        while page < 100:
             params = email_query_builder(page, filter_triads, start_time, end_time)
             emails = self.post(query_uri, json=params)
             for email in emails:
