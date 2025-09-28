@@ -1,0 +1,23 @@
+{
+    "name": "Cloud Security Posture Management Playbooks",
+    "description": "This pack provides the remediation playbooks for Cortex Cloud Issues and Cases.",
+    "support": "xsoar",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "categories": [
+        "Cloud Services"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "supportedModules": [
+        "C1",
+        "C3",
+        "X5"
+    ],
+    "marketplaces": [
+        "platform"
+    ]
+}
