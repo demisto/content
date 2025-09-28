@@ -1714,9 +1714,7 @@ def get_detections_entities(detections_ids: list):
         batch_ids = detections_ids[i : i + MAX_FETCH_DETECTION_PER_API_CALL_ENTITY]
 
         ids_json = {"composite_ids": batch_ids}
-        demisto.debug(
-            f"Getting detections entities from {url} with {ids_json=} " f"with batch_ids len {len(batch_ids)}."
-        )
+        demisto.debug(f"Getting detections entities from {url} with {ids_json=} " f"with batch_ids len {len(batch_ids)}.")
 
         # Make the API call with the current batch.
         response = http_request("POST", url, data=json.dumps(ids_json))
@@ -1811,7 +1809,9 @@ def get_detection_entities(incidents_ids: list):
         batch_ids = incidents_ids[i : i + MAX_FETCH_DETECTION_PER_API_CALL_ENTITY]
 
         ids_json = {"composite_ids": batch_ids}
-        demisto.debug(f"In get_detection_entities: Getting detection entities from {url_endpoint_version} with {ids_json=} and with batch_ids len {len(batch_ids)}.")  # noqa: E501
+        demisto.debug(
+            f"In get_detection_entities: Getting detection entities from {url_endpoint_version} with {ids_json=} and with batch_ids len {len(batch_ids)}."  # noqa: E501
+        )
 
         # Make the API call with the current batch.
         raw_res = http_request("POST", url, data=json.dumps(ids_json))
@@ -3519,7 +3519,6 @@ def fetch_items(command="fetch-incidents"):
     if not is_fetch_events and NGSIEM_DETECTION_FETCH_TYPE in fetch_incidents_or_detections:
         demisto.debug("CrowdStrikeFalconMsg: Start fetch NGSIEM Detection")
         demisto.debug(f"CrowdStrikeFalconMsg: Current NGSIEM Detection last_run object: {ngsiem_detection_last_run}")
-
 
         fetched_ngsiem_detections, ngsiem_detection_last_run = fetch_detections_by_product_type(
             ngsiem_detection_last_run,
