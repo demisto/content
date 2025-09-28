@@ -1223,25 +1223,29 @@ class RDS:
         kwargs = {
             "SubscriptionName": args.get("subscription_name"),
             "Enabled": args.get("enabled"),
-            "EventCategories.EventCategory.N": args.get("event_categories"),
+            "EventCategories": argToList(args.get("event_categories", "")),
             "SnsTopicArn": args.get("sns_topic_arn"),
             "SourceType": args.get("source_type"),
         }
         remove_nulls_from_dictionary(kwargs)
         try:
             response = client.modify_event_subscription(**kwargs)
-            # if response["ResponseMetadata"]["HTTPStatusCode"] in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
-            #     return CommandResults(readable_output=f"The bucket {bucket} has been deleted successfully.")
-            # return CommandResults(
-            #     readable_output=readable_output,
-            #     outputs_prefix="AWS.RDS.DBInstance",
-            #     outputs=db_instance,
-            #     outputs_key_field="DBInstanceIdentifier",
-            # )
+
+            if response["ResponseMetadata"]["HTTPStatusCode"] in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
+                headers = ["CustomerAwsId", "CustSubscriptionId", "SnsTopicArn", "Status", "SubscriptionCreationTime",
+                           "SourceType", "EventCategoriesList", "Enabled", "EventSubscriptionArn"]
+
+                return CommandResults(
+                    readable_output=f"Event subscription {args.get('subscription_name')} successfully modified.",
+                    outputs_prefix="AWS.RDS.EventSubscription",
+                    outputs=tableToMarkdown(headers=headers, t=response.get("EventSubscription")),
+                    outputs_key_field="CustSubscriptionId",
+                )
+
             demisto.debug(f"{response=}")
             return CommandResults(readable_output=f"{response=}")
         except Exception as e:
-            raise DemistoException(f"Failed to delete bucket website for {args.get('bucket')}. Error: {str(e)}")
+            raise DemistoException(f"Failed to modify event subscription {args.get('subscription_name')}. Error: {str(e)}")
 
 class CloudTrail:
     service = AWSServices.CloudTrail
