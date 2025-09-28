@@ -1,7 +1,7 @@
 variables:
-  CURRENT_BRANCH_NAME: "yc/test_rn_preper"
+  CURRENT_BRANCH_NAME: "yc/fix_tag_handle"
 
 include:
   - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
-    ref: "yc/test_rn_preper"
+    ref: "yc/fix_tag_handle"
     project: "${CI_PROJECT_NAMESPACE}/infra"
