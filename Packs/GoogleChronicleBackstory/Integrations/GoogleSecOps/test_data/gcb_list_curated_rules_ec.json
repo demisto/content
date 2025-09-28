@@ -1,0 +1,27 @@
+{
+    "GoogleChronicleBackstory.CuratedRules(val.ruleId == obj.ruleId)": [
+        {
+            "ruleId": "ur_dummy_curated_rule_id",
+            "ruleName": "Test Rule 1",
+            "ruleSet": "dummy_curated_rule_set_id",
+            "ruleType": "SINGLE_EVENT",
+            "description": "This is a test rule.",
+            "severity": "High",
+            "precision": "HIGH",
+            "tactics": [
+                "TA0001"
+            ],
+            "techniques": [
+                "T1001"
+            ],
+            "metadata": {
+                "false_positives": "Deleting many firewall rules is not necessarily malicious, but could be used to disrupt operations."
+            },
+            "updateTime": "2025-07-29T10:00:00Z"
+        }
+    ],
+    "GoogleChronicleBackstory.Token(val.name == obj.name)": {
+        "name": "gcb-list-curatedrules",
+        "nextPageToken": "next_page_token"
+    }
+}

@@ -34,7 +34,7 @@ TEST_MODULE = "(select (name) (from device ) (limit 1))"
 def is_valid_hostname(hostname):
     if len(hostname) > 15:
         return False
-    allowed = re.compile("(?!-)[A-Z\d-]{1,15}(?<!-)$", re.IGNORECASE)
+    allowed = re.compile(r"(?!-)[A-Z\d-]{1,15}(?<!-)$", re.IGNORECASE)
     return all(allowed.match(x) for x in hostname)
 
 
