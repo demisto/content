@@ -145,6 +145,7 @@ class MsGraphMailBaseClient(MicrosoftClient):
             Response: response indicating whether the operation succeeded. 200 if a chunk was added successfully,
                 201 (created) if the file was uploaded completely. 400 in case of errors.
         """
+        demisto.debug("Uploading attachment chunk")
         chunk_size = len(chunk_data)
         headers = {
             "Content-Length": f"{chunk_size}",
@@ -688,6 +689,7 @@ class MsGraphMailBaseClient(MicrosoftClient):
             attachment_name (str): attachment name.
             is_inline (bool): is the attachment inline, True if yes, False if not.
         """
+        demisto.debug("Creating upload session")
         json_data = {
             "attachmentItem": {"attachmentType": "file", "name": attachment_name, "size": attachment_size, "isInline": is_inline}
         }
@@ -710,8 +712,9 @@ class MsGraphMailBaseClient(MicrosoftClient):
             attachment_name (str): attachment name.
             is_inline (bool): is the attachment inline, True if yes, False if not.
         """
-
+        demisto.debug("Adding attachment with upload session")
         attachment_size = len(attachment_data)
+        demisto.debug(f"Attachment size: {attachment_size}")
         upload_session = self.get_upload_session(
             email=email,
             draft_id=draft_id,
@@ -720,6 +723,8 @@ class MsGraphMailBaseClient(MicrosoftClient):
             is_inline=is_inline,
             content_id=content_id,
         )
+        demisto.debug(f"Upload session created Raw Response: {upload_session}")
+        demisto.debug(f"Upload session created Status Code: {upload_session.get('status_code')}")
         upload_url = upload_session.get("uploadUrl")
         if not upload_url:
             raise Exception(f"Cannot get upload URL for attachment {attachment_name}")
@@ -729,7 +734,7 @@ class MsGraphMailBaseClient(MicrosoftClient):
         end_chunk_index = min(self.MAX_ATTACHMENT_SIZE, attachment_size)
 
         chunk_data = attachment_data[start_chunk_index:end_chunk_index]
-
+        demisto.debug("Uploading First Chunk")
         response = self.upload_attachment(
             upload_url=upload_url,
             start_chunk_idx=start_chunk_index,
@@ -737,6 +742,8 @@ class MsGraphMailBaseClient(MicrosoftClient):
             chunk_data=chunk_data,
             attachment_size=attachment_size,
         )
+        demisto.debug(f"First chunk uploaded Raw Response: {response}")
+        demisto.debug(f"First chunk uploaded Status Code: {response.get('status_code')}")
         while response.status_code != 201:  # the api returns 201 when the file is created at the draft message
             start_chunk_index = end_chunk_index
             next_chunk = end_chunk_index + self.MAX_ATTACHMENT_SIZE
@@ -748,6 +755,7 @@ class MsGraphMailBaseClient(MicrosoftClient):
                 demisto.debug(f"Skipping empty chunk at range {start_chunk_index}-{end_chunk_index}")
                 break
 
+            demisto.debug("Uploading Next Chunk")
             response = self.upload_attachment(
                 upload_url=upload_url,
                 start_chunk_idx=start_chunk_index,
@@ -755,7 +763,8 @@ class MsGraphMailBaseClient(MicrosoftClient):
                 chunk_data=chunk_data,
                 attachment_size=attachment_size,
             )
-
+            demisto.debug(f"Next chunk uploaded Raw Response: {response}")
+            demisto.debug(f"Next chunk uploaded Status Code: {response.status_code}")
             if response.status_code not in (201, 200):
                 raise Exception(f"{response.json()}")
 
@@ -776,8 +785,12 @@ class MsGraphMailBaseClient(MicrosoftClient):
         """
         # create the draft email
         email = email or self._mailbox_to_fetch
+        demisto.debug(f"Creating draft email for {email}")
         created_draft = self.create_draft(from_email=email, json_data=json_data, reply_message_id=reply_message_id)
+        demisto.debug(f"Draft created Raw Response: {created_draft}")
+        demisto.debug(f"Draft created Status Code: {created_draft.get('status_code')}")
         draft_id = created_draft.get("id", "")
+        demisto.debug(f"Draft created with ID: {draft_id}")
         self.add_attachments_via_upload_session(  # add attachments via upload session.
             email=email, draft_id=draft_id, attachments=attachments_more_than_3mb
         )
