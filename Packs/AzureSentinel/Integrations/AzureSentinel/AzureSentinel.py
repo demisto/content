@@ -1563,12 +1563,16 @@ def process_incidents(raw_incidents: list, latest_created_time: datetime, last_i
 
     incidents = []
     current_fetch_ids = []
+    skip_closed_incidents = demisto.params().get("skip_closed_incidents", False)
     if not last_incident_number:
         last_incident_number = 0
 
     for incident in raw_incidents:
         incident_severity = severity_to_level(incident.get("Severity"))
         demisto.debug(f"{incident.get('ID')=}, {incident_severity=}, {incident.get('IncidentNumber')=}")
+        if incident.get("Status") == "Closed" and skip_closed_incidents:
+            demisto.debug(f"Skipping closed incident {incident.get('ID')}")
+            continue
 
         incident_created_time = dateparser.parse(incident.get("CreatedTimeUTC"))
         current_fetch_ids.append(incident.get("ID"))

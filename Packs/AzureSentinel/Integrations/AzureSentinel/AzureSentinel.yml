@@ -199,6 +199,13 @@ configuration:
   section: Collect
   advanced: true
   required: false
+- additionalinfo: When selected, closed incidents will not be fetched.
+  defaultvalue: 'false'
+  display: Skip closed incidents
+  name: skip_closed_incidents
+  type: 8
+  section: Collect
+  advanced: true
 - defaultvalue: '1'
   display: Incidents Fetch Interval
   name: incidentFetchInterval
