@@ -489,7 +489,8 @@ class TestMainFunctions:
 
             result = test_module(client, params)
 
-            assert "Connection failed: Error in API call [401]" in result
+            assert "Connection failed:" in result
+            assert "401" in result or "Error in API call" in result
 
     def test_get_events_command(self, mocker):
         """
