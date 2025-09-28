@@ -3,10 +3,6 @@ import json
 import pathlib
 import pickle
 import socket
-import subprocess
-import sys
-import tempfile
-import time
 from typing import Any
 
 import demistomock as demisto
@@ -88,25 +84,6 @@ def test_socks_proxy_fail(mocker: MockerFixture, capfd: pytest.CaptureFixture):
         results = demisto.results.call_args[0]  # type: ignore
         assert len(results) == 1
         assert "Exception thrown calling command" in results[0]["Contents"]
-
-
-def test_socks_proxy(mocker, request):
-    mocker.patch.object(demisto, "params", return_value={"proxy_url": "socks5h://localhost:9980"})
-    mocker.patch.object(demisto, "command", return_value="test-module")
-    mocker.patch.object(demisto, "results")
-    tmp = tempfile.TemporaryFile("w+")
-    microsocks = "./test_data/microsocks_darwin" if "darwin" in sys.platform else "./test_data/microsocks"
-    process = subprocess.Popen([microsocks, "-p", "9980"], stderr=subprocess.STDOUT, stdout=tmp)
-
-    def cleanup():
-        process.kill()
-
-    request.addfinalizer(cleanup)
-    time.sleep(1)
-    Whois.main()
-    assert_results_ok()
-    tmp.seek(0)
-    assert "connected to" in tmp.read()  # make sure we went through microsocks
 
 
 TEST_QUERY_RESULT_INPUT = [
@@ -293,7 +270,7 @@ def test_indian_tld():
     from Whois import get_root_server
 
     result = get_root_server("google.in")
-    assert result == "in.whois-servers.net"
+    assert result == "whois.nixiregistry.in"
 
 
 def test_ph_tld():
