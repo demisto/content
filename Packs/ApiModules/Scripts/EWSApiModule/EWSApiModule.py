@@ -517,7 +517,6 @@ class EWSClient:
             target_mailbox = self.account_email
             demisto.debug(f"Set target mailbox to: {target_mailbox}")
 
-
         if self.auto_discover:
             return self.get_account_autodiscover(target_mailbox, time_zone)
 
@@ -703,7 +702,7 @@ class EWSClient:
             except Exception as e:
                 demisto.debug(f"got error {e}")
                 raise ValueError(f"No such folder {path_parts}")
-        demisto.debug(f"[get_folder_by_path] Returning the folder.")
+        demisto.debug("[get_folder_by_path] Returning the folder.")
         return folder
 
     def send_email(self, message: Message):
