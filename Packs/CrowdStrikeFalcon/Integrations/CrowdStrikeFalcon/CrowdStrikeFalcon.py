@@ -5044,26 +5044,26 @@ def upload_file_command():
 def delete_file_command():
     """
     Deletes a file from CrowdStrike Falcon.
-    
+
     This command deletes a file by either file_id or file_name. If file_name is provided
     without file_id, it will first list all files to find the corresponding file_id.
-    
+
     Args:
         file_id (str, optional): The ID of the file to delete
         file_name (str, optional): The name of the file to delete
-        
+
     Returns:
         dict: Entry object with deletion confirmation message
-        
+
     Raises:
         ValueError: If neither file_name nor file_id is provided, or if file with given name is not found
     """
     file_id = demisto.args().get("file_id")
     file_name = demisto.args().get("file_name")
-    
+
     if not file_name and not file_id:
         raise ValueError("Either file_name or file_id must be provided.")
-    
+
     if not file_id:
         result = list_files()
         resources = result.get("resources", [])
@@ -5073,10 +5073,10 @@ def delete_file_command():
             if resource.get("name", "") == file_name:
                 file_id = resource.get("id")
                 break
-            
+
         if not file_id:
             raise ValueError(f"File with name '{file_name}' not found.")
-    
+
     response = delete_file(file_id)
 
     return create_entry_object(contents=response, hr=f"File {file_id} was deleted successfully")
