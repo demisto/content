@@ -46,15 +46,13 @@ CHECK_HR_KEY_TO_RES_KEY = {
 
 VENDOR = "HashiCorp"
 PRODUCT = "Terraform"
-EVENTS_DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
 DEFAULT_PAGE_SIZE = 1000
 DEFAULT_GET_EVENTS_LIMIT = 10
 DEFAULT_FETCH_EVENTS_LIMIT = 10000
 
-UTC_ONE_HOUR_AGO = datetime.now(tz=UTC) - timedelta(hours=1)
-# API accepts the format "YYYY-MM-DDTHH:MM:SS.SSSZ"
-DEFAULT_GET_EVENTS_FROM_DATE = UTC_ONE_HOUR_AGO.isoformat(timespec="milliseconds").replace("+00:00", "Z")
+DEFAULT_AUDIT_TRAIL_FROM_TIME = datetime.now(tz=UTC) - timedelta(hours=1)
 
 
 class Client(BaseClient):
@@ -225,28 +223,37 @@ class AsyncClient:
         url = urljoin(self.base_url, "/organization/audit-trail")
 
         max_retries = 5
-        backoff_factor = 0.5
+        backoff_factor = 1
 
         for attempt in range(max_retries):
             try:
-                demisto.debug(f"Starting request for audit trails (attempt {attempt + 1}/{max_retries}) using {params=}.")
+                attempt_string = f"attempt {attempt + 1}/{max_retries}"
+                demisto.debug(f"Starting request for audit trails ({attempt_string}) using {params=}.")
                 async with self._session.get(url, params=params, proxy=self._proxy_url) as response:
                     response.raise_for_status()
                     response_json = await response.json()
-                    data_items_count = len(response_json.get("data", []))
-                    demisto.debug(f"Finished request for audit trails. Got {data_items_count} items.")
+                    response_data = response_json.get("data", [])
+                    min_event_time = max_event_time = None
+                    if response_data:
+                        # The first event is the newest, and the last event is the oldest
+                        max_event_time = response_data[0]["timestamp"]
+                        min_event_time = response_data[-1]["timestamp"]
+                    demisto.debug(
+                        f"Finished request for audit trails using {params=}. "
+                        f"Got {len(response_data)} items: {min_event_time=}, {max_event_time=}."
+                    )
                     return response_json
 
             except aiohttp.ClientResponseError as e:
                 if e.status == HTTPStatus.TOO_MANY_REQUESTS and attempt < max_retries - 1:
-                    delay = backoff_factor * (2**attempt)
-                    demisto.debug(f"Got rate limit error. Backing off for {delay:.2f} seconds.")
+                    delay = int(backoff_factor * (2**attempt))  # double the back off time each time
+                    demisto.debug(f"Got rate limit error ({attempt_string}) using {params=}. Backing off for {delay} seconds.")
                     await asyncio.sleep(delay)
                 else:
-                    demisto.error(f"Request failed after {attempt + 1} attempts with status {e.status}: {e.message}")
+                    demisto.error(f"Request failed with status {e.status}: {e.message}")
                     raise
 
-        raise Exception(f"Failed to retrieve audit trails from {url} after {max_retries} attempts.")
+        raise Exception(f"Failed after {max_retries} attempts to retrieve audit trails using {params=}.")
 
 
 def deduplicate_and_format_events(
@@ -272,7 +279,7 @@ def deduplicate_and_format_events(
         all_fetched_ids.add(event_id)
         # `arg_to_datetime` does not return `None` since `timestamp` field exists and has a supported format
         # Added `type: ignore` to silence type checkers and linters
-        event["_time"] = arg_to_datetime(event["timestamp"]).strftime(EVENTS_DATE_FORMAT)  # type: ignore [union-attr]
+        event["_time"] = arg_to_datetime(event["timestamp"]).strftime(DATE_FORMAT)  # type: ignore [union-attr]
         events.append(event)
     return events
 
@@ -285,6 +292,8 @@ async def get_audit_trail_events(
 ) -> list[dict[str, Any]]:
     """
     Asynchronously fetches audit trail events from Terraform, handling pagination.
+    Since the API returns events from newest to oldest, we fetch pages from last to first
+    to get the oldest events first.
 
     Args:
         client (AsyncClient): An instance of the AsyncClient.
@@ -293,7 +302,7 @@ async def get_audit_trail_events(
         last_fetched_ids (list[str]): A list of IDs of events that have already been fetched.
 
     Returns:
-        list[dict[str, Any]]: A list of new audit trail events.
+        list[dict[str, Any]]: A list of new audit trail events, sorted from oldest to newest.
     """
     if last_fetched_ids is None:
         last_fetched_ids = []
@@ -305,36 +314,35 @@ async def get_audit_trail_events(
     all_fetched_ids = set(last_fetched_ids)
     all_events = []
 
-    # Make the first request to get the first page and pagination details
+    # Get the first page to determine the total number of pages
     first_page_raw_response = await client.get_audit_trails(from_date=from_date, page_number=1)
-    all_events.extend(deduplicate_and_format_events(first_page_raw_response, all_fetched_ids))
-
-    if not all_events or len(all_events) >= limit:
-        all_events.sort(key=lambda event: event["timestamp"])
-        return all_events[:limit]
-
-    # Calculate the total number of pages to fetch based on the limit
     total_pages = first_page_raw_response.get("pagination", {}).get("total_pages", 1)
+
+    # Calculate the number of pages to fetch to meet the limit
     page_size = DEFAULT_PAGE_SIZE
     required_pages = math.ceil(limit / page_size)
     pages_to_fetch = min(total_pages, int(required_pages))
 
-    if pages_to_fetch > 1:
-        # Create tasks for the remaining pages
+    # Determine the range of pages to fetch (from last to first)
+    start_page = total_pages
+    stop_page = max(0, total_pages - pages_to_fetch)  # stop page not included!
+
+    if pages_to_fetch > 0:
+        # Create tasks to fetch pages concurrently, from oldest to newest
         audit_trail_tasks = [
-            client.get_audit_trails(
-                from_date=from_date,
-                page_number=page_number,
-            )
-            for page_number in range(2, pages_to_fetch + 1)
+            client.get_audit_trails(from_date=from_date, page_number=page_number)
+            for page_number in range(start_page, stop_page, -1)
         ]
 
         # Gather responses from all API requests
         raw_responses = await asyncio.gather(*audit_trail_tasks)
 
         for raw_response in raw_responses:
-            all_events.extend(deduplicate_and_format_events(raw_response, all_fetched_ids))
+            new_events = deduplicate_and_format_events(raw_response, all_fetched_ids)
+            # Since we are fetching pages in reverse (oldest to newest)
+            all_events.extend(new_events)
 
+    # Sort all collected events by timestamp (oldest to newest) and return up to the limit
     all_events.sort(key=lambda event: event["timestamp"])
     return all_events[:limit]
 
@@ -350,7 +358,7 @@ async def get_events_command(client: AsyncClient, args: dict[str, Any]) -> tuple
     Returns:
         tuple[list[dict[str, Any]], CommandResults]: A tuple of the events list and the CommandResults with human-readable output.
     """
-    from_date = args.get("from_date") or DEFAULT_GET_EVENTS_FROM_DATE
+    from_date = (arg_to_datetime(args.get("from_date")) or DEFAULT_AUDIT_TRAIL_FROM_TIME).strftime(DATE_FORMAT)
     limit = arg_to_number(args.get("limit")) or DEFAULT_GET_EVENTS_LIMIT
 
     events = await get_audit_trail_events(client, from_date, limit)
@@ -374,7 +382,8 @@ async def fetch_events_command(
     Returns:
         tuple[dict[str, Any], list[dict[str, Any]]]: A tuple of the the next run object and a list of fetched events.
     """
-    from_date = last_run.get("from_date") or DEFAULT_GET_EVENTS_FROM_DATE
+    demisto.debug(f"Starting fetching events with {last_run=}.")
+    from_date = last_run.get("from_date") or DEFAULT_AUDIT_TRAIL_FROM_TIME.strftime(DATE_FORMAT)
     last_fetched_ids = last_run.get("last_fetched_ids", [])
 
     all_events = await get_audit_trail_events(
@@ -388,9 +397,9 @@ async def fetch_events_command(
         demisto.debug(f"No new events found since {last_run=}.")
         return last_run, []
 
-    # Events are ordered by timestamp in ascending order
+    # Events are sorted by `timestamp` in ascending order inside `get_audit_trail_events`
     newest_event_timestamp = all_events[-1]["timestamp"]
-    demisto.debug(f"Sorted {len(all_events)} events after deduplication. Got {newest_event_timestamp=}.")
+    demisto.debug(f"Got {len(all_events)} deduplicated events with {newest_event_timestamp=}.")
 
     # Get the IDs of the events that have the newest timestamp
     new_last_fetched_ids = [event["id"] for event in all_events if event["timestamp"] == newest_event_timestamp]
@@ -592,7 +601,7 @@ def main() -> None:
         if command == "test-module":
             test_results = test_module(client)
             if is_fetch_events:
-                asyncio.run(_run_async_command(fetch_events_command, last_run={}, limit=1))
+                asyncio.run(_run_async_command(fetch_events_command, last_run={}, max_fetch=1))
             return_results(test_results)
 
         elif command == "terraform-get-events" and (is_xsiam() or is_platform()):
@@ -604,7 +613,7 @@ def main() -> None:
 
         elif command == "fetch-events" and (is_xsiam() or is_platform()):
             last_run = demisto.getLastRun()
-            next_run, events = asyncio.run(_run_async_command(fetch_events_command, last_run=last_run, limit=max_fetch))
+            next_run, events = asyncio.run(_run_async_command(fetch_events_command, last_run=last_run, max_fetch=max_fetch))
             send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
             demisto.setLastRun(next_run)
 
