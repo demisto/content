@@ -705,7 +705,7 @@ class EWSClient:
         """
         account = self.get_account()
         message.account = account
-        message.send_and_save()
+        return message.send_and_save()
 
     def reply_email(
         self,
@@ -810,17 +810,25 @@ def handle_html(html_body) -> tuple[str, List[Dict[str, Any]]]:
     last_index = 0
     for i, m in enumerate(re.finditer(r"<img.+?src=\"(data:(image\/.+?);base64,([a-zA-Z0-9+/=\r\n]+?))\"", html_body, re.I)):
         name = f"image{i}"
+        demisto.debug(f"AAA_handle_html: Found attachment: {name=}")
         cid = f"{name}@{str(uuid.uuid4())[:8]}_{str(uuid.uuid4())[:8]}"
+        demisto.debug(f"AAA_handle_html: Found attachment: {cid=}")
         attachment = {"data": base64.b64decode(m.group(3)), "name": name}
+        demisto.debug(f"AAA_handle_html: Found attachment: {attachment=}")
         attachment["cid"] = cid
         clean_body += html_body[last_index : m.start(1)] + "cid:" + attachment["cid"]
+        demisto.debug(f"AAA_handle_html: Found attachment: {clean_body=}")
         last_index = m.end() - 1
         new_attachment = FileAttachment(
             name=attachment.get("name"), content=attachment.get("data"), content_id=attachment.get("cid"), is_inline=True
         )
+        demisto.debug(f"AAA_handle_html: Found attachment: {new_attachment=}")
         attachments.append(new_attachment)
+        demisto.debug(f"AAA_handle_html: Added attachment: {attachment}")
 
     clean_body += html_body[last_index:]
+    demisto.debug(f"AAA_handle_html: Final clean_body: {clean_body=}")
+    demisto.debug(f"AAA_handle_html: Final attachments: {attachments=}")
     return clean_body, attachments
 
 
