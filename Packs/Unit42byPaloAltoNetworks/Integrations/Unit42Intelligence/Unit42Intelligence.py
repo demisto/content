@@ -659,6 +659,10 @@ def create_location_indicators_and_relationships(threat_obj: dict[str, Any], thr
     # Handle affected regions
     affected_regions = demisto.get(threat_obj, "battlecard_details.threat_actor_details.affected_regions", [])
 
+    # in case affected_regions is "null", return empty list.
+    if not isinstance(affected_regions, list):
+        return location_indicators
+
     for region in affected_regions:
         if isinstance(region, str) and region.strip():
             region_lower = region.strip().lower()
