@@ -1,4 +1,4 @@
 {
     "breakingChanges": true,
-    "breakingChangesNotes": "The use_legacy parameter is deprecated as of September 30th, 2025. The following commands are affected: \n- crowdstrike-falcon-detects-list\n- crowdstrike-falcon-detects-get"
+    "breakingChangesNotes": "The use_legacy parameter is deprecated as of September 30th, 2025. This affects multiple areas of functionality:\n\n**Direct Commands:**\n- cs-falcon-search-detection\n- cs-falcon-resolve-detection\n- cs-falcon-get-detections-for-incident\n\n**Fetch Operations:**\n- fetch-incidents (all detection types including endpoint, IDP, mobile, ODS, OFP, NGSIEM, and third-party detections)\n- fetch-events (XSIAM detection fetching)\n\n**Mirroring Operations:**\n- get-remote-data (detection mirroring)\n- get-modified-remote-data (detection change tracking)\n- get-mapping-fields (detection field mappings)\n\n**Impact:** The legacy API endpoints and data structures will no longer be supported. All detection-related operations will use the updated Raptor API format. Users should test their detection workflows and update any custom scripts or playbooks that depend on the legacy detection format."
 }
