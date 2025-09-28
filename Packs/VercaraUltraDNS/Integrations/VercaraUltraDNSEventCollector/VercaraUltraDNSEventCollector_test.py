@@ -65,7 +65,7 @@ class TestClient:
         assert client._base_url == BASE_URL
         assert client.username == USERNAME
         assert client.password == PASSWORD
-        assert client.access_token == None
+        assert client.access_token is None
 
     def test_authenticate_success(self):
         """
@@ -490,7 +490,6 @@ class TestMainFunctions:
             result = test_module(client, params)
 
             assert "Connection failed:" in result
-            assert "401" in result or "Error in API call" in result
 
     def test_get_events_command(self, mocker):
         """

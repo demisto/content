@@ -55,7 +55,7 @@ class Client(BaseClient):
         """
         if self._is_token_valid():
             demisto.debug("Access token is valid, using existing token")
-            return self.access_token
+            return self.access_token  # type: ignore[return-value]
 
         if self.refresh_token:
             try:
@@ -150,7 +150,7 @@ class Client(BaseClient):
             DemistoException: If JSON parsing fails
         """
         if not end_time:
-            end_time = datetime.utcnow()
+            end_time = datetime.now()
 
         start_time_str = start_time.strftime(DATE_FORMAT)
         end_time_str = end_time.strftime(DATE_FORMAT)
@@ -263,7 +263,7 @@ def _deduplicate_events(
     if not events:
         return []
 
-    filtered_events = []
+    filtered_events: list[dict[str, Any]] = []
 
     # Process events from oldest to newest (iterate backwards through array)
     for i, event in reversed(list(enumerate(events))):
@@ -374,7 +374,7 @@ def test_module(client: Client, params: dict[str, Any]) -> str:
             return "Authentication failed: Could not obtain access token"
 
         demisto.debug("Authentication successful, testing API connectivity...")
-        end_time = datetime.utcnow()
+        end_time = datetime.now()
         start_time = end_time.replace(hour=0, minute=0, second=0, microsecond=0)
         response = client.get_audit_logs(start_time=start_time, end_time=end_time, limit=1)
 
@@ -420,7 +420,7 @@ def get_events_command(client: Client, args: dict[str, Any]) -> tuple[list[dict]
 
     should_push_events = argToBoolean(args.get("should_push_events", False))
 
-    start_time = dateparser.parse(args.get("start_time"))
+    start_time = dateparser.parse(args.get("start_time") or "")
     if not start_time:
         raise DemistoException(f"Invalid start_time format: {args.get('start_time')}")
 
@@ -430,11 +430,11 @@ def get_events_command(client: Client, args: dict[str, Any]) -> tuple[list[dict]
         if not end_time:
             raise DemistoException(f"Invalid end_time format: {end_time_arg}")
     else:
-        end_time = datetime.utcnow()
+        end_time = datetime.now()
 
     demisto.debug(f"Fetching events from {start_time} to {end_time}")
 
-    all_events = []
+    all_events: list[dict[str, Any]] = []
     cursor = None
     page_count = 0
 
@@ -471,7 +471,8 @@ def get_events_command(client: Client, args: dict[str, Any]) -> tuple[list[dict]
     if should_push_events:
         processed_events = process_events_for_xsiam(events)
         send_events_to_xsiam(processed_events, vendor=VENDOR, product=PRODUCT)
-        command_results.readable_output += f"\n\nSuccessfully sent {len(processed_events)} events to XSIAM."
+        xsiam_msg = f"\n\nSuccessfully sent {len(processed_events)} events to XSIAM."
+        command_results.readable_output = (command_results.readable_output or "") + xsiam_msg
         demisto.debug(f"Successfully pushed {len(processed_events)} events to XSIAM")
     else:
         demisto.debug("Events displayed only, not pushed to XSIAM")
@@ -510,13 +511,13 @@ def fetch_events(
         )
     else:
         last_event_time = None
-        start_time = datetime.utcnow() - timedelta(hours=3)
+        start_time = datetime.now() - timedelta(hours=3)
         demisto.debug("First fetch: collecting events from last 3 hours")
 
-    end_time = datetime.utcnow()
+    end_time = datetime.now()
 
     # Initialize pagination variables
-    raw_events = []
+    raw_events: list[dict[str, Any]] = []
     cursor = None
     page_count = 0
     latest_event_time = last_event_time  # Will be updated with newest event from this fetch
