@@ -225,14 +225,8 @@ def convert_time_string(time_str: str) -> datetime:
     """
     try:
         return datetime.strptime(time_str, API_DATE_FORMAT)
-    except ValueError:
-        parsed_time = dateparser.parse(time_str)
-        if not parsed_time:
-            raise DemistoException(f"Failed to parse time string: {time_str}")
-        # Ensure timezone-naive datetime for consistent comparisons
-        if parsed_time.tzinfo is not None:
-            parsed_time = parsed_time.replace(tzinfo=None)
-        return parsed_time
+    except ValueError as e:
+        raise DemistoException(f"Failed to parse time string '{time_str}' with expected format '{API_DATE_FORMAT}': {e}")
 
 
 def _calculate_event_hash(event: dict[str, Any]) -> str:
@@ -316,7 +310,7 @@ def _cache_recent_events(events: list[dict[str, Any]], cache: dict[str, str], cu
             break  # Events are newest first, so we can stop here
 
         event_hash = _calculate_event_hash(event)
-        cache[event_hash] = event_datetime.strftime("%Y-%m-%dT%H:%M:%SZ")
+        cache[event_hash] = event_datetime.strftime("%Y-%m-%dT%H:%M:%S")
 
 
 def _cleanup_event_cache(event_cache: dict[str, str], cutoff_time: datetime) -> dict[str, str]:
@@ -331,7 +325,7 @@ def _cleanup_event_cache(event_cache: dict[str, str], cutoff_time: datetime) -> 
     """
     cleaned_cache = {}
     removed_count = 0
-    cutoff_time_str = cutoff_time.strftime("%Y-%m-%dT%H:%M:%SZ")
+    cutoff_time_str = cutoff_time.strftime("%Y-%m-%dT%H:%M:%S")
 
     for event_hash, timestamp_str in event_cache.items():
         try:
@@ -508,7 +502,7 @@ def fetch_events(
     event_cache = last_run.get("event_cache", {})
     # Determine fetch time window
     if last_fetch_time_str:
-        last_event_time = convert_time_string(last_fetch_time_str)
+        last_event_time = datetime.fromisoformat(last_fetch_time_str)
         start_time = last_event_time - timedelta(seconds=MARGIN_FETCH_OVERLAP_SECONDS)
         demisto.debug(
             f"Starting fetch from {last_event_time} with adding {MARGIN_FETCH_OVERLAP_SECONDS}s overlap, "
@@ -563,7 +557,7 @@ def fetch_events(
         cache_cutoff_time = latest_event_time - timedelta(seconds=MARGIN_FETCH_OVERLAP_SECONDS + MARGIN_DEDUP_SAFETY_SECONDS)
         _cache_recent_events(unique_events, event_cache, cache_cutoff_time)
         cleaned_cache = _cleanup_event_cache(event_cache, cache_cutoff_time)
-        next_run_state = {"last_fetch_time": latest_event_time.strftime("%Y-%m-%dT%H:%M:%SZ"), "event_cache": cleaned_cache}
+        next_run_state = {"last_fetch_time": latest_event_time.strftime("%Y-%m-%dT%H:%M:%S"), "event_cache": cleaned_cache}
 
         unique_events = process_events_for_xsiam(unique_events)
 

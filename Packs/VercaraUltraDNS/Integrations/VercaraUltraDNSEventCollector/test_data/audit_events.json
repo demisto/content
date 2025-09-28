@@ -2,22 +2,16 @@
   "auditRecords": [
     {
       "account": "EXAMPLE CORP - 1234567",
-      "changeTime": "2025-09-27 14:30:00.0",
-      "changeType": "CREATE",
+      "changeTime": "2025-09-27 14:32:30.0", 
+      "changeType": "DELETE",
       "detail": {
-        "recordType": "A",
-        "ttl": 300
+        "recordType": "MX"
       },
-      "others": [
-        {
-          "name": "priority",
-          "value": "10"
-        }
-      ],
-      "ipAddress": "192.168.1.100",
-      "object": "example-test.com.",
-      "objectType": "ZONE",
-      "user": "admin_user"
+      "others": [],
+      "ipAddress": "192.168.1.102",
+      "object": "mail.example-test.com.",
+      "objectType": "RECORD",
+      "user": "cleanup_service"
     },
     {
       "account": "EXAMPLE CORP - 1234567", 
@@ -40,17 +34,23 @@
     },
     {
       "account": "EXAMPLE CORP - 1234567",
-      "changeTime": "2025-09-27 14:32:30.0", 
-      "changeType": "DELETE",
+      "changeTime": "2025-09-27 14:30:00.0",
+      "changeType": "CREATE",
       "detail": {
-        "recordType": "MX"
+        "recordType": "A",
+        "ttl": 300
       },
-      "others": [],
-      "ipAddress": "192.168.1.102",
-      "object": "mail.example-test.com.",
-      "objectType": "RECORD",
-      "user": "cleanup_service"
+      "others": [
+        {
+          "name": "priority",
+          "value": "10"
+        }
+      ],
+      "ipAddress": "192.168.1.100",
+      "object": "example-test.com.",
+      "objectType": "ZONE",
+      "user": "admin_user"
     }
   ],
-  "next_cursor": "eyJjdXJzb3IiOiIyMDI1LTA5LTI3VDE0OjMyOjMwWiJ9"
+  "next_cursor": "cursor_123"
 }
