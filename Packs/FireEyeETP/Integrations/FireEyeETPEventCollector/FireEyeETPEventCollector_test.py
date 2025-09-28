@@ -104,7 +104,7 @@ def test_fetch_alerts(mocker, hide_sensitive, alert_expected, trace_expected, ac
     """
     Given: mocked client, mocked responses and expected event structure,
     When: fetching incidents
-    Then: Testing the formatted events are as required.
+    Then: Testing the formatted events are as required, and direction_source is set for non-activity events.
     """
     client = mock_client()
     client.hide_sensitive = hide_sensitive
@@ -136,8 +136,20 @@ def test_fetch_alerts(mocker, hide_sensitive, alert_expected, trace_expected, ac
         demisto_last_run=LAST_RUN_MULTIPLE_EVENT,
         first_fetch=datetime.now(),
     )
-    assert events[0] == mocked_alert_data[alert_expected]
-    assert events[1] == mocked_trace_data[trace_expected]
+
+    # Validate new direction_source field
+    assert events[0].get("direction_source") == "inbound"  # alerts
+    assert events[1].get("direction_source") == "inbound"  # email_trace
+    assert "direction_source" not in events[2]  # activity_log
+
+    # Compare payloads ignoring direction_source for non-activity events
+    alert_cmp = dict(events[0])
+    alert_cmp.pop("direction_source", None)
+    trace_cmp = dict(events[1])
+    trace_cmp.pop("direction_source", None)
+
+    assert alert_cmp == mocked_alert_data[alert_expected]
+    assert trace_cmp == mocked_trace_data[trace_expected]
     assert events[2] == mocked_activity_data[activity_expected]
 
 
@@ -181,7 +193,6 @@ def test_parse_special_iso_format(input_str, expected_dt):
     When: trying to convert from response to datetime
     Then: make sure parsing is correct.
     """
-
     assert FireEyeETPEventCollector.parse_special_iso_format(input_str) == expected_dt
 
 
@@ -209,6 +220,11 @@ class TestLastRun:
 
 @freeze_time("2023-07-30 11:34:30")
 def test_get_command(mocker):
+    """
+    Given: mocked client and responses
+    When: running get-events command
+    Then: markdown is returned and direction_source is set on non-activity events.
+    """
     mocked_alert_data = util_load_json("test_data/alerts.json")
     mocked_trace_data = util_load_json("test_data/email_trace.json")
     mocked_activity_data = util_load_json("test_data/activity_log.json")
@@ -233,8 +249,13 @@ def test_get_command(mocker):
         "get_activity_log",
         side_effect=[mocked_activity_data["ok_response"], {"data": []}],
     )
-    next_run, events = collector.get_events_command(start_time=datetime.now() - timedelta(days=20))
-    assert events.readable_output
+    events, md = collector.get_events_command(start_time=datetime.now() - timedelta(days=20))
+    assert md.readable_output
+
+    # Validate direction_source flags in the returned events list
+    assert events[0].get("direction_source") == "inbound"  # alerts
+    assert events[1].get("direction_source") == "inbound"  # email_trace
+    assert "direction_source" not in events[2]  # activity_log
 
 
 PAGINATION_CASES = [
@@ -268,6 +289,7 @@ def test_pagination(mocker, event_name, res_mock_path, func_to_mock, expected_re
     Then: Validate we fetch correct number of results, meaning:
         1. No dups
         2. All events arrived
+        3. direction_source is set only for non-activity events
     """
     collector = FireEyeETPEventCollector.EventCollector(
         mock_client(),
@@ -284,6 +306,10 @@ def test_pagination(mocker, event_name, res_mock_path, func_to_mock, expected_re
     # using timedelta with milliseconds due to a freeze_time issue.
     events, md = collector.get_events_command(start_time=datetime.now() - timedelta(days=2, milliseconds=1))
     assert len(events)
+    if event_name != "activity_log":
+        assert all(e.get("direction_source") == "inbound" for e in events)
+    else:
+        assert all("direction_source" not in e for e in events)
 
 
 @pytest.mark.parametrize(
@@ -357,7 +383,6 @@ def test_limit_zero_skip_fetch_flow(mocker):
     When: running the fetch flow
     Then: validates the flow was only running for the event with limit.
     """
-
     event_types = [
         FireEyeETPEventCollector.EventType("alerts", 0, outbound=False),
         FireEyeETPEventCollector.EventType("email_trace", 0, outbound=False),
@@ -382,7 +407,7 @@ def test_client_get_activity_log(mocker):
     Given:
         - "from" time and a "size".
     When:
-        - Calling `Client.get_activity_log`.
+        - Calling Client.get_activity_log.
     Then:
         - Assert "to" time is set as expected due to API requirement (current UTC time).
     """
