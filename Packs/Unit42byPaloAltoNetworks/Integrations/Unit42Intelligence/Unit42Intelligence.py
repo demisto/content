@@ -125,13 +125,12 @@ class Client(BaseClient):
 
     def __init__(
         self,
-        base_url: str,
         verify: bool,
         proxy: bool,
         reliability: str,
     ):
         headers = {"Authorization": f"Bearer {demisto.getLicenseID()}", "Content-Type": "application/json"}
-        super().__init__(base_url=base_url, verify=verify, proxy=proxy, headers=headers)
+        super().__init__(base_url=SERVER_URL, verify=verify, proxy=proxy, headers=headers)
         self.reliability = reliability
 
     def lookup_indicator(self, indicator_type: str, indicator_value: str) -> requests.Response:
@@ -1115,7 +1114,6 @@ def main() -> None:
     command = demisto.command()
 
     # Get parameters
-    base_url = params.get("url", "").rstrip("/")
     verify_certificate = not argToBoolean(params.get("insecure", False))
     proxy = argToBoolean(params.get("proxy", False))
     reliability = params.get("integration_reliability", "A++ - Reputation script")
@@ -1130,7 +1128,6 @@ def main() -> None:
 
     try:
         client = Client(
-            base_url=base_url,
             verify=verify_certificate,
             proxy=proxy,
             reliability=reliability,
