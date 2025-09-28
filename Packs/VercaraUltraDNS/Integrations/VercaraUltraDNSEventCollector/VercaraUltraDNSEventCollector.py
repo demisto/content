@@ -503,6 +503,8 @@ def fetch_events(
     # Determine fetch time window
     if last_fetch_time_str:
         last_event_time = datetime.fromisoformat(last_fetch_time_str)
+        # Since the api can filter only by seconds (not milliseconds),
+        # we need to add a small overlap to ensure we don't miss any events
         start_time = last_event_time - timedelta(seconds=MARGIN_FETCH_OVERLAP_SECONDS)
         demisto.debug(
             f"Starting fetch from {last_event_time} with adding {MARGIN_FETCH_OVERLAP_SECONDS}s overlap, "
