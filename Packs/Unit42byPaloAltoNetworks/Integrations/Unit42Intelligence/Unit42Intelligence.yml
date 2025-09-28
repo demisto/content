@@ -6,13 +6,6 @@ commonfields:
   id: Unit 42 Intelligence
   version: -1
 configuration:
-- display: Server URL
-  defaultvalue: https://xdr-tas-api.crtx.us.paloaltonetworks.com/
-  name: url
-  required: true
-  type: 0
-  section: Connect
-  additionalinfo: The base URL for the Unit 42 Intelligence API
 - display: Source Reliability
   name: integration_reliability
   additionalinfo: Reliability of the source providing the intelligence data.

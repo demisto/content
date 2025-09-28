@@ -73,6 +73,7 @@ INTEGRATION_COMMAND_NAME = "unit42-intelligence"
 VENDOR = "Unit 42 by Palo Alto Networks"
 
 # API endpoints
+SERVER_URL = "https://prod-us.tas.crtx.paloaltonetworks.com"
 LOOKUP_ENDPOINT = "/api/v1/lookups/indicator/{indicator_type}/{indicator_value}"
 
 # Score mappings
