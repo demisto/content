@@ -12,12 +12,12 @@ configuration:
   required: true
   type: 0
   section: Connect
-- display: Integration Key (Client ID)
+- display: Integration Key
   name: integration_key
   required: true
   type: 0
   section: Connect
-- display: User ID (GUID)
+- display: User ID
   name: user_id
   required: true
   type: 0
@@ -27,22 +27,24 @@ configuration:
   required: true
   type: 0
   section: Connect
-- display: Private Key (Credential)
+- display: Private Key
   name: credentials
   required: true
   type: 9
   section: Connect
   hiddenusername: true
-- display: Account ID (optional)
+- display: Account ID
   name: account_id
   required: false
   type: 0
   section: Connect
-- display: Organization ID (optional)
+  additionalinfo: For fetching user data only
+- display: Organization ID
   name: organization_id
   required: false
   type: 0
   section: Connect
+  additionalinfo: For fetching user data only
 - display: Fetch events
   name: isFetch
   required: false
