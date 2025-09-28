@@ -97,6 +97,7 @@ INDICATOR_TYPE_MAPPING = {
     "threat_actor": ThreatIntel.ObjectsNames.THREAT_ACTOR,
     "campaign": ThreatIntel.ObjectsNames.CAMPAIGN,
     "attack pattern": ThreatIntel.ObjectsNames.ATTACK_PATTERN,
+    "technique": ThreatIntel.ObjectsNames.ATTACK_PATTERN,
     "malicious_behavior": Common.Indicator,
     "malicious behavior": Common.Indicator,
 }
@@ -216,6 +217,12 @@ def create_relationships(
     for threat_obj in threat_objects:
         threat_name = threat_obj.get("name", "")
         threat_class = threat_obj.get("threat_object_class", "").lower()
+        
+        # Remove MITRE technique ID prefix (e.g., "T1590 - " from "T1590 - Gather Victim Network Information")
+        if INDICATOR_TYPE_MAPPING[threat_class] == ThreatIntel.ObjectsNames.ATTACK_PATTERN and " - " in threat_name:
+            parts = threat_name.split(" - ", 1)
+            if len(parts) == 2 and parts[0].startswith("T") and parts[0][1:].isdigit():
+                threat_name = parts[1]
 
         if not threat_name or threat_class not in INDICATOR_TYPE_MAPPING:
             demisto.debug(f"Skipping create_relationships for threat_name {threat_name} and threat_class {threat_class}")
@@ -255,7 +262,7 @@ def extract_response_data(response: dict[str, Any]) -> dict[str, Any]:
         "last_seen": response.get("last_seen", ""),
         "updated_at": response.get("updated_at", ""),
         "seen_by": response.get("sources", []),
-        "relationships": response.get("threat_object_associations", []),
+        "threat_object_associations": response.get("threat_object_associations", []),
         "indicator_details": response.get("indicator_details", {}),
     }
 
@@ -813,7 +820,7 @@ def create_context_data(response_data: dict[str, Any]) -> dict[str, Any]:
         "FirstSeen": response_data["first_seen"],
         "LastSeen": response_data["last_seen"],
         "SeenBy": list({string_to_table_header(item) for item in response_data["seen_by"]}),
-        "EnrichedThreatObjectAssociation": response_data["relationships"],
+        "EnrichedThreatObjectAssociation": response_data["threat_object_associations"],
     }
 
 
@@ -863,7 +870,7 @@ def ip_command(client: Client, args: dict[str, Any]) -> CommandResults:
         return CommandResults(readable_output=human_readable)
 
     response_data = extract_response_data(response.json())
-    threat_objects = response_data["relationships"]
+    threat_objects = response_data["threat_object_associations"]
 
     # Create DBotScore
     dbot_score = create_dbot_score(ip, DBotScoreType.IP, response_data["verdict"], client.reliability)
@@ -927,7 +934,7 @@ def domain_command(client: Client, args: dict[str, Any]) -> CommandResults:
         return CommandResults(readable_output=human_readable)
 
     response_data = extract_response_data(response.json())
-    threat_objects = response_data["relationships"]
+    threat_objects = response_data["threat_object_associations"]
 
     # Create DBotScore
     dbot_score = create_dbot_score(domain, DBotScoreType.DOMAIN, response_data["verdict"], client.reliability)
@@ -991,7 +998,7 @@ def url_command(client: Client, args: dict[str, Any]) -> CommandResults:
         return CommandResults(readable_output=human_readable)
 
     response_data = extract_response_data(response.json())
-    threat_objects = response_data["relationships"]
+    threat_objects = response_data["threat_object_associations"]
 
     # Create DBotScore
     dbot_score = create_dbot_score(url, DBotScoreType.URL, response_data["verdict"], client.reliability)
@@ -1062,7 +1069,7 @@ def file_command(client: Client, args: dict[str, Any]) -> CommandResults:
         return CommandResults(readable_output=human_readable)
 
     response_data = extract_response_data(response.json())
-    threat_objects = response_data["relationships"]
+    threat_objects = response_data["threat_object_associations"]
 
     # Create DBotScore
     dbot_score = create_dbot_score(file_hash, DBotScoreType.FILE, response_data["verdict"], client.reliability)

@@ -124,7 +124,7 @@
         "complex": {
           "root": "File",
           "filters": [],
-          "accessor": "imphash",
+          "accessor": "Imphash",
           "transformers": [
             {
               "operator": "toUpperCase",
