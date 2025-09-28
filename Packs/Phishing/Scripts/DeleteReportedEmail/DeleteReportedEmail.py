@@ -268,6 +268,7 @@ def delete_email(
         Success if the deletion succeeded, fails otherwise
     """
     mailboxes = []
+    original_mailbox = search_args.get("target-mailbox")
 
     if "target-mailbox" in search_args:
         mailboxes = [mailbox.strip() for mailbox in search_args["target-mailbox"].split(",")]
@@ -285,6 +286,7 @@ def delete_email(
         resp = execute_command(delete_function, delete_args)
         if deletion_error_condition(resp):
             raise DeletionFailed(resp)
+    search_args["target-mailbox"] = original_mailbox
 
     return "Success"
 
