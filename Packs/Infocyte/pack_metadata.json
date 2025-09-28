@@ -2,7 +2,7 @@
     "name": "Infocyte",
     "description": "Infocyte detection and response platform integration for conducting agentless (non-persistent) or agented detection, hunting, triage and forensic analysis of endpoints",
     "support": "partner",
-    "currentVersion": "1.0.7",
+    "currentVersion": "1.0.8",
     "author": "Infocyte",
     "url": "https://www.infocyte.com",
     "email": "support@infocyte.com",
