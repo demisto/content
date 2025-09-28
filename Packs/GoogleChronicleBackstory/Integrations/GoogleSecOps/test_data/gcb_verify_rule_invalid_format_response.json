@@ -1,0 +1,14 @@
+{
+    "compilationDiagnostics": [
+        {
+            "message": "parsing: error with token: \":\"\nexpected '=' between meta assignment key and value\nline: 1 \ncolumn: 114-115 ",
+            "position": {
+                "startLine": 1,
+                "startColumn": 114,
+                "endLine": 1,
+                "endColumn": 115
+            },
+            "severity": "ERROR"
+        }
+    ]
+}
