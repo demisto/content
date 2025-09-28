@@ -72,5 +72,6 @@ marketplaces:
 - marketplacev2
 - platform
 fromversion: 8.4.0
+supportlevelheader: xsoar
 tests:
 - No tests (auto formatted)
