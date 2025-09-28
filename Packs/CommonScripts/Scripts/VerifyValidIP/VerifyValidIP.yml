@@ -8,12 +8,12 @@ tags:
 - Utility
 - IP
 - Validation
-comment: Verifies if the given input contains valid IP addresses (IPv4 or IPv6)
+comment: Verifies if the given input contains valid IP addresses (IPv4 or IPv6).
 enabled: true
 args:
 - name: input
   required: true
-  description: IP address or list of IP addresses to validate
+  description: IP address or list of IP addresses to validate.
   isArray: true
   defaultValue: ''
 scripttarget: 0
@@ -21,14 +21,12 @@ subtype: python3
 dockerimage: demisto/python3:3.12.11.4819260
 runas: DBotWeakRole
 engineinfo: {}
-mainengineinfo: {}
-pswd: ''
 runonce: false
 timeout: 0ns
 outputs:
 - contextPath: VerifyValidIP
-  description: Dictionary with IP addresses as keys and validation results as boolean values
+  description: Dictionary with IP addresses as keys and validation results as boolean values.
   type: Unknown
 tests:
 - No tests (auto formatted)
-fromversion: 6.0.0
+fromversion: 6.10.0
