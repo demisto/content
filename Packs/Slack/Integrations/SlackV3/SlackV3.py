@@ -2739,8 +2739,16 @@ def conversation_history():
     """
     args = demisto.args()
     channel_id = args.get("channel_id")
+    channel_name = args.get("channel_name")
     limit = arg_to_number(args.get("limit"))
     conversation_id = args.get("conversation_id")
+    
+    if not channel_id and not channel_name:
+        return_error("Either channel_id or channel_name must be provided.")
+
+    if not conversation_id:
+        channel = get_conversation_by_name(channel_name)
+        channel_id = channel.get("id")
     
     body = (
         {"channel": channel_id, "limit": limit}
