@@ -370,18 +370,16 @@ class S3:
         except Exception as e:
             raise DemistoException(f"Couldn't apply bucket policy to {args.get('bucket')} bucket. Error: {str(e)}")
 
-    # from here
-
     @staticmethod
     def delete_bucket_website_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
-        bucket = args.get("bucket", "")
+        kwargs = {"Bucket": args.get("bucket")}
         try:
-            response = client.delete_bucket_website(bucket)
-            demisto.debug(f"{response=}")
-            return CommandResults(readable_output=f"{response=}")
+            response = client.delete_bucket_website(**kwargs)
+            if response["ResponseMetadata"]["HTTPStatusCode"] in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
+                return CommandResults(
+                    readable_output=f"Successfully removed the static website configuration from {args.get('bucket')} bucket.")
         except Exception as e:
             raise DemistoException(f"Failed to delete bucket website for {args.get('bucket')}. Error: {str(e)}")
-    # to here
 
 
 class IAM:
@@ -1220,6 +1218,30 @@ class RDS:
         else:
             raise DemistoException(f"Couldn't modify DB snapshot attribute for {args.get('db_snapshot_identifier')}")
 
+    @staticmethod
+    def modify_event_subscription_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        kwargs = {
+            "SubscriptionName": args.get("subscription_name"),
+            "Enabled": args.get("enabled"),
+            "EventCategories.EventCategory.N": args.get("event_categories"),
+            "SnsTopicArn": args.get("sns_topic_arn"),
+            "SourceType": args.get("source_type"),
+        }
+        remove_nulls_from_dictionary(kwargs)
+        try:
+            response = client.modify_event_subscription(**kwargs)
+            # if response["ResponseMetadata"]["HTTPStatusCode"] in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
+            #     return CommandResults(readable_output=f"The bucket {bucket} has been deleted successfully.")
+            # return CommandResults(
+            #     readable_output=readable_output,
+            #     outputs_prefix="AWS.RDS.DBInstance",
+            #     outputs=db_instance,
+            #     outputs_key_field="DBInstanceIdentifier",
+            # )
+            demisto.debug(f"{response=}")
+            return CommandResults(readable_output=f"{response=}")
+        except Exception as e:
+            raise DemistoException(f"Failed to delete bucket website for {args.get('bucket')}. Error: {str(e)}")
 
 class CloudTrail:
     service = AWSServices.CloudTrail
@@ -1321,6 +1343,7 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-rds-db-cluster-snapshot-attribute-modify": RDS.modify_db_cluster_snapshot_attribute_command,
     "aws-rds-db-instance-modify": RDS.modify_db_instance_command,
     "aws-rds-db-snapshot-attribute-modify": RDS.modify_db_snapshot_attribute_command,
+    "aws-rds-modify-event-subscription": RDS.modify_event_subscription_command,
     "aws-cloudtrail-logging-start": CloudTrail.start_logging_command,
     "aws-cloudtrail-trail-update": CloudTrail.update_trail_command,
 }
