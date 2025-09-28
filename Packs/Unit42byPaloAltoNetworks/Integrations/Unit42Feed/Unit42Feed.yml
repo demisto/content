@@ -6,19 +6,23 @@ sectionOrder:
 - Connect
 - Collect
 configuration:
-- display: Server URL
-  defaultvalue: https://xdr-tas-api.crtx.us.paloaltonetworks.com
-  name: url
-  required: true
-  type: 0
-  section: Connect
 - display: Fetch indicators
   name: feed
   type: 8
   required: false
+  defaultvalue: 'true'
   section: Collect
-- display: Indicator Type
-  additionalinfo: Comma-separated list of indicator types to fetch (File, IP, URL, Domain, or All for all). Default is All
+- display: Feed Types
+  name: feed_types
+  type: 16
+  options:
+  - Indicators
+  - Threat Objects
+  required: false
+  defaultvalue: Indicators, Threat Objects
+  section: Collect
+- display: Indicator Types
+  additionalinfo: Comma-separated list of indicator types to fetch (File, IP, URL, Domain). If not specified, all indicator types are fetched.
   name: indicator_types
   type: 16
   options:
@@ -26,14 +30,13 @@ configuration:
   - IP
   - URL
   - Domain
-  - All
-  defaultvalue: All
+  defaultvalue: File,IP,URL,Domain
   required: false
   section: Collect
 - display: Feed Fetch Interval
   name: feedFetchInterval
   type: 19
-  defaultvalue: '240'
+  defaultvalue: '720'
   required: false
   section: Collect
   advanced: true
@@ -121,12 +124,6 @@ configuration:
   required: false
   section: Collect
   advanced: true
-- display: Fetch threat objects
-  name: fetch_threat_objects
-  type: 8
-  required: false
-  section: Collect
-  advanced: true
 - display: Use system proxy settings
   name: proxy
   type: 8
@@ -147,23 +144,20 @@ script:
   commands:
   - arguments:
     - name: indicator_types
-      description: Comma-separated list of indicator types to fetch (File, IP, URL, Domain, or All for all). Default is All
+      description: Comma-separated list of indicator types to fetch (File, IP, URL, Domain). If not specified, all indicator types are fetched.
       auto: PREDEFINED
       predefined:
       - File
       - IP
       - URL
       - Domain
-      - All
-      defaultValue: 'All'
+      defaultValue: 'File,IP,URL,Domain'
       required: false
     - defaultValue: '10'
       description: The maximum number of indicators to return. The default is 10.
       name: limit
     description: Gets indicators from the feed.
     name: unit42-get-indicators
-  - description: Gets indicators from the feed.
-    name: unit42-fetch-indicators
   - arguments:
     - defaultValue: '10'
       description: The maximum number of threat objects to return. The default is 10.

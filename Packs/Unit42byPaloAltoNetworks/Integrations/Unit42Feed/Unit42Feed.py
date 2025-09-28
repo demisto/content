@@ -7,6 +7,12 @@ requests.packages.urllib3.disable_warnings()
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 INTEGRATION_NAME = "Unit42Feed"
+LIMIT = 5000
+
+# API endpoints
+BASE_URL = "https://prod-us.tas.crtx.paloaltonetworks.com"
+INDICATORS_ENDPOINT = "/api/v1/feeds/indicators"
+THREAT_OBJECTS_ENDPOINT = "/api/v1/feeds/threat_objects"
 
 # Mapping from API indicator types to XSOAR indicator types
 INDICATOR_TYPE_MAP = {
@@ -43,21 +49,20 @@ THREAT_OBJECT_CLASS_MAP = {
 
 
 class Client(BaseClient):
-    def __init__(self, base_url, headers, verify=False, proxy=False):
+    def __init__(self, headers, verify=False, proxy=False):
         """Implements class for Unit 42 feed.
 
         Args:
-            base_url: feed URL.
             headers: headers for the request.
             verify: boolean, if *false*, feed HTTPS server certificate is verified. Default: *false*
             proxy: boolean, if *false* feed HTTPS server certificate will not use proxies. Default: *false*
         """
-        super().__init__(base_url=base_url, headers=headers, verify=verify, proxy=proxy)
+        super().__init__(base_url=BASE_URL, headers=headers, verify=verify, proxy=proxy)
 
     def get_indicators(
         self,
         indicator_types: str | None = None,
-        limit: int = 100,
+        limit: int = LIMIT,
         start_time: str | None = None,
         next_page_token: str | None = None,
     ) -> dict:
@@ -80,13 +85,13 @@ class Client(BaseClient):
         if start_time:
             params["start_time"] = start_time
         if next_page_token:
-            params["next_page_token"] = next_page_token
+            params["page_token"] = next_page_token
 
-        response = self._http_request(method="GET", url_suffix="/api/v1/feeds/indicators", params=params)
+        response = self._http_request(method="GET", url_suffix=INDICATORS_ENDPOINT, params=params)
 
         return response
 
-    def get_threat_objects(self, limit: int = 100, next_page_token: str | None = None) -> dict:
+    def get_threat_objects(self, limit: int = LIMIT, next_page_token: str | None = None) -> dict:
         """Get threat objects from the Unit 42 feed.
 
         Args:
@@ -100,9 +105,9 @@ class Client(BaseClient):
         if limit:
             params["limit"] = limit
         if next_page_token:
-            params["next_page_token"] = next_page_token
+            params["page_token"] = next_page_token
 
-        response = self._http_request(method="GET", url_suffix="/api/v1/feeds/threat_objects", params=params)
+        response = self._http_request(method="GET", url_suffix=THREAT_OBJECTS_ENDPOINT, params=params)
 
         return response
 
@@ -389,7 +394,7 @@ def fetch_indicators(
     """
     # Get indicator types from params
     indicator_types = ",".join(params.get("indicator_types", ["All"]))
-    start_time = demisto.getLastRun().get("last_successful_run", (current_time - timedelta(hours=12)).strftime(DATE_FORMAT))
+    start_time = demisto.getLastRun().get("last_successful_run", (current_time - timedelta(hours=24)).strftime(DATE_FORMAT))
 
     # Get indicators from the API
     response = client.get_indicators(indicator_types=indicator_types, start_time=start_time)
@@ -406,7 +411,9 @@ def fetch_indicators(
             next_page_token = metadata.get("next_page_token") if isinstance(metadata, dict) else None
             while next_page_token:
                 # Get next page of indicators
-                response = client.get_indicators(indicator_types=indicator_types, next_page_token=next_page_token)
+                response = client.get_indicators(
+                    indicator_types=indicator_types, start_time=start_time, next_page_token=next_page_token
+                )
                 if response and isinstance(response, dict) and response.get("data"):
                     data = response.get("data", [])
                     if isinstance(data, list):
@@ -547,13 +554,16 @@ def main():
     The main function parses the params and runs the command functions
     """
     params = demisto.params()
-    url = params.get("url")
+
     verify_certificate = not params.get("insecure", False)
     proxy = params.get("proxy", False)
 
     # Get feed tags and TLP color from params
     feed_tags = argToList(params.get("feedTags", []))
     tlp_color = params.get("tlp_color")
+    
+    if arg_to_number(params.get("feedFetchInterval", 720)) < 720:
+        return_error("Feed Fetch Interval parameter must be set to at least 12 hours.")
 
     command = demisto.command()
     demisto.debug(f"Command being called is {command}")
@@ -561,7 +571,7 @@ def main():
     headers = {"Authorization": f"Bearer {demisto.getLicenseID()}"}
 
     try:
-        client = Client(base_url=url, headers=headers, verify=verify_certificate, proxy=proxy)
+        client = Client(headers=headers, verify=verify_certificate, proxy=proxy)
 
         if command == "test-module":
             return_results(test_module(client))
@@ -572,7 +582,9 @@ def main():
             for b in batch(indicators, batch_size=2000):
                 demisto.createIndicators(b)
             demisto.setLastRun({"last_successful_run": now.strftime(DATE_FORMAT)})
-            demisto.info(f"Fetch-indicators completed. Next run will fetch from: {now.strftime(DATE_FORMAT)}")
+            demisto.info(
+                f"The fetch-indicators command completed successfully. Next run will fetch from: {now.strftime(DATE_FORMAT)}"
+            )
 
         elif command == "unit42-get-indicators":
             return_results(get_indicators_command(client, demisto.args(), feed_tags, tlp_color))
