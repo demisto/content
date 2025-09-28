@@ -253,8 +253,10 @@ def extract_response_data(response: dict[str, Any]) -> dict[str, Any]:
         "verdict_categories": [item.get("value") for item in response.get("verdict_categories", [])],
         "first_seen": response.get("first_seen", ""),
         "last_seen": response.get("last_seen", ""),
+        "updated_at": response.get("updated_at", ""),
         "seen_by": response.get("sources", []),
         "relationships": response.get("threat_object_associations", []),
+        "indicator_details": response.get("indicator_details", {}),
     }
 
 
@@ -1071,7 +1073,13 @@ def file_command(client: Client, args: dict[str, Any]) -> CommandResults:
 
     # Create enriched File indicator with proper hash field assignment
     file_indicator = Common.File(
+        size=demisto.get(response_data, "indicator_details.file_size", ""),
+        file_type=demisto.get(response_data, "indicator_details.file_type", ""),
+        imphash=demisto.get(response_data, "indicator_details.file_hashes.imphash", ""),
+        md5=demisto.get(response_data, "indicator_details.file_hashes.md5", ""),
+        sha1=demisto.get(response_data, "indicator_details.file_hashes.sha1", ""),
         sha256=file_hash,
+        ssdeep=demisto.get(response_data, "indicator_details.file_hashes.ssdeep", ""),
         dbot_score=dbot_score,
         tags=tags,
         malware_family=malware_families,
