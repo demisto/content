@@ -8515,7 +8515,7 @@ def safe_strptime(date_str, datetime_format, strptime=datetime.strptime):
     try:
         return strptime(date_str, datetime_format)
     except ValueError as e:
-        demisto.debug(f'Failed to parse date {date_str} with format {datetime_format}: {str(e)}')
+        demisto.debug('Failed to parse date {} with format {}: {}'.format(date_str, datetime_format, str(e)))
         return strptime(date_str, datetime_format.replace('.%f', ''))
 
 
