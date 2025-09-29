@@ -1561,7 +1561,7 @@ def create_ticket_command(client: Client, args: dict, is_quick_action: bool = Fa
     return human_readable, entry_context, result, True
 
 
-def delete_ticket_command(client: Client, args: dict) -> tuple[str, dict, dict, bool]:
+def delete_ticket_command(client: Client, args: dict) -> CommandResults:
     """Delete a ticket.
 
     Args:
@@ -1569,14 +1569,28 @@ def delete_ticket_command(client: Client, args: dict) -> tuple[str, dict, dict, 
         args: Usually demisto.args()
 
     Returns:
-        Demisto Outputs.
+        CommandResults object.
     """
     ticket_id = str(args.get("id", ""))
     ticket_type = client.get_table_name(str(args.get("ticket_type", "")))
 
     result = client.delete(ticket_type, ticket_id)
 
-    return f"Ticket with ID {ticket_id} was successfully deleted.", {}, result, True
+    demisto.debug(f"Ticket deletion result: {result}")
+    is_success = result == ""
+
+    if is_success:
+        human_readable = f"Ticket with ID {ticket_id} was successfully deleted from {ticket_type} table."
+    else:
+        human_readable = f"Failed to delete ticket {ticket_id} from {ticket_type} table. Record may not exist."
+
+    return CommandResults(
+        readable_output=human_readable,
+        outputs_prefix="ServiceNow.Ticket",
+        outputs_key_field="ID",
+        outputs={"ID": ticket_id, "DeleteMessage": human_readable},
+        raw_response=result,
+    )
 
 
 def query_tickets_command(client: Client, args: dict) -> tuple[str, dict, dict, bool]:
@@ -3343,7 +3357,7 @@ def set_default_fields(
         UpdateRemoteSystemArgs: The parsed arguments with default closure fields if they were missing.
     """
     state = parsed_args.delta.get("state")
-    if (state in {"7", "6"}) or (state == close_custom_state and ticket_type == "incident"):
+    if (state in {"7", "6"}) or (ticket_type == "incident" and close_custom_state and state == close_custom_state):
         demisto.debug(
             f"State {state} is 7 or 6 or custom {close_custom_state} and ticket type is incident - Setting default "
             f"closure fields if missing"
@@ -3945,7 +3959,6 @@ def main():
             "servicenow-oauth-login": login_command,
             "servicenow-update-ticket": update_ticket_command,
             "servicenow-create-ticket": create_ticket_command,
-            "servicenow-delete-ticket": delete_ticket_command,
             "servicenow-query-tickets": query_tickets_command,
             "servicenow-add-link": add_link_command,
             "servicenow-add-comment": add_comment_command,
@@ -3973,6 +3986,8 @@ def main():
             demisto.incidents(incidents)
         elif command == "servicenow-get-ticket":
             demisto.results(get_ticket_command(client, args))
+        elif command == "servicenow-delete-ticket":
+            return_results(delete_ticket_command(client, args))
         elif command == "servicenow-generic-api-call":
             return_results(generic_api_call_command(client, args))
         elif command == "get-remote-data":
