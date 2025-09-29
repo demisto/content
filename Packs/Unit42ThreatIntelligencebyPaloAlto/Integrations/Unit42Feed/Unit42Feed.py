@@ -162,6 +162,27 @@ class Client(BaseClient):
 
         return response
 
+def create_publications(publications_data: list) -> list:
+    """
+    Creates the publications list of the indicator
+
+    Args:
+        publications_data: A list of all publications from threat object
+
+    Returns:
+        A list of publications of the indicator
+    """
+    publications = []
+
+    for data in publications_data:
+        timestamp = data.get("created_at", "")
+        title = data.get("title", "")
+        url = data.get("url", "")
+        source = data.get("source", INTEGRATION_NAME)
+
+        publications.append({"link": url, "title": title, "timestamp": timestamp, "source": source})
+
+    return publications
 
 def get_threat_object_score(threat_class: str) -> int:
     """
@@ -189,6 +210,333 @@ def get_threat_object_score(threat_class: str) -> int:
 
     return Common.DBotScore.NONE
 
+def create_location_indicators_and_relationships(threat_obj: dict[str, Any], threat_actor_name: str) -> list[dict[str, Any]]:
+    """
+    Create location indicators from affected regions and origin field and build relationships
+
+    Args:
+        threat_obj: The threat object data
+        threat_actor_name: Name of the threat actor to create relationships with
+
+    Returns:
+        List of location indicators with relationships
+    """
+    location_indicators = []
+
+    # Handle affected regions
+    affected_regions = demisto.get(threat_obj, "battlecard_details.threat_actor_details.affected_regions", [])
+
+    # in case affected_regions is "null", return empty list.
+    if not isinstance(affected_regions, list):
+        return location_indicators
+
+    for region in affected_regions:
+        if isinstance(region, str) and region.strip():
+            region_lower = region.strip().lower()
+
+            # Use the standardized region name if it matches our enum
+            standardized_region = VALID_REGIONS.get(region_lower)
+            if not standardized_region:
+                demisto.debug(f"Skipping region {region} as it is not in the valid regions enum")
+                continue
+
+            # Create EntityRelationship for the location
+            entity_relationship = EntityRelationship(
+                name=EntityRelationship.Relationships.TARGETS,
+                entity_a=threat_actor_name,
+                entity_a_type=ThreatIntel.ObjectsNames.THREAT_ACTOR,
+                entity_b=standardized_region,
+                entity_b_type=FeedIndicatorType.Location,
+                source_reliability=DBotScoreReliability.A_PLUS_PLUS,
+                brand=INTEGRATION_NAME,
+            )
+
+            location_indicator = {
+                "value": standardized_region,
+                "type": FeedIndicatorType.Location,
+                "score": Common.DBotScore.NONE,
+                "service": INTEGRATION_NAME,
+                "relationships": [entity_relationship.to_entry()],
+                "fields": {
+                    "geocountry": standardized_region,
+                },
+            }
+            location_indicators.append(location_indicator)
+
+    return location_indicators
+
+def build_threat_object_description(threat_obj: dict[str, Any]) -> str:
+    """
+    Build a comprehensive description for a threat object including highlights, methods, and targets
+
+    Args:
+        threat_obj: The threat object data
+
+    Returns:
+        Formatted description string with sections for highlights, methods, and targets
+    """
+    description = threat_obj.get("description", "").replace("\\n", "\n")
+
+    # Add highlights section if available
+    highlights = demisto.get(threat_obj, "battlecard_details.highlights", "").replace("\\n", "\n")
+    if highlights:
+        description += "\n\n##"
+        description += highlights
+
+    # Add methods section if available (for threat actors)
+    methods = demisto.get(threat_obj, "battlecard_details.threat_actor_details.methods", "").replace("\\n", "\n")
+    if methods:
+        description += "\n\n##"
+        description += methods
+
+    # Add targets section if available (for threat actors)
+    targets = demisto.get(threat_obj, "battlecard_details.threat_actor_details.targets", "").replace("\\n", "\n")
+    if targets:
+        description += "\n\n##"
+        description += targets
+
+    return description
+
+def create_vulnerabilities_relationships(
+    threat_obj: dict[str, Any], threat_actor_name: str, threat_class: str
+) -> list[EntityRelationship]:
+    """
+    Create vulnerabilities relationships from vulnerabilities associations
+
+    Args:
+        threat_obj: The threat object data
+        threat_actor_name: Name of the threat actor
+        threat_class: The threat object class
+
+    Returns:
+        List of EntityRelationship objects
+    """
+    relationships = []
+    vulnerabilities = demisto.get(threat_obj, "battlecard_details.threat_actor_details.vulnerability_associations", [])
+
+    for vulnerability in vulnerabilities:
+        cve_id = vulnerability.get("cve")
+
+        if cve_id:
+            entity_relationship = EntityRelationship(
+                name=EntityRelationship.Relationships.EXPLOITS,
+                entity_a=threat_actor_name,
+                entity_a_type=INDICATOR_TYPE_MAPPING[threat_class],
+                entity_b=cve_id.upper(),
+                entity_b_type=FeedIndicatorType.CVE,
+                source_reliability=DBotScoreReliability.A_PLUS_PLUS,
+                brand=INTEGRATION_NAME,
+            )
+            relationships.append(entity_relationship.to_entry())
+
+    return relationships
+
+
+def create_actor_relationships(
+    threat_obj: dict[str, Any], malware_family_name: str, threat_class: str
+) -> list[EntityRelationship]:
+    """
+    Create actor relationships from actor_associations
+
+    Args:
+        threat_obj: The threat object data
+        malware_family_name: Name of the malware family
+        threat_class: The threat object class
+
+    Returns:
+        List of EntityRelationship objects
+    """
+    relationships = []
+    actor_associations = demisto.get(threat_obj, "battlecard_details.malware_family_details.actor_associations", [])
+
+    for relationship in actor_associations:
+        aliases = relationship.get("aliases", [])
+        name = relationship.get("name")
+
+        if aliases:
+            # Create a relationship for each alias
+            for alias in aliases:
+                entity_relationship = EntityRelationship(
+                    name=EntityRelationship.Relationships.USED_BY,
+                    entity_a=malware_family_name,
+                    entity_a_type=INDICATOR_TYPE_MAPPING[threat_class],
+                    entity_b=string_to_table_header(alias),
+                    entity_b_type=ThreatIntel.ObjectsNames.THREAT_ACTOR,
+                    source_reliability=DBotScoreReliability.A_PLUS_PLUS,
+                    brand=INTEGRATION_NAME,
+                )
+                relationships.append(entity_relationship.to_entry())
+        elif name:
+            # Create a relationship using the name if no aliases exist
+            entity_relationship = EntityRelationship(
+                name=EntityRelationship.Relationships.USED_BY,
+                entity_a=malware_family_name,
+                entity_a_type=INDICATOR_TYPE_MAPPING[threat_class],
+                entity_b=string_to_table_header(name),
+                entity_b_type=ThreatIntel.ObjectsNames.THREAT_ACTOR,
+                source_reliability=DBotScoreReliability.A_PLUS_PLUS,
+                brand=INTEGRATION_NAME,
+            )
+            relationships.append(entity_relationship.to_entry())
+
+    return relationships
+
+def create_tools_relationships(threat_obj: dict[str, Any], threat_actor_name: str, threat_class: str) -> list[EntityRelationship]:
+    """
+    Create tools relationships from tools associations
+
+    Args:
+        threat_obj: The threat object data
+        threat_actor_name: Name of the threat actor
+        threat_class: The threat object class
+
+    Returns:
+        List of EntityRelationship objects
+    """
+    relationships = []
+    tools_associations = demisto.get(threat_obj, "battlecard_details.threat_actor_details.tools", [])
+
+    for tool in tools_associations:
+        tool_name = tool.get("name")
+
+        if tool_name:
+            entity_relationship = EntityRelationship(
+                name=EntityRelationship.Relationships.USES,
+                entity_a=threat_actor_name,
+                entity_a_type=INDICATOR_TYPE_MAPPING[threat_class],
+                entity_b=string_to_table_header(tool_name),
+                entity_b_type=ThreatIntel.ObjectsNames.TOOL,
+                source_reliability=DBotScoreReliability.A_PLUS_PLUS,
+                brand=INTEGRATION_NAME,
+                fields={"tags": f"mitre-id: {tool.get('mitreid')}" if tool.get("mitreid") else ""},
+            )
+            relationships.append(entity_relationship.to_entry())
+
+    return relationships
+
+def create_malware_relationships(
+    threat_obj: dict[str, Any], threat_actor_name: str, threat_class: str
+) -> list[EntityRelationship]:
+    """
+    Create malware relationships from malware_associations
+
+    Args:
+        threat_obj: The threat object data
+        threat_actor_name: Name of the threat actor
+        threat_class: The threat object class
+
+    Returns:
+        List of EntityRelationship objects
+    """
+    relationships = []
+    malware_associations = demisto.get(threat_obj, "battlecard_details.threat_actor_details.malware_associations", [])
+
+    for relationship in malware_associations:
+        name = relationship.get("name")
+        aliases = relationship.get("aliases", [])
+
+        if name:
+            # Create a relationship using the name
+            entity_relationship = EntityRelationship(
+                name=EntityRelationship.Relationships.USES,
+                entity_a=threat_actor_name,
+                entity_a_type=INDICATOR_TYPE_MAPPING[threat_class],
+                entity_b=string_to_table_header(name),
+                entity_b_type=ThreatIntel.ObjectsNames.MALWARE,
+                source_reliability=DBotScoreReliability.A_PLUS_PLUS,
+                brand=INTEGRATION_NAME,
+            )
+            relationships.append(entity_relationship.to_entry())
+        elif aliases:
+            # Create a relationship for each alias if no name exists
+            for alias in aliases:
+                entity_relationship = EntityRelationship(
+                    name=EntityRelationship.Relationships.USES,
+                    entity_a=threat_actor_name,
+                    entity_a_type=INDICATOR_TYPE_MAPPING[threat_class],
+                    entity_b=string_to_table_header(alias),
+                    entity_b_type=ThreatIntel.ObjectsNames.MALWARE,
+                    source_reliability=DBotScoreReliability.A_PLUS_PLUS,
+                    brand=INTEGRATION_NAME,
+                )
+                relationships.append(entity_relationship.to_entry())
+
+    return relationships
+
+def create_attack_patterns_relationships(
+    threat_obj: dict[str, Any], threat_actor_name: str, threat_class: str
+) -> list[EntityRelationship]:
+    """
+    Create attack patterns relationships from attack patterns associations
+
+    Args:
+        threat_obj: The threat object data
+        threat_actor_name: Name of the threat actor
+        threat_class: The threat object class
+
+    Returns:
+        List of EntityRelationship objects
+    """
+    relationships = []
+    attack_patterns = demisto.get(threat_obj, "battlecard_details.attack_patterns", [])
+
+    for pattern in attack_patterns:
+        mitre_id = pattern.get("mitreid", "")
+        pattern_name = pattern.get("name", "")
+
+        # Skip items with a dot in the mitreid
+        if "." in mitre_id:
+            demisto.debug(f"Skipping attack pattern {pattern_name} with mitreid {mitre_id}")
+            continue
+
+        if pattern_name and pattern_name.endswith("(enterprise)"):
+            # Remove (enterprise) suffix if present
+            pattern_name = pattern_name.removesuffix("(enterprise)").strip()
+
+            entity_relationship = EntityRelationship(
+                name=EntityRelationship.Relationships.USES,
+                entity_a=threat_actor_name,
+                entity_a_type=INDICATOR_TYPE_MAPPING[threat_class],
+                entity_b=string_to_table_header(pattern_name),
+                entity_b_type=ThreatIntel.ObjectsNames.ATTACK_PATTERN,
+                source_reliability=DBotScoreReliability.A_PLUS_PLUS,
+                brand=INTEGRATION_NAME,
+            )
+            relationships.append(entity_relationship.to_entry())
+
+    return relationships
+
+def create_campaigns_relationships(
+    threat_obj: dict[str, Any], threat_object_name: str, threat_class: str
+) -> list[EntityRelationship]:
+    """
+    Create campaigns relationships from campaigns list
+
+    Args:
+        threat_obj: The threat object data
+        threat_object_name: Name of the threat object
+        threat_class: The threat object class
+
+    Returns:
+        List of EntityRelationship objects
+    """
+    relationships = []
+    campaigns = demisto.get(threat_obj, "battlecard_details.campaigns", [])
+
+    for campaign in campaigns:
+        if isinstance(campaign, str) and campaign.strip():
+            entity_relationship = EntityRelationship(
+                name=EntityRelationship.Relationships.RELATED_TO,
+                entity_a=threat_object_name,
+                entity_a_type=INDICATOR_TYPE_MAPPING[threat_class],
+                entity_b=string_to_table_header(campaign),
+                entity_b_type=ThreatIntel.ObjectsNames.CAMPAIGN,
+                source_reliability=DBotScoreReliability.A_PLUS_PLUS,
+                brand=INTEGRATION_NAME,
+            )
+            relationships.append(entity_relationship.to_entry())
+
+    return relationships
 
 def create_relationships_and_tags(indicator_value: str, indicator_type: str, threat_object_associations: list) -> list:
     """
@@ -283,7 +631,8 @@ def map_indicator(indicator_data: dict, feed_tags: list = [], tlp_color: str | N
         "updateddate": indicator_data.get("updated_at"),
         "creationdate": indicator_data.get("first_seen"),
         "reportedby": indicator_data.get("source"),
-        "tags": tags,
+        "tags": feed_tags + tags,
+        "tlp_color": tlp_color,
     }
     if xsoar_indicator_type == FeedIndicatorType.File:
         fields["md5"] = demisto.get(indicator_data, "indicator_details.file_hashes.md5")
@@ -310,7 +659,7 @@ def map_indicator(indicator_data: dict, feed_tags: list = [], tlp_color: str | N
     return indicator
 
 
-def map_threat_object(threat_object: dict, feed_tags: list = [], tlp_color: str | None = None) -> dict:
+def map_threat_object(threat_object: dict, feed_tags: list = [], tlp_color: str | None = None) -> list:
     """Map a threat object from the Unit 42 API to XSOAR format.
 
     Args:
@@ -319,7 +668,7 @@ def map_threat_object(threat_object: dict, feed_tags: list = [], tlp_color: str 
         tlp_color: Traffic Light Protocol color to add to the threat object.
 
     Returns:
-        Threat object in XSOAR format.
+        List of threat objects in XSOAR format.
     """
     # Get basic threat object properties
     name = threat_object.get("name", "")
@@ -327,23 +676,48 @@ def map_threat_object(threat_object: dict, feed_tags: list = [], tlp_color: str 
 
     # Map the threat object class to XSOAR type
     xsoar_indicator_type = INDICATOR_TYPE_MAPPING.get(str(threat_class), Common.Indicator)
+    
+    # Create relationships
+    relationships = []
+    if argToBoolean(demisto.params().get("create_relationships")):
+        relationships, _ = create_relationships_and_tags(name, threat_class, threat_object.get("related_threat_objects", []))
+        relationships += create_campaigns_relationships(name, threat_class, threat_object)
+        relationships += create_attack_patterns_relationships(threat_object, name, threat_class)
+        relationships += create_malware_relationships(threat_object, name, threat_class)
+        relationships += create_tools_relationships(threat_object, name, threat_class)
+        relationships += create_vulnerabilities_relationships(threat_object, name, threat_class)
+        relationships += create_actor_relationships(threat_object, name, threat_class)
 
     fields = {
-        "description": threat_object.get("description"),
-        "updateddate": threat_object.get("updated_at"),
+        "description": build_threat_object_description(threat_object),
+        "lastseenbysource": threat_object.get("last_hit"),
         "reportedby": threat_object.get("source"),
+        "aliases": [string_to_table_header(alias) for alias in threat_object.get("aliases", [])],
+        "industrysectors": [
+            string_to_table_header(industry) for industry in demisto.get(threat_object, "battlecard_details.industries", [])
+        ],
+        "primarymotivation": string_to_table_header(
+            demisto.get(threat_object, "battlecard_details.threat_actor_details.primary_motivation", "")
+        ),
+        "publications": create_publications(threat_object.get("publications", [])),
+        "geocountry": demisto.get(threat_object, "battlecard_details.threat_actor_details.origin", "").upper(),
+        "tags": feed_tags,
+        "tlp_color": tlp_color,
     }
 
     # Create the threat object
-    result: dict = {
+    result: list = [{
         "value": name,
         "type": xsoar_indicator_type,
         "score": get_threat_object_score(threat_class),
         "service": INTEGRATION_NAME,
-        "relationships": [],
+        "relationships": relationships,
         "fields": fields,
         "rawJSON": threat_object,
-    }
+    }]
+
+    location_indicators = create_location_indicators_and_relationships(threat_object, name)
+    result.extend(location_indicators)
 
     return result
 
@@ -384,8 +758,8 @@ def parse_threat_objects(threat_objects_data: list, feed_tags: list = [], tlp_co
 
     if threat_objects_data and isinstance(threat_objects_data, list):
         for threat_object_data in threat_objects_data:
-            threat_object = map_threat_object(threat_object_data, feed_tags, tlp_color)
-            threat_objects.append(threat_object)
+            threat_objects = map_threat_object(threat_object_data, feed_tags, tlp_color)
+            threat_objects.extend(threat_objects)
 
     return threat_objects
 
@@ -597,15 +971,11 @@ def main():
         if command == "test-module":
             return_results(test_module(client))
 
-        elif command == "fetch-indicators" or command == "unit42-fetch-indicators":
+        elif command == "fetch-indicators":
             now = datetime.now()
             indicators = fetch_indicators(client, params, now)
-            if command == "fetch-indicators":
-                for b in batch(indicators, batch_size=2000):
-                    demisto.createIndicators(b)
-            else:
-                demisto.debug(len(indicators))
-
+            for b in batch(indicators, batch_size=2000):
+                demisto.createIndicators(b)
             demisto.setLastRun({"last_successful_run": now.strftime(DATE_FORMAT)})
             demisto.info(
                 f"The fetch-indicators command completed successfully. Next run will fetch from: {now.strftime(DATE_FORMAT)}"
