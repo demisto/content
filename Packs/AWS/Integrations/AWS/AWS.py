@@ -381,6 +381,21 @@ class S3:
         except Exception as e:
             raise DemistoException(f"Failed to delete bucket website for {args.get('bucket')}. Error: {str(e)}")
 
+    @staticmethod
+    def put_bucket_ownership_controls_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        kwargs = {"Bucket": args.get("bucket"),
+                  "OwnershipControls": args.get("ownership_controls"),
+                  "Rule": args.get("rule"),
+                  "x-amz-expected-bucket-owner": args.get("x-amz-expected-bucket-owner")
+                  }
+        remove_nulls_from_dictionary(kwargs)
+        try:
+            response = client.put_bucket_ownership_controls(**kwargs)
+            if response["ResponseMetadata"]["HTTPStatusCode"] in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
+                return CommandResults(
+                    readable_output=f"Bucket Ownership Controls successfully updated for {args.get('bucket')} {response=}")
+        except Exception as e:
+            raise DemistoException(f"Failed to set Bucket Ownership Controls for {args.get('bucket')}. Error: {str(e)}")
 
 class IAM:
     service = AWSServices.IAM
@@ -1327,7 +1342,8 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-s3-bucket-logging-put": S3.put_bucket_logging_command,
     "aws-s3-bucket-acl-put": S3.put_bucket_acl_command,
     "aws-s3-bucket-policy-put": S3.put_bucket_policy_command,
-    "aws-s3-delete-bucket-website": S3.delete_bucket_website_command,
+    "aws-s3-bucket-website-delete": S3.delete_bucket_website_command,
+    "aws-s3-bucket-ownership-controls-put": S3.put_bucket_ownership_controls_command,
     "aws-iam-account-password-policy-get": IAM.get_account_password_policy_command,
     "aws-iam-account-password-policy-update": IAM.update_account_password_policy_command,
     "aws-iam-role-policy-put": IAM.put_role_policy_command,
@@ -1347,7 +1363,7 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-rds-db-cluster-snapshot-attribute-modify": RDS.modify_db_cluster_snapshot_attribute_command,
     "aws-rds-db-instance-modify": RDS.modify_db_instance_command,
     "aws-rds-db-snapshot-attribute-modify": RDS.modify_db_snapshot_attribute_command,
-    "aws-rds-modify-event-subscription": RDS.modify_event_subscription_command,
+    "aws-rds-event-subscription-modify": RDS.modify_event_subscription_command,
     "aws-cloudtrail-logging-start": CloudTrail.start_logging_command,
     "aws-cloudtrail-trail-update": CloudTrail.update_trail_command,
 }

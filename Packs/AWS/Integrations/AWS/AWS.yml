@@ -396,8 +396,7 @@ script:
       description: 'The bucket policy to apply as a JSON string.'
       required: true
 
-
-  - name: aws-s3-delete-bucket-website
+  - name: aws-s3-bucket-website-delete
     description: Removes the website configuration for a bucket.
     arguments:
       - name: account_id
@@ -444,6 +443,61 @@ script:
         description: The bucket name for which you want to remove the website configuration.
         required: true
 
+  - name: aws-s3-bucket-ownership-controls-put
+    description: Creates or modifies OwnershipControls for an Amazon S3 bucket.
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        required: true
+      - name: region
+        description: The AWS region.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+      - name: bucket
+        description: The name of the Amazon S3 bucket whose OwnershipControls you want to set.
+        required: true
+      - name: ownership_controls
+        description: Root level tag for the OwnershipControls parameters.
+        required: true
+      - name: rule
+        description: The container element for an ownership control rule.
+        required: true
+        isArray: true
+      - name: x-amz-expected-bucket-owner
+        description: The account ID of the expected bucket owner. If the account ID that you provide does not match the actual owner of the bucket, the request fails.
 
   - name: aws-iam-account-password-policy-get
     description: Gets the AWS account password policy.
@@ -1156,7 +1210,7 @@ script:
       isArray: true
       required: false
 
-  - name: aws-rds-modify-event-subscription
+  - name: aws-rds-event-subscription-modify
     description: Modifies an existing RDS event notification subscription.
     arguments:
     - name: account_id
