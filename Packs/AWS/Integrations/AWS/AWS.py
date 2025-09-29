@@ -395,9 +395,9 @@ class S3:
         if len(rules) != 1:
             raise ValueError(f"Validation Error: 'Rules' list must contain exactly one rule, found {len(rules)}.")
 
-        if rules[0].get('ObjectOwnership') not in ["BucketOwnerEnforced", "BucketOwnerPreferred", "ObjectWriter"]:
-            raise ValueError("Validation Error: 'ObjectOwnership' is missing or invalid."
-                             " Must be one of: [BucketOwnerEnforced, BucketOwnerPreferred, ObjectWriter]")
+        if rules[0].get('ObjectOwnership') not in ["BucketOwnerPreferred", "ObjectWriter", "BucketOwnerEnforced"]:
+            raise ValueError("Validation Error: 'ObjectOwnership' is missing, invalid or have more than one value."
+                             " Must be one of: [BucketOwnerPreferred, ObjectWriter, BucketOwnerEnforced]")
 
         kwargs = {"Bucket": args.get("bucket"),
                   "OwnershipControls": ownership_controls,
