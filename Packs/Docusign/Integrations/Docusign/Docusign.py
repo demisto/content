@@ -101,7 +101,7 @@ class AuthClient(BaseClient):
         token = jwt.encode(payload, self.private_key_pem, algorithm="RS256", headers=headers)
         return token
 
-    def exchange_jwt_to_access_token(self, jwt: str) -> str: # [V] reviewed
+    def exchange_jwt_to_access_token(self, jwt: str) -> tuple[str, dt.datetime]: # [V] reviewed
         """Exchange JWT for an access token.
         
         Args:
@@ -121,43 +121,50 @@ class AuthClient(BaseClient):
         resp = self._http_request(method="POST", full_url=url, headers=headers, data=data, resp_type="json")
         
         access_token = resp.get("access_token")
-        if not access_token:
-            demisto.error(f"{LOG_PREFIX}: Token exchange failed, response missing access_token\n{resp}")
-            raise DemistoException(f"{LOG_PREFIX}: Token exchange failed, response missing access_token\n{resp}")
-        
-        expires_in = resp.get("expires_in")
-        demisto.debug(f"{LOG_PREFIX}: Token exchange successful.\naccess_token: {access_token}\nexpires_in: {expires_in}")
-        
-        return access_token
+        expires_in_seconds = resp.get("expires_in")
 
-    def userinfo(self, token: str) -> dict:
-        """Fetch user information including base_uri for the account.
+        if not access_token or not expires_in_seconds:
+            demisto.error(f"{LOG_PREFIX}: Token exchange failed, response missing access_token or expires_in\n{resp}")
+            raise DemistoException(f"{LOG_PREFIX}: Token exchange failed, response missing access_token or expires_in\n{resp}")
         
+        expired_at = _utcnow() + dt.timedelta(seconds=expires_in_seconds)
+        return access_token, expired_at
+
+    def get_user_info(self, access_token: str) -> str:
+        url = urljoin(self.server_url, "/oauth/userinfo")
+        headers = {"Authorization": f"Bearer {access_token}"}
+        resp = self._http_request(method="GET", full_url=url, headers=headers, resp_type="json")
+        return resp
+
+    def get_base_uri(self, access_token: str, account_id: str) -> str:
+        """Fetch user information including base_uri for the account.
+
         Args:
-            token: Valid access token
-            
+            access_token: Valid access token
+            account_id: Account ID to fetch base URI for
+
         Returns:
-            dict: Base URI for the user's account
-            
+            str: Base URI for the user's account
+
         Raises:
             DemistoException: If user info is invalid or missing required data
         """
-        # TODO: NOTE FOR DEVELOPER: above API call can be used as part of test module
-        url = urljoin(self.server_url, "/oauth/userinfo")
-        headers = {"Authorization": f"Bearer {token}"}
-        resp = self._http_request(method="GET", full_url=url, headers=headers, resp_type="json")
 
-        accounts = resp.get("accounts", [])
+        user_info = self.get_user_info(access_token)
+
+        accounts = user_info.get("accounts", [])
         if not accounts:
             demisto.debug(f"{LOG_PREFIX}: /oauth/userinfo missing accounts.")
             raise DemistoException("DocuSign: /oauth/userinfo missing accounts.")
-            
-        for account in accounts:
-            if account.get("is_default"):
-                return account.get("base_uri"), account.get("account_id")
-        return accounts[0].get("base_uri"), accounts[0].get("account_id")
 
-    def get_token(self) -> str: # [V] reviewed
+        for account in accounts:
+            if account.get("account_id") == account_id:
+                return account.get("base_uri")
+
+        demisto.debug(f"{LOG_PREFIX}: /oauth/userinfo missing configuration account id: {account_id}.")
+        raise DemistoException(f"{LOG_PREFIX}: /oauth/userinfo missing configuration account id: {account_id}.")
+
+    def get_token(self) -> tuple[str, dt.datetime]: # [V] reviewed
         """
         Exchange JWT for access token using DocuSign OAuth flow.
 
@@ -169,10 +176,28 @@ class AuthClient(BaseClient):
 
         """
         assertion = self.get_jwt() # NOTE:  design - step 2
-        access_token = self.exchange_jwt_to_access_token(assertion) # NOTE: design - step 3
-        return access_token
+        access_token, expired_at = self.exchange_jwt_to_access_token(assertion) # NOTE: design - step 3
+        return access_token, expired_at
 
-def get_access_token() -> str: # [V] reviewed
+def is_access_token_expired(expired_at: dt.datetime) -> bool: # [V] reviewed
+    """Check if access token is expired.
+    
+    Args:
+        expired_at: Expiration time of access token
+        
+    Returns:
+        bool: True if access token is expired, False otherwise
+    """
+
+    is_not_expired = expired_at > _utcnow() + dt.timedelta(minutes=1)
+    if is_not_expired:
+        demisto.debug(f"{LOG_PREFIX}using existing Access token from integration context (expires at {expired_at}).")
+        return False
+    else:
+        demisto.debug(f"{LOG_PREFIX}Access token expired.")
+        return True
+
+def get_access_token(client: AuthClient) -> str: # [V] reviewed
     """
     Generate JWT and exchange it for access token for DocuSign API OAuth flow.
 
@@ -187,33 +212,22 @@ def get_access_token() -> str: # [V] reviewed
     Note:
         The access token is stored in the integration context for reuse in subsequent calls.
     """
-    # TODO: add an expiration mechanism to the integration context for access token
     integration_context = get_integration_context()
     access_token = integration_context.get("access_token", "")
-    if access_token:
-        demisto.debug(f"{LOG_PREFIX}Access token already exists in integration context")
+    expired_at = integration_context.get("expired_at", "")
+
+    if access_token and expired_at and not is_access_token_expired(expired_at):
         return access_token
-
-    params = demisto.params()
-    integration_key = params.get("integration_key", "")
-    user_id = params.get("user_id", "")
-    private_key_pem = params.get("credentials", {}).get("password", "")
     
-    if not integration_key or not user_id or not private_key_pem:
-        demisto.debug(f"{LOG_PREFIX}get_access_token function: Integration Key, User ID  or  Private Key is missing.")
-        raise DemistoException(
-            f"{LOG_PREFIX}. get_access_token function: Integration Key, User ID  or  Private Key is missing."
-        )
-
-    client = initiate_auth_client()
-
+    demisto.debug(f"{LOG_PREFIX}Acquiring a new Access token.")
     try:
-        access_token = client.get_token() # NOTE: design - step 2+3
-        # base_uri = client.userinfo(access_token) # NOTE: design - step 4, TODO: move it to the test-module command
+        client = initiate_auth_client()
+        access_token, expired_at = client.get_token()
+        integration_context.update({"access_token": access_token, "expired_at": expired_at})
 
-        integration_context.update({"access_token": access_token})
         set_integration_context(integration_context)
-        demisto.debug(f"{LOG_PREFIX}Access token received successfully and set to integration context")
+        demisto.debug(f"{LOG_PREFIX}Access token received successfully and set to integration context."
+                      f"\naccess_token: {access_token}\nexpired_at: {expired_at}")
 
         return access_token
 
@@ -306,7 +320,8 @@ class CustomerEventsClient(BaseClient):
             dict: Response from DocuSign Monitor API containing customer events
             
         """
-        access_token = get_access_token()
+        client = initiate_auth_client()
+        access_token = get_access_token(client)
         headers = {"Authorization": f"Bearer {access_token}", "Accept": "application/json", "Content-Type": "application/json"}
         params = {"cursor": cursor, "limit": events_per_page}
         
@@ -612,6 +627,12 @@ def initiate_auth_client() -> AuthClient: # [V] reviewed
     verify = not params.get("insecure", False)
     proxy = params.get("proxy", False)
     
+    if not integration_key or not user_id or not private_key_pem:
+        demisto.debug(f"{LOG_PREFIX}initiate_auth_client function: Integration Key, User ID  or  Private Key is missing.")
+        raise DemistoException(
+            f"{LOG_PREFIX}. initiate_auth_client function: Integration Key, User ID  or  Private Key is missing."
+        )
+    
     auth = AuthClient(
         server_url=server_url,
         integration_key=integration_key,
@@ -720,27 +741,31 @@ def command_generate_consent_url() -> CommandResults: # [V] reviewed
     
     return CommandResults(readable_output=md)
 
-def command_test_module(client: DocuSignClient, config: Config) -> str:
-    """Test the integration configuration and authentication.
-    
-    Args:
-        client: Initialized DocuSign client
-        config: Configuration object
-        
-    Returns:
-        str: 'ok' if test succeeds
-        
-    Raises:
-        DemistoException: If test fails
-    """
-    demisto.debug(f"{LOG_PREFIX} Testing module configuration")
-    
-    access_token = get_access_token()
-    base_uri = 1 # TODO: implement get_base_uri function
 
-    if not access_token or not base_uri:
-        demisto.debug(f"{LOG_PREFIX} Test module failed during authentication: No access token or base URI received")
-        raise DemistoException("Test module failed during authentication: No access token or base URI received")
+def validate_params():
+    params = demisto.params()
+    selected_fetch_types = params.get("event_types", "")
+    
+    # Validate authentication parameters
+    if not params.get("url") or not params.get("redirect_url") or not params.get("integration_key") or not params.get("user_id") or not params.get("credentials", {}).get("password", ""):
+        raise DemistoException("Please provide Server URL, Integration Key and Redirect URL for authentication flow.")
+    
+    if USER_DATA_TYPE in selected_fetch_types and (not params.get("account_id") or not params.get("organization_id")):
+        raise DemistoException(f"Please provide Account ID and Organization ID for fetching {USER_DATA_TYPE}.")
+    
+    if CUSTOMER_EVENTS_TYPE in selected_fetch_types and not params.get("url"):
+        raise DemistoException(f"Please provide Server URL for fetching {CUSTOMER_EVENTS_TYPE}.")
+
+def test_module() -> str:
+    validate_params()
+
+    client = initiate_auth_client()
+    access_token = get_access_token(client)
+    user_info = client.get_user_info(access_token)
+
+    if not access_token or not user_info:
+        demisto.debug(f"{LOG_PREFIX} Test module failed during authentication: No access token or userinfo received")
+        raise DemistoException("Test module failed during authentication: No access token or userinfo received")
         
     demisto.debug(f"{LOG_PREFIX} Test module completed successfully")
     return "ok"
@@ -813,10 +838,7 @@ def main() -> None:
         demisto.debug(f"{LOG_PREFIX} Processing command: {command}")
 
         if command == "test-module":
-            res = "# TODO: implement this command"
-            # client = DocuSignClient(auth, verify, proxy)
-            # res = command_test_module(client)
-            return_results(res)
+            return_results(test_module())
 
         elif command == "fetch-events": # [V] reviewed
             last_run, events = fetch_events()
