@@ -838,7 +838,7 @@ if __name__ in ("__main__", "__builtin__", "builtins"):  # pragma: no cover
                 if not lease_expiration:
                     demisto.debug("No existing lease; creating a new one.")
                     TOKEN = login()
-                elif lease_expiration < int(time.time()) - TIME_BUFFER:
+                elif lease_expiration <= int(time.time()) - TIME_BUFFER:
                     demisto.debug("Existing lease expired; creating a new one.")
                     TOKEN = login()
                 else:
