@@ -588,6 +588,18 @@ def severity_filter(min_severity):
     return severity_filter
 
 
+def status_filter(statuses):
+    """
+    Create a Status Filter string when statuses is not empty.
+    """
+    status_filter = ""
+    if statuses:
+        conditions = [f"properties/status eq '{s}'" for s in statuses]
+        status_filter = f"and ({ ' or '.join(conditions) })"
+
+    return status_filter
+
+
 def generic_list_incident_items(
     client,
     incident_id,
@@ -1483,6 +1495,7 @@ def fetch_incidents(
     """
     # Get the last fetch details, if exist
     limit = min(arg_to_number(demisto.params().get("limit")) or FETCH_MAX_LIMIT, FETCH_MAX_LIMIT)
+    statuses_to_fetch = demisto.params().get("statuses_to_fetch", [])
     last_fetch_time = last_run.get("last_fetch_time")
     last_fetch_ids = last_run.get("last_fetch_ids", [])
     last_incident_number = last_run.get("last_incident_number")
@@ -1502,7 +1515,10 @@ def fetch_incidents(
 
         latest_created_time_str = latest_created_time.strftime(DATE_FORMAT)
         command_args = {
-            "filter": f"properties/createdTimeUtc ge {latest_created_time_str} {severity_filter(min_severity)}",
+            "filter": (
+                f"properties/createdTimeUtc ge {latest_created_time_str} {severity_filter(min_severity)}"
+                f" {status_filter(statuses_to_fetch)}".strip()
+            ),
             "orderby": "properties/createdTimeUtc asc",
             "limit": limit,
         }
@@ -1514,7 +1530,10 @@ def fetch_incidents(
         if latest_created_time is None:
             raise DemistoException(f"{last_fetch_time=} couldn't be parsed")
         command_args = {
-            "filter": f"properties/incidentNumber gt {last_incident_number} {severity_filter(min_severity)}",
+            "filter": (
+                f"properties/incidentNumber gt {last_incident_number} {severity_filter(min_severity)}"
+                f" {status_filter(statuses_to_fetch)}".strip()
+            ),
             "orderby": "properties/incidentNumber asc",
             "limit": limit,
         }
@@ -1563,16 +1582,12 @@ def process_incidents(raw_incidents: list, latest_created_time: datetime, last_i
 
     incidents = []
     current_fetch_ids = []
-    skip_closed_incidents = demisto.params().get("skip_closed_incidents", False)
     if not last_incident_number:
         last_incident_number = 0
 
     for incident in raw_incidents:
         incident_severity = severity_to_level(incident.get("Severity"))
         demisto.debug(f"{incident.get('ID')=}, {incident_severity=}, {incident.get('IncidentNumber')=}")
-        if incident.get("Status") == "Closed" and skip_closed_incidents:
-            demisto.debug(f"Skipping closed incident {incident.get('ID')}")
-            continue
 
         incident_created_time = dateparser.parse(incident.get("CreatedTimeUTC"))
         current_fetch_ids.append(incident.get("ID"))
