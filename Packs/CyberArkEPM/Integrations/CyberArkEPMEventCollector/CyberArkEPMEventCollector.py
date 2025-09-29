@@ -87,11 +87,9 @@ class Client(BaseClient):
         full_url = f"{self.application_url}?onetimetoken={self.get_session_token()}"
         result = self._http_request("POST", full_url=full_url, resp_type="response")
         soup = BeautifulSoup(result.text, features="html.parser")
-        tag = soup.find("input", {"name": "SAMLResponse"})
-        value = tag.get("value") if tag else None
-        if not value:
-            raise DemistoException("Unable to extract SAMLResponse.")
-        return value
+        saml_response = soup.find("input", {"name": "SAMLResponse"}).get("value")
+
+        return saml_response
 
     def saml_auth_to_cyber_ark(self):  # pragma: no cover
         # Reference: https://docs.cyberark.com/EPM/Latest/en/Content/WebServices/SAMLAuthentication.htm
