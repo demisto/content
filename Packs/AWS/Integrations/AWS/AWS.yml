@@ -492,10 +492,6 @@ script:
       - name: ownership_controls
         description: Root level tag for the OwnershipControls parameters.
         required: true
-      - name: rule
-        description: The container element for an ownership control rule.
-        required: true
-        isArray: true
       - name: x-amz-expected-bucket-owner
         description: The account ID of the expected bucket owner. If the account ID that you provide does not match the actual owner of the bucket, the request fails.
 

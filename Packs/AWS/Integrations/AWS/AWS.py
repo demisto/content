@@ -383,17 +383,33 @@ class S3:
 
     @staticmethod
     def put_bucket_ownership_controls_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        try:
+            ownership_controls = json.loads(args.get("ownership_controls"))
+        except json.JSONDecodeError:
+            raise ValueError("Validation Error: Input is an invalid JSON string.")
+
+        rules = ownership_controls.get('Rules')
+        if not isinstance(rules, list):
+            raise ValueError("Validation Error: 'OwnershipControls' must contain a key 'Rules' with a list value.")
+
+        if len(rules) != 1:
+            raise ValueError(f"Validation Error: 'Rules' list must contain exactly one rule, found {len(rules)}.")
+
+        if rules[0].get('ObjectOwnership') not in ["BucketOwnerEnforced", "BucketOwnerPreferred", "ObjectWriter"]:
+            raise ValueError("Validation Error: 'ObjectOwnership' is missing or invalid."
+                             " Must be one of: [BucketOwnerEnforced, BucketOwnerPreferred, ObjectWriter]")
+
         kwargs = {"Bucket": args.get("bucket"),
-                  "OwnershipControls": args.get("ownership_controls"),
-                  "Rule": args.get("rule"),
+                  "OwnershipControls": ownership_controls,
                   "x-amz-expected-bucket-owner": args.get("x-amz-expected-bucket-owner")
                   }
+
         remove_nulls_from_dictionary(kwargs)
         try:
             response = client.put_bucket_ownership_controls(**kwargs)
             if response["ResponseMetadata"]["HTTPStatusCode"] in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
                 return CommandResults(
-                    readable_output=f"Bucket Ownership Controls successfully updated for {args.get('bucket')} {response=}")
+                    readable_output=f"Bucket Ownership Controls successfully updated for {args.get('bucket')}")
         except Exception as e:
             raise DemistoException(f"Failed to set Bucket Ownership Controls for {args.get('bucket')}. Error: {str(e)}")
 
