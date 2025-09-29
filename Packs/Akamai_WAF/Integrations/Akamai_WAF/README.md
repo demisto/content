@@ -2138,3 +2138,79 @@ Creates a stream configuration. Within a stream configuration, you can select pr
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Akamai.DataStream | unknown | Akamai DataStream. |
+
+### akamai-deprecate-client-list
+
+***
+
+#### Base Command
+
+`akamai-deprecate-client-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| client_list_id | The ID of the client list to be deprecated. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+### akamai-create-client-list
+
+***
+
+#### Base Command
+
+`akamai-create-client-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | The name of the new client list. | Required | 
+| type | The type of client list. Possible values are: IP, GEO, ASN, TLS_FINGERPRINT, FILE_HASH, USER. | Required | 
+| contract_id | The contract ID. You can get this value by running the `akamai-get-contract-group` command. | Required | 
+| group_id | The group ID. You can get this value by running the `akamai-get-contract-group` command. | Required | 
+| notes | A description of the client list. | Optional | 
+| tags | A list of tags to attach to the client list. | Optional | 
+| entry_value | The value of a single entry in the client list. | Optional | 
+| entry_description | A description of the entry. | Optional | 
+| entry_expiration_date | The expiration date for the entry. Use ISO 8601 format (e.g. 2025-09-29 or 2025-09-29T13:15:28). | Optional | 
+| entry_tags | A list of tags attached to the entry. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Akamai.ClientList | unknown | The client list that was created. | 
+
+### akamai-get-client-list
+
+***
+
+#### Base Command
+
+`akamai-get-client-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| client_list_id | An optional URL parameter to get a specific client list. | Optional | 
+| name | Filters the output to show only lists that match a given name. | Optional | 
+| include_items | Include items in the response. Possible values are: true, false. Default is false. | Optional | 
+| include_deprecated | Include deprecated lists in the response. Possible values are: true, false. Default is false. | Optional | 
+| search | Returns results that contain the specified substring in any client list or entry details. | Optional | 
+| type_list | Filters the output to show only lists of the specified types. Repeat the parameter to filter by multiple types. Valid values: IP, GEO, ASN, TLS_FINGERPRINT, FILE_HASH. Possible values are: IP, GEO, ASN, TLS_FINGERPRINT, FILE_HASH, USER. | Optional | 
+| include_network_list | Include network lists in the response. Possible values are: true, false. Default is false. | Optional | 
+| page | Page number. Default is 0. | Optional | 
+| page_size | Page size. Default is 50. | Optional | 
+| limit | Limit. Default is 50. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Akamai.ClientList | unknown | The client list. | 
+
