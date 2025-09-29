@@ -249,7 +249,7 @@ script:
     name: akamai-activate-network-list
     deprecated: true
   - arguments:
-    - description: The ID of the network in which to add elements.
+    - description: The ID of the network where elements will be added.
       name: network_list_id
       required: true
     - description: The War Room entry ID of the sample file.
