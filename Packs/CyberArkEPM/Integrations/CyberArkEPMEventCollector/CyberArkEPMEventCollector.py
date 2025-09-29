@@ -331,7 +331,8 @@ def get_events_command(client: Client, event_type: str, last_run: dict, limit: i
         events_list = list(chain(*events_list_of_lists))
 
     demisto.debug(f"[get_events_command] event_type={event_type} total_fetched={len(events_list)}")
-    demisto.debug(f"[get_events_command] event_list: {events_list}")
+    unique_types = list(dict.fromkeys(e.get("eventType") for e in events_list if isinstance(e, dict))) if events_list else []
+    demisto.debug(f"[get_events_command] unique_event_types fetched during this fetch={unique_types}")
 
     human_readable = tableToMarkdown(string_to_table_header(event_type), events_list)
 
@@ -390,8 +391,11 @@ def fetch_events(
             events.extend(detailed_events)
 
     demisto.info(f"[fetch_events] Sending len {len(events)} to XSIAM. updated_next_run={last_run}.")
-    demisto.debug(f"[fetch_events] events: {events}")
-
+    unique_types = list(dict.fromkeys(e.get('eventType') for e in events if isinstance(e, dict)))
+    demisto.debug(f"[fetch_events] unique_event_types fetched during this fetch={unique_types}")
+    demisto.debug(
+        f"[fetch_events] events_count={len(events)} first_event_keys={(list(events[0].keys()) if events else [])}"
+    )
     return events, last_run
 
 
