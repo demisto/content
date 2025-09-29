@@ -1284,6 +1284,9 @@ class RDS:
             "SourceType": args.get("source_type"),
         }
         remove_nulls_from_dictionary(kwargs)
+        if kwargs.get("Enabled"):
+            kwargs["Enabled"] = argToBoolean(kwargs.get("Enabled"))
+
         try:
             response = client.modify_event_subscription(**kwargs)
 
@@ -1291,11 +1294,10 @@ class RDS:
                 headers = ["CustomerAwsId", "CustSubscriptionId", "SnsTopicArn", "Status", "SubscriptionCreationTime",
                            "SourceType", "EventCategoriesList", "Enabled", "EventSubscriptionArn"]
 
-                human_readable = f"Event subscription {args.get('subscription_name')} successfully modified." + tableToMarkdown(
-                    headers=headers, t=response.get("EventSubscription"))
-
                 return CommandResults(
-                    readable_output=human_readable,
+                    readable_output=tableToMarkdown(
+                        name=f"Event subscription {args.get('subscription_name')} successfully modified.", headers=headers,
+                        t=response.get("EventSubscription")),
                     outputs_prefix="AWS.RDS.EventSubscription",
                     outputs=response.get("EventSubscription"),
                     outputs_key_field="CustSubscriptionId",
