@@ -225,7 +225,7 @@ script:
     - description: The ID of the network list to delete.
       name: network_list_id
       required: true
-    description: Deprecated. Use “akamai-delete-client-list” instead.
+    description: Deprecated. Use “akamai-deprecate-client-list” instead.
     name: akamai-delete-network-list
     deprecated: true
   - arguments:
@@ -653,7 +653,7 @@ script:
       isArray: true
       description: A list of tags to associate with the client list.
     - name: entry_value
-      description: The value for a single entry in the client list. Will be sent as a single object in the `items` array.
+      description: The value for a single entry in the client list.
     - name: entry_description
       description: A description for the entry.
     - name: entry_expiration_date
@@ -669,8 +669,8 @@ script:
   - arguments:
     - name: client_list_id
       required: true
-      description: The ID of the client list to delete.
-    name: akamai-delete-client-list
+      description: The ID of the client list to deprecate.
+    name: akamai-deprecate-client-list
   - name: akamai-activate-client-list
     polling: true
     description: Activates a client list.

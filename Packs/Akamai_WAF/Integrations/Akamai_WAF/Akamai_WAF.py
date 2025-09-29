@@ -407,7 +407,7 @@ class Client(BaseClient):
         entry_value: str = None,
         entry_description: str = None,
         entry_expiration_date: str = None,
-        entry_tags: list = None,
+        entry_tags: str = None,
     ) -> dict:
         """
         Create a client list.
@@ -426,7 +426,7 @@ class Client(BaseClient):
             Json response as dictionary
         """
         entry_tags = entry_tags.split(",") if entry_tags else []
-        body = {
+        body: dict = {
             "name": name,
             "type": client_list_type,
             "contractId": contract_id,
@@ -436,21 +436,24 @@ class Client(BaseClient):
             "items": [],
         }
         if entry_value:
+            # Normalize expiration date to ISO 8601 UTC (YYYY-MM-DDTHH:MM:SSZ) when provided
+            exp_iso = normalize_to_iso8601(entry_expiration_date) if entry_expiration_date else None
+
             entry = {
                 "value": entry_value,
                 "description": entry_description,
-                "expirationDate": entry_expiration_date,
+                "expirationDate": exp_iso,
                 "tags": entry_tags,
             }
             body["items"].append(entry)
 
         return self._http_request(method="POST", url_suffix="/client-list/v1/lists", json_data=body)
 
-    def delete_client_list(self, client_list_id: str) -> requests.Response:
+    def deprecate_client_list(self, client_list_id: str) -> requests.Response:
         """
-        Delete a client list.
+        Deprecate a client list.
         Args:
-            client_list_id: The ID of the client list to delete.
+            client_list_id: The ID of the client list to deprecate.
         Returns:
             Response object
         """
@@ -499,7 +502,7 @@ class Client(BaseClient):
         )
 
     def add_client_list_entry(
-        self, list_id: str, value: str, description: str = None, expiration_date: str = None, tags: list = None
+        self, list_id: str, value: str, description: str = None, expiration_date: str = None, tags: str = None
     ) -> dict:
         """
         Add an entry to a client list.
@@ -513,11 +516,12 @@ class Client(BaseClient):
             Json response as dictionary
         """
         tags = tags.split(",") if tags else []
-        entry = {"value": value, "description": description, "expirationDate": expiration_date, "tags": tags}
+        exp_iso = normalize_to_iso8601(expiration_date) if expiration_date else None
+        entry = {"value": value, "description": description, "expirationDate": exp_iso, "tags": tags}
         body = {"append": [entry]}
         return self._http_request(method="POST", url_suffix=f"/client-list/v1/lists/{list_id}/items", json_data=body)
 
-    def remove_client_list_entry(self, list_id: str, value: list) -> dict:
+    def remove_client_list_entry(self, list_id: str, value: str) -> dict:
         """
         Remove an entry from a client list.
         Args:
@@ -541,7 +545,7 @@ class Client(BaseClient):
         """
         return self._http_request(method="GET", url_suffix="/client-list/v1/contracts-groups")
 
-    def update_client_list(self, list_id: str, name: str, notes: str = None, tags: list = None) -> dict:
+    def update_client_list(self, list_id: str, name: str, notes: str = None, tags: str = None) -> dict:
         """
         Update a client list.
         Args:
@@ -3502,6 +3506,35 @@ def try_parsing_date(date: str, arr_fmt: list):
     raise ValueError(f"The date you provided does not match the wanted format {arr_fmt}")
 
 
+def normalize_to_iso8601(date_str: str) -> str:
+    """
+    Normalize an input date string into ISO 8601 UTC string (YYYY-MM-DDTHH:MM:SSZ).
+    Tries common formats via try_parsing_date and falls back to datetime.fromisoformat
+    to handle timezone offsets like +00:00. If all parsing fails, returns the original string.
+
+    Args:
+        date_str: The input date string.
+
+    Returns:
+        Normalized ISO 8601 UTC string, or the original string when parsing fails.
+    """
+    if not date_str:
+        return date_str
+    try:
+        dt = try_parsing_date(date_str, ["%Y-%m-%d", "%m-%d-%Y", "%Y-%m-%dT%H:%M:%SZ", "%Y-%m-%dT%H:%M:%S.%fZ"])
+        return dt.strftime("%Y-%m-%dT%H:%M:%SZ")
+    except Exception:
+        demisto.error(f"Failed to parse date: {date_str}")
+        pass
+    try:
+        iso_input = date_str.replace("Z", "+00:00")
+        dt2 = datetime.fromisoformat(iso_input)
+        return dt2.strftime("%Y-%m-%dT%H:%M:%SZ")
+    except Exception:
+        demisto.error(f"Failed to parse date: {date_str}. Returning original date string.")
+        return date_str
+
+
 """ COMMANDS """
 # Created by C.L.
 
@@ -3649,20 +3682,20 @@ def create_client_list_command(
 
 
 @logger
-def delete_client_list_command(client: Client, client_list_id: str) -> tuple[str, dict, dict]:
+def deprecate_client_list_command(client: Client, client_list_id: str) -> tuple[str, dict, dict]:
     """
-    Deletes a client list.
+    Deprecates a client list.
     Args:
         client: Akamai WAF client
-        client_list_id: The ID of the client list to delete.
+        client_list_id: The ID of the client list to deprecate.
     Returns:
         Human readable, context entry, raw response
     """
-    raw_response = client.delete_client_list(client_list_id)
+    raw_response = client.deprecate_client_list(client_list_id)
     if raw_response.status_code == 204:
-        human_readable = f"Akamai WAF Client List {client_list_id} deleted successfully."
+        human_readable = f"Akamai WAF Client List {client_list_id} marked as deprecated successfully."
         return human_readable, {}, {}
-    return f"Akamai WAF Client List {client_list_id} was not deleted.", {}, {}
+    return f"Akamai WAF Client List {client_list_id} was not marked as deprecated.", {}, {}
 
 
 def check_activation_status(
@@ -3697,7 +3730,7 @@ def check_activation_status(
     while latest_status == pending_status and (time.time() - start_time) < timeout_seconds:
         status_resp = client.get_client_list_activation_status(list_id, network_environment)
         if isinstance(status_resp, dict):
-            items = []
+            items: list = []
             if "activations" in status_resp and isinstance(status_resp["activations"], dict):
                 items = status_resp["activations"].get("items") or []
             elif "items" in status_resp and isinstance(status_resp["items"], list):
@@ -3714,6 +3747,7 @@ def check_activation_status(
                 network = status_resp.get("network")
         if latest_status and latest_status != pending_status:
             notice = "activation" if pending_status == "PENDING_ACTIVATION" else "deactivation"
+            network = ""
             hr = tableToMarkdown(
                 f"Akamai WAF Client List {list_id} {notice} completed with status {latest_status}",
                 {
@@ -3895,7 +3929,7 @@ def update_client_list_entry_command(
     value: str,
     description: str = None,
     expiration_date: str = None,
-    tags: list = None,
+    tags: str = None,
     is_override: bool = False,
 ) -> tuple[str, dict, dict]:
     """
@@ -3913,12 +3947,14 @@ def update_client_list_entry_command(
     """
     updated_item = None
     tags = tags.split(",") if tags else []
+    # Normalize expiration_date into ISO 8601 (UTC) if provided in a supported format
+    exp_iso = normalize_to_iso8601(expiration_date) if expiration_date else None
     if is_override:
         demisto.debug("Update_client_list_entry: Override missing entry")
         updated_item = {
             "value": value,
             "description": description,
-            "expirationDate": expiration_date,
+            "expirationDate": exp_iso,
             "tags": tags,
         }
     else:
@@ -3929,8 +3965,8 @@ def update_client_list_entry_command(
             if item.get("value") == value:
                 if description:
                     item["description"] = description
-                if expiration_date:
-                    item["expirationDate"] = expiration_date
+                if exp_iso:
+                    item["expirationDate"] = exp_iso
                 if tags:
                     item["tags"] = tags
                 updated_item = item
@@ -7259,7 +7295,7 @@ def main():
         f"{INTEGRATION_COMMAND_NAME}-get-group": get_group_command,
         f"{INTEGRATION_COMMAND_NAME}-get-client-list": get_client_list_command,
         f"{INTEGRATION_COMMAND_NAME}-create-client-list": create_client_list_command,
-        f"{INTEGRATION_COMMAND_NAME}-delete-client-list": delete_client_list_command,
+        f"{INTEGRATION_COMMAND_NAME}-deprecate-client-list": deprecate_client_list_command,
         f"{INTEGRATION_COMMAND_NAME}-activate-client-list": activate_client_list_command,
         f"{INTEGRATION_COMMAND_NAME}-add-client-list-entry": add_client_list_entry_command,
         f"{INTEGRATION_COMMAND_NAME}-remove-client-list-entry": remove_client_list_entry_command,
