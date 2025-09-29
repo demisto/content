@@ -273,19 +273,23 @@ def delete_email(
     if "target-mailbox" in search_args:
         mailboxes = [mailbox.strip() for mailbox in search_args["target-mailbox"].split(",")]
 
-
     for mailbox in mailboxes:
         search_args["target-mailbox"] = mailbox
         if search_function:
             search_result = execute_command(search_function, search_args)
             if not search_result or isinstance(search_result, str):
-                raise MissingEmailException
+                demisto.debug(f"Did not find email in mailbox {mailbox}")
+                continue
+                # raise MissingEmailException
             delete_args = delete_args_function(search_result, search_args)  # type: ignore
         else:
             delete_args = delete_args_function(search_args)  # type: ignore
         resp = execute_command(delete_function, delete_args)
         if deletion_error_condition(resp):
-            raise DeletionFailed(resp)
+            demisto.debug(f"Failed to delete email in mailbox {mailbox}")
+            continue
+            # raise DeletionFailed(resp)
+
     search_args["target-mailbox"] = original_mailbox
 
     return "Success"
