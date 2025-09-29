@@ -1,5 +1,4 @@
-import json
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
@@ -58,9 +57,6 @@ disable_warnings()
 
 """ CONSTANTS """
 
-# TODO: clean me
-DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
-UI_DATE_FORMAT = "%B %d, %Y %I:%M %p"
 DEFAULT_OFFSET = 0
 DEFAULT_PAGE_SIZE = 50
 PAGE_NUMBER_ERROR_MSG = "Invalid Input Error: page number should be greater than zero."
@@ -69,10 +65,8 @@ DEFAULT_FROM_DATE = "-7days"
 DEFAULT_TO_DATE = "now"
 INTEGRATION_CONTEXT_NAME = "Datadog"
 SECURITY_SIGNAL_CONTEXT_NAME = f"{INTEGRATION_CONTEXT_NAME}.SecuritySignal"
-HOUR_SECONDS = 3600
 NO_RESULTS_FROM_API_MSG = "API didn't return any results for given search parameters."
 ERROR_MSG = "Something went wrong!\n"
-DATE_ERROR_MSG = "Unable to parse date. Please check help section for right format."
 AUTHENTICATION_ERROR_MSG = "Authentication Error: Invalid API Key. Make sure API Key and Server URL are correct."
 
 
@@ -607,7 +601,7 @@ def get_security_signals_command(
     args: Dict[str, Any],
 ) -> CommandResults:
     """
-    Get a list of security signals from Datadog Cloud SIEM with optional filtering.
+    Get a list of security signals with optional filtering.
 
     Supports filtering by state, severity, rule name, source, tags, and time range.
     Returns paginated results with configurable sorting.
@@ -705,7 +699,7 @@ def update_security_signal_assignee_command(
     args: Dict[str, Any],
 ) -> CommandResults:
     """
-    Update the assignee of a security monitoring signal in Datadog Cloud SIEM.
+    Update the assignee of a security signal.
 
     Assigns a security signal to a specific user by providing their UUID.
     The signal must exist and the user must have appropriate permissions.
@@ -754,7 +748,7 @@ def update_security_signal_assignee_command(
         )
         signal_display = signal_update.to_display_dict()
         readable_output = lookup_to_markdown(
-            [signal_display], f"Security Signals partial update"
+            [signal_display], f"Security Signals assignee update"
         )
 
         return CommandResults(
@@ -768,8 +762,76 @@ def update_security_signal_assignee_command(
 def update_security_signal_state_command(
     configuration: Configuration,
     args: dict[str, Any],
-) -> CommandResults | DemistoException:
-    return DemistoException("not implemented")
+) -> CommandResults:
+    """
+    Update the state of a security signal.
+
+    Changes the triage state of a security signal (e.g., open, under_review, archived).
+    The signal must exist and the user must have appropriate permissions.
+
+    Args:
+        configuration: Datadog API configuration
+        args: Command arguments containing signal_id and state
+
+    Returns:
+        CommandResults: XSOAR command results with updated signal data
+
+    Raises:
+        DemistoException: If signal_id or state is missing, or API call fails
+    """
+    signal_id = args.get("signal_id")
+    state = args.get("state")
+
+    if not signal_id:
+        raise DemistoException("signal_id is required")
+
+    if not state:
+        raise DemistoException("state is required")
+
+    # Valid states based on Datadog API documentation
+    valid_states = ["open", "under_review", "archived"]
+    if state not in valid_states:
+        raise DemistoException(
+            f"Invalid state '{state}'. Valid states are: {', '.join(valid_states)}"
+        )
+
+    body = SecurityMonitoringSignalStateUpdateRequest(
+        data=SecurityMonitoringSignalStateUpdateData(
+            attributes=SecurityMonitoringSignalStateUpdateAttributes(
+                state=state,
+            ),
+        ),
+    )
+
+    with ApiClient(configuration) as api_client:
+        api_instance = SecurityMonitoringApi(api_client)
+        response = api_instance.edit_security_monitoring_signal_state(
+            signal_id=str(signal_id), body=body
+        )
+        data = response.to_dict()
+        attributes = data.get("attributes", {})
+        assignee = Assignee(
+            id=attributes.get("assignee", {}).get("id", -1),
+            uuid=attributes.get("assignee", {}).get("uuid", ""),
+            name=attributes.get("assignee", {}).get("name", "Unassigned"),
+        )
+        updated_state = attributes.get("state", state)
+
+        signal_update = SecuritySignal(
+            id=signal_id,
+            triage=Triage(state=updated_state, assignee=assignee),
+        )
+        signal_display = signal_update.to_display_dict()
+        readable_output = lookup_to_markdown(
+            [signal_display], f"Security Signal State Update"
+        )
+
+        return CommandResults(
+            readable_output=readable_output,
+            outputs_prefix=SECURITY_SIGNAL_CONTEXT_NAME,
+            outputs_key_field="id",
+            outputs=signal_update.to_dict(),
+        )
 
 
 def logs_search_command(
