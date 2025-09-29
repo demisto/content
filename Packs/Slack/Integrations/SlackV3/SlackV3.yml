@@ -492,8 +492,12 @@ script:
     - defaultValue: 100
       description: Set this argument to specify how many results to return. If you have more results than the limit you set, you will need to use the cursor argument to paginate your results.
       name: limit
-    - description: The conversation ID.
+    - description: Deprecated. The value of this argument is time stamp sent to the oldest query parameter. Use from_time with limit=1 instead.
       name: conversation_id
+      deprecated: true
+    - description: |
+        Lower bound for conversation history (sent to Slack 'oldest' query parameter). Returns messages with 'time stamp ≥ this value. Accepts Unix timestamp (e.g., "1727448000.000200").
+      name: from_time
     description: Fetches a conversation's history of messages and events.
     name: slack-get-conversation-history
   - arguments:
