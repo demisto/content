@@ -142,6 +142,244 @@ script:
       description: Type of the resource. Always compute#operation for Operation resources.
       type: string
 
+  - name: gcp-compute-firewall-patch-update-gcp-firewall-rule-quick-action
+    description: Disables a firewall rule that blocks internet traffic to Telnet port (23).
+    prettyname: Update GCP Firewall Rule to Block Traffic
+    quickaction: true
+    hidden: true
+    arguments:
+      - name: project_id
+        required: true
+        description: GCP project ID.
+      - name: resource_name
+        required: true
+        description: Name of the firewall rule to update.
+        prettypredefined:
+          GCP Firewall Rule Name: ${issue.resourceName}
+      - description: An optional description of this resource, which you provide when you create the resource.
+        name: description
+      - description: URL of the network resource for this firewall rule. If not specified when creating a firewall rule, the default network is used.
+        name: network
+      - description: Priority for this rule. This is an integer between 0 and 65535, both inclusive. When not specified, the value assumed is 1000. Relative priorities determine precedence of conflicting rules. Lower value of priority implies higher precedence (eg, a rule with priority 0 has higher precedence than a rule with priority 1). DENY rules take precedence over ALLOW rules.
+        name: priority
+      - description: 'If source ranges are specified, the firewall applies only to traffic with source IP addresses in these ranges. These ranges must be expressed in CIDR format. One or both of sourceRanges and sourceTags may be set. If both properties are set, the firewall applies to traffic with a source IP address within sourceRanges OR the source IP belonging to a tag listed in the sourceTags property. The connection does not need to match both properties for the firewall to apply. Only IPv4 is supported, comma-separated.'
+        name: sourceRanges
+      - description: If destination ranges are specified, the firewall applies only to traffic with destination IP addresses in these ranges. These ranges must be expressed in CIDR format. Only IPv4 is supported. Comma-separated.
+        name: destinationRanges
+      - description: If source tags are specified, the firewall rule applies only to traffic with source IPs that match the primary network interfaces of VM instances that have the tag and are in the same VPC network. Source tags cannot be used to control traffic to an instance's external IP address. It only applies to traffic between instances in the same virtual network, because tags are associated with instances, not IP addresses. One or both of sourceRanges and sourceTags may be set. If both properties are set, the firewall will apply to traffic with a source IP address within sourceRanges OR the source IP belonging to a tag listed in the sourceTags property. The connection does not need to match both properties for the firewall to apply. Comma-separated.
+        name: sourceTags
+      - description: A list of tags that controls which instances the firewall rule applies to. If targetTags are specified, then the firewall rule applies only to instances in the VPC network that have one of those tags. If no targetTags are specified, the firewall rule applies to all instances on the specified network. Comma-separated.
+        name: targetTags
+      - description: If source service accounts are specified, the firewall applies only to traffic originating from an instance with a service account in this list. Source service accounts cannot be used to control traffic to an instance's external IP address because service accounts are associated with an instance, not an IP address. sourceRanges can be set at the same time as sourceServiceAccounts. If both are set, the firewall will apply to traffic that has a source IP address within sourceRanges OR the source IP belongs to an instance with a service account listed in sourceServiceAccount. The connection does not need to match both properties for the firewall to apply. sourceServiceAccounts cannot be used simultaneously as sourceTags or targetTags. Comma-separated.
+        name: sourceServiceAccounts
+      - description: A list of service accounts indicating sets of instances located in the network that may make network connections as specified in allowed[]. targetServiceAccounts cannot be used at the same time as targetTags or sourceTags. If neither targetServiceAccounts nor targetTags are specified, the firewall rule applies to all instances on the specified network. Comma-separated.
+        name: targetServiceAccounts
+      - description: 'The ALLOW rules list specified by this firewall. Each rule specifies a protocol and port-range tuple that describes a permitted connection. For example, ipprotocol=tcp,ports=22,443;ipprotocol=tcp,ports=8080,80.'
+        name: allowed
+      - description: 'The DENY rules list specified by this firewall. Each rule specifies a protocol and port-range tuple that describes a denied connection. For example, ipprotocol=tcp,ports=22,443;ipprotocol=tcp,ports=8080,80.'
+        name: denied
+      - description: 'Direction of traffic to which this firewall applies; default is INGRESS. Note: For INGRESS traffic, it is NOT supported to specify destinationRanges; For EGRESS traffic, it is NOT supported to specify sourceRanges OR sourceTags.'
+        name: direction
+      - auto: PREDEFINED
+        description: This field denotes whether to enable logging for a particular firewall rule.
+        name: logConfigEnable
+        predefined:
+          - 'true'
+          - 'false'
+      - auto: PREDEFINED
+        description: Denotes whether the firewall rule is disabled, i.e not applied to the network it is associated with. When set to true, the firewall rule is not enforced and the network behaves as if it did not exist. If this is unspecified, the firewall rule will be enabled.
+        name: disabled
+        predefined:
+          - 'true'
+          - 'false'
+        defaultValue: "true"
+    outputs:
+      - contextPath: GCP.Compute.Operations.id
+        description: The unique identifier for the resource. This identifier is defined by the server.
+        type: string
+      - contextPath: GCP.Compute.Operations.name
+        description: Name of the resource.
+        type: string
+      - contextPath: GCP.Compute.Operations.zone
+        description: The URL of the zone where the operation resides. Only available when performing per-zone operations. You must specify this field as part of the HTTP request URL. It is not configurable as a field in the request body.
+        type: string
+      - contextPath: GCP.Compute.Operations.clientOperationId
+        description: The value of requestId if you provided it in the request. Not present otherwise.
+        type: string
+      - contextPath: GCP.Compute.Operations.operationType
+        description: The type of operation, such as insert, update, or delete, and so on.
+        type: string
+      - contextPath: GCP.Compute.Operations.targetLink
+        description: The URL of the resource that the operation modifies. For operations related to creating a snapshot, this points to the persistent disk from which the snapshot was created.
+        type: string
+      - contextPath: GCP.Compute.Operations.targetId
+        description: The unique target ID, which identifies a specific incarnation of the target resource.
+        type: string
+      - contextPath: GCP.Compute.Operations.status
+        description: 'The status of the operation, which can be one of the following: PENDING RUNNING or DONE.'
+        type: string
+      - contextPath: GCP.Compute.Operations.statusMessage
+        description: An optional textual description of the current status of the operation.
+        type: string
+      - contextPath: GCP.Compute.Operations.user
+        description: The user who requested the operation, for example, EMAILADDRESS.
+        type: string
+      - contextPath: GCP.Compute.Operations.progress
+        description: An optional progress indicator that ranges from 0 to 100. There is no requirement that this be linear or support any granularity of operations. This should not be used to guess when the operation will be complete. This number should monotonically increase as the operation progresses.
+        type: number
+      - contextPath: GCP.Compute.Operations.insertTime
+        description: The time that this operation was requested. This value is in RFC3339 text format.
+        type: string
+      - contextPath: GCP.Compute.Operations.startTime
+        description: The time that this operation was started by the server. This value is in RFC3339 text format.
+        type: string
+      - contextPath: GCP.Compute.Operations.endTime
+        description: The time that this operation was completed. This value is in RFC3339 text format.
+        type: string
+      - contextPath: GCP.Compute.Operations.error
+        description: If errors are generated during processing of the operation, this field will be populated.
+        type: string
+      - contextPath: GCP.Compute.Operations.warnings
+        description: If warning messages are generated during processing of the operation, this field will be populated.
+        type: string
+      - contextPath: GCP.Compute.Operations.httpErrorStatusCode
+        description: If the operation fails, this field contains the HTTP error status code that was returned. For example, a 404 means the resource was not found.
+        type: number
+      - contextPath: GCP.Compute.Operations.httpErrorMessage
+        description: If the operation fails, this field contains the HTTP error message that was returned, such as NOT FOUND.
+        type: string
+      - contextPath: GCP.Compute.Operations.selfLink
+        description: Server-defined URL for the resource.
+        type: string
+      - contextPath: GCP.Compute.Operations.region
+        description: The URL of the region where the operation resides. Only available when performing regional operations. You must specify this field as part of the HTTP request URL. It is not configurable as a field in the request body.
+        type: string
+      - contextPath: GCP.Compute.Operations.description
+        description: A textual description of the operation, which is set when the operation is created.
+        type: string
+      - contextPath: GCP.Compute.Operations.kind
+        description: Type of the resource. Always compute#operation for Operation resources.
+        type: string
+
+  - name: gcp-compute-firewall-patch-disable-gcp-default-firewall-rule-quick-action
+    description: Disables default GCP firewall rule which is overly permissive (except http and https).
+    prettyname: Disable GCP Default Firewall Rule
+    quickaction: true
+    hidden: true
+    arguments:
+      - name: project_id
+        required: true
+        description: GCP project ID.
+      - name: resource_name
+        required: true
+        description: Name of the firewall rule to disable.
+        prettypredefined:
+          GCP Firewall Rule Name: ${issue.resourceName}
+      - description: An optional description of this resource, which you provide when you create the resource.
+        name: description
+      - description: URL of the network resource for this firewall rule. If not specified when creating a firewall rule, the default network is used.
+        name: network
+      - description: Priority for this rule. This is an integer between 0 and 65535, both inclusive. When not specified, the value assumed is 1000. Relative priorities determine precedence of conflicting rules. Lower value of priority implies higher precedence (eg, a rule with priority 0 has higher precedence than a rule with priority 1). DENY rules take precedence over ALLOW rules.
+        name: priority
+      - description: 'If source ranges are specified, the firewall applies only to traffic with source IP addresses in these ranges. These ranges must be expressed in CIDR format. One or both of sourceRanges and sourceTags may be set. If both properties are set, the firewall applies to traffic with a source IP address within sourceRanges OR the source IP belonging to a tag listed in the sourceTags property. The connection does not need to match both properties for the firewall to apply. Only IPv4 is supported, comma-separated.'
+        name: sourceRanges
+      - description: If destination ranges are specified, the firewall applies only to traffic with destination IP addresses in these ranges. These ranges must be expressed in CIDR format. Only IPv4 is supported. Comma-separated.
+        name: destinationRanges
+      - description: If source tags are specified, the firewall rule applies only to traffic with source IPs that match the primary network interfaces of VM instances that have the tag and are in the same VPC network. Source tags cannot be used to control traffic to an instance's external IP address. It only applies to traffic between instances in the same virtual network, because tags are associated with instances, not IP addresses. One or both of sourceRanges and sourceTags may be set. If both properties are set, the firewall will apply to traffic with a source IP address within sourceRanges OR the source IP belonging to a tag listed in the sourceTags property. The connection does not need to match both properties for the firewall to apply. Comma-separated.
+        name: sourceTags
+      - description: A list of tags that controls which instances the firewall rule applies to. If targetTags are specified, then the firewall rule applies only to instances in the VPC network that have one of those tags. If no targetTags are specified, the firewall rule applies to all instances on the specified network. Comma-separated.
+        name: targetTags
+      - description: If source service accounts are specified, the firewall applies only to traffic originating from an instance with a service account in this list. Source service accounts cannot be used to control traffic to an instance's external IP address because service accounts are associated with an instance, not an IP address. sourceRanges can be set at the same time as sourceServiceAccounts. If both are set, the firewall will apply to traffic that has a source IP address within sourceRanges OR the source IP belongs to an instance with a service account listed in sourceServiceAccount. The connection does not need to match both properties for the firewall to apply. sourceServiceAccounts cannot be used simultaneously as sourceTags or targetTags. Comma-separated.
+        name: sourceServiceAccounts
+      - description: A list of service accounts indicating sets of instances located in the network that may make network connections as specified in allowed[]. targetServiceAccounts cannot be used at the same time as targetTags or sourceTags. If neither targetServiceAccounts nor targetTags are specified, the firewall rule applies to all instances on the specified network. Comma-separated.
+        name: targetServiceAccounts
+      - description: 'The ALLOW rules list specified by this firewall. Each rule specifies a protocol and port-range tuple that describes a permitted connection. For example, ipprotocol=tcp,ports=22,443;ipprotocol=tcp,ports=8080,80.'
+        name: allowed
+      - description: 'The DENY rules list specified by this firewall. Each rule specifies a protocol and port-range tuple that describes a denied connection. For example, ipprotocol=tcp,ports=22,443;ipprotocol=tcp,ports=8080,80.'
+        name: denied
+      - description: 'Direction of traffic to which this firewall applies; default is INGRESS. Note: For INGRESS traffic, it is NOT supported to specify destinationRanges; For EGRESS traffic, it is NOT supported to specify sourceRanges OR sourceTags.'
+        name: direction
+      - auto: PREDEFINED
+        description: This field denotes whether to enable logging for a particular firewall rule.
+        name: logConfigEnable
+        predefined:
+          - 'true'
+          - 'false'
+      - auto: PREDEFINED
+        description: Denotes whether the firewall rule is disabled, i.e not applied to the network it is associated with. When set to true, the firewall rule is not enforced and the network behaves as if it did not exist. If this is unspecified, the firewall rule will be enabled.
+        name: disabled
+        predefined:
+          - 'true'
+          - 'false'
+        defaultValue: "true"
+    outputs:
+      - contextPath: GCP.Compute.Operations.id
+        description: The unique identifier for the resource. This identifier is defined by the server.
+        type: string
+      - contextPath: GCP.Compute.Operations.name
+        description: Name of the resource.
+        type: string
+      - contextPath: GCP.Compute.Operations.zone
+        description: The URL of the zone where the operation resides. Only available when performing per-zone operations. You must specify this field as part of the HTTP request URL. It is not configurable as a field in the request body.
+        type: string
+      - contextPath: GCP.Compute.Operations.clientOperationId
+        description: The value of requestId if you provided it in the request. Not present otherwise.
+        type: string
+      - contextPath: GCP.Compute.Operations.operationType
+        description: The type of operation, such as insert, update, or delete, and so on.
+        type: string
+      - contextPath: GCP.Compute.Operations.targetLink
+        description: The URL of the resource that the operation modifies. For operations related to creating a snapshot, this points to the persistent disk from which the snapshot was created.
+        type: string
+      - contextPath: GCP.Compute.Operations.targetId
+        description: The unique target ID, which identifies a specific incarnation of the target resource.
+        type: string
+      - contextPath: GCP.Compute.Operations.status
+        description: 'The status of the operation, which can be one of the following: PENDING RUNNING or DONE.'
+        type: string
+      - contextPath: GCP.Compute.Operations.statusMessage
+        description: An optional textual description of the current status of the operation.
+        type: string
+      - contextPath: GCP.Compute.Operations.user
+        description: The user who requested the operation, for example, EMAILADDRESS.
+        type: string
+      - contextPath: GCP.Compute.Operations.progress
+        description: An optional progress indicator that ranges from 0 to 100. There is no requirement that this be linear or support any granularity of operations. This should not be used to guess when the operation will be complete. This number should monotonically increase as the operation progresses.
+        type: number
+      - contextPath: GCP.Compute.Operations.insertTime
+        description: The time that this operation was requested. This value is in RFC3339 text format.
+        type: string
+      - contextPath: GCP.Compute.Operations.startTime
+        description: The time that this operation was started by the server. This value is in RFC3339 text format.
+        type: string
+      - contextPath: GCP.Compute.Operations.endTime
+        description: The time that this operation was completed. This value is in RFC3339 text format.
+        type: string
+      - contextPath: GCP.Compute.Operations.error
+        description: If errors are generated during processing of the operation, this field will be populated.
+        type: string
+      - contextPath: GCP.Compute.Operations.warnings
+        description: If warning messages are generated during processing of the operation, this field will be populated.
+        type: string
+      - contextPath: GCP.Compute.Operations.httpErrorStatusCode
+        description: If the operation fails, this field contains the HTTP error status code that was returned. For example, a 404 means the resource was not found.
+        type: number
+      - contextPath: GCP.Compute.Operations.httpErrorMessage
+        description: If the operation fails, this field contains the HTTP error message that was returned, such as NOT FOUND.
+        type: string
+      - contextPath: GCP.Compute.Operations.selfLink
+        description: Server-defined URL for the resource.
+        type: string
+      - contextPath: GCP.Compute.Operations.region
+        description: The URL of the region where the operation resides. Only available when performing regional operations. You must specify this field as part of the HTTP request URL. It is not configurable as a field in the request body.
+        type: string
+      - contextPath: GCP.Compute.Operations.description
+        description: A textual description of the operation, which is set when the operation is created.
+        type: string
+      - contextPath: GCP.Compute.Operations.kind
+        description: Type of the resource. Always compute#operation for Operation resources.
+        type: string
+
   - name: gcp-storage-bucket-policy-delete
     description: Removes an entity from a bucket's Access Control List.
     arguments:
@@ -157,6 +395,76 @@ script:
       required: false
       isArray: true
       description: "Entity to remove from the Access Control List.\nCommon entity formats are:\n* user:<userId or email>\n* group:<groupId or email>\n* allUsers\n* allAuthenticatedUsers\nFor more options and details, see: https://cloud.google.com/storage/docs/json_api/v1/bucketAccessControls#resource "
+
+  - name: gcp-storage-bucket-policy-delete-remove-allusers-access-quick-action
+    description: Revoke 'allUsers' permission access in GCP Storage buckets.
+    prettyname: Remove GCP Bucket AllUsers Access
+    quickaction: true
+    hidden: true
+    arguments:
+      - name: project_id
+        required: true
+        description: GCP project ID.
+      - name: resource_name
+        required: true
+        description: Name of the GCS bucket.
+        prettyname: Run action on
+        prettypredefined:
+          GCP Bucket Name: ${issue.bucketname}
+      - name: entity
+        auto: PREDEFINED
+        defaultValue: "allUsers"
+        required: false
+        isArray: true
+        hidden: true
+        description: "Entity to remove from the Access Control List.\nCommon entity formats are:\n* user:<userId or email>\n* group:<groupId or email>\n* allUsers\n* allAuthenticatedUsers\nFor more options and details, see: https://cloud.google.com/storage/docs/json_api/v1/bucketAccessControls#resource "
+
+  - name: gcp-storage-bucket-policy-delete-remove-AllAuthenticatedUser-access-quick-action
+    description: Revoke 'allAuthenticatedUsers' permission access in GCP Storage buckets.
+    prettyname: Remove GCP Bucket AllAuthenticatedUser Access
+    quickaction: true
+    hidden: true
+    arguments:
+      - name: project_id
+        required: true
+        description: GCP project ID.
+      - name: resource_name
+        required: true
+        description: Name of the GCS bucket.
+        prettyname: Run action on
+        prettypredefined:
+          GCP Bucket Name: ${issue.bucketname}
+      - name: entity
+        auto: PREDEFINED
+        defaultValue: "allAuthenticatedUsers"
+        required: false
+        hidden: true
+        isArray: true
+        description: "Entity to remove from the Access Control List.\nCommon entity formats are:\n* user:<userId or email>\n* group:<groupId or email>\n* allUsers\n* allAuthenticatedUsers\nFor more options and details, see: https://cloud.google.com/storage/docs/json_api/v1/bucketAccessControls#resource "
+
+  - name: gcp-storage-bucket-policy-delete-make-gcp-bucket-private-quick-action
+    description: Revokes 'allUsers' and 'allAuthenticatedUsers' access in a GCP Storage bucket.
+    prettyname: Make GCP Bucket Private
+    quickaction: true
+    hidden: true
+    arguments:
+      - name: project_id
+        required: true
+        description: GCP project ID.
+      - name: resource_name
+        required: true
+        description: Name of the GCS bucket.
+        prettyname: Run action on
+        prettypredefined:
+          GCP Bucket Name: ${issue.bucketname}
+      - name: entity
+        auto: PREDEFINED
+        defaultValue: "allAuthenticatedUsers,allUsers"
+        required: false
+        hidden: true
+        isArray: true
+        description: "Entity to remove from the Access Control List.\nCommon entity formats are:\n* user:<userId or email>\n* group:<groupId or email>\n* allUsers\n* allAuthenticatedUsers\nFor more options and details, see: https://cloud.google.com/storage/docs/json_api/v1/bucketAccessControls#resource "
+
 
   - name: gcp-compute-subnet-update
     description: Enables flow logs or Private Google Access on a subnet.
@@ -218,6 +526,140 @@ script:
     - contextPath: GCP.Compute.Operations.description
       description: The description of the subnet.
       type: String
+
+  - name: gcp-compute-subnet-update-enable-gcp-subnet-flow-logs-quick-action
+    description: Enables VPC Flow Logs on a GCP subnet.
+    prettyname: Enable GCP Subnet Flow Logs
+    quickaction: true
+    hidden: true
+    arguments:
+      - name: project_id
+        required: true
+        description: GCP project ID.
+      - name: region
+        required: true
+        description: GCP region.
+      - name: resource_name
+        required: true
+        description: Subnet name.
+        prettypredefined:
+          GCP Subnet Name: ${issue.gcpsubnetname}
+      - name: enable_flow_logs
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - "true"
+          - "false"
+        defaultValue: "true"
+        description: Enable VPC Flow Logs.
+      - name: enable_private_ip_google_access
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - "true"
+          - "false"
+        description: Enable Private Google Access.
+    outputs:
+      - contextPath: GCP.Compute.Operations.name
+        description: The name of the updated subnet.
+        type: String
+      - contextPath: GCP.Compute.Operations.region
+        description: The region of the updated subnet.
+        type: String
+      - contextPath: GCP.Compute.Operations.subnetName
+        description: The name of the subnet that was updated.
+        type: String
+      - contextPath: GCP.Compute.Operations.enableFlowLogs
+        description: Whether flow logs are enabled for the subnet.
+        type: Boolean
+      - contextPath: GCP.Compute.Operations.ipCidrRange
+        description: The updated CIDR range for the subnet.
+        type: String
+      - contextPath: GCP.Compute.Operations.privateIpGoogleAccess
+        description: Whether private Google access is enabled for the subnet.
+        type: Boolean
+      - contextPath: GCP.Compute.Operations.privateIpv6GoogleAccess
+        description: Whether private IPv6 Google access is enabled for the subnet.
+        type: Boolean
+      - contextPath: GCP.Compute.Operations.stackType
+        description: The stack type of the subnet (e.g., `IPV4`, `IPV6`).
+        type: String
+      - contextPath: GCP.Compute.Operations.rangeName
+        description: The name of the IP range associated with the subnet.
+        type: String
+      - contextPath: GCP.Compute.Operations.secondaryIpRanges
+        description: List of secondary IP ranges for the subnet.
+        type: Unknown
+      - contextPath: GCP.Compute.Operations.description
+        description: The description of the subnet.
+        type: String
+
+  - name: gcp-compute-subnet-update-enable-private-access-quick-action
+    description: Enables Private Google Access on a GCP subnet.
+    prettyname: Enable GCP Subnet Private Access
+    quickaction: true
+    hidden: true
+    arguments:
+      - name: project_id
+        required: true
+        description: GCP project ID.
+      - name: region
+        required: true
+        description: GCP region.
+      - name: resource_name
+        required: true
+        description: Subnet name.
+        prettypredefined:
+          GCP Subnet Name: ${issue.gcpsubnetname}
+      - name: enable_flow_logs
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - "true"
+          - "false"
+        description: Enable VPC Flow Logs.
+      - name: enable_private_ip_google_access
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - "true"
+          - "false"
+        defaultValue: "true"
+        description: Enable Private Google Access.
+    outputs:
+      - contextPath: GCP.Compute.Operations.name
+        description: The name of the updated subnet.
+        type: String
+      - contextPath: GCP.Compute.Operations.region
+        description: The region of the updated subnet.
+        type: String
+      - contextPath: GCP.Compute.Operations.subnetName
+        description: The name of the subnet that was updated.
+        type: String
+      - contextPath: GCP.Compute.Operations.enableFlowLogs
+        description: Whether flow logs are enabled for the subnet.
+        type: Boolean
+      - contextPath: GCP.Compute.Operations.ipCidrRange
+        description: The updated CIDR range for the subnet.
+        type: String
+      - contextPath: GCP.Compute.Operations.privateIpGoogleAccess
+        description: Whether private Google access is enabled for the subnet.
+        type: Boolean
+      - contextPath: GCP.Compute.Operations.privateIpv6GoogleAccess
+        description: Whether private IPv6 Google access is enabled for the subnet.
+        type: Boolean
+      - contextPath: GCP.Compute.Operations.stackType
+        description: The stack type of the subnet (e.g., `IPV4`, `IPV6`).
+        type: String
+      - contextPath: GCP.Compute.Operations.rangeName
+        description: The name of the IP range associated with the subnet.
+        type: String
+      - contextPath: GCP.Compute.Operations.secondaryIpRanges
+        description: List of secondary IP ranges for the subnet.
+        type: Unknown
+      - contextPath: GCP.Compute.Operations.description
+        description: The description of the subnet.
+        type: String
 
   - name: gcp-container-cluster-security-update
     description: Configures security settings for GKE clusters, including access controls and visibility.
@@ -324,6 +766,228 @@ script:
       description: The current version of the Kubernetes master in the GKE cluster.
       type: String
 
+  - name: gcp-container-cluster-security-update-enable-gke-cluster-intra-node-visibility-quick-action
+    description: Enables intra-node visibility on a GKE cluster for enhanced network monitoring.
+    prettyname: Enable GKE Cluster Intra-Node Visibility
+    quickaction: true
+    hidden: true
+    arguments:
+      - name: project_id
+        required: true
+        description: GCP project ID.
+      - name: region
+        required: true
+        description: GCP region.
+      - name: resource_name
+        required: true
+        description: Name of the GKE cluster.
+        prettypredefined:
+          GCP Cluster Name: ${issue.gcpclustername}
+      - name: enable_intra_node_visibility
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - "true"
+          - "false"
+        defaultValue: "true"
+        description: Enable intra-node visibility.
+      - name: enable_master_authorized_networks
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - "true"
+          - "false"
+        description: Enable Master Authorized Networks.
+      - name: cidrs
+        description: |
+          Comma-separated list of up to 50 CIDR blocks (e.g., "192.168.0.0/24,10.0.0.0/32") that are allowed to access the Kubernetes master via HTTPS.
+          If enable_master_authorized_networks is true and no CIDRs are provided, all access will be blocked.
+        isArray: true
+    outputs:
+      - contextPath: GCP.Container.Operations.name
+        description: The name of the GKE cluster.
+        type: String
+      - contextPath: GCP.Container.Operations.zone
+        description: The zone of the GKE cluster.
+        type: String
+      - contextPath: GCP.Container.Operations.enableStackdriverLogging
+        description: Whether Stackdriver Logging is enabled for the cluster.
+        type: Boolean
+      - contextPath: GCP.Container.Operations.enableStackdriverMonitoring
+        description: Whether Stackdriver Monitoring is enabled for the cluster.
+        type: Boolean
+      - contextPath: GCP.Container.Operations.enablePrivateNodes
+        description: Whether private nodes are enabled for the GKE cluster.
+        type: Boolean
+      - contextPath: GCP.Container.Operations.enablePrivateEndpoint
+        description: Whether private endpoint is enabled for the GKE cluster control plane.
+        type: Boolean
+      - contextPath: GCP.Container.Operations.enableHttpsOnly
+        description: Whether HTTPS-only traffic is enforced for the cluster.
+        type: Boolean
+      - contextPath: GCP.Container.Operations.enableNetworkPolicy
+        description: Whether network policies are enabled for the cluster.
+        type: Boolean
+      - contextPath: GCP.Container.Operations.enableAutoscaling
+        description: Whether autoscaling is enabled for the cluster nodes.
+        type: Boolean
+      - contextPath: GCP.Container.Operations.enableIstio
+        description: Whether Istio is enabled for the GKE cluster.
+        type: Boolean
+      - contextPath: GCP.Container.Operations.enablePodSecurityPolicy
+        description: Whether PodSecurityPolicy is enabled for the GKE cluster.
+        type: Boolean
+      - contextPath: GCP.Container.Operations.enableBinaryAuthorization
+        description: Whether Binary Authorization is enabled for the cluster.
+        type: Boolean
+      - contextPath: GCP.Container.Operations.enableLegacyABAC
+        description: Whether legacy ABAC is enabled for the cluster.
+        type: Boolean
+      - contextPath: GCP.Container.Operations.clusterIpv4Cidr
+        description: The cluster's IPv4 CIDR block.
+        type: String
+      - contextPath: GCP.Container.Operations.masterAuthorizedNetworksConfig.cidrBlocks
+        description: List of authorized CIDR blocks that can access the GKE cluster master.
+        type: Unknown
+      - contextPath: GCP.Container.Operations.masterAuthorizedNetworksConfig.enabled
+        description: Whether master authorized networks are enabled for the cluster.
+        type: Boolean
+      - contextPath: GCP.Container.Operations.network
+        description: The network to which the GKE cluster belongs.
+        type: String
+      - contextPath: GCP.Container.Operations.subnetwork
+        description: The subnetwork to which the GKE cluster belongs.
+        type: String
+      - contextPath: GCP.Container.Operations.loggingService
+        description: The logging service used for the cluster (e.g., "logging.googleapis.com").
+        type: String
+      - contextPath: GCP.Container.Operations.monitoringService
+        description: The monitoring service used for the cluster (e.g., "monitoring.googleapis.com").
+        type: String
+      - contextPath: GCP.Container.Operations.nodePools
+        description: A list of node pools in the cluster, with their configuration and security settings.
+        type: Unknown
+      - contextPath: GCP.Container.Operations.privateClusterConfig.enablePrivateNodes
+        description: Whether private nodes are enabled in the cluster.
+        type: Boolean
+      - contextPath: GCP.Container.Operations.privateClusterConfig.enablePrivateEndpoint
+        description: Whether private endpoint is enabled for the cluster control plane.
+        type: Boolean
+      - contextPath: GCP.Container.Operations.masterVersion
+        description: The current version of the Kubernetes master in the GKE cluster.
+        type: String
+
+  - name: gcp-container-cluster-security-update-enable-master-authorized-networks-on-gke-quick-action
+    description: Enables Master Authorized Networks on a GKE cluster to restrict API server access.
+    prettyname: Enable Master Authorized Networks on GKE
+    quickaction: true
+    hidden: true
+    arguments:
+      - name: project_id
+        required: true
+        description: GCP project ID.
+      - name: region
+        required: true
+        description: GCP region.
+      - name: resource_name
+        required: true
+        description: Name of the GKE cluster.
+        prettypredefined:
+          GCP Cluster Name: ${issue.gcpclustername}
+      - name: enable_intra_node_visibility
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - "true"
+          - "false"
+        description: Enable intra-node visibility.
+      - name: enable_master_authorized_networks
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - "true"
+          - "false"
+        defaultValue: "true"
+        description: Enable Master Authorized Networks.
+      - name: cidrs
+        description: |
+          Comma-separated list of up to 50 CIDR blocks (e.g., "192.168.0.0/24,10.0.0.0/32") that are allowed to access the Kubernetes master via HTTPS.
+          If enable_master_authorized_networks is true and no CIDRs are provided, all access will be blocked.
+        isArray: true
+    outputs:
+      - contextPath: GCP.Container.Operations.name
+        description: The name of the GKE cluster.
+        type: String
+      - contextPath: GCP.Container.Operations.zone
+        description: The zone of the GKE cluster.
+        type: String
+      - contextPath: GCP.Container.Operations.enableStackdriverLogging
+        description: Whether Stackdriver Logging is enabled for the cluster.
+        type: Boolean
+      - contextPath: GCP.Container.Operations.enableStackdriverMonitoring
+        description: Whether Stackdriver Monitoring is enabled for the cluster.
+        type: Boolean
+      - contextPath: GCP.Container.Operations.enablePrivateNodes
+        description: Whether private nodes are enabled for the GKE cluster.
+        type: Boolean
+      - contextPath: GCP.Container.Operations.enablePrivateEndpoint
+        description: Whether private endpoint is enabled for the GKE cluster control plane.
+        type: Boolean
+      - contextPath: GCP.Container.Operations.enableHttpsOnly
+        description: Whether HTTPS-only traffic is enforced for the cluster.
+        type: Boolean
+      - contextPath: GCP.Container.Operations.enableNetworkPolicy
+        description: Whether network policies are enabled for the cluster.
+        type: Boolean
+      - contextPath: GCP.Container.Operations.enableAutoscaling
+        description: Whether autoscaling is enabled for the cluster nodes.
+        type: Boolean
+      - contextPath: GCP.Container.Operations.enableIstio
+        description: Whether Istio is enabled for the GKE cluster.
+        type: Boolean
+      - contextPath: GCP.Container.Operations.enablePodSecurityPolicy
+        description: Whether PodSecurityPolicy is enabled for the GKE cluster.
+        type: Boolean
+      - contextPath: GCP.Container.Operations.enableBinaryAuthorization
+        description: Whether Binary Authorization is enabled for the cluster.
+        type: Boolean
+      - contextPath: GCP.Container.Operations.enableLegacyABAC
+        description: Whether legacy ABAC is enabled for the cluster.
+        type: Boolean
+      - contextPath: GCP.Container.Operations.clusterIpv4Cidr
+        description: The cluster's IPv4 CIDR block.
+        type: String
+      - contextPath: GCP.Container.Operations.masterAuthorizedNetworksConfig.cidrBlocks
+        description: List of authorized CIDR blocks that can access the GKE cluster master.
+        type: Unknown
+      - contextPath: GCP.Container.Operations.masterAuthorizedNetworksConfig.enabled
+        description: Whether master authorized networks are enabled for the cluster.
+        type: Boolean
+      - contextPath: GCP.Container.Operations.network
+        description: The network to which the GKE cluster belongs.
+        type: String
+      - contextPath: GCP.Container.Operations.subnetwork
+        description: The subnetwork to which the GKE cluster belongs.
+        type: String
+      - contextPath: GCP.Container.Operations.loggingService
+        description: The logging service used for the cluster (e.g., "logging.googleapis.com").
+        type: String
+      - contextPath: GCP.Container.Operations.monitoringService
+        description: The monitoring service used for the cluster (e.g., "monitoring.googleapis.com").
+        type: String
+      - contextPath: GCP.Container.Operations.nodePools
+        description: A list of node pools in the cluster, with their configuration and security settings.
+        type: Unknown
+      - contextPath: GCP.Container.Operations.privateClusterConfig.enablePrivateNodes
+        description: Whether private nodes are enabled in the cluster.
+        type: Boolean
+      - contextPath: GCP.Container.Operations.privateClusterConfig.enablePrivateEndpoint
+        description: Whether private endpoint is enabled for the cluster control plane.
+        type: Boolean
+      - contextPath: GCP.Container.Operations.masterVersion
+        description: The current version of the Kubernetes master in the GKE cluster.
+        type: String
+
   - name: gcp-storage-bucket-metadata-update
     description: Updates the metadata of a Google Cloud Storage (GCS) bucket, including settings such as versioning and Uniform Bucket-Level Access (UBLA).
     arguments:
@@ -420,6 +1084,212 @@ script:
     - contextPath: GCP.StorageBucket.Metadata.website.notFoundPage
       description: The path to the custom 404 page for the bucket website.
       type: String
+
+  - name: gcp-storage-bucket-metadata-update-enable-GCP-bucket-versioning-quick-action
+    description: Enables versioning on a GCP Storage bucket to preserve object versions.
+    prettyname: Enable GCP Bucket Versioning
+    quickaction: true
+    hidden: true
+    arguments:
+      - name: project_id
+        required: true
+        description: GCP project ID.
+      - name: resource_name
+        required: true
+        description: Name of the bucket.
+        prettypredefined:
+          GCP Bucket Name: ${issue.bucketname}
+      - name: enable_versioning
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - "true"
+          - "false"
+        defaultValue: "true"
+        description: Enable versioning.
+      - name: enable_uniform_access
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - "true"
+          - "false"
+        description: Enable uniform bucket-level access.
+    outputs:
+      - contextPath: GCP.StorageBucket.Metadata
+        description: Updated bucket metadata.
+        type: Unknown
+      - contextPath: GCP.StorageBucket.Metadata.name
+        description: The name of the GCP bucket.
+        type: String
+      - contextPath: GCP.StorageBucket.Metadata.id
+        description: The ID of the GCP bucket.
+        type: String
+      - contextPath: GCP.StorageBucket.Metadata.location
+        description: The location of the bucket.
+        type: String
+      - contextPath: GCP.StorageBucket.Metadata.storageClass
+        description: The storage class of the bucket (e.g., STANDARD, NEARLINE).
+        type: String
+      - contextPath: GCP.StorageBucket.Metadata.created
+        description: The creation timestamp of the bucket.
+        type: Date
+      - contextPath: GCP.StorageBucket.Metadata.updated
+        description: The last update timestamp of the bucket.
+        type: Date
+      - contextPath: GCP.StorageBucket.Metadata.metageneration
+        description: The metadata generation of the bucket.
+        type: Number
+      - contextPath: GCP.StorageBucket.Metadata.labels
+        description: The labels attached to the bucket.
+        type: Unknown
+      - contextPath: GCP.StorageBucket.Metadata.defaultEventBasedHold
+        description: Whether a default event-based hold is enabled on the bucket.
+        type: Boolean
+      - contextPath: GCP.StorageBucket.Metadata.retentionPolicy.retentionPeriod
+        description: The duration in seconds that objects in the bucket must be retained.
+        type: Number
+      - contextPath: GCP.StorageBucket.Metadata.retentionPolicy.effectiveTime
+        description: The time from which the retention policy is effective.
+        type: Date
+      - contextPath: GCP.StorageBucket.Metadata.retentionPolicy.isLocked
+        description: Whether the retention policy is locked.
+        type: Boolean
+      - contextPath: GCP.StorageBucket.Metadata.versioning.enabled
+        description: Whether object versioning is enabled.
+        type: Boolean
+      - contextPath: GCP.StorageBucket.Metadata.logging.logBucket
+        description: The destination bucket where access logs are stored.
+        type: String
+      - contextPath: GCP.StorageBucket.Metadata.logging.logObjectPrefix
+        description: The object prefix used for logging.
+        type: String
+      - contextPath: GCP.StorageBucket.Metadata.lifecycle.rule
+        description: A list of lifecycle management rules for the bucket.
+        type: Unknown
+      - contextPath: GCP.StorageBucket.Metadata.iamConfiguration.uniformBucketLevelAccess
+        description: Whether uniform bucket-level access is enabled.
+        type: Boolean
+      - contextPath: GCP.StorageBucket.Metadata.cors
+        description: CORS configuration for the bucket.
+        type: Unknown
+      - contextPath: GCP.StorageBucket.Metadata.customPlacementConfig
+        description: Custom placement configuration for multi-region buckets.
+        type: Unknown
+      - contextPath: GCP.StorageBucket.Metadata.encryption.defaultKmsKeyName
+        description: The default Cloud KMS key used to encrypt objects.
+        type: String
+      - contextPath: GCP.StorageBucket.Metadata.billing.requesterPays
+        description: Whether requester pays is enabled.
+        type: Boolean
+      - contextPath: GCP.StorageBucket.Metadata.website.mainPageSuffix
+        description: Suffix appended to requests for the bucket's website configuration.
+        type: String
+      - contextPath: GCP.StorageBucket.Metadata.website.notFoundPage
+        description: The path to the custom 404 page for the bucket website.
+        type: String
+
+  - name: gcp-storage-bucket-metadata-update-set-GCP-bucket-access-to-uniform-quick-action
+    description: Enables uniform bucket-level access on a GCP Storage bucket for enhanced security.
+    prettyname: Set GCP Bucket Access to Uniform
+    quickaction: true
+    hidden: true
+    arguments:
+      - name: project_id
+        required: true
+        description: GCP project ID.
+      - name: resource_name
+        required: true
+        description: Name of the bucket.
+        prettypredefined:
+          GCP Bucket Name: ${issue.bucketname}
+      - name: enable_versioning
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - "true"
+          - "false"
+        description: Enable versioning.
+      - name: enable_uniform_access
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - "true"
+          - "false"
+        defaultValue: "true"
+        description: Enable uniform bucket-level access.
+    outputs:
+      - contextPath: GCP.StorageBucket.Metadata
+        description: Updated bucket metadata.
+        type: Unknown
+      - contextPath: GCP.StorageBucket.Metadata.name
+        description: The name of the GCP bucket.
+        type: String
+      - contextPath: GCP.StorageBucket.Metadata.id
+        description: The ID of the GCP bucket.
+        type: String
+      - contextPath: GCP.StorageBucket.Metadata.location
+        description: The location of the bucket.
+        type: String
+      - contextPath: GCP.StorageBucket.Metadata.storageClass
+        description: The storage class of the bucket (e.g., STANDARD, NEARLINE).
+        type: String
+      - contextPath: GCP.StorageBucket.Metadata.created
+        description: The creation timestamp of the bucket.
+        type: Date
+      - contextPath: GCP.StorageBucket.Metadata.updated
+        description: The last update timestamp of the bucket.
+        type: Date
+      - contextPath: GCP.StorageBucket.Metadata.metageneration
+        description: The metadata generation of the bucket.
+        type: Number
+      - contextPath: GCP.StorageBucket.Metadata.labels
+        description: The labels attached to the bucket.
+        type: Unknown
+      - contextPath: GCP.StorageBucket.Metadata.defaultEventBasedHold
+        description: Whether a default event-based hold is enabled on the bucket.
+        type: Boolean
+      - contextPath: GCP.StorageBucket.Metadata.retentionPolicy.retentionPeriod
+        description: The duration in seconds that objects in the bucket must be retained.
+        type: Number
+      - contextPath: GCP.StorageBucket.Metadata.retentionPolicy.effectiveTime
+        description: The time from which the retention policy is effective.
+        type: Date
+      - contextPath: GCP.StorageBucket.Metadata.retentionPolicy.isLocked
+        description: Whether the retention policy is locked.
+        type: Boolean
+      - contextPath: GCP.StorageBucket.Metadata.versioning.enabled
+        description: Whether object versioning is enabled.
+        type: Boolean
+      - contextPath: GCP.StorageBucket.Metadata.logging.logBucket
+        description: The destination bucket where access logs are stored.
+        type: String
+      - contextPath: GCP.StorageBucket.Metadata.logging.logObjectPrefix
+        description: The object prefix used for logging.
+        type: String
+      - contextPath: GCP.StorageBucket.Metadata.lifecycle.rule
+        description: A list of lifecycle management rules for the bucket.
+        type: Unknown
+      - contextPath: GCP.StorageBucket.Metadata.iamConfiguration.uniformBucketLevelAccess
+        description: Whether uniform bucket-level access is enabled.
+        type: Boolean
+      - contextPath: GCP.StorageBucket.Metadata.cors
+        description: CORS configuration for the bucket.
+        type: Unknown
+      - contextPath: GCP.StorageBucket.Metadata.customPlacementConfig
+        description: Custom placement configuration for multi-region buckets.
+        type: Unknown
+      - contextPath: GCP.StorageBucket.Metadata.encryption.defaultKmsKeyName
+        description: The default Cloud KMS key used to encrypt objects.
+        type: String
+      - contextPath: GCP.StorageBucket.Metadata.billing.requesterPays
+        description: Whether requester pays is enabled.
+        type: Boolean
+      - contextPath: GCP.StorageBucket.Metadata.website.mainPageSuffix
+        description: Suffix appended to requests for the bucket's website configuration.
+        type: String
+      - contextPath: GCP.StorageBucket.Metadata.website.notFoundPage
+        description: The path to the custom 404 page for the bucket website.
+        type: String
 
   - name: gcp-iam-project-policy-binding-remove
     description: Removes a specified IAM role binding from a GCP project.
