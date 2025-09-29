@@ -697,10 +697,11 @@ class EWSClient:
         demisto.debug("[get_folder_by_path] Iterating over the path parts.")
         for part in path_parts:
             try:
-                demisto.debug(f"resolving {part=} {path_parts=}")
+                demisto.debug(f"[get_folder_by_path] resolving {part=} {path_parts=}")
                 folder = folder // part
+                demisto.debug(f"[get_folder_by_path] resolved {part=}, current folder={folder}")
             except Exception as e:
-                demisto.debug(f"got error {e}")
+                demisto.debug(f"[get_folder_by_path] got error {e}")
                 raise ValueError(f"No such folder {path_parts}")
         demisto.debug("[get_folder_by_path] Returning the folder.")
         return folder
