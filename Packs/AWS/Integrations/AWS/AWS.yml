@@ -442,6 +442,8 @@ script:
       - name: bucket
         description: The bucket name for which you want to remove the website configuration.
         required: true
+      - name: expected_bucket_owner
+        description: The account ID of the expected bucket owner.
 
   - name: aws-s3-bucket-ownership-controls-put
     description: Creates or modifies OwnershipControls for an Amazon S3 bucket.
@@ -492,7 +494,7 @@ script:
       - name: ownership_controls
         description: Root level tag for the OwnershipControls parameters.
         required: true
-      - name: x-amz-expected-bucket-owner
+      - name: x_amz_expected_bucket_owner
         description: The account ID of the expected bucket owner. If the account ID that you provide does not match the actual owner of the bucket, the request fails.
 
   - name: aws-iam-account-password-policy-get
@@ -1254,17 +1256,13 @@ script:
       required: true
     - name: enabled
       description: 'Specifies whether to activate the subscription.'
-      required: false
     - name: event_categories
       description: 'A list of event categories for a source type (SourceType) that you want to subscribe to.'
-      required: false
       isArray: true
     - name: sns_topic_arn
       description: 'The Amazon Resource Name (ARN) of the SNS topic created for event notification.'
-      required: false
     - name: source_type
       description: 'The type of source that is generating the events.'
-      required: false
 
   - name: aws-ec2-security-group-ingress-revoke
     description: 'Revokes one or more ingress rules in a security group.'

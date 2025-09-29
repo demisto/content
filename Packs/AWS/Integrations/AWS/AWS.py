@@ -372,7 +372,8 @@ class S3:
 
     @staticmethod
     def delete_bucket_website_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
-        kwargs = {"Bucket": args.get("bucket")}
+        kwargs = {"Bucket": args.get("bucket"), "ExpectedBucketOwner": args.get("expected_bucket_owner")}
+        remove_nulls_from_dictionary(kwargs)
         try:
             response = client.delete_bucket_website(**kwargs)
             if response["ResponseMetadata"]["HTTPStatusCode"] in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
@@ -974,7 +975,7 @@ class EC2:
     def modify_subnet_attribute_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
         kwargs = {
             "SubnetId": args.get("subnet_id"),
-            "AssignIpv6AddressOnCreation": args.get("assign_ipv6_address_on_creation"),
+            "AssignIpv6AddressOnCreation": {"Value": argToBoolean(args.get("assign_ipv6_address_on_creation"))},
             "CustomerOwnedIpv4Pool": args.get("customer_owned_ipv4_pool"),
             "DisableLniAtDeviceIndex": args.get("disable_lni_at_device_index"),
             "EnableDns64": args.get("enable_dns64"),
@@ -982,10 +983,11 @@ class EC2:
             "EnableResourceNameDnsAAAARecordOnLaunch": args.get("enable_resource_name_dns_aaaa_record_on_launch"),
             "EnableResourceNameDnsARecordOnLaunch": args.get("enable_resource_name_dns_a_record_on_launch"),
             "MapCustomerOwnedIpOnLaunch": args.get("map_customer_owned_ip_on_launch"),
-            "MapPublicIpOnLaunch": args.get("map_public_ip_on_launch"),
+            # "MapPublicIpOnLaunch": {"Value": argToBoolean(args.get("map_public_ip_on_launch"))},
             "PrivateDnsHostnameTypeOnLaunch": args.get("private_dns_hostname_type_on_launch"),
         }
         remove_nulls_from_dictionary(kwargs)
+
         try:
             response = client.modify_subnet_attribute(**kwargs)
             if response["ResponseMetadata"]["HTTPStatusCode"] in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
@@ -1277,7 +1279,7 @@ class RDS:
         kwargs = {
             "SubscriptionName": args.get("subscription_name"),
             "Enabled": args.get("enabled"),
-            "EventCategories": argToList(args.get("event_categories", "")),
+            "EventCategories": argToList(args.get("event_categories", [])),
             "SnsTopicArn": args.get("sns_topic_arn"),
             "SourceType": args.get("source_type"),
         }
@@ -1289,10 +1291,13 @@ class RDS:
                 headers = ["CustomerAwsId", "CustSubscriptionId", "SnsTopicArn", "Status", "SubscriptionCreationTime",
                            "SourceType", "EventCategoriesList", "Enabled", "EventSubscriptionArn"]
 
+                human_readable = f"Event subscription {args.get('subscription_name')} successfully modified." + tableToMarkdown(
+                    headers=headers, t=response.get("EventSubscription"))
+
                 return CommandResults(
-                    readable_output=f"Event subscription {args.get('subscription_name')} successfully modified.",
+                    readable_output=human_readable,
                     outputs_prefix="AWS.RDS.EventSubscription",
-                    outputs=tableToMarkdown(headers=headers, t=response.get("EventSubscription")),
+                    outputs=response.get("EventSubscription"),
                     outputs_key_field="CustSubscriptionId",
                 )
 
