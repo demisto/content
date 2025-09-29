@@ -104,7 +104,7 @@ GET_SAFE_BY_NAME_ARGS = {"safe_name": "TestSafe"}
 ADD_SAFE_MEMBER_ARGS = {
     "member_name": "TestUser",
     "requests_authorization_level": "0",
-    "safe_name": "TestSafe",
+    "safe_url_id": "TestSafe",
     "permissions": ["ManageSafeMembers"],
 }
 
@@ -112,7 +112,7 @@ UPDATE_SAFE_MEMBER_ARGS = {
     "member_name": "TestUser",
     "permissions": "UseAccounts",
     "requests_authorization_level": "0",
-    "safe_name": "TestSafe",
+    "safe_url_id": "TestSafe",
 }
 
 LIST_SAFE_MEMBER_ARGS = {"safe_name": "TestSafe"}
