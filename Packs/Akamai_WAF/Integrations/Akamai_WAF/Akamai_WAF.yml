@@ -657,7 +657,7 @@ script:
     - name: entry_description
       description: A description for the entry.
     - name: entry_expiration_date
-      description: The expiration date for the entry.
+      description: The expiration date for the entry. Use ISO 8601 format (e.g. 2025-09-29 or 2025-09-29T13:15:28).
     - name: entry_tags
       isArray: true
       description: A list of tags for the entry.
@@ -723,7 +723,7 @@ script:
       - name: description
         description: A description for the new entry.
       - name: expiration_date
-        description: The expiration date for the new entry.
+        description: The expiration date for the new entry. Use ISO 8601 format (e.g. 2025-09-29 or 2025-09-29T13:15:28).
       - name: tags
         isArray: true
         description: A list of tags for the new entry.
@@ -814,7 +814,7 @@ script:
       - name: description
         description: The new description for the entry.
       - name: expiration_date
-        description: The new expiration date for the entry.
+        description: The new expiration date for the entry. Use ISO 8601 format (e.g. 2025-09-29 or 2025-09-29T13:15:28).
       - name: tags
         isArray: true
         description: The new tags for the entry.
