@@ -1,6 +1,6 @@
 {
   "trigger_id": "8b94c2511f_ap",
-  "playbook_id": "sendIssueSummaryEmail",
+  "playbook_id": "",
   "suggestion_reason": "Suggests emailing the issue summary for Attack Path alerts.",
   "description": "Quick action to email the issue summary.",
   "trigger_name": "Send Email – Attack Path",
@@ -14,4 +14,3 @@
         }
   }
 }
-
