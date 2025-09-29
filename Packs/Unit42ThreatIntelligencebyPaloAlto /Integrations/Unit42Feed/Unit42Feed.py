@@ -432,51 +432,46 @@ def fetch_indicators(client: Client, params: dict, current_time: str | None = No
             if isinstance(data, list):
                 indicators.extend(parse_indicators(data, feed_tags, tlp_color))
 
-                # # Handle pagination if needed
-                # metadata = response.get("metadata", {})
-                # next_page_token = metadata.get("next_page_token") if isinstance(metadata, dict) else None
-                # while next_page_token:
-                #     # Get next page of indicators
-                #     response = client.get_indicators(
-                #         indicator_types=indicator_types, start_time=start_time, next_page_token=next_page_token
-                #     )
-                #     if response and isinstance(response, dict) and response.get("data"):
-                #         data = response.get("data", [])
-                #         if isinstance(data, list):
-                #             indicators.extend(parse_indicators(data, feed_tags, tlp_color))
-                #         metadata = response.get("metadata", {})
-                #         next_page_token = metadata.get("next_page_token") if isinstance(metadata, dict) else None
-                #     else:
-                #         break
+                # Handle pagination if needed
+                metadata = response.get("metadata", {})
+                next_page_token = metadata.get("next_page_token") if isinstance(metadata, dict) else None
+                while next_page_token:
+                    # Get next page of indicators
+                    response = client.get_indicators(
+                        indicator_types=indicator_types, start_time=start_time, next_page_token=next_page_token
+                    )
+                    if response and isinstance(response, dict) and response.get("data"):
+                        data = response.get("data", [])
+                        if isinstance(data, list):
+                            indicators.extend(parse_indicators(data, feed_tags, tlp_color))
+                        metadata = response.get("metadata", {})
+                        next_page_token = metadata.get("next_page_token") if isinstance(metadata, dict) else None
+                    else:
+                        break
 
     if "Threat Objects" in feed_types and start_time:
-        # Get threat objects twice a day (every 12 hours)
-        start_time_utc = datetime.strptime(start_time, DATE_FORMAT).replace(tzinfo=timezone.utc)
-        time_diff = (datetime.now(timezone.utc) - start_time_utc).total_seconds()
+        response = client.get_threat_objects()
 
-        if time_diff >= 6 * 3600:
-            response = client.get_threat_objects()
+        # Parse threat objects
+        if response and isinstance(response, dict) and response.get("data"):
+            data = response.get("data", [])
+            if isinstance(data, list):
+                indicators.extend(parse_threat_objects(data, feed_tags, tlp_color))
 
-            # Parse threat objects
-            if response and isinstance(response, dict) and response.get("data"):
-                data = response.get("data", [])
-                if isinstance(data, list):
-                    indicators.extend(parse_threat_objects(data, feed_tags, tlp_color))
-
-                # # Handle pagination if needed
-                # metadata = response.get("metadata", {})
-                # next_page_token = metadata.get("next_page_token") if isinstance(metadata, dict) else None
-                # while next_page_token:
-                #     # Get next page of threat objects
-                #     response = client.get_threat_objects(next_page_token=next_page_token)
-                #     if response and isinstance(response, dict) and response.get("data"):
-                #         data = response.get("data", [])
-                #         if isinstance(data, list):
-                #             indicators.extend(parse_threat_objects(data, feed_tags, tlp_color))
-                #         metadata = response.get("metadata", {})
-                #         next_page_token = metadata.get("next_page_token") if isinstance(metadata, dict) else None
-                #     else:
-                #         break
+            # Handle pagination if needed
+            metadata = response.get("metadata", {})
+            next_page_token = metadata.get("next_page_token") if isinstance(metadata, dict) else None
+            while next_page_token:
+                # Get next page of threat objects
+                response = client.get_threat_objects(next_page_token=next_page_token)
+                if response and isinstance(response, dict) and response.get("data"):
+                    data = response.get("data", [])
+                    if isinstance(data, list):
+                        indicators.extend(parse_threat_objects(data, feed_tags, tlp_color))
+                    metadata = response.get("metadata", {})
+                    next_page_token = metadata.get("next_page_token") if isinstance(metadata, dict) else None
+                else:
+                    break
 
     return indicators
 

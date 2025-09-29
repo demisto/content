@@ -1,6 +1,6 @@
 {
-    "name": "Unit 42 by Palo Alto Networks",
-    "description": "Unit 42 by Palo Alto Networks provides threat intelligence feeds to help organizations stay protected against the latest threats.",
+    "name": "Unit 42 Threat Intelligence by Palo Alto",
+    "description": "Unit 42 Threat Intelligence by Palo Alto provides threat intelligence feeds to help organizations stay protected against the latest threats.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
@@ -35,3 +35,10 @@
         }
     }
 }
+
+
+Content pack: Unit 42 Threat Intelligence by Palo Alto Networks
+Integration: Unit 42 Feed
+Feed of indicators and tags
+Integration: Unit 42 Intelligence
+Enrichments

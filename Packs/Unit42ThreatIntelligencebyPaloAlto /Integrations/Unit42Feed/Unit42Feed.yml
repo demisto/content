@@ -21,6 +21,7 @@ configuration:
   required: true
   defaultvalue: Indicators,Threat Objects
   section: Collect
+  advanced: true
 - display: Indicator Types
   additionalinfo: Comma-separated list of indicator types to fetch (File, IP, URL, Domain). If not specified, all indicator types are fetched.
   name: indicator_types
@@ -33,7 +34,9 @@ configuration:
   defaultvalue: File,IP,URL,Domain
   required: false
   section: Collect
+  advanced: true
 - display: Feed Fetch Interval
+  additionalinfo: Don't set the feed fetch interval to less than 12 hours.
   name: feedFetchInterval
   type: 19
   defaultvalue: '720'
@@ -65,7 +68,7 @@ configuration:
   - AMBER
   - GREEN
   - WHITE
-  defaultvalue: AMBER
+  defaultvalue: GREEN
   required: false
   section: Collect
   advanced: true
@@ -164,7 +167,6 @@ script:
       name: limit
     description: Gets threat objects from the feed.
     name: unit42-get-threat-objects
-  - name: unit42-fetch-indicators
   dockerimage: demisto/python3:3.12.8.1983910
   feed: true
   runonce: false
