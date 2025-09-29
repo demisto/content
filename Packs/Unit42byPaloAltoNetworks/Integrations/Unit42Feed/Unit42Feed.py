@@ -15,15 +15,28 @@ INDICATORS_ENDPOINT = "/api/v1/feeds/indicators"
 THREAT_OBJECTS_ENDPOINT = "/api/v1/feeds/threat_objects"
 
 # Mapping from API indicator types to XSOAR indicator types
-INDICATOR_TYPE_MAP = {
+INDICATOR_TYPE_MAPPING = {
     "ip": FeedIndicatorType.IP,
     "domain": FeedIndicatorType.Domain,
-    "domain-name": FeedIndicatorType.Domain,
     "url": FeedIndicatorType.URL,
-    "md5": FeedIndicatorType.File,
-    "sha-1": FeedIndicatorType.File,
-    "sha-256": FeedIndicatorType.File,
-    "file:hashes": FeedIndicatorType.File,
+    "file": FeedIndicatorType.File,
+    "filehash_sha256": FeedIndicatorType.File,
+    "exploit": FeedIndicatorType.CVE,
+    "malware_family": ThreatIntel.ObjectsNames.MALWARE,
+    "actor": ThreatIntel.ObjectsNames.THREAT_ACTOR,
+    "threat_actor": ThreatIntel.ObjectsNames.THREAT_ACTOR,
+    "campaign": ThreatIntel.ObjectsNames.CAMPAIGN,
+    "attack pattern": ThreatIntel.ObjectsNames.ATTACK_PATTERN,
+    "technique": ThreatIntel.ObjectsNames.ATTACK_PATTERN,
+    "malicious_behavior": Common.Indicator,
+    "malicious behavior": Common.Indicator,
+}
+
+VERDICT_TO_SCORE = {
+    "malicious": Common.DBotScore.BAD,
+    "suspicious": Common.DBotScore.SUSPICIOUS,
+    "benign": Common.DBotScore.GOOD,
+    "unknown": Common.DBotScore.NONE,
 }
 
 
@@ -61,7 +74,7 @@ class Client(BaseClient):
 
     def get_indicators(
         self,
-        indicator_types: str | None = None,
+        indicator_types: list | None = None,
         limit: int = LIMIT,
         start_time: str | None = None,
         next_page_token: str | None = None,
@@ -69,7 +82,7 @@ class Client(BaseClient):
         """Get indicators from the Unit 42 feed.
 
         Args:
-            indicator_types: Comma separated list of indicator types to fetch (ip, filehash_sha256, domain, url, or None for all)
+            indicator_types: A list of indicator types to fetch (ip, filehash_sha256, domain, url)
             limit: Maximum number of indicators to return
             start_time: Start time for fetching indicators
             next_page_token: Token for pagination
@@ -78,8 +91,8 @@ class Client(BaseClient):
             Dict containing indicators and pagination info
         """
         params = {}
-        if indicator_types and indicator_types != "All":
-            params["indicator_types"] = indicator_types
+        if indicator_types:
+            params["indicator_types"] = ",".join(indicator_types)
         if limit:
             params["limit"] = limit
         if start_time:
@@ -112,6 +125,41 @@ class Client(BaseClient):
         return response
 
 
+def create_dbot_score(
+    indicator: str,
+    indicator_type: str,
+    verdict: str,
+) -> Common.DBotScore:
+    """
+    Create DBotScore object
+
+    Args:
+        indicator: The indicator value
+        indicator_type: Type of indicator
+        verdict: Verdict from API
+
+    Returns:
+        DBotScore object
+    """
+    score: int = VERDICT_TO_SCORE.get(verdict.lower() or "unknown", Common.DBotScore.NONE)
+
+    # Add malicious description if the verdict is malicious
+    malicious_description = None
+    if verdict.lower() == "malicious":
+        malicious_description = f"Unit 42 classified this {indicator_type.lower()} as malicious"
+
+    reliability = demisto.params().get("feedReliability", "A++ - Reputation script")
+
+    return Common.DBotScore(
+        indicator=indicator,
+        indicator_type=indicator_type,
+        integration_name=INTEGRATION_NAME,
+        score=score,
+        reliability=reliability,
+        malicious_description=malicious_description,
+    )
+
+
 def get_threat_object_score(threat_class: str) -> int:
     """
     Get the appropriate score for a threat object based on its class
@@ -122,10 +170,10 @@ def get_threat_object_score(threat_class: str) -> int:
     Returns:
         Appropriate ThreatIntel score or Common.DBotScore.NONE as default
     """
-    if threat_class not in INDICATOR_TYPE_MAP:
+    if threat_class not in INDICATOR_TYPE_MAPPING:
         return Common.DBotScore.NONE
 
-    threat_type = INDICATOR_TYPE_MAP[threat_class]
+    threat_type = INDICATOR_TYPE_MAPPING[threat_class]
 
     if threat_type == ThreatIntel.ObjectsNames.MALWARE:
         return ThreatIntel.ObjectsScore.MALWARE
@@ -139,6 +187,62 @@ def get_threat_object_score(threat_class: str) -> int:
     return Common.DBotScore.NONE
 
 
+def create_relationships(indicator_value: str, indicator_type: str, threat_object_associations: list) -> list:
+    """
+    Create relationships from threat object associations
+
+    Args:
+        indicator_value: The indicator value (entity_a)
+        indicator_type: The indicator type for mapping
+        threat_object_associations: List of threat object associations
+
+    Returns:
+        List of EntityRelationship objects
+    """
+    relationships = []
+
+    for assoc in threat_object_associations:
+        if not assoc or not assoc.get("name") or not assoc.get("threat_object_class"):
+            continue
+
+        threat_name = assoc.get("name")
+        threat_class = assoc.get("threat_object_class")
+
+        # Map threat class to XSOAR threat intel object type
+        entity_a_type = INDICATOR_TYPE_MAPPING.get(indicator_type, Common.Indicator)
+        entity_b_type = INDICATOR_TYPE_MAPPING.get(threat_class, Common.Indicator)
+
+        # Determine relationship type based on threat class
+        if threat_class in ["actor", "threat_actor"]:
+            relationship_name = EntityRelationship.Relationships.USED_BY
+        elif threat_class == "campaign":
+            relationship_name = EntityRelationship.Relationships.PART_OF
+        elif threat_class in ["attack pattern", "technique"]:
+            relationship_name = EntityRelationship.Relationships.USES
+        elif threat_class == "exploit":
+            relationship_name = EntityRelationship.Relationships.EXPLOITS
+        elif threat_class in ["malicious behavior", "malicious_behavior"]:
+            relationship_name = EntityRelationship.Relationships.INDICATOR_OF
+        else:
+            relationship_name = EntityRelationship.Relationships.RELATED_TO
+
+        reliability = demisto.params().get("feedReliability", "A++ - Reputation script")
+
+        relationship = EntityRelationship(
+            name=relationship_name,
+            entity_a=indicator_value,
+            entity_a_type=entity_a_type,
+            entity_b=threat_name,
+            entity_b_type=entity_b_type,
+            source_reliability=reliability,
+            brand=INTEGRATION_NAME,
+        )
+
+        relationships.append(relationship.to_entry())
+
+    return relationships
+
+
 def map_indicator(indicator_data: dict, feed_tags: list = [], tlp_color: str | None = None) -> dict:
     """Map an indicator from the Unit 42 API to XSOAR format.
 
@@ -150,22 +254,46 @@ def map_indicator(indicator_data: dict, feed_tags: list = [], tlp_color: str | N
     Returns:
         Indicator in XSOAR format.
     """
-    indicator_type = indicator_data.get("indicator_type", "")
     indicator_value = indicator_data.get("indicator_value", "")
+    indicator_type = indicator_data.get("indicator_type", "")
 
     # Map the indicator type to XSOAR type
-    xsoar_type = INDICATOR_TYPE_MAP.get(str(indicator_type), FeedIndicatorType.File)
+    xsoar_indicator_type = INDICATOR_TYPE_MAPPING.get(indicator_type, Common.Indicator)
+
+    # Create DBotScore object
+    dbot_score = create_dbot_score(indicator_value, xsoar_indicator_type, indicator_data.get("verdict"))
+
+    # Create fields
+    fields = {
+        "description": indicator_data.get("description"),
+        "updateddate": indicator_data.get("updated_at"),
+        "reportedby": indicator_data.get("source"),
+    }
+    if xsoar_indicator_type == FeedIndicatorType.File:
+        fields["md5"] = demisto.get(indicator_data, "indicator_details.file_hashes.md5")
+        fields["sha1"] = demisto.get(indicator_data, "indicator_details.file_hashes.sha1")
+        fields["sha256"] = demisto.get(indicator_data, "indicator_details.file_hashes.sha256")
+        fields["ssdeep"] = demisto.get(indicator_data, "indicator_details.file_hashes.ssdeep")
+        fields["imphash"] = demisto.get(indicator_data, "indicator_details.file_hashes.imphash")
+        fields["pehash"] = demisto.get(indicator_data, "indicator_details.file_hashes.pehash")
+        fields["filetype"] = demisto.get(indicator_data, "indicator_details.file_type")
+        fields["fileextension"] = demisto.get(indicator_data, "indicator_details.file_type", "").split(".")[-1]
+        fields["size"] = demisto.get(indicator_data, "indicator_details.file_size")
+
+    # Create relationships
+    relationships = []
+    if indicator_data.get("threat_object_associations"):
+        relationships = create_relationships(indicator_value, indicator_type, indicator_data.get("threat_object_associations"))
 
     # Create the indicator object
     indicator: dict = {
         "value": indicator_value,
-        "type": xsoar_type,
+        "type": xsoar_indicator_type,
+        "score": dbot_score,
         "rawJSON": indicator_data,
-        "fields": {
-            "updateddate": indicator_data.get("updated_at"),
-            "reportedby": "Unit42",
-            "score": indicator_data.get("verdict"),
-        },
+        "service": INTEGRATION_NAME,
+        "fields": fields,
+        "relationships": relationships,
     }
 
     # Add tags from threat object associations
@@ -378,55 +506,58 @@ def test_module(client: Client) -> str:
     return "Failed to connect to Unit 42 API. Check your Server URL and License."
 
 
-def fetch_indicators(
-    client: Client, params: dict, feed_tags: list = [], tlp_color: str | None = None, current_time: str | None = None
-) -> list:
+def fetch_indicators(client: Client, params: dict, current_time: str | None = None) -> list:
     """Retrieves indicators from the feed
 
     Args:
         client: Client object with request
         params: demisto.params()
-        feed_tags: feed tags.
-        tlp_color: Traffic Light Protocol color.
         current_time: The current fetch time.
     Returns:
         List. Processed indicators from feed.
     """
+    indicators = []
+
     # Get indicator types from params
-    indicator_types = ",".join(params.get("indicator_types", ["All"]))
+    feed_types = argToList(params.get("feed_types"))
+    indicator_types = argToList(params.get("indicator_types"))
     start_time = demisto.getLastRun().get("last_successful_run", (current_time - timedelta(hours=24)).strftime(DATE_FORMAT))
 
-    # Get indicators from the API
-    response = client.get_indicators(indicator_types=indicator_types, start_time=start_time)
+    feed_tags = argToList(params.get("feedTags", []))
+    tlp_color = params.get("tlp_color")
 
-    # Parse indicators
-    indicators = []
-    if response and isinstance(response, dict) and response.get("data"):
-        data = response.get("data", [])
-        if isinstance(data, list):
-            indicators.extend(parse_indicators(data, feed_tags, tlp_color))
+    if "Indicators" in feed_types:
+        # Get indicators from the API
+        response = client.get_indicators(indicator_types=indicator_types, start_time=start_time)
 
-            # Handle pagination if needed
-            metadata = response.get("metadata", {})
-            next_page_token = metadata.get("next_page_token") if isinstance(metadata, dict) else None
-            while next_page_token:
-                # Get next page of indicators
-                response = client.get_indicators(
-                    indicator_types=indicator_types, start_time=start_time, next_page_token=next_page_token
-                )
-                if response and isinstance(response, dict) and response.get("data"):
-                    data = response.get("data", [])
-                    if isinstance(data, list):
-                        indicators.extend(parse_indicators(data, feed_tags, tlp_color))
-                    metadata = response.get("metadata", {})
-                    next_page_token = metadata.get("next_page_token") if isinstance(metadata, dict) else None
-                else:
-                    break
+        # Parse indicators
+        if response and isinstance(response, dict) and response.get("data"):
+            data = response.get("data", [])
+            if isinstance(data, list):
+                indicators.extend(parse_indicators(data, feed_tags, tlp_color))
 
-    # Get threat objects twice a day (every 12 hours)
-    if start_time:
+                # Handle pagination if needed
+                metadata = response.get("metadata", {})
+                next_page_token = metadata.get("next_page_token") if isinstance(metadata, dict) else None
+                while next_page_token:
+                    # Get next page of indicators
+                    response = client.get_indicators(
+                        indicator_types=indicator_types, start_time=start_time, next_page_token=next_page_token
+                    )
+                    if response and isinstance(response, dict) and response.get("data"):
+                        data = response.get("data", [])
+                        if isinstance(data, list):
+                            indicators.extend(parse_indicators(data, feed_tags, tlp_color))
+                        metadata = response.get("metadata", {})
+                        next_page_token = metadata.get("next_page_token") if isinstance(metadata, dict) else None
+                    else:
+                        break
+
+    if "Threat Objects" in feed_types and start_time:
+        # Get threat objects twice a day (every 12 hours)
         start_time_utc = datetime.strptime(start_time, DATE_FORMAT).replace(tzinfo=timezone.utc)
         time_diff = (datetime.now(timezone.utc) - start_time_utc).total_seconds()
+
         if time_diff >= 6 * 3600:
             response = client.get_threat_objects()
 
@@ -436,20 +567,20 @@ def fetch_indicators(
                 if isinstance(data, list):
                     indicators.extend(parse_threat_objects(data, feed_tags, tlp_color))
 
-                    # Handle pagination if needed
-                    metadata = response.get("metadata", {})
-                    next_page_token = metadata.get("next_page_token") if isinstance(metadata, dict) else None
-                    while next_page_token:
-                        # Get next page of threat objects
-                        response = client.get_threat_objects(next_page_token=next_page_token)
-                        if response and isinstance(response, dict) and response.get("data"):
-                            data = response.get("data", [])
-                            if isinstance(data, list):
-                                indicators.extend(parse_threat_objects(data, feed_tags, tlp_color))
-                            metadata = response.get("metadata", {})
-                            next_page_token = metadata.get("next_page_token") if isinstance(metadata, dict) else None
-                        else:
-                            break
+                # Handle pagination if needed
+                metadata = response.get("metadata", {})
+                next_page_token = metadata.get("next_page_token") if isinstance(metadata, dict) else None
+                while next_page_token:
+                    # Get next page of threat objects
+                    response = client.get_threat_objects(next_page_token=next_page_token)
+                    if response and isinstance(response, dict) and response.get("data"):
+                        data = response.get("data", [])
+                        if isinstance(data, list):
+                            indicators.extend(parse_threat_objects(data, feed_tags, tlp_color))
+                        metadata = response.get("metadata", {})
+                        next_page_token = metadata.get("next_page_token") if isinstance(metadata, dict) else None
+                    else:
+                        break
 
     return indicators
 
@@ -558,10 +689,6 @@ def main():
     verify_certificate = not params.get("insecure", False)
     proxy = params.get("proxy", False)
 
-    # Get feed tags and TLP color from params
-    feed_tags = argToList(params.get("feedTags", []))
-    tlp_color = params.get("tlp_color")
-    
     if arg_to_number(params.get("feedFetchInterval", 720)) < 720:
         return_error("Feed Fetch Interval parameter must be set to at least 12 hours.")
 
@@ -578,7 +705,7 @@ def main():
 
         elif command == "fetch-indicators" or command == "unit42-fetch-indicators":
             now = datetime.now()
-            indicators = fetch_indicators(client, params, feed_tags, tlp_color, now)
+            indicators = fetch_indicators(client, params, now)
             for b in batch(indicators, batch_size=2000):
                 demisto.createIndicators(b)
             demisto.setLastRun({"last_successful_run": now.strftime(DATE_FORMAT)})
@@ -587,10 +714,10 @@ def main():
             )
 
         elif command == "unit42-get-indicators":
-            return_results(get_indicators_command(client, demisto.args(), feed_tags, tlp_color))
+            return_results(get_indicators_command(client, demisto.args()))
 
         elif command == "unit42-get-threat-objects":
-            return_results(get_threat_objects_command(client, demisto.args(), feed_tags, tlp_color))
+            return_results(get_threat_objects_command(client, demisto.args()))
 
     except Exception as e:
         return_error(f"Failed to execute {command} command. Error: {str(e)}")
