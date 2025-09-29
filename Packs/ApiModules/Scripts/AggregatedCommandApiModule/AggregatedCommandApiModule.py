@@ -13,6 +13,7 @@ import demistomock as demisto
 # Type alias for complex dictionary structures to improve readability
 ContextResult = dict[str, Any]
 DBotScoreList = list[ContextResult]
+CommandProcessResults = list[tuple[ContextResult, str, str]]
 
 # Calculating time interval for indicators freshness
 STATUS_FRESHNESS_WINDOW = timedelta(weeks=1)
@@ -188,7 +189,7 @@ class BatchExecutor:
         results: list[list[ContextResult]],
         commands_list: list[Command],
         verbose: bool = False,
-    ) -> list[list[tuple[ContextResult, str, str]]]:
+    ) -> list[CommandProcessResults]:
         """
         Normalize command results into `(result, hr_output, error_message)` tuples, skipping debug entries.
 
@@ -198,7 +199,7 @@ class BatchExecutor:
             verbose (bool): Whether to print verbose output.
 
         Returns:
-            list[list[tuple[ContextResult, str, str]]]: List of lists of tuples (result, hr_output, error_message).
+            list[CommandProcessResults]: List of lists of tuples (result, hr_output, error_message).
         """
         demisto.debug("[BatchExecutor.process_results]")
         final_results = []
@@ -237,7 +238,7 @@ class BatchExecutor:
         commands: list[Command],
         brands_to_run: list[str] | None = None,
         verbose: bool = False,
-    ) -> list[list[tuple[ContextResult, str, str]]]:
+    ) -> list[CommandProcessResults]:
         """
         Execute one batch (list of Command). Returns a list aligned to `commands`,
         where each item is a list of `(result, hr_output, error_message)` tuples.
@@ -246,7 +247,7 @@ class BatchExecutor:
             brands_to_run (list[str]): List of brands to run on.
             verbose (bool): Whether to print verbose output.
         Returns:
-            list[list[tuple[ContextResult, str, str]]]: List of lists of tuples (result, hr_output, error_message).
+            list[CommandProcessResults]: List of lists of tuples (result, hr_output, error_message).
         """
         brands_to_run = brands_to_run or []
         commands_to_execute = [command.to_batch_item(brands_to_run) for command in commands]
@@ -260,7 +261,7 @@ class BatchExecutor:
         list_of_batches: list[list[Command]],
         brands_to_run: list[str] | None = None,
         verbose: bool = False,
-    ) -> list[list[list[tuple[ContextResult, str, str]]]]:
+    ) -> list[list[CommandProcessResults]]:
         """
         Execute batches in order. See `execute_batch` for inner tuple shape.
 
@@ -536,13 +537,6 @@ class AggregatedCommand(ABC):
         self.commands = commands or []
         self.brand_manager = BrandManager(brands)
 
-    @cached_property
-    def unsupported_enrichment_brands(self) -> list[str]:
-        """Returns a list of brands that are not enabled but are required for external enrichment."""
-        if not self.brands:
-            return []
-        return self.brand_manager.unsupported_external(self.commands)
-
 
 class ReputationAggregatedCommand(AggregatedCommand):
     def __init__(
@@ -578,6 +572,13 @@ class ReputationAggregatedCommand(AggregatedCommand):
         self.data = data
         self.indicator = indicator
         super().__init__(args, brands, verbose, commands)
+
+    @cached_property
+    def unsupported_enrichment_brands(self) -> list[str]:
+        """Returns a list of brands that are not enabled but are required for external enrichment."""
+        if not self.brands:
+            return []
+        return self.brand_manager.unsupported_external(self.commands)
 
     def run(self) -> CommandResults:
         """
