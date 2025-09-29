@@ -1302,9 +1302,6 @@ class RDS:
                     outputs=response.get("EventSubscription"),
                     outputs_key_field="CustSubscriptionId",
                 )
-
-            demisto.debug(f"{response=}")
-            return CommandResults(readable_output=f"{response=}")
         except Exception as e:
             raise DemistoException(f"Failed to modify event subscription {args.get('subscription_name')}. Error: {str(e)}")
 
