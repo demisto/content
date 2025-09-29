@@ -402,7 +402,7 @@ class S3:
 
         kwargs = {"Bucket": args.get("bucket"),
                   "OwnershipControls": ownership_controls,
-                  "x-amz-expected-bucket-owner": args.get("x-amz-expected-bucket-owner")
+                  "ExpectedBucketOwner": args.get("expected-bucket-owner")
                   }
 
         remove_nulls_from_dictionary(kwargs)
@@ -1304,6 +1304,7 @@ class RDS:
                 )
         except Exception as e:
             raise DemistoException(f"Failed to modify event subscription {args.get('subscription_name')}. Error: {str(e)}")
+
 
 class CloudTrail:
     service = AWSServices.CloudTrail
