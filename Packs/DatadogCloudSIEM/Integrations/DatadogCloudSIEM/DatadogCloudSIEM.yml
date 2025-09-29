@@ -261,6 +261,68 @@ script:
           description: The current triage state of the security signal.
           type: String
 
+    - arguments:
+        - description: Custom search query string. Uses Datadog search syntax.
+          name: query
+        - description: Filter logs by service name.
+          name: service
+        - description: Filter logs by host name.
+          name: host
+        - description: Filter logs by source.
+          name: source
+        - description: Filter logs by status/level (info, warn, error, debug, etc.).
+          name: status
+        - description: Start date for the search. Format can be relative (e.g., "7 days ago") or absolute (e.g., "2023-01-01T00:00:00Z").
+          name: from_date
+          defaultvalue: "-7days"
+        - description: End date for the search. Format can be relative (e.g., "now") or absolute (e.g., "2023-01-01T23:59:59Z").
+          name: to_date
+          defaultvalue: "now"
+        - description: Sort order for results.
+          name: sort
+          auto: PREDEFINED
+          predefined:
+            - asc
+            - desc
+          defaultvalue: "desc"
+        - description: Page number for pagination (starts from 1).
+          name: page
+        - description: Number of results per page.
+          name: page_size
+        - description: Maximum number of results to return. If page_size is specified, limit is ignored.
+          name: limit
+          defaultvalue: "50"
+      name: datadog-logs-search
+      description: Search for logs in Datadog Cloud SIEM with optional filtering for security investigations.
+      outputs:
+        - contextPath: Datadog.Log.id
+          description: The unique identifier of the log entry.
+          type: String
+        - contextPath: Datadog.Log.timestamp
+          description: The timestamp when the log was generated.
+          type: String
+        - contextPath: Datadog.Log.message
+          description: The log message content.
+          type: String
+        - contextPath: Datadog.Log.service
+          description: The service that generated the log.
+          type: String
+        - contextPath: Datadog.Log.host
+          description: The host that generated the log.
+          type: String
+        - contextPath: Datadog.Log.source
+          description: The source of the log entry.
+          type: String
+        - contextPath: Datadog.Log.status
+          description: The status/level of the log entry.
+          type: String
+        - contextPath: Datadog.Log.tags
+          description: List of tags associated with the log entry.
+          type: Unknown
+        - contextPath: Datadog.Log.raw
+          description: The raw log object returned by the API
+          type: Unknown
+
   dockerimage: demisto/datadog-api-client:1.0.0.1832460
   isfetch: true
   runonce: false
