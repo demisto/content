@@ -5,6 +5,7 @@ from urllib.parse import quote
 from MicrosoftApiModule import *  # noqa: E402
 
 API_DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
+UPLOAD_SESSION_RETRIES = 2
 
 
 class MsGraphMailBaseClient(MicrosoftClient):
@@ -15,7 +16,7 @@ class MsGraphMailBaseClient(MicrosoftClient):
     ITEM_ATTACHMENT = "#microsoft.graph.itemAttachment"
     FILE_ATTACHMENT = "#microsoft.graph.fileAttachment"
     # maximum attachment size to be sent through the api, files larger must be uploaded via upload session
-    MAX_ATTACHMENT_SIZE = 10  # 3mb = 3145728 bytes
+    MAX_ATTACHMENT_SIZE = 3145728  # 3mb = 3145728 bytes
     MAX_FOLDERS_SIZE = 250
     DEFAULT_PAGE_SIZE = 20
     DEFAULT_PAGES_TO_PULL_NUM = 1
@@ -145,7 +146,6 @@ class MsGraphMailBaseClient(MicrosoftClient):
             Response: response indicating whether the operation succeeded. 200 if a chunk was added successfully,
                 201 (created) if the file was uploaded completely. 400 in case of errors.
         """
-        demisto.debug("Uploading attachment chunk")
         chunk_size = len(chunk_data)
         headers = {
             "Content-Length": f"{chunk_size}",
@@ -689,7 +689,6 @@ class MsGraphMailBaseClient(MicrosoftClient):
             attachment_name (str): attachment name.
             is_inline (bool): is the attachment inline, True if yes, False if not.
         """
-        demisto.debug("Creating upload session")
         json_data = {
             "attachmentItem": {"attachmentType": "file", "name": attachment_name, "size": attachment_size, "isInline": is_inline}
         }
@@ -712,61 +711,77 @@ class MsGraphMailBaseClient(MicrosoftClient):
             attachment_name (str): attachment name.
             is_inline (bool): is the attachment inline, True if yes, False if not.
         """
-        demisto.debug("Adding attachment with upload session")
+
         attachment_size = len(attachment_data)
-        demisto.debug(f"Attachment size: {attachment_size}")
-        upload_session = self.get_upload_session(
-            email=email,
-            draft_id=draft_id,
-            attachment_name=attachment_name,
-            attachment_size=attachment_size,
-            is_inline=is_inline,
-            content_id=content_id,
-        )
-        demisto.debug(f"Upload session created Raw Response: {json.dumps(upload_session, indent=4)}")
-        demisto.debug(f"Upload session created Status Code: {upload_session.get('status_code')}")
-        upload_url = upload_session.get("uploadUrl")
-        if not upload_url:
-            raise Exception(f"Cannot get upload URL for attachment {attachment_name}")
+        for i in range(UPLOAD_SESSION_RETRIES):
+            try:
+                upload_session = self.get_upload_session(
+                    email=email,
+                    draft_id=draft_id,
+                    attachment_name=attachment_name,
+                    attachment_size=attachment_size,
+                    is_inline=is_inline,
+                    content_id=content_id,
+                )
+                upload_url = upload_session.get("uploadUrl", "")
+                if not upload_url:
+                    raise Exception(f"Cannot get upload URL for attachment {attachment_name}")
+            except NotFoundError as e:
+                if i == UPLOAD_SESSION_RETRIES - 1:
+                    raise e
+                demisto.debug(f"Failed to get upload session for attachment {attachment_name}: {str(e)} retry {i}")
+            except Exception as e:
+                raise e
 
-        start_chunk_index = 0
-        # The if is for adding functionality of inline attachment sending from layout
-        end_chunk_index = min(self.MAX_ATTACHMENT_SIZE, attachment_size)
+        start_idx = 0
 
-        chunk_data = attachment_data[start_chunk_index:end_chunk_index]
-        demisto.debug("Uploading First Chunk")
-        response = self.upload_attachment(
-            upload_url=upload_url,
-            start_chunk_idx=start_chunk_index,
-            end_chunk_idx=end_chunk_index,
-            chunk_data=chunk_data,
-            attachment_size=attachment_size,
-        )
-        demisto.debug(f"First chunk uploaded Raw Response: {response}")
-        demisto.debug(f"First chunk uploaded Status Code: {response.status_code}")
-        while response.status_code != 201:  # the api returns 201 when the file is created at the draft message
-            start_chunk_index = end_chunk_index
-            next_chunk = end_chunk_index + self.MAX_ATTACHMENT_SIZE
-            end_chunk_index = min(attachment_size, next_chunk)
+        while start_idx < attachment_size:
+            end_idx = min(start_idx + self.MAX_ATTACHMENT_SIZE, attachment_size)
+            chunk = attachment_data[start_idx:end_idx]
 
-            chunk_data = attachment_data[start_chunk_index:end_chunk_index]
-
-            if start_chunk_index >= attachment_size:  # this means we reached the end of the file
-                demisto.debug(f"Skipping empty chunk at range {start_chunk_index}-{end_chunk_index}")
-                break
-
-            demisto.debug("Uploading Next Chunk")
-            response = self.upload_attachment(
+            # attempt #1
+            resp = self.upload_attachment(
                 upload_url=upload_url,
-                start_chunk_idx=start_chunk_index,
-                end_chunk_idx=end_chunk_index,
-                chunk_data=chunk_data,
+                start_chunk_idx=start_idx,
+                end_chunk_idx=end_idx,
+                chunk_data=chunk,
                 attachment_size=attachment_size,
             )
-            demisto.debug(f"Next chunk uploaded Raw Response: {response}")
-            demisto.debug(f"Next chunk uploaded Status Code: {response.status_code}")
-            if response.status_code not in (201, 200):
-                raise Exception(f"{response.json()}")
+
+            # 404 -> single retry for this chunk
+            if resp.status_code == 404:
+                demisto.debug(
+                    f"Chunk upload got 404 for '{attachment_name}' at range {start_idx}-{end_idx - 1}. Retrying once..."
+                )
+                resp = self.upload_attachment(
+                    upload_url=upload_url,
+                    start_chunk_idx=start_idx,
+                    end_chunk_idx=end_idx,
+                    chunk_data=chunk,
+                    attachment_size=attachment_size,
+                )
+                if resp.status_code == 404:
+                    try:
+                        details = resp.json()
+                    except Exception:
+                        details = resp.text
+                    raise DemistoException(
+                        f"Chunk upload failed with 404 twice for '{attachment_name}' "
+                        f"at range {start_idx}-{end_idx - 1}. Details: {details}"
+                    )
+
+            if resp.status_code == 201:
+                break
+
+            if resp.status_code == 200:
+                start_idx = end_idx
+                continue
+
+            try:
+                details = resp.json()
+            except Exception:
+                details = resp.text
+            raise Exception(f"{details}")
 
     def send_mail_with_upload_session_flow(
         self, email: str, json_data: dict, attachments_more_than_3mb: list[dict], reply_message_id: str = None
@@ -785,12 +800,8 @@ class MsGraphMailBaseClient(MicrosoftClient):
         """
         # create the draft email
         email = email or self._mailbox_to_fetch
-        demisto.debug(f"Creating draft email for {email}")
         created_draft = self.create_draft(from_email=email, json_data=json_data, reply_message_id=reply_message_id)
-        demisto.debug(f"Draft created Raw Response: {json.dumps(created_draft, indent=4)}")
-        demisto.debug(f"Draft created Status Code: {created_draft.get('status_code')}")
         draft_id = created_draft.get("id", "")
-        demisto.debug(f"Draft created with ID: {draft_id}")
         self.add_attachments_via_upload_session(  # add attachments via upload session.
             email=email, draft_id=draft_id, attachments=attachments_more_than_3mb
         )
