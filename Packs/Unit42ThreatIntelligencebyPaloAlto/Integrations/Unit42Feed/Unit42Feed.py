@@ -685,6 +685,8 @@ def map_threat_object(threat_object: dict, feed_tags: list = [], tlp_color: str 
     Returns:
         List of threat objects in XSOAR format.
     """
+    result: list = []
+
     # Get basic threat object properties
     name = threat_object.get("name", "")
     threat_class = threat_object.get("threat_object_class", "").lower()
@@ -701,6 +703,10 @@ def map_threat_object(threat_object: dict, feed_tags: list = [], tlp_color: str 
         relationships += create_tools_relationships(threat_object, name, threat_class)
         relationships += create_vulnerabilities_relationships(threat_object, name, threat_class)
         relationships += create_actor_relationships(threat_object, name, threat_class)
+
+        # Create location indicators and relationships
+        location_indicators = create_location_indicators_and_relationships(threat_object, name)
+        result.extend(location_indicators)
 
     fields = {
         "description": build_threat_object_description(threat_object),
@@ -720,7 +726,7 @@ def map_threat_object(threat_object: dict, feed_tags: list = [], tlp_color: str 
     }
 
     # Create the threat object
-    result: list = [{
+    result.append({
         "value": name,
         "type": xsoar_indicator_type,
         "score": get_threat_object_score(threat_class),
@@ -728,10 +734,7 @@ def map_threat_object(threat_object: dict, feed_tags: list = [], tlp_color: str 
         "relationships": relationships,
         "fields": fields,
         "rawJSON": threat_object,
-    }]
-
-    location_indicators = create_location_indicators_and_relationships(threat_object, name)
-    result.extend(location_indicators)
+    })
 
     return result
 
@@ -772,8 +775,8 @@ def parse_threat_objects(threat_objects_data: list, feed_tags: list = [], tlp_co
 
     if threat_objects_data and isinstance(threat_objects_data, list):
         for threat_object_data in threat_objects_data:
-            threat_objects = map_threat_object(threat_object_data, feed_tags, tlp_color)
-            threat_objects.extend(threat_objects)
+            new_threat_objects = map_threat_object(threat_object_data, feed_tags, tlp_color)
+            threat_objects.extend(new_threat_objects)
 
     return threat_objects
 
