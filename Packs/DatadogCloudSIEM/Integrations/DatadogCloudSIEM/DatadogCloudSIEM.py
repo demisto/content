@@ -83,6 +83,8 @@ class Assignee:
 @dataclass
 class Triage:
     state: str
+    comment: str
+    reason: str
     assignee: Assignee
 
 
@@ -388,6 +390,8 @@ def parse_security_signal(data: Dict[str, Any]) -> SecuritySignal:
     triage = (
         Triage(
             state=triage_d.get("state", ""),
+            reason=triage_d.get("archiveReason", ""),
+            comment=triage_d.get("archiveComment", ""),
             assignee=(
                 Assignee(
                     id=assignee_d.get("id", -1),
@@ -741,10 +745,17 @@ def update_security_signal_assignee_command(
             name=attributes.get("assignee", {}).get("name", "Unassigned"),
         )
         state = attributes.get("state", "")
+        comment = attributes.get("archive_comment", "")
+        reason = attributes.get("archive_reason", "")
 
         signal_update = SecuritySignal(
             id=signal_id,
-            triage=Triage(state=state, assignee=assignee),
+            triage=Triage(
+                state=state,
+                comment=comment,
+                reason=reason,
+                assignee=assignee,
+            ),
         )
         signal_display = signal_update.to_display_dict()
         readable_output = lookup_to_markdown(
@@ -771,7 +782,11 @@ def update_security_signal_state_command(
 
     Args:
         configuration: Datadog API configuration
-        args: Command arguments containing signal_id and state
+        args: A dictionary of arguments for the command.
+            - signal_id (str): The ID of the signal to update
+            - state (str): The new state for the signal (open, under_review, resolved, etc.)
+            - reason (str): Reason for the state change
+            - comment (str): Comment about the state change
 
     Returns:
         CommandResults: XSOAR command results with updated signal data
@@ -781,6 +796,8 @@ def update_security_signal_state_command(
     """
     signal_id = args.get("signal_id")
     state = args.get("state")
+    reason = args.get("reason")
+    comment = args.get("comment")
 
     if not signal_id:
         raise DemistoException("signal_id is required")
@@ -799,6 +816,8 @@ def update_security_signal_state_command(
         data=SecurityMonitoringSignalStateUpdateData(
             attributes=SecurityMonitoringSignalStateUpdateAttributes(
                 state=state,
+                reason=reason,
+                comment=comment,
             ),
         ),
     )
@@ -815,11 +834,18 @@ def update_security_signal_state_command(
             uuid=attributes.get("assignee", {}).get("uuid", ""),
             name=attributes.get("assignee", {}).get("name", "Unassigned"),
         )
-        updated_state = attributes.get("state", state)
+        updated_state = attributes.get("state", "")
+        comment = attributes.get("archive_comment", "")
+        reason = attributes.get("archive_reason", "")
 
         signal_update = SecuritySignal(
             id=signal_id,
-            triage=Triage(state=updated_state, assignee=assignee),
+            triage=Triage(
+                state=updated_state,
+                comment=comment,
+                reason=reason,
+                assignee=assignee,
+            ),
         )
         signal_display = signal_update.to_display_dict()
         readable_output = lookup_to_markdown(
