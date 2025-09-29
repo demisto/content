@@ -220,6 +220,11 @@ class EventCollector:
                 demisto.debug(f"{LOG_LINE} getting events of type {event_type.name}")
                 if event_type.client_max_fetch > 0:
                     next_run, new_events = self.get_events(event_type=event_type, last_run=next_run)
+                    # annotate direction for non-activity events
+                    if event_type.name != "activity_log":
+                        direction = "outbound" if event_type in OUTBOUND_EVENT_TYPES else "inbound"
+                        for evt in new_events:
+                            evt.setdefault("direction_source", direction)
                     events += new_events
 
         demisto.debug(f"{LOG_LINE} fetched {len(events)} to load. Setting last_run")
@@ -438,6 +443,11 @@ class EventCollector:
                 last_run_time = parse_special_iso_format(next_run_time)
             case _:
                 raise DemistoException("Event's type format is undefined.")
+
+        if event_type.name != "activity_log":
+            direction = "outbound" if event_type in OUTBOUND_EVENT_TYPES else "inbound"
+            for evt in events:
+                evt["direction_source"] = direction
 
         demisto.debug(f"{LOG_LINE} Got {len(events)} events to load with type {event_type.name}. Setting last_run")
         last_run.get_last_run_event(event_type.name).set_ids(last_run_ids)

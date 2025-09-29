@@ -1,8 +1,8 @@
-# FireEye Email Threat Prevention (ETP)
+# Trellix Email Security - Cloud
 
 ## Overview
 
-Use the FireEye Email Threat Prevention (ETP) integration to import messages as incidents, search for messages with specific attributes, and retrieve alert data.
+Use the Trellix Email Security - Cloud integration to import messages as incidents, search for messages with specific attributes, and retrieve alert data.
 
 ## Use Cases
 
@@ -13,11 +13,11 @@ Use the FireEye Email Threat Prevention (ETP) integration to import messages as 
 
 Make sure you obtain the following information.
 
-* Valid FireEye ETP account
+* Valid Trellix Email Security - Cloud account
 * Configure an API key on the ETP Web portal. Select the product as both *Email Threat Prevention* and *Identity Access Management*. Select all entitlements.
-* Upon Authentication errors, contact FireEye Technical Support to let them know the IP address of your Cortex XSOAR Server and the URL you are accessing , e.g. https://etp.us.fireeye.com. FireEye will add these details to their Firewall rules so that the bidirectional traffic can be allowed between Cortex XSOAR and FireEye ETP.
+* Upon Authentication errors, contact Trellix Email Security - Cloud Technical Support to let them know the IP address of your Cortex XSOAR Server and the URL you are accessing , e.g. https://etp.us.fireeye.com. Trellix will add these details to their Firewall rules so that the bidirectional traffic can be allowed between Cortex XSOAR and Trellix Email Security - Cloud.
 
-## Configure FireEye ETP in Cortex
+## Configure Trellix Email Security - Cloud in Cortex
 
 * *Name*: a textual name for the integration instance.
 * *Server URL*: ETP server URL. Use the endpoint in the region that hosts your ETP service:
@@ -358,7 +358,7 @@ Returns detailed information for any specified alert. Alerts that are more than 
 |FireEyeETP.Alerts.email.source_ip|Email source IP address|
 |FireEyeETP.Alerts.email.smtp.rcpt_to|Recipient SMTP|
 |FireEyeETP.Alerts.email.smtp.mail_from|Sender SMTP|
-|FireEyeETP.Alerts.email.etp_message_id|FireEye ETP unique message ID|
+|FireEyeETP.Alerts.email.etp_message_id|Trellix Email Security - Cloud unique message ID|
 |FireEyeETP.Alerts.email.headers.cc|Email cc recipients|
 |FireEyeETP.Alerts.email.headers.to|Email recipients|
 |FireEyeETP.Alerts.email.headers.from|Email sender|

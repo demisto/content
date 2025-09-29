@@ -1,9 +1,7 @@
 commonfields:
   id: FPDeleteRule
   version: -1
-name: FPDeleteRule (Deprecated)
-description: Deprecated. No available replacement.
-deprecated: true
+name: FPDeleteRule
 script: ''
 type: python
 subtype: python3
@@ -29,6 +27,6 @@ dependson:
   - ssh
 timeout: 0s
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.12.8.3296088
+dockerimage: demisto/python3:3.12.11.4819260
 tests:
 - No tests (auto formatted)

@@ -5,7 +5,6 @@ import dateparser
 import demistomock as demisto
 import pytest
 import requests_mock
-from _pytest.python_api import raises
 from CommonServerPython import DemistoException, snakify
 from freezegun import freeze_time
 from MicrosoftDefenderAdvancedThreatProtection import (
@@ -1081,7 +1080,9 @@ def test_add_error_message(failed_devices, all_requested_devices, expected_resul
 def test_add_error_message_raise_error(failed_devices, all_requested_devices):
     from MicrosoftDefenderAdvancedThreatProtection import add_error_message
 
-    with raises(DemistoException, match=f"Microsoft Defender ATP The command was failed with the errors: {failed_devices}"):
+    with pytest.raises(
+        DemistoException, match=f"Microsoft Defender ATP The command was failed with the errors: {failed_devices}"
+    ):
         add_error_message(failed_devices, all_requested_devices)
 
 

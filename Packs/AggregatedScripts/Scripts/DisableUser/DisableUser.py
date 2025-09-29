@@ -305,7 +305,7 @@ def main():
         users, hr_get = get_users(args)
         outputs, hr_disable = disable_users(users)
 
-        if argToBoolean(args.get("verbose")):
+        if argToBoolean(args.get("verbose", "false")):
             verbose_hr = "\n\n".join(("", hr_get, hr_disable))
 
         if any(res["Disabled"] for res in outputs):

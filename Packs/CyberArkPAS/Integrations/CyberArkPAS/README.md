@@ -1,18 +1,18 @@
-Use the CyberArk Privileged Access Security (PAS) solution to manage users, safes, vaults, and accounts from Cortex XSOAR.
+Use the CyberArk Privileged Access Management (PAM) solution to manage users, safes, vaults, and accounts from Cortex XSOAR.
 
-## Configure CyberArkPAS in Cortex
+## Configure CyberArkPAM in Cortex
 
-| **Parameter** | **Description** | **Required** |
-| --- | --- | --- |
-| url | Server URL \(e.g., https://example.net\) | True |
-| credentials | Username | True |
-| isFetch | Fetch incidents | False |
-| max_fetch | Max fetch | False |
+| **Parameter** | **Description**                                                                                      | **Required** |
+| --- |------------------------------------------------------------------------------------------------------| --- |
+| url | Server URL \(e.g., https://example.net\)                                                             | True |
+| credentials | Username                                                                                             | True |
+| isFetch | Fetch incidents                                                                                      | False |
+| max_fetch | Max fetch                                                                                            | False |
 | fetch_time | First fetch timestamp \(&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days, 3 months, 1 year\) | False |
-| score | CyberArk PAS score \(0.0\-100.0\) | False |
-| incidentType | Incident type | False |
-| insecure | Trust any certificate \(not secure\) | False |
-| proxy | Use system proxy settings | False |
+| score | CyberArk PAM score \(0.0\-100.0\)                                                                    | False |
+| incidentType | Incident type                                                                                        | False |
+| insecure | Trust any certificate \(not secure\)                                                                 | False |
+| proxy | Use system proxy settings                                                                            | False |
 
 ## Commands
 
@@ -35,24 +35,24 @@ To run this command, you must have the following permissions:
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| username | The name of the user. | Required |
-| user_type | The user type according to the license. | Optional |
-| non_authorized_interfaces | The CyberArkPAS interfaces that this user is not authorized to use, e.g., - "PSM", "PSMP" | Optional |
-| location | The location in the vault where the user will be created. Must begin with "\\".  If just "\\", the vault is in the root. | Optional |
-| expiry_date | The date when the user credentials expire. Must be in the following timestamp format: (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days, 3 months, 1 year). | Optional |
-| password | The password that the user will use to log in for the first time. | Required |
-| change_password_on_the_next_logon | Whether or not the user must change the user password from the second log in onward. Can be 'true' or 'false'. Default is 'true'. | Optional |
-| password_never_expires | Whether the user’s password will not expire unless they decide to change it. Can be 'true' or 'false'. Default is 'false'. | Optional |
+| **Argument Name** | **Description**                                                                                                                                                                                                                                              | **Required** |
+| --- |--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
+| username | The name of the user.                                                                                                                                                                                                                                        | Required |
+| user_type | The user type according to the license.                                                                                                                                                                                                                      | Optional |
+| non_authorized_interfaces | The CyberArkPAM interfaces that this user is not authorized to use, e.g., - "PSM", "PSMP"                                                                                                                                                                    | Optional |
+| location | The location in the vault where the user will be created. Must begin with "\\".  If just "\\", the vault is in the root.                                                                                                                                     | Optional |
+| expiry_date | The date when the user credentials expire. Must be in the following timestamp format: (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days, 3 months, 1 year).                                                                                          | Optional |
+| password | The password that the user will use to log in for the first time.                                                                                                                                                                                            | Required |
+| change_password_on_the_next_logon | Whether or not the user must change the user password from the second log in onward. Can be 'true' or 'false'. Default is 'true'.                                                                                                                            | Optional |
+| password_never_expires | Whether the user’s password will not expire unless they decide to change it. Can be 'true' or 'false'. Default is 'false'.                                                                                                                                   | Optional |
 | vault_authorization | A comma-separated list of user permissions. Valid values are: AuditUsers, AddUpdateUsers, ResetUsersPasswords, ActivateUsers, AddNetworkAreas, ManageDirectoryMapping, ManageServerFileCategories, BackupAllSafes, RestoreAllSafes e.g., AddSafes,AuditUsers | Optional |
-| description | Notes and comments. | Optional |
-| email | The email address of the user. | Optional |
-| first_name | The first name of the user. | Optional |
-| last_name | The last name of the user. | Optional |
-| enable_user | Whether the user will be enabled upon creation. Can be 'true' or 'false'. Default is 'true'. | Optional |
-| distinguished_name | The distinguished name of the user. The usage is for PKI authentication. This will match the certificate subject name or domain name. | Optional |
-| profession | The profession of the user. | Optional |
+| description | Notes and comments.                                                                                                                                                                                                                                          | Optional |
+| email | The email address of the user.                                                                                                                                                                                                                               | Optional |
+| first_name | The first name of the user.                                                                                                                                                                                                                                  | Optional |
+| last_name | The last name of the user.                                                                                                                                                                                                                                   | Optional |
+| enable_user | Whether the user will be enabled upon creation. Can be 'true' or 'false'. Default is 'true'.                                                                                                                                                                 | Optional |
+| distinguished_name | The distinguished name of the user. The usage is for PKI authentication. This will match the certificate subject name or domain name.                                                                                                                        | Optional |
+| profession | The profession of the user.                                                                                                                                                                                                                                  | Optional |
 
 #### Context Output
 
@@ -166,24 +166,24 @@ To run this command, you must have the following permissions:
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| username | The name of the user. | Optional |
-| user_type | User type according to the license. | Optional |
-| non_authorized_interfaces | The CyberArkPAS interfaces that this user is not authorized to use, e.g., "PSM", "PSMP" | Optional |
-| location | The location in the vault where the user will be created. Must begin with "\\". If just "\\", the vault is in the root. | Optional |
-| expiry_date | The date when the user expires. Must be in the following timestamp format: (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days, 3 months, 1 year). | Optional |
-| change_password_on_the_next_logon | Whether or not the user must change their password from the second log on onward. Can be 'true' or 'false'. Default is 'true'. | Optional |
-| password_never_expires | Whether the user’s password will not expire unless they decide to change it. Can be 'true' or 'false'. Default is 'false'. | Optional |
+| **Argument Name** | **Description**                                                                                                                                                                                                                                                        | **Required** |
+| --- |------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
+| username | The name of the user.                                                                                                                                                                                                                                                  | Optional |
+| user_type | User type according to the license.                                                                                                                                                                                                                                    | Optional |
+| non_authorized_interfaces | The CyberArkPAM interfaces that this user is not authorized to use, e.g., "PSM", "PSMP"                                                                                                                                                                                | Optional |
+| location | The location in the vault where the user will be created. Must begin with "\\". If just "\\", the vault is in the root.                                                                                                                                                | Optional |
+| expiry_date | The date when the user expires. Must be in the following timestamp format: (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days, 3 months, 1 year).                                                                                                               | Optional |
+| change_password_on_the_next_logon | Whether or not the user must change their password from the second log on onward. Can be 'true' or 'false'. Default is 'true'.                                                                                                                                         | Optional |
+| password_never_expires | Whether the user’s password will not expire unless they decide to change it. Can be 'true' or 'false'. Default is 'false'.                                                                                                                                             | Optional |
 | vault_authorization | A comma-separated list of user permissions. Valid values are: AddSafes, AuditUsers, AddUpdateUsers, ResetUsersPasswords, ActivateUsers, AddNetworkAreas, ManageDirectoryMapping, ManageServerFileCategories, BackupAllSafes, RestoreAllSafes e.g., AddSafes,AuditUsers | Optional |
-| description | Notes and comments. | Optional |
-| email | The email addresses of the user. | Optional |
-| first_name | The first name of the user. | Optional |
-| last_name | The last name of the user. | Optional |
-| enable_user | Whether the user will be enabled upon creation. Can be 'true' or 'false'. Default is 'true'. | Optional |
-| distinguished_name | The distinguished name of the user. The usage is for PKI authentication. This will match the certificate subject name or domain name. | Optional |
-| profession | The profession of the user. | Optional |
-| user_id | The ID of the user to update. | Required |
+| description | Notes and comments.                                                                                                                                                                                                                                                    | Optional |
+| email | The email addresses of the user.                                                                                                                                                                                                                                       | Optional |
+| first_name | The first name of the user.                                                                                                                                                                                                                                            | Optional |
+| last_name | The last name of the user.                                                                                                                                                                                                                                             | Optional |
+| enable_user | Whether the user will be enabled upon creation. Can be 'true' or 'false'. Default is 'true'.                                                                                                                                                                           | Optional |
+| distinguished_name | The distinguished name of the user. The usage is for PKI authentication. This will match the certificate subject name or domain name.                                                                                                                                  | Optional |
+| profession | The profession of the user.                                                                                                                                                                                                                                            | Optional |
+| user_id | The ID of the user to update.                                                                                                                                                                                                                                          | Required |
 
 #### Context Output
 

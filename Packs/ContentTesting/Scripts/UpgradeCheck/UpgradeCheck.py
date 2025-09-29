@@ -165,7 +165,7 @@ def GetFieldKey(inoutfield):
 def GetFieldsUsed(playbooks):
     usedfields: dict[str, list[str]]
     usedfields = {}
-    regex = re.compile("\$\{incident\.[^}]+\}")
+    regex = re.compile(r"\$\{incident\.[^}]+\}")
 
     for p in playbooks:
         name = p["name"]

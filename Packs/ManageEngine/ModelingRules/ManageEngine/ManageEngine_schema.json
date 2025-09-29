@@ -1,0 +1,48 @@
+{
+    "manage_engine_raw": {
+      "hostName": {
+        "type": "string",
+        "is_array": false
+      },
+      "eventId": {
+        "type": "string",
+        "is_array": false
+      },
+      "module": {
+        "type": "string",
+        "is_array": false
+      },
+      "priority": {
+        "type": "string",
+        "is_array": false
+      },
+      "application": {
+        "type": "string",
+        "is_array": false
+      },
+      "computerName": {
+        "type": "string",
+        "is_array": false
+      },
+      "domainName": {
+        "type": "string",
+        "is_array": false
+      },
+      "viewerIP": {
+        "type": "string",
+        "is_array": false
+      },
+      "userIP": {
+        "type": "string",
+        "is_array": false
+      },
+      "userName": {
+        "type": "string",
+        "is_array": false
+      },
+      "remarks": {
+        "type": "string",
+        "is_array": false
+      }
+    }
+  }

@@ -1,0 +1,60 @@
+{
+    "GoogleChronicleBackstory.DataTable(val.displayName == obj.displayName)": {
+        "name": "projects/dummy_project_id/locations/dummy_location/instances/dummy_instance_id/dataTables/test_table",
+        "displayName": "Test Table",
+        "description": "This is a test data table",
+        "createTime": "2025-08-13T07:26:56.704838492Z",
+        "updateTime": "2025-08-14T07:26:56.704838492Z",
+        "columnInfo": [
+            {
+                "originalColumn": "column_1",
+                "columnType": "STRING"
+            },
+            {
+                "columnIndex": 1,
+                "originalColumn": "column_2",
+                "columnType": "REGEX"
+            }
+        ],
+        "dataTableUuid": "00000000000000000000000000000001",
+        "approximateRowCount": "4",
+        "rows": [
+            {
+                "name": "projects/dummy_project_id/locations/dummy_location/instances/dummy_instance_id/dataTables/test_table/dataTableRows/row1",
+                "values": {
+                    "column_1": "1",
+                    "column_2": "[]/+*a"
+                },
+                "createTime": "2025-08-19T05:11:53.230367Z",
+                "updateTime": "2025-08-19T05:11:53.230367Z"
+            },
+            {
+                "name": "projects/dummy_project_id/locations/dummy_location/instances/dummy_instance_id/dataTables/test_table/dataTableRows/row2",
+                "values": {
+                    "column_1": "2",
+                    "column_2": "^[a-zA-Z]+$"
+                },
+                "createTime": "2025-08-19T05:11:53.230367Z",
+                "updateTime": "2025-08-19T05:11:53.230367Z"
+            },
+            {
+                "name": "projects/dummy_project_id/locations/dummy_location/instances/dummy_instance_id/dataTables/test_table/dataTableRows/row3",
+                "values": {
+                    "column_1": "3",
+                    "column_2": "[]/+*b"
+                },
+                "createTime": "2025-08-19T05:11:53.230367Z",
+                "updateTime": "2025-08-19T05:11:53.230367Z"
+            },
+            {
+                "name": "projects/dummy_project_id/locations/dummy_location/instances/dummy_instance_id/dataTables/test_table/dataTableRows/row4",
+                "values": {
+                    "column_1": "4",
+                    "column_2": "^[a-zA-Z]+$"
+                },
+                "createTime": "2025-08-19T05:11:53.230367Z",
+                "updateTime": "2025-08-19T05:11:53.230367Z"
+            }
+        ]
+    }
+}

@@ -1,0 +1,28 @@
+{
+  "trigger_id": "faeb87b310ed46168838eef5fb9a246e",
+  "trigger_name": "Remediation playbook for AWS S3 Bucket Publicly accessible",
+  "playbook_id": "AWS S3 Bucket Publicly Accessible - Remediate and Notify",
+  "suggestion_reason": "Recommended for AWS S3 Bucket Publicly Accessible Issues",
+  "description": "This trigger is responsible for handling AWS S3 Bucket Publicly Accessible Issues",
+  "alerts_filter": {
+    "filter": {
+      "OR": [
+        {
+            "SEARCH_FIELD": "matching_service_rule_id",
+            "SEARCH_TYPE": "EQ",
+            "SEARCH_VALUE": "70b5bb02-aafd-4c23-ac4b-4872b3aced30"
+        },
+        {
+            "SEARCH_FIELD": "matching_service_rule_id",
+            "SEARCH_TYPE": "EQ",
+            "SEARCH_VALUE": "1c513ad3-7db5-4fbf-abdd-39969f222f13"
+        }
+      ]
+    }
+  },
+  "supportedModules": [
+      "C1",
+      "C3",
+      "X5"
+  ]
+}

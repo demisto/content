@@ -44,7 +44,7 @@ This playbook does not use any integrations.
 | EWSSearchQuery | The EWS query to find malicious emails related to NOBELIUM spear-phishing. | From:*usaid.gov or From:*in.constantcontact.com | Optional |
 | BlockIndicatorsAutomatically | Whether to automatically indicators involved with NOBELIUM spear-phishing. | False | Optional |
 | UserVerification | Whether to provide user verification for blocking IPs. <br/><br/>False - No prompt will be displayed to the user.<br/>True - The server will ask the user for blocking verification and will display the blocking list. | False | Optional |
-| AutoBlockIndicators | Should the given indicators be automatically blocked, or should the user be given the option to choose?<br/><br/>If set to False - no prompt will appear, and all provided indicators will be blocked automatically.<br/>If set to True - the user will be prompted to select which indicators to block. | True | Optional |
+| AutoBlockIndicators | Should the given indicators be automatically blocked, or should the user be given the option to choose?<br/><br/>If set to True - no prompt will appear, and all provided indicators will be blocked automatically.<br/>If set to False - the user will be prompted to select which indicators to block. | True | Optional |
 
 ## Playbook Outputs
 

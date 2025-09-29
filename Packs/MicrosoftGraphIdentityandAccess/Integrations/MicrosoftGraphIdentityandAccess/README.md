@@ -491,7 +491,7 @@ Retrieves the properties of a collection of riskDetection objects.
 
 #### Required Permissions
 
-`IdentityRiskEvent.Read.All`
+`IdentityRiskyUser.Read.All`
 
 #### Base Command
 

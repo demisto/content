@@ -1,0 +1,10 @@
+[INGEST:vendor="cisco", product="ucm", target_dataset="cisco_ucm_raw" , no_hit=drop]
+filter _raw_log ~= "\w+\s+\d{1,2}\s+\d{4}\s+\d{2}:\d{2}:\d{2}\.\d+"
+| alter 
+    _time = parse_timestamp("%h %d %Y %H:%M:%E*S", arrayindex(regextract(_raw_log,"\w+\s+\d{1,2}\s+\d{4}\s+\d{2}:\d{2}:\d{2}\.\d+"),0))
+| alter 
+    tmp_get_keys = rtrim(arraystring(arraymap(regextract(_raw_log,"\[([^=]+)=(?:[^\]]+)\]"),concat("(?P<", "@element", ">[^|]+)?\|")),""),"\|"),
+    tmp_get_values = arraystring(regextract(_raw_log,"\[(?:[^=]+)=([^\]]+)\]"),"|")
+| alter 
+    parsed_fields = if(tmp_get_values = null or tmp_get_values ~= "^\s*$", null, regexcapture(tmp_get_values, tmp_get_keys))
+| fields -tmp_*;

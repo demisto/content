@@ -18,6 +18,12 @@
         "office",
         "365"
     ],
+    "dependencies": {
+        "CloudIncidentResponse": {
+            "mandatory": false,
+            "display_name": "Cloud Incident Response"
+        }
+    },
     "marketplaces": [
         "marketplacev2",
         "platform"

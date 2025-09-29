@@ -5,7 +5,13 @@ from datetime import datetime, timedelta
 
 from pytest_mock import MockerFixture
 from CommonServerPython import parse_date_range, DemistoException
-from CortexDataLake import FIRST_FAILURE_TIME_CONST, LAST_FAILURE_TIME_CONST, STANDARD_TOKEN_URL, FEDRAMP_TOKEN_URL
+from CortexDataLake import (
+    FIRST_FAILURE_TIME_CONST,
+    LAST_FAILURE_TIME_CONST,
+    STANDARD_TOKEN_URL,
+    IS_FEDRAMP_CONST,
+    FEDRAMP_TOKEN_URL,
+)
 
 HUMAN_READABLE_TIME_FROM_EPOCH_TIME_TEST_CASES = [
     (1582210145000000, False, "2020-02-20T14:49:05"),
@@ -458,51 +464,120 @@ class TestBackoffStrategy:
 
 
 @pytest.mark.parametrize(
-    "configured_reg_id_url, license_field_url, expected_result",
+    "configured_reg_id_url, mock_is_fedramp_return_value, expected_result",
     [
         pytest.param(
             "test_id_custom@https://custom.test.com/api",
-            "https://tenant.paloaltonetworks.com",
-            ("https://custom.test.com/api", "test_id_custom", False),
-            id="Custom URL in params. License field URL NOT used for token URL",
+            False,
+            ("https://custom.test.com/api", "test_id_custom"),
+            id="FedRAMP tenant with URL in registration ID",
         ),
         pytest.param(
             "test_id_fr",
-            "https://fr-tenant.federal.paloaltonetworks.com",
-            (FEDRAMP_TOKEN_URL, "test_id_fr", True),
-            id="No custom URL, FedRAMP tenant URL with a 'http(s)' scheme",
+            True,
+            (FEDRAMP_TOKEN_URL, "test_id_fr"),
+            id="FedRAMP tenant without URL in registration ID",
         ),
         pytest.param(
-            "test_id_std",
-            "https://std-tenant.paloaltonetworks.com",
-            (STANDARD_TOKEN_URL, "test_id_std", False),
-            id="No custom URL, a standard tenant URL with a scheme",
-        ),
-        pytest.param(
-            "test_id_fr_nohost",
-            "fr-tenant.federal.paloaltonetworks.com",
-            (FEDRAMP_TOKEN_URL, "test_id_fr_nohost", True),
-            id="No custom URL, FedRAMP tenant URL WITHOUT 'http(s)' scheme",
+            "test_id_std@https://custom.test.com/api",
+            False,
+            ("https://custom.test.com/api", "test_id_std"),
+            id="Standard tenant with URL in registration ID",
         ),
         pytest.param(
             "test_id_std_nohost",
-            "std-tenant.paloaltonetworks.com",
-            (STANDARD_TOKEN_URL, "test_id_std_nohost", False),
-            id="No custom URL, standard tenant URL WITHOUT 'http(s)' scheme",
+            False,
+            (STANDARD_TOKEN_URL, "test_id_std_nohost"),
+            id="Standard tenant without URL in registration ID",
         ),
     ],
 )
-def test_extract_client_args(mocker: MockerFixture, configured_reg_id_url: str, license_field_url: str, expected_result: tuple):
+def test_extract_client_args(
+    mocker: MockerFixture,
+    configured_reg_id_url: str,
+    mock_is_fedramp_return_value: bool,
+    expected_result: tuple,
+):
     """
     Given:
         - Configured "Registration ID" param value.
     When:
         - Calling `extract_client_args`.
     Then:
-        - Assert returned token retrieval URL, the registration ID, and FedRAMP status are as expected.
+        - Assert returned token retrieval URL and registration ID are as expected.
     """
-    from CortexDataLake import demisto, extract_client_args
+    from CortexDataLake import extract_client_args
 
-    mocker.patch.object(demisto, "getLicenseCustomField", return_value=license_field_url)
+    mocker.patch("CortexDataLake.is_fedramp_tenant", return_value=mock_is_fedramp_return_value)
     result = extract_client_args(configured_reg_id_url)
     assert result == expected_result
+
+
+@pytest.mark.parametrize(
+    "license_field_url, integration_context, expected_is_fedramp",
+    [
+        pytest.param(
+            "https://tenant1.paloaltonetworks.com",
+            {IS_FEDRAMP_CONST: False},
+            False,
+            id="Standard tenant with 'https' scheme and integration context",
+        ),
+        pytest.param(
+            "https://tenant1.paloaltonetworks.com",
+            {},
+            False,
+            id="Standard tenant with 'https' scheme and no integration context",
+        ),
+        pytest.param(
+            "tenant2.paloaltonetworks.com",
+            {},
+            False,
+            id="Standard tenant without 'https' scheme and no integration context",
+        ),
+        pytest.param(
+            "https://fr-tenant1.federal.paloaltonetworks.com",
+            {IS_FEDRAMP_CONST: True},
+            True,
+            id="FedRAMP tenant with 'https' scheme and integration context",
+        ),
+        pytest.param(
+            "https://fr-tenant1.federal.paloaltonetworks.com",
+            {},
+            True,
+            id="FedRAMP tenant with 'https' scheme and no integration context",
+        ),
+        pytest.param(
+            "fr-tenant2.federal.paloaltonetworks.com",
+            {},
+            True,
+            id="FedRAMP tenant without 'https' scheme and no integration context",
+        ),
+    ],
+)
+def test_is_fedramp_tenant(
+    mocker: MockerFixture,
+    integration_context,
+    license_field_url: str,
+    expected_is_fedramp: bool,
+):
+    """
+    Given:
+        - The integration context and the domain name from `demisto.getLicenseCustomField`.
+    When:
+        - Calling `is_fedramp_tenant`.
+    Then:
+        - Assert function calls are as expected and returned FedRAMP status is correct.
+    """
+    from CortexDataLake import demisto, is_fedramp_tenant
+
+    mock_get_integration_context = mocker.patch.object(demisto, "getIntegrationContext", return_value=integration_context)
+    mock_set_integration_context = mocker.patch.object(demisto, "setIntegrationContext")
+    mocker_get_license_custom_field = mocker.patch.object(demisto, "getLicenseCustomField", return_value=license_field_url)
+    is_cached = IS_FEDRAMP_CONST in integration_context
+
+    is_fedramp = is_fedramp_tenant()
+
+    assert mock_get_integration_context.call_count == 1
+    assert mocker_get_license_custom_field.call_count == 0 if is_cached else 1
+    assert mock_set_integration_context.call_count == 0 if is_cached else 1
+    assert is_fedramp == expected_is_fedramp

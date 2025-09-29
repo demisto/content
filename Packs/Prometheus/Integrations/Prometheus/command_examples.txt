@@ -1,0 +1,3 @@
+!prometheus-query fields="co2|solar|temperature"
+!prometheus-query fields="go_info|node_hwmon_temp_celsius"
+!prometheus-raw query="{__name__=~'^(go_info|node_hwmon_temp_celsius)$'}"

@@ -341,6 +341,18 @@ def test_module(client: Client, *_) -> tuple[str, dict[Any, Any], list[Any]]:
     params = demisto.params()
 
     if params.get("isFetch"):
+        dialect = params.get("dialect")
+        if params.get("dialect") not in {MY_SQL, MICROSOFT_SQL_SERVER, MS_ODBC_DRIVER}:
+            return (
+                (
+                    f"Fetch Incidents is supported only for the following SQL databases: "
+                    f"'{MICROSOFT_SQL_SERVER}', '{MS_ODBC_DRIVER}', and '{MY_SQL}'. "
+                    f"Current dialect '{dialect}' is not supported."
+                ),
+                {},
+                [],
+            )
+
         if not params.get("query"):
             msg += "Missing parameter Fetch events query. "
 

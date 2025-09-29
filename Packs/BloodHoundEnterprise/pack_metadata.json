@@ -1,11 +1,11 @@
 {
     "name": "BloodHound Enterprise",
     "description": "BloodHound Enterprise identifies and remediates Active Directory vulnerabilities to enhance security posture.",
-    "support": "xsoar",
-    "currentVersion": "1.0.3",
-    "author": "Cortex XSOAR",
-    "url": "https://www.paloaltonetworks.com/cortex",
-    "email": "",
+    "support": "partner",
+    "currentVersion": "1.0.5",
+    "author": "SpecterOps",
+    "url": "https://bloodhound.specterops.io/",
+    "email": "sales@specterops.io",
     "categories": [
         "Identity and Access Management"
     ],

@@ -628,11 +628,13 @@ def create_filter_query(filter_param: str, providers_param: str, service_sources
                 providers_query.append(f"vendorInformation/provider eq '{provider}'")
             filter_query = " or ".join(providers_query)
         elif API_VER == API_V2 and service_sources_param:
-            service_sources_query = []
-            service_sources_lst = service_sources_param.split(",")
-            for service_source in service_sources_lst:
-                service_sources_query.append(f"serviceSource eq '{service_source}'")
-            filter_query = " or ".join(service_sources_query)
+            demisto.debug("In API V2 and service sources param")
+            service_sources_lst = [source.strip() for source in service_sources_param.split(",")]
+            # This creates a string like: "serviceSource in ('source1','source2')"
+            # see docs supporting this operation: https://learn.microsoft.com/en-us/graph/filter-query-parameter?tabs=http
+            quoted_sources = [f"'{source}'" for source in service_sources_lst]
+            filter_query = f"serviceSource in ({','.join(quoted_sources)})"
+    demisto.debug("filter query: " + str(filter_query))
     return filter_query
 
 
@@ -2081,7 +2083,6 @@ def main():
     }
     command = demisto.command()
     LOG(f"Command being called is {command}")
-
     try:
         auth_code = params.get("auth_code", {}).get("password")
         redirect_uri = params.get("redirect_uri")

@@ -510,6 +510,24 @@ def test_reformat_output():
                 },
             ],
         },
+        {
+            "endpoint_name": "name3",
+            "endpoint_ip_address": ["11.11.11.11"],
+            "endpoint_status": "STATUS_020_CONNECTED",
+            "domain": "",
+            "endpoint_id": "dummy_id3",
+            "executed_command": [
+                {
+                    "failed_files": 0,
+                    "retention_date": None,
+                    "retrieved_files": 0,
+                    "standard_output": "output",
+                    "execution_status": "COMPLETED_SUCCESSFULLY",
+                    "command_output": None,
+                    "command": None,
+                }
+            ],
+        },
     ]
     assert reformatted_outputs == excepted_output
 
@@ -535,8 +553,26 @@ def test_reformat_readable():
 | dummy_id | echo hello | hello | 2.2.2.2 | name | STATUS_010_CONNECTED |
 | dummy_id2 | echo |  | 11.11.11.11 | name2 | STATUS_010_CONNECTED |
 | dummy_id2 | echo hello | hello | 11.11.11.11 | name2 | STATUS_010_CONNECTED |
+| dummy_id3 |  |  | 11.11.11.11 | name3 | STATUS_020_CONNECTED |
 """
     assert reformatted_readable_output == excepted_output
+
+
+@pytest.mark.parametrize("result", load_test_data("./test_data/execute_command_response.json")["results"])
+def test_reformat_command_data(result):
+    """
+    Given:
+        - Response from polling command.
+    When:
+        - Calling `core_execute_command_reformat_command_data` with response.
+    Then:
+        - Verify function output removes the underscore prefix from the command name.
+    """
+    from CortexCoreIR import core_execute_command_reformat_command_data
+
+    reformatted_command_data = core_execute_command_reformat_command_data(result)
+
+    assert not str(reformatted_command_data["command"]).startswith("_")
 
 
 @freeze_time("2024-01-01T12:00:00Z")

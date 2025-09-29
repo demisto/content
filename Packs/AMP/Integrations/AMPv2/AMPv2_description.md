@@ -16,3 +16,7 @@ The following commands support polling:
 - `cisco-amp-computer-isolation-delete`
 
 The polling is done when the status of an endpoint has changed.
+
+# Get License Information
+The following command is used to get license information about the tenant such as number of connectors
+      registered, tier level and licensed seats count: `cisco-amp-license-get`

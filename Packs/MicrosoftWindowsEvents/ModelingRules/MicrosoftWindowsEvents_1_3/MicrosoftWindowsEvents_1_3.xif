@@ -24,7 +24,7 @@ filter channel in ("System", "Application","Directory Service") or provider_name
         event_fwlink = event_data->["FWLink"],
         execution_name = event_data -> ["Execution Name"],
         SubjectKeyIdentifier = event_data -> SubjectKeyIdentifier,
-        event_name = arrayindex(regextract(message, "([^\.]+)\."), 0),
+        event_name = arrayindex(regextract(message, "^([^:.(]+)"), 0),
         TicketEncryptionType = to_string(event_data -> TicketEncryptionType),
         IpPort = coalesce(event_data -> IpPort, event_data -> SourcePort),
         IpAddress = coalesce(event_data -> IpAddress, event_data -> SourceAddress),
@@ -59,7 +59,7 @@ filter channel in ("System", "Application","Directory Service") or provider_name
         threat_id = if(provider_name = "Microsoft-Windows-Windows Defender" and ((event_id_num >= 1006 and event_id_num <= 1012) or event_id_num = 1015 or (event_id_num >= 1116 and event_id_num <= 1119)), arrayindex(regextract(message, "ID:\s*(\w+)\s+\w+:"), 0)),
         threat_category = if(provider_name = "Microsoft-Windows-Windows Defender" and ((event_id_num >= 1006 and event_id_num <= 1012) or event_id_num = 1015 or (event_id_num >= 1116 and event_id_num <= 1119)), arrayindex(regextract(message, "Category:\s*(.+?)\s+\w+:"), 0)),
         threat_name = if(provider_name = "Microsoft-Windows-Windows Defender" and ((event_id_num >= 1006 and event_id_num <= 1012) or event_id_num = 1015 or (event_id_num >= 1116 and event_id_num <= 1119)), arrayindex(regextract(message, "Name:\s*(.+?)\s+ID:"), 0)),
-        user_domain = coalesce(user -> domain, event_data -> Domain, event_data -> SubjectDomainName, user_data -> SubjectDomainName, arrayindex(regextract(message, "User:\s*([^\\]+)"), 0)),
+        user_domain = coalesce(user -> domain, event_data -> Domain, if(event_data -> SubjectDomainName in ("-", " - "), null, event_data -> SubjectDomainName), if(user_data -> SubjectDomainName in ("-", " - "), null, user_data -> SubjectDomainName)),
         user_name = coalesce(user -> name, event_data -> User, event_data -> SubjectUserName, user_data -> SubjectUserName, arrayindex(regextract(message, "User:\s*(?:[^\\]+\\)*(\S+)"), 0), arrayindex(regextract(message, "User \"([^\"]+)\""), 0), if(channel="Application" and event_data -> param3 contains "*\\*", event_data -> param3),event_data -> ["Detection User"],event_data -> ["Requester"]), 
         user_sid = coalesce(event_data -> SID, event_data -> SubjectUserSid, user -> identifier, user -> SubjectUserSid, event_data -> UserSid, if(provider_name = "Microsoft-Windows-Windows Firewall With Advanced Security", arrayindex(regextract(message, "Modifying\s*User\:\s+(.*)\b\s+Modifying\s+Application:"), 0))),
         user_type = user -> type

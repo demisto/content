@@ -2,7 +2,7 @@
     "name": "Asimily Insight",
     "description": "Integrate Asimily Insight to ingest security anomalies, CVEs, and leverage detailed asset data for streamlined incident investigation.",
     "support": "partner",
-    "currentVersion": "1.0.0",
+    "currentVersion": "1.0.1",
     "author": "Asimily",
     "url": "http://asimily.zendesk.com/",
     "email": "support@asimily.com",
@@ -39,7 +39,8 @@
         "OT"
     ],
     "marketplaces": [
-        "xsoar"
+        "xsoar",
+        "marketplacev2"
     ],
     "githubUser": [
         "amelia-asimily"

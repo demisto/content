@@ -28,9 +28,10 @@ The License ID will be used in Step 4.
 6. In Palo Alto Networks Cortex XSOAR, navigate to **Settings** > **Integrations** > **Servers & Services**.
 7. Search for Strata Logging Service XSOAR Connector.
 8. Click **Add instance** to create and configure a new integration instance.
-    * **Name**: a textual name for the integration instance.
+    * **Name**: A textual name for the integration instance.
     * **Authentication Token**: Retrieved in the authentication process in Step 4.
     * **Registration ID**: Retrieved in the authentication process in Step 4.
+      * The token retrieval URL is inferred based on the tenant's FedRAMP status unless explicitly specified in the **Registration ID** parameter in the format `REGISTRATION_ID@URL`.
     * **Encryption Key**: Retrieved in the authentication process in Step 4.
     * **Fetch incidents**: Whether to fetch incidents or not.
     * **first_fetch_timestamp**: First fetch time (\<number\> \<time unit\>, e.g., 12 hours, 7 days, 3 months, 1 year).
