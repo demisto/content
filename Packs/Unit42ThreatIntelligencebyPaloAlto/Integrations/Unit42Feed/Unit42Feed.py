@@ -39,6 +39,21 @@ VERDICT_TO_SCORE = {
     "unknown": Common.DBotScore.NONE,
 }
 
+# Define valid regions enum
+VALID_REGIONS = {
+    "australia and oceania": "Australia And Oceania",
+    "antarctica": "Antarctica",
+    "north america": "North America",
+    "south asia": "South Asia",
+    "europe": "Europe",
+    "central america and the caribbean": "Central America And The Caribbean",
+    "africa": "Africa",
+    "east and southeast asia": "East And Southeast Asia",
+    "middle east": "Middle East",
+    "central asia": "Central Asia",
+    "south america": "South America",
+}
+
 
 #### DBotScoreReliability ####
 class DBotScoreReliability:
@@ -678,9 +693,8 @@ def map_threat_object(threat_object: dict, feed_tags: list = [], tlp_color: str 
     xsoar_indicator_type = INDICATOR_TYPE_MAPPING.get(str(threat_class), Common.Indicator)
     
     # Create relationships
-    relationships = []
+    relationships, tags = create_relationships_and_tags(name, threat_class, threat_object.get("related_threat_objects", []))
     if argToBoolean(demisto.params().get("create_relationships")):
-        relationships, _ = create_relationships_and_tags(name, threat_class, threat_object.get("related_threat_objects", []))
         relationships += create_campaigns_relationships(name, threat_class, threat_object)
         relationships += create_attack_patterns_relationships(threat_object, name, threat_class)
         relationships += create_malware_relationships(threat_object, name, threat_class)
@@ -701,7 +715,7 @@ def map_threat_object(threat_object: dict, feed_tags: list = [], tlp_color: str 
         ),
         "publications": create_publications(threat_object.get("publications", [])),
         "geocountry": demisto.get(threat_object, "battlecard_details.threat_actor_details.origin", "").upper(),
-        "tags": feed_tags,
+        "tags": tags + feed_tags,
         "tlp_color": tlp_color,
     }
 
