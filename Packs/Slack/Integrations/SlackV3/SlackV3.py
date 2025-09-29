@@ -2730,11 +2730,11 @@ def list_channels():
     )
 
 
-def get_private_conversation_id_by_user_name(user_name: str):
+def get_direct_message_channel_id_by_username(username: str):
     try:
-        user_details = get_user_by_name(user_name)
-        demisto.debug(f"user_details: {user_details}")
-        user_id = user_details.get("id")
+        user_info = get_user_by_name(username)
+        demisto.debug(f"user_info: {user_info}")
+        user_id = user_info.get("id")
         raw_response = send_slack_request_sync(
             CLIENT, "conversations.open", http_verb="POST", body={"users": user_id, "prevent_creation": True}
         )
@@ -2745,13 +2745,13 @@ def get_private_conversation_id_by_user_name(user_name: str):
         demisto.debug(f"Error opening conversation: {slack_error}")
 
 
-def extract_channel_id_by_channel_name(channel_name):
+def resolve_channel_id_from_name(channel_name: str):
     # Try to get channel id in case channel_name is user name
-    channel_id = get_private_conversation_id_by_user_name(channel_name)
+    channel_id = get_direct_message_channel_id_by_username(channel_name)
     if channel_id is None:
         # Try to get channel id in case channel_name is channel name
-        channel = get_conversation_by_name(channel_name)
-        channel_id = channel.get("id")
+        conversation_info = get_conversation_by_name(channel_name)
+        channel_id = conversation_info.get("id")
         demisto.debug(f"Channel id of channel {channel_name} is: {channel_id}")
 
     if channel_id is None:
