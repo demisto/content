@@ -483,7 +483,7 @@ def main():  # pragma: no cover
             )
             events, command_result = get_events_command(client, "admin_audits", last_run, max_limit)  # type: ignore
             if argToBoolean(args.get("should_push_events", False)):
-                # send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+                send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
                 demisto.debug(f"[cyberarkepm-get-admin-audits] send_events_to_xsiam: {events=}")
             return_results(command_result)
 
