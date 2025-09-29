@@ -98,6 +98,7 @@ class DBotScoreReliability:
             return DBotScoreReliability.F
         raise Exception("Please use supported reliability only.")
 
+
 class Client(BaseClient):
     def __init__(self, headers, verify=False, proxy=False):
         """Implements class for Unit 42 feed.
@@ -273,7 +274,9 @@ def map_indicator(indicator_data: dict, feed_tags: list = [], tlp_color: str | N
     relationships = []
     tags = []
     if indicator_data.get("threat_object_associations"):
-        relationships, tags = create_relationships_and_tags(indicator_value, indicator_type, indicator_data.get("threat_object_associations"))
+        relationships, tags = create_relationships_and_tags(
+            indicator_value, indicator_type, indicator_data.get("threat_object_associations")
+        )
 
     # Create fields
     fields = {
@@ -303,7 +306,7 @@ def map_indicator(indicator_data: dict, feed_tags: list = [], tlp_color: str | N
         "fields": fields,
         "rawJSON": indicator_data,
     }
-    
+
     return indicator
 
 
@@ -324,7 +327,7 @@ def map_threat_object(threat_object: dict, feed_tags: list = [], tlp_color: str 
 
     # Map the threat object class to XSOAR type
     xsoar_indicator_type = INDICATOR_TYPE_MAPPING.get(str(threat_class), Common.Indicator)
-    
+
     fields = {
         "description": threat_object.get("description"),
         "updateddate": threat_object.get("updated_at"),
