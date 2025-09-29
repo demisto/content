@@ -704,26 +704,26 @@ def test_create_client_list_command(mocker, akamai_waf_client):
     assert expected_context_entry == context_entry
 
 
-def test_delete_client_list_command(mocker, akamai_waf_client):
+def test_deprecate_client_list_command(mocker, akamai_waf_client):
     """
     Given:
         - A client and a client_list_id.
     When:
-        - running the command delete_client_list_command.
+        - running the command deprecate_client_list_command.
     Then:
         - The returned values (human_readable, context_entry, raw_response) are correct.
     """
-    from Akamai_WAF import delete_client_list_command
+    from Akamai_WAF import deprecate_client_list_command
     import requests
 
-    test_data = util_load_json("test_data/delete_client_list_test.json")
+    test_data = util_load_json("test_data/deprecate_client_list_test.json")
     expected_human_readable = test_data.get("human_readable")
 
     mock_response = requests.Response()
     mock_response.status_code = 204
-    mocker.patch.object(akamai_waf_client, "delete_client_list", return_value=mock_response)
+    mocker.patch.object(akamai_waf_client, "deprecate_client_list", return_value=mock_response)
 
-    human_readable, _, _ = delete_client_list_command(client=akamai_waf_client, client_list_id="12345")
+    human_readable, _, _ = deprecate_client_list_command(client=akamai_waf_client, client_list_id="12345")
     assert expected_human_readable == human_readable
 
 

@@ -3525,7 +3525,6 @@ def normalize_to_iso8601(date_str: str) -> str:
         return dt.strftime("%Y-%m-%dT%H:%M:%SZ")
     except Exception:
         demisto.error(f"Failed to parse date: {date_str}")
-        pass
     try:
         iso_input = date_str.replace("Z", "+00:00")
         dt2 = datetime.fromisoformat(iso_input)
