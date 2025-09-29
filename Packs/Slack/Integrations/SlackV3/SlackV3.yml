@@ -496,7 +496,7 @@ script:
       name: conversation_id
       deprecated: true
     - description: |
-        Lower bound for conversation history (sent to Slack 'oldest' query parameter). Returns messages with 'time stamp ≥ this value. Accepts Unix timestamp (e.g., "1727448000.000200").
+        Lower bound for conversation history (sent to Slack 'oldest' query parameter). Returns messages with time stamp ≥ this value. Accepts Unix timestamp (e.g., "1727448000.000200").
       name: from_time
     description: Fetches a conversation's history of messages and events.
     name: slack-get-conversation-history
