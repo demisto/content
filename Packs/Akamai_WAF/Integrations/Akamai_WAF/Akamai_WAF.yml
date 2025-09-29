@@ -254,14 +254,14 @@ script:
       required: true
     - description: The War Room entry ID of the sample file.
       name: entry_id
-    - description: A comma-separated list of elements to add to the network list.
+    - description: A comma-separated list of elements to be added to the network list.
       isArray: true
       name: elements
     description: Deprecated. Use “akamai-add-client-list-entry” instead.
     name: akamai-add-elements-to-network-list
     deprecated: true
   - arguments:
-    - description: The ID of the network list from which to remove elements.
+    - description: The ID of the network list from which elements are removed.
       name: network_list_id
       required: true
     - description: The element to remove from the network list.
@@ -271,7 +271,7 @@ script:
     name: akamai-remove-element-from-network-list
     deprecated: true
   - arguments:
-    - description: 'A comma-separated list of network list IDs for which to get the activation status. For example: (support list - list1,list2).'
+    - description: 'A comma-separated list of network list IDs, to check the activation status. For example: support list - list1,list2.'
       isArray: true
       name: network_list_ids
       required: true
@@ -577,7 +577,7 @@ script:
     - name: client_list_id
       description: An optional URL parameter to get a specific client list.
     - name: name
-      description: Filters the output to lists matching a name.
+      description: Filters the output to show only lists that match a given name.
     - name: include_items
       description: Include items in the response.
       auto: PREDEFINED
@@ -593,9 +593,9 @@ script:
       - 'false'
       defaultValue: 'false'
     - name: search
-      description: Returns results that match the specified substring in any client list's details or entry details.
+      description: Returns results that contain the specified substring in any client list or entry details.
     - name: type_list
-      description: 'Filters the output to lists of specified types. Repeat the parameter to filter on more than one type. Valid values: IP, GEO, ASN, TLS_FINGERPRINT,FILE_HASH.'
+      description: 'Filters the output to show only lists of the specified types. Repeat the parameter to filter by multiple types. Valid values: IP, GEO, ASN, TLS_FINGERPRINT, FILE_HASH.'
       isArray: true
       auto: PREDEFINED
       predefined:
@@ -629,7 +629,7 @@ script:
   - arguments:
     - name: name
       required: true
-      description: The name for the new client list.
+      description: The name of the new client list.
     - name: type
       required: true
       auto: PREDEFINED
@@ -643,33 +643,33 @@ script:
       description: The type of client list.
     - name: contract_id
       required: true
-      description: The contract ID. This value can be retrieved by running the `akamai-get-contract-group` command.
+      description: The contract ID. You can get this value by running the `akamai-get-contract-group` command.
     - name: group_id
       required: true
-      description: The group ID. This value can be retrieved by running the `akamai-get-contract-group` command.
+      description: The group ID. You can get this value by running the `akamai-get-contract-group` command.
     - name: notes
-      description: A description for the client list.
+      description: A description of the client list.
     - name: tags
       isArray: true
-      description: A list of tags to associate with the client list.
+      description: A list of tags to attach to the client list.
     - name: entry_value
-      description: The value for a single entry in the client list.
+      description: The value of a single entry in the client list.
     - name: entry_description
-      description: A description for the entry.
+      description: A description of the entry.
     - name: entry_expiration_date
       description: The expiration date for the entry. Use ISO 8601 format (e.g. 2025-09-29 or 2025-09-29T13:15:28).
     - name: entry_tags
       isArray: true
-      description: A list of tags for the entry.
+      description: A list of tags attached to the entry.
     name: akamai-create-client-list
     outputs:
     - contextPath: Akamai.ClientList
-      description: The created client list.
+      description: The client list that was created.
       type: unknown
   - arguments:
     - name: client_list_id
       required: true
-      description: The ID of the client list to deprecate.
+      description: The ID of the client list to be deprecated.
     name: akamai-deprecate-client-list
   - name: akamai-activate-client-list
     polling: true
@@ -684,9 +684,9 @@ script:
         predefined:
           - STAGING
           - PRODUCTION
-        description: The network environment to activate the list on.
+        description: The network environment where the list will be activated.
       - name: comments
-        description: A description for the activation.
+        description: A description of the activation.
       - name: notification_recipients
         isArray: true
         description: A list of email addresses to notify.
@@ -719,9 +719,9 @@ script:
         description: The ID of the client list.
       - name: value
         required: true
-        description: The value for the new entry.
+        description: The value of the new entry.
       - name: description
-        description: A description for the new entry.
+        description: A description of the new entry.
       - name: expiration_date
         description: The expiration date for the new entry. Use ISO 8601 format (e.g. 2025-09-29 or 2025-09-29T13:15:28).
       - name: tags
@@ -752,9 +752,9 @@ script:
         description: The ID of the client list to update.
       - name: name
         required: true
-        description: The new name for the client list.
+        description: The new name of the client list.
       - name: notes
-        description: The new description for the client list.
+        description: The new description of the client list.
       - name: tags
         isArray: true
         description: The new tags for the client list.
@@ -775,7 +775,7 @@ script:
         predefined:
           - STAGING
           - PRODUCTION
-        description: The network environment to deactivate the list on.
+        description: The network environment where the list is deactivated.
       - name: comments
         description: A description for the deactivation.
       - name: notification_recipients
