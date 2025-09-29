@@ -28,7 +28,6 @@ MAX_CUSTOMER_EVENTS_PER_FETCH = 2000
 MAX_USER_DATA_PER_FETCH = 1250
 
 # API limits
-MAX_CUSTOMER_EVENTS_PER_PAGE = 2000
 MAX_USER_DATA_PER_PAGE = 250
 
 # -------------------- Utilities --------------------
@@ -97,7 +96,6 @@ class AuthClient(BaseClient):
             "scope": "signature impersonation organization_read user_read",
         }
 
-        # Generate the JWT
         token = jwt.encode(payload, self.private_key_pem, algorithm="RS256", headers=headers)
         return token
 
@@ -130,7 +128,9 @@ class AuthClient(BaseClient):
         expired_at = _utcnow() + dt.timedelta(seconds=expires_in_seconds)
         return access_token, expired_at
 
-    def get_user_info(self, access_token: str) -> str:
+    def get_user_info(self, access_token: str) -> str: # [V] reviewed
+        """Fetch user information from /oauth/userinfo endpoint."""
+
         url = urljoin(self.server_url, "/oauth/userinfo")
         headers = {"Authorization": f"Bearer {access_token}"}
         resp = self._http_request(method="GET", full_url=url, headers=headers, resp_type="json")
@@ -145,9 +145,6 @@ class AuthClient(BaseClient):
 
         Returns:
             str: Base URI for the user's account
-
-        Raises:
-            DemistoException: If user info is invalid or missing required data
         """
 
         user_info = self.get_user_info(access_token)
@@ -165,29 +162,13 @@ class AuthClient(BaseClient):
         raise DemistoException(f"{LOG_PREFIX}: /oauth/userinfo missing configuration account id: {account_id}.")
 
     def get_token(self) -> tuple[str, dt.datetime]: # [V] reviewed
-        """
-        Exchange JWT for access token using DocuSign OAuth flow.
-
-        Args:
-            scopes: Space-separated OAuth scopes to request
-            
-        Returns:
-            str: Access token for DocuSign API authentication
-
-        """
+        """Exchange JWT for access token using DocuSign OAuth flow."""
         assertion = self.get_jwt() # NOTE:  design - step 2
         access_token, expired_at = self.exchange_jwt_to_access_token(assertion) # NOTE: design - step 3
         return access_token, expired_at
 
 def is_access_token_expired(expired_at: dt.datetime) -> bool: # [V] reviewed
-    """Check if access token is expired.
-    
-    Args:
-        expired_at: Expiration time of access token
-        
-    Returns:
-        bool: True if access token is expired, False otherwise
-    """
+    """Check if access token is expired."""
 
     is_not_expired = expired_at > _utcnow() + dt.timedelta(minutes=1)
     if is_not_expired:
@@ -235,54 +216,37 @@ def get_access_token(client: AuthClient) -> str: # [V] reviewed
         demisto.debug(f"{LOG_PREFIX}Error retrieving access token: {str(e)}")
         raise DemistoException(f"Error retrieving access token: {str(e)}")
 
-# [V] reviewed
-def get_customer_events(last_run: dict, limit: int, events_per_page: int, client: CustomerEventsClient) -> tuple[list, dict]:
+def get_customer_events(last_run: dict, limit: int, client: CustomerEventsClient) -> tuple[list, dict]: # [V] reviewed
     """Fetch customer events from DocuSign Monitor API.
         
     Args:
         client: Initialized DocuSign client
         last_run: Previous fetch state containing cursor
         limit: Maximum number of events to fetch
-        events_per_page: Number of events per page
     Returns:
         tuple: (events, last_run) where last_run is the updated state and events are the fetched events.
     """
-    # one_minute_ago = '2025-08-25T14:00:13Z' # TODO: change delete before release
     one_minute_ago = timestamp_to_datestring(int(time.time() - 60) * 1000, date_format="%Y-%m-%dT%H:%M:%SZ")
     cursor = last_run.get("cursor") or one_minute_ago
+    demisto.debug(f"{LOG_PREFIX}Customer Events: requesting {limit} events with cursor: {cursor}")
 
-    total_events: list = []
-    request_count = 1
-
-    # TODO: after solving the issue with the limit parameter, The pagination is not needed, because 2000 is the max limit.
-    # delete loop and remaining_logs, only fetch 1 request per page.
-    while len(total_events) < limit:
-        remaining_logs = limit - len(total_events)
-        events_per_page = min(events_per_page, remaining_logs)
-        
-        demisto.debug(f"{LOG_PREFIX} Request number {request_count}: requesting {events_per_page} events with cursor: {cursor}")
-        try:
-            resp = client.get_customer_events_request(cursor, events_per_page)
-        except Exception as e:
-            demisto.debug(f"{LOG_PREFIX}Exception during get customer events. Exception is {e!s}")
-            raise DemistoException(f"Exception during get customer events. Exception is {e!s}")
+    try:
+        resp = client.get_customer_events_request(cursor, limit)
 
         cursor = resp.get("endCursor")
-        fetched_events = resp.get("data") or []
-        total_events.extend(fetched_events)
-        
-        demisto.debug(
-            f"{LOG_PREFIX}{len(fetched_events)} events fetched from request number {request_count}\n"
-            f"Total customer events fetched: {len(total_events)}")
+        total_events = resp.get("data", [])
+        demisto.debug(f"Total customer events fetched: {len(total_events)}")
 
-        if not fetched_events:
-            demisto.info(f"{LOG_PREFIX} No more data available")
-            break
+        if not total_events:
+            demisto.info(f"{LOG_PREFIX} Customer Events: No data available for cursor: {cursor}")
         
-        request_count += 1
+        last_run["cursor"] = cursor
+        return total_events, last_run
+    
+    except Exception as e:
+        demisto.debug(f"{LOG_PREFIX}Exception during get customer events. Exception is {e!s}")
+        raise DemistoException(f"Exception during get customer events. Exception is {e!s}")
 
-    last_run["cursor"] = cursor
-    return total_events, last_run
 
 class CustomerEventsClient(BaseClient):
     """
@@ -308,25 +272,15 @@ class CustomerEventsClient(BaseClient):
     def get_env_from_server_url(self, server_url: str) -> str: # [V] reviewed
         return "dev" if "account-d.docusign.com" in server_url else "prod"
 
-    def get_customer_events_request(self, cursor: str, events_per_page: int) -> dict: # [V] reviewed
-        """
-        Send GET request to fetch a stream of customer events from DocuSign Monitor API.
-        
-        Args:
-            cursor: Pagination cursor for resuming from a specific point
-            events_per_page: Maximum number of events to return in the current request(capped at MAX_CUSTOMER_EVENTS_PER_PAGE)
-            
-        Returns:
-            dict: Response from DocuSign Monitor API containing customer events
-            
-        """
-        client = initiate_auth_client()
-        access_token = get_access_token(client)
+    def get_customer_events_request(self, cursor: str, limit: int) -> dict: # [V] reviewed
+        """Send GET request to fetch a stream of customer events from DocuSign Monitor API."""
+
+        auth_client = initiate_auth_client()
+        access_token = get_access_token(auth_client)
         headers = {"Authorization": f"Bearer {access_token}", "Accept": "application/json", "Content-Type": "application/json"}
-        params = {"cursor": cursor, "limit": events_per_page}
+        params = {"cursor": cursor, "limit": limit}
         
         demisto.debug(f"{LOG_PREFIX}Requesting customer events\nParams: {params}")
-
         resp = self._http_request(method="GET", headers=headers, params=params, resp_type="json")
         return resp
 
@@ -423,7 +377,7 @@ class UserDataClient(BaseClient):
         )
         return resp.json()
 
-def fetch_user_data(last_run: dict) -> tuple[dict, list]:
+def fetch_user_data(last_run: dict) -> tuple[dict, list]: # [V] reviewed
     params = demisto.params()
   
     limit = min(MAX_USER_DATA_PER_FETCH, int(params.get("max_user_events_per_fetch", MAX_USER_DATA_PER_FETCH)))
@@ -441,33 +395,24 @@ def fetch_user_data(last_run: dict) -> tuple[dict, list]:
     return last_run, user_data_events
 
 def get_user_data_events(last_run: dict, limit: int, events_per_page: int, client: UserDataClient) -> tuple[list, dict]:
-    """Fetch user data events from DocuSign Admin API.
-        
-    Args:
-        client: Initialized DocuSign client
-        last_run: Previous fetch state containing # TODO: containing...?
-        limit: Maximum number of events to fetch
-        events_per_page: Number of events per page
-    Returns:
-        tuple: (events, last_run) where last_run is the updated state and events are the fetched events.
-    """
-    
-    # Initial setup
-    scopes = "signature impersonation organization_read user_read" # TODO :why is it needed
-    # one_minute_ago = '2025-08-25T14:00:13Z' # TODO: change delete before release
-    one_minute_ago = timestamp_to_datestring(int(time.time() - 60) * 1000, date_format="%Y-%m-%dT%H:%M:%SZ")
-    last_modified_since = last_run.get("audit_last_modified_since") or one_minute_ago # TODO check the correct format for this parameter
 
+    params = demisto.params()
+
+    one_minute_ago = timestamp_to_datestring(int(time.time() - 60) * 1000, date_format="%Y-%m-%dT%H:%M:%SZ")
+    last_modified_since = last_run.get("audit_last_modified_since") or one_minute_ago
     next_url = last_run.get("audit_next_url", "")
 
-    start = None if next_url else 0
+    start = 0 # TODO: implement remaining events logic like monday collector and use the start as offset
     total_events = []
 
-    base_uri = 1 # TODO: implment base_uri getter
     max_seen_modified_iso = None # TODO: what is this?
     page_count = 0
     
     try:
+        auth_client = initiate_auth_client()
+        access_token = get_access_token(auth_client)
+        base_uri = auth_client.get_base_uri(access_token, params.get("account_id"))
+        
         while len(total_events) < limit:
             page_count += 1
             
@@ -481,7 +426,7 @@ def get_user_data_events(last_run: dict, limit: int, events_per_page: int, clien
             # Fetch a page of users synchronously
             try:
                 resp = client.admin_list_users(
-                    scopes=scopes,
+                    scopes="signature impersonation organization_read user_read",
                     base_uri=base_uri,
                     organization_id=demisto.params().get("organization_id", ""),
                     last_modified_since=last_modified_since,
@@ -584,7 +529,7 @@ def get_user_data_events(last_run: dict, limit: int, events_per_page: int, clien
 
     return total_events, last_run
 
-def initiate_user_data_client() -> UserDataClient:
+def initiate_user_data_client() -> UserDataClient:  # [V] reviewed
     """
     Create UserDataClient for making requests to DocuSign Admin API and fetching user data and fetching user details.
     """
@@ -645,14 +590,11 @@ def initiate_auth_client() -> AuthClient: # [V] reviewed
 
 def fetch_customer_events(last_run: dict) -> tuple[dict, list]: # [V] reviewed
     params = demisto.params()
-    
-    limit = min(MAX_CUSTOMER_EVENTS_PER_FETCH, int(params.get("max_customer_events_per_fetch", MAX_CUSTOMER_EVENTS_PER_FETCH)))
-    events_per_page = min(MAX_CUSTOMER_EVENTS_PER_PAGE, limit)
-    
+    limit = min(MAX_CUSTOMER_EVENTS_PER_FETCH, int(params.get("max_customer_events_per_fetch", MAX_CUSTOMER_EVENTS_PER_FETCH)))    
     try:
         demisto.debug(f"{LOG_PREFIX} last_run before fetching customer events: {last_run}")
         client = initiate_customer_events_client()
-        customer_events, last_run = get_customer_events(last_run, limit, events_per_page, client)
+        customer_events, last_run = get_customer_events(last_run, limit, client)
 
     except Exception as e:
         demisto.debug(f"{LOG_PREFIX}Exception during fetch customer events.\n{e!s}")
@@ -742,7 +684,7 @@ def command_generate_consent_url() -> CommandResults: # [V] reviewed
     return CommandResults(readable_output=md)
 
 
-def validate_params():
+def validate_params(): # [V] reviewed
     params = demisto.params()
     selected_fetch_types = params.get("event_types", "")
     
@@ -756,7 +698,7 @@ def validate_params():
     if CUSTOMER_EVENTS_TYPE in selected_fetch_types and not params.get("url"):
         raise DemistoException(f"Please provide Server URL for fetching {CUSTOMER_EVENTS_TYPE}.")
 
-def test_module() -> str:
+def test_module() -> str: # [V] reviewed
     validate_params()
 
     client = initiate_auth_client()
@@ -769,75 +711,13 @@ def test_module() -> str:
         
     demisto.debug(f"{LOG_PREFIX} Test module completed successfully")
     return "ok"
-
-def command_get_audit_users(client: DocuSignClient, config: Config, args: dict[str, Any]) -> CommandResults:
-    """Fetch audit user records from DocuSign.
-    
-    Args:
-        client: Initialized DocuSign client
-        config: Configuration object
-        args: Command arguments
-        
-    Returns:
-        CommandResults: Results to return to Demisto
-        
-    Raises:
-        DemistoException: If required parameters are missing
-    """
-    # Validate required parameters
-    params = demisto.params()
-    account_id = params.get("account_id", "")
-    organization_id = params.get("organization_id", "")
-    
-    if not account_id or not organization_id:
-        demisto.debug(f"{LOG_PREFIX} initiate_user_data_client function: Account ID or Organization ID is missing.")
-        raise DemistoException(f"{LOG_PREFIX}. initiate_user_data_client function: Account ID or Organization ID is missing.")
-
-    # Parse arguments
-    start = int(args.get("start", 0)) if not args.get("next") else None
-    take = min(
-        int(args.get("take", MAX_USER_DATA_PER_PAGE)),
-        MAX_USER_DATA_PER_PAGE
-    )
-    last_modified_since = args.get("last_modified_since") or _iso_z(_utcnow())
-    next_url = args.get("next") or None
-    
-    demisto.debug(
-        f"{LOG_PREFIX} Fetching audit users: "
-        f"start={start}, take={take}, last_modified_since={last_modified_since}"
-    )
-    
-    # Fetch audit users
-    events, state = get_audit_users_once(
-        client=client,
-        config=config,
-        start=start,
-        take=take,
-        last_modified_since=last_modified_since,
-        next_url=next_url
-    )
-    
-    return CommandResults(
-        readable_output=(
-            f"### Audit Users\n"
-            f"Fetched {len(events)} audit user records.\n"
-            f"**Next URL**: {state.get("audit_next_url", 'No more records')}"
-        ),
-        raw_response={"events": events, "state": state},
-        outputs_prefix="Docusign.AuditUsers",
-        outputs={
-            "Events": events,
-            "State": state,
-            "Count": len(events)
-        },
-    )
-
+  
 def main() -> None:
     try:
         command = demisto.command()
         demisto.debug(f"{LOG_PREFIX} Processing command: {command}")
 
-        if command == "test-module":
+        if command == "test-module": # [V] reviewed
             return_results(test_module())
 
         elif command == "fetch-events": # [V] reviewed
