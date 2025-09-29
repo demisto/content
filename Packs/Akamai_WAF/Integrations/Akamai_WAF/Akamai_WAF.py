@@ -3712,20 +3712,23 @@ def check_activation_status(
         Human readable, context entry, raw response
     """
     try:
-        timeout_seconds = int(timeout_seconds) if timeout_seconds is not None else 120
+        timeout_seconds = int(timeout_seconds) if timeout_seconds is not None else 180
     except (TypeError, ValueError):
-        timeout_seconds = 120
+        timeout_seconds = 180
     try:
         interval_seconds = int(interval_seconds) if interval_seconds is not None else 30
     except (TypeError, ValueError):
         interval_seconds = 30
 
-    timeout_seconds = min(timeout_seconds, 120)
+    timeout_seconds = min(timeout_seconds, 180)
     # ensure interval is at least 1 second to avoid zero/negative sleep
     interval_seconds = max(1, min(interval_seconds, 30))
     latest_status = pending_status
     activation_id = None
     start_time = time.time()
+    status_resp = {}
+    i: int = 0
+    demisto.debug(f"Starting polling for activation status with timeout {timeout_seconds} and interval {interval_seconds}")
     while latest_status == pending_status and (time.time() - start_time) < timeout_seconds:
         status_resp = client.get_client_list_activation_status(list_id, network_environment)
         if isinstance(status_resp, dict):
@@ -3734,7 +3737,6 @@ def check_activation_status(
                 items = status_resp["activations"].get("items") or []
             elif "items" in status_resp and isinstance(status_resp["items"], list):
                 items = status_resp["items"]
-            # Use the first item as latest
             if items:
                 latest = items[0]
                 latest_status = latest.get("activationStatus") or latest.get("status")
@@ -3755,26 +3757,25 @@ def check_activation_status(
                     "status": latest_status,
                 },
             )
+            context_entry: dict = {f"{INTEGRATION_CONTEXT_NAME}.Activation": status_resp}
             demisto.debug(f"Finished polling for status status is: {latest_status}")
-            demisto.debug(f"hr: {hr}")
-            demisto.debug(f"outputs: {INTEGRATION_CONTEXT_NAME}.Activation: {status_resp}")
-            demisto.debug(f"raw_response: {status_resp}")
-            return hr, f"{INTEGRATION_CONTEXT_NAME}.Activation: {status_resp}", status_resp
+            return hr, context_entry, status_resp
         else:
             elapsed_time = time.time() - start_time
             demisto.debug(f"check_activation_status: is '{latest_status}'. Elapsed time: {elapsed_time:.2f}s.")
             demisto.debug(f"check_activation_status Sleeping for {interval_seconds} seconds...\n")
             time.sleep(interval_seconds)
-    demisto.debug(f"Stopped polling as of timeout. stastus is: {latest_status}")
+    demisto.debug(f"Stopped polling as of timeout. status is: {latest_status}")
     hr = tableToMarkdown(
         f"Akamai WAF Client List {list_id}. Activation incompleted with status {latest_status}",
         {
             "activationId": activation_id,
-            "network": network or network_environment,
+            "network": network_environment,
             "status": latest_status,
         },
     )
-    return hr, f"{INTEGRATION_CONTEXT_NAME}.Activation: {status_resp}", f"Activation incompleted with status {latest_status}"
+    context_entry: dict = {f"{INTEGRATION_CONTEXT_NAME}.Activation": status_resp}
+    return hr, context_entry, status_resp
 
 
 def activate_client_list_command(
@@ -3787,7 +3788,7 @@ def activate_client_list_command(
     include_polling: str = "true",
     interval: int = 30,
     timeout: int = 60,
-) -> tuple[str, dict, dict]:
+):
     """
      Args:
         client: Akamai WAF client
@@ -3894,7 +3895,7 @@ def deactivate_client_list_command(
     include_polling: str = "true",
     interval: int = 30,
     timeout: int = 180,
-) -> tuple[str, dict, dict]:
+):
     """
     Args:
         client: Akamai WAF client
@@ -3914,7 +3915,7 @@ def deactivate_client_list_command(
     )
     if str(include_polling).lower() != "true":
         human_readable = tableToMarkdown(f"Akamai WAF Client List {list_id} triggered deactivation successfully", raw_response)
-        context_entry = {f"{INTEGRATION_CONTEXT_NAME}.Activation": raw_response}
+        context_entry: dict = {f"{INTEGRATION_CONTEXT_NAME}.Activation": raw_response}
         return human_readable, context_entry, raw_response
 
     else:
@@ -7367,6 +7368,10 @@ def main():
     }
     try:
         readable_output, outputs, raw_response = commands[command](client=client, **demisto.args())
+        demisto.debug(f"After command: {command}")
+        demisto.debug(f"readable_output: {readable_output} type: {type(readable_output)}")
+        demisto.debug(f"outputs: {outputs} type: {type(outputs)}")
+        demisto.debug(f"raw_response: {raw_response} type: {type(raw_response)}")
         return_outputs(readable_output, outputs, raw_response)
 
     except Exception as e:
