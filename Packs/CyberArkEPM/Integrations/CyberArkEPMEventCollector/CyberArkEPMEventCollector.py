@@ -2,6 +2,7 @@ from collections.abc import Callable
 from itertools import chain
 
 from bs4 import BeautifulSoup
+from bs4.element import Tag
 from dateutil import parser
 
 import demistomock as demisto  # noqa: F401
@@ -87,7 +88,11 @@ class Client(BaseClient):
         full_url = f"{self.application_url}?onetimetoken={self.get_session_token()}"
         result = self._http_request("POST", full_url=full_url, resp_type="response")
         soup = BeautifulSoup(result.text, features="html.parser")
-        saml_response = soup.find("input", {"name": "SAMLResponse"}).get("value")
+        saml_input = soup.find("input", {"name": "SAMLResponse"})
+        saml_response = saml_input.get("value") if isinstance(saml_input, Tag) else None
+        if not isinstance(saml_response, str):
+            # Covers: missing input, missing value, or unexpected non-string attribute type.
+            raise DemistoException("SAMLResponse value not found in authentication response.")
 
         return saml_response
 
