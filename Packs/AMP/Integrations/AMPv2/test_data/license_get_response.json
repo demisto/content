@@ -1,0 +1,26 @@
+{
+    "version": "version",
+    "metadata": {
+        "links": {
+            "self": "metadata_links_self"
+        },
+        "results": {
+            "total": "metadata_results_total",
+            "current_item_count": "metadata_results_current_item_count",
+            "index": "metadata_results_index",
+            "items_per_page": "metadata_results_items_per_page"
+        }
+    },
+    "data": {
+        "number_of_connectors_registered": "data_number_of_connectors_registered",
+        "number_of_connectors_seen_in_the_last_30_days": "data_number_of_connectors_seen_in_the_last_30_days",
+        "license_summaries": [
+            {
+                "licensed_seats_count": "data_license_summaries[0]_licensed_seats_count",
+                "start_date": "data_license_summaries[0]_start_date",
+                "end_date": "data_license_summaries[0]_end_date",
+                "tier": "data_license_summaries[0]_tier"
+            }
+        ]
+    }
+}
