@@ -1769,11 +1769,9 @@ def get_conversation_from_api_paginated(conversation_to_search):
     """
     body = {"types": "private_channel,public_channel", "exclude_archived": True, "limit": PAGINATED_COUNT}
     response = send_slack_request_sync(CLIENT, "conversations.list", http_verb="GET", body=body)
-    demisto.debug(f"Searching for channel '{conversation_to_search}' via paginated API")
 
     while True:
         conversations = response["channels"] if response and response.get("channels") else []
-        demisto.debug(f"Channels: {conversations}")
         cursor = response.get("response_metadata", {}).get("next_cursor")  # type: ignore
         conversation_filter = list(filter(lambda c: c.get("name").lower() == conversation_to_search, conversations))
         if conversation_filter:
@@ -2732,6 +2730,36 @@ def list_channels():
     )
 
 
+def get_private_conversation_id_by_user_name(user_name: str):
+    try:
+        user_details = get_user_by_name(user_name)
+        demisto.debug(f"user_details: {user_details}")
+        user_id = user_details.get("id")
+        raw_response = send_slack_request_sync(
+            CLIENT, "conversations.open", http_verb="POST", body={"users": user_id, "prevent_creation": True}
+        )
+        channel_id = raw_response.get("channel").get("id")
+        demisto.debug(f"Channel id of conversation with user_id {user_id} is: {channel_id}")
+        return channel_id
+    except SlackApiError as slack_error:
+        demisto.debug(f"Error opening conversation: {slack_error}")
+
+
+def extract_channel_id_by_channel_name(channel_name):
+    # Try to get channel id in case channel_name is user name
+    channel_id = get_private_conversation_id_by_user_name(channel_name)
+    if channel_id is None:
+        # Try to get channel id in case channel_name is channel name
+        channel = get_conversation_by_name(channel_name)
+        channel_id = channel.get("id")
+        demisto.debug(f"Channel id of channel {channel_name} is: {channel_id}")
+
+    if channel_id is None:
+        raise ValueError(f"Could not find channel ID for channel name: {channel_name}.")
+
+    return channel_id
+
+
 def conversation_history():
     """
     Fetches a conversation's history of messages
@@ -2742,17 +2770,16 @@ def conversation_history():
     channel_name = args.get("channel_name")
     limit = arg_to_number(args.get("limit"))
     conversation_id = args.get("conversation_id")
-    
+    from_time = args.get("from_time", "0")
+
     if not channel_id and not channel_name:
-        return_error("Either channel_id or channel_name must be provided.")
+        raise ValueError("Either channel_id or channel_name must be provided.")
 
     if not channel_id:
-        channel = get_conversation_by_name(channel_name)
-        channel_id = channel.get("id")
-        demisto.debug(f"Channel id of channel {channel_name} is: {channel_id}")
-    
+        channel_id = extract_channel_id_by_channel_name(channel_name)
+
     body = (
-        {"channel": channel_id, "limit": limit}
+        {"channel": channel_id, "limit": limit, "oldest": from_time}
         if not conversation_id
         else {"channel": channel_id, "oldest": conversation_id, "inclusive": "true", "limit": 1}
     )
