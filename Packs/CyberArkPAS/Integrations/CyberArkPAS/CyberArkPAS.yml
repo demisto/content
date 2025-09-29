@@ -513,8 +513,8 @@ script:
         e.g., UseAccounts,RetrieveAccounts.
       isArray: true
       name: permissions
-    - description: The name of the safe to add a member to.
-      name: safe_name
+    - description: The URL encoded name of the safe to add a member to.
+      name: safe_url_id
       required: true
     - auto: PREDEFINED
       defaultValue: '0'
@@ -557,8 +557,8 @@ script:
         e.g., UseAccounts,RetrieveAccounts.
       isArray: true
       name: permissions
-    - description: The name of the safe to which the safe member belongs.
-      name: safe_name
+    - description: The URL encoded name of the safe to which the safe member belongs.
+      name: safe_url_id
       required: true
     - auto: PREDEFINED
       defaultValue: '0'
@@ -589,8 +589,8 @@ script:
       description: The vault or domain where the user or group was found.
       type: String
   - arguments:
-    - description: The name of the safe to delete a member from.
-      name: safe_name
+    - description: The URL encoded name of the safe to delete a member from.
+      name: safe_url_id
       required: true
     - description: The name of the safe member to delete from the safe’s list of members.
       name: member_name
