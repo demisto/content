@@ -134,6 +134,31 @@ log_stream = None
 log_handler = None
 
 
+
+
+original_print = print
+def joey_print(*args):
+    parsed_args = []
+    demisto.debug("[JOEY_PRINT] ENTER")
+    for arg in args:
+        if not isinstance(arg ,str):
+            try:
+                arg_to_print = json.dumps(arg_to_print)
+                parsed_args.append(arg_to_print)
+            except Exception as e:
+                demisto.debug(f"[JOEY_PRINT] Failed to convert to json, ignoring, {type(e)}")
+                return
+    demisto.debug("[JOEY_PRINT] ENDING")
+    demisto.debug(*parsed_args)
+
+import http.client as http_client
+
+
+setattr(http_client, 'print', joey_print)
+
+
+
+
 def start_logging():
     global log_stream
     global log_handler
