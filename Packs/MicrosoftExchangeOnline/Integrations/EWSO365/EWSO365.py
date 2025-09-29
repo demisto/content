@@ -10,7 +10,7 @@ import chardet
 import demistomock as demisto  # noqa: F401
 import exchangelib
 from CommonServerPython import *  # noqa: F401
-from Packs.ApiModules.Scripts.EWSApiModule.EWSApiModule import *
+from EWSApiModule import *
 from exchangelib import (
     DELEGATE,
     OAUTH2,

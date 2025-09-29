@@ -41,7 +41,7 @@ from exchangelib.version import (
     EXCHANGE_2019,
     EXCHANGE_O365,
 )
-from Packs.ApiModules.Scripts.MicrosoftApiModule.MicrosoftApiModule import *
+from MicrosoftApiModule import *
 from oauthlib.oauth2 import OAuth2Token
 
 """ Constants """
