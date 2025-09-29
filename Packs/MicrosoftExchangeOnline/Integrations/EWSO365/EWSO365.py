@@ -136,7 +136,7 @@ log_handler = None
 
 
 
-original_print = print
+# original_print = print
 def joey_print(*args):
     parsed_args = []
     demisto.debug("[JOEY_PRINT] ENTER")
@@ -149,12 +149,14 @@ def joey_print(*args):
                 demisto.debug(f"[JOEY_PRINT] Failed to convert to json, ignoring, {type(e)}")
                 return
     demisto.debug("[JOEY_PRINT] ENDING")
+    print(*parsed_args)
     demisto.debug(*parsed_args)
 
 import http.client as http_client
 
 
-setattr(http_client, 'print', joey_print)
+# setattr(http_client, 'print', joey_print)
+# setattr(exchangelib, 'print', joey_print)
 
 
 
