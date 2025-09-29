@@ -1,31 +1,6 @@
-  function isValidTimestampFormat(timestamp) {
-    //  the valid Timestamp Format is in ISO 8601 "yyyy-MM-dd'T'HH:mm:ss" for example : 2020-01-01T00:01:00
-      const regex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/;
-      return regex.test(timestamp);
-  }
-
-
-  try {
-
+ try {
       var start_time = args.start_time.replace(/"/g, "");
       var end_time = args.end_time.replace(/"/g, "");
-
-      // Validate params format
-      if (!isValidTimestampFormat(start_time)) {
-          return {
-              ContentsFormat: formats.markdown,
-              Type: entryTypes.error,
-              Contents: "start_time argument does not match format '%Y-%m-%dT%H:%M:%S'"
-          };
-      }
-
-      if (!isValidTimestampFormat(end_time)) {
-          return {
-              ContentsFormat: formats.markdown,
-              Type: entryTypes.error,
-              Contents: "end_time argument does not match format '%Y-%m-%dT%H:%M:%S'"
-          };
-      }
 
       // Strip microseconds and parse the datetime
       var startTimeObj = new Date(start_time.split(".")[0]);
