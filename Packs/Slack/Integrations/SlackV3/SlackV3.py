@@ -2731,6 +2731,16 @@ def list_channels():
 
 
 def get_direct_message_channel_id_by_username(username: str):
+    """
+    Gets the direct message channel ID for a given username.
+
+    Args:
+        username (str): The Slack username to get the DM channel ID for.
+
+    Returns:
+        str or None: The channel ID of the direct message conversation with the user,
+                    or None if the conversation doesn't exist or an error occurs.
+    """
     try:
         user_info = get_user_by_name(username)
         demisto.debug(f"user_info: {user_info}")
@@ -2738,7 +2748,10 @@ def get_direct_message_channel_id_by_username(username: str):
         raw_response = send_slack_request_sync(
             CLIENT, "conversations.open", http_verb="POST", body={"users": user_id, "prevent_creation": True}
         )
-        channel_id = raw_response.get("channel").get("id")
+        if not raw_response:
+            return None
+        channel_info = raw_response.get("channel") or {}
+        channel_id = channel_info.get("id")
         demisto.debug(f"Channel id of conversation with user_id {user_id} is: {channel_id}")
         return channel_id
     except SlackApiError as slack_error:
@@ -2746,6 +2759,22 @@ def get_direct_message_channel_id_by_username(username: str):
 
 
 def resolve_channel_id_from_name(channel_name: str):
+    """
+    Resolves a channel ID from a given channel name.
+
+    This function attempts to find the channel ID by first checking if the channel_name
+    corresponds to a username for a direct message channel. If that fails, it tries to
+    find a channel with the given name.
+
+    Args:
+        channel_name (str): The name of the channel or username to resolve.
+
+    Returns:
+        str: The channel ID corresponding to the given channel name.
+
+    Raises:
+        ValueError: If no channel ID could be found for the given channel name.
+    """
     # Try to get channel id in case channel_name is user name
     channel_id = get_direct_message_channel_id_by_username(channel_name)
     if channel_id is None:
