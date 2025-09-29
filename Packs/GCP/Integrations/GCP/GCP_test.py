@@ -1,6 +1,12 @@
+import json
 import pytest
 from google.oauth2.credentials import Credentials
 from unittest.mock import MagicMock
+
+
+def util_load_json(path):
+    with open(path, encoding="utf-8") as f:
+        return json.loads(f.read())
 
 
 def test_parse_firewall_rule_valid_input():
@@ -1226,3 +1232,1340 @@ def test_health_check_credentials_creation_failure(mocker):
     assert result.connector_id == connector_id
     assert "Invalid token format" in result.message
     assert result.error_type == "Connectivity Error"
+
+
+def test_parse_labels_valid_2_inputs():
+    """
+    Given: A valid labels string with multiple labels
+    When: parse_labels is called
+    Then: The function returns a correctly parsed dictionary
+    """
+    from GCP import parse_labels
+
+    input_str = "key=label1,value=true;key=label2,value=false"
+    expected = {"label1": "true", "label2": "false"}
+
+    result = parse_labels(input_str)
+    assert result == expected
+
+
+def test_parse_labels_valid_1_input():
+    """
+    Given: A valid labels string with a single label
+    When: parse_labels is called
+    Then: The function returns a correctly parsed dictionary
+    """
+    from GCP import parse_labels
+
+    input_str_option1 = "key=label1,value=true;"
+    input_str_option2 = "key=label1,value=true"
+    expected_option1 = {
+        "label1": "true",
+    }
+    expected_option2 = {
+        "label1": "true",
+    }
+
+    result_option1 = parse_labels(input_str_option1)
+    result_option2 = parse_labels(input_str_option2)
+    assert result_option1 == expected_option1
+    assert result_option2 == expected_option2
+
+
+def test_handle_permission_error_valid_json_with_matching_permission(mocker):
+    """
+    Given: An HttpError with JSON content containing a permission error that matches command requirements
+    When: handle_permission_error is called with the error
+    Then: The function should extract permission info and call return_multiple_permissions_error
+    """
+    from GCP import handle_permission_error
+    from googleapiclient.errors import HttpError
+    import json
+
+    command_name = "gcp-compute-instance-labels-set"
+
+    # Create mock HTTP response
+    mock_resp = mocker.MagicMock()
+    mock_resp.status = 403
+    mock_resp.get.return_value = "application/json"
+
+    error_content = {
+        "error": {
+            "errors": [{"reason": "forbidden"}],
+            "message": "Required 'compute.instances.setLabels' permission for "
+            "'projects/project/zones/zone/instances/instance_number'",
+        }
+    }
+
+    # Create HttpError with mocked content
+    http_error = HttpError(mock_resp, json.dumps(error_content).encode())
+
+    # Mock demisto functions
+    mocker.patch("GCP.demisto.debug")
+    mock_return_error = mocker.patch("GCP.return_multiple_permissions_error")
+
+    # Execute the function
+    handle_permission_error(http_error, "test-project", command_name)
+
+    # Verify return_multiple_permissions_error was called with correct parameters
+    mock_return_error.assert_called_once()
+    error_entries = mock_return_error.call_args[0][0]
+
+    assert len(error_entries) == 1
+    assert error_entries[0]["account_id"] == "test-project"
+    assert error_entries[0]["name"] == "compute.instances.setLabels"
+    assert "compute.instances.setLabels" in error_entries[0]["message"]
+
+
+def test_handle_permission_error_valid_json_no_matching_permission(mocker):
+    """
+    Given: An HttpError with JSON content that doesn't match any command requirements
+    When: handle_permission_error is called with the error
+    Then: The function should use "N/A" as the permission name
+    """
+    from GCP import handle_permission_error
+    from googleapiclient.errors import HttpError
+    import json
+
+    # Mock command requirements
+    command_name = "gcp-compute-firewall-patch"
+
+    # Create mock HTTP response
+    mock_resp = mocker.MagicMock()
+    mock_resp.status = 403
+    mock_resp.get.return_value = "application/json"
+
+    error_content = {"error": {"errors": [{"reason": "forbidden"}], "message": "Access denied for unknown resource"}}
+
+    # Create HttpError with mocked content
+    http_error = HttpError(mock_resp, json.dumps(error_content).encode())
+
+    # Mock demisto functions
+    mocker.patch("GCP.demisto.debug")
+    mock_return_error = mocker.patch("GCP.return_multiple_permissions_error")
+
+    # Execute the function
+    handle_permission_error(http_error, "test-project", command_name)
+
+    # Verify return_multiple_permissions_error was called with N/A permission
+    error_entries = mock_return_error.call_args[0][0]
+
+    assert len(error_entries) == 1
+    assert error_entries[0]["account_id"] == "test-project"
+    assert error_entries[0]["name"] == "N/A"
+    assert "Access denied for unknown resource" in error_entries[0]["message"]
+
+
+def test_handle_permission_error_multiple_matching_permissions(mocker):
+    """
+    Given: An HttpError with JSON content containing multiple permissions that match command requirements
+    When: handle_permission_error is called with the error
+    Then: The function should extract all matching permissions and create multiple error entries
+    """
+    from GCP import handle_permission_error
+    from googleapiclient.errors import HttpError
+    import json
+
+    # Mock command requirements with multiple permissions
+    command_name = "gcp-compute-firewall-patch"
+
+    # Create mock HTTP response
+    mock_resp = mocker.MagicMock()
+    mock_resp.status = 403
+    mock_resp.get.return_value = "application/json"
+
+    error_content = {
+        "error": {
+            "errors": [{"reason": "forbidden"}],
+            "message": "Required 'compute.firewalls.update' and compute.firewalls.get' permissions for project.",
+        }
+    }
+
+    # Create HttpError with mocked content
+    http_error = HttpError(mock_resp, json.dumps(error_content).encode())
+
+    # Mock demisto functions
+    mocker.patch("GCP.demisto.debug")
+    mock_return_error = mocker.patch("GCP.return_multiple_permissions_error")
+
+    # Execute the function
+    handle_permission_error(http_error, "test-project", command_name)
+
+    # Verify return_multiple_permissions_error was called with multiple permissions
+    error_entries = mock_return_error.call_args[0][0]
+
+    assert len(error_entries) == 2
+    permission_names = [entry["name"] for entry in error_entries]
+    assert "compute.firewalls.get" in permission_names
+    assert "compute.firewalls.update" in permission_names
+
+    for entry in error_entries:
+        assert entry["account_id"] == "test-project"
+        assert entry["message"] == "Required 'compute.firewalls.update' and compute.firewalls.get' permissions for project."
+
+
+def test_handle_permission_error_non_json_content_type(mocker):
+    """
+    Given: An HttpError with non-JSON content type
+    When: handle_permission_error is called with the error
+    Then: The function should re-raise the original HttpError
+    """
+    from GCP import handle_permission_error
+    from googleapiclient.errors import HttpError
+
+    # Create mock HTTP response with non-JSON content
+    mock_resp = mocker.MagicMock()
+    mock_resp.status = 403
+    mock_resp.get.return_value = "text/html"
+
+    # Create HttpError
+    http_error = HttpError(mock_resp, b"<html>Error page</html>")
+
+    # Mock demisto functions
+    mocker.patch("GCP.demisto.debug")
+
+    # Execute the function and expect the same error to be raised
+    with pytest.raises(SystemExit) as exc_info:
+        handle_permission_error(http_error, "test-project", "some-command")
+
+    # Verify there was a graceful exist
+    assert exc_info.typename == "SystemExit"
+    assert exc_info.value.code == 0
+
+
+def test_handle_permission_error_missing_error_structure(mocker):
+    """
+    Given: An HttpError with valid JSON but missing expected error structure
+    When: handle_permission_error is called with the error
+    Then: The function should handle missing keys gracefully
+    """
+    from GCP import handle_permission_error
+    from googleapiclient.errors import HttpError
+    import json
+
+    # Mock command requirements
+    command_name = "gcp-compute-firewall-patch"
+
+    # Create mock HTTP response with incomplete error structure
+    mock_resp = mocker.MagicMock()
+    mock_resp.status = 403
+    mock_resp.get.return_value = "application/json"
+
+    error_content = {
+        "error": {
+            "errors": [{}],  # Missing 'reason' key
+            # Missing 'message' key
+        }
+    }
+
+    # Create HttpError with mocked content
+    http_error = HttpError(mock_resp, json.dumps(error_content).encode())
+
+    # Mock demisto functions
+    mocker.patch("GCP.demisto.debug")
+    mock_return_error = mocker.patch("GCP.return_multiple_permissions_error")
+
+    # Execute the function and expect a KeyError or similar handling
+    # with pytest.raises(SystemExit):
+    handle_permission_error(http_error, "test-project", command_name)
+    error_entries = mock_return_error.call_args[0][0]
+
+    assert len(error_entries) == 1
+    assert error_entries[0]["account_id"] == "test-project"
+    assert error_entries[0]["name"] == "N/A"
+
+
+def test_handle_permission_error_case_insensitive_matching(mocker):
+    """
+    Given: An HttpError with JSON content containing permissions in different cases
+    When: handle_permission_error is called with the error
+    Then: The function should match permissions case-insensitively
+    """
+    from GCP import handle_permission_error
+    from googleapiclient.errors import HttpError
+    import json
+
+    # Mock command requirements
+    command_name = "gcp-compute-firewall-patch"
+
+    # Create mock HTTP response
+    mock_resp = mocker.MagicMock()
+    mock_resp.status = 403
+    mock_resp.get.return_value = "application/json"
+
+    error_content = {
+        "error": {"errors": [{"reason": "forbidden"}], "message": "Required 'COMPUTE.FIREWALLS.UPDATE' for the resource"}
+    }
+
+    # Create HttpError with mocked content
+    http_error = HttpError(mock_resp, json.dumps(error_content).encode())
+
+    # Mock demisto functions
+    mocker.patch("GCP.demisto.debug")
+    mock_return_error = mocker.patch("GCP.return_multiple_permissions_error")
+
+    # Execute the function
+    handle_permission_error(http_error, "test-project", command_name)
+
+    # Verify return_multiple_permissions_error was called with matched permission
+    error_entries = mock_return_error.call_args[0][0]
+
+    assert len(error_entries) == 1
+    assert error_entries[0]["account_id"] == "test-project"
+    assert error_entries[0]["name"] == "compute.firewalls.update"
+
+
+def test_gcp_compute_instances_list_command_basic_success(mocker):
+    """
+    Given: Valid credentials and basic arguments
+    When: gcp_compute_instances_list_command is called
+    Then: The function should return instances list with correct outputs
+    """
+    from GCP import gcp_compute_instances_list_command
+
+    # Mock arguments
+    args = {
+        "project_id": "test-project",
+        "zone": "us-central1-a",
+    }
+
+    # Mock API response
+    mock_response = util_load_json("test_data/list_instances_response.json")
+
+    # Mock the GCP API calls
+    mock_compute = mocker.Mock()
+    mock_instances = mocker.Mock()
+    mock_compute.instances.return_value = mock_instances
+    mock_instances.list.return_value.execute.return_value = mock_response
+
+    # Mock the build function
+    mock_creds = mocker.Mock(spec=Credentials)
+    mocker.patch("GCP.GCPServices.COMPUTE.build", return_value=mock_compute)
+
+    # Execute the function
+    result = gcp_compute_instances_list_command(mock_creds, args)
+
+    # Verify API call parameters
+    mock_instances.list.assert_called_once_with(
+        project="test-project", zone="us-central1-a", filter=None, maxResults=500, orderBy=None, pageToken=None
+    )
+
+    # Verify outputs structure
+    assert "GCP.Compute.Instances(val.id && val.id == obj.id)" in result.outputs
+    assert "GCP.Compute(true)" in result.outputs
+    assert len(result.outputs["GCP.Compute.Instances(val.id && val.id == obj.id)"]) == 2
+
+
+def test_gcp_compute_instances_list_command_with_pagination(mocker):
+    """
+    Given: Valid arguments with pagination
+    When: gcp_compute_instances_list_command is called with page_token
+    Then: The function should handle pagination correctly and return next page token
+    """
+    from GCP import gcp_compute_instances_list_command
+
+    # Mock arguments
+    args = {"project_id": "test-project", "zone": "us-central1-a", "limit": 1, "page_token": "current-page-token"}
+
+    # Mock API response with next page token
+    mock_response = {
+        "kind": "compute#instanceList",
+        "items": [
+            {
+                "id": "123456789",
+                "name": "test-instance-1",
+                "kind": "compute#instance",
+                "creationTimestamp": "2023-01-01T10:00:00.000-07:00",
+                "status": "RUNNING",
+                "machineType": "projects/test-project/zones/us-central1-a/machineTypes/n1-standard-1",
+                "zone": "projects/test-project/zones/us-central1-a",
+            }
+        ],
+        "nextPageToken": "next-page-token-123",
+        "selfLink": "https://www.googleapis.com/compute/v1/projects/test-project/zones/us-central1-a/instances",
+    }
+
+    # Mock the GCP API calls
+    mock_compute = mocker.Mock()
+    mock_instances = mocker.Mock()
+    mock_compute.instances.return_value = mock_instances
+    mock_instances.list.return_value.execute.return_value = mock_response
+
+    # Mock the build function
+    mock_creds = mocker.Mock(spec=Credentials)
+    mocker.patch("GCP.GCPServices.COMPUTE.build", return_value=mock_compute)
+
+    # Execute the function
+    result = gcp_compute_instances_list_command(mock_creds, args)
+
+    # Verify API call parameters include pagination
+    mock_instances.list.assert_called_once_with(
+        project="test-project", zone="us-central1-a", filter=None, maxResults=1, orderBy=None, pageToken="current-page-token"
+    )
+
+    # Verify pagination handling in outputs
+    assert result.outputs["GCP.Compute(true)"]["InstancesNextPageToken"] == "next-page-token-123"
+    assert "InstancesNextPageToken" in result.raw_response
+    assert "nextPageToken" not in result.raw_response
+    assert (
+        "Run the following command to retrieve the next batch of instances:\n!gcp-compute-instances-list "
+        "project_id=test-project zone=us-central1-a page_token=next-page-token-123 limit=1\n" in result.readable_output
+    )
+
+
+def test_gcp_compute_instances_list_command_with_filters_and_ordering(mocker):
+    """
+    Given: Valid arguments with filters and ordering
+    When: gcp_compute_instances_list_command is called with filters and order_by
+    Then: The function should pass filters and ordering to the API call
+    """
+    from GCP import gcp_compute_instances_list_command
+
+    # Mock arguments
+    args = {
+        "project_id": "test-project",
+        "zone": "us-central1-a",
+        "filters": "status=RUNNING",
+        "order_by": "creationTimestamp desc",
+        "limit": 100,
+    }
+
+    # Mock API response
+    mock_response = {
+        "kind": "compute#instanceList",
+        "items": [
+            {
+                "id": "123456789",
+                "name": "test-instance-1",
+                "kind": "compute#instance",
+                "creationTimestamp": "2023-01-01T10:00:00.000-07:00",
+                "status": "RUNNING",
+                "machineType": "projects/test-project/zones/us-central1-a/machineTypes/n1-standard-1",
+                "zone": "projects/test-project/zones/us-central1-a",
+            }
+        ],
+        "selfLink": "https://www.googleapis.com/compute/v1/projects/test-project/zones/us-central1-a/instances",
+    }
+
+    # Mock the GCP API calls
+    mock_compute = mocker.Mock()
+    mock_instances = mocker.Mock()
+    mock_compute.instances.return_value = mock_instances
+    mock_instances.list.return_value.execute.return_value = mock_response
+
+    # Mock the build function
+    mock_creds = mocker.Mock(spec=Credentials)
+    mocker.patch("GCP.GCPServices.COMPUTE.build", return_value=mock_compute)
+
+    # Execute the function
+    result = gcp_compute_instances_list_command(mock_creds, args)
+
+    # Verify API call parameters include filters and ordering
+    mock_instances.list.assert_called_once_with(
+        project="test-project",
+        zone="us-central1-a",
+        filter="status=RUNNING",
+        maxResults=100,
+        orderBy="creationTimestamp desc",
+        pageToken=None,
+    )
+
+    # Verify successful execution
+    assert len(result.outputs["GCP.Compute.Instances(val.id && val.id == obj.id)"]) == 1
+
+
+def test_gcp_compute_instances_list_command_limit_validation_too_high(mocker):
+    """
+    Given: Arguments with limit greater than 500
+    When: gcp_compute_instances_list_command is called
+    Then: The function should raise DemistoException
+    """
+    from GCP import gcp_compute_instances_list_command, DemistoException
+
+    # Mock arguments with invalid limit
+    args = {"project_id": "test-project", "zone": "us-central1-a", "limit": "501"}
+
+    mock_creds = mocker.Mock(spec=Credentials)
+
+    # Execute the function and expect exception
+    with pytest.raises(DemistoException) as exc_info:
+        gcp_compute_instances_list_command(mock_creds, args)
+
+    assert "The acceptable values of the argument limit are 1 to 500" in str(exc_info.value)
+    assert "501" in str(exc_info.value)
+
+
+def test_gcp_compute_instances_list_command_limit_validation_too_low(mocker):
+    """
+    Given: Arguments with limit less than 1
+    When: gcp_compute_instances_list_command is called
+    Then: The function should raise DemistoException
+    """
+    from GCP import gcp_compute_instances_list_command, DemistoException
+
+    # Mock arguments with invalid limit
+    args = {"project_id": "test-project", "zone": "us-central1-a", "limit": "0"}
+
+    mock_creds = mocker.Mock(spec=Credentials)
+
+    # Execute the function and expect exception
+    with pytest.raises(DemistoException) as exc_info:
+        gcp_compute_instances_list_command(mock_creds, args)
+
+    assert "The acceptable values of the argument limit are 1 to 500" in str(exc_info.value)
+    assert "0" in str(exc_info.value)
+
+
+def test_gcp_compute_instances_list_command_empty_response(mocker):
+    """
+    Given: Valid arguments but no instances found
+    When: gcp_compute_instances_list_command is called
+    Then: The function should handle empty response gracefully
+    """
+    from GCP import gcp_compute_instances_list_command
+
+    # Mock arguments
+    args = {
+        "project_id": "test-project",
+        "zone": "us-central1-a",
+    }
+
+    # Mock API response with no instances
+    mock_response = {
+        "kind": "compute#instanceList",
+        "id": "projects/test-project/zones/us-central1-a/instances",
+        "items": [],
+        "selfLink": "https://www.googleapis.com/compute/v1/projects/test-project/zones/us-central1-a/instances",
+    }
+
+    # Mock the GCP API calls
+    mock_compute = mocker.Mock()
+    mock_instances = mocker.Mock()
+    mock_compute.instances.return_value = mock_instances
+    mock_instances.list.return_value.execute.return_value = mock_response
+
+    # Mock the build function
+    mock_creds = mocker.Mock(spec=Credentials)
+    mocker.patch("GCP.GCPServices.COMPUTE.build", return_value=mock_compute)
+
+    # Execute the function
+    result = gcp_compute_instances_list_command(mock_creds, args)
+
+    # Verify empty results are handled properly
+    assert len(result.outputs["GCP.Compute.Instances(val.id && val.id == obj.id)"]) == 0
+
+
+def test_gcp_compute_instance_get_command_basic_success(mocker):
+    """
+    Given: Valid credentials and basic arguments for getting an instance
+    When: gcp_compute_instance_get_command is called
+    Then: The function should return instance details with correct outputs
+    """
+    from GCP import gcp_compute_instance_get_command
+
+    # Mock arguments
+    args = {"project_id": "test-project", "zone": "us-central1-a", "instance": "test-instance-1"}
+
+    # Mock API response
+    mock_response = {
+        "id": "123456789",
+        "name": "test-instance-1",
+        "kind": "compute#instance",
+        "creationTimestamp": "2023-01-01T10:00:00.000-07:00",
+        "description": "Test instance for unit testing",
+        "status": "RUNNING",
+        "machineType": "projects/test-project/zones/us-central1-a/machineTypes/n1-standard-1",
+        "zone": "projects/test-project/zones/us-central1-a",
+        "networkInterfaces": [
+            {
+                "network": "projects/test-project/global/networks/default",
+                "subnetwork": "projects/test-project/regions/us-central1/subnetworks/default",
+            }
+        ],
+    }
+
+    # Mock the GCP API calls
+    mock_compute = mocker.Mock()
+    mock_instances = mocker.Mock()
+    mock_compute.instances.return_value = mock_instances
+    mock_instances.get.return_value.execute.return_value = mock_response
+
+    # Mock the build function
+    mock_creds = mocker.Mock(spec=Credentials)
+    mocker.patch("GCP.GCPServices.COMPUTE.build", return_value=mock_compute)
+
+    # Execute the function
+    result = gcp_compute_instance_get_command(mock_creds, args)
+
+    # Verify API call parameters
+    mock_instances.get.assert_called_once_with(project="test-project", zone="us-central1-a", instance="test-instance-1")
+
+    # Verify outputs structure
+    assert result.outputs_prefix == "GCP.Compute.Instances"
+    assert result.outputs_key_field == "id"
+    assert result.outputs == mock_response
+    assert result.raw_response == mock_response
+
+
+def test_gcp_compute_instance_get_command_minimal_response(mocker):
+    """
+    Given: API response with minimal fields (some optional fields missing)
+    When: gcp_compute_instance_get_command is called
+    Then: The function should handle missing optional fields gracefully
+    """
+    from GCP import gcp_compute_instance_get_command
+
+    # Mock arguments
+    args = {"project_id": "test-project", "zone": "asia-east1-a", "instance": "minimal-instance"}
+
+    # Mock API response with minimal fields
+    mock_response = {
+        "id": "555666777",
+        "name": "minimal-instance",
+        "kind": "compute#instance",
+        "status": "PROVISIONING",
+        "machineType": "projects/test-project/zones/asia-east1-a/machineTypes/f1-micro",
+        # Missing: creationTimestamp, description
+    }
+
+    # Mock the GCP API calls
+    mock_compute = mocker.Mock()
+    mock_instances = mocker.Mock()
+    mock_compute.instances.return_value = mock_instances
+    mock_instances.get.return_value.execute.return_value = mock_response
+
+    # Mock the build function
+    mock_creds = mocker.Mock(spec=Credentials)
+    mocker.patch("GCP.GCPServices.COMPUTE.build", return_value=mock_compute)
+
+    # Execute the function
+    result = gcp_compute_instance_get_command(mock_creds, args)
+
+    # Verify API call
+    mock_instances.get.assert_called_once_with(project="test-project", zone="asia-east1-a", instance="minimal-instance")
+
+    # Verify outputs handle missing fields
+    assert result.outputs == mock_response
+    assert result.outputs["id"] == "555666777"
+    assert result.outputs["name"] == "minimal-instance"
+    assert "creationTimestamp" not in result.outputs
+    assert "description" not in result.outputs
+
+
+def test_gcp_compute_instance_get_command_complete_response(mocker):
+    """
+    Given: API response with all possible fields populated
+    When: gcp_compute_instance_get_command is called
+    Then: The function should handle complete response correctly
+    """
+    from GCP import gcp_compute_instance_get_command
+
+    # Mock arguments
+    args = {"project_id": "test-project", "zone": "us-west2-c", "instance": "full-instance"}
+
+    # Mock API response with all fields
+    mock_response = {
+        "id": "111222333",
+        "name": "full-instance",
+        "kind": "compute#instance",
+        "creationTimestamp": "2023-03-15T08:45:00.000-07:00",
+        "description": "Comprehensive test instance with all fields",
+        "status": "RUNNING",
+        "machineType": "projects/test-project/zones/us-west2-c/machineTypes/n2-standard-4",
+        "zone": "projects/test-project/zones/us-west2-c",
+        "tags": {"items": ["web-server", "database"]},
+        "labels": {"environment": "production", "team": "backend"},
+        "metadata": {"items": [{"key": "startup-script", "value": "#!/bin/bash\necho 'Hello World'"}]},
+        "disks": [
+            {"type": "PERSISTENT", "mode": "READ_WRITE", "source": "projects/test-project/zones/us-west2-c/disks/full-instance"}
+        ],
+    }
+
+    # Mock the GCP API calls
+    mock_compute = mocker.Mock()
+    mock_instances = mocker.Mock()
+    mock_compute.instances.return_value = mock_instances
+    mock_instances.get.return_value.execute.return_value = mock_response
+
+    # Mock the build function
+    mock_creds = mocker.Mock(spec=Credentials)
+    mocker.patch("GCP.GCPServices.COMPUTE.build", return_value=mock_compute)
+
+    # Execute the function
+    result = gcp_compute_instance_get_command(mock_creds, args)
+
+    # Verify complete response is returned
+    assert result.outputs == mock_response
+    assert result.outputs["tags"]["items"] == ["web-server", "database"]
+    assert result.outputs["labels"]["environment"] == "production"
+    assert result.outputs["metadata"]["items"][0]["key"] == "startup-script"
+
+
+def test_gcp_compute_instance_get_command_table_generation(mocker):
+    """
+    Given: Valid instance data
+    When: gcp_compute_instance_get_command is called
+    Then: The function should generate readable output table with correct headers and data
+    """
+    from GCP import gcp_compute_instance_get_command
+
+    # Mock arguments
+    args = {"project_id": "test-project", "zone": "us-east1-b", "instance": "table-test-instance"}
+
+    # Mock API response
+    mock_response = {
+        "id": "444555666",
+        "name": "table-test-instance",
+        "kind": "compute#instance",
+        "creationTimestamp": "2023-04-10T12:00:00.000-07:00",
+        "description": "Instance for table testing",
+        "status": "TERMINATED",
+        "machineType": "projects/test-project/zones/us-east1-b/machineTypes/g1-small",
+    }
+
+    # Mock the GCP API calls
+    mock_compute = mocker.Mock()
+    mock_instances = mocker.Mock()
+    mock_compute.instances.return_value = mock_instances
+    mock_instances.get.return_value.execute.return_value = mock_response
+
+    # Mock the build function
+    mock_creds = mocker.Mock(spec=Credentials)
+    mocker.patch("GCP.GCPServices.COMPUTE.build", return_value=mock_compute)
+    mock_table = mocker.patch("GCP.tableToMarkdown", return_value="Generated table output")
+    mock_pascal_to_space = mocker.patch("GCP.pascalToSpace")
+
+    # Execute the function
+    result = gcp_compute_instance_get_command(mock_creds, args)
+
+    # Verify tableToMarkdown was called with correct parameters
+    mock_table.assert_called_once()
+    table_call_args = mock_table.call_args
+
+    # Check table title
+    assert table_call_args[0][0] == "GCP Instance table-test-instance from zone us-east1-b"
+
+    # Check table data
+    table_data = table_call_args[0][1]
+    assert table_data["id"] == "444555666"
+    assert table_data["name"] == "table-test-instance"
+    assert table_data["status"] == "TERMINATED"
+
+    # Check headers
+    expected_headers = [
+        "id",
+        "name",
+        "kind",
+        "creationTimestamp",
+        "description",
+        "status",
+        "machineType",
+        "labels",
+        "labelFingerprint",
+    ]
+    assert table_call_args[1]["headers"] == expected_headers
+
+    # Check other parameters
+    assert table_call_args[1]["removeNull"] is True
+    assert table_call_args[1]["headerTransform"] == mock_pascal_to_space
+
+    # Verify readable output uses table result
+    assert result.readable_output == "Generated table output"
+
+
+def test_gcp_compute_instance_label_set_command_basic_success(mocker):
+    """
+    Given: Valid credentials and basic arguments for setting instance labels
+    When: gcp_compute_instance_label_set_command is called
+    Then: The function should set labels and return operation details with correct outputs
+    """
+    from GCP import gcp_compute_instance_label_set_command
+
+    # Mock arguments
+    args = {
+        "project_id": "test-project",
+        "zone": "us-central1-a",
+        "instance": "test-instance",
+        "label_fingerprint": "abc123fingerprint",
+        "labels": "key=environment,value=production;key=team,value=backend",
+    }
+
+    # Mock API response
+    mock_response = {
+        "id": "operation-12345",
+        "name": "operation-set-labels",
+        "kind": "compute#operation",
+        "status": "RUNNING",
+        "progress": "0",
+        "operationType": "setLabels",
+        "zone": "projects/test-project/zones/us-central1-a",
+        "targetId": "567890",
+        "targetLink": "projects/test-project/zones/us-central1-a/instances/test-instance",
+    }
+
+    # Mock the GCP API calls
+    mock_compute = mocker.Mock()
+    mock_instances = mocker.Mock()
+    mock_compute.instances.return_value = mock_instances
+    mock_instances.setLabels.return_value.execute.return_value = mock_response
+
+    # Mock the build function
+    mock_creds = mocker.Mock(spec=Credentials)
+    mocker.patch("GCP.GCPServices.COMPUTE.build", return_value=mock_compute)
+
+    # Execute the function
+    result = gcp_compute_instance_label_set_command(mock_creds, args)
+
+    # Verify API call parameters
+    expected_body = {"labels": {"environment": "production", "team": "backend"}, "labelFingerprint": "abc123fingerprint"}
+    mock_instances.setLabels.assert_called_once_with(
+        project="test-project", zone="us-central1-a", instance="test-instance", body=expected_body
+    )
+
+    # Verify outputs structure
+    assert result.outputs_prefix == "GCP.Compute.Operations"
+    assert result.outputs_key_field == "id"
+    assert result.outputs == mock_response
+    assert result.raw_response == mock_response
+
+
+def test_gcp_compute_instance_label_set_command_no_labels(mocker):
+    """
+    Given: Valid arguments with empty labels string
+    When: gcp_compute_instance_label_set_command is called
+    Then: An exception should be raised for empty labels.
+    """
+    from GCP import gcp_compute_instance_label_set_command
+
+    # Mock arguments with empty labels
+    args = {
+        "project_id": "test-project",
+        "zone": "asia-southeast1-a",
+        "instance": "test-instance-3",
+        "label_fingerprint": "xyz789fingerprint",
+        "labels": "''",
+    }
+
+    # Mock the build function
+    mock_creds = mocker.Mock(spec=Credentials)
+
+    # Execute the function
+    with pytest.raises(ValueError) as e:
+        gcp_compute_instance_label_set_command(mock_creds, args)
+
+    assert "Could not parse field" in str(e.value)
+
+
+def test_gcp_compute_instance_label_set_command_multiple_labels(mocker):
+    """
+    Given: Valid arguments with multiple complex labels
+    When: gcp_compute_instance_label_set_command is called
+    Then: The function should parse and set all labels correctly
+    """
+    from GCP import gcp_compute_instance_label_set_command
+
+    # Mock arguments with multiple labels
+    args = {
+        "project_id": "test-project",
+        "zone": "us-east1-c",
+        "instance": "multi-label-instance",
+        "label_fingerprint": "multi123fingerprint",
+        "labels": "key=env,value=staging;key=app,value=frontend;key=version,value=v2.1.0;key=owner,value=team-alpha",
+    }
+
+    # Mock API response
+    mock_response = {
+        "id": "operation-22222",
+        "name": "operation-multi-labels",
+        "kind": "compute#operation",
+        "status": "RUNNING",
+        "progress": "25",
+        "operationType": "setLabels",
+    }
+
+    # Mock the GCP API calls
+    mock_compute = mocker.Mock()
+    mock_instances = mocker.Mock()
+    mock_compute.instances.return_value = mock_instances
+    mock_instances.setLabels.return_value.execute.return_value = mock_response
+
+    # Mock the build function
+    mock_creds = mocker.Mock(spec=Credentials)
+    mocker.patch("GCP.GCPServices.COMPUTE.build", return_value=mock_compute)
+
+    # Execute the function
+    result = gcp_compute_instance_label_set_command(mock_creds, args)
+
+    # Verify API call with all labels
+    expected_body = {
+        "labels": {"env": "staging", "app": "frontend", "version": "v2.1.0", "owner": "team-alpha"},
+        "labelFingerprint": "multi123fingerprint",
+    }
+    mock_instances.setLabels.assert_called_once_with(
+        project="test-project", zone="us-east1-c", instance="multi-label-instance", body=expected_body
+    )
+
+    assert result.outputs == mock_response
+
+
+def test_gcp_compute_instance_label_set_command_minimal_response(mocker):
+    """
+    Given: API response with minimal fields
+    When: gcp_compute_instance_label_set_command is called
+    Then: The function should handle missing optional fields gracefully in data_res
+    """
+    from GCP import gcp_compute_instance_label_set_command
+
+    # Mock arguments
+    args = {
+        "project_id": "test-project",
+        "zone": "us-central1-b",
+        "instance": "minimal-response-instance",
+        "label_fingerprint": "minimal123",
+        "labels": "key=test,value=minimal",
+    }
+
+    # Mock API response with minimal fields
+    mock_response = {
+        "id": "operation-33333",
+        "kind": "compute#operation",
+        "status": "DONE",
+        # Missing: name, progress, operationType
+    }
+
+    # Mock the GCP API calls
+    mock_compute = mocker.Mock()
+    mock_instances = mocker.Mock()
+    mock_compute.instances.return_value = mock_instances
+    mock_instances.setLabels.return_value.execute.return_value = mock_response
+
+    # Mock the build function and table generation
+    mock_creds = mocker.Mock(spec=Credentials)
+    mocker.patch("GCP.GCPServices.COMPUTE.build", return_value=mock_compute)
+    mock_table = mocker.patch("GCP.tableToMarkdown", return_value="Generated table")
+
+    # Execute the function
+    result = gcp_compute_instance_label_set_command(mock_creds, args)
+
+    # Verify table generation handles missing fields
+    mock_table.assert_called_once()
+    table_data = mock_table.call_args[0][1]
+
+    assert table_data["id"] == "operation-33333"
+    assert table_data["status"] == "DONE"
+    assert table_data["kind"] == "compute#operation"
+    assert table_data["name"] is None
+    assert table_data["progress"] is None
+    assert table_data["operationType"] is None
+
+    assert result.readable_output == "Generated table"
+    assert result.outputs == mock_response
+
+
+def test_parse_labels_empty_string():
+    """
+    Given: An empty labels string
+    When: parse_labels is called
+    Then: The function returns an empty dictionary
+    """
+    from GCP import parse_labels
+
+    input_str = ""
+    expected = {}
+
+    result = parse_labels(input_str)
+    assert result == expected
+
+
+def test_parse_labels_whitespace_only():
+    """
+    Given: A labels string with only whitespace
+    When: parse_labels is called
+    Then: The function returns an empty dictionary
+    """
+    from GCP import parse_labels
+
+    input_str = "   "
+    expected = {}
+
+    result = parse_labels(input_str)
+    assert result == expected
+
+
+def test_parse_labels_single_label_with_trailing_semicolon():
+    """
+    Given: A valid labels string with a single label and trailing semicolon
+    When: parse_labels is called
+    Then: The function returns a correctly parsed dictionary
+    """
+    from GCP import parse_labels
+
+    input_str = "key=environment,value=PRODUCTION;"
+    expected = {"environment": "production"}
+
+    result = parse_labels(input_str)
+    assert result == expected
+
+
+def test_parse_labels_case_conversion():
+    """
+    Given: A labels string with mixed case keys and values
+    When: parse_labels is called
+    Then: The function converts both keys and values to lowercase
+    """
+    from GCP import parse_labels
+
+    input_str = "key=Environment,value=PRODUCTION;key=TEAM,value=Backend"
+    expected = {"environment": "production", "team": "backend"}
+
+    result = parse_labels(input_str)
+    assert result == expected
+
+
+def test_parse_labels_special_characters_in_values():
+    """
+    Given: A labels string with special characters in values
+    When: parse_labels is called
+    Then: The function handles special characters correctly
+    """
+    from GCP import parse_labels
+
+    input_str = "key=version,value=v2.1.0;key=branch,value=feature-branch_123"
+    expected = {"version": "v2.1.0", "branch": "feature-branch_123"}
+
+    result = parse_labels(input_str)
+    assert result == expected
+
+
+def test_parse_labels_empty_segments():
+    """
+    Given: A labels string with empty segments between semicolons
+    When: parse_labels is called
+    Then: The function skips empty segments and processes valid ones
+    """
+    from GCP import parse_labels
+
+    input_str = "key=app,value=web;;key=env,value=test;"
+    expected = {"app": "web", "env": "test"}
+
+    result = parse_labels(input_str)
+    assert result == expected
+
+
+def test_parse_labels_malformed_missing_key():
+    """
+    Given: A labels string missing the key part
+    When: parse_labels is called
+    Then: The function raises a ValueError with appropriate message
+    """
+    from GCP import parse_labels
+
+    input_str = "value=production"
+    with pytest.raises(ValueError) as e:
+        parse_labels(input_str)
+
+    assert "Could not parse field" in str(e.value)
+    assert "value=production" in str(e.value)
+    assert "Please make sure you provided like so: key=abc,value=123" in str(e.value)
+
+
+def test_parse_labels_malformed_missing_value():
+    """
+    Given: A labels string missing the value part
+    When: parse_labels is called
+    Then: The function raises a ValueError with appropriate message
+    """
+    from GCP import parse_labels
+
+    input_str = "key=environment"
+    with pytest.raises(ValueError) as e:
+        parse_labels(input_str)
+
+    assert "Could not parse field" in str(e.value)
+    assert "key=environment" in str(e.value)
+    assert "Please make sure you provided like so: key=abc,value=123" in str(e.value)
+
+
+def test_parse_labels_malformed_wrong_separator():
+    """
+    Given: A labels string using wrong separator between key and value
+    When: parse_labels is called
+    Then: The function raises a ValueError with appropriate message
+    """
+    from GCP import parse_labels
+
+    input_str = "key:environment,value:production"
+    with pytest.raises(ValueError) as e:
+        parse_labels(input_str)
+
+    assert "Could not parse field" in str(e.value)
+    assert "key:environment,value:production" in str(e.value)
+    assert "Please make sure you provided like so: key=abc,value=123" in str(e.value)
+
+
+def test_parse_labels_malformed_extra_equals():
+    """
+    Given: A labels string with extra equals signs
+    When: parse_labels is called
+    Then: The function raises a ValueError with appropriate message
+    """
+    from GCP import parse_labels
+
+    input_str = "key=env=prod,value=test"
+    with pytest.raises(ValueError) as e:
+        parse_labels(input_str)
+
+    assert "Could not parse field" in str(e.value)
+    assert "key=env=prod,value=test" in str(e.value)
+    assert "Please make sure you provided like so: key=abc,value=123" in str(e.value)
+
+
+def test_parse_labels_numeric_values():
+    """
+    Given: A labels string with numeric values
+    When: parse_labels is called
+    Then: The function converts numeric values to lowercase strings
+    """
+    from GCP import parse_labels
+
+    input_str = "key=port,value=8080;key=instances,value=3"
+    expected = {"port": "8080", "instances": "3"}
+
+    result = parse_labels(input_str)
+    assert result == expected
+
+
+def test_parse_labels_duplicate_keys():
+    """
+    Given: A labels string with duplicate keys
+    When: parse_labels is called
+    Then: The function updates with the last value for duplicate keys
+    """
+    from GCP import parse_labels
+
+    input_str = "key=env,value=dev;key=app,value=web;key=env,value=prod"
+    expected = {"env": "prod", "app": "web"}
+
+    result = parse_labels(input_str)
+    assert result == expected
+
+
+def test_parse_labels_mixed_valid_invalid():
+    """
+    Given: A labels string with mix of valid and invalid segments
+    When: parse_labels is called
+    Then: The function raises a ValueError on the first invalid segment
+    """
+    from GCP import parse_labels
+
+    input_str = "key=env,value=prod;invalid_format;key=app,value=web"
+    with pytest.raises(ValueError) as e:
+        parse_labels(input_str)
+
+    assert "Could not parse field" in str(e.value)
+    assert "invalid_format" in str(e.value)
+    assert "Please make sure you provided like so: key=abc,value=123" in str(e.value)
+
+
+def test_parse_labels_empty_key_value():
+    """
+    Given: A labels string with empty key or value
+    When: parse_labels is called
+    Then: An exception is raised.
+    """
+    from GCP import parse_labels
+
+    input_str = "key=,value=empty_key;key=empty_value,value="
+
+    with pytest.raises(ValueError) as e:
+        parse_labels(input_str)
+    assert "Could not parse field" in str(e.value)
+
+
+def test_parse_labels_complex_valid_format():
+    """
+    Given: A complex labels string with multiple valid labels including special characters
+    When: parse_labels is called
+    Then: The function returns correctly parsed dictionary with all labels
+    """
+    from GCP import parse_labels
+
+    input_str = (
+        "key=app-name,value=my-web-app;key=version_tag,value=v1.2.3-beta;key=environment,value=STAGING;key=owner.team,"
+        "value=Platform_Team"
+    )
+    expected = {"app-name": "my-web-app", "version_tag": "v1.2.3-beta", "environment": "staging", "owner.team": "platform_team"}
+
+    result = parse_labels(input_str)
+    assert result == expected
+
+
+def test_gcp_compute_instance_label_set_command_add_labels_true(mocker):
+    """
+    Given: Valid arguments with add_labels=true and existing instance labels
+    When: gcp_compute_instance_label_set_command is called
+    Then: The function should merge new labels with existing ones
+    """
+    from GCP import gcp_compute_instance_label_set_command
+
+    # Mock arguments with add_labels=true
+    args = {
+        "project_id": "test-project",
+        "zone": "us-central1-a",
+        "instance": "test-instance",
+        "label_fingerprint": "abc123fingerprint",
+        "labels": "key=newlabel,value=newvalue;key=app,value=updated",
+        "add_labels": "true",
+    }
+
+    # Mock relevant instance data with current labels
+    mock_instance_response = {
+        "id": "567890",
+        "name": "test-instance",
+        "labels": {"environment": "production", "app": "oldvalue", "team": "backend"},
+    }
+
+    # Mock setLabels operation response
+    mock_operation_response = {
+        "id": "operation-12345",
+        "name": "operation-set-labels",
+        "kind": "compute#operation",
+        "status": "RUNNING",
+        "progress": "0",
+        "operationType": "setLabels",
+    }
+
+    # Mock the GCP API calls
+    mock_compute = mocker.Mock()
+    mock_instances = mocker.Mock()
+    mock_compute.instances.return_value = mock_instances
+    mock_instances.get.return_value.execute.return_value = mock_instance_response
+    mock_instances.setLabels.return_value.execute.return_value = mock_operation_response
+
+    # Mock the build function
+    mock_creds = mocker.Mock(spec=Credentials)
+    mocker.patch("GCP.GCPServices.COMPUTE.build", return_value=mock_compute)
+
+    # Execute the function
+    result = gcp_compute_instance_label_set_command(mock_creds, args)
+
+    # Verify get was called to fetch existing labels
+    mock_instances.get.assert_called_once_with(project="test-project", zone="us-central1-a", instance="test-instance")
+
+    # Verify setLabels was called with merged labels
+    expected_body = {
+        "labels": {
+            "environment": "production",
+            "team": "backend",
+            "newlabel": "newvalue",
+            "app": "updated",  # Should override existing value
+        },
+        "labelFingerprint": "abc123fingerprint",
+    }
+    mock_instances.setLabels.assert_called_once_with(
+        project="test-project", zone="us-central1-a", instance="test-instance", body=expected_body
+    )
+
+    assert result.outputs == mock_operation_response
+
+
+def test_gcp_compute_instance_label_set_command_add_labels_no_existing(mocker):
+    """
+    Given: Valid arguments with add_labels=true but instance has no existing labels
+    When: gcp_compute_instance_label_set_command is called
+    Then: The function should handle missing labels field gracefully
+    """
+    from GCP import gcp_compute_instance_label_set_command
+
+    # Mock arguments with add_labels=true
+    args = {
+        "project_id": "test-project",
+        "zone": "us-west1-b",
+        "instance": "new-instance",
+        "label_fingerprint": "xyz789fingerprint",
+        "labels": "key=firstlabel,value=firstvalue",
+        "add_labels": "true",
+    }
+
+    # Mock instance response without labels field
+    mock_instance_response = {
+        "id": "111222333",
+        "name": "new-instance",
+        # No labels field
+    }
+
+    # Mock setLabels operation response
+    mock_operation_response = {"id": "operation-99999", "kind": "compute#operation", "status": "DONE"}
+
+    # Mock the GCP API calls
+    mock_compute = mocker.Mock()
+    mock_instances = mocker.Mock()
+    mock_compute.instances.return_value = mock_instances
+    mock_instances.get.return_value.execute.return_value = mock_instance_response
+    mock_instances.setLabels.return_value.execute.return_value = mock_operation_response
+
+    # Mock the build function
+    mock_creds = mocker.Mock(spec=Credentials)
+    mocker.patch("GCP.GCPServices.COMPUTE.build", return_value=mock_compute)
+
+    # Execute the function
+    result = gcp_compute_instance_label_set_command(mock_creds, args)
+
+    # Verify setLabels was called with only new labels (no existing to merge)
+    expected_body = {"labels": {"firstlabel": "firstvalue"}, "labelFingerprint": "xyz789fingerprint"}
+    mock_instances.setLabels.assert_called_once_with(
+        project="test-project", zone="us-west1-b", instance="new-instance", body=expected_body
+    )
+
+    assert result.outputs == mock_operation_response
+
+
+def test_gcp_compute_instance_label_set_command_add_labels_false(mocker):
+    """
+    Given: Valid arguments with add_labels=false (default behavior)
+    When: gcp_compute_instance_label_set_command is called
+    Then: The function should not fetch existing labels and only set new ones
+    """
+    from GCP import gcp_compute_instance_label_set_command
+
+    # Mock arguments with add_labels=false (explicit)
+    args = {
+        "project_id": "test-project",
+        "zone": "europe-west1-c",
+        "instance": "replace-labels-instance",
+        "label_fingerprint": "replace123fingerprint",
+        "labels": "key=onlylabel,value=onlyvalue",
+        "add_labels": "false",
+    }
+
+    # Mock setLabels operation response
+    mock_operation_response = {
+        "id": "operation-replace",
+        "name": "operation-replace-labels",
+        "kind": "compute#operation",
+        "status": "RUNNING",
+    }
+
+    # Mock the GCP API calls
+    mock_compute = mocker.Mock()
+    mock_instances = mocker.Mock()
+    mock_compute.instances.return_value = mock_instances
+    mock_instances.setLabels.return_value.execute.return_value = mock_operation_response
+
+    # Mock the build function
+    mock_creds = mocker.Mock(spec=Credentials)
+    mocker.patch("GCP.GCPServices.COMPUTE.build", return_value=mock_compute)
+
+    # Execute the function
+    result = gcp_compute_instance_label_set_command(mock_creds, args)
+
+    # Verify get was NOT called (no existing labels fetched)
+    mock_instances.get.assert_not_called()
+
+    # Verify setLabels was called with only new labels
+    expected_body = {"labels": {"onlylabel": "onlyvalue"}, "labelFingerprint": "replace123fingerprint"}
+    mock_instances.setLabels.assert_called_once_with(
+        project="test-project", zone="europe-west1-c", instance="replace-labels-instance", body=expected_body
+    )
+
+    assert result.outputs == mock_operation_response
