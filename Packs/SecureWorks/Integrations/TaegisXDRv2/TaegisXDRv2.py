@@ -2,15 +2,8 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 """
- > adding close Invesitigation feature to pack version: 5.0.8
- > fromversion:5.0.8
- > this is internal development of the pack to be contributed
- > Updated by: Mohamed Abdelrahman
- > change log: (27/10/2024)close_investigation_command function and mapping of it in dict of pack commands  "taegis-close-investigation": close_investigation_command
-from typing import Any
-
 """
-
+please remove
 
 """ CONSTANTS """
 
