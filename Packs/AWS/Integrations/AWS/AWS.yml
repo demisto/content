@@ -1724,6 +1724,72 @@ script:
       - 'disabled'
       - 'enabled'
 
+  - name: aws-ec2-subnet-attribute-modify
+    description: Modifies a subnet attribute.
+    arguments:
+      - description: The AWS account ID.
+        name: account_id
+        required: true
+      - description: The AWS region.
+        name: region
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+      - description: The ID of the subnet.
+        name: subnet_id
+        required: true
+      - description: Specify true to indicate that network interfaces created in the specified subnet should be assigned an IPv6 address.
+        name: assign_ipv6_address_on_creation
+      - description: The customer-owned IPv4 address pool associated with the subnet.
+        name: customer_owned_ipv4_pool
+      - description: Specify true to indicate that local network interfaces at the current position should be disabled.
+        name: disable_lni_at_device_index
+      - description: Indicates whether DNS queries made to the Amazon-provided DNS Resolver in this subnet should return synthetic IPv6 addresses for IPv4-only destinations.
+        name: enable_dns64
+      - description: Indicates the device position for local network interfaces in this subnet.
+        name: enable_lni_at_device_index
+      - description: Indicates whether to respond to DNS queries for instance hostnames with DNS AAAA records.
+        name: enable_resource_name_dns_aaaa_record_on_launch
+      - description: Indicates whether to respond to DNS queries for instance hostnames with DNS A records.
+        name: enable_resource_name_dns_a_record_on_launch
+      - description: Specify true to indicate that network interfaces attached to instances created in the specified subnet should be assigned a customer-owned IPv4 address.
+        name: map_customer_owned_ip_on_launch
+      - description: Specify true to indicate that network interfaces attached to instances created in the specified subnet should be assigned a public IPv4 address.
+        name: map_public_ip_on_launch
+      - description: The type of hostname to assign to instances in the subnet at launch.
+        name: private_dns_hostname_type_on_launch
 
   - name: aws-cloudtrail-trail-update
     description: 'Updates trail settings that control what events you are logging, and how to handle log files. Changes to a trail do not require stopping the CloudTrail service. Use this action to designate an existing bucket for log delivery. If the existing bucket has previously been a target for CloudTrail log files, an IAM policy exists for the bucket. UpdateTrail must be called from the Region in which the trail was created; otherwise, an InvalidHomeRegionException is thrown.'

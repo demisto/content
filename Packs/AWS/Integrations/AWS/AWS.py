@@ -970,6 +970,29 @@ class EC2:
                 raise DemistoException(f"Security group {group_id} not found.")
             raise DemistoException(f"Failed to revoke egress rule: {e}")
 
+    @staticmethod
+    def modify_subnet_attribute_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        kwargs = {
+            "SubnetId": args.get("subnet_id"),
+            "AssignIpv6AddressOnCreation": args.get("assign_ipv6_address_on_creation"),
+            "CustomerOwnedIpv4Pool": args.get("customer_owned_ipv4_pool"),
+            "DisableLniAtDeviceIndex": args.get("disable_lni_at_device_index"),
+            "EnableDns64": args.get("enable_dns64"),
+            "EnableLniAtDeviceIndex": args.get("enable_lni_at_device_index"),
+            "EnableResourceNameDnsAAAARecordOnLaunch": args.get("enable_resource_name_dns_aaaa_record_on_launch"),
+            "EnableResourceNameDnsARecordOnLaunch": args.get("enable_resource_name_dns_a_record_on_launch"),
+            "MapCustomerOwnedIpOnLaunch": args.get("map_customer_owned_ip_on_launch"),
+            "MapPublicIpOnLaunch": args.get("map_public_ip_on_launch"),
+            "PrivateDnsHostnameTypeOnLaunch": args.get("private_dns_hostname_type_on_launch"),
+        }
+        remove_nulls_from_dictionary(kwargs)
+        try:
+            response = client.modify_subnet_attribute(**kwargs)
+            if response["ResponseMetadata"]["HTTPStatusCode"] in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
+                return CommandResults(
+                    readable_output=f"{response=}")
+        except Exception as e:
+            raise DemistoException(f"Error: {str(e)}")
 
 class EKS:
     service = AWSServices.EKS
@@ -1374,6 +1397,7 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-ec2-security-group-ingress-revoke": EC2.revoke_security_group_ingress_command,
     "aws-ec2-security-group-ingress-authorize": EC2.authorize_security_group_ingress_command,
     "aws-ec2-security-group-egress-revoke": EC2.revoke_security_group_egress_command,
+    "aws-ec2-subnet-attribute-modify": EC2.modify_subnet_attribute_command,
     "aws-eks-cluster-config-update": EKS.update_cluster_config_command,
     "aws-rds-db-cluster-modify": RDS.modify_db_cluster_command,
     "aws-rds-db-cluster-snapshot-attribute-modify": RDS.modify_db_cluster_snapshot_attribute_command,
