@@ -8512,6 +8512,9 @@ def response_to_context(reponse_obj, user_predefiend_keys=None):
 
 
 def safe_strptime(date_str, datetime_format, strptime=datetime.strptime):
+    """
+    Parses a date string to a datetime object, handling cases where the microsecond component is missing.
+    """
     try:
         return strptime(date_str, datetime_format)
     except ValueError as e:
