@@ -16,10 +16,10 @@ configuration:
   name: feed_types
   type: 16
   options:
-  - Indicators
-  - Threat Objects
-  required: false
-  defaultvalue: Indicators, Threat Objects
+  - "Indicators"
+  - "Threat Objects"
+  required: true
+  defaultvalue: Indicators,Threat Objects
   section: Collect
 - display: Indicator Types
   additionalinfo: Comma-separated list of indicator types to fetch (File, IP, URL, Domain). If not specified, all indicator types are fetched.
@@ -164,6 +164,7 @@ script:
       name: limit
     description: Gets threat objects from the feed.
     name: unit42-get-threat-objects
+  - name: unit42-fetch-indicators
   dockerimage: demisto/python3:3.12.8.1983910
   feed: true
   runonce: false

@@ -40,26 +40,63 @@ VERDICT_TO_SCORE = {
 }
 
 
-# Define ThreatTypes enum for threat object classification
-class ThreatTypes:
-    Malware = "Malware"
-    Campaign = "Campaign"
-    Actor = "Actor"
-    Tool = "Tool"
-    Report = "Report"
-    Other = "Other"
+#### DBotScoreReliability ####
+class DBotScoreReliability:
+    """
+    Enum: Source reliability levels
+    Values are case sensitive
 
+    :return: None
+    :rtype: ``None``
+    """
 
-# Mapping from API threat object classes to XSOAR threat types
-THREAT_OBJECT_CLASS_MAP = {
-    "malware_family": ThreatIntel.ObjectsNames.MALWARE,
-    "campaign": ThreatIntel.ObjectsNames.CAMPAIGN,
-    "threat_actor": ThreatIntel.ObjectsNames.THREAT_ACTOR,
-    "malicious_behavior": Common.Indicator,
-    "exploit": FeedIndicatorType.CVE,
-    "attack_pattern": ThreatIntel.ObjectsNames.ATTACK_PATTERN,
-}
+    A_PLUS_PLUS = "A++ - Reputation script"
+    A_PLUS = "A+ - 3rd party enrichment"
+    A = "A - Completely reliable"
+    B = "B - Usually reliable"
+    C = "C - Fairly reliable"
+    D = "D - Not usually reliable"
+    E = "E - Unreliable"
+    F = "F - Reliability cannot be judged"
 
+    def __init__(self):
+        # required to create __init__ for create_server_docs.py purpose
+        pass
+
+    @staticmethod
+    def is_valid_type(_type):
+        # type: (str) -> bool
+
+        return _type in (
+            DBotScoreReliability.A_PLUS_PLUS,
+            DBotScoreReliability.A_PLUS,
+            DBotScoreReliability.A,
+            DBotScoreReliability.B,
+            DBotScoreReliability.C,
+            DBotScoreReliability.D,
+            DBotScoreReliability.E,
+            DBotScoreReliability.F,
+        )
+
+    @staticmethod
+    def get_dbot_score_reliability_from_str(reliability_str):  # pragma: no cover
+        if reliability_str == DBotScoreReliability.A_PLUS_PLUS:
+            return DBotScoreReliability.A_PLUS_PLUS
+        if reliability_str == DBotScoreReliability.A_PLUS:
+            return DBotScoreReliability.A_PLUS
+        elif reliability_str == DBotScoreReliability.A:
+            return DBotScoreReliability.A
+        elif reliability_str == DBotScoreReliability.B:
+            return DBotScoreReliability.B
+        elif reliability_str == DBotScoreReliability.C:
+            return DBotScoreReliability.C
+        elif reliability_str == DBotScoreReliability.D:
+            return DBotScoreReliability.D
+        elif reliability_str == DBotScoreReliability.E:
+            return DBotScoreReliability.E
+        elif reliability_str == DBotScoreReliability.F:
+            return DBotScoreReliability.F
+        raise Exception("Please use supported reliability only.")
 
 class Client(BaseClient):
     def __init__(self, headers, verify=False, proxy=False):
@@ -92,7 +129,7 @@ class Client(BaseClient):
         """
         params = {}
         if indicator_types:
-            params["indicator_types"] = ",".join(indicator_types)
+            params["indicator_type"] = ",".join(indicator_types).lower().replace("file", "filehash_sha256")
         if limit:
             params["limit"] = limit
         if start_time:
@@ -125,41 +162,6 @@ class Client(BaseClient):
         return response
 
 
-def create_dbot_score(
-    indicator: str,
-    indicator_type: str,
-    verdict: str,
-) -> Common.DBotScore:
-    """
-    Create DBotScore object
-
-    Args:
-        indicator: The indicator value
-        indicator_type: Type of indicator
-        verdict: Verdict from API
-
-    Returns:
-        DBotScore object
-    """
-    score: int = VERDICT_TO_SCORE.get(verdict.lower() or "unknown", Common.DBotScore.NONE)
-
-    # Add malicious description if the verdict is malicious
-    malicious_description = None
-    if verdict.lower() == "malicious":
-        malicious_description = f"Unit 42 classified this {indicator_type.lower()} as malicious"
-
-    reliability = demisto.params().get("feedReliability", "A++ - Reputation script")
-
-    return Common.DBotScore(
-        indicator=indicator,
-        indicator_type=indicator_type,
-        integration_name=INTEGRATION_NAME,
-        score=score,
-        reliability=reliability,
-        malicious_description=malicious_description,
-    )
-
-
 def get_threat_object_score(threat_class: str) -> int:
     """
     Get the appropriate score for a threat object based on its class
@@ -187,9 +189,9 @@ def get_threat_object_score(threat_class: str) -> int:
     return Common.DBotScore.NONE
 
 
-def create_relationships(indicator_value: str, indicator_type: str, threat_object_associations: list) -> list:
+def create_relationships_and_tags(indicator_value: str, indicator_type: str, threat_object_associations: list) -> list:
     """
-    Create relationships from threat object associations
+    Create relationships and tags from threat object associations
 
     Args:
         indicator_value: The indicator value (entity_a)
@@ -197,9 +199,10 @@ def create_relationships(indicator_value: str, indicator_type: str, threat_objec
         threat_object_associations: List of threat object associations
 
     Returns:
-        List of EntityRelationship objects
+        Tuple of List of EntityRelationship objects and tags
     """
     relationships = []
+    tags = []
 
     for assoc in threat_object_associations:
         if not assoc or not assoc.get("name") or not assoc.get("threat_object_class"):
@@ -208,39 +211,42 @@ def create_relationships(indicator_value: str, indicator_type: str, threat_objec
         threat_name = assoc.get("name")
         threat_class = assoc.get("threat_object_class")
 
-        # Map threat class to XSOAR threat intel object type
-        entity_a_type = INDICATOR_TYPE_MAPPING.get(indicator_type, Common.Indicator)
-        entity_b_type = INDICATOR_TYPE_MAPPING.get(threat_class, Common.Indicator)
+        tags.append(threat_name)
 
-        # Determine relationship type based on threat class
-        if threat_class in ["actor", "threat_actor"]:
-            relationship_name = EntityRelationship.Relationships.USED_BY
-        elif threat_class == "campaign":
-            relationship_name = EntityRelationship.Relationships.PART_OF
-        elif threat_class in ["attack pattern", "technique"]:
-            relationship_name = EntityRelationship.Relationships.USES
-        elif threat_class == "exploit":
-            relationship_name = EntityRelationship.Relationships.EXPLOITS
-        elif threat_class in ["malicious behavior", "malicious_behavior"]:
-            relationship_name = EntityRelationship.Relationships.INDICATOR_OF
-        else:
-            relationship_name = EntityRelationship.Relationships.RELATED_TO
+        if argToBoolean(demisto.params().get("create_relationships")):
+            reliability = demisto.params().get("feedReliability", "A++ - Reputation script")
 
-        reliability = demisto.params().get("feedReliability", "A++ - Reputation script")
+            # Map threat class to XSOAR threat intel object type
+            entity_a_type = INDICATOR_TYPE_MAPPING.get(indicator_type, Common.Indicator)
+            entity_b_type = INDICATOR_TYPE_MAPPING.get(threat_class, Common.Indicator)
 
-        relationship = EntityRelationship(
-            name=relationship_name,
-            entity_a=indicator_value,
-            entity_a_type=entity_a_type,
-            entity_b=threat_name,
-            entity_b_type=entity_b_type,
-            source_reliability=reliability,
-            brand=INTEGRATION_NAME,
-        )
+            # Determine relationship type based on threat class
+            if threat_class in ["actor", "threat_actor"]:
+                relationship_name = EntityRelationship.Relationships.USED_BY
+            elif threat_class == "campaign":
+                relationship_name = EntityRelationship.Relationships.PART_OF
+            elif threat_class in ["attack pattern", "technique"]:
+                relationship_name = EntityRelationship.Relationships.USES
+            elif threat_class == "exploit":
+                relationship_name = EntityRelationship.Relationships.EXPLOITS
+            elif threat_class in ["malicious behavior", "malicious_behavior"]:
+                relationship_name = EntityRelationship.Relationships.INDICATOR_OF
+            else:
+                relationship_name = EntityRelationship.Relationships.RELATED_TO
 
-        relationships.append(relationship.to_entry())
+            relationship = EntityRelationship(
+                name=relationship_name,
+                entity_a=indicator_value,
+                entity_a_type=entity_a_type,
+                entity_b=threat_name,
+                entity_b_type=entity_b_type,
+                source_reliability=reliability,
+                brand=INTEGRATION_NAME,
+            )
 
-    return relationships
+            relationships.append(relationship.to_entry())
+
+    return relationships, tags
 
 
 def map_indicator(indicator_data: dict, feed_tags: list = [], tlp_color: str | None = None) -> dict:
@@ -260,14 +266,21 @@ def map_indicator(indicator_data: dict, feed_tags: list = [], tlp_color: str | N
     # Map the indicator type to XSOAR type
     xsoar_indicator_type = INDICATOR_TYPE_MAPPING.get(indicator_type, Common.Indicator)
 
-    # Create DBotScore object
-    dbot_score = create_dbot_score(indicator_value, xsoar_indicator_type, indicator_data.get("verdict"))
+    # Create DBotScore
+    dbot_score = VERDICT_TO_SCORE.get(indicator_data.get("verdict"), Common.DBotScore.NONE)
+
+    # Create relationships and tags
+    relationships = []
+    tags = []
+    if indicator_data.get("threat_object_associations"):
+        relationships, tags = create_relationships_and_tags(indicator_value, indicator_type, indicator_data.get("threat_object_associations"))
 
     # Create fields
     fields = {
-        "description": indicator_data.get("description"),
         "updateddate": indicator_data.get("updated_at"),
+        "creationdate": indicator_data.get("first_seen"),
         "reportedby": indicator_data.get("source"),
+        "tags": tags,
     }
     if xsoar_indicator_type == FeedIndicatorType.File:
         fields["md5"] = demisto.get(indicator_data, "indicator_details.file_hashes.md5")
@@ -280,69 +293,17 @@ def map_indicator(indicator_data: dict, feed_tags: list = [], tlp_color: str | N
         fields["fileextension"] = demisto.get(indicator_data, "indicator_details.file_type", "").split(".")[-1]
         fields["size"] = demisto.get(indicator_data, "indicator_details.file_size")
 
-    # Create relationships
-    relationships = []
-    if indicator_data.get("threat_object_associations"):
-        relationships = create_relationships(indicator_value, indicator_type, indicator_data.get("threat_object_associations"))
-
     # Create the indicator object
     indicator: dict = {
         "value": indicator_value,
         "type": xsoar_indicator_type,
         "score": dbot_score,
-        "rawJSON": indicator_data,
         "service": INTEGRATION_NAME,
-        "fields": fields,
         "relationships": relationships,
+        "fields": fields,
+        "rawJSON": indicator_data,
     }
-
-    # Add tags from threat object associations
-    threat_object_association = indicator_data.get("threat_object_association", [])
-    # Process threat object associations for tags and relationships
-    if threat_object_association and "fields" in indicator and isinstance(indicator["fields"], dict):
-        # Add tags from threat object associations
-        threat_tags = [assoc.get("name") for assoc in threat_object_association if assoc and assoc.get("name")]
-        # Use a single if statement to avoid nesting
-        indicator["fields"]["tags"] = list(set(threat_tags + feed_tags)) if threat_tags else feed_tags.copy() if feed_tags else []
-
-        # Add relationships from threat object associations
-        relationships = [
-            {"name": assoc.get("name"), "class": assoc.get("class")}
-            for assoc in threat_object_association
-            if assoc and assoc.get("name") and assoc.get("class")
-        ]
-        # Assign relationships only if they exist
-        indicator["fields"]["relationships"] = relationships if relationships else []
-
-    # Add file-specific fields
-    if (
-        indicator_type
-        and isinstance(indicator_type, str)
-        and indicator_type.startswith("filehash_")
-        and "fields" in indicator
-        and isinstance(indicator["fields"], dict)
-    ):
-        if indicator_data.get("file_type"):
-            indicator["fields"]["filetype"] = indicator_data.get("file_type")
-        if indicator_data.get("size"):
-            indicator["fields"]["size"] = indicator_data.get("size")
-        if indicator_data.get("ssdeep"):
-            indicator["fields"]["ssdeep"] = indicator_data.get("ssdeep")
-        if indicator_data.get("imphash"):
-            indicator["fields"]["imphash"] = indicator_data.get("imphash")
-        if indicator_data.get("sha1"):
-            indicator["fields"]["sha1"] = indicator_data.get("sha1")
-        if indicator_data.get("md5"):
-            indicator["fields"]["md5"] = indicator_data.get("md5")
-
-    # Add first seen date
-    if indicator_data.get("first_seen") and "fields" in indicator and isinstance(indicator["fields"], dict):
-        indicator["fields"]["creationdate"] = indicator_data.get("first_seen")
-
-    # Add TLP color if provided
-    if tlp_color and "fields" in indicator and isinstance(indicator["fields"], dict):
-        indicator["fields"]["trafficlightprotocol"] = tlp_color
-
+    
     return indicator
 
 
@@ -359,92 +320,27 @@ def map_threat_object(threat_object: dict, feed_tags: list = [], tlp_color: str 
     """
     # Get basic threat object properties
     name = threat_object.get("name", "")
-    obj_class = threat_object.get("class", "")
+    threat_class = threat_object.get("threat_object_class", "").lower()
 
     # Map the threat object class to XSOAR type
-    xsoar_type = THREAT_OBJECT_CLASS_MAP.get(str(obj_class), ThreatTypes.Other)
+    xsoar_indicator_type = INDICATOR_TYPE_MAPPING.get(str(threat_class), Common.Indicator)
+    
+    fields = {
+        "description": threat_object.get("description"),
+        "updateddate": threat_object.get("updated_at"),
+        "reportedby": threat_object.get("source"),
+    }
 
     # Create the threat object
     result: dict = {
         "value": name,
-        "type": xsoar_type,
-        "score": get_threat_object_score(obj_class),
+        "type": xsoar_indicator_type,
+        "score": get_threat_object_score(threat_class),
         "service": INTEGRATION_NAME,
+        "relationships": [],
+        "fields": fields,
         "rawJSON": threat_object,
-        "fields": {
-            "updateddate": threat_object.get("updated_at"),
-            "reportedby": "Unit42",
-        },
     }
-
-    # Add description if available
-    if threat_object.get("description") and "fields" in result and isinstance(result["fields"], dict):
-        result["fields"]["description"] = threat_object.get("description")
-
-    # Add aliases if available
-    aliases = threat_object.get("aliases")
-    if aliases and "fields" in result and isinstance(result["fields"], dict):
-        result["fields"]["aliases"] = aliases
-
-    # Add publications if available
-    publications_data = threat_object.get("publications", [])
-    if publications_data and isinstance(publications_data, list) and "fields" in result and isinstance(result["fields"], dict):
-        publications = []
-        for pub in publications_data:
-            if pub and pub.get("name") and pub.get("url"):
-                publications.append({"name": pub.get("name"), "url": pub.get("url")})
-        if publications:
-            result["fields"]["publications"] = publications
-
-    # Add tags
-    tags = feed_tags.copy() if feed_tags else []
-    threat_tags = threat_object.get("tags", [])
-    if threat_tags and isinstance(threat_tags, list):
-        tags.extend(threat_tags)
-    if tags and "fields" in result and isinstance(result["fields"], dict):
-        result["fields"]["tags"] = list(set(tags))
-
-    # Add relationships
-    relationships_data = threat_object.get("relationships", [])
-    if relationships_data and isinstance(relationships_data, list) and "fields" in result and isinstance(result["fields"], dict):
-        relationships = []
-        for rel in relationships_data:
-            if rel and rel.get("name") and rel.get("class"):
-                relationships.append(
-                    {
-                        "name": rel.get("name"),
-                        "class": rel.get("class"),
-                        "relationship_type": rel.get("relationship_type", "related-to"),
-                    }
-                )
-        if relationships:
-            result["fields"]["relationships"] = relationships
-
-    # Add MITRE ATT&CK techniques
-    attack_techniques = threat_object.get("attack_techniques", [])
-    if attack_techniques and isinstance(attack_techniques, list) and "fields" in result and isinstance(result["fields"], dict):
-        techniques = []
-        for tech in attack_techniques:
-            if tech and tech.get("technique_id") and tech.get("technique_name"):
-                techniques.append(
-                    {
-                        "id": tech.get("technique_id"),
-                        "name": tech.get("technique_name"),
-                        "tactic": tech.get("tactic", ""),
-                    }
-                )
-        if techniques:
-            result["fields"]["attack_techniques"] = techniques
-
-    # Add first seen and last seen dates
-    if threat_object.get("first_seen") and "fields" in result and isinstance(result["fields"], dict):
-        result["fields"]["firstseenbysource"] = threat_object.get("first_seen")
-    if threat_object.get("last_seen"):
-        result["fields"]["lastseenbysource"] = threat_object.get("last_seen")
-
-    # Add TLP color if provided
-    if tlp_color and "fields" in result and isinstance(result["fields"], dict):
-        result["fields"]["trafficlightprotocol"] = tlp_color
 
     return result
 
@@ -536,22 +432,22 @@ def fetch_indicators(client: Client, params: dict, current_time: str | None = No
             if isinstance(data, list):
                 indicators.extend(parse_indicators(data, feed_tags, tlp_color))
 
-                # Handle pagination if needed
-                metadata = response.get("metadata", {})
-                next_page_token = metadata.get("next_page_token") if isinstance(metadata, dict) else None
-                while next_page_token:
-                    # Get next page of indicators
-                    response = client.get_indicators(
-                        indicator_types=indicator_types, start_time=start_time, next_page_token=next_page_token
-                    )
-                    if response and isinstance(response, dict) and response.get("data"):
-                        data = response.get("data", [])
-                        if isinstance(data, list):
-                            indicators.extend(parse_indicators(data, feed_tags, tlp_color))
-                        metadata = response.get("metadata", {})
-                        next_page_token = metadata.get("next_page_token") if isinstance(metadata, dict) else None
-                    else:
-                        break
+                # # Handle pagination if needed
+                # metadata = response.get("metadata", {})
+                # next_page_token = metadata.get("next_page_token") if isinstance(metadata, dict) else None
+                # while next_page_token:
+                #     # Get next page of indicators
+                #     response = client.get_indicators(
+                #         indicator_types=indicator_types, start_time=start_time, next_page_token=next_page_token
+                #     )
+                #     if response and isinstance(response, dict) and response.get("data"):
+                #         data = response.get("data", [])
+                #         if isinstance(data, list):
+                #             indicators.extend(parse_indicators(data, feed_tags, tlp_color))
+                #         metadata = response.get("metadata", {})
+                #         next_page_token = metadata.get("next_page_token") if isinstance(metadata, dict) else None
+                #     else:
+                #         break
 
     if "Threat Objects" in feed_types and start_time:
         # Get threat objects twice a day (every 12 hours)
@@ -567,20 +463,20 @@ def fetch_indicators(client: Client, params: dict, current_time: str | None = No
                 if isinstance(data, list):
                     indicators.extend(parse_threat_objects(data, feed_tags, tlp_color))
 
-                # Handle pagination if needed
-                metadata = response.get("metadata", {})
-                next_page_token = metadata.get("next_page_token") if isinstance(metadata, dict) else None
-                while next_page_token:
-                    # Get next page of threat objects
-                    response = client.get_threat_objects(next_page_token=next_page_token)
-                    if response and isinstance(response, dict) and response.get("data"):
-                        data = response.get("data", [])
-                        if isinstance(data, list):
-                            indicators.extend(parse_threat_objects(data, feed_tags, tlp_color))
-                        metadata = response.get("metadata", {})
-                        next_page_token = metadata.get("next_page_token") if isinstance(metadata, dict) else None
-                    else:
-                        break
+                # # Handle pagination if needed
+                # metadata = response.get("metadata", {})
+                # next_page_token = metadata.get("next_page_token") if isinstance(metadata, dict) else None
+                # while next_page_token:
+                #     # Get next page of threat objects
+                #     response = client.get_threat_objects(next_page_token=next_page_token)
+                #     if response and isinstance(response, dict) and response.get("data"):
+                #         data = response.get("data", [])
+                #         if isinstance(data, list):
+                #             indicators.extend(parse_threat_objects(data, feed_tags, tlp_color))
+                #         metadata = response.get("metadata", {})
+                #         next_page_token = metadata.get("next_page_token") if isinstance(metadata, dict) else None
+                #     else:
+                #         break
 
     return indicators
 
@@ -706,8 +602,12 @@ def main():
         elif command == "fetch-indicators" or command == "unit42-fetch-indicators":
             now = datetime.now()
             indicators = fetch_indicators(client, params, now)
-            for b in batch(indicators, batch_size=2000):
-                demisto.createIndicators(b)
+            if command == "fetch-indicators":
+                for b in batch(indicators, batch_size=2000):
+                    demisto.createIndicators(b)
+            else:
+                demisto.debug(len(indicators))
+
             demisto.setLastRun({"last_successful_run": now.strftime(DATE_FORMAT)})
             demisto.info(
                 f"The fetch-indicators command completed successfully. Next run will fetch from: {now.strftime(DATE_FORMAT)}"
