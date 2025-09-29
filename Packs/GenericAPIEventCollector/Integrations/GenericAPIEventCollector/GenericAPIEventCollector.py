@@ -169,7 +169,8 @@ class Client(BaseClient):
             "params": request_data.query_params,
         }
 
-        if next_page_handling == "navigate to it":
+        if next_page_handling == "navigate to it" and request_data.request_json:
+            # During the first cycle of fetching, request_json may be None. Here, fetch events from the configured endpoint
             full_url = next(iter(request_data.request_json.values()))  # in this case there is only one value in the json
             demisto.debug(f"Fetching next page of events: {full_url}")
             return self._http_request(full_url=full_url, **common_kwargs)  # type: ignore
