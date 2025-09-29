@@ -3636,9 +3636,20 @@ def get_client_list_command(
     raw_response = client.get_client_list(
         client_list_id, name, include_items, include_deprecated, search, type_list, include_network_list, page, page_size, limit
     )
-    human_readable = tableToMarkdown("Akamai WAF Client Lists", raw_response.get("lists", []))
+    hr = tableToMarkdown(
+        "Akamai WAF Client List",
+        {
+            "Name": raw_response.get("name", ""),
+            "List ID": raw_response.get("listId", ""),
+            "Type": raw_response.get("type", ""),
+            "Staging Activation Status": raw_response.get("stagingActivationStatus", ""),
+            "Production Activation Status": raw_response.get("productionActivationStatus", ""),
+            "Notes": raw_response.get("notes", ""),
+            "Tags": raw_response.get("tags", []),
+        },
+    )
     context_entry = {f"{INTEGRATION_CONTEXT_NAME}.ClientList": raw_response}
-    return human_readable, context_entry, raw_response
+    return hr, context_entry, raw_response
 
 
 @logger
@@ -3727,7 +3738,6 @@ def check_activation_status(
     activation_id = None
     start_time = time.time()
     status_resp = {}
-    i: int = 0
     demisto.debug(f"Starting polling for activation status with timeout {timeout_seconds} and interval {interval_seconds}")
     while latest_status == pending_status and (time.time() - start_time) < timeout_seconds:
         status_resp = client.get_client_list_activation_status(list_id, network_environment)
