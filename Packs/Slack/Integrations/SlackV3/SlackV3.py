@@ -2776,7 +2776,7 @@ def conversation_history():
         raise ValueError("Either channel_id or channel_name must be provided.")
 
     if not channel_id:
-        channel_id = extract_channel_id_by_channel_name(channel_name)
+        channel_id = resolve_channel_id_from_name(channel_name)
 
     body = (
         {"channel": channel_id, "limit": limit, "oldest": from_time}
