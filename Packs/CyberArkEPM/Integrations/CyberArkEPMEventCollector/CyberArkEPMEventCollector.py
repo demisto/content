@@ -391,11 +391,9 @@ def fetch_events(
             events.extend(detailed_events)
 
     demisto.info(f"[fetch_events] Sending len {len(events)} to XSIAM. updated_next_run={last_run}.")
-    unique_types = list(dict.fromkeys(e.get('eventType') for e in events if isinstance(e, dict)))
+    unique_types = list(dict.fromkeys(e.get("eventType") for e in events if isinstance(e, dict)))
     demisto.debug(f"[fetch_events] unique_event_types fetched during this fetch={unique_types}")
-    demisto.debug(
-        f"[fetch_events] events_count={len(events)} first_event_keys={(list(events[0].keys()) if events else [])}"
-    )
+    demisto.debug(f"[fetch_events] events_count={len(events)} first_event_keys={(list(events[0].keys()) if events else [])}")
     return events, last_run
 
 
