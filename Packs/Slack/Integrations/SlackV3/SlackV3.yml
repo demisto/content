@@ -492,7 +492,7 @@ script:
     - defaultValue: 100
       description: Set this argument to specify how many results to return. If you have more results than the limit you set, you will need to use the cursor argument to paginate your results.
       name: limit
-    - description: Deprecated. The value of this argument is time stamp sent to the oldest query parameter. Use from_time with limit=1 instead.
+    - description: Deprecated. This argument was incorrectly named, and actually worked as a timestamp filter, retrieving the first message after the given time. For equivalent behavior, use the *from_time* argument combined with *limit=1*.
       name: conversation_id
       deprecated: true
     - description: |
