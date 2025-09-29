@@ -3,6 +3,7 @@ from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
 from CommonServerPython import *  # noqa: F401 # pylint: disable=unused-wildcard-import
+from CommonServerPython import Common, DBotScoreReliability, DBotScoreType
 from datadog_api_client import ApiClient, Configuration
 from datadog_api_client.exceptions import ForbiddenException, UnauthorizedException
 from datadog_api_client.model_utils import unset
@@ -22,15 +23,6 @@ from datadog_api_client.v2.model.security_monitoring_signal_assignee_update_data
 )
 from datadog_api_client.v2.model.security_monitoring_signal_assignee_update_request import (
     SecurityMonitoringSignalAssigneeUpdateRequest,
-)
-from datadog_api_client.v2.model.security_monitoring_signal_list_request import (
-    SecurityMonitoringSignalListRequest,
-)
-from datadog_api_client.v2.model.security_monitoring_signal_list_request_filter import (
-    SecurityMonitoringSignalListRequestFilter,
-)
-from datadog_api_client.v2.model.security_monitoring_signal_list_request_page import (
-    SecurityMonitoringSignalListRequestPage,
 )
 from datadog_api_client.v2.model.security_monitoring_signal_state_update_attributes import (
     SecurityMonitoringSignalStateUpdateAttributes,
@@ -270,6 +262,171 @@ class SecuritySignal:
 
 
 """ HELPER FUNCTIONS """
+
+
+def extract_iocs_from_signal(signal: SecuritySignal) -> List[Common.Indicator]:
+    """
+    Extract Indicators of Compromise (IOCs) from a SecuritySignal and create standard XSOAR contexts.
+
+    Searches through signal data for IP addresses, domains, URLs, and file hashes,
+    then creates appropriate Common.IP, Common.Domain, etc. objects with DBotScore.
+
+    Args:
+        signal (SecuritySignal): SecuritySignal object to extract IOCs from
+
+    Returns:
+        List[Common.Indicator]: List of standard XSOAR indicator objects
+    """
+    import re
+
+    indicators = []
+
+    # Combine text fields to search for IOCs
+    searchable_text = " ".join(
+        filter(
+            None,
+            [
+                signal.message or "",
+                signal.title or "",
+                signal.source or "",
+                " ".join(signal.tags or []),
+                json.dumps(signal.raw or {}),
+            ],
+        )
+    )
+
+    # Extract IP addresses
+    ip_pattern = r"\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b"
+    ips = set(re.findall(ip_pattern, searchable_text))
+
+    for ip in ips:
+        # Skip private/local IPs for security signals (focus on external threats)
+        if not (
+            ip.startswith(
+                (
+                    "10.",
+                    "172.16.",
+                    "172.17.",
+                    "172.18.",
+                    "172.19.",
+                    "172.20.",
+                    "172.21.",
+                    "172.22.",
+                    "172.23.",
+                    "172.24.",
+                    "172.25.",
+                    "172.26.",
+                    "172.27.",
+                    "172.28.",
+                    "172.29.",
+                    "172.30.",
+                    "172.31.",
+                    "192.168.",
+                    "127.",
+                )
+            )
+        ):
+
+            dbot_score = Common.DBotScore(
+                indicator=ip,
+                indicator_type=DBotScoreType.IP,
+                integration_name="DatadogCloudSIEM",
+                score=Common.DBotScore.NONE,  # SIEM doesn't provide reputation, just detection
+                reliability=DBotScoreReliability.B,
+                malicious_description=f"IP found in Datadog security signal: {signal.title}",
+            )
+
+            ip_indicator = Common.IP(ip=ip, dbot_score=dbot_score)
+            indicators.append(ip_indicator)
+
+    # Extract domains
+    domain_pattern = r"\b[a-zA-Z0-9-]+\.(?:[a-zA-Z]{2,})\b"
+    domains = set(re.findall(domain_pattern, searchable_text))
+
+    for domain in domains:
+        # Filter out common false positives
+        if not domain.lower().endswith(
+            (".png", ".jpg", ".gif", ".css", ".js", ".local", ".internal")
+        ):
+            dbot_score = Common.DBotScore(
+                indicator=domain,
+                indicator_type=DBotScoreType.DOMAIN,
+                integration_name="DatadogCloudSIEM",
+                score=Common.DBotScore.NONE,
+                reliability=DBotScoreReliability.B,
+                malicious_description=f"Domain found in Datadog security signal: {signal.title}",
+            )
+
+            domain_indicator = Common.Domain(domain=domain, dbot_score=dbot_score)
+            indicators.append(domain_indicator)
+
+    # Extract URLs
+    url_pattern = r'https?://[^\s<>"{}|\\^`\[\]]+'
+    urls = set(re.findall(url_pattern, searchable_text))
+
+    for url in urls:
+        dbot_score = Common.DBotScore(
+            indicator=url,
+            indicator_type=DBotScoreType.URL,
+            integration_name="DatadogCloudSIEM",
+            score=Common.DBotScore.NONE,
+            reliability=DBotScoreReliability.B,
+            malicious_description=f"URL found in Datadog security signal: {signal.title}",
+        )
+
+        url_indicator = Common.URL(url=url, dbot_score=dbot_score)
+        indicators.append(url_indicator)
+
+    # Extract file hashes (MD5, SHA1, SHA256)
+    md5_pattern = r"\b[a-fA-F0-9]{32}\b"
+    sha1_pattern = r"\b[a-fA-F0-9]{40}\b"
+    sha256_pattern = r"\b[a-fA-F0-9]{64}\b"
+
+    md5_hashes = set(re.findall(md5_pattern, searchable_text))
+    sha1_hashes = set(re.findall(sha1_pattern, searchable_text))
+    sha256_hashes = set(re.findall(sha256_pattern, searchable_text))
+
+    # Group hashes by type
+    for hash_value in md5_hashes:
+        dbot_score = Common.DBotScore(
+            indicator=hash_value,
+            indicator_type=DBotScoreType.FILE,
+            integration_name="DatadogCloudSIEM",
+            score=Common.DBotScore.NONE,
+            reliability=DBotScoreReliability.B,
+            malicious_description=f"MD5 hash found in Datadog security signal: {signal.title}",
+        )
+
+        file_indicator = Common.File(md5=hash_value, dbot_score=dbot_score)
+        indicators.append(file_indicator)
+
+    for hash_value in sha1_hashes:
+        dbot_score = Common.DBotScore(
+            indicator=hash_value,
+            indicator_type=DBotScoreType.FILE,
+            integration_name="DatadogCloudSIEM",
+            score=Common.DBotScore.NONE,
+            reliability=DBotScoreReliability.B,
+            malicious_description=f"SHA1 hash found in Datadog security signal: {signal.title}",
+        )
+
+        file_indicator = Common.File(sha1=hash_value, dbot_score=dbot_score)
+        indicators.append(file_indicator)
+
+    for hash_value in sha256_hashes:
+        dbot_score = Common.DBotScore(
+            indicator=hash_value,
+            indicator_type=DBotScoreType.FILE,
+            integration_name="DatadogCloudSIEM",
+            score=Common.DBotScore.NONE,
+            reliability=DBotScoreReliability.B,
+            malicious_description=f"SHA256 hash found in Datadog security signal: {signal.title}",
+        )
+
+        file_indicator = Common.File(sha256=hash_value, dbot_score=dbot_score)
+        indicators.append(file_indicator)
+
+    return indicators
 
 
 def remove_none_values(data: Dict[str, Any]) -> Dict[str, Any]:
@@ -744,10 +901,27 @@ def get_security_signal_command(
 
             signal = parse_security_signal(data)
 
+            # Extract IOCs from the signal for standard XSOAR context
+            indicators = extract_iocs_from_signal(signal)
+
             # Create human-readable summary using the display dictionary
             signal_display = signal.to_display_dict()
-            readable_output = lookup_to_markdown(
-                [signal_display], "Security Signal Details"
+
+            # Add IOC summary to readable output if found
+            ioc_summary = ""
+            if indicators:
+                ioc_counts = {}
+                for indicator in indicators:
+                    ioc_type = type(indicator).__name__.replace("Common", "")
+                    ioc_counts[ioc_type] = ioc_counts.get(ioc_type, 0) + 1
+
+                ioc_summary = "\n\n**IOCs Extracted:** " + ", ".join(
+                    [f"{count} {ioc_type}" for ioc_type, count in ioc_counts.items()]
+                )
+
+            readable_output = (
+                lookup_to_markdown([signal_display], "Security Signal Details")
+                + ioc_summary
             )
 
             return CommandResults(
@@ -755,6 +929,7 @@ def get_security_signal_command(
                 outputs_prefix=SECURITY_SIGNAL_CONTEXT_NAME,
                 outputs_key_field="id",
                 outputs=signal.to_dict(),
+                indicators=indicators,  # This populates standard XSOAR contexts (IP, Domain, URL, File, etc.)
             )
 
     except Exception as e:
@@ -837,15 +1012,35 @@ def get_security_signals_command(
 
             signals = []
             display_data = []
+            all_indicators = []
 
             for signal_data in data_list:
                 signal = parse_security_signal(signal_data)
                 signals.append(signal.to_dict())
                 display_data.append(signal.to_display_dict())
 
+                # Extract IOCs from each signal
+                signal_indicators = extract_iocs_from_signal(signal)
+                all_indicators.extend(signal_indicators)
+
+            # Create summary of all IOCs found across signals
+            ioc_summary = ""
+            if all_indicators:
+                ioc_counts = {}
+                for indicator in all_indicators:
+                    ioc_type = type(indicator).__name__.replace("Common", "")
+                    ioc_counts[ioc_type] = ioc_counts.get(ioc_type, 0) + 1
+
+                ioc_summary = "\n\n**IOCs Extracted:** " + ", ".join(
+                    [f"{count} {ioc_type}" for ioc_type, count in ioc_counts.items()]
+                )
+
             # Create human-readable output
-            readable_output = lookup_to_markdown(
-                display_data, f"Security Signals ({len(signals)} results)"
+            readable_output = (
+                lookup_to_markdown(
+                    display_data, f"Security Signals ({len(signals)} results)"
+                )
+                + ioc_summary
             )
 
             return CommandResults(
@@ -853,6 +1048,7 @@ def get_security_signals_command(
                 outputs_prefix=SECURITY_SIGNAL_CONTEXT_NAME,
                 outputs_key_field="id",
                 outputs=signals,
+                indicators=all_indicators,  # This populates standard XSOAR contexts from all signals
             )
 
     except Exception as e:

@@ -100,6 +100,48 @@ script:
         - contextPath: Datadog.SecuritySignal.raw
           description: The raw signal object returned by the API
           type: Unknown
+        - contextPath: IP.Address
+          description: IP addresses extracted from security signal data
+          type: String
+        - contextPath: IP.DBotScore.Score
+          description: The DBot score for extracted IP addresses
+          type: Number
+        - contextPath: IP.DBotScore.Vendor
+          description: The vendor used to calculate the DBot score for IPs
+          type: String
+        - contextPath: Domain.Name
+          description: Domain names extracted from security signal data
+          type: String
+        - contextPath: Domain.DBotScore.Score
+          description: The DBot score for extracted domains
+          type: Number
+        - contextPath: Domain.DBotScore.Vendor
+          description: The vendor used to calculate the DBot score for domains
+          type: String
+        - contextPath: URL.Data
+          description: URLs extracted from security signal data
+          type: String
+        - contextPath: URL.DBotScore.Score
+          description: The DBot score for extracted URLs
+          type: Number
+        - contextPath: URL.DBotScore.Vendor
+          description: The vendor used to calculate the DBot score for URLs
+          type: String
+        - contextPath: File.MD5
+          description: MD5 hash values extracted from security signal data
+          type: String
+        - contextPath: File.SHA1
+          description: SHA1 hash values extracted from security signal data
+          type: String
+        - contextPath: File.SHA256
+          description: SHA256 hash values extracted from security signal data
+          type: String
+        - contextPath: File.DBotScore.Score
+          description: The DBot score for extracted file hashes
+          type: Number
+        - contextPath: File.DBotScore.Vendor
+          description: The vendor used to calculate the DBot score for files
+          type: String
 
     - arguments:
         - description: Filter signals by state (open, under_review, archived).
@@ -212,6 +254,48 @@ script:
         - contextPath: Datadog.SecuritySignal.raw
           description: The raw signal object returned by the API
           type: Unknown
+        - contextPath: IP.Address
+          description: IP addresses extracted from security signals data
+          type: String
+        - contextPath: IP.DBotScore.Score
+          description: The DBot score for extracted IP addresses
+          type: Number
+        - contextPath: IP.DBotScore.Vendor
+          description: The vendor used to calculate the DBot score for IPs
+          type: String
+        - contextPath: Domain.Name
+          description: Domain names extracted from security signals data
+          type: String
+        - contextPath: Domain.DBotScore.Score
+          description: The DBot score for extracted domains
+          type: Number
+        - contextPath: Domain.DBotScore.Vendor
+          description: The vendor used to calculate the DBot score for domains
+          type: String
+        - contextPath: URL.Data
+          description: URLs extracted from security signals data
+          type: String
+        - contextPath: URL.DBotScore.Score
+          description: The DBot score for extracted URLs
+          type: Number
+        - contextPath: URL.DBotScore.Vendor
+          description: The vendor used to calculate the DBot score for URLs
+          type: String
+        - contextPath: File.MD5
+          description: MD5 hash values extracted from security signals data
+          type: String
+        - contextPath: File.SHA1
+          description: SHA1 hash values extracted from security signals data
+          type: String
+        - contextPath: File.SHA256
+          description: SHA256 hash values extracted from security signals data
+          type: String
+        - contextPath: File.DBotScore.Score
+          description: The DBot score for extracted file hashes
+          type: Number
+        - contextPath: File.DBotScore.Vendor
+          description: The vendor used to calculate the DBot score for files
+          type: String
 
     - arguments:
         - description: The unique identifier of the security signal to update.
