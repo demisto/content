@@ -1634,7 +1634,7 @@ def close_investigation_command(client: Client, env: str, args=None):
                 f"Supported Status Values: {INVESTIGATION_STATUSES}")
         if field == "closeReason" and len(args.get("closeReason")) == 0:
             raise ValueError(
-                f"Close Reason cannot be empty , please provide a proper cdetailed close reason. "
+                f"Close Reason cannot be empty , please provide a proper detailed close reason. "
             )
 
         else:
