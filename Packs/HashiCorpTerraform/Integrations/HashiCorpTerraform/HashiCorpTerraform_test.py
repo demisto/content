@@ -1,15 +1,19 @@
 import re
 
 import pytest
+from unittest.mock import AsyncMock
+from freezegun import freeze_time
 from CommonServerPython import *
 from HashiCorpTerraform import (
     Client,
+    AsyncClient,
     plan_get_command,
     policies_checks_list_command,
     policies_list_command,
     policy_set_list_command,
     run_action_command,
     runs_list_command,
+    DEFAULT_PAGE_SIZE,
 )
 
 SERVER_URL = "https://test_url.com"
@@ -23,6 +27,11 @@ def util_load_json(path):
 @pytest.fixture()
 def client():
     return Client(url=SERVER_URL, token=None, default_organization_name=None, default_workspace_id=None, verify=None, proxy=None)
+
+
+@pytest.fixture()
+def async_client():
+    return AsyncClient(base_url=SERVER_URL, token="test_token", verify_ssl=False, is_proxy=False)
 
 
 def test_runs_list_command(client, requests_mock):
@@ -161,3 +170,112 @@ def test_test_module_command(client, mocker):
         HashiCorpTerraform.test_module(client)
 
     assert "Unauthorized: Please be sure you put a valid API Token" in str(err)
+
+
+def mock_aoi_session_response(response_json: None | dict = None, status_code: int = 200):
+    mock_response = AsyncMock()
+    mock_response.json = AsyncMock(return_value=response_json)
+    mock_response.raise_for_status = AsyncMock()
+    mock_response.status_code = status_code
+    return AsyncMock(__aenter__=AsyncMock(return_value=mock_response))
+
+
+@pytest.mark.asyncio
+async def test_client_get_audit_trails(async_client: AsyncClient, mocker):
+    """
+    Given:
+     - An AsyncClient instance.
+    When:
+     - Calling client.get_audit_trails with a given from_date and page_number.
+    Then:
+     - Ensure the correct HTTP GET request is made and the correct JSON response is returned.
+    """
+    from_date = "2025-01-01T00:00:00Z"
+    page_number = 1
+
+    mock_response_json = {"data": [{"id": "event-1", "timestamp": "2025-01-01T00:00:00Z"}], "pagination": {"total_pages": 1}}
+
+    async with async_client as _client:
+        mocker.patch.object(_client._session, "get", return_value=mock_aoi_session_response(mock_response_json))
+        response_json = await _client.get_audit_trails(from_date=from_date, page_number=page_number)
+
+    assert response_json == mock_response_json
+    assert _client._session.get.call_args.kwargs == {
+        "url": f"{SERVER_URL}/organization/audit-trail",
+        "params": {"since": from_date, "page[number]": str(page_number), "page[size]": str(DEFAULT_PAGE_SIZE)},
+        "proxy": None,
+    }
+    assert _client._session.get.call_count == 1
+
+
+@pytest.mark.asyncio
+async def test_get_audit_trail_events_pagination(async_client: AsyncClient, mocker):
+    """
+    Given:
+     - A limit that requires fetching two pages of events.
+    When:
+     - Calling get_audit_trail_events.
+    Then:
+     - Ensure that two API calls are made and the events are aggregated.
+    """
+    from HashiCorpTerraform import get_audit_trail_events
+
+    mock_response_jsons = [
+        {  # Page 1 (Newest events)
+            "data": [{"id": f"event-A{i}", "timestamp": "2025-01-01T00:02:00.000Z"} for i in range(DEFAULT_PAGE_SIZE)],
+            "pagination": {"current_page": 1, "total_pages": 3},
+        },
+        {  # Page 2
+            "data": [{"id": f"event-B{i}", "timestamp": "2025-01-01T00:01:00.000Z"} for i in range(DEFAULT_PAGE_SIZE)],
+            "pagination": {"current_page": 2, "total_pages": 3},
+        },
+        {  # Page 3 (Oldest events)
+            "data": [{"id": f"event-C{i}", "timestamp": "2025-01-01T00:00:00.000Z"} for i in range(DEFAULT_PAGE_SIZE)],
+            "pagination": {"current_page": 3, "total_pages": 3},
+        },
+    ]
+
+    mock_responses = [
+        mock_aoi_session_response(mock_response_jsons[0]),  # First call to find total pages
+        mock_aoi_session_response(mock_response_jsons[2]),  # Second call to last page (oldest events)
+        mock_aoi_session_response(mock_response_jsons[1]),  # Third call to second to last page (newer events than last page)
+    ]
+
+    limit = DEFAULT_PAGE_SIZE + 5
+    async with async_client as _client:
+        mocker.patch.object(_client._session, "get", side_effect=mock_responses)
+        events = await get_audit_trail_events(async_client, from_date="2025-01-01T00:00:00Z", limit=limit)
+
+    assert len(events) == limit
+    assert events[0]["timestamp"] < events[-1]["timestamp"]
+    assert events[-1]["_time"] == "2025-01-01T00:01:00Z"
+    assert _client._session.get.call_count == 3
+
+
+@freeze_time("2025-01-02T00:00:00Z")
+@pytest.mark.asyncio
+async def test_get_events_command(async_client: AsyncClient, mocker):
+    """
+    Given:
+     - An AsyncClient and command arguments.
+    When:
+     - Calling get_events_command.
+    Then:
+     - Ensure get_audit_trail_events is called with the correct arguments and returns the correct events.
+     - Ensure tableToMarkdown is called with the correct arguments.
+    """
+    from HashiCorpTerraform import get_events_command
+
+    mock_events = [{"id": "event-1", "timestamp": "2025-01-01T00:00:00Z", "_time": "2025-01-01T00:00:00Z"}]
+
+    mock_get_audit_events = mocker.patch("HashiCorpTerraform.get_audit_trail_events", return_value=mock_events)
+    mock_table_to_markdown = mocker.patch("HashiCorpTerraform.tableToMarkdown")
+
+    args = {"limit": "10", "from_date": "1 day ago"}
+    events, _ = await get_events_command(async_client, args)
+
+    assert events == mock_events
+    assert mock_get_audit_events.call_args[0][1] == "2025-01-01T00:00:00Z"  # One day before frozen time
+    assert mock_get_audit_events.call_args[0][2] == 10
+
+    assert mock_table_to_markdown.call_args.kwargs == {"name": "Terraform Audit Trail Events", "t": mock_events}

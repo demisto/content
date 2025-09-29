@@ -229,7 +229,7 @@ class AsyncClient:
             try:
                 attempt_string = f"attempt {attempt + 1}/{max_retries}"
                 demisto.debug(f"Starting request for audit trails ({attempt_string}) using {params=}.")
-                async with self._session.get(url, params=params, proxy=self._proxy_url) as response:
+                async with self._session.get(url=url, params=params, proxy=self._proxy_url) as response:
                     response.raise_for_status()
                     response_json = await response.json()
                     response_data = response_json.get("data", [])
@@ -363,7 +363,7 @@ async def get_events_command(client: AsyncClient, args: dict[str, Any]) -> tuple
 
     events = await get_audit_trail_events(client, from_date, limit)
 
-    return events, CommandResults(readable_output=tableToMarkdown("Terraform Audit Trail Events", events))
+    return events, CommandResults(readable_output=tableToMarkdown(name="Terraform Audit Trail Events", t=events))
 
 
 async def fetch_events_command(
