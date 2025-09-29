@@ -708,7 +708,7 @@ class MDEHandler(BrandHandler):
 
         if self.orchestrator.verbose:
             self.orchestrator.verbose_results.extend(verbose_res)
-        demisto.debug(f"Raw response received from MDE quaratnine: {raw_response}")
+        demisto.debug(f"Raw response received from MDE quarantine: {raw_response}")
         metadata = raw_response[0].get("Metadata", {})
 
         job = {
