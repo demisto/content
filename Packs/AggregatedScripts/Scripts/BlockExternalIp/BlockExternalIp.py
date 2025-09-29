@@ -798,7 +798,7 @@ def main():  # pragma: no cover
         brands_to_run = argToList(
             args.get(
                 "brands",
-                "Palo Alto Networks - Prisma SASE,Panorama,CheckPointFirewall_v2,FortiGate,F5Silverline,Cisco ASA,Zscaler",
+                "Palo Alto Networks - Prisma SASE,Panorama,FortiGate,F5Silverline,Cisco ASA,Zscaler",
             )
         )
         modules = demisto.getModules()
