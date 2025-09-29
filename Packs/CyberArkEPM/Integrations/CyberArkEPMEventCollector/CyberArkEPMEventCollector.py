@@ -288,9 +288,8 @@ def get_events(client_function: Callable, event_type: str, last_run_per_id: dict
 
         demisto.debug(f"[get_events] requesting first page - {set_id=}, {from_date=}, {next_cursor=}")
         results = client_function(set_id, from_date, limit, next_cursor)
-        demisto.debug(
-            f"[get_events] set_id={set_id} received {len(results.get('events', []))} events, nextCursor={results.get('nextCursor')}"
-        )
+        demisto.debug(f"[get_events] set_id={set_id} received {len(results.get('events', []))} events")
+        demisto.debug(f"[get_events] set_id={set_id} nextCursor={results.get('nextCursor')}")
         events[set_id]["events"] = results.get("events", [])
 
         while (next_cursor := results.get("nextCursor")) and len(events[set_id]["events"]) < limit:
@@ -300,9 +299,8 @@ def get_events(client_function: Callable, event_type: str, last_run_per_id: dict
             )
             results = client_function(set_id, from_date, limit, next_cursor)
             events[set_id]["events"].extend(results.get("events", []))  # type: ignore
-            demisto.debug(
-                f"[get_events] set_id={set_id} page received {len(results.get('events', []))}, total_count={len(events[set_id]['events'])}"
-            )
+            demisto.debug(f"[get_events] set_id={set_id} page received {len(results.get('events', []))}")
+            demisto.debug(f"[get_events] set_id={set_id} total_count={len(events[set_id]['events'])}")
 
         add_fields_to_events(events[set_id]["events"], "arrivalTime", event_type)  # type: ignore
         events[set_id]["next_cursor"] = next_cursor or "start"
@@ -356,9 +354,8 @@ def fetch_events(
     """
     events: list = []
     demisto.info(f"[fetch_events] Start fetching last run: {last_run}")
-    demisto.debug(
-        f"[fetch_events] params: max_fetch={max_fetch}, enable_admin_audits={enable_admin_audits}, set_ids={list(last_run.keys())}"
-    )
+    demisto.debug(f"[fetch_events] params: max_fetch={max_fetch}, enable_admin_audits={enable_admin_audits}")
+    demisto.debug(f"[fetch_events] set_ids={list(last_run.keys())}")
 
     if enable_admin_audits:
         for set_id, admin_audits in get_admin_audits(client, last_run, max_fetch).items():
