@@ -4515,7 +4515,7 @@ def get_network_lists_command(
     list_type: str = None,
     extended: str = "true",
     include_elements: str = "true",
-) -> tuple[object, dict, Union[list, dict]]:
+):
     """Deprecated. Use akamai-get-client-list instead.
 
     Args:
@@ -4532,7 +4532,7 @@ def get_network_lists_command(
 
 
 @logger
-def get_network_list_by_id_command(client: Client, network_list_id: str) -> tuple[object, dict, Union[list, dict]]:
+def get_network_list_by_id_command(client: Client, network_list_id: str):
     """Deprecated. Use akamai-get-client-list instead.
 
     Args:
@@ -4553,7 +4553,7 @@ def create_network_list_command(
     description: str = None,
     entry_id: str = None,
     elements: Union[str, list] = None,
-) -> tuple[object, dict, Union[list, dict]]:
+):
     """
         Deprecated. Use akamai-create-client-list instead.
     Args:
@@ -4571,7 +4571,7 @@ def create_network_list_command(
 
 
 @logger
-def delete_network_list_command(client: Client, network_list_id: str) -> tuple[object, dict, Union[list, dict]]:
+def delete_network_list_command(client: Client, network_list_id: str):
     """Deprecated. Use akamai-deprecate-client-list instead.
 
     Args:
@@ -4585,9 +4585,7 @@ def delete_network_list_command(client: Client, network_list_id: str) -> tuple[o
 
 
 @logger
-def update_network_list_elements_command(
-    client: Client, network_list_id: str, elements: Union[str, list] = None
-) -> tuple[object, dict, Union[list, dict]]:
+def update_network_list_elements_command(client: Client, network_list_id: str, elements: Union[str, list] = None):
     """Deprecated. No longer supported by Akamai.
 
     Args:
@@ -4601,9 +4599,7 @@ def update_network_list_elements_command(
 
 
 @logger
-def activate_network_list_command(
-    client: Client, network_list_ids: str, env: str, comment: str = None, notify: str = None
-) -> tuple[object, dict, Union[list, dict]]:
+def activate_network_list_command(client: Client, network_list_ids: str, env: str, comment: str = None, notify: str = None):
     """Deprecated. Use akamai-activate-client-list instead.
 
     Args:
@@ -4622,7 +4618,7 @@ def activate_network_list_command(
 @logger
 def add_elements_to_network_list_command(
     client: Client, network_list_id: str, entry_id: str = None, elements: Union[str, list] = None
-) -> tuple[object, dict, Union[list, dict]]:
+):
     """Deprecated. Use akamai-add-client-list-entry instead.
 
     Args:
@@ -4638,9 +4634,7 @@ def add_elements_to_network_list_command(
 
 
 @logger
-def remove_element_from_network_list_command(
-    client: Client, network_list_id: str, element: str
-) -> tuple[object, dict, Union[list, dict]]:
+def remove_element_from_network_list_command(client: Client, network_list_id: str, element: str):
     """Deprecated. Use akamai-remove-client-list-entry instead.
 
     Args:
@@ -4655,9 +4649,7 @@ def remove_element_from_network_list_command(
 
 
 @logger
-def get_activation_status_command(
-    client: Client, network_list_ids: Union[str, list], env: str
-) -> tuple[str, dict, Union[list, dict]]:
+def get_activation_status_command(client: Client, network_list_ids: Union[str, list], env: str):
     """Deprecated. No longer supported by Akamai.
 
     Args:
