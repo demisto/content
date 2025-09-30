@@ -1039,8 +1039,8 @@ Deletes a file (object) from a bucket.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| object_name | Name of the file to delete. | Required | 
-| bucket_name | Name of the bucket that stores the file to delete. | Optional | 
+| object_name | Name of the file to delete. | Required |
+| bucket_name | Name of the bucket that stores the file to delete. | Optional |
 
 #### Context Output
 
