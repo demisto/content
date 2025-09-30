@@ -41,6 +41,7 @@ configuration:
   type: 8
   section: Connect
 description: Vercara UltraDNS integration for Cortex. Leverage UltraDNS's cloud-based DNS event and configuration data for security automation and real-time threat detection in Cortex.
+display: Vercara UltraDNS
 name: VercaraUltraDNS
 script:
   commands:
