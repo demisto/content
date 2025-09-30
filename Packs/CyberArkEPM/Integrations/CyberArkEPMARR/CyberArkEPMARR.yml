@@ -29,7 +29,7 @@ configuration:
   type: 8
 description: This integration allows you to activate and deactivate CyberArk EPM risk plans for specific endpoints.
 display: CyberArk EPM ARR
-name: CyberArkEPMARR_test
+name: CyberArkEPMARR
 script:
   commands:
   - arguments:
@@ -42,6 +42,11 @@ script:
     - description: The external IP address of the endpoint.
       name: external_ip
       required: true
+    - description: Allow multiple endpoints to be added to the risk plan.
+      name: allow_multiple_endpoints
+      required: false
+      defaultvalue: true
+      type: 8
     description: Activates a CyberArk EPM risk plan for a specified endpoint.
     name: cyberarkepm-activate-risk-plan
     outputs:
@@ -58,6 +63,11 @@ script:
     - description: The external IP address of the endpoint.
       name: external_ip
       required: true
+    - description: Allow multiple endpoints to be removed from risk plan.
+      name: allow_multiple_endpoints
+      required: false
+      defaultvalue: true
+      type: 8
     description: Deactivates a CyberArk EPM risk plan for a specified endpoint.
     name: cyberarkepm-deactivate-risk-plan
     outputs:
