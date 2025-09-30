@@ -172,7 +172,10 @@ def test_merge_integration_context(mocker, current_integration_context, updated_
         (["DetectionSummaryEvent", "AuthActivityAuditEvent"], "EppDetectionSummaryEvent,AuthActivityAuditEvent"),
         (["DetectionSummaryEvent", "DetectionSummaryEvent"], "EppDetectionSummaryEvent,EppDetectionSummaryEvent"),
         (["EppDetectionSummaryEvent", "AuthActivityAuditEvent"], "EppDetectionSummaryEvent,AuthActivityAuditEvent"),
-        (["UserActivityAuditEvent", "DetectionSummaryEvent", "ProcessRollup2Event"], "UserActivityAuditEvent,EppDetectionSummaryEvent,ProcessRollup2Event"),  # noqa: E501
+        (
+            ["UserActivityAuditEvent", "DetectionSummaryEvent", "ProcessRollup2Event"],
+            "UserActivityAuditEvent,EppDetectionSummaryEvent,ProcessRollup2Event",
+        ),  # noqa: E501
     ],
 )
 def test_replace_deprecated_event_types(input_event_types, expected_output):

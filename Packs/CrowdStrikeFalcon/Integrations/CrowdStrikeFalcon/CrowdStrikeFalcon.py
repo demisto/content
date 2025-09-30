@@ -4815,7 +4815,9 @@ def resolve_detection_command():
 
     status = args.get("status")
     if status in ["true_positive", "false_positive", "ignored"]:
-        raise ValueError(f"The status chosen: {status} is deprecated due to the deprecation of the Legacy API. Choose a different one from the available options.")  # noqa: E501
+        raise ValueError(
+            f"The status chosen: {status} is deprecated due to the deprecation of the Legacy API. Choose a different one from the available options."
+        )  # noqa: E501
     tag = args.get("tag")
     show_in_ui = args.get("show_in_ui")
     if not (username or assigned_to_uuid or comment or status or show_in_ui or tag):

@@ -585,10 +585,10 @@ def merge_integration_context() -> None:
 
 def replace_deprecated_event_types(event_type_list: list) -> str:
     """Replace deprecated DetectionSummaryEvent with EppDetectionSummaryEvent.
-    
+
     Args:
         event_type_list: List of event types from parameters
-        
+
     Returns:
         Comma-separated string of event types with deprecated types replaced
     """
