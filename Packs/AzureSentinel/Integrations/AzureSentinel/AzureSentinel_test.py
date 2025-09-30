@@ -26,6 +26,7 @@ from AzureSentinel import (
     delete_watchlist_item_command,
     extract_classification_reason,
     fetch_incidents,
+    fetch_incidents_command,
     fetch_incidents_additional_info,
     get_mapping_fields_command,
     get_modified_remote_data_command,
@@ -2408,10 +2409,11 @@ def test_statuses_to_fetch_parameter_single_status(mocker):
     client = mock_client()
     mocker.patch.object(client, "http_request", return_value=MOCKED_INCIDENTS_OUTPUT)
     mocker.patch("AzureSentinel.process_incidents", return_value=({}, []))
-    mocker.patch("AzureSentinel.demisto.params", return_value={"statuses_to_fetch": ["New"]})
+    mocker.patch.object(demisto, "getLastRun", return_value=last_run)
+    params = {"statuses_to_fetch": ["New"]}
 
     # execute
-    fetch_incidents(client, last_run, "3 days", "Informational")
+    fetch_incidents_command(client, params)
 
     # validate
     expected_filter = "properties/createdTimeUtc ge 2022-03-16T13:01:08Z  and (properties/status eq 'New')"
@@ -2440,10 +2442,11 @@ def test_statuses_to_fetch_parameter_multiple_statuses(mocker):
     client = mock_client()
     mocker.patch.object(client, "http_request", return_value=MOCKED_INCIDENTS_OUTPUT)
     mocker.patch("AzureSentinel.process_incidents", return_value=({}, []))
-    mocker.patch("AzureSentinel.demisto.params", return_value={"statuses_to_fetch": ["New", "Active", "Closed"]})
+    mocker.patch.object(demisto, "getLastRun", return_value=last_run)
+    params = {"statuses_to_fetch": ["New", "Active", "Closed"]}
 
     # execute
-    fetch_incidents(client, last_run, "3 days", "Informational")
+    fetch_incidents_command(client, params)
 
     # validate
     expected_filter = (
