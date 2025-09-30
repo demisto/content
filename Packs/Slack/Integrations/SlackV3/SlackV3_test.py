@@ -5322,7 +5322,7 @@ def test_conversation_history_no_channel_provided_error(mocker):
     Test conversation_history raises error when neither channel_id nor channel_name provided
 
     Given: A conversation_history command is configured and no channel parameters are provided
-    When: The conversation_history command is called with args missing both channel_id and channel_name
+    When: The conversation_history command is called with args missing both conversation_id and conversation_name
     Then: The command raises ValueError with appropriate error message
     """
 
@@ -5330,16 +5330,16 @@ def test_conversation_history_no_channel_provided_error(mocker):
 
     mocker.patch.object(demisto, "args", return_value=args)
 
-    with pytest.raises(ValueError, match="Either channel_id or channel_name must be provided."):
+    with pytest.raises(ValueError, match="Either conversation_id or conversation_name must be provided."):
         conversation_history()
 
 
 def test_resolve_channel_id_from_name_private_conversation_found(mocker):
     """
-    Test extract_channel_id_by_channel_name when channel name corresponds to a user name.
+    Test resolve_channel_id_from_name when channel name corresponds to a user name.
 
-    Given: The extract_channel_id_by_channel_name function is called with a user name as the channel_name parameter.
-    When: A private conversation exists for the specified user and channel id is not provided.
+    Given: The resolve_channel_id_from_name is called with a user name as the channel_name parameter.
+    When: A private conversation exists for the specified user and conversation id or channel id is not provided.
     Then: The function returns the channel ID of the private conversation with that user.
     """
     mocker.patch("SlackV3.get_direct_message_channel_id_by_username", return_value="D1234567890")
@@ -5352,9 +5352,9 @@ def test_resolve_channel_id_from_name_private_conversation_found(mocker):
 
 def test_resolve_channel_id_from_name_channel_found(mocker):
     """
-    Test extract_channel_id_by_channel_name when channel name corresponds to a channel name.
+    Test resolve_channel_id_from_name when channel name corresponds to a channel name.
 
-    Given: The extract_channel_id_by_channel_name function is called with a channel name as the channel_name parameter.
+    Given: The resolve_channel_id_from_name function is called with a channel name as the conversation_name parameter.
     When: A channel with the specified name exists and channel id is not provided.
     Then: The function returns the channel ID of the channel.
     """
@@ -5368,9 +5368,9 @@ def test_resolve_channel_id_from_name_channel_found(mocker):
 
 def test_resolve_channel_id_from_name_no_channel_found(mocker):
     """
-    Test extract_channel_id_by_channel_name when no channel or user is found.
+    Test resolve_channel_id_from_name when no channel or user is found.
 
-    Given: The extract_channel_id_by_channel_name function is called with a channel name that doesn't exist.
+    Given: The resolve_channel_id_from_name function is called with a channel name that doesn't exist.
     When: No private conversation or channel exists for the specified name and channel id is not provided.
     Then: The function raises ValueError with appropriate error message indicating the channel was not found.
     """

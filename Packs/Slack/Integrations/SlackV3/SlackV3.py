@@ -2801,7 +2801,7 @@ def conversation_history():
     from_time = args.get("from_time", "0")
 
     if not conversation_id and not conversation_name:
-        raise ValueError("Either channel_id or channel_name must be provided.")
+        raise ValueError("Either conversation_id or conversation_name must be provided.")
 
     if not conversation_id:
         conversation_id = resolve_channel_id_from_name(conversation_name)
