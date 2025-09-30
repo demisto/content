@@ -602,7 +602,7 @@ def create_location_indicators_and_relationships(threat_obj: dict[str, Any], thr
     Returns:
         List of location indicators with relationships
     """
-    location_indicators = []
+    location_indicators: list = []
 
     # Handle affected regions
     affected_regions = demisto.get(threat_obj, "battlecard_details.threat_actor_details.affected_regions", [])

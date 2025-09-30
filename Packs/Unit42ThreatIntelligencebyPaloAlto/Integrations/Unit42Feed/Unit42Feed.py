@@ -84,7 +84,7 @@ class Client(BaseClient):
         Returns:
             Dict containing indicators and pagination info
         """
-        params = {}
+        params: dict[str, Any] = {}
         if indicator_types:
             params["indicator_type"] = ",".join(indicator_types).lower().replace("file", "filehash_sha256")
         if limit:
@@ -108,7 +108,7 @@ class Client(BaseClient):
         Returns:
             Dict containing threat objects and pagination info
         """
-        params = {}
+        params: dict[str, Any] = {}
         if limit:
             params["limit"] = limit
         if next_page_token:
@@ -180,7 +180,7 @@ def create_location_indicators_and_relationships(threat_obj: dict[str, Any], thr
     Returns:
         List of location indicators with relationships
     """
-    location_indicators = []
+    location_indicators: list[dict[str, Any]] = []
 
     # Handle affected regions
     affected_regions = demisto.get(threat_obj, "battlecard_details.threat_actor_details.affected_regions", [])
@@ -260,7 +260,7 @@ def build_threat_object_description(threat_obj: dict[str, Any]) -> str:
 
 def create_vulnerabilities_relationships(
     threat_obj: dict[str, Any], threat_actor_name: str, threat_class: str
-) -> list[EntityRelationship]:
+) -> list[dict]:
     """
     Create vulnerabilities relationships from vulnerabilities associations
 
@@ -295,7 +295,7 @@ def create_vulnerabilities_relationships(
 
 def create_actor_relationships(
     threat_obj: dict[str, Any], malware_family_name: str, threat_class: str
-) -> list[EntityRelationship]:
+) -> list[dict]:
     """
     Create actor relationships from actor_associations
 
@@ -343,7 +343,7 @@ def create_actor_relationships(
     return relationships
 
 
-def create_tools_relationships(threat_obj: dict[str, Any], threat_actor_name: str, threat_class: str) -> list[EntityRelationship]:
+def create_tools_relationships(threat_obj: dict[str, Any], threat_actor_name: str, threat_class: str) -> list[dict]:
     """
     Create tools relationships from tools associations
 
@@ -379,7 +379,7 @@ def create_tools_relationships(threat_obj: dict[str, Any], threat_actor_name: st
 
 def create_malware_relationships(
     threat_obj: dict[str, Any], threat_actor_name: str, threat_class: str
-) -> list[EntityRelationship]:
+) -> list[dict]:
     """
     Create malware relationships from malware_associations
 
@@ -429,7 +429,7 @@ def create_malware_relationships(
 
 def create_attack_patterns_relationships(
     threat_obj: dict[str, Any], threat_actor_name: str, threat_class: str
-) -> list[EntityRelationship]:
+) -> list[dict]:
     """
     Create attack patterns relationships from attack patterns associations
 
@@ -473,7 +473,7 @@ def create_attack_patterns_relationships(
 
 def create_campaigns_relationships(
     threat_obj: dict[str, Any], threat_object_name: str, threat_class: str
-) -> list[EntityRelationship]:
+) -> list[dict]:
     """
     Create campaigns relationships from campaigns list
 
@@ -504,7 +504,9 @@ def create_campaigns_relationships(
     return relationships
 
 
-def create_relationships_and_tags(indicator_value: str, indicator_type: str, threat_object_associations: list) -> list:
+def create_relationships_and_tags(
+    indicator_value: str, indicator_type: str, threat_object_associations: list
+) -> tuple[list[Any], list[str]]:
     """
     Create relationships and tags from threat object associations
 
@@ -516,8 +518,8 @@ def create_relationships_and_tags(indicator_value: str, indicator_type: str, thr
     Returns:
         Tuple of List of EntityRelationship objects and tags
     """
-    relationships = []
-    tags = []
+    relationships: list[Any] = []
+    tags: list[str] = []
 
     for assoc in threat_object_associations:
         if not assoc or not assoc.get("name") or not assoc.get("threat_object_class"):
@@ -582,14 +584,15 @@ def map_indicator(indicator_data: dict, feed_tags: list = [], tlp_color: str | N
     xsoar_indicator_type = INDICATOR_TYPE_MAPPING.get(indicator_type, Common.Indicator)
 
     # Create DBotScore
-    dbot_score = VERDICT_TO_SCORE.get(indicator_data.get("verdict"), Common.DBotScore.NONE)
+    verdict = str(indicator_data.get("verdict") or "")
+    dbot_score = VERDICT_TO_SCORE.get(verdict, Common.DBotScore.NONE)
 
     # Create relationships and tags
-    relationships = []
-    tags = []
+    relationships: list[Any] = []
+    tags: list[str] = []
     if indicator_data.get("threat_object_associations"):
         relationships, tags = create_relationships_and_tags(
-            indicator_value, indicator_type, indicator_data.get("threat_object_associations")
+            indicator_value, indicator_type, indicator_data.get("threat_object_associations") or []
         )
 
     # Create fields
@@ -648,7 +651,7 @@ def map_threat_object(threat_object: dict, feed_tags: list = [], tlp_color: str 
     # Create relationships
     relationships, tags = create_relationships_and_tags(name, threat_class, threat_object.get("related_threat_objects", []))
     if argToBoolean(demisto.params().get("create_relationships")):
-        relationships += create_campaigns_relationships(name, threat_class, threat_object)
+        relationships += create_campaigns_relationships(threat_object, name, threat_class)
         relationships += create_attack_patterns_relationships(threat_object, name, threat_class)
         relationships += create_malware_relationships(threat_object, name, threat_class)
         relationships += create_tools_relationships(threat_object, name, threat_class)
@@ -749,7 +752,7 @@ def test_module(client: Client) -> str:
     return "Failed to connect to Unit 42 API. Check your Server URL and License."
 
 
-def fetch_indicators(client: Client, params: dict, current_time: datetime | None = None) -> list:
+def fetch_indicators(client: Client, params: dict, current_time: datetime) -> list:
     """Retrieves indicators from the feed
 
     Args:
@@ -764,7 +767,10 @@ def fetch_indicators(client: Client, params: dict, current_time: datetime | None
     # Get indicator types from params
     feed_types = argToList(params.get("feed_types"))
     indicator_types = argToList(params.get("indicator_types"))
-    start_time = demisto.getLastRun().get("last_successful_run", (current_time - timedelta(hours=24)).strftime(DATE_FORMAT))
+
+    default_start = (current_time - timedelta(hours=24)).strftime(DATE_FORMAT)
+    last_run = demisto.getLastRun() or {}
+    start_time = last_run.get("last_successful_run", default_start)
 
     feed_tags = argToList(params.get("feedTags", []))
     tlp_color = params.get("tlp_color")
@@ -835,7 +841,7 @@ def get_indicators_command(client: Client, args: dict, feed_tags: list = [], tlp
         Demisto Outputs.
     """
     limit = arg_to_number(args.get("limit", "10")) or 10  # Default to 10 if None
-    indicator_types = ",".join(args.get("indicator_types", ["All"]))
+    indicator_types = argToList(args.get("indicator_types", "All"))
     next_page_token = args.get("next_page_token")
 
     # Get indicators from the API
@@ -927,7 +933,7 @@ def main():
     verify_certificate = not params.get("insecure", False)
     proxy = params.get("proxy", False)
 
-    if arg_to_number(params.get("feedFetchInterval", 720)) < 720:
+    if (arg_to_number(params.get("feedFetchInterval", "720")) or 720) < 720:
         return_error("Feed Fetch Interval parameter must be set to at least 12 hours.")
 
     command = demisto.command()
@@ -944,7 +950,7 @@ def main():
         elif command == "fetch-indicators":
             now = datetime.now()
             indicators = fetch_indicators(client, params, now)
-            for b in batch(indicators, batch_size=100):
+            for b in batch(indicators, batch_size=2000):
                 demisto.createIndicators(b)
             demisto.setLastRun({"last_successful_run": now.strftime(DATE_FORMAT)})
             demisto.info(
