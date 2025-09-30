@@ -1531,6 +1531,7 @@ def storage_blob_containers_update_command(client: AzureClient, params: dict, ar
             t=readable_output,
             headers=["Name", "Account Name", "Subscription ID", "Resource Group", "Public Access"],
         ),
+        removeNull=True,
     )
 
 
@@ -1580,6 +1581,7 @@ def storage_blob_service_properties_get_command(client: AzureClient, params: dic
                 "Delete Retention Policy",
                 "Versioning",
             ],
+            removeNull=True,
         ),
     )
 
