@@ -355,16 +355,24 @@ def process_events_for_xsiam(events: list[dict[str, Any]]) -> list[dict[str, Any
     return events
 
 
-def test_module(client: Client) -> str:
+def test_module(client: Client, params: dict) -> str:
     """Test API connectivity and authentication.
 
     Args:
         client: UltraDNS client instance
+        params: Integration parameters
 
     Returns:
         str: 'ok' if successful, error message if failed
     """
     demisto.debug("Starting test-module validation")
+    
+    # Validate max_events_per_fetch parameter in test-module
+    configured_limit = arg_to_number(params.get("max_events_per_fetch")) or MAX_EVENTS_PER_FETCH
+    if configured_limit > MAX_EVENTS_PER_FETCH:
+        raise DemistoException(
+            f"The maximum number of audit logs per fetch cannot exceed {MAX_EVENTS_PER_FETCH}. Configured: {configured_limit}"
+        )
     try:
         demisto.debug("Testing OAuth authentication...")
         access_token = client.get_access_token()
@@ -596,19 +604,20 @@ def main() -> None:
     password = params.get("credentials", {}).get("password") or params.get("password", "")
     verify_certificate = not params.get("insecure", False)
     proxy = params.get("proxy", False)
+    # Handle max_events_per_fetch with graceful fallback
     configured_limit = arg_to_number(params.get("max_events_per_fetch")) or MAX_EVENTS_PER_FETCH
     if configured_limit > MAX_EVENTS_PER_FETCH:
-        raise DemistoException(
-            f"The maximum number of audit logs per fetch cannot exceed {MAX_EVENTS_PER_FETCH}. Configured: {configured_limit}"
+        demisto.info(
+            f"Requested limit {configured_limit} exceeds maximum {MAX_EVENTS_PER_FETCH}. Using {MAX_EVENTS_PER_FETCH} instead."
         )
-    max_events_per_fetch = configured_limit
+    max_events_per_fetch = min(configured_limit, MAX_EVENTS_PER_FETCH)
 
     try:
         client = Client(base_url=base_url, username=username, password=password, verify=verify_certificate, proxy=proxy)
         demisto.debug(f"Client initialized, executing command: {command}")
 
         if command == "test-module":
-            result = test_module(client)
+            result = test_module(client, params)
             return_results(result)
 
         elif command == "vercara-ultradns-get-events":

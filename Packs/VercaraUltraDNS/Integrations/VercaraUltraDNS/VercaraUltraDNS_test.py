@@ -472,7 +472,7 @@ class TestMainFunctions:
             mocker.get(AUDIT_LOG_URL, json=audit_response)
 
             client = Client(BASE_URL, USERNAME, PASSWORD)
-            result = test_module(client)
+            result = test_module(client, {})
 
             assert result == "ok"
 
@@ -493,7 +493,7 @@ class TestMainFunctions:
 
             client = Client(BASE_URL, USERNAME, PASSWORD)
 
-            result = test_module(client)
+            result = test_module(client, {})
 
             assert "Connection failed:" in result
 
