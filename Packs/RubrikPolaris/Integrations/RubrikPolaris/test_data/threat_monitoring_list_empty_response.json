@@ -1,0 +1,21 @@
+{
+    "data": {
+        "threatMonitoringMatchedObjects": {
+            "edges": [],
+            "stats": {
+                "objectsWithMatches": 0,
+                "objectsWithNoMatches": 0,
+                "totalObjectsScanned": 0,
+                "__typename": "dummy-typename"
+            },
+            "pageInfo": {
+                "startCursor": "dummy-cursor",
+                "endCursor": "dummy-cursor",
+                "hasNextPage": false,
+                "hasPreviousPage": false,
+                "__typename": "dummy-typename"
+            },
+            "__typename": "dummy-typename"
+        }
+    }
+}
