@@ -6,7 +6,7 @@ import json
 from unittest.mock import patch
 from CommonServerPython import *
 
-from VercaraUltraDNSEventCollector import (
+from VercaraUltraDNS import (
     Client,
     convert_time_string,
     _calculate_event_hash,
@@ -343,7 +343,7 @@ class TestCaching:
             {"changeTime": "2025-09-27 14:20:00.0", "user": "admin", "object": "old.com"},  # Older
         ]
 
-        with patch("VercaraUltraDNSEventCollector._calculate_event_hash") as mock_hash:
+        with patch("VercaraUltraDNS._calculate_event_hash") as mock_hash:
             mock_hash.side_effect = ["hash_recent", "hash_exact", "hash_old"]
 
             cache = {}
@@ -517,7 +517,7 @@ class TestMainFunctions:
         # Remove next_cursor to simulate single page response
         audit_response.pop("next_cursor", None)
 
-        mock_send = mocker.patch("VercaraUltraDNSEventCollector.send_events_to_xsiam", side_effect=mock_send_events_to_xsiam)
+        mock_send = mocker.patch("VercaraUltraDNS.send_events_to_xsiam", side_effect=mock_send_events_to_xsiam)
 
         with requests_mock.Mocker() as requests_mocker:
             requests_mocker.post(TOKEN_URL, json=token_response)

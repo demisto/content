@@ -3,7 +3,7 @@ This integration was integrated and tested with the 3.18.0 Vercara UltraDNS API.
 
 This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
 
-## Configure Vercara UltraDNS Event Collector in Cortex
+## Configure Vercara UltraDNS in Cortex
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -15,13 +15,16 @@ This is the default integration for this content pack when configured by the Dat
 | Fetch events | Whether to bring events or not. | False |
 | The maximum number of audit logs per fetch | Maximum number of events to fetch per cycle. Default is 2,500, maximum is 2,500. | False |
 
-## Vercara UltraDNS Event Collector Authentication
+## Vercara UltraDNS Authentication
 
 The integration uses OAuth 2.0 password grant flow for authentication:
 
 1. **Initial Token Request**: Uses username/password to obtain access token and refresh token
 2. **Token Usage**: Access token is used in Authorization header for API requests
-3. **Token Refresh**: Automatically refreshes tokens when they expire, with fallback to username/password if refresh fails
+3. **Token Refresh**: Automatically refreshes tokens when they expire, with fallback to username/password if refresh fails.
+   
+For detailed API documentation, see the [REST API User Guide](https://ultra-portalstatic.ultradns.com/static/docs/REST-API_User_Guide.pdf).
+
 
 ## Commands
 

@@ -3,7 +3,7 @@ sectionorder:
 - Connect
 - Collect
 commonfields:
-  id: VercaraUltraDNSEventCollector
+  id: VercaraUltraDNS
   version: -1
 configuration:
 - defaultvalue: https://api.ultradns.com
@@ -40,9 +40,8 @@ configuration:
   required: false
   type: 8
   section: Connect
-description: Vercara UltraDNS Event Collector integration for Cortex. Collects audit logs from Vercara UltraDNS platform using OAuth authentication.
-display: Vercara UltraDNS Event Collector
-name: VercaraUltraDNSEventCollector
+description: Vercara UltraDNS integration for Cortex. Leverage UltraDNS's cloud-based DNS event and configuration data for security automation and real-time threat detection in Cortex.
+name: VercaraUltraDNS
 script:
   commands:
   - arguments:

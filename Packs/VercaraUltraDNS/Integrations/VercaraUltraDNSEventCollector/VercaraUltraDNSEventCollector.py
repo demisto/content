@@ -578,7 +578,7 @@ def fetch_events(
 
 
 def main() -> None:
-    """Main entry point for UltraDNS Event Collector integration.
+    """Main entry point for UltraDNS integration.
 
     Returns:
         None

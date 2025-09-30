@@ -27,5 +27,5 @@
         "marketplacev2",
         "platform"
     ],
-    "defaultDataSource": "VercaraUltraDNSEventCollector"
+    "defaultDataSource": "VercaraUltraDNS"
 }
