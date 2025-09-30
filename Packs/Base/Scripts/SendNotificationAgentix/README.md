@@ -1,6 +1,5 @@
 Sends a notification message to a user, group, or channel. Supports sending messages to Slack, Microsoft Teams, Mattermost or Zoom.
 
-
 ## Script Data
 
 ---
