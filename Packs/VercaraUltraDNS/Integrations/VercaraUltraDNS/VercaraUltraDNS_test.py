@@ -16,7 +16,6 @@ from VercaraUltraDNS import (
     process_events_for_xsiam,
     fetch_events,
     get_events_command,
-    test_module,
     VENDOR,
     PRODUCT,
 )
@@ -467,6 +466,8 @@ class TestMainFunctions:
         token_response = util_load_json("test_data/oauth_token_response.json")
         audit_response = util_load_json("test_data/audit_events_empty.json")
 
+        from VercaraUltraDNS import test_module
+
         with requests_mock.Mocker() as mocker:
             mocker.post(TOKEN_URL, json=token_response)
             mocker.get(AUDIT_LOG_URL, json=audit_response)
@@ -488,6 +489,8 @@ class TestMainFunctions:
         Then:
         - Should return error message with authentication failure
         """
+        from VercaraUltraDNS import test_module
+
         with requests_mock.Mocker() as mocker:
             mocker.post(TOKEN_URL, status_code=401, json={"error": "invalid_credentials"})
 
