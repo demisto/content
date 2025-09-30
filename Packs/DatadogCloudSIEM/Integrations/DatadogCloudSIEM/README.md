@@ -4,11 +4,11 @@ Datadog Cloud SIEM integration for Cortex XSOAR provides security signal managem
 
 This integration allows security teams to:
 
--   Fetch security signals as XSOAR incidents automatically
--   Retrieve and filter security signals from Datadog's Cloud SIEM platform
--   Manage signal triage states and assignments
--   Search security logs for investigations
--   Extract IOCs (IPs, URLs, file hashes) from security signals
+- Fetch security signals as XSOAR incidents automatically
+- Retrieve and filter security signals from Datadog's Cloud SIEM platform
+- Manage signal triage states and assignments
+- Search security logs for investigations
+- Extract IOCs (IPs, URLs, file hashes) from security signals
 
 This integration was integrated and tested with version 2.12.0 of datadog-api-client.
 
@@ -325,39 +325,39 @@ To enable incident fetching:
 
 Each fetched incident includes:
 
--   **Name**: Security signal title
--   **Occurred**: Signal timestamp
--   **Severity**: Mapped from Datadog severity (Low=1, Medium=2, High=3, Critical=4)
--   **Raw JSON**: Complete signal data for mapping and enrichment
+- **Name**: Security signal title
+- **Occurred**: Signal timestamp
+- **Severity**: Mapped from Datadog severity (Low=1, Medium=2, High=3, Critical=4)
+- **Raw JSON**: Complete signal data for mapping and enrichment
 
 ### IOC Extraction
 
 IOCs are automatically extracted from security signals and can be accessed via:
 
--   Running `!datadog-security-signal-get signal_id=${incident.dbotMirrorId}` in playbooks
--   Standard XSOAR indicator contexts (IP, URL, File) are populated
+- Running `!datadog-security-signal-get signal_id=${incident.dbotMirrorId}` in playbooks
+- Standard XSOAR indicator contexts (IP, URL, File) are populated
 
 ## Known Limitations
 
--   Private IP addresses (RFC 1918) are filtered out from IOC extraction
--   Datadog API rate limits apply
+- Private IP addresses (RFC 1918) are filtered out from IOC extraction
+- Datadog API rate limits apply
 
 ## Troubleshooting
 
 ### Authentication Errors
 
--   Verify API Key and APP Key are correct
--   Ensure keys have appropriate permissions in Datadog
--   Check Server URL matches your Datadog site (e.g., datadoghq.com, datadoghq.eu)
+- Verify API Key and APP Key are correct
+- Ensure keys have appropriate permissions in Datadog
+- Check Server URL matches your Datadog site (e.g., datadoghq.com, datadoghq.eu)
 
 ### Fetch Issues
 
--   Check First Fetch Time is not too far in the past (max 90 days recommended)
--   Verify Fetch Query syntax using Datadog's query language
--   Review integration logs for detailed error messages
+- Check First Fetch Time is not too far in the past (max 90 days recommended)
+- Verify Fetch Query syntax using Datadog's query language
+- Review integration logs for detailed error messages
 
 ### IOC Extraction
 
--   IOCs are extracted from signal title, message, tags, and raw data
--   Only public IP addresses are extracted (private IPs filtered)
--   File hashes must be complete MD5 (32 chars), SHA1 (40 chars), or SHA256 (64 chars)
+- IOCs are extracted from signal title, message, tags, and raw data
+- Only public IP addresses are extracted (private IPs filtered)
+- File hashes must be complete MD5 (32 chars), SHA1 (40 chars), or SHA256 (64 chars)

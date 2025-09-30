@@ -17,5 +17,6 @@
     ],
     "useCases": ["Incident Response", "Threat Intelligence Management"],
     "keywords": ["Cloud SIEM"],
-    "marketplaces": ["xsoar", "marketplacev2"]
+    "marketplaces": ["xsoar", "marketplacev2"],
+    "defaultDataSource": "Datadog Cloud SIEM"
 }

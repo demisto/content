@@ -4,21 +4,75 @@
         "tabs": [
             {
                 "hidden": false,
-                "id": "tkghzdhjpd",
-                "name": "Datadog Details Table",
+                "id": "security-signal-details",
+                "name": "Security Signal Details",
                 "sections": [
                     {
-                        "displayType": "ROW",
+                        "displayType": "CARD",
                         "h": 2,
                         "hideName": false,
-                        "i": "caseinfoid-b31778b0-e406-11ed-956e-39ec0379f460",
+                        "i": "security-signal-details-signal-info",
                         "items": [
                             {
                                 "endCol": 2,
-                                "fieldId": "datadogcloudsiem",
+                                "fieldId": "datadogsecuritysignalid",
                                 "height": 22,
-                                "id": "c201fbc0-e406-11ed-956e-39ec0379f460",
+                                "id": "field-datadogsecuritysignalid",
                                 "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "datadogsecuritysignalseverity",
+                                "height": 22,
+                                "id": "field-datadogsecuritysignalseverity",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "datadogsecuritysignalstate",
+                                "height": 22,
+                                "id": "field-datadogsecuritysignalstate",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "datadogsecuritysignalhost",
+                                "height": 22,
+                                "id": "field-datadogsecuritysignalhost",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "datadogsecuritysignalservice",
+                                "height": 22,
+                                "id": "field-datadogsecuritysignalservice",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "datadogsecuritysignaltags",
+                                "height": 22,
+                                "id": "field-datadogsecuritysignaltags",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "datadogsecuritysignaltriggeringlogid",
+                                "height": 22,
+                                "id": "field-datadogsecuritysignaltriggeringlogid",
+                                "index": 6,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
@@ -27,10 +81,114 @@
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
-                        "name": "New Section",
+                        "name": "Signal Information",
                         "static": false,
                         "w": 1,
                         "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "i": "security-signal-details-rule-info",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "datadogsecuritysignalruleid",
+                                "height": 22,
+                                "id": "field-datadogsecuritysignalruleid",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "datadogsecuritysignalrulename",
+                                "height": 22,
+                                "id": "field-datadogsecuritysignalrulename",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "datadogsecuritysignalruletype",
+                                "height": 22,
+                                "id": "field-datadogsecuritysignalruletype",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "datadogsecuritysignalruletags",
+                                "height": 22,
+                                "id": "field-datadogsecuritysignalruletags",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Detection Rule Details",
+                        "static": false,
+                        "w": 1,
+                        "x": 1,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "i": "security-signal-details-triage-info",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "datadogsecuritysignalassigneeuuid",
+                                "height": 22,
+                                "id": "field-datadogsecuritysignalassigneeuuid",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "datadogsecuritysignalassigneename",
+                                "height": 22,
+                                "id": "field-datadogsecuritysignalassigneename",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "datadogsecuritysignaltragereason",
+                                "height": 22,
+                                "id": "field-datadogsecuritysignaltragereason",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "datadogsecuritysignaltriagecomment",
+                                "height": 22,
+                                "id": "field-datadogsecuritysignaltriagecomment",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Triage Information",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
                         "y": 0
                     }
                 ],
