@@ -22,13 +22,17 @@ from urllib.parse import urlparse
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 """ GLOBAL CONSTS """
+# Integration context fields
 ACCESS_TOKEN_CONST = "access_token"  # guardrails-disable-line
 EXPIRES_IN = "expires_in"
 INSTANCE_ID_CONST = "instance_id"
 API_URL_CONST = "api_url"
 FIRST_FAILURE_TIME_CONST = "first_failure_time"
 LAST_FAILURE_TIME_CONST = "last_failure_time"
+REFRESH_TOKEN_CONST = "refresh_token"
+IS_FEDRAMP_CONST = "is_fedramp"
 
+FEDRAMP_HOSTNAME_SUFFIX = "federal.paloaltonetworks.com"
 DEFAULT_API_URL = "https://api.us.cdl.paloaltonetworks.com"
 STANDARD_TOKEN_URL = "https://oproxy.demisto.ninja"  # guardrails-disable-line
 FEDRAMP_TOKEN_URL = (
@@ -61,7 +65,7 @@ class Client(BaseClient):
     Should only do requests and return data.
     """
 
-    def __init__(self, token_retrieval_url, registration_id, use_ssl, proxy, refresh_token, enc_key, is_fr):
+    def __init__(self, token_retrieval_url, registration_id, use_ssl, proxy, refresh_token, enc_key):
         headers = get_x_content_info_headers()
         headers["Authorization"] = registration_id
         headers["Accept"] = "application/json"
@@ -69,7 +73,7 @@ class Client(BaseClient):
         self.refresh_token = refresh_token
         self.enc_key = enc_key
         self.use_ssl = use_ssl
-        self.is_fr = is_fr
+        self.use_fr_token_headers = bool(FEDRAMP_HOSTNAME_SUFFIX in token_retrieval_url)
         self.registration_id = registration_id
         # Trust environment settings for proxy configuration
         self.trust_env = proxy
@@ -92,15 +96,17 @@ class Client(BaseClient):
             return
         demisto.debug(f"access token time: {valid_until} expired/none. Will call oproxy")
         access_token, api_url, instance_id, refresh_token, expires_in = self._oproxy_authorize()
-        updated_integration_context = {
-            ACCESS_TOKEN_CONST: access_token,
-            EXPIRES_IN: int(time.time()) + expires_in - SECONDS_30,
-            API_URL_CONST: api_url,
-            INSTANCE_ID_CONST: instance_id,
-        }
+        integration_context.update(
+            {
+                ACCESS_TOKEN_CONST: access_token,
+                EXPIRES_IN: int(time.time()) + expires_in - SECONDS_30,
+                API_URL_CONST: api_url,
+                INSTANCE_ID_CONST: instance_id,
+            }
+        )
         if refresh_token:
-            updated_integration_context.update({"refresh_token": refresh_token})
-        demisto.setIntegrationContext(updated_integration_context)
+            integration_context.update({REFRESH_TOKEN_CONST: refresh_token})
+        demisto.setIntegrationContext(integration_context)
         self.access_token = access_token
         self.api_url = api_url
         self.instance_id = instance_id
@@ -109,7 +115,7 @@ class Client(BaseClient):
         oproxy_response = self._get_access_token_with_backoff_strategy()
         access_token = oproxy_response.get(ACCESS_TOKEN_CONST)
         api_url = oproxy_response.get("url")
-        refresh_token = oproxy_response.get("refresh_token")
+        refresh_token = oproxy_response.get(REFRESH_TOKEN_CONST)
         instance_id = oproxy_response.get(INSTANCE_ID_CONST)
         # In case the response has EXPIRES_IN key with empty string as value, we need to make sure we don't try to cast
         # an empty string to an int.
@@ -185,9 +191,11 @@ class Client(BaseClient):
         demisto.debug("CDL - Fetching access token")
         try:
             token = get_encrypted(self.refresh_token, self.enc_key)
-            if self.is_fr:
+            if self.use_fr_token_headers:
+                demisto.debug("Using FedRAMP resource token request headers.")
                 data = {"encrypted_token": token, "registration_id": self.registration_id}
             else:
+                demisto.debug("Using standard resource token request headers.")
                 data = {"token": token}
             oproxy_response = self._http_request(
                 "POST",
@@ -1033,27 +1041,24 @@ def convert_log_to_incident(log: dict, fetch_table: str) -> dict:
     return incident
 
 
-def extract_client_args(configured_registration_id_and_url: str) -> tuple[str, str, bool]:
+def is_fedramp_tenant() -> bool:
     """
-    Extracts the API Client arguments, including token retrieval URL, the registration ID, and FedRAMP status.
-
-    If the URL is provided in the "Registration ID" parameter, it extracts the registration ID and URL directly.
-    Otherwise, it retrieves the tenant URL from the license custom field to determine if it is a FedRAMP or standard tenant,
-    then sets the corresponding token retrieval URL.
-
-    Args:
-        configured_registration_id_and_url (str): The "Registration ID" parameter; may contain a URL joined with an "@" symbol.
+    Retrieves the tenant URL from the license custom field to determine if it is a FedRAMP or standard tenant.
 
     Returns:
-        tuple[str, str, bool]: A tuple containing the following:
-            - Token retrieval URL
-            - Registration ID
-            - Boolean flag indicating if FedRAMP (`True`) or standard tenant (`False`).
+        bool: True if FedRAMP tenant, False otherwise.
     """
-    # Get tenant URL
-    demisto.debug("Getting URL from license custom field.")
+    # Try to get from integration context
+    integration_context = demisto.getIntegrationContext()
+    is_fedramp = integration_context.get(IS_FEDRAMP_CONST)
+    if is_fedramp is not None:
+        demisto.debug(f"Found FedRAMP status {is_fedramp=} in integration context.")
+        return is_fedramp
+
+    # If not in integration context, get tenant URL
+    demisto.debug("FedRAMP status not in integration context. Getting tenant URL from license custom field.")
     url = str(demisto.getLicenseCustomField("Http_Connector.url"))
-    demisto.debug(f"Got {url=} from license custom field.")
+    demisto.debug(f"Got tenant {url=} from license custom field.")
 
     # Ensure 'https' scheme in tenant URL, otherwise URL may not be parsed correctly
     if not url.startswith("https"):
@@ -1061,30 +1066,55 @@ def extract_client_args(configured_registration_id_and_url: str) -> tuple[str, s
         url = f"https://{url}"
 
     # Extract hostname from tenant URL
-    demisto.debug("Extracting hostname from parsed URL.")
+    demisto.debug("Extracting hostname from parsed tenant URL.")
     parsed_url = urlparse(url)
     hostname = parsed_url.hostname
-    demisto.debug(f"Extracted {hostname=} from parsed URL.")
+    demisto.debug(f"Extracted {hostname=} from parsed tenant URL.")
 
-    is_fr = isinstance(hostname, str) and hostname.endswith(".federal.paloaltonetworks.com")  # Indicates if FedRAMP tenant
-    demisto.debug(f"Working on tenant with {is_fr=}.")
+    is_fedramp = isinstance(hostname, str) and hostname.endswith(FEDRAMP_HOSTNAME_SUFFIX)
 
+    # Set in integration context for use next time
+    integration_context[IS_FEDRAMP_CONST] = is_fedramp
+    demisto.debug(f"Setting tenant FedRAMP status {is_fedramp=} in integration context.")
+    demisto.setIntegrationContext(integration_context)
+    return is_fedramp
+
+
+def extract_client_args(configured_registration_id_and_url: str) -> tuple[str, str]:
+    """
+    Extracts the API Client arguments, including token retrieval URL and the registration ID.
+
+    If the URL is provided in the "Registration ID" parameter, it extracts the registration ID and URL directly.
+    Otherwise, it infers the token retrieval URL based on the tenant FedRAMP status.
+
+    Args:
+        configured_registration_id_and_url (str): The "Registration ID" parameter; may contain a URL joined with an "@" symbol.
+
+    Returns:
+        tuple[str, str]: The token retrieval URL, registration ID
+    """
     registration_id_and_url = configured_registration_id_and_url.split("@")
     registration_id = registration_id_and_url[0]
 
+    # If directly supplied, take configured token URL
     if len(registration_id_and_url) == 2:
         demisto.debug("Getting token retrieval URL from configured Registration ID.")
         token_retrieval_url = registration_id_and_url[1]
+        return token_retrieval_url, registration_id
 
-    elif is_fr:
-        demisto.debug("Getting token retrieval URL for FedRAMP tenant.")
+    # Else, infer token URL based on tenant FedRAMP status
+    is_fr = is_fedramp_tenant()
+    demisto.debug(f"Working on tenant with {is_fr=}.")
+
+    if is_fr:
+        demisto.debug("Getting inferred token retrieval URL for FedRAMP tenant.")
         token_retrieval_url = FEDRAMP_TOKEN_URL
 
     else:
-        demisto.debug("Getting token retrieval URL for standard tenant.")
+        demisto.debug("Getting inferred token retrieval URL for standard tenant.")
         token_retrieval_url = STANDARD_TOKEN_URL
 
-    return token_retrieval_url, registration_id, is_fr
+    return token_retrieval_url, registration_id
 
 
 """ COMMANDS FUNCTIONS """
@@ -1386,8 +1416,8 @@ def main():
         return_outputs(readable_output="Caching mechanism failure time counters have been successfully reset.")
         return
 
-    token_retrieval_url, registration_id, is_fr = extract_client_args(registration_id_and_url)
-    client = Client(token_retrieval_url, registration_id, use_ssl, proxy, refresh_token, enc_key, is_fr)
+    token_retrieval_url, registration_id = extract_client_args(registration_id_and_url)
+    client = Client(token_retrieval_url, registration_id, use_ssl, proxy, refresh_token, enc_key)
 
     try:
         if command == "test-module":
