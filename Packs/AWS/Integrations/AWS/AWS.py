@@ -381,12 +381,11 @@ class S3:
             client (BotoClient): The initialized Boto3 S3 client.
             args (Dict[str, Any]): Command arguments, typically containing:
                 - 'bucket' (str): The name of the S3 bucket. (Required)
-                - 'expected_bucket_owner' (str): The account ID of the expected bucket owner. (Optional)
 
         Returns:
             CommandResults: A CommandResults object with a success message on status 200/204.
         """
-        kwargs = {"Bucket": args.get("bucket"), "ExpectedBucketOwner": args.get("expected_bucket_owner")}
+        kwargs = {"Bucket": args.get("bucket")}
         remove_nulls_from_dictionary(kwargs)
         try:
             response = client.delete_bucket_website(**kwargs)
@@ -410,7 +409,6 @@ class S3:
                 - 'bucket' (str): The name of the S3 bucket. (Required)
                 - 'ownership_controls' (str): A JSON string defining the object ownership rule. (Required)
                   Format must be: '{"Rules": [{"ObjectOwnership": "BucketOwnerEnforced"}]}'
-                - 'expected_bucket_owner' (str): The account ID of the expected bucket owner. (Optional)
 
         Returns:
             CommandResults: A CommandResults object with a success message on status 200/204.
@@ -431,10 +429,7 @@ class S3:
             raise ValueError("Validation Error: 'ObjectOwnership' is missing, invalid or have more than one value."
                              " Must be one of: [BucketOwnerPreferred, ObjectWriter, BucketOwnerEnforced]")
 
-        kwargs = {"Bucket": args.get("bucket"),
-                  "OwnershipControls": ownership_controls,
-                  "ExpectedBucketOwner": args.get("expected-bucket-owner")
-                  }
+        kwargs = {"Bucket": args.get("bucket"), "OwnershipControls": ownership_controls}
 
         remove_nulls_from_dictionary(kwargs)
         try:

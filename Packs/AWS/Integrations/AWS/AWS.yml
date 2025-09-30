@@ -442,8 +442,6 @@ script:
       - name: bucket
         description: The bucket name for which you want to remove the website configuration.
         required: true
-      - name: expected_bucket_owner
-        description: The account ID of the expected bucket owner.
 
   - name: aws-s3-bucket-ownership-controls-put
     description: Creates or modifies OwnershipControls for an Amazon S3 bucket.
@@ -494,8 +492,6 @@ script:
       - name: ownership_controls
         description: Root level tag for the OwnershipControls parameters.
         required: true
-      - name: expected_bucket_owner
-        description: The account ID of the expected bucket owner.
 
   - name: aws-iam-account-password-policy-get
     description: Gets the AWS account password policy.
