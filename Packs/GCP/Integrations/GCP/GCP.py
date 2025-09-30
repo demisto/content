@@ -582,9 +582,11 @@ def storage_bucket_list(creds: Credentials, args: dict[str, Any]) -> CommandResu
         CommandResults: List of buckets with their metadata.
     """
     project_id = args.get("project_id") or get_project_id()
-    max_results = argToNumber(args.get("max_results"))
+    demisto.debug(f"[GCP: storage_bucket_list] \nProject ID: {project_id}")
+    max_results = arg_to_number(args.get("max_results"))
     prefix = args.get("prefix")
     page_token = args.get("page_token")
+    demisto.debug(f"[GCP: storage_bucket_list] \nMax results: {max_results}, \nPrefix: {prefix}, \nPage token: {page_token}")
 
     storage = GCPServices.STORAGE.build(creds)
     
@@ -595,6 +597,7 @@ def storage_bucket_list(creds: Credentials, args: dict[str, Any]) -> CommandResu
         "prefix": prefix,
         "pageToken": page_token
     }
+    
     remove_nulls_from_dictionary(request_params)
 
     response = storage.buckets().list(**request_params).execute()  # pylint: disable=E1101
@@ -641,6 +644,7 @@ def storage_bucket_get(creds: Credentials, args: dict[str, Any]) -> CommandResul
     storage = GCPServices.STORAGE.build(creds)
     
     response = storage.buckets().get(bucket=bucket_name).execute()  # pylint: disable=E1101
+    demisto.debug(f"[GCP: storage_bucket_get] \nResponse: \n{response}")
     
     bucket_info = {
         "Name": response.get("name"),
@@ -684,18 +688,17 @@ def storage_bucket_objects_list(creds: Credentials, args: dict[str, Any]) -> Com
     storage = GCPServices.STORAGE.build(creds)
     
     # Build request parameters
-    request_params = {"bucket": bucket_name}
-    if prefix:
-        request_params["prefix"] = prefix
-    if delimiter:
-        request_params["delimiter"] = delimiter
-    if max_results:
-        request_params["maxResults"] = int(max_results)
-    if page_token:
-        request_params["pageToken"] = page_token
+    request_params = {"bucket": bucket_name,
+                      "prefix": prefix,
+                      "delimiter": delimiter,
+                      "maxResults": max_results,
+                      "pageToken": page_token
+                      }
+    remove_nulls_from_dictionary(request_params)
 
     response = storage.objects().list(**request_params).execute()  # pylint: disable=E1101
-    
+    demisto.debug(f" \nResponse: \n{response}")
+
     objects = response.get("items", [])
     object_data = []
     
@@ -747,6 +750,7 @@ def storage_bucket_policy_get(creds: Credentials, args: dict[str, Any]) -> Comma
         request_params["optionsRequestedPolicyVersion"] = int(requested_policy_version)
 
     response = storage.buckets().getIamPolicy(**request_params).execute()  # pylint: disable=E1101
+    demisto.debug(f" \nResponse: \n{response}")
     
     # Format bindings for human readable output
     bindings_hr = []
@@ -799,6 +803,7 @@ def storage_bucket_policy_set(creds: Credentials, args: dict[str, Any]) -> Comma
     storage = GCPServices.STORAGE.build(creds)
     
     response = storage.buckets().setIamPolicy(bucket=bucket_name, body=policy).execute()  # pylint: disable=E1101
+    demisto.debug(f" \nResponse: \n{response}")
     
     result_info = {
         "Bucket": bucket_name,
@@ -845,6 +850,7 @@ def storage_bucket_object_policy_get(creds: Credentials, args: dict[str, Any]) -
         request_params["generation"] = int(generation)
 
     response = storage.objects().getIamPolicy(**request_params).execute()  # pylint: disable=E1101
+    demisto.debug(f" \nResponse: \n{response}")
     
     # Format bindings for human readable output
     bindings_hr = []
@@ -908,6 +914,7 @@ def storage_bucket_object_policy_set(creds: Credentials, args: dict[str, Any]) -
         request_params["generation"] = int(generation)
 
     response = storage.objects().setIamPolicy(**request_params).execute()  # pylint: disable=E1101
+    demisto.debug(f" \nResponse: \n{response}")
     
     result_info = {
         "Bucket": bucket_name,
