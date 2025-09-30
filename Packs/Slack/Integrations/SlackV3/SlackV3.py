@@ -2730,23 +2730,86 @@ def list_channels():
     )
 
 
+def get_direct_message_channel_id_by_username(username):
+    """
+    Gets the direct message channel ID for a given username.
+
+    Args:
+        username (str): The Slack username to get the DM channel ID for.
+
+    Returns:
+        str or None: The channel ID of the direct message conversation with the user,
+                    or None if the conversation doesn't exist or an error occurs.
+    """
+    try:
+        user_info = get_user_by_name(username)
+        demisto.debug(f"user_info: {user_info}")
+        user_id = user_info.get("id")
+        raw_response = send_slack_request_sync(
+            CLIENT, "conversations.open", http_verb="POST", body={"users": user_id, "prevent_creation": True}
+        )
+        if not raw_response:
+            return None
+        channel_info = raw_response.get("channel") or {}
+        channel_id = channel_info.get("id")
+        demisto.debug(f"Channel id of conversation with user_id {user_id} is: {channel_id}")
+        return channel_id
+    except SlackApiError as slack_error:
+        demisto.debug(f"Error opening conversation: {slack_error}")
+
+
+def resolve_conversation_id_from_name(channel_name):
+    """
+    Resolves a channel ID from a given channel name.
+
+    This function attempts to find the channel ID by first checking if the channel_name
+    corresponds to a username for a direct message channel. If that fails, it tries to
+    find a channel with the given name.
+
+    Args:
+        channel_name (str): The name of the channel or username to resolve.
+
+    Returns:
+        str: The channel ID corresponding to the given channel name.
+
+    Raises:
+        ValueError: If no channel ID could be found for the given channel name.
+    """
+    # Try to get channel id in case channel_name is user name
+    if (channel_id := get_direct_message_channel_id_by_username(channel_name)) is None:
+        # Try to get channel id in case channel_name is channel name
+        conversation_info = get_conversation_by_name(channel_name)
+        channel_id = conversation_info.get("id")
+        demisto.debug(f"Channel id of channel {channel_name} is: {channel_id}")
+
+    if channel_id is None:
+        raise ValueError(f"Could not find channel ID for channel name: {channel_name}.")
+
+    return channel_id
+
+
 def conversation_history():
     """
     Fetches a conversation's history of messages
     and events
     """
     args = demisto.args()
-    channel_id = args.get("channel_id")
+    conversation_id = args.get("channel_id") or args.get("conversation_id")
+    conversation_name = args.get("conversation_name")
     limit = arg_to_number(args.get("limit"))
-    conversation_id = args.get("conversation_id")
-    body = (
-        {"channel": channel_id, "limit": limit}
-        if not conversation_id
-        else {"channel": channel_id, "oldest": conversation_id, "inclusive": "true", "limit": 1}
-    )
+    from_time = args.get("from_time", "0")
+
+    if not conversation_id and not conversation_name:
+        raise ValueError("Either conversation_id or conversation_name must be provided.")
+
+    if not conversation_id:
+        conversation_id = resolve_conversation_id_from_name(conversation_name)
+
+    body = {"channel": conversation_id, "limit": limit, "oldest": from_time}
     readable_output = ""
     raw_response = send_slack_request_sync(CLIENT, "conversations.history", http_verb="GET", body=body)
     messages = raw_response.get("messages", "")
+    demisto.debug(f"Messages: {messages}")
     if not raw_response.get("ok"):
         raise DemistoException(
             f'An error occurred while listing conversation history: {raw_response.get("error")}', res=raw_response
@@ -2790,7 +2853,8 @@ def conversation_history():
             "ThreadTimeStamp": thread_ts,
         }
         context.append(entry)
-    readable_output = tableToMarkdown(f"Channel details from Channel ID - {channel_id}", context)
+    readable_output = tableToMarkdown(f"Channel details from Channel ID - {conversation_id}", context)
+    demisto.debug(f"Context: {context}")
     demisto.results(
         {
             "Type": entryTypes["note"],

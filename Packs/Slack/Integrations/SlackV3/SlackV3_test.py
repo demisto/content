@@ -9,7 +9,7 @@ from CommonServerPython import *
 from slack_sdk.errors import SlackApiError
 from slack_sdk.web.async_slack_response import AsyncSlackResponse
 from slack_sdk.web.slack_response import SlackResponse
-from SlackV3 import get_war_room_url, parse_common_channels
+from SlackV3 import get_war_room_url, parse_common_channels, resolve_channel_id_from_name, conversation_history
 
 
 def load_test_data(path):
@@ -5315,3 +5315,67 @@ def test_validate_slack_request_args():
     with pytest.raises(ValueError) as e:
         validate_slack_request_args(http_verb="HI", method="chat.postMessage", file_upload_params=None)
     assert str(e.value) == "Invalid http_verb: HI. Allowed values: POST, GET."
+
+
+def test_conversation_history_no_channel_provided_error(mocker):
+    """
+    Test conversation_history raises error when neither channel_id nor channel_name provided
+
+    Given: A conversation_history command is configured and no channel parameters are provided
+    When: The conversation_history command is called with args missing both conversation_id and conversation_name
+    Then: The command raises ValueError with appropriate error message
+    """
+
+    args = {"limit": "10"}
+
+    mocker.patch.object(demisto, "args", return_value=args)
+
+    with pytest.raises(ValueError, match="Either conversation_id or conversation_name must be provided."):
+        conversation_history()
+
+
+def test_resolve_conversation_id_from_name_private_conversation_found(mocker):
+    """
+    Test resolve_conversation_id_from_name when channel name corresponds to a user name.
+
+    Given: The resolve_conversation_id_from_name is called with a user name as the channel_name parameter.
+    When: A private conversation exists for the specified user and conversation id or channel id is not provided.
+    Then: The function returns the channel ID of the private conversation with that user.
+    """
+    mocker.patch("SlackV3.get_direct_message_channel_id_by_username", return_value="D1234567890")
+    mocker.patch("SlackV3.get_conversation_by_name")
+
+    result = resolve_channel_id_from_name("john.doe")
+
+    assert result == "D1234567890"
+
+
+def test_resolve_conversation_id_from_name_channel_found(mocker):
+    """
+    Test resolve_conversation_id_from_name when channel name corresponds to a channel name.
+
+    Given: The resolve_conversation_id_from_name function is called with a channel name as the conversation_name parameter.
+    When: A channel with the specified name exists and channel id is not provided.
+    Then: The function returns the channel ID of the channel.
+    """
+    mocker.patch("SlackV3.get_direct_message_channel_id_by_username", return_value=None)
+    mocker.patch("SlackV3.get_conversation_by_name", return_value={"id": "C1234567890", "name": "general"})
+
+    result = resolve_channel_id_from_name("general")
+
+    assert result == "C1234567890"
+
+
+def test_resolve_conversation_id_from_name_no_channel_found(mocker):
+    """
+    Test resolve_conversation_id_from_name when no channel or user is found.
+
+    Given: The resolve_conversation_id_from_name function is called with a channel name that doesn't exist.
+    When: No private conversation or channel exists for the specified name and channel id is not provided.
+    Then: The function raises ValueError with appropriate error message indicating the channel was not found.
+    """
+    mocker.patch("SlackV3.get_direct_message_channel_id_by_username", return_value=None)
+    mocker.patch("SlackV3.get_conversation_by_name", return_value={})
+
+    with pytest.raises(ValueError, match="Could not find channel ID for channel name: nonexistent."):
+        resolve_channel_id_from_name("nonexistent")
