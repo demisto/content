@@ -407,28 +407,13 @@ class S3:
             client (BotoClient): The initialized Boto3 S3 client.
             args (Dict[str, Any]): Command arguments, typically containing:
                 - 'bucket' (str): The name of the S3 bucket. (Required)
-                - 'ownership_controls' (str): A JSON string defining the object ownership rule. (Required)
-                  Format must be: '{"Rules": [{"ObjectOwnership": "BucketOwnerEnforced"}]}'
+                - 'ownership_controls_rule' (str): A predefined rule specifying the desired ownership behavior.
+                 Must be one of the following: BucketOwnerPreferred, ObjectWriter, BucketOwnerEnforced
 
         Returns:
             CommandResults: A CommandResults object with a success message on status 200/204.
         """
-        try:
-            ownership_controls = json.loads(args.get("ownership_controls"))
-        except json.JSONDecodeError:
-            raise ValueError("Validation Error: Input is an invalid JSON string.")
-
-        rules = ownership_controls.get('Rules')
-        if not isinstance(rules, list):
-            raise ValueError("Validation Error: 'OwnershipControls' must contain a key 'Rules' with a list value.")
-
-        if len(rules) != 1:
-            raise ValueError(f"Validation Error: 'Rules' list must contain exactly one rule, found {len(rules)}.")
-
-        if rules[0].get('ObjectOwnership') not in ["BucketOwnerPreferred", "ObjectWriter", "BucketOwnerEnforced"]:
-            raise ValueError("Validation Error: 'ObjectOwnership' is missing, invalid or have more than one value."
-                             " Must be one of: [BucketOwnerPreferred, ObjectWriter, BucketOwnerEnforced]")
-
+        ownership_controls = {"Rules": [{"ObjectOwnership": args.get("ownership_controls_rule")}]}
         kwargs = {"Bucket": args.get("bucket"), "OwnershipControls": ownership_controls}
 
         remove_nulls_from_dictionary(kwargs)
@@ -1057,6 +1042,7 @@ class EC2:
         try:
             response = client.modify_subnet_attribute(**kwargs)
             if response["ResponseMetadata"]["HTTPStatusCode"] in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
+                demisto.debug(f"RequestId={response.get('ResponseMetadata').get('RequestId')}")
                 return CommandResults(readable_output="Subnet configuration successfully updated.")
         except Exception as e:
             raise DemistoException(f"Modification could not be performed. Error: {str(e)}")
@@ -1380,7 +1366,7 @@ class RDS:
                 return CommandResults(
                     readable_output=tableToMarkdown(
                         name=f"Event subscription {args.get('subscription_name')} successfully modified.", headers=headers,
-                        t=response.get("EventSubscription")),
+                        t=response.get("EventSubscription"), removeNull=True),
                     outputs_prefix="AWS.RDS.EventSubscription",
                     outputs=response.get("EventSubscription"),
                     outputs_key_field="CustSubscriptionId",

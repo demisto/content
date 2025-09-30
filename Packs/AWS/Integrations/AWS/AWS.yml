@@ -489,9 +489,14 @@ script:
       - name: bucket
         description: The name of the Amazon S3 bucket whose OwnershipControls you want to set.
         required: true
-      - name: ownership_controls
-        description: Root level tag for the OwnershipControls parameters.
+      - name: ownership_controls_rule
+        description: Ownership for a bucket's ownership controls.
         required: true
+        auto: PREDEFINED
+        predefined:
+          - BucketOwnerPreferred
+          - ObjectWriter
+          - BucketOwnerEnforced
 
   - name: aws-iam-account-password-policy-get
     description: Gets the AWS account password policy.
