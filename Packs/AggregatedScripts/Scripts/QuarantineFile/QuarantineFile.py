@@ -6,7 +6,7 @@ from collections import defaultdict
 from CommonServerPython import *
 
 """ CONSTANTS """
-DEFAULT_TIMEOUT = 60
+DEFAULT_TIMEOUT = 300
 
 
 class Brands(StrEnum):
@@ -309,6 +309,10 @@ class EndpointBrandMapper:
         cmd = Command(name="get-endpoint-data", args=command_args)
         raw_response, verbose_res = cmd.execute()
 
+        demisto.debug(f"[EndpointBrandMapper] Raw response: {raw_response}")
+        demisto.debug(f"[EndpointBrandMapper] Verbose response: {verbose_res}")
+
+
         if self.orchestrator.verbose:
             self.orchestrator.verbose_results.extend(verbose_res)
 
@@ -333,6 +337,7 @@ class EndpointBrandMapper:
         """
         online_endpoints = {}
         all_found_ids = set()
+        demisto.debug(f"[EndpointBrandMapper] Filtering data: {endpoint_data}")
 
         # First pass: find all successful, online endpoints. These take precedence.
         for result in endpoint_data:
@@ -666,7 +671,7 @@ class MDEHandler(BrandHandler):
     def validate_args(self, args: dict) -> None:
         return
 
-    def initiate_quarantine(self, args: dict) -> dict:
+    def initiate_quarantine(self, args: dict):
         """
         Initiates the quarantine action for a list of MDE endpoints.
 
@@ -708,8 +713,40 @@ class MDEHandler(BrandHandler):
 
         if self.orchestrator.verbose:
             self.orchestrator.verbose_results.extend(verbose_res)
-        demisto.debug(f"Raw response received from MDE quarantine: {raw_response}")
+
+        quarantine_kick_off_results: list = Command.get_entry_context_object_containing_key(
+            raw_response, "MachineAction"
+        )
+
+        demisto.debug(f"[MDE Handler] Quarantine Kick Off Results: {quarantine_kick_off_results}")
+
+        if not quarantine_kick_off_results or len(quarantine_kick_off_results) == 0:
+            raise QuarantineException("Failed to initiate quarantine.")
+
+        pending_jobs = False
+        # Iterate over kick-off response to check if any/all jobs have completed.
+        for quarantine_endpoint_result in quarantine_kick_off_results:
+            status = quarantine_endpoint_result.get("Status", "Unknown")
+            message = QuarantineResult.Messages.SUCCESS if status == "Succeeded" else QuarantineResult.Messages.GENERAL_FAILURE
+            if status in ["Succeeded", "Failed", "Cancelled", "TimeOut"]:
+                self.orchestrator.completed_results.append(
+                    QuarantineResult.create(
+                        endpoint_id=quarantine_endpoint_result.get("MachineID", "Unknown"),
+                        status=quarantine_endpoint_result.get("Status", "Unknown"),
+                        message=message,
+                        brand=self.brand,
+                        script_args=self.orchestrator.args,
+                    )
+                )
+            else:
+                pending_jobs = True
+
+        if not pending_jobs:
+            return None
+
+
         metadata = raw_response[0].get("Metadata", {})
+        demisto.debug(f"[MDEHandler] Returned Metadata from MDE Quarantine Kickoff: {metadata}")
 
         job = {
             "brand": self.brand,
@@ -804,8 +841,6 @@ def handler_factory(brand: str, orchestrator) -> BrandHandler:
 class QuarantineOrchestrator:
     """Manages the entire quarantine lifecycle from start to finish."""
 
-    CONTEXT_PENDING_JOBS = "quarantine_pending_jobs"
-    CONTEXT_COMPLETED_RESULTS = "quarantine_completed_results"
     ENDPOINT_IDS_ARG = "endpoint_id"
     FILE_HASH_ARG = "file_hash"
     FILE_PATH_ARG = "file_path"
@@ -818,7 +853,7 @@ class QuarantineOrchestrator:
         Initializes the QuarantineOrchestrator.
 
         This involves loading the current state (pending jobs and completed results)
-        from the incident context to support polling.
+        from the given args to support polling.
 
         Args:
             args (dict): The arguments passed to the script.
@@ -827,10 +862,10 @@ class QuarantineOrchestrator:
         self.args = args
         self.verbose = argToBoolean(args.get("verbose", False))
         self.verbose_results: list[CommandResults] = []
-        # demisto_context = demisto.context()
-        # load pending jobs if they exist from args
+
+        # load pending jobs if they exist from kick-off
         self.pending_jobs = argToList(args.get("pending_jobs", []))
-        # Load results from context, ensuring they are dictionaries
+        # Load completed jobs if they exist from kick-off
         self.completed_results: list[QuarantineResult] = [
             QuarantineResult(**res) for res in (argToList(args.get("completed_results", [])))
         ]
@@ -962,7 +997,7 @@ class QuarantineOrchestrator:
         Determines if this is the first execution of the script for this task.
 
         Returns:
-            bool: True if there are no pending jobs in the context, False otherwise.
+            bool: True if there are no pending jobs in the args, False otherwise.
         """
 
         return not argToList(self.args.get("pending_jobs", []))
@@ -1024,10 +1059,9 @@ class QuarantineOrchestrator:
         if self.pending_jobs:
             demisto.debug(f"[Orchestrator] {len(self.pending_jobs)} jobs still pending. Saving state and scheduling next poll.")
 
-            # demisto.setContext(self.CONTEXT_PENDING_JOBS, self.pending_jobs)
-            # demisto.setContext(self.CONTEXT_COMPLETED_RESULTS, QuarantineResult.to_context_entry(self.completed_results))
             if self._is_first_run() and self.completed_results:
                 demisto.debug("Returning the failed quarantine operations from the kick-off stage to war room")
+                demisto.debug(f"The failed results being returned are: {self.completed_results}")
                 hr = tableToMarkdown(
                     name=f"Unable to Quarantine the file hash: {self.args.get(self.FILE_HASH_ARG)} "
                     f"for the following endpoints:",
@@ -1106,7 +1140,8 @@ class QuarantineOrchestrator:
                 initiate_args = self.args.copy()
                 initiate_args[self.ENDPOINT_IDS_ARG] = endpoint_ids
                 new_job = handler.initiate_quarantine(initiate_args)
-                self.pending_jobs.append(new_job)
+                if new_job:
+                    self.pending_jobs.append(new_job)
             return
         except QuarantineException as e:
             demisto.error(f"Failed to process endpoints for brand '{brand}': {e}")
@@ -1172,22 +1207,19 @@ class QuarantineOrchestrator:
 
     def _get_final_results(self, fatal_error_msg=None) -> PollResult:
         """
+        Args:
+            fatal_error_msg: An error message in case of fatal error.
+                             If given, the command will continue to error path.
+
         Formats and returns the final report after all jobs are complete.
 
-        This method cleans up the working data from the incident context, builds
-        a Markdown table for the war room, and constructs the final CommandResults object.
+        This method builds a Markdown table for the war room, and constructs the final CommandResults object.
+        It will also return error_path if given a fatal_error_msg or none of the endpoints were successfully quarantined.
 
         Returns:
             PollResult: A PollResult object with `continue_to_poll=False` and the final results.
         """
         demisto.debug("[Orchestrator] Formatting final results.")
-        # Clean up the context keys before returning the final result
-        # demisto.debug("[Orchestrator] Deleting context keys.")
-        # demisto.executeCommand(
-        #     "DeleteContext",
-        #     {"key": f"{QuarantineOrchestrator.CONTEXT_PENDING_JOBS},{QuarantineOrchestrator.CONTEXT_COMPLETED_RESULTS}"},
-        # )
-        # demisto.debug("[Orchestrator] Successfully deleted context keys.")
 
         results_list = QuarantineResult.to_context_entry(self.completed_results)
         # Build final report
@@ -1206,7 +1238,7 @@ class QuarantineOrchestrator:
         )
 
         if fatal_error_msg or self._all_jobs_have_failed():
-            demisto.debug("Before the return_error")
+            # If there is a fatal error message or all jobs have failed, we want to be on error path.
             demisto.results(
                 {
                     "Type": entryTypes["error"],
@@ -1215,9 +1247,6 @@ class QuarantineOrchestrator:
                     "EntryContext": {},
                 }
             )
-            # return_error(fatal_error_msg or "Could not quarantine file on all endpoints.")
-            demisto.debug("After the return_error")
-
         # Prepend verbose results if the flag is set
         if self.verbose:
             self.verbose_results.append(final_command_results)
@@ -1264,14 +1293,7 @@ def main():
         args["polling"] = True
         return_results(quarantine_file_script(args))
     except Exception as e:
-        # demisto.debug("Deleting context keys.")
-        # demisto.executeCommand(
-        #     "DeleteContext",
-        #     {"key": f"{QuarantineOrchestrator.CONTEXT_PENDING_JOBS},{QuarantineOrchestrator.CONTEXT_COMPLETED_RESULTS}"},
-        # )
-        # demisto.debug("[Orchestrator] Successfully deleted context keys.")
         demisto.error(f"--- Unhandled Exception in quarantine-file script: {traceback.format_exc()} ---")
-
         return_error(f"Failed to execute quarantine-file script. Error: {str(e)}")
 
     demisto.debug("--- quarantine-file script execution complete. ---")

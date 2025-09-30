@@ -25,6 +25,7 @@ def mock_demisto(mocker):
     This fixture automatically mocks all required demisto functions for each test.
     """
     mocker.patch.object(demisto, "error")
+    mocker.patch.object(demisto, "results")
 
     mocker.patch.object(
         demisto,
@@ -868,10 +869,50 @@ class TestMDEHandler:
             handler = MDEHandler(orchestrator)
 
             # mock the Command class execute() method, and check that it was called with the expected arguments
-            mock_command_instance = mocker.Mock()
-            mock_command_instance.execute.return_value = (
-                [
+            # mock_execute = mocker.patch("QuarantineFile.Command.execute")
+
+            mock_response = [
                     {
+                        "Type": 1,
+                        "HumanReadable": "Quarantine operations are still in progress...",
+                        "EntryContext": {
+                            "MicrosoftATP.MachineAction(val.ID && val.ID == obj.ID)": [
+                                {
+                                    "Commands": None,
+                                    "ComputerDNSName": None,
+                                    "CreationDateTimeUtc": None,
+                                    "ID": None,
+                                    "LastUpdateTimeUtc": None,
+                                    "MachineID": "id1",
+                                    "RelatedFileInfo": {
+                                        "FileIdentifier": "sha1sha1",
+                                        "FileIdentifierType": None,
+                                    },
+                                    "Requestor": None,
+                                    "RequestorComment": "Quarantine file hash: sha1sha1",
+                                    "Scope": None,
+                                    "Status": "Failed",
+                                    "Type": None,
+                                },
+                                {
+                                    "Commands": None,
+                                    "ComputerDNSName": None,
+                                    "CreationDateTimeUtc": "2025-09-30T10:51:12.8554335Z",
+                                    "ID": "111111",
+                                    "LastUpdateTimeUtc": "2025-09-30T10:51:12.8554346Z",
+                                    "MachineID": "id2",
+                                    "RelatedFileInfo": {
+                                        "FileIdentifier": None,
+                                        "FileIdentifierType": None,
+                                    },
+                                    "Requestor": "Cortex XSOAR - Microsoft Defender ATP - Dev",
+                                    "RequestorComment": "Quarantine file hash: sha1sha1",
+                                    "Scope": None,
+                                    "Status": "Pending",
+                                    "Type": "StopAndQuarantineFile",
+                                },
+                            ]
+                        },
                         "Metadata": {
                             "pollingCommand": "microsoft-atp-stop-and-quarantine-file",
                             "pollingArgs": {
@@ -880,12 +921,13 @@ class TestMDEHandler:
                                 "file_hash": "sha1sha1",
                                 "timeout_in_seconds": "300",
                             },
-                        }
-                    }
-                ],
-                [],
-            )
-            mock_command_class = mocker.patch("QuarantineFile.Command", return_value=mock_command_instance)
+                        },
+                        "Contents": {},
+                    },
+                ]
+
+
+            mock_execute = mocker.patch.object(demisto, "executeCommand", return_value=mock_response)
 
             job = handler.initiate_quarantine(args)
 
@@ -897,8 +939,8 @@ class TestMDEHandler:
                 "polling": True,
                 "timeout_in_seconds": 123,
             }
-            mock_command_class.assert_called_once_with(
-                name="microsoft-atp-stop-and-quarantine-file", args=expected_command_args, brand=Brands.MDE
+            mock_execute.assert_called_once_with(
+                "microsoft-atp-stop-and-quarantine-file", expected_command_args
             )
 
             # Assert that the returned job object is correct
@@ -1283,41 +1325,45 @@ class TestQuarantineOrchestrator:
             assert orchestrator.args == args
             assert not orchestrator.verbose
 
-        def test_constructor_sets_from_context(self, mocker):
+        def test_constructor_sets_pending_and_completed_jobs(self, mocker):
             """
             Given: Args for quarantine.
-            When: QuarantineOrchestrator is instantiated and there are pending jobs
-            Then: Args are properly set, load pending jobs and completed results from context
+            When: QuarantineOrchestrator is instantiated and there are pending jobs from initial poll
+            Then: Args are properly set, load pending jobs and completed results from the given args
             """
+
+            completed_result = QuarantineResult.create(
+                        endpoint_id="id2",
+                        status=QuarantineResult.Statuses.FAILED,
+                        message=QuarantineResult.Messages.ENDPOINT_OFFLINE,
+                        brand=Brands.MDE,
+                        script_args={"file_hash": "sha256", "file_path": "/path"},
+                    )
+
+            pending_job = [{'brand': 'Microsoft Defender Advanced Threat Protection',
+                            'poll_args': {'action_ids': ['111'],
+                    'comment': 'Quarantine file hash: SHA1',
+                    'file_hash': 'SHA1',
+                    'hide_polling_output': True,
+                    'machine_id': ['id1'],
+                    'polling': 'true',
+                    'timeout_in_seconds': '300'},
+                    'poll_command': 'microsoft-atp-stop-and-quarantine-file'}]
             args = {
-                "endpoint_id": "id1",
-                "file_hash": "sha256",
+                "endpoint_id": "id1,is2",
+                "file_hash": "sha1",
                 "file_path": "/path",
                 "brands": f"{Brands.CORTEX_CORE_IR},{Brands.CORTEX_XDR_IR}",
                 "verbose": True,
+                "pending_jobs": pending_job,
+                "completed_results": QuarantineResult.to_context_entry([completed_result])
             }
 
-            completed_result = QuarantineResult.create(
-                endpoint_id="id4",
-                status=QuarantineResult.Statuses.FAILED,
-                message=QuarantineResult.Messages.ENDPOINT_OFFLINE,
-                brand=Brands.CORTEX_XDR_IR,
-                script_args={"file_hash": "sha256", "file_path": "/path"},
-            )
-
-            mocker.patch.object(
-                demisto,
-                "context",
-                return_value={
-                    "quarantine_pending_jobs": ["pending job"],
-                    "quarantine_completed_results": QuarantineResult.to_context_entry([completed_result]),
-                },
-            )
 
             orchestrator = QuarantineOrchestrator(args)
             assert orchestrator.args == args
             assert orchestrator.verbose
-            assert orchestrator.pending_jobs == ["pending job"]
+            assert orchestrator.pending_jobs == pending_job
             assert orchestrator.completed_results == [completed_result]
 
     class TestRun:
@@ -1330,7 +1376,7 @@ class TestQuarantineOrchestrator:
             Then:
                 - Ensure a polling job is created only for endpoints needing action.
                 - Ensure initial results from both the mapper and handler are collected.
-                - Ensure both pending jobs and completed results are saved to context.
+                - Ensure both pending jobs and completed results are saved in args for next poll.
             """
             # Arrange
             args = {
@@ -1338,10 +1384,6 @@ class TestQuarantineOrchestrator:
                 "file_hash": "sha256sha256sha256sha256sha256sha256sha256sha256sha256sha256sha2",
                 "file_path": "/path",
             }
-
-            # Mock context to be empty for a first run
-            mocker.patch.object(demisto, "context", return_value={})
-            mock_set_context = mocker.patch.object(demisto, "setContext")
 
             # Mock EndpointBrandMapper to find some endpoints and fail others
             mock_mapper_instance = mocker.Mock()
@@ -1363,33 +1405,38 @@ class TestQuarantineOrchestrator:
             # Act
             result = orchestrator.run()
 
-            # Assert Polling is Scheduled
+            # Assert Polling is Scheduled with completed/pending jobs
             assert result.continue_to_poll is True
-            assert result.args_for_next_run == args
+            # The result from your command
+            actual_args = result.args_for_next_run
+
+            # 1. Pop the unpredictable list from the actual results
+            actual_endpoint_ids = actual_args.pop('endpoint_id')
+
+            # Define your expected results, also without the endpoint_id list
+            expected_args = {
+                'brands': [Brands.CORTEX_CORE_IR],
+                'completed_results': [{
+                    'Brand': 'Unknown',
+                    'EndpointID': 'offline-ep',
+                    'FileHash': 'sha256sha256sha256sha256sha256sha256sha256sha256sha256sha256sha2',
+                    'FilePath': '/path',
+                    'Message': 'Offline',
+                    'Status': 'Failed'}],
+                # 'endpoint_id' key is removed
+                'file_hash': 'sha256sha256sha256sha256sha256sha256sha256sha256sha256sha256sha2',
+                'file_path': '/path',
+                'pending_jobs': [{'brand': Brands.CORTEX_CORE_IR, 'poll_command': 'some-poll-cmd'}]
+            }
+
+            # 2. Assert that the rest of the dictionary is an exact match
+            assert actual_args == expected_args
+
+            # 3. Assert that the lists have the same content by comparing them as sets
+            expected_endpoint_ids = ['ep2', 'ep1', 'ep3', 'offline-ep']
+            assert set(actual_endpoint_ids) == set(expected_endpoint_ids)
+
             assert result.response.readable_output == "Quarantine operations are still in progress..."
-
-            assert mock_set_context.call_count == 2
-
-            # 1. Check Pending Jobs was set in Context
-            pending_jobs_call = next(
-                (c for c in mock_set_context.call_args_list if c[0][0] == QuarantineOrchestrator.CONTEXT_PENDING_JOBS), None
-            )
-            assert pending_jobs_call is not None
-            saved_jobs = pending_jobs_call[0][1]
-            assert len(saved_jobs) == 1
-            assert saved_jobs[0]["brand"] == Brands.CORTEX_CORE_IR
-            assert saved_jobs[0]["poll_command"] == "some-poll-cmd"
-
-            # 2. Check Completed Results Context
-            completed_results_call = next(
-                (c for c in mock_set_context.call_args_list if c[0][0] == QuarantineOrchestrator.CONTEXT_COMPLETED_RESULTS), None
-            )
-            assert completed_results_call is not None
-            saved_results = completed_results_call[0][1]
-            assert len(saved_results) == 1
-
-            # Check for the offline result from the mapper
-            assert any(r["EndpointID"] == "offline-ep" for r in saved_results)
 
         def test_run_first_run_handles_arg_validation_error(self, mocker):
             """
@@ -1409,10 +1456,7 @@ class TestQuarantineOrchestrator:
                 "file_path": "/path",
             }
 
-            # Mock context to be empty for a first run
-            mocker.patch.object(demisto, "context", return_value={})
-            mocker.patch.object(demisto, "setContext")
-            mock_return_error = mocker.patch("QuarantineFile.return_error")
+            mock_demisto_results = mocker.patch.object(demisto, "results")
 
             mock_verify_and_get_valid_brands = mocker.patch.object(QuarantineOrchestrator, "_verify_and_get_valid_brands")
             mock_verify_and_get_valid_brands.side_effect = QuarantineException("Invalid argument")
@@ -1429,7 +1473,11 @@ class TestQuarantineOrchestrator:
 
             # Assert initiate_job is not called
             mock_initiate_job.assert_not_called()
-            mock_return_error.assert_called_once_with("Invalid argument")
+            mock_demisto_results.assert_called_once_with({
+                'Contents': 'Invalid argument',
+                'ContentsFormat': 'text',
+                'EntryContext': {},
+                'Type': 4},)
 
             assert len(result.response.outputs) == 4
             assert result.response.outputs[0]["FilePath"] == "/path"
@@ -1444,21 +1492,16 @@ class TestQuarantineOrchestrator:
         def test_run_polling_run_job_still_polling(self, mocker):
             """
             Given:
-                - A polling run with a pending job in the context.
+                - A polling run with a pending job in the given args for the poll run.
                 - The polling command indicates the action is still in progress.
             When:
                 - The orchestrator's run() method is called.
             Then:
-                - Ensure the pending job is updated with new polling args.
                 - Ensure the method returns a PollResult to continue polling.
             """
             # Arrange
-            args = {"file_hash": "hash123", "file_path": "/path"}
             pending_job = {"brand": Brands.CORTEX_CORE_IR, "poll_command": "some-poll-cmd", "poll_args": {"action_id": "123"}}
-
-            # Mock context to contain the pending job
-            mocker.patch.object(demisto, "context", return_value={QuarantineOrchestrator.CONTEXT_PENDING_JOBS: [pending_job]})
-            mock_set_context = mocker.patch.object(demisto, "setContext")
+            args = {"file_hash": "hash123", "file_path": "/path", "pending_jobs": [pending_job]}
 
             # Mock the polling command to return 'polling: True'
             polling_response = [{"Type": 1, "Contents": {}, "Metadata": {"polling": True, "pollingArgs": {"action_id": "456"}}}]
@@ -1469,22 +1512,13 @@ class TestQuarantineOrchestrator:
             # Act
             result = orchestrator.run()
 
-            # Assert
+            # Assert continuing to poll because response stated so.
             assert result.continue_to_poll is True
-
-            # Check that the pending jobs context was updated
-            pending_jobs_call = next(
-                (c for c in mock_set_context.call_args_list if c[0][0] == QuarantineOrchestrator.CONTEXT_PENDING_JOBS), None
-            )
-            assert pending_jobs_call is not None
-            updated_jobs = pending_jobs_call[0][1]
-            assert len(updated_jobs) == 1
-            assert updated_jobs[0]["poll_args"]["action_id"] == "456"  # Assert the args were updated
 
         def test_run_polling_run_job_finishes(self, mocker):
             """
             Given:
-                - A polling run with a pending job in the context.
+                - A polling run with a pending job in the args.
                 - The polling command indicates the action is complete.
             When:
                 - The orchestrator's run() method is called.
@@ -1494,12 +1528,8 @@ class TestQuarantineOrchestrator:
                 - Ensure the method returns a final result (continue_to_poll=False).
             """
             # Arrange
-            args = {"endpoint_id": "ep1", "file_hash": "hash123", "file_path": "/path"}
             pending_job = {"brand": Brands.CORTEX_CORE_IR, "poll_command": "some-poll-cmd", "poll_args": {"action_id": "123"}}
-
-            # Mock context to contain the pending job
-            mocker.patch.object(demisto, "context", return_value={QuarantineOrchestrator.CONTEXT_PENDING_JOBS: [pending_job]})
-            mocker.patch.object(demisto, "setContext")  # We don't need to check its content here
+            args = {"endpoint_id": "ep1", "file_hash": "hash123", "file_path": "/path", "pending_jobs": [pending_job]}
 
             # Mock the polling command to return 'polling: False'
             polling_response = [{"Type": 1, "Contents": {}, "Metadata": {"polling": False}}]
@@ -1564,36 +1594,6 @@ class TestScriptEntrypoints:
         expected_args["polling"] = True
         mock_script_func.assert_called_once_with(expected_args)
         mock_return_results.assert_called_once_with("SUCCESS")
-
-    def test_main_function_exception_path_cleans_up_context(self, mocker):
-        """
-        Given:
-            - The script execution raises an exception.
-        When:
-            - The main() function is called.
-        Then:
-            - Ensure return_error is called with the correct error message.
-            - Ensure the context is cleaned up by calling DeleteContext.
-        """
-        # Arrange
-        mocker.patch.object(demisto, "args", return_value={})
-        mock_return_error = mocker.patch("QuarantineFile.return_error")
-        mock_delete_context = mocker.patch.object(demisto, "executeCommand")
-        mocker.patch("QuarantineFile.quarantine_file_script", side_effect=Exception("A critical error occurred"))
-
-        # Act
-        main()
-
-        # Assert
-        mock_return_error.assert_called_once()
-        assert "A critical error occurred" in mock_return_error.call_args[0][0]
-
-        # Assert that DeleteContext was called
-        mock_delete_context.assert_called_with(
-            "DeleteContext",
-            {"key": f"{QuarantineOrchestrator.CONTEXT_PENDING_JOBS},{QuarantineOrchestrator.CONTEXT_COMPLETED_RESULTS}"},
-        )
-
 
 if __name__ == "__main__":
     pytest.main()

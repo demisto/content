@@ -6037,7 +6037,7 @@ def run_polling_command(
         raise Exception(error_msg)
 
     elif command_status != "Completed" or action_status in ("InProgress", "Pending"):
-        demisto.debug("action status is not completed")
+        demisto.debug("action status is not completed, will poll again")
         # schedule next poll
         polling_args = {"interval_in_seconds": interval_in_secs, "polling": True, **args}
 

@@ -15,7 +15,7 @@ args:
 - name: timeout
   description: The polling timeout in seconds for the quarantine commands. The default is 300.
   required: false
-  defaultValue: 60
+  defaultValue: 300
 - name: brands
   description: |-
     A comma-seperated list of brands brands for which to execute the 'quarantine-file' command. If not specified, all available instances will run.
