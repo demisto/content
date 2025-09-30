@@ -309,9 +309,6 @@ class EndpointBrandMapper:
         cmd = Command(name="get-endpoint-data", args=command_args)
         raw_response, verbose_res = cmd.execute()
 
-        demisto.debug(f"[EndpointBrandMapper] Raw response: {raw_response}")
-        demisto.debug(f"[EndpointBrandMapper] Verbose response: {verbose_res}")
-
         if self.orchestrator.verbose:
             self.orchestrator.verbose_results.extend(verbose_res)
 
