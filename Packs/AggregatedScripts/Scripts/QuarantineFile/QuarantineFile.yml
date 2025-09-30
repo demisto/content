@@ -39,7 +39,7 @@ args:
 - name: pending_jobs
   description: a list of the jobs that need to poll quarantine status for (automatically filled by polling).
   deprecated: true
-comment: This script executes the 'quarantine-file' command on a specified file via the appropriate agent. This script is used to isolate files identified as suspicious. Currently supported on brands "Cortex XDR - IR", "Cortex Core - IR", "Microsoft Defender Advanced Threat Protection"
+comment: This script executes the 'quarantine-file' command on a specified file via the appropriate agent. This script is used to isolate files identified as suspicious. Currently supported on brands "Cortex XDR - IR", "Cortex Core - IR", "Microsoft Defender Advanced Threat Protection".
 name: quarantine-file
 outputs:
 - contextPath: QuarantineFile.FilePath
