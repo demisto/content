@@ -2377,10 +2377,11 @@ def test_statuses_to_fetch_parameter_not_used(mocker):
     client = mock_client()
     mocker.patch.object(client, "http_request", return_value=MOCKED_INCIDENTS_OUTPUT)
     mocker.patch("AzureSentinel.process_incidents", return_value=({}, []))
-    mocker.patch("AzureSentinel.demisto.params", return_value={"statuses_to_fetch": []})
+    mocker.patch.object(demisto, "getLastRun", return_value=last_run)
+    params = {}
 
     # execute
-    fetch_incidents(client, last_run, "3 days", "Informational")
+    fetch_incidents_command(client, params)
 
     # validate
     expected_filter = "properties/createdTimeUtc ge 2022-03-16T13:01:08Z"
