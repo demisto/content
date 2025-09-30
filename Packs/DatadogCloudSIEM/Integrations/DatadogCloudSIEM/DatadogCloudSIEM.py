@@ -163,7 +163,6 @@ class SecuritySignal:
     timestamp: Optional[datetime] = None
     host: Optional[str] = None
     service: Optional[List[str]] = None
-    level: Optional[str] = None
     severity: Optional[str] = None
     title: Optional[str] = None
     message: Optional[str] = None
@@ -171,7 +170,6 @@ class SecuritySignal:
     triage: Optional[Triage] = None
     tags: Optional[List[str]] = None
     triggering_log_id: Optional[str] = None
-    source: Optional[str] = None
 
     # Raw signal
     raw: Optional[Dict[str, Any]] = None
@@ -193,7 +191,6 @@ class SecuritySignal:
             "State": self.triage.state if self.triage else None,
             "Rule Name": self.rule.name if self.rule else None,
             "Rule Type": self.rule.type if self.rule else None,
-            "Source": self.source,
             "Host": self.host,
             "Services": ", ".join(self.service) if self.service else None,
             "Timestamp": str(self.timestamp) if self.timestamp else None,
@@ -226,13 +223,11 @@ class SecuritySignal:
             "timestamp": str(self.timestamp) if self.timestamp else None,
             "host": self.host,
             "service": self.service,
-            "level": self.level,
             "severity": self.severity,
             "title": self.title,
             "message": self.message,
             "tags": self.tags,
             "triggering_log_id": self.triggering_log_id,
-            "source": self.source,
             "raw": self.raw,
         }
 
@@ -247,7 +242,11 @@ class SecuritySignal:
 
         # Convert triage to dict if present
         if self.triage:
-            result["triage"] = {"state": self.triage.state}
+            result["triage"] = {
+                "state": self.triage.state,
+                "comment": self.triage.comment,
+                "reason": self.triage.reason,
+            }
             # Convert assignee to dict if present
             if self.triage.assignee:
                 result["triage"]["assignee"] = {  # type: ignore
@@ -267,8 +266,8 @@ def extract_iocs_from_signal(signal: SecuritySignal) -> List[Common.Indicator]:
     """
     Extract Indicators of Compromise (IOCs) from a SecuritySignal and create standard XSOAR contexts.
 
-    Searches through signal data for IP addresses, domains, URLs, and file hashes,
-    then creates appropriate Common.IP, Common.Domain, etc. objects with DBotScore.
+    Searches through signal data for IP addresses, URLs, and file hashes,
+    then creates appropriate Common.IP, Common.URL, Common.File objects with DBotScore.
 
     SIEM doesn't provide reputation, just detection, so indicators score is always Common.DBotScore.NONE
 
@@ -276,7 +275,7 @@ def extract_iocs_from_signal(signal: SecuritySignal) -> List[Common.Indicator]:
         signal (SecuritySignal): SecuritySignal object to extract IOCs from
 
     Returns:
-        List[Common.Indicator]: List of standard XSOAR indicator objects
+        List[Common.Indicator]: List of standard XSOAR indicator objects (IP, URL, File)
     """
     import re
 
@@ -289,7 +288,6 @@ def extract_iocs_from_signal(signal: SecuritySignal) -> List[Common.Indicator]:
             [
                 signal.message or "",
                 signal.title or "",
-                signal.source or "",
                 " ".join(signal.tags or []),
                 json.dumps(signal.raw or {}),
             ],
@@ -617,7 +615,6 @@ def parse_security_signal(data: Dict[str, Any]) -> SecuritySignal:
         timestamp=attrs.get("timestamp"),
         host=attrs.get("host"),
         service=services,
-        level=custom.get("level") or attrs.get("level"),
         severity=custom.get("severity"),
         title=custom.get("title") or attrs.get("title") or rule_d.get("name"),
         message=attrs.get("message"),
@@ -689,7 +686,7 @@ def security_signals_search_query(args: Dict[str, Any]) -> str:
     Build a Datadog search query string for filtering security signals based on provided arguments.
 
     Constructs a query using Datadog's search syntax with AND operators between conditions.
-    Supports filtering by state, severity, rule name, source, and tags.
+    Supports filtering by state, severity, rule name, source, and custom queries.
 
     Args:
         args (Dict[str, Any]): Dictionary containing search parameters. Supported keys:
@@ -705,10 +702,7 @@ def security_signals_search_query(args: Dict[str, Any]) -> str:
     Examples:
         >>> args = {"state": "open", "severity": "high"}
         >>> security_signals_search_query(args)
-        "@signal.state:open AND @signal.severity:high"
-
-        >>> security_signals_search_query({})
-        "*"
+        "state:open AND severity:high"
     """
     query_parts = []
 
@@ -997,7 +991,7 @@ def get_security_signals_command(
     """
     Get a list of security signals with optional filtering.
 
-    Supports filtering by state, severity, rule name, source, tags, and time range.
+    Supports filtering by state, severity, rule name, source, and time range.
     Returns paginated results with configurable sorting.
 
     Args:

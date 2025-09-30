@@ -88,32 +88,26 @@ script:
         - contextPath: Datadog.SecuritySignal.timestamp
           description: The timestamp when the security signal was generated.
           type: String
-        - contextPath: Datadog.SecuritySignal.host
-          description: Host associated with the security signal.
-          type: String
-        - contextPath: Datadog.SecuritySignal.service
-          description: List of services associated with the security signal.
-          type: Unknown
-        - contextPath: Datadog.SecuritySignal.level
-          description: The level of the security signal.
-          type: String
-        - contextPath: Datadog.SecuritySignal.severity
-          description: The severity level of the security signal (low, medium, high, critical).
-          type: String
         - contextPath: Datadog.SecuritySignal.title
           description: The title of the security signal.
           type: String
         - contextPath: Datadog.SecuritySignal.message
           description: The message describing the security signal.
           type: String
+        - contextPath: Datadog.SecuritySignal.severity
+          description: The severity level of the security signal (low, medium, high, critical).
+          type: String
+        - contextPath: Datadog.SecuritySignal.host
+          description: Host associated with the security signal.
+          type: String
+        - contextPath: Datadog.SecuritySignal.service
+          description: List of services associated with the security signal.
+          type: Unknown
         - contextPath: Datadog.SecuritySignal.tags
           description: List of tags associated with the security signal.
           type: Unknown
         - contextPath: Datadog.SecuritySignal.triggering_log_id
           description: ID of the log that triggered the security signal.
-          type: String
-        - contextPath: Datadog.SecuritySignal.source
-          description: The source of the security signal.
           type: String
         - contextPath: Datadog.SecuritySignal.rule.id
           description: The unique identifier of the security rule.
@@ -130,8 +124,11 @@ script:
         - contextPath: Datadog.SecuritySignal.triage.state
           description: The current triage state of the security signal (open, under_review, archived).
           type: String
-        - contextPath: Datadog.SecuritySignal.triage.open_timestamp
-          description: The timestamp when the signal was opened for triage.
+        - contextPath: Datadog.SecuritySignal.triage.comment
+          description: The archive comment of the security signal.
+          type: String
+        - contextPath: Datadog.SecuritySignal.triage.reason
+          description: The archive reason of the security signal.
           type: String
         - contextPath: Datadog.SecuritySignal.triage.assignee.id
           description: The ID of the user assigned to the security signal.
@@ -143,50 +140,9 @@ script:
           description: The name of the user assigned to the security signal.
           type: String
         - contextPath: Datadog.SecuritySignal.raw
-          description: The raw signal object returned by the API
+          description: The raw signal object returned by the API.
           type: Unknown
-        - contextPath: IP.Address
-          description: IP addresses extracted from security signal data
-          type: String
-        - contextPath: IP.DBotScore.Score
-          description: The DBot score for extracted IP addresses
-          type: Number
-        - contextPath: IP.DBotScore.Vendor
-          description: The vendor used to calculate the DBot score for IPs
-          type: String
-        - contextPath: Domain.Name
-          description: Domain names extracted from security signal data
-          type: String
-        - contextPath: Domain.DBotScore.Score
-          description: The DBot score for extracted domains
-          type: Number
-        - contextPath: Domain.DBotScore.Vendor
-          description: The vendor used to calculate the DBot score for domains
-          type: String
-        - contextPath: URL.Data
-          description: URLs extracted from security signal data
-          type: String
-        - contextPath: URL.DBotScore.Score
-          description: The DBot score for extracted URLs
-          type: Number
-        - contextPath: URL.DBotScore.Vendor
-          description: The vendor used to calculate the DBot score for URLs
-          type: String
-        - contextPath: File.MD5
-          description: MD5 hash values extracted from security signal data
-          type: String
-        - contextPath: File.SHA1
-          description: SHA1 hash values extracted from security signal data
-          type: String
-        - contextPath: File.SHA256
-          description: SHA256 hash values extracted from security signal data
-          type: String
-        - contextPath: File.DBotScore.Score
-          description: The DBot score for extracted file hashes
-          type: Number
-        - contextPath: File.DBotScore.Vendor
-          description: The vendor used to calculate the DBot score for files
-          type: String
+
 
     - arguments:
         - description: Filter signals by state (open, under_review, archived).
@@ -209,8 +165,6 @@ script:
           name: rule_name
         - description: Filter signals by source.
           name: source
-        - description: Filter signals by tags. Comma-separated list or single tag.
-          name: tags
         - description: Custom query string for advanced filtering. Uses Datadog search syntax.
           name: query
         - description: Start date for the search. Format can be relative (e.g., "7 days ago") or absolute (e.g., "2023-01-01T00:00:00Z").
@@ -226,8 +180,6 @@ script:
             - asc
             - desc
           defaultvalue: "desc"
-        - description: Page number for pagination (starts from 1).
-          name: page
         - description: Number of results per page.
           name: page_size
         - description: Maximum number of results to return. If page_size is specified, limit is ignored.
@@ -248,9 +200,6 @@ script:
         - contextPath: Datadog.SecuritySignal.service
           description: List of services associated with the security signal.
           type: Unknown
-        - contextPath: Datadog.SecuritySignal.level
-          description: The level of the security signal.
-          type: String
         - contextPath: Datadog.SecuritySignal.severity
           description: The severity level of the security signal (low, medium, high, critical).
           type: String
@@ -265,9 +214,6 @@ script:
           type: Unknown
         - contextPath: Datadog.SecuritySignal.triggering_log_id
           description: ID of the log that triggered the security signal.
-          type: String
-        - contextPath: Datadog.SecuritySignal.source
-          description: The source of the security signal.
           type: String
         - contextPath: Datadog.SecuritySignal.rule.id
           description: The unique identifier of the security rule.
@@ -284,8 +230,11 @@ script:
         - contextPath: Datadog.SecuritySignal.triage.state
           description: The current triage state of the security signal (open, under_review, archived).
           type: String
-        - contextPath: Datadog.SecuritySignal.triage.open_timestamp
-          description: The timestamp when the signal was opened for triage.
+        - contextPath: Datadog.SecuritySignal.triage.comment
+          description: The archive comment of the security signal.
+          type: String
+        - contextPath: Datadog.SecuritySignal.triage.reason
+          description: The archive reason of the security signal.
           type: String
         - contextPath: Datadog.SecuritySignal.triage.assignee.id
           description: The ID of the user assigned to the security signal.
@@ -307,15 +256,6 @@ script:
           type: Number
         - contextPath: IP.DBotScore.Vendor
           description: The vendor used to calculate the DBot score for IPs
-          type: String
-        - contextPath: Domain.Name
-          description: Domain names extracted from security signals data
-          type: String
-        - contextPath: Domain.DBotScore.Score
-          description: The DBot score for extracted domains
-          type: Number
-        - contextPath: Domain.DBotScore.Vendor
-          description: The vendor used to calculate the DBot score for domains
           type: String
         - contextPath: URL.Data
           description: URLs extracted from security signals data
@@ -354,6 +294,15 @@ script:
         - contextPath: Datadog.SecuritySignal.id
           description: The unique identifier of the security signal.
           type: String
+        - contextPath: Datadog.SecuritySignal.triage.state
+          description: The current triage state of the security signal (open, under_review, archived).
+          type: String
+        - contextPath: Datadog.SecuritySignal.triage.comment
+          description: The archive comment of the security signal.
+          type: String
+        - contextPath: Datadog.SecuritySignal.triage.reason
+          description: The archive reason of the security signal.
+          type: String
         - contextPath: Datadog.SecuritySignal.triage.assignee.id
           description: The ID of the user assigned to the security signal.
           type: Number
@@ -387,7 +336,22 @@ script:
           description: The unique identifier of the security signal.
           type: String
         - contextPath: Datadog.SecuritySignal.triage.state
-          description: The current triage state of the security signal.
+          description: The current triage state of the security signal (open, under_review, archived).
+          type: String
+        - contextPath: Datadog.SecuritySignal.triage.comment
+          description: The archive comment of the security signal.
+          type: String
+        - contextPath: Datadog.SecuritySignal.triage.reason
+          description: The archive reason of the security signal.
+          type: String
+        - contextPath: Datadog.SecuritySignal.triage.assignee.id
+          description: The ID of the user assigned to the security signal.
+          type: Number
+        - contextPath: Datadog.SecuritySignal.triage.assignee.uuid
+          description: The UUID of the user assigned to the security signal.
+          type: String
+        - contextPath: Datadog.SecuritySignal.triage.assignee.name
+          description: The name of the user assigned to the security signal.
           type: String
 
     - arguments:
@@ -414,8 +378,6 @@ script:
             - asc
             - desc
           defaultvalue: "desc"
-        - description: Page number for pagination (starts from 1).
-          name: page
         - description: Number of results per page.
           name: page_size
         - description: Maximum number of results to return. If page_size is specified, limit is ignored.
