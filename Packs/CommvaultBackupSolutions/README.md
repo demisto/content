@@ -57,7 +57,7 @@ For more information, see the product [documentation](https://documentation.comm
 3. Set the following values:
 
     | Parameter    | Value                                                                                                                                           |
-    |:-------------|:------------------------------------------------------------------------------------------------------------------------------------------------|
+    |:-------------|:-------------------------------------------|
     | `Name`        |  `<Vendor>` `<Product>` Logs           |
     | `Compression` | uncompressed     |
     | `Log Format`  | JSON     |
