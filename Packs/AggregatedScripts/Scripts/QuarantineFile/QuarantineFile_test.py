@@ -872,60 +872,59 @@ class TestMDEHandler:
             # mock_execute = mocker.patch("QuarantineFile.Command.execute")
 
             mock_response = [
-                    {
-                        "Type": 1,
-                        "HumanReadable": "Quarantine operations are still in progress...",
-                        "EntryContext": {
-                            "MicrosoftATP.MachineAction(val.ID && val.ID == obj.ID)": [
-                                {
-                                    "Commands": None,
-                                    "ComputerDNSName": None,
-                                    "CreationDateTimeUtc": None,
-                                    "ID": None,
-                                    "LastUpdateTimeUtc": None,
-                                    "MachineID": "id1",
-                                    "RelatedFileInfo": {
-                                        "FileIdentifier": "sha1sha1",
-                                        "FileIdentifierType": None,
-                                    },
-                                    "Requestor": None,
-                                    "RequestorComment": "Quarantine file hash: sha1sha1",
-                                    "Scope": None,
-                                    "Status": "Failed",
-                                    "Type": None,
+                {
+                    "Type": 1,
+                    "HumanReadable": "Quarantine operations are still in progress...",
+                    "EntryContext": {
+                        "MicrosoftATP.MachineAction(val.ID && val.ID == obj.ID)": [
+                            {
+                                "Commands": None,
+                                "ComputerDNSName": None,
+                                "CreationDateTimeUtc": None,
+                                "ID": None,
+                                "LastUpdateTimeUtc": None,
+                                "MachineID": "id1",
+                                "RelatedFileInfo": {
+                                    "FileIdentifier": "sha1sha1",
+                                    "FileIdentifierType": None,
                                 },
-                                {
-                                    "Commands": None,
-                                    "ComputerDNSName": None,
-                                    "CreationDateTimeUtc": "2025-09-30T10:51:12.8554335Z",
-                                    "ID": "111111",
-                                    "LastUpdateTimeUtc": "2025-09-30T10:51:12.8554346Z",
-                                    "MachineID": "id2",
-                                    "RelatedFileInfo": {
-                                        "FileIdentifier": None,
-                                        "FileIdentifierType": None,
-                                    },
-                                    "Requestor": "Cortex XSOAR - Microsoft Defender ATP - Dev",
-                                    "RequestorComment": "Quarantine file hash: sha1sha1",
-                                    "Scope": None,
-                                    "Status": "Pending",
-                                    "Type": "StopAndQuarantineFile",
-                                },
-                            ]
-                        },
-                        "Metadata": {
-                            "pollingCommand": "microsoft-atp-stop-and-quarantine-file",
-                            "pollingArgs": {
-                                "action_ids": ["111111"],
-                                "machine_id": ["22222", "33333"],
-                                "file_hash": "sha1sha1",
-                                "timeout_in_seconds": "300",
+                                "Requestor": None,
+                                "RequestorComment": "Quarantine file hash: sha1sha1",
+                                "Scope": None,
+                                "Status": "Failed",
+                                "Type": None,
                             },
-                        },
-                        "Contents": {},
+                            {
+                                "Commands": None,
+                                "ComputerDNSName": None,
+                                "CreationDateTimeUtc": "2025-09-30T10:51:12.8554335Z",
+                                "ID": "111111",
+                                "LastUpdateTimeUtc": "2025-09-30T10:51:12.8554346Z",
+                                "MachineID": "id2",
+                                "RelatedFileInfo": {
+                                    "FileIdentifier": None,
+                                    "FileIdentifierType": None,
+                                },
+                                "Requestor": "Cortex XSOAR - Microsoft Defender ATP - Dev",
+                                "RequestorComment": "Quarantine file hash: sha1sha1",
+                                "Scope": None,
+                                "Status": "Pending",
+                                "Type": "StopAndQuarantineFile",
+                            },
+                        ]
                     },
-                ]
-
+                    "Metadata": {
+                        "pollingCommand": "microsoft-atp-stop-and-quarantine-file",
+                        "pollingArgs": {
+                            "action_ids": ["111111"],
+                            "machine_id": ["22222", "33333"],
+                            "file_hash": "sha1sha1",
+                            "timeout_in_seconds": "300",
+                        },
+                    },
+                    "Contents": {},
+                },
+            ]
 
             mock_execute = mocker.patch.object(demisto, "executeCommand", return_value=mock_response)
 
@@ -939,9 +938,7 @@ class TestMDEHandler:
                 "polling": True,
                 "timeout_in_seconds": 123,
             }
-            mock_execute.assert_called_once_with(
-                "microsoft-atp-stop-and-quarantine-file", expected_command_args
-            )
+            mock_execute.assert_called_once_with("microsoft-atp-stop-and-quarantine-file", expected_command_args)
 
             # Assert that the returned job object is correct
             expected_job = {
@@ -1333,22 +1330,28 @@ class TestQuarantineOrchestrator:
             """
 
             completed_result = QuarantineResult.create(
-                        endpoint_id="id2",
-                        status=QuarantineResult.Statuses.FAILED,
-                        message=QuarantineResult.Messages.ENDPOINT_OFFLINE,
-                        brand=Brands.MDE,
-                        script_args={"file_hash": "sha256", "file_path": "/path"},
-                    )
+                endpoint_id="id2",
+                status=QuarantineResult.Statuses.FAILED,
+                message=QuarantineResult.Messages.ENDPOINT_OFFLINE,
+                brand=Brands.MDE,
+                script_args={"file_hash": "sha256", "file_path": "/path"},
+            )
 
-            pending_job = [{'brand': 'Microsoft Defender Advanced Threat Protection',
-                            'poll_args': {'action_ids': ['111'],
-                    'comment': 'Quarantine file hash: SHA1',
-                    'file_hash': 'SHA1',
-                    'hide_polling_output': True,
-                    'machine_id': ['id1'],
-                    'polling': 'true',
-                    'timeout_in_seconds': '300'},
-                    'poll_command': 'microsoft-atp-stop-and-quarantine-file'}]
+            pending_job = [
+                {
+                    "brand": "Microsoft Defender Advanced Threat Protection",
+                    "poll_args": {
+                        "action_ids": ["111"],
+                        "comment": "Quarantine file hash: SHA1",
+                        "file_hash": "SHA1",
+                        "hide_polling_output": True,
+                        "machine_id": ["id1"],
+                        "polling": "true",
+                        "timeout_in_seconds": "300",
+                    },
+                    "poll_command": "microsoft-atp-stop-and-quarantine-file",
+                }
+            ]
             args = {
                 "endpoint_id": "id1,is2",
                 "file_hash": "sha1",
@@ -1356,9 +1359,8 @@ class TestQuarantineOrchestrator:
                 "brands": f"{Brands.CORTEX_CORE_IR},{Brands.CORTEX_XDR_IR}",
                 "verbose": True,
                 "pending_jobs": pending_job,
-                "completed_results": QuarantineResult.to_context_entry([completed_result])
+                "completed_results": QuarantineResult.to_context_entry([completed_result]),
             }
-
 
             orchestrator = QuarantineOrchestrator(args)
             assert orchestrator.args == args
@@ -1411,29 +1413,32 @@ class TestQuarantineOrchestrator:
             actual_args = result.args_for_next_run
 
             # 1. Pop the unpredictable list from the actual results
-            actual_endpoint_ids = actual_args.pop('endpoint_id')
+            actual_endpoint_ids = actual_args.pop("endpoint_id")
 
             # Define your expected results, also without the endpoint_id list
             expected_args = {
-                'brands': [Brands.CORTEX_CORE_IR],
-                'completed_results': [{
-                    'Brand': 'Unknown',
-                    'EndpointID': 'offline-ep',
-                    'FileHash': 'sha256sha256sha256sha256sha256sha256sha256sha256sha256sha256sha2',
-                    'FilePath': '/path',
-                    'Message': 'Offline',
-                    'Status': 'Failed'}],
+                "brands": [Brands.CORTEX_CORE_IR],
+                "completed_results": [
+                    {
+                        "Brand": "Unknown",
+                        "EndpointID": "offline-ep",
+                        "FileHash": "sha256sha256sha256sha256sha256sha256sha256sha256sha256sha256sha2",
+                        "FilePath": "/path",
+                        "Message": "Offline",
+                        "Status": "Failed",
+                    }
+                ],
                 # 'endpoint_id' key is removed
-                'file_hash': 'sha256sha256sha256sha256sha256sha256sha256sha256sha256sha256sha2',
-                'file_path': '/path',
-                'pending_jobs': [{'brand': Brands.CORTEX_CORE_IR, 'poll_command': 'some-poll-cmd'}]
+                "file_hash": "sha256sha256sha256sha256sha256sha256sha256sha256sha256sha256sha2",
+                "file_path": "/path",
+                "pending_jobs": [{"brand": Brands.CORTEX_CORE_IR, "poll_command": "some-poll-cmd"}],
             }
 
             # 2. Assert that the rest of the dictionary is an exact match
             assert actual_args == expected_args
 
             # 3. Assert that the lists have the same content by comparing them as sets
-            expected_endpoint_ids = ['ep2', 'ep1', 'ep3', 'offline-ep']
+            expected_endpoint_ids = ["ep2", "ep1", "ep3", "offline-ep"]
             assert set(actual_endpoint_ids) == set(expected_endpoint_ids)
 
             assert result.response.readable_output == "Quarantine operations are still in progress..."
@@ -1473,11 +1478,9 @@ class TestQuarantineOrchestrator:
 
             # Assert initiate_job is not called
             mock_initiate_job.assert_not_called()
-            mock_demisto_results.assert_called_once_with({
-                'Contents': 'Invalid argument',
-                'ContentsFormat': 'text',
-                'EntryContext': {},
-                'Type': 4},)
+            mock_demisto_results.assert_called_once_with(
+                {"Contents": "Invalid argument", "ContentsFormat": "text", "EntryContext": {}, "Type": 4},
+            )
 
             assert len(result.response.outputs) == 4
             assert result.response.outputs[0]["FilePath"] == "/path"
@@ -1594,6 +1597,7 @@ class TestScriptEntrypoints:
         expected_args["polling"] = True
         mock_script_func.assert_called_once_with(expected_args)
         mock_return_results.assert_called_once_with("SUCCESS")
+
 
 if __name__ == "__main__":
     pytest.main()

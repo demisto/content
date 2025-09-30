@@ -312,7 +312,6 @@ class EndpointBrandMapper:
         demisto.debug(f"[EndpointBrandMapper] Raw response: {raw_response}")
         demisto.debug(f"[EndpointBrandMapper] Verbose response: {verbose_res}")
 
-
         if self.orchestrator.verbose:
             self.orchestrator.verbose_results.extend(verbose_res)
 
@@ -714,9 +713,7 @@ class MDEHandler(BrandHandler):
         if self.orchestrator.verbose:
             self.orchestrator.verbose_results.extend(verbose_res)
 
-        quarantine_kick_off_results: list = Command.get_entry_context_object_containing_key(
-            raw_response, "MachineAction"
-        )
+        quarantine_kick_off_results: list = Command.get_entry_context_object_containing_key(raw_response, "MachineAction")
 
         demisto.debug(f"[MDE Handler] Quarantine Kick Off Results: {quarantine_kick_off_results}")
 
@@ -743,7 +740,6 @@ class MDEHandler(BrandHandler):
 
         if not pending_jobs:
             return None
-
 
         metadata = raw_response[0].get("Metadata", {})
         demisto.debug(f"[MDEHandler] Returned Metadata from MDE Quarantine Kickoff: {metadata}")
