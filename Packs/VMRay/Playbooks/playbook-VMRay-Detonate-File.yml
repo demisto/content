@@ -428,6 +428,13 @@ tasks:
           root: VMRay
           accessor: Analysis.SampleID
           transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: ${VMRay.Sample.SampleID}
+                iscontext: true
           - operator: uniq
     separatecontext: false
     continueonerrortype: ""
