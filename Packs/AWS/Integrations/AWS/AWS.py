@@ -372,6 +372,20 @@ class S3:
 
     @staticmethod
     def delete_bucket_website_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Deletes the static website configuration from a specified S3 bucket.
+        This command performs the 'DeleteBucketWebsite' API operation. If the command succeeds,
+        it confirms the removal of the website configuration. Note that the bucket itself is not deleted.
+
+        Args:
+            client (BotoClient): The initialized Boto3 S3 client.
+            args (Dict[str, Any]): Command arguments, typically containing:
+                - 'bucket' (str): The name of the S3 bucket. (Required)
+                - 'expected_bucket_owner' (str): The account ID of the expected bucket owner. (Optional)
+
+        Returns:
+            CommandResults: A CommandResults object with a success message on status 200/204.
+        """
         kwargs = {"Bucket": args.get("bucket"), "ExpectedBucketOwner": args.get("expected_bucket_owner")}
         remove_nulls_from_dictionary(kwargs)
         try:
@@ -384,6 +398,23 @@ class S3:
 
     @staticmethod
     def put_bucket_ownership_controls_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Creates or modifies the Ownership Controls configuration for an S3 bucket.
+        This command sets the rule that governs who owns new objects uploaded to the bucket, specifically controlling
+        the role of Access Control Lists (ACLs). This operation requires a specific, validated JSON structure for
+        the 'ownership_controls' argument.
+
+        Args:
+            client (BotoClient): The initialized Boto3 S3 client.
+            args (Dict[str, Any]): Command arguments, typically containing:
+                - 'bucket' (str): The name of the S3 bucket. (Required)
+                - 'ownership_controls' (str): A JSON string defining the object ownership rule. (Required)
+                  Format must be: '{"Rules": [{"ObjectOwnership": "BucketOwnerEnforced"}]}'
+                - 'expected_bucket_owner' (str): The account ID of the expected bucket owner. (Optional)
+
+        Returns:
+            CommandResults: A CommandResults object with a success message on status 200/204.
+        """
         try:
             ownership_controls = json.loads(args.get("ownership_controls"))
         except json.JSONDecodeError:
@@ -972,8 +1003,33 @@ class EC2:
 
     @staticmethod
     def modify_subnet_attribute_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Modifies a single attribute on a specified Amazon EC2 subnet.
+        This command performs the 'ModifySubnetAttribute' API operation.
+
+        Args:
+            client (BotoClient): The initialized Boto3 EC2 client.
+            args (Dict[str, Any]): Command arguments, typically containing:
+                - 'subnet_id' (str): The ID of the subnet to modify. (Required)
+                - 'map_public_ip_on_launch' (str): Boolean value to control auto-assign public IPv4.
+                - 'assign_ipv6_address_on_creation' (str): Boolean value to control auto-assign IPv6 address.
+                - 'enable_dns64' (str): Boolean value to enable DNS64 resolution.
+                - 'enable_resource_name_dns_a_record_on_launch' (str): Boolean value to enable DNS A records based
+                 on instance resource name.
+                - 'enable_resource_name_dns_aaaa_record_on_launch' (str): Boolean value to enable DNS AAAA records based on
+                 instance resource name.
+                - 'private_dns_hostname_type_on_launch' (str): String value for private DNS hostname generation.
+                - 'customer_owned_ipv4_pool' (str): The ID of the Customer Owned IPv4 Pool (CoIP) to associate with the subnet.
+                - 'map_customer_owned_ip_on_launch' (str): Boolean value to auto-assign CoIPs to instances.
+                - 'enable_lni_at_device_index' (str): Integer (1-15) to set the device index for LNI assignment.
+                - 'disable_lni_at_device_index' (str): Boolean value to disable LNI assignment at a device index.
+
+
+        Returns:
+            CommandResults: A CommandResults object with a success message.
+        """
         kwargs = {
-            "SubnetId": args.get("subnet_id"),
+            "SubnetId": args.get("subnet_id"), #
             "AssignIpv6AddressOnCreation": args.get("assign_ipv6_address_on_creation"),
             "CustomerOwnedIpv4Pool": args.get("customer_owned_ipv4_pool"),
             "DisableLniAtDeviceIndex": args.get("disable_lni_at_device_index"),
@@ -1291,6 +1347,23 @@ class RDS:
 
     @staticmethod
     def modify_event_subscription_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Modifies the configuration of an existing Amazon RDS event notification subscription.
+        This command performs the 'ModifyEventSubscription' API operation, allowing updates to the target SNS topic,
+        the list of event categories, the source type, and the enabled state of the subscription.
+
+        Args:
+            client (BotoClient): The initialized Boto3 client.
+            args (Dict[str, Any]): Command arguments, typically containing:
+                - 'subscription_name' (str): The unique name of the subscription to modify. (Required)
+                - 'enabled' (str): Boolean string ('true' or 'false') to activate/deactivate the subscription. (Optional)
+                - 'event_categories' (str | List[str]): A list of event categories to subscribe to. (Optional)
+                - 'sns_topic_arn' (str): The ARN of the new SNS topic to publish events to. (Optional)
+                - 'source_type' (str): The type of resource generating events. (Optional)
+
+        Returns:
+            CommandResults: A CommandResults object containing the modified EventSubscription details.
+        """
         kwargs = {
             "SubscriptionName": args.get("subscription_name"),
             "Enabled": args.get("enabled"),
