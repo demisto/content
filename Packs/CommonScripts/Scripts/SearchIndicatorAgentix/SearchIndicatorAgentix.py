@@ -2,6 +2,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 KEYS_TO_EXCLUDE_FROM_QUERY = ["size", "value"]
+SCORE_TO_REPUTATION = {0: "Unknown", 1: "Benign", 2: "Suspicious", 3: "Malicious"}
 
 
 def escape_special_characters(value):
@@ -221,7 +222,7 @@ def search_indicators(args):
         for field in fields:
             style_indicator[field] = indicator.get(field, indicator.get("CustomFields", {}).get(field, "n/a"))
 
-        style_indicator["verdict"] = scoreToReputation(style_indicator["score"])
+        style_indicator["verdict"] = SCORE_TO_REPUTATION.get(style_indicator["score"]) or "Unknown"
         filtered_indicators.append(style_indicator)
 
     headers = fields + ["verdict"]

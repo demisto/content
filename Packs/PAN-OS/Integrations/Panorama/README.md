@@ -9894,6 +9894,7 @@ Gathers the name, expiration date, and expiration status of certificates configu
 
 ***
 Checks for the latest available dynamic update versions and returns a list of latest available / currently installed content.
+When running from a Panorama instance, the `target` argument must be specified.
 
 #### Base Command
 
@@ -9903,7 +9904,7 @@ Checks for the latest available dynamic update versions and returns a list of la
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| target | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional |
+| target | Serial number of the firewall on which to run the command. Mandatory for Panorama instances. | Optional |
 
 #### Context Output
 
