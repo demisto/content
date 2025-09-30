@@ -845,6 +845,7 @@ def list_groups(
         "AssociatedIndicators",
         "AssociatedGroups",
         "securityLabels",
+        "Web Link",
     ]
 
     for group in response.get("data"):
@@ -860,6 +861,7 @@ def list_groups(
                 "AssociatedIndicators": group.get("associatedIndicators"),
                 "AssociatedGroups": group.get("associatedGroups"),
                 "securityLabels": group.get("securityLabels"),
+                "Web Link": group.get("webLink", ""),
             }
         )
     context = {"TC.Groups(val.ID && val.ID === obj.ID)": content}
