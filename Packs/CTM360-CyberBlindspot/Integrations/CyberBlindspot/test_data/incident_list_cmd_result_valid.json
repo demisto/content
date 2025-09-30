@@ -1,6 +1,7 @@
 [
     {
         "CustomFields": {
+            "brand": "RiskAssess Demo",
             "class": "URL",
             "cbs_coa": "Takedown",
             "subject": "https://example.com/abcdefg1",
@@ -18,6 +19,7 @@
     },
     {
         "CustomFields": {
+            "brand": "RiskAssess Demo",
             "class": "Link",
             "cbs_coa": "Member Side Action",
             "subject": "23 customer credentials compromised (1ab2c3de)",
@@ -35,6 +37,7 @@
     },
     {
         "CustomFields": {
+            "brand": "RiskAssess Demo",
             "class": "URL",
             "cbs_coa": "Takedown",
             "subject": "https://example.com/abcdefg2",
