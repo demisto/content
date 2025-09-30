@@ -264,7 +264,7 @@ def build_threat_object_description(threat_obj: dict[str, Any]) -> str:
 
     # Add highlights section if available
     highlights = demisto.get(threat_obj, "battlecard_details.highlights", "").replace("\\n", "\n")
-    if highlights:
+    if highlights and highlights != "Highlights / Key Takeaways (external)":  # Do not add if it is only the default title
         description += "\n\n##"
         description += highlights
 
