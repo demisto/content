@@ -32,6 +32,9 @@ MAX_USER_DATA_PER_PAGE = 250
 
 # -------------------- Utilities --------------------
 
+def get_env_from_server_url(server_url: str) -> str: # [V] reviewed
+    return "dev" if "account-d.docusign.com" in server_url else "prod"
+
 def _utcnow() -> dt.datetime:
     return dt.datetime.now(dt.timezone.utc)
 
@@ -262,15 +265,12 @@ class CustomerEventsClient(BaseClient):
             proxy: Whether to use proxy for requests
             verify: Whether to verify SSL certificates
         """
-        env = self.get_env_from_server_url(server_url)
+        env = get_env_from_server_url(server_url)
         base_url = urljoin(self.get_monitor_base_url(env), "api/v2.0/datasets/monitor/stream")
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
 
     def get_monitor_base_url(self, env: str) -> str: # [V] reviewed
         return "https://lens-d.docusign.net" if env == "dev" else "https://lens.docusign.net"
-
-    def get_env_from_server_url(self, server_url: str) -> str: # [V] reviewed
-        return "dev" if "account-d.docusign.com" in server_url else "prod"
 
     def get_customer_events_request(self, cursor: str, limit: int) -> dict: # [V] reviewed
         """Send GET request to fetch a stream of customer events from DocuSign Monitor API."""
@@ -300,52 +300,27 @@ class UserDataClient(BaseClient):
         self.account_id = account_id
         self.organization_id = organization_id
 
-    def admin_list_users(
-        self,
-        scopes: str,
-        organization_id: str,
-        account_id: str,
-        start: Optional[int],
-        take: int,
-        last_modified_since: Optional[str],
-        next_url: Optional[str]
-    ) -> Dict[str, Any]:
-        """List users with admin access from DocuSign.
+    def get_admin_base_url(self, env: str) -> str:
+        return "https://api-d.docusign.net" if env == "dev" else "https://api.docusign.net"
+
+    def get_users_next_request(self, access_token: str, url: str, request_params: dict = {}) -> dict:
+        headers = {"Authorization": f"Bearer {access_token}"}
+        resp = self._http_request(method="GET", full_url=url, headers=headers, params=request_params, resp_type="json")
+        return resp
         
-        Args:
-            scopes: OAuth scopes required for the request
-            organization_id: DocuSign organization ID
-            account_id: DocuSign account ID
-            start: Starting index for pagination
-            take: Number of users to fetch (capped at MAX_USER_DATA_PER_PAGE)
-            last_modified_since: Filter users modified since this timestamp (ISO 8601)
-            next_url: URL for next page of results (for pagination)
-            
-        Returns:
-            Dict containing user data and pagination information
-            
-        Raises:
-            DemistoException: If there's an error fetching user list
-        """
-        ti = self.auth.get_token(scopes)
-        if next_url:
-            url = next_url
-            params = None
-        else:
-            base = "https://api-d.docusign.net" if ti.env == "dev" else "https://api.docusign.net"
-            url = f"{base}/management/v2/organizations/{organization_id}/users"
-            params = {"account_id": account_id, "take": min(take, MAX_USER_DATA_PER_PAGE)}
-            if start is not None:
-                params["start"] = start
-            if last_modified_since:
-                params["last_modified_since"] = last_modified_since
-        resp = self.http.request(
-            "GET",
-            url,
-            headers={"Authorization": f"Bearer {ti.access_token}"},
-            params=params
-        )
-        return resp.json()
+    def get_users_first_request(self,
+        organization_id: str,
+        env: str,
+        access_token: str,
+        request_params: Dict[str, Any]
+    ) -> tuple[dict, str]:
+
+        base = self.get_admin_base_url(env)
+        url = urljoin(base, f"management/v2/organizations/{organization_id}/users")
+        
+        headers = {"Authorization": f"Bearer {access_token}"}
+        resp = self._http_request(method="GET", full_url=url, headers=headers, params=request_params, resp_type="json")
+        return resp, url
 
     def esign_user_detail(
         self,
@@ -380,13 +355,19 @@ class UserDataClient(BaseClient):
 def fetch_user_data(last_run: dict) -> tuple[dict, list]: # [V] reviewed
     params = demisto.params()
   
+    server_url = params.get("url", DEFAULT_SERVER_URL)
+    organization_id = params.get("organization_id", "")
+    env = get_env_from_server_url(server_url)
+    account_id = params.get("account_id", "")
+
     limit = min(MAX_USER_DATA_PER_FETCH, int(params.get("max_user_events_per_fetch", MAX_USER_DATA_PER_FETCH)))
     events_per_page = min(MAX_USER_DATA_PER_PAGE, limit)
     
     try:
         demisto.debug(f"{LOG_PREFIX} last_run before fetching user data: {last_run}")
         client = initiate_user_data_client()
-        user_data_events, last_run = get_user_data_events(last_run, limit, events_per_page, client)
+        user_data_events, last_run = get_user_data_events(
+            last_run, limit, events_per_page, client, organization_id, env, account_id)
     except Exception as e:
         demisto.debug(f"{LOG_PREFIX}Exception during fetch user data.\n{e!s}")
         raise DemistoException(f"{LOG_PREFIX}Exception during fetch user data.\n{e!s}")
@@ -394,12 +375,116 @@ def fetch_user_data(last_run: dict) -> tuple[dict, list]: # [V] reviewed
     add_fields_to_events(user_data_events, event_type=USER_DATA_TYPE)
     return last_run, user_data_events
 
-def get_user_data_events(last_run: dict, limit: int, events_per_page: int, client: UserDataClient) -> tuple[list, dict]:
+
+
+def get_user_data_events(last_run: dict, limit: int, events_per_page: int, client: UserDataClient, organization_id: str, env: str, account_id: str) -> tuple[list, dict]:
+    total_events = []
+    remaining_to_fetch = 0
+    latest_modified_date = None
+    
+    try:
+        # next url was existing in the last response, meaning we are continuing a fetch from the last run
+        if last_run.get("continuing_fetch_info"):
+            url = last_run.get("continuing_fetch_info", {}).get("url")
+            request_params = {}
+            demisto.debug(f"{LOG_PREFIX}Continuing fetch for Audit data from:\n {url}")
+
+        # First fetch in the current time range.
+        else:
+            one_minute_ago = timestamp_to_datestring(int(time.time() - 60) * 1000, date_format="%Y-%m-%dT%H:%M:%SZ")
+            url = ""
+            request_params = {
+                "start": 0,
+                "take": events_per_page, # api limit - max 250
+                "last_modified_since": last_run.get("last_modified_since") or one_minute_ago
+            }
+            demisto.debug(f"{LOG_PREFIX}Starting new fetch range for Audit Users data.")
+        
+        auth_client = initiate_auth_client()
+        access_token = get_access_token(auth_client)
+        base_uri = auth_client.get_base_uri(access_token, account_id)
+        
+        """
+        The first condition that reached will exit the loop:
+        1. len(total_events) >= limit
+        2. next_url is None
+        """
+        while len(total_events) < limit:
+            remaining = limit - len(total_events)
+            demisto.debug(f"{LOG_PREFIX}Starting to fetch new request of users.\nRemaining users to fetch: {remaining}")
+
+            if url:
+                resp = client.get_users_next_request(access_token, url)
+            else:
+                resp, url = client.get_users_first_request(organization_id, env, access_token, request_params)
+
+            users = resp.get("users", [])
+            next_url = resp.get("paging", {}).get("next", "")
+            
+            demisto.debug(f"{LOG_PREFIX}Successfully fetched {len(users)} users events.")
+            total_events.extend(users)
+
+            # TODO: implement handle duplication - maybe i can do it once outside the function, after finishinf to fetch all ues in this current run.
+            # just save the old latest modified date before calling this function, and remove the duplicates based on it after calling this function.
+            #NOTE: I dont know how to handle duplication because there is no id in the first step, and hoe can I Differentiate between fetched event in the second step?
+
+            if not next_url: # last page reached, there are no more logs to fetch.
+                demisto.debug(f"{LOG_PREFIX}No more pages in the current time range.")
+
+                if len(users) > remaining_to_fetch:
+                    demisto.debug(f"{LOG_PREFIX} There are more users than remaining to fetch.")
+                    last_run["excess_logs_info"] = {
+                        "offset": remaining_to_fetch,
+                        "url": url,
+                        "request_params": request_params
+                    }
+                    demisto.debug(
+                        f"{LOG_PREFIX} Setting excess_logs_info for next fetch: {last_run['excess_logs_info']}\n"
+                        f"{LOG_PREFIX} Truncated total fetched users from {len(total_events)} to limit: {limit}"
+                    )
+                    total_events = total_events[:limit]
+                    
+                # TODO: add the step 2 for this fetch and set latest_modified_date
+                last_run["last_modified_since"] = latest_modified_date
+                last_run["continuing_fetch_info"] = None
+
+                return total_events, last_run
+
+            prev_url = url
+            url = next_url
+            
+        # At this point, limit is reached before next_url. (it means there are more pages to fetch)
+        last_run["continuing_fetch_info"] = {"url": url}
+        demisto.debug(
+            f"{LOG_PREFIX} limit is reached and there are more pages to fetch"
+            f"setting continuing_fetch_info for next fetch: {last_run['continuing_fetch_info']}")
+
+        if len(users) > remaining_to_fetch:
+            last_run["excess_logs_info"] = {
+                "offset": remaining_to_fetch,
+                "url": prev_url,
+                "request_params": request_params
+            }
+
+            demisto.debug(
+                f"{LOG_PREFIX}Limit is reached and only partial users were fetched from the last page scanning.\n"
+                f"Setting excess_logs_info: {last_run['excess_logs_info']}"
+            )
+
+            total_events = total_events[:limit]
+        return total_events, last_run
+
+    except Exception as e:
+        demisto.debug(f"{LOG_PREFIX}Exception during get user data events. Exception is {e!s}")
+        raise DemistoException(f"Exception during get user data events. Exception is {e!s}")
+            
+
+def get_user_data_events_reference(last_run: dict, limit: int, events_per_page: int, client: UserDataClient) -> tuple[list, dict]:
 
     params = demisto.params()
 
     one_minute_ago = timestamp_to_datestring(int(time.time() - 60) * 1000, date_format="%Y-%m-%dT%H:%M:%SZ")
-    last_modified_since = last_run.get("audit_last_modified_since") or one_minute_ago
+    last_modified_since = last_run.get("last_modified_since") or one_minute_ago
     next_url = last_run.get("audit_next_url", "")
 
     start = 0 # TODO: implement remaining events logic like monday collector and use the start as offset
@@ -443,7 +528,8 @@ def get_user_data_events(last_run: dict, limit: int, events_per_page: int, clien
             if not users:
                 demisto.info(f"{LOG_PREFIX} no users on page {page_count}; stopping")
                 break
-
+            
+            # TODO: stop here - step 2
             # Enrich with eSign details synchronously
             ids = [str(u.get("id") or u.get("user_id") or "") for u in users if u.get("id") or u.get("user_id")]
             details = []
@@ -524,7 +610,7 @@ def get_user_data_events(last_run: dict, limit: int, events_per_page: int, clien
         demisto.error(f"{LOG_PREFIX} unexpected error after page {page_count}: {e}")
         raise
     
-    last_run["audit_last_modified_since"] = last_modified_since
+    last_run["last_modified_since"] = last_modified_since
     last_run["audit_next_url"] = next_url
 
     return total_events, last_run
