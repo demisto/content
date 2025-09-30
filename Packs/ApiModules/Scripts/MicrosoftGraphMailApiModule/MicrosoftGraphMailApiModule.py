@@ -5,6 +5,7 @@ from urllib.parse import quote
 from MicrosoftApiModule import *  # noqa: E402
 
 API_DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
+UPLOAD_SESSION_RETRIES = 2
 
 
 class MsGraphMailBaseClient(MicrosoftClient):
@@ -712,52 +713,76 @@ class MsGraphMailBaseClient(MicrosoftClient):
         """
 
         attachment_size = len(attachment_data)
-        upload_session = self.get_upload_session(
-            email=email,
-            draft_id=draft_id,
-            attachment_name=attachment_name,
-            attachment_size=attachment_size,
-            is_inline=is_inline,
-            content_id=content_id,
-        )
-        upload_url = upload_session.get("uploadUrl")
-        if not upload_url:
-            raise Exception(f"Cannot get upload URL for attachment {attachment_name}")
 
-        start_chunk_index = 0
-        # The if is for adding functionality of inline attachment sending from layout
-        end_chunk_index = min(self.MAX_ATTACHMENT_SIZE, attachment_size)
-
-        chunk_data = attachment_data[start_chunk_index:end_chunk_index]
-
-        response = self.upload_attachment(
-            upload_url=upload_url,
-            start_chunk_idx=start_chunk_index,
-            end_chunk_idx=end_chunk_index,
-            chunk_data=chunk_data,
-            attachment_size=attachment_size,
-        )
-        while response.status_code != 201:  # the api returns 201 when the file is created at the draft message
-            start_chunk_index = end_chunk_index
-            next_chunk = end_chunk_index + self.MAX_ATTACHMENT_SIZE
-            end_chunk_index = min(attachment_size, next_chunk)
-
-            chunk_data = attachment_data[start_chunk_index:end_chunk_index]
-
-            if start_chunk_index >= attachment_size:  # this means we reached the end of the file
-                demisto.debug(f"Skipping empty chunk at range {start_chunk_index}-{end_chunk_index}")
+        upload_url = ""
+        for i in range(UPLOAD_SESSION_RETRIES):
+            try:
+                upload_session = self.get_upload_session(
+                    email=email,
+                    draft_id=draft_id,
+                    attachment_name=attachment_name,
+                    attachment_size=attachment_size,
+                    is_inline=is_inline,
+                    content_id=content_id,
+                )
+                upload_url = upload_session.get("uploadUrl", "")
+                if not upload_url:
+                    raise Exception(f"Cannot get upload URL for attachment {attachment_name}")
                 break
+            except NotFoundError as e:
+                if i == UPLOAD_SESSION_RETRIES - 1:
+                    raise e
+                demisto.debug(f"Failed to get upload session for attachment {attachment_name}: {str(e)} retry {i}")
+            except Exception as e:
+                raise e
 
-            response = self.upload_attachment(
+        start_idx = 0
+
+        while start_idx < attachment_size:
+            end_idx = min(start_idx + self.MAX_ATTACHMENT_SIZE, attachment_size)
+            chunk = attachment_data[start_idx:end_idx]
+
+            # attempt #1
+            resp = self.upload_attachment(
                 upload_url=upload_url,
-                start_chunk_idx=start_chunk_index,
-                end_chunk_idx=end_chunk_index,
-                chunk_data=chunk_data,
+                start_chunk_idx=start_idx,
+                end_chunk_idx=end_idx,
+                chunk_data=chunk,
                 attachment_size=attachment_size,
             )
 
-            if response.status_code not in (201, 200):
-                raise Exception(f"{response.json()}")
+            # 404 -> single retry for this chunk
+            if resp.status_code == 404:
+                demisto.debug(f"Chunk upload got 404 for '{attachment_name}' at range {start_idx}-{end_idx}. Retrying once...")
+                resp = self.upload_attachment(
+                    upload_url=upload_url,
+                    start_chunk_idx=start_idx,
+                    end_chunk_idx=end_idx,
+                    chunk_data=chunk,
+                    attachment_size=attachment_size,
+                )
+                if resp.status_code == 404:
+                    try:
+                        details = resp.json()
+                    except Exception:
+                        details = resp.text
+                    raise DemistoException(
+                        f"Chunk upload failed with 404 twice for '{attachment_name}' "
+                        f"at range {start_idx}-{end_idx - 1}. Details: {details}"
+                    )
+
+            if resp.status_code == 201:
+                break
+
+            if resp.status_code == 200:
+                start_idx = end_idx
+                continue
+
+            try:
+                details = resp.json()
+            except Exception:
+                details = resp.text
+            raise Exception(f"{details}")
 
     def send_mail_with_upload_session_flow(
         self, email: str, json_data: dict, attachments_more_than_3mb: list[dict], reply_message_id: str = None
