@@ -625,28 +625,14 @@ class SecurityAndComplianceClient {
     }
 
     CreateDelegatedSession([string]$CommandName){
-        # Build parameters for both connection methods
-        $exch_params = @{
+        $cmd_params = @{
             "UserPrincipalName" = $this.upn
             "Organization" = $this.organization
             "AccessToken" = $this.access_token
             "ConnectionUri" = $this.connection_uri
             "AzureADAuthorizationEndpointUri" = $this.azure_ad_authorization_endpoint_uri
         }
-        $ipps_params = @{
-            "UserPrincipalName" = $this.upn
-            "AccessToken" = $this.access_token
-            "ConnectionUri" = $this.connection_uri
-            "AzureADAuthorizationEndpointUri" = $this.azure_ad_authorization_endpoint_uri
-        }
-
-        # Use Connect-IPPSSession with -EnableSearchOnly for ExchangeOnlineManagement >= 3.9.0
-        $module = Get-Module ExchangeOnlineManagement
-        if ($module -and ($module.Version -ge [version]'3.9.0')) {
-            Connect-IPPSSession @ipps_params -EnableSearchOnly -WarningAction:SilentlyContinue | Out-Null
-        } else {
-            Connect-ExchangeOnline @exch_params -CommandName $CommandName -WarningAction:SilentlyContinue -ShowBanner:$false | Out-Null
-        }
+        Connect-IPPSSession @cmd_params -CommandName $CommandName -EnableSearchOnlySession -WarningAction:SilentlyContinue -ShowBanner:$false | Out-Null
     }
 
     DisconnectSession(){
