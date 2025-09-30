@@ -366,7 +366,7 @@ def test_module(client: Client, params: dict) -> str:
         str: 'ok' if successful, error message if failed
     """
     demisto.debug("Starting test-module validation")
-    
+
     # Validate max_events_per_fetch parameter in test-module
     configured_limit = arg_to_number(params.get("max_events_per_fetch")) or MAX_EVENTS_PER_FETCH
     if configured_limit > MAX_EVENTS_PER_FETCH:
