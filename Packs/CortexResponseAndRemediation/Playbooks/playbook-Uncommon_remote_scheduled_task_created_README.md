@@ -19,40 +19,43 @@ Remediation:
 - Block the malicious IP (requires analyst approval).
 - Automatically Close the alert.
 
-Requirements:
-
-For response actions, the following integrations are required:
-
-- PAN-OS.
-
 ## Dependencies
 
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Command-Line Analysis
-* PAN-OS - Block IP
+This playbook does not use any sub-playbooks.
 
 ### Integrations
 
-* CoreIOCs
-* CortexCoreIR
-* CortexCoreXQLQueryEngine
+This playbook does not use any integrations.
 
 ### Scripts
 
+* CommandLineAnalysis
 * IsIPInRanges
 * Print
 * SearchIncidentsV2
+* block-external-ip
+* ip-enrichment
 
 ### Commands
 
 * closeInvestigation
+* core-add-indicator-rule
+* core-execute-command
 * core-get-cloud-original-alerts
-* core-get-script-execution-results
-* core-run-script-execute-commands
-* ip
+
+## Playbook Inputs
+
+---
+There are no inputs for this playbook.
+
+## Playbook Outputs
+
+---
+There are no outputs for this playbook.
 
 ## Playbook Image
 
