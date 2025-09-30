@@ -975,19 +975,34 @@ class EC2:
     def modify_subnet_attribute_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
         kwargs = {
             "SubnetId": args.get("subnet_id"),
-            # "AssignIpv6AddressOnCreation": {"Value": argToBoolean(args.get("assign_ipv6_address_on_creation"))},
+            "AssignIpv6AddressOnCreation": args.get("assign_ipv6_address_on_creation"), #
             "CustomerOwnedIpv4Pool": args.get("customer_owned_ipv4_pool"),
             "DisableLniAtDeviceIndex": args.get("disable_lni_at_device_index"),
-            "EnableDns64": args.get("enable_dns64"),
-            # "EnableLniAtDeviceIndex": int(args.get("enable_lni_at_device_index")),
+            "EnableDns64": args.get("enable_dns64"), #
+            "EnableLniAtDeviceIndex": args.get("enable_lni_at_device_index"),
             "EnableResourceNameDnsAAAARecordOnLaunch": args.get("enable_resource_name_dns_aaaa_record_on_launch"),
             "EnableResourceNameDnsARecordOnLaunch": args.get("enable_resource_name_dns_a_record_on_launch"),
             "MapCustomerOwnedIpOnLaunch": args.get("map_customer_owned_ip_on_launch"),
-            # "MapPublicIpOnLaunch": {"Value": argToBoolean(args.get("map_public_ip_on_launch"))},
-            "MapPublicIpOnLaunch": {"Value": True},
-            "PrivateDnsHostnameTypeOnLaunch": args.get("private_dns_hostname_type_on_launch"),
+            "MapPublicIpOnLaunch": args.get("map_public_ip_on_launch"), #
+            "PrivateDnsHostnameTypeOnLaunch": args.get("private_dns_hostname_type_on_launch"), #
         }
+
         remove_nulls_from_dictionary(kwargs)
+        attribute_boolean_value_fields = [
+            "AssignIpv6AddressOnCreation",
+            "DisableLniAtDeviceIndex",
+            "EnableDns64",
+            "EnableResourceNameDnsAAAARecordOnLaunch",
+            "EnableResourceNameDnsARecordOnLaunch",
+            "MapCustomerOwnedIpOnLaunch",
+            "MapPublicIpOnLaunch"
+        ]
+
+        for arg, value in kwargs.items():
+            if arg in attribute_boolean_value_fields:
+                kwargs[arg] = {"Value": argToBoolean(value)}
+            elif arg == "EnableLniAtDeviceIndex":
+                kwargs[arg] = int(value)
 
         try:
             response = client.modify_subnet_attribute(**kwargs)
@@ -995,6 +1010,7 @@ class EC2:
                 return CommandResults(readable_output="Subnet configuration successfully updated.")
         except Exception as e:
             raise DemistoException(f"Modification could not be performed. Error: {str(e)}")
+
 
 class EKS:
     service = AWSServices.EKS
