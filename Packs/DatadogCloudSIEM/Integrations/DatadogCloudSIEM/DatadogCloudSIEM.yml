@@ -28,7 +28,7 @@ configuration:
     name: incidentType
     type: 13
     required: false
-  - additionalinfo: First fetch time range. How far back to fetch security signals on the first run. Examples: "3 days", "7 days", "1 week"
+  - additionalinfo: First fetch time range. How far back to fetch security signals on the first run. Examples "3 days", "7 days", "1 week"
     display: First fetch time
     name: first_fetch
     type: 0
@@ -142,7 +142,6 @@ script:
         - contextPath: Datadog.SecuritySignal.raw
           description: The raw signal object returned by the API.
           type: Unknown
-
 
     - arguments:
         - description: Filter signals by state (open, under_review, archived).

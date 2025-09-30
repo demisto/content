@@ -1,8 +1,8 @@
 # Datadog Cloud SIEM
 
-Datadog is an observability service for cloud-scale applications, providing monitoring of servers, databases, tools, and services, through a SaaS-based data analytics platform.
+Datadog Cloud SIEM elevates your organization’s threat detection and investigation for their dynamic, cloud-scale environments.
 
-The SaaS platform integrates and automates infrastructure monitoring, application performance monitoring and log management to provide unified, real-time observability of our customers' entire technology stack.
+With Datadog Cloud SIEM, you can augment your existing SIEM investments and deliver better cloud security outcomes. Datadog Cloud SIEM analyzes operational and security logs in real time—regardless of their volume—while utilizing curated, out-of-the-box integrations and rules to detect threats and investigate them. Developers, security, and operations teams can also leverage detailed observability data to accelerate security investigations in a single, unified platform.
 
 ## How to get a Datadog Cloud SIEM Credentials
 
