@@ -1530,8 +1530,8 @@ def storage_blob_containers_update_command(client: AzureClient, params: dict, ar
             name="Azure Storage Blob Containers Properties",
             t=readable_output,
             headers=["Name", "Account Name", "Subscription ID", "Resource Group", "Public Access"],
+            removeNull=True,
         ),
-        removeNull=True,
     )
 
 
