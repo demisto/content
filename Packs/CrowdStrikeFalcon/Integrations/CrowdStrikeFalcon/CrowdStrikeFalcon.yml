@@ -552,9 +552,9 @@ script:
       name: status
       predefined:
       - new
+      - in_progress
       - closed
       - reopened
-      - ignored
     - description: 'A user ID, for example: 1234567891234567891. username and assigned_to_uuid are mutually exclusive.'
       name: assigned_to_uuid
     - description: Optional comment to add to the detection. Comments are displayed with the detection in CrowdStrike Falcon and provide context or notes for other Falcon users.
