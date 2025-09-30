@@ -1,6 +1,8 @@
 import re
 
 import pytest
+from pytest_mock import MockerFixture
+from requests_mock import Mocker as RequestsMocker
 from unittest.mock import AsyncMock
 from freezegun import freeze_time
 from CommonServerPython import *
@@ -34,7 +36,7 @@ def async_client():
     return AsyncClient(base_url=SERVER_URL, token="test_token", verify_ssl=False, is_proxy=False)
 
 
-def test_runs_list_command(client, requests_mock):
+def test_runs_list_command(client: Client, requests_mock: RequestsMocker):
     """
     Given:
         - Client object.
@@ -52,7 +54,7 @@ def test_runs_list_command(client, requests_mock):
     assert results.to_context() == expected_results
 
 
-def test_run_action_command(client, requests_mock):
+def test_run_action_command(client: Client, requests_mock: RequestsMocker):
     """
     Given:
         - Client object.
@@ -70,7 +72,7 @@ def test_run_action_command(client, requests_mock):
     assert f"Error occurred when queued an apply request for run id {run_id}" in str(err)
 
 
-def test_plan_get_command(client, requests_mock):
+def test_plan_get_command(client: Client, requests_mock: RequestsMocker):
     """
     Given:
         - Client object.
@@ -89,7 +91,7 @@ def test_plan_get_command(client, requests_mock):
     assert results.to_context() == expected_results
 
 
-def test_policies_list_command(client, requests_mock, mocker):
+def test_policies_list_command(client: Client, requests_mock, mocker: MockerFixture):
     """
     Given:
         - Client object.
@@ -111,7 +113,7 @@ def test_policies_list_command(client, requests_mock, mocker):
     assert results.to_context() == expected_results
 
 
-def test_policy_set_list_command(client, requests_mock, mocker):
+def test_policy_set_list_command(client: Client, requests_mock, mocker: MockerFixture):
     """
     Given:
         - Client object.
@@ -133,7 +135,7 @@ def test_policy_set_list_command(client, requests_mock, mocker):
     assert results.to_context() == expected_results
 
 
-def test_policies_checks_list_command(client, requests_mock):
+def test_policies_checks_list_command(client: Client, requests_mock: RequestsMocker):
     """
     Given:
         - Client object.
@@ -153,7 +155,7 @@ def test_policies_checks_list_command(client, requests_mock):
     assert results.to_context() == expected_results
 
 
-def test_test_module_command(client, mocker):
+def test_test_module_command(client: Client, mocker: MockerFixture):
     """
     Given:
         - Client object with error occurred in test_connection.
@@ -172,7 +174,7 @@ def test_test_module_command(client, mocker):
     assert "Unauthorized: Please be sure you put a valid API Token" in str(err)
 
 
-def mock_aoi_session_response(response_json: None | dict = None, status_code: int = 200):
+def mock_aoi_session_response(response_json: None | dict = None, status_code: int = 200) -> AsyncMock:
     mock_response = AsyncMock()
     mock_response.json = AsyncMock(return_value=response_json)
     mock_response.raise_for_status = AsyncMock()
@@ -181,7 +183,7 @@ def mock_aoi_session_response(response_json: None | dict = None, status_code: in
 
 
 @pytest.mark.asyncio
-async def test_client_get_audit_trails(async_client: AsyncClient, mocker):
+async def test_client_get_audit_trails(async_client: AsyncClient, mocker: MockerFixture):
     """
     Given:
      - An AsyncClient instance.
@@ -209,7 +211,7 @@ async def test_client_get_audit_trails(async_client: AsyncClient, mocker):
 
 
 @pytest.mark.asyncio
-async def test_get_audit_trail_events_pagination(async_client: AsyncClient, mocker):
+async def test_get_audit_trail_events_pagination(async_client: AsyncClient, mocker: MockerFixture):
     """
     Given:
      - A limit that requires fetching two pages of events.
@@ -254,7 +256,7 @@ async def test_get_audit_trail_events_pagination(async_client: AsyncClient, mock
 
 @freeze_time("2025-01-02T00:00:00Z")
 @pytest.mark.asyncio
-async def test_get_events_command(async_client: AsyncClient, mocker):
+async def test_get_events_command(async_client: AsyncClient, mocker: MockerFixture):
     """
     Given:
      - An AsyncClient and command arguments.
@@ -279,3 +281,140 @@ async def test_get_events_command(async_client: AsyncClient, mocker):
     assert mock_get_audit_events.call_args[0][2] == 10
 
     assert mock_table_to_markdown.call_args.kwargs == {"name": "Terraform Audit Trail Events", "t": mock_events}
+
+
+@pytest.mark.parametrize(
+    "raw_response, all_fetched_ids, expected_events_count, expected_all_ids_count",
+    [
+        pytest.param(
+            {
+                "data": [
+                    {"id": "event-1", "timestamp": "2025-01-01T00:00:00Z"},
+                    {"id": "event-2", "timestamp": "2025-01-01T01:00:00Z"},
+                ]
+            },
+            set(),
+            2,
+            2,
+            id="No duplicates",
+        ),
+        pytest.param(
+            {
+                "data": [
+                    {"id": "event-1", "timestamp": "2025-01-01T00:00:00Z"},
+                    {"id": "event-2", "timestamp": "2025-01-01T01:00:00Z"},
+                ]
+            },
+            {"event-1"},
+            1,
+            2,
+            id="With duplicates",
+        ),
+        pytest.param(
+            {"data": []},
+            {"event-1"},
+            0,
+            1,
+            id="Empty raw response",
+        ),
+        pytest.param(
+            {"data": [{"id": "event-1", "timestamp": "2025-01-01T00:00:00Z"}]},
+            {"event-1"},
+            0,
+            1,
+            id="All duplicates",
+        ),
+    ],
+)
+@freeze_time("2025-01-02T00:00:00Z")
+def test_deduplicate_and_format_events(
+    raw_response: dict[str, Any],
+    all_fetched_ids: set[str],
+    expected_events_count: int,
+    expected_all_ids_count: int,
+):
+    """
+    Given:
+     - A raw API response and a set of already fetched event IDs.
+    When:
+     - Calling deduplicate_and_format_events.
+    Then:
+     - Ensure that events are correctly deduplicated and formatted.
+     - Ensure that the set of fetched IDs is correctly updated.
+    """
+    from HashiCorpTerraform import deduplicate_and_format_events, DATE_FORMAT
+
+    new_events = deduplicate_and_format_events(raw_response, all_fetched_ids)
+
+    assert len(new_events) == expected_events_count
+    assert len(all_fetched_ids) == expected_all_ids_count
+
+    for event in new_events:
+        assert event["_time"] == arg_to_datetime(event["timestamp"]).strftime(DATE_FORMAT)
+
+
+@pytest.mark.parametrize(
+    "last_run, max_fetch, mock_events, expected_next_run",
+    [
+        pytest.param(
+            {},
+            10,
+            [
+                {"id": "event-1", "timestamp": "2025-01-01T00:00:00Z"},
+                {"id": "event-2", "timestamp": "2025-01-01T01:00:00Z"},
+            ],
+            {"from_date": "2025-01-01T01:00:00Z", "last_fetched_ids": ["event-2"]},
+            id="Initial run",
+        ),
+        pytest.param(
+            {"from_date": "2025-01-01T00:00:00Z", "last_fetched_ids": ["event-1"]},
+            5,
+            [
+                {"id": "event-2", "timestamp": "2025-01-01T01:00:00Z"},
+                {"id": "event-3", "timestamp": "2025-01-01T01:00:00Z"},
+            ],
+            {"from_date": "2025-01-01T01:00:00Z", "last_fetched_ids": ["event-2", "event-3"]},
+            id="Subsequent run",
+        ),
+        pytest.param(
+            {"from_date": "2025-01-01T01:00:00Z", "last_fetched_ids": ["event-2"]},
+            10,
+            [],
+            {"from_date": "2025-01-01T01:00:00Z", "last_fetched_ids": ["event-2"]},
+            id="No new events",
+        ),
+    ],
+)
+@pytest.mark.asyncio
+async def test_fetch_events_command(
+    async_client: AsyncClient,
+    mocker: MockerFixture,
+    last_run: dict,
+    max_fetch: int,
+    mock_events: list,
+    expected_next_run: dict,
+):
+    """
+    Given:
+     - An AsyncClient, last_run, and max_fetch parameters.
+    When:
+     - Calling fetch_events_command.
+    Then:
+     - Ensure that get_audit_trail_events is called with the correct arguments.
+     - Ensure that the next_run object and events are returned correctly.
+    """
+    from HashiCorpTerraform import fetch_events_command, DEFAULT_AUDIT_TRAIL_FROM_TIME, DATE_FORMAT
+
+    get_audit_trail_events_mock = mocker.patch("HashiCorpTerraform.get_audit_trail_events", return_value=mock_events)
+
+    next_run, events = await fetch_events_command(async_client, last_run, max_fetch)
+
+    assert get_audit_trail_events_mock.call_args.kwargs == {
+        "client": async_client,
+        "from_date": last_run.get("from_date") or DEFAULT_AUDIT_TRAIL_FROM_TIME.strftime(DATE_FORMAT),
+        "limit": max_fetch,
+        "last_fetched_ids": last_run.get("last_fetched_ids", []),
+    }
+
+    assert next_run == expected_next_run
+    assert events == mock_events
