@@ -1058,7 +1058,7 @@ channel was added to the bot in the Azure portal during setup.
 Refer to steps #13-14 of the "Creating the Demisto Bot using Microsoft Azure Portal" \
 section in the integration documentation for more information.
 
-If the problem is not resolved, see Troubleshooting number 5 in the integration documentation.
+If the problem is not resolved, see Troubleshooting step #5 in the integration documentation.
 
 (Error Message): {error}"""
 
