@@ -5043,18 +5043,13 @@ def upload_file_command():
 
 def delete_file_command():
     """
-    Deletes a file from CrowdStrike Falcon.
-
     This command deletes a file by either file_id or file_name. If file_name is provided
     without file_id, it will first list all files to find the corresponding file_id.
-
     Args:
         file_id (str, optional): The ID of the file to delete
         file_name (str, optional): The name of the file to delete
-
     Returns:
         dict: Entry object with deletion confirmation message
-
     Raises:
         ValueError: If neither file_name nor file_id is provided, or if file with given name is not found
     """
