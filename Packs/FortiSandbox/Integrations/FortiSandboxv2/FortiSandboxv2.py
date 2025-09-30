@@ -6,6 +6,7 @@ import base64
 import urllib.parse
 from enum import Enum
 from typing import Any
+import re
 
 """ Global Variables """
 
@@ -551,6 +552,41 @@ def build_relationship(entity_type: str, entity: str, malware: str) -> EntityRel
     )
 
 
+def is_url(data: dict[str: Any]) -> bool:
+    """
+    Determine whether a FortiSandbox job JSON represents a URL (WEBLink) scan.
+
+    The function checks multiple indicators:
+    1. If the "ftype" field equals "WEBLink".
+    2. If the "name" field starts with "http://" or "https://".
+    3. If the "download_url" field (base64 encoded) decodes to a valid HTTP/HTTPS URL.
+
+    Args:
+        data (dict): The JSON object parsed into a Python dictionary.
+
+    Returns:
+        bool: True if the JSON represents a URL scan, False otherwise.
+    """
+    # Check ftype
+    if data.get("ftype") == "WEBLink":
+        return True
+
+    # Check name
+    name = data.get("name", "").strip()
+    if re.match(r"^https?://", name):
+        return True
+
+    # Check download_url
+    try:
+        decoded = base64.b64decode(data.get("download_url", "")).decode()
+        if re.match(r"^https?://", decoded):
+            return True
+    except Exception:
+        pass
+
+    return False
+
+
 def build_indicator(
     data: dict[str, Any],
     url: str | None = None,
@@ -587,7 +623,7 @@ def build_indicator(
 
     demisto.debug(f"Indicator's malware name: {malware_name}")
 
-    if url or req_type == "url-csearch":
+    if url or req_type == "url-csearch" or is_url(data):
         demisto.info("Indicator type is URL")
         entity_type = FeedIndicatorType.URL
 

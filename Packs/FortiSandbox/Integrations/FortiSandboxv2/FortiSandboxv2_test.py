@@ -6,6 +6,8 @@ from typing import Any
 import CommonServerPython
 import FortiSandboxv2
 import pytest
+from FortiSandboxv2 import is_url
+import base64
 
 TEST_DATA = "test_data"
 BASE_URL = "https://www.example.com"
@@ -841,3 +843,75 @@ def test_submission_job_report_command(requests_mock, mock_client: FortiSandboxv
         }
         # Retrieve the write calls to the mock file and assert the content
         assert handle.write.call_args[0][0] == b"Decoded Pikachu"
+
+def test_is_url_by_ftype():
+    """Test URL detection using ftype field"""
+    data = {
+        "ftype": "WEBLink",
+        "name": "not a url",
+        "download_url": ""
+    }
+    assert is_url(data) is True
+
+def test_is_url_by_http_name():
+    """Test URL detection using http name field"""
+    data = {
+        "ftype": "File",
+        "name": "http://example.com",
+        "download_url": ""
+    }
+    assert is_url(data) is True
+
+def test_is_url_by_https_name():
+    """Test URL detection using https name field"""
+    data = {
+        "ftype": "File",
+        "name": "https://example.com",
+        "download_url": ""
+    }
+    assert is_url(data) is True
+
+def test_is_url_by_download_url():
+    """Test URL detection using base64 encoded download_url"""
+    url = "https://example.com/malware"
+    encoded_url = base64.b64encode(url.encode()).decode()
+    data = {
+        "ftype": "File",
+        "name": "malware.exe",
+        "download_url": encoded_url
+    }
+    assert is_url(data) is True
+
+def test_is_url_negative():
+    """Test negative case where no URL indicators are present"""
+    data = {
+        "ftype": "File",
+        "name": "malware.exe",
+        "download_url": base64.b64encode(b"not a url").decode()
+    }
+    assert is_url(data) is False
+
+def test_is_url_empty_data():
+    """Test with empty data"""
+    assert is_url({}) is False
+
+def test_is_url_invalid_download_url():
+    """Test with invalid base64 in download_url"""
+    data = {
+        "ftype": "File",
+        "name": "malware.exe",
+        "download_url": "not base64"
+    }
+    assert is_url(data) is False
+
+def test_is_url_missing_fields():
+    """Test with missing fields"""
+    data = {
+        "name": "http://example.com"  # Missing other fields
+    }
+    assert is_url(data) is True  # Should still detect from name
+
+    data = {
+        "ftype": "File"  # Only has ftype
+    }
+    assert is_url(data) is False
