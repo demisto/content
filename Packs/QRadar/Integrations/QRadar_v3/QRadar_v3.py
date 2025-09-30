@@ -2897,6 +2897,9 @@ def long_running_execution_command(client: Client, params: dict):
         params (Dict): Demisto params.
 
     """
+    
+    
+    
     global EVENTS_SEARCH_TRIES
     validate_long_running_params(params)
     fetch_mode = params.get("fetch_mode", "")
