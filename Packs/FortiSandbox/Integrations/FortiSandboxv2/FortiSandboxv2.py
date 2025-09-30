@@ -552,7 +552,7 @@ def build_relationship(entity_type: str, entity: str, malware: str) -> EntityRel
     )
 
 
-def is_url(data: dict[str: Any]) -> bool:
+def is_url(data: dict[str, Any]) -> bool:
     """
     Determine whether a FortiSandbox job JSON represents a URL (WEBLink) scan.
 
