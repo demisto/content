@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: Unit42 Feed
+  id: Unit 42 Feed
   version: -1
 sectionOrder:
 - Connect
@@ -143,7 +143,7 @@ configuration:
   advanced: true
 description: Unit 42 Feed integration provides threat intelligence from Palo Alto Networks Unit 42 research team.
 display: Unit 42 Feed
-name: Unit42 Feed
+name: Unit 42 Feed
 script:
   commands:
   - arguments:

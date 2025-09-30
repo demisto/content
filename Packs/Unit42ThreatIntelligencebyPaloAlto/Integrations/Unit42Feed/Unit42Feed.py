@@ -6,7 +6,7 @@ import requests
 requests.packages.urllib3.disable_warnings()
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
-INTEGRATION_NAME = "Unit42Feed"
+INTEGRATION_NAME = "Unit 42 Feed"
 LIMIT = 5000
 
 # API endpoints
