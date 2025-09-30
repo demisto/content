@@ -26,6 +26,7 @@ You are required to fill in only the *Username / Role ID* parameter with the rol
 | Use AppRole Auth Method | Set as true if you are using the [AppRole](https://developer.hashicorp.com/vault/docs/auth/approle) method for authentication. | False |
 | Username / Role ID | The username for the Hashicorp vault.                                                                                            | False |
 | Password / Secret ID | The password for the Hashicorp vault.                                                                                             | False |
+| Cache the authentication token | enables caching of the authentication token. | False |
 | Authentication token | A token for authentication for the Hashicorp vault. (Use instead of password and username.)                                            | False |
 | Vault enterprise namespace | The [namespace](https://developer.hashicorp.com/vault/tutorials/enterprise/namespaces) used for the vault by the user.  | False |
 | Trust any certificate (not secure) | Mark as true to make unverified HTTP requests.                                                                                    | False |

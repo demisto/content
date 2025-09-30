@@ -14,12 +14,14 @@ if CREDENTIALS:
     PASSWORD = CREDENTIALS.get("password")
 VERIFY_SSL = not demisto.params().get("unsecure", False)
 TOKEN = demisto.params().get("credentials_token", {}).get("password") or demisto.params().get("token")
+CACHE_TOKEN = argToBoolean(demisto.params().get("cache_token", "false") or "false")
 NAMESPACE = demisto.params().get("namespace")
 USE_APPROLE_AUTH_METHOD = argToBoolean(demisto.params().get("use_approle", "false") or "false")
 BASE_URL = demisto.params().get("server", "")
 SERVER_URL = BASE_URL + "/v1"
 
 DEFAULT_STATUS_CODES = {429, 472, 473}
+TIME_BUFFER = 5
 
 """ HELPER FUNCTIONS """
 
@@ -44,6 +46,7 @@ def login():  # pragma: no cover
         path = "auth/userpass/login/" + USERNAME  # type: ignore
         body = {"password": PASSWORD}
 
+    integration_context = get_integration_context()
     url = urljoin(SERVER_URL, path)
     payload = json.dumps(body)
     headers = get_headers()
@@ -62,6 +65,13 @@ def login():  # pragma: no cover
     if not auth_res or "auth" not in auth_res or "client_token" not in auth_res["auth"]:
         return_error("Could not authenticate user")
 
+    integration_context.update(
+        {
+            "lease_expiration": int(time.time()) + int(auth_res["auth"]["lease_duration"]),
+            "auth_token": auth_res["auth"]["client_token"],
+        }
+    )
+    set_integration_context(integration_context)
     return auth_res["auth"]["client_token"]
 
 
@@ -814,16 +824,29 @@ def get_ch_secret(engine_path, secret):
 
 if __name__ in ("__main__", "__builtin__", "builtins"):  # pragma: no cover
     handle_proxy()
+    integration_context = get_integration_context()
 
     demisto.debug("Executing command: " + demisto.command())
     if USERNAME and PASSWORD:
         if TOKEN:
             return_error("You can only specify one login method, please choose username and password or authentication token")
-        TOKEN = login()
+        else:
+            if not CACHE_TOKEN:
+                TOKEN = login()
+            else:
+                lease_expiration = integration_context.get("lease_expiration")
+                if not lease_expiration:
+                    demisto.debug("No existing lease; creating a new one.")
+                    TOKEN = login()
+                elif lease_expiration <= int(time.time()) - TIME_BUFFER:
+                    demisto.debug("Existing lease expired; creating a new one.")
+                    TOKEN = login()
+                else:
+                    demisto.debug("Existing lease still available; reusing it.")
+                    TOKEN = integration_context.get("auth_token")
     elif not TOKEN:
         return_error("Either an authentication token or user credentials must be provided")
 
-    integration_context = get_integration_context()
     if not integration_context or "configs" not in integration_context:
         integration_context["configs"] = []
 
