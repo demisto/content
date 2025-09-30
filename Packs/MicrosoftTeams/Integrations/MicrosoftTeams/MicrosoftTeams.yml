@@ -80,6 +80,13 @@ configuration:
   advanced: true
   hidden: true
   required: false
+- display: Bot Type Switched to Single-Tenant
+  name: is_single_tenant_bot_type
+  type: 8
+  section: Connect
+  additionalinfo: Check this box if the bot was originally created as **Multi-tenant** and later switched to **Single-tenant**. The system will detect the bot type automatically in all other standard cases.
+  advanced: true
+  required: false
 - display: Minimum incident severity to send notifications to Teams by
   name: min_incident_severity
   type: 15
