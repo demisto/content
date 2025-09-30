@@ -8514,6 +8514,18 @@ def response_to_context(reponse_obj, user_predefiend_keys=None):
 def safe_strptime(date_str, datetime_format, strptime=datetime.strptime):
     """
     Parses a date string to a datetime object, handling cases where the microsecond component is missing.
+    
+    :type date_str: ``str``
+    :param date_str: The date string to parse (required)
+    
+    :type datetime_format: ``str``
+    :param datetime_format: The format of the date string (required)
+    
+    :type strptime: ``Callable``
+    :param strptime: The function to use for parsing the date string (optional)
+    
+    :return: The parsed datetime object
+    :rtype: ``datetime.datetime``
     """
     try:
         return strptime(date_str, datetime_format)
