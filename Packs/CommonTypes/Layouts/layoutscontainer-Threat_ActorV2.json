@@ -247,25 +247,25 @@
                                 "startCol": 0
                             },
                             {
-                                "endCol": 2,
-                                "fieldId": "tags",
-                                "height": 22,
-                                "id": "f72ca610-b30c-11eb-941c-e725acf1fbbc",
-                                "index": 12,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
 								"dropEffect": "move",
 								"endCol": 2,
 								"fieldId": "industrysectors",
 								"height": 22,
 								"id": "9eb5e473-9ebc-4bb1-b0af-5e3a9813670f",
-								"index": 13,
+								"index": 12,
 								"listId": "f6n7qgpsje-14a72590-b30c-11eb-941c-e725acf1fbbc",
 								"sectionItemType": "field",
 								"startCol": 0
 							},
+                            {
+                                "endCol": 2,
+                                "fieldId": "tags",
+                                "height": 22,
+                                "id": "f72ca610-b30c-11eb-941c-e725acf1fbbc",
+                                "index": 13,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
                             {
                                 "args": {
                                     "field": {
@@ -277,7 +277,7 @@
                                 "fieldId": "",
                                 "height": 44,
                                 "id": "85698e10-b313-11eb-941c-e725acf1fbbc",
-                                "index": 12,
+                                "index": 14,
                                 "listId": "f6n7qgpsje-3eeb0060-b30c-11eb-941c-e725acf1fbbc",
                                 "name": "Add tags",
                                 "scriptId": "Builtin|||appendIndicatorField",
@@ -295,7 +295,7 @@
                                 "fieldId": "",
                                 "height": 44,
                                 "id": "8ad09c90-b313-11eb-941c-e725acf1fbbc",
-                                "index": 12,
+                                "index": 14,
                                 "listId": "f6n7qgpsje-3eeb0060-b30c-11eb-941c-e725acf1fbbc",
                                 "name": "Remove tags",
                                 "scriptId": "Builtin|||removeIndicatorField",
