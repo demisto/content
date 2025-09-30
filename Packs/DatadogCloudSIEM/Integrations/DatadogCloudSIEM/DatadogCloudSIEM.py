@@ -49,12 +49,11 @@ disable_warnings()
 
 """ CONSTANTS """
 
-DEFAULT_OFFSET = 0
 DEFAULT_PAGE_SIZE = 50
-PAGE_NUMBER_ERROR_MSG = "Invalid Input Error: page number should be greater than zero."
 PAGE_SIZE_ERROR_MSG = "Invalid Input Error: page size should be greater than zero."
 DEFAULT_FROM_DATE = "-7days"
 DEFAULT_TO_DATE = "now"
+INTEGRATION_NAME = "DatadogCloudSIEM"
 INTEGRATION_CONTEXT_NAME = "Datadog"
 SECURITY_SIGNAL_CONTEXT_NAME = f"{INTEGRATION_CONTEXT_NAME}.SecuritySignal"
 NO_RESULTS_FROM_API_MSG = "API didn't return any results for given search parameters."
@@ -271,6 +270,8 @@ def extract_iocs_from_signal(signal: SecuritySignal) -> List[Common.Indicator]:
     Searches through signal data for IP addresses, domains, URLs, and file hashes,
     then creates appropriate Common.IP, Common.Domain, etc. objects with DBotScore.
 
+    SIEM doesn't provide reputation, just detection, so indicators score is always Common.DBotScore.NONE
+
     Args:
         signal (SecuritySignal): SecuritySignal object to extract IOCs from
 
@@ -330,35 +331,13 @@ def extract_iocs_from_signal(signal: SecuritySignal) -> List[Common.Indicator]:
             dbot_score = Common.DBotScore(
                 indicator=ip,
                 indicator_type=DBotScoreType.IP,
-                integration_name="DatadogCloudSIEM",
-                score=Common.DBotScore.NONE,  # SIEM doesn't provide reputation, just detection
-                reliability=DBotScoreReliability.B,
-                malicious_description=f"IP found in Datadog security signal: {signal.title}",
-            )
-
-            ip_indicator = Common.IP(ip=ip, dbot_score=dbot_score)
-            indicators.append(ip_indicator)
-
-    # Extract domains
-    domain_pattern = r"\b[a-zA-Z0-9-]+\.(?:[a-zA-Z]{2,})\b"
-    domains = set(re.findall(domain_pattern, searchable_text))
-
-    for domain in domains:
-        # Filter out common false positives
-        if not domain.lower().endswith(
-            (".png", ".jpg", ".gif", ".css", ".js", ".local", ".internal")
-        ):
-            dbot_score = Common.DBotScore(
-                indicator=domain,
-                indicator_type=DBotScoreType.DOMAIN,
-                integration_name="DatadogCloudSIEM",
+                integration_name=INTEGRATION_NAME,
                 score=Common.DBotScore.NONE,
                 reliability=DBotScoreReliability.B,
-                malicious_description=f"Domain found in Datadog security signal: {signal.title}",
+                malicious_description=f"IP found in Datadog security signal: {signal.title} [id:{signal.id}]",
             )
-
-            domain_indicator = Common.Domain(domain=domain, dbot_score=dbot_score)
-            indicators.append(domain_indicator)
+            ip_indicator = Common.IP(ip=ip, dbot_score=dbot_score)
+            indicators.append(ip_indicator)
 
     # Extract URLs
     url_pattern = r'https?://[^\s<>"{}|\\^`\[\]]+'
@@ -368,12 +347,11 @@ def extract_iocs_from_signal(signal: SecuritySignal) -> List[Common.Indicator]:
         dbot_score = Common.DBotScore(
             indicator=url,
             indicator_type=DBotScoreType.URL,
-            integration_name="DatadogCloudSIEM",
+            integration_name=INTEGRATION_NAME,
             score=Common.DBotScore.NONE,
             reliability=DBotScoreReliability.B,
-            malicious_description=f"URL found in Datadog security signal: {signal.title}",
+            malicious_description=f"URL found in Datadog security signal: {signal.title} [id:{signal.id}]",
         )
-
         url_indicator = Common.URL(url=url, dbot_score=dbot_score)
         indicators.append(url_indicator)
 
@@ -391,12 +369,11 @@ def extract_iocs_from_signal(signal: SecuritySignal) -> List[Common.Indicator]:
         dbot_score = Common.DBotScore(
             indicator=hash_value,
             indicator_type=DBotScoreType.FILE,
-            integration_name="DatadogCloudSIEM",
+            integration_name=INTEGRATION_NAME,
             score=Common.DBotScore.NONE,
             reliability=DBotScoreReliability.B,
-            malicious_description=f"MD5 hash found in Datadog security signal: {signal.title}",
+            malicious_description=f"MD5 hash found in Datadog security signal: {signal.title} [id:{signal.id}]",
         )
-
         file_indicator = Common.File(md5=hash_value, dbot_score=dbot_score)
         indicators.append(file_indicator)
 
@@ -404,12 +381,11 @@ def extract_iocs_from_signal(signal: SecuritySignal) -> List[Common.Indicator]:
         dbot_score = Common.DBotScore(
             indicator=hash_value,
             indicator_type=DBotScoreType.FILE,
-            integration_name="DatadogCloudSIEM",
+            integration_name=INTEGRATION_NAME,
             score=Common.DBotScore.NONE,
             reliability=DBotScoreReliability.B,
-            malicious_description=f"SHA1 hash found in Datadog security signal: {signal.title}",
+            malicious_description=f"SHA1 hash found in Datadog security signal: {signal.title} [id:{signal.id}]",
         )
-
         file_indicator = Common.File(sha1=hash_value, dbot_score=dbot_score)
         indicators.append(file_indicator)
 
@@ -417,12 +393,11 @@ def extract_iocs_from_signal(signal: SecuritySignal) -> List[Common.Indicator]:
         dbot_score = Common.DBotScore(
             indicator=hash_value,
             indicator_type=DBotScoreType.FILE,
-            integration_name="DatadogCloudSIEM",
+            integration_name=INTEGRATION_NAME,
             score=Common.DBotScore.NONE,
             reliability=DBotScoreReliability.B,
-            malicious_description=f"SHA256 hash found in Datadog security signal: {signal.title}",
+            malicious_description=f"SHA256 hash found in Datadog security signal: {signal.title} [id:{signal.id}]",
         )
-
         file_indicator = Common.File(sha256=hash_value, dbot_score=dbot_score)
         indicators.append(file_indicator)
 
@@ -801,40 +776,119 @@ def build_logs_search_query(args: Dict[str, Any]) -> str:
     return " AND ".join(query_parts) if query_parts else "*"
 
 
-def pagination(
+def calculate_limit(
     limit: int | None,
-    page: int | None,
     page_size: int | None,
-) -> tuple[int, int]:
+) -> int:
     """
-    Define pagination.
+    Calculate the limit for API requests.
+
+    Datadog API uses simple limit-based pagination (page_limit parameter).
+    This function normalizes limit/page_size parameters from XSOAR commands.
 
     Args:
-        page: The page number.
-        page_size: The number of requested results per page.
-        limit: The number of requested results limit per page.
+        limit: Maximum number of results to retrieve
+        page_size: Number of results per page (alternative to limit)
 
     Returns:
-        limit (int): Records per page.
-        offset (int): The number of records to be skipped.
+        int: The calculated limit for the API request
+
+    Raises:
+        DemistoException: If page_size is invalid (≤ 0)
     """
-    if page and page <= 0:
-        raise DemistoException(PAGE_NUMBER_ERROR_MSG)
     if page_size and page_size <= 0:
         raise DemistoException(PAGE_SIZE_ERROR_MSG)
 
-    if page_size and limit:
-        limit = page_size
-    page = page - 1 if page else DEFAULT_OFFSET
-    page_size = page_size or DEFAULT_PAGE_SIZE
+    # page_size takes precedence over limit if both provided
+    if page_size:
+        return page_size
 
-    limit = limit or page_size or DEFAULT_PAGE_SIZE
-    offset = page * page_size
+    # Use limit or default
+    return limit or DEFAULT_PAGE_SIZE
 
-    return limit, offset
+
+def map_severity_to_xsoar(severity: Optional[str]) -> int:
+    """
+    Map Datadog signal severity to XSOAR incident severity.
+
+    Args:
+        severity: Datadog severity level (info, low, medium, high, critical)
+
+    Returns:
+        int: XSOAR severity (0=Unknown, 1=Low, 2=Medium, 3=High, 4=Critical)
+    """
+    severity_map = {
+        "info": 1,  # Low
+        "low": 1,  # Low
+        "medium": 2,  # Medium
+        "high": 3,  # High
+        "critical": 4,  # Critical
+    }
+    return severity_map.get((severity or "").lower(), 0)  # Default to Unknown
 
 
 """ COMMAND FUNCTIONS """
+
+
+def fetch_security_signals(
+    configuration: Configuration,
+    filter_query: str,
+    from_datetime: Optional[datetime],
+    to_datetime: Optional[datetime],
+    limit: int,
+    sort: str = "desc",
+) -> List[SecuritySignal]:
+    """
+    Fetch security signals from Datadog API.
+
+    Helper function to retrieve security signals with filtering and sorting.
+    Used by both get_security_signals_command and fetch_incidents.
+
+    Args:
+        configuration: Datadog API configuration
+        filter_query: Query string for filtering signals (Datadog search syntax)
+        from_datetime: Start time for signal search
+        to_datetime: End time for signal search
+        limit: Maximum number of signals to retrieve
+        sort: Sort order - "asc" or "desc" (default: "desc")
+
+    Returns:
+        List[SecuritySignal]: List of parsed SecuritySignal objects
+
+    Raises:
+        DemistoException: If API call fails
+    """
+    try:
+        with ApiClient(configuration) as api_client:
+            api_instance = SecurityMonitoringApi(api_client)
+
+            sort_order = (
+                SecurityMonitoringSignalsSort.TIMESTAMP_DESCENDING
+                if sort == "desc"
+                else SecurityMonitoringSignalsSort.TIMESTAMP_ASCENDING
+            )
+
+            signal_list_response = api_instance.list_security_monitoring_signals(
+                filter_query=filter_query if filter_query != "*" else unset,
+                filter_from=from_datetime or unset,
+                filter_to=to_datetime or unset,
+                sort=sort_order,
+                page_limit=limit,
+            )
+
+            results = signal_list_response.to_dict()
+            data_list = results.get("data", [])
+
+            # Parse all signals
+            signals = []
+            for signal_data in data_list:
+                signal = parse_security_signal(signal_data)
+                signals.append(signal)
+
+            return signals
+
+    except Exception as e:
+        raise DemistoException(f"Failed to fetch security signals: {str(e)}")
 
 
 def module_test(configuration: Configuration) -> str:
@@ -957,10 +1011,9 @@ def get_security_signals_command(
         DemistoException: If API call fails or invalid arguments provided
     """
     try:
-        page = arg_to_number(args.get("page"), arg_name="page")
         page_size = arg_to_number(args.get("page_size"), arg_name="page_size")
         limit = arg_to_number(args.get("limit"), arg_name="limit")
-        limit, _ = pagination(limit, page, page_size)
+        limit = calculate_limit(limit, page_size)
 
         sort = args.get("sort", "desc")
         if sort not in ["asc", "desc"]:
@@ -979,77 +1032,67 @@ def get_security_signals_command(
                 f"Invalid date format. Use formats like '7 days ago', '2023-01-01T00:00:00Z': {str(e)}"
             )
 
-        with ApiClient(configuration) as api_client:
-            api_instance = SecurityMonitoringApi(api_client)
+        # Use helper function to fetch signals
+        signals_objs = fetch_security_signals(
+            configuration=configuration,
+            filter_query=filter_query,
+            from_datetime=from_datetime,
+            to_datetime=to_datetime,
+            limit=limit,
+            sort=sort,
+        )
 
-            sort_order = (
-                SecurityMonitoringSignalsSort.TIMESTAMP_DESCENDING
-                if sort == "desc"
-                else SecurityMonitoringSignalsSort.TIMESTAMP_ASCENDING
-            )
-
-            signal_list_response = api_instance.list_security_monitoring_signals(
-                filter_query=filter_query if filter_query != "*" else unset,
-                filter_from=from_datetime or unset,
-                filter_to=to_datetime or unset,
-                sort=sort_order,
-                page_limit=limit,
-            )
-
-            results = signal_list_response.to_dict()
-            data_list = results.get("data", [])
-
-            if not data_list:
-                readable_output = (
-                    "No security signals found matching the specified criteria."
-                )
-                return CommandResults(
-                    readable_output=readable_output,
-                    outputs_prefix=SECURITY_SIGNAL_CONTEXT_NAME,
-                    outputs_key_field="id",
-                    outputs=[],
-                )
-
-            signals = []
-            display_data = []
-            all_indicators = []
-
-            for signal_data in data_list:
-                signal = parse_security_signal(signal_data)
-                signals.append(signal.to_dict())
-                display_data.append(signal.to_display_dict())
-
-                # Extract IOCs from each signal
-                signal_indicators = extract_iocs_from_signal(signal)
-                all_indicators.extend(signal_indicators)
-
-            # Create summary of all IOCs found across signals
-            ioc_summary = ""
-            if all_indicators:
-                ioc_counts = {}
-                for indicator in all_indicators:
-                    ioc_type = type(indicator).__name__.replace("Common", "")
-                    ioc_counts[ioc_type] = ioc_counts.get(ioc_type, 0) + 1
-
-                ioc_summary = "\n\n**IOCs Extracted:** " + ", ".join(
-                    [f"{count} {ioc_type}" for ioc_type, count in ioc_counts.items()]
-                )
-
-            # Create human-readable output
+        if not signals_objs:
             readable_output = (
-                lookup_to_markdown(
-                    display_data, f"Security Signals ({len(signals)} results)"
-                )
-                + ioc_summary
+                "No security signals found matching the specified criteria."
             )
-
             return CommandResults(
                 readable_output=readable_output,
                 outputs_prefix=SECURITY_SIGNAL_CONTEXT_NAME,
                 outputs_key_field="id",
-                outputs=signals,
-                indicators=all_indicators,  # This populates standard XSOAR contexts from all signals
+                outputs=[],
             )
+
+        # Process signals for output
+        signals = []
+        display_data = []
+        all_indicators = []
+
+        for signal in signals_objs:
+            signals.append(signal.to_dict())
+            display_data.append(signal.to_display_dict())
+
+            # Extract IOCs from each signal
+            signal_indicators = extract_iocs_from_signal(signal)
+            all_indicators.extend(signal_indicators)
+
+        # Create summary of all IOCs found across signals
+        ioc_summary = ""
+        if all_indicators:
+            ioc_counts = {}
+            for indicator in all_indicators:
+                ioc_type = type(indicator).__name__.replace("Common", "")
+                ioc_counts[ioc_type] = ioc_counts.get(ioc_type, 0) + 1
+
+            ioc_summary = "\n\n**IOCs Extracted:** " + ", ".join(
+                [f"{count} {ioc_type}" for ioc_type, count in ioc_counts.items()]
+            )
+
+        # Create human-readable output
+        readable_output = (
+            lookup_to_markdown(
+                display_data, f"Security Signals ({len(signals)} results)"
+            )
+            + ioc_summary
+        )
+
+        return CommandResults(
+            readable_output=readable_output,
+            outputs_prefix=SECURITY_SIGNAL_CONTEXT_NAME,
+            outputs_key_field="id",
+            outputs=signals,
+            indicators=all_indicators,  # This populates standard XSOAR contexts from all signals
+        )
 
     except Exception as e:
         raise DemistoException(f"Failed to get security signals: {str(e)}")
@@ -1238,10 +1281,9 @@ def logs_search_command(
         DemistoException: If API call fails or invalid arguments provided
     """
     try:
-        page = arg_to_number(args.get("page"), arg_name="page")
         page_size = arg_to_number(args.get("page_size"), arg_name="page_size")
         limit = arg_to_number(args.get("limit"), arg_name="limit")
-        limit, _ = pagination(limit, page, page_size)
+        limit = calculate_limit(limit, page_size)
 
         sort = args.get("sort", "desc")
         if sort not in ["asc", "desc"]:
@@ -1320,73 +1362,125 @@ def logs_search_command(
         raise DemistoException(f"Failed to search logs: {str(e)}")
 
 
-def fetch_incidents(configuration: Configuration, params: dict):
-    # first_fetch_time = params.get("first_fetch", "3 days")
-    # fetch_limit = params.get("max_fetch", 50)
-    # first_fetch_time = dateparser.parse(f"-{first_fetch_time}")
-    # last_run = demisto.getLastRun()
-    # with ApiClient(configuration) as api_client:
-    #     incidents = []
-    #     api_instance = IncidentsApi(api_client)
-    #     configuration.unstable_operations["search_incidents"] = True
+def fetch_incidents(configuration: Configuration, params: dict) -> None:
+    """
+    Fetch security signals from Datadog Cloud SIEM and create XSOAR incidents.
 
-    #     response = api_instance.search_incidents(
-    #         query=incident_serach_query({}),
-    #         page_size=min(200, int(fetch_limit)),
-    #         sort=IncidentSearchSortOrder("-created"),
-    #     )
-    #     results = response.to_dict()
-    #     data = results.get("data", {}).get("attributes", {}).get("incidents", [])
-    #     data = [convert_datetime_to_str(incident.get("data")) for incident in data]
-    #     data_list = [
-    #         incident
-    #         for incident in data
-    #         if (
-    #             datetime.fromisoformat(incident["attributes"]["modified"])
-    #             .replace(tzinfo=None)
-    #             .timestamp()
-    #             > datetime.fromisoformat(last_run.get("lastRun", "")).timestamp()
-    #             if last_run.get("lastRun")
-    #             else first_fetch_time.timestamp() if first_fetch_time else None
-    #         )
-    #     ]
-    #     for obj in data_list:
-    #         new_obj = obj["attributes"]
-    #         new_obj["type"] = obj["type"]
-    #         new_obj["detected"] = datetime.fromisoformat(
-    #             obj["attributes"]["detected"]
-    #         ).strftime(UI_DATE_FORMAT)
-    #         new_obj["relationships"] = obj["relationships"]
-    #         new_obj["id"] = obj["id"]
-    #         new_obj["detection_method"] = obj["attributes"]["fields"][
-    #             "detection_method"
-    #         ]["value"]
-    #         new_obj["root_cause"] = obj["attributes"]["fields"]["root_cause"]["value"]
-    #         new_obj["summary"] = obj["attributes"]["fields"]["summary"]["value"]
-    #         new_obj["notification_display_name"] = (
-    #             obj["attributes"]["notification_handles"][0]["display_name"]
-    #             if obj["attributes"]["notification_handles"]
-    #             else None
-    #         )
-    #         new_obj["notification_handle"] = (
-    #             obj["attributes"]["notification_handles"][0]["handle"]
-    #             if obj["attributes"]["notification_handles"]
-    #             else None
-    #         )
-    #         incident = {
-    #             "name": obj["attributes"]["title"],
-    #             "occurred": obj["attributes"]["modified"],
-    #             "dbotMirrorId": obj["id"],
-    #             "rawJSON": json.dumps({"incidents": new_obj}),
-    #             "type": "Datadog Cloud SIEM",
-    #         }
-    #         incidents.append(incident)
-    #     if data_list:
-    #         demisto.setLastRun(
-    #             {"lastRun": data_list[0].get("attributes", {}).get("modified", "")}
-    #         )
-    # demisto.incidents(incidents)
-    return "OK"
+    Retrieves new security signals since the last fetch and converts them to XSOAR incidents.
+    Supports incremental fetch using last_run timestamp and configurable filters.
+
+    Args:
+        configuration: Datadog API configuration
+        params: Integration parameters from XSOAR configuration
+            - first_fetch: Time range for initial fetch (e.g., "3 days", "7 days")
+            - max_fetch: Maximum number of incidents to fetch per cycle (default: 50)
+            - fetch_severity: Comma-separated list of severities to fetch (e.g., "high,critical")
+            - fetch_state: Signal state to fetch (default: "open")
+            - fetch_query: Additional custom query filter
+
+    Returns:
+        None. Creates incidents via demisto.incidents() and updates last_run via demisto.setLastRun()
+    """
+    try:
+        # Get integration parameters
+        first_fetch = params.get("first_fetch", "3 days")
+        max_fetch = int(params.get("max_fetch", 50))
+        fetch_severity = params.get("fetch_severity", "")
+        fetch_state = params.get("fetch_state", "open")
+        fetch_query = params.get("fetch_query", "")
+
+        # Get last run to handle incremental fetch
+        last_run = demisto.getLastRun()
+        last_fetch_time = last_run.get("last_fetch_time")
+
+        # Calculate fetch time range
+        if last_fetch_time:
+            # Incremental fetch - get signals since last fetch
+            from_datetime = parse(last_fetch_time, settings={"TIMEZONE": "UTC"})
+            demisto.debug(f"Fetching incidents since last run: {last_fetch_time}")
+        else:
+            # First fetch - use first_fetch parameter
+            from_datetime = parse(f"-{first_fetch}", settings={"TIMEZONE": "UTC"})
+            demisto.debug(f"First fetch - fetching incidents from: {first_fetch} ago")
+
+        to_datetime = datetime.now(timezone.utc)
+
+        # Build filter query
+        filter_args = {
+            "state": fetch_state,
+            "query": fetch_query,
+        }
+        if fetch_severity:
+            # If multiple severities, build OR query
+            severities = [s.strip() for s in fetch_severity.split(",")]
+            if len(severities) == 1:
+                filter_args["severity"] = severities[0]
+            else:
+                # Build custom severity query
+                severity_query = " OR ".join([f"severity:{s}" for s in severities])
+                filter_args["query"] = f"({severity_query})" + (
+                    f" AND {fetch_query}" if fetch_query else ""
+                )
+
+        filter_query = security_signals_search_query(filter_args)
+
+        # Fetch security signals
+        demisto.debug(f"Fetching signals with query: {filter_query}")
+        signals = fetch_security_signals(
+            configuration=configuration,
+            filter_query=filter_query,
+            from_datetime=from_datetime,
+            to_datetime=to_datetime,
+            limit=max_fetch,
+            sort="asc",  # Oldest first for chronological incident creation
+        )
+
+        demisto.debug(f"Fetched {len(signals)} security signals")
+
+        # Convert signals to XSOAR incidents
+        incidents = []
+        latest_signal_time = last_fetch_time
+
+        for signal in signals:
+            # Create incident from signal
+            # Note: IOCs are embedded in signal.raw and can be extracted via
+            # datadog-security-signal-get command or playbooks
+            incident = {
+                "name": signal.title or f"Datadog Security Signal {signal.id}",
+                "occurred": (
+                    str(signal.timestamp)
+                    if signal.timestamp
+                    else to_datetime.isoformat()
+                ),
+                "severity": map_severity_to_xsoar(signal.severity),
+                "dbotMirrorId": signal.id,
+                "rawJSON": json.dumps(signal.to_dict()),
+            }
+
+            incidents.append(incident)
+
+            # Track latest signal timestamp for next fetch
+            if signal.timestamp:
+                signal_time = str(signal.timestamp)
+                if not latest_signal_time or signal_time > latest_signal_time:
+                    latest_signal_time = signal_time
+
+        demisto.debug(f"Created {len(incidents)} incidents")
+
+        # Update last run with latest timestamp
+        if incidents and latest_signal_time:
+            demisto.setLastRun({"last_fetch_time": latest_signal_time})
+            demisto.debug(f"Updated last_fetch_time to: {latest_signal_time}")
+        elif not last_fetch_time:
+            # First run with no incidents - still save the from_datetime
+            demisto.setLastRun({"last_fetch_time": from_datetime.isoformat()})  # type: ignore
+
+        # Send incidents to XSOAR
+        demisto.incidents(incidents)
+
+    except Exception as e:
+        demisto.error(f"Error in fetch_incidents: {str(e)}")
+        raise DemistoException(f"Failed to fetch incidents: {str(e)}")
 
 
 """ MAIN FUNCTION """
@@ -1400,6 +1494,7 @@ def main() -> None:
     try:
         configuration = Configuration()
         configuration.api_key["apiKeyAuth"] = params.get("api_key")
+        configuration.api_key["appKeyAuth"] = params.get("app_key")
         configuration.server_variables["site"] = params.get("site")
 
         commands = {
@@ -1408,11 +1503,11 @@ def main() -> None:
             "datadog-security-signal-assignee-update": update_security_signal_assignee_command,
             "datadog-security-signal-state-update": update_security_signal_state_command,
             "datadog-logs-search": logs_search_command,
-            # Special XSOAR command to sync Cloud SIEM signals to XSOAR
-            "fetch-incidents": fetch_incidents,
         }
         if command == "test-module":
             return_results(module_test(configuration))
+        elif command == "fetch-incidents":
+            fetch_incidents(configuration, params)
         elif command in commands:
             return_results(commands[command](configuration, args))
         else:

@@ -12,14 +12,59 @@ configuration:
     display: API Key
     name: api_key
     type: 4
+    required: true
     hidden: true
+  - additionalinfo: The APP Key to use for authentication
+    display: APP Key
+    name: app_key
+    type: 4
+    required: true
+    hidden: true
+  - display: Fetch incidents
+    name: isFetch
+    type: 8
+    required: false
   - display: Incident type
     name: incidentType
     type: 13
     required: false
-  - display: Fetch incidents
-    name: isFetch
-    type: 8
+  - additionalinfo: First fetch time range. How far back to fetch security signals on the first run. Examples: "3 days", "7 days", "1 week"
+    display: First fetch time
+    name: first_fetch
+    type: 0
+    defaultvalue: "3 days"
+    required: false
+  - additionalinfo: Maximum number of incidents to fetch per cycle. Maximum is 200, recommended less than 100.
+    display: Max fetch
+    name: max_fetch
+    type: 0
+    defaultvalue: "50"
+    required: false
+  - additionalinfo: Fetch only security signals with these severity levels. Comma-separated list. Leave empty to fetch all severities.
+    display: Fetch severity
+    name: fetch_severity
+    type: 0
+    required: false
+    predefined:
+      - info
+      - low
+      - medium
+      - high
+      - critical
+  - additionalinfo: Fetch only security signals in this state. Default is "open".
+    display: Fetch state
+    name: fetch_state
+    type: 15
+    options:
+      - open
+      - under_review
+      - archived
+    defaultvalue: "open"
+    required: false
+  - additionalinfo: Additional custom query filter for fetching security signals. Uses Datadog search syntax.
+    display: Fetch query
+    name: fetch_query
+    type: 0
     required: false
 description: |-
   Datadog Cloud SIEM integration for XSOAR provides security signal management capabilities.
