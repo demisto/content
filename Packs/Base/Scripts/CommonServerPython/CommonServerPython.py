@@ -520,6 +520,7 @@ class DBotScoreReliability(object):
     :rtype: ``None``
     """
 
+    A_PLUS_PLUS = 'A++ - Reputation script'
     A_PLUS = 'A+ - 3rd party enrichment'
     A = 'A - Completely reliable'
     B = 'B - Usually reliable'
@@ -537,6 +538,7 @@ class DBotScoreReliability(object):
         # type: (str) -> bool
 
         return _type in (
+            DBotScoreReliability.A_PLUS_PLUS,
             DBotScoreReliability.A_PLUS,
             DBotScoreReliability.A,
             DBotScoreReliability.B,
@@ -548,6 +550,8 @@ class DBotScoreReliability(object):
 
     @staticmethod
     def get_dbot_score_reliability_from_str(reliability_str):  # pragma: no cover
+        if reliability_str == DBotScoreReliability.A_PLUS_PLUS:
+            return DBotScoreReliability.A_PLUS_PLUS
         if reliability_str == DBotScoreReliability.A_PLUS:
             return DBotScoreReliability.A_PLUS
         elif reliability_str == DBotScoreReliability.A:
@@ -11697,9 +11701,15 @@ def remove_old_incidents_ids(found_incidents_ids, current_time, look_back):
     deletion_threshold_in_seconds = look_back_in_seconds * 2
 
     new_found_incidents_ids = {}
+    latest_incident_time = max(found_incidents_ids.values() or [current_time])
+    demisto.debug('lb: latest_incident_time is {}'.format(latest_incident_time))
+
     for inc_id, addition_time in found_incidents_ids.items():
 
-        if current_time - addition_time <= deletion_threshold_in_seconds:
+        if (
+            current_time - addition_time <= deletion_threshold_in_seconds
+            or addition_time == latest_incident_time  # The latest IDs must be kept to avoid duplicate incidents
+        ):
             new_found_incidents_ids[inc_id] = addition_time
             demisto.debug('lb: Adding incident id: {}, its addition time: {}, deletion_threshold_in_seconds: {}'.format(
                 inc_id, addition_time, deletion_threshold_in_seconds))
@@ -11708,6 +11718,7 @@ def remove_old_incidents_ids(found_incidents_ids, current_time, look_back):
                 inc_id, addition_time, deletion_threshold_in_seconds))
     demisto.debug('lb: Number of new found ids: {}, their ids: {}'.format(
         len(new_found_incidents_ids), new_found_incidents_ids.keys()))
+
     return new_found_incidents_ids
 
 
@@ -12891,7 +12902,7 @@ class ExecutionTimeout(object):
         demisto.debug("Resetting timed signal")
         signal.alarm(0)  # Cancel SIGALRM if it's scheduled
         return exc_type is SignalTimeoutError  # True if a timeout is reacched, False otherwise
-    
+
     @classmethod
     def limit_time(cls, seconds, default_return_value=None):
         """
