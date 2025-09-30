@@ -102,7 +102,6 @@ REQUIRED_ROLE_PERMISSIONS = [
     "Microsoft.Sql/servers/databases/transparentDataEncryption/read",
     "Microsoft.Sql/servers/databases/transparentDataEncryption/write",
     "Microsoft.Consumption/usageDetails/read",
-    "Microsoft.Consumption/forecasts/read",
     "Microsoft.Consumption/budgets/read",
     "Microsoft.CostManagement/forecast/read",
 ]

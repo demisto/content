@@ -1238,18 +1238,14 @@ class CostExplorer:
         Raises:
             DemistoException: If AWS API call fails or invalid parameters provided
         """
+        today = datetime.now().date()
         metrics = argToList(args.get("metrics", "UsageQuantity"))
-        start_date = args.get("start_date")
-        end_date = args.get("end_date")
+        start_date = args.get("start_date") or (today - timedelta(days=7)).isoformat()
+        end_date = args.get("end_date") or today.isoformat()
         granularity = args.get("granularity", "Daily").upper()
         aws_services = argToList(args.get("aws_services"))
         token = args.get("next_page_token")
 
-        today = datetime.now().date()
-        if not start_date:
-            start_date = (today - timedelta(days=7)).isoformat()
-        if not end_date:
-            end_date = today.isoformat()
         request = {
             "TimePeriod": {"Start": start_date, "End": end_date},
             "Granularity": granularity,
@@ -1336,18 +1332,13 @@ class CostExplorer:
         Raises:
             DemistoException: If AWS API call fails or invalid parameters provided
         """
+        today = datetime.now().date()
         metric = args.get("metric", "AMORTIZED_COST")
-        start_date = args.get("start_date")
-        end_date = args.get("end_date")
+        start_date = args.get("start_date") or today.isoformat()
+        end_date = args.get("end_date") or (today + timedelta(days=7)).isoformat()
         granularity = args.get("granularity", "Daily").upper()
         aws_services = argToList(args.get("aws_services"))
         token = args.get("next_page_token")
-
-        today = datetime.now().date()
-        if not start_date:
-            start_date = today.isoformat()
-        if not end_date:
-            end_date = (today + timedelta(days=7)).isoformat()
 
         request = {
             "TimePeriod": {"Start": start_date, "End": end_date},
@@ -1468,12 +1459,12 @@ class Budgets:
             results,
             headers=[
                 "BudgetName",
+                "TimePeriod",
                 "BudgetType",
                 "BudgetLimitAmount",
                 "BudgetLimitUnit",
                 "ActualSpendAmount",
                 "ActualSpendUnit",
-                "TimePeriod",
             ],
             removeNull=True,
         )
