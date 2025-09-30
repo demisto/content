@@ -20,22 +20,19 @@ args:
   required: false
 - name: channel_id
   description: |
-    (Supported only in the Slack and Zoom brands)
+    (Supported only for Slack and Zoom)
     The ID of the channel to send the message to.
   type: string
   required: false
 - name: team
   description: |
-    (Supported only in the Microsoft Teams brand)
+    (Supported only for Microsoft Teams)
     The team in which the specified channel exists.
     Leave blank to use the default team configured in the integration parameters.
   type: string
   required: false
 comment: |
-  Sends a notification message to a user, group, or channel Supports sending messages to Slack, Microsoft Teams, Mattermost or Zoom.
-  Use exactly one of the optional parameters: to, channel, channel_id.
-  When sending to Zoom:
-    - The Channel argument can only be used for channels that are part of a mirroring incident.
+  Sends a notification message to a user, group, or channel. Supports sending messages to Slack, Microsoft Teams, Mattermost or Zoom.
 commonfields:
   id: SendNotificationAgentix
   version: -1
