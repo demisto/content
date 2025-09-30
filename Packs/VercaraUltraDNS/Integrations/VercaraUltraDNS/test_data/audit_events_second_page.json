@@ -1,0 +1,23 @@
+{
+  "auditRecords": [
+    {
+      "account": "EXAMPLE CORP - 1234567",
+      "changeTime": "2025-09-27 14:33:45.0",
+      "changeType": "MODIFY",
+      "detail": {
+        "recordType": "TXT",
+        "ttl": 3600
+      },
+      "others": [
+        {
+          "name": "value",
+          "value": "v=spf1 include:_spf.google.com ~all"
+        }
+      ],
+      "ipAddress": "192.168.1.103",
+      "object": "example-test.com.",
+      "objectType": "RECORD",
+      "user": "security_admin"
+    }
+  ]
+}
