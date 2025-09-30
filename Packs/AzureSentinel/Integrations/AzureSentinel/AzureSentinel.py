@@ -1480,6 +1480,8 @@ def fetch_incidents(
     last_run: dict,
     first_fetch_time: str,
     min_severity: str,
+    limit: int,
+    statuses_to_fetch: list,
 ) -> tuple:
     """Fetching incidents.
     Args:
@@ -1487,6 +1489,8 @@ def fetch_incidents(
         client: An AzureSentinelClient client.
         last_run: An dictionary of the last run.
         min_severity: A minimum severity of incidents to fetch.
+        limit: The maximum amount of incidents to fetch.
+        statuses_to_fetch: A list of statuses to fetch.
 
     Returns:
         (tuple): 1. The LastRun object updated with the last run details.
@@ -1494,8 +1498,6 @@ def fetch_incidents(
 
     """
     # Get the last fetch details, if exist
-    limit = min(arg_to_number(demisto.params().get("limit")) or FETCH_MAX_LIMIT, FETCH_MAX_LIMIT)
-    statuses_to_fetch = demisto.params().get("statuses_to_fetch", [])
     last_fetch_time = last_run.get("last_fetch_time")
     last_fetch_ids = last_run.get("last_fetch_ids", [])
     last_incident_number = last_run.get("last_incident_number")
@@ -1555,6 +1557,8 @@ def fetch_incidents_command(client, params):
     # How much time before the first fetch to retrieve incidents
     first_fetch_time = params.get("fetch_time", "3 days").strip()
     min_severity = params.get("min_severity", "Informational")
+    limit = min(arg_to_number(params.get("limit")) or FETCH_MAX_LIMIT, FETCH_MAX_LIMIT)
+    statuses_to_fetch = argToList(params.get("statuses_to_fetch", []))
     # Set and define the fetch incidents command to run after activated via integration settings.
     last_run = demisto.getLastRun()
     demisto.debug(f"Current last run is {last_run}")
@@ -1563,6 +1567,8 @@ def fetch_incidents_command(client, params):
         last_run=last_run,
         first_fetch_time=first_fetch_time,
         min_severity=min_severity,
+        limit=limit,
+        statuses_to_fetch=statuses_to_fetch,
     )
     demisto.debug(f"New last run is {last_run}")
     demisto.setLastRun(next_run)
