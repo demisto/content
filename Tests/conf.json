@@ -5942,6 +5942,15 @@
                 "virus_total_v3"
             ],
             "fromversion": "6.10.0"
+        },
+        {
+            "playbookID": "GetEndpointData-Test",
+            "integrations": ["Active Directory Query v2", "CrowdstrikeFalcon", "FireEyeHX v2"],
+            "instance_names": [
+                "active_directory_80k"
+            ],
+            "timeout": 300,
+            "fromversion": "6.10.0"
         }
     ],
     "skipped_tests": {
