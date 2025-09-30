@@ -4508,6 +4508,169 @@ def test_module_command(client: Client, *_) -> tuple[None, None, str]:
     raise DemistoException(f"Test module failed, {results}")
 
 
+@logger
+def get_network_lists_command(
+    client: Client,
+    search: str = None,
+    list_type: str = None,
+    extended: str = "true",
+    include_elements: str = "true",
+) -> tuple[object, dict, Union[list, dict]]:
+    """Deprecated. Use akamai-get-client-list instead.
+
+    Args:
+        client: Client object with request
+        search: Only list items that match the specified substring in any network list’s name or list of items.
+        list_type: Filters the output to lists of only the given type of network lists if provided, either IP or GEO.
+        extended: Whether to return extended details in the response
+        include_elements: Whether to return all list items.
+
+    Returns:
+        human readable (markdown format), entry context and raw response
+    """
+    return f"{INTEGRATION_NAME} - Use akamai-get-client-list instead.", {}, {}
+
+
+@logger
+def get_network_list_by_id_command(client: Client, network_list_id: str) -> tuple[object, dict, Union[list, dict]]:
+    """Deprecated. Use akamai-get-client-list instead.
+
+    Args:
+        client: Client object with request
+        network_list_id: Unique ID of network list
+
+    Returns:
+        human readable (markdown format), entry context and raw response
+    """
+    return f"{INTEGRATION_NAME} - Use akamai-get-client-list instead.", {}, {}
+
+
+@logger
+def create_network_list_command(
+    client: Client,
+    list_name: str,
+    list_type: str,
+    description: str = None,
+    entry_id: str = None,
+    elements: Union[str, list] = None,
+) -> tuple[object, dict, Union[list, dict]]:
+    """
+        Deprecated. Use akamai-create-client-list instead.
+    Args:
+        client: Client object with request
+        list_name: Network list name
+        list_type: Network list type IP/GEO
+        description: Network list description
+        entry_id: Entry ID of list file (Each line should have one IP or GEO)
+        elements: Elements separated by commas
+
+    Returns:
+        human readable (markdown format), entry context and raw response
+    """
+    return f"{INTEGRATION_NAME} - Use akamai-create-client-list instead.", {}, {}
+
+
+@logger
+def delete_network_list_command(client: Client, network_list_id: str) -> tuple[object, dict, Union[list, dict]]:
+    """Deprecated. Use akamai-deprecate-client-list instead.
+
+    Args:
+        client: Client object with request
+        network_list_id: Unique ID of network list
+
+    Returns:
+        human readable (markdown format), entry context and raw response
+    """
+    return f"{INTEGRATION_NAME} - Use akamai-deprecate-client-list instead.", {}, {}
+
+
+@logger
+def update_network_list_elements_command(
+    client: Client, network_list_id: str, elements: Union[str, list] = None
+) -> tuple[object, dict, Union[list, dict]]:
+    """Deprecated. No longer supported by Akamai.
+
+    Args:
+        client: Client object with request
+        network_list_id: Unique ID of network list
+
+    Returns:
+        human readable (markdown format), entry context and raw response
+    """
+    return f"{INTEGRATION_NAME} - Deprecated.", {}, {}
+
+
+@logger
+def activate_network_list_command(
+    client: Client, network_list_ids: str, env: str, comment: str = None, notify: str = None
+) -> tuple[object, dict, Union[list, dict]]:
+    """Deprecated. Use akamai-activate-client-list instead.
+
+    Args:
+        client: Client object with request
+        network_list_ids: Unique ID of network list
+        env: STAGING or PRODUCTION
+        comment: Comment to be logged
+        notify: Email to notify on activation
+
+    Returns:
+        human readable (markdown format), entry context and raw response
+    """
+    return f"{INTEGRATION_NAME} - Use akamai-activate-client-list instead.", {}, {}
+
+
+@logger
+def add_elements_to_network_list_command(
+    client: Client, network_list_id: str, entry_id: str = None, elements: Union[str, list] = None
+) -> tuple[object, dict, Union[list, dict]]:
+    """Deprecated. Use akamai-add-client-list-entry instead.
+
+    Args:
+        client: Client object with request
+        network_list_id: Unique ID of network list
+        entry_id: Entry ID of list file (Each line should have one IP or GEO)
+        elements: Elements separated by commas
+
+    Returns:
+        human readable (markdown format), entry context and raw response
+    """
+    return f"{INTEGRATION_NAME} - Use akamai-add-client-list-entry instead.", {}, {}
+
+
+@logger
+def remove_element_from_network_list_command(
+    client: Client, network_list_id: str, element: str
+) -> tuple[object, dict, Union[list, dict]]:
+    """Deprecated. Use akamai-remove-client-list-entry instead.
+
+    Args:
+        client: Client object with request
+        network_list_id: Unique ID of network list
+        element: Element to be removed
+
+    Returns:
+        human readable (markdown format), entry context and raw response
+    """
+    return f"{INTEGRATION_NAME} - Use akamai-remove-client-list-entry instead.", {}, {}
+
+
+@logger
+def get_activation_status_command(
+    client: Client, network_list_ids: Union[str, list], env: str
+) -> tuple[str, dict, Union[list, dict]]:
+    """Deprecated. No longer supported by Akamai.
+
+    Args:
+        client: Client object with request
+        network_list_ids: Unique ID of network list (can be list as a string)
+        env: STAGING or PRODUCTION
+
+    Returns:
+        human readable (markdown format), entry context and raw response
+    """
+    return f"{INTEGRATION_NAME} - No longer supported by Akamai.", {}, {}
+
+
 # Created by D.S.
 def clone_papi_property_command(
     client: Client,
@@ -7289,6 +7452,15 @@ def main():
     demisto.debug(f"Command being called is {command}")
     commands = {
         "test-module": test_module_command,
+        f"{INTEGRATION_COMMAND_NAME}-get-network-lists": get_network_lists_command,
+        f"{INTEGRATION_COMMAND_NAME}-get-network-list-by-id": get_network_list_by_id_command,
+        f"{INTEGRATION_COMMAND_NAME}-create-network-list": create_network_list_command,
+        f"{INTEGRATION_COMMAND_NAME}-delete-network-list": delete_network_list_command,
+        f"{INTEGRATION_COMMAND_NAME}-update-network-list-elements": update_network_list_elements_command,
+        f"{INTEGRATION_COMMAND_NAME}-activate-network-list": activate_network_list_command,
+        f"{INTEGRATION_COMMAND_NAME}-add-elements-to-network-list": add_elements_to_network_list_command,
+        f"{INTEGRATION_COMMAND_NAME}-remove-element-from-network-list": remove_element_from_network_list_command,
+        f"{INTEGRATION_COMMAND_NAME}-get-network-list-activation-status": get_activation_status_command,
         f"{INTEGRATION_COMMAND_NAME}-list-groups": list_groups_command,
         f"{INTEGRATION_COMMAND_NAME}-create-enrollment": create_enrollment_command,
         f"{INTEGRATION_COMMAND_NAME}-list-enrollments": list_enrollments_command,
