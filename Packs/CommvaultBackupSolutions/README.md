@@ -58,11 +58,11 @@ For more information, see the product [documentation](https://documentation.comm
 
     | Parameter    | Value                                                                                                                                           |
     |:-------------|:------------------------------------------------------------------------------------------------------------------------------------------------|
-    | `Name`        |  `<Vendor> <Product> Logs`           |
-    | `Compression` | `uncompressed`     |
-    | `Log Format`  | `JSON`     |
-    | `Vendor`      | `commvault`                     |
-    | `Product`     | `backupsolution`                    |
+    | `Name`        |  `<Vendor>` `<Product>` Logs           |
+    | `Compression` | uncompressed     |
+    | `Log Format`  | JSON     |
+    | `Vendor`      | commvault                     |
+    | `Product`     | backupsolution                    |
 
 4. Creating a new HTTP Log Collector will allow you to generate a unique token, please save it since it will be used later.
 5. Click the 3 dots sign next to the newly created instance and copy the API Url, it will also be used later.
