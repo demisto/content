@@ -5,6 +5,7 @@ import uuid
 from enum import Enum
 from ipaddress import ip_address
 from urllib import parse
+from collections.abc import Callable
 from deepmerge import always_merger
 
 
@@ -441,9 +442,11 @@ class Client(BaseClient):
         username = credentials.get("identifier")
         password = credentials.get("password")
         if username == API_USERNAME:
+            auth_type = "Token"
             self.base_headers = {"Version": api_version, "SEC": password}
             auth = None
         else:
+            auth_type = "Basic"
             auth = (username, password)
             self.base_headers = {"Version": api_version}
         base_url = urljoin(server, "/api")
@@ -451,6 +454,26 @@ class Client(BaseClient):
         self.timeout = timeout  # type: ignore[assignment]
         self.password = password
         self.server = server
+        self._verify = verify
+        self._proxy = proxy
+        self._api_version = api_version
+        self._credentials = credentials
+        demisto.debug(f"QRadar client instance initialized with: {server=}, {verify=}, {proxy=}, {api_version=}, {auth_type=}.")
+
+    def create_copy(self):
+        """
+        Creates a new instance of the Client with the same configuration.
+        Useful for multi-threading to ensure each thread has its own client since the client requests.Session is not thread-safe.
+        """
+        demisto.debug("Creating a replica QRadar client instance.")
+        return Client(
+            server=self.server,
+            verify=self._verify,
+            proxy=self._proxy,
+            api_version=self._api_version,
+            credentials=self._credentials,
+            timeout=self.timeout,
+        )
 
     def http_request(
         self,
@@ -1169,69 +1192,16 @@ def get_remote_events(
         MIRRORED_OFFENSES_FETCHED_CTX_KEY: offenses_fetched,
     }
 
-    safely_update_context_data_partial(partial_changes)
+    safely_update_context_data_partial(
+        partial_changes,
+        override_keys=list(partial_changes.keys()),  # need to override (not merge!) since offense may have been deleted
+    )
 
     return events, status
 
 
 def update_user_query(user_query: str) -> str:
     return f" AND ({user_query})" if user_query else ""
-
-
-def insert_to_updated_context(
-    context_data: dict,
-    offense_ids: list | None = None,
-    should_update_last_fetch: bool = False,
-    should_update_last_mirror: bool = False,
-    should_add_reset_key: bool = False,
-    should_force_update: bool = False,
-):
-    """When we have a race condition, insert the changed data from context_data to the updated context data
-
-    Args:
-        context_data (dict): Context data with relevant changes.
-        updated_context_data (dict): Context data that was updated before.
-        offense_ids (list, optional): Offense ids that were changed. Defaults to None.
-        should_update_last_fetch (bool, optional): Should update the last_fetch. Defaults to False.
-        should_update_last_mirror (bool, optional): Should update the last mirror. Defaults to False.
-        should_add_reset_key (bool, optional): If we should add reset key. Defaults to False
-        should_force_update (bool, optional): If we should force update the current context. Defaults to False
-
-    """
-    if offense_ids is None:
-        offense_ids = []
-    updated_context_data, version = get_integration_context_with_version()
-    new_context_data = updated_context_data.copy()
-    if should_force_update:
-        return context_data, version
-
-    if should_add_reset_key:
-        new_context_data[RESET_KEY] = True
-    for id_ in offense_ids:
-        # Those are "trusted ids" from the changed context_data, we will keep the data (either update or delete it)
-        for key in (MIRRORED_OFFENSES_QUERIED_CTX_KEY, MIRRORED_OFFENSES_FINISHED_CTX_KEY, MIRRORED_OFFENSES_FETCHED_CTX_KEY):
-            if id_ in context_data[key]:
-                new_context_data[key][id_] = context_data[key][id_]
-            else:
-                new_context_data[key].pop(id_, None)
-
-    if should_update_last_fetch:
-        # Last fetch is updated with the samples that were fetched
-        new_context_data.update(
-            {
-                LAST_FETCH_KEY: int(context_data.get(LAST_FETCH_KEY, 0)),
-                SAMPLE_INCIDENTS_KEY: context_data.get(SAMPLE_INCIDENTS_KEY, [])[:SAMPLE_SIZE],
-            }
-        )
-
-    if should_update_last_mirror:
-        new_context_data.update(
-            {
-                LAST_MIRROR_KEY: int(context_data.get(LAST_MIRROR_KEY, 0)),
-                LAST_MIRROR_CLOSED_KEY: int(context_data.get(LAST_MIRROR_CLOSED_KEY, 0)),
-            }
-        )
-    return new_context_data, version
 
 
 def merge_samples(current_ctx: dict, changes: dict) -> None:
@@ -1271,7 +1241,7 @@ def remove_context_keys(
         if key in current_ctx and key in changes:
             current_ctx.pop(key, None)
             removed_keys.add(key)
-    demisto.debug(f"Removed {len(removed_keys)} from current integration context: {', '.join(removed_keys)}.")
+    demisto.debug(f"Removed keys from current integration context for overriding: {', '.join(removed_keys)}.")
 
 
 def deep_merge_context_changes(
@@ -1303,16 +1273,19 @@ def safely_update_context_data_partial(
     Retries up to `attempts` times if there's a version conflict.
     """
     override_keys = override_keys or []
+    changes_size_bytes = {key: calculate_object_size(value) for key, value in changes.items()}
+    print_debug_msg(f"Updating context with {changes=}, {override_keys=}, {changes_size_bytes=}.")
     for _ in range(attempts):
         ctx, version = get_integration_context_with_version()
         merged = copy.deepcopy(ctx)
         deep_merge_context_changes(merged, changes, override_keys=override_keys)
+        merged_size_bytes = {key: calculate_object_size(value) for key, value in merged.items()}
         try:
-            demisto.debug(f"Merging partial data to context {merged}")
+            print_debug_msg(f"Saving merged context using {version=}, {merged_size_bytes=}.")
             set_integration_context(merged, version=version)
             return  # success
         except Exception as e:
-            demisto.debug(f"Version conflict or error setting context: {e}. Retrying...")
+            print_debug_msg(f"Version conflict or error setting context: {e}. Retrying...")
 
     raise DemistoException(f"Failed updating context after {attempts} attempts.")
 
@@ -1487,6 +1460,52 @@ def get_offense_closing_reasons(client: Client, offenses: List[dict]) -> dict:
         return {}
 
 
+def get_names_with_retries(func: Callable, *args, **kwargs) -> dict:
+    """
+    A wrapper for retrying API calls with exponential backoff for getting names from IDs.
+
+    Args:
+        func (Callable): The API call to be executed and retried.
+        *args: Positional arguments to pass to the API call.
+        **kwargs: Keyword arguments to pass to the API call.
+
+    Returns:
+        dict: Dictionary of {id: name} from the API response, or an empty dictionary if all retries fail.
+    """
+    # Retry logic with exponential backoff
+    max_retries = CONNECTION_ERRORS_RETRIES  # Use existing constant (5)
+    base_delay = CONNECTION_ERRORS_INTERVAL  # Use existing constant (1)
+
+    last_exception = None
+    # NOTE: Retry logic is essential here to prevent silent failures in name resolution.
+    # Without retries, API call failures result in empty dict return, causing IDs (e.g., "6")
+    # to be displayed instead of names (e.g., "ABC") in the relevant field.
+    for attempt in range(max_retries):
+        try:
+            demisto.debug(f"Resolution attempt {attempt + 1}/{max_retries} to get names using {func.__name__}.")
+            return func(*args, **kwargs)
+        except Exception as e:
+            last_exception = e
+            attempt_msg = f"Resolution attempt {attempt + 1}/{max_retries} failed to get names using {func.__name__}."
+
+            if attempt < max_retries - 1:
+                # Calculate delay with exponential backoff
+                delay = base_delay * (2**attempt)
+                demisto.debug(f"{attempt_msg}: {str(e)}. Retrying in {delay} seconds...")
+                time.sleep(delay)
+            else:
+                demisto.error(f"{attempt_msg}: {str(e)}. All retry attempts exhausted.")
+
+    # If we reach here, all retries failed
+    error_msg = f"Requests failed after {max_retries} attempts"
+    if last_exception:
+        error_msg += f". Last error: {str(last_exception)}"
+
+    demisto.error(error_msg)
+    demisto.info(f"Falling back to using IDs instead of names from {func.__name__}.")
+    return {}
+
+
 def get_domain_names(client: Client, outputs: List[dict]) -> dict:
     """
     Receives list of outputs, and performs API call to QRadar service to retrieve the domain names
@@ -1506,49 +1525,15 @@ def get_domain_names(client: Client, outputs: List[dict]) -> dict:
 
     domain_ids_str = ",".join(map(str, domain_ids))
     demisto.debug(f"Attempting to resolve domain names for domain IDs: {domain_ids_str}")
+    domains_info = get_names_with_retries(client.domains_list, filter_=f"id in ({domain_ids_str})", fields="id,name")
 
-    # Retry logic with exponential backoff
-    max_retries = CONNECTION_ERRORS_RETRIES  # Use existing constant (5)
-    base_delay = CONNECTION_ERRORS_INTERVAL  # Use existing constant (1)
-
-    last_exception = None
-    # NOTE: Retry logic is essential here to prevent silent failures in domain name resolution.
-    # Without retries, API call failures result in empty dict return, causing domain IDs (e.g., "6")
-    # to be displayed instead of domain names (e.g., "ABC") in the "Domain - Offense" field.
-    for attempt in range(max_retries):
-        try:
-            demisto.debug(f"Domain name resolution attempt {attempt + 1}/{max_retries}")
-            domains_info = client.domains_list(filter_=f"""id in ({domain_ids_str})""", fields="id,name")
-
-            if domains_info:
-                domain_mapping = {domain_info.get("id"): domain_info.get("name") for domain_info in domains_info}
-                demisto.debug(f"Successfully resolved {len(domain_mapping)} domain names: {domain_mapping}")
-                return domain_mapping
-            else:
-                demisto.debug(f"Domain list API returned empty response for domain IDs: {domain_ids_str}")
-                return {}
-
-        except Exception as e:
-            last_exception = e
-            attempt_msg = f"Domain name resolution attempt {attempt + 1}/{max_retries} failed"
-
-            if attempt < max_retries - 1:
-                # Calculate delay with exponential backoff
-                delay = base_delay * (2**attempt)
-                demisto.debug(f"{attempt_msg}: {str(e)}. Retrying in {delay} seconds...")
-                time.sleep(delay)
-            else:
-                demisto.error(f"{attempt_msg}: {str(e)}. All retry attempts exhausted.")
-
-    # If we reach here, all retries failed
-    error_msg = f"Failed to resolve domain names after {max_retries} attempts for domain IDs: {domain_ids_str}"
-    if last_exception:
-        error_msg += f". Last error: {str(last_exception)}"
-
-    demisto.error(error_msg)
-    demisto.info("Falling back to using domain IDs instead of domain names for affected offenses")
-
-    return {}
+    if domains_info:
+        domain_mapping = {domain_info.get("id"): domain_info.get("name") for domain_info in domains_info}
+        demisto.debug(f"Successfully resolved {len(domain_mapping)} domain names: {domain_mapping}")
+        return domain_mapping
+    else:
+        demisto.debug(f"Domain list API returned empty response for domain IDs: {domain_ids_str}")
+        return {}
 
 
 def get_rules_names(client: Client, offenses: List[dict]) -> dict:
@@ -1562,14 +1547,22 @@ def get_rules_names(client: Client, offenses: List[dict]) -> dict:
     Returns:
         (Dict): Dictionary of {rule_id: rule_name}
     """
-    try:
-        rules_ids = {rule.get("id") for offense in offenses for rule in offense.get("rules", [])}
-        if not rules_ids:
-            return {}
-        rules = client.rules_list(None, None, f"""id in ({','.join(map(str, rules_ids))})""", "id,name")
-        return {rule.get("id"): rule.get("name") for rule in rules}
-    except Exception as e:
-        demisto.error(f"Encountered an issue while getting offenses rules: {e}")
+    # Collect unique rule IDs
+    rules_ids = {rule.get("id") for offense in offenses for rule in offense.get("rules", []) if rule.get("id") is not None}
+    if not rules_ids:
+        demisto.debug("No rule IDs found in offenses for rule name enrichment")
+        return {}
+
+    rules_ids_str = ",".join(map(str, rules_ids))
+    demisto.debug(f"Attempting to resolve rule names for rule IDs: {rules_ids_str}")
+    rules = get_names_with_retries(client.rules_list, filter_=f"id in ({rules_ids_str})", fields="id,name")
+
+    if rules:
+        mapping = {rule.get("id"): rule.get("name") for rule in rules}
+        demisto.debug(f"Successfully resolved {len(mapping)} rule names")
+        return mapping
+    else:
+        demisto.debug(f"Rules API returned empty response for rule IDs: {rules_ids_str}")
         return {}
 
 
@@ -2291,9 +2284,9 @@ def test_module_command(client: Client, params: dict) -> str:
     return message
 
 
-def calculate_incident_size(incident: dict) -> int:
+def calculate_object_size(item: dict) -> int:
     """
-    Calculate the approximate size of an incident in bytes for context storage.
+    Calculate the approximate size of an JSON serializable object in bytes for context storage.
 
     This function uses a multi-step process with granular error handling:
     1. It first attempts to create a string using JSON serialization, which is precise.
@@ -2304,16 +2297,16 @@ def calculate_incident_size(incident: dict) -> int:
        replaces any problematic characters to guarantee a result.
 
     Args:
-        incident (dict): The incident dictionary.
+        incident (dict): The JSON serializable object.
 
     Returns:
-        int: The calculated or estimated size of the incident in bytes.
+        int: The calculated or estimated size of the object in bytes.
     """
     try:
-        string_to_encode = json.dumps(incident, default=str)
+        string_to_encode = json.dumps(item, default=str)
     except TypeError as e:
-        print_debug_msg(f"Could not serialize incident to JSON: {e}. Using fallback string representation.")
-        string_to_encode = str(incident)
+        print_debug_msg(f"Could not serialize object to JSON: {e}. Using fallback string representation.")
+        string_to_encode = str(item)
 
     try:
         encoded_bytes = string_to_encode.encode("utf-8")
@@ -2334,7 +2327,7 @@ def is_incident_size_acceptable(incident: dict) -> bool:
     Returns:
         bool: True if incident size is acceptable, False otherwise
     """
-    size_bytes = calculate_incident_size(incident)
+    size_bytes = calculate_object_size(incident)
     if size_bytes > MAX_SAMPLE_SIZE_BYTES:
         print_debug_msg(
             f"Incident {incident.get('name', 'Unknown')} size ({size_bytes / (1024*1024):.2f} MB) "
@@ -2481,7 +2474,7 @@ def enrich_offense_with_events(client: Client, offense: dict, fetch_mode: FetchM
     indexed when performing the search, and QRadar will return less events than expected.
     Retry mechanism here meant to avoid such cases as much as possible
     Args:
-        client (Client): Client to perform the API calls.
+        client (Client): Client to perform the API calls. A copy is created to ensure thread safety.
         offense (Dict): Offense to enrich with events.
         fetch_mode (str): Which enrichment mode was requested.
                           Can be 'Fetch With All Events', 'Fetch Correlation Events Only'
@@ -2491,6 +2484,7 @@ def enrich_offense_with_events(client: Client, offense: dict, fetch_mode: FetchM
     Returns:
         (Dict): Enriched offense with events.
     """
+    _client = client.create_copy()
     offense_id = str(offense["id"])
     events_count = offense.get("event_count", 0)
     events: List[dict] = []
@@ -2498,15 +2492,15 @@ def enrich_offense_with_events(client: Client, offense: dict, fetch_mode: FetchM
     is_success = True
     for retry in range(EVENTS_SEARCH_TRIES):
         start_time = time.time()
-        search_id = create_search_with_retry(client, fetch_mode, offense, events_columns, events_limit)
+        search_id = create_search_with_retry(_client, fetch_mode, offense, events_columns, events_limit)
         if search_id == QueryStatus.ERROR.value:
             failure_message = "Search for events was failed."
         else:
-            events, failure_message = poll_offense_events_with_retry(client, search_id, int(offense_id))
+            events, failure_message = poll_offense_events_with_retry(_client, search_id, int(offense_id))
         events_fetched = get_num_events(events)
         offense["events_fetched"] = events_fetched
         offense["events"] = events
-        if is_all_events_fetched(client, fetch_mode, offense_id, events_limit, events):
+        if is_all_events_fetched(_client, fetch_mode, offense_id, events_limit, events):
             break
         print_debug_msg(
             f"Not enough events were fetched for offense {offense_id}. Retrying in {FAILURE_SLEEP} seconds."
@@ -2572,7 +2566,10 @@ def delete_offense_from_context(offense_id: str):
         MIRRORED_OFFENSES_FINISHED_CTX_KEY: offenses_finished,
     }
 
-    safely_update_context_data_partial(partial_changes)
+    safely_update_context_data_partial(
+        partial_changes,
+        override_keys=list(partial_changes.keys()),  # need to override (not merge!) since offense was deleted
+    )
 
 
 def is_all_events_fetched(client: Client, fetch_mode: FetchMode, offense_id: str, events_limit: int, events: list[dict]) -> bool:
@@ -2796,11 +2793,15 @@ def perform_long_running_loop(
     long_running_container_id: str,
 ):
     context_data, version = get_integration_context_with_version()
+    print_debug_msg(f"Got context data with {version=}.")
 
     if is_reset_triggered(context_data, version):
         last_highest_id = 0
+        print_debug_msg("Reset was triggered. Set last highest ID to 0.")
     else:
         last_highest_id = int(context_data.get(LAST_FETCH_KEY, 0))
+        print_debug_msg(f"Got last highest ID in context: {last_highest_id}.")
+
     print_debug_msg(f"Starting fetch loop. Fetch mode: {fetch_mode} on Container:{long_running_container_id}.")
     incidents, new_highest_id = get_incidents_long_running_execution(
         client=client,
@@ -4262,7 +4263,7 @@ def get_remote_data_command(client: Client, params: dict[str, Any], args: dict) 
     demisto.debug(f"Updating offense. Offense last update was {offense_last_update}")
     entries = []
     if offense.get("status") == "CLOSED" and argToBoolean(params.get("close_incident", False)):
-        demisto.debug(f"Offense is closed: {offense}")
+        demisto.debug(f"Offense {offense_id} is closed: {offense}.")
         try:
             if closing_reason := offense.get("closing_reason_id", ""):
                 closing_reason = client.closing_reasons_list(closing_reason).get("text")
@@ -4439,7 +4440,10 @@ def add_modified_remote_offenses(
         partial_changes[MIRRORED_OFFENSES_FINISHED_CTX_KEY] = finished_offenses_queue
 
     # Now safely merge these partial changes.
-    safely_update_context_data_partial(partial_changes)
+    safely_update_context_data_partial(
+        partial_changes,
+        override_keys=[MIRRORED_OFFENSES_QUERIED_CTX_KEY, MIRRORED_OFFENSES_FINISHED_CTX_KEY],
+    )
 
     # Do final logging for debugging if desired
     print_context_data_stats(context_data, "Get Modified Remote Data - After update")
