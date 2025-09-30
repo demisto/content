@@ -2730,7 +2730,7 @@ def list_channels():
     )
 
 
-def get_direct_message_channel_id_by_username(username: str):
+def get_direct_message_channel_id_by_username(username):
     """
     Gets the direct message channel ID for a given username.
 
@@ -2758,7 +2758,7 @@ def get_direct_message_channel_id_by_username(username: str):
         demisto.debug(f"Error opening conversation: {slack_error}")
 
 
-def resolve_channel_id_from_name(channel_name: str):
+def resolve_channel_id_from_name(channel_name):
     """
     Resolves a channel ID from a given channel name.
 
@@ -2795,26 +2795,22 @@ def conversation_history():
     and events
     """
     args = demisto.args()
-    channel_id = args.get("channel_id")
-    channel_name = args.get("channel_name")
+    conversation_id = args.get("channel_id") or args.get("conversation_id")
+    conversation_name = args.get("conversation_name")
     limit = arg_to_number(args.get("limit"))
-    conversation_id = args.get("conversation_id")
     from_time = args.get("from_time", "0")
 
-    if not channel_id and not channel_name:
+    if not conversation_id and not conversation_name:
         raise ValueError("Either channel_id or channel_name must be provided.")
 
-    if not channel_id:
-        channel_id = resolve_channel_id_from_name(channel_name)
+    if not conversation_id:
+        conversation_id = resolve_channel_id_from_name(conversation_name)
 
-    body = (
-        {"channel": channel_id, "limit": limit, "oldest": from_time}
-        if not conversation_id
-        else {"channel": channel_id, "oldest": conversation_id, "inclusive": "true", "limit": 1}
-    )
+    body = {"channel": conversation_id, "limit": limit, "oldest": from_time}
     readable_output = ""
     raw_response = send_slack_request_sync(CLIENT, "conversations.history", http_verb="GET", body=body)
     messages = raw_response.get("messages", "")
+    demisto.debug(f"Messages: {messages}")
     if not raw_response.get("ok"):
         raise DemistoException(
             f'An error occurred while listing conversation history: {raw_response.get("error")}', res=raw_response
@@ -2858,7 +2854,7 @@ def conversation_history():
             "ThreadTimeStamp": thread_ts,
         }
         context.append(entry)
-    readable_output = tableToMarkdown(f"Channel details from Channel ID - {channel_id}", context)
+    readable_output = tableToMarkdown(f"Channel details from Channel ID - {conversation_id}", context)
     demisto.results(
         {
             "Type": entryTypes["note"],

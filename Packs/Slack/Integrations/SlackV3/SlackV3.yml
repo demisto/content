@@ -485,16 +485,16 @@ script:
       description: The purpose, or description, of the channel.
       type: string
   - arguments:
-    - description: The channel ID associated with the Slack channel.
+    - description: Deprecated. Use *conversation_id* instead.
       name: channel_id
-    - description: The channel name.
-      name: channel_name
+      deprecated: true
+    - description: The conversation name. Could be a channel name or username/display name in case of DMs.
+      name: conversation_name
+    - description: The conversation id.
+      name: conversation_id
     - defaultValue: 100
       description: Set this argument to specify how many results to return. If you have more results than the limit you set, you will need to use the cursor argument to paginate your results.
       name: limit
-    - description: Deprecated. This argument was incorrectly named, and actually worked as a timestamp filter, retrieving the first message after the given time. For equivalent behavior, use the *from_time* argument combined with *limit=1*.
-      name: conversation_id
-      deprecated: true
     - description: |
         Lower bound for conversation history (sent to Slack 'oldest' query parameter). Returns messages with time stamp ≥ this value. Accepts Unix timestamp (e.g., "1727448000.000200").
       name: from_time

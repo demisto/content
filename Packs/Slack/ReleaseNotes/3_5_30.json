@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "In ***slack-get-conversation-history*** command, the conversation_id parameter was incorrectly named and functioned as a timestamp filter, retrieving the first message after the specified time.\nThis parameter has been updated to properly accept the conversation_id of a Slack channel or direct message to fetch history from. To achieve the previous timestamp filtering behavior, use the *from_time* parameter combined with *limit=1*."
+}
