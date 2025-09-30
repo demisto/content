@@ -5334,11 +5334,11 @@ def test_conversation_history_no_channel_provided_error(mocker):
         conversation_history()
 
 
-def test_resolve_channel_id_from_name_private_conversation_found(mocker):
+def test_resolve_conversation_id_from_name_private_conversation_found(mocker):
     """
-    Test resolve_channel_id_from_name when channel name corresponds to a user name.
+    Test resolve_conversation_id_from_name when channel name corresponds to a user name.
 
-    Given: The resolve_channel_id_from_name is called with a user name as the channel_name parameter.
+    Given: The resolve_conversation_id_from_name is called with a user name as the channel_name parameter.
     When: A private conversation exists for the specified user and conversation id or channel id is not provided.
     Then: The function returns the channel ID of the private conversation with that user.
     """
@@ -5350,11 +5350,11 @@ def test_resolve_channel_id_from_name_private_conversation_found(mocker):
     assert result == "D1234567890"
 
 
-def test_resolve_channel_id_from_name_channel_found(mocker):
+def test_resolve_conversation_id_from_name_channel_found(mocker):
     """
-    Test resolve_channel_id_from_name when channel name corresponds to a channel name.
+    Test resolve_conversation_id_from_name when channel name corresponds to a channel name.
 
-    Given: The resolve_channel_id_from_name function is called with a channel name as the conversation_name parameter.
+    Given: The resolve_conversation_id_from_name function is called with a channel name as the conversation_name parameter.
     When: A channel with the specified name exists and channel id is not provided.
     Then: The function returns the channel ID of the channel.
     """
@@ -5366,11 +5366,11 @@ def test_resolve_channel_id_from_name_channel_found(mocker):
     assert result == "C1234567890"
 
 
-def test_resolve_channel_id_from_name_no_channel_found(mocker):
+def test_resolve_conversation_id_from_name_no_channel_found(mocker):
     """
-    Test resolve_channel_id_from_name when no channel or user is found.
+    Test resolve_conversation_id_from_name when no channel or user is found.
 
-    Given: The resolve_channel_id_from_name function is called with a channel name that doesn't exist.
+    Given: The resolve_conversation_id_from_name function is called with a channel name that doesn't exist.
     When: No private conversation or channel exists for the specified name and channel id is not provided.
     Then: The function raises ValueError with appropriate error message indicating the channel was not found.
     """

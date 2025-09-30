@@ -2758,7 +2758,7 @@ def get_direct_message_channel_id_by_username(username):
         demisto.debug(f"Error opening conversation: {slack_error}")
 
 
-def resolve_channel_id_from_name(channel_name):
+def resolve_conversation_id_from_name(channel_name):
     """
     Resolves a channel ID from a given channel name.
 
@@ -2776,8 +2776,7 @@ def resolve_channel_id_from_name(channel_name):
         ValueError: If no channel ID could be found for the given channel name.
     """
     # Try to get channel id in case channel_name is user name
-    channel_id = get_direct_message_channel_id_by_username(channel_name)
-    if channel_id is None:
+    if (channel_id := get_direct_message_channel_id_by_username(channel_name)) is None:
         # Try to get channel id in case channel_name is channel name
         conversation_info = get_conversation_by_name(channel_name)
         channel_id = conversation_info.get("id")
@@ -2804,7 +2803,7 @@ def conversation_history():
         raise ValueError("Either conversation_id or conversation_name must be provided.")
 
     if not conversation_id:
-        conversation_id = resolve_channel_id_from_name(conversation_name)
+        conversation_id = resolve_conversation_id_from_name(conversation_name)
 
     body = {"channel": conversation_id, "limit": limit, "oldest": from_time}
     readable_output = ""
@@ -2855,6 +2854,7 @@ def conversation_history():
         }
         context.append(entry)
     readable_output = tableToMarkdown(f"Channel details from Channel ID - {conversation_id}", context)
+    demisto.debug(f"Context: {context}")
     demisto.results(
         {
             "Type": entryTypes["note"],
