@@ -3,7 +3,7 @@ To get an API client ID and secret, contact [CrowdStrike support](mailto:support
 
 #### Important:
 
-This integration is enabled by default for the new CrowdStrike Raptor version. <~XSOAR>For the older API version (pre-Raptor release), check the "Use legacy API" checkbox and select the Legacy mapper as well.</~XSOAR>
+This integration is enabled by default for the new CrowdStrike Raptor version. <~XSOAR>Using older API versions is not supported.</~XSOAR>
 
 ### Required API client scopes
 

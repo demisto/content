@@ -88,7 +88,7 @@ INCIDENTS_PER_FETCH = int(PARAMS.get("incidents_per_fetch", 15))
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 DETECTION_DATE_FORMAT = IOM_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 DEFAULT_TIMEOUT = 30
-LEGACY_VERSION = PARAMS.get("legacy_version", False)
+LEGACY_VERSION = False
 
 DEFAULT_TIMEOUT_ON_GENERIC_HTTP_REQUEST = 60
 TOTAL_RETRIES_ON_ENRICHMENT = 0
@@ -4814,6 +4814,10 @@ def resolve_detection_command():
         assigned_to_uuid = get_username_uuid(username)
 
     status = args.get("status")
+    if status in ["true_positive", "false_positive", "ignored"]:
+        raise ValueError(
+            f"The status chosen: {status} is deprecated due to the deprecation of the Legacy API. Choose a different one from the available options."  # noqa: E501
+        )  # noqa: E501
     tag = args.get("tag")
     show_in_ui = args.get("show_in_ui")
     if not (username or assigned_to_uuid or comment or status or show_in_ui or tag):

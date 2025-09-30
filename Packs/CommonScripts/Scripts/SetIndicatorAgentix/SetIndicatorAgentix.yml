@@ -43,5 +43,3 @@ dockerimage: demisto/python3:3.12.11.4508456
 fromversion: 6.1.0
 marketplaces:
 - platform
-supportedModules:
-- agentix
