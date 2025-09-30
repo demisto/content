@@ -173,7 +173,7 @@ def create_relationships(
             entity_a_type=indicator_type,
             entity_b=threat_name,
             entity_b_type=INDICATOR_TYPE_MAPPING[threat_class],
-            source_reliability=DBotScoreReliability.A,
+            source_reliability=DBotScoreReliability.A_PLUS_PLUS,
             brand=INTEGRATION_NAME,
         )
         relationships.append(relationship)
