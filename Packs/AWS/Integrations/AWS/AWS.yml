@@ -1252,17 +1252,17 @@ script:
       - me-central-1
       - sa-east-1
     - name: subscription_name
-      description: 'The name of the RDS event notification subscription.'
+      description: The name of the RDS event notification subscription.
       required: true
     - name: enabled
-      description: 'Specifies whether to activate the subscription.'
+      description: Specifies whether to activate the subscription.
     - name: event_categories
-      description: 'A list of event categories for a source type (SourceType) that you want to subscribe to.'
+      description: A list of event categories for a source type (SourceType) that you want to subscribe to.
       isArray: true
     - name: sns_topic_arn
-      description: 'The Amazon Resource Name (ARN) of the SNS topic created for event notification.'
+      description: The Amazon Resource Name (ARN) of the SNS topic created for event notification.
     - name: source_type
-      description: 'The type of source that is generating the events.'
+      description: The type of source that is generating the events.
 
   - name: aws-ec2-security-group-ingress-revoke
     description: 'Revokes one or more ingress rules in a security group.'

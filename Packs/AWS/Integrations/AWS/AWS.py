@@ -658,7 +658,6 @@ class IAM:
             raise DemistoException(f"Error updating access key '{access_key_id}' status: {str(e)}")
 
 
-
 class EC2:
     service = AWSServices.EC2
 
