@@ -37,8 +37,8 @@ INDICATOR_TYPE_MAPPING = {
     "campaign": ThreatIntel.ObjectsNames.CAMPAIGN,
     "attack pattern": ThreatIntel.ObjectsNames.ATTACK_PATTERN,
     "technique": ThreatIntel.ObjectsNames.ATTACK_PATTERN,
-    "malicious_behavior": Common.Indicator,
-    "malicious behavior": Common.Indicator,
+    "malicious_behavior": ThreatIntel.ObjectsNames.ATTACK_PATTERN,
+    "malicious behavior": ThreatIntel.ObjectsNames.ATTACK_PATTERN,
 }
 
 # Define valid regions enum

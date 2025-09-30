@@ -343,9 +343,7 @@ def test_client_initialization(mocker):
     # Mock demisto.getLicenseID within the Unit42Intelligence module
     mocker.patch("Unit42Intelligence.demisto.getLicenseID", return_value=license_id)
 
-    client = Client(
-        verify=True, proxy=False, reliability=DBotScoreReliability.B
-    )
+    client = Client(verify=True, proxy=False, reliability=DBotScoreReliability.B)
 
     assert client._base_url == "https://prod-us.tas.crtx.paloaltonetworks.com"
     assert client.reliability == DBotScoreReliability.B

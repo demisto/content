@@ -28,8 +28,8 @@ INDICATOR_TYPE_MAPPING = {
     "campaign": ThreatIntel.ObjectsNames.CAMPAIGN,
     "attack pattern": ThreatIntel.ObjectsNames.ATTACK_PATTERN,
     "technique": ThreatIntel.ObjectsNames.ATTACK_PATTERN,
-    "malicious_behavior": Common.Indicator,
-    "malicious behavior": Common.Indicator,
+    "malicious_behavior": ThreatIntel.ObjectsNames.ATTACK_PATTERN,
+    "malicious behavior": ThreatIntel.ObjectsNames.ATTACK_PATTERN,
 }
 
 VERDICT_TO_SCORE = {
@@ -258,9 +258,7 @@ def build_threat_object_description(threat_obj: dict[str, Any]) -> str:
     return description
 
 
-def create_vulnerabilities_relationships(
-    threat_obj: dict[str, Any], threat_actor_name: str, threat_class: str
-) -> list[dict]:
+def create_vulnerabilities_relationships(threat_obj: dict[str, Any], threat_actor_name: str, threat_class: str) -> list[dict]:
     """
     Create vulnerabilities relationships from vulnerabilities associations
 
@@ -293,9 +291,7 @@ def create_vulnerabilities_relationships(
     return relationships
 
 
-def create_actor_relationships(
-    threat_obj: dict[str, Any], malware_family_name: str, threat_class: str
-) -> list[dict]:
+def create_actor_relationships(threat_obj: dict[str, Any], malware_family_name: str, threat_class: str) -> list[dict]:
     """
     Create actor relationships from actor_associations
 
@@ -377,9 +373,7 @@ def create_tools_relationships(threat_obj: dict[str, Any], threat_actor_name: st
     return relationships
 
 
-def create_malware_relationships(
-    threat_obj: dict[str, Any], threat_actor_name: str, threat_class: str
-) -> list[dict]:
+def create_malware_relationships(threat_obj: dict[str, Any], threat_actor_name: str, threat_class: str) -> list[dict]:
     """
     Create malware relationships from malware_associations
 
@@ -427,9 +421,7 @@ def create_malware_relationships(
     return relationships
 
 
-def create_attack_patterns_relationships(
-    threat_obj: dict[str, Any], threat_actor_name: str, threat_class: str
-) -> list[dict]:
+def create_attack_patterns_relationships(threat_obj: dict[str, Any], threat_actor_name: str, threat_class: str) -> list[dict]:
     """
     Create attack patterns relationships from attack patterns associations
 
@@ -471,9 +463,7 @@ def create_attack_patterns_relationships(
     return relationships
 
 
-def create_campaigns_relationships(
-    threat_obj: dict[str, Any], threat_object_name: str, threat_class: str
-) -> list[dict]:
+def create_campaigns_relationships(threat_obj: dict[str, Any], threat_object_name: str, threat_class: str) -> list[dict]:
     """
     Create campaigns relationships from campaigns list
 
