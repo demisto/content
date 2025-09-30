@@ -403,7 +403,7 @@ class Client(BaseClient):
         contract_id: str,
         group_id: int,
         notes: str = None,
-        tags: list = None,
+        tags: str = None,
         entry_value: str = None,
         entry_description: str = None,
         entry_expiration_date: str = None,
@@ -3660,7 +3660,7 @@ def create_client_list_command(
     contract_id: str,
     group_id: int,
     notes: str = None,
-    tags: list = None,
+    tags: str = None,
     entry_value: str = None,
     entry_description: str = None,
     entry_expiration_date: str = None,
@@ -3738,6 +3738,7 @@ def check_activation_status(
     activation_id = None
     start_time = time.time()
     status_resp = {}
+    context_entry: dict
     demisto.debug(f"Starting polling for activation status with timeout {timeout_seconds} and interval {interval_seconds}")
     while latest_status == pending_status and (time.time() - start_time) < timeout_seconds:
         status_resp = client.get_client_list_activation_status(list_id, network_environment)
@@ -3767,7 +3768,7 @@ def check_activation_status(
                     "status": latest_status,
                 },
             )
-            context_entry: dict = {f"{INTEGRATION_CONTEXT_NAME}.Activation": status_resp}
+            context_entry = {f"{INTEGRATION_CONTEXT_NAME}.Activation": status_resp}
             demisto.debug(f"Finished polling for status status is: {latest_status}")
             return hr, context_entry, status_resp
         else:
@@ -3784,7 +3785,7 @@ def check_activation_status(
             "status": latest_status,
         },
     )
-    context_entry: dict = {f"{INTEGRATION_CONTEXT_NAME}.Activation": status_resp}
+    context_entry = {f"{INTEGRATION_CONTEXT_NAME}.Activation": status_resp}
     return hr, context_entry, status_resp
 
 
@@ -3824,7 +3825,7 @@ def activate_client_list_command(
 
 @logger
 def add_client_list_entry_command(
-    client: Client, list_id: str, value: str, description: str = None, expiration_date: str = None, tags: list = None
+    client: Client, list_id: str, value: str, description: str = None, expiration_date: str = None, tags: str = None
 ) -> tuple[str, dict, dict]:
     """
     Adds an entry to a client list.
@@ -3844,13 +3845,13 @@ def add_client_list_entry_command(
 
 
 @logger
-def remove_client_list_entry_command(client: Client, list_id: str, value: list) -> tuple[str, dict, dict]:
+def remove_client_list_entry_command(client: Client, list_id: str, value: str) -> tuple[str, dict, dict]:
     """
     Removes an entry from a client list.
     Args:
         client: Akamai WAF client
         list_id: The ID of the client list.
-        value: A list of values to remove.
+        value: A value to remove.
     Returns:
         Human readable, context entry, raw response
     """
@@ -3876,7 +3877,7 @@ def get_contract_group_command(client: Client) -> tuple[str, dict, dict]:
 
 @logger
 def update_client_list_command(
-    client: Client, list_id: str, name: str, notes: str = None, tags: list = None
+    client: Client, list_id: str, name: str, notes: str = None, tags: str = None
 ) -> tuple[str, dict, dict]:
     """
     Updates a client list.
