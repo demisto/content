@@ -22,9 +22,8 @@ The integration uses OAuth 2.0 password grant flow for authentication:
 1. **Initial Token Request**: Uses username/password to obtain access token and refresh token
 2. **Token Usage**: Access token is used in Authorization header for API requests
 3. **Token Refresh**: Automatically refreshes tokens when they expire, with fallback to username/password if refresh fails.
-   
-For detailed API documentation, see the [REST API User Guide](https://ultra-portalstatic.ultradns.com/static/docs/REST-API_User_Guide.pdf).
 
+For detailed API documentation, see the [REST API User Guide](https://ultra-portalstatic.ultradns.com/static/docs/REST-API_User_Guide.pdf).
 
 ## Commands
 
