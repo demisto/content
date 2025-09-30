@@ -974,16 +974,16 @@ class EC2:
     def modify_subnet_attribute_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
         kwargs = {
             "SubnetId": args.get("subnet_id"),
-            "AssignIpv6AddressOnCreation": args.get("assign_ipv6_address_on_creation"), #
+            "AssignIpv6AddressOnCreation": args.get("assign_ipv6_address_on_creation"),
             "CustomerOwnedIpv4Pool": args.get("customer_owned_ipv4_pool"),
             "DisableLniAtDeviceIndex": args.get("disable_lni_at_device_index"),
-            "EnableDns64": args.get("enable_dns64"), #
+            "EnableDns64": args.get("enable_dns64"),
             "EnableLniAtDeviceIndex": args.get("enable_lni_at_device_index"),
             "EnableResourceNameDnsAAAARecordOnLaunch": args.get("enable_resource_name_dns_aaaa_record_on_launch"),
             "EnableResourceNameDnsARecordOnLaunch": args.get("enable_resource_name_dns_a_record_on_launch"),
             "MapCustomerOwnedIpOnLaunch": args.get("map_customer_owned_ip_on_launch"),
-            "MapPublicIpOnLaunch": args.get("map_public_ip_on_launch"), #
-            "PrivateDnsHostnameTypeOnLaunch": args.get("private_dns_hostname_type_on_launch"), #
+            "MapPublicIpOnLaunch": args.get("map_public_ip_on_launch"),
+            "PrivateDnsHostnameTypeOnLaunch": args.get("private_dns_hostname_type_on_launch"),
         }
 
         remove_nulls_from_dictionary(kwargs)
