@@ -1406,7 +1406,7 @@ def test_file_result_creator(monkeypatch, raw_attachment, legacy_name, expected_
         assert result["File"] == expected_name
 
 
-def test_add_attachment_with_upload_session__404_once_then_success_and_final_201(monkeypatch):
+def test_add_attachment_with_upload_session__404_once_then_success_and_final_201(mocker):
     """
     Given:
       - MsGraphMail client with MAX_ATTACHMENT_SIZE=4.
@@ -1451,7 +1451,7 @@ def test_add_attachment_with_upload_session__404_once_then_success_and_final_201
             return MockedResponse(201)
         raise AssertionError(f"Unexpected chunk {key}")
 
-    monkeypatch.setattr(client, "upload_attachment", types.MethodType(upload_attachment, client))
+    mocker.patch.object(client, "upload_attachment", types.MethodType(upload_attachment, client))
 
     # Act
     client.add_attachment_with_upload_session(
@@ -1468,7 +1468,7 @@ def test_add_attachment_with_upload_session__404_once_then_success_and_final_201
     assert calls[(8, 10)] == 1
 
 
-def test_upload_chunk_404_twice_raises(monkeypatch):
+def test_upload_chunk_404_twice_raises(mocker):
     """
     Given:
       - MsGraphMail client with MAX_ATTACHMENT_SIZE=4 and a valid uploadUrl.
@@ -1484,7 +1484,7 @@ def test_upload_chunk_404_twice_raises(monkeypatch):
     """
     client = self_deployed_client()
     client.MAX_ATTACHMENT_SIZE = 4
-    monkeypatch.setattr(client, "get_upload_session", lambda **kw: {"uploadUrl": "https://example/upload"})
+    mocker.patch.object(client, "get_upload_session", lambda **kw: {"uploadUrl": "https://example/upload"})
 
     attempts = {"n": 0}
 
@@ -1499,8 +1499,8 @@ def test_upload_chunk_404_twice_raises(monkeypatch):
             return r
         return MockedResponse(404)
 
-    monkeypatch.setattr(client, "upload_attachment", types.MethodType(upload_attachment, client))
-    monkeypatch.setattr(demisto, "debug", lambda *a, **k: None)
+    mocker.patch.object(client, "upload_attachment", types.MethodType(upload_attachment, client))
+    mocker.patch.object(demisto, "debug", lambda *a, **k: None)
 
     with pytest.raises(DemistoException) as ei:
         client.add_attachment_with_upload_session(
@@ -1517,7 +1517,7 @@ def test_upload_chunk_404_twice_raises(monkeypatch):
     assert "range" in msg
 
 
-def test_get_upload_session_retried_on_notfound(monkeypatch):
+def test_get_upload_session_retried_on_notfound(mocker):
     """
     Given:
       - MsGraphMail client with MAX_ATTACHMENT_SIZE=4.
@@ -1546,9 +1546,9 @@ def test_get_upload_session_retried_on_notfound(monkeypatch):
     def upload_attachment(self, **kw):
         return MockedResponse(201)
 
-    monkeypatch.setattr(client, "get_upload_session", get_upload_session)
-    monkeypatch.setattr(client, "upload_attachment", types.MethodType(upload_attachment, client))
-    monkeypatch.setattr(demisto, "debug", lambda *a, **k: None)
+    mocker.patch.object(client, "get_upload_session", get_upload_session)
+    mocker.patch.object(client, "upload_attachment", types.MethodType(upload_attachment, client))
+    mocker.patch.object(demisto, "debug", lambda *a, **k: None)
 
     client.add_attachment_with_upload_session(
         email="x@y",
