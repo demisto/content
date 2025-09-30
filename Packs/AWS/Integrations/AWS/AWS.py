@@ -201,7 +201,7 @@ class S3:
     @staticmethod
     def put_public_access_block_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
         """
-            Create or Modify the PublicAccessBlock configuration for an Amazon S3 bucket.
+        Create or Modify the PublicAccessBlock configuration for an Amazon S3 bucket.
 
         Args:
             client (BotoClient): The boto3 client for S3 service
