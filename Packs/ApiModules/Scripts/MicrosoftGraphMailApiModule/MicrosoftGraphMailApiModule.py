@@ -713,6 +713,8 @@ class MsGraphMailBaseClient(MicrosoftClient):
         """
 
         attachment_size = len(attachment_data)
+
+        upload_url = ""
         for i in range(UPLOAD_SESSION_RETRIES):
             try:
                 upload_session = self.get_upload_session(
@@ -726,6 +728,7 @@ class MsGraphMailBaseClient(MicrosoftClient):
                 upload_url = upload_session.get("uploadUrl", "")
                 if not upload_url:
                     raise Exception(f"Cannot get upload URL for attachment {attachment_name}")
+                break
             except NotFoundError as e:
                 if i == UPLOAD_SESSION_RETRIES - 1:
                     raise e
@@ -750,9 +753,7 @@ class MsGraphMailBaseClient(MicrosoftClient):
 
             # 404 -> single retry for this chunk
             if resp.status_code == 404:
-                demisto.debug(
-                    f"Chunk upload got 404 for '{attachment_name}' at range {start_idx}-{end_idx - 1}. Retrying once..."
-                )
+                demisto.debug(f"Chunk upload got 404 for '{attachment_name}' at range {start_idx}-{end_idx}. Retrying once...")
                 resp = self.upload_attachment(
                     upload_url=upload_url,
                     start_chunk_idx=start_idx,
