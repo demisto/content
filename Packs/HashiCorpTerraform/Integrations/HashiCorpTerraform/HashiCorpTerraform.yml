@@ -1,7 +1,7 @@
 commonfields:
   id: HashicorpTerraform
   version: -1
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 configuration:
