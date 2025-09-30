@@ -15,7 +15,7 @@ import requests
 
 # Disable insecure warnings
 import urllib3
-from gql import Client, gql
+from gql import Client, gql, GraphQLRequest
 from gql.transport.requests import RequestsHTTPTransport
 
 urllib3.disable_warnings()
@@ -4651,7 +4651,7 @@ def get_status(device_ids):
     state_data = {}
     batch_size = 100
     for i in range(0, len(device_ids), batch_size):
-        batch = device_ids[i : i + batch_size]
+        batch = device_ids[i: i + batch_size]
         raw_res = http_request("GET", "/devices/entities/online-state/v1", params={"ids": batch})
         for res in raw_res.get("resources"):
             state = res.get("state", "")
@@ -5940,7 +5940,8 @@ def rtr_general_command_on_hosts(
     General function to run RTR commands depending on the given command.
     """
     batch_id = init_rtr_batch_session(host_ids, offline)
-    response = get_session_function(batch_id, command_type=command, full_command=full_command, host_ids=host_ids, timeout=timeout)  # type:ignore
+    response = get_session_function(batch_id, command_type=command, full_command=full_command,
+                                    host_ids=host_ids, timeout=timeout)  # type:ignore
     output, file, not_found_hosts = parse_rtr_stdout_response(host_ids, response, command)
 
     human_readable = tableToMarkdown(f"{INTEGRATION_NAME} {command} command on host {host_ids[0]}:", output, headers="Stdout")
@@ -7227,7 +7228,9 @@ def list_identity_entities_command(args: dict) -> CommandResults:
         while has_next_page and page:
             if next_token:
                 variables["after"] = next_token
-            res = client.execute(idp_query, variable_values=variables)
+            idp_query.variable_values = variables
+            req = GraphQLRequest(idp_query)
+            res = client.execute(req)
             res_ls.append(res)
             page -= 1
             pageInfo = res.get("entities", {}).get("pageInfo", {})
@@ -7241,7 +7244,9 @@ def list_identity_entities_command(args: dict) -> CommandResults:
             variables["first"] = min(1000, limit)
             if next_token:
                 variables["after"] = next_token
-            res = client.execute(idp_query, variable_values=variables)
+            idp_query.variable_values = variables
+            req = GraphQLRequest(idp_query)
+            res = client.execute(req)
             res_ls.append(res)
             pageInfo = res.get("entities", {}).get("pageInfo", {})
             has_next_page = pageInfo.get("hasNextPage", False)
@@ -7249,6 +7254,7 @@ def list_identity_entities_command(args: dict) -> CommandResults:
             if has_next_page:
                 next_token = pageInfo.get("endCursor", "")
             limit -= 1000
+
     headers = [
         "primaryDisplayName",
         "secondaryDisplayName",
@@ -7289,7 +7295,7 @@ def create_gql_client(url_suffix="identity-protection/combined/graphql/v1"):
     transport = RequestsHTTPTransport(**kwargs)  # type: ignore[arg-type]
     client = Client(
         transport=transport,
-        fetch_schema_from_transport=True,
+        fetch_schema_from_transport=False,
     )
     return client
 
