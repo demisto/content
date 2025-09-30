@@ -831,10 +831,10 @@ Returns actual usage and cost details for a given time period, optionally filter
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| subscription_id | The Azure subscription ID on which to run the command. Will be sent as a scope parameter - /subscriptions/{subscriptionId}/. | Required |
+| subscription_id | The Azure subscription ID on which to run the command. It will be sent as a scope parameter - /subscriptions/{subscriptionId}/. | Required |
 | expand_result | Whether to expand the result. Default - false. | Optional |
 | filter | Optional filter for the API. API argument - $filter. | Optional |
-| metric | Metric to retrieve. Actual API values [actualcost, amortizedcost, usage]. Possible values are: Actual Cost, Amortized Cost, Usage. | Optional |
+| metric | The metric to retrieve. API values [actualcost, amortizedcost, usage]. Possible values are: Actual Cost, Amortized Cost, Usage. | Optional |
 | max_results | Maximum results to return. Default - 50, Max - 1000. | Optional |
 | next_page_token | Next page token for pagination. Use value from Azure.Billing.UsageNextToken. | Optional |
 
@@ -913,24 +913,37 @@ Returns cost forecast for a subscription over a given time range.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| subscription_id | The Azure subscription ID on which to run the command. | Required |
-| filter | Optional filter for the API. API argument - $filter. | Optional |
+| subscription_id | Azure subscription ID (required). | Required |
+| type | Forecast type (required). Possible values are: Usage, ActualCost, AmortizedCost. | Required |
+| aggregation_function_name | The name of the column to aggregate (required). Possible values are: PreTaxCostUSD, Cost, CostUSD, PreTaxCost. | Required |
+| aggregation_function_type | The name of the aggregation function to use. Default is Sum. | Optional |
+| granularity | The granularity of the forecast. Default is Daily. | Optional |
+| start_date | Start date for the forecast. Default value current time. | Optional |
+| end_date | End date for the forecast. Default value 7 days from current time. | Optional |
+| filter | A URL parameter to filter forecasts by properties/usageDate (Utc time), properties/chargeType or properties/grain. The filter supports 'eq', 'lt', 'gt', 'le', 'ge', and 'and'. It does not currently support 'ne', 'or', or 'not'. | Optional |
+| include_actual_cost | Include actual cost data. | Optional |
+| include_fresh_partial_cost | Include fresh partial cost data. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.Billing.Forecast | unknown | List of forecast details from Azure Consumption API. |
+| Azure.Billing.Forecast | unknown | Complete Azure Cost Management API response with forecast data. |
 | Azure.Billing.Forecast.id | String | Fully qualified resource ID for the forecast. |
 | Azure.Billing.Forecast.name | String | Name of the forecast resource. |
-| Azure.Billing.Forecast.type | String | Resource type \(Microsoft.Consumption/forecasts\). |
-| Azure.Billing.Forecast.properties.usageDate | Date | Usage date for the forecast. |
-| Azure.Billing.Forecast.properties.grain | String | Time granularity \(Daily, Monthly\). |
-| Azure.Billing.Forecast.properties.charge | Number | Forecasted charge amount. |
-| Azure.Billing.Forecast.properties.currency | String | Currency code for the forecast. |
-| Azure.Billing.Forecast.properties.chargeType | String | Type of charge \(Actual, Forecast\). |
-| Azure.Billing.Forecast.properties.confidenceLevel | String | Confidence level of the forecast. |
-| Azure.Billing.Forecast.properties.forecastType | String | Type of forecast \(ActualCost, AmortizedCost\). |
+| Azure.Billing.Forecast.type | String | Resource type \(Microsoft.CostManagement/query\). |
+| Azure.Billing.Forecast.location | String | Location of the forecast resource. |
+| Azure.Billing.Forecast.eTag | String | ETag for the forecast resource. |
+| Azure.Billing.Forecast.properties | unknown | Properties object containing forecast data. |
+| Azure.Billing.Forecast.properties.nextLink | String | Next link for pagination. |
+| Azure.Billing.Forecast.properties.forecasts | unknown | Array of forecast data entries. |
+| Azure.Billing.Forecast.properties.forecasts.PreTaxCostUSD | Number | Pre-tax cost in USD. |
+| Azure.Billing.Forecast.properties.forecasts.Cost | Number | Cost amount. |
+| Azure.Billing.Forecast.properties.forecasts.CostUSD | Number | Cost in USD. |
+| Azure.Billing.Forecast.properties.forecasts.PreTaxCost | Number | Pre-tax cost amount. |
+| Azure.Billing.Forecast.properties.forecasts.UsageDate | String | Usage date for the forecast \(YYYY-MM-DD format\). |
+| Azure.Billing.Forecast.properties.forecasts.CostStatus | String | Cost status \(Forecast, Actual\). |
+| Azure.Billing.Forecast.properties.forecasts.Currency | String | Currency code for the forecast. |
 
 ### azure-billing-budgets-list
 

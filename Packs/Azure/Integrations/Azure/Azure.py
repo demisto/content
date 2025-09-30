@@ -1156,11 +1156,11 @@ class AzureClient:
     def billing_usage_list(
         self,
         subscription_id: str,
-        expand: str = None,
-        filter_: str = None,
-        metric: str = None,
+        expand: str = "",
+        filter_: str = "",
+        metric: str = "",
         max_results: int = 50,
-        next_page_token: str = None,
+        next_page_token: str = "",
     ):
         """
         Retrieves actual usage and cost details from Azure Consumption API.
@@ -1182,16 +1182,15 @@ class AzureClient:
         scope = f"/{subscription_id}"
         url = f"{scope}/providers/Microsoft.Consumption/usageDetails"
         api_version = "2021-10-01"
-        params_ = {}
-        if expand:
-            params_["$expand"] = expand
-        if filter_:
-            params_["$filter"] = filter_
-        if metric:
-            params_["metric"] = metric.lower().replace(" ", "")
-        params_["api-version"] = api_version
-        params_["$top"] = max_results
-        
+        params_ = {
+            "$expand": expand,
+            "$filter": filter_,
+            "metric": metric.lower().replace(" ", ""),
+            "api-version": api_version,
+            "$top": max_results,
+        }
+        remove_nulls_from_dictionary(params_)
+
         try:
             if next_page_token:
                 new_url = remove_query_param_from_url(next_page_token, "api-version")
@@ -1215,9 +1214,9 @@ class AzureClient:
         aggregation_function_name: str,
         aggregation_function_type: str = "Sum",
         granularity: str = "Daily",
-        start_date: str = None,
-        end_date: str = None,
-        filter_param: str = None,
+        start_date: str = "",
+        end_date: str = "",
+        filter_param: str = "",
         include_actual_cost: bool = False,
         include_fresh_partial_cost: bool = False,
     ):
@@ -1242,12 +1241,8 @@ class AzureClient:
         Raises:
             DemistoException: If Azure API call fails, subscription not found, or invalid parameters provided
         """
-        from datetime import datetime, timedelta
-        
-        if not start_date:
-            start_date = datetime.now().strftime("%Y-%m-%dT00:00:00Z")
-        if not end_date:
-            end_date = (datetime.now() + timedelta(days=7)).strftime("%Y-%m-%dT23:59:59Z")
+        start_date = start_date or datetime.now().strftime("%Y-%m-%dT00:00:00Z")
+        end_date = end_date or (datetime.now() + timedelta(days=7)).strftime("%Y-%m-%dT23:59:59Z")
 
         url = f"{subscription_id}/providers/Microsoft.CostManagement/forecast"
         api_version = "2025-03-01"
@@ -1255,29 +1250,21 @@ class AzureClient:
         body = {
             "type": forecast_type,
             "timeframe": "Custom",
-            "timePeriod": {
-                "from": start_date,
-                "to": end_date
-            },
+            "timePeriod": {"from": start_date, "to": end_date},
             "dataset": {
                 "granularity": granularity,
-                "aggregation": {
-                    "totalCost": {
-                        "function": aggregation_function_type,
-                        "name": aggregation_function_name
-                    }
-                }
+                "aggregation": {"totalCost": {"function": aggregation_function_type, "name": aggregation_function_name}},
             },
             "includeActualCost": include_actual_cost,
-            "includeFreshPartialCost": include_fresh_partial_cost
+            "includeFreshPartialCost": include_fresh_partial_cost,
         }
-        
+
         if filter_param:
             body["dataset"]["filter"] = filter_param
-            
+
         demisto.debug(f"Azure billing forecast \nrequest body: \n{body}")
         params_ = {"api-version": api_version}
-        
+
         try:
             return self.http_request("POST", url_suffix=url, params=params_, json_data=body)
         except Exception as e:
@@ -1291,7 +1278,7 @@ class AzureClient:
     def billing_budgets_list(
         self,
         subscription_id: str,
-        budget_name: str = None,
+        budget_name: str = "",
     ):
         """
         Retrieves budget information from Azure Consumption API.
@@ -1311,10 +1298,10 @@ class AzureClient:
             url = f"{scope}/providers/Microsoft.Consumption/budgets/{budget_name}"
         else:
             url = f"{scope}/providers/Microsoft.Consumption/budgets"
-        
+
         api_version = "2021-10-01"
         params_ = {"api-version": api_version}
-        
+
         demisto.debug(f"Azure billing budgets request: {url}, params: {params_}")
         try:
             return self.http_request("GET", url_suffix=url, params=params_)
@@ -2143,11 +2130,11 @@ def azure_billing_usage_list_command(client: AzureClient, params: dict, args: di
         DemistoException: If Azure API call fails, subscription not found, or invalid parameters provided
     """
     subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
-    expand = args.get("expand_result")
-    filter_ = args.get("filter")
-    metric = args.get("metric")
+    expand = args.get("expand_result", "")
+    filter_ = args.get("filter", "")
+    metric = args.get("metric", "")
     max_results = int(args.get("max_results", 50))
-    next_page_token = args.get("next_page_token")
+    next_page_token = args.get("next_page_token", "")
 
     res = client.billing_usage_list(
         subscription_id=subscription_id,
@@ -2155,7 +2142,7 @@ def azure_billing_usage_list_command(client: AzureClient, params: dict, args: di
         filter_=filter_,
         metric=metric,
         max_results=max_results,
-        next_page_token=next_page_token
+        next_page_token=next_page_token,
     )
 
     response_data = res.json() if hasattr(res, "json") else res
@@ -2193,7 +2180,7 @@ def azure_billing_usage_list_command(client: AzureClient, params: dict, args: di
 def azure_billing_forecast_list_command(client: AzureClient, params: dict, args: dict) -> CommandResults:
     """
     Returns cost forecast for a subscription over a given time range.
-    
+
     This command retrieves cost forecast data from Azure Cost Management API using the Forecasts - Usage endpoint.
     It provides forecasted cost information for Azure resources based on historical usage patterns.
 
@@ -2217,9 +2204,9 @@ def azure_billing_forecast_list_command(client: AzureClient, params: dict, args:
 
     Raises:
         DemistoException: If Azure API call fails, subscription not found, or invalid parameters provided
-    """    
+    """
     # Get required parameters
-    subscription_id = args.get("subscription_id")
+    subscription_id = args.get("subscription_id", "")
     forecast_type = args.get("type", "")
     aggregation_function_name = args.get("aggregation_function_name", "")
 
@@ -2228,9 +2215,9 @@ def azure_billing_forecast_list_command(client: AzureClient, params: dict, args:
     granularity = args.get("granularity", "Daily")
     include_actual_cost = argToBoolean(args.get("include_actual_cost", False))
     include_fresh_partial_cost = argToBoolean(args.get("include_fresh_partial_cost", False))
-    filter_param = args.get("filter")
-    start_date = args.get("start_date")
-    end_date = args.get("end_date")
+    filter_param = args.get("filter", "")
+    start_date = args.get("start_date", "")
+    end_date = args.get("end_date", "")
 
     response = client.billing_forecast_list(
         subscription_id=subscription_id,
@@ -2242,13 +2229,13 @@ def azure_billing_forecast_list_command(client: AzureClient, params: dict, args:
         end_date=end_date,
         filter_param=filter_param,
         include_actual_cost=include_actual_cost,
-        include_fresh_partial_cost=include_fresh_partial_cost
+        include_fresh_partial_cost=include_fresh_partial_cost,
     )
     demisto.debug(f"Azure response:\n {response}\n")
 
     parsed_data = parse_forecast_table_to_dict(response)
     demisto.debug(f"Parsed data:\n {parsed_data}\n")
-    
+
     results = [
         {
             aggregation_function_name: obj.get(aggregation_function_name),
@@ -2258,7 +2245,7 @@ def azure_billing_forecast_list_command(client: AzureClient, params: dict, args:
         }
         for obj in parsed_data
     ]
-    
+
     outputs = copy.deepcopy(response)
     properties = {k: v for k, v in response.get("properties", {}).items() if k not in ["columns", "rows"]}
     properties["forecasts"] = results
@@ -2269,7 +2256,7 @@ def azure_billing_forecast_list_command(client: AzureClient, params: dict, args:
         "Azure Billing Forecast",
         results,
         headers=[aggregation_function_name, "UsageDate", "CostStatus", "Currency"],
-        removeNull=True
+        removeNull=True,
     )
 
     return CommandResults(
@@ -2302,13 +2289,10 @@ def azure_billing_budgets_list_command(client: AzureClient, params: dict, args: 
         DemistoException: If Azure API call fails, subscription not found, budget doesn't exist, or invalid parameters provided
     """
     subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
-    budget_name = args.get("budget_name")
+    budget_name = args.get("budget_name", "")
 
-    res = client.billing_budgets_list(
-        subscription_id=subscription_id,
-        budget_name=budget_name
-    )
-    
+    res = client.billing_budgets_list(subscription_id=subscription_id, budget_name=budget_name)
+
     response_data = res.json() if hasattr(res, "json") else res
     if budget_name:
         # Single budget response
@@ -2345,19 +2329,19 @@ def azure_billing_budgets_list_command(client: AzureClient, params: dict, args: 
         outputs=outputs,
         raw_response=res,
     )
-    
-    
+
+
 def parse_forecast_table_to_dict(response: dict) -> list[dict]:
     """
     Parses a generic Azure table-like API response and organizes the data into a list of dictionaries.
 
     Args:
         response (dict): The raw JSON response from the Azure API.
-    
+
     Returns:
         list[dict]: A list of dictionaries, where each dictionary represents a row
                     and maps column names to their corresponding values.
-                    
+
     Raises:
         DemistoException: If the response is not in the expected format.
     """
@@ -2365,22 +2349,20 @@ def parse_forecast_table_to_dict(response: dict) -> list[dict]:
         properties = response.get("properties", {})
         columns = [column["name"] for column in properties.get("columns", [])]
         rows = properties.get("rows", [])
-        
+
         parsed_data = []
         for row in rows:
             if len(row) != len(columns):
                 # This check ensures data integrity.
-                demisto.warning(
-                    f"Mismatched data: Found {len(row)} values for {len(columns)} columns. Skipping row."
-                )
+                demisto.debug(f"Mismatched data: Found {len(row)} values for {len(columns)} columns. Skipping row.")
                 continue
-            
+
             # Map column names to row values to create a dictionary for each row.
             row_dict = dict(zip(columns, row))
             parsed_data.append(row_dict)
-            
+
         return parsed_data
-        
+
     except (KeyError, TypeError) as e:
         raise DemistoException(f"Failed to parse API response. Malformed data structure: {e}")
 

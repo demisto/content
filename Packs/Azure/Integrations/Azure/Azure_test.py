@@ -2091,27 +2091,56 @@ def test_azure_billing_forecast_list_command_success(mocker, client, mock_params
     """
     from Azure import azure_billing_forecast_list_command
 
+    # The current implementation expects a table-like response under properties with columns and rows,
+    # and it calls client.billing_forecast_list (not http_request) directly.
     mock_response = {
-        "value": [
-            {
-                "name": "forecast-item-1",
-                "properties": {"usageDate": "2023-10-15", "charge": 250.50, "currency": "USD", "grain": "Daily"},
-            }
-        ]
+        "properties": {
+            "columns": [
+                {"name": "UsageDate"},
+                {"name": "CostStatus"},
+                {"name": "Currency"},
+                {"name": "Pre Tax Cost USD"},
+            ],
+            "rows": [
+                [20231015, "Forecast", "USD", 250.50],
+            ],
+        }
     }
-    mocker.patch.object(client, "http_request", return_value=mock_response)
+    mocker.patch.object(client, "billing_forecast_list", return_value=mock_response)
 
-    args = {"subscription_id": "test-subscription-id", "filter": "properties/usageDate ge '2023-10-15'"}
+    args = {
+        "subscription_id": "test-subscription-id",
+        "type": "Usage",
+        "aggregation_function_name": "Pre Tax Cost USD",
+        # optional args are covered by defaults; include a filter to mirror typical usage
+        "filter": "properties/UsageDate ge '2023-10-15'",
+    }
     params = mock_params
 
     result = azure_billing_forecast_list_command(client, params, args)
 
     assert isinstance(result, CommandResults)
     assert "Azure Billing Forecast" in result.readable_output
+
+    # Validate context structure and parsed forecasts
     assert "Azure.Billing.Forecast" in result.outputs
-    assert len(result.outputs["Azure.Billing.Forecast"]) == 1
-    assert result.outputs["Azure.Billing.Forecast"][0]["Charge"] == 250.50
-    assert result.outputs["Azure.Billing.Forecast"][0]["Currency"] == "USD"
+    forecast_ctx = result.outputs["Azure.Billing.Forecast"]
+    assert isinstance(forecast_ctx, dict)
+    assert "properties" in forecast_ctx
+    assert "forecasts" in forecast_ctx["properties"]
+    forecasts = forecast_ctx["properties"]["forecasts"]
+    assert isinstance(forecasts, list)
+    assert len(forecasts) == 1
+
+    row = forecasts[0]
+    # The command uses aggregation_function_name as a key in the result rows
+    assert row["Pre Tax Cost USD"] == 250.50
+    assert row["CostStatus"] == "Forecast"
+    assert row["Currency"] == "USD"
+    # UsageDate should be formatted as YYYY-MM-DD from 20231015
+    assert row["UsageDate"] == "2023-10-15"
+
+    # Raw response should be the original mock response
     assert result.raw_response == mock_response
 
 
