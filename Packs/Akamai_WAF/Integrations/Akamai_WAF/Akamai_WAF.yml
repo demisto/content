@@ -622,6 +622,7 @@ script:
       description: Limit.
       defaultValue: '50'
     name: akamai-get-client-list
+    description: Get a client list.
     outputs:
     - contextPath: Akamai.ClientList
       description: The client list.
@@ -662,6 +663,7 @@ script:
       isArray: true
       description: A list of tags attached to the entry.
     name: akamai-create-client-list
+    description: Creates a new client list.
     outputs:
     - contextPath: Akamai.ClientList
       description: The client list that was created.
@@ -671,6 +673,7 @@ script:
       required: true
       description: The ID of the client list to be deprecated.
     name: akamai-deprecate-client-list
+    description: Deprecates a client list.
   - name: akamai-activate-client-list
     polling: true
     description: Activates a client list.
