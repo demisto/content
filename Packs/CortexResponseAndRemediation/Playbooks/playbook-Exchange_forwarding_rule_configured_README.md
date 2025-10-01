@@ -10,8 +10,8 @@ This playbook addresses the following alerts:
 - Suspicious Exchange transport forwarding rule configured.
 
 Playbook Stages:
-
-Triage:
+ 
+Triage: 
 
 - The playbook retrieves the caller's IP, the forwarding email address, and the domain.
 
@@ -28,7 +28,7 @@ Containment:
 - Soft Response Actions: If at least two suspicious pieces of evidence are identified, the playbook will execute soft response actions. These actions include signing the user out and disabling the forwarding rule configured in the user's account mailbox.
 - Hard Response Actions: If more than two suspicious pieces of evidence are identified, the playbook escalates to hard response actions. These actions include disabling the user account upon analyst decision and removing the forwarding rule from the user's account mailbox.
 
-Requirements:
+Requirements: 
 
 For any response action, you need the following integrations:
 - EWS Extension Online Powershell v3 integration.
@@ -40,32 +40,31 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Containment Plan - Clear User Sessions
-* PAN-OS - Block IP
+This playbook does not use any sub-playbooks.
 
 ### Integrations
 
-* CoreIOCs
-* CortexCoreIR
-* CortexCoreXQLQueryEngine
-* EWSO365
+This playbook does not use any integrations.
 
 ### Scripts
 
 * AnyMatch
 * BetweenHours
+* IncreaseAlertSeverity
 * SetAndHandleEmpty
+* block-external-ip
+* clear-user-session
+* disable-user
+* domain-enrichment
+* get-user-data
+* ip-enrichment
 
 ### Commands
 
 * closeInvestigation
 * core-get-cloud-original-alerts
-* core-list-risky-users
-* domain
 * ews-mail-flow-rule-disable
 * ews-rule-disable
-* ip
-* msgraph-user-account-disable
 
 ## Playbook Inputs
 
