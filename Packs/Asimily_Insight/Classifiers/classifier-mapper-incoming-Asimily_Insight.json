@@ -1,0 +1,488 @@
+{
+    "name": "Asimily_Insight - Incoming Mapper",
+    "type": "mapping-incoming",
+    "description": "Maps incoming Asimily Anomaly and Anomaly CVE fields.",
+    "fromVersion": "6.10.0",
+    "id": "Asimily_Insight - Incoming Mapper",
+    "mapping": {
+        "Asimily Anomaly": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Asimily Anomaly Alert ID": {
+                    "complex": {
+                        "accessor": "asimilyanomalyalertid",
+                        "filters": [],
+                        "root": "customFields",
+                        "transformers": []
+                    }
+                },
+                "Asimily Anomaly Category": {
+                    "complex": {
+                        "accessor": "asimilyanomalycategory",
+                        "filters": [],
+                        "root": "customFields",
+                        "transformers": []
+                    }
+                },
+                "Asimily Anomaly Criticality": {
+                    "complex": {
+                        "accessor": "asimilyanomalycriticality",
+                        "filters": [],
+                        "root": "customFields",
+                        "transformers": []
+                    }
+                },
+                "Asimily Anomaly Criticality Score": {
+                    "complex": {
+                        "accessor": "asimilyanomalycriticalityscore",
+                        "filters": [],
+                        "root": "customFields",
+                        "transformers": []
+                    }
+                },
+                "Asimily Anomaly Description": {
+                    "complex": {
+                        "accessor": "asimilyanomalydescription",
+                        "filters": [],
+                        "root": "customFields",
+                        "transformers": []
+                    }
+                },
+                "Asimily Anomaly Earliest Trigger Time": {
+                    "complex": {
+                        "accessor": "asimilyanomalyearliesttriggertime",
+                        "filters": [],
+                        "root": "customFields",
+                        "transformers": []
+                    }
+                },
+                "Asimily Anomaly Fix By": {
+                    "complex": {
+                        "accessor": "asimilyanomalyfixby",
+                        "filters": [],
+                        "root": "customFields",
+                        "transformers": []
+                    }
+                },
+                "Asimily Anomaly Is Fixed": {
+                    "complex": {
+                        "accessor": "asimilyanomalyisfixed",
+                        "filters": [],
+                        "root": "customFields",
+                        "transformers": []
+                    }
+                },
+                "Asimily Anomaly Last Trigger Time": {
+                    "complex": {
+                        "accessor": "asimilyanomalylasttriggertime",
+                        "filters": [],
+                        "root": "customFields",
+                        "transformers": []
+                    }
+                },
+                "Asimily Anomaly Mitre Tactic": {
+                    "complex": {
+                        "accessor": "asimilyanomalymitretactic",
+                        "filters": [],
+                        "root": "customFields",
+                        "transformers": []
+                    }
+                },
+                "Asimily Anomaly Mitre Technique": {
+                    "complex": {
+                        "accessor": "asimilyanomalymitretechnique",
+                        "filters": [],
+                        "root": "customFields",
+                        "transformers": []
+                    }
+                },
+                "Asimily Anomaly Name": {
+                    "complex": {
+                        "accessor": "asimilyanomalyname",
+                        "filters": [],
+                        "root": "customFields",
+                        "transformers": []
+                    }
+                },
+                "Asimily Anomaly URLs": {
+                    "complex": {
+                        "accessor": "asimilyanomalyurls",
+                        "filters": [],
+                        "root": "customFields",
+                        "transformers": []
+                    }
+                },
+                "Asimily Device Families": {
+                    "complex": {
+                        "accessor": "asimilydevicefamilies",
+                        "filters": [],
+                        "root": "customFields",
+                        "transformers": []
+                    }
+                },
+                "Asimily Device Host Name": {
+                    "complex": {
+                        "accessor": "asimilydevicehostname",
+                        "filters": [],
+                        "root": "customFields",
+                        "transformers": []
+                    }
+                },
+                "Asimily Device ID": {
+                    "complex": {
+                        "accessor": "asimilydeviceid",
+                        "filters": [],
+                        "root": "customFields",
+                        "transformers": []
+                    }
+                },
+                "Asimily Device IPV4 Address": {
+                    "complex": {
+                        "accessor": "asimilydeviceipv4address",
+                        "filters": [],
+                        "root": "customFields",
+                        "transformers": []
+                    }
+                },
+                "Asimily Device MAC Address": {
+                    "complex": {
+                        "accessor": "asimilydevicemacaddress",
+                        "filters": [],
+                        "root": "customFields",
+                        "transformers": []
+                    }
+                },
+                "Asimily Device Manufacturer": {
+                    "complex": {
+                        "accessor": "asimilydevicemanufacturer",
+                        "filters": [],
+                        "root": "customFields",
+                        "transformers": []
+                    }
+                },
+                "Asimily Device Model": {
+                    "complex": {
+                        "accessor": "asimilydevicemodel",
+                        "filters": [],
+                        "root": "customFields",
+                        "transformers": []
+                    }
+                },
+                "Asimily Device OS": {
+                    "complex": {
+                        "accessor": "asimilydeviceos",
+                        "filters": [],
+                        "root": "customFields",
+                        "transformers": []
+                    }
+                },
+                "Asimily Device Type": {
+                    "complex": {
+                        "accessor": "asimilydevicetype",
+                        "filters": [],
+                        "root": "customFields",
+                        "transformers": []
+                    }
+                },
+                "Device Id": {
+                    "complex": {
+                        "accessor": "asimilydeviceid",
+                        "filters": [],
+                        "root": "customFields",
+                        "transformers": []
+                    }
+                },
+                "Device Local IP": {
+                    "complex": {
+                        "accessor": "devicelocalip",
+                        "filters": [],
+                        "root": "customFields",
+                        "transformers": []
+                    }
+                },
+                "Device Model": {
+                    "complex": {
+                        "accessor": "devicemodel",
+                        "filters": [],
+                        "root": "customFields",
+                        "transformers": []
+                    }
+                },
+                "Hostnames": {
+                    "complex": {
+                        "accessor": "hostnames",
+                        "filters": [],
+                        "root": "customFields",
+                        "transformers": []
+                    }
+                },
+                "MAC Address": {
+                    "complex": {
+                        "accessor": "macaddress",
+                        "filters": [],
+                        "root": "customFields",
+                        "transformers": []
+                    }
+                },
+                "name": {
+                    "complex": {
+                        "filters": [],
+                        "root": "name",
+                        "transformers": []
+                    }
+                },
+                "severity": {
+                    "complex": {
+                        "filters": [],
+                        "root": "severity",
+                        "transformers": []
+                    }
+                }
+            }
+        },
+        "Asimily CVE": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Asimily CVE CVSS 3 Base Score": {
+                    "complex": {
+                        "accessor": "asimilycvecvss3basescore",
+                        "filters": [],
+                        "root": "customFields",
+                        "transformers": []
+                    }
+                },
+                "Asimily CVE CWE Type": {
+                    "complex": {
+                        "accessor": "asimilycvecwetype",
+                        "filters": [],
+                        "root": "customFields",
+                        "transformers": []
+                    }
+                },
+                "Asimily CVE Description": {
+                    "complex": {
+                        "accessor": "asimilycvedescription",
+                        "filters": [],
+                        "root": "customFields",
+                        "transformers": []
+                    }
+                },
+                "Asimily CVE Entity Name": {
+                    "complex": {
+                        "accessor": "asimilycveentityname",
+                        "filters": [],
+                        "root": "customFields",
+                        "transformers": []
+                    }
+                },
+                "Asimily CVE Entity Type": {
+                    "complex": {
+                        "accessor": "asimilycveentitytype",
+                        "filters": [],
+                        "root": "customFields",
+                        "transformers": []
+                    }
+                },
+                "Asimily CVE Exploitable In Wild": {
+                    "complex": {
+                        "accessor": "asimilycveexploitableinwild",
+                        "filters": [],
+                        "root": "customFields",
+                        "transformers": []
+                    }
+                },
+                "Asimily CVE Fixed By": {
+                    "complex": {
+                        "accessor": "asimilycvefixedby",
+                        "filters": [],
+                        "root": "customFields",
+                        "transformers": []
+                    }
+                },
+                "Asimily CVE Fixed Date": {
+                    "complex": {
+                        "accessor": "asimilycvefixeddate",
+                        "filters": [],
+                        "root": "customFields",
+                        "transformers": []
+                    }
+                },
+                "Asimily CVE Is Fixed": {
+                    "complex": {
+                        "accessor": "asimilycveisfixed",
+                        "filters": [],
+                        "root": "customFields",
+                        "transformers": []
+                    }
+                },
+                "Asimily CVE Is Muted": {
+                    "complex": {
+                        "accessor": "asimilycveismuted",
+                        "filters": [],
+                        "root": "customFields",
+                        "transformers": []
+                    }
+                },
+                "Asimily CVE Name": {
+                    "complex": {
+                        "accessor": "asimilycvename",
+                        "filters": [],
+                        "root": "customFields",
+                        "transformers": []
+                    }
+                },
+                "Asimily CVE OEM Patched": {
+                    "complex": {
+                        "accessor": "asimilycveoempatched",
+                        "filters": [],
+                        "root": "customFields",
+                        "transformers": []
+                    }
+                },
+                "Asimily CVE Open Date": {
+                    "complex": {
+                        "accessor": "asimilycveopendate",
+                        "filters": [],
+                        "root": "customFields",
+                        "transformers": []
+                    }
+                },
+                "Asimily CVE Published Date": {
+                    "complex": {
+                        "accessor": "asimilycvepublisheddate",
+                        "filters": [],
+                        "root": "customFields",
+                        "transformers": []
+                    }
+                },
+                "Asimily CVE Score": {
+                    "complex": {
+                        "accessor": "asimilycvescore",
+                        "filters": [],
+                        "root": "customFields",
+                        "transformers": []
+                    }
+                },
+                "Asimily Device Families": {
+                    "complex": {
+                        "accessor": "asimilydevicefamilies",
+                        "filters": [],
+                        "root": "customFields",
+                        "transformers": []
+                    }
+                },
+                "Asimily Device Host Name": {
+                    "complex": {
+                        "accessor": "asimilydevicehostname",
+                        "filters": [],
+                        "root": "customFields",
+                        "transformers": []
+                    }
+                },
+                "Asimily Device ID": {
+                    "complex": {
+                        "accessor": "asimilydeviceid",
+                        "filters": [],
+                        "root": "customFields",
+                        "transformers": []
+                    }
+                },
+                "Asimily Device IPV4 Address": {
+                    "complex": {
+                        "accessor": "asimilydeviceipv4address",
+                        "filters": [],
+                        "root": "customFields",
+                        "transformers": []
+                    }
+                },
+                "Asimily Device MAC Address": {
+                    "complex": {
+                        "accessor": "asimilydevicemacaddress",
+                        "filters": [],
+                        "root": "customFields",
+                        "transformers": []
+                    }
+                },
+                "Asimily Device Manufacturer": {
+                    "complex": {
+                        "accessor": "asimilydevicemanufacturer",
+                        "filters": [],
+                        "root": "customFields",
+                        "transformers": []
+                    }
+                },
+                "Asimily Device Model": {
+                    "complex": {
+                        "accessor": "asimilydevicemodel",
+                        "filters": [],
+                        "root": "customFields",
+                        "transformers": []
+                    }
+                },
+                "Asimily Device OS": {
+                    "complex": {
+                        "accessor": "asimilydeviceos",
+                        "filters": [],
+                        "root": "customFields",
+                        "transformers": []
+                    }
+                },
+                "Device Id": {
+                    "complex": {
+                        "accessor": "asimilydeviceid",
+                        "filters": [],
+                        "root": "customFields",
+                        "transformers": []
+                    }
+                },
+                "Device Local IP": {
+                    "complex": {
+                        "accessor": "devicelocalip",
+                        "filters": [],
+                        "root": "customFields",
+                        "transformers": []
+                    }
+                },
+                "Device Model": {
+                    "complex": {
+                        "accessor": "devicemodel",
+                        "filters": [],
+                        "root": "customFields",
+                        "transformers": []
+                    }
+                },
+                "Hostnames": {
+                    "complex": {
+                        "accessor": "hostnames",
+                        "filters": [],
+                        "root": "customFields",
+                        "transformers": []
+                    }
+                },
+                "MAC Address": {
+                    "complex": {
+                        "accessor": "macaddress",
+                        "filters": [],
+                        "root": "customFields",
+                        "transformers": []
+                    }
+                },
+                "name": {
+                    "complex": {
+                        "filters": [],
+                        "root": "name",
+                        "transformers": []
+                    }
+                },
+                "severity": {
+                    "complex": {
+                        "filters": [],
+                        "root": "severity",
+                        "transformers": []
+                    }
+                }
+            }
+        }
+    },
+    "version": -1
+}

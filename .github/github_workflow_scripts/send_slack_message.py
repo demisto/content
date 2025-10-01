@@ -2,7 +2,7 @@
 
 from slack_sdk import WebClient
 from blessings import Terminal
-from utils import get_env_var
+from utils import get_env_var, ORGANIZATION_NAME, REPO_NAME
 import json
 import requests
 from github import Github, File, PullRequest
@@ -167,10 +167,8 @@ def main():
     pr_number = payload.get("pull_request", {}).get("number")
 
     # Get the PR information in order to get information like metadata
-    org_name = "demisto"
-    repo_name = "content"
     gh = Github(get_env_var("CONTENTBOT_GH_ADMIN_TOKEN"), verify=False)
-    content_repo = gh.get_repo(f"{org_name}/{repo_name}")
+    content_repo = gh.get_repo(f"{ORGANIZATION_NAME}/{REPO_NAME}")
     pr = content_repo.get_pull(pr_number)
     metadata_files = [file for file in pr.get_files() if file.filename.endswith("_metadata.json")]
 

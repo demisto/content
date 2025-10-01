@@ -1,0 +1,63 @@
+{
+    "response": {
+        "@status": "success",
+        "result": {
+            "content-updates": {
+                "@last-updated-at": "2025/06/11 13:40:16 PDT",
+                "entry": [
+                    {
+                        "version": "5211-5731",
+                        "app-version": "5211-5731",
+                        "filename": "panup-all-antivirus-5211-5731",
+                        "size": "102",
+                        "size-kb": "104547",
+                        "released-on": "2025/06/10 04:01:55 PDT",
+                        "release-notes": "https://fake-release-note-link",
+                        "downloaded": "yes",
+                        "current": "yes",
+                        "previous": "no",
+                        "installing": "no",
+                        "features": "virus",
+                        "update-type": "Full",
+                        "feature-desc": "Unknown",
+                        "sha256": "fake-sha256-hash"
+                    },
+                    {
+                        "version": "5212-5732",
+                        "app-version": "5212-5732",
+                        "filename": "panup-all-antivirus-5212-5732",
+                        "size": "102",
+                        "size-kb": "104745",
+                        "released-on": "2025/06/11 04:00:51 PDT",
+                        "release-notes": "https://fake-release-note-link",
+                        "downloaded": "no",
+                        "current": "no",
+                        "previous": "no",
+                        "installing": "no",
+                        "features": "virus",
+                        "update-type": "Full",
+                        "feature-desc": "Unknown",
+                        "sha256": "fake-sha256-hash"
+                    },
+                    {
+                        "version": "5209-5729",
+                        "app-version": "5209-5729",
+                        "filename": "panup-all-antivirus-5209-5729",
+                        "size": "102",
+                        "size-kb": "104622",
+                        "released-on": "2025/06/08 04:01:26 PDT",
+                        "release-notes": "https://fake-release-note-link",
+                        "downloaded": "no",
+                        "current": "no",
+                        "previous": "no",
+                        "installing": "no",
+                        "features": "virus",
+                        "update-type": "Full",
+                        "feature-desc": "Unknown",
+                        "sha256": "fake-sha256-hash"
+                    }
+                ]
+            }
+        }
+    }
+}

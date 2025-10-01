@@ -24,16 +24,30 @@ configuration:
   - Custom
   advanced: true
   required: false
+- displaypassword: ID
+  name: _auth_id_encrypted
+  type: 9
+  hiddenusername: true
+  section: Connect
+  required: false
+- displaypassword: Token
+  name: _tenant_id_encrypted
+  type: 9
+  hiddenusername: true
+  section: Connect
+  required: false
 - display: ID
   name: _auth_id
   type: 0
   section: Connect
   required: false
+  hidden: true
 - display: Token
   name: _tenant_id
   type: 0
   section: Connect
   required: false
+  hidden: true
 - displaypassword: Key
   section: Connect
   name: credentials
@@ -5678,6 +5692,8 @@ script:
     execution: false
     name: microsoft-atp-auth-reset
     arguments: []
+  - description: This command gets the permissions from the currently configured credentials. Use for debugging and detecting permission issues.
+    name: microsoft-atp-list-auth-permissions
   - arguments:
     - description: The machine ID. Can be retrieved by running the 'microsoft-atp-get-machines' command.
       name: machine_id
@@ -5813,7 +5829,7 @@ script:
     - contextPath: MicrosoftATP.PublicVulnerability.UpdatedOn
       description: The date and time when this vulnerability was last updated.
       type: String
-  dockerimage: demisto/crypto:1.0.0.3539024
+  dockerimage: demisto/crypto:1.0.0.4578119
   isfetch: true
   runonce: false
   script: '-'

@@ -2,6 +2,10 @@ from CommonServerPython import *
 
 
 def main():
+    auth_key = demisto.params().get("credentials", {}).get("password")
+    if not auth_key:
+        raise ValueError("Missing required parameter Auth Key. Please set this parameter in the instance configuration.")
+
     params = {k: v for k, v in demisto.params().items() if v is not None}
     chosen_urls = []
     params["feed_url_to_config"] = {}
@@ -20,7 +24,7 @@ def main():
         "malwarefamily": "malwarefamily",
         "relationship_entity_b": "relationship_entity_b",
     }
-    auth_key = params.get("credentials", {}).get("password")
+
     params["credentials"] = {"password": auth_key, "identifier": "_header:Auth-Key"}
 
     feed_main("Feodo Tracker IP Blocklist Feed", params, "feodotracker-ipblocklist-")

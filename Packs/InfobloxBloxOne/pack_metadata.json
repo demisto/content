@@ -1,11 +1,11 @@
 {
     "name": "Infoblox BloxOne",
     "description": "Infoblox BloxOne",
-    "support": "xsoar",
-    "currentVersion": "1.1.13",
-    "author": "Cortex XSOAR",
-    "url": "https://www.paloaltonetworks.com/cortex",
-    "email": "",
+    "support": "partner",
+    "currentVersion": "1.1.16",
+    "author": "Infoblox Inc.",
+    "url": "https://support.infoblox.com/",
+    "email": "support@infoblox.com",
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
@@ -21,6 +21,7 @@
         "X1",
         "X3",
         "X5",
-        "ENT_PLUS"
+        "ENT_PLUS",
+        "agentix"
     ]
 }

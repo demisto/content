@@ -1177,8 +1177,11 @@ script:
     - name: parameters
       description: Query parameters, i.e. limit -> 10 , match['status_name'] -> Ongoing.
       type: keyValue
+    - name: data
+      description: Body of the request.
+      type: keyValue
     description: Command that performs a HTTP request to Sekoia using the integration authentication configured.
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.11.4417419
   isfetch: true
   runonce: false
   subtype: python3

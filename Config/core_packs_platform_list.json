@@ -9,7 +9,8 @@
                 "X1",
                 "X3",
                 "X5",
-                "ENT_PLUS"
+                "ENT_PLUS",
+                "agentix"
             ]
         },
         {
@@ -18,7 +19,8 @@
                 "X1",
                 "X3",
                 "X5",
-                "ENT_PLUS"
+                "ENT_PLUS",
+                "agentix"
             ]
         },
         {
@@ -30,7 +32,8 @@
                 "X1",
                 "X3",
                 "X5",
-                "ENT_PLUS"
+                "ENT_PLUS",
+                "agentix"
             ]
         },
         {
@@ -41,7 +44,8 @@
                 "X1",
                 "X3",
                 "X5",
-                "ENT_PLUS"
+                "ENT_PLUS",
+                "agentix"
             ]
         },
         {
@@ -53,7 +57,8 @@
                 "X1",
                 "X3",
                 "X5",
-                "ENT_PLUS"
+                "ENT_PLUS",
+                "agentix"
             ]
         },
         {
@@ -62,7 +67,8 @@
                 "X1",
                 "X3",
                 "X5",
-                "ENT_PLUS"
+                "ENT_PLUS",
+                "agentix"
             ]
         },
         {
@@ -74,7 +80,8 @@
                 "X1",
                 "X3",
                 "X5",
-                "ENT_PLUS"
+                "ENT_PLUS",
+                "agentix"
             ]
         },
         {
@@ -83,7 +90,8 @@
                 "X1",
                 "X3",
                 "X5",
-                "ENT_PLUS"
+                "ENT_PLUS",
+                "agentix"
             ]
         },
         {
@@ -92,7 +100,8 @@
                 "X1",
                 "X3",
                 "X5",
-                "ENT_PLUS"
+                "ENT_PLUS",
+                "agentix"
             ]
         },
         {
@@ -104,7 +113,8 @@
                 "X1",
                 "X3",
                 "X5",
-                "ENT_PLUS"
+                "ENT_PLUS",
+                "agentix"
             ]
         },
         {
@@ -113,7 +123,8 @@
                 "X1",
                 "X3",
                 "X5",
-                "ENT_PLUS"
+                "ENT_PLUS",
+                "agentix"
             ]
         },
         {
@@ -122,7 +133,8 @@
                 "X1",
                 "X3",
                 "X5",
-                "ENT_PLUS"
+                "ENT_PLUS",
+                "agentix"
             ]
         },
         {
@@ -131,7 +143,8 @@
                 "X1",
                 "X3",
                 "X5",
-                "ENT_PLUS"
+                "ENT_PLUS",
+                "agentix"
             ]
         },
         {
@@ -143,7 +156,8 @@
                 "X1",
                 "X3",
                 "X5",
-                "ENT_PLUS"
+                "ENT_PLUS",
+                "agentix"
             ]
         },
         {
@@ -152,7 +166,8 @@
                 "X1",
                 "X3",
                 "X5",
-                "ENT_PLUS"
+                "ENT_PLUS",
+                "agentix"
             ]
         },
         {
@@ -161,7 +176,8 @@
                 "X1",
                 "X3",
                 "X5",
-                "ENT_PLUS"
+                "ENT_PLUS",
+                "agentix"
             ]
         },
         {
@@ -170,7 +186,8 @@
                 "X1",
                 "X3",
                 "X5",
-                "ENT_PLUS"
+                "ENT_PLUS",
+                "agentix"
             ]
         },
         {
@@ -179,7 +196,8 @@
                 "X1",
                 "X3",
                 "X5",
-                "ENT_PLUS"
+                "ENT_PLUS",
+                "agentix"
             ]
         },
         {
@@ -188,7 +206,8 @@
                 "X1",
                 "X3",
                 "X5",
-                "ENT_PLUS"
+                "ENT_PLUS",
+                "agentix"
             ]
         },
         {
@@ -197,7 +216,8 @@
                 "X1",
                 "X3",
                 "X5",
-                "ENT_PLUS"
+                "ENT_PLUS",
+                "agentix"
             ]
         },
         {
@@ -206,7 +226,8 @@
                 "X1",
                 "X3",
                 "X5",
-                "ENT_PLUS"
+                "ENT_PLUS",
+                "agentix"
             ]
         },
         {
@@ -215,7 +236,8 @@
                 "X1",
                 "X3",
                 "X5",
-                "ENT_PLUS"
+                "ENT_PLUS",
+                "agentix"
             ]
         },
         {
@@ -226,7 +248,8 @@
                 "X1",
                 "X3",
                 "X5",
-                "ENT_PLUS"
+                "ENT_PLUS",
+                "agentix"
             ]
         },
         {
@@ -249,7 +272,8 @@
                 "X1",
                 "X3",
                 "X5",
-                "ENT_PLUS"
+                "ENT_PLUS",
+                "agentix"
             ]
         },
         {
@@ -261,7 +285,8 @@
                 "X1",
                 "X3",
                 "X5",
-                "ENT_PLUS"
+                "ENT_PLUS",
+                "agentix"
             ]
         },
         {
@@ -273,7 +298,8 @@
                 "X1",
                 "X3",
                 "X5",
-                "ENT_PLUS"
+                "ENT_PLUS",
+                "agentix"
             ]
         },
         {
@@ -285,7 +311,8 @@
                 "X1",
                 "X3",
                 "X5",
-                "ENT_PLUS"
+                "ENT_PLUS",
+                "agentix"
             ]
         },
         {
@@ -293,7 +320,27 @@
             "supportedModules":[
                 "C1", 
                 "C3",
-                "X5"
+                "X5",
+                "agentix",
+                "cloud_posture"
+            ]
+        },
+        {
+            "id": "GCP",
+            "supportedModules":[
+                "C1", 
+                "C3",
+                "X5",
+                "cloud_posture"
+            ]
+        },
+                {
+            "id": "Azure",
+            "supportedModules":[
+                "C1", 
+                "C3",
+                "X5",
+                "cloud_posture"
             ]
         }
     ]

@@ -1,0 +1,100 @@
+args:
+- description: The hostname by which to filter the results.
+  name: hostname
+- auto: PREDEFINED
+  description: 'A comma-separated list of scan statuses by which to filter the results, for example: "started,aborted".'
+  name: scan_status
+  predefined:
+  - started
+  - none
+  - finished
+  - aborted
+- auto: PREDEFINED
+  description: 'Included operating system types, for example: "windows".'
+  isArray: true
+  name: os_type
+  predefined:
+  - windows
+  - windows_legacy
+  - macos
+  - linux
+- description: 'Endpoint creation timestamp, for example: "2018-02-27T04:49:26.257525Z".'
+  name: created_at
+- description: Minimum number of threats per agent.
+  name: min_active_threats
+- defaultValue: "10"
+  description: The maximum number of agents to return.
+  name: limit
+- name: agent_ip
+  description: The agent IP address.
+comment: This script is used to wrap the list-agents command in SentinelOne v2. Returns all agents that match the specified criteria.
+commonfields:
+  id: SentinelOneListAgents
+  version: -1
+enabled: true
+name: SentinelOneListAgents
+outputs:
+- contextPath: SentinelOne.Agents.networkStatus
+  description: The agent network status.
+  type: string
+- contextPath: SentinelOne.Agents.id
+  description: The agent ID.
+  type: string
+- contextPath: SentinelOne.Agents.agentVersion
+  description: The agent software version.
+  type: string
+- contextPath: SentinelOne.Agents.isDecommissioned
+  description: Whether the agent is decommissioned.
+  type: boolean
+- contextPath: SentinelOne.Agents.isActive
+  description: Whether the agent is active.
+  type: boolean
+- contextPath: SentinelOne.Agents.lastActiveDate
+  description: When was the agent last active.
+  type: date
+- contextPath: SentinelOne.Agents.registeredAt
+  description: The registration date of the agent.
+  type: date
+- contextPath: SentinelOne.Agents.externalIp
+  description: The agent IP address.
+  type: string
+- contextPath: SentinelOne.Agents.threatCount
+  description: Number of active threats.
+  type: number
+- contextPath: SentinelOne.Agents.encryptedApplications
+  description: Whether disk encryption is enabled.
+  type: boolean
+- contextPath: SentinelOne.Agents.osName
+  description: Name of operating system.
+  type: string
+- contextPath: SentinelOne.Agents.computerName
+  description: Name of agent computer.
+  type: string
+- contextPath: SentinelOne.Agents.machineType
+  description: Machine type.
+  type: string
+- contextPath: SentinelOne.Agents.domain
+  description: Domain name of the agent.
+  type: string
+- contextPath: SentinelOne.Agents.createdAt
+  description: Creation time of the agent.
+  type: date
+- contextPath: SentinelOne.Agents.siteName
+  description: Site name associated with the agent.
+  type: string
+- contextPath: SentinelOne.Agents.tags
+  description: Tags associated with the agent.
+  type: unknown
+script: '-'
+dependson:
+  must:
+  - sentinelone-list-agents
+type: python
+subtype: python3
+dockerimage: demisto/python3:3.12.11.4417419
+fromversion: 6.1.0
+isInternal: true
+marketplaces:
+- platform
+tests:
+- No tests (auto formatted)

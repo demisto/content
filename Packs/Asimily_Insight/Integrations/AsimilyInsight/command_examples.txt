@@ -1,0 +1,9 @@
+!asimily-get-asset-details asimily_device_id=163062
+!asimily-get-asset-details facility=40Gfacility
+!asimily-get-asset-details mac_addr=64:51:06:3C:0C:74
+!asimily-get-asset-details ip_addr=0.0.0.0
+!asimily-get-asset-anomalies asimily_device_id=841377
+!asimily-get-asset-anomalies mac_addr=5C:88:16:A1:EB:1C
+!asimily-get-asset-anomalies ip_addr=0.0.0.0
+!asimily-get-asset-anomalies criticality="High Only" device_tag=xsoarintegration,xsoarintegrationtaglist device_family="IT Systems,Non-Medical Devices,Workstations"
+!asimily-get-asset-vulnerabilities asimily_device_id=758154 cve_score="Medium and High" ip_addr=0.0.0.0 mac_addr=70:BC:10:63:5E:D0 device_tag="FR_610_testing" device_family="IoT Devices,Non-Medical Devices"

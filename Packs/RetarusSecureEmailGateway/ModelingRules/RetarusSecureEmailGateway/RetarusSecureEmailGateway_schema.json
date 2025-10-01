@@ -1,0 +1,56 @@
+{
+    "retarus_secure_email_gateway_raw": {
+        "ts": {
+            "type": "datetime",
+            "is_array": false
+        },
+        "version": {
+            "type": "string",
+            "is_array": false
+        },
+        "host": {
+            "type": "string",
+            "is_array": false
+        },
+        "type": {
+            "type": "string",
+            "is_array": false
+        },
+        "sourceIp": {
+            "type": "string",
+            "is_array": false
+        },
+        "recipient": {
+            "type": "string",
+            "is_array": false
+        },
+        "sender": {
+            "type": "string",
+            "is_array": false
+        },
+        "direction": {
+            "type": "string",
+            "is_array": false
+        },
+        "rmxId": {
+            "type": "string",
+            "is_array": false
+        },
+        "status": {
+            "type": "string",
+            "is_array": false
+        },
+        "class": {
+            "type": "string",
+            "is_array": false
+        },
+        "mimeId": {
+            "type": "string",
+            "is_array": false
+        },
+        "metaData": {
+            "type": "string",
+            "is_array": false
+        }
+    }
+}

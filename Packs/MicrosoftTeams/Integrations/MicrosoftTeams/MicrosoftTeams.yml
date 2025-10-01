@@ -808,7 +808,7 @@ script:
     - contextPath: MicrosoftTeams.Message.ID
       description: ID of the message sent.
       type: String
-  dockerimage: demisto/teams:1.0.0.3184495
+  dockerimage: demisto/teams:1.0.0.3748709
   longRunning: true
   longRunningPort: true
   script: ''
@@ -821,3 +821,14 @@ tests:
 - Microsoft Teams - Test
 supportsquickactions: true
 fromversion: 5.0.0
+triggers:
+  - conditions:
+      - name: engine
+        operator: not_exists
+      - name: isEngineGroup
+        operator: not_exists
+    effects:
+      - name: longRunningPort
+        action:
+          hidden: true
+          required: false

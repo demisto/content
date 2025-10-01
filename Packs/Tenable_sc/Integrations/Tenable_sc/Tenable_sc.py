@@ -133,10 +133,9 @@ class Client(BaseClient):
             try:
                 error = res.json()
             except Exception:
-                # type: ignore
                 raise DemistoException(
-                    f"Error: Got status code {res.status_code!s} with {url=} with"  # type: ignore
-                    f" body {res.content} with headers {res.headers!s}"
+                    f"Error: Got status code {res.status_code!s} with {url=} with"
+                    f" body {res.content} with headers {res.headers!s}"  # type: ignore[str-bytes-safe]
                 )
 
             raise DemistoException(f"Error: Got an error from TenableSC, code: {error['error_code']}, \
@@ -181,7 +180,7 @@ class Client(BaseClient):
 
         if res.status_code < 200 or res.status_code >= 300:
             raise DemistoException(f"Error: Got status code {res.status_code!s} with {url=} \
-                        with body {res.content} with headers {res.headers!s}")  # type: ignore
+                        with body {res.content} with headers {res.headers!s}")  # type: ignore[str-bytes-safe]
 
         self.cookie = res.cookies.get("TNS_SESSIONID", self.cookie)
         demisto.setIntegrationContext({"cookie": self.cookie})
@@ -938,8 +937,8 @@ def get_server_url(url):
     Returns:
         str: The server url.
     """
-    url = re.sub("/[\/]+$/", "", url)
-    url = re.sub("\/$", "", url)
+    url = re.sub(r"/[\/]+$/", "", url)
+    url = re.sub(r"\/$", "", url)
     return url
 
 
@@ -1255,7 +1254,7 @@ def get_asset_command(client: Client, args: dict[str, Any]):
 
     for ip_list in ip_lists:
         # Extract IPs
-        ips += re.findall("[0-9]+(?:\.[0-9]+){3}", ip_list)
+        ips += re.findall(r"[0-9]+(?:\.[0-9]+){3}", ip_list)
 
     headers = ["ID", "Name", "Description", "Tag", "Created", "Modified", "Owner", "Group", "IPs"]
 

@@ -6,7 +6,6 @@ from CommonServerUserPython import *
 
 from contextlib import contextmanager
 from logging.handlers import SysLogHandler
-from distutils.util import strtobool
 from logging import Logger, getLogger, INFO, DEBUG, WARNING, ERROR, CRITICAL
 from socket import SOCK_STREAM
 from collections.abc import Generator
@@ -319,7 +318,7 @@ def syslog_send_notification(manager: SyslogManager, min_severity: int):
         message = f"{investigation_id}, {message}"
 
     if ignore_add_url and isinstance(ignore_add_url, str):
-        ignore_add_url = bool(strtobool(ignore_add_url))
+        ignore_add_url = argToBoolean(ignore_add_url)
     if not ignore_add_url:
         investigation = demisto.investigation()
         server_links = demisto.demistoUrls()

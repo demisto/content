@@ -900,26 +900,36 @@ Deletes a ticket from ServiceNow.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | Ticket System ID | Required |
+| id | Ticket System ID. | Required |
 | ticket_type | Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", "sc_req_item", or "sn_si_incident". | Optional |
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| ServiceNow.Ticket.ID | string | Ticket ID. |
+| ServiceNow.Ticket.DeleteMessage | string | Message indicating the result of the ticket deletion operation. |
 
 #### Command Example
 
-```!servicenow-delete-ticket id=id```
+```!servicenow-delete-ticket id=existingId"```
+
+#### Human Readable Output
+
+Ticket with ID id was successfully deleted from incident table.
 
 #### Context Example
 
 ```json
-{}
+{
+    "ServiceNow": {
+        "Ticket": {
+            "ID": "id",
+            "DeleteMessage": "Ticket with ID id was successfully deleted from incident table.",
+        }
+    }
+}
 ```
-
-#### Human Readable Output
-
->Ticket with ID id was successfully deleted.
 
 ### servicenow-query-tickets
 
@@ -1180,6 +1190,7 @@ Uploads a file to the specified ticket.
 ```!servicenow-upload-file id="{TicketID}" ticket_type="incident" file_id="123@456"```
 
 #### Context Example
+
 ```json
 {
     "ServiceNow": {
@@ -1205,7 +1216,8 @@ Uploads a file to the specified ticket.
 
 #### Human Readable Output
 
->### File uploaded successfully to ticket {TICKET ID}.
+>### File uploaded successfully to ticket {TICKET ID}
+>
 >|Download link|Filename|System ID|
 >|---|---|---|
 >| https:<span>//</span>{ServerURL}/api/now/attachment/{SystemID}/file | test.txt | {SystemID} |

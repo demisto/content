@@ -5,7 +5,6 @@ import dateparser
 import demistomock as demisto
 import pytest
 import requests_mock
-from _pytest.python_api import raises
 from CommonServerPython import DemistoException, snakify
 from freezegun import freeze_time
 from MicrosoftDefenderAdvancedThreatProtection import (
@@ -1081,7 +1080,9 @@ def test_add_error_message(failed_devices, all_requested_devices, expected_resul
 def test_add_error_message_raise_error(failed_devices, all_requested_devices):
     from MicrosoftDefenderAdvancedThreatProtection import add_error_message
 
-    with raises(DemistoException, match=f"Microsoft Defender ATP The command was failed with the errors: {failed_devices}"):
+    with pytest.raises(
+        DemistoException, match=f"Microsoft Defender ATP The command was failed with the errors: {failed_devices}"
+    ):
         add_error_message(failed_devices, all_requested_devices)
 
 
@@ -3787,3 +3788,23 @@ def test_file_statistics_api_parser_to_human_readable(mocker, file_stats: FileSt
         "Global Last Observed": response["globalLastObserved"],
         "Top File Names": response["topFileNames"],
     }
+
+
+def test_list_auth_permissions_command(mocker):
+    """
+    Given:
+    - An authenticated Microsoft Defender ATP API client.
+
+    When:
+    - Calling function microsoft-atp-list-auth-permissions.
+
+    Then:
+    - Ensure the human-readable command results are as expected.
+    """
+    from MicrosoftDefenderAdvancedThreatProtection import list_auth_permissions_command
+
+    mocker.patch.object(client_mocker, "get_decoded_token", return_value={"roles": ["Event.Write", "User.Read"]})
+
+    command_results = list_auth_permissions_command(client_mocker)
+
+    assert command_results.readable_output == "### Permissions\nEvent.Write\nUser.Read"

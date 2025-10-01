@@ -47,6 +47,7 @@ DEFAULT_FIELDS = [
     {"name": "remarks", "description": "Remarks about the incident"},
     {"name": "type", "description": "Incident type"},
     {"name": "id", "description": "Unique ID for the incident record"},
+    {"name": "external_link", "description": "External link to the remote platform"},
 ]
 CBS_INCIDENT_FIELDS = [
     {"name": "subject", "description": "Asset or title of incident"},
@@ -61,6 +62,27 @@ CBS_CARD_FIELDS = [
     {"name": "cvv", "description": "The compromised card's Card Verification Value (CVV)."},
     {"name": "expiry_month", "description": "The compromised card's expiration month."},
     {"name": "expiry_year", "description": "The compromised card's expiration year."},
+    *DEFAULT_FIELDS,
+]
+
+CBS_MALWARE_LOG_FIELDS = [
+    {"name": "masked_password", "description": "The masked password related to the breached data."},
+    {"name": "password", "description": "Password found in the breached data or compromised account."},
+    {"name": "software", "description": "The software related to the breached data."},
+    {"name": "user", "description": "The user related to the breached data."},
+    {"name": "user_domain", "description": "The domain of the user related to the breached data."},
+    {"name": "website", "description": "The website related to the breached data."},
+    {"name": "sources", "description": "The sources related to the breached data."},
+    {"name": "source_uri", "description": "The source URI related to the breached data."},
+    {"name": "domain", "description": "The domain related to the breached data or compromised device."},
+    {"name": "hostname", "description": "The hostname related to the breached data."},
+    {"name": "stealer_family", "description": "The family of the malware."},
+    {"name": "compromise_details", "description": "The details of the compromise."},
+    {"name": "date_compromised", "description": "The date the malware was compromised."},
+    {"name": "computer_name", "description": "The name of the computer that was compromised."},
+    {"name": "operating_system", "description": "The operating system of the computer that was compromised."},
+    {"name": "malware_path", "description": "The path of the malware."},
+    {"name": "url_path", "description": "The URL path of the malware."},
     *DEFAULT_FIELDS,
 ]
 
@@ -97,6 +119,8 @@ class Instance:
                 self.mapping_fields = CBS_CARD_FIELDS
             case "breached_credentials":
                 self.mapping_fields = CBS_CRED_FIELDS
+            case "malware_logs":
+                self.mapping_fields = CBS_MALWARE_LOG_FIELDS
             case "domain_infringement":
                 self.mapping_fields = CBS_DOMAIN_INFRINGE_FIELDS
             case "subdomain_infringement":
@@ -110,6 +134,7 @@ INSTANCE = Instance(
         "Incidents": "incidents",
         "Compromised Cards": "compromised_cards",
         "Breached Credentials": "breached_credentials",
+        "Malware Logs": "malware_logs",
         "Domain Infringement": "domain_infringement",
         "Subdomain Infringement": "subdomain_infringement",
     }.get(demisto.params().get("module_to_use", "Incidents"), "incidents")
@@ -381,7 +406,6 @@ def map_and_create_incident(unmapped_incident: dict) -> dict:
     :return: Incident in format ready for XSOAR
     :rtype: ``dict``
     """
-    unmapped_incident.pop("brand", "")
     unmapped_incident.pop("screenshots", "")
     incident_id: str = unmapped_incident.pop("id", "")
     mapped_incident = {
@@ -390,9 +414,11 @@ def map_and_create_incident(unmapped_incident: dict) -> dict:
             unmapped_incident.pop("first_seen", ""), CBS_INCOMING_DATE_FORMAT, in_iso_format=True, is_utc=True
         ),
         "externalstatus": unmapped_incident.pop("status", "monitoring"),
+        "externallink": unmapped_incident.pop("external_link", ""),
         "severity": convert_to_demisto_severity(unmapped_incident.pop("severity", "low")),
         "CustomFields": {
             "cbs_type": unmapped_incident.pop("type", ""),
+            "cbs_module": INSTANCE.module,
             "cbs_coa": unmapped_incident.pop("coa", ""),
             "cbs_updated_date": convert_time_string(
                 unmapped_incident.pop("last_seen", ""), CBS_INCOMING_DATE_FORMAT, in_iso_format=True, is_utc=True

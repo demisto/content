@@ -1,10 +1,8 @@
-from copy import deepcopy
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from CoreIRApiModule import *
+from copy import deepcopy
 
-# Disable insecure warnings
-urllib3.disable_warnings()
 
 TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 
@@ -29,7 +27,15 @@ PREVALENCE_COMMANDS = {
 
 TERMINATE_BUILD_NUM = "1398786"
 TERMINATE_SERVER_VERSION = "8.8.0"
-COMMAND_DATA_KEYS = ["failed_files", "retention_date", "retrieved_files", "standard_output", "command_output", "execution_status"]
+COMMAND_DATA_KEYS = [
+    "failed_files",
+    "retention_date",
+    "retrieved_files",
+    "standard_output",
+    "command",
+    "command_output",
+    "execution_status",
+]
 EXECUTE_COMMAND_READABLE_OUTPUT_FIELDS = [
     "endpoint_id",
     "command",
@@ -38,6 +44,17 @@ EXECUTE_COMMAND_READABLE_OUTPUT_FIELDS = [
     "endpoint_name",
     "endpoint_status",
 ]
+ERROR_CODE_MAP = {
+    -199: "IP_BLOCK_DISABLED_BY_POLICY",
+    -198: "INVALID_IP_ADDRESS",
+    -197: "IP_ADDRESS_ALREADY_BLOCKED",
+    -196: "IP_ADDRESS_WHITELISTED",
+    -195: "IP_ADDRESS_NOT_BLOCKED",
+    -194: "IP_ADDRESS_NOT_BLOCKED_BUT_WHITELISTED",
+    -193: "IP_IS_LOOPBACK",
+    -192: "IPV6_BLOCKING_IS_DISABLED",
+    -191: "IP_IS_LOCAL_ADDRESS",
+}
 
 
 class Client(CoreClient):
@@ -86,6 +103,134 @@ class Client(CoreClient):
             method="POST", json_data={"request_data": request_data, "validate": True}, headers=self._headers, url_suffix=suffix
         )
         return reply
+
+    def _is_endpoint_connected(self, endpoint_id: str) -> bool:
+        """
+        Helper method to check if an endpoint is connected
+        """
+        endpoint_status = self.get_endpoints(endpoint_id_list=[endpoint_id], status="connected")
+        return bool(endpoint_status)
+
+    def block_ip_request(self, endpoint_id: str, ip_list: list[str], duration: int) -> list[dict[str, Any]]:
+        """
+        Block one or more IPs on a given endpoint and collect action IDs.
+        If endpoint disconnected/not exists the group id will be None.
+        Args:
+            endpoint_id (str): ID of the endpoint to apply the block.
+            ip_list (list[str]): IP addresses to block.
+            duration (int): Block duration in seconds.
+
+        Returns:
+            list[dict]: A list of action records, each containing:
+                - ip_address (str): The blocked IP.
+                - endpoint_id (str): The endpoint where the block was applied.
+                - group_id (str): ID of the block action for status polling.
+        """
+        results = []
+        if not self._is_endpoint_connected(endpoint_id):
+            demisto.debug(f"Cannot block ip list. Endpoint {endpoint_id} is not connected.")
+            return [{"ip_address": ip_address, "group_id": None, "endpoint_id": endpoint_id} for ip_address in ip_list]
+
+        for ip_address in ip_list:
+            demisto.debug(f"Blocking ip address: {ip_address}")
+            response = self._http_request(
+                method="POST",
+                headers=self._headers,
+                url_suffix="/endpoints/block_ip",
+                json_data={
+                    "request_data": {
+                        "addresses": [ip_address],
+                        "endpoint_id": endpoint_id,
+                        "direction": "both",
+                        "duration": duration,
+                    }
+                },
+            )
+            group_id = response.get("reply", {}).get("group_action_id")
+            demisto.debug(f"Block request for {ip_address} returned with group_id {group_id}")
+            results.append(
+                {
+                    "ip_address": ip_address,
+                    "group_id": group_id,
+                    "endpoint_id": endpoint_id,
+                }
+            )
+
+        return results
+
+    def fetch_block_status(self, group_id: int, endpoint_id: str) -> tuple[str, str]:
+        """
+        Check for status of blocking ip action.
+
+        Args:
+            group_id (int): The group id returned from the block request.
+            endpoint_id (str): The ID of the endpoint whose block status is being checked.
+
+        Returns:
+            tuple[str, str]:
+                - status: The returned status from the api.
+                - message: The returned error text.
+        """
+        if not self._is_endpoint_connected(endpoint_id) or not group_id:
+            demisto.debug(f"Cannot fetch status. Endpoint {endpoint_id} is not connected.")
+            return "Failure", "Endpoint Disconnected"
+
+        if group_id == "INVALID_IP":
+            return "Failure", "INVALID_IP"
+
+        reply = self.action_status_get(group_id)
+        status = reply.get("data", {}).get(endpoint_id)
+        error_reasons = reply.get("errorReasons", {})
+        if status == "FAILED":
+            reason = error_reasons.get(endpoint_id, {})
+            text = reason.get("errorText")
+
+            if not text and reason.get("errorData"):
+                try:
+                    payload = json.loads(reason["errorData"])
+                    text = payload.get("errorText")
+                except (ValueError, TypeError):
+                    text = reason["errorData"]
+
+            match = re.search(r"error code\s*(-?\d+)", text or "")
+            error_number = int(match.group(1)) if match else 0
+
+            demisto.debug(f"Error number {error_number}")
+            return "Failure", ERROR_CODE_MAP.get(error_number) or text or "Unknown error"
+
+        if status == "COMPLETED_SUCCESSFULLY":
+            return "Success", ""
+
+        return status or "Unknown", ""
+
+    def get_contributing_event_by_alert_id(self, alert_id: int):
+        """_summary_
+
+        Args:
+            alert_id (int): _description_
+
+        Returns:
+            _type_: _description_
+        """
+        request_data = {
+            "request_data": {
+                "alert_id": alert_id,
+            }
+        }
+        try:
+            reply = self._http_request(
+                method="POST",
+                json_data=request_data,
+                headers=self._headers,
+                url_suffix="/alerts/get_correlation_alert_data/",
+            )
+
+            return reply
+        except Exception as e:
+            if "[404]" in str(e):
+                raise DemistoException(f"Got 404 when querying for alert ID {alert_id}, alert not found.")
+            else:
+                raise e
 
 
 def report_incorrect_wildfire_command(client: Client, args) -> CommandResults:
@@ -294,7 +439,8 @@ def core_execute_command_reformat_readable_output(script_res: list) -> str:
             for key in EXECUTE_COMMAND_READABLE_OUTPUT_FIELDS:
                 reformatted_result[key] = res.get(key)
             # remove the underscore prefix from the command name
-            reformatted_result["command"] = reformatted_result["command"].removeprefix("_")
+            if isinstance(reformatted_result["command"], str):
+                reformatted_result["command"] = reformatted_result["command"].removeprefix("_")
             reformatted_results.append(reformatted_result)
     return tableToMarkdown(
         f'Script Execution Results for Action ID: {script_res[0].outputs["action_id"]}',
@@ -315,9 +461,12 @@ def core_execute_command_reformat_command_data(result: dict) -> dict:
     Returns:
         dict: all relevant command data from the result
     """
-    reformatted_command = {"command": result["command"].removeprefix("_")}  # remove the underscore prefix from the command name
+    reformatted_command = {}
     for key in COMMAND_DATA_KEYS:
         reformatted_command[key] = result.get(key)
+    reformatted_command["command"] = (
+        result["command"].removeprefix("_") if isinstance(result.get("command"), str) else None
+    )  # remove the underscore prefix from the command name
     return reformatted_command
 
 
@@ -341,22 +490,21 @@ def core_execute_command_reformat_outputs(script_res: list) -> list:
                 new_results[endpoint_id]["executed_command"].append(core_execute_command_reformat_command_data(res))
                 # the context output include for each result a field with the name of each command, we want to remove it
                 command_name = res.get("command")
-                new_results[endpoint_id].pop(command_name)
+                new_results[endpoint_id].pop(command_name, None)
             else:
                 # if the endpoint doesn't already exist - adding all the data into new_results[endpoint]
                 # relocate all the data related to the command to be under executed_command
                 reformatted_res = deepcopy(res)
                 reformatted_res["executed_command"] = [core_execute_command_reformat_command_data(res)]
                 # remove from reformatted_res all the data we put under executed_command
-                command_name = reformatted_res.pop("command")
-                reformatted_res.pop(command_name)
+                command_name = reformatted_res.pop("command", None)
+                reformatted_res.pop(command_name, None)
                 for key in COMMAND_DATA_KEYS:
-                    reformatted_res.pop(key)
+                    reformatted_res.pop(key, None)
                 new_results[endpoint_id] = reformatted_res
     # reformat new_results from {"endpoint_id_1": {values_1}, "endpoint_id_2": {values_2}}
     # to [{values_1}, {values_2}] (values include the endpoint_id)
-    reformatted_results = [new_results[i] for i in new_results]
-    return reformatted_results
+    return list(new_results.values())
 
 
 def core_execute_command_reformat_args(args: dict) -> dict:
@@ -515,6 +663,157 @@ def core_add_indicator_rule_command(client: Client, args: dict) -> CommandResult
     )
 
 
+def core_get_contributing_event_command(client: Client, args: Dict) -> CommandResults:
+    """Gets the contributing events for specific alert IDs.
+
+    Args:
+        client (Client): The Core client
+        args (dict): Dictionary containing the arguments for the command.
+
+    Returns:
+        CommandResults: Object containing the formatted asset details,
+                        raw response, and outputs for integration context.
+    """
+    alert_ids = argToList(args.get("alert_ids"))
+    alerts = []
+
+    for alert_id in alert_ids:
+        if alert := client.get_contributing_event_by_alert_id(int(alert_id)).get("reply", {}):
+            page_number = max(int(args.get("page_number", 1)), 1) - 1  # Min & default zero (First page)
+            page_size = max(int(args.get("page_size", 50)), 0)  # Min zero & default 50
+            offset = page_number * page_size
+            limit = max(int(args.get("limit", 0)), 0) or offset + page_size
+
+            alert_with_events = {
+                "alertID": str(alert_id),
+                "events": alert.get("events", [])[offset:limit],
+            }
+            alerts.append(alert_with_events)
+
+    readable_output = tableToMarkdown(
+        "Contributing events", alerts, headerTransform=pascalToSpace, removeNull=True, is_auto_json_transform=True
+    )
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.ContributingEvent",
+        outputs_key_field="alertID",
+        outputs=alerts,
+        raw_response=alerts,
+    )
+
+
+def polling_block_ip_status(args, client) -> PollResult:
+    """
+    Check action status for each endpoint id and ip address.
+    Due limitation of the polling each time will check all combinations.
+    Will stop polling when all statuses of the requests are Success/Failure.
+
+    Args:
+        args (dict):
+            ip_list list[str]: IPs to block.
+            endpoint_list list[str]: Endpoint IDs.
+            duration (int, optional): Block time in seconds (default: 300).
+            blocked_list list[str]: Action IDs to poll.
+        client (Client): Integration client.
+    """
+    polling_queue = argToList(args.get("blocked_list", []))
+    demisto.debug(f"polling queue length:{len(polling_queue)}")
+
+    results = []
+    for polled_action in polling_queue:
+        demisto.debug(
+            f"Polled action: endpoint={polled_action['endpoint_id']}, "
+            f"group={polled_action['group_id']}, address={polled_action['ip_address']}"
+        )
+        status, message = client.fetch_block_status(polled_action["group_id"], polled_action["endpoint_id"])
+        demisto.debug(f"polled action status:{status}, with message:{message}")
+        if status == "Success":
+            results.append(
+                {"ip_address": polled_action["ip_address"], "endpoint_id": polled_action["endpoint_id"], "reason": "Success"}
+            )
+
+        elif status == "Failure":
+            results.append(
+                {
+                    "ip_address": polled_action["ip_address"],
+                    "endpoint_id": polled_action["endpoint_id"],
+                    "reason": f"{status}: {message}",
+                }
+            )
+
+        else:
+            demisto.debug("Polling continue")
+            return PollResult(
+                response=None,
+                partial_result=CommandResults(readable_output="Blocking in progress..."),
+                continue_to_poll=True,
+                args_for_next_run=args,
+            )
+
+    response = CommandResults(
+        readable_output=tableToMarkdown(
+            name="Results",
+            t=results,
+        ),
+        outputs_prefix="Core.ip_block_results",
+        outputs=results,
+    )
+
+    return PollResult(response=response, continue_to_poll=False, args_for_next_run=args)
+
+
+@polling_function("core-block-ip", interval=10, timeout=60, requires_polling_arg=False)
+def core_block_ip_command(args: dict, client: Client) -> PollResult:
+    """
+    Send block IP requests for each IP address on each endpoint.
+    Polls status of the requests until all status are Success/Failure or until timeout.
+
+    Args:
+        args (dict):
+            addresses list[str]: IPs to block.
+            endpoint_list list[str]: Endpoint IDs.
+            duration (int, optional): Block time in seconds (default: 300).
+            blocked_list list[dict]: list of dicts each holds 3 fields: ip_address, group_id, endpoint_id
+            for polling status of requests only.
+        client (Client): client.
+
+    Returns:
+        PollResult: Schedules or returns poll status/result.
+    """
+    if not args.get("blocked_list"):
+        # First call when no block ip request has done
+        ip_list = argToList(args.get("addresses", []))
+        endpoint_list = argToList(args.get("endpoint_list", []))
+        duration = arg_to_number(args.get("duration")) or 300
+
+        if duration <= 0 or duration >= 518400:
+            raise DemistoException("Duration must be greater than 0 and less than 518,400 minutes (approx 12 months).")
+
+        is_ip_list_valid(ip_list)
+
+        blocked_list = []
+
+        for endpoint_id in endpoint_list:
+            blocked_list.extend(client.block_ip_request(endpoint_id, ip_list, duration))
+        args_for_next_run = {"blocked_list": blocked_list, **args}
+        return polling_block_ip_status(args_for_next_run, client)
+    else:
+        # all other calls after the block ip requests sent
+        return polling_block_ip_status(args, client)
+
+
+def is_ip_list_valid(ip_list: list[str]):
+    """
+    Validates all the ip addresses.
+    Return error in case one of the inputs is invalid.
+    Args:
+        ip_list (list[str]): list of ip address to check.
+    """
+    for ip_address in ip_list:
+        if not is_ip_valid(ip_address) and not is_ipv6_valid(ip_address):
+            raise DemistoException(f"ip address {ip_address} is invalid")
+
+
 def main():  # pragma: no cover
     """
     Executes an integration command
@@ -531,17 +830,11 @@ def main():  # pragma: no cover
         api_key_id = demisto.params().get("apikey_id")
         url = demisto.params().get("url")
 
-        if not api_key or not api_key_id or not url:
-            headers = {
-                "HOST": demisto.getLicenseCustomField("Core.ApiHostName"),
-                demisto.getLicenseCustomField("Core.ApiHeader"): demisto.getLicenseCustomField("Core.ApiKey"),
-                "Content-Type": "application/json",
-            }
-            url = "http://" + demisto.getLicenseCustomField("Core.ApiHost") + "/api/webapp/"
-            add_sensitive_log_strs(demisto.getLicenseCustomField("Core.ApiKey"))
-        else:
-            headers = {"Content-Type": "application/json", "x-xdr-auth-id": str(api_key_id), "Authorization": api_key}
-            add_sensitive_log_strs(api_key)
+        if not all((api_key, api_key_id, url)):
+            raise DemistoException("Please provide the following parameters: Server URL, API Key, API Key ID")
+
+        headers = {"Content-Type": "application/json", "x-xdr-auth-id": str(api_key_id), "Authorization": api_key}
+        add_sensitive_log_strs(api_key)
     else:
         url = "/api/webapp/"
     base_url = urljoin(url, url_suffix)
@@ -904,6 +1197,12 @@ def main():  # pragma: no cover
 
         elif command == "core-add-indicator-rule":
             return_results(core_add_indicator_rule_command(client, args))
+
+        elif command == "core-get-contributing-event":
+            return_results(core_get_contributing_event_command(client, args))
+
+        elif command == "core-block-ip":
+            return_results(core_block_ip_command(args, client))
 
         elif command in PREVALENCE_COMMANDS:
             return_results(handle_prevalence_command(client, command, args))

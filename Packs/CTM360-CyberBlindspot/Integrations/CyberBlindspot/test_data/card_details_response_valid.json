@@ -1,16 +1,16 @@
 {
-    "first_seen": "24-11-2024 09:23:11 PM",
-    "last_seen": "24-11-2024 09:23:11 PM",
-    "breach_source": [
-        "Pure Incubation"
-    ],
-    "domain": "example.local",
-    "type": "",
-    "remarks": "Pure Incubation Breach - yash.abc@example.local",
-    "email": "yash.abc@example.local",
-    "username": "yser",
-    "password": "ypass123!",
+    "first_seen": "25-12-2024 09:16:59 AM",
+    "last_seen": "25-12-2024 09:16:59 AM",
+    "card_number": "0123456789012345",
+    "cvv": "123",
+    "expiry_month": 4,
+    "expiry_year": 2026,
     "brand": "RiskAssess Demo",
-    "id": "BC-0D7FDA777",
-    "status": "new"
+    "external_link": "https://platform.ctm360.com/cbs/leaks/compromised_cards?filters=[]&searchQuery=LC-A1E4B2F49&selectedSearchField=leak_id",
+    "id": "LC-A1E4B2F49",
+    "status": "new",
+    "timestamp": 1735107419000,
+    "severity":"Low",
+    "type":"Compromised Cards",
+    "remarks":"Compromised Card 0123456789012345"
 }
