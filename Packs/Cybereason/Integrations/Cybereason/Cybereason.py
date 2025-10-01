@@ -176,10 +176,11 @@ class Client(BaseClient):
         retries: int = 0,
         backoff_factor: int = 5,
     ) -> Any:
-        demisto.info(f"running request with url={SERVER + url_suffix}. API Query: {json_body}")
+        demisto.info(f"cybereason_api_call: running request with url={SERVER + url_suffix}. API Query: {json_body}")
 
-        try:
-            res = self._http_request(
+        # Helper function to perform the API call
+        def make_request():
+            return self._http_request(
                 method,
                 url_suffix=url_suffix,
                 data=data,
@@ -190,6 +191,25 @@ class Client(BaseClient):
                 retries=retries,
                 backoff_factor=backoff_factor,
             )
+        try:
+            res = make_request()
+            # Check for redirection to login page logic
+            if res.status_code == 200 and "login" not in url_suffix and "login" in str(res.url):
+                demisto.info("cybereason_api_call: Token Trigger In Retry method: Session expired, logging in again.")
+
+                new_token, login_time = login(self) 
+                
+                # Update context and headers
+                integration_context = get_integration_context() # You might need to make integration_context global or pass it around if it's not
+                integration_context["jsession_id"] = new_token
+                integration_context["valid_until"] = login_time + 600
+                set_integration_context(integration_context)
+                HEADERS["Cookie"] = f"JSESSIONID={new_token}"
+                demisto.info(f"cybereason_api_call: New token generated: {new_token}. Retrying original request.")
+                
+                # Retry the request with the new token
+                res = make_request()
+
             if custom_response:
                 return res
             if res.status_code not in [200, 204]:
@@ -1740,6 +1760,7 @@ def fetch_incidents(client: Client):
 
 
 def login(client: Client):
+    demisto.debug("login: function initiated")
     headers = {
         "Content-Type": "application/x-www-form-urlencoded",
         "Connection": "close",
@@ -1752,7 +1773,7 @@ def login(client: Client):
 
 
 def validate_jsession(client: Client, explicit_refresh = False):
-    creation_time = int(time.time())
+    current_time = int(time.time())
     integration_context = get_integration_context()
     token = integration_context.get('jsession_id')
     valid_until = integration_context.get('valid_until')
