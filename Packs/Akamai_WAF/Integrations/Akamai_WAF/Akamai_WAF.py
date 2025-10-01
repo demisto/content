@@ -965,7 +965,7 @@ class Client(BaseClient):
             SyncPoint = None
             Name = None
             Type = None
-            demisto.results("Could not get the Sync Point...")
+            return {"message": "Could not get the Sync Point..."}
 
         body = {"name": Name, "syncPoint": SyncPoint, "type": Type, "list": elements}
 
@@ -1595,7 +1595,7 @@ class Client(BaseClient):
         )
 
     # created by D.S.
-    def list_security_policy(self, config_id: str, config_version):
+    def list_security_policy(self, config_id: str, config_version: str):
         """
             List security policy
         Args:
@@ -1635,7 +1635,7 @@ class Client(BaseClient):
         )
 
     # created by D.S.
-    def get_papi_property_activation_status(self, activation_id: int, property_id):
+    def get_papi_property_activation_status(self, activation_id: int, property_id: int):
         """
             Get papi property activation Status
         Args:
@@ -2782,7 +2782,7 @@ def get_list_from_file(entry_id: str = None) -> list:
         with open(list_path) as list_file:
             elements += list_file.read().split("\n")
     except Exception as ex:
-        return_error(f"Failed to open txt file: {ex}")
+        raise DemistoException(f"Failed to open txt file: {ex}")
     return elements
 
 
@@ -3664,7 +3664,7 @@ def create_client_list_command(
     entry_value: str = None,
     entry_description: str = None,
     entry_expiration_date: str = None,
-    entry_tags: list = None,
+    entry_tags: str = None,
 ) -> tuple[str, dict, dict]:
     """
     Creates a client list.
@@ -3679,7 +3679,7 @@ def create_client_list_command(
         entry_value: The value for a single entry in the client list.
         entry_description: A description for the entry.
         entry_expiration_date: The expiration date for the entry.
-        entry_tags: A list of tags for the entry.
+        entry_tags: A comma-separated list of tags for the entry.
     Returns:
         Human readable, context entry, raw response
     """
@@ -4673,7 +4673,7 @@ def clone_papi_property_command(
     group_id: str,
     property_id: str,
     version: str,
-    check_existence_before_create="yes",
+    check_existence_before_create: str = "yes",
 ) -> tuple[str, dict, Union[list, dict]]:
     """
         Post clone property command
@@ -4832,7 +4832,7 @@ def new_papi_edgehostname_command(
     secure: str,
     secure_network: str,
     cert_enrollment_id: str,
-    check_existence_before_create="yes",
+    check_existence_before_create: str = "yes",
 ) -> tuple[str, dict, Union[list, dict]]:
     """
         add papi edge hostname command
@@ -4937,7 +4937,7 @@ def get_cps_enrollmentid_by_cnname_command(
 # Created by D.S.
 @logger
 def new_papi_cpcode_command(
-    client: Client, product_id: str, contract_id: str, group_id: str, cpcode_name: str, check_existence_before_create="yes"
+    client: Client, product_id: str, contract_id: str, group_id: str, cpcode_name: str, check_existence_before_create: str = "yes"
 ) -> tuple[str, dict, Union[list, dict]]:
     """
         get papi property All Versions by group_id and property_id command
@@ -5268,7 +5268,7 @@ def clone_security_policy_command(
                 isErrored = True
                 if "You entered a Policy ID that already exists." not in str(e):
                     err_msg = f"Error in {INTEGRATION_NAME} Integration [{e}]"
-                    return_error(err_msg, error=e)
+                    raise DemistoException(f"{err_msg} error: {e}")
             if not isErrored:
                 isDuplicated = False
         if raw_response:
@@ -7354,7 +7354,7 @@ def generic_api_call_command(
             been exhausted.
 
         :type empty_valid_codes: sinlge integer or ``comma separated integers``
-        :param empty_valid_codes: A list of all valid status codes of empty responses (usually only 204, but
+        :param empty_valid_codes: A comma separated list of all valid status codes of empty responses (usually only 204, but
             can vary)
 
         :type with_metrics ``bool``
@@ -7543,11 +7543,7 @@ def main():
     }
     try:
         readable_output, outputs, raw_response = commands[command](client=client, **demisto.args())
-        demisto.debug(f"After command: {command}")
-        demisto.debug(f"readable_output: {readable_output} type: {type(readable_output)}")
-        demisto.debug(f"outputs: {outputs} type: {type(outputs)}")
-        demisto.debug(f"raw_response: {raw_response} type: {type(raw_response)}")
-        return_outputs(readable_output, outputs, raw_response)
+        return CommandResults(readable_output, outputs, raw_response)
 
     except Exception as e:
         err_msg = f"Error in {INTEGRATION_NAME} Integration [{e}]"
