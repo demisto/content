@@ -904,7 +904,7 @@ def get_security_signal_command(
         DemistoException: If signal_id is not provided or API call fails
     """
     signal_id = args.get("signal_id")
-    fetch_ioc = args.get("fetch_ioc", False)
+    fetch_ioc = arg_to_bool_or_none(args.get("fetch_ioc", False))
 
     if not signal_id:
         raise DemistoException("Signal ID is required. Please provide signal_id parameter.")
@@ -992,7 +992,7 @@ def get_security_signal_list_command(
         DemistoException: If API call fails or invalid arguments provided
     """
     try:
-        fetch_ioc = args.get("fetch_ioc", False)
+        fetch_ioc = arg_to_bool_or_none(args.get("fetch_ioc", False))
         page_size = arg_to_number(args.get("page_size"), arg_name="page_size")
         limit = arg_to_number(args.get("limit"), arg_name="limit")
         limit = calculate_limit(limit, page_size)
