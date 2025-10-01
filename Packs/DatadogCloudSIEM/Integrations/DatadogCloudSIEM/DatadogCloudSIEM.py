@@ -904,6 +904,7 @@ def get_security_signal_command(
         DemistoException: If signal_id is not provided or API call fails
     """
     signal_id = args.get("signal_id")
+    fetch_ioc = args.get("fetch_ioc", False)
 
     if not signal_id:
         raise DemistoException("Signal ID is required. Please provide signal_id parameter.")
@@ -929,7 +930,9 @@ def get_security_signal_command(
             signal = parse_security_signal(data)
 
             # Extract IOCs from the signal for standard XSOAR context
-            indicators = extract_iocs_from_signal(signal)
+            indicators: list[Common.Indicator] = []
+            if fetch_ioc:
+                indicators = extract_iocs_from_signal(signal)
 
             # Create human-readable summary using the display dictionary
             signal_display = signal.to_display_dict()
@@ -968,7 +971,7 @@ def get_security_signal_command(
         raise DemistoException(f"Failed to get security signal {signal_id}: {str(e)}")
 
 
-def get_security_signals_command(
+def get_security_signal_list_command(
     configuration: Configuration,
     args: dict[str, Any],
 ) -> list[CommandResults]:
@@ -989,6 +992,7 @@ def get_security_signals_command(
         DemistoException: If API call fails or invalid arguments provided
     """
     try:
+        fetch_ioc = args.get("fetch_ioc", False)
         page_size = arg_to_number(args.get("page_size"), arg_name="page_size")
         limit = arg_to_number(args.get("limit"), arg_name="limit")
         limit = calculate_limit(limit, page_size)
@@ -1039,8 +1043,9 @@ def get_security_signals_command(
             display_data.append(signal.to_display_dict())
 
             # Extract IOCs from each signal
-            signal_indicators = extract_iocs_from_signal(signal)
-            all_indicators.extend(signal_indicators)
+            if fetch_ioc:
+                signal_indicators = extract_iocs_from_signal(signal)
+                all_indicators.extend(signal_indicators)
 
         # Create summary of all IOCs found across signals
         ioc_summary = ""
@@ -1451,10 +1456,11 @@ def main() -> None:
         configuration.api_key["apiKeyAuth"] = params.get("api_key")
         configuration.api_key["appKeyAuth"] = params.get("app_key")
         configuration.server_variables["site"] = params.get("site")
+        args["fetch_ioc"] = params.get("fetch_ioc", False)
 
         commands = {
             "datadog-security-signal-get": get_security_signal_command,
-            "datadog-security-signals-list": get_security_signals_command,
+            "datadog-security-signal-list": get_security_signal_list_command,
             "datadog-security-signal-assignee-update": update_security_signal_assignee_command,
             "datadog-security-signal-state-update": update_security_signal_state_command,
             "datadog-logs-search": logs_search_command,
