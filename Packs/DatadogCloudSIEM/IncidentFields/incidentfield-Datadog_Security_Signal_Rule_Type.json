@@ -1,6 +1,6 @@
 {
     "associatedToAll": false,
-    "associatedTypes": ["Datadog Cloud SIEM"],
+    "associatedTypes": ["DatadogCloudSIEM"],
     "caseInsensitive": true,
     "cliName": "datadogsecuritysignalruletype",
     "closeForm": false,
@@ -10,7 +10,7 @@
     "group": 0,
     "hidden": false,
     "id": "incident_datadogsecuritysignalruletype",
-    "isReadOnly": false,
+    "isReadOnly": true,
     "locked": false,
     "name": "Datadog Security Signal Rule Type",
     "neverSetAsRequired": false,

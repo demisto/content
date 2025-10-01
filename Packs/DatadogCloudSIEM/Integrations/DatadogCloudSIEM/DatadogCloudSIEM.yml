@@ -6,20 +6,27 @@ configuration:
   - additionalinfo: Datadog website URL
     display: Server URL
     name: site
+    type: 15
+    options:
+      - datadoghq.com
+      - us3.datadoghq.com
+      - us5.datadoghq.com
+      - ap1.datadoghq.com
+      - ap2.datadoghq.com
+      - datadoghq.eu
+      - ddog-gov.com
+    defaultvalue: "datadoghq.com"
     required: true
-    type: 0
   - additionalinfo: The API Key to use for authentication
     display: API Key
     name: api_key
     type: 4
     required: true
-    hidden: true
   - additionalinfo: The APP Key to use for authentication
     display: APP Key
     name: app_key
     type: 4
     required: true
-    hidden: true
   - display: Fetch incidents
     name: isFetch
     type: 8
@@ -43,14 +50,15 @@ configuration:
   - additionalinfo: Fetch only security signals with these severity levels. Comma-separated list. Leave empty to fetch all severities.
     display: Fetch severity
     name: fetch_severity
-    type: 0
-    required: false
-    predefined:
+    type: 15
+    options:
       - info
       - low
       - medium
       - high
       - critical
+    defaultvalue: "medium"
+    required: false
   - additionalinfo: Fetch only security signals in this state. Default is "open".
     display: Fetch state
     name: fetch_state
@@ -66,12 +74,6 @@ configuration:
     name: fetch_query
     type: 0
     required: false
-  - additionalinfo: Whether to fetch IOCs (Indicators of Compromise) when fetching security signals.
-    display: Fetch IOC
-    name: fetch_ioc
-    type: 8
-    required: false
-    defaultvalue: false
 description: Datadog Cloud SIEM integration for XSOAR provides security signal management capabilities. This integration allows you to retrieve, filter, and manage security signals from Datadog's Cloud SIEM platform, enabling security teams to investigate threats, manage signal triage states, and assign signals to team members.
 display: Datadog Cloud SIEM
 name: DatadogCloudSIEM
@@ -161,8 +163,6 @@ script:
             - medium
             - high
             - critical
-        - description: Filter signals by rule name.
-          name: rule_name
         - description: Filter signals by source.
           name: source
         - description: Custom query string for advanced filtering. Uses Datadog search syntax.
@@ -325,6 +325,16 @@ script:
             - archived
         - description: Reason for the state change (required for archived state).
           name: reason
+          auto: PREDEFINED
+          predefined:
+            - none
+            - false_positive
+            - testing_or_maintenance
+            - remediated
+            - investigated_case_opened
+            - other
+            - true_positive_benign
+            - true_positive_malicious
         - description: Comment about the state change (for archived state).
           name: comment
       name: datadog-security-signal-state-update
@@ -354,8 +364,6 @@ script:
     - arguments:
         - description: Custom search query string. Uses Datadog search syntax.
           name: query
-        - description: Filter logs by service name.
-          name: service
         - description: Filter logs by host name.
           name: host
         - description: Filter logs by source.
@@ -416,6 +424,8 @@ script:
   script: "-"
   subtype: python3
   type: python
+defaultclassifier: Datadog Cloud SIEM
+defaultmapperin: Datadog Cloud SIEM - Incoming Mapper
 tests:
   - DatadogCloudSIEM
 fromversion: 6.8.0

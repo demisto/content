@@ -146,7 +146,10 @@ def test_get_security_signal_command_success(configuration, security_signal_resp
     mock_response = MagicMock()
     mock_response.to_dict.return_value = security_signal_response
 
-    with patch("DatadogCloudSIEM.ApiClient"), patch("DatadogCloudSIEM.SecurityMonitoringApi") as mock_api:
+    with (
+        patch("DatadogCloudSIEM.ApiClient"),
+        patch("DatadogCloudSIEM.SecurityMonitoringApi") as mock_api,
+    ):
         mock_api_instance = MagicMock()
         mock_api.return_value = mock_api_instance
         mock_api_instance.get_security_monitoring_signal.return_value = mock_response
@@ -157,7 +160,9 @@ def test_get_security_signal_command_success(configuration, security_signal_resp
         assert len(results) == 1
         assert isinstance(results[0], CommandResults)
         assert results[0].outputs["id"] == "AQAAAYvz-1234567890"  # type: ignore
-        mock_api_instance.get_security_monitoring_signal.assert_called_once_with(signal_id="AQAAAYvz-1234567890")
+        mock_api_instance.get_security_monitoring_signal.assert_called_once_with(
+            signal_id="AQAAAYvz-1234567890"
+        )
 
 
 def test_get_security_signal_command_with_ioc(configuration, security_signal_response):
@@ -174,7 +179,10 @@ def test_get_security_signal_command_with_ioc(configuration, security_signal_res
     mock_response = MagicMock()
     mock_response.to_dict.return_value = security_signal_response
 
-    with patch("DatadogCloudSIEM.ApiClient"), patch("DatadogCloudSIEM.SecurityMonitoringApi") as mock_api:
+    with (
+        patch("DatadogCloudSIEM.ApiClient"),
+        patch("DatadogCloudSIEM.SecurityMonitoringApi") as mock_api,
+    ):
         mock_api_instance = MagicMock()
         mock_api.return_value = mock_api_instance
         mock_api_instance.get_security_monitoring_signal.return_value = mock_response
@@ -194,7 +202,10 @@ def test_get_security_signal_command_not_found(configuration):
     mock_response = MagicMock()
     mock_response.to_dict.return_value = {"data": {}}
 
-    with patch("DatadogCloudSIEM.ApiClient"), patch("DatadogCloudSIEM.SecurityMonitoringApi") as mock_api:
+    with (
+        patch("DatadogCloudSIEM.ApiClient"),
+        patch("DatadogCloudSIEM.SecurityMonitoringApi") as mock_api,
+    ):
         mock_api_instance = MagicMock()
         mock_api.return_value = mock_api_instance
         mock_api_instance.get_security_monitoring_signal.return_value = mock_response
@@ -214,7 +225,9 @@ def test_get_security_signal_command_missing_signal_id(configuration):
         get_security_signal_command(configuration, args)
 
 
-def test_get_security_signal_list_command_success(configuration, security_signals_list_response):
+def test_get_security_signal_list_command_success(
+    configuration, security_signals_list_response
+):
     """Test get_security_signal_list_command with default parameters."""
     args = {"limit": "50", "fetch_ioc": "false"}
 
@@ -246,7 +259,9 @@ def test_get_security_signal_list_command_success(configuration, security_signal
         assert len(results[0].outputs) == 2  # type: ignore
 
 
-def test_get_security_signal_list_command_with_filters(configuration, security_signals_list_response):
+def test_get_security_signal_list_command_with_filters(
+    configuration, security_signals_list_response
+):
     """Test get_security_signal_list_command with severity and state filters."""
     args = {
         "state": "open",
@@ -258,10 +273,15 @@ def test_get_security_signal_list_command_with_filters(configuration, security_s
     mock_response = MagicMock()
     mock_response.to_dict.return_value = security_signals_list_response
 
-    with patch("DatadogCloudSIEM.ApiClient"), patch("DatadogCloudSIEM.SecurityMonitoringApi") as mock_api:
+    with (
+        patch("DatadogCloudSIEM.ApiClient"),
+        patch("DatadogCloudSIEM.SecurityMonitoringApi") as mock_api,
+    ):
         mock_api_instance = MagicMock()
         mock_api.return_value = mock_api_instance
-        mock_api_instance.search_security_monitoring_signals.return_value = mock_response
+        mock_api_instance.search_security_monitoring_signals.return_value = (
+            mock_response
+        )
 
         results = get_security_signal_list_command(configuration, args)
 
@@ -269,17 +289,24 @@ def test_get_security_signal_list_command_with_filters(configuration, security_s
         assert len(results) >= 1
 
 
-def test_get_security_signal_list_command_with_ioc(configuration, security_signals_list_response):
+def test_get_security_signal_list_command_with_ioc(
+    configuration, security_signals_list_response
+):
     """Test get_security_signal_list_command with IOC extraction enabled."""
     args = {"limit": "50", "fetch_ioc": "true"}
 
     mock_response = MagicMock()
     mock_response.to_dict.return_value = security_signals_list_response
 
-    with patch("DatadogCloudSIEM.ApiClient"), patch("DatadogCloudSIEM.SecurityMonitoringApi") as mock_api:
+    with (
+        patch("DatadogCloudSIEM.ApiClient"),
+        patch("DatadogCloudSIEM.SecurityMonitoringApi") as mock_api,
+    ):
         mock_api_instance = MagicMock()
         mock_api.return_value = mock_api_instance
-        mock_api_instance.search_security_monitoring_signals.return_value = mock_response
+        mock_api_instance.search_security_monitoring_signals.return_value = (
+            mock_response
+        )
 
         results = get_security_signal_list_command(configuration, args)
 
@@ -295,10 +322,15 @@ def test_get_security_signal_list_command_no_results(configuration):
     mock_response = MagicMock()
     mock_response.to_dict.return_value = {"data": [], "meta": {}}
 
-    with patch("DatadogCloudSIEM.ApiClient"), patch("DatadogCloudSIEM.SecurityMonitoringApi") as mock_api:
+    with (
+        patch("DatadogCloudSIEM.ApiClient"),
+        patch("DatadogCloudSIEM.SecurityMonitoringApi") as mock_api,
+    ):
         mock_api_instance = MagicMock()
         mock_api.return_value = mock_api_instance
-        mock_api_instance.search_security_monitoring_signals.return_value = mock_response
+        mock_api_instance.search_security_monitoring_signals.return_value = (
+            mock_response
+        )
 
         results = get_security_signal_list_command(configuration, args)
 
@@ -330,10 +362,15 @@ def test_update_security_signal_assignee_command_success(configuration):
         },
     }
 
-    with patch("DatadogCloudSIEM.ApiClient"), patch("DatadogCloudSIEM.SecurityMonitoringApi") as mock_api:
+    with (
+        patch("DatadogCloudSIEM.ApiClient"),
+        patch("DatadogCloudSIEM.SecurityMonitoringApi") as mock_api,
+    ):
         mock_api_instance = MagicMock()
         mock_api.return_value = mock_api_instance
-        mock_api_instance.edit_security_monitoring_signal_assignee.return_value = mock_response
+        mock_api_instance.edit_security_monitoring_signal_assignee.return_value = (
+            mock_response
+        )
 
         result = update_security_signal_assignee_command(configuration, args)
 
@@ -362,10 +399,15 @@ def test_update_security_signal_state_command_success(configuration):
         },
     }
 
-    with patch("DatadogCloudSIEM.ApiClient"), patch("DatadogCloudSIEM.SecurityMonitoringApi") as mock_api:
+    with (
+        patch("DatadogCloudSIEM.ApiClient"),
+        patch("DatadogCloudSIEM.SecurityMonitoringApi") as mock_api,
+    ):
         mock_api_instance = MagicMock()
         mock_api.return_value = mock_api_instance
-        mock_api_instance.edit_security_monitoring_signal_state.return_value = mock_response
+        mock_api_instance.edit_security_monitoring_signal_state.return_value = (
+            mock_response
+        )
 
         result = update_security_signal_state_command(configuration, args)
 
@@ -418,7 +460,10 @@ def test_logs_search_command_success(configuration, logs_search_response):
     mock_response = MagicMock()
     mock_response.to_dict.return_value = logs_search_response
 
-    with patch("DatadogCloudSIEM.ApiClient"), patch("DatadogCloudSIEM.LogsApi") as mock_api:
+    with (
+        patch("DatadogCloudSIEM.ApiClient"),
+        patch("DatadogCloudSIEM.LogsApi") as mock_api,
+    ):
         mock_api_instance = MagicMock()
         mock_api.return_value = mock_api_instance
         mock_api_instance.list_logs.return_value = mock_response
@@ -443,7 +488,10 @@ def test_logs_search_command_with_filters(configuration, logs_search_response):
     mock_response = MagicMock()
     mock_response.to_dict.return_value = logs_search_response
 
-    with patch("DatadogCloudSIEM.ApiClient"), patch("DatadogCloudSIEM.LogsApi") as mock_api:
+    with (
+        patch("DatadogCloudSIEM.ApiClient"),
+        patch("DatadogCloudSIEM.LogsApi") as mock_api,
+    ):
         mock_api_instance = MagicMock()
         mock_api.return_value = mock_api_instance
         mock_api_instance.list_logs.return_value = mock_response
@@ -463,7 +511,10 @@ def test_logs_search_command_no_results(configuration):
     mock_response = MagicMock()
     mock_response.to_dict.return_value = {"data": [], "meta": {}}
 
-    with patch("DatadogCloudSIEM.ApiClient"), patch("DatadogCloudSIEM.LogsApi") as mock_api:
+    with (
+        patch("DatadogCloudSIEM.ApiClient"),
+        patch("DatadogCloudSIEM.LogsApi") as mock_api,
+    ):
         mock_api_instance = MagicMock()
         mock_api.return_value = mock_api_instance
         mock_api_instance.list_logs.return_value = mock_response
@@ -484,7 +535,10 @@ def test_logs_search_command_with_custom_query(configuration, logs_search_respon
     mock_response = MagicMock()
     mock_response.to_dict.return_value = logs_search_response
 
-    with patch("DatadogCloudSIEM.ApiClient"), patch("DatadogCloudSIEM.LogsApi") as mock_api:
+    with (
+        patch("DatadogCloudSIEM.ApiClient"),
+        patch("DatadogCloudSIEM.LogsApi") as mock_api,
+    ):
         mock_api_instance = MagicMock()
         mock_api.return_value = mock_api_instance
         mock_api_instance.list_logs.return_value = mock_response
@@ -538,6 +592,13 @@ def test_fetch_incidents_first_fetch(configuration, mocker):
         assert len(incidents_arg) == 1
         assert incidents_arg[0]["name"] == "Test Security Signal"
         assert incidents_arg[0]["severity"] == 3  # High severity maps to 3
+        assert (
+            incidents_arg[0]["CustomFields"]["datadogsecuritysignalid"] == "signal-123"
+        )
+        assert (
+            incidents_arg[0]["CustomFields"]["datadogsecuritysignalurl"]
+            == "https://app.datadoghq.com/security/signals/signal-123"
+        )
 
 
 def test_fetch_incidents_incremental_fetch(configuration, mocker):
@@ -595,6 +656,16 @@ def test_fetch_incidents_no_results(configuration, mocker):
 
         # Verify empty incidents list was sent
         mock_incidents.assert_called_once_with([])
+
+
+def test_build_security_signal_url():
+    """Test build_security_signal_url constructs correct URLs."""
+    from DatadogCloudSIEM import build_security_signal_url
+
+    assert (
+        build_security_signal_url("signal-123")
+        == "https://app.datadoghq.com/security/signals/signal-123"
+    )
 
 
 def test_security_signals_search_query():

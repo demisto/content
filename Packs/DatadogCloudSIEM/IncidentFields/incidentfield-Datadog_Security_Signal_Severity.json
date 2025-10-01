@@ -1,16 +1,16 @@
 {
     "associatedToAll": false,
-    "associatedTypes": ["Datadog Cloud SIEM"],
+    "associatedTypes": ["DatadogCloudSIEM"],
     "caseInsensitive": true,
     "cliName": "datadogsecuritysignalseverity",
     "closeForm": false,
     "content": true,
-    "description": "The severity level of the security signal (info, low, medium, high, critical).",
+    "description": "The severity level of the Datadog security signal (info, low, medium, high, critical).",
     "editForm": true,
     "group": 0,
     "hidden": false,
     "id": "incident_datadogsecuritysignalseverity",
-    "isReadOnly": false,
+    "isReadOnly": true,
     "locked": false,
     "name": "Datadog Security Signal Severity",
     "neverSetAsRequired": false,
@@ -23,7 +23,7 @@
     "type": "shortText",
     "unmapped": false,
     "unsearchable": false,
-    "useAsKpi": true,
+    "useAsKpi": false,
     "version": -1,
     "fromVersion": "6.8.0"
 }
