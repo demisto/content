@@ -4,7 +4,6 @@ from CommonServerUserPython import *  # noqa: F401  # pylint: disable=import-err
 from datetime import datetime, UTC
 import dateparser
 from typing import Any, cast
-import json
 
 
 class Client(BaseClient):
@@ -345,11 +344,11 @@ def get_ip_report(client: Client, args: dict[str, Any]) -> CommandResults:
         "Country": first_whois.get("org_country_code"),
         "Hostname": first_hostname.get("domain_name_full"),
         "OpenPorts": len(raw.get("port", {}).get("data", [])),
-        "TopPort": first_port.get("open_port_no"),
-        "TopService": first_port.get("app_name"),
+        "ObservedPort": first_port.get("open_port_no"),
+        "ObservedService": first_port.get("app_name"),
         "Vulnerabilities": len(raw.get("vulnerability", {}).get("data", [])),
-        "TopCVE": first_vuln.get("cve_id"),
-        "TopCVSS": first_vuln.get("cvssv3_score"),
+        "ObservedCVE": first_vuln.get("cve_id"),
+        "ObservedCVSS": first_vuln.get("cvssv3_score"),
     }
 
     return CommandResults(
@@ -436,7 +435,10 @@ def check_last_scan_date(client: Client, args: dict[str, Any]) -> CommandResults
     reports = (raw.get("data") or {}).get("reports", [])
     if not reports:
         return CommandResults(
-            readable_output=f"No scan result\n\n(No scan report found for domain {domain})",
+            readable_output=tableToMarkdown(
+                "CriminalIP - Last Scan Date Check",
+                [{"Domain": domain, "Scan ID": "N/A", "Scan Date": "N/A", "Scanned (within 7d)": False}],
+            ),
             outputs_prefix="CriminalIP.Scan_Date",
             outputs_key_field="scan_id",
             outputs={"last_scan_date": None},
@@ -503,6 +505,8 @@ def domain_lite_scan_status(client: Client, args: dict[str, Any]) -> CommandResu
     scan_id = cast(str, scan_id)
 
     raw = client.domain_lite_scan_status(scan_id)
+    if not raw or not raw.get("data"):
+        return_error(f"CriminalIP Error: No status found for scan_id={scan_id}")
     return _wrap_simple_output("CriminalIP.Domain_Lite_Status", raw)
 
 
@@ -513,6 +517,8 @@ def domain_lite_scan_result(client: Client, args: dict[str, Any]) -> CommandResu
     scan_id = cast(str, scan_id)
 
     raw = client.domain_lite_scan_result(scan_id)
+    if not raw or not raw.get("data"):
+        return_error(f"CriminalIP Error: No result found for scan_id={scan_id}")
     return _wrap_simple_output("CriminalIP.Domain_Lite_Result", raw, key_field="domain")
 
 
@@ -551,6 +557,8 @@ def domain_full_scan_status(client: Client, args: dict[str, Any]) -> CommandResu
     scan_id = cast(str, scan_id)
 
     raw = client.domain_full_scan_status(scan_id)
+    if not raw or not raw.get("data"):
+        return_error(f"CriminalIP Error: No status found for scan_id={scan_id}")
     return _wrap_simple_output("CriminalIP.Full_Scan_Status", raw)
 
 
@@ -561,6 +569,8 @@ def domain_full_scan_result(client: Client, args: dict[str, Any]) -> CommandResu
     scan_id = cast(str, scan_id)
 
     raw = client.domain_full_scan_result(scan_id)
+    if not raw or not raw.get("data"):
+        return_error(f"CriminalIP Error: No result found for scan_id={scan_id}")
     return _wrap_simple_output("CriminalIP.Full_Scan_Result", raw, key_field="domain")
 
 
@@ -586,71 +596,37 @@ def make_email_body(client: Client, args: dict[str, Any]) -> CommandResults:
     abuse_record = summary.get("abuse_record", {}) or {}
     abuse_critical = abuse_record.get("critical", 0)
     abuse_dangerous = abuse_record.get("dangerous", 0)
-
     cert_valid_to = certs[0].get("valid_to") if certs else "N/A"
 
     connected_ips_str = (
         ", ".join([f"{ip.get('ip')}({ip.get('score')},{ip.get('country')})" for ip in connected_ips]) if connected_ips else "N/A"
     )
-
     ssl_vulns = ", ".join([k for k, v in (ssl_detail.get("vulnerable") or {}).items() if v]) or "None"
-
     domain_score = domain_info.get("domain_score") or {}
 
-    readable_output = f"""## CriminalIP Full Scan Report
+    flat = {
+        "Domain": domain_info.get("main_domain") or domain,
+        "Scan ID": scan_id,
+        "Domain Score": domain_score.get("score", "N/A"),
+        "Score %": domain_score.get("score_percentage", "N/A"),
+        "Certificate Valid To": cert_valid_to,
+        "Connected IPs": connected_ips_str,
+        "Phishing Probability": summary.get("url_phishing_prob", "N/A"),
+        "DGA Score": summary.get("dga_score", "N/A"),
+        "Registrar": domain_info.get("domain_registrar", "N/A"),
+        "Created": domain_info.get("domain_created", "N/A"),
+        "Report Time": data.get("report_time", "N/A"),
+        "Abuse Critical": abuse_critical,
+        "Abuse Dangerous": abuse_dangerous,
+        "Fake HTTPS": summary.get("fake_https_url", False),
+        "Punycode": summary.get("punycode", False),
+        "SSL Vulns": ssl_vulns,
+    }
 
-### Scan ID
-{scan_id}
-
-### Domain
-{domain_info.get('main_domain') or domain}
-
-### Domain Score / Score %
-{domain_score.get("score", "N/A")} / {domain_score.get("score_percentage", "N/A")}
-
-### Certificate Valid To
-{cert_valid_to}
-
-### Connected IPs
-{connected_ips_str}
-
-### Phishing Probability
-{summary.get('url_phishing_prob', 'N/A')}
-
-### DGA Score
-{summary.get('dga_score', 'N/A')}
-
-### Registrar
-{domain_info.get('domain_registrar', 'N/A')}
-
-### Created
-{domain_info.get('domain_created', 'N/A')}
-
-### Report Time
-{data.get('report_time', 'N/A')}
-
-### Abuse Critical
-{abuse_critical}
-
-### Abuse Dangerous
-{abuse_dangerous}
-
-### Fake HTTPS
-{summary.get('fake_https_url', False)}
-
-### Punycode
-{summary.get('punycode', False)}
-
-### SSL Vulns
-{ssl_vulns}
-
-### Raw Data Excerpt
-```json
-{json.dumps(raw, indent=2, ensure_ascii=False)[:5000]}
-```"""
+    readable = tableToMarkdown("CriminalIP - Full Scan Report", [flat])
 
     return CommandResults(
-        readable_output=readable_output,
+        readable_output=readable,
         outputs_prefix="CriminalIP.Email_Body",
         outputs_key_field="scan_id",
         outputs={
@@ -669,7 +645,7 @@ def make_email_body(client: Client, args: dict[str, Any]) -> CommandResults:
             "cert_valid_to": cert_valid_to,
             "connected_ips": connected_ips_str,
             "ssl_vulns": ssl_vulns,
-            "readable_output": readable_output,
+            "readable_output": readable,
             "raw": raw,
         },
         raw_response=raw,
@@ -693,76 +669,42 @@ def micro_asm(client: Client, args: dict[str, Any]) -> CommandResults:
     summary = data.get("summary", {}) or {}
     certs = data.get("certificates", []) or []
     ssl_detail = data.get("ssl_detail", {}) or {}
-    connected_ips = data.get("connected_ip", []) or []
+    connected_ips = data.get("connected_ip_info", []) or []
 
     abuse_record = summary.get("abuse_record", {}) or {}
     abuse_critical = abuse_record.get("critical", 0)
     abuse_dangerous = abuse_record.get("dangerous", 0)
-
     cert_valid_to = certs[0].get("valid_to") if certs else "N/A"
 
     connected_ips_str = (
         ", ".join([f"{ip.get('ip')}({ip.get('score')},{ip.get('country')})" for ip in connected_ips]) if connected_ips else "N/A"
     )
-
     ssl_vulns = ", ".join([k for k, v in (ssl_detail.get("vulnerable") or {}).items() if v]) or "None"
-
     domain_score = domain_info.get("domain_score") or {}
 
-    readable_output = f"""## CriminalIP Micro ASM Report
+    flat = {
+        "Domain": domain_info.get("main_domain") or domain,
+        "Scan ID": scan_id,
+        "Domain Score": domain_score.get("score", "N/A"),
+        "Score %": domain_score.get("score_percentage", "N/A"),
+        "Certificate Valid To": cert_valid_to,
+        "Connected IPs": connected_ips_str,
+        "Phishing Probability": summary.get("url_phishing_prob", "N/A"),
+        "DGA Score": summary.get("dga_score", "N/A"),
+        "Registrar": domain_info.get("domain_registrar", "N/A"),
+        "Created": domain_info.get("domain_created", "N/A"),
+        "Report Time": data.get("report_time", "N/A"),
+        "Abuse Critical": abuse_critical,
+        "Abuse Dangerous": abuse_dangerous,
+        "Fake HTTPS": summary.get("fake_https_url", False),
+        "Punycode": summary.get("punycode", False),
+        "SSL Vulns": ssl_vulns,
+    }
 
-### Scan ID
-{scan_id}
-
-### Domain
-{domain_info.get('main_domain') or domain}
-
-### Domain Score / Score %
-{domain_score.get("score", "N/A")} / {domain_score.get("score_percentage", "N/A")}
-
-### Certificate Valid To
-{cert_valid_to}
-
-### Connected IPs
-{connected_ips_str}
-
-### Phishing Probability
-{summary.get('url_phishing_prob', 'N/A')}
-
-### DGA Score
-{summary.get('dga_score', 'N/A')}
-
-### Registrar
-{domain_info.get('domain_registrar', 'N/A')}
-
-### Created
-{domain_info.get('domain_created', 'N/A')}
-
-### Report Time
-{data.get('report_time', 'N/A')}
-
-### Abuse Critical
-{abuse_critical}
-
-### Abuse Dangerous
-{abuse_dangerous}
-
-### Fake HTTPS
-{summary.get('fake_https_url', False)}
-
-### Punycode
-{summary.get('punycode', False)}
-
-### SSL Vulns
-{ssl_vulns}
-
-### Raw Data Excerpt
-```json
-{json.dumps(raw, indent=2, ensure_ascii=False)[:5000]}
-```"""
+    readable = tableToMarkdown("CriminalIP - Micro ASM Report", [flat])
 
     return CommandResults(
-        readable_output=readable_output,
+        readable_output=readable,
         outputs_prefix="CriminalIP.Micro_ASM",
         outputs_key_field="scan_id",
         outputs={
@@ -781,7 +723,7 @@ def micro_asm(client: Client, args: dict[str, Any]) -> CommandResults:
             "cert_valid_to": cert_valid_to,
             "connected_ips": connected_ips_str,
             "ssl_vulns": ssl_vulns,
-            "readable_output": readable_output,
+            "readable_output": readable,
             "raw": raw,
         },
         raw_response=raw,

@@ -105,19 +105,19 @@ script:
     - contextPath: CriminalIP.IP.OpenPorts
       description: Number of open ports detected.
       type: Number
-    - contextPath: CriminalIP.IP.TopPort
+    - contextPath: CriminalIP.IP.ObservedPort
       description: Example open port number.
       type: Number
-    - contextPath: CriminalIP.IP.TopService
+    - contextPath: CriminalIP.IP.ObservedService
       description: Example service detected on an open port.
       type: String
     - contextPath: CriminalIP.IP.Vulnerabilities
       description: Number of vulnerabilities detected on the IP.
       type: Number
-    - contextPath: CriminalIP.IP.TopCVE
+    - contextPath: CriminalIP.IP.ObservedCVE
       description: Example CVE ID detected on the IP.
       type: String
-    - contextPath: CriminalIP.IP.TopCVSS
+    - contextPath: CriminalIP.IP.ObservedCVSS
       description: Example CVSS v3 score of detected vulnerability.
       type: Number
     - contextPath: CriminalIP.IP.raw
@@ -186,9 +186,6 @@ script:
     - contextPath: CriminalIP.Domain_Quick.domain
       description: Queried Domain.
       type: String
-    - contextPath: CriminalIP.Domain_Quick.risk_score
-      description: Risk Score.
-      type: Number
     - contextPath: CriminalIP.Domain_Quick.reg_dtime
       description: Domain registration time.
       type: String
@@ -283,9 +280,6 @@ script:
     - contextPath: CriminalIP.Domain_Lite_Result.mapped_ips
       description: Mapped IP list.
       type: String
-    - contextPath: CriminalIP.Domain_Lite_Result.vulns
-      description: CVEs detected.
-      type: Unknown
     - contextPath: CriminalIP.Domain_Lite_Result.raw
       description: Full raw response.
       type: Unknown
@@ -377,12 +371,6 @@ script:
     - contextPath: CriminalIP.Full_Scan_Result.ssl_vulns
       description: SSL vulnerabilities detected.
       type: String
-    - contextPath: CriminalIP.Full_Scan_Result.certificates
-      description: Certificate Information.
-      type: Unknown
-    - contextPath: CriminalIP.Full_Scan_Result.vulns
-      description: CVEs detected in Full Scan.
-      type: Unknown
     - contextPath: CriminalIP.Full_Scan_Result.raw
       description: Full raw response.
       type: Unknown
@@ -407,16 +395,51 @@ script:
     - contextPath: CriminalIP.Email_Body.scan_id
       description: Scan ID used for generating the email body.
       type: String
-    - contextPath: CriminalIP.Email_Body.summary
-      description: Generated email summary string.
+    - contextPath: CriminalIP.Email_Body.domain_score
+      description: Domain score.
       type: String
-    - contextPath: CriminalIP.Email_Body.body
-      description: Generated email body text (for email notifications).
+    - contextPath: CriminalIP.Email_Body.phishing_prob
+      description: Phishing probability.
+      type: Number
+    - contextPath: CriminalIP.Email_Body.dga_score
+      description: DGA score.
+      type: Number
+    - contextPath: CriminalIP.Email_Body.registrar
+      description: Domain registrar.
+      type: String
+    - contextPath: CriminalIP.Email_Body.created
+      description: Domain creation date.
+      type: String
+    - contextPath: CriminalIP.Email_Body.report_time
+      description: Report generation time.
+      type: String
+    - contextPath: CriminalIP.Email_Body.abuse_critical
+      description: Critical abuse record count.
+      type: Number
+    - contextPath: CriminalIP.Email_Body.abuse_dangerous
+      description: Dangerous abuse record count.
+      type: Number
+    - contextPath: CriminalIP.Email_Body.fake_https
+      description: Whether fake HTTPS detected.
+      type: Boolean
+    - contextPath: CriminalIP.Email_Body.punycode
+      description: Whether punycode detected.
+      type: Boolean
+    - contextPath: CriminalIP.Email_Body.cert_valid_to
+      description: Certificate expiration date.
+      type: String
+    - contextPath: CriminalIP.Email_Body.connected_ips
+      description: Connected IP addresses (comma-separated).
+      type: String
+    - contextPath: CriminalIP.Email_Body.ssl_vulns
+      description: SSL vulnerabilities detected.
+      type: String
+    - contextPath: CriminalIP.Email_Body.readable_output
+      description: Pre-formatted Full Scan report (email-ready).
       type: String
     - contextPath: CriminalIP.Email_Body.raw
       description: Full raw response from Criminal IP API.
       type: Unknown
-
   # --- Micro ASM ---
   - name: criminal-ip-micro-asm
     description: Performs a micro ASM-style summary for a domain with a completed Full Scan.

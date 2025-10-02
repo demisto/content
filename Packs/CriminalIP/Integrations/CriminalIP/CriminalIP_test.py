@@ -3,15 +3,10 @@ from freezegun import freeze_time
 
 import CriminalIP  # the module under test
 
-# Define BASE_URL locally for testing instead of referencing CriminalIP.BASE_URL
 BASE_URL = "https://example.com"
 
 
 def make_client():
-    """
-    Create a Client instance.
-    The Client inherits from BaseClient, so we follow its init signature.
-    """
     return CriminalIP.Client(
         base_url=BASE_URL,
         verify=False,
@@ -99,7 +94,7 @@ def test_check_malicious_ip_true_by_issue_flag(requests_mock):
         "ip": ip,
         "score": {"inbound": "low", "outbound": "low"},
         "protected_ip": {"count": 0, "data": []},
-        "issues": {"is_tor": True},  # any True flag means malicious
+        "issues": {"is_tor": True},
     }
     requests_mock.get(url, json=mock, status_code=200)
 
@@ -116,7 +111,6 @@ def test_check_last_scan_date_found_within_7_days(requests_mock):
     domain = "example.com"
 
     url = f"{BASE_URL}/v1/domain/reports"
-    # recent scan (4 days ago)
     mock = {"data": {"reports": [{"scan_id": "SCAN-NEW", "reg_dtime": "2025-08-18T10:00:00Z"}]}}
     requests_mock.get(url, json=mock, status_code=200)
 
@@ -131,7 +125,6 @@ def test_check_last_scan_date_not_found_or_old(requests_mock):
     domain = "example.com"
 
     url = f"{BASE_URL}/v1/domain/reports"
-    # old scan (older than 7 days)
     mock = {"data": {"reports": [{"scan_id": "SCAN-OLD", "reg_dtime": "2025-07-01T00:00:00Z"}]}}
     requests_mock.get(url, json=mock, status_code=200)
 
@@ -148,7 +141,7 @@ def test_check_last_scan_date_no_reports(requests_mock):
     requests_mock.get(url, json={"data": {"reports": []}}, status_code=200)
 
     res = CriminalIP.check_last_scan_date(client, {"domain": domain})
-    assert res.readable_output.startswith("No scan result")
+    assert res.readable_output.startswith("### CriminalIP - Last Scan Date Check")
     assert res.outputs.get("last_scan_date") is None
 
 
@@ -246,7 +239,7 @@ def test_make_email_body_with_findings(requests_mock):
     requests_mock.get(url, json=mock, status_code=200)
 
     res = CriminalIP.make_email_body(client, {"domain": domain, "scan_id": scan_id})
-    assert "CriminalIP Full Scan Report" in res.readable_output
+    assert "### CriminalIP - Full Scan Report" in res.readable_output
     assert "DGA Score" in res.readable_output or "Punycode" in res.readable_output
 
 
@@ -261,7 +254,7 @@ def test_make_email_body_no_findings(requests_mock):
     requests_mock.get(url, json=mock, status_code=200)
 
     res = CriminalIP.make_email_body(client, {"domain": domain, "scan_id": scan_id})
-    assert res.readable_output.startswith("## CriminalIP Full Scan Report")
+    assert res.readable_output.startswith("### CriminalIP - Full Scan Report")
     assert "DGA Score" in res.readable_output
 
 
@@ -287,7 +280,7 @@ def test_micro_asm_with_findings(requests_mock):
     requests_mock.get(url, json=mock, status_code=200)
 
     res = CriminalIP.micro_asm(client, {"domain": domain, "scan_id": scan_id})
-    assert "CriminalIP Micro ASM Report" in res.readable_output
+    assert "### CriminalIP - Micro ASM Report" in res.readable_output
     assert "example.com" in res.readable_output
     assert "Certificate Valid To" in res.readable_output
     assert "Abuse Critical" in res.readable_output
@@ -309,7 +302,7 @@ def test_micro_asm_no_findings(requests_mock):
     requests_mock.get(url, json=mock, status_code=200)
 
     res = CriminalIP.micro_asm(client, {"domain": domain, "scan_id": scan_id})
-    assert res.readable_output.startswith("## CriminalIP Micro ASM Report")
+    assert res.readable_output.startswith("### CriminalIP - Micro ASM Report")
     assert "Abuse Critical" in res.readable_output
 
 

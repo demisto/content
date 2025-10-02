@@ -600,7 +600,7 @@ tasks:
       Timeout:
         simple: "10"
       dt:
-        simple: CriminalIP.Full_Scan_Status.data(val.scan_percentage < 100)
+        simple: CriminalIP.Full_Scan_Status(val.scan_percentage < 100)
     separatecontext: false
     continueonerrortype: ""
     loop:

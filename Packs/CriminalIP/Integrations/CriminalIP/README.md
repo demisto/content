@@ -49,11 +49,11 @@ Provides detailed information about an IP address using Criminal IP's API.
 | CriminalIP.IP.Country | String | Country code from Whois. |
 | CriminalIP.IP.Hostname | String | Resolved hostname. |
 | CriminalIP.IP.OpenPorts | Number | Number of open ports detected. |
-| CriminalIP.IP.TopPort | Number | Example open port number. |
-| CriminalIP.IP.TopService | String | Example service detected on an open port. |
+| CriminalIP.IP.ObservedPort | Number | Example open port number. |
+| CriminalIP.IP.ObservedService | String | Example service detected on an open port. |
 | CriminalIP.IP.Vulnerabilities | Number | Number of vulnerabilities detected on the IP. |
-| CriminalIP.IP.TopCVE | String | Example CVE ID detected on the IP. |
-| CriminalIP.IP.TopCVSS | Number | Example CVSS v3 score of detected vulnerability. |
+| CriminalIP.IP.ObservedCVE | String | Example CVE ID detected on the IP. |
+| CriminalIP.IP.ObservedCVSS | Number | Example CVSS v3 score of detected vulnerability. |
 | CriminalIP.IP.raw | Unknown | Full raw response from CriminalIP API. |
 
 #### Example
@@ -143,7 +143,6 @@ Performs a Domain Quick Scan using CriminalIP's API.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | CriminalIP.Domain_Quick.domain | String | Queried Domain. |
-| CriminalIP.Domain_Quick.risk_score | Number | Risk Score. |
 | CriminalIP.Domain_Quick.reg_dtime | String | Domain registration time. |
 | CriminalIP.Domain_Quick.result | String | Quick scan result string. |
 | CriminalIP.Domain_Quick.type | String | Domain type classification. |
@@ -243,7 +242,6 @@ Returns the Lite Scan results for the given scan_id.
 | CriminalIP.Domain_Lite_Result.a_records | String | A records resolved. |
 | CriminalIP.Domain_Lite_Result.ns_records | String | NS records resolved. |
 | CriminalIP.Domain_Lite_Result.mapped_ips | String | Mapped IP list. |
-| CriminalIP.Domain_Lite_Result.vulns | Unknown | CVEs detected. |
 | CriminalIP.Domain_Lite_Result.raw | Unknown | Full raw response. |
 
 #### Example
@@ -342,8 +340,6 @@ Returns the Full Scan results for the given scan_id.
 | CriminalIP.Full_Scan_Result.cert_valid_to | String | Certificate valid until date. |
 | CriminalIP.Full_Scan_Result.connected_ips | String | Connected IP list. |
 | CriminalIP.Full_Scan_Result.ssl_vulns | String | SSL vulnerabilities detected. |
-| CriminalIP.Full_Scan_Result.certificates | Unknown | Certificate Information. |
-| CriminalIP.Full_Scan_Result.vulns | Unknown | CVEs detected in Full Scan. |
 | CriminalIP.Full_Scan_Result.raw | Unknown | Full raw response. |
 
 #### Example
@@ -374,8 +370,20 @@ Builds an email body summarizing notable findings from a completed Full Scan.
 | --- | --- | --- |
 | CriminalIP.Email_Body.domain | String | Domain analyzed. |
 | CriminalIP.Email_Body.scan_id | String | Scan ID used for generating the email body. |
-| CriminalIP.Email_Body.summary | String | Generated email summary string. |
-| CriminalIP.Email_Body.body | String | Generated email body text \(for email notifications\). |
+| CriminalIP.Email_Body.domain_score | String | Domain score. |
+| CriminalIP.Email_Body.phishing_prob | Number | Phishing probability. |
+| CriminalIP.Email_Body.dga_score | Number | DGA score. |
+| CriminalIP.Email_Body.registrar | String | Domain registrar. |
+| CriminalIP.Email_Body.created | String | Domain creation date. |
+| CriminalIP.Email_Body.report_time | String | Report generation time. |
+| CriminalIP.Email_Body.abuse_critical | Number | Critical abuse record count. |
+| CriminalIP.Email_Body.abuse_dangerous | Number | Dangerous abuse record count. |
+| CriminalIP.Email_Body.fake_https | Boolean | Whether fake HTTPS detected. |
+| CriminalIP.Email_Body.punycode | Boolean | Whether punycode detected. |
+| CriminalIP.Email_Body.cert_valid_to | String | Certificate expiration date. |
+| CriminalIP.Email_Body.connected_ips | String | Connected IP addresses (comma-separated). |
+| CriminalIP.Email_Body.ssl_vulns | String | SSL vulnerabilities detected. |
+| CriminalIP.Email_Body.readable_output | String | Pre-formatted Full Scan report (email-ready). |
 | CriminalIP.Email_Body.raw | Unknown | Full raw response from Criminal IP API. |
 
 #### Example
