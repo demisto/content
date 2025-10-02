@@ -50,10 +50,6 @@
             "mandatory": false,
             "display_name": "Splunk Prerelease"
         },
-        "CortexXDR": {
-            "mandatory": false,
-            "display_name": "Palo Alto Networks Cortex XDR - Investigation and Response"
-        },
         "SplunkPy": {
             "mandatory": false,
             "display_name": "Splunk"
@@ -77,7 +73,6 @@
         "CommonScripts",
         "MajorBreachesInvestigationandResponse",
         "SplunkPyPreRelease",
-        "CortexXDR",
         "SplunkPy",
         "PaloAltoNetworks_PAN_OS_EDL_Management",
         "PANWComprehensiveInvestigation",
