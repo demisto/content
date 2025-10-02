@@ -2919,8 +2919,6 @@ tasks:
     scriptarguments:
       comment:
         simple: demo comment
-      value:
-        simple: test
       id:
         complex:
           root: CrowdStrike.MLExclusion
