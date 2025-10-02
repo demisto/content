@@ -229,6 +229,15 @@ UPDATE_INVESTIGATION_RESPONSE = {
     }
 }
 
+CLOSE_INVESTIGATION_RESPONSE = {
+    "data": {
+        "closeInvestigation": {
+            "id": "593fa115-abad-4a52-9fc4-2ec403a8a1e4",
+            "shortId": "INV00248",
+            "url":"https://ctpx.secureworks.com/investigations/593fa115-abad-4a52-9fc4-2ec403a8a1e4"
+        }
+    }
+}
 FETCH_USER_RESPONSE = {
     "data": {
         "tdrusersByIDs": [TAEGIS_USER],

@@ -1,10 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-"""
-"""
-please remove
-
 """ CONSTANTS """
 
 
@@ -27,7 +23,7 @@ ALERT_STATUSES = {
     "OTHER",
     "SUPPRESSED",
 }
-ASSET_SEARCH_FIELDS = ((
+ASSET_SEARCH_FIELDS = (
     "endpoint_type",
     "host_id",
     "hostname",
@@ -38,7 +34,7 @@ ASSET_SEARCH_FIELDS = ((
     "os_version",
     "sensor_version",
     "username",
-))
+)
 COMMENT_TYPES = {
     "investigation",
 }
@@ -199,13 +195,13 @@ def add_evidence_to_investigation_command(client: Client, env: str, args=None):
 
     fields: str = args.get("fields") or "investigationId"
 
-    query = """
-    mutation addEvidenceToInvestigation($input: AddEvidenceToInvestigationInput!) {
-      addEvidenceToInvestigation(input: $input) {
-        %s
-      }
-    }
-    """ % (fields)
+    query = f"""
+    mutation addEvidenceToInvestigation($input: AddEvidenceToInvestigationInput!) {{
+      addEvidenceToInvestigation(input: $input) {{
+        {fields}
+      }}
+    }}
+    """
 
     result = client.graphql_run(query=query, variables=variables)
     try:
@@ -239,13 +235,13 @@ def create_comment_command(client: Client, env: str, args=None):
 
     fields: str = args.get("fields") or "id"
 
-    query = """
-    mutation addCommentToInvestigation($input: AddCommentToInvestigationInput!) {
-        addCommentToInvestigation(input: $input) {
-            %s
-        }
-    }
-    """ % (fields)
+    query = f"""
+    mutation addCommentToInvestigation($input: AddCommentToInvestigationInput!) {{
+        addCommentToInvestigation(input: $input) {{
+            {fields}
+        }}
+    }}
+    """
 
     variables = {
         "input": {
@@ -278,13 +274,13 @@ def create_comment_command(client: Client, env: str, args=None):
 
 def create_investigation_command(client: Client, env: str, args=None):
     fields: str = args.get("fields") or "id shortId"
-    query = """
-    mutation ($input: CreateInvestigationInput!) {
-    createInvestigationV2(input: $input) {
-            %s
-        }
-    }
-    """ % (fields)
+    query = f"""
+    mutation ($input: CreateInvestigationInput!) {{
+    createInvestigationV2(input: $input) {{
+            {fields}
+        }}
+    }}
+    """
 
     variables = {
         "input": {
@@ -364,13 +360,13 @@ def create_sharelink_command(client: Client, env: str, args=None):
 
     fields: str = args.get("fields") or "id createdTime"
 
-    query = """
-    mutation ($sharelink: ShareLinkCreateInput!) {
-        createShareLink (input: $sharelink) {
-            %s
-        }
-    }
-    """ % (fields)
+    query = f"""
+    mutation ($sharelink: ShareLinkCreateInput!) {{
+        createShareLink (input: $sharelink) {{
+            {fields}
+        }}
+    }}
+    """
 
     result = client.graphql_run(query=query, variables=variables)
     try:
@@ -516,34 +512,34 @@ def fetch_alerts_command(client: Client, env: str, args=None):
 
     if args.get("ids"):
         field = "alertsServiceRetrieveAlertsById"
-        query = """
-        query alertsServiceRetrieveAlertsById($ids: [String!]) {
+        query = f"""
+        query alertsServiceRetrieveAlertsById($ids: [String!]) {{
             alertsServiceRetrieveAlertsById(
-                in: {
+                in: {{
                     iDs: $ids
-                }
-            ) {
-                %s
-            }
-        }
-        """ % (fields)
+                }}
+            ) {{
+                {fields}
+            }}
+        }}
+        """
 
         variables["ids"] = argToList(variables["ids"])
     else:
         field = "alertsServiceSearch"
-        query = """
-        query alertsServiceSearch($cql_query: String, $limit: Int, $offset: Int) {
+        query = f"""
+        query alertsServiceSearch($cql_query: String, $limit: Int, $offset: Int) {{
             alertsServiceSearch(
-                in: {
-                    cql_query:$cql_query,
-                    offset:$offset,
-                    limit:$limit
-                }
-            ) {
-                %s
-            }
-        }
-        """ % (fields)
+                in: {{
+                    cql_query: $cql_query,
+                    offset: $offset,
+                    limit: $limit
+                }}
+            ) {{
+                {fields}
+            }}
+        }}
+        """
 
     result = client.graphql_run(query=query, variables=variables)
     alerts = result["data"][field]["alerts"]["list"]
