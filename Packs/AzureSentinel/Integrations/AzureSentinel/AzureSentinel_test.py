@@ -26,6 +26,7 @@ from AzureSentinel import (
     delete_watchlist_item_command,
     extract_classification_reason,
     fetch_incidents,
+    fetch_incidents_command,
     fetch_incidents_additional_info,
     get_mapping_fields_command,
     get_modified_remote_data_command,
@@ -2290,7 +2291,7 @@ def test_max_limit_argument_in_fetch_and_list_incident_commands(mocker):
     assert client.http_request.call_args_list[1][1] == {
         "params": {
             "$top": 20,
-            "$filter": "properties/createdTimeUtc ge 2022-03-16T13:01:08Z ",
+            "$filter": "properties/createdTimeUtc ge 2022-03-16T13:01:08Z",
             "$orderby": "properties/createdTimeUtc asc",
         }
     }
@@ -2322,7 +2323,7 @@ def test_default_limit_argument_in_fetch_and_list_incident_commands(mocker):
     assert client.http_request.call_args_list[1][1] == {
         "params": {
             "$top": 20,
-            "$filter": "properties/createdTimeUtc ge 2022-03-16T13:01:08Z ",
+            "$filter": "properties/createdTimeUtc ge 2022-03-16T13:01:08Z",
             "$orderby": "properties/createdTimeUtc asc",
         }
     }
@@ -2354,7 +2355,109 @@ def test_lower_then_default_limit_argument_in_fetch_and_list_incident_commands(m
     assert client.http_request.call_args_list[1][1] == {
         "params": {
             "$top": 20,
-            "$filter": "properties/createdTimeUtc ge 2022-03-16T13:01:08Z ",
+            "$filter": "properties/createdTimeUtc ge 2022-03-16T13:01:08Z",
+            "$orderby": "properties/createdTimeUtc asc",
+        }
+    }
+
+
+def test_statuses_to_fetch_parameter_not_used(mocker):
+    """
+    Given:
+        - No statuses_to_fetch parameter configured (empty list).
+
+    When:
+        - Execute the fetch-incidents command.
+
+    Then:
+        - Ensure the filter query does not contain any status check.
+    """
+    # prepare
+    last_run = {"last_fetch_time": "2022-03-16T13:01:08Z", "last_fetch_ids": []}
+    client = mock_client()
+    mocker.patch.object(client, "http_request", return_value=MOCKED_INCIDENTS_OUTPUT)
+    mocker.patch("AzureSentinel.process_incidents", return_value=({}, []))
+    mocker.patch.object(demisto, "getLastRun", return_value=last_run)
+    params = {}
+
+    # execute
+    fetch_incidents_command(client, params)
+
+    # validate
+    expected_filter = "properties/createdTimeUtc ge 2022-03-16T13:01:08Z"
+    assert client.http_request.call_args_list[0][1] == {
+        "params": {
+            "$top": 20,
+            "$filter": expected_filter,
+            "$orderby": "properties/createdTimeUtc asc",
+        }
+    }
+
+
+def test_statuses_to_fetch_parameter_single_status(mocker):
+    """
+    Given:
+        - A single status in statuses_to_fetch parameter.
+
+    When:
+        - Execute the fetch-incidents command.
+
+    Then:
+        - Ensure the filter query contains a status equality check.
+    """
+    # prepare
+    last_run = {"last_fetch_time": "2022-03-16T13:01:08Z", "last_fetch_ids": []}
+    client = mock_client()
+    mocker.patch.object(client, "http_request", return_value=MOCKED_INCIDENTS_OUTPUT)
+    mocker.patch("AzureSentinel.process_incidents", return_value=({}, []))
+    mocker.patch.object(demisto, "getLastRun", return_value=last_run)
+    params = {"statuses_to_fetch": ["New"]}
+
+    # execute
+    fetch_incidents_command(client, params)
+
+    # validate
+    expected_filter = "properties/createdTimeUtc ge 2022-03-16T13:01:08Z  and (properties/status eq 'New')"
+    assert client.http_request.call_args_list[0][1] == {
+        "params": {
+            "$top": 20,
+            "$filter": expected_filter,
+            "$orderby": "properties/createdTimeUtc asc",
+        }
+    }
+
+
+def test_statuses_to_fetch_parameter_multiple_statuses(mocker):
+    """
+    Given:
+        - Multiple statuses in statuses_to_fetch parameter.
+
+    When:
+        - Execute the fetch-incidents command.
+
+    Then:
+        - Ensure the filter query contains a status 'in' check for multiple values.
+    """
+    # prepare
+    last_run = {"last_fetch_time": "2022-03-16T13:01:08Z", "last_fetch_ids": []}
+    client = mock_client()
+    mocker.patch.object(client, "http_request", return_value=MOCKED_INCIDENTS_OUTPUT)
+    mocker.patch("AzureSentinel.process_incidents", return_value=({}, []))
+    mocker.patch.object(demisto, "getLastRun", return_value=last_run)
+    params = {"statuses_to_fetch": ["New", "Active", "Closed"]}
+
+    # execute
+    fetch_incidents_command(client, params)
+
+    # validate
+    expected_filter = (
+        "properties/createdTimeUtc ge 2022-03-16T13:01:08Z  and "
+        "(properties/status eq 'New' or properties/status eq 'Active' or properties/status eq 'Closed')"
+    )
+    assert client.http_request.call_args_list[0][1] == {
+        "params": {
+            "$top": 20,
+            "$filter": expected_filter,
             "$orderby": "properties/createdTimeUtc asc",
         }
     }
