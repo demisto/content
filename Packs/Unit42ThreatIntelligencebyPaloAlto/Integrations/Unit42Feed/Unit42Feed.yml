@@ -9,7 +9,7 @@ configuration:
 - display: Fetch indicators
   name: feed
   type: 8
-  required: false
+  required: true
   defaultvalue: 'true'
   section: Collect
 - display: Feed Types
@@ -58,7 +58,7 @@ configuration:
   - E - Unreliable
   - F - Reliability cannot be judged
   defaultvalue: A++ - Reputation script
-  required: false
+  required: true
   section: Collect
   advanced: true
 - display: Traffic Light Protocol Color (TLP). Indicator's TLP will override default value.
@@ -82,7 +82,7 @@ configuration:
   - Suspicious
   - Malicious
   defaultvalue: Malicious
-  required: false
+  required: true
   section: Collect
   advanced: true
 - display: Indicator Expiration Method
@@ -94,7 +94,7 @@ configuration:
   - Never Expired
   - When removed from the Feed
   defaultvalue: Indicator Type
-  required: false
+  required: true
   section: Collect
   advanced: true
 - display: Indicator Expiration Interval
