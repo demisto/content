@@ -5,7 +5,7 @@ fromversion: 5.0.0
 name: CTIX v3
 display: CTIX v3
 category: Data Enrichment & Threat Intelligence
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 description: This is Cyware Threat Intelligence eXhange(CTIX) integration which enriches IP/Domain/URL/File Data.

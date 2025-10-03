@@ -1,7 +1,7 @@
 commonfields:
   id: McAfee ePO v2
   version: -1
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 name: McAfee ePO v2

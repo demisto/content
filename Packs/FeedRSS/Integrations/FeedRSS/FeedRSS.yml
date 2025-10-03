@@ -157,6 +157,6 @@ script:
 tests:
 - No tests
 fromversion: 6.2.0
-sectionOrder:
+sectionorder:
 - Connect
 - Collect

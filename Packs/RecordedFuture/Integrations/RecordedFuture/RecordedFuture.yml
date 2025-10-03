@@ -5,7 +5,7 @@ name: Recorded Future v2
 display: Recorded Future v2
 category: Data Enrichment & Threat Intelligence
 description: Unique threat intel technology that automatically serves up relevant insights in real time.
-sectionOrder:
+sectionorder:
   - Connect
   - Collect
 configuration:

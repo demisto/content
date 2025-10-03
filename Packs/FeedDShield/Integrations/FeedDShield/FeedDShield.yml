@@ -2,7 +2,7 @@ category: Data Enrichment & Threat Intelligence
 commonfields:
   id: DShield Feed
   version: -1
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 configuration:

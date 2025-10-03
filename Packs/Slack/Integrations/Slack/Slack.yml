@@ -1,6 +1,6 @@
 category: Messaging and Conferencing
 deprecated: true
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:

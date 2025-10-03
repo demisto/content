@@ -664,6 +664,6 @@ script:
 tests:
 - Azure Compute - Test
 fromversion: 5.0.0
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
