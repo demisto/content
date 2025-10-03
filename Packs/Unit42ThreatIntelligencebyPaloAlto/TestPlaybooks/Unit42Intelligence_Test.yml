@@ -1,7 +1,7 @@
 id: Unit 42 Intelligence Test
 version: -1
 name: Unit 42 Intelligence Test
-description: Test playbook for Unit 42 Intelligence integration
+description: Test playbook for Unit 42 Intelligence integration.
 starttaskid: "0"
 tasks:
   "0":
@@ -483,6 +483,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -515,4 +516,4 @@ inputs: []
 outputs: []
 tests:
 - No tests (auto formatted)
-fromversion: 6.0.0
+fromversion: 6.10.0
