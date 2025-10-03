@@ -306,4 +306,4 @@ script:
   type: python
 tests:
 - Unit 42 Intelligence Test
-fromversion: 6.0.0
+fromversion: 6.10.0

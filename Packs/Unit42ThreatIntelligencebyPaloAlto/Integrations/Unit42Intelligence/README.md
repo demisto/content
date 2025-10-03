@@ -95,6 +95,7 @@ Enrich an IP address with Unit 42 threat intelligence context.
 >| 8.8.8.8 | malicious |  | wf_sample |  |  |
 
 ### domain
+
 ***
 Enrich a domain with Unit 42 threat intelligence context.
 
@@ -234,11 +235,11 @@ Enrich a URL with Unit 42 threat intelligence context.
 
 #### Human Readable Output
 
->### Unit 42 Intelligence results for URL: https://en.wikipedia.org/wiki/URL
+>### Unit 42 Intelligence results for URL: <https://en.wikipedia.org/wiki/URL>
 >
 >|Value|Verdict|Verdict Category|Seen By|First Seen|Last Seen|
 >|---|---|---|---|---|---|
->| https://en.wikipedia.org/wiki/URL | unknown |  | wf_sample |  |  |
+>| <https://en.wikipedia.org/wiki/URL> | unknown |  | wf_sample |  |  |
 
 ### file
 
