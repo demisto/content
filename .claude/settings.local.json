@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(do sed -i '' 's/\"\"name\"\": \"\"/\"\"name\"\": \"\"Datadog Security Signal /g' \"$file\")",
+      "Bash(for pack in Darktrace SentinelOne AccentureCTI)",
+      "Bash(do echo \"=== $pack ===\")",
+      "Bash(for:*)",
+      "Bash(do sed -i '' 's/\"\"isReadOnly\"\": false/\"\"isReadOnly\"\": true/g' \"$file\")",
+      "WebSearch",
+      "WebFetch(domain:live.paloaltonetworks.com)",
+      "WebFetch(domain:xsoar.pan.dev)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

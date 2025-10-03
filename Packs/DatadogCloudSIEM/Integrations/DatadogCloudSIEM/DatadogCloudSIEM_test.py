@@ -1,1012 +1,746 @@
-"""Base Integration for Cortex XSOAR - Unit Tests file
+"""Unit tests for DatadogCloudSIEM integration.
 
-Pytest Unit Tests: all funcion names must start with "test_"
-
+Pytest Unit Tests: all function names must start with "test_"
 More details: https://xsoar.pan.dev/docs/integrations/unit-testing
-
-MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
-
-You must add at least a Unit Test function for every XSOAR command
-you are implementing with your integration
 """
 
-import datetime
 import json
-import os
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 
-import demistomock as demisto
+import demistomock as demisto  # noqa: F401
 import pytest
 from CommonServerPython import CommandResults, DemistoException
-from datadog_api_client.v1.model.metric_metadata import MetricMetadata
-from datadog_api_client.v1.model.metric_search_response import MetricSearchResponse
-from datadog_api_client.v1.model.metric_search_response_results import (
-    MetricSearchResponseResults,
-)
-from datadog_api_client.v1.model.metrics_list_response import MetricsListResponse
 from DatadogCloudSIEM import (
-    DEFAULT_PAGE_SIZE,
-    PAGE_NUMBER_ERROR_MSG,
-    PAGE_SIZE_ERROR_MSG,
-    active_metrics_list_command,
-    add_tags_to_host_command,
-    convert_datetime_to_str,
-    create_event_command,
-    create_incident_command,
-    delete_host_tags_command,
-    delete_incident_command,
-    event_for_lookup,
-    fetch_incidents,
-    get_events_command,
-    get_host_tags_command,
-    get_incident_command,
-    get_metric_metadata_command,
-    get_paginated_results,
-    get_tags_command,
-    incident_for_lookup,
-    is_within_time,
-    metric_command_results,
-    metrics_search_command,
-    module_test,
-    pagination,
-    query_timeseries_points_command,
-    table_header,
-    tags_context_and_readable_output,
-    update_host_tags_command,
-    update_incident_command,
-    update_metric_metadata_command,
-)
-from test_data.inputs import (
-    ACTIVE_METRIC_LIST_CONTEXT,
-    ACTIVE_METRIC_LIST_RESPONSE,
-    CREATE_INCIDENT_CONTEXT,
-    CREATE_INCIDENT_RESPONSE,
-    EVENT_CREATE_CONTEXT,
-    EVENT_CREATE_RESPONSE,
-    EVENT_GET_CONTEXT,
-    EVENT_GET_RESPONSE,
-    EVENT_LIST_CONTEXT,
-    EVENT_LIST_RESPONSE,
-    EVENT_MOCK,
-    EXPECTED_EVENT_MOCK,
-    GET_INCIDENT_CONTEXT,
-    GET_INCIDENT_RESPONSE,
-    HOST_TAG_CREATE_CONTEXT,
-    HOST_TAG_GET_CONTEXT,
-    HOST_TAG_UPDATE_CONTEXT,
-    INCIDENT_LOOKUP_DATA,
-    INCIDENT_LOOKUP_DATA_EXPECTED,
-    LIST_INCIDENT_CONTEXT,
-    LIST_INCIDENT_RESPONSE,
-    METRIC_COMMAND_RESULT_INPUT,
-    METRIC_COMMAND_RESULT_OUTPUT,
-    METRIC_METADATA_GET_CONTEXT,
-    METRIC_METADATA_GET_RESPONSE,
-    METRIC_METADATA_UPDATE_CONTEXT,
-    METRIC_METADATA_UPDATE_RESPONSE,
-    METRIC_SEARCH_CONTEXT,
-    METRIC_SEARCH_RESPONSE,
-    TAGS_CONTEXT_READABLE_OUTPUT,
-    TAGS_LIST_CONTEXT,
-    TIME_SERIES_POINT_QUERY_CONTEXT,
-    TIME_SERIES_POINT_QUERY_RESPONSE,
-    UPDATE_INCIDENT_CONTEXT,
-    UPDATE_INCIDENT_RESPONSE,
+    get_security_signal_command,
+    get_security_signal_list_command,
+    logs_search_command,
+    update_security_signal_assignee_command,
+    update_security_signal_state_command,
 )
 
 
 def util_load_json(path):
+    """Load JSON test data from file."""
     with open(path, encoding="utf-8") as f:
         return json.loads(f.read())
 
 
-DATADOG_API_CLIENT_MOCK = MagicMock()
-
-TAGS_LIST_RESPONSE = util_load_json("test_data/tag-list.json")
-HOST_TAG_CREATE_RESPONSE = util_load_json("test_data/host-tag-create.json")
-HOST_TAG_GET_RESPONSE = util_load_json("test_data/host-tag-get.json")
-HOST_TAG_UPDATE_RESPONSE = util_load_json("test_data/host-tag-update.json")
-
-
-class Datadog:
-    """
-    A class representing a Datadog object, which stores key-value pairs as attributes.
-
-    Attributes:
-    **kwargs (key-value pairs): The key-value pairs to store as attributes of the Datadog object.
-
-    Methods:
-    to_dict(): Converts the Datadog object to a dictionary, where the keys are the attribute names
-    and the values are the attribute values.
-    """
-
-    def __init__(self, **kwargs):
-        """
-        Initializes the Datadog object with the given key-value pairs as attributes.
-
-        Args:
-        **kwargs (key-value pairs): The key-value pairs to store as attributes of the Datadog object.
-        """
-        for key, value in kwargs.items():
-            setattr(self, key, value)
-
-    def to_dict(self):
-        """
-        Converts the Datadog object to a dictionary, where the keys are the attribute names and
-        the values are the attribute values.
-
-        Returns:
-        dict: A dictionary representation of the Datadog object.
-        """
-        return {
-            attr: getattr(self, attr) for attr in dir(self) if not callable(getattr(self, attr)) and not attr.startswith("__")
-        }
-
-
 @pytest.fixture
 def configuration():
+    """Mock Datadog API configuration."""
     return MagicMock()
 
 
-@pytest.mark.parametrize("raw_resp, expected", [(EVENT_CREATE_RESPONSE, EVENT_CREATE_CONTEXT)])
-def test_create_event_command(mocker, raw_resp, expected, configuration):
-    """
-    Test function for the create_event_command function in DatadogCloudSIEM.
-
-    Args:
-    mocker: The mocker object used for mocking API calls.
-    raw_resp: The raw response to be returned by the mocked API call.
-    expected: The expected result of the command.
-    configuration: The configuration to be used for the command.
-
-    Returns:
-    None. The function asserts the output of the create_event_command function against the expected output.
-    """
-    args = {
-        "title": "Event Title",
-        "text": "Event Text",
-        "alert_type": "info",
-        "date_happened": "1 hour ago",
-        "device_name": "DESKTOP-IIQVPJ7",
-        "host_name": "DESKTOP-IIQVPJ7",
-        "tags": "test:123",
-    }
-    raw_obj = Datadog(**EVENT_CREATE_RESPONSE)
-    DATADOG_API_CLIENT_MOCK.create_event.return_value = raw_obj
-    mocker.patch("DatadogCloudSIEM.ApiClient", return_value=DATADOG_API_CLIENT_MOCK)
-    mocker.patch("DatadogCloudSIEM.EventsApi", return_value=DATADOG_API_CLIENT_MOCK)
-    with open(
-        os.path.join("test_data", "readable_outputs/create_event_command_readable.md"),
-    ) as f:
-        readable_output = f.read()
-    result = create_event_command(configuration, args)
-    assert isinstance(result, CommandResults)
-    assert result.to_context()["Contents"] == expected
-    assert result.readable_output == readable_output
-
-
-@pytest.mark.parametrize("raw_resp, expected", [(EVENT_LIST_RESPONSE, EVENT_LIST_CONTEXT)])
-def test_list_events_command(mocker, raw_resp, expected, configuration):
-    """
-    Test function for the list_events function in DatadogCloudSIEM.
-
-    Args:
-    mocker: The mocker object used for mocking API calls.
-    raw_resp: The raw response to be returned by the mocked API call.
-    expected: The expected result of the command.
-    configuration: The configuration to be used for the command.
-
-    Returns:
-    None. The function asserts the output of the list_events function against the expected output.
-    """
-    args = {
-        "start_date": "1 month ago",
-        "end_date": "now",
-        "priority": "low",
-        "sources": "dotnet",
-        "tags": "test:123",
-        "limit": "2",
-    }
-    new_raw = [Datadog(**obj) for obj in raw_resp.get("events")]
-    DATADOG_API_CLIENT_MOCK.list_events.return_value = {"events": new_raw}
-    mocker.patch("DatadogCloudSIEM.ApiClient", return_value=DATADOG_API_CLIENT_MOCK)
-    mocker.patch("DatadogCloudSIEM.EventsApi", return_value=DATADOG_API_CLIENT_MOCK)
-    result = get_events_command(configuration, args)
-    with open(
-        os.path.join("test_data", "readable_outputs/list_events_command_readable.md"),
-    ) as f:
-        readable_output = f.read()
-    assert isinstance(result, CommandResults)
-    assert result.to_context()["Contents"] == expected
-    assert result.readable_output == readable_output
-
-
-@pytest.mark.parametrize("raw_resp, expected", [(EVENT_GET_RESPONSE, EVENT_GET_CONTEXT)])
-def test_get_events_command(mocker, raw_resp, expected, configuration):
-    """
-    Test function for the get_events_command function in DatadogCloudSIEM.
-
-    Args:
-    mocker: The mocker object used for mocking API calls.
-    raw_resp: The raw response to be returned by the mocked API call.
-    expected: The expected result of the command.
-    configuration: The configuration to be used for the command.
-
-    Returns:
-    None. The function asserts the output of the get_events_command function against the expected output.
-    """
-    args = {"event_id": "6995647921883593635"}
-    new_raw = Datadog(**raw_resp.get("event"))
-    DATADOG_API_CLIENT_MOCK.get_event.return_value = {"event": new_raw}
-    mocker.patch("DatadogCloudSIEM.ApiClient", return_value=DATADOG_API_CLIENT_MOCK)
-    mocker.patch("DatadogCloudSIEM.EventsApi", return_value=DATADOG_API_CLIENT_MOCK)
-    result = get_events_command(configuration, args)
-    with open(
-        os.path.join("test_data", "readable_outputs/get_events_command_readable.md"),
-    ) as f:
-        readable_output = f.read()
-    assert isinstance(result, CommandResults)
-    assert result.to_context()["Contents"] == expected
-    assert result.readable_output == readable_output
-
-
-@pytest.mark.parametrize("raw_resp, expected", [(HOST_TAG_CREATE_RESPONSE, HOST_TAG_CREATE_CONTEXT)])
-def test_add_tags_to_host_command(mocker, raw_resp, expected, configuration):
-    """
-    Test function for the add_tags_to_host_command function in DatadogCloudSIEM.
-
-    Args:
-    mocker: The mocker object used for mocking API calls.
-    raw_resp: The raw response to be returned by the mocked API call.
-    expected: The expected result of the command.
-    configuration: The configuration to be used for the command.
-
-    Returns:
-    None. The function asserts the output of the add_tags_to_host_command function against the expected output.
-    """
-    args = {
-        "host_name": "DESKTOP-IIQVPJ7",
-        "tags": "env:prod,environment:production12,environment:production13,region:east,source:my_apps,test:123",
-    }
-
-    DATADOG_API_CLIENT_MOCK.create_host_tags.return_value = raw_resp
-    mocker.patch("DatadogCloudSIEM.ApiClient", return_value=DATADOG_API_CLIENT_MOCK)
-    mocker.patch("DatadogCloudSIEM.TagsApi", return_value=DATADOG_API_CLIENT_MOCK)
-    result = add_tags_to_host_command(configuration, args)
-    with open(
-        os.path.join("test_data", "readable_outputs/add_tags_to_host_command_readable.md"),
-    ) as f:
-        readable_output = f.read()
-    assert isinstance(result, CommandResults)
-    assert result.to_context()["Contents"] == expected
-    assert result.readable_output == readable_output
-
-
-@pytest.mark.parametrize("raw_resp, expected", [(HOST_TAG_GET_RESPONSE, HOST_TAG_GET_CONTEXT)])
-def test_get_host_tags_command(mocker, raw_resp, expected, configuration):
-    """
-    Test function for the get_host_tags_command function in DatadogCloudSIEM.
-
-    Args:
-    mocker: The mocker object used for mocking API calls.
-    raw_resp: The raw response to be returned by the mocked API call.
-    expected: The expected result of the command.
-    configuration: The configuration to be used for the command.
-
-    Returns:
-    None. The function asserts the output of the get_host_tags_command function against the expected output.
-    """
-    args = {"host_name": "DESKTOP-IIQVPJ7"}
-
-    DATADOG_API_CLIENT_MOCK.get_host_tags.return_value = HOST_TAG_GET_RESPONSE
-    mocker.patch("DatadogCloudSIEM.ApiClient", return_value=DATADOG_API_CLIENT_MOCK)
-    mocker.patch("DatadogCloudSIEM.TagsApi", return_value=DATADOG_API_CLIENT_MOCK)
-    result = get_host_tags_command(configuration, args)
-    with open(
-        os.path.join("test_data", "readable_outputs/get_host_tags_command_readable.md"),
-    ) as f:
-        readable_output = f.read()
-    assert isinstance(result, CommandResults)
-    assert result.to_context()["Contents"] == expected
-    assert result.readable_output == readable_output
-
-
-@pytest.mark.parametrize("raw_resp, expected", [(HOST_TAG_UPDATE_RESPONSE, HOST_TAG_UPDATE_CONTEXT)])
-def test_update_host_tags_command(mocker, raw_resp, expected, configuration):
-    """
-    Test function for the update_host_tags_command function in DatadogCloudSIEM.
-
-    Args:
-    mocker: The mocker object used for mocking API calls.
-    raw_resp: The raw response to be returned by the mocked API call.
-    expected: The expected result of the command.
-    configuration: The configuration to be used for the command.
-
-    Returns:
-    None. The function asserts the output of the update_host_tags_command function against the expected output.
-    """
-    args = {
-        "host_name": "DESKTOP-IIQVPJ7",
-        "tags": "env:prod,environment:production1234,environment:production1354,region:west,source:my_apps,test:123",
-    }
-
-    DATADOG_API_CLIENT_MOCK.update_host_tags.return_value = HOST_TAG_UPDATE_RESPONSE
-    mocker.patch("DatadogCloudSIEM.ApiClient", return_value=DATADOG_API_CLIENT_MOCK)
-    mocker.patch("DatadogCloudSIEM.TagsApi", return_value=DATADOG_API_CLIENT_MOCK)
-    result = update_host_tags_command(configuration, args)
-    with open(
-        os.path.join("test_data", "readable_outputs/update_host_tags_command_readable.md"),
-    ) as f:
-        readable_output = f.read()
-    assert isinstance(result, CommandResults)
-    assert result.to_context()["Contents"] == expected
-    assert result.readable_output == readable_output
-
-
-@pytest.mark.parametrize("raw_resp, expected", [(ACTIVE_METRIC_LIST_RESPONSE, ACTIVE_METRIC_LIST_CONTEXT)])
-def test_active_metrics_list_command(mocker, raw_resp, expected, configuration):
-    """
-    Test function for the active_metrics_list_command function in DatadogCloudSIEM.
-
-    Args:
-    mocker: The mocker object used for mocking API calls.
-    raw_resp: The raw response to be returned by the mocked API call.
-    expected: The expected result of the command.
-    configuration: The configuration to be used for the command.
-
-    Returns:
-    None. The function asserts the output of the active_metrics_list_command function against the expected output.
-    """
-    args = {"from": "2 days ago"}
-    resp_obj = MetricsListResponse(_from=raw_resp.get("_from"), metrics=raw_resp.get("metrics"))
-    DATADOG_API_CLIENT_MOCK.list_active_metrics.return_value = resp_obj
-    mocker.patch("DatadogCloudSIEM.ApiClient", return_value=DATADOG_API_CLIENT_MOCK)
-    mocker.patch("DatadogCloudSIEM.MetricsApi", return_value=DATADOG_API_CLIENT_MOCK)
-    result = active_metrics_list_command(configuration, args)
-    with open(
-        os.path.join("test_data", "readable_outputs/active_metrics_list_command_readable.md"),
-    ) as f:
-        readable_output = f.read()
-    assert isinstance(result, CommandResults)
-    assert result.to_context()["Contents"] == expected
-    assert result.readable_output == readable_output
-
-
-# check readable output
-@pytest.mark.parametrize("raw_resp, expected", [(METRIC_SEARCH_RESPONSE, METRIC_SEARCH_CONTEXT)])
-def test_metrics_search_command(mocker, raw_resp, expected, configuration):
-    """
-    Test function for the metrics_search_command function in DatadogCloudSIEM.
-
-    Args:
-    mocker: The mocker object used for mocking API calls.
-    raw_resp: The raw response to be returned by the mocked API call.
-    expected: The expected result of the command.
-    configuration: The configuration to be used for the command.
-
-    Returns:
-    None. The function asserts the output of the metrics_search_command function against the expected output.
-    """
-    args = {"query": "datadog.agent.python.version"}
-    resp_obj = MetricSearchResponse(results=MetricSearchResponseResults(metrics=raw_resp["results"]["metrics"]))
-    DATADOG_API_CLIENT_MOCK.list_metrics.return_value = resp_obj
-    mocker.patch("DatadogCloudSIEM.ApiClient", return_value=DATADOG_API_CLIENT_MOCK)
-    mocker.patch("DatadogCloudSIEM.MetricsApi", return_value=DATADOG_API_CLIENT_MOCK)
-    result = metrics_search_command(configuration, args)
-    with open(
-        os.path.join("test_data", "readable_outputs/metrics_search_command_readable.md"),
-    ) as f:
-        readable_output = f.read()
-    assert isinstance(result, CommandResults)
-    assert result.to_context()["Contents"] == expected
-    assert result.readable_output == readable_output
-
-
-@pytest.mark.parametrize("raw_resp, expected", [(METRIC_METADATA_GET_RESPONSE, METRIC_METADATA_GET_CONTEXT)])
-def test_get_metric_metadata_command(mocker, raw_resp, expected, configuration):
-    """
-    Test function for the get_metric_metadata_command function in DatadogCloudSIEM.
-
-    Args:
-    mocker: The mocker object used for mocking API calls.
-    raw_resp: The raw response to be returned by the mocked API call.
-    expected: The expected result of the command.
-    configuration: The configuration to be used for the command.
-
-    Returns:
-    None. The function asserts the output of the get_metric_metadata_command function against the expected output.
-    """
-    args = {"metric_name": "datadog.agent.python.version"}
-
-    resp_obj = MetricMetadata(**raw_resp)
-    DATADOG_API_CLIENT_MOCK.get_metric_metadata.return_value = resp_obj
-    mocker.patch("DatadogCloudSIEM.ApiClient", return_value=DATADOG_API_CLIENT_MOCK)
-    mocker.patch("DatadogCloudSIEM.MetricsApi", return_value=DATADOG_API_CLIENT_MOCK)
-    result = get_metric_metadata_command(configuration, args)
-    with open(
-        os.path.join("test_data", "readable_outputs/get_metric_metadata_command_readable.md"),
-    ) as f:
-        readable_output = f.read()
-    assert isinstance(result, CommandResults)
-    assert result.to_context()["Contents"] == expected
-    assert result.readable_output == readable_output
-
-
-@pytest.mark.parametrize(
-    "raw_resp, expected",
-    [(METRIC_METADATA_UPDATE_RESPONSE, METRIC_METADATA_UPDATE_CONTEXT)],
-)
-def test_update_metric_metadata_command(mocker, raw_resp, expected, configuration):
-    """
-    Test function for the update_metric_metadata_command function in DatadogCloudSIEM.
-
-    Args:
-    mocker: The mocker object used for mocking API calls.
-    raw_resp: The raw response to be returned by the mocked API call.
-    expected: The expected result of the command.
-    configuration: The configuration to be used for the command.
-
-    Returns:
-    None. The function asserts the output of the update_metric_metadata_command function against the expected output.
-    """
-    args = {
-        "metric_name": "datadog.agent.python.version",
-        "description": "description",
-        "per_unit": "instance",
-        "short_name": "python",
-        "statsd_interval": 60,
-        "type": "gauge",
-    }
-
-    resp_obj = MetricMetadata(**raw_resp)
-    DATADOG_API_CLIENT_MOCK.update_metric_metadata.return_value = resp_obj
-    mocker.patch("DatadogCloudSIEM.ApiClient", return_value=DATADOG_API_CLIENT_MOCK)
-    mocker.patch("DatadogCloudSIEM.MetricsApi", return_value=DATADOG_API_CLIENT_MOCK)
-    result = update_metric_metadata_command(configuration, args)
-    with open(
-        os.path.join("test_data", "readable_outputs/update_metric_metadata_command_readable.md"),
-    ) as f:
-        readable_output = f.read()
-    assert isinstance(result, CommandResults)
-    assert result.to_context()["Contents"] == expected
-    assert result.readable_output == readable_output
-
-
-@pytest.mark.parametrize("raw_resp, expected", [(TAGS_LIST_RESPONSE, TAGS_LIST_CONTEXT)])
-def test_get_tags_command(mocker, raw_resp, expected, configuration):
-    """
-    Test function for the get_tags_command function in DatadogCloudSIEM.
-
-    Args:
-    mocker: The mocker object used for mocking API calls.
-    raw_resp: The raw response to be returned by the mocked API call.
-    expected: The expected result of the command.
-    configuration: The configuration to be used for the command.
-
-    Returns:
-    None. The function asserts the output of the get_tags_command function against the expected output.
-    """
-    args = {
-        "page": "1",
-        "page_size": "50",
-        "limit": "100",
-        "source": "test",
-    }
-    DATADOG_API_CLIENT_MOCK.list_host_tags.return_value = raw_resp
-    mocker.patch("DatadogCloudSIEM.ApiClient", return_value=DATADOG_API_CLIENT_MOCK)
-    mocker.patch("DatadogCloudSIEM.TagsApi", return_value=DATADOG_API_CLIENT_MOCK)
-    result = get_tags_command(configuration, args)
-    with open(os.path.join("test_data", "readable_outputs/get_tags_command_readable.md")) as f:
-        readable_output = f.read()
-    assert isinstance(result, CommandResults)
-    assert result.to_context()["Contents"] == expected
-    assert result.readable_output == readable_output
-
-
-@pytest.mark.parametrize(
-    "raw_resp, expected",
-    [(TIME_SERIES_POINT_QUERY_RESPONSE, TIME_SERIES_POINT_QUERY_CONTEXT)],
-)
-def test_query_timeseries_points_command(mocker, raw_resp, expected, configuration):
-    """
-    Test function for the query_timeseries_points_command function in DatadogCloudSIEM.
-
-    Args:
-    mocker: The mocker object used for mocking API calls.
-    raw_resp: The raw response to be returned by the mocked API call.
-    expected: The expected result of the command.
-    configuration: The configuration to be used for the command.
-
-    Returns:
-    None. The function asserts the output of the query_timeseries_points_command function against the expected output.
-    """
-    args = {"from": "2 days ago", "query": "datadog.agent.running", "to": "now"}
-    resp_obj = Datadog(**raw_resp)
-    DATADOG_API_CLIENT_MOCK.query_metrics.return_value = resp_obj
-    mocker.patch("DatadogCloudSIEM.ApiClient", return_value=DATADOG_API_CLIENT_MOCK)
-    mocker.patch("DatadogCloudSIEM.MetricsApi", return_value=DATADOG_API_CLIENT_MOCK)
-    result = query_timeseries_points_command(configuration, args)
-    with open(
-        os.path.join("test_data", "readable_outputs/query_timeseries_points_command_readable.md"),
-    ) as f:
-        readable_output = f.read()
-    assert isinstance(result[0], CommandResults)
-    assert isinstance(result[1], dict)
-    assert result[0].readable_output == readable_output
-
-
-@pytest.mark.parametrize("raw_resp, expected", [(None, "### Host tags deleted successfully!\n")])
-def test_delete_host_tags_command(mocker, raw_resp, expected, configuration):
-    """
-    Test function for the delete_host_tags_command function in DatadogCloudSIEM.
-
-    Args:
-    mocker: The mocker object used for mocking API calls.
-    raw_resp: The raw response to be returned by the mocked API call.
-    expected: The expected result of the command.
-    configuration: The configuration to be used for the command.
-
-    Returns:
-    None. The function asserts the output of the delete_host_tags_command function against the expected output.
-    """
-    args = {"host_name": "DESKTOP-IIQVPJ7"}
-    DATADOG_API_CLIENT_MOCK.delete_host_tags.return_value = raw_resp
-    mocker.patch("DatadogCloudSIEM.ApiClient", return_value=DATADOG_API_CLIENT_MOCK)
-    mocker.patch("DatadogCloudSIEM.TagsApi", return_value=DATADOG_API_CLIENT_MOCK)
-    result = delete_host_tags_command(configuration, args)
-    assert isinstance(result, CommandResults)
-    assert result.readable_output == expected
-
-
-@pytest.mark.parametrize("raw_resp, expected", [(None, "### Incident deleted successfully!\n")])
-def test_delete_incident_command(mocker, raw_resp, expected, configuration):
-    """
-    Test function for the delete_incident_command function in DatadogCloudSIEM.
-
-    Args:
-    mocker: The mocker object used for mocking API calls.
-    raw_resp: The raw response to be returned by the mocked API call.
-    expected: The expected result of the command.
-    configuration: The configuration to be used for the command.
-
-    Returns:
-    None. The function asserts the output of the delete_incident_command function against the expected output.
-    """
-    args = {"incident_id": "8d00d025-6d73-50f3-b93d-c9c3e40afce3"}
-    DATADOG_API_CLIENT_MOCK.delete_incident.return_value = raw_resp
-    mocker.patch("DatadogCloudSIEM.ApiClient", return_value=DATADOG_API_CLIENT_MOCK)
-    mocker.patch("DatadogCloudSIEM.IncidentsApi", return_value=DATADOG_API_CLIENT_MOCK)
-    result = delete_incident_command(configuration, args)
-    assert isinstance(result, CommandResults)
-    assert result.readable_output == expected
-
-
-@pytest.mark.parametrize("raw_resp, expected", [(CREATE_INCIDENT_RESPONSE, CREATE_INCIDENT_CONTEXT)])
-def test_create_incident_command(mocker, raw_resp, expected, configuration):
-    """
-    Test function for the create_incident_command function in DatadogCloudSIEM.
-
-    Args:
-    mocker: The mocker object used for mocking API calls.
-    raw_resp: The raw response to be returned by the mocked API call.
-    expected: The expected result of the command.
-    configuration: The configuration to be used for the command.
-
-    Returns:
-    None. The function asserts the output of the create_incident_command function against the expected output.
-    """
-    args = {
-        "customer_impacted": False,
-        "title": "Incident title",
-        "content": "Incident content",
-        "detection_method": "customer",
-        "display_name": "datadog",
-        "handle": "abc@domain.com",
-        "important": True,
-        "root_cause": "cause",
-        "severity": "SEV-1",
-        "state": "active",
-        "summary": "summary",
-    }
-    resp_obj = Datadog(**raw_resp)
-    DATADOG_API_CLIENT_MOCK.create_incident.return_value = resp_obj
-    mocker.patch("DatadogCloudSIEM.ApiClient", return_value=DATADOG_API_CLIENT_MOCK)
-    mocker.patch("DatadogCloudSIEM.IncidentsApi", return_value=DATADOG_API_CLIENT_MOCK)
-    result = create_incident_command(configuration, args)
-    with open(
-        os.path.join("test_data", "readable_outputs/create_incident_command_readable.md"),
-    ) as f:
-        readable_output = f.read()
-    assert isinstance(result, CommandResults)
-    assert result.to_context()["Contents"] == expected
-    assert result.readable_output == readable_output
-
-
-@pytest.mark.parametrize("raw_resp, expected", [(UPDATE_INCIDENT_RESPONSE, UPDATE_INCIDENT_CONTEXT)])
-def test_update_incident_command(mocker, raw_resp, expected, configuration):
-    """
-    Test function for the update_incident_command function in DatadogCloudSIEM.
-
-    Args:
-    mocker: The mocker object used for mocking API calls.
-    raw_resp: The raw response to be returned by the mocked API call.
-    expected: The expected result of the command.
-    configuration: The configuration to be used for the command.
-
-    Returns:
-    None. The function asserts the output of the update_incident_command function against the expected output.
-    """
-    args = {
-        "customer_impact_end": "now",
-        "customer_impact_scope": "impact scope",
-        "customer_impact_start": "1 day ago",
-        "customer_impacted": True,
-        "detected": "now",
-        "detection_method": "monitor",
-        "display_name": "datadog",
-        "handle": "xyz@domain.com",
-        "root_cause": "the root cause",
-        "severity": "SEV-2",
-        "state": "active",
-        "summary": "summary text",
-        "title": "updated title",
-    }
-    resp_obj = Datadog(**raw_resp)
-    DATADOG_API_CLIENT_MOCK.update_incident.return_value = resp_obj
-    mocker.patch("DatadogCloudSIEM.ApiClient", return_value=DATADOG_API_CLIENT_MOCK)
-    mocker.patch("DatadogCloudSIEM.IncidentsApi", return_value=DATADOG_API_CLIENT_MOCK)
-    result = update_incident_command(configuration, args)
-    with open(
-        os.path.join("test_data", "readable_outputs/update_incident_command_readable.md"),
-    ) as f:
-        readable_output = f.read()
-    assert isinstance(result, CommandResults)
-    assert result.to_context()["Contents"] == expected
-    assert result.readable_output == readable_output
-
-
-@pytest.mark.parametrize("raw_resp, expected", [(GET_INCIDENT_RESPONSE, GET_INCIDENT_CONTEXT)])
-def test_get_incident_command(mocker, raw_resp, expected, configuration):
-    """
-    Test function for the get_incident_command function in DatadogCloudSIEM.
-
-    Args:
-    mocker: The mocker object used for mocking API calls.
-    raw_resp: The raw response to be returned by the mocked API call.
-    expected: The expected result of the command.
-    configuration: The configuration to be used for the command.
-
-    Returns:
-    None. The function asserts the output of the get_incident_command function against the expected output.
-    """
-    args = {"incident_id": "37ad8b5b-b251-5d46-9978-2edbdac3cdb1"}
-    resp_obj = Datadog(**raw_resp)
-    DATADOG_API_CLIENT_MOCK.get_incident.return_value = resp_obj
-    mocker.patch("DatadogCloudSIEM.ApiClient", return_value=DATADOG_API_CLIENT_MOCK)
-    mocker.patch("DatadogCloudSIEM.IncidentsApi", return_value=DATADOG_API_CLIENT_MOCK)
-    result = get_incident_command(configuration, args)
-    with open(
-        os.path.join("test_data", "readable_outputs/get_incident_command_readable.md"),
-    ) as f:
-        readable_output = f.read()
-    assert isinstance(result, CommandResults)
-    assert result.to_context()["Contents"] == expected
-    assert result.readable_output == readable_output
-
-
-@pytest.mark.parametrize("raw_resp, expected", [(LIST_INCIDENT_RESPONSE, LIST_INCIDENT_CONTEXT)])
-def test_list_incident_command(mocker, raw_resp, expected, configuration):
-    """
-    Test function for the incident list function in DatadogCloudSIEM.
-
-    Args:
-    mocker: The mocker object used for mocking API calls.
-    raw_resp: The raw response to be returned by the mocked API call.
-    expected: The expected result of the command.
-    configuration: The configuration to be used for the command.
-
-    Returns:
-    None. The function asserts the output of the incident list function against the expected output.
-    """
-    args = {"limit": 2}
-    resp_obj = Datadog(**raw_resp)
-    DATADOG_API_CLIENT_MOCK.search_incidents.return_value = resp_obj
-    mocker.patch("DatadogCloudSIEM.ApiClient", return_value=DATADOG_API_CLIENT_MOCK)
-    mocker.patch("DatadogCloudSIEM.IncidentsApi", return_value=DATADOG_API_CLIENT_MOCK)
-    result = get_incident_command(configuration, args)
-    with open(
-        os.path.join("test_data", "readable_outputs/list_incident_command_readable.md"),
-    ) as f:
-        readable_output = f.read()
-    assert isinstance(result, CommandResults)
-    assert result.outputs == expected
-    assert result.readable_output == readable_output
-
-
-@pytest.mark.parametrize("raw_resp, expected", [(LIST_INCIDENT_RESPONSE, LIST_INCIDENT_CONTEXT)])
-def test_fetch_incidents(mocker, raw_resp, expected, configuration):
-    """
-    Test function for the fetch_incidents function in DatadogCloudSIEM.
-
-    Args:
-    mocker: The mocker object used for mocking API calls.
-    raw_resp: The raw response to be returned by the mocked API call.
-    expected: The expected result of the command.
-    configuration: The configuration to be used for the command.
-
-    Returns:
-    None. The function asserts the output of the fetch_incidents function against the expected output.
-    """
-    args = {"first_fetch_time": "3 days", "fetch_limit": 50}
-    resp_obj = Datadog(**raw_resp)
-    mocker.patch.object(demisto, "getLastRun", return_value={"lastRun": "2023-04-27 10:41:04.316926"})
-    DATADOG_API_CLIENT_MOCK.search_incidents.return_value = resp_obj
-    mocker.patch("DatadogCloudSIEM.ApiClient", return_value=DATADOG_API_CLIENT_MOCK)
-    mocker.patch("DatadogCloudSIEM.IncidentsApi", return_value=DATADOG_API_CLIENT_MOCK)
-    result = fetch_incidents(configuration, args)
-    assert result == "OK"
-
-
-def test_test_module(mocker, configuration):
-    """
-    Test function for the test_module function in DatadogCloudSIEM.
-
-    Args:
-    mocker: The mocker object used for mocking API calls.
-    raw_resp: The raw response to be returned by the mocked API call.
-    expected: The expected result of the command.
-    configuration: The configuration to be used for the command.
-
-    Returns:
-    None. The function asserts the output of the test_module function against the expected output.
-    """
-    DATADOG_API_CLIENT_MOCK.list_events.return_value = {}
-    mocker.patch("DatadogCloudSIEM.ApiClient", return_value=DATADOG_API_CLIENT_MOCK)
-    mocker.patch("DatadogCloudSIEM.AuthenticationApi", return_value=DATADOG_API_CLIENT_MOCK)
-    mocker.patch("DatadogCloudSIEM.EventsApi", return_value=DATADOG_API_CLIENT_MOCK)
-    result = module_test(configuration)
-    assert result == "ok"
-    assert isinstance(result, str)
-
-
-@pytest.mark.parametrize(
-    "results, offset, limit, expected",
-    [
-        ([1, 2, 3, 4, 5], 0, 3, [1, 2, 3]),
-        ([1, 2, 3, 4, 5], 2, 2, [3, 4]),
-        ([1, 2, 3, 4, 5], 5, 10, []),
-        ([], 0, 5, []),
-    ],
-)
-def test_get_paginated_results(results, offset, limit, expected):
-    """
-    Test function for the get_paginated_results function in DatadogCloudSIEM.
-
-    Args:
-    results: The list of object.
-    limit: Records per page.
-    offset: The number of records to be skipped.
-    expected: The expected result of the command.
-
-    Returns:
-    None. The function asserts the output of the get_paginated_results function against the expected output.
-    """
-    assert get_paginated_results(results, offset, limit) == expected
-
-
-@pytest.mark.parametrize(
-    "sub_context, page, page_size, expected",
-    [
-        ("Test", None, None, "Test"),
-        (
-            "Test",
-            1,
-            10,
-            "Test List\nCurrent page size: 10\nShowing page 1 out of others that may exist",
-        ),
-        (
-            "Test",
-            2,
-            20,
-            "Test List\nCurrent page size: 20\nShowing page 2 out of others that may exist",
-        ),
-        ("Test", -1, 10, "Test"),
-        ("Test", 1, -1, "Test"),
-        ("Test", -1, -1, "Test"),
-    ],
-)
-def test_table_header(sub_context, page, page_size, expected):
-    """
-    Test function for the table_header function in DatadogCloudSIEM.
-
-    Args:
-    sub_context: The sub-context of the results to display in the table header.
-    page: The page number of the results.
-    page_size: The number of results per page.
-    expected: The expected result of the table_header function.
-
-    Returns:
-    None. The function asserts the output of the table_header function against the expected output.
-    """
-    assert table_header(sub_context, page, page_size) == expected
-
-
-@pytest.mark.parametrize(
-    "timestamp, time, expected",
-    [
-        (
-            int((datetime.datetime.now() - datetime.timedelta(hours=12)).timestamp()),
-            14,
-            True,
-        ),
-        (
-            int((datetime.datetime.now() - datetime.timedelta(hours=4)).timestamp()),
-            6,
-            True,
-        ),
-        (
-            int((datetime.datetime.now() - datetime.timedelta(hours=2)).timestamp()),
-            10,
-            True,
-        ),
-        (
-            int((datetime.datetime.now() - datetime.timedelta(hours=12)).timestamp()),
-            1,
-            False,
-        ),
-    ],
-)
-def test_is_within_time(timestamp, time, expected):
-    """
-    Test function for the is_within_time function in DatadogCloudSIEM.
-
-    Args:
-    timestamp: The timestamp to check if it's within the given time window.
-    time: The time window to check against, in minutes.
-    expected: The expected result of the is_within_time function.
-
-    Returns:
-    None. The function asserts the output of the is_within_time function against the expected output.
-    """
-    assert is_within_time(timestamp, time) == expected
-
-
-@pytest.mark.parametrize("raw, expected", [(EVENT_MOCK, EXPECTED_EVENT_MOCK)])
-def test_event_for_lookup(raw, expected):
-    """
-    Test function for the event_for_lookup function in DatadogCloudSIEM.
-
-    Args:
-    raw: The raw event data to be processed.
-    expected: The expected output of the event_for_lookup function.
-
-    Returns:
-    None. The function asserts the output of the event_for_lookup function against the expected output.
-    """
-    assert event_for_lookup(raw) == expected
-
-
-@pytest.mark.parametrize("raw, expected", [(INCIDENT_LOOKUP_DATA, INCIDENT_LOOKUP_DATA_EXPECTED)])
-def test_incident_for_lookup(raw, expected):
-    """
-    Test function for the incident_for_lookup function in DatadogCloudSIEM.
-
-    Args:
-    raw: The raw event data to be processed.
-    expected: The expected output of the event_for_lookup function.
-
-    Returns:
-    None. The function asserts the output of the incident_for_lookup function against the expected output.
-    """
-    assert incident_for_lookup(raw) == expected
-
-
-@pytest.mark.parametrize(
-    "limit, page, page_size, expected",
-    [
-        (50, 1, 10, (10, 0)),
-        (None, 2, 5, (5, 5)),
-        (10, 3, None, (10, 100)),
-        (20, 4, -1, DemistoException(PAGE_SIZE_ERROR_MSG)),
-        (50, -1, -3, DemistoException(PAGE_NUMBER_ERROR_MSG)),
-        (None, None, None, (DEFAULT_PAGE_SIZE, 0)),
-    ],
-)
-def test_pagination(limit: int | None, page: int | None, page_size: int | None, expected):
-    """
-    Test function for the pagination function in DatadogCloudSIEM.
-
-    Args:
-    limit: The maximum number of results to retrieve.
-    page: The page number of the results to retrieve.
-    page_size: The number of results per page.
-    expected: The expected output of the pagination function.
-    If an exception is expected, the value should be an Exception object.
-
-    Returns:
-    None. The function asserts the output of the pagination function against the expected output.
-    """
-    if isinstance(expected, Exception):
-        with pytest.raises(DemistoException):
-            pagination(limit, page, page_size)
-    else:
-        assert pagination(limit, page, page_size) == expected
-
-
-@pytest.mark.parametrize(
-    "raw, metric_name, expected",
-    [(METRIC_COMMAND_RESULT_INPUT, "system.cpu.idle", METRIC_COMMAND_RESULT_OUTPUT)],
-)
-def test_metric_command_results(raw, metric_name, expected):
-    """
-    Test function for the 'metric_command_results' function.
-
-    Args:
-        raw (dict): A dictionary of Datadog API credentials.
-        metric_name (str): The name of the metric to search for.
-        expected (Any): The expected result of the function.
-
-    Raises:
-        AssertionError: If the result of the function is not an instance of CommandResults, or if the
-        'Contents' key of the result's context dictionary is not equal to the expected value.
-
-    Returns:
-        None
-    """
-    result = metric_command_results(Datadog(**raw), metric_name)
-    assert isinstance(result, CommandResults)
-    assert result.to_context()["Contents"] == expected
-
-
-@pytest.mark.parametrize(
-    "raw, expected",
-    [
-        (
-            {"date": datetime.datetime(2022, 4, 13, 12, 0, 0)},
-            {"date": "2022-04-13T12:00:00+00:00"},
-        ),
-        (
-            {
-                "date1": datetime.datetime(2022, 4, 13, 12, 0, 0),
-                "date2": datetime.datetime(2022, 4, 14, 12, 0, 0),
+@pytest.fixture
+def mock_api_client():
+    """Mock ApiClient for Datadog API calls."""
+    return MagicMock()
+
+
+@pytest.fixture
+def security_signal_response():
+    """Sample security signal API response."""
+    return {
+        "data": {
+            "id": "AQAAAYvz-1234567890",
+            "type": "signal",
+            "attributes": {
+                "timestamp": "2024-01-15T10:30:00.000Z",
+                "message": "Suspicious login attempt detected from unusual location",
+                "tags": [
+                    "security:threat",
+                    "env:production",
+                    "source:aws",
+                ],
+                "custom": {
+                    "workflow": {
+                        "rule": {
+                            "id": "abc-123-def",
+                            "name": "Brute Force Login Detection",
+                            "ruleType": "log_detection",
+                            "ruleTags": ["attack:credential_access", "technique:T1110"],
+                        },
+                        "triage": {
+                            "state": "open",
+                            "comment": "",
+                            "reason": "",
+                            "assignee": {
+                                "id": 12345,
+                                "uuid": "550e8400-e29b-41d4-a716-446655440000",
+                                "name": "security_analyst",
+                            },
+                        },
+                    }
+                },
             },
-            {"date1": "2022-04-13T12:00:00+00:00", "date2": "2022-04-14T12:00:00+00:00"},
-        ),
-        ({"name": "John", "age": 30}, {"name": "John", "age": 30}),
-        (
+        }
+    }
+
+
+@pytest.fixture
+def security_signals_list_response():
+    """Sample security signals list API response."""
+    return {
+        "data": [
             {
-                "date": datetime.datetime(2022, 4, 13, 12, 0, 0),
-                "nested": {"date": datetime.datetime(2022, 4, 14, 12, 0, 0)},
+                "id": "AQAAAYvz-1234567890",
+                "type": "signal",
+                "attributes": {
+                    "timestamp": "2024-01-15T10:30:00.000Z",
+                    "message": "Suspicious login attempt detected",
+                    "tags": ["security:threat", "env:production"],
+                    "custom": {
+                        "workflow": {
+                            "rule": {
+                                "id": "abc-123",
+                                "name": "Brute Force Detection",
+                                "ruleType": "log_detection",
+                                "ruleTags": ["attack:credential_access"],
+                            },
+                            "triage": {
+                                "state": "open",
+                                "comment": "",
+                                "reason": "",
+                            },
+                        }
+                    },
+                },
             },
-            {"date": "2022-04-13T12:00:00+00:00", "nested": {"date": "2022-04-14T12:00:00+00:00"}},
-        ),
-    ],
-)
-def test_convert_datetime_to_str(raw, expected):
-    """
-    Test the `convert_datetime_to_str` function with the given datetime object and expected string value.
-    The function should convert the datetime object to a string in ISO 8601 format and
-    return the expected string.
+            {
+                "id": "AQAAAYvz-0987654321",
+                "type": "signal",
+                "attributes": {
+                    "timestamp": "2024-01-15T09:15:00.000Z",
+                    "message": "Malicious file download detected",
+                    "tags": ["security:threat", "env:production"],
+                    "custom": {
+                        "workflow": {
+                            "rule": {
+                                "id": "xyz-456",
+                                "name": "Malware Detection",
+                                "ruleType": "log_detection",
+                                "ruleTags": ["attack:execution"],
+                            },
+                            "triage": {
+                                "state": "under_review",
+                                "comment": "",
+                                "reason": "",
+                            },
+                        }
+                    },
+                },
+            },
+        ],
+        "meta": {
+            "page": {
+                "after": "next_page_cursor",
+            }
+        },
+    }
 
-    :param raw: The datetime object to be converted to a string.
-    :type raw: datetime
-    :param expected: The expected string value of the converted datetime object.
-    :type expected: str
-    """
-    assert convert_datetime_to_str(raw) == expected
+
+def test_get_security_signal_command_success(configuration, security_signal_response):
+    """Test get_security_signal_command with valid signal ID."""
+    args = {"signal_id": "AQAAAYvz-1234567890", "fetch_ioc": "false"}
+
+    mock_response = MagicMock()
+    mock_response.to_dict.return_value = security_signal_response
+
+    with (
+        patch("DatadogCloudSIEM.ApiClient"),
+        patch("DatadogCloudSIEM.SecurityMonitoringApi") as mock_api,
+    ):
+        mock_api_instance = MagicMock()
+        mock_api.return_value = mock_api_instance
+        mock_api_instance.get_security_monitoring_signal.return_value = mock_response
+
+        results = get_security_signal_command(configuration, args)
+
+        assert isinstance(results, list)
+        assert len(results) == 1
+        assert isinstance(results[0], CommandResults)
+        assert results[0].outputs["id"] == "AQAAAYvz-1234567890"  # type: ignore
+        mock_api_instance.get_security_monitoring_signal.assert_called_once_with(
+            signal_id="AQAAAYvz-1234567890"
+        )
 
 
-@pytest.mark.parametrize("raw, expected", [(HOST_TAG_CREATE_RESPONSE, TAGS_CONTEXT_READABLE_OUTPUT)])
-def test_tags_context_and_readable_output(raw, expected):
-    """
-    Test the `tags_context_and_readable_output` function with the given raw data and
-    expected results. The function should parse the input data, create a context object
-    and a readable output object with the appropriate format, and return a dictionary
-    that matches the expected value.
+def test_get_security_signal_command_with_ioc(configuration, security_signal_response):
+    """Test get_security_signal_command with IOC extraction enabled."""
+    # Add IOC data to the signal response
+    security_signal_response["data"]["attributes"]["custom"]["signal"] = {
+        "attributes": {
+            "network": {"client": {"ip": "192.168.1.100"}},
+        }
+    }
 
-    :param raw: A dictionary containing raw data to be parsed and formatted.
-    :type raw: dict
-    :param expected: The expected output of the function, as a dictionary.
-    :type expected: dict
-    """
-    assert tags_context_and_readable_output(raw) == expected
+    args = {"signal_id": "AQAAAYvz-1234567890", "fetch_ioc": "true"}
+
+    mock_response = MagicMock()
+    mock_response.to_dict.return_value = security_signal_response
+
+    with (
+        patch("DatadogCloudSIEM.ApiClient"),
+        patch("DatadogCloudSIEM.SecurityMonitoringApi") as mock_api,
+    ):
+        mock_api_instance = MagicMock()
+        mock_api.return_value = mock_api_instance
+        mock_api_instance.get_security_monitoring_signal.return_value = mock_response
+
+        results = get_security_signal_command(configuration, args)
+
+        assert isinstance(results, list)
+        # Should have at least the signal result
+        assert len(results) >= 1
+        assert isinstance(results[0], CommandResults)
+
+
+def test_get_security_signal_command_not_found(configuration):
+    """Test get_security_signal_command when signal is not found."""
+    args = {"signal_id": "non_existent_id", "fetch_ioc": "false"}
+
+    mock_response = MagicMock()
+    mock_response.to_dict.return_value = {"data": {}}
+
+    with (
+        patch("DatadogCloudSIEM.ApiClient"),
+        patch("DatadogCloudSIEM.SecurityMonitoringApi") as mock_api,
+    ):
+        mock_api_instance = MagicMock()
+        mock_api.return_value = mock_api_instance
+        mock_api_instance.get_security_monitoring_signal.return_value = mock_response
+
+        results = get_security_signal_command(configuration, args)
+
+        assert isinstance(results, list)
+        assert len(results) == 1
+        assert "No security signal found" in results[0].readable_output
+
+
+def test_get_security_signal_command_missing_signal_id(configuration):
+    """Test get_security_signal_command without signal_id."""
+    args = {}
+
+    with pytest.raises(DemistoException, match="Signal ID is required"):
+        get_security_signal_command(configuration, args)
+
+
+def test_get_security_signal_list_command_success(
+    configuration, security_signals_list_response
+):
+    """Test get_security_signal_list_command with default parameters."""
+    args = {"limit": "50", "fetch_ioc": "false"}
+
+    mock_response = MagicMock()
+    mock_response.to_dict.return_value = security_signals_list_response
+
+    with (
+        patch("DatadogCloudSIEM.ApiClient"),
+        patch("DatadogCloudSIEM.SecurityMonitoringApi"),
+        patch("DatadogCloudSIEM.fetch_security_signals") as mock_fetch,
+    ):
+        # Mock the helper function that parses signals
+        mock_signal1 = MagicMock()
+        mock_signal1.to_dict.return_value = {"id": "signal1"}
+        mock_signal1.to_display_dict.return_value = {"ID": "signal1"}
+
+        mock_signal2 = MagicMock()
+        mock_signal2.to_dict.return_value = {"id": "signal2"}
+        mock_signal2.to_display_dict.return_value = {"ID": "signal2"}
+
+        mock_fetch.return_value = [mock_signal1, mock_signal2]
+
+        results = get_security_signal_list_command(configuration, args)
+
+        assert isinstance(results, list)
+        assert len(results) >= 1
+        assert isinstance(results[0], CommandResults)
+        assert isinstance(results[0].outputs, list)  # type: ignore
+        assert len(results[0].outputs) == 2  # type: ignore
+
+
+def test_get_security_signal_list_command_with_filters(
+    configuration, security_signals_list_response
+):
+    """Test get_security_signal_list_command with severity and state filters."""
+    args = {
+        "state": "open",
+        "severity": "high",
+        "limit": "50",
+        "fetch_ioc": "false",
+    }
+
+    mock_response = MagicMock()
+    mock_response.to_dict.return_value = security_signals_list_response
+
+    with (
+        patch("DatadogCloudSIEM.ApiClient"),
+        patch("DatadogCloudSIEM.SecurityMonitoringApi") as mock_api,
+    ):
+        mock_api_instance = MagicMock()
+        mock_api.return_value = mock_api_instance
+        mock_api_instance.search_security_monitoring_signals.return_value = (
+            mock_response
+        )
+
+        results = get_security_signal_list_command(configuration, args)
+
+        assert isinstance(results, list)
+        assert len(results) >= 1
+
+
+def test_get_security_signal_list_command_with_ioc(
+    configuration, security_signals_list_response
+):
+    """Test get_security_signal_list_command with IOC extraction enabled."""
+    args = {"limit": "50", "fetch_ioc": "true"}
+
+    mock_response = MagicMock()
+    mock_response.to_dict.return_value = security_signals_list_response
+
+    with (
+        patch("DatadogCloudSIEM.ApiClient"),
+        patch("DatadogCloudSIEM.SecurityMonitoringApi") as mock_api,
+    ):
+        mock_api_instance = MagicMock()
+        mock_api.return_value = mock_api_instance
+        mock_api_instance.search_security_monitoring_signals.return_value = (
+            mock_response
+        )
+
+        results = get_security_signal_list_command(configuration, args)
+
+        assert isinstance(results, list)
+        # Should have at least the signal list result
+        assert len(results) >= 1
+
+
+def test_get_security_signal_list_command_no_results(configuration):
+    """Test get_security_signal_list_command when no signals are found."""
+    args = {"limit": "50", "fetch_ioc": "false"}
+
+    mock_response = MagicMock()
+    mock_response.to_dict.return_value = {"data": [], "meta": {}}
+
+    with (
+        patch("DatadogCloudSIEM.ApiClient"),
+        patch("DatadogCloudSIEM.SecurityMonitoringApi") as mock_api,
+    ):
+        mock_api_instance = MagicMock()
+        mock_api.return_value = mock_api_instance
+        mock_api_instance.search_security_monitoring_signals.return_value = (
+            mock_response
+        )
+
+        results = get_security_signal_list_command(configuration, args)
+
+        assert isinstance(results, list)
+        assert len(results) == 1
+        assert "No security signals found" in results[0].readable_output
+
+
+def test_update_security_signal_assignee_command_success(configuration):
+    """Test update_security_signal_assignee_command with valid parameters."""
+    args = {
+        "signal_id": "AQAAAYvz-1234567890",
+        "assignee_uuid": "550e8400-e29b-41d4-a716-446655440000",
+    }
+
+    mock_response = MagicMock()
+    mock_response.to_dict.return_value = {
+        "id": "AQAAAYvz-1234567890",
+        "type": "signal",
+        "attributes": {
+            "state": "under_review",
+            "assignee": {
+                "id": 12345,
+                "uuid": "550e8400-e29b-41d4-a716-446655440000",
+                "name": "security_analyst",
+            },
+            "archive_comment": "",
+            "archive_reason": "",
+        },
+    }
+
+    with (
+        patch("DatadogCloudSIEM.ApiClient"),
+        patch("DatadogCloudSIEM.SecurityMonitoringApi") as mock_api,
+    ):
+        mock_api_instance = MagicMock()
+        mock_api.return_value = mock_api_instance
+        mock_api_instance.edit_security_monitoring_signal_assignee.return_value = (
+            mock_response
+        )
+
+        result = update_security_signal_assignee_command(configuration, args)
+
+        assert isinstance(result, CommandResults)
+        assert result.outputs["id"] == "AQAAAYvz-1234567890"  # type: ignore
+        assert result.outputs["triage"]["assignee"]["uuid"] == "550e8400-e29b-41d4-a716-446655440000"  # type: ignore
+
+
+def test_update_security_signal_state_command_success(configuration):
+    """Test update_security_signal_state_command with valid parameters."""
+    args = {
+        "signal_id": "AQAAAYvz-1234567890",
+        "state": "archived",
+        "reason": "false_positive",
+        "comment": "This was a false positive alert",
+    }
+
+    mock_response = MagicMock()
+    mock_response.to_dict.return_value = {
+        "id": "AQAAAYvz-1234567890",
+        "type": "signal",
+        "attributes": {
+            "state": "archived",
+            "archive_reason": "false_positive",
+            "archive_comment": "This was a false positive alert",
+        },
+    }
+
+    with (
+        patch("DatadogCloudSIEM.ApiClient"),
+        patch("DatadogCloudSIEM.SecurityMonitoringApi") as mock_api,
+    ):
+        mock_api_instance = MagicMock()
+        mock_api.return_value = mock_api_instance
+        mock_api_instance.edit_security_monitoring_signal_state.return_value = (
+            mock_response
+        )
+
+        result = update_security_signal_state_command(configuration, args)
+
+        assert isinstance(result, CommandResults)
+        assert result.outputs["id"] == "AQAAAYvz-1234567890"  # type: ignore
+        assert result.outputs["triage"]["state"] == "archived"  # type: ignore
+        assert result.outputs["triage"]["reason"] == "false_positive"  # type: ignore
+
+
+@pytest.fixture
+def logs_search_response():
+    """Sample logs search API response."""
+    return {
+        "data": [
+            {
+                "id": "log-12345",
+                "type": "log",
+                "attributes": {
+                    "timestamp": "2024-01-15T10:30:00.000Z",
+                    "message": "User login attempt from 192.168.1.100",
+                    "service": "auth-service",
+                    "host": "web-server-01",
+                    "source": "nginx",
+                    "status": "info",
+                    "tags": ["env:production", "team:security"],
+                },
+            },
+            {
+                "id": "log-12346",
+                "type": "log",
+                "attributes": {
+                    "timestamp": "2024-01-15T10:31:00.000Z",
+                    "message": "Failed login attempt detected",
+                    "service": "auth-service",
+                    "host": "web-server-01",
+                    "source": "nginx",
+                    "status": "warn",
+                    "tags": ["env:production", "team:security"],
+                },
+            },
+        ],
+        "meta": {"page": {"after": "next_cursor"}},
+    }
+
+
+def test_logs_search_command_success(configuration, logs_search_response):
+    """Test logs_search_command with default parameters."""
+    args = {"limit": "50"}
+
+    mock_response = MagicMock()
+    mock_response.to_dict.return_value = logs_search_response
+
+    with (
+        patch("DatadogCloudSIEM.ApiClient"),
+        patch("DatadogCloudSIEM.LogsApi") as mock_api,
+    ):
+        mock_api_instance = MagicMock()
+        mock_api.return_value = mock_api_instance
+        mock_api_instance.list_logs.return_value = mock_response
+
+        result = logs_search_command(configuration, args)
+
+        assert isinstance(result, CommandResults)
+        assert isinstance(result.outputs, list)  # type: ignore
+        assert len(result.outputs) == 2  # type: ignore
+        assert result.outputs[0]["id"] == "log-12345"  # type: ignore
+
+
+def test_logs_search_command_with_filters(configuration, logs_search_response):
+    """Test logs_search_command with service and status filters."""
+    args = {
+        "service": "auth-service",
+        "status": "warn",
+        "host": "web-server-01",
+        "limit": "50",
+    }
+
+    mock_response = MagicMock()
+    mock_response.to_dict.return_value = logs_search_response
+
+    with (
+        patch("DatadogCloudSIEM.ApiClient"),
+        patch("DatadogCloudSIEM.LogsApi") as mock_api,
+    ):
+        mock_api_instance = MagicMock()
+        mock_api.return_value = mock_api_instance
+        mock_api_instance.list_logs.return_value = mock_response
+
+        result = logs_search_command(configuration, args)
+
+        assert isinstance(result, CommandResults)
+        assert isinstance(result.outputs, list)  # type: ignore
+        # Verify that the API was called with a body containing the filters
+        mock_api_instance.list_logs.assert_called_once()
+
+
+def test_logs_search_command_no_results(configuration):
+    """Test logs_search_command when no logs are found."""
+    args = {"limit": "50"}
+
+    mock_response = MagicMock()
+    mock_response.to_dict.return_value = {"data": [], "meta": {}}
+
+    with (
+        patch("DatadogCloudSIEM.ApiClient"),
+        patch("DatadogCloudSIEM.LogsApi") as mock_api,
+    ):
+        mock_api_instance = MagicMock()
+        mock_api.return_value = mock_api_instance
+        mock_api_instance.list_logs.return_value = mock_response
+
+        result = logs_search_command(configuration, args)
+
+        assert isinstance(result, CommandResults)
+        assert "No logs found" in result.readable_output
+
+
+def test_logs_search_command_with_custom_query(configuration, logs_search_response):
+    """Test logs_search_command with custom query string."""
+    args = {
+        "query": "error AND status:500",
+        "limit": "50",
+    }
+
+    mock_response = MagicMock()
+    mock_response.to_dict.return_value = logs_search_response
+
+    with (
+        patch("DatadogCloudSIEM.ApiClient"),
+        patch("DatadogCloudSIEM.LogsApi") as mock_api,
+    ):
+        mock_api_instance = MagicMock()
+        mock_api.return_value = mock_api_instance
+        mock_api_instance.list_logs.return_value = mock_response
+
+        result = logs_search_command(configuration, args)
+
+        assert isinstance(result, CommandResults)
+        assert isinstance(result.outputs, list)  # type: ignore
+
+
+def test_fetch_incidents_first_fetch(configuration, mocker):
+    """Test fetch_incidents on first run (no last_run)."""
+    params = {
+        "first_fetch": "3 days",
+        "max_fetch": 10,
+        "fetch_severity": "high,critical",
+        "fetch_state": "open",
+        "fetch_query": "",
+    }
+
+    # Mock demisto functions
+    mock_get_last_run = mocker.patch.object(demisto, "getLastRun", return_value={})
+    mock_set_last_run = mocker.patch.object(demisto, "setLastRun")
+    mock_incidents = mocker.patch.object(demisto, "incidents")
+    mocker.patch.object(demisto, "debug")
+
+    # Mock fetch_security_signals helper
+    mock_signal = MagicMock()
+    mock_signal.id = "signal-123"
+    mock_signal.title = "Test Security Signal"
+    mock_signal.severity = "high"
+    mock_signal.timestamp = "2024-01-15T10:30:00+00:00"
+    mock_signal.to_dict.return_value = {
+        "id": "signal-123",
+        "title": "Test Security Signal",
+        "severity": "high",
+    }
+
+    with patch("DatadogCloudSIEM.fetch_security_signals", return_value=[mock_signal]):
+        from DatadogCloudSIEM import fetch_incidents
+
+        fetch_incidents(configuration, params)
+
+        # Verify demisto functions were called
+        mock_get_last_run.assert_called_once()
+        mock_set_last_run.assert_called_once()
+        mock_incidents.assert_called_once()
+
+        # Verify incidents were created
+        incidents_arg = mock_incidents.call_args[0][0]
+        assert len(incidents_arg) == 1
+        assert incidents_arg[0]["name"] == "Test Security Signal"
+        assert incidents_arg[0]["severity"] == 3  # High severity maps to 3
+        assert (
+            incidents_arg[0]["CustomFields"]["datadogsecuritysignalid"] == "signal-123"
+        )
+        assert (
+            incidents_arg[0]["CustomFields"]["datadogsecuritysignalurl"]
+            == "https://app.datadoghq.com/security/signals/signal-123"
+        )
+
+
+def test_fetch_incidents_incremental_fetch(configuration, mocker):
+    """Test fetch_incidents with existing last_run timestamp."""
+    params = {
+        "first_fetch": "3 days",
+        "max_fetch": 10,
+        "fetch_severity": "",
+        "fetch_state": "open",
+        "fetch_query": "",
+    }
+    # Mock demisto functions
+    mock_set_last_run = mocker.patch.object(demisto, "setLastRun")
+
+    # Mock fetch_security_signals helper
+    mock_signal = MagicMock()
+    mock_signal.id = "signal-456"
+    mock_signal.title = "New Security Signal"
+    mock_signal.severity = "critical"
+    mock_signal.timestamp = "2024-01-15T10:30:00+00:00"
+    mock_signal.to_dict.return_value = {
+        "id": "signal-456",
+        "title": "New Security Signal",
+        "severity": "critical",
+    }
+
+    with patch("DatadogCloudSIEM.fetch_security_signals", return_value=[mock_signal]):
+        from DatadogCloudSIEM import fetch_incidents
+
+        fetch_incidents(configuration, params)
+
+        # Verify last_run was updated with new timestamp
+        mock_set_last_run.assert_called_once()
+        updated_last_run = mock_set_last_run.call_args[0][0]
+        assert updated_last_run["last_fetch_time"] == "2024-01-15T10:30:00+00:00"
+
+
+def test_fetch_incidents_no_results(configuration, mocker):
+    """Test fetch_incidents when no new signals are found."""
+    params = {
+        "first_fetch": "1 day",
+        "max_fetch": 50,
+        "fetch_severity": "",
+        "fetch_state": "open",
+        "fetch_query": "",
+    }
+
+    # Mock demisto functions
+    mock_incidents = mocker.patch.object(demisto, "incidents")
+
+    with patch("DatadogCloudSIEM.fetch_security_signals", return_value=[]):
+        from DatadogCloudSIEM import fetch_incidents
+
+        fetch_incidents(configuration, params)
+
+        # Verify empty incidents list was sent
+        mock_incidents.assert_called_once_with([])
+
+
+def test_build_security_signal_url():
+    """Test build_security_signal_url constructs correct URLs."""
+    from DatadogCloudSIEM import build_security_signal_url
+
+    assert (
+        build_security_signal_url("signal-123")
+        == "https://app.datadoghq.com/security/signals/signal-123"
+    )
+
+
+def test_security_signals_search_query():
+    """Test security_signals_search_query builds correct query string."""
+    from DatadogCloudSIEM import security_signals_search_query
+
+    # Test with multiple filters
+    args = {
+        "state": "open",
+        "severity": "high",
+        "rule_name": "Brute Force",
+        "source": "aws",
+        "query": "host:web-server",
+    }
+    query = security_signals_search_query(args)
+    assert "state:open" in query
+    assert "severity:high" in query
+    assert "rule.name:Brute Force" in query
+    assert "source:aws" in query
+    assert "host:web-server" in query
+    assert " AND " in query
+
+    # Test with no filters
+    assert security_signals_search_query({}) == "*"
+
+
+def test_build_logs_search_query():
+    """Test build_logs_search_query builds correct query string."""
+    from DatadogCloudSIEM import build_logs_search_query
+
+    # Test with multiple filters
+    args = {
+        "service": "auth-service",
+        "host": "web-01",
+        "source": "nginx",
+        "status": "error",
+        "query": "failed login",
+    }
+    query = build_logs_search_query(args)
+    assert "service:auth-service" in query
+    assert "host:web-01" in query
+    assert "source:nginx" in query
+    assert "status:error" in query
+    assert "failed login" in query
+
+    # Test with no filters
+    assert build_logs_search_query({}) == "*"
+
+
+def test_calculate_limit():
+    """Test calculate_limit function."""
+    from DatadogCloudSIEM import calculate_limit
+
+    # page_size takes precedence
+    assert calculate_limit(100, 50) == 50
+
+    # Use limit when no page_size
+    assert calculate_limit(100, None) == 100
+
+    # Use default when both None
+    assert calculate_limit(None, None) == 50
+
+    # Test invalid page_size (negative)
+    with pytest.raises(DemistoException, match="page size should be greater than zero"):
+        calculate_limit(None, -1)
+
+
+def test_map_severity_to_xsoar():
+    """Test map_severity_to_xsoar function."""
+    from DatadogCloudSIEM import map_severity_to_xsoar
+
+    assert map_severity_to_xsoar("info") == 1
+    assert map_severity_to_xsoar("low") == 1
+    assert map_severity_to_xsoar("medium") == 2
+    assert map_severity_to_xsoar("high") == 3
+    assert map_severity_to_xsoar("critical") == 4
+    assert map_severity_to_xsoar("unknown") == 0
+    assert map_severity_to_xsoar(None) == 0
