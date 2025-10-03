@@ -1,0 +1,48 @@
+{
+    "events": [
+        {
+            "confidenceLevel": "High",
+            "deviceCountry": "United States",
+            "deviceName": "0.0.0.0",
+            "deviceRegion": "New York",
+            "dnsView": "default",
+            "feed": "suspicious-noed",
+            "source": "DFP",
+            "action": "Block",
+            "policy": "Default Policy",
+            "deviceIp": "0.0.0.0",
+            "query": "example.com",
+            "queryType": "TXT",
+            "response": "NXDOMAIN",
+            "class": "Suspicious",
+            "threatFamily": "EmergentDomain",
+            "threatIndicator": "example.com",
+            "detected": "2025-07-18 13:42:08 +0000 UTC",
+            "property": "EmergentDomain",
+            "user": "unknown",
+            "threatLevel": "High"
+        },
+        {
+            "confidenceLevel": "High",
+            "deviceCountry": "United Kingdom",
+            "deviceName": "0.0.0.1",
+            "deviceRegion": "London",
+            "dnsView": "default",
+            "feed": "suspicious-noed",
+            "source": "DFP",
+            "action": "Block",
+            "policy": "Default Policy",
+            "deviceIp": "0.0.0.1",
+            "query": "example.org",
+            "queryType": "ANY",
+            "response": "NOTIMP",
+            "class": "Suspicious",
+            "threatFamily": "EmergentDomain",
+            "threatIndicator": "example.org",
+            "detected": "2025-07-15 11:09:28 +0000 UTC",
+            "property": "EmergentDomain",
+            "user": "unknown",
+            "threatLevel": "High"
+        }
+    ]
+}

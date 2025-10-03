@@ -1,0 +1,55 @@
+{
+  "insightList": [
+    {
+      "insightId": "insight-001",
+      "dateChanged": "2023-12-01T10:00:00Z",
+      "priorityText": "HIGH",
+      "threatType": "Suspicious",
+      "status": "Active",
+      "tClass": "TI-CONFIGURATIONISSUE",
+      "tFamily": "OPENRESOLVER",
+      "feedSource": "Insight Detection Framework",
+      "spreadingDate": "2023-12-01T10:00:00Z",
+      "numEvents": "24",
+      "mostRecentAt": "2023-12-01T10:00:00Z",
+      "eventsNotBlockedCount": "24",
+      "changer": "abc@xyz.com",
+      "userComment": "sample comment",
+      "startedAt": "2023-12-01T10:00:00Z"
+    },
+    {
+      "insightId": "insight-002", 
+      "dateChanged": "2023-12-01T11:00:00Z",
+      "priorityText": "CRITICAL",
+      "threatType": "Suspicious",
+      "status": "Active",
+      "tClass": "Suspicious",
+      "tFamily": "EmergentDomain",
+      "feedSource": "Insight Detection Framework",
+      "spreadingDate": "2023-12-01T10:00:00Z",
+      "numEvents": "24",
+      "mostRecentAt": "2023-12-01T10:00:00Z",
+      "eventsNotBlockedCount": "24",
+      "changer": "abc@xyz.com",
+      "userComment": "sample comment",
+      "startedAt": "2023-12-01T10:00:00Z"
+    },
+    {
+      "insightId": "insight-003",
+      "dateChanged": "2023-12-01T12:00:00Z", 
+      "priorityText": "MEDIUM",
+      "threatType": "Phishing",
+      "status": "Active",
+      "tClass": "Suspicious",
+      "tFamily": "EmergentDomain",
+      "feedSource": "Insight Detection Framework",
+      "spreadingDate": "2023-12-01T10:00:00Z",
+      "numEvents": "24",
+      "mostRecentAt": "2023-12-01T10:00:00Z",
+      "eventsNotBlockedCount": "24",
+      "changer": "abc@xyz.com",
+      "userComment": "sample comment",
+      "startedAt": "2023-12-01T10:00:00Z"
+    }
+  ]
+}
