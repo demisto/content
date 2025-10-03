@@ -5942,6 +5942,10 @@
                 "virus_total_v3"
             ],
             "fromversion": "6.10.0"
+        },
+        {
+            "integrations": "Unit42Intelligence",
+            "playbookID": "Unit42Intelligence_Test"
         }
     ],
     "skipped_tests": {
