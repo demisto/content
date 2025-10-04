@@ -35,7 +35,7 @@ configuration:
   section: Connect
 - display: Minutes to look back when fetching
   name: look_back
-  additionalinfo: May help avoid missing events in case of vendor-side indexing delays.
+  additionalinfo: Helps avoid missing events due to vendor-side indexing delays. Use caution when increasing this value as significant increases may result in performance degradation.
   required: false
   defaultvalue: 0
   type: 0
