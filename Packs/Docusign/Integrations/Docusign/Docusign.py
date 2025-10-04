@@ -291,17 +291,19 @@ class UserDataClient(BaseClient):
     Args:
         account_id: DocuSign account ID
         organization_id: DocuSign organization ID
+        env: DocuSign environment (dev/production)
         proxy: Whether to use proxy for requests
         verify: Whether to verify SSL certificates
     """
 
-    def __init__(self, account_id: str, organization_id: str, proxy: bool = False, verify: bool = True):
+    def __init__(self, account_id: str, organization_id: str, env: str, proxy: bool = False, verify: bool = True):
         super().__init__(base_url="", verify=verify, proxy=proxy)
         self.account_id = account_id
         self.organization_id = organization_id
+        self.env = env
 
-    def get_admin_base_url(self, env: str) -> str:
-        return "https://api-d.docusign.net" if env == "dev" else "https://api.docusign.net"
+    def get_admin_base_url(self) -> str:
+        return "https://api-d.docusign.net" if self.env == "dev" else "https://api.docusign.net"
 
     def get_users_next_request(self, access_token: str, url: str, request_params: dict = {}) -> dict:
         headers = {"Authorization": f"Bearer {access_token}"}
@@ -309,14 +311,12 @@ class UserDataClient(BaseClient):
         return resp
         
     def get_users_first_request(self,
-        organization_id: str,
-        env: str,
         access_token: str,
         request_params: Dict[str, Any]
     ) -> tuple[dict, str]:
 
-        base = self.get_admin_base_url(env)
-        url = urljoin(base, f"management/v2/organizations/{organization_id}/users")
+        base = self.get_admin_base_url()
+        url = urljoin(base, f"management/v2/organizations/{self.organization_id}/users")
         
         headers = {"Authorization": f"Bearer {access_token}"}
         resp = self._http_request(method="GET", full_url=url, headers=headers, params=request_params, resp_type="json")
@@ -352,22 +352,78 @@ class UserDataClient(BaseClient):
         )
         return resp.json()
 
-def fetch_user_data(last_run: dict) -> tuple[dict, list]: # [V] reviewed
-    params = demisto.params()
-  
-    server_url = params.get("url", DEFAULT_SERVER_URL)
-    organization_id = params.get("organization_id", "")
-    env = get_env_from_server_url(server_url)
-    account_id = params.get("account_id", "")
 
+def get_remaining_user_data(last_run: dict, logs_per_page: int, client: UserDataClient) -> tuple[list, dict]:
+    """
+    Fetch remaining user data from DocuSign based on configuration.
+    Called only if the user set the user data limit to be bigger than 1,000,
+    and there are remaining logs to fetch from the last fetch run.
+
+    Args:
+        last_run (dict): The last run of the fetch.
+        logs_per_page (int): Number of logs per page
+        client (UserDataClient): UserDataClient instance for making requests
+
+    Returns:
+        tuple[list, dict]: The remaining user data and the updated last run.
+    """
+    excess_logs_info = last_run.get("excess_logs_info", {})
+    if not excess_logs_info:
+        demisto.debug(f"{AUDIT_LOG_DEBUG_PREFIX}No excess logs info found in last run.")
+        return [], last_run
+
+    offset = excess_logs_info.get("offset")
+    url = excess_logs_info.get("url")
+    request_params = excess_logs_info.get("request_params")
+
+    try:
+        response = client.get_users_next_request(url, request_params)
+        fetched_users = response.get("users", [])
+        fetched_users = fetched_users[offset:]
+
+        # No longer users fetched from the last fetch time range, All fetched at this point.
+        # Remove duplicate users.
+        # TODO: I don't think the handling duplication is needed here.
+        if not last_run.get("continuing_fetch_info"):
+            x = 1
+
+        last_run["excess_logs_info"] = None
+        return fetched_users, last_run
+
+    except Exception as e:
+        demisto.debug(f"{LOG_PREFIX}Exception during get remaining user data. Exception is {e!s}")
+        raise DemistoException(f"Exception during get remaining user data. Exception is {e!s}")
+
+
+
+def fetch_user_data(last_run: dict) -> tuple[dict, list]: # [V] reviewed#
+    params = demisto.params()
     limit = min(MAX_USER_DATA_PER_FETCH, int(params.get("max_user_events_per_fetch", MAX_USER_DATA_PER_FETCH)))
     events_per_page = min(MAX_USER_DATA_PER_PAGE, limit)
-    
+    user_data_events = []
+
     try:
         demisto.debug(f"{LOG_PREFIX} last_run before fetching user data: {last_run}")
         client = initiate_user_data_client()
-        user_data_events, last_run = get_user_data_events(
-            last_run, limit, events_per_page, client, organization_id, env, account_id)
+
+        # Handle fetching remaining logs from previous fetch
+        if last_run.get("excess_logs_info"):
+            excess_events, last_run = get_remaining_user_data(last_run, events_per_page, client)
+            limit_before_fetch = limit
+            user_data_events.extend(excess_events)
+            limit -= len(excess_events)
+            demisto.debug(
+                f"{LOG_PREFIX}Fetched {len(excess_events)} excess user data, "
+                f"limit changes from {limit_before_fetch} to {limit}"
+            )
+            demisto.debug(f"{LOG_PREFIX}last_run after fetching remaining user data: {last_run}")
+
+        fetched_events, last_run = get_user_data_events(
+            last_run, limit, events_per_page, client
+        )
+
+        user_data_events.extend(fetched_events)
+
     except Exception as e:
         demisto.debug(f"{LOG_PREFIX}Exception during fetch user data.\n{e!s}")
         raise DemistoException(f"{LOG_PREFIX}Exception during fetch user data.\n{e!s}")
@@ -377,7 +433,7 @@ def fetch_user_data(last_run: dict) -> tuple[dict, list]: # [V] reviewed
 
 
 
-def get_user_data_events(last_run: dict, limit: int, events_per_page: int, client: UserDataClient, organization_id: str, env: str, account_id: str) -> tuple[list, dict]:
+def get_user_data_events(last_run: dict, limit: int, events_per_page: int, client: UserDataClient) -> tuple[list, dict]:
     total_events = []
     remaining_to_fetch = 0
     latest_modified_date = None
@@ -402,7 +458,7 @@ def get_user_data_events(last_run: dict, limit: int, events_per_page: int, clien
         
         auth_client = initiate_auth_client()
         access_token = get_access_token(auth_client)
-        base_uri = auth_client.get_base_uri(access_token, account_id)
+        base_uri = auth_client.get_base_uri(access_token, client.account_id)
         
         """
         The first condition that reached will exit the loop:
@@ -416,7 +472,7 @@ def get_user_data_events(last_run: dict, limit: int, events_per_page: int, clien
             if url:
                 resp = client.get_users_next_request(access_token, url)
             else:
-                resp, url = client.get_users_first_request(organization_id, env, access_token, request_params)
+                resp, url = client.get_users_first_request(access_token, request_params)
 
             users = resp.get("users", [])
             next_url = resp.get("paging", {}).get("next", "")
@@ -479,142 +535,6 @@ def get_user_data_events(last_run: dict, limit: int, events_per_page: int, clien
         raise DemistoException(f"Exception during get user data events. Exception is {e!s}")
             
 
-def get_user_data_events_reference(last_run: dict, limit: int, events_per_page: int, client: UserDataClient) -> tuple[list, dict]:
-
-    params = demisto.params()
-
-    one_minute_ago = timestamp_to_datestring(int(time.time() - 60) * 1000, date_format="%Y-%m-%dT%H:%M:%SZ")
-    last_modified_since = last_run.get("last_modified_since") or one_minute_ago
-    next_url = last_run.get("audit_next_url", "")
-
-    start = 0 # TODO: implement remaining events logic like monday collector and use the start as offset
-    total_events = []
-
-    max_seen_modified_iso = None # TODO: what is this?
-    page_count = 0
-    
-    try:
-        auth_client = initiate_auth_client()
-        access_token = get_access_token(auth_client)
-        base_uri = auth_client.get_base_uri(access_token, params.get("account_id"))
-        
-        while len(total_events) < limit:
-            page_count += 1
-            
-            remaining = max(0, limit - len(total_events))
-            if remaining == 0:
-                demisto.debug(f"{LOG_PREFIX} limit reached, stopping")
-                break
-            take = min(events_per_page, remaining)
-
-            demisto.debug(f"{LOG_PREFIX} Page number {page_count}: requesting {take} events with next_url: {next_url}")
-            # Fetch a page of users synchronously
-            try:
-                resp = client.admin_list_users(
-                    scopes="signature impersonation organization_read user_read",
-                    base_uri=base_uri,
-                    organization_id=demisto.params().get("organization_id", ""),
-                    last_modified_since=last_modified_since,
-                    next_url=next_url,
-                    start=start,
-                    take=take,
-                )
-            except Exception as e:
-                demisto.error(f"{LOG_PREFIX} page {page_count} fetch failed: {e}")
-                raise
-
-            users = resp.get("users") or []
-            next_url = resp.get("paging", {}).get("next") or ""
-            if not users:
-                demisto.info(f"{LOG_PREFIX} no users on page {page_count}; stopping")
-                break
-            
-            # TODO: stop here - step 2
-            # Enrich with eSign details synchronously
-            ids = [str(u.get("id") or u.get("user_id") or "") for u in users if u.get("id") or u.get("user_id")]
-            details = []
-            if ids:
-                detail_start = time.time()
-                demisto.debug(
-                    f"{LOG_PREFIX} page {page_count} enrich {len(ids)} users"
-                )
-                try:
-                    # Fetch user details sequentially (synchronous)
-                    for uid in ids:
-                        try:
-                            detail = client.esign_user_detail(scopes, base_uri, demisto.params().get("account_id", ""), uid)
-                            if detail:
-                                details.append(detail)
-                        except Exception as e:
-                            demisto.debug(f"{LOG_PREFIX} failed to enrich user {uid}: {e}")
-                            continue
-                except Exception as e:
-                    demisto.error(f"{LOG_PREFIX} page {page_count} enrich failed: {e}")
-                    details = []  # proceed without enrichment
-                finally:
-                    enr_dt = time.time() - detail_start
-                    demisto.debug(
-                        f"{LOG_PREFIX} page {page_count} enrich done | {len(details)} items in {enr_dt:.2f}s"
-                    )
-
-            by_id = {
-                str(d.get("userId") or d.get("user_id") or d.get("id")): d
-                for d in details
-                if d
-            }
-
-            # Process and collect events
-            for u in users:
-                ev = {"source_log_type": "auditusers", "user": u}
-
-                # timestamps
-                mod = u.get("modifiedDate") or u.get("modified_date") or ""
-                ev["_time"] = mod or _iso_z(_utcnow())
-                dtp = _parse_time_maybe(mod)
-                if dtp:
-                    ev["_time_iso"] = _iso_z(dtp)
-                    # track max modified seen
-                    if max_seen_modified_iso is None or _parse_time_maybe(max_seen_modified_iso) < dtp:
-                        max_seen_modified_iso = _iso_z(dtp)
-
-                # attach enrichment
-                uid = str(u.get("id") or u.get("user_id") or "")
-                if uid and uid in by_id:
-                    ev["esign_detail"] = by_id[uid]
-
-                total_events.append(ev)
-
-                if limit and len(total_events) >= limit:
-                    demisto.debug(f"{LOG_PREFIX} limit {limit} reached")
-                    break
-
-            demisto.debug(
-                f"{LOG_PREFIX} page {page_count} collected={len(users)} total={len(total_events)}"
-            )
-
-            # stop conditions
-            if limit and len(total_events) >= limit:
-                demisto.info(f"{LOG_PREFIX} reached limit after {page_count} pages")
-                break
-
-            if not next_url:
-                # no more pages; advance LMS to max seen (fallback to now if none)
-                last_modified_since = max_seen_modified_iso or _iso_z(_utcnow())
-                demisto.info(f"{LOG_PREFIX} end of pages; lms-> {last_modified_since}")
-                break
-
-            # when using server-provided next URLs, server drives paging
-            start = None
-
-    except Exception as e:
-        demisto.error(f"{LOG_PREFIX} unexpected error after page {page_count}: {e}")
-        raise
-    
-    last_run["last_modified_since"] = last_modified_since
-    last_run["audit_next_url"] = next_url
-
-    return total_events, last_run
-
 def initiate_user_data_client() -> UserDataClient:  # [V] reviewed
     """
     Create UserDataClient for making requests to DocuSign Admin API and fetching user data and fetching user details.
@@ -624,12 +544,14 @@ def initiate_user_data_client() -> UserDataClient:  # [V] reviewed
     verify = not params.get("insecure", False)
     account_id = params.get("account_id", "")
     organization_id = params.get("organization_id", "")
+    server_url = params.get("url", DEFAULT_SERVER_URL)
+    env = get_env_from_server_url(server_url)
     
     if not account_id or not organization_id:
         demisto.debug(f"{LOG_PREFIX} initiate_user_data_client function: Account ID or Organization ID is missing.")
         raise DemistoException(f"{LOG_PREFIX}. initiate_user_data_client function: Account ID or Organization ID is missing.")
 
-    return UserDataClient(account_id=account_id, organization_id=organization_id, proxy=proxy, verify=verify)
+    return UserDataClient(account_id=account_id, organization_id=organization_id, env=env, proxy=proxy, verify=verify)
 
 def initiate_customer_events_client() -> CustomerEventsClient: # [V] reviewed
     """
