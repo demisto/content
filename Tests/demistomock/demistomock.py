@@ -708,6 +708,33 @@ def executeCommand(command, args):
 
     return ""
 
+def executeCommandBatch(commands_list):
+    """(Script only)
+    Execute list of commands in the following format {"command_name":args}
+    Example:
+    [{"get-endpoint-data":{"endpoint_hostname":"example"}},
+    {"get-user-data":{"user_email":"example@gmail.com"}}]
+    Args:
+      commands_list (list[dict[str,any]]): list of dicts each represent a command.
+
+    Returns:
+      list[Union[dict, list]]: list of the Command execution response wrapped in Demisto entry object.
+
+    """
+    results = []
+    commands = {
+        "getIncidents": exampleIncidents,
+        "getContext": exampleContext,
+        "getUsers": exampleUsers,
+    }
+    for command_dict in commands_list:
+        for command in command_dict:
+            if commands.get(command):
+                results.append(commands.get(command))
+    if results:
+        return results
+    return ""
+
 
 def getParam(param):
     """(Integration only)
