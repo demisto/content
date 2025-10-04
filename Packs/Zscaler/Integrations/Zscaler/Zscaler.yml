@@ -3,20 +3,48 @@ sectionOrder:
 - Connect
 - Collect
 commonfields:
-  id: Zscaler
+  id: Zscaler dev 5 #TODO remove
   version: -1
 configuration:
+- display: Client ID (OAuth 2.0)
+  name: oauth_credentials
+  required: false
+  type: 9
+  section: Connect
+  displaypassword: Client Secret (OAuth 2.0)
+  additionalinfo: OAuth 2.0 Client ID and Secret from ZIA Admin Portal.
 - display: Cloud Name (i.e., <https://zsapi.zscalertwo.net>)
   name: cloud
   required: true
   type: 0
   section: Connect
-- display: Username
-  name: credentials
-  required: true
-  type: 9
+  additionalinfo: Your Zscaler cloud instance (e.g. https://zsapi.zscalertwo.net).
+- name: org_id
+  type: 0
   section: Connect
-- name: creds_key
+  required: false
+  display: Org ID (OAuth 2.0)
+  additionalinfo: OAuth 2.0 Organization ID from ZIA Admin Portal.
+- display: API Role (OAuth 2.0)
+  name: api_role
+  type: 0
+  section: Connect
+  required: false
+  additionalinfo: OAuth 2.0 API role from ZIA Admin Portal.
+- display: OAuth Token URL (OAuth 2.0)
+  name: oauth_token_url
+  type: 0
+  section: Connect
+  required: false
+  additionalinfo: 'OAuth 2.0 token endpoint URL. Example: https://your-vanity.zslogin.net/oauth2/v1/token'
+- additionalinfo: Basic Auth username.
+  display: Username (Basic Auth)
+  name: credentials
+  type: 9
+  required: false
+- additionalinfo: API key for Basic Auth.
+  display: API Key (Basic Auth)
+  name: creds_key
   type: 9
   displaypassword: API Key
   hiddenusername: true
@@ -80,8 +108,8 @@ configuration:
   advanced: true
   required: false
 description: Zscaler is a cloud security solution built for performance and flexible scalability. This integration enables you to manage URL and IP address allow lists and block lists, manage and update categories, get Sandbox reports, create, manage, and update IP destination groups and manually log in, log out, and activate changes in a Zscaler session.
-display: Zscaler Internet Access
-name: Zscaler
+display: Zscaler Internet Access dev 5 #TODO remove
+name: Zscaler dev 5 #TODO remove
 script:
   commands:
   - arguments:
