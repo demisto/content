@@ -779,7 +779,7 @@ def fetch_indicators(client: Client, params: dict, current_time: datetime) -> li
                 # Handle pagination if needed
                 metadata = response.get("metadata", {})
                 next_page_token = metadata.get("next_page_token") if isinstance(metadata, dict) else None
-                
+
                 # Keep track of total indicator count (starts at API_LIMIT because one call already completed)
                 indicator_count = API_LIMIT
                 while next_page_token and indicator_count < TOTAL_INDICATOR_LIMIT:
