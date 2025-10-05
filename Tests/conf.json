@@ -5944,8 +5944,8 @@
             "fromversion": "6.10.0"
         },
         {
-            "integrations": "Unit42Intelligence",
-            "playbookID": "Unit42Intelligence_Test"
+            "integrations": "Unit 42 Intelligence",
+            "playbookID": "Unit 42 Intelligence Test"
         }
     ],
     "skipped_tests": {
