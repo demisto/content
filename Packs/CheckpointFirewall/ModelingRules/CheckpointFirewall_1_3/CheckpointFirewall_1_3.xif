@@ -34,13 +34,13 @@ alter
     xdm.source.user.username = suser,
     xdm.source.ipv4 = ipv4src,
     xdm.source.ipv6 = ipv6src,
-    xdm.source.port = spt,
+    xdm.source.port = to_integer(spt),
     xdm.source.zone = inzone,
     xdm.target.host.hostname = dhost,
     xdm.target.user.username = duser,
     xdm.target.ipv4 = ipv4dest,
     xdm.target.ipv6 = ipv6dest,
-    xdm.target.port = dpt,
+    xdm.target.port = to_integer(dpt),
     xdm.target.zone = outzone,
     xdm.network.icmp.type = ICMP_type,
     xdm.network.icmp.code = ICMP_code,
@@ -80,7 +80,7 @@ alter
     xdm.target.user.username = duser,
     xdm.target.ipv4 = ipv4dest,
     xdm.target.ipv6 = ipv6dest,
-    xdm.target.port = dpt;
+    xdm.target.port = to_integer(dpt);
 
 [MODEL: dataset ="check_point_smartdefense_raw"]
 // Fields Parsing
@@ -147,7 +147,7 @@ alter
     xdm.target.user.username = duser,
     xdm.target.ipv4 = ipv4dest,
     xdm.target.ipv6 = ipv6dest,
-    xdm.target.port = dpt;
+    xdm.target.port = to_integer(dpt);
 
 [MODEL: dataset ="check_point_identity_awareness_raw"]
 // Fields Parsing
