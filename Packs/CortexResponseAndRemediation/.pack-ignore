@@ -56,6 +56,14 @@ ignore=GR103
 [file:silent-playbook-Suspicious_user_access_to_multiple_resources_via_SSO.yml]
 ignore=GR103
 
+# GR107 The trigger fails because it uses deprecated content
+[file:Trigger_-_Office_process_creates_a_scheduled_task_via_file_access.json]
+ignore=GR107
+
+# GR107 The trigger fails because it uses deprecated content
+[file:silent-Trigger_-_Office_process_creates_a_scheduled_task_via_file_access_Test.json]
+ignore=GR107
+
 [known_words]
 xsiam
 coreirapimodule
