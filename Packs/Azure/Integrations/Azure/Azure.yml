@@ -1738,15 +1738,13 @@ script:
     - contextPath: Azure.CosmosDB.properties.writeLocations
       description: An array that contains the write locations enabled for the Cosmos DB account.
       type: List
+# Quick Actions
   - arguments:
-    - description: The subscription ID.
-      name: subscription_id
-      type: String
-      required: true
     - description: The name of the resource group.
       name: resource_group_name
       type: String
       required: true
+      prettyname: Resource Group
     - description: The name of the security group.
       name: security_group_name
       required: true
@@ -1754,39 +1752,6 @@ script:
       name: security_rule_name
       required: true
       prettyname: NSG Rule
-    - auto: PREDEFINED
-      description: 'The direction of the rule. Possible values are: "Inbound" and "Outbound".'
-      name: direction
-      predefined:
-      - Inbound
-      - Outbound
-    - description: Whether to allow the traffic. Possible values are "Allow" and "Deny".
-      name: action
-      auto: PREDEFINED
-      predefined:
-      - Allow
-      - Deny
-      defaultvalue: Deny
-    - description: 'The protocol on which to apply the rule. Possible values are: "Any", "TCP", "UDP", and "ICMP".'
-      name: protocol
-      auto: PREDEFINED
-      predefined:
-      - Any
-      - TCP
-      - UDP
-      - ICMP
-    - description: The source IP address range from which incoming traffic will be allowed or denied by this rule. Possible values are "Any", an IP address range, an application security group, or a default tag. Default is "Any".
-      name: source
-    - description: The priority by which the rules will be processed. The lower the number, the higher the priority. We recommend leaving gaps between rules - 100, 200, 300, etc. - so that it is easier to add new rules without having to edit existing rules. Default is "4096".
-      name: priority
-    - description: The source ports from which traffic will be allowed or denied by this rule. Provide a single port, such as 80; a port range, such as 1024-65535; or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535. Use an asterisk (*) to allow traffic on any port. Default is "*".
-      name: source_ports
-    - description: The specific destination IP address range for outgoing traffic that will be allowed or denied by this rule. The destination filter can be "Any", an IP address range, an application security group, or a default tag.
-      name: destination
-    - description: The destination ports for which traffic will be allowed or denied by this rule. Provide a single port, such as 80; a port range, such as 1024-65535; or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535. Use an asterisk (*) to allow traffic on any port.
-      name: destination_ports
-    - description: A description to add to the rule.
-      name: description
     - auto: PREDEFINED
       description: The network traffic is allowed or denied.
       name: access
@@ -1850,34 +1815,12 @@ script:
       type: String
       required: true
       description: The resource group name.
-    - name: subscription_id
-      type: String
-      description: Subscription ID.
+      prettyname: Resource Group
     - name: name
       type: String
       required: true
       description: Name of the Web App.
       prettyname: AZ Web App
-    - name: identity_type
-      type: String
-      required: false
-      auto: PREDEFINED
-      predefined:
-      - None
-      - SystemAssigned
-      description: Managed service identity type.
-    - name: https_only
-      description: Configures the web site to accept only https requests.
-      type: bool
-      predefined:
-      - 'true'
-      - 'false'
-    - name: client_cert_enabled
-      description: Configures the web site to accept only https requests.
-      type: bool
-      predefined:
-      - 'true'
-      - 'false'
     description: "Assigns a system-assigned managed identity to the Web App. This allows the app to securely access other Azure services while removing the need to manage sensitive credentials and the risk of exposing them. 'This allows the app to securely access other Azure services while removing the need to manage sensitive credentials and the risk of exposing them. 'Microsoft.Web/sites/{app_name}/config/*' permission is required."
     name: azure-webapp-assign-managed-identity-quick-action
     prettyname: Assign Managed Identity to Web App
@@ -2089,136 +2032,11 @@ script:
     - description: The resource group name.
       name: resource_group_name
       required: true
-    - description: The subscription ID.
-      name: subscription_id
+      prettyname: Resource Group
     - description: The name of the storage account.
       name: account_name
       required: true
       prettyname: Storage Account
-    - auto: PREDEFINED
-      description: Gets or sets the SKU name, Required for account creation; optional for update.
-      name: sku
-      predefined:
-      - Premium_LRS
-      - Premium_ZRS
-      - Standard_GRS
-      - Standard_GZRS
-      - Standard_LRS
-      - Standard_RAGRS
-      - Standard_RAGZRS
-      - Standard_ZRS
-    - description: Indicates the type of storage account, Required for account creation; optional for update.
-      name: kind
-      auto: PREDEFINED
-      predefined:
-      - Storage
-      - StorageV2
-      - BlobStorage
-      - FileStorage
-      - BlockBlobStorage
-    - description: Gets or sets the location of the resource. The geo region of a resource cannot be changed once it is created, but if an identical geo region is specified on update, the request will succeed. Required for account creation; optional for update.
-      name: location
-      auto: PREDEFINED
-      predefined:
-      - eastus
-      - eastus2
-      - westus
-      - westeurope
-      - eastasia
-      - southeastasia
-      - japaneast
-      - japanwest
-      - northcentralus
-      - southcentralus
-      - centralus
-      - northeurope
-      - brazilsouth
-      - australiaeast
-      - australiasoutheast
-      - southindia
-      - centralindia
-      - westindia
-      - canadaeast
-      - canadacentral
-      - westus2
-      - westcentralus
-      - uksouth
-      - ukwest
-      - koreacentral
-      - koreasouth
-      - francecentral
-      - australiacentral
-      - southafricanorth
-      - uaenorth
-      - switzerlandnorth
-      - germanywestcentral
-      - norwayeast
-    - description: Gets or sets a list of tags that describe the resource.
-      name: tags
-      isArray: true
-    - description: Gets or sets the custom domain name assigned to the storage account.
-      name: custom_domain_name
-    - auto: PREDEFINED
-      description: Indicates whether indirect CName validation is enabled.
-      name: use_sub_domain_name
-      predefined:
-      - 'true'
-      - 'false'
-    - description: The encryption keySource.
-      name: enc_key_source
-      auto: PREDEFINED
-      predefined:
-      - Microsoft.Storage
-      - Microsoft.Keyvault
-    - description: Indicates whether the service applies a secondary layer of encryption with platform managed keys for data at rest.
-      name: enc_requireInfrastructureEncryption
-      auto: PREDEFINED
-      predefined:
-      - 'true'
-      - 'false'
-    - description: The name of KeyVault key.
-      name: enc_keyvault_key_name
-    - description: The version of KeyVault key.
-      name: enc_keyvault_key_version
-    - description: The Uri of KeyVault.
-      name: enc_keyvault_uri
-    - auto: PREDEFINED
-      description: The access tier for the account. Required where kind = BlobStorage.
-      name: access_tier
-      predefined:
-      - 'Hot'
-      - 'Cool'
-    - auto: PREDEFINED
-      description: Allows https traffic only to storage service if sets to true.
-      name: supports_https_traffic_only
-      predefined:
-      - 'true'
-      - 'false'
-    - auto: PREDEFINED
-      description: Account HierarchicalNamespace enabled if sets to true.
-      name: is_hns_enabled
-      predefined:
-      - 'true'
-      - 'false'
-    - auto: PREDEFINED
-      description: If set to Enabled, allows large file shares.
-      name: large_file_shares_state
-      predefined:
-      - Disabled
-      - Enabled
-    - auto: PREDEFINED
-      description: If set to true, allows public access to all blobs or containers in the storage account.
-      name: allow_blob_public_access
-      predefined:
-      - 'true'
-      - 'false'
-    - description: Sets the minimum TLS version to be permitted on requests to storage.
-      name: minimum_tls_version
-      auto: PREDEFINED
-      predefined:
-      - TLS1_0
-      - TLS1_1
-      - TLS1_2
     - description: Specifies whether traffic is bypassed for Logging/Metrics/AzureServices.
       name: network_ruleset_bypass
       auto: PREDEFINED
@@ -2229,22 +2047,6 @@ script:
       - Metrics
       - None
       defaultvalue: AzureServices
-    - auto: PREDEFINED
-      description: Specifies the default action of allow or deny when no other rules match.
-      name: network_ruleset_default_action
-      predefined:
-      - Allow
-      - Deny
-    - description: Sets the IP ACL rules.
-      name: network_ruleset_ipRules
-    - description: Sets the virtual network rules.
-      name: virtual_network_rules
-    - auto: PREDEFINED
-      description: Allow or disallow cross AAD tenant object replication.
-      name: allow_cross_tenant_replication
-      predefined:
-      - 'true'
-      - 'false'
     description: "Configures the storage account's network rules to allow traffic from Azure services. 'Microsoft.Storage/storageAccounts/*' permission is required."
     name: azure-storage-allow-access-quick-action
     prettyname: Allow Access by Trusted Services
@@ -2327,6 +2129,7 @@ script:
       type: string
       description: The resource group name.
       required: true
+      prettyname: Resource Group
     - name: server_name
       type: string
       required: true
@@ -2336,13 +2139,7 @@ script:
       type: string
       required: true
       description: The configuration setting name.
-    - name: subscription_id
-      required: true
-      type: string
-      description: Subscription ID.
-    - name: source
-      type: string
-      description: Source of the configuration.
+      defaultvalue: connection_throttling
     - name: value
       type: string
       description: Value of the configuration.
@@ -2358,9 +2155,7 @@ script:
       type: string
       required: true
       description: The resource group name.
-    - name: subscription_id
-      type: string
-      description: Subscription ID.
+      prettyname: Resource Group
     - name: name
       type: string
       required: true
@@ -2369,30 +2164,11 @@ script:
     - auto: PREDEFINED
       name: http20_enabled
       type: bool
-      required: false
       description: Configures a web site to allow clients to connect over http2.0.
       predefined:
       - 'true'
       - 'false'
-    - auto: PREDEFINED
-      name: remote_debugging_enabled
-      type: bool
-      required: false
-      description: True if remote debugging is enabled; otherwise, false.
-      predefined:
-      - 'true'
-      - 'false'
       defaultvalue: 'true'
-    - name: min_tls_version
-      type: str
-      auto: PREDEFINED
-      required: false
-      description: Configures the minimum version of TLS required for SSL requests.
-      predefined:
-      - '1.0'
-      - '1.1'
-      - '1.2'
-      - '1.3'
     description: "Enables the HTTP/2.0 protocol for the WebApp. 'Microsoft.Web/sites/{app_name}/config/*' permission is required."
     name: azure-webapp-set-http-version2.0-quick-action
     prettyname: Set Webapp HTTP Version to 2.0
@@ -2491,9 +2267,7 @@ script:
       type: string
       required: true
       description: The resource group name.
-    - name: subscription_id
-      type: string
-      description: Subscription ID.
+      prettyname: Resource Group
     - name: name
       type: string
       required: true
@@ -2614,155 +2388,11 @@ script:
     - description: The resource group name.
       name: resource_group_name
       required: true
-    - description: The subscription ID.
-      name: subscription_id
+      prettyname: Resource Group
     - description: The name of the storage account.
       name: account_name
       required: true
       prettyname: Storage Account
-    - auto: PREDEFINED
-      description: Gets or sets the SKU name, Required for account creation; optional for update.
-      name: sku
-      predefined:
-      - Premium_LRS
-      - Premium_ZRS
-      - Standard_GRS
-      - Standard_GZRS
-      - Standard_LRS
-      - Standard_RAGRS
-      - Standard_RAGZRS
-      - Standard_ZRS
-    - description: Indicates the type of storage account, Required for account creation; optional for update.
-      name: kind
-      auto: PREDEFINED
-      predefined:
-      - Storage
-      - StorageV2
-      - BlobStorage
-      - FileStorage
-      - BlockBlobStorage
-    - description: Gets or sets the location of the resource. The geo region of a resource cannot be changed once it is created, but if an identical geo region is specified on update, the request will succeed. Required for account creation; optional for update.
-      name: location
-      auto: PREDEFINED
-      predefined:
-      - eastus
-      - eastus2
-      - westus
-      - westeurope
-      - eastasia
-      - southeastasia
-      - japaneast
-      - japanwest
-      - northcentralus
-      - southcentralus
-      - centralus
-      - northeurope
-      - brazilsouth
-      - australiaeast
-      - australiasoutheast
-      - southindia
-      - centralindia
-      - westindia
-      - canadaeast
-      - canadacentral
-      - westus2
-      - westcentralus
-      - uksouth
-      - ukwest
-      - koreacentral
-      - koreasouth
-      - francecentral
-      - australiacentral
-      - southafricanorth
-      - uaenorth
-      - switzerlandnorth
-      - germanywestcentral
-      - norwayeast
-    - description: Gets or sets a list of tags that describe the resource.
-      name: tags
-      isArray: true
-    - description: Gets or sets the custom domain name assigned to the storage account.
-      name: custom_domain_name
-    - auto: PREDEFINED
-      description: Indicates whether indirect CName validation is enabled.
-      name: use_sub_domain_name
-      predefined:
-      - 'true'
-      - 'false'
-    - description: The encryption keySource.
-      name: enc_key_source
-      auto: PREDEFINED
-      predefined:
-      - Microsoft.Storage
-      - Microsoft.Keyvault
-    - description: Indicates whether the service applies a secondary layer of encryption with platform managed keys for data at rest.
-      name: enc_requireInfrastructureEncryption
-      auto: PREDEFINED
-      predefined:
-      - 'true'
-      - 'false'
-    - description: The name of KeyVault key.
-      name: enc_keyvault_key_name
-    - description: The version of KeyVault key.
-      name: enc_keyvault_key_version
-    - description: The Uri of KeyVault.
-      name: enc_keyvault_uri
-    - auto: PREDEFINED
-      description: The access tier for the account. Required where kind = BlobStorage.
-      name: access_tier
-      predefined:
-      - 'Hot'
-      - 'Cool'
-    - auto: PREDEFINED
-      description: Allows https traffic only to storage service if sets to true.
-      name: supports_https_traffic_only
-      predefined:
-      - 'true'
-      - 'false'
-    - auto: PREDEFINED
-      description: Account HierarchicalNamespace enabled if sets to true.
-      name: is_hns_enabled
-      predefined:
-      - 'true'
-      - 'false'
-    - auto: PREDEFINED
-      description: If set to Enabled, allows large file shares.
-      name: large_file_shares_state
-      predefined:
-      - Disabled
-      - Enabled
-    - auto: PREDEFINED
-      description: If set to true, allows public access to all blobs or containers in the storage account.
-      name: allow_blob_public_access
-      predefined:
-      - 'true'
-      - 'false'
-    - description: Sets the minimum TLS version to be permitted on requests to storage.
-      name: minimum_tls_version
-      auto: PREDEFINED
-      predefined:
-      - TLS1_0
-      - TLS1_1
-      - TLS1_2
-    - description: Specifies whether traffic is bypassed for Logging/Metrics/AzureServices.
-      name: network_ruleset_bypass
-      auto: PREDEFINED
-      isArray: true
-      predefined:
-      - AzureServices
-      - Logging
-      - Metrics
-      - None
-    - auto: PREDEFINED
-      description: Specifies the default action of allow or deny when no other rules match.
-      name: network_ruleset_default_action
-      predefined:
-      - Allow
-      - Deny
-    - description: Sets the IP ACL rules.
-      name: network_ruleset_ipRules
-    - description: Sets the virtual network rules.
-      name: virtual_network_rules
     - auto: PREDEFINED
       description: Allow or disallow cross AAD tenant object replication.
       name: allow_cross_tenant_replication
@@ -2852,9 +2482,7 @@ script:
       type: string
       required: true
       description: The resource group name.
-    - name: subscription_id
-      type: string
-      description: Subscription ID.
+      prettyname: Resource Group
     - name: name
       type: string
       required: true
@@ -2869,24 +2497,6 @@ script:
       - 'true'
       - 'false'
       defaultvalue: 'true'
-    - auto: PREDEFINED
-      name: remote_debugging_enabled
-      type: bool
-      required: false
-      description: True if remote debugging is enabled; otherwise, false.
-      predefined:
-      - 'true'
-      - 'false'
-    - name: min_tls_version
-      type: str
-      auto: PREDEFINED
-      required: false
-      description: Configures the minimum version of TLS required for SSL requests.
-      predefined:
-      - '1.0'
-      - '1.1'
-      - '1.2'
-      - '1.3'
     name: azure-set-function-app-http-version2-0-quick-action
     prettyname: Set Function App HTTP Version to 2.0
     description: "Enables the HTTP/2.0 protocol for the FunctionApp. 'Microsoft.Web/sites/config/Write' permission required."
@@ -2985,6 +2595,7 @@ script:
     - description: The resource group name.
       name: resource_group_name
       required: true
+      prettyname: Resource Group
     - description: The subscription ID.
       name: subscription_id
     - description: The name of the storage account.
@@ -3224,22 +2835,12 @@ script:
       type: string
       required: true
       description: The resource group name.
-    - name: subscription_id
-      type: string
-      description: Subscription ID.
+      prettyname: Resource Group
     - name: name
       type: string
       required: true
       description: Name of the Web App.
       prettyname: AZ Webapp
-    - auto: PREDEFINED
-      name: http20_enabled
-      type: bool
-      required: false
-      description: Configures a web site to allow clients to connect over http2.0.
-      predefined:
-      - 'true'
-      - 'false'
     - auto: PREDEFINED
       name: remote_debugging_enabled
       type: bool
@@ -3249,22 +2850,99 @@ script:
       - 'true'
       - 'false'
       defaultvalue: 'false'
-    - name: min_tls_version
-      type: str
-      auto: PREDEFINED
-      required: false
-      description: Configures the minimum version of TLS required for SSL requests.
-      predefined:
-      - '1.0'
-      - '1.1'
-      - '1.2'
-      - '1.3'
     description: "Disables remote debugging for the Web App to prevent unauthorized access to the application code.  'Microsoft.Web/sites/config/Write' permission is required."
     name: azure-webapp-disable-remote-debugging-quick-action
     prettyname: Disable Remote Debugging on Azure App
     hidden: true
     quickaction: true
     outputs:
+    - contextPath: Azure.WebAppConfig.id
+      description: Resource ID.
+      type: String
+    - contextPath: Azure.WebAppConfig.name
+      description: Resource name.
+      type: String
+    - contextPath: Azure.WebAppConfig.type
+      description: Resource type.
+      type: String
+    - contextPath: Azure.WebAppConfig.location
+      description: Resource location.
+      type: String
+    - contextPath: Azure.WebAppConfig.properties.numberOfWorkers
+      description: Number of workers.
+      type: Number
+    - contextPath: Azure.WebAppConfig.properties.defaultDocuments
+      description: List of default documents.
+      type: Unknown
+    - contextPath: Azure.WebAppConfig.properties.netFrameworkVersion
+      description: .NET Framework version.
+      type: String
+    - contextPath: Azure.WebAppConfig.properties.phpVersion
+      description: PHP version.
+      type: String
+    - contextPath: Azure.WebAppConfig.properties.pythonVersion
+      description: Python version.
+      type: String
+    - contextPath: Azure.WebAppConfig.properties.nodeVersion
+      description: Node.js version.
+      type: String
+    - contextPath: Azure.WebAppConfig.properties.powerShellVersion
+      description: PowerShell version.
+      type: String
+    - contextPath: Azure.WebAppConfig.properties.linuxFxVersion
+      description: Linux app framework and version.
+      type: String
+    - contextPath: Azure.WebAppConfig.properties.windowsFxVersion
+      description: Windows container image name.
+      type: String
+    - contextPath: Azure.WebAppConfig.properties.requestTracingEnabled
+      description: Indicates whether request tracing is enabled.
+      type: Boolean
+    - contextPath: Azure.WebAppConfig.properties.remoteDebuggingEnabled
+      description: Indicates whether remote debugging is enabled.
+      type: Boolean
+    - contextPath: Azure.WebAppConfig.properties.remoteDebuggingVersion
+      description: Remote debugging version.
+      type: String
+    - contextPath: Azure.WebAppConfig.properties.http20Enabled
+      description: Indicates whether HTTP/2 is enabled.
+      type: Boolean
+    - contextPath: Azure.WebAppConfig.properties.minTlsVersion
+      description: Minimum TLS version required.
+      type: String
+    - contextPath: Azure.WebAppConfig.properties.ftpsState
+      description: State of FTP / FTPS service.
+      type: String
+    - contextPath: Azure.WebAppConfig.properties.webSocketsEnabled
+      description: Indicates whether WebSockets are enabled.
+      type: Boolean
+    - contextPath: Azure.WebAppConfig.properties.alwaysOn
+      description: Indicates whether Always On is enabled.
+      type: Boolean
+    - contextPath: Azure.WebAppConfig.properties.managedPipelineMode
+      description: Managed pipeline mode.
+      type: String
+    - contextPath: Azure.WebAppConfig.properties.loadBalancing
+      description: Site load balancing mode.
+      type: String
+    - contextPath: Azure.WebAppConfig.properties.autoHealEnabled
+      description: Indicates whether Auto Heal is enabled.
+      type: Boolean
+    - contextPath: Azure.WebAppConfig.properties.autoHealRules
+      description: Auto Heal rules configuration.
+      type: Unknown
+    - contextPath: Azure.WebAppConfig.properties.cors.allowedOrigins
+      description: CORS allowed origins.
+      type: Unknown
+    - contextPath: Azure.WebAppConfig.properties.cors.supportCredentials
+      description: Indicates whether CORS supports credentials.
+      type: Boolean
+    - contextPath: Azure.WebAppConfig.properties.apiDefinition.url
+      description: URL of the API definition.
+      type: String
+    - contextPath: Azure.WebAppConfig.properties.apiManagementConfig.id
+      description: Azure API management integration ID.
+      type: String
     
   isfetch: false
   runonce: false
