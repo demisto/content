@@ -543,6 +543,7 @@ class AzureClient:
                 e=e,
                 resource_name=f"{account_name}/blobServices",
                 resource_type="Storage Blob Service",
+                api_function_name="storage_blob_service_properties_get_request",
                 subscription_id=subscription_id,
                 resource_group_name=resource_group_name,
             )
@@ -600,6 +601,7 @@ class AzureClient:
                 e=e,
                 resource_name=f"{account_name}/{container_name}",
                 resource_type="Storage Blob Service",
+                api_function_name="storage_blob_containers_create_update_request",
                 subscription_id=subscription_id,
                 resource_group_name=resource_group_name,
             )
@@ -1801,12 +1803,12 @@ def storage_blob_containers_update_command(client: AzureClient, params: dict, ar
     """
         Updates a given blob container.
     Args:
-        client: The microsoft client.
+        client: The Microsoft client.
         params: The configuration parameters.
-        args: The users arguments, (like account name, container name).
+        args: User-provided arguments, such as the account name and container name.
 
     Returns:
-        CommandResults: The command results in MD table and context data.
+        CommandResults: The command results, including the Markdown table and context data.
     """
     subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
     resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
@@ -1845,10 +1847,10 @@ def storage_blob_service_properties_get_command(client: AzureClient, params: dic
     Args:
         client: The AzureClient client.
         params: The configuration parameters.
-        args: The users arguments, (like account name).
+        args: User-provided arguments, such as the account name and container name.
 
     Returns:
-        CommandResults: The command results in MD table and context data.
+        CommandResults: The command results, including the Markdown table and context data.
     """
     subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
     resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
