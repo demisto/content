@@ -392,8 +392,9 @@ class S3:
             if response["ResponseMetadata"]["HTTPStatusCode"] in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
                 return CommandResults(
                     readable_output=f"Successfully removed the static website configuration from {args.get('bucket')} bucket.")
+            raise DemistoException(f"Failed to delete bucket website for {args.get('bucket')}.")
         except Exception as e:
-            raise DemistoException(f"Failed to delete bucket website for {args.get('bucket')}. Error: {str(e)}")
+            raise DemistoException(f"Error: {str(e)}")
 
     @staticmethod
     def put_bucket_ownership_controls_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
@@ -422,8 +423,9 @@ class S3:
             if response["ResponseMetadata"]["HTTPStatusCode"] in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
                 return CommandResults(
                     readable_output=f"Bucket Ownership Controls successfully updated for {args.get('bucket')}")
+            raise DemistoException(f"Failed to set Bucket Ownership Controls for {args.get('bucket')}.")
         except Exception as e:
-            raise DemistoException(f"Failed to set Bucket Ownership Controls for {args.get('bucket')}. Error: {str(e)}")
+            raise DemistoException(f"Error: {str(e)}")
 
 class IAM:
     service = AWSServices.IAM
@@ -1009,7 +1011,7 @@ class EC2:
             CommandResults: A CommandResults object with a success message.
         """
         kwargs = {
-            "SubnetId": args.get("subnet_id"), #
+            "SubnetId": args.get("subnet_id"),
             "AssignIpv6AddressOnCreation": args.get("assign_ipv6_address_on_creation"),
             "CustomerOwnedIpv4Pool": args.get("customer_owned_ipv4_pool"),
             "DisableLniAtDeviceIndex": args.get("disable_lni_at_device_index"),
@@ -1044,8 +1046,9 @@ class EC2:
             if response["ResponseMetadata"]["HTTPStatusCode"] in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
                 demisto.debug(f"RequestId={response.get('ResponseMetadata').get('RequestId')}")
                 return CommandResults(readable_output="Subnet configuration successfully updated.")
+            raise DemistoException(f"Modification could not be performed.")
         except Exception as e:
-            raise DemistoException(f"Modification could not be performed. Error: {str(e)}")
+            raise DemistoException(f"Error: {str(e)}")
 
 
 class EKS:
@@ -1371,8 +1374,9 @@ class RDS:
                     outputs=response.get("EventSubscription"),
                     outputs_key_field="CustSubscriptionId",
                 )
+            raise DemistoException(f"Failed to modify event subscription {args.get('subscription_name')}.")
         except Exception as e:
-            raise DemistoException(f"Failed to modify event subscription {args.get('subscription_name')}. Error: {str(e)}")
+            raise DemistoException(f"Error: {str(e)}")
 
 
 class CloudTrail:
