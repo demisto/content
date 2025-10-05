@@ -22,23 +22,39 @@ DEFAULT_MAX_RESULTS = 1000
 API_MAX_PAGE_SIZE = 100  # The API only allows a maximum of 100 results per request. Using more raises an error.
 
 
-def generate_last_run(events: list["AwsSecurityFindingTypeDef"]) -> dict[str, Any]:
+def generate_last_run(events: list["AwsSecurityFindingTypeDef"], previous_last_run: dict | None = None) -> dict[str, Any]:
     """
     Generate the last run object using events data.
 
     Args:
         events (list[dict]): List of events to generate the last run object from.
+        previous_last_run (dict | None, optional): Previous last run data for smart ignore list accumulation.
 
     Note:
         Since the time filters seem to be equal or greater than (which results in duplicate from the last run),
         we add findings that are equal to 'last_finding_update_time' and filter them out in the next fetch.
-
+        Smart accumulation: If timestamp hasn't changed, accumulate ignore list instead of replacing it.
 
     Returns:
         dict: Last run object.
     """
-    ignore_list: list[str] = []
     last_update_date = events[-1].get(TIME_FIELD)
+    
+    # Smart ignore list accumulation logic
+    if previous_last_run and previous_last_run.get("last_update_date") == last_update_date:
+        # Same timestamp - ACCUMULATE ignore list from previous run
+        ignore_list: list[str] = previous_last_run.get("last_update_date_finding_ids", []).copy()
+        demisto.debug(
+            f"Same timestamp detected ({last_update_date}). Accumulating ignore list from {len(ignore_list)} existing IDs."
+        )
+    else:
+        # New timestamp - START FRESH ignore list
+        ignore_list = []
+        if previous_last_run:
+            demisto.debug(
+                f"Timestamp changed from {previous_last_run.get('last_update_date')} to {last_update_date}. "
+                f"Starting fresh ignore list."
+            )
 
     # Since the "_time" key is added to each event, the event type changes from "AwsSecurityFindingTypeDef" to just dict
     events = cast(list[dict[str, Any]], events)
@@ -48,6 +64,8 @@ def generate_last_run(events: list["AwsSecurityFindingTypeDef"]) -> dict[str, An
         if event[TIME_FIELD] == last_update_date:
             ignore_list.append(event["Id"])
 
+    demisto.debug(f"Generated ignore list with {len(ignore_list)} IDs for timestamp {last_update_date}")
+    
     return {
         "last_update_date": last_update_date,
         "last_update_date_finding_ids": ignore_list,
@@ -102,27 +120,68 @@ def get_events(
         kwargs["Filters"] = filters
 
     count = 0
+    pagination_iteration = 0
+
+    demisto.debug(
+        f"Starting get_events pagination with limit={limit}, page_size={page_size}, ignore_set_size={len(id_ignore_set)}"
+    )
 
     while True:
+        pagination_iteration += 1
+        
         if limit and limit - count < page_size:
             kwargs["MaxResults"] = limit - count
-
+            demisto.debug(
+                f"Iteration {pagination_iteration}: Requesting final {limit - count} events (limit adjustment)"
+            )
         else:
             kwargs["MaxResults"] = page_size
+            demisto.debug(f"Iteration {pagination_iteration}: Requesting {page_size} events")
 
         response = client.get_findings(**kwargs)
         result = response.get("Findings", [])
+        has_next_token = "NextToken" in response
+
+        # Store original count before filtering
+        original_count = len(result)
+        demisto.debug(
+            f"Iteration {pagination_iteration}: AWS returned {original_count} findings, NextToken present: {has_next_token}"
+        )
 
         # Filter out events based on id_ignore_set
         result = [event for event in result if event["Id"] not in id_ignore_set]
+        filtered_count = len(result)
+
+        demisto.debug(
+            f"Iteration {pagination_iteration}: After deduplication: {filtered_count} new events "
+            f"({original_count - filtered_count} duplicates filtered)"
+        )
+
+        # CRITICAL FIX: Break if ALL events were duplicates
+        if original_count > 0 and len(result) == 0:
+            demisto.info(
+                f"Iteration {pagination_iteration}: All {original_count} events were duplicates. "
+                f"Breaking pagination to prevent infinite loop."
+            )
+            break
 
         count += len(result)
+        demisto.debug(f"Iteration {pagination_iteration}: Total events collected so far: {count}")
         yield result  # type: ignore
 
         if "NextToken" in response and (limit == 0 or count < limit):
             kwargs["NextToken"] = response["NextToken"]
-
+            demisto.debug(
+                f"Iteration {pagination_iteration}: Continuing pagination (limit={limit}, count={count})"
+            )
         else:
+            if not has_next_token:
+                demisto.debug(f"Iteration {pagination_iteration}: No more pages available from AWS")
+            elif limit > 0 and count >= limit:
+                demisto.debug(f"Iteration {pagination_iteration}: Reached limit ({count}/{limit})")
+            demisto.debug(
+                f"get_events completed after {pagination_iteration} iterations with {count} total events"
+            )
             break
 
 
@@ -167,7 +226,7 @@ def fetch_events(
     # --- Set next_run data ---
     if events:
         demisto.info(f"Fetched {len(events)} findings.")
-        next_run = generate_last_run(events)
+        next_run = generate_last_run(events, last_run)
         demisto.info(f"Last run data updated to: {next_run}.")
 
     else:
