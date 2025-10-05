@@ -3,7 +3,7 @@ sectionOrder:
 - Connect
 - Collect
 commonfields:
-  id: Zscaler dev 5 #TODO remove
+  id: Zscaler dev test #TODO remove
   version: -1
 configuration:
 - display: Client ID (OAuth 2.0)
@@ -108,8 +108,8 @@ configuration:
   advanced: true
   required: false
 description: Zscaler is a cloud security solution built for performance and flexible scalability. This integration enables you to manage URL and IP address allow lists and block lists, manage and update categories, get Sandbox reports, create, manage, and update IP destination groups and manually log in, log out, and activate changes in a Zscaler session.
-display: Zscaler Internet Access dev 5 #TODO remove
-name: Zscaler dev 5 #TODO remove
+display: Zscaler Internet Access dev test #TODO remove
+name: Zscaler dev test #TODO remove
 script:
   commands:
   - arguments:
