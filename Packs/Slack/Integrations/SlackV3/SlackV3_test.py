@@ -9,7 +9,7 @@ from CommonServerPython import *
 from slack_sdk.errors import SlackApiError
 from slack_sdk.web.async_slack_response import AsyncSlackResponse
 from slack_sdk.web.slack_response import SlackResponse
-from SlackV3 import get_war_room_url, parse_common_channels, conversation_history
+from SlackV3 import get_war_room_url, parse_common_channels, conversation_history, resolve_conversation_id_from_name
 
 
 def load_test_data(path):
@@ -5377,5 +5377,5 @@ def test_resolve_conversation_id_from_name_no_channel_found(mocker):
     mocker.patch("SlackV3.get_direct_message_channel_id_by_username", return_value=None)
     mocker.patch("SlackV3.get_conversation_by_name", return_value={})
 
-    with pytest.raises(ValueError, match="Channel 'nonexistent' does not exist or could not be found."):
+    with pytest.raises(DemistoException, match="Channel 'nonexistent' does not exist or could not be found."):
         resolve_conversation_id_from_name("nonexistent")

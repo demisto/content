@@ -566,7 +566,12 @@ def send_slack_request_sync(
                 retry_after = int(headers["Retry-After"])
                 total_try_time += retry_after
                 if total_try_time < MAX_LIMIT_TIME:
-                    time.sleep(retry_after)
+                    try:
+                        safe_sleep(retry_after)
+                    except ValueError:
+                        raise DemistoException(
+                            f"Got rate limit error (sync) and reached docker timeout. Body is: {body!s}\n{api_error}"
+                        )
                     continue
             raise
         break
@@ -2779,12 +2784,9 @@ def resolve_conversation_id_from_name(channel_name):
     """
     # Try to get channel id in case channel_name is user name
     if (channel_id := get_direct_message_channel_id_by_username(channel_name)) is None:
-        # Try to get channel id in case channel_name is channel name
-        try:
-            conversation_info = get_conversation_by_name(channel_name)
-            channel_id = conversation_info.get("id")
-        except Exception as e:
-            demisto.debug(f"Error getting conversation by name: {e}")
+        demisto.debug("Did not find conversation ID by username, attempting to find by channel name")
+        conversation_info = get_conversation_by_name(channel_name)
+        channel_id = conversation_info.get("id")
 
     if not channel_id:
         raise DemistoException(f"Channel '{channel_name}' does not exist or could not be found.")
