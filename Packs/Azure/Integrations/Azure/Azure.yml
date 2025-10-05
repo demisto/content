@@ -1743,6 +1743,7 @@ script:
       type: string
       description: The resource group name.
       required: true
+      prettyname: Resource Group
     - name: server_name
       type: string
       required: true
@@ -1752,13 +1753,7 @@ script:
       type: string
       required: true
       description: The configuration setting name.
-    - name: subscription_id
-      required: true
-      type: string
-      description: Subscription ID.
-    - name: source
-      type: string
-      description: Source of the configuration.
+      defaultvalue: 'log_checkpoints'
     - name: value
       type: string
       description: Value of the configuration.
@@ -1775,30 +1770,12 @@ script:
       type: string
       required: true
       description: The resource group name.
-    - name: subscription_id
-      type: string
-      description: Subscription ID.
+      prettyname: Resource Group
     - name: name
       type: string
       required: true
       description: Name of the Web App.
       prettyname: AZ Webapp
-    - auto: PREDEFINED
-      name: http20_enabled
-      type: bool
-      required: false
-      description: Configures a web site to allow clients to connect over http2.0.
-      predefined:
-      - 'true'
-      - 'false'
-    - auto: PREDEFINED
-      name: remote_debugging_enabled
-      type: bool
-      required: false
-      description: True if remote debugging is enabled; otherwise, false.
-      predefined:
-      - 'true'
-      - 'false'
     - name: min_tls_version
       type: str
       auto: PREDEFINED
@@ -1909,28 +1886,11 @@ script:
       type: string
       required: true
       description: The resource group name.
-    - name: subscription_id
-      type: string
-      description: Subscription ID.
+      prettyname: Resource Group
     - name: name
       type: string
       required: true
       description: Name of the Web App.
-    - auto: PREDEFINED
-      name: http20_enabled
-      type: bool
-      description: Configures a web site to allow clients to connect over http2.0.
-      predefined:
-      - 'true'
-      - 'false'
-    - auto: PREDEFINED
-      name: remote_debugging_enabled
-      type: bool
-      required: false
-      description: True if remote debugging is enabled; otherwise, false.
-      predefined:
-      - 'true'
-      - 'false'
     - name: min_tls_version
       type: str
       auto: PREDEFINED
@@ -1941,6 +1901,7 @@ script:
       - '1.1'
       - '1.2'
       - '1.3'
+      defaultvalue: '1.2'
     description: 
     name: azure-function-app-set-min-tls-version-quick-action
     prettyname: Set Function App Min TLS Version
@@ -2040,9 +2001,7 @@ script:
       type: string
       required: true
       description: The resource group name.
-    - name: subscription_id
-      type: string
-      description: Subscription ID.
+      prettyname: Resource Group
     - name: server_name
       type: string
       required: true
@@ -2052,10 +2011,7 @@ script:
       type: string
       required: true
       description: The name of the server configuration.
-    - name: source
-      type: string
-      required: false
-      description: Source of the configuration.
+      defaultvalue: 'require_secure_transport'
     - name: value
       type: string
       required: false
@@ -2083,12 +2039,6 @@ script:
       type: string
       defaultvalue: log_disconnections
       description: The configuration setting name.
-    - name: subscription_id
-      type: string
-      description: Subscription ID.
-    - name: source
-      type: string
-      description: Source of the configuration.
     - name: value
       type: string
       description: Value of the configuration.
@@ -2136,145 +2086,11 @@ script:
     - description: The resource group name.
       name: resource_group_name
       required: true
-    - description: The subscription ID.
-      name: subscription_id
+      prettyname: Resource Group
     - description: The name of the storage account.
       name: account_name
       required: true
       prettyname: Storage Account
-    - auto: PREDEFINED
-      description: Gets or sets the SKU name, Required for account creation; optional for update.
-      name: sku
-      predefined:
-      - Premium_LRS
-      - Premium_ZRS
-      - Standard_GRS
-      - Standard_GZRS
-      - Standard_LRS
-      - Standard_RAGRS
-      - Standard_RAGZRS
-      - Standard_ZRS
-    - description: Indicates the type of storage account, Required for account creation; optional for update.
-      name: kind
-      auto: PREDEFINED
-      predefined:
-      - Storage
-      - StorageV2
-      - BlobStorage
-      - FileStorage
-      - BlockBlobStorage
-    - description: Gets or sets the location of the resource. The geo region of a resource cannot be changed once it is created, but if an identical geo region is specified on update, the request will succeed. Required for account creation; optional for update.
-      name: location
-      auto: PREDEFINED
-      predefined:
-      - eastus
-      - eastus2
-      - westus
-      - westeurope
-      - eastasia
-      - southeastasia
-      - japaneast
-      - japanwest
-      - northcentralus
-      - southcentralus
-      - centralus
-      - northeurope
-      - brazilsouth
-      - australiaeast
-      - australiasoutheast
-      - southindia
-      - centralindia
-      - westindia
-      - canadaeast
-      - canadacentral
-      - westus2
-      - westcentralus
-      - uksouth
-      - ukwest
-      - koreacentral
-      - koreasouth
-      - francecentral
-      - australiacentral
-      - southafricanorth
-      - uaenorth
-      - switzerlandnorth
-      - germanywestcentral
-      - norwayeast
-    - description: Gets or sets a list of tags that describe the resource.
-      name: tags
-      isArray: true
-    - description: Gets or sets the custom domain name assigned to the storage account.
-      name: custom_domain_name
-    - auto: PREDEFINED
-      description: Indicates whether indirect CName validation is enabled.
-      name: use_sub_domain_name
-      predefined:
-      - 'true'
-      - 'false'
-    - description: The encryption keySource.
-      name: enc_key_source
-      auto: PREDEFINED
-      predefined:
-      - Microsoft.Storage
-      - Microsoft.Keyvault
-    - description: Indicates whether the service applies a secondary layer of encryption with platform managed keys for data at rest.
-      name: enc_requireInfrastructureEncryption
-      auto: PREDEFINED
-      predefined:
-      - 'true'
-      - 'false'
-    - description: The name of KeyVault key.
-      name: enc_keyvault_key_name
-    - description: The version of KeyVault key.
-      name: enc_keyvault_key_version
-    - description: The Uri of KeyVault.
-      name: enc_keyvault_uri
-    - auto: PREDEFINED
-      description: The access tier for the account. Required where kind = BlobStorage.
-      name: access_tier
-      predefined:
-      - 'Hot'
-      - 'Cool'
-    - auto: PREDEFINED
-      description: Allows https traffic only to storage service if sets to true.
-      name: supports_https_traffic_only
-      predefined:
-      - 'true'
-      - 'false'
-    - auto: PREDEFINED
-      description: Account HierarchicalNamespace enabled if sets to true.
-      name: is_hns_enabled
-      predefined:
-      - 'true'
-      - 'false'
-    - auto: PREDEFINED
-      description: If set to Enabled, allows large file shares.
-      name: large_file_shares_state
-      predefined:
-      - Disabled
-      - Enabled
-    - auto: PREDEFINED
-      description: If set to true, allows public access to all blobs or containers in the storage account.
-      name: allow_blob_public_access
-      predefined:
-      - 'true'
-      - 'false'
-    - description: Sets the minimum TLS version to be permitted on requests to storage.
-      name: minimum_tls_version
-      auto: PREDEFINED
-      predefined:
-      - TLS1_0
-      - TLS1_1
-      - TLS1_2
-    - description: Specifies whether traffic is bypassed for Logging/Metrics/AzureServices.
-      name: network_ruleset_bypass
-      auto: PREDEFINED
-      isArray: true
-      predefined:
-      - AzureServices
-      - Logging
-      - Metrics
-      - None
     - auto: PREDEFINED
       description: Specifies the default action of allow or deny when no other rules match.
       name: network_ruleset_default_action
@@ -2282,16 +2098,6 @@ script:
       - Allow
       - Deny
       defaultvalue: Deny
-    - description: Sets the IP ACL rules.
-      name: network_ruleset_ipRules
-    - description: Sets the virtual network rules.
-      name: virtual_network_rules
-    - auto: PREDEFINED
-      description: Allow or disallow cross AAD tenant object replication.
-      name: allow_cross_tenant_replication
-      predefined:
-      - 'true'
-      - 'false'
     description: "Denies all network traffic to the storage account by default.  Only traffic from explicitly allowed IP addresses, subnets, or trusted Azure services will be able to access the storage account. 'Microsoft.Storage/storageAccounts/*' permission is required."
     name: azure-network-disable-storage-account-access-quick-action
     prettyname: Disable Network Access to Storage Account
@@ -2376,9 +2182,6 @@ script:
       required: true
       type: String
       prettyname: Resource
-    - name: subscription_id
-      type: string
-      description: subscription ID.
     - name: location
       description: Resource location.
       defaultvalue: global
@@ -2435,108 +2238,12 @@ script:
       description: The number of days for the retention policy.  
 
   - arguments:
-    - description: The resource group name.
-      name: resource_group_name
-      required: true
     - description: The subscription ID.
-      name: subscription_id
+      name: subscription_id # Not sure
     - description: The name of the storage account.
-      name: account_name
-      required: true
+      name: account_name # Not sure
+      required: true 
       prettyname: Storage Account
-    - auto: PREDEFINED
-      description: Gets or sets the SKU name, Required for account creation; optional for update.
-      name: sku
-      predefined:
-      - Premium_LRS
-      - Premium_ZRS
-      - Standard_GRS
-      - Standard_GZRS
-      - Standard_LRS
-      - Standard_RAGRS
-      - Standard_RAGZRS
-      - Standard_ZRS
-    - description: Indicates the type of storage account, Required for account creation; optional for update.
-      name: kind
-      auto: PREDEFINED
-      predefined:
-      - Storage
-      - StorageV2
-      - BlobStorage
-      - FileStorage
-      - BlockBlobStorage
-    - description: Gets or sets the location of the resource. The geo region of a resource cannot be changed once it is created, but if an identical geo region is specified on update, the request will succeed. Required for account creation; optional for update.
-      name: location
-      auto: PREDEFINED
-      predefined:
-      - eastus
-      - eastus2
-      - westus
-      - westeurope
-      - eastasia
-      - southeastasia
-      - japaneast
-      - japanwest
-      - northcentralus
-      - southcentralus
-      - centralus
-      - northeurope
-      - brazilsouth
-      - australiaeast
-      - australiasoutheast
-      - southindia
-      - centralindia
-      - westindia
-      - canadaeast
-      - canadacentral
-      - westus2
-      - westcentralus
-      - uksouth
-      - ukwest
-      - koreacentral
-      - koreasouth
-      - francecentral
-      - australiacentral
-      - southafricanorth
-      - uaenorth
-      - switzerlandnorth
-      - germanywestcentral
-      - norwayeast
-    - description: Gets or sets a list of tags that describe the resource.
-      name: tags
-      isArray: true
-    - description: Gets or sets the custom domain name assigned to the storage account.
-      name: custom_domain_name
-    - auto: PREDEFINED
-      description: Indicates whether indirect CName validation is enabled.
-      name: use_sub_domain_name
-      predefined:
-      - 'true'
-      - 'false'
-    - description: The encryption keySource.
-      name: enc_key_source
-      auto: PREDEFINED
-      predefined:
-      - Microsoft.Storage
-      - Microsoft.Keyvault
-    - description: Indicates whether the service applies a secondary layer of encryption with platform managed keys for data at rest.
-      name: enc_requireInfrastructureEncryption
-      auto: PREDEFINED
-      predefined:
-      - 'true'
-      - 'false'
-    - description: The name of KeyVault key.
-      name: enc_keyvault_key_name
-    - description: The version of KeyVault key.
-      name: enc_keyvault_key_version
-    - description: The Uri of KeyVault.
-      name: enc_keyvault_uri
-    - auto: PREDEFINED
-      description: The access tier for the account. Required where kind = BlobStorage.
-      name: access_tier
-      predefined:
-      - 'Hot'
-      - 'Cool'
     - auto: PREDEFINED
       description: Allows https traffic only to storage service if sets to true.
       name: supports_https_traffic_only
@@ -2544,56 +2251,6 @@ script:
       - 'true'
       - 'false'
       defaultvalue: 'true'
-    - auto: PREDEFINED
-      description: Account HierarchicalNamespace enabled if sets to true.
-      name: is_hns_enabled
-      predefined:
-      - 'true'
-      - 'false'
-    - auto: PREDEFINED
-      description: If set to Enabled, allows large file shares.
-      name: large_file_shares_state
-      predefined:
-      - Disabled
-      - Enabled
-    - auto: PREDEFINED
-      description: If set to true, allows public access to all blobs or containers in the storage account.
-      name: allow_blob_public_access
-      predefined:
-      - 'true'
-      - 'false'
-    - description: Sets the minimum TLS version to be permitted on requests to storage.
-      name: minimum_tls_version
-      auto: PREDEFINED
-      predefined:
-      - TLS1_0
-      - TLS1_1
-      - TLS1_2
-    - description: Specifies whether traffic is bypassed for Logging/Metrics/AzureServices.
-      name: network_ruleset_bypass
-      auto: PREDEFINED
-      isArray: true
-      predefined:
-      - AzureServices
-      - Logging
-      - Metrics
-      - None
-    - auto: PREDEFINED
-      description: Specifies the default action of allow or deny when no other rules match.
-      name: network_ruleset_default_action
-      predefined:
-      - Allow
-      - Deny
-    - description: Sets the IP ACL rules.
-      name: network_ruleset_ipRules
-    - description: Sets the virtual network rules.
-      name: virtual_network_rules
-    - auto: PREDEFINED
-      description: Allow or disallow cross AAD tenant object replication.
-      name: allow_cross_tenant_replication
-      predefined:
-      - 'true'
-      - 'false'
     description: "Enforces HTTPS-only traffic for the storage account, rejecting any requests made over HTTP. 'Microsoft.Storage/storageAccounts/*' permission is required."
     name: azure-set-storage-account-https-only-quick-action
     prettyname: Set Storage Account to HTTPS only
@@ -2677,9 +2334,7 @@ script:
       type: String
       required: true
       description: The resource group name.
-    - name: subscription_id
-      type: String
-      description: Subscription ID.
+      prettyname: Resource Group
     - name: server_name
       type: String
       required: true
