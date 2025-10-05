@@ -1264,6 +1264,37 @@ script:
       description: The Amazon Resource Name (ARN) of the SNS topic created for event notification.
     - name: source_type
       description: The type of source that is generating the events.
+    outputs:
+      - contextPath: AWS.RDS.EventSubscription.CustomerAwsId
+        description: The AWS customer account associated with the RDS event notification subscription.
+        type: string
+      - contextPath: AWS.RDS.EventSubscription.CustSubscriptionId
+        description: The RDS event notification subscription Id.
+        type: string
+      - contextPath: AWS.RDS.EventSubscription.Enabled
+        description: Specifies whether the subscription is enabled. True indicates the subscription is enabled.
+        type: boolean
+      - contextPath: AWS.RDS.EventSubscription.EventCategoriesList
+        description: A list of event categories for the RDS event notification subscription.
+        type: array
+      - contextPath: AWS.RDS.EventSubscription.EventSubscriptionArn
+        description: The Amazon Resource Name (ARN) for the event subscription.
+        type: string
+      - contextPath: AWS.RDS.EventSubscription.SnsTopicArn
+        description: The topic ARN of the RDS event notification subscription.
+        type: string
+      - contextPath: AWS.RDS.EventSubscription.SourceIdsList
+        description: A list of source IDs for the RDS event notification subscription.
+        type: array
+      - contextPath: AWS.RDS.EventSubscription.SourceType
+        description: The source type for the RDS event notification subscription.
+        type: string
+      - contextPath: AWS.RDS.EventSubscription.Status
+        description: The status of the RDS event notification subscription.
+        type: string
+      - contextPath: AWS.RDS.EventSubscription.SubscriptionCreationTime
+        description: The time the RDS event notification subscription was created.
+        type: string
 
   - name: aws-ec2-security-group-ingress-revoke
     description: 'Revokes one or more ingress rules in a security group.'

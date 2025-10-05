@@ -1375,6 +1375,7 @@ class RDS:
                     "EventCategoriesList",
                     "Enabled",
                     "EventSubscriptionArn",
+                    "SourceIdsList"
                 ]
 
                 return CommandResults(
