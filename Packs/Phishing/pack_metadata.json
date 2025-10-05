@@ -185,10 +185,6 @@
             "mandatory": false,
             "display_name": "FortiGate"
         },
-        "CortexXDR": {
-            "mandatory": false,
-            "display_name": "Palo Alto Networks Cortex XDR - Investigation and Response"
-        },
         "Cylance_Protect": {
             "mandatory": false,
             "display_name": "Cylance Protect"

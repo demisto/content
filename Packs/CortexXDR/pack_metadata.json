@@ -80,8 +80,7 @@
     },
     "marketplaces": [
         "xsoar",
-        "xpanse",
-        "platform"
+        "xpanse"
     ],
     "displayedImages": [
         "ServiceNow",

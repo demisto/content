@@ -24,10 +24,6 @@
         "xsoar"
     ],
     "dependencies": {
-        "CortexXDR": {
-            "mandatory": false,
-            "display_name": "Cortex XDR by Palo Alto Networks"
-        },
         "FiltersAndTransformers": {
             "mandatory": true,
             "display_name": "Filters And Transformers"
@@ -54,7 +50,6 @@
         }
     },
     "displayedImages": [
-        "CortexXDR",
         "FiltersAndTransformers",
         "CommonTypes",
         "MicrosoftDefenderAdvancedThreatProtection",
