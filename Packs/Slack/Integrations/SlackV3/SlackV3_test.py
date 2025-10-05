@@ -9,7 +9,7 @@ from CommonServerPython import *
 from slack_sdk.errors import SlackApiError
 from slack_sdk.web.async_slack_response import AsyncSlackResponse
 from slack_sdk.web.slack_response import SlackResponse
-from SlackV3 import get_war_room_url, parse_common_channels, resolve_channel_id_from_name, conversation_history
+from SlackV3 import get_war_room_url, parse_common_channels, conversation_history
 
 
 def load_test_data(path):
@@ -5345,7 +5345,7 @@ def test_resolve_conversation_id_from_name_private_conversation_found(mocker):
     mocker.patch("SlackV3.get_direct_message_channel_id_by_username", return_value="D1234567890")
     mocker.patch("SlackV3.get_conversation_by_name")
 
-    result = resolve_channel_id_from_name("john.doe")
+    result = resolve_conversation_id_from_name("john.doe")
 
     assert result == "D1234567890"
 
@@ -5361,7 +5361,7 @@ def test_resolve_conversation_id_from_name_channel_found(mocker):
     mocker.patch("SlackV3.get_direct_message_channel_id_by_username", return_value=None)
     mocker.patch("SlackV3.get_conversation_by_name", return_value={"id": "C1234567890", "name": "general"})
 
-    result = resolve_channel_id_from_name("general")
+    result = resolve_conversation_id_from_name("general")
 
     assert result == "C1234567890"
 
@@ -5377,5 +5377,5 @@ def test_resolve_conversation_id_from_name_no_channel_found(mocker):
     mocker.patch("SlackV3.get_direct_message_channel_id_by_username", return_value=None)
     mocker.patch("SlackV3.get_conversation_by_name", return_value={})
 
-    with pytest.raises(ValueError, match="Could not find channel ID for channel name: nonexistent."):
-        resolve_channel_id_from_name("nonexistent")
+    with pytest.raises(ValueError, match="Channel 'nonexistent' does not exist or could not be found."):
+        resolve_conversation_id_from_name("nonexistent")

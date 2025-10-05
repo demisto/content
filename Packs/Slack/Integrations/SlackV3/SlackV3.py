@@ -2743,19 +2743,21 @@ def get_direct_message_channel_id_by_username(username):
     """
     try:
         user_info = get_user_by_name(username)
-        demisto.debug(f"user_info: {user_info}")
-        user_id = user_info.get("id")
+        if not user_info or not user_info.get("id"):
+            return None
+
+        user_id = user_info["id"]
         raw_response = send_slack_request_sync(
             CLIENT, "conversations.open", http_verb="POST", body={"users": user_id, "prevent_creation": True}
         )
-        if not raw_response:
+
+        if not raw_response or not raw_response.get("channel"):
             return None
-        channel_info = raw_response.get("channel") or {}
-        channel_id = channel_info.get("id")
-        demisto.debug(f"Channel id of conversation with user_id {user_id} is: {channel_id}")
-        return channel_id
-    except SlackApiError as slack_error:
-        demisto.debug(f"Error opening conversation: {slack_error}")
+
+        return raw_response["channel"].get("id")
+
+    except Exception as e:
+        demisto.debug(f"Error getting direct message channel for username '{username}': {e}")
 
 
 def resolve_conversation_id_from_name(channel_name):
@@ -2773,17 +2775,19 @@ def resolve_conversation_id_from_name(channel_name):
         str: The channel ID corresponding to the given channel name.
 
     Raises:
-        ValueError: If no channel ID could be found for the given channel name.
+        DemistoException: If no channel ID could be found for the given channel name.
     """
     # Try to get channel id in case channel_name is user name
     if (channel_id := get_direct_message_channel_id_by_username(channel_name)) is None:
         # Try to get channel id in case channel_name is channel name
-        conversation_info = get_conversation_by_name(channel_name)
-        channel_id = conversation_info.get("id")
-        demisto.debug(f"Channel id of channel {channel_name} is: {channel_id}")
+        try:
+            conversation_info = get_conversation_by_name(channel_name)
+            channel_id = conversation_info.get("id")
+        except Exception as e:
+            demisto.debug(f"Error getting conversation by name: {e}")
 
-    if channel_id is None:
-        raise ValueError(f"Could not find channel ID for channel name: {channel_name}.")
+    if not channel_id:
+        raise DemistoException(f"Channel '{channel_name}' does not exist or could not be found.")
 
     return channel_id
 
