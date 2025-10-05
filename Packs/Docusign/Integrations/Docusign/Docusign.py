@@ -30,6 +30,10 @@ MAX_USER_DATA_PER_FETCH = 1250
 # API limits
 MAX_USER_DATA_PER_PAGE = 250
 
+# scopes
+CUSTOMER_EVENTS_SCOPE = "signature impersonation organization_read user_read"
+USER_DATA_SCOPE = "signature impersonation organization_read user_read"
+
 SERVER_PROD_URL = "https://account.docusign.com"
 
 # -------------------- Utilities --------------------
@@ -155,7 +159,7 @@ class AuthClient(BaseClient):
         access_token, expired_at = self.exchange_jwt_to_access_token(assertion) # NOTE: design - step 3
         return access_token, expired_at
 
-def is_access_token_expired(expired_at: dt.datetime) -> bool: 
+def is_access_token_expired(expired_at: dt.datetime) -> bool:
     """Check if access token is expired."""
 
     is_not_expired = expired_at > _utcnow() + dt.timedelta(minutes=15)
@@ -166,7 +170,7 @@ def is_access_token_expired(expired_at: dt.datetime) -> bool:
         demisto.debug(f"{LOG_PREFIX}Access token expired.")
         return True
 
-def get_access_token(client: AuthClient) -> str: 
+def get_access_token(client: AuthClient) -> str:
     """
     Generate JWT and exchange it for access token for DocuSign API OAuth flow.
 
@@ -203,7 +207,7 @@ def get_access_token(client: AuthClient) -> str:
         demisto.debug(f"{LOG_PREFIX}Error retrieving access token: {str(e)}")
         raise DemistoException(f"Error retrieving access token: {str(e)}")
 
-def get_customer_events(last_run: dict, limit: int, client: CustomerEventsClient) -> tuple[list, dict]: 
+def get_customer_events(last_run: dict, limit: int, client: CustomerEventsClient) -> tuple[list, dict]:
     """Fetch customer events from DocuSign Monitor API.
         
     Args:
@@ -305,6 +309,7 @@ class UserDataClient(BaseClient):
         url = urljoin(base, f"management/v2/organizations/{self.organization_id}/users")
         
         headers = {"Authorization": f"Bearer {access_token}"}
+        request_params["account_id"] = self.account_id
         resp = self._http_request(method="GET", full_url=url, headers=headers, params=request_params, resp_type="json")
         return resp, url
 
@@ -313,8 +318,8 @@ class UserDataClient(BaseClient):
             eSignature REST API
         '''
         url = urljoin(base_uri, f"restapi/v2.1/accounts/{self.account_id}/users/{user_id}")
-        resp = self._http_request(method="GET", full_url=url, headers={"Authorization": f"Bearer {access_token}"})
-        return resp.json()
+        resp = self._http_request(method="GET", full_url=url, headers={"Authorization": f"Bearer {access_token}"}, resp_type="json")
+        return resp
 
 
 def get_remaining_user_data(last_run: dict, users_per_page: int, client: UserDataClient, access_token: str, limit: int) -> tuple[list, dict]:
@@ -369,7 +374,7 @@ def fetch_audit_user_data(last_run: dict) -> tuple[dict, list]: # TODO: check fl
         fetched_users, last_run = get_user_data(last_run, limit, users_per_page, user_data_client, access_token)
         users.extend(fetched_users)
         # ---------- STEP 2: Fetch user details ----------
-        base_uri = auth_client.get_base_uri(access_token, user_data_client.account_id)
+        base_uri = auth_client.get_base_uri(access_token, user_data_client.account_id) # I think I cant move the base_uri to the context, it is permanent
         users, latest_modified = get_user_details(users, base_uri, access_token, user_data_client) # TODO: check with the tpm which list to return, from step 1 or step 2.
 
         # Persist the latest modifiedDate for next fetch
@@ -397,7 +402,7 @@ def get_user_details(users: list, base_uri: str, access_token: str, client: User
     for user in users:
         user_data = client.get_user_detail(base_uri, user.get("id"), access_token)
 
-        modified_date = user_data.get("modifiedDate")
+        modified_date = user_data.get("userSettings", {}).get("modifiedDate")
         if modified_date:
             try:
                 md_dt = datetime.strptime(modified_date, "%m/%d/%Y %I:%M:%S %p")
@@ -411,7 +416,7 @@ def get_user_details(users: list, base_uri: str, access_token: str, client: User
             except Exception as ex:
                 demisto.debug(f"{LOG_PREFIX}Failed to parse modifiedDate '{modified_date}': {ex!s}")
     
-    return users, latest_modified_dt
+    return users, latest_modified_dt.strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
 def get_user_data(last_run: dict, limit: int, users_per_page: int, client: UserDataClient, access_token: str) -> tuple[list, dict]:
@@ -426,7 +431,8 @@ def get_user_data(last_run: dict, limit: int, users_per_page: int, client: UserD
             demisto.debug(f"{LOG_PREFIX}Continuing fetch for Audit data from:\n {url}")
         # First request in the current time range.
         else:
-            one_minute_ago = timestamp_to_datestring(int(time.time() - 60) * 1000, date_format="%Y-%m-%dT%H:%M:%SZ")
+            # one_minute_ago = timestamp_to_datestring(int(time.time() - 60) * 1000, date_format="%Y-%m-%dT%H:%M:%SZ")
+            one_minute_ago = "2023-06-29T13:14:16Z" # TODO: remove this line => return 16 users
             url = ""
             request_params = {
                 "start": 0,
@@ -563,7 +569,7 @@ def initiate_auth_client() -> AuthClient:
 
 def fetch_customer_events(last_run: dict) -> tuple[dict, list]: 
     params = demisto.params()
-    limit = min(MAX_CUSTOMER_EVENTS_PER_FETCH, int(params.get("max_customer_events_per_fetch", MAX_CUSTOMER_EVENTS_PER_FETCH)))    
+    limit = min(MAX_CUSTOMER_EVENTS_PER_FETCH, int(params.get("max_customer_events_per_fetch", MAX_CUSTOMER_EVENTS_PER_FETCH)))
     try:
         demisto.debug(f"{LOG_PREFIX} last_run before fetching customer events: {last_run}")
         client = initiate_customer_events_client()
@@ -668,7 +674,6 @@ def validate_params():
 
 def test_module() -> str:
     validate_params()
-    
     client = initiate_auth_client()
     access_token = get_access_token(client)
     user_info = client.get_user_info(access_token)
