@@ -87,7 +87,7 @@ class Client(BaseClient):
         """
         params: dict[str, Any] = {}
         if indicator_types:
-            params["indicator_type"] = [i.lower().replace("file", "filehash_sha256") for i in indicator_types]
+            params["indicator_types"] = [i.lower().replace("file", "filehash_sha256") for i in indicator_types]
         if limit:
             params["limit"] = limit
         if start_time:
@@ -837,7 +837,7 @@ def get_indicators_command(client: Client, args: dict, feed_tags: list = [], tlp
         Demisto Outputs.
     """
     limit = arg_to_number(args.get("limit", "10")) or 10  # Default to 10 if None
-    indicator_types = argToList(args.get("indicator_types", "All"))
+    indicator_types = argToList(args.get("indicator_types"))
     next_page_token = args.get("next_page_token")
 
     # Get indicators from the API
@@ -849,20 +849,9 @@ def get_indicators_command(client: Client, args: dict, feed_tags: list = [], tlp
         if isinstance(data, list):
             indicators = parse_indicators(data, feed_tags, tlp_color)
 
-    # Create pagination context
-    pagination_context = {}
-    if response and isinstance(response, dict) and response.get("metadata"):
-        metadata = response.get("metadata", {})
-        if isinstance(metadata, dict) and metadata.get("next_page_token"):
-            pagination_context["next_page_token"] = metadata.get("next_page_token")
-
     # Create human readable output
     headers = ["value", "type", "score"]
     human_readable = tableToMarkdown("Unit 42 Indicators:", indicators, headers=headers, removeNull=True)
-
-    # Add pagination information to human readable output if available
-    if pagination_context:
-        human_readable += f"\n\nTo get the next page of results, use next_page_token: {pagination_context.get('next_page_token')}"
 
     return CommandResults(
         readable_output=human_readable,
@@ -896,20 +885,9 @@ def get_threat_objects_command(client: Client, args: dict, feed_tags: list = [],
         if isinstance(data, list):
             threat_objects = parse_threat_objects(data, feed_tags, tlp_color)
 
-    # Create pagination context
-    pagination_context = {}
-    if response and isinstance(response, dict) and response.get("metadata"):
-        metadata = response.get("metadata", {})
-        if isinstance(metadata, dict) and metadata.get("next_page_token"):
-            pagination_context["next_page_token"] = metadata.get("next_page_token")
-
     # Create human readable output
-    headers = ["value", "type", "description"]
+    headers = ["value", "type", "score"]
     human_readable = tableToMarkdown("Unit 42 Threat Objects:", threat_objects, headers=headers, removeNull=True)
-
-    # Add pagination information to human readable output if available
-    if pagination_context:
-        human_readable += f"\n\nTo get the next page of results, use next_page_token: {pagination_context.get('next_page_token')}"
 
     return CommandResults(
         readable_output=human_readable,

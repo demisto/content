@@ -13,6 +13,17 @@ from Unit42Intelligence import (
     extract_tags_from_threat_objects,
     extract_malware_families_from_threat_objects,
     create_threat_object_indicators,
+    build_threat_object_description,
+    create_publications,
+    create_threat_object_relationships,
+    create_campaigns_relationships,
+    create_attack_patterns_relationships,
+    create_malware_relationships,
+    create_tools_relationships,
+    create_vulnerabilities_relationships,
+    create_actor_relationships,
+    create_location_indicators_and_relationships,
+    get_threat_object_score,
 )
 from CommonServerPython import *
 
@@ -602,7 +613,7 @@ def test_create_relationships_attack_patterns():
         # Check the actual mapping based on INDICATOR_TYPE_MAPPING
         threat_class = threat_objects[relationships.index(relationship)]["threat_object_class"]
         if threat_class in ["malicious_behavior", "malicious behavior"]:
-            assert relationship._entity_b_type == Common.Indicator
+            assert relationship._entity_b_type == ThreatIntel.ObjectsNames.ATTACK_PATTERN
         elif threat_class == "exploit":
             assert relationship._entity_b_type == FeedIndicatorType.CVE
         elif threat_class == "attack pattern":
@@ -690,6 +701,35 @@ def test_create_relationships_missing_name():
     assert relationships[0]._entity_b == "APT29"
 
 
+def test_create_relationships_mitre_technique_prefix_removal():
+    """
+    Given:
+        - Threat objects with MITRE technique IDs that have prefixes like "T1590 - "
+    When:
+        - create_relationships is called with create_relationships enabled
+    Then:
+        - Removes MITRE technique ID prefix from attack pattern names
+        - Creates relationships with clean technique names
+    """
+    threat_objects = [
+        {"name": "T1590 - Gather Victim Network Information", "threat_object_class": "attack pattern"},
+        {"name": "T1566 - Phishing", "threat_object_class": "technique"},
+        {"name": "Regular Attack Pattern", "threat_object_class": "malicious_behavior"},  # No prefix
+        {"name": "T123 - Invalid Format", "threat_object_class": "attack pattern"},  # Invalid format (not digit after T)
+    ]
+
+    relationships = create_relationships("1.2.3.4", FeedIndicatorType.IP, threat_objects, True)
+
+    assert len(relationships) == 4
+
+    # Check that MITRE prefixes are removed for valid patterns
+    entity_b_names = [rel._entity_b for rel in relationships]
+    assert "Gather Victim Network Information" in entity_b_names
+    assert "Phishing" in entity_b_names
+    assert "Regular Attack Pattern" in entity_b_names
+    assert "T123 - Invalid Format" in entity_b_names  # Invalid format should remain unchanged
+
+
 def test_file_hash_detection():
     """
     Given:
@@ -763,8 +803,8 @@ def test_multiple_threat_objects():
     assert ThreatIntel.ObjectsNames.THREAT_ACTOR in entity_b_types
     assert ThreatIntel.ObjectsNames.MALWARE in entity_b_types
     assert ThreatIntel.ObjectsNames.CAMPAIGN in entity_b_types
-    # malicious_behavior maps to Common.Indicator in the current implementation
-    assert Common.Indicator in entity_b_types
+    # malicious_behavior maps to ThreatIntel.ObjectsNames.ATTACK_PATTERN in the current implementation
+    assert ThreatIntel.ObjectsNames.ATTACK_PATTERN in entity_b_types
 
 
 def test_extract_response_data_missing_fields():
@@ -1004,3 +1044,373 @@ def test_file_command_sha1_unsupported(client):
 
     assert "Unit 42 Intelligence only supports SHA256 hashes" in result.readable_output
     assert "sha1" in result.readable_output
+
+
+def test_build_threat_object_description():
+    """
+    Given:
+        - A threat object with description, highlights, methods, and targets
+    When:
+        - build_threat_object_description is called
+    Then:
+        - Returns formatted description with all sections properly concatenated
+        - Handles newline characters correctly
+        - Skips empty or default sections
+    """
+    threat_obj = {
+        "description": "Base description\\nwith newlines",
+        "battlecard_details": {
+            "highlights": "Key highlights\\nImportant info",
+            "threat_actor_details": {
+                "methods": "Attack methods\\nTechniques used",
+                "targets": "Target sectors\\nSpecific victims",
+            },
+        },
+    }
+
+    result = build_threat_object_description(threat_obj)
+
+    assert "Base description\nwith newlines" in result
+    assert "##Key highlights\nImportant info" in result
+    assert "##Attack methods\nTechniques used" in result
+    assert "##Target sectors\nSpecific victims" in result
+
+
+def test_build_threat_object_description_minimal():
+    """
+    Given:
+        - A threat object with only basic description
+    When:
+        - build_threat_object_description is called
+    Then:
+        - Returns only the basic description
+        - Does not add empty sections
+    """
+    threat_obj = {"description": "Simple description"}
+
+    result = build_threat_object_description(threat_obj)
+
+    assert result == "Simple description"
+    assert "##" not in result
+
+
+def test_build_threat_object_description_skip_default_highlights():
+    """
+    Given:
+        - A threat object with default highlights title
+    When:
+        - build_threat_object_description is called
+    Then:
+        - Skips the default highlights section
+        - Only includes actual content
+    """
+    threat_obj = {
+        "description": "Base description",
+        "battlecard_details": {"highlights": "Highlights / Key Takeaways (external)"},
+    }
+
+    result = build_threat_object_description(threat_obj)
+
+    assert result == "Base description"
+    assert "Highlights / Key Takeaways (external)" not in result
+
+
+def test_create_publications():
+    """
+    Given:
+        - A list of publication data with various fields
+    When:
+        - create_publications is called
+    Then:
+        - Returns properly formatted publications list
+        - Maps all fields correctly
+        - Uses default source when not provided
+    """
+    publications_data = [
+        {"created": "2023-01-01T00:00:00Z", "title": "Threat Report 1", "url": "https://example.com/report1", "source": "Unit42"},
+        {
+            "created": "2023-02-01T00:00:00Z",
+            "title": "Threat Report 2",
+            "url": "https://example.com/report2",
+            # Missing source - should use default
+        },
+    ]
+
+    result = create_publications(publications_data)
+
+    assert len(result) == 2
+    assert result[0]["timestamp"] == "2023-01-01T00:00:00Z"
+    assert result[0]["title"] == "Threat Report 1"
+    assert result[0]["link"] == "https://example.com/report1"
+    assert result[0]["source"] == "Unit42"
+
+    assert result[1]["source"] == "Unit 42 Intelligence"  # Default source
+
+
+def test_create_publications_empty():
+    """
+    Given:
+        - An empty publications list
+    When:
+        - create_publications is called
+    Then:
+        - Returns empty list
+    """
+    result = create_publications([])
+    assert result == []
+
+
+def test_get_threat_object_score():
+    """
+    Given:
+        - Various threat object classes
+    When:
+        - get_threat_object_score is called
+    Then:
+        - Returns appropriate ThreatIntel scores for known classes
+        - Returns NONE score for unknown classes
+    """
+    assert get_threat_object_score("malware_family") == ThreatIntel.ObjectsScore.MALWARE
+    assert get_threat_object_score("actor") == ThreatIntel.ObjectsScore.THREAT_ACTOR
+    assert get_threat_object_score("threat_actor") == ThreatIntel.ObjectsScore.THREAT_ACTOR
+    assert get_threat_object_score("campaign") == ThreatIntel.ObjectsScore.CAMPAIGN
+    assert get_threat_object_score("attack pattern") == ThreatIntel.ObjectsScore.ATTACK_PATTERN
+    assert get_threat_object_score("technique") == ThreatIntel.ObjectsScore.ATTACK_PATTERN
+    assert get_threat_object_score("malicious_behavior") == ThreatIntel.ObjectsScore.ATTACK_PATTERN
+    assert get_threat_object_score("malicious behavior") == ThreatIntel.ObjectsScore.ATTACK_PATTERN
+    assert get_threat_object_score("unknown_class") == Common.DBotScore.NONE
+
+
+def test_create_threat_object_relationships():
+    """
+    Given:
+        - A threat object with related threat objects
+    When:
+        - create_threat_object_relationships is called
+    Then:
+        - Creates relationships for each related threat object
+        - Maps threat classes correctly
+        - Returns relationship entries
+    """
+    threat_obj = {
+        "related_threat_objects": [
+            {"name": "Related Actor", "class": "actor"},
+            {"name": "Related Malware", "class": "malware_family"},
+            {"class": "campaign"},  # Missing name - should be skipped
+        ]
+    }
+
+    relationships = create_threat_object_relationships(threat_obj, "Main Threat", "actor")
+
+    assert len(relationships) == 2
+    # Note: The function returns relationship entries (dictionaries), not EntityRelationship objects
+
+
+def test_create_campaigns_relationships():
+    """
+    Given:
+        - A threat object with campaigns in battlecard details
+    When:
+        - create_campaigns_relationships is called
+    Then:
+        - Creates relationships for each campaign
+        - Filters out empty campaign names
+        - Returns relationship entries
+    """
+    threat_obj = {
+        "battlecard_details": {
+            "campaigns": ["Campaign Alpha", "Campaign Beta", "", "  "]  # Include empty/whitespace
+        }
+    }
+
+    relationships = create_campaigns_relationships(threat_obj, "Threat Actor", "actor")
+
+    assert len(relationships) == 2  # Only non-empty campaigns
+
+
+def test_create_attack_patterns_relationships():
+    """
+    Given:
+        - A threat object with attack patterns containing MITRE IDs
+    When:
+        - create_attack_patterns_relationships is called
+    Then:
+        - Creates relationships for valid attack patterns
+        - Skips patterns with dots in MITRE ID
+        - Removes (enterprise) suffix from pattern names
+    """
+    threat_obj = {
+        "battlecard_details": {
+            "attack_patterns": [
+                {"mitreid": "T1566", "name": "Phishing (enterprise)"},
+                {"mitreid": "T1566.001", "name": "Spear Phishing"},  # Should be skipped (has dot)
+                {"mitreid": "T1059", "name": "Command and Scripting Interpreter (enterprise)"},
+            ]
+        }
+    }
+
+    relationships = create_attack_patterns_relationships(threat_obj, "Threat Actor", "actor")
+
+    assert len(relationships) == 2  # One skipped due to dot in MITRE ID
+
+
+def test_create_malware_relationships():
+    """
+    Given:
+        - A threat object with malware associations
+    When:
+        - create_malware_relationships is called
+    Then:
+        - Creates relationships for malware with names
+        - Creates relationships for aliases when no name exists
+        - Returns relationship entries
+    """
+    threat_obj = {
+        "battlecard_details": {
+            "threat_actor_details": {
+                "malware_associations": [
+                    {"name": "Malware A", "aliases": ["Alias A1", "Alias A2"]},
+                    {"aliases": ["Orphan Alias"]},  # No name, use aliases
+                    {"name": "Malware B"},  # No aliases
+                ]
+            }
+        }
+    }
+
+    relationships = create_malware_relationships(threat_obj, "Threat Actor", "actor")
+
+    assert len(relationships) == 3  # Malware A, Orphan Alias, Malware B
+
+
+def test_create_tools_relationships():
+    """
+    Given:
+        - A threat object with tools associations
+    When:
+        - create_tools_relationships is called
+    Then:
+        - Creates relationships for each tool
+        - Includes MITRE ID in fields when available
+        - Returns relationship entries
+    """
+    threat_obj = {
+        "battlecard_details": {
+            "threat_actor_details": {
+                "tools": [
+                    {"name": "Tool A", "mitreid": "S0001"},
+                    {"name": "Tool B"},  # No MITRE ID
+                ]
+            }
+        }
+    }
+
+    relationships = create_tools_relationships(threat_obj, "Threat Actor", "actor")
+
+    assert len(relationships) == 2
+
+
+def test_create_vulnerabilities_relationships():
+    """
+    Given:
+        - A threat object with vulnerability associations
+    When:
+        - create_vulnerabilities_relationships is called
+    Then:
+        - Creates relationships for each CVE
+        - Converts CVE IDs to uppercase
+        - Returns relationship entries
+    """
+    threat_obj = {
+        "battlecard_details": {
+            "threat_actor_details": {
+                "vulnerability_associations": [
+                    {"cve": "cve-2023-1234"},
+                    {"cve": "CVE-2023-5678"},
+                    {},  # Missing CVE - should be skipped
+                ]
+            }
+        }
+    }
+
+    relationships = create_vulnerabilities_relationships(threat_obj, "Threat Actor", "actor")
+
+    assert len(relationships) == 2
+
+
+def test_create_actor_relationships():
+    """
+    Given:
+        - A malware family with actor associations
+    When:
+        - create_actor_relationships is called
+    Then:
+        - Creates relationships using aliases when available
+        - Falls back to name when no aliases exist
+        - Returns relationship entries
+    """
+    threat_obj = {
+        "battlecard_details": {
+            "malware_family_details": {
+                "actor_associations": [
+                    {"aliases": ["Actor Alias 1", "Actor Alias 2"], "name": "Actor Name"},
+                    {"name": "Solo Actor"},  # No aliases
+                    {"aliases": []},  # Empty aliases, should use name
+                ]
+            }
+        }
+    }
+
+    relationships = create_actor_relationships(threat_obj, "Malware Family", "malware_family")
+
+    assert len(relationships) == 3  # 2 aliases + 1 solo actor
+
+
+def test_create_location_indicators_and_relationships():
+    """
+    Given:
+        - A threat object with affected regions
+    When:
+        - create_location_indicators_and_relationships is called
+    Then:
+        - Creates location indicators for valid regions
+        - Skips invalid regions not in VALID_REGIONS enum
+        - Creates proper relationships with threat actor
+    """
+    threat_obj = {
+        "battlecard_details": {
+            "threat_actor_details": {
+                "affected_regions": [
+                    "north america",  # Valid region
+                    "europe",  # Valid region
+                    "invalid region",  # Should be skipped
+                    "  ASIA  ",  # Should be normalized and skipped if not valid
+                ]
+            }
+        }
+    }
+
+    location_indicators = create_location_indicators_and_relationships(threat_obj, "Threat Actor")
+
+    assert len(location_indicators) == 2  # Only valid regions
+
+    for indicator in location_indicators:
+        assert indicator["type"] == FeedIndicatorType.Location
+        assert indicator["score"] == Common.DBotScore.NONE
+        assert indicator["service"] == "Unit 42 Intelligence"
+        assert len(indicator["relationships"]) == 1
+
+
+def test_create_location_indicators_null_regions():
+    """
+    Given:
+        - A threat object with null affected_regions
+    When:
+        - create_location_indicators_and_relationships is called
+    Then:
+        - Returns empty list without errors
+    """
+    threat_obj = {"battlecard_details": {"threat_actor_details": {"affected_regions": None}}}
+
+    location_indicators = create_location_indicators_and_relationships(threat_obj, "Threat Actor")
+
+    assert location_indicators == []
