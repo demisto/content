@@ -36,6 +36,14 @@ def async_client():
     return AsyncClient(base_url=SERVER_URL, token="test_token", verify_ssl=False, is_proxy=False)
 
 
+def mock_async_session_response(response_json: None | dict = None, status_code: int = 200) -> AsyncMock:
+    mock_response = AsyncMock()
+    mock_response.json = AsyncMock(return_value=response_json)
+    mock_response.raise_for_status = AsyncMock()
+    mock_response.status_code = status_code
+    return AsyncMock(__aenter__=AsyncMock(return_value=mock_response))
+
+
 def test_runs_list_command(client: Client, requests_mock: RequestsMocker):
     """
     Given:
@@ -174,14 +182,6 @@ def test_test_module_command(client: Client, mocker: MockerFixture):
     assert "Unauthorized: Please be sure you put a valid API Token" in str(err)
 
 
-def mock_aoi_session_response(response_json: None | dict = None, status_code: int = 200) -> AsyncMock:
-    mock_response = AsyncMock()
-    mock_response.json = AsyncMock(return_value=response_json)
-    mock_response.raise_for_status = AsyncMock()
-    mock_response.status_code = status_code
-    return AsyncMock(__aenter__=AsyncMock(return_value=mock_response))
-
-
 @pytest.mark.asyncio
 async def test_client_get_audit_trails(async_client: AsyncClient, mocker: MockerFixture):
     """
@@ -198,7 +198,7 @@ async def test_client_get_audit_trails(async_client: AsyncClient, mocker: Mocker
     mock_response_json = {"data": [{"id": "event-1", "timestamp": "2025-01-01T00:00:00Z"}], "pagination": {"total_pages": 1}}
 
     async with async_client as _client:
-        mocker.patch.object(_client._session, "get", return_value=mock_aoi_session_response(mock_response_json))
+        mocker.patch.object(_client._session, "get", return_value=mock_async_session_response(mock_response_json))
         response_json = await _client.get_audit_trails(from_date=from_date, page_number=page_number)
 
     assert response_json == mock_response_json
@@ -238,9 +238,9 @@ async def test_get_audit_trail_events_pagination(async_client: AsyncClient, mock
     ]
 
     mock_responses = [
-        mock_aoi_session_response(mock_response_jsons[0]),  # First call to find total pages
-        mock_aoi_session_response(mock_response_jsons[2]),  # Second call to last page (oldest events)
-        mock_aoi_session_response(mock_response_jsons[1]),  # Third call to second to last page (newer events than last page)
+        mock_async_session_response(mock_response_jsons[0]),  # First call to find total pages
+        mock_async_session_response(mock_response_jsons[2]),  # Second call to last page (oldest events)
+        mock_async_session_response(mock_response_jsons[1]),  # Third call to second to last page (newer events than last page)
     ]
 
     limit = DEFAULT_PAGE_SIZE + 5
