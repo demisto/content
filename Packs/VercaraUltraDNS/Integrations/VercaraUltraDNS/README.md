@@ -33,8 +33,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### vercara-ultradns-get-events
 
 ***
-Gets DNS configuration audit events from Vercara UltraDNS.
-
+Gets audit events from Vercara UltraDNS. Manual command to fetch and display events. This command is used for developing/debugging and is to be used with caution, as it can create events, leading to events duplication and exceeding the API request limitation.
 #### Base Command
 
 `vercara-ultradns-get-events`

@@ -6,8 +6,8 @@ commonfields:
   id: VercaraUltraDNS
   version: -1
 configuration:
-- defaultvalue: https://api.ultradns.com
-  display: Server URL
+- display: Server URL
+  defaultvalue: https://api.ultradns.com
   name: url
   required: true
   type: 0
@@ -17,15 +17,15 @@ configuration:
   required: true
   type: 9
   section: Connect
-- defaultvalue: 'false'
-  display: Fetch events
+- display: Fetch events
+  defaultvalue: 'false'
   name: isFetchEvents
   required: false
   type: 8
   section: Collect
-- defaultvalue: '2500'
+- name: max_events_per_fetch
+  defaultvalue: '2500'
   display: The maximum number of audit logs per fetch
-  name: max_events_per_fetch
   required: false
   type: 0
   section: Collect
@@ -46,24 +46,24 @@ name: VercaraUltraDNS
 script:
   commands:
   - arguments:
-    - auto: PREDEFINED
+    - name: should_push_events
+      auto: PREDEFINED
       defaultValue: 'false'
       description: If true, the command creates events; otherwise, it only displays them.
-      name: should_push_events
       predefined:
       - 'true'
       - 'false'
       required: true
-    - description: Maximum number of results to return. Maximum is 2,500.
-      name: limit
+    - name: limit
+      description: Maximum number of results to return. Maximum is 2,500.
       required: false
-      defaultValue: '50'
-    - description: Start time for fetching events. Supports ISO format ("2023-01-01T00:00:00") or natural language ("7 days ago", "yesterday", "1 week ago").
-      name: start_time
+      defaultValue: '10'
+    - name: start_time
+      description: Start time for fetching events. Supports ISO format ("2023-01-01T00:00:00") or natural language ("7 days ago", "yesterday", "1 week ago").
       required: true
-    - description: End time for fetching events. Supports ISO format ("2023-01-01T23:59:59") or natural language ("2 hours ago", "now"). If not provided, defaults to now.
-      name: end_time
-    description: Gets audit events from Vercara UltraDNS.
+    - name: end_time
+      description: End time for fetching events. Supports ISO format ("2023-01-01T23:59:59") or natural language ("2 hours ago", "now"). If not provided, defaults to now.
+    description: Gets audit events from Vercara UltraDNS. Manual command to fetch and display events. This command is used for developing/debugging and is to be used with caution, as it can create events, leading to events duplication and exceeding the API request limitation.
     name: vercara-ultradns-get-events
   dockerimage: demisto/python3:3.12.11.4819260
   isfetchevents: true
