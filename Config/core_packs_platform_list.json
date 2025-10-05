@@ -290,7 +290,7 @@
             ]
         },
         {
-            "id": "Unit42byPaloAltoNetworks",
+            "id": "Unit42ThreatIntelligencebyPaloAltoNetworks",
             "supportedModules": [
                 "C1",
                 "C3",
