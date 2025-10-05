@@ -3754,7 +3754,7 @@ def check_activation_status(
                 activation_id = latest.get("activationId")
                 network = latest.get("network")
             else:
-                latest_status = status_resp.get("activationStatus") or status_resp.get("status")
+                latest_status = status_resp.get("activationStatus", "") or status_resp.get("status", "")
                 activation_id = status_resp.get("activationId")
                 network = status_resp.get("network")
         if latest_status and latest_status != pending_status:
