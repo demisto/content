@@ -2,7 +2,6 @@ Enrich indicators with Unit 42 threat intelligence context including verdicts, t
 
 ## Configure Unit 42 Intelligence in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Source Reliability | Reliability of the source providing the intelligence data. | True |
@@ -107,7 +106,7 @@ Enrich a domain with Unit 42 threat intelligence context.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| domain | Domain to enrich. | Required | 
+| domain | Domain to enrich. | Required |
 
 #### Context Output
 

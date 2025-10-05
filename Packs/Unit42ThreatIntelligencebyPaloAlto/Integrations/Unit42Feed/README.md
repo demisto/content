@@ -3,7 +3,6 @@ This integration was integrated and tested with version xx of Unit 42 Feed.
 
 ## Configure Unit 42 Feed in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Fetch indicators |  | True |
@@ -38,8 +37,8 @@ Gets indicators from the feed.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| indicator_types | Comma-separated list of indicator types to fetch (File, IP, URL, Domain). If not specified, all indicator types are fetched. Possible values are: File, IP, URL, Domain. | Optional | 
-| limit | The maximum number of indicators to return. The default is 10. Default is 10. | Optional | 
+| indicator_types | Comma-separated list of indicator types to fetch (File, IP, URL, Domain). If not specified, all indicator types are fetched. Possible values are: File, IP, URL, Domain. | Optional |
+| limit | The maximum number of indicators to return. The default is 10. Default is 10. | Optional |
 
 #### Context Output
 
@@ -58,7 +57,7 @@ Gets threat objects from the feed.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of threat objects to return. The default is 10. Default is 10. | Optional | 
+| limit | The maximum number of threat objects to return. The default is 10. Default is 10. | Optional |
 
 #### Context Output
 

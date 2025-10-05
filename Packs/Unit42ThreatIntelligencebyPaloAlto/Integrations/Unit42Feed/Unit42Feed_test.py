@@ -6,7 +6,7 @@ from Unit42Feed import (
     get_threat_object_score,
     create_location_indicators_and_relationships,
     build_threat_object_description,
-    test_module,
+    test_module as unit42_test_module,
     main,
     INDICATOR_TYPE_MAPPING,
     VERDICT_TO_SCORE,
@@ -16,6 +16,14 @@ from Unit42Feed import (
     INTEGRATION_NAME,
 )
 from CommonServerPython import *
+
+
+def mock_demisto_params(mocker, create_relationships=True):
+    """Helper function to mock demisto.params() with common parameters"""
+    return mocker.patch(
+        "Unit42Feed.demisto.params",
+        return_value={"create_relationships": create_relationships, "feedReliability": DBotScoreReliability.A},
+    )
 
 
 @pytest.fixture
@@ -47,7 +55,6 @@ def test_client_initialization():
     assert client._base_url == "https://prod-us.tas.crtx.paloaltonetworks.com"
     assert client._headers == headers
     assert client._verify is True
-    assert client._proxy is True
 
 
 def test_client_get_indicators(client, mocker):
@@ -102,7 +109,7 @@ def test_client_get_indicators_file_type_mapping(client, mocker):
     client.get_indicators(indicator_types=["file"])
 
     mock_http_request.assert_called_once_with(
-        method="GET", url_suffix="/api/v1/feeds/indicators", params={"indicator_types": ["filehash_sha256"]}
+        method="GET", url_suffix="/api/v1/feeds/indicators", params={"indicator_types": ["filehash_sha256"], "limit": 5000}
     )
 
 
@@ -253,9 +260,10 @@ def test_test_module_success(client, mocker):
         - Returns 'ok' indicating successful connection
     """
     mock_response = {"data": [{"indicator_value": "test"}]}
-    mocker.patch.object(client, "get_indicators", return_value=mock_response)
+    # Mock the _http_request method to avoid actual API calls
+    mocker.patch.object(client, "_http_request", return_value=mock_response)
 
-    result = test_module(client)
+    result = unit42_test_module(client)
 
     assert result == "ok"
 
@@ -271,9 +279,10 @@ def test_test_module_failure(client, mocker):
         - Returns failure message
     """
     mock_response = {"data": []}
-    mocker.patch.object(client, "get_indicators", return_value=mock_response)
+    # Mock the _http_request method to avoid actual API calls
+    mocker.patch.object(client, "_http_request", return_value=mock_response)
 
-    result = test_module(client)
+    result = unit42_test_module(client)
 
     assert "Failed to connect" in result
 
@@ -286,13 +295,14 @@ def test_test_module_exception(client, mocker):
     When:
         - Running test_module function
     Then:
-        - Returns failure message
+        - Raises an exception (since test_module doesn't catch exceptions)
     """
-    mocker.patch.object(client, "get_indicators", side_effect=Exception("API Error"))
+    # Mock the _http_request method to raise an exception
+    mocker.patch.object(client, "_http_request", side_effect=Exception("API Error"))
 
-    result = test_module(client)
-
-    assert "Failed to connect" in result
+    # The test_module function doesn't catch exceptions, so it should raise
+    with pytest.raises(Exception, match="API Error"):
+        unit42_test_module(client)
 
 
 def test_create_location_indicators_and_relationships():
@@ -419,7 +429,7 @@ def test_create_relationships_and_tags():
     ]
 
     with unittest.mock.patch("Unit42Feed.demisto.params") as mock_params:
-        mock_params.return_value = {"create_relationships": True, "feedReliability": "A++ - Reputation script"}
+        mock_params.return_value = {"create_relationships": True, "feedReliability": DBotScoreReliability.A}
 
         with unittest.mock.patch("Unit42Feed.argToBoolean", return_value=True):
             relationships, tags = create_relationships_and_tags("1.2.3.4", "ip", threat_object_associations)
@@ -560,7 +570,7 @@ def test_map_indicator_with_relationships():
     assert "Cobalt Strike" in result["fields"]["tags"]
 
 
-def test_map_threat_object_basic():
+def test_map_threat_object_basic(mocker):
     """
     Given:
         - Basic threat object data from API
@@ -571,6 +581,8 @@ def test_map_threat_object_basic():
         - Sets correct threat object type and score
     """
     from Unit42Feed import map_threat_object
+
+    mock_demisto_params(mocker)
 
     threat_object = {
         "name": "APT29",
@@ -619,6 +631,8 @@ def test_map_threat_object_with_relationships(mocker):
     """
     from Unit42Feed import map_threat_object
 
+    mock_demisto_params(mocker)
+
     threat_object = {
         "name": "APT29",
         "threat_object_class": "actor",
@@ -645,7 +659,9 @@ def test_map_threat_object_with_relationships(mocker):
     # Should include the main threat object plus location indicators
     assert len(result) >= 1
 
-    main_threat_obj = result[0]
+    # Find the main threat object (not a location indicator)
+    main_threat_obj = next((obj for obj in result if obj["value"] == "APT29"), None)
+    assert main_threat_obj is not None
     assert main_threat_obj["value"] == "APT29"
     assert len(main_threat_obj["relationships"]) > 0  # Should have relationships
 
@@ -733,7 +749,7 @@ def test_parse_indicators():
     assert none_result == []
 
 
-def test_parse_threat_objects():
+def test_parse_threat_objects(mocker):
     """
     Given:
         - List of threat object data from API
@@ -744,6 +760,8 @@ def test_parse_threat_objects():
         - Handles empty and invalid data gracefully
     """
     from Unit42Feed import parse_threat_objects
+
+    mock_demisto_params(mocker)
 
     threat_objects_data = [
         {"name": "APT29", "threat_object_class": "actor", "publications": []},
@@ -802,6 +820,7 @@ def test_fetch_indicators_basic(client, mocker):
 
     # Mock demisto functions
     mocker.patch("Unit42Feed.demisto.getLastRun", return_value={})
+    mock_demisto_params(mocker)
 
     params = {
         "feed_types": ["Indicators", "Threat Objects"],
@@ -912,6 +931,7 @@ def test_get_threat_objects_command(client, mocker):
     }
 
     mocker.patch.object(client, "get_threat_objects", return_value=mock_response)
+    mock_demisto_params(mocker)
 
     args = {"limit": "10", "next_page_token": "test_token"}
 

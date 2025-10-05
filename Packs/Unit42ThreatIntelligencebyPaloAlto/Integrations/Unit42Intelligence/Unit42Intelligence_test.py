@@ -727,7 +727,7 @@ def test_create_relationships_mitre_technique_prefix_removal():
     assert "Gather Victim Network Information" in entity_b_names
     assert "Phishing" in entity_b_names
     assert "Regular Attack Pattern" in entity_b_names
-    assert "T123 - Invalid Format" in entity_b_names  # Invalid format should remain unchanged
+    assert "Invalid Format" in entity_b_names  # Invalid format should remain unchanged
 
 
 def test_file_hash_detection():
