@@ -5,21 +5,13 @@ alter
 	xdm.network.rule = alert_rule_name,
 	xdm.alert.description = alertdescription,
 	xdm.alert.severity = severity,
-	xdm.event.log_level = if(
-		severity = "Critical", XDM_CONST.LOG_LEVEL_EMERGENCY,
-		severity ~= "Major|High", XDM_CONST.LOG_LEVEL_CRITICAL,
-		severity = "Medium", XDM_CONST.LOG_LEVEL_ALERT,
-		severity ~= "Minor|Low", XDM_CONST.LOG_LEVEL_NOTICE,		
-		severity = "Warning", XDM_CONST.LOG_LEVEL_WARNING,
-		severity = "Information", XDM_CONST.LOG_LEVEL_INFORMATIONAL
-	),
 	xdm.observer.name = coalesce(commcell, commcellname),
 	xdm.target.host.hostname = coalesce(computer, client),
 	xdm.event.description = coalesce(description, details),
 	xdm.event.type = if(
-		opid != null and opid !~= "^\s*$", "Audit",
-		alert_id != null and alert_id !~= "^\s*$", "Alert",
-		event_id != null and event_id !~= "^\s*$", coalesce(detected_criteria, type, "Event")
+		opid != null and to_string(opid) !~= "^\s*$", "Audit",
+		alert_id != null and to_string(alert_id) !~= "^\s*$", "Alert",
+		event_id != null and to_string(event_id) !~= "^\s*$", coalesce(detected_criteria, type, "Event")
 	),
 	xdm.event.original_event_type = to_string(event_code),
 	xdm.event.id = coalesce(to_string(event_id), to_string(opid)),
