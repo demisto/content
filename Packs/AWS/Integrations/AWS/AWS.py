@@ -1039,9 +1039,8 @@ class EC2:
         for arg, value in kwargs.items():
             if arg in attribute_boolean_value_fields:
                 kwargs[arg] = {"Value": argToBoolean(value)}
-            elif arg == "EnableLniAtDeviceIndex":
-                if value is not None or value != "":
-                    kwargs[arg] = int(value)
+            elif arg == "EnableLniAtDeviceIndex" and value is not None and value != "":
+                kwargs[arg] = int(value)
 
         try:
             response = client.modify_subnet_attribute(**kwargs)
@@ -1375,7 +1374,7 @@ class RDS:
                     "EventCategoriesList",
                     "Enabled",
                     "EventSubscriptionArn",
-                    "SourceIdsList"
+                    "SourceIdsList",
                 ]
 
                 return CommandResults(
