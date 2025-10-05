@@ -43,7 +43,7 @@ Gets DNS configuration audit events from Vercara UltraDNS.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| should_push_events | If true, the command will create events, otherwise it will only display them. Possible values are: true, false. Default is false. | Required |
+| should_push_events | If true, the command creates events; otherwise, it only displays them. Possible values are true and false. The default value is false. | Required |
 | limit | Maximum number of events to return. Default is 50, maximum is 2,500. | Optional |
 | start_time | Start time for event collection. Supports ISO format ("2023-01-01T00:00:00") or natural language ("7 days ago", "yesterday", "1 week ago"). | Required |
 | end_time | End time for event collection. Supports ISO format ("2023-01-01T23:59:59") or natural language ("2 hours ago", "now"). Default is now if not provided. | Optional |

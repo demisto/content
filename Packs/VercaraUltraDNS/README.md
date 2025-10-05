@@ -4,7 +4,7 @@ For more information about Vercara UltraDNS, visit: https://vercara.digicert.com
 
 ## What does this pack do?
 
-This pack includes the Vercara UltraDNS integration that provides:
+This pack includes the Vercara UltraDNS integration that:
 
 - Collects DNS configuration audit logs from Vercara UltraDNS platform
 - Monitors DNS record changes including creation, modification, and deletion events
