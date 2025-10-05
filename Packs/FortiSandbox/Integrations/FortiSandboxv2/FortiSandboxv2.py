@@ -558,8 +558,7 @@ def is_url(data: dict[str, Any]) -> bool:
 
     The function checks multiple indicators:
     1. If the "ftype" field equals "WEBLink".
-    2. If the "name" field starts with "http://" or "https://".
-    3. If the "download_url" field (base64 encoded) decodes to a valid HTTP/HTTPS URL.
+    2. If the "name" field matches the urlRegex.
 
     Args:
         data (dict): The JSON object parsed into a Python dictionary.
@@ -573,16 +572,8 @@ def is_url(data: dict[str, Any]) -> bool:
 
     # Check name
     name = data.get("name", "").strip()
-    if re.match(r"^https?://", name):
+    if re.match(urlRegex, name):
         return True
-
-    # Check download_url
-    try:
-        decoded = base64.b64decode(data.get("download_url", "")).decode()
-        if re.match(r"^https?://", decoded):
-            return True
-    except Exception:
-        pass
 
     return False
 
@@ -673,7 +664,11 @@ def build_indicator(
             sha1=data.get("sha1"),
             **{hash_type: entity},
         )
-
+    else:
+        raise DemistoException(
+            "Could not determine indicator type. "
+            "Either 'url', 'file_hash', or a valid 'req_type' in the detail_url must be provided."
+        )
     indicator.relationships = [
         build_relationship(
             entity_type=entity_type,
