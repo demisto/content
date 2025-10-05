@@ -13,6 +13,8 @@ This integration was integrated and tested with version 3 of SailPoint API.
 | Trust any certificate (not secure) | False |
 | Use system proxy settings | False |
 
+Note: The `Minutes to look back when fetching` parameter is recommended when missing events due to API indexing delay. It should be increased with caution, since in cases of dense events within a minute, increasing the lookback for several minutes can affect performance.
+
 Note: After generating client credentials, it is required to allow the following scopes: sp, search, read.
 
 ## Commands

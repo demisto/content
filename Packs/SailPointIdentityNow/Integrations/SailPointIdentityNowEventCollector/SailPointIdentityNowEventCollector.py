@@ -180,8 +180,8 @@ def fetch_events(client: Client, limit: int, look_back: int, last_run: dict) -> 
     if "prev_date" in last_run:
         # Use prev_date from last run and apply lookback
         prev_date = dateparser.parse(last_run["prev_date"], settings={"TIMEZONE": "UTC", "RETURN_AS_TIMEZONE_AWARE": True})
-        fetch_start = prev_date - timedelta(minutes=look_back)
-        last_fetched_creation_date = fetch_start.strftime(DATE_FORMAT)
+        fetch_start = prev_date - timedelta(minutes=look_back)  # type: ignore[operator]
+        last_fetched_creation_date = fetch_start.strftime(DATE_FORMAT)  # type: ignore[union-attr]
         demisto.debug(
             f"Using prev_date '{last_run['prev_date']}' with {look_back} min lookback → "
             f"fetch from '{last_fetched_creation_date}'"
@@ -272,7 +272,7 @@ def _fetch_events_batch(
             should_break_after_processing = False
 
         events_before_dedup = len(events)
-        events = dedup_events(events, dedup_cache.keys(), prev_date)
+        events = dedup_events(events, list(dedup_cache.keys()), prev_date)
         demisto.debug(f"After dedup: {events_before_dedup} -> {len(events)} events.")
 
         if events:
@@ -427,7 +427,7 @@ def filter_id_timestamps_by_lookback_window(id_timestamps: dict, current_date: s
     retention_minutes = look_back + 1 if look_back > 0 else look_back
     lookback_cutoff = current_datetime - timedelta(minutes=retention_minutes)  # type: ignore
 
-    demisto.debug(f"Lookback window: from {current_datetime.strftime(DATE_FORMAT)} to {lookback_cutoff.strftime(DATE_FORMAT)}")
+    demisto.debug(f"Lookback window: from {current_datetime.strftime(DATE_FORMAT)} to {lookback_cutoff.strftime(DATE_FORMAT)}")  # type: ignore[union-attr]
 
     filtered_id_timestamps = {}
     removed_count = 0
