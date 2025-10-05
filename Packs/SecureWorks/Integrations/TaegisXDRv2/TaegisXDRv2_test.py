@@ -20,6 +20,7 @@ from TaegisXDRv2 import (
     isolate_asset_command,
     create_investigation_command,
     update_investigation_command,
+    close_investigation_command,
     archive_investigation_command,
     unarchive_investigation_command,
     update_alert_status_command,
@@ -471,6 +472,45 @@ def test_update_investigation(requests_mock):
     with pytest.raises(ValueError, match="Failed to locate/update investigation"):
         assert update_investigation_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
 
+def test_close_investigation(requests_mock):
+    """Tests taegis-close-investigation command function"""
+    client = mock_client(requests_mock, CLOSE_INVESTIGATION_RESPONSE)
+    args = {}
+
+    # id not set
+    with pytest.raises(ValueError, match="Cannot fetch investigation without id defined"):
+        assert close_investigation_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
+
+    args["id"] = CLOSE_INVESTIGATION_RESPONSE["data"]["closeInvestigation"]["id"]
+
+    # Invalid investigation status
+    args["status"] = "BadStatus"
+    bad_status = r"The provided status, BadStatus, is not valid for updating an investigation. Supported Status Values:.*"
+    with pytest.raises(ValueError, match=bad_status):
+        assert close_investigation_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
+
+    # Empty Close Reason
+    args["closeReason"]=""
+    empty_closreason:str=r"Close Reason cannot be empty , please provide a proper detailed close reason. "
+    with pytest.raises(ValueError, match=empty_closreason):
+        assert close_investigation_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
+
+    # Successful Closure
+    args = {
+        "id": CLOSE_INVESTIGATION_RESPONSE["data"]["closeInvestigation"]["id"],
+        "title": "Test Investigation Closed",
+        "priority": 2,
+        "status": "CLOSED_THREAT_MITIGATED",
+        "alertResolutionStatus":"TRUE_POSITIVE_BENIGN",
+        "reason":"The detected insure configuration got hardened!"
+    }
+    response = close_investigation_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
+    assert response.outputs["id"] == args["id"]
+
+    # Investigation update failure
+    client = mock_client(requests_mock, FETCH_COMMENTS_BAD_RESPONSE)
+    with pytest.raises(ValueError, match="Failed to locate/update investigation"):
+        assert update_investigation_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
 
 def test_archive_investigation(requests_mock):
     """Tests taegis-archive-investigation command function"""
