@@ -62,14 +62,15 @@ configuration:
   section: Collect
   advanced: true
 - display: Tags
-  name: feed_tags
-  additionalinfo: Comma separated list of tags to add to the fetched indicators
+  name: feedTags
+  additionalinfo: Supports CSV values.
   type: 0
   required: false
   section: Collect
   advanced: true
-- display: Traffic Light Protocol Color (TLP). Indicator's TLP will override default value.
+- display: Traffic Light Protocol Color (TLP).
   name: tlp_color
+  additionalinfo: The Traffic Light Protocol (TLP) designation is to apply to indicators fetched from the feed.
   type: 15
   options:
   - RED
@@ -83,13 +84,13 @@ configuration:
 - display: Indicator Reputation
   name: feedReputation
   additionalinfo: Indicators from this integration instance will be marked with this reputation
-  type: 15
+  type: 18
   options:
-  - Unknown
-  - Benign
-  - Suspicious
-  - Malicious
-  defaultvalue: Malicious
+  - "None"
+  - "Good"
+  - "Suspicious"
+  - "Bad"
+  defaultvalue: "Bad"
   required: true
   section: Collect
   advanced: true
