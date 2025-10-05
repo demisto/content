@@ -20,7 +20,7 @@ configuration:
   - E - Unreliable
   - F - Reliability cannot be judged
   defaultvalue: A++ - Reputation script
-  required: false
+  required: true
   section: Collect
   advanced: true
 - display: Create relationships
@@ -51,7 +51,7 @@ configuration:
   required: false
   section: Connect
   advanced: true
-description: Enrich indicators with Unit 42 threat intelligence data including verdicts, tags, and relationships.
+description: Enrich indicators with Unit 42 threat intelligence context including verdicts, threat object associations, and relationships.
 display: Unit 42 Intelligence
 name: Unit 42 Intelligence
 script:
@@ -62,7 +62,7 @@ script:
       required: true
       default: true
       isArray: true
-    description: Enrich an IP address with Unit 42 threat intelligence.
+    description: Enrich an IP address with Unit 42 threat intelligence context.
     name: ip
     outputs:
     - contextPath: IP.Address
@@ -121,7 +121,7 @@ script:
       name: domain
       required: true
       isArray: true
-    description: Enrich a domain with Unit 42 threat intelligence.
+    description: Enrich a domain with Unit 42 threat intelligence context.
     name: domain
     outputs:
     - contextPath: Domain.Name
@@ -180,7 +180,7 @@ script:
       name: url
       required: true
       isArray: true
-    description: Enrich a URL with Unit 42 threat intelligence.
+    description: Enrich a URL with Unit 42 threat intelligence context.
     name: url
     outputs:
     - contextPath: URL.Data
@@ -239,7 +239,7 @@ script:
       name: file
       required: true
       isArray: true
-    description: Enrich a file hash with Unit 42 threat intelligence.
+    description: Enrich a file hash with Unit 42 threat intelligence context.
     name: file
     outputs:
     - contextPath: File.MD5
@@ -306,4 +306,4 @@ script:
   type: python
 tests:
 - Unit 42 Intelligence Test
-fromversion: 6.0.0
+fromversion: 6.10.0

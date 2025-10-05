@@ -7,7 +7,8 @@ requests.packages.urllib3.disable_warnings()
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 INTEGRATION_NAME = "Unit 42 Feed"
-LIMIT = 5000
+API_LIMIT = 5000
+TOTAL_INDICATOR_LIMIT = 200000
 
 # API endpoints
 BASE_URL = "https://prod-us.tas.crtx.paloaltonetworks.com"
@@ -69,7 +70,7 @@ class Client(BaseClient):
     def get_indicators(
         self,
         indicator_types: list | None = None,
-        limit: int = LIMIT,
+        limit: int = API_LIMIT,
         start_time: str | None = None,
         next_page_token: str | None = None,
     ) -> dict:
@@ -86,7 +87,7 @@ class Client(BaseClient):
         """
         params: dict[str, Any] = {}
         if indicator_types:
-            params["indicator_type"] = ",".join(indicator_types).lower().replace("file", "filehash_sha256")
+            params["indicator_type"] = [i.lower().replace("file", "filehash_sha256") for i in indicator_types]
         if limit:
             params["limit"] = limit
         if start_time:
@@ -98,7 +99,7 @@ class Client(BaseClient):
 
         return response
 
-    def get_threat_objects(self, limit: int = LIMIT, next_page_token: str | None = None) -> dict:
+    def get_threat_objects(self, limit: int = API_LIMIT, next_page_token: str | None = None) -> dict:
         """Get threat objects from the Unit 42 feed.
 
         Args:
@@ -590,7 +591,7 @@ def map_indicator(indicator_data: dict, feed_tags: list = [], tlp_color: str | N
         "updateddate": indicator_data.get("updated_at"),
         "creationdate": indicator_data.get("first_seen"),
         "reportedby": indicator_data.get("source"),
-        "tags": feed_tags + tags,
+        "tags": list(set(feed_tags + tags)),
         "tlp_color": tlp_color,
     }
     if xsoar_indicator_type == FeedIndicatorType.File:
@@ -762,7 +763,7 @@ def fetch_indicators(client: Client, params: dict, current_time: datetime) -> li
     last_run = demisto.getLastRun() or {}
     start_time = last_run.get("last_successful_run", default_start)
 
-    feed_tags = argToList(params.get("feedTags", []))
+    feed_tags = argToList(params.get("feed_tags", []))
     tlp_color = params.get("tlp_color")
 
     if "Indicators" in feed_types:
@@ -778,7 +779,10 @@ def fetch_indicators(client: Client, params: dict, current_time: datetime) -> li
                 # Handle pagination if needed
                 metadata = response.get("metadata", {})
                 next_page_token = metadata.get("next_page_token") if isinstance(metadata, dict) else None
-                while next_page_token:
+                
+                # Keep track of total indicator count (starts at API_LIMIT because one call already completed)
+                indicator_count = API_LIMIT
+                while next_page_token and indicator_count < TOTAL_INDICATOR_LIMIT:
                     # Get next page of indicators
                     response = client.get_indicators(
                         indicator_types=indicator_types, start_time=start_time, next_page_token=next_page_token
@@ -789,6 +793,8 @@ def fetch_indicators(client: Client, params: dict, current_time: datetime) -> li
                             indicators.extend(parse_indicators(data, feed_tags, tlp_color))
                         metadata = response.get("metadata", {})
                         next_page_token = metadata.get("next_page_token") if isinstance(metadata, dict) else None
+                        # increment indicator_count by max number of objects fetches in single call
+                        indicator_count += API_LIMIT
                     else:
                         break
 

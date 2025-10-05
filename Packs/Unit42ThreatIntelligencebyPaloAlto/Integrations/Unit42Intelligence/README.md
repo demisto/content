@@ -1,13 +1,13 @@
-Enrich indicators with Unit 42 threat intelligence data including verdicts, tags, and relationships.
+Enrich indicators with Unit 42 threat intelligence context including verdicts, threat object associations, and relationships.
 
 ## Configure Unit 42 Intelligence in Cortex
 
+
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Server URL | The base URL for the Unit 42 Intelligence API | True |
-| Source Reliability | Reliability of the source providing the intelligence data. | False |
+| Source Reliability | Reliability of the source providing the intelligence data. | True |
 | Create relationships | Create relationships between indicators and threat objects | False |
-| Create indicators from relationships | Whether to create indicators from relationships, When selected, the relationships will be created as indicators | False |
+| Create threat objects as separate indicators | Whether to create threat objects \(malware families, actors, campaigns, etc.\) as separate XSOAR indicators | False |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
 
@@ -19,7 +19,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### ip
 
 ***
-Enrich an IP address with Unit 42 threat intelligence.
+Enrich an IP address with Unit 42 threat intelligence context.
 
 #### Base Command
 
@@ -97,7 +97,7 @@ Enrich an IP address with Unit 42 threat intelligence.
 ### domain
 
 ***
-Enrich a domain with Unit 42 threat intelligence.
+Enrich a domain with Unit 42 threat intelligence context.
 
 #### Base Command
 
@@ -107,7 +107,7 @@ Enrich a domain with Unit 42 threat intelligence.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| domain | Domain to enrich. | Required |
+| domain | Domain to enrich. | Required | 
 
 #### Context Output
 
@@ -166,7 +166,7 @@ Enrich a domain with Unit 42 threat intelligence.
 ### url
 
 ***
-Enrich a URL with Unit 42 threat intelligence.
+Enrich a URL with Unit 42 threat intelligence context.
 
 #### Base Command
 
@@ -244,7 +244,7 @@ Enrich a URL with Unit 42 threat intelligence.
 ### file
 
 ***
-Enrich a file hash with Unit 42 threat intelligence.
+Enrich a file hash with Unit 42 threat intelligence context.
 
 #### Base Command
 

@@ -9,7 +9,7 @@ configuration:
 - display: Fetch indicators
   name: feed
   type: 8
-  required: false
+  required: true
   defaultvalue: 'true'
   section: Collect
 - display: Feed Types
@@ -47,7 +47,7 @@ configuration:
 - display: Source Reliability
   additionalinfo: Reliability of the source providing the intelligence data
   name: feedReliability
-  type: 15  
+  type: 15
   options:
   - A++ - Reputation script
   - A+ - 3rd party enrichment
@@ -58,6 +58,13 @@ configuration:
   - E - Unreliable
   - F - Reliability cannot be judged
   defaultvalue: A++ - Reputation script
+  required: true
+  section: Collect
+  advanced: true
+- display: Tags
+  name: feed_tags
+  additionalinfo: Comma separated list of tags to add to the fetched indicators
+  type: 0
   required: false
   section: Collect
   advanced: true
@@ -75,6 +82,7 @@ configuration:
   advanced: true
 - display: Indicator Reputation
   name: feedReputation
+  additionalinfo: Indicators from this integration instance will be marked with this reputation
   type: 15
   options:
   - Unknown
@@ -82,7 +90,7 @@ configuration:
   - Suspicious
   - Malicious
   defaultvalue: Malicious
-  required: false
+  required: true
   section: Collect
   advanced: true
 - display: Indicator Expiration Method
@@ -94,7 +102,7 @@ configuration:
   - Never Expired
   - When removed from the Feed
   defaultvalue: Indicator Type
-  required: false
+  required: true
   section: Collect
   advanced: true
 - display: Indicator Expiration Interval
@@ -107,7 +115,7 @@ configuration:
 - display: Create relationships
   name: create_relationships
   type: 8
-  defaultvalue: true
+  defaultvalue: 'true'
   required: false
   section: Collect
   advanced: true
@@ -123,7 +131,7 @@ configuration:
 - display: Bypass exclusion list
   name: feedBypassExclusionList
   additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
-  defaultvalue: ""
+  defaultvalue: 'false'
   type: 8
   required: false
   section: Collect
@@ -174,6 +182,6 @@ script:
   script: '-'
   type: python
   subtype: python3
-fromversion: 6.0.0
+fromversion: 6.10.0
 tests:
 - No tests (auto formatted)
