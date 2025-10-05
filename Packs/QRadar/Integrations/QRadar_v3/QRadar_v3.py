@@ -2138,7 +2138,8 @@ def is_reset_triggered(ctx: dict | None = None, version: Any = None) -> bool:
     if not ctx or not version:
         ctx, version = get_integration_context_with_version()
 
-    if ctx and RESET_KEY in ctx:
+    # RESET_KEY must be True if 'qradar-reset-last-run' command was called
+    if ctx and ctx.get(RESET_KEY) is True:
         print_debug_msg("Reset fetch-incidents.")
         demisto.setLastRun({LAST_FETCH_KEY: 0})
 
@@ -4048,9 +4049,8 @@ def qradar_reset_last_run_command() -> str:
     Returns:
         (str): 'fetch-incidents was reset successfully'.
     """
-    # Instead of reading the entire context and writing it back,
-    # build a small dict with only the `reset` key set.
-    partial_changes = {RESET_KEY: True}
+    # Set RESET_KEY to True to identify whether reset was triggered during long running command execution
+    partial_changes = {RESET_KEY: True}  
     safely_update_context_data_partial(partial_changes)
 
     return "fetch-incidents was reset successfully."
