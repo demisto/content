@@ -2633,6 +2633,7 @@ def test_handle_azure_error_permission_error_multiple_permissions(mocker, client
     ]
     mock_return_multiple_permissions_error.assert_called_once_with(expected_error_entries)
 
+
 def test_storage_blob_service_properties_get_command(mocker):
     """
     Given: An Azure client mock and the get_blob_service_properties.json file.
