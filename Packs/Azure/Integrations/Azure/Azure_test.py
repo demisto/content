@@ -26,6 +26,7 @@ from Azure import (
     get_azure_client,
     remove_member_from_role,
     postgres_server_update_command,
+    extract_azure_resource_info,
     WEBAPP_API_VERSION,
     FLEXIBLE_API_VERSION,
     CommandResults,
@@ -2626,3 +2627,154 @@ def test_handle_azure_error_permission_error_multiple_permissions(mocker, client
         }
     ]
     mock_return_multiple_permissions_error.assert_called_once_with(expected_error_entries)
+
+
+def test_storage_blob_service_properties_get_command(mocker):
+    """
+    Given: An Azure client mock and the get_blob_service_properties.json file.
+    When: storage_blob_service_properties_get_command is called.
+    Then:
+        1. It should call client.storage_blob_service_properties_get_request with correct parameters.
+        2. It should extract subscription_id, resource_group, and account_name from the response ID.
+        3. The CommandResults should have correct outputs, readable_output, and metadata.
+    """
+    from Azure import storage_blob_service_properties_get_command
+
+    mock_response = util_load_json("test_data/get_blob_service_properties.json")
+
+    mock_client = mocker.Mock()
+    mock_client.storage_blob_service_properties_get_request.return_value = mock_response
+
+    params = {"subscription_id": "subid", "resource_group_name": "rg1"}
+    args = {"account_name": "teststorage"}
+
+    result: CommandResults = storage_blob_service_properties_get_command(mock_client, params, args)
+
+    mock_client.storage_blob_service_properties_get_request.assert_called_once_with(
+        account_name="teststorage", resource_group_name="rg1", subscription_id="subid"
+    )
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "Azure.StorageBlobServiceProperties"
+    assert result.outputs_key_field == "id"
+    assert result.outputs == mock_response
+    assert result.raw_response == mock_response
+
+    assert "Azure Storage Blob Service Properties" in result.readable_output
+    assert "default" in result.readable_output
+    assert "sto8607" in result.readable_output
+    assert "subscription-id" in result.readable_output
+    assert "res4410" in result.readable_output
+    assert "true" in result.readable_output.lower()
+
+    expected_headers = [
+        "Name",
+        "Account Name",
+        "Subscription ID",
+        "Resource Group",
+        "Change Feed",
+        "Delete Retention Policy",
+        "Versioning",
+    ]
+    for header in expected_headers:
+        assert header in result.readable_output
+
+
+def test_storage_blob_containers_update_command(mocker):
+    """
+    Given: An Azure client mock and the update_blob_container.json file.
+    When: storage_blob_containers_update_command is called.
+    Then:
+        1. It should call client.storage_blob_containers_create_update_request with correct parameters and PATCH method.
+        2. It should extract subscription_id, resource_group, and account_name from the response ID.
+        3. The CommandResults should have correct outputs, readable_output, and metadata.
+    """
+    from Azure import storage_blob_containers_update_command
+
+    mock_response = util_load_json("test_data/update_blob_container.json")
+
+    mock_client = mocker.Mock()
+    mock_client.storage_blob_containers_create_update_request.return_value = mock_response
+
+    params = {"subscription_id": "subid", "resource_group_name": "rg1"}
+    args = {"account_name": "teststorage", "container_name": "testcontainer"}
+
+    result: CommandResults = storage_blob_containers_update_command(mock_client, params, args)
+
+    mock_client.storage_blob_containers_create_update_request.assert_called_once_with(
+        subscription_id="subid", resource_group_name="rg1", args=args, method="PATCH"
+    )
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "Azure.StorageBlobContainer"
+    assert result.outputs_key_field == "id"
+    assert result.outputs == mock_response
+    assert result.raw_response == mock_response
+
+    assert "Azure Storage Blob Containers Properties" in result.readable_output
+    assert "container6185" in result.readable_output
+    assert "sto328" in result.readable_output
+    assert "subscription-id" in result.readable_output
+    assert "res3376" in result.readable_output
+    assert "Container" in result.readable_output
+
+    expected_headers = ["Name", "Account Name", "Subscription ID", "Resource Group", "Public Access"]
+    for header in expected_headers:
+        assert header in result.readable_output
+
+
+def test_extract_azure_resource_info():
+    """
+    Given: Various Azure resource ID formats.
+    When: The extract_azure_resource_info function is called.
+    Then: The function should correctly extract subscription_id, resource_group, and account_name components.
+    """
+
+    # Test case 1: Complete Azure storage blob service resource ID
+    resource_id = "/subscriptions/12345678-1234-1234-1234-123456789012/resourceGroups/test-rg/providers/Microsoft.Storage/storageAccounts/teststorage/blobServices/default"  # noqa: E501
+    subscription_id, resource_group, account_name = extract_azure_resource_info(resource_id)
+    assert subscription_id == "12345678-1234-1234-1234-123456789012"
+    assert resource_group == "test-rg"
+    assert account_name == "teststorage"
+
+    # Test case 2: Partial resource ID (only subscription and resource group)
+    resource_id = "/subscriptions/12345678-1234-1234-1234-123456789012/resourceGroups/test-rg/providers/Microsoft.Compute/virtualMachines/test-vm"  # noqa: E501
+    subscription_id, resource_group, account_name = extract_azure_resource_info(resource_id)
+    assert subscription_id == "12345678-1234-1234-1234-123456789012"
+    assert resource_group == "test-rg"
+    assert account_name is None
+
+    # Test case 3: Empty string
+    resource_id = ""
+    subscription_id, resource_group, account_name = extract_azure_resource_info(resource_id)
+    assert subscription_id is None
+    assert resource_group is None
+    assert account_name is None
+
+    # Test case 4: Invalid format
+    resource_id = "invalid-resource-id-format"
+    subscription_id, resource_group, account_name = extract_azure_resource_info(resource_id)
+    assert subscription_id is None
+    assert resource_group is None
+    assert account_name is None
+
+    # Test case 5: Only subscription information
+    resource_id = "/subscriptions/12345678-1234-1234-1234-123456789012/resourceGroups"
+    subscription_id, resource_group, account_name = extract_azure_resource_info(resource_id)
+    assert subscription_id == "12345678-1234-1234-1234-123456789012"
+    assert resource_group is None
+    assert account_name is None
+
+    # Test case 6: Complex names with hyphens and underscores
+    resource_id = "/subscriptions/abcd-efgh-1234-5678-ijkl/resourceGroups/my-resource-group_v2/providers/Microsoft.Storage/storageAccounts/my_storage_account123/blobServices/default"  # noqa: E501
+    subscription_id, resource_group, account_name = extract_azure_resource_info(resource_id)
+    assert subscription_id == "abcd-efgh-1234-5678-ijkl"
+    assert resource_group == "my-resource-group_v2"
+    assert account_name == "my_storage_account123"
+
+    # Test case 7: Storage account without blob services suffix
+    resource_id = "/subscriptions/12345678-1234-1234-1234-123456789012/resourceGroups/test-rg/providers/Microsoft.Storage/storageAccounts/teststorage"  # noqa: E501
+    subscription_id, resource_group, account_name = extract_azure_resource_info(resource_id)
+    assert subscription_id == "12345678-1234-1234-1234-123456789012"
+    assert resource_group == "test-rg"
+    assert account_name is None

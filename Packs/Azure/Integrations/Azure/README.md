@@ -1067,3 +1067,65 @@ Gets public IP addresses in a resource group.
 | Azure.NSGPublicIPAddress.properties.resourceGuid | String | The public IP address's resource GUID. |
 | Azure.NSGPublicIPAddress.sku.name | String | The public IP address's SKU name. |
 | Azure.NSGPublicIPAddress.sku.tier | String | The public IP address's SKU tier. |
+
+### azure-storage-blob-containers-update
+
+***
+Run this command to update a specific blob container.
+
+#### Base Command
+
+`azure-storage-blob-containers-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID. | Required |
+| resource_group_name | The resource group name. | Required |
+| account_name | The storage account name. | Required |
+| container_name | The container name. | Required |
+| default_encryption_scope | Default the container to use specified encryption scope for all writes. | Optional |
+| deny_encryption_scope_override | Block override of encryption scope from the container default. Possible values are: true, false. | Optional |
+| public_access | Specifies the level of access. Possible values are: Blob, Container, None. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.StorageBlobContainer.id | String | Fully qualified resource ID for the resource. |
+| Azure.StorageBlobContainer.name | String | The resource name. |
+| Azure.StorageBlobContainer.type | String | The resource type. |
+| Azure.StorageBlobContainer.properties.metadata.metadata | String | A metadata entry for the container, in name–value format. |
+| Azure.StorageBlobContainer.properties.publicAccess | String | Specifies whether data in the container may be accessed publicly and the access level. |
+| Azure.StorageBlobContainer.properties.hasImmutabilityPolicy | Boolean | The hasImmutabilityPolicy property is set to true by SRP if an ImmutabilityPolicy exists for this container, and false if it does not. |
+| Azure.StorageBlobContainer.properties.hasLegalHold | Boolean | The hasLegalHold property is set to true by SRP if at least one legal hold tag exists, and false if all tags are cleared. |
+
+### azure-storage-blob-service-properties-get
+
+***
+Run this command to get the blob service properties of a specific account storage.
+
+#### Base Command
+
+`azure-storage-blob-service-properties-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID. | Required |
+| resource_group_name | The resource group name. | Required |
+| account_name | The storage account name. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.StorageBlobServiceProperties.id | String | Fully qualified resource ID for the resource. |
+| Azure.StorageBlobServiceProperties.name | String | The resource name. |
+| Azure.StorageBlobServiceProperties.type | String | The resource type. |
+| Azure.StorageBlobServiceProperties.properties.lastAccessTimeTrackingPolicy.enable | Boolean | When set to true, last access time based tracking is enabled. |
+| Azure.StorageBlobServiceProperties.properties.lastAccessTimeTrackingPolicy.name | String | Name of the policy. The valid value is AccessTimeTracking. |
+| Azure.StorageBlobServiceProperties.properties.lastAccessTimeTrackingPolicy.trackingGranularityInDays | Number | Specifies the blob object tracking granularity in days, indicating how often the blob should be tracked. |
+| Azure.StorageBlobServiceProperties.properties.lastAccessTimeTrackingPolicy.blobType | String | An array of predefined, supported blob types. The only supported value is BlockBlob. |

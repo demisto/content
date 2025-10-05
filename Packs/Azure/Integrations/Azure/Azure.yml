@@ -141,16 +141,16 @@ script:
       description: The protocol, which can be "TCP", "UDP", "ICMP", or "*".
       type: String
     - contextPath: Azure.NSGRule.sourcePortRange
-      description: For a single port, the source port or a range of ports. Note that for multiple ports, `sourcePortRanges` will appear instead.
+      description: For a single port, the source port or a range of ports.
       type: String
     - contextPath: Azure.NSGRule.sourcePortRanges
-      description: For multiple ports, a list of these ports. Note that for single ports, `sourcePortRange` will appear instead.
+      description: For multiple ports, a list of these ports.
       type: String
     - contextPath: Azure.NSGRule.destinationPortRange
-      description: For a single port, the destination port or range of ports. Note that for multiple ports, `destinationPortRanges` will appear instead.
+      description: For a single port, the destination port or range of ports.
       type: String
     - contextPath: Azure.NSGRule.destinationPortRanges
-      description: For multiple ports, a list of destination ports. Note that for single ports, `destinationPortRange` will appear instead.
+      description: For multiple ports, a list of destination ports.
       type: String
     - contextPath: Azure.NSGRule.sourceAddressPrefix
       description: The source address.
@@ -450,6 +450,92 @@ script:
     - contextPath: Azure.StorageAccountBlobServiceProperties.sku.tier
       description: The SKU tier.
       type: String
+  - description: Run this command to get the blob service properties of a specific account storage.
+    name: azure-storage-blob-service-properties-get
+    outputs:
+      - contextPath: Azure.StorageBlobServiceProperties.id
+        description: Fully qualified resource ID for the resource.
+        type: String
+      - contextPath: Azure.StorageBlobServiceProperties.name
+        description: The name of the resource.
+        type: String
+      - contextPath: Azure.StorageBlobServiceProperties.type
+        description: The resource type.
+        type: String
+      - contextPath: Azure.StorageBlobServiceProperties.properties.lastAccessTimeTrackingPolicy.enable
+        description: When set to true, last access time–based tracking is enabled.
+        type: Boolean
+      - contextPath: Azure.StorageBlobServiceProperties.properties.lastAccessTimeTrackingPolicy.name
+        description: Name of the policy. The valid value is AccessTimeTracking.
+        type: String
+      - contextPath: Azure.StorageBlobServiceProperties.properties.lastAccessTimeTrackingPolicy.trackingGranularityInDays
+        description: Specifies the blob object tracking granularity in days, indicating how often the blob should be tracked.
+        type: Number
+      - contextPath: Azure.StorageBlobServiceProperties.properties.lastAccessTimeTrackingPolicy.blobType
+        description: An array of predefined, supported blob types. The only supported value is BlockBlob.
+        type: String
+    arguments:
+      - description: The subscription ID.
+        name: subscription_id
+        required: true
+      - description: The resource group name.
+        name: resource_group_name
+        required: true
+      - description: The storage account name.
+        name: account_name
+        required: true
+  - description: Run this command to update a specific blob container.
+    name: azure-storage-blob-containers-update
+    outputs:
+      - contextPath: Azure.StorageBlobContainer.id
+        description: Fully qualified resource ID for the resource.
+        type: String
+      - contextPath: Azure.StorageBlobContainer.name
+        description: The name of the resource.
+        type: String
+      - contextPath: Azure.StorageBlobContainer.type
+        description: The resource type.
+        type: String
+      - contextPath: Azure.StorageBlobContainer.properties.metadata.metadata
+        description: A metadata entry for the container, in name–value format.
+        type: String
+      - contextPath: Azure.StorageBlobContainer.properties.publicAccess
+        description: Specifies whether data in the container may be accessed publicly and the access level.
+        type: String
+      - contextPath: Azure.StorageBlobContainer.properties.hasImmutabilityPolicy
+        description: The hasImmutabilityPolicy property is set to true by SRP if an ImmutabilityPolicy exists for this container, and false if it does not.
+        type: Boolean
+      - contextPath: Azure.StorageBlobContainer.properties.hasLegalHold
+        description: The hasLegalHold property is set to true by SRP if at least one legal hold tag exists, and false if all tags are cleared.
+        type: Boolean
+    arguments:
+      - description: "The subscription ID."
+        name: subscription_id
+        required: true
+      - description: "The resource group name."
+        name: resource_group_name
+        required: true
+      - description: The storage account name.
+        name: account_name
+        required: true
+      - description: The container name.
+        name: container_name
+        required: true
+      - description: Uses the specified encryption scope by default for all writes to the container.
+        name: default_encryption_scope
+      - auto: PREDEFINED
+        description: "Blocks overriding the container’s default encryption scope. Possible values: true, false."
+        name: deny_encryption_scope_override
+        predefined:
+          - 'true'
+          - 'false'
+      - auto: PREDEFINED
+        description: "Specifies the access level. Possible values: Blob, Container, None."
+        name: public_access
+        predefined:
+          - Blob
+          - Container
+          - None
   - arguments:
     - name: name
       required: true
@@ -2171,7 +2257,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/crypto:1.0.0.4578119
+  dockerimage: demisto/crypto:1.0.0.4834757
 fromversion: 8.11.0
 isCloudProviderIntegration: true
 tests:
