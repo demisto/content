@@ -15,7 +15,7 @@ import requests
 
 # Disable insecure warnings
 import urllib3
-from gql import Client, gql
+from gql import Client, gql, GraphQLRequest
 from gql.transport.requests import RequestsHTTPTransport
 
 urllib3.disable_warnings()
@@ -7231,7 +7231,9 @@ def list_identity_entities_command(args: dict) -> CommandResults:
         while has_next_page and page:
             if next_token:
                 variables["after"] = next_token
-            res = client.execute(idp_query, variable_values=variables)
+            idp_query.variable_values = variables
+            req = GraphQLRequest(idp_query)
+            res = client.execute(req)
             res_ls.append(res)
             page -= 1
             pageInfo = res.get("entities", {}).get("pageInfo", {})
@@ -7245,7 +7247,9 @@ def list_identity_entities_command(args: dict) -> CommandResults:
             variables["first"] = min(1000, limit)
             if next_token:
                 variables["after"] = next_token
-            res = client.execute(idp_query, variable_values=variables)
+            idp_query.variable_values = variables
+            req = GraphQLRequest(idp_query)
+            res = client.execute(req)
             res_ls.append(res)
             pageInfo = res.get("entities", {}).get("pageInfo", {})
             has_next_page = pageInfo.get("hasNextPage", False)
@@ -7253,6 +7257,7 @@ def list_identity_entities_command(args: dict) -> CommandResults:
             if has_next_page:
                 next_token = pageInfo.get("endCursor", "")
             limit -= 1000
+
     headers = [
         "primaryDisplayName",
         "secondaryDisplayName",
@@ -7293,7 +7298,7 @@ def create_gql_client(url_suffix="identity-protection/combined/graphql/v1"):
     transport = RequestsHTTPTransport(**kwargs)  # type: ignore[arg-type]
     client = Client(
         transport=transport,
-        fetch_schema_from_transport=True,
+        fetch_schema_from_transport=False,
     )
     return client
 
