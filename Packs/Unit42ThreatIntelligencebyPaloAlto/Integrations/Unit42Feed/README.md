@@ -1,5 +1,4 @@
 Unit 42 Feed integration provides threat intelligence from Palo Alto Networks Unit 42 research team.
-This integration was integrated and tested with version xx of Unit 42 Feed.
 
 ## Configure Unit 42 Feed in Cortex
 

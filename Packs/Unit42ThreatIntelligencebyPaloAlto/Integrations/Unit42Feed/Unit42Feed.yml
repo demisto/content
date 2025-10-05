@@ -9,7 +9,6 @@ configuration:
 - display: Fetch indicators
   name: feed
   type: 8
-  required: true
   defaultvalue: 'true'
   section: Collect
 - display: Feed Types
@@ -94,9 +93,9 @@ configuration:
   required: true
   section: Collect
   advanced: true
-- display: Indicator Expiration Method
+- display: ""
   name: feedExpirationPolicy
-  type: 15
+  type: 17
   options:
   - Indicator Type
   - Time Interval
