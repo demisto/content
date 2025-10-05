@@ -156,12 +156,23 @@
                                 "startCol": 0
                             },
                             {
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "reportedby",
+								"height": 22,
+								"id": "3de7d2c0-94c0-11f0-b563-1f3868fa5824",
+								"index": 3,
+								"listId": "f6n7qgpsje-d48d2ff1-66e0-4ad8-8e41-6fa4efd4ce14-f6n7qgpsje-14a72590-b30c-11eb-941c-e725acf1fbbc",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+                            {
                                 "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "aliases",
                                 "height": 22,
                                 "id": "8a3ff980-b30c-11eb-941c-e725acf1fbbc",
-                                "index": 3,
+                                "index": 4,
                                 "listId": "f6n7qgpsje-14a72590-b30c-11eb-941c-e725acf1fbbc",
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -171,7 +182,7 @@
                                 "fieldId": "threatactortypes",
                                 "height": 22,
                                 "id": "86e47270-b30c-11eb-941c-e725acf1fbbc",
-                                "index": 4,
+                                "index": 5,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -181,7 +192,7 @@
                                 "fieldId": "goals",
                                 "height": 22,
                                 "id": "99762b90-b30c-11eb-941c-e725acf1fbbc",
-                                "index": 5,
+                                "index": 6,
                                 "listId": "f6n7qgpsje-14a72590-b30c-11eb-941c-e725acf1fbbc",
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -191,7 +202,7 @@
                                 "fieldId": "geocountry",
                                 "height": 22,
                                 "id": "8fc676e0-b30c-11eb-941c-e725acf1fbbc",
-                                "index": 6,
+                                "index": 7,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -201,7 +212,7 @@
                                 "fieldId": "primarymotivation",
                                 "height": 22,
                                 "id": "a9c21360-b30c-11eb-941c-e725acf1fbbc",
-                                "index": 7,
+                                "index": 8,
                                 "listId": "f6n7qgpsje-14a72590-b30c-11eb-941c-e725acf1fbbc",
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -212,7 +223,7 @@
                                 "fieldId": "secondarymotivations",
                                 "height": 22,
                                 "id": "ac046240-b30c-11eb-941c-e725acf1fbbc",
-                                "index": 8,
+                                "index": 9,
                                 "listId": "f6n7qgpsje-14a72590-b30c-11eb-941c-e725acf1fbbc",
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -222,7 +233,7 @@
                                 "fieldId": "sophistication",
                                 "height": 22,
                                 "id": "9f10a620-b30c-11eb-941c-e725acf1fbbc",
-                                "index": 9,
+                                "index": 10,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -231,16 +242,27 @@
                                 "fieldId": "resourcelevel",
                                 "height": 22,
                                 "id": "a6cec400-b30c-11eb-941c-e725acf1fbbc",
-                                "index": 10,
+                                "index": 11,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
+                            {
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "industrysectors",
+								"height": 22,
+								"id": "9eb5e473-9ebc-4bb1-b0af-5e3a9813670f",
+								"index": 12,
+								"listId": "f6n7qgpsje-14a72590-b30c-11eb-941c-e725acf1fbbc",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
                             {
                                 "endCol": 2,
                                 "fieldId": "tags",
                                 "height": 22,
                                 "id": "f72ca610-b30c-11eb-941c-e725acf1fbbc",
-                                "index": 11,
+                                "index": 13,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -255,7 +277,7 @@
                                 "fieldId": "",
                                 "height": 44,
                                 "id": "85698e10-b313-11eb-941c-e725acf1fbbc",
-                                "index": 12,
+                                "index": 14,
                                 "listId": "f6n7qgpsje-3eeb0060-b30c-11eb-941c-e725acf1fbbc",
                                 "name": "Add tags",
                                 "scriptId": "Builtin|||appendIndicatorField",
@@ -273,7 +295,7 @@
                                 "fieldId": "",
                                 "height": 44,
                                 "id": "8ad09c90-b313-11eb-941c-e725acf1fbbc",
-                                "index": 12,
+                                "index": 14,
                                 "listId": "f6n7qgpsje-3eeb0060-b30c-11eb-941c-e725acf1fbbc",
                                 "name": "Remove tags",
                                 "scriptId": "Builtin|||removeIndicatorField",
