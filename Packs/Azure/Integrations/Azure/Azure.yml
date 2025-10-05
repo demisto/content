@@ -1879,7 +1879,7 @@ script:
       - 'true'
       - 'false'
     description: "Assigns a system-assigned managed identity to the Web App. This allows the app to securely access other Azure services while removing the need to manage sensitive credentials and the risk of exposing them. 'This allows the app to securely access other Azure services while removing the need to manage sensitive credentials and the risk of exposing them. 'Microsoft.Web/sites/{app_name}/config/*' permission is required."
-    name: azure-webapp-update-quick-action
+    name: azure-webapp-assign-managed-identity-quick-action
     prettyname: Assign Managed Identity to Web App
     quickaction: true
     hidden: true
@@ -2770,7 +2770,7 @@ script:
       - 'true'
       - 'false'
       defaultvalue: 'false'
-    description: 
+    description: "Disables cross-tenant object replication for the storage account to prevent data from being copied to other tenants. 'Microsoft.Storage/storageAccounts/*' permission is required."
     name: azure-disable-storage-account-cross-tenant-replication-quick-action
     prettyname: Disable Storage Account Cross Tenant Replication
     quickaction: true
