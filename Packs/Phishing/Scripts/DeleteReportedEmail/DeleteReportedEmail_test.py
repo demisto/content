@@ -287,6 +287,14 @@ def test_search_args(mocker, brand):
         get_search_args({})
     assert "'Reported Email To' field could not be found" in str(e.value)
 
+    # Test multiple recipients
+    incident_info_copy = deepcopy(INCIDENT_INFO)
+    mocker.patch.object(demisto, "incident", return_value=incident_info_copy)
+    incident_info_copy["CustomFields"]["reportedemailto"] = "user1@user.com, user2@user.com"
+    with pytest.raises(ValueError) as e:
+        get_search_args({})
+    assert "Please make sure that there is only one 'Reported Email To' address." in str(e.value)
+
 
 def test_schedule_next_command(mocker):
     """
