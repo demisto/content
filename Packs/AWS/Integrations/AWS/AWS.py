@@ -1040,7 +1040,8 @@ class EC2:
             if arg in attribute_boolean_value_fields:
                 kwargs[arg] = {"Value": argToBoolean(value)}
             elif arg == "EnableLniAtDeviceIndex":
-                kwargs[arg] = int(value)
+                if value is not None or value != "":
+                    kwargs[arg] = int(value)
 
         try:
             response = client.modify_subnet_attribute(**kwargs)
