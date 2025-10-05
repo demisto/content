@@ -1016,21 +1016,26 @@ def create_message(
     if not html_body:
         # This is a simple text message - we cannot have CIDs here
         message = create_message_object(to, cc, bcc, subject, body, additional_headers, from_address, reply_to, importance)
+        demisto.debug(f"AAA_create_message: Created message: {message}")
 
         for attachment in attachments:
             if not attachment.get("cid"):
                 new_attachment = FileAttachment(name=attachment.get("name"), content=attachment.get("data"))
                 message.attach(new_attachment)
+                demisto.debug(f"AAA_create_message: Added attachment: {attachment}")
 
     else:
         html_attachments: list = []
+        demisto.debug(f"AAA_create_message: html_body before handle_html: {html_body}")
         if handle_inline_image:
             html_body, html_attachments = handle_html(html_body)
             attachments += html_attachments
+            demisto.debug(f"AAA_create_message: html_body after handle_html: {html_body}")
             demisto.debug(f"create_message: Processed HTML body with {len(attachments)} attachments")
         message = create_message_object(
             to, cc, bcc, subject, HTMLBody(html_body), additional_headers, from_address, reply_to, importance
         )
+        demisto.debug(f"AAA_create_message: Created message: {message}")
 
         for attachment in attachments:
             if not isinstance(attachment, FileAttachment):
@@ -1045,7 +1050,7 @@ def create_message(
                     )
 
             message.attach(attachment)
-
+    demisto.debug(f"AAA_create_message: Final message: {message=}")
     return message
 
 
@@ -1112,6 +1117,7 @@ def send_email(
     reply_to = argToList(replyTo)
     render_body = argToBoolean(renderBody)
     handle_inline_image = argToBoolean(handle_inline_image)
+    demisto.debug(f"AAA_send_email: Received to:{to} subject:{subject} body:{body} htmlBody:{htmlBody} raw_message:{raw_message}")
 
     # Basic validation - we allow pretty much everything but you have to have at least a recipient
     # We allow messages without subject and also without body
@@ -1128,6 +1134,7 @@ def send_email(
             reply_to=reply_to,
             importance=importance,
         )
+        demisto.debug(f"AAA_send_email: message:{message}")
 
     else:
         if additionalHeader:
@@ -1137,6 +1144,7 @@ def send_email(
         attachments = collect_attachments(attachIDs, attachCIDs, attachNames)
         attachments.extend(collect_manual_attachments(manualAttachObj))
         attachments.extend(handle_transient_files(transientFile, transientFileContent, transientFileCID))
+        demisto.debug(f"AAA_send_email: attachments:{attachments}")
 
         # update body and html_body with the templated params, if exists
         template_params = handle_template_params(templateParams)
@@ -1160,7 +1168,8 @@ def send_email(
             importance,
         )
 
-    client.send_email(message)
+    response = client.send_email(message)
+    demisto.debug(f"AAA_send_email: response:{response}")
 
     results = [CommandResults(entry_type=EntryType.NOTE, raw_response="Mail sent successfully")]
     if render_body:
