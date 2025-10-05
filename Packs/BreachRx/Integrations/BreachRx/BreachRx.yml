@@ -1,7 +1,4 @@
 category: Case Management
-sectionOrder:
-- Connect
-- Collect
 commonfields:
   id: BreachRx
   version: -1
@@ -122,3 +119,6 @@ script:
 fromversion: 6.2.0
 tests:
 - No tests (auto formatted)
+sectionOrder:
+- Connect
+- Collect
