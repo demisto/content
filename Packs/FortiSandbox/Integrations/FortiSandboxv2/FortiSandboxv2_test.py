@@ -7,7 +7,6 @@ import CommonServerPython
 import FortiSandboxv2
 import pytest
 from FortiSandboxv2 import is_url
-import base64
 
 TEST_DATA = "test_data"
 BASE_URL = "https://www.example.com"
@@ -895,7 +894,7 @@ def test_build_indicator_unknown_type():
         "score": 3,
         "malware_name": "test_malware",
         "detail_url": "https://example.com/detail?sid=123",
-        "category": "test_category"
+        "category": "test_category",
     }
 
     # The error message we expect to see

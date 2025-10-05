@@ -572,10 +572,7 @@ def is_url(data: dict[str, Any]) -> bool:
 
     # Check name
     name = data.get("name", "").strip()
-    if re.match(urlRegex, name):
-        return True
-
-    return False
+    return bool(re.match(urlRegex, name))
 
 
 def build_indicator(
