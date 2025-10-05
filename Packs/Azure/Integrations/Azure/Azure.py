@@ -2089,6 +2089,15 @@ def main():
             "azure-sql-db-threat-policy-update": sql_db_threat_policy_update_command,
             "azure-sql-db-transparent-data-encryption-set": sql_db_tde_set_command,
             "azure-cosmos-db-update": cosmosdb_update_command,
+            "azure-postgres-config-set-log-retention-quick-action": set_postgres_config_command,
+            "azure-webapp-update-assign-managed-identity-quick-action": webapp_update_command,
+            "azure-storage-blob-enable-soft-delete-quick-action": storage_blob_service_properties_set_command,
+            "azure-postgres-enable-statement-logging-quick-action": set_postgres_config_command,
+            "azure-disable-public-private-access-vm-disk-quick-action": disk_update_command,
+            "azure-disk-set-data-access-aad-quick-action": disk_update_command,
+            "azure-acr-disable-public-private-access-quick-action": acr_update_command,
+            "azure-acr-disable-authentication-as-arm-quick-action": acr_update_command,
+            "azure-acr-disable-anonymous-pull-quick-action": acr_update_command,
         }
         if command == "test-module" and connector_id:
             demisto.debug(f"Running health check for connector ID: {connector_id}")
