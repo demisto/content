@@ -1,7 +1,6 @@
 Use the Akamai WAF integration to manage common sets of lists used by various Akamai security products and features.
 
 This is the modified version where a new command "akamai-update-network-list-elements" was added by the SA.
-This integration was integrated and tested with version xx of Akamai WAF.
 
 ## Configure Akamai WAF in Cortex
 
