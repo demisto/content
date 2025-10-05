@@ -708,8 +708,11 @@ script:
         type: Number
       - name: timeout
         description: Timeout in seconds for polling.
-        defaultValue: 60
+        defaultValue: 180
         type: Number
+      - name: poll_status
+        description: The poll status.
+        deprecated: true
     outputs:
       - contextPath: Akamai.Activation
         description: The activation details.
@@ -801,6 +804,9 @@ script:
         description: Timeout in seconds for polling.
         defaultValue: 180
         type: Number
+      - name: poll_status
+        description: The poll status.
+        deprecated: true
     outputs:
       - contextPath: Akamai.Activation
         description: The deactivation details.
