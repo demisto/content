@@ -583,6 +583,20 @@ def merge_integration_context() -> None:
         set_integration_context(integration_context, version)
 
 
+def replace_deprecated_event_types(event_type_list: list) -> str:
+    """Replace deprecated DetectionSummaryEvent with EppDetectionSummaryEvent.
+
+    Args:
+        event_type_list: List of event types from parameters
+
+    Returns:
+        Comma-separated string of event types with deprecated types replaced
+    """
+    # Replace deprecated DetectionSummaryEvent with EppDetectionSummaryEvent due to deprecation
+    updated_list = ["EppDetectionSummaryEvent" if event == "DetectionSummaryEvent" else event for event in event_type_list]
+    return ",".join(updated_list)
+
+
 def main():
     params: dict = demisto.params()
     base_url: str = params.get("base_url", "")
@@ -590,7 +604,8 @@ def main():
     client_secret: str = params.get("credentials_client", {}).get("password") or params.get("client_secret", "")
     if not (client_id and client_secret):
         raise DemistoException("Client ID and Client Secret must be provided.")
-    event_type = ",".join(params.get("event_type", []) or [])
+    event_type_list = params.get("event_type", []) or []
+    event_type = replace_deprecated_event_types(event_type_list)
     verify_ssl = not params.get("insecure", False)
     proxy = params.get("proxy", False)
     offset = params.get("offset", "0")
