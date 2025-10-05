@@ -391,7 +391,8 @@ class S3:
             response = client.delete_bucket_website(**kwargs)
             if response["ResponseMetadata"]["HTTPStatusCode"] in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
                 return CommandResults(
-                    readable_output=f"Successfully removed the static website configuration from {args.get('bucket')} bucket.")
+                    readable_output=f"Successfully removed the static website configuration from {args.get('bucket')} bucket."
+                )
             raise DemistoException(f"Failed to delete bucket website for {args.get('bucket')}.")
         except Exception as e:
             raise DemistoException(f"Error: {str(e)}")
@@ -421,11 +422,11 @@ class S3:
         try:
             response = client.put_bucket_ownership_controls(**kwargs)
             if response["ResponseMetadata"]["HTTPStatusCode"] in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
-                return CommandResults(
-                    readable_output=f"Bucket Ownership Controls successfully updated for {args.get('bucket')}")
+                return CommandResults(readable_output=f"Bucket Ownership Controls successfully updated for {args.get('bucket')}")
             raise DemistoException(f"Failed to set Bucket Ownership Controls for {args.get('bucket')}.")
         except Exception as e:
             raise DemistoException(f"Error: {str(e)}")
+
 
 class IAM:
     service = AWSServices.IAM
@@ -1032,7 +1033,7 @@ class EC2:
             "EnableResourceNameDnsAAAARecordOnLaunch",
             "EnableResourceNameDnsARecordOnLaunch",
             "MapCustomerOwnedIpOnLaunch",
-            "MapPublicIpOnLaunch"
+            "MapPublicIpOnLaunch",
         ]
 
         for arg, value in kwargs.items():
@@ -1046,7 +1047,7 @@ class EC2:
             if response["ResponseMetadata"]["HTTPStatusCode"] in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
                 demisto.debug(f"RequestId={response.get('ResponseMetadata').get('RequestId')}")
                 return CommandResults(readable_output="Subnet configuration successfully updated.")
-            raise DemistoException(f"Modification could not be performed.")
+            raise DemistoException("Modification could not be performed.")
         except Exception as e:
             raise DemistoException(f"Error: {str(e)}")
 
@@ -1363,13 +1364,25 @@ class RDS:
             response = client.modify_event_subscription(**kwargs)
 
             if response["ResponseMetadata"]["HTTPStatusCode"] in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
-                headers = ["CustomerAwsId", "CustSubscriptionId", "SnsTopicArn", "Status", "SubscriptionCreationTime",
-                           "SourceType", "EventCategoriesList", "Enabled", "EventSubscriptionArn"]
+                headers = [
+                    "CustomerAwsId",
+                    "CustSubscriptionId",
+                    "SnsTopicArn",
+                    "Status",
+                    "SubscriptionCreationTime",
+                    "SourceType",
+                    "EventCategoriesList",
+                    "Enabled",
+                    "EventSubscriptionArn",
+                ]
 
                 return CommandResults(
                     readable_output=tableToMarkdown(
-                        name=f"Event subscription {args.get('subscription_name')} successfully modified.", headers=headers,
-                        t=response.get("EventSubscription"), removeNull=True),
+                        name=f"Event subscription {args.get('subscription_name')} successfully modified.",
+                        headers=headers,
+                        t=response.get("EventSubscription"),
+                        removeNull=True,
+                    ),
                     outputs_prefix="AWS.RDS.EventSubscription",
                     outputs=response.get("EventSubscription"),
                     outputs_key_field="CustSubscriptionId",
