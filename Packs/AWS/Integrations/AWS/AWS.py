@@ -370,6 +370,62 @@ class S3:
         except Exception as e:
             raise DemistoException(f"Couldn't apply bucket policy to {args.get('bucket')} bucket. Error: {str(e)}")
 
+    @staticmethod
+    def delete_bucket_website_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Deletes the static website configuration from a specified S3 bucket.
+        This command performs the 'DeleteBucketWebsite' API operation. If the command succeeds,
+        it confirms the removal of the website configuration. Note that the bucket itself is not deleted.
+
+        Args:
+            client (BotoClient): The initialized Boto3 S3 client.
+            args (Dict[str, Any]): Command arguments, typically containing:
+                - 'bucket' (str): The name of the S3 bucket. (Required)
+
+        Returns:
+            CommandResults: A CommandResults object with a success message on status 200/204.
+        """
+        kwargs = {"Bucket": args.get("bucket")}
+        remove_nulls_from_dictionary(kwargs)
+        try:
+            response = client.delete_bucket_website(**kwargs)
+            if response["ResponseMetadata"]["HTTPStatusCode"] in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
+                return CommandResults(
+                    readable_output=f"Successfully removed the static website configuration from {args.get('bucket')} bucket.")
+            raise DemistoException(f"Failed to delete bucket website for {args.get('bucket')}.")
+        except Exception as e:
+            raise DemistoException(f"Error: {str(e)}")
+
+    @staticmethod
+    def put_bucket_ownership_controls_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Creates or modifies the Ownership Controls configuration for an S3 bucket.
+        This command sets the rule that governs who owns new objects uploaded to the bucket, specifically controlling
+        the role of Access Control Lists (ACLs). This operation requires a specific, validated JSON structure for
+        the 'ownership_controls' argument.
+
+        Args:
+            client (BotoClient): The initialized Boto3 S3 client.
+            args (Dict[str, Any]): Command arguments, typically containing:
+                - 'bucket' (str): The name of the S3 bucket. (Required)
+                - 'ownership_controls_rule' (str): A predefined rule specifying the desired ownership behavior.
+                 Must be one of the following: BucketOwnerPreferred, ObjectWriter, BucketOwnerEnforced
+
+        Returns:
+            CommandResults: A CommandResults object with a success message on status 200/204.
+        """
+        ownership_controls = {"Rules": [{"ObjectOwnership": args.get("ownership_controls_rule")}]}
+        kwargs = {"Bucket": args.get("bucket"), "OwnershipControls": ownership_controls}
+
+        remove_nulls_from_dictionary(kwargs)
+        try:
+            response = client.put_bucket_ownership_controls(**kwargs)
+            if response["ResponseMetadata"]["HTTPStatusCode"] in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
+                return CommandResults(
+                    readable_output=f"Bucket Ownership Controls successfully updated for {args.get('bucket')}")
+            raise DemistoException(f"Failed to set Bucket Ownership Controls for {args.get('bucket')}.")
+        except Exception as e:
+            raise DemistoException(f"Error: {str(e)}")
 
 class IAM:
     service = AWSServices.IAM
@@ -927,6 +983,73 @@ class EC2:
                 raise DemistoException(f"Security group {group_id} not found.")
             raise DemistoException(f"Failed to revoke egress rule: {e}")
 
+    @staticmethod
+    def modify_subnet_attribute_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Modifies a single attribute on a specified Amazon EC2 subnet.
+        This command performs the 'ModifySubnetAttribute' API operation.
+
+        Args:
+            client (BotoClient): The initialized Boto3 EC2 client.
+            args (Dict[str, Any]): Command arguments, typically containing:
+                - 'subnet_id' (str): The ID of the subnet to modify. (Required)
+                - 'map_public_ip_on_launch' (str): Boolean value to control auto-assign public IPv4.
+                - 'assign_ipv6_address_on_creation' (str): Boolean value to control auto-assign IPv6 address.
+                - 'enable_dns64' (str): Boolean value to enable DNS64 resolution.
+                - 'enable_resource_name_dns_a_record_on_launch' (str): Boolean value to enable DNS A records based
+                 on instance resource name.
+                - 'enable_resource_name_dns_aaaa_record_on_launch' (str): Boolean value to enable DNS AAAA records based on
+                 instance resource name.
+                - 'private_dns_hostname_type_on_launch' (str): String value for private DNS hostname generation.
+                - 'customer_owned_ipv4_pool' (str): The ID of the Customer Owned IPv4 Pool (CoIP) to associate with the subnet.
+                - 'map_customer_owned_ip_on_launch' (str): Boolean value to auto-assign CoIPs to instances.
+                - 'enable_lni_at_device_index' (str): Integer (1-15) to set the device index for LNI assignment.
+                - 'disable_lni_at_device_index' (str): Boolean value to disable LNI assignment at a device index.
+
+
+        Returns:
+            CommandResults: A CommandResults object with a success message.
+        """
+        kwargs = {
+            "SubnetId": args.get("subnet_id"),
+            "AssignIpv6AddressOnCreation": args.get("assign_ipv6_address_on_creation"),
+            "CustomerOwnedIpv4Pool": args.get("customer_owned_ipv4_pool"),
+            "DisableLniAtDeviceIndex": args.get("disable_lni_at_device_index"),
+            "EnableDns64": args.get("enable_dns64"),
+            "EnableLniAtDeviceIndex": args.get("enable_lni_at_device_index"),
+            "EnableResourceNameDnsAAAARecordOnLaunch": args.get("enable_resource_name_dns_aaaa_record_on_launch"),
+            "EnableResourceNameDnsARecordOnLaunch": args.get("enable_resource_name_dns_a_record_on_launch"),
+            "MapCustomerOwnedIpOnLaunch": args.get("map_customer_owned_ip_on_launch"),
+            "MapPublicIpOnLaunch": args.get("map_public_ip_on_launch"),
+            "PrivateDnsHostnameTypeOnLaunch": args.get("private_dns_hostname_type_on_launch"),
+        }
+
+        remove_nulls_from_dictionary(kwargs)
+        attribute_boolean_value_fields = [
+            "AssignIpv6AddressOnCreation",
+            "DisableLniAtDeviceIndex",
+            "EnableDns64",
+            "EnableResourceNameDnsAAAARecordOnLaunch",
+            "EnableResourceNameDnsARecordOnLaunch",
+            "MapCustomerOwnedIpOnLaunch",
+            "MapPublicIpOnLaunch"
+        ]
+
+        for arg, value in kwargs.items():
+            if arg in attribute_boolean_value_fields:
+                kwargs[arg] = {"Value": argToBoolean(value)}
+            elif arg == "EnableLniAtDeviceIndex":
+                kwargs[arg] = int(value)
+
+        try:
+            response = client.modify_subnet_attribute(**kwargs)
+            if response["ResponseMetadata"]["HTTPStatusCode"] in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
+                demisto.debug(f"RequestId={response.get('ResponseMetadata').get('RequestId')}")
+                return CommandResults(readable_output="Subnet configuration successfully updated.")
+            raise DemistoException(f"Modification could not be performed.")
+        except Exception as e:
+            raise DemistoException(f"Error: {str(e)}")
+
 
 class EKS:
     service = AWSServices.EKS
@@ -1206,6 +1329,55 @@ class RDS:
         else:
             raise DemistoException(f"Couldn't modify DB snapshot attribute for {args.get('db_snapshot_identifier')}")
 
+    @staticmethod
+    def modify_event_subscription_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Modifies the configuration of an existing Amazon RDS event notification subscription.
+        This command performs the 'ModifyEventSubscription' API operation, allowing updates to the target SNS topic,
+        the list of event categories, the source type, and the enabled state of the subscription.
+
+        Args:
+            client (BotoClient): The initialized Boto3 client.
+            args (Dict[str, Any]): Command arguments, typically containing:
+                - 'subscription_name' (str): The unique name of the subscription to modify. (Required)
+                - 'enabled' (str): Boolean string ('true' or 'false') to activate/deactivate the subscription. (Optional)
+                - 'event_categories' (str | List[str]): A list of event categories to subscribe to. (Optional)
+                - 'sns_topic_arn' (str): The ARN of the new SNS topic to publish events to. (Optional)
+                - 'source_type' (str): The type of resource generating events. (Optional)
+
+        Returns:
+            CommandResults: A CommandResults object containing the modified EventSubscription details.
+        """
+        kwargs = {
+            "SubscriptionName": args.get("subscription_name"),
+            "Enabled": args.get("enabled"),
+            "EventCategories": argToList(args.get("event_categories", [])),
+            "SnsTopicArn": args.get("sns_topic_arn"),
+            "SourceType": args.get("source_type"),
+        }
+        remove_nulls_from_dictionary(kwargs)
+        if kwargs.get("Enabled"):
+            kwargs["Enabled"] = argToBoolean(kwargs.get("Enabled"))
+
+        try:
+            response = client.modify_event_subscription(**kwargs)
+
+            if response["ResponseMetadata"]["HTTPStatusCode"] in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
+                headers = ["CustomerAwsId", "CustSubscriptionId", "SnsTopicArn", "Status", "SubscriptionCreationTime",
+                           "SourceType", "EventCategoriesList", "Enabled", "EventSubscriptionArn"]
+
+                return CommandResults(
+                    readable_output=tableToMarkdown(
+                        name=f"Event subscription {args.get('subscription_name')} successfully modified.", headers=headers,
+                        t=response.get("EventSubscription"), removeNull=True),
+                    outputs_prefix="AWS.RDS.EventSubscription",
+                    outputs=response.get("EventSubscription"),
+                    outputs_key_field="CustSubscriptionId",
+                )
+            raise DemistoException(f"Failed to modify event subscription {args.get('subscription_name')}.")
+        except Exception as e:
+            raise DemistoException(f"Error: {str(e)}")
+
 
 class CloudTrail:
     service = AWSServices.CloudTrail
@@ -1287,6 +1459,8 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-s3-bucket-logging-put": S3.put_bucket_logging_command,
     "aws-s3-bucket-acl-put": S3.put_bucket_acl_command,
     "aws-s3-bucket-policy-put": S3.put_bucket_policy_command,
+    "aws-s3-bucket-website-delete": S3.delete_bucket_website_command,
+    "aws-s3-bucket-ownership-controls-put": S3.put_bucket_ownership_controls_command,
     "aws-iam-account-password-policy-get": IAM.get_account_password_policy_command,
     "aws-iam-account-password-policy-update": IAM.update_account_password_policy_command,
     "aws-iam-role-policy-put": IAM.put_role_policy_command,
@@ -1301,11 +1475,13 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-ec2-security-group-ingress-revoke": EC2.revoke_security_group_ingress_command,
     "aws-ec2-security-group-ingress-authorize": EC2.authorize_security_group_ingress_command,
     "aws-ec2-security-group-egress-revoke": EC2.revoke_security_group_egress_command,
+    "aws-ec2-subnet-attribute-modify": EC2.modify_subnet_attribute_command,
     "aws-eks-cluster-config-update": EKS.update_cluster_config_command,
     "aws-rds-db-cluster-modify": RDS.modify_db_cluster_command,
     "aws-rds-db-cluster-snapshot-attribute-modify": RDS.modify_db_cluster_snapshot_attribute_command,
     "aws-rds-db-instance-modify": RDS.modify_db_instance_command,
     "aws-rds-db-snapshot-attribute-modify": RDS.modify_db_snapshot_attribute_command,
+    "aws-rds-event-subscription-modify": RDS.modify_event_subscription_command,
     "aws-cloudtrail-logging-start": CloudTrail.start_logging_command,
     "aws-cloudtrail-trail-update": CloudTrail.update_trail_command,
 }
