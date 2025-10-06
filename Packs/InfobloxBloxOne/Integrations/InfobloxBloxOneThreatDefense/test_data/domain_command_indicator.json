@@ -8,7 +8,7 @@
         ],
         "MalwareFamily": "Phishing",
         "Malicious": {
-            "Vendor": "InfobloxThreatDefensewithDDI",
+            "Vendor": "InfobloxThreatDefense",
             "Description": "cyber actors, possibly associated with the APT group Agent Serpens, created a fake website mimicking a modeling agency to collect detailed visitor."
         },
         "ThreatTypes": [
@@ -31,7 +31,7 @@
     "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": {
         "Indicator": "test.com",
         "Type": "domain",
-        "Vendor": "InfobloxThreatDefensewithDDI",
+        "Vendor": "InfobloxThreatDefense",
         "Score": 3
     }
 }

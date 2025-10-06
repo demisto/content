@@ -4,7 +4,7 @@
     "modified": "2025-07-14T19:16:57.649555412+05:30",
     "name": "Infoblox Cloud Insight Spreading Time",
     "ownerOnly": false,
-    "description": "The spreading time of the Infoblox Cloud Insight.",
+    "description": "The spreading time of the Infoblox Cloud SOC Insight.",
     "cliName": "infobloxcloudinsightspreadingtime",
     "type": "date",
     "closeForm": false,
@@ -20,7 +20,7 @@
     "hidden": false,
     "openEnded": false,
     "associatedTypes": [
-        "Infoblox Cloud Insight"
+        "Infoblox Cloud SOC Insight"
     ],
     "associatedToAll": false,
     "unmapped": false,

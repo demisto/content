@@ -4,7 +4,7 @@
     "modified": "2025-07-14T18:43:17.022788348+05:30",
     "name": "Infoblox Cloud Insight Persistent Time",
     "ownerOnly": false,
-    "description": "The persistent time of the Infoblox Cloud Insight.",
+    "description": "The persistent time of the Infoblox Cloud SOC Insight.",
     "cliName": "infobloxcloudinsightpersistenttime",
     "type": "date",
     "closeForm": false,
@@ -20,7 +20,7 @@
     "hidden": false,
     "openEnded": false,
     "associatedTypes": [
-        "Infoblox Cloud Insight"
+        "Infoblox Cloud SOC Insight"
     ],
     "associatedToAll": false,
     "unmapped": false,

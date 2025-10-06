@@ -4,7 +4,7 @@
     "modified": "2025-07-14T18:14:07.690936059+05:30",
     "name": "Infoblox Cloud Insight ID",
     "ownerOnly": false,
-    "description": "The Insight ID of the Infoblox Cloud Insights.",
+    "description": "The SOC Insight ID of the Infoblox Cloud SOC Insights.",
     "cliName": "infobloxcloudinsightid",
     "type": "shortText",
     "closeForm": false,
@@ -20,7 +20,7 @@
     "hidden": false,
     "openEnded": false,
     "associatedTypes": [
-        "Infoblox Cloud Insight"
+        "Infoblox Cloud SOC Insight"
     ],
     "associatedToAll": false,
     "unmapped": false,

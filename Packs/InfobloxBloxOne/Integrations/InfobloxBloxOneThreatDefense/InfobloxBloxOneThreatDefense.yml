@@ -29,6 +29,13 @@ configuration:
   type: 15
   required: false
 - section: Collect
+  defaultvalue: 'true'
+  additionalinfo: Create relationships between indicators as part of Enrichment.
+  display: Create relationships
+  name: create_relationships
+  type: 8
+  required: false
+- section: Collect
   display: Fetch incidents
   name: isFetch
   type: 8
@@ -36,24 +43,33 @@ configuration:
 - section: Connect
   display: Incident type
   name: incidentType
-  defaultvalue: "Infoblox Cloud Insight"
   type: 13
   required: false
 - section: Collect
+  display: Ingestion Type
+  name: ingestion_type
+  options:
+  - SOC Insight
+  - DNS Security Event
+  type: 15
+  required: false
+  defaultvalue: SOC Insight
+  additionalinfo: Select the ingestion type to fetch as XSOAR incident. Default is SOC Insight.
+- section: Collect
   advanced: true
-  display: Insight Status
-  name: incident_status
+  display: SOC Insight Status
+  name: soc_insight_status
   defaultvalue: Active
   type: 15
   required: false
   options:
   - Active
   - Closed
-  additionalinfo: Retrieve the Insights as specified status.
+  additionalinfo: Retrieve the SOC Insights as specified status.
 - section: Collect
   advanced: true
-  display: Insight Threat Type
-  name: incident_threat_type
+  display: SOC Insight Threat Type
+  name: soc_insight_threat_type
   type: 15
   required: false
   options:
@@ -76,11 +92,11 @@ configuration:
   - Lookalike Threat
   - Sanctioned Feed Disabled
   - DNSTunnel
-  additionalinfo: Retrieve the Insights as specified threat type.
+  additionalinfo: Retrieve the SOC Insights as specified threat type.
 - section: Collect
   advanced: true
-  display: Insight Priority Level
-  name: incident_priority_level
+  display: SOC Insight Priority Level
+  name: soc_insight_priority_level
   type: 15
   required: false
   options:
@@ -88,34 +104,244 @@ configuration:
   - MEDIUM
   - HIGH
   - CRITICAL
-  additionalinfo: Retrieve the Insights as specified priority level.
+  additionalinfo: Retrieve the SOC Insights as specified priority level.
+- section: Collect
+  advanced: true
+  display: DNS Security Event Feed Name
+  name: dns_events_feed_name
+  type: 16
+  required: false
+  additionalinfo: Retrieve the DNS Security Events as specified feed name or custom list name.
+- section: Collect
+  advanced: true
+  display: DNS Security Event Network
+  name: dns_events_network
+  type: 16
+  required: false
+  additionalinfo: Retrieve the DNS Security Events as specified network name.
+- section: Collect
+  advanced: true
+  display: DNS Security Event Policy Action
+  name: dns_events_policy_action
+  type: 16
+  required: false
+  options:
+  - Log
+  - Block
+  - Allow
+  - Redirect
+  additionalinfo: Retrieve the DNS Security Events as specified policy action.
+- section: Collect
+  advanced: true
+  display: DNS Security Event Policy Name
+  name: dns_events_policy_name
+  type: 16
+  required: false
+  additionalinfo: Retrieve the DNS Security Events as specified policy name.
+- section: Collect
+  advanced: true
+  display: DNS Security Event Queried Name
+  name: dns_events_queried_name
+  type: 16
+  required: false
+  additionalinfo: Retrieve the DNS Security Events as specified queried name.
+- section: Collect
+  advanced: true
+  display: DNS Security Event Threat Class
+  name: dns_events_threat_class
+  type: 16
+  required: false
+  options:
+  - InfostealerShiz
+  - Typosquat
+  - PonyLoader
+  - FEEDIGNORED
+  - LOG4SHELL
+  - SpyEye
+  - DoHService
+  - Generic
+  - ParkedDomain
+  - NewlyObservedDomains
+  - IcedID
+  - ExploitKit
+  - OPENRESOLVER
+  - SmokeLoader
+  - AgentTesla
+  - Vawtrak
+  - TorNode
+  - CryptoLocker
+  - Lokibot
+  - Simda
+  - Brushaloader
+  - DanglingRecord
+  - Geodo
+  - Phish
+  - Padcrypt
+  - TinyBanker
+  - SinkholedHost
+  - Registration
+  - LOOKALIKE
+  - Upatre
+  - Dorkbot
+  - RIG
+  - Node
+  - Source
+  - Ursnif
+  - Nemucod
+  - DGA
+  - Smishing
+  - BackdoorRAT
+  - Azorult
+  - Symmi
+  - Safe
+  - Ramdo
+  - mfa_smishing
+  - PHISHING
+  - SUSPICIOUS
+  - Palevo
+  - Shifu
+  - Behavior
+  - Lookalike
+  - Formbook
+  - CTBLocker
+  - Suppobox
+  - Spam
+  - DarkComet
+  - Beebone
+  - Expiro
+  - Chinad
+  - LowProfileC2Beacon
+  - EMERGENT
+  - Bamital
+  - Hesperbot
+  - GenericThreat
+  - QTYPEANY
+  - Coreflood
+  - EmergentDomain
+  - Lottery
+  - Malvertising
+  - MalwareC2
+  - Qadars
+  - COBALTSTRIKE
+  - LookalikeDomains
+  - FIRSTSEEN
+  - MalwareDownload
+  - MalwareGeneric
+  - EmdiviC2
+  - Zusy
+  - Banjori
+  - Ramnit
+  - Murofet
+  - Virut
+  - Necurs
+  - EMERGENTDOMAINS
+  - Gozi
+  - Locky
+  - TeslaCrypt
+  - Nameserver
+  - SittingDucks
+  - MYLOBOT
+  - Ranbyus
+  - Proslikefan
+  - Ransomware
+  - Advertising
+  - UrlZone
+  - Spyware
+  - RDGA
+  - Dircrypt
+  - Cridex
+  - TorExitNode
+  - BROWSERMISCONFIGURATION
+  - DNST
+  - SERVFAIL
+  - Sphinx
+  - Nymaim
+  - FinancialFraud
+  - REACTIVATED TLD
+  - GameoverZeus
+  - NXDOMAIN
+  - ZLOADER
+  - Bedep
+  - Fobber
+  - WebAppAttack
+  - Qakbot
+  - Tempedreve
+  - Emotet
+  - Sisron
+  - X
+  - Gandcrab
+  - Hancitor
+  - Cerber
+  - Pykspa
+  - TDS
+  additionalinfo: Retrieve the DNS Security Events as specified threat class.
+- section: Collect
+  advanced: true
+  display: DNS Security Event Threat Family
+  name: dns_events_threat_family
+  type: 16
+  required: false
+  options:
+  - COBALTSTRIKE
+  - Generic
+  - X
+  - MYLOBOT
+  - ZLOADER
+  - QTYPEANY
+  - NXDOMAIN
+  - SERVFAIL
+  - OPENRESOLVER
+  - BROWSERMISCONFIGURATION
+  - FEEDIGNORED
+  - LowProfileC2Beacon
+  - mfa_smishing
+  - DGA
+  - LOOKALIKE
+  - EMERGENT
+  - FIRSTSEEN
+  - REACTIVATED TLD
+  - PHISHING
+  - SUSPICIOUS
+  - EMERGENTDOMAINS
+  - LOG4SHELL
+  additionalinfo: Retrieve the DNS Security Events as specified threat family.
+- section: Collect
+  advanced: true
+  display: DNS Security Event Threat Indicator
+  name: dns_events_threat_indicator
+  type: 16
+  required: false
+  additionalinfo: Retrieve the DNS Security Events as specified threat indicator.
+- section: Collect
+  advanced: true
+  display: DNS Security Event Threat Level
+  name: dns_events_threat_level
+  type: 16
+  required: false
+  options:
+  - LOW
+  - MEDIUM
+  - HIGH
+  defaultvalue: "HIGH"
+  additionalinfo: Retrieve the DNS Security Events as specified threat level.
 - section: Collect
   display: Max Fetch
   name: max_fetch
   defaultvalue: "50"
   type: 0
   required: false
-  additionalinfo: The maximum number of Insights to fetch each time. If the value
-    is greater than 200, it will be considered as 200. The maximum is 200.
+  additionalinfo: The maximum number of SOC Insights or DNS Security Events to fetch each time. If the value is greater than 200, it will be considered as 200. The maximum is 200.
 - section: Collect
-  defaultvalue: 'true'
-  additionalinfo: Create relationships between indicators as part of Enrichment.
-  display: Create relationships
-  name: create_relationships
-  type: 8
-  required: false
-- section: Collect
-  additionalinfo: The time interval for the first fetch (retroactive). Examples of supported values can be found at https://dateparser.readthedocs.io/en/latest/#relative-dates.
-  defaultvalue: 7 days
+  additionalinfo: "The date or relative timestamp from which to begin fetching incidents. Note: This parameter is only applicable for DNS Security Events.\n\nSupported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.\n\nFor example: 01 May 2025, 01 May 2025 04:45:33, 2025-05-17T14:05:44Z."
+  defaultvalue: 24 hours
   display: First fetch timestamp
   name: first_fetch
   type: 0
   required: false
-  hidden: true
 - section: Collect
   display: Incidents Fetch Interval
   name: incidentFetchInterval
-  defaultvalue: "1"
+  defaultvalue: "60"
   type: 19
   required: false
 - section: Connect
@@ -128,7 +354,7 @@ configuration:
   name: proxy
   type: 8
   required: false
-description: Infoblox Threat Defense with DDI integration leverages DNS as the first line of defense to detect and block cyber threats, while also using threat intelligence to manage insight incident response and enrich indicators.
+description: Infoblox Threat Defense with DDI integration leverages DNS as the first line of defense to detect and block cyber threats, while also using threat intelligence to manage SOC Insight incident response and enrich indicators.
 display: 'Infoblox Threat Defense with DDI'
 name: InfobloxBloxOneThreatDefense
 script:
@@ -370,7 +596,7 @@ script:
         - threat_insight_nde
       defaultValue: default_block
       required: false
-    description: The given domain will be added to the provided block list.
+    description: The given domains will be added to the provided block list.
     name: infobloxcloud-block-domain
     outputs:
     - contextPath: InfobloxCloud.CustomList.id
@@ -436,7 +662,7 @@ script:
         - threat_insight_nde
       defaultValue: default_allow
       required: false
-    description: The given domain will be added to the provided allow list.
+    description: The given domains will be added to the provided allow list.
     name: infobloxcloud-unblock-domain
     outputs:
     - contextPath: InfobloxCloud.CustomList.id
@@ -1583,14 +1809,14 @@ script:
     description: Enrich a MAC address with DHCP lease information.
   - arguments:
     - auto: PREDEFINED
-      description: Specify the status of insights to fetch.
+      description: Specify the status of SOC Insights to fetch.
       name: status
       predefined:
         - Active
         - Closed
       required: false
     - auto: PREDEFINED
-      description: Specify the threat type of insights to fetch.
+      description: Specify the threat type of SOC Insights to fetch.
       name: threat_type
       predefined:
         - DGA
@@ -1614,7 +1840,7 @@ script:
         - DNSTunnel
       required: false
     - auto: PREDEFINED
-      description: Specify the priority level of insights to fetch.
+      description: Specify the priority level of SOC Insights to fetch.
       name: priority
       predefined:
         - INFO
@@ -1622,59 +1848,58 @@ script:
         - HIGH
         - CRITICAL
       required: false
-    description: List insights from Infoblox Cloud.
-    name: infobloxcloud-insights-list
+    description: List SOC Insights from Infoblox Cloud.
+    name: infobloxcloud-soc-insight-list
     outputs:
-    - contextPath: InfobloxCloud.Insight.insightId
-      description: The ID of the insight.
+    - contextPath: InfobloxCloud.SOCInsight.insightId
+      description: The ID of the SOC Insight.
       type: String
-    - contextPath: InfobloxCloud.Insight.priorityText
-      description: The priority level of the insight.
+    - contextPath: InfobloxCloud.SOCInsight.priorityText
+      description: The priority level of the SOC Insight.
       type: String
-    - contextPath: InfobloxCloud.Insight.tClass
-      description: The threat class of the insight.
+    - contextPath: InfobloxCloud.SOCInsight.tClass
+      description: The threat class of the SOC Insight.
       type: String
-    - contextPath: InfobloxCloud.Insight.tFamily
-      description: The threat family of the insight.
+    - contextPath: InfobloxCloud.SOCInsight.tFamily
+      description: The threat family of the SOC Insight.
       type: String
-    - contextPath: InfobloxCloud.Insight.startedAt
-      description: The start time of the insight.
+    - contextPath: InfobloxCloud.SOCInsight.startedAt
+      description: The start time of the SOC Insight.
       type: String
-    - contextPath: InfobloxCloud.Insight.status
-      description: The status of the insight.
+    - contextPath: InfobloxCloud.SOCInsight.status
+      description: The status of the SOC Insight.
       type: String
-    - contextPath: InfobloxCloud.Insight.persistentDate
+    - contextPath: InfobloxCloud.SOCInsight.persistentDate
       description: Timestamp when the threat was first observed as persistent.
       type: String
-    - contextPath: InfobloxCloud.Insight.spreadingDate
+    - contextPath: InfobloxCloud.SOCInsight.spreadingDate
       description: Timestamp when the threat was first observed as spreading.
       type: String
-    - contextPath: InfobloxCloud.Insight.dateChanged
-      description: Timestamp when the insight was last updated.
+    - contextPath: InfobloxCloud.SOCInsight.dateChanged
+      description: Timestamp when the SOC Insight was last updated.
       type: String
-    - contextPath: InfobloxCloud.Insight.changer
-      description: The user or process that last changed the insight status or data.
+    - contextPath: InfobloxCloud.SOCInsight.changer
+      description: The user or process that last changed the SOC Insight status or data.
       type: String
-    - contextPath: InfobloxCloud.Insight.feedSource
-      description: The source feed or provider of the insight.
+    - contextPath: InfobloxCloud.SOCInsight.feedSource
+      description: The source feed or provider of the SOC Insight.
       type: String
-    - contextPath: InfobloxCloud.Insight.threatType
-      description: The threat type of the insight.
+    - contextPath: InfobloxCloud.SOCInsight.threatType
+      description: The threat type of the SOC Insight.
       type: String
-    - contextPath: InfobloxCloud.Insight.numEvents
-      description: The number of events associated with the insight.
+    - contextPath: InfobloxCloud.SOCInsight.numEvents
+      description: The number of events associated with the SOC Insight.
       type: String
-    - contextPath: InfobloxCloud.Insight.eventsNotBlockedCount
-      description: The number of events not blocked by the insight.
+    - contextPath: InfobloxCloud.SOCInsight.eventsNotBlockedCount
+      description: The number of events not blocked by the SOC Insight.
       type: String
-    - contextPath: InfobloxCloud.Insight.mostRecentAt
-      description: The most recent time the insight was updated.
+    - contextPath: InfobloxCloud.SOCInsight.mostRecentAt
+      description: The most recent time the SOC Insight was updated.
       type: String
   - arguments:
-    - name: insight_id
+    - name: soc_insight_id
       required: true
-      description: Specify the insight ID to fetch events for.
-      default: true
+      description: Specify the SOC Insight ID to fetch events for.
     - name: limit
       required: false
       description: Specify the maximum number of events to fetch.
@@ -1731,8 +1956,8 @@ script:
     - name: indicator
       required: false
       description: Specify the indicator of the events.
-    description: List events for a specific insight.
-    name: infobloxcloud-insight-events-list
+    description: List events for a specific SOC Insight.
+    name: infobloxcloud-soc-insight-event-list
     outputs:
     - contextPath: InfobloxCloud.Event.confidenceLevel
       description: The confidence level of the threat detection.
@@ -1795,9 +2020,9 @@ script:
       description: The severity level of the event.
       type: String
   - arguments:
-    - name: insight_id
+    - name: soc_insight_id
       required: true
-      description: Specify the insight ID to fetch indicators for.
+      description: Specify the SOC Insight ID to fetch indicators for.
       default: true
     - name: limit
       required: false
@@ -1830,8 +2055,8 @@ script:
     - name: actor
       required: false
       description: Specify the actor of the indicators.
-    description: List indicators for a specific insight.
-    name: infobloxcloud-insight-indicators-list
+    description: List indicators for a specific SOC Insight.
+    name: infobloxcloud-soc-insight-indicator-list
     outputs:
     - contextPath: InfobloxCloud.Indicator.action
       description: The action taken for the indicator.
@@ -1858,9 +2083,9 @@ script:
       description: The earliest time the indicator was observed.
       type: Date
   - arguments:
-    - name: insight_id
+    - name: soc_insight_id
       required: true
-      description: Specify the insight ID to fetch assets for.
+      description: Specify the SOC Insight ID to fetch assets for.
       default: true
     - name: limit
       required: false
@@ -1884,8 +2109,8 @@ script:
     - name: user
       required: false
       description: Specify the user of the assets.
-    description: List assets for a specific insight.
-    name: infobloxcloud-insight-assets-list
+    description: List assets for a specific SOC Insight.
+    name: infobloxcloud-soc-insight-asset-list
     outputs:
     - contextPath: InfobloxCloud.Asset.count
       description: The number of occurrences associated with the asset.
@@ -1912,9 +2137,9 @@ script:
       description: The most recent action taken for the asset.
       type: String
   - arguments:
-    - name: insight_id
+    - name: soc_insight_id
       required: true
-      description: Specify the insight ID to fetch comments for.
+      description: Specify the SOC Insight ID to fetch comments for.
       default: true
     - name: start_time
       required: false
@@ -1926,8 +2151,8 @@ script:
       required: false
       description: Specify the maximum number of comments to fetch.
       defaultValue: 50
-    description: List comments for a specific insight.
-    name: infobloxcloud-insight-comments-list
+    description: List comments for a specific SOC Insight.
+    name: infobloxcloud-soc-insight-comment-list
     outputs:
     - contextPath: InfobloxCloud.Comment.commentsChanger
       description: The user who created or changed the comment.
@@ -1949,5 +2174,6 @@ script:
   isfetch: true
 fromversion: 6.5.0
 defaultmapperin: "Infoblox Cloud - Incoming Mapper"
+defaultclassifier: "Infoblox Cloud - Classifier"
 tests:
 - No tests (auto formatted)

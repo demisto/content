@@ -188,7 +188,7 @@ class TestE2E:
         mock_fetch_incidents.assert_not_called()
 
         # Test case 2: isFetch is True (should call fetch_incidents with is_test=True)
-        mock_params.return_value = {"isFetch": True, "max_fetch": "10", "incident_status": "Active"}
+        mock_params.return_value = {"isFetch": True, "max_fetch": "10", "soc_insight_status": "Active"}
 
         # Mock the insights API call for fetch_incidents
         requests_mock.get(f"{BASE_URL}/api/v1/insights", json={"insightList": []})
@@ -656,9 +656,9 @@ class TestFetchIncidents:
 
         params = {
             "max_fetch": "10",
-            "incident_status": "Active",
-            "incident_priority_level": "HIGH",
-            "incident_threat_type": "Malware",
+            "soc_insight_status": "Active",
+            "soc_insight_priority_level": "HIGH",
+            "soc_insight_threat_type": "Malware",
         }
 
         fetch_incidents(blox_client, params)
@@ -683,10 +683,10 @@ class TestFetchIncidents:
         # Verify last run was set
         mock_demisto_methods["setLastRun"].assert_called_once()
         last_run_call = mock_demisto_methods["setLastRun"].call_args[0][0]
-        assert "insight_ids" in last_run_call
-        assert "insight-001" in last_run_call["insight_ids"]
-        assert "insight-002" in last_run_call["insight_ids"]
-        assert "insight-003" in last_run_call["insight_ids"]
+        assert "soc_insight_ids" in last_run_call
+        assert "insight-001" in last_run_call["soc_insight_ids"]
+        assert "insight-002" in last_run_call["soc_insight_ids"]
+        assert "insight-003" in last_run_call["soc_insight_ids"]
 
     def test_fetch_incidents_with_existing_last_run(self, blox_client, requests_mock, mock_demisto_methods):
         """Test fetch_incidents with existing last_run data"""
@@ -694,7 +694,7 @@ class TestFetchIncidents:
         requests_mock.get(f"{BASE_URL}/api/v1/insights", text=load_json_file("soc-insights-list"))
 
         # Mock existing last run with one insight already processed
-        existing_last_run = {"insight_ids": ["insight-001"]}
+        existing_last_run = {"soc_insight_ids": ["insight-001"]}
         mock_demisto_methods["getLastRun"].return_value = existing_last_run
 
         params = {"max_fetch": "10"}
@@ -708,10 +708,10 @@ class TestFetchIncidents:
 
         # Verify the skipped insight is not in the incidents
         incident_data = [json.loads(inc["rawJSON"]) for inc in incidents]
-        insight_ids = [data["insightId"] for data in incident_data]
-        assert "insight-001" not in insight_ids
-        assert "insight-002" in insight_ids
-        assert "insight-003" in insight_ids
+        soc_insight_ids = [data["insightId"] for data in incident_data]
+        assert "insight-001" not in soc_insight_ids
+        assert "insight-002" in soc_insight_ids
+        assert "insight-003" in soc_insight_ids
 
     def test_fetch_incidents_max_fetch_limit(self, blox_client, requests_mock, mock_demisto_methods):
         """Test fetch_incidents respects max_fetch limit"""
@@ -731,7 +731,7 @@ class TestFetchIncidents:
 
         # Verify last_run only contains the processed insights
         last_run_call = mock_demisto_methods["setLastRun"].call_args[0][0]
-        assert len(last_run_call["insight_ids"]) == 2
+        assert len(last_run_call["soc_insight_ids"]) == 2
 
     def test_fetch_incidents_with_max_fetch_less_than_1(self, blox_client, requests_mock):
         requests_mock.get(f"{BASE_URL}/api/v1/insights", json={"insightList": []})
@@ -757,7 +757,27 @@ class TestFetchIncidents:
 
         # Verify empty last_run was set
         last_run_call = mock_demisto_methods["setLastRun"].call_args[0][0]
-        assert last_run_call["insight_ids"] == []
+        assert "soc_insight_ids" not in last_run_call
+
+    def test_fetch_incidents_empty_response_with_last_run(self, blox_client, requests_mock, mock_demisto_methods):
+        """Test fetch_incidents when API returns empty insight list"""
+        # Mock empty API response
+        requests_mock.get(f"{BASE_URL}/api/v1/insights", json={"insightList": []})
+
+        mock_demisto_methods["getLastRun"].return_value = {"soc_insight_ids": ["insight-001"]}
+
+        params = {"max_fetch": "10"}
+
+        fetch_incidents(blox_client, params)
+
+        # Verify no incidents were created
+        mock_demisto_methods["incidents"].assert_called_once()
+        incidents = mock_demisto_methods["incidents"].call_args[0][0]
+        assert len(incidents) == 0
+
+        # Verify empty last_run was set
+        last_run_call = mock_demisto_methods["setLastRun"].call_args[0][0]
+        assert last_run_call["soc_insight_ids"] == ["insight-001"]
 
     def test_fetch_incidents_invalid_insights_skipped(self, blox_client, requests_mock, mock_demisto_methods):
         """Test fetch_incidents skips insights with missing required fields"""
@@ -777,7 +797,7 @@ class TestFetchIncidents:
 
         # Verify empty last_run was set
         last_run_call = mock_demisto_methods["setLastRun"].call_args[0][0]
-        assert last_run_call["insight_ids"] == ["insight-004"]
+        assert last_run_call["soc_insight_ids"] == ["insight-004"]
 
     @pytest.mark.parametrize(
         "priority_text,expected_severity",
@@ -850,7 +870,7 @@ class TestFetchIncidents:
         mocker.patch.object(
             demisto,
             "params",
-            return_value={"credentials": {"password": "test-api-key"}, "max_fetch": "10", "incident_status": "open"},
+            return_value={"credentials": {"password": "test-api-key"}, "max_fetch": "201", "soc_insight_status": "open"},
         )
 
         # Run main function
@@ -860,6 +880,358 @@ class TestFetchIncidents:
         mock_incidents.assert_called_once()
         incidents = mock_incidents.call_args[0][0]
         assert len(incidents) == 3
+
+    @patch("InfobloxBloxOneThreatDefense.return_results")
+    def test_test_module_through_main_function_for_insight_fetch(self, mock_return, requests_mock, mocker):
+        """Test of test_module through main() function for insight fetch"""
+
+        # Mock API response
+        requests_mock.get(f"{BASE_URL}/api/v1/insights", text=load_json_file("soc-insights-list"))
+
+        # Mock demisto command and params
+        patch_command_args_and_params(mocker, "test-module", {})
+        mocker.patch.object(
+            demisto,
+            "params",
+            return_value={
+                "credentials": {"password": "test-api-key"},
+                "isFetch": True,
+                "max_fetch": "10",
+                "soc_insight_status": "open",
+            },
+        )
+
+        # Run main function
+        main()
+
+        # Verify fetch_incidents was executed successfully
+        assert mock_return.call_args.args[0] == "ok"
+
+    @pytest.mark.parametrize(
+        "max_fetch,expected_error",
+        [
+            ("0", ERRORS["INVALID_MAX_FETCH"].format("0")),
+            ("201", ERRORS["INVALID_MAX_FETCH"].format("201")),
+        ],
+    )
+    def test_fetch_invalid_max_fetch(self, blox_client, max_fetch, expected_error):
+        """Test command behavior with error input"""
+        with pytest.raises(ValueError, match=expected_error):
+            fetch_incidents(blox_client, params={"max_fetch": max_fetch}, is_test=True)
+
+
+class TestFetchDnsSecurityEvents:
+    """Test cases for the fetch_dns_security_events function"""
+
+    @pytest.fixture
+    def dns_events_response(self):
+        """Load DNS security events test data"""
+        return util_load_json("dns-security-event-response-success.json")
+
+    def test_fetch_dns_security_events_first_run_no_last_run(self, blox_client, requests_mock, dns_events_response):
+        """Test fetch_dns_security_events when no previous last_run exists (first run)"""
+        # Mock API response
+        requests_mock.get(f"{BASE_URL}/api/dnsdata/v2/dns_event", json={"result": dns_events_response})
+
+        params = {"first_fetch": "24 hours", "dns_events_queried_name": "example.com", "dns_events_threat_level": "HIGH,MEDIUM"}
+        last_run = {}
+        max_fetch = 50
+
+        incidents, updated_last_run = fetch_dns_security_events(blox_client, params, last_run, max_fetch)
+
+        # Verify API was called with correct parameters
+        assert requests_mock.call_count == 1
+        request = requests_mock.request_history[0]
+        assert "_limit" in request.qs
+        assert request.qs["_limit"] == ["50"]
+        assert "t0" in request.qs  # Should have start time
+        assert "t1" in request.qs  # Should have end time
+        assert request.qs["qname"] == ["example.com"]
+        assert request.qs["threat_level"] == ["high,medium"]
+
+        # Verify incident was created
+        assert len(incidents) == 1
+        incident = incidents[0]
+        assert "Infoblox DNS Security Event - Data Exfiltration" in incident["name"]
+        assert incident["severity"] == 3  # HIGH severity maps to 3
+        assert "occurred" in incident
+        assert "rawJSON" in incident
+
+        # Verify last run was updated
+        assert "dns_events_last_fetch" in updated_last_run
+        assert "dns_events_ids" in updated_last_run
+        assert len(updated_last_run["dns_events_ids"]) == 1
+
+    def test_fetch_dns_security_events_with_existing_last_run(self, blox_client, requests_mock, dns_events_response):
+        """Test fetch_dns_security_events with existing last_run data"""
+        # Mock API response with same event
+        requests_mock.get(f"{BASE_URL}/api/dnsdata/v2/dns_event", json={"result": dns_events_response})
+
+        # Create composite key from the test data event
+        event = dns_events_response[0]
+        event_time = event.get("event_time")
+        qname_truncated = event.get("qname", "")[:20]
+        composite_key = "|".join([event_time, qname_truncated, event.get("device", ""), event.get("feed_name", "")])
+
+        # Mock existing last run with the event already processed
+        existing_last_run = {"dns_events_last_fetch": "2025-09-17T07:45:30.000Z", "dns_events_ids": [composite_key]}
+
+        params = {"first_fetch": "24 hours"}
+        max_fetch = 50
+
+        incidents, updated_last_run = fetch_dns_security_events(blox_client, params, existing_last_run, max_fetch)
+
+        # Verify no incidents were created (event was already processed)
+        assert len(incidents) == 0
+
+        # Verify last run was updated
+        assert updated_last_run["dns_events_last_fetch"] == event_time
+        assert composite_key in updated_last_run["dns_events_ids"]
+
+    def test_fetch_dns_security_events_max_fetch_limit(self, blox_client, requests_mock):
+        """Test fetch_dns_security_events respects max_fetch limit"""
+        # Create multiple events
+        multiple_events = []
+        base_event = util_load_json("dns-security-event-response-success.json")[0]
+        for i in range(5):
+            event = base_event.copy()
+            event["event_time"] = f"2025-09-18T07:45:3{i}.000Z"
+            event["qname"] = f"test{i}.example.com"
+            multiple_events.append(event)
+
+        requests_mock.get(f"{BASE_URL}/api/dnsdata/v2/dns_event", json={"result": multiple_events})
+
+        params = {"first_fetch": "24 hours"}
+        last_run = {}
+        max_fetch = 5  # Limit to 5 events
+
+        incidents, _ = fetch_dns_security_events(blox_client, params, last_run, max_fetch)
+
+        # Verify API was called with correct limit
+        request = requests_mock.request_history[0]
+        assert request.qs["_limit"] == ["5"]
+
+        # Note: The function doesn't actually limit incidents in processing,
+        # it relies on API _limit parameter
+        assert len(incidents) == 5
+
+    def test_fetch_dns_security_events_with_filters(self, blox_client, requests_mock, dns_events_response):
+        """Test fetch_dns_security_events with various filter parameters"""
+        requests_mock.get(f"{BASE_URL}/api/dnsdata/v2/dns_event", json={"result": dns_events_response})
+
+        params = {
+            "first_fetch": "24 hours",
+            "dns_events_queried_name": "example.com,test.com",
+            "dns_events_policy_name": "Policy1,Policy2",
+            "dns_events_threat_level": "HIGH,MEDIUM",
+            "dns_events_threat_class": "Malware,Phishing",
+            "dns_events_threat_family": "Family1,Family2",
+            "dns_events_threat_indicator": "indicator1,indicator2",
+            "dns_events_policy_action": "Block,Log",
+            "dns_events_feed_name": "Feed1,Feed2",
+            "dns_events_network": "Network1,Network2",
+        }
+        last_run = {}
+        max_fetch = 50
+
+        fetch_dns_security_events(blox_client, params, last_run, max_fetch)
+
+        # Verify API was called with all filter parameters
+        request = requests_mock.request_history[0]
+        assert request.qs["qname"] == ["example.com,test.com"]
+        assert request.qs["policy_name"] == ["policy1,policy2"]
+        assert request.qs["threat_level"] == ["high,medium"]
+        assert request.qs["threat_class"] == ["malware,phishing"]
+        assert request.qs["threat_family"] == ["family1,family2"]
+        assert request.qs["threat_indicator"] == ["indicator1,indicator2"]
+        assert request.qs["policy_action"] == ["block,log"]
+        assert request.qs["feed_name"] == ["feed1,feed2"]
+        assert request.qs["network"] == ["network1,network2"]
+
+    def test_fetch_dns_security_events_empty_response(self, blox_client, requests_mock):
+        """Test fetch_dns_security_events when API returns empty result"""
+        requests_mock.get(f"{BASE_URL}/api/dnsdata/v2/dns_event", json={"result": []})
+
+        params = {"first_fetch": "24 hours"}
+        last_run = {}
+        max_fetch = 50
+
+        incidents, updated_last_run = fetch_dns_security_events(blox_client, params, last_run, max_fetch)
+
+        # Verify no incidents were created
+        assert len(incidents) == 0
+
+        # Verify last_run is returned unchanged since no events
+        assert updated_last_run == last_run
+
+    def test_fetch_dns_security_events_test_mode(self, blox_client, requests_mock, dns_events_response):
+        """Test fetch_dns_security_events in test mode"""
+        requests_mock.get(f"{BASE_URL}/api/dnsdata/v2/dns_event", json={"result": dns_events_response})
+
+        params = {"first_fetch": "24 hours"}
+        last_run = {}
+        max_fetch = 50
+        is_test = True
+
+        incidents, updated_last_run = fetch_dns_security_events(blox_client, params, last_run, max_fetch, is_test)
+
+        # In test mode, should return empty incidents and last_run
+        assert incidents == []
+        assert updated_last_run == {}
+
+    @pytest.mark.parametrize(
+        "severity, expected_severity_level",
+        [
+            ("HIGH", 3),
+            ("MEDIUM", 2),
+            ("INFO", 1),
+            ("CRITICAL", 4),
+            ("UNKNOWN", 1),  # Default for unmapped severity
+            (None, 1),  # Default for missing severity
+        ],
+    )
+    def test_fetch_dns_security_events_severity_mapping(self, blox_client, requests_mock, severity, expected_severity_level):
+        """Test fetch_dns_security_events correctly maps severity to incident severity"""
+        base_event = util_load_json("dns-security-event-response-success.json")[0]
+        if severity is not None:
+            base_event["severity"] = severity
+        else:
+            base_event.pop("severity", None)
+
+        requests_mock.get(f"{BASE_URL}/api/dnsdata/v2/dns_event", json={"result": [base_event]})
+
+        params = {"first_fetch": "24 hours"}
+        last_run = {}
+        max_fetch = 50
+
+        incidents, _ = fetch_dns_security_events(blox_client, params, last_run, max_fetch)
+
+        assert len(incidents) == 1
+        assert incidents[0]["severity"] == expected_severity_level
+
+    def test_fetch_dns_security_events_response_format_variations(self, blox_client, requests_mock, dns_events_response):
+        """Test fetch_dns_security_events handles different response formats"""
+        # Test when response is directly a list (not wrapped in result key)
+        requests_mock.get(f"{BASE_URL}/api/dnsdata/v2/dns_event", json=dns_events_response)
+
+        params = {"first_fetch": "24 hours"}
+        last_run = {}
+        max_fetch = 50
+
+        incidents, _ = fetch_dns_security_events(blox_client, params, last_run, max_fetch)
+
+        # Should handle both response formats
+        assert len(incidents) == 1
+
+    def test_fetch_dns_security_events_time_handling(self, blox_client, requests_mock, dns_events_response, mocker):
+        """Test fetch_dns_security_events properly handles time parameters"""
+        requests_mock.get(f"{BASE_URL}/api/dnsdata/v2/dns_event", json={"result": dns_events_response})
+
+        # Mock datetime to control timestamp calculation
+        mock_now = mocker.patch("InfobloxBloxOneThreatDefense.arg_to_datetime")
+        mock_now.side_effect = lambda x: arg_to_datetime("2025-09-18T08:00:00.000Z") if x == "now" else arg_to_datetime(x)
+
+        params = {"first_fetch": "1 day"}
+        last_run = {"dns_events_last_fetch": "2025-09-17T08:00:00.000Z"}
+        max_fetch = 50
+
+        fetch_dns_security_events(blox_client, params, last_run, max_fetch)
+
+        # Verify time parameters were set correctly in API call
+        request = requests_mock.request_history[0]
+        assert "t0" in request.qs  # Start time from last fetch
+        assert "t1" in request.qs  # End time (now)
+
+    def test_fetch_dns_security_events_composite_key_generation(self, blox_client, requests_mock):
+        """Test fetch_dns_security_events generates correct composite keys for deduplication"""
+        # Create event with specific fields for key generation
+        test_event = {
+            "event_time": "2025-09-18T07:45:30.000Z",
+            "qname": "test.example.com.with.very.long.domain.name.that.exceeds.twenty.characters",
+            "device": "10.0.0.1",
+            "feed_name": "Test Feed",
+            "severity": "HIGH",
+            "tclass": "Malware",
+        }
+
+        requests_mock.get(f"{BASE_URL}/api/dnsdata/v2/dns_event", json={"result": [test_event]})
+
+        params = {"first_fetch": "24 hours"}
+        last_run = {}
+        max_fetch = 50
+
+        _, updated_last_run = fetch_dns_security_events(blox_client, params, last_run, max_fetch)
+
+        # Verify composite key format: event_time|qname_truncated|device|feed_name
+        expected_composite_key = "2025-09-18T07:45:30.000Z|test.example.com.wit|10.0.0.1|Test Feed"
+        assert expected_composite_key in updated_last_run["dns_events_ids"]
+
+    def test_fetch_dns_security_events_integration_with_fetch_incidents(
+        self, blox_client, requests_mock, dns_events_response, mocker
+    ):
+        """Test fetch_dns_security_events integration with main fetch_incidents function"""
+        # Mock demisto methods
+        mock_get_last_run = mocker.patch.object(demisto, "getLastRun", return_value={})
+        mock_set_last_run = mocker.patch.object(demisto, "setLastRun")
+        mock_incidents = mocker.patch.object(demisto, "incidents")
+
+        # Mock API response
+        requests_mock.get(f"{BASE_URL}/api/dnsdata/v2/dns_event", json={"result": dns_events_response})
+
+        params = {"max_fetch": "50", "ingestion_type": "DNS Security Event", "first_fetch": "24 hours"}
+
+        fetch_incidents(blox_client, params)
+
+        # Verify demisto methods were called correctly
+        mock_get_last_run.assert_called_once()
+        mock_set_last_run.assert_called_once()
+        mock_incidents.assert_called_once()
+
+        # Verify incident was created
+        incidents_call = mock_incidents.call_args[0][0]
+        assert len(incidents_call) == 1
+        assert incidents_call[0]["name"].startswith("Infoblox DNS Security Event")
+
+    @patch("InfobloxBloxOneThreatDefense.return_results")
+    def test_test_module_through_main_function_for_event_fetch(self, mock_return, requests_mock, mocker):
+        """Test of test_module through main() function for DNS Security Events fetch"""
+
+        # Mock API response
+        requests_mock.get(f"{BASE_URL}/api/dnsdata/v2/dns_event", json=util_load_json("dns-security-event-response-success.json"))
+
+        # Mock demisto command and params
+        patch_command_args_and_params(mocker, "test-module", {})
+        mocker.patch.object(
+            demisto,
+            "params",
+            return_value={
+                "credentials": {"password": "test-api-key"},
+                "isFetch": True,
+                "max_fetch": "10",
+                "soc_insight_status": "open",
+                "ingestion_type": "DNS Security Event",
+            },
+        )
+
+        # Run main function
+        main()
+
+        # Verify fetch_incidents was executed successfully
+        assert mock_return.call_args.args[0] == "ok"
+
+    @pytest.mark.parametrize(
+        "dns_events_threat_level,expected_error",
+        [
+            ("abc", MESSAGES["INVALID_DNS_EVENT_THREAT_LEVEL"].format("abc")),
+            ("lower,high", MESSAGES["INVALID_DNS_EVENT_THREAT_LEVEL"].format("lower")),
+        ],
+    )
+    def test_fetch_dns_security_events_error_input(self, blox_client, dns_events_threat_level, expected_error):
+        """Test command behavior with error input"""
+        with pytest.raises(ValueError, match=expected_error):
+            fetch_dns_security_events(
+                blox_client, params={"dns_events_threat_level": dns_events_threat_level}, last_run={}, max_fetch=50
+            )
 
 
 class TestMacEnrichCommand:
@@ -998,30 +1370,50 @@ class TestBlockUnblock:
             unblock_ip_command(blox_client, args)
         assert str(e.value) == error_msg
 
-    def test_block_ip_command_success(self, mocker):
+    def test_block_ip_command_success(self, blox_client, requests_mock):
         """Test successful IP blocking"""
-        mock_client = mocker.Mock()
-
-        response = util_load_json("block-unblock-ip-command-response.json")
+        # Load test data
+        get_response = util_load_json("block-unblock-ip-command-response.json")
         readable_output = util_load_text_data("block-unblock-ip-command-readable.md")
-        mock_client.get_named_list.return_value.get.return_value = response.get("results")
+
+        # Mock the three API calls that generic_named_list_method makes:
+
+        # 1. Initial get_named_list call to get the list ID
+        requests_mock.get(f"{BASE_URL}/api/atcfw/v1/named_lists/0", json=get_response, status_code=200)
+
+        # 2. update_named_list API call (POST to add items)
+        requests_mock.post(
+            f"{BASE_URL}/api/atcfw/v1/named_lists/{get_response['results']['id']}/items", json={"success": True}, status_code=200
+        )
+
+        # 3. Final get_named_list call to get updated results
+        requests_mock.get(f"{BASE_URL}/api/atcfw/v1/named_lists/0", json=get_response, status_code=200)
 
         result = block_ip_command(
-            mock_client, {"ip": "0.0.0.0, 0.0.0.1", "custom_list_name": "Test Name", "custom_list_type": "test_type"}
+            blox_client, {"ip": "0.0.0.0, 0.0.0.1", "custom_list_name": "Test Name", "custom_list_type": "test_type"}
         )
 
         assert result.readable_output == readable_output
 
-    def test_unblock_ip_command_success(self, mocker):
+    def test_unblock_ip_command_success(self, blox_client, requests_mock):
         """Test successful IP unblocking"""
-        mock_client = mocker.Mock()
-
-        response = util_load_json("block-unblock-ip-command-response.json")
+        # Load test data
+        get_response = util_load_json("block-unblock-ip-command-response.json")
         readable_output = util_load_text_data("block-unblock-ip-command-readable.md")
-        mock_client.get_named_list.return_value.get.return_value = response.get("results")
+
+        # Mock the three API calls that generic_named_list_method makes for remove operation:
+
+        # 1. Initial get_named_list call to get the list ID
+        requests_mock.get(f"{BASE_URL}/api/atcfw/v1/named_lists/0", json=get_response, status_code=200)
+
+        # 2. remove_named_list_items API call (DELETE to remove items) - needs JSON response
+        requests_mock.post(f"{BASE_URL}/api/atcfw/v1/named_lists/123456/items", json={"success": True}, status_code=200)
+
+        # 3. Final get_named_list call to get updated results
+        requests_mock.get(f"{BASE_URL}/api/atcfw/v1/named_lists/0", json=get_response, status_code=200)
 
         result = unblock_ip_command(
-            mock_client, {"ip": "0.0.0.0, 0.0.0.1", "custom_list_name": "Test Name", "custom_list_type": "test_type"}
+            blox_client, {"ip": "0.0.0.0, 0.0.0.1", "custom_list_name": "Test Name", "custom_list_type": "test_type"}
         )
 
         assert result.readable_output == readable_output
@@ -1052,30 +1444,50 @@ class TestBlockUnblock:
             unblock_domain_command(blox_client, args)
         assert str(e.value) == error_msg
 
-    def test_block_domain_command_success(self, mocker):
+    def test_block_domain_command_success(self, blox_client, requests_mock):
         """Test successful domain blocking"""
-        mock_client = mocker.Mock()
-
-        response = util_load_json("block-unblock-domain-command-response.json")
+        # Load test data
+        get_response = util_load_json("block-unblock-domain-command-response.json")
         readable_output = util_load_text_data("block-unblock-domain-command-readable.md")
-        mock_client.get_named_list.return_value.get.return_value = response.get("results")
+
+        # Mock the three API calls that generic_named_list_method makes:
+
+        # 1. Initial get_named_list call to get the list ID
+        requests_mock.get(f"{BASE_URL}/api/atcfw/v1/named_lists/0", json=get_response, status_code=200)
+
+        # 2. update_named_list API call (POST to add items)
+        requests_mock.post(
+            f"{BASE_URL}/api/atcfw/v1/named_lists/{get_response['results']['id']}/items", json={"success": True}, status_code=200
+        )
+
+        # 3. Final get_named_list call to get updated results
+        requests_mock.get(f"{BASE_URL}/api/atcfw/v1/named_lists/0", json=get_response, status_code=200)
 
         result = block_domain_command(
-            mock_client, {"domain": "test.com, test.org", "custom_list_name": "Test Name", "custom_list_type": "test_type"}
+            blox_client, {"domain": "test.com, test.org", "custom_list_name": "Test Name", "custom_list_type": "test_type"}
         )
 
         assert result.readable_output == readable_output
 
-    def test_unblock_domain_command_success(self, mocker):
+    def test_unblock_domain_command_success(self, blox_client, requests_mock):
         """Test successful domain unblocking"""
-        mock_client = mocker.Mock()
-
-        response = util_load_json("block-unblock-domain-command-response.json")
+        # Load test data
+        get_response = util_load_json("block-unblock-domain-command-response.json")
         readable_output = util_load_text_data("block-unblock-domain-command-readable.md")
-        mock_client.get_named_list.return_value.get.return_value = response.get("results")
+
+        # Mock the three API calls that generic_named_list_method makes for remove operation:
+
+        # 1. Initial get_named_list call to get the list ID
+        requests_mock.get(f"{BASE_URL}/api/atcfw/v1/named_lists/0", json=get_response, status_code=200)
+
+        # 2. remove_named_list_items API call (DELETE to remove items) - needs JSON response
+        requests_mock.post(f"{BASE_URL}/api/atcfw/v1/named_lists/123456/items", json={"success": True}, status_code=200)
+
+        # 3. Final get_named_list call to get updated results
+        requests_mock.get(f"{BASE_URL}/api/atcfw/v1/named_lists/0", json=get_response, status_code=200)
 
         result = unblock_domain_command(
-            mock_client, {"domain": "test.com, test.org", "custom_list_name": "Test Name", "custom_list_type": "test_type"}
+            blox_client, {"domain": "test.com, test.org", "custom_list_name": "Test Name", "custom_list_type": "test_type"}
         )
 
         assert result.readable_output == readable_output
@@ -1100,16 +1512,24 @@ class TestBlockUnblock:
             infobloxcloud_customlist_indicator_remove(blox_client, args)
         assert str(e.value) == error_msg
 
-    def test_infobloxcloud_customlist_indicator_remove_success(self, mocker):
+    def test_infobloxcloud_customlist_indicator_remove_success(self, blox_client, requests_mock):
         """Test successful indicator removal"""
-        mock_client = mocker.Mock()
-
-        response = util_load_json("infobloxcloud-customlist-indicator-remove-response.json")
+        get_response = util_load_json("infobloxcloud-customlist-indicator-remove-response.json")
         readable_output = util_load_text_data("infobloxcloud-customlist-indicator-remove-readable.md")
-        mock_client.get_named_list.return_value.get.return_value = response.get("results")
+
+        # 1. Initial get_named_list call to get the list ID
+        requests_mock.get(f"{BASE_URL}/api/atcfw/v1/named_lists/0", json=get_response, status_code=200)
+
+        # 2. update_named_list API call (POST to add items)
+        requests_mock.delete(
+            f"{BASE_URL}/api/atcfw/v1/named_lists/{get_response['results']['id']}/items", json={"success": True}, status_code=200
+        )
+
+        # 3. Final get_named_list call to get updated results
+        requests_mock.get(f"{BASE_URL}/api/atcfw/v1/named_lists/0", json=get_response, status_code=200)
 
         result = infobloxcloud_customlist_indicator_remove(
-            mock_client, {"indicators": "example.com", "custom_list_name": "Test Name", "custom_list_type": "test_type"}
+            blox_client, {"indicators": "example.com", "custom_list_name": "Test Name", "custom_list_type": "test_type"}
         )
 
         assert result.readable_output == readable_output
@@ -1199,8 +1619,8 @@ class TestDomainCommand:
         assert str(error_msg.value) == MESSAGES["REQUIRED_ARGUMENT"].format("domain")
 
 
-class TestListInsights:
-    """Tests for list_insights command."""
+class TestListSOCInsights:
+    """Tests for list_soc_insights command."""
 
     @pytest.fixture
     def return_data(self):
@@ -1208,49 +1628,53 @@ class TestListInsights:
         response = util_load_json("soc-insights-list.json")
         return response
 
-    def test_list_insights_with_no_filters(self, return_data, mocker):
-        """Test list_insights command with no filters applied."""
+    def test_list_soc_insights_with_no_filters(self, return_data, blox_client, requests_mock):
+        """Test list_soc_insights command with no filters applied."""
+        # Mock the soc_insights_list API call
+        requests_mock.get(f"{BASE_URL}/api/v1/insights", json=return_data, status_code=200)
 
-        mock_client = mocker.Mock()
-        mock_client.soc_insights_list.return_value = return_data
-        result = list_insights_command(mock_client, {})
+        result = list_soc_insights_command(blox_client, {})
 
-        assert result.outputs_prefix == "InfobloxCloud.Insight"
+        assert result.outputs_prefix == "InfobloxCloud.SOCInsight"
         assert result.outputs_key_field == "insightId"
         assert len(result.outputs) == 3
         assert result.readable_output == util_load_text_data("soc-insights-list-readable.md")
         assert result.outputs == return_data.get("insightList")
 
-    def test_list_insights_with_filters(self, return_data, mocker):
-        """Test list_insights command with filters applied."""
+    def test_list_soc_insights_with_filters(self, return_data, blox_client, requests_mock):
+        """Test list_soc_insights command with filters applied."""
         args = {"status": "OPEN", "priority": "HIGH", "threat_type": "MALWARE"}
 
-        mock_client = mocker.Mock()
-        mock_client.soc_insights_list.return_value = return_data
-        list_insights_command(mock_client, args)
+        # Mock the soc_insights_list API call
+        requests_mock.get(f"{BASE_URL}/api/v1/insights", json=return_data, status_code=200)
 
-        # Verify the parameters were passed correctly
-        mock_client.soc_insights_list.assert_called_once_with({"status": "OPEN", "priority": "HIGH", "threat_type": "MALWARE"})
+        list_soc_insights_command(blox_client, args)
 
-    def test_list_insights_with_empty_response(self, mocker):
-        """Test list_insights command with empty response."""
+        # Verify the parameters were passed correctly to the API
+        request = requests_mock.request_history[0]
+        assert request.qs["status"] == ["open"]
+        assert request.qs["priority"] == ["high"]
+        assert request.qs["threat_type"] == ["malware"]
 
-        mock_client = mocker.Mock()
-        mock_client.soc_insights_list.return_value = {"insightList": []}
-        result = list_insights_command(mock_client, {})
+    def test_list_soc_insights_with_empty_response(self, blox_client, requests_mock):
+        """Test list_soc_insights command with empty response."""
+        # Mock empty API response
+        requests_mock.get(f"{BASE_URL}/api/v1/insights", json={"insightList": []}, status_code=200)
+
+        result = list_soc_insights_command(blox_client, {})
 
         assert result.raw_response == []
 
 
-class TestListInsightIndicators:
-    """Tests for list_insight_indicators_command command."""
+class TestListSOCInsightIndicators:
+    """Tests for list_soc_insight_indicators_command command."""
 
     @pytest.fixture
     def indicators_data(self):
         """Load test data for indicators."""
         return util_load_json("insight-indicators-list-command-response.json")
 
-    def test_list_insight_indicators_command_success(self, indicators_data, blox_client, requests_mock):
+    def test_list_soc_insight_indicators_command_success(self, indicators_data, blox_client, requests_mock):
         """Test successful listing of insight indicators."""
 
         requests_mock.get(
@@ -1259,22 +1683,22 @@ class TestListInsightIndicators:
             status_code=200,
         )
 
-        args = {"insight_id": "insight-123"}
-        result = list_insight_indicators_command(blox_client, args)
+        args = {"soc_insight_id": "insight-123"}
+        result = list_soc_insight_indicators_command(blox_client, args)
 
         expected_readable = util_load_text_data("insight-indicators-list-command-readable.md")
         assert result.outputs_prefix == "InfobloxCloud.Indicator"
         assert result.readable_output == expected_readable
 
-    def test_list_insight_indicators_command_empty_insight_id(self, blox_client):
+    def test_list_soc_insight_indicators_command_empty_insight_id(self, blox_client):
         """Test with empty insight ID."""
 
-        args = {"insight_id": ""}
+        args = {"soc_insight_id": ""}
         with pytest.raises(ValueError) as e:
-            list_insight_indicators_command(blox_client, args)
-        assert str(e.value) == MESSAGES["REQUIRED_ARGUMENT"].format("insight_id")
+            list_soc_insight_indicators_command(blox_client, args)
+        assert str(e.value) == MESSAGES["REQUIRED_ARGUMENT"].format("soc_insight_id")
 
-    def test_list_insight_indicators_command_with_time_range(self, indicators_data, requests_mock, blox_client):
+    def test_list_soc_insight_indicators_command_with_time_range(self, indicators_data, requests_mock, blox_client):
         """Test filtering indicators by time range."""
 
         requests_mock.get(
@@ -1283,22 +1707,22 @@ class TestListInsightIndicators:
             status_code=200,
         )
 
-        args = {"insight_id": "insight-123", "start_time": "2025-07-01T00:00:00Z", "end_time": "2025-07-31T23:59:59Z"}
-        list_insight_indicators_command(blox_client, args)
+        args = {"soc_insight_id": "insight-123", "start_time": "2025-07-01T00:00:00Z", "end_time": "2025-07-31T23:59:59Z"}
+        list_soc_insight_indicators_command(blox_client, args)
 
         request = requests_mock.request_history[0]
         assert request.qs.get("from") == ["2025-07-01t00:00:00.000"]
         assert request.qs.get("to") == ["2025-07-31t23:59:59.000"]
 
-    def test_list_insight_indicators_command_with_invalid_time_range(self, blox_client):
+    def test_list_soc_insight_indicators_command_with_invalid_time_range(self, blox_client):
         """Test filtering indicators by time range."""
 
-        args = {"insight_id": "insight-123", "start_time": "invalid-time", "end_time": "invalid-time"}
+        args = {"soc_insight_id": "insight-123", "start_time": "invalid-time", "end_time": "invalid-time"}
         with pytest.raises(ValueError) as e:
-            list_insight_indicators_command(blox_client, args)
+            list_soc_insight_indicators_command(blox_client, args)
         assert str(e.value) == 'Invalid date: "start_time"="invalid-time"'
 
-    def test_list_insight_indicators_command_empty_response(self, blox_client, requests_mock):
+    def test_list_soc_insight_indicators_command_empty_response(self, blox_client, requests_mock):
         """Test handling of empty response."""
 
         requests_mock.get(
@@ -1307,22 +1731,22 @@ class TestListInsightIndicators:
             status_code=200,
         )
 
-        args = {"insight_id": "insight-123"}
-        result = list_insight_indicators_command(blox_client, args)
+        args = {"soc_insight_id": "insight-123"}
+        result = list_soc_insight_indicators_command(blox_client, args)
 
         assert result.readable_output == "No indicators found."
         assert result.raw_response == []
 
 
-class TestListInsightEvents:
-    """Tests for list_insight_events_command command."""
+class TestListSOCInsightEvents:
+    """Tests for list_soc_insight_events_command command."""
 
     @pytest.fixture
     def events_data(self):
         """Load test data for events."""
         return util_load_json("insight-events-list-command-response.json")
 
-    def test_list_insight_events_command_success(self, events_data, blox_client, requests_mock):
+    def test_list_soc_insight_events_command_success(self, events_data, blox_client, requests_mock):
         """Test successful listing of insight events."""
 
         requests_mock.get(
@@ -1331,14 +1755,14 @@ class TestListInsightEvents:
             status_code=200,
         )
 
-        args = {"insight_id": "insight-123"}
-        result = list_insight_events_command(blox_client, args)
+        args = {"soc_insight_id": "insight-123"}
+        result = list_soc_insight_events_command(blox_client, args)
 
         expected_readable = util_load_text_data("insight-events-list-command-readable.md")
         assert result.readable_output == expected_readable
         assert result.outputs_prefix == "InfobloxCloud.Event"
 
-    def test_list_insight_events_command_with_device_ip(self, events_data, blox_client, requests_mock):
+    def test_list_soc_insight_events_command_with_device_ip(self, events_data, blox_client, requests_mock):
         """Test filtering events by device IP."""
 
         requests_mock.get(
@@ -1347,30 +1771,30 @@ class TestListInsightEvents:
             status_code=200,
         )
 
-        args = {"insight_id": "insight-123", "device_ip": "0.0.0.0"}
-        list_insight_events_command(blox_client, args)
+        args = {"soc_insight_id": "insight-123", "device_ip": "0.0.0.0"}
+        list_soc_insight_events_command(blox_client, args)
 
         request = requests_mock.request_history[0]
         assert request.qs.get("device_ip") == ["0.0.0.0"]
 
-    def test_list_insight_events_command_invalid_ip(self, blox_client):
+    def test_list_soc_insight_events_command_invalid_ip(self, blox_client):
         """Test validation of invalid IP address."""
 
-        args = {"insight_id": "insight-123", "device_ip": "invalid-ip"}
+        args = {"soc_insight_id": "insight-123", "device_ip": "invalid-ip"}
         with pytest.raises(ValueError) as e:
-            list_insight_events_command(blox_client, args)
+            list_soc_insight_events_command(blox_client, args)
 
         assert str(e.value) == MESSAGES["INVALID_VALUE"].format("invalid-ip", "device_ip")
 
-    def test_list_insight_events_command_empty_insight_id(self, blox_client):
+    def test_list_soc_insight_events_command_empty_insight_id(self, blox_client):
         """Test with empty insight ID."""
 
-        args = {"insight_id": ""}
+        args = {"soc_insight_id": ""}
         with pytest.raises(ValueError) as e:
-            list_insight_events_command(blox_client, args)
-        assert str(e.value) == MESSAGES["REQUIRED_ARGUMENT"].format("insight_id")
+            list_soc_insight_events_command(blox_client, args)
+        assert str(e.value) == MESSAGES["REQUIRED_ARGUMENT"].format("soc_insight_id")
 
-    def test_list_insight_events_command_with_time_range(self, events_data, requests_mock, blox_client):
+    def test_list_soc_insight_events_command_with_time_range(self, events_data, requests_mock, blox_client):
         """Test filtering events by time range."""
 
         requests_mock.get(
@@ -1379,31 +1803,31 @@ class TestListInsightEvents:
             status_code=200,
         )
 
-        args = {"insight_id": "insight-123", "start_time": "2025-07-01T00:00:00Z", "end_time": "2025-07-31T23:59:59Z"}
-        list_insight_events_command(blox_client, args)
+        args = {"soc_insight_id": "insight-123", "start_time": "2025-07-01T00:00:00Z", "end_time": "2025-07-31T23:59:59Z"}
+        list_soc_insight_events_command(blox_client, args)
 
         request = requests_mock.request_history[0]
         assert request.qs.get("from") == ["2025-07-01t00:00:00.000"]
         assert request.qs.get("to") == ["2025-07-31t23:59:59.000"]
 
-    def test_list_insight_events_command_with_invalid_time_range(self, blox_client):
+    def test_list_soc_insight_events_command_with_invalid_time_range(self, blox_client):
         """Test filtering events by time range."""
 
-        args = {"insight_id": "insight-123", "start_time": "invalid-time", "end_time": "invalid-time"}
+        args = {"soc_insight_id": "insight-123", "start_time": "invalid-time", "end_time": "invalid-time"}
         with pytest.raises(ValueError) as e:
-            list_insight_events_command(blox_client, args)
+            list_soc_insight_events_command(blox_client, args)
         assert str(e.value) == 'Invalid date: "start_time"="invalid-time"'
 
 
-class TestListInsightAssets:
-    """Tests for list_insight_assets_command command."""
+class TestListSOCInsightAssets:
+    """Tests for list_soc_insight_assets_command command."""
 
     @pytest.fixture
     def assets_data(self):
         """Load test data for assets."""
         return util_load_json("insight-assets-list-command-response.json")
 
-    def test_list_insight_assets_command_success(self, assets_data, requests_mock, blox_client):
+    def test_list_soc_insight_assets_command_success(self, assets_data, requests_mock, blox_client):
         """Test successful listing of insight assets."""
 
         requests_mock.get(
@@ -1412,22 +1836,22 @@ class TestListInsightAssets:
             status_code=200,
         )
 
-        args = {"insight_id": "insight-123"}
-        result = list_insight_assets_command(blox_client, args)
+        args = {"soc_insight_id": "insight-123"}
+        result = list_soc_insight_assets_command(blox_client, args)
 
         expected_readable = util_load_text_data("insight-assets-list-command-readable.md")
         assert result.readable_output == expected_readable
         assert result.outputs_prefix == "InfobloxCloud.Asset"
 
-    def test_list_insight_assets_command_empty_insight_id(self, blox_client):
+    def test_list_soc_insight_assets_command_empty_insight_id(self, blox_client):
         """Test with empty insight ID."""
 
-        args = {"insight_id": ""}
+        args = {"soc_insight_id": ""}
         with pytest.raises(ValueError) as e:
-            list_insight_assets_command(blox_client, args)
-        assert str(e.value) == MESSAGES["REQUIRED_ARGUMENT"].format("insight_id")
+            list_soc_insight_assets_command(blox_client, args)
+        assert str(e.value) == MESSAGES["REQUIRED_ARGUMENT"].format("soc_insight_id")
 
-    def test_list_insight_assets_command_with_ip_filter(self, assets_data, requests_mock, blox_client):
+    def test_list_soc_insight_assets_command_with_ip_filter(self, assets_data, requests_mock, blox_client):
         """Test filtering assets by IP address."""
 
         requests_mock.get(
@@ -1436,13 +1860,13 @@ class TestListInsightAssets:
             status_code=200,
         )
 
-        args = {"insight_id": "insight-123", "qip": "0.0.0.0"}
-        list_insight_assets_command(blox_client, args)
+        args = {"soc_insight_id": "insight-123", "qip": "0.0.0.0"}
+        list_soc_insight_assets_command(blox_client, args)
 
         request = requests_mock.request_history[0]
         assert request.qs.get("qip") == ["0.0.0.0"]
 
-    def test_list_insight_assets_command_with_mac_filter(self, assets_data, requests_mock, blox_client):
+    def test_list_soc_insight_assets_command_with_mac_filter(self, assets_data, requests_mock, blox_client):
         """Test filtering assets by MAC address."""
 
         requests_mock.get(
@@ -1451,13 +1875,13 @@ class TestListInsightAssets:
             status_code=200,
         )
 
-        args = {"insight_id": "insight-123", "cmac": "00:00:00:00:00:00"}
-        list_insight_assets_command(blox_client, args)
+        args = {"soc_insight_id": "insight-123", "cmac": "00:00:00:00:00:00"}
+        list_soc_insight_assets_command(blox_client, args)
 
         request = requests_mock.request_history[0]
         assert request.qs.get("cmac") == ["00:00:00:00:00:00"]
 
-    def test_list_insight_assets_command_with_time_range(self, assets_data, requests_mock, blox_client):
+    def test_list_soc_insight_assets_command_with_time_range(self, assets_data, requests_mock, blox_client):
         """Test filtering assets by time range."""
 
         requests_mock.get(
@@ -1466,22 +1890,22 @@ class TestListInsightAssets:
             status_code=200,
         )
 
-        args = {"insight_id": "insight-123", "start_time": "2025-07-01T00:00:00Z", "end_time": "2025-07-31T23:59:59Z"}
-        list_insight_assets_command(blox_client, args)
+        args = {"soc_insight_id": "insight-123", "start_time": "2025-07-01T00:00:00Z", "end_time": "2025-07-31T23:59:59Z"}
+        list_soc_insight_assets_command(blox_client, args)
 
         request = requests_mock.request_history[0]
         assert request.qs.get("from") == ["2025-07-01t00:00:00.000"]
         assert request.qs.get("to") == ["2025-07-31t23:59:59.000"]
 
-    def test_list_insight_assets_command_with_invalid_time_range(self, blox_client):
+    def test_list_soc_insight_assets_command_with_invalid_time_range(self, blox_client):
         """Test filtering assets by time range."""
 
-        args = {"insight_id": "insight-123", "start_time": "invalid-time", "end_time": "invalid-time"}
+        args = {"soc_insight_id": "insight-123", "start_time": "invalid-time", "end_time": "invalid-time"}
         with pytest.raises(ValueError) as e:
-            list_insight_assets_command(blox_client, args)
+            list_soc_insight_assets_command(blox_client, args)
         assert str(e.value) == 'Invalid date: "start_time"="invalid-time"'
 
-    def test_list_insight_assets_command_empty_response(self, requests_mock, blox_client):
+    def test_list_soc_insight_assets_command_empty_response(self, requests_mock, blox_client):
         """Test handling of empty response."""
 
         requests_mock.get(
@@ -1490,40 +1914,40 @@ class TestListInsightAssets:
             status_code=200,
         )
 
-        args = {"insight_id": "insight-123"}
-        result = list_insight_assets_command(blox_client, args)
+        args = {"soc_insight_id": "insight-123"}
+        result = list_soc_insight_assets_command(blox_client, args)
 
         assert result.readable_output == "No assets found."
         assert result.raw_response == []
 
-    def test_list_insight_assets_command_invalid_ip(self, blox_client):
+    def test_list_soc_insight_assets_command_invalid_ip(self, blox_client):
         """Test validation of invalid IP address."""
 
-        args = {"insight_id": "insight-123", "qip": "invalid-ip"}
+        args = {"soc_insight_id": "insight-123", "qip": "invalid-ip"}
         with pytest.raises(ValueError) as e:
-            list_insight_assets_command(blox_client, args)
+            list_soc_insight_assets_command(blox_client, args)
 
         assert str(e.value) == MESSAGES["INVALID_VALUE"].format("invalid-ip", "qip")
 
-    def test_list_insight_assets_command_invalid_mac(self, blox_client):
+    def test_list_soc_insight_assets_command_invalid_mac(self, blox_client):
         """Test validation of invalid MAC address."""
 
-        args = {"insight_id": "insight-123", "cmac": "invalid-mac"}
+        args = {"soc_insight_id": "insight-123", "cmac": "invalid-mac"}
         with pytest.raises(ValueError) as e:
-            list_insight_assets_command(blox_client, args)
+            list_soc_insight_assets_command(blox_client, args)
 
         assert str(e.value) == MESSAGES["INVALID_VALUE"].format("invalid-mac", "cmac")
 
 
-class TestListInsightComments:
-    """Tests for list_insight_comments_command command."""
+class TestListSOCInsightComments:
+    """Tests for list_soc_insight_comments_command command."""
 
     @pytest.fixture
     def comments_data(self):
         """Load test data for comments."""
         return util_load_json("insight-comments-list-command-response.json")
 
-    def test_list_insight_comments_command_success(self, comments_data, requests_mock, blox_client):
+    def test_list_soc_insight_comments_command_success(self, comments_data, requests_mock, blox_client):
         """Test successful listing of insight comments."""
 
         requests_mock.get(
@@ -1532,15 +1956,15 @@ class TestListInsightComments:
             status_code=200,
         )
 
-        args = {"insight_id": "insight-123"}
-        result = list_insight_comments_command(blox_client, args)
+        args = {"soc_insight_id": "insight-123"}
+        result = list_soc_insight_comments_command(blox_client, args)
 
         expected_readable = util_load_text_data("insight-comments-list-command-readable.md")
         assert result.readable_output == expected_readable
         assert result.outputs_prefix == "InfobloxCloud.Comment"
         assert len(result.outputs) == 3
 
-    def test_list_insight_comments_command_with_limit(self, comments_data, requests_mock, blox_client):
+    def test_list_soc_insight_comments_command_with_limit(self, comments_data, requests_mock, blox_client):
         """Test limiting the number of comments returned."""
 
         requests_mock.get(
@@ -1549,20 +1973,20 @@ class TestListInsightComments:
             status_code=200,
         )
 
-        args = {"insight_id": "insight-123", "limit": "2"}
-        result = list_insight_comments_command(blox_client, args)
+        args = {"soc_insight_id": "insight-123", "limit": "2"}
+        result = list_soc_insight_comments_command(blox_client, args)
 
         assert len(result.outputs) == 2
 
-    def test_list_insight_comments_command_with_invalid_limit(self, blox_client):
+    def test_list_soc_insight_comments_command_with_invalid_limit(self, blox_client):
         """Test invalid limit value."""
 
-        args = {"insight_id": "insight-123", "limit": "-1"}
+        args = {"soc_insight_id": "insight-123", "limit": "-1"}
         with pytest.raises(ValueError) as e:
-            list_insight_comments_command(blox_client, args)
+            list_soc_insight_comments_command(blox_client, args)
         assert str(e.value) == "Limit should not be less than 0."
 
-    def test_list_insight_comments_with_time_range(self, comments_data, requests_mock, blox_client):
+    def test_list_soc_insight_comments_with_time_range(self, comments_data, requests_mock, blox_client):
         """Test filtering comments by time range."""
 
         requests_mock.get(
@@ -1571,22 +1995,22 @@ class TestListInsightComments:
             status_code=200,
         )
 
-        args = {"insight_id": "insight-123", "start_time": "2025-07-01T00:00:00Z", "end_time": "2025-07-31T23:59:59Z"}
-        list_insight_comments_command(blox_client, args)
+        args = {"soc_insight_id": "insight-123", "start_time": "2025-07-01T00:00:00Z", "end_time": "2025-07-31T23:59:59Z"}
+        list_soc_insight_comments_command(blox_client, args)
 
         request = requests_mock.request_history[0]
         assert request.qs.get("from") == ["2025-07-01t00:00:00.000"]
         assert request.qs.get("to") == ["2025-07-31t23:59:59.000"]
 
-    def test_list_insight_comments_command_with_invalid_time_range(self, blox_client):
+    def test_list_soc_insight_comments_command_with_invalid_time_range(self, blox_client):
         """Test filtering comments by time range."""
 
-        args = {"insight_id": "insight-123", "start_time": "invalid-time", "end_time": "invalid-time"}
+        args = {"soc_insight_id": "insight-123", "start_time": "invalid-time", "end_time": "invalid-time"}
         with pytest.raises(ValueError) as e:
-            list_insight_comments_command(blox_client, args)
+            list_soc_insight_comments_command(blox_client, args)
         assert str(e.value) == 'Invalid date: "start_time"="invalid-time"'
 
-    def test_list_insight_comments_command_empty_response(self, requests_mock, blox_client):
+    def test_list_soc_insight_comments_command_empty_response(self, requests_mock, blox_client):
         """Test handling of empty response."""
 
         requests_mock.get(
@@ -1595,16 +2019,16 @@ class TestListInsightComments:
             status_code=200,
         )
 
-        args = {"insight_id": "insight-123"}
-        result = list_insight_comments_command(blox_client, args)
+        args = {"soc_insight_id": "insight-123"}
+        result = list_soc_insight_comments_command(blox_client, args)
 
         assert result.readable_output == "No comments found."
         assert result.raw_response == []
 
-    def test_list_insight_comments_command_empty_insight_id(self, blox_client):
+    def test_list_soc_insight_comments_command_empty_insight_id(self, blox_client):
         """Test with empty insight ID."""
 
-        args = {"insight_id": ""}
+        args = {"soc_insight_id": ""}
         with pytest.raises(ValueError) as e:
-            list_insight_comments_command(blox_client, args)
-        assert str(e.value) == MESSAGES["REQUIRED_ARGUMENT"].format("insight_id")
+            list_soc_insight_comments_command(blox_client, args)
+        assert str(e.value) == MESSAGES["REQUIRED_ARGUMENT"].format("soc_insight_id")

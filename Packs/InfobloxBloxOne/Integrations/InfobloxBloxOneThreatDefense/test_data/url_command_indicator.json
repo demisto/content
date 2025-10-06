@@ -17,14 +17,14 @@
             }
         ],
         "Malicious": {
-            "Vendor": "InfobloxThreatDefensewithDDI",
+            "Vendor": "InfobloxThreatDefense",
             "Description": "Scam advertised. Lures victims to put their money into fake investments."
         }
     },
     "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": {
         "Indicator": "https://test.com",
         "Type": "url",
-        "Vendor": "InfobloxThreatDefensewithDDI",
+        "Vendor": "InfobloxThreatDefense",
         "Score": 3
     }
 }

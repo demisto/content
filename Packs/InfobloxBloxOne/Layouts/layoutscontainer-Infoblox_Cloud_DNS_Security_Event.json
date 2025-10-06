@@ -31,7 +31,7 @@
             }
         ]
     },
-    "description": "Layout for Infoblox Cloud Insight",
+    "description": "Layout for Infoblox Cloud DNS Security Event",
     "detailsV2": {
         "tabs": [
             {
@@ -122,7 +122,7 @@
                         "type": "notes",
                         "w": 1,
                         "x": 2,
-                        "y": 7
+                        "y": 8
                     },
                     {
                         "displayType": "ROW",
@@ -135,7 +135,7 @@
                         "type": "workplan",
                         "w": 2,
                         "x": 0,
-                        "y": 7
+                        "y": 8
                     },
                     {
                         "displayType": "ROW",
@@ -149,7 +149,7 @@
                         "type": "linkedIncidents",
                         "w": 2,
                         "x": 0,
-                        "y": 11
+                        "y": 12
                     },
                     {
                         "displayType": "ROW",
@@ -162,7 +162,7 @@
                         "type": "childInv",
                         "w": 1,
                         "x": 2,
-                        "y": 13
+                        "y": 14
                     },
                     {
                         "displayType": "ROW",
@@ -175,7 +175,7 @@
                         "type": "evidence",
                         "w": 1,
                         "x": 2,
-                        "y": 11
+                        "y": 12
                     },
                     {
                         "displayType": "ROW",
@@ -189,7 +189,7 @@
                         "type": "team",
                         "w": 1,
                         "x": 1,
-                        "y": 13
+                        "y": 14
                     },
                     {
                         "displayType": "ROW",
@@ -204,7 +204,7 @@
                         "type": "indicators",
                         "w": 2,
                         "x": 0,
-                        "y": 9
+                        "y": 10
                     },
                     {
                         "displayType": "CARD",
@@ -225,7 +225,7 @@
                                 "fieldId": "dbotmodified",
                                 "height": 53,
                                 "id": "incident-modified-field",
-                                "index": 1,
+                                "index": 2,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -234,7 +234,7 @@
                                 "fieldId": "dbotduedate",
                                 "height": 53,
                                 "id": "incident-dueDate-field",
-                                "index": 2,
+                                "index": 3,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -244,7 +244,7 @@
                                 "fieldId": "dbotcreated",
                                 "height": 53,
                                 "id": "incident-created-field",
-                                "index": 3,
+                                "index": 4,
                                 "listId": "caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289",
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -255,7 +255,7 @@
                                 "fieldId": "dbotclosed",
                                 "height": 53,
                                 "id": "incident-closed-field",
-                                "index": 4,
+                                "index": 5,
                                 "listId": "caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289",
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -309,11 +309,11 @@
                         "static": false,
                         "w": 1,
                         "x": 0,
-                        "y": 13
+                        "y": 14
                     },
                     {
                         "displayType": "CARD",
-                        "h": 2,
+                        "h": 3,
                         "i": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
                         "isVisible": true,
                         "items": [
@@ -336,100 +336,233 @@
                         "y": 5
                     },
                     {
+                        "description": "",
                         "displayType": "CARD",
-                        "h": 3,
+                        "h": 5,
                         "hideName": false,
                         "i": "caseinfoid-ed2b7280-60b5-11f0-a7ba-0557ae9694c3",
                         "items": [
                             {
+                                "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "infobloxcloudinsightid",
+                                "fieldId": "infobloxcloudseverity",
                                 "height": 53,
-                                "id": "ced9cce0-60b6-11f0-a7ba-0557ae9694c3",
+                                "id": "591fd250-979e-11f0-946f-8ffabe883e4d",
                                 "index": 0,
+                                "listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "infobloxcloudinsightstatus",
+                                "fieldId": "infobloxcloudconfidence",
                                 "height": 53,
-                                "id": "d43394f0-60b6-11f0-a7ba-0557ae9694c3",
+                                "id": "1f5e8140-97b4-11f0-946f-8ffabe883e4d",
                                 "index": 1,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "infobloxcloudinsightpriority",
+                                "fieldId": "devicename",
                                 "height": 53,
-                                "id": "d6028890-60b6-11f0-a7ba-0557ae9694c3",
+                                "id": "ea7f2960-983b-11f0-946f-8ffabe883e4d",
                                 "index": 2,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "incidentlink",
+                                "fieldId": "infobloxcloudprivateip",
                                 "height": 53,
-                                "id": "cc269bd0-66ed-11f0-a869-3f61b7f87792",
+                                "id": "ed8507a0-9841-11f0-a80f-4be942cb5169",
                                 "index": 3,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
-							{
-								"endCol": 2,
-								"fieldId": "comment",
-								"height": 53,
-								"id": "faf784f0-6ea5-11f0-8fd3-99a72aeedf9f",
-								"index": 4,
-								"sectionItemType": "field",
-								"startCol": 0
-							}
-                        ],
-                        "maxW": 3,
-                        "minH": 1,
-                        "moved": false,
-                        "name": "Insight Details",
-                        "static": false,
-                        "w": 1,
-                        "x": 1,
-                        "y": 0
-                    },
-                    {
-                        "displayType": "CARD",
-                        "h": 2,
-                        "hideItemTitleOnlyOne": false,
-                        "hideName": false,
-                        "i": "caseinfoid-eee5b030-60b6-11f0-a7ba-0557ae9694c3",
-                        "items": [
                             {
+                                "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "infobloxcloudeventcount",
+                                "fieldId": "macaddress",
                                 "height": 53,
-                                "id": "12d55d60-60b7-11f0-a7ba-0557ae9694c3",
-                                "index": 0,
+                                "id": "2425c480-983c-11f0-946f-8ffabe883e4d",
+                                "index": 4,
+                                "listId": "caseinfoid-ed2b7280-60b5-11f0-a7ba-0557ae9694c3",
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "infobloxcloudeventnotblockedcount",
-                                "height": 22,
-                                "id": "173d9980-60b7-11f0-a7ba-0557ae9694c3",
-                                "index": 1,
+                                "fieldId": "infobloxclouddnsview",
+                                "height": 53,
+                                "id": "fd484630-983b-11f0-946f-8ffabe883e4d",
+                                "index": 5,
                                 "sectionItemType": "field",
                                 "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "infobloxcloudnetwork",
+                                "height": 53,
+                                "id": "3cf38f60-983c-11f0-946f-8ffabe883e4d",
+                                "index": 6,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "infobloxcloudapplicationname",
+                                "height": 53,
+                                "id": "96b48ef0-984b-11f0-946f-8ffabe883e4d",
+                                "index": 7,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "infobloxcloudapplicationcategory",
+                                "height": 53,
+                                "id": "e2a83520-97b3-11f0-946f-8ffabe883e4d",
+                                "index": 8,
+                                "listId": "caseinfoid-eee5b030-60b6-11f0-a7ba-0557ae9694c3",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "infobloxclouduser",
+                                "height": 53,
+                                "id": "a3c60c40-984b-11f0-946f-8ffabe883e4d",
+                                "index": 9,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "infobloxcloudusergroups",
+                                "height": 53,
+                                "id": "abec88e0-984b-11f0-946f-8ffabe883e4d",
+                                "index": 10,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "infobloxcloudeventtime",
+                                "height": 53,
+                                "id": "44336050-979e-11f0-946f-8ffabe883e4d",
+                                "index": 0,
+                                "listId": "caseinfoid-ed2b7280-60b5-11f0-a7ba-0557ae9694c3",
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            },
+                            {
+                                "endCol": 4,
+                                "fieldId": "osversion",
+                                "height": 53,
+                                "id": "4bc29b30-983c-11f0-946f-8ffabe883e4d",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            },
+                            {
+                                "endCol": 4,
+                                "fieldId": "infobloxclouddhcpfingerprint",
+                                "height": 53,
+                                "id": "f44c0300-983b-11f0-946f-8ffabe883e4d",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "infobloxcloudendpointgroups",
+                                "height": 53,
+                                "id": "1275dfe0-983c-11f0-946f-8ffabe883e4d",
+                                "index": 3,
+                                "listId": "caseinfoid-ed2b7280-60b5-11f0-a7ba-0557ae9694c3",
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "policyactions",
+                                "height": 53,
+                                "id": "341b0b60-983d-11f0-946f-8ffabe883e4d",
+                                "index": 4,
+                                "listId": "caseinfoid-ed2b7280-60b5-11f0-a7ba-0557ae9694c3",
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "policyid",
+                                "height": 53,
+                                "id": "3928d650-983d-11f0-946f-8ffabe883e4d",
+                                "index": 5,
+                                "listId": "caseinfoid-ed2b7280-60b5-11f0-a7ba-0557ae9694c3",
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            },
+                            {
+                                "endCol": 4,
+                                "fieldId": "infobloxcloudcategory",
+                                "height": 53,
+                                "id": "d604bfd0-984b-11f0-946f-8ffabe883e4d",
+                                "index": 6,
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            },
+                            {
+                                "endCol": 4,
+                                "fieldId": "country",
+                                "height": 53,
+                                "id": "af58a500-983b-11f0-946f-8ffabe883e4d",
+                                "index": 7,
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            },
+                            {
+                                "endCol": 4,
+                                "fieldId": "infobloxcloudrip",
+                                "height": 53,
+                                "id": "55ca1760-983d-11f0-946f-8ffabe883e4d",
+                                "index": 8,
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            },
+                            {
+                                "endCol": 4,
+                                "fieldId": "infobloxcloudrcode",
+                                "height": 53,
+                                "id": "5befbaf0-983d-11f0-946f-8ffabe883e4d",
+                                "index": 9,
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            },
+                            {
+                                "endCol": 4,
+                                "fieldId": "infobloxcloudrdata",
+                                "height": 53,
+                                "id": "589c9850-983d-11f0-946f-8ffabe883e4d",
+                                "index": 10,
+                                "sectionItemType": "field",
+                                "startCol": 2
                             }
                         ],
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
-                        "name": "Insight Event Details",
+                        "name": "DNS Security Event Details",
                         "static": false,
-                        "w": 1,
-                        "x": 2,
-                        "y": 5
+                        "w": 2,
+                        "x": 1,
+                        "y": 0
                     },
                     {
                         "displayType": "CARD",
@@ -438,12 +571,39 @@
                         "i": "caseinfoid-3f32a250-60b7-11f0-a7ba-0557ae9694c3",
                         "items": [
                             {
+                                "endCol": 2,
+                                "fieldId": "infobloxcloudfeedname",
+                                "height": 53,
+                                "id": "1966f490-979e-11f0-946f-8ffabe883e4d",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "infobloxcloudfeedtype",
+                                "height": 53,
+                                "id": "1bd61fd0-979e-11f0-946f-8ffabe883e4d",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "infobloxcloudthreatindicator",
+                                "height": 53,
+                                "id": "0ff951f0-979e-11f0-946f-8ffabe883e4d",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "infobloxcloudfeedsource",
+                                "fieldId": "infobloxcloudthreatproperty",
                                 "height": 53,
-                                "id": "554bad70-60b7-11f0-a7ba-0557ae9694c3",
-                                "index": 0,
+                                "id": "df55ab50-984e-11f0-946f-8ffabe883e4d",
+                                "index": 3,
                                 "listId": "caseinfoid-3f32a250-60b7-11f0-a7ba-0557ae9694c3",
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -453,7 +613,7 @@
                                 "fieldId": "infobloxcloudthreatclass",
                                 "height": 53,
                                 "id": "5815f100-60b7-11f0-a7ba-0557ae9694c3",
-                                "index": 1,
+                                "index": 4,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -462,16 +622,7 @@
                                 "fieldId": "infobloxcloudthreatfamily",
                                 "height": 53,
                                 "id": "598845b0-60b7-11f0-a7ba-0557ae9694c3",
-                                "index": 2,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "infobloxcloudthreattype",
-                                "height": 53,
-                                "id": "4b8d0cb0-66ee-11f0-a869-3f61b7f87792",
-                                "index": 3,
+                                "index": 5,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
@@ -479,81 +630,11 @@
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
-                        "name": "Insight Threat Details",
+                        "name": "DNS Security Event Threat Details",
                         "static": false,
                         "w": 1,
                         "x": 2,
-                        "y": 0
-                    },
-                    {
-                        "displayType": "CARD",
-                        "h": 2,
-                        "hideName": false,
-                        "i": "caseinfoid-e01e5010-60b7-11f0-a7ba-0557ae9694c3",
-                        "items": [
-                            {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "infobloxcloudinsightmostrecenttime",
-                                "height": 53,
-                                "id": "0f1d6900-60b8-11f0-a7ba-0557ae9694c3",
-                                "index": 0,
-                                "listId": "caseinfoid-e01e5010-60b7-11f0-a7ba-0557ae9694c3",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "infobloxcloudinsightstarttime",
-                                "height": 53,
-                                "id": "1a24be70-60b8-11f0-a7ba-0557ae9694c3",
-                                "index": 1,
-                                "listId": "caseinfoid-e01e5010-60b7-11f0-a7ba-0557ae9694c3",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "infobloxcloudinsightpersistenttime",
-                                "height": 53,
-                                "id": "49dbdcc0-60b8-11f0-a7ba-0557ae9694c3",
-                                "index": 2,
-                                "listId": "caseinfoid-e01e5010-60b7-11f0-a7ba-0557ae9694c3",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 4,
-                                "fieldId": "infobloxcloudinsightchangedtime",
-                                "height": 53,
-                                "id": "143b6090-60b8-11f0-a7ba-0557ae9694c3",
-                                "index": 0,
-                                "listId": "caseinfoid-e01e5010-60b7-11f0-a7ba-0557ae9694c3",
-                                "sectionItemType": "field",
-                                "startCol": 2
-                            },
-                            {
-                                "endCol": 4,
-                                "fieldId": "infobloxcloudinsightspreadingtime",
-                                "height": 53,
-                                "id": "44740af0-60b8-11f0-a7ba-0557ae9694c3",
-                                "index": 1,
-                                "sectionItemType": "field",
-                                "startCol": 2
-                            }
-                        ],
-                        "maxW": 3,
-                        "minH": 1,
-                        "moved": false,
-                        "name": "Insight Timeline Details",
-                        "static": false,
-                        "w": 2,
-                        "wrapLabels": true,
-                        "x": 1,
-                        "y": 3
+                        "y": 5
                     }
                 ],
                 "type": "custom"
@@ -1298,6 +1379,10 @@
                         "isVisible": true
                     },
                     {
+                        "fieldId": "incident_positionstackneighbourhood",
+                        "isVisible": true
+                    },
+                    {
                         "fieldId": "incident_processcmd",
                         "isVisible": true
                     },
@@ -1403,6 +1488,10 @@
                     },
                     {
                         "fieldId": "incident_riskname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_riskscorelist",
                         "isVisible": true
                     },
                     {
@@ -1668,8 +1757,8 @@
         ]
     },
     "group": "incident",
-    "id": "Infoblox Cloud Insight",
-    "name": "Infoblox Cloud Insight",
+    "id": "Infoblox Cloud DNS Security Event",
+    "name": "Infoblox Cloud DNS Security Event",
     "quickView": {
         "sections": [
             {
@@ -1723,19 +1812,118 @@
                 "description": "",
                 "fields": [
                     {
-                        "fieldId": "incident_infobloxcloudinsightid",
+                        "fieldId": "incident_infobloxcloudseverity",
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_infobloxcloudinsightstatus",
+                        "fieldId": "incident_infobloxcloudeventtime",
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_infobloxcloudinsightpriority",
+                        "fieldId": "incident_infobloxcloudconfidence",
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_infobloxcloudfeedsource",
+                        "fieldId": "incident_osversion",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_devicename",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_infobloxclouddhcpfingerprint",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_infobloxcloudprivateip",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_infobloxcloudendpointgroups",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_macaddress",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_policyactions",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_infobloxclouddnsview",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_policyid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_infobloxcloudnetwork",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_infobloxcloudcategory",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_infobloxcloudapplicationname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_country",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_infobloxcloudapplicationcategory",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_infobloxcloudrip",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_infobloxclouduser",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_infobloxcloudrcode",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_infobloxcloudusergroups",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_infobloxcloudrdata",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "DNS Security Event Details",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            },
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "incident_infobloxcloudfeedname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_infobloxcloudfeedtype",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_infobloxcloudthreatindicator",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_infobloxcloudthreatproperty",
                         "isVisible": true
                     },
                     {
@@ -1745,38 +1933,10 @@
                     {
                         "fieldId": "incident_infobloxcloudthreatfamily",
                         "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_infobloxcloudinsightmostrecenttime",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_infobloxcloudinsightstarttime",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_infobloxcloudinsightpersistenttime",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_infobloxcloudinsightchangedtime",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_infobloxcloudinsightspreadingtime",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_infobloxcloudeventcount",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_infobloxcloudeventnotblockedcount",
-                        "isVisible": true
                     }
                 ],
                 "isVisible": true,
-                "name": "Insight Details",
+                "name": "DNS Security Event Threat Details",
                 "query": null,
                 "queryType": "",
                 "readOnly": false,
@@ -2582,10 +2742,6 @@
                     },
                     {
                         "fieldId": "incident_riskname",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_rulename",
                         "isVisible": true
                     },
                     {

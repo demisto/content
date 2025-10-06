@@ -4,7 +4,7 @@
     "modified": "2025-07-14T18:13:41.817234783+05:30",
     "name": "Infoblox Cloud Feed Source",
     "ownerOnly": false,
-    "description": "The feed source of the Infoblox Cloud Insight.",
+    "description": "The feed source of the Infoblox Cloud SOC Insight.",
     "cliName": "infobloxcloudfeedsource",
     "type": "shortText",
     "closeForm": false,
@@ -20,7 +20,7 @@
     "hidden": false,
     "openEnded": false,
     "associatedTypes": [
-        "Infoblox Cloud Insight"
+        "Infoblox Cloud SOC Insight"
     ],
     "associatedToAll": false,
     "unmapped": false,

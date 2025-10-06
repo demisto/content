@@ -1,10 +1,10 @@
 {
     "id": "incident_infobloxcloudthreatclass",
     "version": -1,
-    "modified": "2025-07-14T18:16:42.168997276+05:30",
+    "modified": "2025-09-22T14:35:53.174815542+05:30",
     "name": "Infoblox Cloud Threat Class",
     "ownerOnly": false,
-    "description": "The threat class of the Infoblox Cloud Insight. ",
+    "description": "The threat class of the Infoblox Cloud SOC Insight and DNS Security Event. ",
     "cliName": "infobloxcloudthreatclass",
     "type": "shortText",
     "closeForm": false,
@@ -20,7 +20,8 @@
     "hidden": false,
     "openEnded": false,
     "associatedTypes": [
-        "Infoblox Cloud Insight"
+        "Infoblox Cloud SOC Insight",
+        "Infoblox Cloud DNS Security Event"
     ],
     "associatedToAll": false,
     "unmapped": false,

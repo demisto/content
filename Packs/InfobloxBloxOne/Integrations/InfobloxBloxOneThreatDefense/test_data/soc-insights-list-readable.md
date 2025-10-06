@@ -1,4 +1,4 @@
-### Insights
+### SOC Insights
 |ID|Priority|Class|Threat Type|Status|Threat Family|Feed Source|Most Recent At|
 |---|---|---|---|---|---|---|---|
 | insight-001 | HIGH | TI-CONFIGURATIONISSUE | Suspicious | Active | OPENRESOLVER | Insight Detection Framework | 2023-12-01T10:00:00Z |

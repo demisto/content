@@ -5,6 +5,7 @@ from CommonServerUserPython import *
 import ipaddress
 
 SEVERITY_MAP = {"INFO": 1, "MEDIUM": 2, "HIGH": 3, "CRITICAL": 4}
+THREAT_LEVELS = ["LOW", "MEDIUM", "HIGH"]
 INCIDENT_SEVERITY_MAP = {"INFO": "Info", "MEDIUM": "Medium", "HIGH": "High", "CRITICAL": "Critical"}
 INCIDENT_LINK = "https://csp.infoblox.com/#/insights-console/insight/{}/summary"
 ERRORS = {
@@ -13,8 +14,9 @@ ERRORS = {
 MAC_PATTERN = re.compile(
     r"^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})|([0-9a-fA-F]{4}\.[0-9a-fA-F]{4}\.[0-9a-fA-F]{4})|([0-9A-Fa-f]{12})$"
 )
-
+VENDOR_NAME = "InfobloxThreatDefense"
 BASE_URL = "https://csp.infoblox.com"
+DEFAULT_FIRST_FETCH = "24 hours"
 MARKDOWN_CHARS = r"\*_{}[]()#+-!"
 BACKOFF_FACTOR = 7.5  # Consider its double.
 TOTAL_RETRIES = 4
@@ -50,6 +52,7 @@ MESSAGES = {
     "KEY_NOT_FOUND": "Key {} not found in response.",
     "INVALID_VALUE": "The value '{}' is invalid for '{}'.",
     "INVALID_IP_ADDRESS": "The following IP Addresses were found invalid: {}",
+    "INVALID_DNS_EVENT_THREAT_LEVEL": "Invalid threat level configured for parameter 'DNS Event Threat Level' with option: {}",
 }
 
 
@@ -180,41 +183,41 @@ class BloxOneTDClient(BaseClient):
     def soc_insights_list(self, params: dict) -> list[dict]:
         """
         :param params: Dictionary of parameters.
-        :return: List of insights.
+        :return: List of SOC insights.
         """
         url_suffix = "api/v1/insights"
         return self.http_request("GET", url_suffix=url_suffix, params=params)
 
-    def soc_insight_indicators_list(self, params: dict, insight_id: str) -> list[dict]:
+    def soc_insight_indicators_list(self, params: dict, soc_insight_id: str) -> list[dict]:
         """
         :param params: Dictionary of parameters.
-        :return: List of indicators.
+        :return: List of SOC insight indicators.
         """
-        url_suffix = f"api/v1/insights/{insight_id}/indicators"
+        url_suffix = f"api/v1/insights/{soc_insight_id}/indicators"
         return self.http_request("GET", url_suffix=url_suffix, params=params)
 
-    def soc_insight_events_list(self, params: dict, insight_id: str) -> list[dict]:
+    def soc_insight_events_list(self, params: dict, soc_insight_id: str) -> list[dict]:
         """
         :param params: Dictionary of parameters.
-        :return: List of events.
+        :return: List of SOC insight events.
         """
-        url_suffix = f"api/v1/insights/{insight_id}/events"
+        url_suffix = f"api/v1/insights/{soc_insight_id}/events"
         return self.http_request("GET", url_suffix=url_suffix, params=params)
 
-    def soc_insight_assets_list(self, params: dict, insight_id: str) -> list[dict]:
+    def soc_insight_assets_list(self, params: dict, soc_insight_id: str) -> list[dict]:
         """
         :param params: Dictionary of parameters.
-        :return: List of assets.
+        :return: List of SOC insight assets.
         """
-        url_suffix = f"api/v1/insights/{insight_id}/assets"
+        url_suffix = f"api/v1/insights/{soc_insight_id}/assets"
         return self.http_request("GET", url_suffix=url_suffix, params=params)
 
-    def soc_insight_comments_list(self, params: dict, insight_id: str) -> list[dict]:
+    def soc_insight_comments_list(self, params: dict, soc_insight_id: str) -> list[dict]:
         """
         :param params: Dictionary of parameters.
-        :return: List of comments.
+        :return: List of SOC insight comments.
         """
-        url_suffix = f"api/v1/insights/{insight_id}/comments"
+        url_suffix = f"api/v1/insights/{soc_insight_id}/comments"
         return self.http_request("GET", url_suffix=url_suffix, params=params)
 
     def get_named_list(self, params: Dict):
@@ -317,6 +320,16 @@ class BloxOneTDClient(BaseClient):
         return self.http_request(
             method="GET", url_suffix="/api/ddi/v1/dhcp/lease", params={"_filter": f"hardware=='{mac}'", "_limit": 1}
         )
+
+    def list_dns_security_events(self, params: dict) -> list[dict]:
+        """
+        List DNS security events from Infoblox Cloud.
+
+        :param params: Dictionary of parameters for filtering DNS security events.
+        :return: List of DNS security events.
+        """
+        url_suffix = "/api/dnsdata/v2/dns_event"
+        return self.http_request("GET", url_suffix=url_suffix, params=params)
 
 
 def check_empty(x: Any) -> bool:
@@ -572,9 +585,9 @@ def prepare_hr_for_named_list(json_data: Dict[str, Any], table_name: str = "Name
     return tableToMarkdown(table_name, hr_output, headers=headers, removeNull=True)
 
 
-def prepare_hr_for_insights(insights: list[dict[str, Any]]) -> str:
+def prepare_hr_for_soc_insights(insights: list[dict[str, Any]]) -> str:
     """
-    Prepare human-readable for insights command.
+    Prepare human-readable for SOC insights command.
 
     :type insights: list[dict[str, Any]]
     :param insights: List of insights.
@@ -582,7 +595,7 @@ def prepare_hr_for_insights(insights: list[dict[str, Any]]) -> str:
     :rtype: str
     :return: Human readable string for the command.
     """
-    table_name = "Insights"
+    table_name = "SOC Insights"
     hr_output = []
     for insight in insights:
         hr_output.append(
@@ -610,20 +623,20 @@ def prepare_hr_for_insights(insights: list[dict[str, Any]]) -> str:
     return tableToMarkdown(table_name, hr_output, headers=headers, removeNull=True)
 
 
-def prepare_hr_for_insight_indicators(indicators: list[dict[str, Any]], insight_id: str) -> str:
+def prepare_hr_for_soc_insight_indicators(indicators: list[dict[str, Any]], soc_insight_id: str) -> str:
     """
-    Prepare human-readable for insight indicators command.
+    Prepare human-readable for SOC insight indicators command.
 
     :type indicators: list[dict[str, Any]]
     :param indicators: List of indicators.
 
-    :type insight_id: str
-    :param insight_id: ID of the insight.
+    :type soc_insight_id: str
+    :param soc_insight_id: ID of the insight.
 
     :rtype: str
     :return: Human readable string for the command.
     """
-    table_name = f"Indicators for the given Insight: {insight_id}"
+    table_name = f"Indicators for the given SOC Insight: {soc_insight_id}"
     hr_output = []
     for indicator in indicators:
         hr_output.append(
@@ -649,20 +662,20 @@ def prepare_hr_for_insight_indicators(indicators: list[dict[str, Any]], insight_
     return tableToMarkdown(table_name, hr_output, headers=headers, removeNull=True)
 
 
-def prepare_hr_for_insight_events(events: list[dict[str, Any]], insight_id: str) -> str:
+def prepare_hr_for_soc_insight_events(events: list[dict[str, Any]], soc_insight_id: str) -> str:
     """
-    Prepare human-readable for insight events command.
+    Prepare human-readable for SOC insight events command.
 
     :type events: list[dict[str, Any]]
     :param events: List of events.
 
-    :type insight_id: str
-    :param insight_id: ID of the insight.
+    :type soc_insight_id: str
+    :param soc_insight_id: ID of the SOC insight.
 
     :rtype: str
     :return: Human readable string for the command.
     """
-    table_name = f"Events for the given Insight: {insight_id}"
+    table_name = f"Events for the given SOC Insight: {soc_insight_id}"
     hr_output = []
     for event in events:
         hr_output.append(
@@ -686,20 +699,20 @@ def prepare_hr_for_insight_events(events: list[dict[str, Any]], insight_id: str)
     return tableToMarkdown(table_name, hr_output, headers=headers, removeNull=True)
 
 
-def prepare_hr_for_insight_assets(assets: list[dict[str, Any]], insight_id: str) -> str:
+def prepare_hr_for_soc_insight_assets(assets: list[dict[str, Any]], soc_insight_id: str) -> str:
     """
-    Prepare human-readable for insight assets command.
+    Prepare human-readable for SOC insight assets command.
 
     :type assets: list[dict[str, Any]]
     :param assets: List of assets.
 
-    :type insight_id: str
-    :param insight_id: ID of the insight.
+    :type soc_insight_id: str
+    :param soc_insight_id: ID of the insight.
 
     :rtype: str
     :return: Human readable string for the command.
     """
-    table_name = f"Assets for the given Insight: {insight_id}"
+    table_name = f"Assets for the given SOC Insight: {soc_insight_id}"
     hr_output = []
     for asset in assets:
         hr_output.append(
@@ -727,20 +740,20 @@ def prepare_hr_for_insight_assets(assets: list[dict[str, Any]], insight_id: str)
     return tableToMarkdown(table_name, hr_output, headers=headers, removeNull=True)
 
 
-def prepare_hr_for_insight_comments(comments: list[dict[str, Any]], insight_id: str) -> str:
+def prepare_hr_for_soc_insight_comments(comments: list[dict[str, Any]], soc_insight_id: str) -> str:
     """
-    Prepare human-readable for insight comments command.
+    Prepare human-readable for SOC insight comments command.
 
     :type comments: list[dict[str, Any]]
     :param comments: List of comments.
 
-    :type insight_id: str
-    :param insight_id: ID of the insight.
+    :type soc_insight_id: str
+    :param soc_insight_id: ID of the insight.
 
     :rtype: str
     :return: Human readable string for the command.
     """
-    table_name = f"Comments for the given Insight: {insight_id}"
+    table_name = f"Comments for the given SOC Insight: {soc_insight_id}"
     hr_output = []
     for comment in comments:
         hr_output.append(
@@ -987,10 +1000,12 @@ def ip_command(client: BloxOneTDClient, args: Dict[str, Any]) -> List[CommandRes
         dbot_score_obj = Common.DBotScore(
             indicator=ip,
             indicator_type=DBotScoreType.IP,
-            integration_name="InfobloxThreatDefensewithDDI",
+            integration_name=VENDOR_NAME,
             score=dbot_score,
             reliability=client.integration_reliability,
         )
+
+        dbot_score_obj.integration_name = VENDOR_NAME
 
         # Create IP indicator object
         ip_indicator = Common.IP(ip=ip, dbot_score=dbot_score_obj)
@@ -1144,10 +1159,12 @@ def domain_command(client: BloxOneTDClient, args: Dict[str, Any]) -> List[Comman
         dbot_score_obj = Common.DBotScore(
             indicator=domain,
             indicator_type=DBotScoreType.DOMAIN,
-            integration_name="InfobloxThreatDefensewithDDI",
+            integration_name=VENDOR_NAME,
             score=dbot_score,
             reliability=client.integration_reliability,
         )
+
+        dbot_score_obj.integration_name = VENDOR_NAME
 
         domain_indicator = Common.Domain(domain=domain, dbot_score=dbot_score_obj)
         domain_indicator.tags = []
@@ -1198,7 +1215,7 @@ def domain_command(client: BloxOneTDClient, args: Dict[str, Any]) -> List[Comman
                             entity_b=address_value,
                             entity_b_type=FeedIndicatorType.IP,
                             source_reliability=client.integration_reliability,
-                            brand="InfobloxThreatDefensewithDDI",
+                            brand=VENDOR_NAME,
                         )
                         relationships.append(relationship)
 
@@ -1284,10 +1301,12 @@ def url_command(client: BloxOneTDClient, args: Dict[str, Any]) -> List[CommandRe
         dbot_score_obj = Common.DBotScore(
             indicator=url,
             indicator_type=DBotScoreType.URL,
-            integration_name="InfobloxThreatDefensewithDDI",
+            integration_name=VENDOR_NAME,
             score=dbot_score,
             reliability=client.integration_reliability,
         )
+
+        dbot_score_obj.integration_name = VENDOR_NAME
 
         url_indicator = Common.URL(url=url, dbot_score=dbot_score_obj)
         url_indicator.tags = []
@@ -1413,15 +1432,17 @@ def command_test_module(client: BloxOneTDClient) -> str:
     return "ok"
 
 
-def fetch_incidents(client: BloxOneTDClient, params: Dict, is_test: bool = False):
+def fetch_incidents(client: BloxOneTDClient, params: dict, is_test: bool = False):
     """
-    Fetches new insights and creates incidents for them.
+    Fetches new SOC insights and DNS security events and creates incidents for them.
     :param client: BloxOneTDClient instance.
     :param params: Dictionary of parameters.
     :param is_test: Whether this is a test run.
     :return: None
     """
-    max_fetch = arg_to_number(params.get("max_fetch")) or 50
+    max_fetch = arg_to_number(params.get("max_fetch"))
+    if max_fetch is None:
+        max_fetch = 50
     if max_fetch > 200:  # type: ignore
         if is_test:
             raise ValueError(ERRORS["INVALID_MAX_FETCH"].format(max_fetch))
@@ -1433,39 +1454,219 @@ def fetch_incidents(client: BloxOneTDClient, params: Dict, is_test: bool = False
         raise ValueError(ERRORS["INVALID_MAX_FETCH"].format(max_fetch))
 
     incidents = []
-    last_run = demisto.getLastRun()
-    if last_run:
-        last_run_ids = last_run.get("insight_ids", [])
-    else:
-        last_run_ids = []
-    params = {
-        "status": params.get("incident_status"),
-        "priority": params.get("incident_priority_level"),
-        "threat_type": params.get("incident_threat_type"),
-    }
-    results = client.soc_insights_list(params)
-    insights = results.get("insightList", [])  # type: ignore
-    insight_ids = []
-    new_insights = []
-    duplicate_insight_ids = []
-    for insight in insights:
-        insight_id = insight.get("insightId")
-        if not insight_id or insight_id in last_run_ids:
-            duplicate_insight_ids.append(insight_id) if insight_id else None
-            continue
-        insight["incident_link"] = INCIDENT_LINK.format(insight_id)
-        new_insights.append(insight)
-        last_run_ids.append(insight_id)
-        insight_ids.append(insight.get("insightId"))
-        if len(new_insights) >= max_fetch:  # type: ignore
-            break
+    last_run = demisto.getLastRun() or {}
+
+    # Determine what to fetch based on parameters
+    ingestion_type = params.get("ingestion_type", "SOC Insight")
+
+    # Fetch SOC insights if enabled
+    if ingestion_type == "SOC Insight":
+        insights_incidents, last_run = fetch_soc_insights(client, params, last_run, max_fetch, is_test)
+        incidents.extend(insights_incidents)
+
+    # Fetch DNS security events if enabled
+    if ingestion_type == "DNS Security Event":
+        dns_incidents, last_run = fetch_dns_security_events(client, params, last_run, max_fetch, is_test)
+        incidents.extend(dns_incidents)
 
     if is_test:
         return
 
+    if not incidents:
+        demisto.debug("[Infoblox] No incidents found.")
+    else:
+        demisto.debug(f"[Infoblox] Total {len(incidents)} incidents fetched for {ingestion_type}.")
+
+    # Create incidents
+    demisto.incidents(incidents)
+
+    # Save the updated last run data
+    demisto.setLastRun(last_run)
+
+
+def fetch_dns_security_events(
+    client: BloxOneTDClient, params: dict, last_run: dict, max_fetch: int, is_test: bool = False
+) -> tuple[list, dict]:
+    """
+    Fetches DNS security events and creates incidents for them.
+    :param client: BloxOneTDClient instance.
+    :param params: Dictionary of parameters.
+    :param last_run: Last run data.
+    :param max_fetch: Maximum number of events to fetch.
+    :param is_test: Whether this is a test run.
+    :return: Tuple of incidents list and next run data.
+    """
+    incidents = []
+
+    # Get the last fetch time for DNS events
+    last_fetch_time = last_run.get("dns_events_last_fetch")
+
+    # If no last fetch time, use first_fetch parameter
+    if last_fetch_time:
+        last_fetch_time = arg_to_datetime(last_fetch_time).timestamp()  # type: ignore
+    else:
+        last_fetch_time = arg_to_datetime(  # type: ignore
+            params.get("first_fetch", DEFAULT_FIRST_FETCH), "first_fetch"
+        ).timestamp()
+
+    # Build API parameters
+    api_params: dict[str, Any] = {
+        "_limit": max_fetch,
+        "t0": int(last_fetch_time),
+        "t1": int(arg_to_datetime("now").timestamp()),  # type: ignore
+    }
+
+    # Add optional filters
+    if params.get("dns_events_queried_name"):
+        api_params["qname"] = ",".join(  # Note: API expects 'qname' not 'queried_name'
+            item.strip() for item in argToList(params.get("dns_events_queried_name", [])) if item.strip()
+        )
+    if params.get("dns_events_policy_name"):
+        api_params["policy_name"] = ",".join(
+            item.strip() for item in argToList(params.get("dns_events_policy_name", [])) if item.strip()
+        )
+    if params.get("dns_events_threat_level"):
+        threat_levels = [item.strip() for item in argToList(params.get("dns_events_threat_level", [])) if item.strip()]
+        threat_levels_upper = [item.upper() for item in threat_levels]
+        for level, upper_level in zip(threat_levels, threat_levels_upper):
+            if upper_level not in THREAT_LEVELS:
+                raise ValueError(MESSAGES["INVALID_DNS_EVENT_THREAT_LEVEL"].format(level))
+        api_params["threat_level"] = ",".join(threat_levels_upper)
+    if params.get("dns_events_threat_class"):
+        api_params["threat_class"] = ",".join(
+            item.strip() for item in argToList(params.get("dns_events_threat_class", [])) if item.strip()
+        )
+    if params.get("dns_events_threat_family"):
+        api_params["threat_family"] = ",".join(
+            item.strip() for item in argToList(params.get("dns_events_threat_family", [])) if item.strip()
+        )
+    if params.get("dns_events_threat_indicator"):
+        api_params["threat_indicator"] = ",".join(
+            item.strip() for item in argToList(params.get("dns_events_threat_indicator", [])) if item.strip()
+        )
+    if params.get("dns_events_policy_action"):
+        api_params["policy_action"] = ",".join(
+            item.strip() for item in argToList(params.get("dns_events_policy_action", [])) if item.strip()
+        )
+    if params.get("dns_events_feed_name"):
+        api_params["feed_name"] = ",".join(
+            item.strip() for item in argToList(params.get("dns_events_feed_name", [])) if item.strip()
+        )
+    if params.get("dns_events_network"):
+        api_params["network"] = ",".join(item.strip() for item in argToList(params.get("dns_events_network", [])) if item.strip())
+
+    # Fetch DNS security events
+    response = client.list_dns_security_events(api_params)
+    events = response.get("result", []) if isinstance(response, dict) else response  # type: ignore
+
+    demisto.debug(f"[Infoblox DNS Security Events] Fetched {len(events)} events from API.")
+
+    if is_test:
+        return [], {}
+
+    if not events:
+        demisto.debug("[Infoblox DNS Security Events] No events found.")
+        return [], last_run
+
+    latest_event_time = events[0].get("event_time")
+    events = events[::-1]
+    last_run_ids = last_run.get("dns_events_ids", [])
+    new_event_ids = []
+    duplicate_event_ids = []
+
+    for event in events:
+        event_time = event.get("event_time")
+        qname_truncated = event.get("qname", "")[:20]
+        event["incident_type"] = "Infoblox Cloud DNS Security Event"
+        # Create a composite key with fields separated by '|'
+        key_parts = [
+            event_time,
+            qname_truncated,
+            event.get("device", ""),
+            event.get("feed_name", ""),
+        ]
+        composite_key = "|".join([str(part) for part in key_parts if part])
+        if composite_key in last_run_ids:
+            duplicate_event_ids.append(composite_key)
+            continue
+        last_run_ids.append(composite_key)
+        new_event_ids.append(composite_key)
+
+        # Create incident for each DNS security event
+        incident_name = f"Infoblox DNS Security Event - {event.get('tclass', 'Unknown')} : {qname_truncated}"
+
+        incident = {
+            "name": incident_name,
+            "details": json.dumps(event),
+            "rawJSON": json.dumps(event),
+            "severity": SEVERITY_MAP.get(event.get("severity", "INFO"), 1),
+            "occurred": event_time,
+        }
+        incidents.append(incident)
+
+    # Update next run data
+    demisto.debug(f"[Infoblox DNS Security Events] Setting last_fetch_time to {latest_event_time} and index to 1.")
+    last_run["dns_events_last_fetch"] = latest_event_time
+    demisto.debug(f"[Infoblox DNS Security Events] Found {len(new_event_ids)} new events with IDs: {', '.join(new_event_ids)}.")
+    last_run["dns_events_ids"] = last_run_ids
+
+    if duplicate_event_ids:
+        demisto.debug(
+            f"[Infoblox DNS Security Events] {len(duplicate_event_ids)} duplicate events were skipped with"
+            f"IDs: {', '.join(duplicate_event_ids)}."
+        )
+
+    return incidents, last_run
+
+
+def fetch_soc_insights(
+    client: BloxOneTDClient, params: dict, last_run: dict, max_fetch: int, is_test: bool = False
+) -> tuple[list, dict]:
+    """
+    Fetches new SOC insights and creates incidents for them.
+    :param client: BloxOneTDClient instance.
+    :param params: Dictionary of parameters.
+    :param last_run: Last run data.
+    :param max_fetch: Maximum number of insights to fetch.
+    :param is_test: Whether this is a test run.
+    :return: Tuple of incidents list and next run data.
+    """
+    incidents = []
+    last_run_ids = last_run.get("soc_insight_ids", [])
+
+    params = {
+        "status": params.get("soc_insight_status"),
+        "priority": params.get("soc_insight_priority_level"),
+        "threat_type": params.get("soc_insight_threat_type"),
+    }
+
+    results = client.soc_insights_list(params)
+    insights = results.get("insightList", [])  # type: ignore
+    soc_insight_ids = []
+    new_insights = []
+    new_insight_ids = []
+    duplicate_insight_ids = []
+
+    for insight in insights:
+        soc_insight_id = insight.get("insightId")
+        if not soc_insight_id or soc_insight_id in last_run_ids:
+            duplicate_insight_ids.append(soc_insight_id) if soc_insight_id else None
+            continue
+        insight["incident_link"] = INCIDENT_LINK.format(soc_insight_id)
+        new_insights.append(insight)
+        last_run_ids.append(soc_insight_id)
+        new_insight_ids.append(soc_insight_id)
+        soc_insight_ids.append(insight.get("insightId"))
+        if len(new_insights) >= max_fetch:  # type: ignore
+            break
+
+    if is_test:
+        return [], {}
+
     for insight in new_insights:
         threat_type = insight.get("threatType")
         threat_family = insight.get("tFamily")
+        insight["incident_type"] = "Infoblox Cloud SOC Insight"
         incident = {
             "name": f"Infoblox SOC Insight - {threat_type} : {threat_family}",  # noqa: E203
             "details": json.dumps(insight),
@@ -1473,13 +1674,21 @@ def fetch_incidents(client: BloxOneTDClient, params: Dict, is_test: bool = False
             "severity": SEVERITY_MAP.get(insight["priorityText"], 1),
         }
         incidents.append(incident)
-    demisto.setLastRun({"insight_ids": last_run_ids})
-    demisto.debug(f"[Infoblox SOC Insight] {len(incidents)} new incidents created with IDs: {', '.join(insight_ids)}.")
+
+    if not insights:
+        demisto.debug("[Infoblox SOC Insight] No SOC Insights found.")
+        return [], last_run
+
+    # Update next run data
+    last_run["soc_insight_ids"] = last_run_ids
+    demisto.debug(f"[Infoblox SOC Insight] Found {len(new_insight_ids)} new SOC Insights with IDs: {', '.join(new_insight_ids)}.")
+
     demisto.debug(
-        f"[Infoblox SOC Insight] {len(duplicate_insight_ids)} duplicate insights were skipped with"
+        f"[Infoblox SOC Insight] {len(duplicate_insight_ids)} duplicate SOC Insights were skipped with"
         f"IDs: {', '.join(duplicate_insight_ids)}."
     )
-    demisto.incidents(incidents)
+
+    return incidents, last_run
 
 
 def remove_duplicate_entries(indicator_list: list[str]) -> list[str]:
@@ -1665,9 +1874,9 @@ def infobloxcloud_customlist_indicator_remove(client: BloxOneTDClient, args: dic
     return generic_named_list_method(client, args, data, is_remove=True)
 
 
-def list_insights_command(client: BloxOneTDClient, args: dict[str, Any]) -> CommandResults:
+def list_soc_insights_command(client: BloxOneTDClient, args: dict[str, Any]) -> CommandResults:
     """
-    List insights.
+    List SOC insights.
     :param client: BloxOneTDClient instance.
     :param args: Dictionary of arguments.
     :return: CommandResults instance.
@@ -1681,26 +1890,26 @@ def list_insights_command(client: BloxOneTDClient, args: dict[str, Any]) -> Comm
     insights = insights.get("insightList", [])  # type: ignore
     if not insights:
         return CommandResults(
-            readable_output="No insights found.",
+            readable_output="No SOC Insights found.",
             raw_response=insights,
         )
     return CommandResults(
-        readable_output=prepare_hr_for_insights(insights),
-        outputs_prefix="InfobloxCloud.Insight",
+        readable_output=prepare_hr_for_soc_insights(insights),
+        outputs_prefix="InfobloxCloud.SOCInsight",
         outputs_key_field="insightId",
         outputs=remove_empty_elements(insights),
         raw_response=insights,
     )
 
 
-def list_insight_indicators_command(client: BloxOneTDClient, args: dict[str, Any]) -> CommandResults:
+def list_soc_insight_indicators_command(client: BloxOneTDClient, args: dict[str, Any]) -> CommandResults:
     """
-    List insight indicators.
+    List SOC insight indicators.
     :param client: BloxOneTDClient instance.
     :param args: Dictionary of arguments.
     :return: CommandResults instance.
     """
-    insight_id = validate_argument(args.get("insight_id"), "insight_id")
+    soc_insight_id = validate_argument(args.get("soc_insight_id"), "soc_insight_id")
     params = {
         "confidence": args.get("confidence"),
         "indicator": args.get("indicator"),
@@ -1711,7 +1920,7 @@ def list_insight_indicators_command(client: BloxOneTDClient, args: dict[str, Any
         "to": validate_datetime(args.get("end_time"), "end_time"),  # type: ignore
     }
     params = remove_empty_elements(params)
-    indicators = client.soc_insight_indicators_list(params, insight_id)
+    indicators = client.soc_insight_indicators_list(params, soc_insight_id)
     indicators = indicators.get("indicators", [])  # type: ignore
     if not indicators:
         return CommandResults(
@@ -1719,7 +1928,7 @@ def list_insight_indicators_command(client: BloxOneTDClient, args: dict[str, Any
             raw_response=indicators,
         )
     return CommandResults(
-        readable_output=prepare_hr_for_insight_indicators(indicators, insight_id),
+        readable_output=prepare_hr_for_soc_insight_indicators(indicators, soc_insight_id),
         outputs_prefix="InfobloxCloud.Indicator",
         outputs_key_field="indicatorId",
         outputs=remove_empty_elements(indicators),
@@ -1727,14 +1936,14 @@ def list_insight_indicators_command(client: BloxOneTDClient, args: dict[str, Any
     )
 
 
-def list_insight_events_command(client: BloxOneTDClient, args: dict[str, Any]) -> CommandResults:
+def list_soc_insight_events_command(client: BloxOneTDClient, args: dict[str, Any]) -> CommandResults:
     """
-    List insight events.
+    List SOC insight events.
     :param client: BloxOneTDClient instance.
     :param args: Dictionary of arguments.
     :return: CommandResults instance.
     """
-    insight_id = validate_argument(args.get("insight_id"), "insight_id")
+    soc_insight_id = validate_argument(args.get("soc_insight_id"), "soc_insight_id")
     device_ip = args.get("device_ip")
     if device_ip and not is_ip_valid(device_ip, accept_v6_ips=True):
         raise ValueError(MESSAGES["INVALID_VALUE"].format(device_ip, "device_ip"))
@@ -1751,7 +1960,7 @@ def list_insight_events_command(client: BloxOneTDClient, args: dict[str, Any]) -
         "indicator": args.get("indicator"),
     }
     params = remove_empty_elements(params)
-    events = client.soc_insight_events_list(params, insight_id)
+    events = client.soc_insight_events_list(params, soc_insight_id)
     events = events.get("events", [])  # type: ignore
     if not events:
         return CommandResults(
@@ -1759,7 +1968,7 @@ def list_insight_events_command(client: BloxOneTDClient, args: dict[str, Any]) -
             raw_response=events,
         )
     return CommandResults(
-        readable_output=prepare_hr_for_insight_events(events, insight_id),
+        readable_output=prepare_hr_for_soc_insight_events(events, soc_insight_id),
         outputs_prefix="InfobloxCloud.Event",
         outputs_key_field="eventId",
         outputs=remove_empty_elements(events),
@@ -1767,9 +1976,9 @@ def list_insight_events_command(client: BloxOneTDClient, args: dict[str, Any]) -
     )
 
 
-def list_insight_assets_command(client: BloxOneTDClient, args: dict[str, Any]) -> CommandResults:
+def list_soc_insight_assets_command(client: BloxOneTDClient, args: dict[str, Any]) -> CommandResults:
     """
-    List insight assets.
+    List SOC insight assets.
     :param client: BloxOneTDClient instance.
     :param args: Dictionary of arguments.
     :return: CommandResults instance.
@@ -1780,7 +1989,7 @@ def list_insight_assets_command(client: BloxOneTDClient, args: dict[str, Any]) -
         raise ValueError(MESSAGES["INVALID_VALUE"].format(qip, "qip"))
     if cmac and not bool(MAC_PATTERN.match(cmac)):
         raise ValueError(MESSAGES["INVALID_VALUE"].format(cmac, "cmac"))
-    insight_id = validate_argument(args.get("insight_id"), "insight_id")
+    soc_insight_id = validate_argument(args.get("soc_insight_id"), "soc_insight_id")
     params = {
         "qip": qip,
         "cmac": cmac,
@@ -1791,7 +2000,7 @@ def list_insight_assets_command(client: BloxOneTDClient, args: dict[str, Any]) -
         "to": validate_datetime(args.get("end_time"), "end_time"),  # type: ignore
     }
     params = remove_empty_elements(params)
-    assets = client.soc_insight_assets_list(params, insight_id)
+    assets = client.soc_insight_assets_list(params, soc_insight_id)
     assets = assets.get("assets", [])  # type: ignore
     if not assets:
         return CommandResults(
@@ -1799,7 +2008,7 @@ def list_insight_assets_command(client: BloxOneTDClient, args: dict[str, Any]) -
             raw_response=assets,
         )
     return CommandResults(
-        readable_output=prepare_hr_for_insight_assets(assets, insight_id),
+        readable_output=prepare_hr_for_soc_insight_assets(assets, soc_insight_id),
         outputs_prefix="InfobloxCloud.Asset",
         outputs_key_field="assetId",
         outputs=remove_empty_elements(assets),
@@ -1807,14 +2016,14 @@ def list_insight_assets_command(client: BloxOneTDClient, args: dict[str, Any]) -
     )
 
 
-def list_insight_comments_command(client: BloxOneTDClient, args: dict[str, Any]) -> CommandResults:
+def list_soc_insight_comments_command(client: BloxOneTDClient, args: dict[str, Any]) -> CommandResults:
     """
-    List insight comments.
+    List SOC insight comments.
     :param client: BloxOneTDClient instance.
     :param args: Dictionary of arguments.
     :return: CommandResults instance.
     """
-    insight_id = validate_argument(args.get("insight_id"), "insight_id")
+    soc_insight_id = validate_argument(args.get("soc_insight_id"), "soc_insight_id")
     limit = arg_to_number(args.get("limit", 50))
     if limit < 0:  # type: ignore
         raise ValueError("Limit should not be less than 0.")
@@ -1823,7 +2032,7 @@ def list_insight_comments_command(client: BloxOneTDClient, args: dict[str, Any])
         "to": validate_datetime(args.get("end_time"), "end_time"),  # type: ignore
     }
     params = remove_empty_elements(params)
-    comments = client.soc_insight_comments_list(params, insight_id)
+    comments = client.soc_insight_comments_list(params, soc_insight_id)
     comments = comments.get("comments", [])  # type: ignore
     if not comments:
         return CommandResults(
@@ -1833,7 +2042,7 @@ def list_insight_comments_command(client: BloxOneTDClient, args: dict[str, Any])
     if limit != 0:
         comments = comments[:limit]
     return CommandResults(
-        readable_output=prepare_hr_for_insight_comments(comments, insight_id),
+        readable_output=prepare_hr_for_soc_insight_comments(comments, soc_insight_id),
         outputs_prefix="InfobloxCloud.Comment",
         outputs_key_field="commentId",
         outputs=remove_empty_elements(comments),
@@ -1868,11 +2077,11 @@ def main():
         "domain": domain_command,
         "url": url_command,
         "infobloxcloud-mac-enrich": mac_enrich_command,
-        "infobloxcloud-insights-list": list_insights_command,
-        "infobloxcloud-insight-indicators-list": list_insight_indicators_command,
-        "infobloxcloud-insight-events-list": list_insight_events_command,
-        "infobloxcloud-insight-assets-list": list_insight_assets_command,
-        "infobloxcloud-insight-comments-list": list_insight_comments_command,
+        "infobloxcloud-soc-insight-list": list_soc_insights_command,
+        "infobloxcloud-soc-insight-indicator-list": list_soc_insight_indicators_command,
+        "infobloxcloud-soc-insight-event-list": list_soc_insight_events_command,
+        "infobloxcloud-soc-insight-asset-list": list_soc_insight_assets_command,
+        "infobloxcloud-soc-insight-comment-list": list_soc_insight_comments_command,
     }
 
     command = demisto.command()

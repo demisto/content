@@ -1,10 +1,10 @@
 {
-    "id": "Infoblox Cloud Insight",
+    "id": "Infoblox Cloud SOC Insight",
     "version": -1,
     "vcShouldIgnore": false,
     "locked": false,
-    "name": "Infoblox Cloud Insight",
-    "prevName": "Infoblox Cloud Insight",
+    "name": "Infoblox Cloud SOC Insight",
+    "prevName": "Infoblox Cloud SOC Insight",
     "color": "#229D80",
     "playbookId": "Incident Response - Infoblox Cloud",
     "hours": 0,
@@ -20,7 +20,7 @@
     "disabled": false,
     "reputationCalc": 0,
     "onChangeRepAlg": 0,
-    "layout": "Infoblox Cloud Insight",
+    "layout": "Infoblox Cloud SOC Insight",
     "detached": false,
     "extractSettings": {
         "mode": "Specific",

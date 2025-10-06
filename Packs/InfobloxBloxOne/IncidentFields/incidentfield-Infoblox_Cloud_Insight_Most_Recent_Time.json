@@ -4,7 +4,7 @@
     "modified": "2025-07-14T18:09:10.151784059+05:30",
     "name": "Infoblox Cloud Insight Most Recent Time",
     "ownerOnly": false,
-    "description": "The most recent time of the Infoblox Cloud Insight.",
+    "description": "The most recent time of the Infoblox Cloud SOC Insight.",
     "cliName": "infobloxcloudinsightmostrecenttime",
     "type": "date",
     "closeForm": false,
@@ -20,7 +20,7 @@
     "hidden": false,
     "openEnded": false,
     "associatedTypes": [
-        "Infoblox Cloud Insight"
+        "Infoblox Cloud SOC Insight"
     ],
     "associatedToAll": false,
     "unmapped": false,

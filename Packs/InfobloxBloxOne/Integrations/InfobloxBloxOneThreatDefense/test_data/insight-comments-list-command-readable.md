@@ -1,4 +1,4 @@
-### Comments for the given Insight: insight-123
+### Comments for the given SOC Insight: insight-123
 |Comment Changer|Date Changed|Status|Comment|
 |---|---|---|---|
 | abc@xyz.com | 2023-01-01T10:00:00Z | ACTIVE | This is a test comment about the threat |

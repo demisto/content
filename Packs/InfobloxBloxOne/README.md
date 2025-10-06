@@ -1,6 +1,6 @@
 Note: Support for this Pack was moved to Partner starting August 25, 2025. In case of any issues arise, please contact the Partner directly at <support@infoblox.com> or <https://support.infoblox.com/>.
 
-The Infoblox Threat Defense with DDI integration leverages DNS as a security control point to detect and block cyber threats. This integration enables threat intelligence sharing, automated insight incident response, automated indicator enrichment, and DNS-based security controls within your Cortex XSOAR environment.
+The Infoblox Threat Defense with DDI integration leverages DNS as a security control point to detect and block cyber threats. This integration enables threat intelligence sharing, automated SOC Insight incident response, automated indicator enrichment, and DNS-based security controls within your Cortex XSOAR environment.
 
 #### DNS Security
 
@@ -9,7 +9,7 @@ The Infoblox Threat Defense with DDI integration leverages DNS as a security con
 
 #### Threat Intelligence
 
-- Provides SOC teams with actionable insights with detailed information about indicators, events, assets, and analyst comments, to detect, investigate, and respond to threats more effectively.
+- Provides SOC teams with actionable SOC Insights with detailed information about indicators, events, assets, and analyst comments, to detect, investigate, and respond to threats more effectively.
 - Provides visibility into indicators of compromise (IoCs) and enriches them with context for faster investigation.
 
 #### DDI

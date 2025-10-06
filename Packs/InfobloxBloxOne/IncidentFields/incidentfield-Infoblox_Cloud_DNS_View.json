@@ -1,12 +1,12 @@
 {
-    "id": "incident_infobloxcloudinsightstarttime",
+    "id": "incident_infobloxclouddnsview",
     "version": -1,
-    "modified": "2025-07-14T19:17:10.779634375+05:30",
-    "name": "Infoblox Cloud Insight Start Time",
+    "modified": "2025-09-22T11:29:27.712158232+05:30",
+    "name": "Infoblox Cloud DNS View",
     "ownerOnly": false,
-    "description": "The start time of the Infoblox Cloud SOC Insight.",
-    "cliName": "infobloxcloudinsightstarttime",
-    "type": "date",
+    "description": "The DNS View of the Infoblox DNS Security Event.",
+    "cliName": "infobloxclouddnsview",
+    "type": "shortText",
     "closeForm": false,
     "editForm": true,
     "required": false,
@@ -20,11 +20,11 @@
     "hidden": false,
     "openEnded": false,
     "associatedTypes": [
-        "Infoblox Cloud SOC Insight"
+        "Infoblox Cloud DNS Security Event"
     ],
     "associatedToAll": false,
     "unmapped": false,
-    "unsearchable": false,
+    "unsearchable": true,
     "caseInsensitive": true,
     "sla": 0,
     "threshold": 72,

@@ -42,7 +42,7 @@ tasks:
     task:
       id: ac2bdc44-3c7e-49d2-867a-f4c3c256ee37
       version: -1
-      name: Extract insight id and collect insight details
+      name: Extract SOC Insight id and collect SOC Insight details
       type: title
       iscommand: false
       brand: ""
@@ -76,9 +76,9 @@ tasks:
     task:
       id: 20a1bc86-1bb4-424f-835a-4cec1dbb799f
       version: -1
-      name: Collect insight indicators from provided insight id
+      name: Collect SOC Insight indicators from provided SOC Insight id
       description: List indicators for the provided incident.
-      script: '|||infobloxcloud-insight-indicators-list'
+      script: '|||infobloxcloud-soc-insight-indicator-list'
       type: regular
       iscommand: true
       brand: ""
@@ -86,9 +86,9 @@ tasks:
       '#none#':
       - "10"
     scriptarguments:
-      insight_id:
+      soc_insight_id:
         complex:
-          root: inputs.insight_id
+          root: inputs.soc_insight_id
           transformers:
           - operator: trim
       limit:
@@ -117,9 +117,9 @@ tasks:
     task:
       id: d9ec8522-fcd8-4dfa-841d-67e475e3f252
       version: -1
-      name: Collect insight events from provided insight id
+      name: Collect SOC Insight events from provided SOC Insight id
       description: List events for the provided incident.
-      script: '|||infobloxcloud-insight-events-list'
+      script: '|||infobloxcloud-soc-insight-event-list'
       type: regular
       iscommand: true
       brand: ""
@@ -127,9 +127,9 @@ tasks:
       '#none#':
       - "10"
     scriptarguments:
-      insight_id:
+      soc_insight_id:
         complex:
-          root: inputs.insight_id
+          root: inputs.soc_insight_id
           transformers:
           - operator: trim
       limit:
@@ -158,9 +158,9 @@ tasks:
     task:
       id: 008a2ecb-6210-49ff-8425-525f0be935cd
       version: -1
-      name: Collect insight assets from provided insight id
+      name: Collect SOC Insight assets from provided SOC Insight id
       description: List assets for the provided incident.
-      script: '|||infobloxcloud-insight-assets-list'
+      script: '|||infobloxcloud-soc-insight-asset-list'
       type: regular
       iscommand: true
       brand: ""
@@ -168,9 +168,9 @@ tasks:
       '#none#':
       - "10"
     scriptarguments:
-      insight_id:
+      soc_insight_id:
         complex:
-          root: inputs.insight_id
+          root: inputs.soc_insight_id
           transformers:
           - operator: trim
       limit:
@@ -253,9 +253,9 @@ tasks:
     task:
       id: ed99c4f2-40dc-4691-8a82-c48cce2fb9ff
       version: -1
-      name: Collect insight comments from provided insight id
+      name: Collect SOC Insight comments from provided SOC Insight id
       description: List comments for the provided incident.
-      script: '|||infobloxcloud-insight-comments-list'
+      script: '|||infobloxcloud-soc-insight-comment-list'
       type: regular
       iscommand: true
       brand: ""
@@ -263,9 +263,9 @@ tasks:
       '#none#':
       - "10"
     scriptarguments:
-      insight_id:
+      soc_insight_id:
         complex:
-          root: inputs.insight_id
+          root: inputs.soc_insight_id
           transformers:
           - operator: trim
       limit:
@@ -561,7 +561,7 @@ tasks:
 
           XSOAR Incident ID: ${incident.id}
 
-          Infoblox Insight Link: ${incident.incidentlink}
+          Infoblox SOC Insight Link: ${incident.incidentlink}
 
           Next Steps for Analyst:
           1. Review the indicators and correlate with known threat intelligence
@@ -595,7 +595,7 @@ tasks:
       id: f33d3353-9d63-40b7-88e5-3f1e6b8faeae
       version: -1
       name: Extract indicator details for ticket description
-      description: Extract top 5 indicator values from insight indicators list command context.
+      description: Extract top 5 indicator values from SOC Insight indicators list command context.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -652,7 +652,7 @@ tasks:
       id: 0c4eb3ad-585c-48ef-8bf0-77e6c70e0140
       version: -1
       name: Extract event details for ticket description
-      description: Extract top 5 event device IP values from insight events list command context.
+      description: Extract top 5 event device IP values from SOC Insight events list command context.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -709,7 +709,7 @@ tasks:
       id: 9d67034b-3718-4b2a-8cea-b15500485561
       version: -1
       name: Extract asset details for ticket description
-      description: Extract top 5 asset IP values from insight assets list command context.
+      description: Extract top 5 asset IP values from SOC Insight assets list command context.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -766,7 +766,7 @@ tasks:
       id: 54a4256c-9145-43f7-89d9-50826e022819
       version: -1
       name: Extract comment details for ticket description
-      description: Extract top 5 comments from insight comments list command context.
+      description: Extract top 5 comments from SOC Insight comments list command context.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -956,7 +956,7 @@ view: |-
     }
   }
 inputs:
-- key: insight_id
+- key: soc_insight_id
   value:
     complex:
       root: incident.infobloxcloudinsightid
@@ -986,7 +986,7 @@ inputs:
   value:
     simple: "50"
   required: false
-  description: No of indicators, events, assets or comments to fetch of the provided insight.
+  description: No of indicators, events, assets or comments to fetch of the provided SOC Insight.
   playbookInputQuery:
 - key: onCall
   value:

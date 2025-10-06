@@ -7,13 +7,24 @@ This integration was integrated and tested with version 1.0.0 of Infoblox Threat
 | --- | --- | --- |
 | Service API Key |  | True |
 | Source Reliability | Reliability of the source providing the intelligence data. | False |
+| Create relationships | Create relationships between indicators as part of Enrichment. | False |
 | Fetch incidents |  | False |
 | Incident type |  | False |
-| Insight Status | Retrieve the Insights as specified status. | False |
-| Insight Threat Type | Retrieve the Insights as specified threat type. | False |
-| Insight Priority Level | Retrieve the Insights as specified priority level. | False |
-| Max Fetch | The maximum number of Insights to fetch each time. If the value is greater than 200, it will be considered as 200. The maximum is 200. | False |
-| Create relationships | Create relationships between indicators as part of Enrichment. | False |
+| Ingestion Type | Select the ingestion type to fetch as XSOAR incident. Default is SOC Insight. | False |
+| SOC Insight Status | Retrieve the SOC Insights as specified status. | False |
+| SOC Insight Threat Type | Retrieve the SOC Insights as specified threat type. | False |
+| SOC Insight Priority Level | Retrieve the SOC Insights as specified priority level. | False |
+| DNS Security Event Feed Name | Retrieve the DNS Security Events as specified feed name or custom list name. | False |
+| DNS Security Event Network | Retrieve the DNS Security Events as specified network name. | False |
+| DNS Security Event Policy Action | Retrieve the DNS Security Events as specified policy action. | False |
+| DNS Security Event Policy Name | Retrieve the DNS Security Events as specified policy name. | False |
+| DNS Security Event Queried Name | Retrieve the DNS Security Events as specified queried name. | False |
+| DNS Security Event Threat Class | Retrieve the DNS Security Events as specified threat class. | False |
+| DNS Security Event Threat Family | Retrieve the DNS Security Events as specified threat family. | False |
+| DNS Security Event Threat Indicator | Retrieve the DNS Security Events as specified threat indicator. | False |
+| DNS Security Event Threat Level | Retrieve the DNS Security Events as specified threat level. | False |
+| Max Fetch | The maximum number of SOC Insights or DNS Security Events to fetch each time. If the value is greater than 200, it will be considered as 200. The maximum is 200. | False |
+| First fetch timestamp | The date or relative timestamp from which to begin fetching incidents. Note: This parameter is only applicable for DNS Security Events.<br/><br/>Supported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.<br/><br/>For example: 01 May 2025, 01 May 2025 04:45:33, 2025-05-17T14:05:44Z. | False |
 | Incidents Fetch Interval |  | False |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
@@ -1463,53 +1474,53 @@ Enrich a MAC address with DHCP lease information.
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 0.0.0.1 | 01:00:00:00:00:00:01 | 2025-07-01T19:25:24Z | VMware:Virtual Machine:Windows: | processed | 00:00:00:00:00:01 | dhcp/host/123456 | test-host01 | 0 | 2025-07-01T18:25:24.792Z | **-** ***Code***: 57<br/> ***Value***: test<br/>**-** ***Code***: 61<br/> ***Value***: sample<br/>**-** ***Code***: 53<br/> ***Value***: world<br/>**-** ***Code***: 55<br/> ***Value***: bar | 2025-07-01T18:25:24Z | ipam/ip_space/12345678-1234-1234-1234-123456789012 | 2025-07-01T18:25:24Z | used | DHCPv4 |
 
-### infobloxcloud-insights-list
+### infobloxcloud-soc-insight-list
 
 ***
-List insights from Infoblox Cloud.
+List SOC Insights from Infoblox Cloud.
 
 #### Base Command
 
-`infobloxcloud-insights-list`
+`infobloxcloud-soc-insight-list`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| status | Specify the status of insights to fetch. Possible values are: Active, Closed. | Optional |
-| threat_type | Specify the threat type of insights to fetch. Possible values are: DGA, Undefined, Malicious, Open Resolver, Phishing, DNS Tunneling, MalwareDownload, Sinkhole, Zero Day DNS, Notional Data Exfiltration, MalwareC2DGA, MalwareC2, Restricted Country Communications, Suspicious, CompromisedHost, CompromisedDomain, Lookalike Threat, Sanctioned Feed Disabled, DNSTunnel. | Optional |
-| priority | Specify the priority level of insights to fetch. Possible values are: INFO, MEDIUM, HIGH, CRITICAL. | Optional |
+| status | Specify the status of SOC Insights to fetch. Possible values are: Active, Closed. | Optional |
+| threat_type | Specify the threat type of SOC Insights to fetch. Possible values are: DGA, Undefined, Malicious, Open Resolver, Phishing, DNS Tunneling, MalwareDownload, Sinkhole, Zero Day DNS, Notional Data Exfiltration, MalwareC2DGA, MalwareC2, Restricted Country Communications, Suspicious, CompromisedHost, CompromisedDomain, Lookalike Threat, Sanctioned Feed Disabled, DNSTunnel. | Optional |
+| priority | Specify the priority level of SOC Insights to fetch. Possible values are: INFO, MEDIUM, HIGH, CRITICAL. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| InfobloxCloud.Insight.insightId | String | The ID of the insight. |
-| InfobloxCloud.Insight.priorityText | String | The priority level of the insight. |
-| InfobloxCloud.Insight.tClass | String | The threat class of the insight. |
-| InfobloxCloud.Insight.tFamily | String | The threat family of the insight. |
-| InfobloxCloud.Insight.startedAt | String | The start time of the insight. |
-| InfobloxCloud.Insight.status | String | The status of the insight. |
-| InfobloxCloud.Insight.persistentDate | String | Timestamp when the threat was first observed as persistent. |
-| InfobloxCloud.Insight.spreadingDate | String | Timestamp when the threat was first observed as spreading. |
-| InfobloxCloud.Insight.dateChanged | String | Timestamp when the insight was last updated. |
-| InfobloxCloud.Insight.changer | String | The user or process that last changed the insight status or data. |
-| InfobloxCloud.Insight.feedSource | String | The source feed or provider of the insight. |
-| InfobloxCloud.Insight.threatType | String | The threat type of the insight. |
-| InfobloxCloud.Insight.numEvents | String | The number of events associated with the insight. |
-| InfobloxCloud.Insight.eventsNotBlockedCount | String | The number of events not blocked by the insight. |
-| InfobloxCloud.Insight.mostRecentAt | String | The most recent time the insight was updated. |
+| InfobloxCloud.SOCInsight.insightId | String | The ID of the SOC Insight. |
+| InfobloxCloud.SOCInsight.priorityText | String | The priority level of the SOC Insight. |
+| InfobloxCloud.SOCInsight.tClass | String | The threat class of the SOC Insight. |
+| InfobloxCloud.SOCInsight.tFamily | String | The threat family of the SOC Insight. |
+| InfobloxCloud.SOCInsight.startedAt | String | The start time of the SOC Insight. |
+| InfobloxCloud.SOCInsight.status | String | The status of the SOC Insight. |
+| InfobloxCloud.SOCInsight.persistentDate | String | Timestamp when the threat was first observed as persistent. |
+| InfobloxCloud.SOCInsight.spreadingDate | String | Timestamp when the threat was first observed as spreading. |
+| InfobloxCloud.SOCInsight.dateChanged | String | Timestamp when the SOC Insight was last updated. |
+| InfobloxCloud.SOCInsight.changer | String | The user or process that last changed the SOC Insight status or data. |
+| InfobloxCloud.SOCInsight.feedSource | String | The source feed or provider of the SOC Insight. |
+| InfobloxCloud.SOCInsight.threatType | String | The threat type of the SOC Insight. |
+| InfobloxCloud.SOCInsight.numEvents | String | The number of events associated with the SOC Insight. |
+| InfobloxCloud.SOCInsight.eventsNotBlockedCount | String | The number of events not blocked by the SOC Insight. |
+| InfobloxCloud.SOCInsight.mostRecentAt | String | The most recent time the SOC Insight was updated. |
 
 #### Command example
 
-```!infobloxcloud-insights-list```
+```!infobloxcloud-soc-insight-list```
 
 #### Context Example
 
 ```json
 {
     "InfobloxCloud": {
-        "Insight": [
+        "SOCInsight": [
             {
                 "changer": "abc@xyz.com",
                 "dateChanged": "2025-05-21T00:54:49.407214Z",
@@ -1550,34 +1561,34 @@ List insights from Infoblox Cloud.
 
 #### Human Readable Output
 
->### Insights
+>### SOC Insights
 >
 >|ID|Priority|Class|Threat Type|Status|Threat Family|Feed Source|Most Recent At|
 >|---|---|---|---|---|---|---|---|
 >| 00000000-0000-0000-0000-000000000000 | HIGH | Suspicious | Suspicious | Active | EmergentDomain | Insight Detection Framework | 2025-07-19T19:25:11.723397Z |
 >| 00000000-0000-0000-0000-000000000001 | INFO | TI-RESTRICTED | Sanctioned Feed Disabled | Active | OFAC | Insight Detection Framework | 2025-08-07T23:59:19Z |
 
-### infobloxcloud-insight-events-list
+### infobloxcloud-soc-insight-event-list
 
 ***
-List events for a specific insight.
+List events for a specific SOC Insight.
 
 #### Base Command
 
-`infobloxcloud-insight-events-list`
+`infobloxcloud-soc-insight-event-list`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| insight_id | Specify the insight ID to fetch events for. | Required |
+| soc_insight_id | Specify the SOC Insight ID to fetch events for. | Required |
 | limit | Specify the maximum number of events to fetch. Default is 50. | Optional |
 | start_time | Specify the start time for the events.<br/><br/>Format: YYYY-MM-DDTHH:MM:SSZ, YYYY-MM-DD, N days, N hours.<br/><br/>Example: 2025-04-25T00:00:00Z, 2025-04-25, 2 days, 5 hours, 01 Mar 2025, 01 Feb 2025 04:45:33, 15 Jun. | Optional |
 | end_time | Specify the end time for the events.<br/><br/>Format: YYYY-MM-DDTHH:MM:SSZ, YYYY-MM-DD, N days, N hours.<br/><br/>Example: 2025-04-25T00:00:00Z, 2025-04-25, 2 days, 5 hours, 01 Mar 2025, 01 Feb 2025 04:45:33, 15 Jun. | Optional |
 | threat_level | Specify the threat level of the events. Possible values are: High, Medium, Low, Info. | Optional |
 | confidence_level | Specify the confidence level of the events. Possible values are: High, Medium, Low, Info. | Optional |
 | query | Specify the query to search for events. | Optional |
-| query_type | Specify the query type to search for events. Possible values are: A, AAAA, ANY, RRSIG, TXT, CNAME, MX, NS, PTR, SOA, SRV. | Optional |
+| query_type | Specify the query type to search for events. Possible values are: A, AAAA, ANY, TXT, RRSIG, CNAME, MX, NS, PTR, SOA, SRV. | Optional |
 | source | Specify the source of the events. | Optional |
 | device_ip | Specify the device IP of the events. | Optional |
 | indicator | Specify the indicator of the events. | Optional |
@@ -1609,7 +1620,7 @@ List events for a specific insight.
 
 #### Command example
 
-```!infobloxcloud-insight-events-list insight_id="00000000-0000-0000-0000-000000000000"```
+```!infobloxcloud-soc-insight-event-list soc_insight_id="00000000-0000-0000-0000-000000000000"```
 
 #### Context Example
 
@@ -1656,27 +1667,27 @@ List events for a specific insight.
 
 #### Human Readable Output
 
->### Events for the given Insight: 00000000-0000-0000-0000-000000000000
+>### Events for the given SOC Insight: 00000000-0000-0000-0000-000000000000
 >
 >|Confidence Level|Threat Level|Threat Family|Action|Class|Detected|
 >|---|---|---|---|---|---|
 >| High | Low | OPENRESOLVER | Allow - No Log | TI-CONFIGURATIONISSUE | 2025-08-11 23:42:04 +0000 UTC |
 >| High | High | EmergentDomain | Block | Suspicious | 2025-07-16 07:37:29 +0000 UTC |
 
-### infobloxcloud-insight-indicators-list
+### infobloxcloud-soc-insight-indicator-list
 
 ***
-List indicators for a specific insight.
+List indicators for a specific SOC Insight.
 
 #### Base Command
 
-`infobloxcloud-insight-indicators-list`
+`infobloxcloud-soc-insight-indicator-list`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| insight_id | Specify the insight ID to fetch indicators for. | Required |
+| soc_insight_id | Specify the SOC Insight ID to fetch indicators for. | Required |
 | limit | Specify the maximum number of indicators to fetch. Default is 50. | Optional |
 | start_time | Specify the start time for the indicators.<br/><br/>Format: YYYY-MM-DDTHH:MM:SSZ, YYYY-MM-DD, N days, N hours.<br/><br/>Example: 2025-04-25T00:00:00Z, 2025-04-25, 2 days, 5 hours, 01 Mar 2025, 01 Feb 2025 04:45:33, 15 Jun. | Optional |
 | end_time | Specify the end time for the indicators.<br/><br/>Format: YYYY-MM-DDTHH:MM:SSZ, YYYY-MM-DD, N days, N hours.<br/><br/>Example: 2025-04-25T00:00:00Z, 2025-04-25, 2 days, 5 hours, 01 Mar 2025, 01 Feb 2025 04:45:33, 15 Jun. | Optional |
@@ -1700,7 +1711,7 @@ List indicators for a specific insight.
 
 #### Command example
 
-```!infobloxcloud-insight-indicators-list insight_id="00000000-0000-0000-0000-000000000000"```
+```!infobloxcloud-soc-insight-indicator-list soc_insight_id="00000000-0000-0000-0000-000000000000"```
 
 #### Context Example
 
@@ -1733,27 +1744,27 @@ List indicators for a specific insight.
 
 #### Human Readable Output
 
->### Indicators for the given Insight: 00000000-0000-0000-0000-000000000000
+>### Indicators for the given SOC Insight: 00000000-0000-0000-0000-000000000000
 >
 >|Action|Confidence|Max Threat Level|Indicator|Count|Max Time|Min Time|
 >|---|---|---|---|---|---|---|
 >| Not Blocked | 3 | 1 | example.org | 189 | 2025-08-11T23:00:00.000 | 2025-07-13T15:00:00.000 |
 >| Blocked | 1 | 3 | example.com | 5 | 2025-08-11T12:00:00.000 | 2025-07-14T10:00:00.000 |
 
-### infobloxcloud-insight-assets-list
+### infobloxcloud-soc-insight-asset-list
 
 ***
-List assets for a specific insight.
+List assets for a specific SOC Insight.
 
 #### Base Command
 
-`infobloxcloud-insight-assets-list`
+`infobloxcloud-soc-insight-asset-list`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| insight_id | Specify the insight ID to fetch assets for. | Required |
+| soc_insight_id | Specify the SOC Insight ID to fetch assets for. | Required |
 | limit | Specify the maximum number of assets to fetch. Default is 50. | Optional |
 | start_time | Specify the start time for the assets.<br/><br/>Format: YYYY-MM-DDTHH:MM:SSZ, YYYY-MM-DD, N days, N hours.<br/><br/>Example: 2025-04-25T00:00:00Z, 2025-04-25, 2 days, 5 hours, 01 Mar 2025, 01 Feb 2025 04:45:33, 15 Jun. | Optional |
 | end_time | Specify the end time for the assets.<br/><br/>Format: YYYY-MM-DDTHH:MM:SSZ, YYYY-MM-DD, N days, N hours.<br/><br/>Example: 2025-04-25T00:00:00Z, 2025-04-25, 2 days, 5 hours, 01 Mar 2025, 01 Feb 2025 04:45:33, 15 Jun. | Optional |
@@ -1777,7 +1788,7 @@ List assets for a specific insight.
 
 #### Command example
 
-```!infobloxcloud-insight-assets-list insight_id="00000000-0000-0000-0000-000000000000"```
+```!infobloxcloud-soc-insight-asset-list soc_insight_id="00000000-0000-0000-0000-000000000000"```
 
 #### Context Example
 
@@ -1812,27 +1823,27 @@ List assets for a specific insight.
 
 #### Human Readable Output
 
->### Assets for the given Insight: 00000000-0000-0000-0000-000000000000
+>### Assets for the given SOC Insight: 00000000-0000-0000-0000-000000000000
 >
 >|Count|QIP|Max Threat Level|Location|Threat Indicator Distinct Count|Time Max|Time Min|Most Recent Action|
 >|---|---|---|---|---|---|---|---|
 >| 5 | 0.0.0.0 | 1 | Leidschendam,Netherlands | 1 | 2025-08-11T12:00:00.000 | 2025-07-14T10:00:00.000 | Not Blocked |
 >| 1 | 0.0.0.1 | 1 | Minneapolis,United States | 1 | 2025-08-07T12:00:00.000 | 2025-08-07T12:00:00.000 | Not Blocked |
 
-### infobloxcloud-insight-comments-list
+### infobloxcloud-soc-insight-comment-list
 
 ***
-List comments for a specific insight.
+List comments for a specific SOC Insight.
 
 #### Base Command
 
-`infobloxcloud-insight-comments-list`
+`infobloxcloud-soc-insight-comment-list`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| insight_id | Specify the insight ID to fetch comments for. | Required |
+| soc_insight_id | Specify the SOC Insight ID to fetch comments for. | Required |
 | start_time | Specify the start time for the comments.<br/><br/>Format: YYYY-MM-DDTHH:MM:SSZ, YYYY-MM-DD, N days, N hours.<br/><br/>Example: 2025-04-25T00:00:00Z, 2025-04-25, 2 days, 5 hours, 01 Mar 2025, 01 Feb 2025 04:45:33, 15 Jun. | Optional |
 | end_time | Specify the end time for the comments.<br/><br/>Format: YYYY-MM-DDTHH:MM:SSZ, YYYY-MM-DD, N days, N hours.<br/><br/>Example: 2025-04-25T00:00:00Z, 2025-04-25, 2 days, 5 hours, 01 Mar 2025, 01 Feb 2025 04:45:33, 15 Jun. | Optional |
 | limit | Specify the maximum number of comments to fetch. Default is 50. | Optional |
@@ -1848,7 +1859,7 @@ List comments for a specific insight.
 
 #### Command example
 
-```!infobloxcloud-insight-comments-list insight_id="00000000-0000-0000-0000-000000000000"```
+```!infobloxcloud-soc-insight-comment-list soc_insight_id="00000000-0000-0000-0000-000000000000"```
 
 #### Context Example
 
@@ -1875,7 +1886,7 @@ List comments for a specific insight.
 
 #### Human Readable Output
 
->### Comments for the given Insight: 00000000-0000-0000-0000-000000000000
+>### Comments for the given SOC Insight: 00000000-0000-0000-0000-000000000000
 >
 >|Comment Changer|Date Changed|Status|Comment|
 >|---|---|---|---|

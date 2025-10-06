@@ -1,12 +1,12 @@
 {
-    "id": "incident_infobloxcloudinsightstarttime",
+    "id": "incident_infobloxclouddhcpfingerprint",
     "version": -1,
-    "modified": "2025-07-14T19:17:10.779634375+05:30",
-    "name": "Infoblox Cloud Insight Start Time",
+    "modified": "2025-09-22T11:28:02.287359403+05:30",
+    "name": "Infoblox Cloud DHCP Fingerprint",
     "ownerOnly": false,
-    "description": "The start time of the Infoblox Cloud SOC Insight.",
-    "cliName": "infobloxcloudinsightstarttime",
-    "type": "date",
+    "description": "The DHCP Fingerprint of the Infoblox DNS Security Event.",
+    "cliName": "infobloxclouddhcpfingerprint",
+    "type": "shortText",
     "closeForm": false,
     "editForm": true,
     "required": false,
@@ -20,7 +20,7 @@
     "hidden": false,
     "openEnded": false,
     "associatedTypes": [
-        "Infoblox Cloud SOC Insight"
+        "Infoblox Cloud DNS Security Event"
     ],
     "associatedToAll": false,
     "unmapped": false,

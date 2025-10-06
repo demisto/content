@@ -1,6 +1,6 @@
 {
     "name": "Infoblox Threat Defense with DDI",
-    "description": "Utilize the Infoblox Threat Defense with DDI integration to manage insight incident response, indicator enrichment, and block cyber threats.",
+    "description": "Utilize the Infoblox Threat Defense with DDI integration to manage SOC Insight incident response, indicator enrichment, and block cyber threats.",
     "support": "partner",
     "currentVersion": "2.0.0",
     "author": "Infoblox Inc.",

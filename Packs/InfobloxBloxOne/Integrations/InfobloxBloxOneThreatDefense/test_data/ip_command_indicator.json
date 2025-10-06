@@ -19,14 +19,14 @@
         ],
         "MalwareFamily": "APT",
         "Malicious": {
-            "Vendor": "InfobloxThreatDefensewithDDI",
+            "Vendor": "InfobloxThreatDefense",
             "Description": "Malware Download associated with the APT group"
         }
     },
     "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": {
         "Indicator": "0.0.0.1",
         "Type": "ip",
-        "Vendor": "InfobloxThreatDefensewithDDI",
+        "Vendor": "InfobloxThreatDefense",
         "Score": 3
     }
 }

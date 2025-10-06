@@ -4,7 +4,7 @@
     "modified": "2025-07-14T18:14:44.716695448+05:30",
     "name": "Infoblox Cloud Insight Priority",
     "ownerOnly": false,
-    "description": "The priority of the Infoblox Cloud Insight.",
+    "description": "The priority of the Infoblox Cloud SOC Insight.",
     "cliName": "infobloxcloudinsightpriority",
     "type": "shortText",
     "closeForm": false,
@@ -20,7 +20,7 @@
     "hidden": false,
     "openEnded": false,
     "associatedTypes": [
-        "Infoblox Cloud Insight"
+        "Infoblox Cloud SOC Insight"
     ],
     "associatedToAll": false,
     "unmapped": false,

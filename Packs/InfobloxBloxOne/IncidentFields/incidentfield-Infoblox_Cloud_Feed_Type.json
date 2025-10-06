@@ -1,12 +1,12 @@
 {
-    "id": "incident_infobloxcloudinsightstarttime",
+    "id": "incident_infobloxcloudfeedtype",
     "version": -1,
-    "modified": "2025-07-14T19:17:10.779634375+05:30",
-    "name": "Infoblox Cloud Insight Start Time",
+    "modified": "2025-09-22T12:25:01.180789701+05:30",
+    "name": "Infoblox Cloud Feed Type",
     "ownerOnly": false,
-    "description": "The start time of the Infoblox Cloud SOC Insight.",
-    "cliName": "infobloxcloudinsightstarttime",
-    "type": "date",
+    "description": "The feed type of the Infoblox DNS Security Event.",
+    "cliName": "infobloxcloudfeedtype",
+    "type": "shortText",
     "closeForm": false,
     "editForm": true,
     "required": false,
@@ -20,7 +20,7 @@
     "hidden": false,
     "openEnded": false,
     "associatedTypes": [
-        "Infoblox Cloud SOC Insight"
+        "Infoblox Cloud DNS Security Event"
     ],
     "associatedToAll": false,
     "unmapped": false,
