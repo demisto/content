@@ -233,43 +233,12 @@ class Client(BaseClient):
         else:
             return "Can not change the status of the selected feed"
 
-    def get_brands(self):
-        results = self._http_request(
-            method="GET",
-            url_suffix=Endpoints.BRANDS.value,
-            timeout=TIMEOUT,
-            retries=RETRIES,
-            status_list_to_retry=STATUS_LIST_TO_RETRY,
-            headers=self.additional_headers,
-        )
-        return results
-
     def get_formatted_brands(self) -> list[dict[str, str]]:
-        results = self.get_brands()
-        brands_data_raw = {
-            "names": ParserHelper.find_element_by_key(results, "data.brands.name"),
-            "ids": ParserHelper.find_element_by_key(results, "data.brands.id"),
-        }
-        brands_data = [
-            {"name": name, "id": id_}
-            for name, id_ in zip(brands_data_raw["names"], brands_data_raw["ids"])
-        ]
+        brands_data = self.poller.get_brands()
         return brands_data
 
-    def get_subscriptions(self):
-        results = self._http_request(
-            method="GET",
-            url_suffix=Endpoints.SUBSCRIPTIONS.value,
-            timeout=TIMEOUT,
-            retries=RETRIES,
-            status_list_to_retry=STATUS_LIST_TO_RETRY,
-            headers=self.additional_headers,
-        )
-        return results
-
     def get_formatted_subscriptions(self) -> list[str]:
-        results = self.get_subscriptions()
-        return ParserHelper.find_element_by_key(results, "data.subscriptions")
+        return self.poller.get_subscriptions()
 
     def get_file(self, file_sha: str) -> tuple[bytes, str] | None:
         try:

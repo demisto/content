@@ -12,11 +12,12 @@ urllib3_disable_warnings(InsecureRequestWarning)
 
 realpath = os.path.join(os.path.dirname(os.path.realpath(__file__)))
 
-with open(f'{realpath}/test_data/brands_example.json') as example:
-    BRANDS_RAW_JSON = load(example)
+BRANDS_RAW_JSON = [
+                {"name": "Example Brand 1", "id": "exampleid1223"},
+                {"name": "Example Brand 2", "id": "exampleid321"},
+            ]
 
-with open(f'{realpath}/test_data/subscriptions_example.json') as example:
-    SUBSCRIPTIONS_RAW_JSON = load(example)
+SUBSCRIPTIONS_RAW_JSON = ['scam', 'example']
 
 with open(f'{realpath}/test_data/violation_by_id_example.json') as example:
     VIOLATION_BY_ID_RAW_JSON = load(example)
@@ -87,7 +88,7 @@ def test_main_error():
 
 def test_get_brands(mocker, session_fixture):
     client = session_fixture
-    mocker.patch.object(client, 'get_brands', return_value=[BRANDS_RAW_JSON])
+    mocker.patch.object(client, 'get_formatted_brands', return_value=[BRANDS_RAW_JSON])
     response = client.get_formatted_brands()
     assert isinstance(response, list)
     assert len(response) > 0
@@ -95,7 +96,7 @@ def test_get_brands(mocker, session_fixture):
 
 def test_get_subscriptions(mocker, session_fixture):
     client = session_fixture
-    mocker.patch.object(client, 'get_subscriptions', return_value=[SUBSCRIPTIONS_RAW_JSON])
+    mocker.patch.object(client, 'get_formatted_subscriptions', return_value=[SUBSCRIPTIONS_RAW_JSON])
     response = client.get_formatted_subscriptions()
     assert isinstance(response, list)
     assert len(response) > 0
@@ -128,7 +129,7 @@ def test_get_avalible_commands():
 
 def test_command_get_brands(mocker, session_fixture):
     client = session_fixture
-    mocker.patch.object(client, 'get_brands', return_value=[BRANDS_RAW_JSON])
+    mocker.patch.object(client, 'get_formatted_brands', return_value=[BRANDS_RAW_JSON])
     result, requested_method = GroupIBDigitalRiskProtection.Commands(
         client=client,
         command=Commands.GET_BRANDS.value,
@@ -150,7 +151,7 @@ def test_command_get_brands(mocker, session_fixture):
 
 def test_command_get_subscriptions(mocker, session_fixture):
     client = session_fixture
-    mocker.patch.object(client, 'get_subscriptions', return_value=[SUBSCRIPTIONS_RAW_JSON])
+    mocker.patch.object(client, 'get_formatted_subscriptions', return_value=[SUBSCRIPTIONS_RAW_JSON])
     result, requested_method = GroupIBDigitalRiskProtection.Commands(
         client=client,
         command=Commands.GET_SUBSCRIPTIONS.value,
@@ -193,7 +194,7 @@ def test_command_get_violation_by_id(mocker, session_fixture):
 
 def test_command_test_module(mocker, session_fixture):
     client = session_fixture
-    mocker.patch.object(client, 'get_brands', return_value=[BRANDS_RAW_JSON])
+    mocker.patch.object(client, 'get_formatted_brands', return_value=[BRANDS_RAW_JSON])
     result, requested_method = GroupIBDigitalRiskProtection.Commands(
         client=client,
         command=Commands.TEST_MODULE.value,
