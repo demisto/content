@@ -763,7 +763,7 @@ def fetch_indicators(client: Client, params: dict, current_time: datetime) -> li
     last_run = demisto.getLastRun() or {}
     start_time = last_run.get("last_successful_run", default_start)
 
-    feed_tags = argToList(params.get("feed_tags", []))
+    feed_tags = argToList(params.get("feedTags", []))
     tlp_color = params.get("tlp_color")
 
     if "Indicators" in feed_types:
