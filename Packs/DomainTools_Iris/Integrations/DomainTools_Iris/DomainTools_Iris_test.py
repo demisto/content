@@ -4,9 +4,13 @@ from CommonServerPython import *
 from DomainTools_Iris import (
     format_investigate_output,
     format_enrich_output,
+    format_tags,
+    format_attribute,
     main,
     http_request,
     API,
+    chunks,
+    fetch_domains_from_dt_api,
 )
 from test_data import mock_response, expected
 
@@ -206,6 +210,17 @@ def test_testModule_command(mocker):
     assert "ok" in results[0]
 
 
+def test_command_not_implemented(mocker):
+    mocker.patch.object(demisto, "command", return_value="unknown-command")
+    expected_error_msg = "Unable to perform command : unknown-command, Reason: Command unknown-command is not supported."
+    mock_return_error = mocker.patch("DomainTools_Iris.return_error")
+
+    main()
+
+    # Assert that the captured exception message is correct
+    mock_return_error.assert_called_once_with(expected_error_msg)
+
+
 @pytest.mark.parametrize(
     "method, attribute, params",
     [
@@ -215,6 +230,7 @@ def test_testModule_command(mocker):
 def test_http_request(mocker, dt_client, method, attribute, params):
     expected_response = {
         "parsed-domain-rdap": mock_response.raw_parsed_domain_rdap_response,
+        "parsed-whois": mock_response.parsed_whois_response,
     }
 
     mocker.patch("DomainTools_Iris.get_client", return_value=dt_client)
@@ -289,3 +305,41 @@ def test_reverseNameserver_command(mocker):
 
     human_readable = results[0]["HumanReadable"]
     assert " ".join(human_readable.split()) == " ".join(expected.reverseNameserver_table.split())
+
+
+def test_format_tags(mocker):
+    sample_tags = [
+        {"label": "tag1"},
+        {"label": "tag2"},
+    ]
+
+    assert format_tags(sample_tags) == "tag1 tag2"
+
+
+def test_format_attribute(mocker):
+    expected_output = "141.193.213.20,141.193.213.21"
+    test_attr = mock_response.domaintools_response.get("ip")
+    formatted_value = format_attribute(test_attr, key="address.value")
+
+    assert expected_output == formatted_value
+
+
+def test_chunks(mocker):
+    sample_list_results = [{"result": "test"}] * 10000
+    test_chunks = chunks(sample_list_results, 100)
+
+    # test the len if chunks are working as expected
+    test_chunk_result = next(test_chunks)
+
+    assert len(test_chunk_result) == 100
+
+
+def test_fetch_domains_from_dt_api(mocker):
+    # mocker.patch(f"DomainTools_Iris.fetch_domains_from_dt_api", return_value=[])
+    mocker.patch(
+        "DomainTools_Iris.domain_pivot", return_value={"results": [mock_response.domaintools_response], "has_more_results": False}
+    )
+
+    test_fetch_result = fetch_domains_from_dt_api("domain", "domaintools.com")
+
+    assert len(test_fetch_result) == 1

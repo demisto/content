@@ -1,7 +1,7 @@
 id: DomainTools Check New Domains by Iris Hash
 version: -1
 name: DomainTools Check New Domains by Iris Hash
-description: This playbook helps monitor for new domains matching given infrastructure parameters (registrar, DNS, SSL certs, etc.). Start with a search in the Iris Investigate UI. Add an advanced search filter for "First Seen", "Within", "the last day" (for example) to your search. Run the search, then click "Import/Export Search" to view the Search Hash. Copy that into this playbook trigger. Every time this playbook runs, it will pull the new indicators matching the search and add them to the current incident
+description: This playbook helps monitor for new domains matching given infrastructure parameters (registrar, DNS, SSL certs, etc.). Start with a search in the Iris Investigate UI. Add an advanced search filter for "First Seen", "Within", "the last day" (for example) to your search. Run the search, then click "Import/Export Search" to view the Search Hash. Copy that into this playbook trigger. Every time this playbook runs, it will pull the new indicators matching the search and add them to the current incident.
 tags:
 - Domaintools
 starttaskid: "0"
