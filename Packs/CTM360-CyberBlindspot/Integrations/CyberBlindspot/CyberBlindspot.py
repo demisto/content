@@ -406,7 +406,6 @@ def map_and_create_incident(unmapped_incident: dict) -> dict:
     :return: Incident in format ready for XSOAR
     :rtype: ``dict``
     """
-    unmapped_incident.pop("brand", "")
     unmapped_incident.pop("screenshots", "")
     incident_id: str = unmapped_incident.pop("id", "")
     mapped_incident = {
