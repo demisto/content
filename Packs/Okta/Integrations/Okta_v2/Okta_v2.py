@@ -721,17 +721,23 @@ def search_command(client, args):
     return "No users found in Okta", {}, raw_response
 
 
-def get_user_command(client, args):
-    if not (args.get("username") or args.get("userId")):
-        raise Exception("You must supply either 'Username' or 'userId")
-    user_term = args.get("userId") if args.get("userId") else args.get("username")
+def get_user_command(client: Client, args: dict):
+    if not (args.get("username") or args.get("userId") or args.get("userEmail")):
+        raise Exception("You must supply either 'Username' or 'userId' or 'userEmail'")
 
-    try:
-        raw_response = client.get_user(user_term)
-    except Exception as e:
-        if "404" in str(e):
-            return (f'User {args.get("username")} was not found.', {}, {})
-        raise e
+    raw_response = None
+    if user_term := args.get("userEmail"):
+        raw_response, _ = client.list_users({"filter": f'profile.email eq "{user_term}"', "limit": 1})
+    else:
+        user_term = args.get("userId") or args.get("username")
+        try:
+            raw_response = client.get_user(user_term)
+        except Exception as e:
+            if "404" not in str(e):
+                raise e
+
+    if not raw_response:
+        return (f"User {user_term!r} was not found.", {}, {})
 
     verbose = args.get("verbose")
 
