@@ -941,4 +941,4 @@ outputs:
   type: Number
 fromversion: 5.0.0
 tests:
-- DomainTools Iris - Test
+- No tests (auto formatted)
