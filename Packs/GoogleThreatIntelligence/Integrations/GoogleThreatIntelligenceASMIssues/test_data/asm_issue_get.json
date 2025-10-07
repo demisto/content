@@ -1,0 +1,74 @@
+{
+    "success": true,
+    "result": {
+        "uuid": "dummy_uuid",
+        "dynamic_id": 210054431,
+        "entity_uid": "dummy_entity_uid",
+        "alias_group": "4898048",
+        "category": "misconfiguration",
+        "confidence": "confirmed",
+        "description": "Any CA is able to generate a certificate for this domain, increasing the risk of exposure if that CA is compromised.",
+        "details": {
+            "name": "dns_caa_policy_missing",
+            "task": "tasks",
+            "added": "dummy_added",
+            "proof": "dummy_proof",
+            "status": "dummy_status",
+            "category": "dummy_category",
+            "severity": 5,
+            "references": [
+                {
+                    "uri": "https://www.example.com/DNS_Certification_Authority_Authorization",
+                    "type": "description"
+                },
+                {
+                    "uri": "https://www.example.com/caa/",
+                    "type": "remediation"
+                }
+            ],
+            "description": "Any CA is able to generate a certificate for this domain, increasing the risk of exposure if that CA is compromised.",
+            "pretty_name": "Domain is missing a CAA record",
+            "remediation": "Add a CAA record, setting the policy for this domain."
+        },
+        "first_seen": "2024-12-18T15:43:48.000Z",
+        "identifiers": "test",
+        "last_seen": "2025-02-11T16:55:42.000Z",
+        "name": "dns_caa_policy_missing",
+        "pretty_name": "Domain is missing a CAA record",
+        "scoped": true,
+        "severity": 5,
+        "source": "intrigue",
+        "status": "open_new",
+        "ticket_list": ["ticket"],
+        "type": "standard",
+        "uid": "dummy_uid",
+        "upstream": "intrigue",
+        "created_at": "2025-02-11T16:56:52.734Z",
+        "updated_at": "2024-12-19T00:00:00.000Z",
+        "collection_id": 181421,
+        "elasticsearch_mappings_hash": "dummy_elasticsearch_mappings_hash",
+        "cisa_known_exploited": false,
+        "epss_v2_score_lte": 4,
+        "epss_v2_percentile_gte": 4,
+        "entity_id": -522945081,
+        "collection": "crestdata",
+        "collection_type": "pre_collection",
+        "collection_uuid": "dummy_collection_uuid",
+        "organization_uuid": "dummy_organization_uuid",
+        "entity_name": "crestdata.ai",
+        "entity_type": "Intrigue::Entity::Domain",
+        "summary": {
+            "pretty_name": "Domain is missing a CAA record",
+            "severity": 5,
+            "scoped": true,
+            "confidence": "confirmed",
+            "status": "open_new",
+            "category": "misconfiguration",
+            "identifiers": "test",
+            "status_new": "open",
+            "status_new_detailed": "new",
+            "ticket_list": ["ticket"]
+        },
+        "tags": ["Test"]
+    }
+}
