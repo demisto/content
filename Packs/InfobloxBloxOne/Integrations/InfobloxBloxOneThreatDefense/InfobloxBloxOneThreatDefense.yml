@@ -128,7 +128,7 @@ configuration:
   options:
   - Log
   - Block
-  - Allow
+  - Default
   - Redirect
   additionalinfo: Retrieve the DNS Security Events as specified policy action.
 - section: Collect
@@ -152,128 +152,25 @@ configuration:
   type: 16
   required: false
   options:
-  - InfostealerShiz
-  - Typosquat
-  - PonyLoader
-  - FEEDIGNORED
-  - LOG4SHELL
-  - SpyEye
-  - DoHService
-  - Generic
-  - ParkedDomain
-  - NewlyObservedDomains
-  - IcedID
-  - ExploitKit
-  - OPENRESOLVER
-  - SmokeLoader
-  - AgentTesla
-  - Vawtrak
-  - TorNode
-  - CryptoLocker
-  - Lokibot
-  - Simda
-  - Brushaloader
-  - DanglingRecord
-  - Geodo
-  - Phish
-  - Padcrypt
-  - TinyBanker
-  - SinkholedHost
-  - Registration
-  - LOOKALIKE
-  - Upatre
-  - Dorkbot
-  - RIG
-  - Node
-  - Source
-  - Ursnif
-  - Nemucod
   - DGA
-  - Smishing
-  - BackdoorRAT
-  - Azorult
-  - Symmi
-  - Safe
-  - Ramdo
-  - mfa_smishing
-  - PHISHING
-  - SUSPICIOUS
-  - Palevo
-  - Shifu
-  - Behavior
-  - Lookalike
-  - Formbook
-  - CTBLocker
-  - Suppobox
-  - Spam
-  - DarkComet
-  - Beebone
-  - Expiro
-  - Chinad
-  - LowProfileC2Beacon
-  - EMERGENT
-  - Bamital
-  - Hesperbot
-  - GenericThreat
-  - QTYPEANY
-  - Coreflood
-  - EmergentDomain
-  - Lottery
-  - Malvertising
-  - MalwareC2
-  - Qadars
-  - COBALTSTRIKE
-  - LookalikeDomains
-  - FIRSTSEEN
+  - Undefined
+  - Malicious
+  - Open Resolver
+  - Phishing
+  - DNS Tunneling
   - MalwareDownload
-  - MalwareGeneric
-  - EmdiviC2
-  - Zusy
-  - Banjori
-  - Ramnit
-  - Murofet
-  - Virut
-  - Necurs
-  - EMERGENTDOMAINS
-  - Gozi
-  - Locky
-  - TeslaCrypt
-  - Nameserver
-  - SittingDucks
-  - MYLOBOT
-  - Ranbyus
-  - Proslikefan
-  - Ransomware
-  - Advertising
-  - UrlZone
-  - Spyware
-  - RDGA
-  - Dircrypt
-  - Cridex
-  - TorExitNode
-  - BROWSERMISCONFIGURATION
-  - DNST
-  - SERVFAIL
-  - Sphinx
-  - Nymaim
-  - FinancialFraud
-  - REACTIVATED TLD
-  - GameoverZeus
-  - NXDOMAIN
-  - ZLOADER
-  - Bedep
-  - Fobber
-  - WebAppAttack
-  - Qakbot
-  - Tempedreve
-  - Emotet
-  - Sisron
-  - X
-  - Gandcrab
-  - Hancitor
-  - Cerber
-  - Pykspa
-  - TDS
+  - Sinkhole
+  - Zero Day DNS
+  - Notional Data Exfiltration
+  - MalwareC2DGA
+  - MalwareC2
+  - Restricted Country Communications
+  - Suspicious
+  - CompromisedHost
+  - CompromisedDomain
+  - Lookalike Threat
+  - Sanctioned Feed Disabled
+  - DNSTunnel
   additionalinfo: Retrieve the DNS Security Events as specified threat class.
 - section: Collect
   advanced: true
@@ -304,6 +201,107 @@ configuration:
   - SUSPICIOUS
   - EMERGENTDOMAINS
   - LOG4SHELL
+  - EmdiviC2
+  - ExploitKit
+  - MalwareC2
+  - MalwareDownload
+  - Node
+  - SittingDucks
+  - GenericThreat
+  - Source
+  - Safe
+  - RIG
+  - DoHService
+  - MalwareGeneric
+  - RDGA
+  - Spam
+  - TDS
+  - AgentTesla
+  - Azorult
+  - BackdoorRAT
+  - Bedep
+  - Beebone
+  - Brushaloader
+  - Cerber
+  - Coreflood
+  - Cridex
+  - CryptoLocker
+  - CTBLocker
+  - DarkComet
+  - Dorkbot
+  - Emotet
+  - Expiro
+  - Formbook
+  - Gandcrab
+  - Gozi
+  - Hancitor
+  - IcedID
+  - InfostealerShiz
+  - Locky
+  - Lokibot
+  - Lookalike
+  - Necurs
+  - Palevo
+  - PonyLoader
+  - Pykspa
+  - Qakbot
+  - Ramnit
+  - Ransomware
+  - Shifu
+  - SmokeLoader
+  - SpyEye
+  - Spyware
+  - Symmi
+  - Tempedreve
+  - TeslaCrypt
+  - Upatre
+  - Ursnif
+  - Virut
+  - Zusy
+  - Bamital
+  - Banjori
+  - Chinad
+  - Dircrypt
+  - Fobber
+  - GameoverZeus
+  - Geodo
+  - Hesperbot
+  - Murofet
+  - Nymaim
+  - Padcrypt
+  - Proslikefan
+  - Qadars
+  - Ramdo
+  - Ranbyus
+  - Simda
+  - Sisron
+  - Sphinx
+  - Suppobox
+  - TinyBanker
+  - UrlZone
+  - Vawtrak
+  - Malvertising
+  - Nemucod
+  - Typosquat
+  - Phish
+  - Smishing
+  - Advertising
+  - DanglingRecord
+  - LookalikeDomains
+  - NewlyObservedDomains
+  - ParkedDomain
+  - DNST
+  - TorExitNode
+  - TorNode
+  - FinancialFraud
+  - Lottery
+  - Nameserver
+  - SinkholedHost
+  - Behavior
+  - EmergentDomain
+  - Registration
+  - WebAppAttack
+  - REHOME
   additionalinfo: Retrieve the DNS Security Events as specified threat family.
 - section: Collect
   advanced: true
