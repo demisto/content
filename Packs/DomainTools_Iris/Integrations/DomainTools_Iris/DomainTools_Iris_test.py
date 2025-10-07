@@ -11,6 +11,7 @@ from DomainTools_Iris import (
     API,
     chunks,
     fetch_domains_from_dt_api,
+    create_domain_risk_results,
 )
 from test_data import mock_response, expected
 
@@ -305,6 +306,15 @@ def test_reverseNameserver_command(mocker):
 
     human_readable = results[0]["HumanReadable"]
     assert " ".join(human_readable.split()) == " ".join(expected.reverseNameserver_table.split())
+
+
+def test_create_domain_risk_results(mocker):
+    domain_risk_results = create_domain_risk_results(mock_response.domaintools_response)
+    domaintools_risk = domain_risk_results.get("domaintools")
+
+    assert "Analytics" in domaintools_risk
+    assert domaintools_risk["Name"] == "domaintools.com"
+    assert domaintools_risk["LastEnriched"] == "2025-10-07"
 
 
 def test_format_tags(mocker):
