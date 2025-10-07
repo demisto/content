@@ -17,6 +17,7 @@ This playbook does not use any sub-playbooks.
 ### Scripts
 
 Please install this scripts by DomainTools first before running the playbook.
+
 * `CheckPivotableDomains`
 * `AddDomainRiskScoreToContext`
 
