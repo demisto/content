@@ -388,9 +388,10 @@ def get_tq_score_from_response(score_data):
         # score will be max(gen_score, manual_score)
         gen_score = str(score_data.get("generated_score"))
         manual_score = score_data.get("manual_score", 0.0)
-        if manual_score is None:
-            manual_score = -1
-        return max(float(gen_score), float(manual_score))
+
+        if manual_score:
+            return float(manual_score)
+        return float(gen_score)
     else:
         # score is already defined as a number
         return float(score_data)
