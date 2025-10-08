@@ -31,8 +31,13 @@ MAX_USER_DATA_PER_FETCH = 1250
 MAX_USER_DATA_PER_PAGE = 250
 
 # scopes
-CUSTOMER_EVENTS_SCOPE = "signature impersonation organization_read user_read"
-USER_DATA_SCOPE = "signature impersonation organization_read user_read"
+CUSTOMER_EVENTS_SCOPE = "signature impersonation"
+USER_DATA_SCOPE = "organization_read user_read"
+
+SCOPES_PER_FETCH_TYPE = {
+    CUSTOMER_EVENTS_TYPE: CUSTOMER_EVENTS_SCOPE,
+    USER_DATA_TYPE: USER_DATA_SCOPE,
+}
 
 SERVER_PROD_URL = "https://account.docusign.com"
 
@@ -398,6 +403,7 @@ def get_user_details(users: list, base_uri: str, access_token: str, client: User
         users: The updated list of users after enrichment
         latest_modified_iso: The latest modifiedDate in ISO format.
     '''
+    start_time = time.perf_counter()
     latest_modified_dt = None
     for user in users:
         user_data = client.get_user_detail(base_uri, user.get("id"), access_token)
@@ -416,10 +422,13 @@ def get_user_details(users: list, base_uri: str, access_token: str, client: User
             except Exception as ex:
                 demisto.debug(f"{LOG_PREFIX}Failed to parse modifiedDate '{modified_date}': {ex!s}")
     
+    end_time = time.perf_counter()
+    demisto.debug(f"{LOG_PREFIX} get_user_details took {end_time - start_time}s, retrieved modifiedDate from {len(users)} users")
     return users, latest_modified_dt.strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
 def get_user_data(last_run: dict, limit: int, users_per_page: int, client: UserDataClient, access_token: str) -> tuple[list, dict]:
+    start = time.perf_counter()
     total_events = []
     remaining_to_fetch = 0
 
@@ -477,6 +486,8 @@ def get_user_data(last_run: dict, limit: int, users_per_page: int, client: UserD
                     total_events = total_events[:limit]
 
                 last_run["continuing_fetch_info"] = None
+                end_time = time.perf_counter()
+                demisto.debug(f"{LOG_PREFIX} get_user_data took {end_time - start}s, fetched {len(total_events)} users")
                 return total_events, last_run
 
             prev_url = url
@@ -499,6 +510,9 @@ def get_user_data(last_run: dict, limit: int, users_per_page: int, client: UserD
                 f"{LOG_PREFIX}Limit is reached and only partial users were fetched from the last page scanning.\n"
                 f"Setting excess_logs_info: {last_run['excess_logs_info']}"
             )
+
+        end_time = time.perf_counter()
+        demisto.debug(f"{LOG_PREFIX} get_user_data took {end_time - start}s, fetched {len(total_events)} users")
         return total_events[:limit], last_run
 
     except Exception as e:
@@ -535,7 +549,7 @@ def initiate_customer_events_client() -> CustomerEventsClient:
     
     return CustomerEventsClient(server_url=server_url, proxy=proxy, verify=verify)
 
-def initiate_auth_client() -> AuthClient: 
+def initiate_auth_client() -> AuthClient:
     """
     Create AuthClient for making requests to DocuSign API authentication flow.
 
@@ -598,6 +612,7 @@ def fetch_events() -> tuple[dict, list]:
     Returns:
         tuple: (last_run, events) where last_run is the updated state and events are the fetched events.
     """
+    total_start = time.perf_counter()
     events = []
     params = demisto.params()
     
@@ -613,17 +628,25 @@ def fetch_events() -> tuple[dict, list]:
     demisto.debug(f"{LOG_PREFIX}Selected fetch types: {selected_fetch_types}")
 
     if CUSTOMER_EVENTS_TYPE in selected_fetch_types:
+        start = time.perf_counter()
         demisto.info(f"{LOG_PREFIX}Start fetch customer events, Current customer events last_run:\n{last_run_customer_events}")
         last_run_customer_events, fetched_customer_events = fetch_customer_events(last_run_customer_events)
         events.extend(fetched_customer_events)
-        demisto.debug(f"{LOG_PREFIX}Total fetched customer events: {len(fetched_customer_events)}")
+
+        elapsed = time.perf_counter() - start
+        demisto.debug(f"{LOG_PREFIX}finished fetching customer events: {len(fetched_customer_events)} in {elapsed:.3f}s")
 
     if USER_DATA_TYPE in selected_fetch_types:
+        start = time.perf_counter()
         demisto.info(f"{LOG_PREFIX}Start fetch user data, Current user data last_run:\n{last_run_user_data}")
         last_run_user_data, fetched_user_data = fetch_audit_user_data(last_run_user_data)
         events.extend(fetched_user_data)
-        demisto.debug(f"{LOG_PREFIX}Total fetched user data: {len(fetched_user_data)}")
+
+        elapsed = time.perf_counter() - start
+        demisto.debug(f"{LOG_PREFIX}finished fetching user data: {len(fetched_user_data)} in {elapsed:.3f}s")
     
+    elapsed = time.perf_counter() - total_start
+    demisto.debug(f"{LOG_PREFIX}finished running fetch_events.\n total events: {len(events)} in {elapsed:.3f}s")
     last_run = {CUSTOMER_EVENTS_TYPE: last_run_customer_events, USER_DATA_TYPE: last_run_user_data}
     return last_run, events
 
@@ -673,6 +696,8 @@ def validate_params():
         raise DemistoException(f"Please provide Server URL for fetching {CUSTOMER_EVENTS_TYPE}.")
 
 def test_module() -> str:
+    start = time.perf_counter()
+
     validate_params()
     client = initiate_auth_client()
     access_token = get_access_token(client)
@@ -682,7 +707,8 @@ def test_module() -> str:
         demisto.debug(f"{LOG_PREFIX} Test module failed during authentication: No access token or userinfo received")
         raise DemistoException("Test module failed during authentication: No access token or userinfo received")
         
-    demisto.debug(f"{LOG_PREFIX} Test module completed successfully")
+    elapsed = time.perf_counter() - start
+    demisto.debug(f"{LOG_PREFIX} Test module completed successfully in {elapsed:.3f}s")
     return "ok"
   
 def main() -> None:
@@ -693,7 +719,7 @@ def main() -> None:
         if command == "test-module": 
             return_results(test_module())
 
-        elif command == "fetch-events": 
+        elif command == "fetch-events":
             last_run, events = fetch_events()
             demisto.debug(f"{LOG_PREFIX}Sending {len(events)} events to XSIAM.")
             demisto.info(f"{LOG_PREFIX}Sending {len(events)} events to XSIAM.\n{events}")
@@ -704,10 +730,10 @@ def main() -> None:
             demisto.setLastRun(last_run)
             demisto.debug(f"{LOG_PREFIX}Updated last_run object after fetch: {last_run}")
             
-        elif command == "docusign-generate-consent-url": 
+        elif command == "docusign-generate-consent-url":
             return_results(command_generate_consent_url())
             
-    except Exception as e: 
+    except Exception as e:
         return_error(f"{LOG_PREFIX}Failed to execute {command} command.\nError:\n{str(e)}")
 
 if __name__ in ("__main__", "builtin", "builtins"):
