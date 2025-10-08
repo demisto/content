@@ -71,7 +71,7 @@ configuration:
   advanced: true
 - display: Traffic Light Protocol Color (TLP).
   name: tlp_color
-  additionalinfo: The Traffic Light Protocol (TLP) designation is to apply to indicators fetched from the feed.
+  additionalinfo: The Traffic Light Protocol (TLP) designation applied to indicators fetched from the feed.
   type: 15
   options:
   - RED
