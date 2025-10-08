@@ -57,17 +57,17 @@ This playbook does not use any integrations.
 * IsIntegrationAvailable
 * SearchIncidentsV2
 * Set
+* get-endpoint-data
+* isolate-endpoint
+* quarantine-file
+* url-enrichment
 
 ### Commands
 
 * closeInvestigation
-* core-get-endpoints
 * core-get-process-analytics-prevalence
 * core-get-quarantine-status
-* core-isolate-endpoint
-* core-quarantine-files
 * core-terminate-causality
-* url
 * wildfire-get-verdict
 * xdr-xql-generic-query
 
