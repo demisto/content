@@ -67,6 +67,6 @@ For more information, see the product [documentation](https://documentation.comm
 4. Creating a new HTTP Log Collector will allow you to generate a unique token, please save it since it will be used later.
 5. Click the 3 dots sign next to the newly created instance and copy the API Url, it will also be used later.
 
-For more information, see this [doc](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Set-up-an-HTTP-Log-Collector-to-Receive-Logs).
+For more information, see [Set up an HTTP log collector to receive logs](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-3.x-Documentation/Set-up-an-HTTP-log-collector-to-receive-logs).
 
 </~XSIAM>
