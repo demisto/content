@@ -84,7 +84,7 @@ configuration:
   advanced: true
 - display: Indicator Reputation
   name: feedReputation
-  additionalinfo: Indicators from this integration instance will be marked with this reputation
+  additionalinfo: Indicators from this integration instance will be marked with this reputation.
   type: 18
   options:
   - "None"
