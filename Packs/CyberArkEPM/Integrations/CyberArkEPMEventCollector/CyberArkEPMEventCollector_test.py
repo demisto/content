@@ -242,31 +242,15 @@ def test_fetch_events(requests_mock):
     "event_type, last_fetch, expected_next_cursor, expected_from_date",
     [
         # Test Case 1: Zero events with next_cursor="start" (pagination complete, no new events)
-        (
-            "policy_audits",
-            {"events": [], "next_cursor": "start"},
-            "start",
-            "2023-01-01T00:00:00.000Z"
-        ),
+        ("policy_audits", {"events": [], "next_cursor": "start"}, "start", "2023-01-01T00:00:00.000Z"),
         # Test Case 2: Zero events with next_cursor="some_cursor" (pagination ongoing but empty page)
-        (
-            "detailed_events",
-            {"events": [], "next_cursor": "new_cursor_123"},
-            "new_cursor_123",
-            "2023-01-01T00:00:00.000Z"
-        ),
+        ("detailed_events", {"events": [], "next_cursor": "new_cursor_123"}, "new_cursor_123", "2023-01-01T00:00:00.000Z"),
         # Test Case 3: Events exist with next_cursor="start" (pagination complete with events)
         (
             "policy_audits",
-            {
-                "events": [
-                    {"_time": "2023-12-11T13:09:56.055Z"},
-                    {"_time": "2023-12-11T13:09:56.056Z"}
-                ],
-                "next_cursor": "start"
-            },
+            {"events": [{"_time": "2023-12-11T13:09:56.055Z"}, {"_time": "2023-12-11T13:09:56.056Z"}], "next_cursor": "start"},
             "start",
-            "2023-12-11T13:09:56.057Z"
+            "2023-12-11T13:09:56.057Z",
         ),
     ],
 )
@@ -287,11 +271,7 @@ def test_prepare_next_run_with_zero_events(event_type, last_fetch, expected_next
     """
     from CyberArkEPMEventCollector import prepare_next_run
 
-    last_run = {
-        "set123": {
-            event_type: {"from_date": "2023-01-01T00:00:00.000Z", "next_cursor": "old_cursor"}
-        }
-    }
+    last_run = {"set123": {event_type: {"from_date": "2023-01-01T00:00:00.000Z", "next_cursor": "old_cursor"}}}
 
     prepare_next_run("set123", event_type, last_run, last_fetch)
 
