@@ -595,26 +595,26 @@ tasks:
           left:
             value:
               complex:
-                root: PaloAltoNetworksXDR.Incident.alerts
-                accessor: action_process_signature_vendor
+                root: alert
+                accessor: processexecutionsigner
                 transformers:
                 - operator: append
                   args:
                     item:
                       value:
-                        simple: ${PaloAltoNetworksXDR.Incident.alerts.os_actor_process_signature_vendor}
+                        simple: alert.osparentsigner
                       iscontext: true
                 - operator: append
                   args:
                     item:
                       value:
-                        simple: ${PaloAltoNetworksXDR.Incident.alerts.actor_process_signature_vendor}
+                        simple: alert.initiatorsigner
                       iscontext: true
                 - operator: append
                   args:
                     item:
                       value:
-                        simple: ${PaloAltoNetworksXDR.Incident.alerts.causality_actor_process_signature_vendor}
+                        simple: alert.cgosigner
                       iscontext: true
             iscontext: true
           right:
