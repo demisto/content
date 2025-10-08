@@ -1759,7 +1759,7 @@ script:
       type: string
       description: Value of the configuration.
       defaultvalue: '4'
-    description: "Sets the log retention period for the PostgreSQL server to 4 days. NOTE: Recommended Log retention days value can be in 4-7 inclusive range. 'Microsoft.DBforPostgreSQL servers/configuration/*' permission is required."
+    description: "Sets the log retention period for the PostgreSQL server to 4 days. 'Microsoft.DBforPostgreSQL servers/configuration/*' permission is required."
     name: azure-postgres-config-set-log-retention-quick-action
     prettyname: Set Postgres Log Retention
     hidden: true
