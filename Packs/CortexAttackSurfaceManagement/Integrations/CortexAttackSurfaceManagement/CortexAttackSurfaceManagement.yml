@@ -5,13 +5,13 @@ commonfields:
 sectionorder:
   - Connect
 configuration:
-- additionalinfo: The web UI with `api-` appended to front (e.g., https://api-xsiam.paloaltonetworks.com). For more information please see https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-api/cortex-xdr-api-overview/get-started-with-cortex-xdr-apis.
+- additionalinfo: The web UI with `api-` appended to front (e.g., https://api-xsiam.paloaltonetworks.com). For more information please see https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-REST-API/Get-Started-with-Cortex-XDR-APIs.
   display: Server URL
   name: url
   required: true
   type: 0
   section: Connect
-- additionalinfo: For more information please see https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-api/cortex-xdr-api-overview/get-started-with-cortex-xdr-apis.  Only standard API key type is supported.
+- additionalinfo: For more information please see https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-REST-API/Get-Started-with-Cortex-XDR-APIs.  Only standard API key type is supported.
   display: API Key ID
   displaypassword: API Key
   name: credentials
