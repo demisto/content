@@ -1354,6 +1354,7 @@ script:
       description: 'A list of DB snapshot attributes to remove from the attribute specified by AttributeName.'
       required: false
       isArray: true
+
   - name: aws-ec2-security-group-ingress-revoke
     description: 'Revokes one or more ingress rules in a security group.'
     arguments:
@@ -1421,9 +1422,11 @@ script:
     quickaction: true
     arguments:
     - name: account_id
+      prettyname: Account ID
       description: The AWS account ID.
       required: true
     - name: region
+      prettyname: Region
       description: The AWS region.
       required: true
       auto: PREDEFINED
@@ -1461,17 +1464,21 @@ script:
       - me-central-1
       - sa-east-1
     - name: group_id
+      prettyname: Security Group ID
       description: 'The ID of the security group.'
       required: true
     - name: protocol
+      prettyname: Protocol
       description: 'The IP protocol: tcp, udp, icmp, or icmpv6. Use -1 to specify all protocols. When used with port and cidr arguments for simple rule revocation.'
-      required: false
+      required: true
     - name: port
+      prettyname: Port
       description: 'For TCP or UDP: The range of ports to revoke (e.g., "80" or "80-443"). For ICMP: A single integer or range (type-code) representing the ICMP type and code. Use with protocol and cidr for simple rule revocation.'
-      required: false
+      required: true
     - name: cidr
+      prettyname: CIDR
       description: 'The IPv4 address range in CIDR format (e.g., "0.0.0.0/0"). Use with protocol and port for simple rule revocation.'
-      required: false
+      required: true
 
   - name: aws-ec2-security-group-ingress-authorize
     description: 'Adds the specified inbound (ingress) rules to a security group.'
@@ -1532,6 +1539,7 @@ script:
     - name: ip_permissions
       description: 'The sets of IP permissions to authorize, in JSON format. Use this for complex rule configurations or when authorizing multiple rules. Cannot be used together with protocol/port/cidr arguments.'
       required: false
+
   - name: aws-ec2-security-group-egress-revoke
     description: 'Removes the specified outbound (egress) rules from the specified security group.'
     arguments:
@@ -1590,8 +1598,73 @@ script:
       required: false
     - name: ip_permissions
       description: 'The sets of IP permissions to revoke, in JSON format. Use this for complex rule configurations or when revoking multiple rules. Cannot be used together with protocol/port/cidr arguments.'
-
       required: false
+
+  - name: aws-ec2-security-group-egress-revoke-quick-action
+    description: This action runs the aws ec2 revoke-security-group-egress command in your AWS environment to remove the security group egress rule, effectively blocking all outbround traffic to the internet. It requires ec2:RevokeSecurityGroupIngress permissions.
+    prettyname: Block Outbound Traffic to Internet
+    hidden: true
+    quickaction: true
+    arguments:
+      - name: account_id
+        prettyname: Account ID
+        description: The AWS account ID.
+        required: true
+      - name: region
+        prettyname: Region
+        description: The AWS region.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+      - name: group_id
+        prettyname: Security Group ID
+        description: 'The ID of the security group.'
+        required: true
+      - name: protocol
+        prettyname: Protocol
+        description: 'The IP protocol: tcp, udp, icmp, or icmpv6. Use -1 to specify all protocols. When used with port and cidr arguments for simple rule revocation.'
+        required: true
+      - name: port
+        prettyname: Port
+        description: 'For TCP or UDP: The range of ports to revoke (e.g., "80" or "80-443"). For ICMP: A single integer or range (type-code) representing the ICMP type and code. Use with protocol and cidr for simple rule revocation.'
+        required: true
+      - name: cidr
+        prettyname: CIDR
+        description: 'The IPv4 address range in CIDR format (e.g., "0.0.0.0/0"). Use with protocol and port for simple rule revocation.'
+        required: true
+
   - name: aws-ec2-snapshot-attribute-modify
     description: 'Adds or removes permission settings for the specified snapshot. Note: snapshots encrypted with the AWS-managed default key (alias/aws/ebs) cannot be shared—use unencrypted snapshots or those encrypted with a customer-managed KMS key to allow permission modifications.'
     arguments:
@@ -1736,6 +1809,59 @@ script:
       - 'disableApiStop'
     - name: value
       description: A new value for the attribute. Use only with the kernel, ramdisk, userData, disableApiTermination, or instanceInitiatedShutdownBehavior attribute.
+
+  - name: aws-ec2-instance-attribute-modify-quick-action
+    description: This action runs the aws-ec2-modify-instance-attribute command in your AWS environment to remove the associated security group from the EC2 instance profile. It requires ec2:ModifyEC2 permissions.
+    prettyname: Detach Security Group from EC2
+    hidden: true
+    quickaction: true
+    arguments:
+      - description: The AWS account ID.
+        name: account_id
+        prettyname: Account ID
+        required: true
+      - description: The AWS region.
+        name: region
+        prettyname: Region
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+      - description: The ID of the instance.
+        name: instance_id
+        prettyname: EC2 Instace ID
+        required: true
 
   - name: aws-ec2-image-attribute-modify
     description: 'Modifies the specified attribute of the specified AMI.'
