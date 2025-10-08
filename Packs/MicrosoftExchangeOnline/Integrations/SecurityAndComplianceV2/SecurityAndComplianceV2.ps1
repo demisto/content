@@ -915,57 +915,85 @@ class SecurityAndComplianceClient {
     }
 
     [psobject]NewSearchAction([string]$search_name, [string]$action, [string]$purge_type,
-                              [string]$share_point_archive_format, [string]$format,
-                              [bool]$include_sharepoint_document_versions, [string]$notify_email,
-                              [string]$notify_email_cc, [string]$scenario, [string]$scope) {
-        # Establish session to remote
-        $this.CreateDelegatedSession("New-ComplianceSearchAction")
-        # Execute command
-        $cmd_params = @{
-            "SearchName" = $search_name
-        }
-        if ($action -eq "Preview") {
-            $cmd_params.Preview = $true
-            $cmd_params.Confirm = $false
-        } elseif ($action -eq "Purge") {
-            $cmd_params.Purge = $true
-            $cmd_params.PurgeType = $purge_type
-            $cmd_params.Confirm = $false
-            $cmd_params.Force = $true
-        } elseif ($action -eq "Export") {
-            $cmd_params.Export = $true
-            $cmd_params.Confirm = $false
-            if ($share_point_archive_format) {
-                $cmd_params.SharePointArchiveFormat = $share_point_archive_format
-            }
-            if ($format) {
-                $cmd_params.Format = $format
-            }
-            if ($include_sharepoint_document_versions -eq "true") {
-                $cmd_params.IncludeSharePointDocumentVersions = $true
-            }
-            if ($notify_email) {
-                $cmd_params.NotifyEmail = $notify_email
-            }
-            if ($notify_email_cc) {
-                $cmd_params.NotifyEmailCC = $notify_email_cc
-            }
-            if ($scenario) {
-                $cmd_params.Scenario = $scenario
-            }
-            if ($scope) {
-                $cmd_params.Scope = $scope
-            }
-        } else {
-            throw "New action must include valid action - Preview/Purge/Export"
-        }
-        $response = New-ComplianceSearchAction @cmd_params
+                          [string]$share_point_archive_format, [string]$format,
+                          [bool]$include_sharepoint_document_versions, [string]$notify_email,
+                          [string]$notify_email_cc, [string]$scenario, [string]$scope) {
 
-        # Close session to remote
-        $this.DisconnectSession()
+        $maxRetries = 3
+        $retryDelaySeconds = 5
+        $lastError = $null
 
-        return $response
-        <#
+        for ($attempt = 1; $attempt -le $maxRetries; $attempt++) {
+            try {
+                # Establish session to remote
+                $this.CreateDelegatedSession("New-ComplianceSearchAction")
+
+                # Execute command
+                $cmd_params = @{
+                    "SearchName" = $search_name
+                }
+                if ($action -eq "Preview") {
+                    $cmd_params.Preview = $true
+                    $cmd_params.Confirm = $false
+                } elseif ($action -eq "Purge") {
+                    $cmd_params.Purge = $true
+                    $cmd_params.PurgeType = $purge_type
+                    $cmd_params.Confirm = $false
+                    $cmd_params.Force = $true
+                } elseif ($action -eq "Export") {
+                    $cmd_params.Export = $true
+                    $cmd_params.Confirm = $false
+                    if ($share_point_archive_format) {
+                        $cmd_params.SharePointArchiveFormat = $share_point_archive_format
+                    }
+                    if ($format) {
+                        $cmd_params.Format = $format
+                    }
+                    if ($include_sharepoint_document_versions -eq "true") {
+                        $cmd_params.IncludeSharePointDocumentVersions = $true
+                    }
+                    if ($notify_email) {
+                        $cmd_params.NotifyEmail = $notify_email
+                    }
+                    if ($notify_email_cc) {
+                        $cmd_params.NotifyEmailCC = $notify_email_cc
+                    }
+                    if ($scenario) {
+                        $cmd_params.Scenario = $scenario
+                    }
+                    if ($scope) {
+                        $cmd_params.Scope = $scope
+                    }
+                } else {
+                    throw "New action must include valid action - Preview/Purge/Export"
+                }
+
+                $response = New-ComplianceSearchAction @cmd_params -ErrorAction Stop
+
+                # Close session to remote
+                $this.DisconnectSession()
+
+                return $response
+
+            } catch {
+                $lastError = $_
+                $errorMessage = $_.Exception.Message
+                Write-Warning "Attempt $attempt failed: $errorMessage"
+
+                # Close session before retry
+                $this.DisconnectSession()
+
+                if ($attempt -lt $maxRetries) {
+#                    Write-Host "Retrying in $retryDelaySeconds seconds..."
+                    Start-Sleep -Seconds $retryDelaySeconds
+                }
+            }
+        }
+
+        # If we get here, all retries failed - throw the last error
+        throw $lastError
+
+           <#
             .DESCRIPTION
             Create compliance search action in the Security & Compliance Center.
 
@@ -991,6 +1019,8 @@ class SecurityAndComplianceClient {
             https://docs.microsoft.com/en-us/powershell/module/exchange/new-compliancesearchaction?view=exchange-ps
         #>
     }
+
+
 
     RemoveSearchAction([string]$search_action_name) {
         # Establish session to remote
