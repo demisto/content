@@ -151,11 +151,11 @@ script:
       - name: project_id
         required: true
         description: GCP project ID.
+        prettyname: GCP Project ID
       - name: resource_name
         required: true
         description: Name of the firewall rule to update.
-        prettypredefined:
-          GCP Firewall Rule Name: ${issue.resourceName}
+        prettyname: GCP Firewall Rule Name
       - description: An optional description of this resource, which you provide when you create the resource.
         name: description
       - description: URL of the network resource for this firewall rule. If not specified when creating a firewall rule, the default network is used.
@@ -193,6 +193,7 @@ script:
           - 'true'
           - 'false'
         defaultValue: "true"
+        hidden: true
     outputs:
       - contextPath: GCP.Compute.Operations.id
         description: The unique identifier for the resource. This identifier is defined by the server.
@@ -270,11 +271,11 @@ script:
       - name: project_id
         required: true
         description: GCP project ID.
+        prettyname: GCP Project ID
       - name: resource_name
         required: true
         description: Name of the firewall rule to disable.
-        prettypredefined:
-          GCP Firewall Rule Name: ${issue.resourceName}
+        prettyname: GCP Firewall Rule Name
       - description: An optional description of this resource, which you provide when you create the resource.
         name: description
       - description: URL of the network resource for this firewall rule. If not specified when creating a firewall rule, the default network is used.
@@ -312,6 +313,7 @@ script:
           - 'true'
           - 'false'
         defaultValue: "true"
+        hidden: true
     outputs:
       - contextPath: GCP.Compute.Operations.id
         description: The unique identifier for the resource. This identifier is defined by the server.
@@ -405,12 +407,11 @@ script:
       - name: project_id
         required: true
         description: GCP project ID.
+        prettyname: GCP Project ID
       - name: resource_name
         required: true
         description: Name of the GCS bucket.
         prettyname: Run action on
-        prettypredefined:
-          GCP Bucket Name: ${issue.bucketname}
       - name: entity
         auto: PREDEFINED
         defaultValue: "allUsers"
@@ -428,12 +429,11 @@ script:
       - name: project_id
         required: true
         description: GCP project ID.
+        prettyname: GCP Project ID
       - name: resource_name
         required: true
         description: Name of the GCS bucket.
         prettyname: Run action on
-        prettypredefined:
-          GCP Bucket Name: ${issue.bucketname}
       - name: entity
         auto: PREDEFINED
         defaultValue: "allAuthenticatedUsers"
@@ -451,12 +451,11 @@ script:
       - name: project_id
         required: true
         description: GCP project ID.
+        prettyname: GCP Project ID
       - name: resource_name
         required: true
         description: Name of the GCS bucket.
         prettyname: Run action on
-        prettypredefined:
-          GCP Bucket Name: ${issue.bucketname}
       - name: entity
         auto: PREDEFINED
         defaultValue: "allAuthenticatedUsers,allUsers"
@@ -536,14 +535,15 @@ script:
       - name: project_id
         required: true
         description: GCP project ID.
+        prettyname: GCP Project ID
       - name: region
         required: true
         description: GCP region.
+        prettyname: GCP Region
       - name: resource_name
         required: true
         description: Subnet name.
-        prettypredefined:
-          GCP Subnet Name: ${issue.gcpsubnetname}
+        prettyname: GCP Subnet Name
       - name: enable_flow_logs
         required: false
         auto: PREDEFINED
@@ -551,6 +551,7 @@ script:
           - "true"
           - "false"
         defaultValue: "true"
+        hidden: true
         description: Enable VPC Flow Logs.
       - name: enable_private_ip_google_access
         required: false
@@ -603,14 +604,15 @@ script:
       - name: project_id
         required: true
         description: GCP project ID.
+        prettyname: GCP Project ID
       - name: region
         required: true
         description: GCP region.
+        prettyname: GCP Region
       - name: resource_name
         required: true
         description: Subnet name.
-        prettypredefined:
-          GCP Subnet Name: ${issue.gcpsubnetname}
+        prettyname: GCP Subnet Name
       - name: enable_flow_logs
         required: false
         auto: PREDEFINED
@@ -625,6 +627,7 @@ script:
           - "true"
           - "false"
         defaultValue: "true"
+        hidden: true
         description: Enable Private Google Access.
     outputs:
       - contextPath: GCP.Compute.Operations.name
@@ -775,14 +778,15 @@ script:
       - name: project_id
         required: true
         description: GCP project ID.
+        prettyname: GCP Project ID
       - name: region
         required: true
         description: GCP region.
+        prettyname: GCP Region
       - name: resource_name
         required: true
         description: Name of the GKE cluster.
-        prettypredefined:
-          GCP Cluster Name: ${issue.gcpclustername}
+        prettyname: GCP Cluster Name
       - name: enable_intra_node_visibility
         required: false
         auto: PREDEFINED
@@ -790,6 +794,7 @@ script:
           - "true"
           - "false"
         defaultValue: "true"
+        hidden: true
         description: Enable intra-node visibility.
       - name: enable_master_authorized_networks
         required: false
@@ -886,14 +891,15 @@ script:
       - name: project_id
         required: true
         description: GCP project ID.
+        prettyname: GCP Project ID
       - name: region
         required: true
         description: GCP region.
+        prettyname: GCP Region
       - name: resource_name
         required: true
         description: Name of the GKE cluster.
-        prettypredefined:
-          GCP Cluster Name: ${issue.gcpclustername}
+        prettyname: GCP Cluster Name
       - name: enable_intra_node_visibility
         required: false
         auto: PREDEFINED
@@ -908,6 +914,7 @@ script:
           - "true"
           - "false"
         defaultValue: "true"
+        hidden: true
         description: Enable Master Authorized Networks.
       - name: cidrs
         description: |
@@ -1094,14 +1101,15 @@ script:
       - name: project_id
         required: true
         description: GCP project ID.
+        prettyname: GCP Project ID
       - name: resource_name
         required: true
         description: Name of the bucket.
-        prettypredefined:
-          GCP Bucket Name: ${issue.bucketname}
+        prettyname: GCP Bucket Name
       - name: enable_versioning
         required: false
         auto: PREDEFINED
+        hidden: true
         predefined:
           - "true"
           - "false"
@@ -1197,11 +1205,11 @@ script:
       - name: project_id
         required: true
         description: GCP project ID.
+        prettyname: GCP Project ID
       - name: resource_name
         required: true
         description: Name of the bucket.
-        prettypredefined:
-          GCP Bucket Name: ${issue.bucketname}
+        prettyname: GCP Bucket Name
       - name: enable_versioning
         required: false
         auto: PREDEFINED
@@ -1216,6 +1224,7 @@ script:
           - "true"
           - "false"
         defaultValue: "true"
+        hidden: true
         description: Enable uniform bucket-level access.
     outputs:
       - contextPath: GCP.StorageBucket.Metadata
