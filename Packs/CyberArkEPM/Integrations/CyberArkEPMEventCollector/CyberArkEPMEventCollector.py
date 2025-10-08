@@ -201,7 +201,8 @@ def prepare_next_run(set_id: str, event_type: str, last_run: dict, last_fetch: d
         last_fetch (dict): The last fetch information.
 
     Note: Must be called even when zero events are fetched to properly update next_cursor.
-          Failing to update next_cursor may cause infinite fetch loops where stale next_cursor values repeatedly return zero events.
+          Failing to update next_cursor may cause infinite fetch loops where stale next_cursor
+          values repeatedly return zero events.
     """
     events = last_fetch.get("events", [])
     next_cursor = last_fetch.get("next_cursor")
