@@ -1,4 +1,4 @@
-Determine if the violation requires any actions, if it does, then bind a random analyst and ask for a decision from him and when the decision is received we perform actions in accordance with it.
+Handles postprocessing of violation incidents detected by Group-IB Digital Risk Protection.
 
 ## Dependencies
 
@@ -10,14 +10,16 @@ This playbook does not use any sub-playbooks.
 
 ### Integrations
 
-* Group-IB Digital Risk Protection
+* GroupIBDigitalRiskProtection
 
 ### Scripts
 
-This playbook does not use any scripts.
+* AssignAnalystToIncident
+* IsIntegrationAvailable
 
 ### Commands
 
+* closeInvestigation
 * gibdrp-change-violation-status
 
 ## Playbook Inputs
@@ -33,4 +35,5 @@ There are no outputs for this playbook.
 ## Playbook Image
 
 ---
+
 ![Group-IB Digital Risk Protection - Violation Incident Postprocessing](../doc_files/Violation_Incident_Postprocessing_-_Group-IB_Digital_Risk_Protection.png)

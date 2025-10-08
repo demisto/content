@@ -44,7 +44,9 @@ Receive all configured brands.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GIBDRP.OtherInfo | string | List of configured brands. | 
+| GIBDRP.OtherInfo | string | List of configured brands. |
+| GIBDRP.OtherInfo.brands.name | string | Brand name. |
+| GIBDRP.OtherInfo.brands.id | string | Brand ID. |
 
 #### Command example
 
@@ -94,7 +96,8 @@ Receive all configured subscriptions.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GIBDRP.OtherInfo | string | List of configured subscriptions. | 
+| GIBDRP.OtherInfo | string | List of configured subscriptions. |
+| GIBDRP.OtherInfo.subscriptions | string | Subscriptions list. |
 
 #### Command example
 
@@ -140,7 +143,15 @@ Getting a single violation by its ID.
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GIBDRP.Violation.id | string | Violation ID. |
+| GIBDRP.Violation.title | string | Violation title. |
+| GIBDRP.Violation.description | string | Violation description. |
+| GIBDRP.Violation.status | string | Violation status. |
+| GIBDRP.Violation.violation_uri | string | Violation URI. |
+| GIBDRP.Violation.source | string | Violation source section. |
+| GIBDRP.Violation.detected | date | Detected timestamp. |
 
 ### gibdrp-change-violation-status
 

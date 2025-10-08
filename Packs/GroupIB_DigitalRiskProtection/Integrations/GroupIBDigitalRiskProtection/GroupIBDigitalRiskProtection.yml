@@ -36,12 +36,15 @@ configuration:
   name: incidentFetchInterval
   required: false
   type: 19
-- display: Username
-  name: credentials
+- name: credentials
+  display: Username
   required: true
   type: 9
+  displaypassword: ""
+  hiddenusername: false
 - display: Filter by Violation Type
-  additionalinfo: Requests only Violations with the specified Violation Type IDs
+  additionalinfo: >
+    Select a Violation Section to filter fetched Violations. Options map to DRP sections: Web (1), Marketplace (3), Advertising (5), Mobile Apps (2), Social Networks (4), Instant Messengers (6). Leave empty to fetch from all sections.
   name: violationSection
   type: 15
   required: false
@@ -56,7 +59,8 @@ configuration:
   name: brands
   type: 0
   required: false
-  additionalinfo: Requests only Violations associated with the specified Brand IDs. The list of available brands can be obtained with the command !gibdrp-get-brands in the menu WarRoom -> Playground. After getting the brands you must specify the brand ID for which you want to receive violations. Attention! Currently filtering is available only by one brand in one Instance
+  additionalinfo: >
+    Requests only Violations associated with the specified Brand IDs. The list of available brands can be obtained with the command !gibdrp-get-brands in the menu WarRoom -> Playground. After getting the brands you must specify the brand ID for which you want to receive violations. Attention! Currently filtering is available only by one brand in one Instance
 - additionalinfo: Date to start fetching incidents from.
   defaultvalue: 3 days
   display: Incidents first fetch
@@ -93,7 +97,7 @@ description: Pack helps to integrate Group-IB Digital Risk Protection and get vi
 display: Group-IB Digital Risk Protection
 name: Group-IB Digital Risk Protection
 script:
-  dockerimage: demisto/vendors-sdk:1.0.0.4577311
+  dockerimage: demisto/vendors-sdk:1.0.0.4821574
   isfetch: true
   runonce: false
   script: ''
@@ -107,19 +111,50 @@ script:
     - contextPath: GIBDRP.OtherInfo
       description: List of configured brands.
       type: string
+    - contextPath: GIBDRP.OtherInfo.brands.name
+      description: Brand name.
+      type: string
+    - contextPath: GIBDRP.OtherInfo.brands.id
+      description: Brand ID.
+      type: string
   - name: gibdrp-get-subscriptions
     arguments: []
+    description: Receive all configured subscriptions.
     outputs:
     - contextPath: GIBDRP.OtherInfo
       description: List of configured subscriptions.
       type: string
-    description: Receive all configured subscriptions.
+    - contextPath: GIBDRP.OtherInfo.subscriptions
+      description: Subscriptions list.
+      type: string
   - name: gibdrp-get-violation-by-id
     arguments:
     - name: id
       required: true
       description: ID violation.
     description: Getting a single violation by its ID.
+    outputs:
+    - contextPath: GIBDRP.Violation.id
+      description: Violation ID.
+      type: string
+    - contextPath: GIBDRP.Violation.title
+      description: Violation title.
+      type: string
+    - contextPath: GIBDRP.Violation.description
+      description: Violation description.
+      type: string
+    - contextPath: GIBDRP.Violation.status
+      description: Violation status.
+      type: string
+    - contextPath: GIBDRP.Violation.violation_uri
+      description: Violation URI.
+      type: string
+    - contextPath: GIBDRP.Violation.source
+      description: Violation source section.
+      type: string
+    - contextPath: GIBDRP.Violation.detected
+      description: Detected timestamp.
+      type: date
   - name: gibdrp-change-violation-status
     arguments:
     - name: id

@@ -7,7 +7,7 @@ comment: |-
 commonfields:
   id: GIBDRPIncidentUpdate
   version: -1
-dockerimage: demisto/python3:3.12.8.1983910
+dockerimage: demisto/python3:3.12.11.4819260
 enabled: true
 name: GIBDRPIncidentUpdate
 script: ''

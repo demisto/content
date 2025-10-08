@@ -23,10 +23,10 @@ Success! Now you can use it with HTTP Basic Auth, where login is your email and 
 Note: Alternatively, you may configure your own setup if needed.  
 
 #### Step 5: Configure Pre-Processing Rules  
-5.1 Navigate to **Settings → Integrations → Pre-Processing Rules** and create a new rule:  
+5.1 Navigate to **Settings → Integrations → Pre-Processing Rules**. If a rule already exists, open it and verify it performs the following action. Otherwise, create a new rule:  
    - **Condition**: `"gibdrpid" is not empty (General)`.  
-   - **Action**: `"Run a script"`.  
-   - **Script**: `"GIBDRPIncidentUpdate"` – Updates existing incidents without reopening those that were previously closed.  
+   - **Action**: `Run a script`.  
+   - **Script**: `GIBDRPIncidentUpdate` – updates existing incidents without reopening those that were previously closed.  
 
 #### Step 6: Whitelist Your Cortex XSOAR IP  
 6.1 Contact **Group-IB support** to add your **Cortex XSOAR IP** or the **proxy public IP** used with Cortex to the allowlist.  

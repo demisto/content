@@ -357,7 +357,7 @@
                             },
                             {
                                 "endCol": 4,
-                                "fieldId": "gibdrptitle",
+                                "fieldId": "name",
                                 "height": 22,
                                 "id": "16eaf570-ed23-11ef-bdfd-773f20036f06",
                                 "index": 1,
@@ -587,7 +587,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 4,
-                                "fieldId": "gibdrpcreated",
+                                "fieldId": "occurred",
                                 "height": 22,
                                 "id": "e975b0d0-ed22-11ef-bdfd-773f20036f06",
                                 "index": 5,

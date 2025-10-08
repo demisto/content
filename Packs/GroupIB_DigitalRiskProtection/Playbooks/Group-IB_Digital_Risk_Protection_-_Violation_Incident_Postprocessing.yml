@@ -20,14 +20,42 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
+      - "1"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: 6fd5d3b2-9734-4e5f-9a47-5b0a9d3a1c2f
+    type: condition
+    task:
+      id: 6fd5d3b2-9734-4e5f-9a47-5b0a9d3a1c2f
+      version: -1
+      name: Is Group-IB integration enabled?
+      description: Returns 'yes' if the Group-IB Digital Risk Protection integration is enabled.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
       - "8"
+    scriptarguments:
+      brandname:
+        simple: Group-IB Digital Risk Protection
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 50
+          "y": 140
         }
       }
     note: false
@@ -44,12 +72,15 @@ tasks:
     task:
       id: 10df369a-8b31-4bf2-8e2e-123e0dc9c5d7
       version: -1
-      name: Close Investigation
-      description: Close the current incident.
+      name: Close investigation (no action required)
+      description: Close the current incident when no action is required.
       script: Builtin|||closeInvestigation
       type: regular
       iscommand: true
       brand: Builtin
+    nexttasks:
+      '#none#':
+      - "9"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -233,12 +264,15 @@ tasks:
     task:
       id: dbb43028-c9d7-4609-89e0-908e87190560
       version: -1
-      name: Close the investigation
+      name: Close investigation (processed)
       description: Close the investigation after processing the violation.
       script: Builtin|||closeInvestigation
       type: regular
       iscommand: true
       brand: Builtin
+    nexttasks:
+      '#none#':
+      - "9"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -298,6 +332,34 @@ tasks:
         "position": {
           "x": 50,
           "y": 220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: c1a2b3d4-5e6f-4789-9abc-def012345678
+    type: title
+    task:
+      id: c1a2b3d4-5e6f-4789-9abc-def012345678
+      version: -1
+      name: End
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 1340
         }
       }
     note: false

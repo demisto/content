@@ -13,9 +13,9 @@ urllib3_disable_warnings(InsecureRequestWarning)
 realpath = os.path.join(os.path.dirname(os.path.realpath(__file__)))
 
 BRANDS_RAW_JSON = [
-                {"name": "Example Brand 1", "id": "exampleid1223"},
-                {"name": "Example Brand 2", "id": "exampleid321"},
-            ]
+    {"name": "Example Brand 1", "id": "exampleid1223"},
+    {"name": "Example Brand 2", "id": "exampleid321"},
+]
 
 SUBSCRIPTIONS_RAW_JSON = ['scam', 'example']
 

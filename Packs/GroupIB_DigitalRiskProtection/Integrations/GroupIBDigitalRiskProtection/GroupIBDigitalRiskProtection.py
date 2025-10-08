@@ -9,12 +9,10 @@ from urllib3.exceptions import InsecureRequestWarning
 from urllib3 import disable_warnings as urllib3_disable_warnings
 from cyberintegrations import DRPPoller
 from traceback import format_exc
-from cyberintegrations.utils import ParserHelper
 from enum import Enum
-from dateparser import parse as dateparser_parse
+from dateparser import parse as dateparser_parse  # type: ignore
 from json import dumps as json_dumps
 import base64
-from requests import Response
 from cyberintegrations.exception import ConnectionException
 from cyberintegrations.cyberintegrations import Parser
 
@@ -165,9 +163,9 @@ class Client(BaseClient):
         first_fetch_time: str,
         last_run: dict,
         only_typosquatting: bool,
-        violation_subtypes: list[str] = None,
-        brands: str = None,
-        section: str = None,
+        violation_subtypes: list[str] | None = None,
+        brands: str | None = None,
+        section: str | None = None,
     ):
         last_fetch = last_run.get("last_fetch", None)
         demisto.debug(f"create_generator last_fetch {last_fetch}")
@@ -234,15 +232,29 @@ class Client(BaseClient):
             return "Can not change the status of the selected feed"
 
     def get_formatted_brands(self) -> list[dict[str, str]]:
-        brands_data = self.poller.get_brands()
-        return brands_data
+        if hasattr(self.poller, 'get_brands'):
+            try:
+                brands_data = self.poller.get_brands()  # type: ignore[attr-defined]
+                return brands_data or []
+            except Exception as e:
+                demisto.debug(f"get_brands failed: {e}")
+                return []
+        demisto.debug("DRPPoller.get_brands is not available; returning empty list")
+        return []
 
     def get_formatted_subscriptions(self) -> list[str]:
-        return self.poller.get_subscriptions()
+        if hasattr(self.poller, 'get_subscriptions'):
+            try:
+                return self.poller.get_subscriptions() or []  # type: ignore[attr-defined]
+            except Exception as e:
+                demisto.debug(f"get_subscriptions failed: {e}")
+                return []
+        demisto.debug("DRPPoller.get_subscriptions is not available; returning empty list")
+        return []
 
     def get_file(self, file_sha: str) -> tuple[bytes, str] | None:
         try:
-            response: Response = self._http_request(
+            response = self._http_request(
                 method="GET",
                 url_suffix=Endpoints.RECEIVING_FILE.value + file_sha,
                 timeout=TIMEOUT,
@@ -560,7 +572,7 @@ class IncidentBuilder:
         max_requests: int,
         download_images: bool,
         only_typosquatting: bool,
-        violation_subtypes: list[str] | list | None,
+        violation_subtypes: list[str] | None,
         violation_section: str | None,
         brands: str | None,
     ) -> None:
@@ -656,10 +668,13 @@ class IncidentBuilder:
                 else:
                     incident.pop("images")
 
+                # Prefer standard fields: name from title, occurred from created date (fallback to detected)
+                preferred_name = incident.get("title") or f"Violation {incident.get('id')}"
+                preferred_occurred = incident.get("dates_created_date") or incident.get("detected")
                 incident.update(
                     {
-                        "name": f"Violation {incident.get('id')}",
-                        "occurred": incident.get("detected"),
+                        "name": preferred_name,
+                        "occurred": preferred_occurred,
                         "gibType": Endpoints.VIOLATIONS.value,
                     }
                 )
