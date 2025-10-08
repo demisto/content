@@ -1,0 +1,38 @@
+{
+    "name": "Vercara UltraDNS",
+    "description": "Integrations for Vercara UltraDNS cloud-based authoritative DNS service with managed DNS infrastructure and security features.",
+    "support": "xsoar",
+    "currentVersion": "1.0.0",
+    "author": "Cortex",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2025-01-10T14:41:58Z",
+    "categories": [
+        "Analytics & SIEM"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [
+        "vercara",
+        "ultradns",
+        "dns",
+        "audit",
+        "event collector"
+    ],
+    "dependencies": {},
+    "displayedImages": [],
+    "githubUser": [],
+    "certification": "certified",
+    "marketplaces": [
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS",
+        "agentix"
+    ],
+    "defaultDataSource": "VercaraUltraDNS"
+}
