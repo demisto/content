@@ -8,8 +8,7 @@ from typing import Any
 
 import demistomock as demisto  # noqa: F401
 import urllib3
-
-# from CommonServerPython import *  # noqa: F401
+from CommonServerPython import *  # noqa: F401, F403
 
 urllib3.disable_warnings()  # Disable insecure warnings
 
@@ -31,8 +30,6 @@ Sections:
 INTEGRATION_NAME = "CapeSandbox"
 POLLING_INTERVAL_SECONDS = 60
 POLLING_TIMEOUT_SECONDS = 60 * 60 * 5
-
-print("heelo")
 
 
 def parse_integration_params(params: dict[str, Any]) -> dict[str, Any]:
@@ -473,7 +470,7 @@ def cape_file_submit_command2(
     timeout=POLLING_TIMEOUT_SECONDS,
 )
 def cape_file_poll_report(
-    args: Dict[str, Any], client: CapeSandboxClient
+    args: dict[str, Any], client: CapeSandboxClient
 ) -> PollResult:
     """
     Polls the CAPE service for the task status until the report is ready.
