@@ -95,7 +95,7 @@ configuration:
   required: true
   section: Collect
   advanced: true
-- display: Feed Expiration Policy
+- display: ''
   name: feedExpirationPolicy
   additionalinfo: The feed's expiration policy.
   type: 17

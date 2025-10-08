@@ -719,7 +719,7 @@ def create_threat_object_indicators(
             ),
             "publications": create_publications(threat_obj.get("publications", [])),
             "geocountry": demisto.get(threat_obj, "battlecard_details.threat_actor_details.origin", "").upper(),
-            "ismalwarefamily": "True" if threat_class == "malware_family" else "False"
+            "ismalwarefamily": "True" if threat_class == "malware_family" else "False",
         }
 
         indicator_data = {

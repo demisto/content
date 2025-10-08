@@ -668,7 +668,7 @@ def map_threat_object(threat_object: dict, feed_tags: list = [], tlp_color: str 
         "geocountry": demisto.get(threat_object, "battlecard_details.threat_actor_details.origin", "").upper(),
         "tags": tags + feed_tags,
         "tlp_color": tlp_color,
-        "ismalwarefamily": "True" if threat_class == "malware_family" else "False"
+        "ismalwarefamily": "True" if threat_class == "malware_family" else "False",
     }
 
     # Create the threat object
