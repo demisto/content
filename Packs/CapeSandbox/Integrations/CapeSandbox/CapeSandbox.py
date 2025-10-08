@@ -89,11 +89,72 @@ def build_submit_form(args: dict[str, Any], url_mode: bool = False) -> dict[str,
     return form
 
 
+def extract_entry_file_data(entry_id: str) -> tuple[str, str]:
+    """
+    Retrieves the local file path and original name for a given entry ID.
+    Handles all potential errors related to file fetching.
+
+    Args:
+        entry_id: The ID of the entry (e.g., file) in the War Room.
+
+    Returns:
+        A tuple containing (file_path: str, file_name: str).
+
+    Raises:
+        DemistoException: If the entry is not found or is not a file.
+    """
+    try:
+        filepath_result = demisto.getFilePath(entry_id)
+
+        if not filepath_result or "path" not in filepath_result:
+            raise ValueError("Entry is not a valid file entry.")
+
+    except ValueError as e:
+        demisto.debug(f"Error fetching file path for {entry_id!r}: {e}")
+        raise DemistoException(f"Could not find file or entry: {entry_id!r}")
+
+    except Exception as e:
+        raise DemistoException(
+            f"An unexpected error occurred while processing entry {entry_id!r}: {e}"
+        )
+
+    path = filepath_result["path"]
+    name = filepath_result.get("name")
+
+    final_name = name if name else os.path.basename(path)
+
+    return path, final_name
+
+
 def get_entry_path(entry_id: str) -> tuple[str, str]:
-    file_path = get_file_path(entry_id)
-    path = file_path["path"]
-    name = file_path.get("name") or os.path.basename(path)
-    return path, name
+    """
+    Wrapper function to safely extract file data.
+
+    Args:
+        entry_id: The ID of the entry.
+
+    Returns:
+        (file_path: str, file_name: str).
+    """
+    return extract_entry_file_data(entry_id)
+
+
+# def get_file_path2(file_id: str) -> dict:
+#     try:
+#         filepath_result = demisto.getFilePath(file_id)
+#         if "path" not in filepath_result:
+#             demisto.results(f"Error: entry {file_id} is not a file.")
+#             raise DemistoException(f"Error: entry {file_id} is not a file.")
+#     except ValueError as e:
+#         demisto.debug(str(e))
+#         raise DemistoException(f"Could not find file: {file_id!r}")
+
+
+# def get_entry_path2(entry_id: str) -> tuple[str, str]:
+#     file_path = get_file_path(entry_id)
+#     path = file_path["path"]
+#     name = file_path.get("name") or os.path.basename(path)
+#     return path, name
 
 
 def status_is_reported(status_response: dict[str, Any]) -> bool:
