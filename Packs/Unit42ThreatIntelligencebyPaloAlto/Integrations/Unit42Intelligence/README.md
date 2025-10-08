@@ -4,7 +4,7 @@ Enrich indicators with Unit 42 threat intelligence context including verdicts, t
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Source Reliability | Reliability of the source providing the intelligence data. | True |
+| Source Reliability | Reliability of the source providing the intelligence data | True |
 | Create relationships | Create relationships between indicators and threat objects | False |
 | Create threat objects as separate indicators | Whether to create threat objects \(malware families, actors, campaigns, etc.\) as separate XSOAR indicators | False |
 | Trust any certificate (not secure) |  | False |
