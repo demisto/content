@@ -611,9 +611,12 @@ class Client(BaseClient):
                 url_suffix="/events",
                 params=params,
             )
-        except Exception as e:
-            demisto.error(f"error in event_list_request: {e}")
-            res = {}
+        except DemistoException as e:
+            if e.res.status_code == 429:
+                res = {}
+                demisto.debug("Rate limit reached.")
+            else:
+                raise e
         return res
 
     def event_type_list_request(self) -> dict[str, Any]:
