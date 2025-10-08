@@ -1740,6 +1740,80 @@ script:
       type: List
 # Quick Actions
   - arguments:
+    - name: name
+      description: Name of the policy assignment.
+      defaultValue: SecurityCenterBuiltIn
+      hidden: true
+    - name: scope
+      type: string
+      description: The scope of the policy assignment.
+      required: true
+      prettyname: Scope
+    - name: policy_definition_id
+      type: string
+      description: The ID of the policy definition or policy set definition being assigned.
+      hidden: true
+      defaultValue: 1f3afdf9-d0c9-4c3d-847f-89da613e70a8
+    - name: parameters
+      description: The JSON object for policy properties parameters and their values.
+      defaultValue: '{"jitNetworkAccessMonitoringEffect":{"value":"AuditIfNotExists"}}'
+      hidden: true
+    name: azure-policy-assignment-create-quick-action
+    description: "Set system updates, security configuration, endpoint protection, disk encryption, network security groups, web application firewall, next generation firewall, vulnerability assessment, storage encryption, jit network access, adaptive application controls, sql auditing and sql encryption to 'AuditIfNotExists'. 'Microsoft.Authorization/policyAssignments/*' permission is required."
+    prettyname: Apply MS Defender Policy
+    quickaction: true
+    hidden: true
+    outputs:
+    - contextPath: Azure.PolicyAssignment.ID
+      description: The resource ID of the policy assignment.
+      type: string
+    - contextPath: Azure.PolicyAssignment.Name
+      description: The name of the policy assignment.
+      type: string
+    - contextPath: Azure.PolicyAssignment.Type
+      description: The type of the resource (e.g., 'Microsoft.Authorization/policyAssignments').
+      type: string
+    - contextPath: Azure.PolicyAssignment.Location
+      description: The location of the policy assignment.
+      type: string
+    - contextPath: Azure.PolicyAssignment.Identity
+      description: The managed identity associated with the policy assignment.
+    - contextPath: Azure.PolicyAssignment.Properties.DisplayName
+      description: The display name of the policy assignment.
+      type: string
+    - contextPath: Azure.PolicyAssignment.Properties.Description
+      description: The description of the policy assignment.
+      type: string
+    - contextPath: Azure.PolicyAssignment.Properties.PolicyDefinitionId
+      description: The ID of the policy definition or policy set definition being assigned.
+      type: string
+    - contextPath: Azure.PolicyAssignment.Properties.Scope
+      description: The scope of the policy assignment.
+      type: string
+    - contextPath: Azure.PolicyAssignment.Properties.NotScopes
+      description: The list of scopes that are excluded from the policy assignment.
+    - contextPath: Azure.PolicyAssignment.Properties.Parameters
+      description: The parameter values for the assigned policy rule.
+    - contextPath: Azure.PolicyAssignment.Properties.Metadata
+      description: The metadata associated with the policy assignment.
+    - contextPath: Azure.PolicyAssignment.Properties.EnforcementMode
+      description: The policy assignment enforcement mode (e.g., 'Default' or 'DoNotEnforce').
+      type: string
+    - contextPath: Azure.PolicyAssignment.Properties.latestDefinitionVersion
+      description: The latest version of the policy definition available. This is only present if requested via the $expand query parameter.
+      type: string
+    - contextPath: Azure.PolicyAssignment.Properties.NonComplianceMessages
+      description: The messages that describe why a resource is non-compliant with the policy.
+    - contextPath: Azure.PolicyAssignment.Properties.DefinitionVersion
+      description: The version of the policy definition to use.
+      type: string
+    - contextPath: Azure.PolicyAssignment.Properties.Overrides
+      description: The policy property value overrides.
+    - contextPath: Azure.PolicyAssignment.Properties.ResourceSelectors
+      description: The resource selectors to filter policies by resource properties.
+    - contextPath: Azure.PolicyAssignment.SystemData
+      description: The system metadata relating to this resource.
+  - arguments:
     - description: The name of the resource group.
       name: resource_group_name
       type: String
@@ -1748,6 +1822,7 @@ script:
     - description: The name of the security group.
       name: security_group_name
       required: true
+      prettyname: Logic App Name
     - description: The name of the rule to be updated.
       name: security_rule_name
       required: true
@@ -1758,7 +1833,7 @@ script:
       predefined:
       - Allow
       - Deny
-      defaultvalue: Deny
+      defaultValue: Deny
     description: "Updates the access setting of the network security group (NSG) rule to Deny. 'Microsoft.Network/networkSecurityGroups/securityRules/*' permission is required."
     name: azure-nsg-security-rule-update-quick-action
     prettyname: Update NSG to Block Traffic
@@ -2046,7 +2121,7 @@ script:
       - Logging
       - Metrics
       - None
-      defaultvalue: AzureServices
+      defaultValue: AzureServices
     description: "Configures the storage account's network rules to allow traffic from Azure services. 'Microsoft.Storage/storageAccounts/*' permission is required."
     name: azure-storage-allow-access-quick-action
     prettyname: Allow Access by Trusted Services
@@ -2137,13 +2212,12 @@ script:
       prettyname: Postgres Server Name
     - name: configuration_name
       type: string
-      required: true
       description: The configuration setting name.
-      defaultvalue: connection_throttling
+      defaultValue: connection_throttling
     - name: value
       type: string
       description: Value of the configuration.
-      defaultvalue: 'on'
+      defaultValue: 'on'
     description: "Enable connection throttling on the PostgreSQL server. This enables the PostgreSQL database to set the verbosity of logged messages allowing generation of query and error logs with respect to concurrent connections. 'Microsoft.DBforPostgreSQL servers/configuration/*' permission is required."
     name: azure-postgres-config-set-quick-action
     prettyname: Enable Connection Throttling on PostgreSQL
@@ -2168,7 +2242,7 @@ script:
       predefined:
       - 'true'
       - 'false'
-      defaultvalue: 'true'
+      defaultValue: 'true'
     description: "Enables the HTTP/2.0 protocol for the WebApp. 'Microsoft.Web/sites/{app_name}/config/*' permission is required."
     name: azure-webapp-set-http-version2.0-quick-action
     prettyname: Set Webapp HTTP Version to 2.0
@@ -2281,7 +2355,7 @@ script:
       predefined:
       - 'true'
       - 'false'
-      defaultvalue: 'true'
+      defaultValue: 'true'
     description: "Enables the app service authentication for the Web App. 'Microsoft.Web/sites/{app_name}/config/authsettings/*' permission is required."
     name: azure-webapp-auth-update-quick-action
     prettyname: Enable Azure App Service Auth
@@ -2399,7 +2473,7 @@ script:
       predefined:
       - 'true'
       - 'false'
-      defaultvalue: 'false'
+      defaultValue: 'false'
     description: "Disables cross-tenant object replication for the storage account to prevent data from being copied to other tenants. 'Microsoft.Storage/storageAccounts/*' permission is required."
     name: azure-disable-storage-account-cross-tenant-replication-quick-action
     prettyname: Disable Storage Account Cross Tenant Replication
@@ -2496,7 +2570,7 @@ script:
       predefined:
       - 'true'
       - 'false'
-      defaultvalue: 'true'
+      defaultValue: 'true'
     name: azure-set-function-app-http-version2-0-quick-action
     prettyname: Set Function App HTTP Version to 2.0
     description: "Enables the HTTP/2.0 protocol for the FunctionApp. 'Microsoft.Web/sites/config/Write' permission required."
@@ -2596,162 +2670,17 @@ script:
       name: resource_group_name
       required: true
       prettyname: Resource Group
-    - description: The subscription ID.
-      name: subscription_id
     - description: The name of the storage account.
       name: account_name
       required: true
       prettyname: Storage Account
-    - auto: PREDEFINED
-      description: Gets or sets the SKU name, Required for account creation; optional for update.
-      name: sku
-      predefined:
-      - Premium_LRS
-      - Premium_ZRS
-      - Standard_GRS
-      - Standard_GZRS
-      - Standard_LRS
-      - Standard_RAGRS
-      - Standard_RAGZRS
-      - Standard_ZRS
-    - description: Indicates the type of storage account, Required for account creation; optional for update.
-      name: kind
-      auto: PREDEFINED
-      predefined:
-      - Storage
-      - StorageV2
-      - BlobStorage
-      - FileStorage
-      - BlockBlobStorage
-    - description: Gets or sets the location of the resource. The geo region of a resource cannot be changed once it is created, but if an identical geo region is specified on update, the request will succeed. Required for account creation; optional for update.
-      name: location
-      auto: PREDEFINED
-      predefined:
-      - eastus
-      - eastus2
-      - westus
-      - westeurope
-      - eastasia
-      - southeastasia
-      - japaneast
-      - japanwest
-      - northcentralus
-      - southcentralus
-      - centralus
-      - northeurope
-      - brazilsouth
-      - australiaeast
-      - australiasoutheast
-      - southindia
-      - centralindia
-      - westindia
-      - canadaeast
-      - canadacentral
-      - westus2
-      - westcentralus
-      - uksouth
-      - ukwest
-      - koreacentral
-      - koreasouth
-      - francecentral
-      - australiacentral
-      - southafricanorth
-      - uaenorth
-      - switzerlandnorth
-      - germanywestcentral
-      - norwayeast
-    - description: Gets or sets a list of tags that describe the resource.
-      name: tags
-      isArray: true
-    - description: Gets or sets the custom domain name assigned to the storage account.
-      name: custom_domain_name
-    - auto: PREDEFINED
-      description: Indicates whether indirect CName validation is enabled.
-      name: use_sub_domain_name
-      predefined:
-      - 'true'
-      - 'false'
-    - description: The encryption keySource.
-      name: enc_key_source
-      auto: PREDEFINED
-      predefined:
-      - Microsoft.Storage
-      - Microsoft.Keyvault
-    - description: Indicates whether the service applies a secondary layer of encryption with platform managed keys for data at rest.
-      name: enc_requireInfrastructureEncryption
-      auto: PREDEFINED
-      predefined:
-      - 'true'
-      - 'false'
-    - description: The name of KeyVault key.
-      name: enc_keyvault_key_name
-    - description: The version of KeyVault key.
-      name: enc_keyvault_key_version
-    - description: The Uri of KeyVault.
-      name: enc_keyvault_uri
-    - auto: PREDEFINED
-      description: The access tier for the account. Required where kind = BlobStorage.
-      name: access_tier
-      predefined:
-      - 'Hot'
-      - 'Cool'
-    - auto: PREDEFINED
-      description: Allows https traffic only to storage service if sets to true.
-      name: supports_https_traffic_only
-      predefined:
-      - 'true'
-      - 'false'
-    - auto: PREDEFINED
-      description: Account HierarchicalNamespace enabled if sets to true.
-      name: is_hns_enabled
-      predefined:
-      - 'true'
-      - 'false'
-    - auto: PREDEFINED
-      description: If set to Enabled, allows large file shares.
-      name: large_file_shares_state
-      predefined:
-      - Disabled
-      - Enabled
     - auto: PREDEFINED
       description: If set to true, allows public access to all blobs or containers in the storage account.
       name: allow_blob_public_access
       predefined:
       - 'true'
       - 'false'
-      defaultvalue: 'false'
-    - description: Sets the minimum TLS version to be permitted on requests to storage.
-      name: minimum_tls_version
-      auto: PREDEFINED
-      predefined:
-      - TLS1_0
-      - TLS1_1
-      - TLS1_2
-    - description: Specifies whether traffic is bypassed for Logging/Metrics/AzureServices.
-      name: network_ruleset_bypass
-      auto: PREDEFINED
-      isArray: true
-      predefined:
-      - AzureServices
-      - Logging
-      - Metrics
-      - None
-    - auto: PREDEFINED
-      description: Specifies the default action of allow or deny when no other rules match.
-      name: network_ruleset_default_action
-      predefined:
-      - Allow
-      - Deny
-    - description: Sets the IP ACL rules.
-      name: network_ruleset_ipRules
-    - description: Sets the virtual network rules.
-      name: virtual_network_rules
-    - auto: PREDEFINED
-      description: Allow or disallow cross AAD tenant object replication.
-      name: allow_cross_tenant_replication
-      predefined:
-      - 'true'
-      - 'false'
+      defaultValue: 'false'
     name: azure-storage-disable-public-access-quick-action
     description: "Disables public access to blobs for the storage account, effectively disabling anonymous/public read access to container and blobs within an Azure storage account. 'Microsoft.Storage/storageAccounts/write' permission is required."
     prettyname: Disable Public Access / Block Public Access
@@ -2849,7 +2778,7 @@ script:
       predefined:
       - 'true'
       - 'false'
-      defaultvalue: 'false'
+      defaultValue: 'false'
     description: "Disables remote debugging for the Web App to prevent unauthorized access to the application code.  'Microsoft.Web/sites/config/Write' permission is required."
     name: azure-webapp-disable-remote-debugging-quick-action
     prettyname: Disable Remote Debugging on Azure App

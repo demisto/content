@@ -2098,7 +2098,8 @@ def main():
             "azure-disable-storage-account-cross-tenant-replication-quick-action": storage_account_update_command,
             "azure-set-function-app-http-version2-0-quick-action": set_webapp_config_command,
             "azure-storage-disable-public-access-quick-action": storage_account_update_command,
-            "azure-webapp-disable-remote-debugging-quick-action": set_webapp_config_command
+            "azure-webapp-disable-remote-debugging-quick-action": set_webapp_config_command,
+            "azure-policy-assignment-create-quick-action": create_policy_assignment_command
         }
         if command == "test-module" and connector_id:
             demisto.debug(f"Running health check for connector ID: {connector_id}")
