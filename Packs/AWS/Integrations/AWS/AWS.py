@@ -1133,6 +1133,7 @@ class RDS:
             CommandResults: Results of the operation with update information
         """
         try:
+            demisto.info("inside modify_db_instance_command")
             kwargs = {
                 "DBInstanceIdentifier": args.get("db_instance_identifier"),
                 "MultiAZ": arg_to_bool_or_none(args.get("multi_az")),
@@ -1145,21 +1146,34 @@ class RDS:
                 "BackupRetentionPeriod": arg_to_bool_or_none(args.get("backup_retention_period")),
             }
             remove_nulls_from_dictionary(kwargs)
-            demisto.debug(f"modify_db_instance {kwargs=}")
+            demisto.info(f"modify_db_instance {kwargs=}")
             response = client.modify_db_instance(**kwargs)
-
+            demisto.info(f"{response=}")
             if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK:
                 db_instance = response.get("DBInstance", {})
-                readable_output = f"Successfully modified DB instance {args.get('db-instance-identifier')}"
-
+                readable_output = (f"Successfully modified DB instance {args.get('db_instance_identifier')}"
+                                   f"\n\nUpdated DB Instance details:\n\n")
+                demisto.info(f"1# {readable_output=}")
                 if db_instance:
-                    readable_output += "\n\nUpdated DB Instance details:"
-                    readable_output += tableToMarkdown("", db_instance)
+                    minimal_db_instance_table = {
+                            'DBInstanceIdentifier': 'x',
+                            'DBInstanceClass': 'x',
+                            'Engine': 'x',
+                            'DBInstanceStatus': 'x',
+                            'MasterUsername': 'x',
+                            'Endpoint': {
+                                'Address': 'x',
+                                'Port': "x",
+                                'HostedZoneId': 'x'
+                            },
+                    }
+                    readable_output += tableToMarkdown("", t=db_instance, removeNull=True)
 
+                demisto.info(f"2# {readable_output=}")
                 return CommandResults(
                     readable_output=readable_output,
                     outputs_prefix="AWS.RDS.DBInstance",
-                    outputs=db_instance,
+                    outputs=minimal_db_instance_table,
                     outputs_key_field="DBInstanceIdentifier",
                 )
             else:
