@@ -565,8 +565,10 @@ def filter_existing_cases(cases: list[dict], ids_exists: list[str], last_run: st
             if case_id not in ids_exists:
                 filtered_cases.append(case)
             else:
-                case_creation_timestamp = timestamp_to_datestring(case.get("caseCreationTimestamp", 0) / 1000, date_format=DATE_FORMAT)
-                if case_creation_timestamp == last_run: 
+                case_creation_timestamp = timestamp_to_datestring(
+                    case.get("caseCreationTimestamp", 0) / 1000, date_format=DATE_FORMAT
+                )
+                if case_creation_timestamp == last_run:
                     filtered_cases.append(case)
                 else:
                     demisto.debug(f"Case with ID {case_id} already exists, skipping.")

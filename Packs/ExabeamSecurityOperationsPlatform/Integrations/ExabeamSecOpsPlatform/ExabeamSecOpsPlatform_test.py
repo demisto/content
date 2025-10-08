@@ -626,7 +626,7 @@ def test_last_case_time_and_ids():
 @pytest.mark.parametrize(
     "mock_response, params, last_run, expected_incidents, expected_last_run",
     [
-         pytest.param(
+        pytest.param(
             CommandResults(
                 outputs_prefix="ExabeamPlatform.Case",
                 readable_output="",
@@ -683,7 +683,7 @@ def test_last_case_time_and_ids():
                     "rawJSON": '{"caseId": "bb22", "alertName": "alert2", "caseCreationTimestamp": "2024-08-09T14:15:55Z"}',
                 },
             ],
-            {"time": "2024-08-09T14:15:55Z", "last_ids": ["aa11","bb22"]},
+            {"time": "2024-08-09T14:15:55Z", "last_ids": ["aa11", "bb22"]},
             id="same incident creation time",
         ),
     ],
