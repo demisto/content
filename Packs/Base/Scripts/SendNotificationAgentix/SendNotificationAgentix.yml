@@ -63,3 +63,5 @@ marketplaces:
   - platform
 supportedModules:
   - agentix
+  - xsiam
+  - cloud_posture
