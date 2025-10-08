@@ -197,8 +197,9 @@ def test_get_events_command(requests_mock, event_type):
     Then:
         - Validates that the function works as expected.
     """
-    from CommonServerPython import string_to_table_header
     from CyberArkEPMEventCollector import create_last_run, get_events_command
+
+    from CommonServerPython import string_to_table_header
 
     client = mocked_client(requests_mock)
     last_run_per_id = create_last_run(["id1", "id2"], "2023-01-01T00:00:00Z")
@@ -275,16 +276,14 @@ def test_prepare_next_run_with_zero_events(event_type, last_fetch, expected_next
         - A last_run dict and last_fetch results.
 
     When:
-        - prepare_next_run function is called with:
-            1. Zero events and next_cursor="start" (pagination complete with zero events)
-            2. Zero events and next_cursor="some_cursor" (pagination ongoing with zero events)
-            3. Events exist and next_cursor="start" (pagination complete with events)
+        1. Zero events and next_cursor="start" (pagination complete with zero events)
+        2. Zero events and next_cursor="some_cursor" (pagination ongoing with zero events)
+        3. Events exist and next_cursor="start" (pagination complete with events)
 
     Then:
-        - Validates that:
-            1. next_cursor is always updated, even when 0 events are fetched
-            2. from_date is NOT updated when 0 events are fetched (to avoid crash)
-            3. from_date IS updated when events exist and pagination completes
+        1. next_cursor is always updated, even when 0 events are fetched
+        2. from_date is NOT updated when 0 events are fetched (to avoid crash)
+        3. from_date IS updated when events exist and pagination completes
     """
     from CyberArkEPMEventCollector import prepare_next_run
 
