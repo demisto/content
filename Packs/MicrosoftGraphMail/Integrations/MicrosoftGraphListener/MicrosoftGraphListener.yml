@@ -1065,7 +1065,7 @@ script:
       description: The BCC recipients of the email.
       type: String
     - contextPath: MicrosoftGraph.Email.replyTo
-      description: The email addresses to include in the Reply-To field.
+      description: The replyTo recipients of the email.
       type: String
     polling: true
   dockerimage: demisto/crypto:1.0.0.4834757

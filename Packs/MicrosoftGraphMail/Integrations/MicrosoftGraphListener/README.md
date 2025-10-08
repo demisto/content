@@ -229,7 +229,7 @@ Sends an email using Microsoft Graph.
 | MicrosoftGraph.Email.toRecipients | String | The 'to' recipients of the email. |
 | MicrosoftGraph.Email.ccRecipients | String | The CC recipients of the email. |
 | MicrosoftGraph.Email.bccRecipients | String | The BCC recipients of the email. |
-| MicrosoftGraph.Email.replyTo | String | The email addresses to include in the Reply-To field. |
+| MicrosoftGraph.Email.replyTo | String | The replyTo recipients of the email. |
 
 ### msgraph-mail-reply-to
 
