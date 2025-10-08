@@ -103,7 +103,6 @@ configuration:
   - Indicator Type
   - Time Interval
   - Never Expired
-  - When removed from the Feed
   defaultvalue: Indicator Type
   required: true
   section: Collect
