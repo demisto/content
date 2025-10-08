@@ -1533,6 +1533,16 @@ def get_file(file_id: list) -> dict:
     response = http_request("GET", endpoint_url, params=params)
     return response
 
+def get_file_id_by_name(file_name: str) -> str:
+    """
+    Retrieve the file ID for a put-file by its name.
+    :param file_name: Name of the file to search for
+    :return: File ID that matches the given name, or empty string if none found
+    """
+    endpoint_url = "/real-time-response/queries/put-files/v1"
+    params = {"filter": f"name:'{file_name}'"}
+    response = http_request("GET", endpoint_url, params=params)
+    return response.get("resources", "")
 
 def list_files() -> dict:
     """
@@ -5060,14 +5070,7 @@ def delete_file_command():
         raise ValueError("Either file_name or file_id must be provided.")
 
     if not file_id:
-        result = list_files()
-        resources = result.get("resources", [])
-        demisto.debug(f"Listed files: {resources}")
-
-        for resource in resources:
-            if resource.get("name", "") == file_name:
-                file_id = resource.get("id")
-                break
+        file_id = get_file_id_by_name(file_name)
 
         if not file_id:
             raise ValueError(f"File with name '{file_name}' not found.")
