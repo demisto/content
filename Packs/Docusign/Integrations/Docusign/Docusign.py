@@ -31,8 +31,8 @@ MAX_USER_DATA_PER_FETCH = 1250
 MAX_USER_DATA_PER_PAGE = 250
 
 # scopes
-CUSTOMER_EVENTS_SCOPE = "signature impersonation"
-USER_DATA_SCOPE = "organization_read user_read"
+CUSTOMER_EVENTS_SCOPE = ["signature", "impersonation"]
+USER_DATA_SCOPE = ["organization_read", "user_read"]
 
 SCOPES_PER_FETCH_TYPE = {
     CUSTOMER_EVENTS_TYPE: CUSTOMER_EVENTS_SCOPE,
@@ -75,7 +75,7 @@ class AuthClient(BaseClient):
         self.user_id = user_id
         self.private_key_pem = private_key_pem
 
-    def get_jwt(self) -> str: 
+    def get_jwt(self, scopes: str) -> str:
         """Generate a JWT for authentication.
             
         Returns:
@@ -90,22 +90,15 @@ class AuthClient(BaseClient):
             "aud": self.server_url.replace("https://", "").replace("http://", ""),
             "iat": int(now.timestamp()),
             "exp": int((now + dt.timedelta(hours=1)).timestamp()),
-            "scope": "signature impersonation organization_read user_read",
+            "scope": scopes,
         }
 
         token = jwt.encode(payload, self.private_key_pem, algorithm="RS256", headers=headers)
         return token
 
-    def exchange_jwt_to_access_token(self, jwt: str) -> tuple[str, dt.datetime]: 
-        """Exchange JWT for an access token.
-        
-        Args:
-            jwt: Signed JWT
-            
-        Returns:
-            str: Access token
+    def exchange_jwt_to_access_token(self, jwt: str) -> tuple[str, dt.datetime, str]:
+        """Exchange JWT for an access token."""
 
-        """
         url = urljoin(self.server_url, "/oauth/token")
         data = {
             "grant_type": "urn:ietf:params:oauth:grant-type:jwt-bearer",
@@ -117,15 +110,16 @@ class AuthClient(BaseClient):
         
         access_token = resp.get("access_token")
         expires_in_seconds = resp.get("expires_in")
+        scope = resp.get("scope")
 
         if not access_token or not expires_in_seconds:
             demisto.error(f"{LOG_PREFIX}: Token exchange failed, response missing access_token or expires_in\n{resp}")
             raise DemistoException(f"{LOG_PREFIX}: Token exchange failed, response missing access_token or expires_in\n{resp}")
         
         expired_at = _utcnow() + dt.timedelta(seconds=expires_in_seconds)
-        return access_token, expired_at
+        return access_token, expired_at, scope
 
-    def get_user_info(self, access_token: str) -> str: 
+    def get_user_info(self, access_token: str) -> str:
         """Fetch user information from /oauth/userinfo endpoint."""
 
         url = urljoin(self.server_url, "/oauth/userinfo")
@@ -158,11 +152,13 @@ class AuthClient(BaseClient):
         demisto.debug(f"{LOG_PREFIX}: /oauth/userinfo missing configuration account id: {account_id}.")
         raise DemistoException(f"{LOG_PREFIX}: /oauth/userinfo missing configuration account id: {account_id}.")
 
-    def get_token(self) -> tuple[str, dt.datetime]: 
+    def get_token(self, scopes: list[str]) -> tuple[str, dt.datetime, str]:
         """Exchange JWT for access token using DocuSign OAuth flow."""
-        assertion = self.get_jwt() # NOTE:  design - step 2
-        access_token, expired_at = self.exchange_jwt_to_access_token(assertion) # NOTE: design - step 3
-        return access_token, expired_at
+        scope_str = " ".join(scopes)
+
+        jwt_token = self.get_jwt(scope_str)
+        access_token, expired_at, scope = self.exchange_jwt_to_access_token(jwt_token)
+        return access_token, expired_at, scope
 
 def is_access_token_expired(expired_at: dt.datetime) -> bool:
     """Check if access token is expired."""
@@ -174,6 +170,11 @@ def is_access_token_expired(expired_at: dt.datetime) -> bool:
     else:
         demisto.debug(f"{LOG_PREFIX}Access token expired.")
         return True
+
+
+def is_required_scopes_set(required_scopes: list[str], target_scopes: list[str]) -> bool:
+    """Check if all required scopes included in target scopes list."""
+    return all(scope in target_scopes for scope in required_scopes)
 
 def get_access_token(client: AuthClient) -> str:
     """
@@ -190,21 +191,41 @@ def get_access_token(client: AuthClient) -> str:
     Note:
         The access token is stored in the integration context for reuse in subsequent calls.
     """
+    params = demisto.params()
+    selected_fetch_types = params.get("event_types", "")
+    required_scopes = get_scopes_per_type(selected_fetch_types)
+
     integration_context = get_integration_context()
     access_token = integration_context.get("access_token", "")
     expired_at = integration_context.get("expired_at", "")
+    access_token_scopes = integration_context.get("access_token_scopes", [])
+    consent_scopes = integration_context.get("consent_scopes", [])
 
-    if access_token and expired_at and not is_access_token_expired(expired_at):
-        return access_token
-    
-    demisto.debug(f"{LOG_PREFIX}Acquiring a new Access token.")
+    # Step 1: Check if we have enough consent scopes to generate a valid access token according to the selected fetch types
+    if not is_required_scopes_set(required_scopes, consent_scopes):
+        message = "Please run docusign-generate-consent-url command to generate a new consent URL for your fetch types."
+        demisto.debug(message)
+        raise DemistoException(message)
+
+    # Step 2: Check if an access token exists and is usable
+    if access_token:
+        token_is_expired = is_access_token_expired(expired_at)
+        has_required_scopes = is_required_scopes_set(required_scopes, access_token_scopes)
+
+        if not token_is_expired and has_required_scopes:
+            demisto.debug(f"{LOG_PREFIX}Access token is valid. Using existing access token.")
+            return access_token
+
+    # Step 3: Generate a new access token if needed
+    demisto.debug(f"{LOG_PREFIX}Generating a new Access token.")
     try:
-        access_token, expired_at = client.get_token()
-        integration_context.update({"access_token": access_token, "expired_at": expired_at})
+        access_token, expired_at, scope = client.get_token(consent_scopes)
 
+        integration_context.update({"access_token": access_token, "expired_at": expired_at, "access_token_scopes": scope})
         set_integration_context(integration_context)
+
         demisto.debug(f"{LOG_PREFIX}Access token received successfully and set to integration context."
-                      f"\naccess_token: {access_token}\nexpired_at: {expired_at}")
+                      f"\naccess_token: {access_token}\nexpired_at: {expired_at}\nscope: {scope}")
 
         return access_token
 
@@ -212,9 +233,9 @@ def get_access_token(client: AuthClient) -> str:
         demisto.debug(f"{LOG_PREFIX}Error retrieving access token: {str(e)}")
         raise DemistoException(f"Error retrieving access token: {str(e)}")
 
-def get_customer_events(last_run: dict, limit: int, client: CustomerEventsClient) -> tuple[list, dict]:
+def get_customer_events(last_run: dict, limit: int, client: CustomerEventsClient, access_token: str) -> tuple[list, dict]:
     """Fetch customer events from DocuSign Monitor API.
-        
+
     Args:
         client: Initialized DocuSign client
         last_run: Previous fetch state containing cursor
@@ -227,7 +248,7 @@ def get_customer_events(last_run: dict, limit: int, client: CustomerEventsClient
     demisto.debug(f"{LOG_PREFIX}Customer Events: requesting {limit} events with cursor: {cursor}")
 
     try:
-        resp = client.get_customer_events_request(cursor, limit)
+        resp = client.get_customer_events_request(cursor, limit, access_token)
 
         cursor = resp.get("endCursor")
         total_events = resp.get("data", [])
@@ -235,10 +256,10 @@ def get_customer_events(last_run: dict, limit: int, client: CustomerEventsClient
 
         if not total_events:
             demisto.info(f"{LOG_PREFIX} Customer Events: No data available for cursor: {cursor}")
-        
+
         last_run["cursor"] = cursor
         return total_events, last_run
-    
+
     except Exception as e:
         demisto.debug(f"{LOG_PREFIX}Exception during get customer events. Exception is {e!s}")
         raise DemistoException(f"Exception during get customer events. Exception is {e!s}")
@@ -249,10 +270,10 @@ class CustomerEventsClient(BaseClient):
     DocuSign Monitor API Client for fetching customer events.
     Extends BaseClient to support proxy configuration and proper HTTP request handling.
     """
-    
+
     def __init__(self, server_url: str, proxy: bool = False, verify: bool = True): 
         """Initialize the Customer Events Monitor client.
-        
+
         Args:
             server_url: Base URL for the DocuSign Monitor API (developer/production environment URI)
             proxy: Whether to use proxy for requests
@@ -265,14 +286,12 @@ class CustomerEventsClient(BaseClient):
     def get_monitor_base_url(self, env: str) -> str: 
         return "https://lens-d.docusign.net" if env == "dev" else "https://lens.docusign.net"
 
-    def get_customer_events_request(self, cursor: str, limit: int) -> dict: 
+    def get_customer_events_request(self, cursor: str, limit: int, access_token: str) -> dict:
         """Send GET request to fetch a stream of customer events from DocuSign Monitor API."""
 
-        auth_client = initiate_auth_client()
-        access_token = get_access_token(auth_client)
         headers = {"Authorization": f"Bearer {access_token}", "Accept": "application/json", "Content-Type": "application/json"}
         params = {"cursor": cursor, "limit": limit}
-        
+
         demisto.debug(f"{LOG_PREFIX}Requesting customer events\nParams: {params}")
         resp = self._http_request(method="GET", headers=headers, params=params, resp_type="json")
         return resp
@@ -280,7 +299,7 @@ class CustomerEventsClient(BaseClient):
 class UserDataClient(BaseClient):
     """
     DocuSign User Data client for fetching user data from DocuSign Admin API.
-    
+
     Args:
         account_id: DocuSign account ID
         organization_id: DocuSign organization ID
@@ -312,7 +331,7 @@ class UserDataClient(BaseClient):
         '''
         base = self.get_admin_base_url()
         url = urljoin(base, f"management/v2/organizations/{self.organization_id}/users")
-        
+
         headers = {"Authorization": f"Bearer {access_token}"}
         request_params["account_id"] = self.account_id
         resp = self._http_request(method="GET", full_url=url, headers=headers, params=request_params, resp_type="json")
@@ -344,7 +363,7 @@ def get_remaining_user_data(last_run: dict, users_per_page: int, client: UserDat
         response = client.get_users_next_request(access_token, prev_url, request_params)
         fetched_users = response.get("users", [])[offset:]
         last_run["excess_users_info"] = None
-        
+
         demisto.debug(
             f"{LOG_PREFIX}Fetched {len(fetched_users)} excess users, "
             f"limit changes from {limit} to {limit - len(fetched_users)}"
@@ -358,7 +377,7 @@ def get_remaining_user_data(last_run: dict, users_per_page: int, client: UserDat
         raise DemistoException(f"Exception during get remaining user data. Exception is {e!s}")
 
 
-def fetch_audit_user_data(last_run: dict) -> tuple[dict, list]: # TODO: check flow with 0 available users to fetch
+def fetch_audit_user_data(last_run: dict, access_token: str) -> tuple[dict, list]: # TODO: check flow with 0 available users to fetch
     params = demisto.params()
     limit = min(MAX_USER_DATA_PER_FETCH, int(params.get("max_user_events_per_fetch", MAX_USER_DATA_PER_FETCH)))
     users_per_page = min(MAX_USER_DATA_PER_PAGE, limit)
@@ -366,8 +385,6 @@ def fetch_audit_user_data(last_run: dict) -> tuple[dict, list]: # TODO: check fl
     try:
         demisto.debug(f"{LOG_PREFIX} last_run before fetching user data: {last_run}")
         user_data_client = initiate_user_data_client()
-        auth_client = initiate_auth_client()
-        access_token = get_access_token(auth_client)
 
         # Handle fetching excess users from last page fetched
         if last_run.get("excess_users_info"):
@@ -581,13 +598,13 @@ def initiate_auth_client() -> AuthClient:
     )
     return auth
 
-def fetch_customer_events(last_run: dict) -> tuple[dict, list]: 
+def fetch_customer_events(last_run: dict, access_token: str) -> tuple[dict, list]:
     params = demisto.params()
     limit = min(MAX_CUSTOMER_EVENTS_PER_FETCH, int(params.get("max_customer_events_per_fetch", MAX_CUSTOMER_EVENTS_PER_FETCH)))
     try:
         demisto.debug(f"{LOG_PREFIX} last_run before fetching customer events: {last_run}")
         client = initiate_customer_events_client()
-        customer_events, last_run = get_customer_events(last_run, limit, client)
+        customer_events, last_run = get_customer_events(last_run, limit, client, access_token)
 
     except Exception as e:
         demisto.debug(f"{LOG_PREFIX}Exception during fetch customer events.\n{e!s}")
@@ -626,11 +643,14 @@ def fetch_events() -> tuple[dict, list]:
     
     selected_fetch_types = params.get("event_types", "")
     demisto.debug(f"{LOG_PREFIX}Selected fetch types: {selected_fetch_types}")
+    
+    auth_client = initiate_auth_client()
+    access_token = get_access_token(auth_client)
 
     if CUSTOMER_EVENTS_TYPE in selected_fetch_types:
         start = time.perf_counter()
         demisto.info(f"{LOG_PREFIX}Start fetch customer events, Current customer events last_run:\n{last_run_customer_events}")
-        last_run_customer_events, fetched_customer_events = fetch_customer_events(last_run_customer_events)
+        last_run_customer_events, fetched_customer_events = fetch_customer_events(last_run_customer_events, access_token)
         events.extend(fetched_customer_events)
 
         elapsed = time.perf_counter() - start
@@ -639,7 +659,7 @@ def fetch_events() -> tuple[dict, list]:
     if USER_DATA_TYPE in selected_fetch_types:
         start = time.perf_counter()
         demisto.info(f"{LOG_PREFIX}Start fetch user data, Current user data last_run:\n{last_run_user_data}")
-        last_run_user_data, fetched_user_data = fetch_audit_user_data(last_run_user_data)
+        last_run_user_data, fetched_user_data = fetch_audit_user_data(last_run_user_data, access_token)
         events.extend(fetched_user_data)
 
         elapsed = time.perf_counter() - start
@@ -650,7 +670,15 @@ def fetch_events() -> tuple[dict, list]:
     last_run = {CUSTOMER_EVENTS_TYPE: last_run_customer_events, USER_DATA_TYPE: last_run_user_data}
     return last_run, events
 
-def command_generate_consent_url() -> CommandResults:
+def get_scopes_per_type(selected_fetch_types:str) -> list:
+    scopes = []
+    if CUSTOMER_EVENTS_TYPE in selected_fetch_types:
+        scopes += SCOPES_PER_FETCH_TYPE[CUSTOMER_EVENTS_TYPE]
+    if USER_DATA_TYPE in selected_fetch_types:
+        scopes += SCOPES_PER_FETCH_TYPE[USER_DATA_TYPE]
+    return scopes
+
+def generate_consent_url() -> CommandResults:
     """Generate a consent URL for DocuSign OAuth flow.
 
     Returns:
@@ -658,23 +686,51 @@ def command_generate_consent_url() -> CommandResults:
     """
     demisto.debug(f"{LOG_PREFIX}Generating consent URL")
     params = demisto.params()
+
+    selected_fetch_types = params.get("event_types", "")
+    if not selected_fetch_types:
+        demisto.debug(f"{LOG_PREFIX}Please select Event Types before running docusign-generate-consent-url.")
+        raise DemistoException("Please select Event Types before running docusign-generate-consent-url.")
+
+    integration_context = get_integration_context()
+    required_scopes = get_scopes_per_type(selected_fetch_types)
+    consent_scopes = integration_context.get("consent_scopes", [])
+
+    is_all_required_scopes_consent = True
+    for scope in required_scopes:
+        if scope not in consent_scopes:
+            is_all_required_scopes_consent = False
+            consent_scopes.append(scope)
     
-    scopes = "signature%20impersonation%20organization_read%20user_read"
+    # If all required scopes for the selected types are already set
+    if is_all_required_scopes_consent:
+        message = f"{LOG_PREFIX}All consent scopes are already set. No need to generate consent URL for those selected types."
+        demisto.debug(message)
+        return CommandResults(readable_output=message)
+    
+    # not all required scopes are set, validate authentication parameters before generating consent URL
     server_url = params.get("url", DEFAULT_SERVER_DEV_URL).rstrip("/")
     integration_key = params.get("integration_key", "")
     redirect_url = params.get("redirect_url", "")
-    
+
     if not server_url or not integration_key or not redirect_url:
-        demisto.debug(f"{LOG_PREFIX}Please provide Server URL, Integration Key and Redirect URL in the integration parameters before running monday-generate-login-url.")
-        raise DemistoException("Please provide Server URL, Integration Key and Redirect URL in the integration parameters before running monday-generate-login-url.")
-
-    consent_url = f"{server_url}/oauth/auth?response_type=code&scope={scopes}&client_id={integration_key}&redirect_uri={redirect_url}"
-    md = f"### DocuSign Consent URL\n[Click here to authorize]({consent_url})"
+        message = "Please provide Server URL, Integration Key and Redirect URL before running docusign-generate-consent-url."
+        demisto.debug(f"{LOG_PREFIX}{message}")
+        raise DemistoException(message)
     
-    return CommandResults(readable_output=md)
+    # generate consent URL with the new required scopes
+    scopes = "%20".join(consent_scopes)
+    params = f"response_type=code&scope={scopes}&client_id={integration_key}&redirect_uri={redirect_url}"
+    consent_url = f"{server_url}/oauth/auth?" + params
+
+    # set the new consent scopes for the next authentication step
+    integration_context.update({"consent_scopes": consent_scopes})
+    set_integration_context(integration_context)
+
+    return CommandResults(readable_output=f"### DocuSign Consent URL\n[Click here to authorize]({consent_url})")
 
 
-def validate_params():
+def validate_configuration_params():
     params = demisto.params()
     selected_fetch_types = params.get("event_types", "")
     
@@ -696,19 +752,8 @@ def validate_params():
         raise DemistoException(f"Please provide Server URL for fetching {CUSTOMER_EVENTS_TYPE}.")
 
 def test_module() -> str:
-    start = time.perf_counter()
-
-    validate_params()
-    client = initiate_auth_client()
-    access_token = get_access_token(client)
-    user_info = client.get_user_info(access_token)
-
-    if not access_token or not user_info:
-        demisto.debug(f"{LOG_PREFIX} Test module failed during authentication: No access token or userinfo received")
-        raise DemistoException("Test module failed during authentication: No access token or userinfo received")
-        
-    elapsed = time.perf_counter() - start
-    demisto.debug(f"{LOG_PREFIX} Test module completed successfully in {elapsed:.3f}s")
+    # TODO: add here of access token consent scope checking (compere to the selected types scopes)
+    validate_configuration_params()
     return "ok"
   
 def main() -> None:
@@ -716,7 +761,7 @@ def main() -> None:
         command = demisto.command()
         demisto.debug(f"{LOG_PREFIX} Processing command: {command}")
 
-        if command == "test-module": 
+        if command == "test-module":
             return_results(test_module())
 
         elif command == "fetch-events":
@@ -731,7 +776,7 @@ def main() -> None:
             demisto.debug(f"{LOG_PREFIX}Updated last_run object after fetch: {last_run}")
             
         elif command == "docusign-generate-consent-url":
-            return_results(command_generate_consent_url())
+            return_results(generate_consent_url())
             
     except Exception as e:
         return_error(f"{LOG_PREFIX}Failed to execute {command} command.\nError:\n{str(e)}")
