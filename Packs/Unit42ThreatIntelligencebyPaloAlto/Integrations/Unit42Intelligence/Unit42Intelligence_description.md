@@ -4,7 +4,7 @@ Use the **Unit 42 Intelligence** integration to enrich indicators with threat in
 
 ### Prerequisite
 
-This integration requires a Cortex Threat Intelligence Management (TIM) license.
+This integration requires a Threat Intelligence Management (TIM) license.
 
 ### Configuration Parameters
 
