@@ -18,3 +18,6 @@ This integration requires a Cortex Threat Intelligence Management (TIM) license.
 - Domains
 - URLs
 - File hashes
+
+---
+[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/unit-42-intelligence)

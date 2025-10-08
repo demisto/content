@@ -7,11 +7,13 @@ sectionOrder:
 - Collect
 configuration:
 - display: Fetch indicators
+  additionalinfo: Select this check box to fetch indicators (default selected).
   name: feed
   type: 8
   defaultvalue: 'true'
   section: Collect
 - display: Feed Types
+  additionalinfo: Choose the requested indicator feeds. Indicators feed and Threat Objects (actors, malware, campaigns, techniques, etc.) feed (default is both).
   name: feed_types
   type: 16
   options:
@@ -44,7 +46,7 @@ configuration:
   advanced: true
   hidden: true
 - display: Source Reliability
-  additionalinfo: Reliability of the source providing the intelligence data
+  additionalinfo: Reliability of the source providing the intelligence context.
   name: feedReliability
   type: 15
   options:
@@ -93,19 +95,20 @@ configuration:
   required: true
   section: Collect
   advanced: true
-- display: ""
+- display: Feed Expiration Policy
   name: feedExpirationPolicy
+  additionalinfo: The feed's expiration policy.
   type: 17
   options:
   - Indicator Type
   - Time Interval
   - Never Expired
-  - When removed from the Feed
   defaultvalue: Indicator Type
   required: true
   section: Collect
   advanced: true
 - display: Indicator Expiration Interval
+  additionalinfo: The indicator's expiration policy.
   name: feedExpirationInterval
   defaultvalue: "20160"
   type: 1
@@ -113,6 +116,7 @@ configuration:
   section: Collect
   advanced: true
 - display: Create relationships
+  additionalinfo: Create relationships with other indicators.
   name: create_relationships
   type: 8
   defaultvalue: 'true'

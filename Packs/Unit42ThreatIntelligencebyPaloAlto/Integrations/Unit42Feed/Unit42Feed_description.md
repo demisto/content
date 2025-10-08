@@ -11,3 +11,6 @@ This integration requires a Cortex Threat Intelligence Management (TIM) license.
 - **Feed Types**: Select which types of objects to fetch (Indicators, Threat Objects, or both)
 - **Indicator Types**: Choose specific indicator types to collect (IP, Domain, URL, File)
 - **Source Reliability**: Configure the reliability level for feed context (default: A++ - Reputation script)
+
+---
+[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/unit-42-feed)

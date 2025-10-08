@@ -668,6 +668,7 @@ def map_threat_object(threat_object: dict, feed_tags: list = [], tlp_color: str 
         "geocountry": demisto.get(threat_object, "battlecard_details.threat_actor_details.origin", "").upper(),
         "tags": tags + feed_tags,
         "tlp_color": tlp_color,
+        "ismalwarefamily": "True" if threat_class == "malware_family" else "False"
     }
 
     # Create the threat object
@@ -763,7 +764,7 @@ def fetch_indicators(client: Client, params: dict, current_time: datetime) -> li
     last_run = demisto.getLastRun() or {}
     start_time = last_run.get("last_successful_run", default_start)
 
-    feed_tags = argToList(params.get("feed_tags", []))
+    feed_tags = argToList(params.get("feedTags", []))
     tlp_color = params.get("tlp_color")
 
     if "Indicators" in feed_types:
