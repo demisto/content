@@ -1752,13 +1752,12 @@ script:
       prettyname: Postgres Server Name
     - name: configuration_name
       type: string
-      required: true
       description: The configuration setting name.
-      defaultvalue: log_retention_days
+      defaultValue: log_retention_days
     - name: value
       type: string
       description: Value of the configuration.
-      defaultvalue: '4'
+      defaultValue: '4'
     description: "Sets the log retention period for the PostgreSQL server to 4 days. 'Microsoft.DBforPostgreSQL servers/configuration/*' permission is required."
     name: azure-postgres-config-set-log-retention-quick-action
     prettyname: Set Postgres Log Retention
@@ -1993,6 +1992,7 @@ script:
     - description: The name of the storage account.
       name: account_name
       required: true
+      prettyname: Storage Account
     - auto: PREDEFINED
       description: Whether DeleteRetentionPolicy is enabled.
       name: delete_rentention_policy_enabled
@@ -2000,10 +2000,10 @@ script:
       - 'true'
       - 'false'
       type: bool
-      default: 'true'
+      defaultValue: 'true'
     - description: The number of days the deleted item should be retained.
       name: delete_rentention_policy_days
-      default: '30'
+      defaultValue: '30'
       type: number
     description: "Enables blob soft delete for the storage account to retain deleted blobs for 30 days. 'Microsoft.Storage/storageAccounts/blobServices/write' permission is required."
     name: azure-storage-blob-enable-soft-delete-quick-action
@@ -2053,12 +2053,12 @@ script:
       description: Name of the PostgreSQL server.
     - name: configuration_name
       type: string
-      required: true
       description: The configuration setting name.
+      defaultValue: log_duration
     - name: value
       type: string
       description: Value of the configuration.
-      default: 'on'
+      defaultValue: 'on'
     description: "Enables logging of statement execution duration on the PostgreSQL server to help with performance analysis. 'Microsoft.DBforPostgreSQL servers/configuration/*' permission is required."
     name: azure-postgres-enable-statement-logging-quick-action
     prettyname: Enable Postgres Statement Logging
@@ -2079,23 +2079,21 @@ script:
       description: The name of the managed disk that is being created. Supported characters for the name are a-z, A-Z, 0-9, _ and -. The maximum name length is 80 characters.
     - name: public_network_access
       type: string
-      required: false
       auto: PREDEFINED
       predefined:
       - Disabled
       - Enabled
       description: Policy for controlling export on the disk.
-      default: 'Disabled'
+      defaultValue: 'Disabled'
     - name: network_access_policy
       type: string
-      required: false
       auto: PREDEFINED
       predefined:
       - AllowAll
       - AllowPrivate
       - DenyAll
       description: Policy for accessing the disk via network.
-      default: 'DenyAll'
+      defaultValue: 'DenyAll'
     description: "Disables all public and private network access for the managed disk. 'Microsoft.Compute/disks/write' permission is required."
     name: azure-disable-public-private-access-vm-disk-quick-action
     prettyname: Disable Public & Private Access to VM Disk
@@ -2218,12 +2216,11 @@ script:
       description: The name of the managed disk that is being created. Supported characters for the name are a-z, A-Z, 0-9, _ and -. The maximum name length is 80 characters.
     - name: data_access_auth_mode
       type: string
-      required: false
       auto: PREDEFINED
       predefined:
       - AzureActiveDirectory
       description: Additional authentication requirements when exporting or uploading to a disk or snapshot.
-      default: AzureActiveDirectory
+      defaultValue: AzureActiveDirectory
     description: "Sets the data access authentication mode for the managed disk to Azure Active Directory. 'Microsoft.Compute/disks/write' permission is required."
     name: azure-disk-set-data-access-aad-quick-action
     prettyname: Set Disk Data Access to AAD
@@ -2350,7 +2347,7 @@ script:
       predefined:
       - disabled
       - enabled
-      default: disabled
+      defaultValue: disabled
     - name: public_network_access
       type: String
       description: Whether public network access is allowed for the container registry.
@@ -2358,7 +2355,7 @@ script:
       predefined:
       - disabled
       - enabled
-      default: enabled
+      defaultValue: enabled
     description: "Disables public network access and content exports for the Azure Container Registry (ACR) to enhance security. 'Microsoft.ContainerRegistry/registries/write' permission is required."
     name: azure-acr-disable-public-private-access-quick-action
     prettyname: Disable Public Access and Exports on ACR
@@ -2435,13 +2432,99 @@ script:
       description: The type of the resource.
       type: String
   
-  - arguments: #TODO 
-    description: 
+  - arguments:
+    - name: resource_group_name
+      type: String
+      required: true
+      description: The resource group name.
+      prettyname: Resource Group
+    - name: registry_name
+      type: String
+      required: true
+      description: The name of the container registry.
+      prettyname: Azure Container Registry
+    - name: authentication_as_arm_policy
+      auto: PREDEFINED
+      predefined:
+      - disabled
+      - enabled
+      description: Whether the policy is enabled or not.
+      defaultValue: disabled
+    description: "Disables the legacy 'authentication as ARM' feature for the Azure Container Registry (ACR). 'Microsoft.ContainerRegistry/registries/write' permission is required."
     name: azure-acr-disable-authentication-as-arm-quick-action
     prettyname: Disable ACR Authentication as ARM
     hidden: true
     quickaction: true
     outputs:
+    - contextPath: Azure.ACR.id
+      description: The resource ID.
+      type: String
+    - contextPath: Azure.ACR.identity
+      description: The identity of the container registry.
+      type: Unknown
+    - contextPath: Azure.ACR.location
+      description: The location of the resource.
+      type: String
+    - contextPath: Azure.ACR.name
+      description: The name of the resource.
+      type: String
+    - contextPath: Azure.ACR.properties.adminUserEnabled
+      description: The value that indicates whether the admin user is enabled.
+      type: Boolean
+    - contextPath: Azure.ACR.properties.anonymousPullEnabled
+      description: Enables registry-wide pull from unauthenticated clients.
+      type: Boolean
+    - contextPath: Azure.ACR.properties.creationDate
+      description: The creation date of the container registry in ISO8601 format.
+      type: String
+    - contextPath: Azure.ACR.properties.dataEndpointEnabled
+      description: Enable a single data endpoint per region for serving data.
+      type: Boolean
+    - contextPath: Azure.ACR.properties.dataEndpointHostNames
+      description: List of host names that will serve data when dataEndpointEnabled is true.
+      type: Unknown
+    - contextPath: Azure.ACR.properties.encryption
+      description: The encryption settings of container registry.
+      type: Unknown
+    - contextPath: Azure.ACR.properties.loginServer
+      description: The URL that can be used to log into the container registry.
+      type: String
+    - contextPath: Azure.ACR.properties.networkRuleBypassOptions
+      description: Whether to allow trusted Azure services to access a network restricted registry.
+      type: String
+    - contextPath: Azure.ACR.properties.networkRuleSet
+      description: The network rule set for a container registry.
+      type: Unknown
+    - contextPath: Azure.ACR.properties.policies
+      description: The policies for a container registry.
+      type: Unknown
+    - contextPath: Azure.ACR.properties.privateEndpointConnections
+      description: List of private endpoint connections for a container registry.
+      type: Unknown
+    - contextPath: Azure.ACR.properties.provisioningState
+      description: The provisioning state of the container registry at the time the operation was called.
+      type: String
+    - contextPath: Azure.ACR.properties.publicNetworkAccess
+      description: Whether or not public network access is allowed for the container registry.
+      type: String
+    - contextPath: Azure.ACR.properties.status
+      description: The status of the container registry at the time the operation was called.
+      type: Unknown
+    - contextPath: Azure.ACR.properties.zoneRedundancy
+      description: Whether or not zone redundancy is enabled for this container registry.
+      type: String
+    - contextPath: Azure.ACR.sku
+      description: The SKU of the container registry.
+      type: Unknown
+    - contextPath: Azure.ACR.systemData
+      description: Metadata pertaining to creation and last modification of the resource.
+      type: Unknown
+    - contextPath: Azure.ACR.tags
+      description: The tags of the resource.
+      type: Unknown
+    - contextPath: Azure.ACR.type
+      description: The type of the resource.
+      type: String
   
   - arguments:
     - name: resource_group_name
@@ -2461,7 +2544,7 @@ script:
       predefined:
       - 'true'
       - 'false'
-      default: 'false'
+      defaultValue: 'false'
     description: "Disables anonymous pull access for the Azure Container Registry (ACR), requiring clients to authenticate before pulling images. 'Microsoft.ContainerRegistry/registries/write' permission is required."
     name: azure-acr-disable-anonymous-pull-quick-action
     prettyname: Disable ACR Anonymous Pull
@@ -2537,14 +2620,7 @@ script:
     - contextPath: Azure.ACR.type
       description: The type of the resource.
       type: String
-  
-  - arguments:
-    description: 
-    name:
-    prettyname: 
-    hidden: true
-    quickaction: true
-    outputs:
+
   isfetch: false
   runonce: false
   script: '-'
