@@ -28,7 +28,7 @@ Enrich an IP address with Unit 42 threat intelligence context.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ip | IP address to enrich. | Required |
+| ip | The IP address to enrich. | Required |
 
 #### Context Output
 
