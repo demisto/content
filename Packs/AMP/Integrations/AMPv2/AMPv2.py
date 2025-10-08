@@ -605,11 +605,16 @@ class Client(BaseClient):
             }
         )
         demisto.debug(f"Sending request: {params}")
-        return self._http_request(
-            method="GET",
-            url_suffix="/events",
-            params=params,
-        )
+        try:
+            res = self._http_request(
+                method="GET",
+                url_suffix="/events",
+                params=params,
+            )
+        except Exception as e:
+            demisto.error(f"error in event_list_request: {e}")
+            res = {}
+        return res
 
     def event_type_list_request(self) -> dict[str, Any]:
         """
@@ -1217,7 +1222,8 @@ def fetch_incidents(
     while True:
         demisto.debug(f"looping on page #{counter}")
         response = client.event_list_request(start_date=last_fetch, event_types=event_types, limit=500, offset=offset)
-
+        if not response:
+            break
         demisto.debug(f"Received {len(response['data'])}. Adding.")
 
         items = items + response["data"]
