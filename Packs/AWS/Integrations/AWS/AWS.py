@@ -25,24 +25,26 @@ def parse_resource_ids(resource_id: str | None) -> list[str]:
     return resource_ids
 
 
-def convert_datetimes_to_iso(data):
+class ISOEncoder(json.JSONEncoder):
     """
-    Recursively converts datetime.datetime objects within a nested
-    dictionary or list structure to ISO 8601 strings.
+    A custom JSONEncoder that converts datetime objects to ISO 8601 strings.
     """
-    if isinstance(data, dict):
-        return {
-            key: convert_datetimes_to_iso(value)
-            for key, value in data.items()
-        }
 
-    elif isinstance(data, (list, tuple)):
-        return [convert_datetimes_to_iso(item) for item in data]
+    def default(self, obj):
+        if isinstance(obj, datetime):
+            return obj.isoformat()
+        # Let the base class handle other objects
+        return json.JSONEncoder.default(self, obj)
 
-    elif isinstance(data, datetime):
-        return data.isoformat()
 
-    return data
+def convert_datetimes_to_iso_safe(data):
+    """
+    Converts datetime objects in a data structure to ISO 8601 strings
+    by serializing to and then deserializing from JSON using a custom encoder.
+    """
+    json_string = json.dumps(data, cls=ISOEncoder)
+    return json.loads(json_string)
+
 
 class AWSErrorHandler:
     """
@@ -1066,7 +1068,7 @@ class RDS:
                 db_cluster = response.get("DBCluster", {})
                 readable_output = f"Successfully modified DB cluster {args.get('db-cluster-identifier')}"
                 if db_cluster:
-                    db_cluster = convert_datetimes_to_iso(db_cluster)
+                    db_cluster = convert_datetimes_to_iso_safe(db_cluster)
                     readable_output += "\n\nUpdated DB Cluster details:"
                     readable_output += tableToMarkdown("", db_cluster)
 
@@ -1173,7 +1175,7 @@ class RDS:
                 readable_output = (f"Successfully modified DB instance {args.get('db_instance_identifier')}"
                                    f"\n\nUpdated DB Instance details:\n\n")
                 if db_instance:
-                    db_instance = convert_datetimes_to_iso(db_instance)
+                    db_instance = convert_datetimes_to_iso_safe(db_instance)
                     readable_output += tableToMarkdown("", t=db_instance, removeNull=True)
 
                 return CommandResults(
