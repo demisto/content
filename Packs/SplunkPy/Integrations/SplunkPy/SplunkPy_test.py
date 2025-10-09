@@ -4035,6 +4035,7 @@ def test_format_splunk_note_for_xsoar_missing_fields():
     expected = "\n\n"
     assert splunk.format_splunk_note_for_xsoar(note) == expected
 
+
 def test_user_mapping_used_cache(mocker):
     """
     Given:
