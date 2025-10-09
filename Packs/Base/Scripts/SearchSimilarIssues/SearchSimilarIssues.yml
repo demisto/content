@@ -1,0 +1,97 @@
+args:
+- description: Issue ID to get the prediction of. If empty, predicts the the current issue ID.
+  name: issueId
+- auto: PREDEFINED
+  description: 'Comma-separated list of issue text fields to take into account when computing similarity. For example: commandline, URL. Note: In order to calculate similarity, fields must consist of a minimum of 2 letters.'
+  name: similarTextField
+- auto: PREDEFINED
+  description: 'Comma-separated list of issue categorical fields to take into account whe computing similarity. For example: IP, URL. Note: In order to calculate similarity, fields must consist of a minimum of 2 letters.'
+  name: similarCategoricalField
+- auto: PREDEFINED
+  description: 'Comma-separated list of issue JSON fields to take into account whe computing similarity. For example: CustomFields. Note: In order to calculate similarity, fields must consist of a minimum of 2 letters.'
+  name: similarJsonField
+- auto: PREDEFINED
+  description: Comma-separated list of additional issue fields to display, but which will not be taken into account when computing similarity.
+  name: fieldsToDisplay
+- auto: PREDEFINED
+  description: Comma-separated list of issue fields that have to be equal to the current issue fields. This helps reduce the query size. These fields are not part of the similarity calculation.
+  name: fieldExactMatch
+- auto: PREDEFINED
+  defaultValue: 'False'
+  description: Whether to use a predefined set of fields and custom fields to compute similarity. If "True", it will ignore values in similarTextField, similarCategoricalField, similarJsonField.
+  name: useAllFields
+  predefined:
+  - 'True'
+  - 'False'
+- defaultValue: 1 months ago
+  description: The start date by which to filter issues. Date format will be the same as in the issues query page, for example, "3 days ago", ""2019-01-01T00:00:00 +0200").
+  name: fromDate
+- description: The end date by which to filter issues. Date format will be the same as in the issues query page, for example, "3 days ago", ""2019-01-01T00:00:00 +0200").
+  name: toDate
+- defaultValue: '1500'
+  description: The maximum number of issues to query.
+  name: limit
+- auto: PREDEFINED
+  defaultValue: 'False'
+  description: Whether to aggregate duplicate issues within diffrerent dates.
+  name: aggreagateIssuesDifferentDate
+  predefined:
+  - 'True'
+  - 'False'
+- defaultValue: '0.2'
+  description: Retain issues with similarity score that's higher than the minimumIssueSimilarity.
+  name: minimumIssueSimilarity
+- defaultValue: '100'
+  description: The maximum number of issues to display.
+  name: maxIssuesToDisplay
+- auto: PREDEFINED
+  defaultValue: 'False'
+  description: Whether to include similarity of indicators from DBotFindSimilarIssuesByIndicators in the final score.
+  name: includeIndicatorsSimilarity
+  predefined:
+  - 'True'
+  - 'False'
+- description: The minimum number of indicators required related to the issue before running the model. Relevant if includeIndicatorsSimilarity is "True".
+  name: minNumberOfIndicators
+- auto: PREDEFINED
+  description: Comma-separated list of indicator types to take into account. If empty, uses all indicators types. Relevant if includeIndicatorsSimilarity is "True".
+  name: indicatorsTypes
+- description: Help to filter out indicators that appear in many issues. Relevant if includeIndicatorsSimilarity is "True".
+  name: maxIssuesInIndicatorsForWhiteList
+comment: |-
+  Searches past similar issues based on issue fields' similarity. Includes an option to also display indicators similarity.
+  Note: For the similarity calculation, at least one field must be provided in one of the "similarTextField", "similarCategoricalField", or "similarJsonField" arguments.
+commonfields:
+  id: SearchSimilarIssues
+  version: -1
+enabled: false
+name: SearchSimilarIssues
+isInternal: true
+outputs:
+- contextPath: SimilarIssues.IsSimilarIssueFound
+  description: Indicates whether similar issues have been found.
+  type: boolean
+- contextPath: SimilarIssues.Created
+  description: The creation date of the linked issue.
+  type: date
+- contextPath: SimilarIssues.Id
+  description: The ID of the linked issue.
+  type: string
+- contextPath: SimilarIssues.Name
+  description: The name of the linked issue.
+  type: string
+- contextPath: SimilarIssues.SimilarityIssue
+  description: The similarity of the linked issue represented as a float in the range 0-1.
+  type: number
+- contextPath: SimilarIssues.Details
+  description: The details of the linked issue.
+  type: string
+script: '-'
+system: false
+timeout: '0'
+type: python
+subtype: python3
+dockerimage: demisto/python3:3.9.8.24399
+fromversion: 6.1.0
+marketplaces:
+- platform
