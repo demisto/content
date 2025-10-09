@@ -1954,7 +1954,7 @@ class RDS:
                 "BackupRetentionPeriod": arg_to_bool_or_none(args.get("backup_retention_period")),
             }
             remove_nulls_from_dictionary(kwargs)
-            demisto.debug(f"modify_db_instance {kwargs=}")
+            demisto.info(f"modify_db_instance {kwargs=}")
             response = client.modify_db_instance(**kwargs)
 
             if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK:
@@ -2193,6 +2193,7 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-iam-role-from-instance-profile-remove": IAM.remove_role_from_instance_profile_command,
     "aws-iam-access-key-update": IAM.update_access_key_command,
     "aws-ec2-instance-metadata-options-modify": EC2.modify_instance_metadata_options_command,
+    "aws-ec2-instance-metadata-options-modify-quick-action": EC2.modify_instance_metadata_options_command,
     "aws-ec2-instance-attribute-modify": EC2.modify_instance_attribute_command,
     "aws-ec2-instance-attribute-modify-quick-action": EC2.modify_instance_attribute_command,
     "aws-ec2-snapshot-attribute-modify": EC2.modify_snapshot_attribute_command,
@@ -2208,9 +2209,11 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-eks-describe-cluster": EKS.describe_cluster_command,
     "aws-eks-associate-access-policy": EKS.associate_access_policy_command,
     "aws-rds-db-cluster-modify": RDS.modify_db_cluster_command,
+    "aws-rds-db-cluster-modify-quick-action": RDS.modify_db_cluster_command,
     "aws-rds-db-cluster-snapshot-attribute-modify": RDS.modify_db_cluster_snapshot_attribute_command,
     "aws-rds-db-instance-modify": RDS.modify_db_instance_command,
-    "aws-rds-db-instance-modify-quick-action": RDS.modify_db_instance_command,
+    "aws-rds-db-instance-modify-publicly-accessible-quick-action": RDS.modify_db_instance_command,
+    "aws-rds-db-instance-modify-copy-tags-on-rds-snapshot-quick-action": RDS.modify_db_instance_command,
     "aws-rds-db-snapshot-attribute-modify": RDS.modify_db_snapshot_attribute_command,
     "aws-cloudtrail-logging-start": CloudTrail.start_logging_command,
     "aws-cloudtrail-trail-update": CloudTrail.update_trail_command,
