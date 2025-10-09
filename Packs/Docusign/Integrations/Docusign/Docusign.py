@@ -334,12 +334,12 @@ class UserDataClient(BaseClient):
     def get_admin_base_url(self) -> str:
         return "https://api-d.docusign.net" if self.env == "dev" else "https://api.docusign.net"
 
-    def get_users_next_request(self, access_token: str, url: str, request_params: dict = {}) -> dict:
+    def get_users_request(self, access_token: str, url: str) -> dict:
         '''
             DocuSign Admin API
         '''
         headers = {"Authorization": f"Bearer {access_token}"}
-        resp = self._http_request(method="GET", full_url=url, headers=headers, params=request_params, resp_type="json")
+        resp = self._http_request(method="GET", full_url=url, headers=headers, resp_type="json")
         return resp
 
     def get_users_first_request(self, access_token: str, request_params: Dict[str, Any]) -> tuple[dict, str]:
@@ -363,7 +363,7 @@ class UserDataClient(BaseClient):
         return resp
 
 
-def get_remaining_user_data(last_run: dict, users_per_page: int, client: UserDataClient, access_token: str, limit: int) -> tuple[list, dict]:
+def get_remaining_user_data(last_run: dict, client: UserDataClient, access_token: str, limit: int) -> tuple[list, dict]:
     """
     Fetch only the remaining users that were not retrieved from the last page in the previous run
     """
@@ -374,10 +374,9 @@ def get_remaining_user_data(last_run: dict, users_per_page: int, client: UserDat
 
     offset = excess_users_info.get("offset")
     prev_url = excess_users_info.get("url")
-    request_params = excess_users_info.get("request_params")
 
     try:
-        response = client.get_users_next_request(access_token, prev_url, request_params)
+        response = client.get_users_request(access_token, prev_url)
         fetched_users = response.get("users", [])[offset:]
         last_run["excess_users_info"] = None
 
@@ -405,7 +404,7 @@ def fetch_audit_user_data(last_run: dict, access_token: str, auth_client: AuthCl
 
         # Handle fetching excess users from last page fetched
         if last_run.get("excess_users_info"):
-            excess_users_from_last_page, last_run = get_remaining_user_data(last_run, users_per_page, user_data_client, access_token, limit)
+            excess_users_from_last_page, last_run = get_remaining_user_data(last_run, user_data_client, access_token, limit)
             users.extend(excess_users_from_last_page)
             limit -= len(excess_users_from_last_page)
 
@@ -499,7 +498,7 @@ def get_user_data(last_run: dict, limit: int, users_per_page: int, client: UserD
             demisto.debug(f"{LOG_PREFIX}Starting to fetch new request of users.\nRemaining users to fetch: {remaining_to_fetch}")
 
             if url:  # when the last page returned a next_url
-                resp = client.get_users_next_request(access_token, url)
+                resp = client.get_users_request(access_token, url)
             else:
                 resp, url = client.get_users_first_request(access_token, request_params)
 
@@ -515,11 +514,10 @@ def get_user_data(last_run: dict, limit: int, users_per_page: int, client: UserD
                     demisto.debug(f"{LOG_PREFIX} There are more users than remaining to fetch.")
                     last_run["excess_users_info"] = {
                         "offset": remaining_to_fetch,
-                        "url": url,
-                        "request_params": request_params
-                    }
+                        "url": url
+                        }
                     demisto.debug(
-                        f"{LOG_PREFIX} Setting excess_logs_info for next fetch: {last_run['excess_logs_info']}\n"
+                        f"{LOG_PREFIX} Setting excess_users_info for next fetch: {last_run['excess_users_info']}\n"
                         f"{LOG_PREFIX} Truncated total fetched users from {len(total_events)} to limit: {limit}"
                     )
                     total_events = total_events[:limit]
@@ -541,13 +539,12 @@ def get_user_data(last_run: dict, limit: int, users_per_page: int, client: UserD
         if len(users) > remaining_to_fetch:
             last_run["excess_users_info"] = {
                 "offset": remaining_to_fetch,
-                "url": prev_url,
-                "request_params": request_params
+                "url": prev_url
             }
 
             demisto.debug(
                 f"{LOG_PREFIX}Limit is reached and only partial users were fetched from the last page scanning.\n"
-                f"Setting excess_logs_info: {last_run['excess_logs_info']}"
+                f"Setting excess_users_info: {last_run['excess_users_info']}"
             )
 
         end_time = time.perf_counter()
