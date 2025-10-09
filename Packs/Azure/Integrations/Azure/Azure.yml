@@ -1738,15 +1738,14 @@ script:
     - contextPath: Azure.CosmosDB.properties.writeLocations
       description: An array that contains the write locations enabled for the Cosmos DB account.
       type: List
-# Quick Actions
   - arguments:
     - name: name
-      description: Name of the policy assignment.
+      description: Policy assignment name.
       defaultValue: SecurityCenterBuiltIn
       hidden: true
     - name: scope
       type: string
-      description: The scope of the policy assignment.
+      description: Scope for the policy assignment.
       required: true
       prettyname: Scope
     - name: policy_definition_id
@@ -1755,7 +1754,7 @@ script:
       hidden: true
       defaultValue: 1f3afdf9-d0c9-4c3d-847f-89da613e70a8
     - name: parameters
-      description: The JSON object for policy properties parameters and their values.
+      description: JSON object of policy parameter values.
       defaultValue: '{"jitNetworkAccessMonitoringEffect":{"value":"AuditIfNotExists"}}'
       hidden: true
     name: azure-policy-assignment-create-quick-action
@@ -1823,12 +1822,12 @@ script:
       name: security_group_name
       required: true
       prettyname: Logic App Name
-    - description: The name of the rule to be updated.
+    - description: Name of the NSG rule to update.
       name: security_rule_name
       required: true
       prettyname: NSG Rule
     - auto: PREDEFINED
-      description: The network traffic is allowed or denied.
+      description: Whether to allow or deny network traffic.
       name: access
       predefined:
       - Allow
@@ -2212,11 +2211,11 @@ script:
       prettyname: Postgres Server Name
     - name: configuration_name
       type: string
-      description: The configuration setting name.
+      description: Configuration setting name.
       defaultValue: connection_throttling
     - name: value
       type: string
-      description: Value of the configuration.
+      description: Configuration value.
       defaultValue: 'on'
     description: "Enable connection throttling on the PostgreSQL server. This enables the PostgreSQL database to set the verbosity of logged messages allowing generation of query and error logs with respect to concurrent connections. 'Microsoft.DBforPostgreSQL servers/configuration/*' permission is required."
     name: azure-postgres-config-set-quick-action
@@ -2238,7 +2237,7 @@ script:
     - auto: PREDEFINED
       name: http20_enabled
       type: bool
-      description: Configures a web site to allow clients to connect over http2.0.
+      description: CEnable clients to connect over HTTP/2.
       predefined:
       - 'true'
       - 'false'
@@ -2351,7 +2350,7 @@ script:
       name: enabled
       type: bool
       required: false
-      description: True if the Authentication / Authorization feature is enabled for the current app; otherwise, false.
+      description: Whether App Service Authentication/Authorization is enabled.
       predefined:
       - 'true'
       - 'false'
@@ -2463,12 +2462,12 @@ script:
       name: resource_group_name
       required: true
       prettyname: Resource Group
-    - description: The name of the storage account.
+    - description: Name of the storage account.
       name: account_name
       required: true
       prettyname: Storage Account
     - auto: PREDEFINED
-      description: Allow or disallow cross AAD tenant object replication.
+      description: Whether to allow AD cross-tenant object replication.
       name: allow_cross_tenant_replication
       predefined:
       - 'true'
@@ -2560,13 +2559,13 @@ script:
     - name: name
       type: string
       required: true
-      description: Name of the Web App.
+      description: Name of the Function App.
       prettyname: AZ Function Name
     - auto: PREDEFINED
       name: http20_enabled
       type: bool
       required: false
-      description: Configures a web site to allow clients to connect over http2.0.
+      description: Whether to allow clients to connect over HTTP/2.
       predefined:
       - 'true'
       - 'false'
@@ -2669,12 +2668,12 @@ script:
       name: resource_group_name
       required: true
       prettyname: Resource Group
-    - description: The name of the storage account.
+    - description: Name of the storage account.
       name: account_name
       required: true
       prettyname: Storage Account
     - auto: PREDEFINED
-      description: If set to true, allows public access to all blobs or containers in the storage account.
+      description: If set to 'true', allows public access to all blobs or containers in the storage account.
       name: allow_blob_public_access
       predefined:
       - 'true'
@@ -2772,7 +2771,7 @@ script:
       name: remote_debugging_enabled
       type: bool
       required: false
-      description: True if remote debugging is enabled; otherwise, false.
+      description: Whether remote debugging is enabled.
       predefined:
       - 'true'
       - 'false'
@@ -2870,7 +2869,6 @@ script:
     - contextPath: Azure.WebAppConfig.properties.apiManagementConfig.id
       description: Azure API management integration ID.
       type: String
-    
   isfetch: false
   runonce: false
   script: '-'
