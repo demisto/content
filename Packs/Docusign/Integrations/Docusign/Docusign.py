@@ -32,7 +32,7 @@ MAX_USER_DATA_PER_PAGE = 250
 
 # scopes
 CUSTOMER_EVENTS_SCOPE = ["signature", "impersonation"]
-USER_DATA_SCOPE = ["organization_read", "user_read"]
+USER_DATA_SCOPE = ["organization_read", "user_read", "signature"]
 
 SCOPES_PER_FETCH_TYPE = {
     CUSTOMER_EVENTS_TYPE: CUSTOMER_EVENTS_SCOPE,
@@ -155,7 +155,6 @@ class AuthClient(BaseClient):
     def get_token(self, scopes: list[str]) -> tuple[str, dt.datetime, str]:
         """Exchange JWT for access token using DocuSign OAuth flow."""
         scope_str = " ".join(scopes)
-
         jwt_token = self.get_jwt(scope_str)
         access_token, expired_at, scope = self.exchange_jwt_to_access_token(jwt_token)
         return access_token, expired_at, scope
@@ -377,7 +376,7 @@ def get_remaining_user_data(last_run: dict, users_per_page: int, client: UserDat
         raise DemistoException(f"Exception during get remaining user data. Exception is {e!s}")
 
 
-def fetch_audit_user_data(last_run: dict, access_token: str) -> tuple[dict, list]: # TODO: check flow with 0 available users to fetch
+def fetch_audit_user_data(last_run: dict, access_token: str, auth_client: AuthClient) -> tuple[dict, list]: # TODO: check flow with 0 available users to fetch
     params = demisto.params()
     limit = min(MAX_USER_DATA_PER_FETCH, int(params.get("max_user_events_per_fetch", MAX_USER_DATA_PER_FETCH)))
     users_per_page = min(MAX_USER_DATA_PER_PAGE, limit)
@@ -396,8 +395,8 @@ def fetch_audit_user_data(last_run: dict, access_token: str) -> tuple[dict, list
         fetched_users, last_run = get_user_data(last_run, limit, users_per_page, user_data_client, access_token)
         users.extend(fetched_users)
         # ---------- STEP 2: Fetch user details ----------
-        base_uri = auth_client.get_base_uri(access_token, user_data_client.account_id) # I think I cant move the base_uri to the context, it is permanent
-        users, latest_modified = get_user_details(users, base_uri, access_token, user_data_client) # TODO: check with the tpm which list to return, from step 1 or step 2.
+        base_uri = auth_client.get_base_uri(access_token, user_data_client.account_id) # TODO: I think I cant move the base_uri to the context, it is permanent
+        users, latest_modified = get_user_details(users, base_uri, access_token, user_data_client)
 
         # Persist the latest modifiedDate for next fetch
         last_run["latest_modifiedDate"] = latest_modified # TODO: check what is it the correct format to save for step 1?
@@ -659,7 +658,7 @@ def fetch_events() -> tuple[dict, list]:
     if USER_DATA_TYPE in selected_fetch_types:
         start = time.perf_counter()
         demisto.info(f"{LOG_PREFIX}Start fetch user data, Current user data last_run:\n{last_run_user_data}")
-        last_run_user_data, fetched_user_data = fetch_audit_user_data(last_run_user_data, access_token)
+        last_run_user_data, fetched_user_data = fetch_audit_user_data(last_run_user_data, access_token, auth_client)
         events.extend(fetched_user_data)
 
         elapsed = time.perf_counter() - start
