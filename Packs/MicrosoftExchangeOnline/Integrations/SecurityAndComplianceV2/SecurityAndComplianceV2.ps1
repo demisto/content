@@ -978,13 +978,11 @@ class SecurityAndComplianceClient {
             } catch {
                 $lastError = $_
                 $errorMessage = $_.Exception.Message
-                Write-Warning "Attempt $attempt failed: $errorMessage"
 
                 # Close session before retry
                 $this.DisconnectSession()
 
                 if ($attempt -lt $maxRetries) {
-#                    Write-Host "Retrying in $retryDelaySeconds seconds..."
                     Start-Sleep -Seconds $retryDelaySeconds
                 }
             }
