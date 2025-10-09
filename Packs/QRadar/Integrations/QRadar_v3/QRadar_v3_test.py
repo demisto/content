@@ -970,7 +970,8 @@ def test_outputs_enriches(mocker, enrich_func, mock_func_name, args, mock_respon
     Then:
      - Ensure dict containing the enrichment is as expected.
     """
-    mocker.patch.object(client, mock_func_name, return_value=mock_response)
+    mock_func = mocker.patch.object(client, mock_func_name, return_value=mock_response)
+    mock_func.__name__ = mock_func.__name  # magic mock objects have different attributes from actual functions
     res = enrich_func(**args)
     assert res == expected
 
@@ -2285,24 +2286,24 @@ class NonSerializable:
         ({"id": 123, "active": True}, 10),
     ],
 )
-def test_calculate_incident_size_success_json_serialization(incident, expected_min_size):
+def test_calculate_object_size_success_json_serialization(incident, expected_min_size):
     """
     Given a JSON-serializable incident dictionary
-    When calculate_incident_size is called
+    When calculate_object_size is called
     Then it should return a byte length >= expected_min_size and not raise any exception
     """
-    size = QRadar_v3.calculate_incident_size(incident)
+    size = QRadar_v3.calculate_object_size(incident)
     assert isinstance(size, int)
     assert size >= expected_min_size
 
 
-def test_calculate_incident_size_fallback_to_str(monkeypatch):
+def test_calculate_object_size_fallback_to_str(monkeypatch):
     """
     Given an incident dictionary that includes a non-serializable object
-    When calculate_incident_size is called
+    When calculate_object_size is called
     Then it should fallback to str() and log a debug message
     """
-    from QRadar_v3 import calculate_incident_size
+    from QRadar_v3 import calculate_object_size
 
     incident = {"data": NonSerializable()}
 
@@ -2312,21 +2313,21 @@ def test_calculate_incident_size_fallback_to_str(monkeypatch):
     monkeypatch.setattr("QRadar_v3.json.dumps", json_dumps_fail)
 
     with patch("QRadar_v3.demisto.debug") as mock_debug:
-        size = calculate_incident_size(incident)
+        size = calculate_object_size(incident)
         assert isinstance(size, int)
         assert size > 0
 
         debug_calls = [call.args[0] for call in mock_debug.call_args_list]
-        assert any("Could not serialize incident to JSON" in msg for msg in debug_calls)
+        assert any("Could not serialize object to JSON" in msg for msg in debug_calls)
 
 
-def test_calculate_incident_size_encoding_fallback(monkeypatch):
+def test_calculate_object_size_encoding_fallback(monkeypatch):
     """
     Given an incident with characters that cause UTF-8 encoding failure
-    When calculate_incident_size is called
+    When calculate_object_size is called
     Then it should fallback to 'replace' encoding and log a debug message
     """
-    from QRadar_v3 import calculate_incident_size
+    from QRadar_v3 import calculate_object_size
 
     broken_string = "Test\x80Incident"
     incident = {"details": broken_string}
@@ -2338,7 +2339,7 @@ def test_calculate_incident_size_encoding_fallback(monkeypatch):
             return super().encode(encoding, errors)
 
     with patch("QRadar_v3.json.dumps", return_value=MockStr(broken_string)), patch("QRadar_v3.demisto.debug") as mock_debug:
-        size = calculate_incident_size(incident)
+        size = calculate_object_size(incident)
         assert isinstance(size, int)
 
         debug_calls = [call.args[0] for call in mock_debug.call_args_list]
@@ -2465,3 +2466,31 @@ def test_remove_context_keys(current_ctx, changes, override_keys, expected_ctx):
     remove_context_keys(initial_ctx, changes, override_keys)
 
     assert initial_ctx == expected_ctx
+
+
+def test_get_rules_names(mocker):
+    """
+    Given a list of fetched offences
+    When calling get_rules_names
+    Then ensure HTTP request is re-attempted after one failure and the mapping of {rule_id: rule_name} is as expected
+    """
+    from QRadar_v3 import get_rules_names
+
+    mock_api_response = [
+        {"id": 101, "name": "Suspicious Activity"},
+        {"id": 102, "name": "Unauthorized Login"},
+        {"id": 103, "name": "Malware Detected"},
+    ]
+    mock_client_rules_list = mocker.patch.object(client, "rules_list", side_effect=[Exception("API Timeout"), mock_api_response])
+    mock_client_rules_list.__name__ = "mock_rules_list"  # magic mock objects have different attributes from actual functions
+
+    offenses = [{"id": 1, "rules": [{"id": 101}, {"id": 102}]}, {"id": 2, "rules": [{"id": 102}, {"id": 103}]}]
+    rule_id_rule_name_mapping = get_rules_names(client, offenses)
+
+    # Assert `client.rules_list` method was called exactly twice (first time failed due to 'API Timeout' exception)
+    assert mock_client_rules_list.call_count == 2
+    assert rule_id_rule_name_mapping == {
+        101: "Suspicious Activity",
+        102: "Unauthorized Login",
+        103: "Malware Detected",
+    }
