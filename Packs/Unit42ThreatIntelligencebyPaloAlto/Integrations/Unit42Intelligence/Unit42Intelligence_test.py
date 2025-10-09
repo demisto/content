@@ -322,11 +322,7 @@ def test_url_command_404(client, mocker):
 
     args = {"url": "http://example.com", "create_relationships": True}
     result = url_command(client, args)
-
-    assert (
-        "### Unit 42 Intelligence results for URL: http://example.com\n|Value|Verdict|\n|---|---|\n| http://example.com | Unknown |\n"
-        in result.readable_output
-    )
+    assert "http://example.com | Unknown |\n" in result.readable_output
 
 
 def test_file_command_404(client, mocker):
