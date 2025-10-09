@@ -25,6 +25,25 @@ def parse_resource_ids(resource_id: str | None) -> list[str]:
     return resource_ids
 
 
+def convert_datetimes_to_iso(data):
+    """
+    Recursively converts datetime.datetime objects within a nested
+    dictionary or list structure to ISO 8601 strings.
+    """
+    if isinstance(data, dict):
+        return {
+            key: convert_datetimes_to_iso(value)
+            for key, value in data.items()
+        }
+
+    elif isinstance(data, (list, tuple)):
+        return [convert_datetimes_to_iso(item) for item in data]
+
+    elif isinstance(data, datetime):
+        return data.isoformat()
+
+    return data
+
 class AWSErrorHandler:
     """
     Centralized error handling for AWS boto3 client errors.
@@ -1047,6 +1066,7 @@ class RDS:
                 db_cluster = response.get("DBCluster", {})
                 readable_output = f"Successfully modified DB cluster {args.get('db-cluster-identifier')}"
                 if db_cluster:
+                    db_cluster = convert_datetimes_to_iso(db_cluster)
                     readable_output += "\n\nUpdated DB Cluster details:"
                     readable_output += tableToMarkdown("", db_cluster)
 
@@ -1133,7 +1153,6 @@ class RDS:
             CommandResults: Results of the operation with update information
         """
         try:
-            demisto.info("inside modify_db_instance_command")
             kwargs = {
                 "DBInstanceIdentifier": args.get("db_instance_identifier"),
                 "MultiAZ": arg_to_bool_or_none(args.get("multi_az")),
@@ -1148,32 +1167,19 @@ class RDS:
             remove_nulls_from_dictionary(kwargs)
             demisto.info(f"modify_db_instance {kwargs=}")
             response = client.modify_db_instance(**kwargs)
-            demisto.info(f"{response=}")
+
             if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK:
                 db_instance = response.get("DBInstance", {})
                 readable_output = (f"Successfully modified DB instance {args.get('db_instance_identifier')}"
                                    f"\n\nUpdated DB Instance details:\n\n")
-                demisto.info(f"1# {readable_output=}")
                 if db_instance:
-                    minimal_db_instance_table = {
-                            'DBInstanceIdentifier': 'x',
-                            'DBInstanceClass': 'x',
-                            'Engine': 'x',
-                            'DBInstanceStatus': 'x',
-                            'MasterUsername': 'x',
-                            'Endpoint': {
-                                'Address': 'x',
-                                'Port': "x",
-                                'HostedZoneId': 'x'
-                            },
-                    }
+                    db_instance = convert_datetimes_to_iso(db_instance)
                     readable_output += tableToMarkdown("", t=db_instance, removeNull=True)
 
-                demisto.info(f"2# {readable_output=}")
                 return CommandResults(
                     readable_output=readable_output,
                     outputs_prefix="AWS.RDS.DBInstance",
-                    outputs=minimal_db_instance_table,
+                    outputs=db_instance,
                     outputs_key_field="DBInstanceIdentifier",
                 )
             else:
