@@ -3,7 +3,7 @@ commonfields:
   id: Cortex Attack Surface Management
   version: -1
 sectionorder:
-  - Connect
+- Connect
 configuration:
 - additionalinfo: The web UI with `api-` appended to front (e.g., https://api-xsiam.paloaltonetworks.com). For more information please see https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-REST-API/Get-Started-with-Cortex-XDR-APIs.
   display: Server URL
@@ -482,5 +482,3 @@ script:
 fromversion: 6.5.0
 tests:
 - CortexAttackSurfaceManagement_Test
-sectionOrder:
-- Connect
