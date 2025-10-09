@@ -764,6 +764,32 @@ def create_context_data(response_data: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def construct_404_response(indicator_value: str, indicator_type: str) -> dict[str, Any]:
+    """
+    Construct a 404 response for a missing indicator
+
+    Args:
+        indicator_value: Value of the indicator
+        indicator_type: Type of indicator
+
+    Returns:
+        Dictionary containing indicator default response in cases of 404
+    """
+    return {
+        "indicator_value": indicator_value,
+        "indicator_type": indicator_type,
+        "verdict": "Unknown",
+        "verdict_categories": [],
+        "counts": [{"count_type": "wf_sample", "count_values": {"benign": 0, "grayware": 0, "malware": 0}}],
+        "first_seen": "",
+        "last_seen": "",
+        "seen_by": [],
+        "threat_object_associations": [],
+        "is_observed": False,
+        "sources": [],
+    }
+
+
 #### TEST MODULE ####
 
 
@@ -806,10 +832,10 @@ def ip_command(client: Client, args: dict[str, Any]) -> CommandResults:
     response = client.lookup_indicator("ip", ip)
 
     if response.status_code == 404:
-        human_readable = f"### The IP indicator: {ip} was not found in Unit 42 Intelligence"
-        return CommandResults(readable_output=human_readable)
+        response_data = construct_404_response(ip, "IP")
+    else:
+        response_data = extract_response_data(response.json())
 
-    response_data = extract_response_data(response.json())
     threat_objects = response_data["threat_object_associations"]
 
     # Create DBotScore
@@ -870,10 +896,9 @@ def domain_command(client: Client, args: dict[str, Any]) -> CommandResults:
     response = client.lookup_indicator("domain", domain)
 
     if response.status_code == 404:
-        human_readable = f"### The domain indicator: {domain} was not found in Unit 42 Intelligence"
-        return CommandResults(readable_output=human_readable)
-
-    response_data = extract_response_data(response.json())
+        response_data = construct_404_response(domain, "Domain")
+    else:
+        response_data = extract_response_data(response.json())
     threat_objects = response_data["threat_object_associations"]
 
     # Create DBotScore
@@ -934,10 +959,9 @@ def url_command(client: Client, args: dict[str, Any]) -> CommandResults:
     response = client.lookup_indicator("url", url)
 
     if response.status_code == 404:
-        human_readable = f"### The URL indicator: {url} was not found in Unit 42 Intelligence"
-        return CommandResults(readable_output=human_readable)
-
-    response_data = extract_response_data(response.json())
+        response_data = construct_404_response(url, "URL")
+    else:
+        response_data = extract_response_data(response.json())
     threat_objects = response_data["threat_object_associations"]
 
     # Create DBotScore
@@ -1005,10 +1029,9 @@ def file_command(client: Client, args: dict[str, Any]) -> CommandResults:
     response = client.lookup_indicator("filehash_sha256", file_hash)
 
     if response.status_code == 404:
-        human_readable = f"### The file indicator: {file_hash} was not found in Unit 42 Intelligence"
-        return CommandResults(readable_output=human_readable)
-
-    response_data = extract_response_data(response.json())
+        response_data = construct_404_response(file_hash, "File")
+    else:
+        response_data = extract_response_data(response.json())
     threat_objects = response_data["threat_object_associations"]
 
     # Create DBotScore

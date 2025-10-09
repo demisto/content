@@ -277,7 +277,10 @@ def test_ip_command_404(client, mocker):
     args = {"ip": "1.2.3.4", "create_relationships": True}
     result = ip_command(client, args)
 
-    assert "The IP indicator: 1.2.3.4 was not found in Unit 42 Intelligence" in result.readable_output
+    assert (
+        "### Unit 42 Intelligence results for IP: 1.2.3.4\n|Value|Verdict|\n|---|---|\n| 1.2.3.4 | Unknown |\n"
+        in result.readable_output
+    )
 
 
 def test_domain_command_404(client, mocker):
@@ -297,7 +300,10 @@ def test_domain_command_404(client, mocker):
     args = {"domain": "example.com", "create_relationships": True}
     result = domain_command(client, args)
 
-    assert "The domain indicator: example.com was not found in Unit 42 Intelligence" in result.readable_output
+    assert (
+        "### Unit 42 Intelligence results for Domain: example.com\n|Value|Verdict|\n|---|---|\n| example.com | Unknown |\n"
+        in result.readable_output
+    )
 
 
 def test_url_command_404(client, mocker):
@@ -317,7 +323,10 @@ def test_url_command_404(client, mocker):
     args = {"url": "http://example.com", "create_relationships": True}
     result = url_command(client, args)
 
-    assert "The URL indicator: http://example.com was not found in Unit 42 Intelligence" in result.readable_output
+    assert (
+        "### Unit 42 Intelligence results for URL: http://example.com\n|Value|Verdict|\n|---|---|\n| http://example.com | Unknown |\n"
+        in result.readable_output
+    )
 
 
 def test_file_command_404(client, mocker):
@@ -338,7 +347,10 @@ def test_file_command_404(client, mocker):
     args = {"file": test_hash, "create_relationships": True}
     result = file_command(client, args)
 
-    assert f"The file indicator: {test_hash} was not found in Unit 42 Intelligence" in result.readable_output
+    assert (
+        f"### Unit 42 Intelligence results for File: {test_hash}\n|Value|Verdict|\n|---|---|\n| {test_hash} | Unknown |\n"
+        in result.readable_output
+    )
 
 
 def test_client_initialization(mocker):
