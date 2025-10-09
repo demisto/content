@@ -3994,6 +3994,48 @@ def test_mirror_in_with_enrichment_enabled(mocker):
     assert all(actual_mirrored_notable_delta[k] == v for k, v in notable_delta.items())
 
 
+def test_format_splunk_note_for_xsoar_basic():
+    """
+    Given:
+        - A Splunk note with URL-encoded title and content.
+    When:
+        - Formatting the note for XSOAR.
+    Then:
+        - The title and content are URL-decoded and separated by a blank line, ending with a newline.
+    """
+    note = {"title": "My%20Title", "content": "Line%201%0ALine%202"}
+    expected = "My Title\n\nLine 1\nLine 2\n"
+    assert splunk.format_splunk_note_for_xsoar(note) == expected
+
+
+def test_format_splunk_note_for_xsoar_empty_content():
+    """
+    Given:
+        - A Splunk note with a URL-encoded title and empty content.
+    When:
+        - Formatting the note for XSOAR.
+    Then:
+        - The title is URL-decoded and followed by two newlines (current implementation behavior).
+    """
+    note = {"title": "Only%20Title", "content": ""}
+    expected = "Only Title\n\n"
+    assert splunk.format_splunk_note_for_xsoar(note) == expected
+
+
+def test_format_splunk_note_for_xsoar_missing_fields():
+    """
+    Given:
+        - A Splunk note missing both title and content.
+    When:
+        - Formatting the note for XSOAR.
+    Then:
+        - Returns two newlines as per current implementation.
+    """
+    note = {}
+    expected = "\n\n"
+    assert splunk.format_splunk_note_for_xsoar(note) == expected
+
+
 def test_user_mapping_used_cache(mocker):
     """
     Given:
