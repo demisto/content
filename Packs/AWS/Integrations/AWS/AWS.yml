@@ -290,6 +290,7 @@ script:
     - description: 'The prefix to be used for log object keys (e.g., "logs/"). Objects will be stored as: targetBucket/targetPrefix/sourceBucket/YYYY-MM-DD-HH-MM-SS-UniqueString.'
       name: target_prefix
       required: false
+
   - name: aws-s3-bucket-versioning-put
     description: Sets the versioning state of an existing bucket.
     arguments:
@@ -346,6 +347,64 @@ script:
       - 'Enabled'
       - 'Suspended'
       required: true
+
+  - name: aws-s3-bucket-versioning-enable-quick-action
+    description: Enables versioning on the S3 bucket to retain multiple versions of objects by running the aws s3api put-bucket-versioning command. Successful execution requires the s3:PutBucketVersioning permission.
+    prettyname: Enable S3 Versioning
+    hidden: true
+    quickaction: true
+    arguments:
+      - name: account_id
+        prettyname: Account ID
+        description: The AWS account ID.
+        required: true
+      - name: region
+        prettyname: Region
+        description: The AWS region.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+      - name: bucket
+        prettyname: Bucket Name
+        description: The name of the bucket for which to set the logging parameters.
+        required: true
+      - name: status
+        description: The versioning state of the bucket.
+        defaultValue: 'Enabled'
+        hidden: true
+
   - name: aws-s3-bucket-policy-put
     description: Applies an Amazon S3 bucket policy to an Outposts bucket.
     arguments:
@@ -837,7 +896,7 @@ script:
       description: "A JSON representation of the VPC configuration used by the cluster control plane. For example \"{'subnetIds': ['string'], 'securityGroupIds': ['string'], 'endpointPublicAccess': True, 'endpointPrivateAccess': True, 'publicAccessCidrs': ['string']}\"."
       required: false
 
-  - name: aws-eks-cluster-config-enable-control-plane-loggin-quick-action
+  - name: aws-eks-cluster-config-enable-control-plane-logging-quick-action
     description: Enables control plane logging for an EKS cluster by running the aws-eks-update-cluster-config command in your environment. Successful execution requires 'eks:UpdateClusterConfig' permission.
     prettyname: Enable Control Plane Logging
     hidden: true
@@ -892,6 +951,63 @@ script:
       - name: logging
         description: "Enable or disable exporting the Kubernetes control plane logs for your cluster to CloudWatch Logs. By default, cluster control plane logs aren’t exported to CloudWatch Logs. For example \"{'clusterLogging': [{'types': ['api', 'audit', 'authenticator', 'controllerManager', 'scheduler'], 'enabled': true}]}\"."
         defaultValue: '{"clusterLogging":[{"types":["api","audit","authenticator","controllerManager","scheduler"],"enabled":true}]}'
+        hidden: true
+
+  - name: aws-eks-cluster-config-disable-public-access-quick-action
+    description: Disables public access to the EKS cluster's API endpoint, making it only accessible from within the cluster's VPC by running the aws eks update-cluster-config command. Requires the eks:UpdateClusterConfig permission.
+    prettyname: Set EKS cluster to Private / Disable Public Access
+    hidden: true
+    quickaction: true
+    arguments:
+      - name: account_id
+        prettyname: Account ID
+        description: The AWS account ID.
+        required: true
+      - name: region
+        prettyname: Region
+        description: The AWS region.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+      - name: cluster_name
+        prettyname: EKS Cluster
+        description: 'The name of the Amazon EKS cluster to update.'
+        required: true
+      - name: resources_vpc_config
+        description: "A JSON representation of the VPC configuration used by the cluster control plane. For example \"{'subnetIds': ['string'], 'securityGroupIds': ['string'], 'endpointPublicAccess': True, 'endpointPrivateAccess': True, 'publicAccessCidrs': ['string']}\"."
+        defaultValue: "{'endpointPublicAccess': False, 'endpointPrivateAccess': True}"
         hidden: true
 
   - name: aws-eks-describe-cluster
@@ -1224,35 +1340,35 @@ script:
           - ap-southeast-5
           - ap-southeast-4
           - ap-south-1
-          - ap-northeast-3
-          - ap-northeast-2
-          - ap-southeast-1
-          - ap-southeast-2
-          - ap-southeast-7
-          - ap-northeast-1
-          - ca-central-1
-          - ca-west-1
-          - eu-central-1
-          - eu-west-1
-          - eu-west-2
-          - eu-south-1
-          - eu-west-3
-          - eu-south-2
-          - eu-north-1
-          - eu-central-2
-          - il-central-1
-          - mx-central-1
-          - me-south-1
-          - me-central-1
-          - sa-east-1
-      - name: db_cluster_identifier
-        prettyname: RDS Cluster
-        description: 'The DB cluster identifier for the modified cluster. This parameter is not case sensitive and is valid for Aurora DB and Multi-AZ DB cluster types. It must match the identifier of an existing DB cluster.'
-        required: true
-      - name: enable_iam_database_authentication
-        description: 'Weather to enable mapping of Amazon Web Services Identity and Access Management (IAM) accounts to database accounts. By default, mapping isn’t enabled.'
-        defaultValue: 'true'
-        hidden: true
+            - ap-northeast-3
+            - ap-northeast-2
+            - ap-southeast-1
+            - ap-southeast-2
+            - ap-southeast-7
+            - ap-northeast-1
+            - ca-central-1
+            - ca-west-1
+            - eu-central-1
+            - eu-west-1
+            - eu-west-2
+            - eu-south-1
+            - eu-west-3
+            - eu-south-2
+            - eu-north-1
+            - eu-central-2
+            - il-central-1
+            - mx-central-1
+            - me-south-1
+            - me-central-1
+            - sa-east-1
+        - name: db_cluster_identifier
+          prettyname: RDS Cluster
+          description: 'The DB cluster identifier for the modified cluster. This parameter is not case sensitive and is valid for Aurora DB and Multi-AZ DB cluster types. It must match the identifier of an existing DB cluster.'
+          required: true
+        - name: enable_iam_database_authentication
+          description: 'Weather to enable mapping of Amazon Web Services Identity and Access Management (IAM) accounts to database accounts. By default, mapping isn’t enabled.'
+          defaultValue: 'true'
+          hidden: true
 
   - name: aws-rds-db-cluster-snapshot-attribute-modify
     description: Modifies the attributes associated with a DB cluster snapshot.
@@ -1310,6 +1426,66 @@ script:
       description: 'A CSV list of DB cluster snapshot attributes to add to the attribute specified by AttributeName.'
       required: false
 
+  - name: aws-rds-db-cluster-snapshot-set-to-private-quick-action
+    description: Revokes public access to the RDS DB cluster snapshot, making it private by running the aws rds modify-db-cluster-snapshot-attribute command. Successful execution requires the rds:ModifyDBClusterSnapshotAttribute permission.
+    prettyname: Set RDS Cluster Snapshot to Private
+    hidden: true
+    quickaction: true
+    arguments:
+      - name: account_id
+        prettyname: Account ID
+        description: The AWS account ID.
+        required: true
+      - name: region
+        prettyname: Region
+        description: The AWS region.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+            - ap-northeast-3
+            - ap-northeast-2
+            - ap-southeast-1
+            - ap-southeast-2
+            - ap-southeast-7
+            - ap-northeast-1
+            - ca-central-1
+            - ca-west-1
+            - eu-central-1
+            - eu-west-1
+            - eu-west-2
+            - eu-south-1
+            - eu-west-3
+            - eu-south-2
+            - eu-north-1
+            - eu-central-2
+            - il-central-1
+            - mx-central-1
+            - me-south-1
+            - me-central-1
+            - sa-east-1
+          - name: db_cluster_snapshot_identifier
+            prettyname: RDS Cluster Snapshot ID
+            description: 'The identifier for the DB cluster snapshot to modify the attributes for.'
+            required: true
+          - name: attribute_name
+            description: 'The name of the DB cluster snapshot attribute to modify.'
+            defaultValue: 'restore'
+            hidden: true
+          - name: values_to_remove
+            description: 'A CSV list of DB cluster snapshot attributes to remove from the attribute specified by AttributeName. Default is all.'
+            defaultValue: 'all'
+            hidden: true
 
   - name: aws-rds-db-instance-modify
     description: "Modifies an Amazon RDS DB instance. Allows changing various settings of an existing DB instance, such as instance class, storage capacity, security groups, and other configuration parameters."
@@ -1709,6 +1885,128 @@ script:
         defaultValue: 'true'
         hidden: true
 
+  - name: aws-rds-db-instance-enable-auto-upgrade-quick-action
+    description: Enables automatic minor version upgrades for the RDS database instance by running the aws rds modify-db-instance command. Successful execution requires the rds:ModifyDBInstance permission.
+    prettyname: Enable RDS Auto Upgrade
+    hidden: true
+    quickaction: true
+    arguments:
+      - name: account_id
+        prettyname: Account ID
+        description: The AWS account ID.
+        required: true
+      - name: region
+        prettyname: Region
+        description: The AWS region.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+      - name: db_instance_identifier
+        prettyname: RDS Instance ID
+        description: 'The identifier of DB instance to modify. This value is stored as a lowercase string.'
+        required: true
+      - name: auto_minor_version_upgrade
+        description: 'Weather minor version upgrades are applied automatically to the DB instance during the maintenance window. An outage occurs when all the following conditions are met: The automatic upgrade is enabled for the maintenance window. A newer minor version is available. RDS has enabled automatic patching for the engine version. If any of the preceding conditions isn’t met, Amazon RDS applies the change as soon as possible and doesn’t cause an outage. For an RDS Custom DB instance, don’t enable this setting. Otherwise, the operation returns an error.'
+        defaultValue: 'true'
+        hidden: true
+      - name: apply_immediately
+        description: 'Weather the modifications in this request and any pending modifications are asynchronously applied as soon as possible, regardless of the PreferredMaintenanceWindow setting for the DB instance. By default, this parameter is disabled. If this parameter is disabled, changes to the DB instance are applied during the next maintenance window. Some parameter changes can cause an outage and are applied on the next call to RebootDBInstance , or the next failure reboot.'
+        defaultValue: 'true'
+        hidden: true
+
+  - name: aws-rds-db-instance-enable-multi-az-quick-action
+    description: Enables Multi-AZ deployment for the RDS database instance to enhance availability and durability by running the aws rds modify-db-instance command. Successful execution requires the rds:ModifyDBInstance permission.
+    prettyname: Enable Multi-AZ for RDS
+    hidden: true
+    quickaction: true
+    arguments:
+      - name: account_id
+        prettyname: Account ID
+        description: The AWS account ID.
+        required: true
+      - name: region
+        prettyname: Region
+        description: The AWS region.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+      - name: db_instance_identifier
+        prettyname: RDS Instance ID
+        description: 'The identifier of DB instance to modify. This value is stored as a lowercase string.'
+        required: true
+      - name: multi_az
+        description: 'Weather the DB instance is a Multi-AZ deployment. Changing this parameter doesn’t result in an outage. The change is applied during the next maintenance window unless the ApplyImmediately parameter is enabled for this request. This setting doesn’t apply to RDS Custom DB instances.'
+        defaultValue: 'true'
+        hidden: true
+      - name: apply_immediately
+        description: 'Weather the modifications in this request and any pending modifications are asynchronously applied as soon as possible, regardless of the PreferredMaintenanceWindow setting for the DB instance. By default, this parameter is disabled. If this parameter is disabled, changes to the DB instance are applied during the next maintenance window. Some parameter changes can cause an outage and are applied on the next call to RebootDBInstance , or the next failure reboot.'
+        defaultValue: 'true'
+        hidden: true
+
   - name: aws-rds-db-snapshot-attribute-modify
     description: 'Adds or removes permission for the specified AWS account ID to restore the specified DB snapshot.'
     arguments:
@@ -1767,6 +2065,67 @@ script:
       description: 'A list of DB snapshot attributes to remove from the attribute specified by AttributeName.'
       required: false
       isArray: true
+
+  - name: aws-rds-db-snapshot-attribute-set-snapshot-to-private-quick-action
+    description: Revokes public access to the RDS DB snapshot, making it private by running the aws rds modify-db-snapshot-attribute command. Successful execution requires the rds:ModifyDBSnapshotAttribute permission.
+    prettyname: Set RDS Snapshot to Private
+    hidden: true
+    quickaction: true
+    arguments:
+      - name: account_id
+        prettyname: Account ID
+        description: The AWS account ID.
+        required: true
+      - name: region
+        prettyname: Region
+        description: The AWS region.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+      - name: db_snapshot_identifier
+        prettyname: RDS Snapshot ID
+        description: 'The identifier for the DB snapshot to modify the attributes for.'
+        required: true
+      - name: attribute_name
+        description: 'The name of the DB snapshot attribute to modify.'
+        defaultValue: 'restore'
+        hidden: true
+      - name: values_to_remove
+        description: 'A list of DB snapshot attributes to remove from the attribute specified by AttributeName.'
+        defaultValue: 'all'
+        hidden: true
 
   - name: aws-ec2-security-group-ingress-revoke
     description: 'Revokes one or more ingress rules in a security group.'
@@ -4242,7 +4601,7 @@ script:
           - me-central-1
           - sa-east-1
       - name: bucket
-        prettyname: Bucket
+        prettyname: Bucket Name
         description: The name of the Amazon S3 bucket to retrieve public access block configuration from.
         required: true
       - name: publicly_accessible
