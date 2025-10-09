@@ -199,12 +199,19 @@ def prepare_next_run(set_id: str, event_type: str, last_run: dict, last_fetch: d
         event_type (str): The evnet type, (possible values: policy_audits, detailed_events).
         last_run (dict): The last run information should be updated with the last fetch information.
         last_fetch (dict): The last fetch information.
+
+    Note: Must be called even when zero events are fetched to properly update next_cursor.
+          Failing to update next_cursor may cause infinite fetch loops where stale next_cursor
+          values repeatedly return zero events.
     """
-    events = last_fetch.get("events")
+    events = last_fetch.get("events", [])
     next_cursor = last_fetch.get("next_cursor")
 
+    # Always update next_cursor to avoid infinite loops
     last_run[set_id][event_type]["next_cursor"] = next_cursor
-    if last_fetch.get("next_cursor") == "start":
+
+    # Only update from_date when pagination completes (next_cursor == "start") and events from recent fetch exist
+    if events and last_fetch.get("next_cursor") == "start":
         latest_event = max(events, key=lambda x: parser.parse(x.get("_time"), ignoretz=True))  # type: ignore
         from_date_next_fetch = prepare_datetime(latest_event.get("_time"), increase=True)  # type: ignore
         last_run[set_id][event_type]["from_date"] = from_date_next_fetch
@@ -373,8 +380,8 @@ def fetch_events(
                 )
 
     for set_id, policy_audits_last_run in get_events(client.get_policy_audits, "policy_audits", last_run, max_fetch).items():
+        prepare_next_run(set_id, "policy_audits", last_run, policy_audits_last_run)
         if policy_audits := policy_audits_last_run.get("events", []):
-            prepare_next_run(set_id, "policy_audits", last_run, policy_audits_last_run)
             demisto.debug(
                 f"[fetch_events][policy_audits] {set_id=} fetched={len(policy_audits)} "
                 f"next_cursor={last_run[set_id]['policy_audits'].get('next_cursor')} "
@@ -383,8 +390,8 @@ def fetch_events(
             events.extend(policy_audits)
 
     for set_id, detailed_events_last_run in get_events(client.get_events, "detailed_events", last_run, max_fetch).items():
+        prepare_next_run(set_id, "detailed_events", last_run, detailed_events_last_run)
         if detailed_events := detailed_events_last_run.get("events", []):
-            prepare_next_run(set_id, "detailed_events", last_run, detailed_events_last_run)
             demisto.debug(
                 f"[fetch_events][detailed_events] set_id={set_id} fetched={len(detailed_events)} "
                 f"next_cursor={last_run[set_id]['detailed_events'].get('next_cursor')} "

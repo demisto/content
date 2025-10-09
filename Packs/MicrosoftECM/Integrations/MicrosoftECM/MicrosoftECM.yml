@@ -1,6 +1,9 @@
 commonfields:
   id: Microsoft Endpoint Configuration Manager
   version: -1
+sectionOrder:
+  - Connect
+  - Collect
 name: Microsoft Endpoint Configuration Manager
 display: Microsoft Endpoint Configuration Manager
 category: IT Services
@@ -10,15 +13,18 @@ configuration:
   name: ComputerName
   type: 0
   required: true
+  section: Connect
 - display: Username (i.e., DOMAIN\username)
   name: credentials
   type: 9
   required: true
+  section: Connect
 - display: ECM Site Code
   name: SiteCode
   type: 0
   required: true
   additionalinfo: To get the site code in the Configuration Manager UI, go to Administration -> Site configuration -> Sites and look at the `Site Code` tab
+  section: Connect
 script:
   script: ''
   type: powershell
@@ -1096,7 +1102,7 @@ script:
       description: The unique identifier for this relationship.
       type: number
     description: Gets the relationships between a device and its primary users.
-  dockerimage: demisto/powershell-ubuntu:7.4.6.116823
+  dockerimage: demisto/powershell-ubuntu:7.5.0.4903976
 fromversion: 5.5.0
 tests:
 - No tests (auto formatted)
