@@ -1738,7 +1738,6 @@ script:
     - contextPath: Azure.CosmosDB.properties.writeLocations
       description: An array that contains the write locations enabled for the Cosmos DB account.
       type: List
-    
   - arguments:
     - name: resource_group_name
       type: string
@@ -1752,11 +1751,11 @@ script:
       prettyname: Postgres Server Name
     - name: configuration_name
       type: string
-      description: The configuration setting name.
+      description: Configuration setting name.
       defaultValue: log_retention_days
     - name: value
       type: string
-      description: Value of the configuration.
+      description: Configuration value.
       defaultValue: '4'
     description: "Sets the log retention period for the PostgreSQL server to 4 days. 'Microsoft.DBforPostgreSQL servers/configuration/*' permission is required."
     name: azure-postgres-config-set-log-retention-quick-action
@@ -1764,7 +1763,6 @@ script:
     hidden: true
     quickaction: true
     outputs: [] # have no outputs for these command by response
-
   - arguments:
     - name: resource_group_name
       type: String
@@ -1774,7 +1772,7 @@ script:
     - name: name
       type: String
       required: true
-      description: Name of the Web App.
+      description: Name of the Function App.
       prettyname: AZ Function Name
     description: "Assigns a system-assigned managed identity to the Function App. This allows the app to securely access other Azure services while removing the need to manage sensitive credentials and the risk of exposing them. 'Microsoft.Web/sites/Write' permission is required."
     name: azure-webapp-update-assign-managed-identity-quick-action
@@ -1983,13 +1981,12 @@ script:
     - contextPath: Azure.WebApp.properties.siteConfig.requestTracingEnabled
       description: Whether request tracing is enabled.
       type: Boolean
-  
   - arguments:
     - description: The resource group name.
       name: resource_group_name
       required: true
       prettyname: Resource Group
-    - description: The name of the storage account.
+    - description: Name of the storage account.
       name: account_name
       required: true
       prettyname: Storage Account
@@ -2001,7 +1998,7 @@ script:
       - 'false'
       type: bool
       defaultValue: 'true'
-    - description: The number of days the deleted item should be retained.
+    - description: Number of days to retain deleted items.
       name: delete_rentention_policy_days
       defaultValue: '30'
       type: number
@@ -2039,7 +2036,6 @@ script:
     - contextPath: Azure.StorageAccountBlobServiceProperties.sku.tier
       description: The SKU tier.
       type: String
-  
   - arguments:
     - name: resource_group_name
       type: string
@@ -2053,11 +2049,11 @@ script:
       description: Name of the PostgreSQL server.
     - name: configuration_name
       type: string
-      description: The configuration setting name.
+      description: Configuration setting name.
       defaultValue: log_duration
     - name: value
       type: string
-      description: Value of the configuration.
+      description: Configuration value.
       defaultValue: 'on'
     description: "Enables logging of statement execution duration on the PostgreSQL server to help with performance analysis. 'Microsoft.DBforPostgreSQL servers/configuration/*' permission is required."
     name: azure-postgres-enable-statement-logging-quick-action
@@ -2065,7 +2061,6 @@ script:
     hidden: true
     quickaction: true
     outputs: [] # have no outputs for these command by response
-  
   - arguments:
     - name: resource_group_name
       type: string
@@ -2076,7 +2071,7 @@ script:
       prettyname: VM Disk
       type: string
       required: true
-      description: The name of the managed disk that is being created. Supported characters for the name are a-z, A-Z, 0-9, _ and -. The maximum name length is 80 characters.
+      description: Name of the managed disk. Supported characters for the name are a-z, A-Z, 0-9, _ and -. The maximum name length is 80 characters.
     - name: public_network_access
       type: string
       auto: PREDEFINED
@@ -2202,7 +2197,6 @@ script:
     - contextPath: Azure.Disk.properties.lastOwnershipUpdateTime
       description: The last time ownership of the disk was updated.
       type: String
-  
   - arguments:
     - name: resource_group_name
       type: string
@@ -2213,7 +2207,7 @@ script:
       prettyname: VM Disk
       type: string
       required: true
-      description: The name of the managed disk that is being created. Supported characters for the name are a-z, A-Z, 0-9, _ and -. The maximum name length is 80 characters.
+      description: Name of the managed disk. Supported characters for the name are a-z, A-Z, 0-9, _ and -. The maximum name length is 80 characters.
     - name: data_access_auth_mode
       type: string
       auto: PREDEFINED
@@ -2329,9 +2323,8 @@ script:
     - contextPath: Azure.Disk.properties.lastOwnershipUpdateTime
       description: The last time ownership of the disk was updated.
       type: String
-  
   - arguments:
-    - name: resource_group_name # not sure
+    - name: resource_group_name
       type: String 
       required: true
       description: The resource group name.
@@ -2339,7 +2332,7 @@ script:
     - name: registry_name
       type: String
       required: true
-      description: The name of the container registry.
+      description: Name of the container registry.
       prettyname: Azure Container Registry
     - name: allow_exports
       description: Whether artifacts can be exported.
@@ -2431,7 +2424,6 @@ script:
     - contextPath: Azure.ACR.type
       description: The type of the resource.
       type: String
-  
   - arguments:
     - name: resource_group_name
       type: String
@@ -2525,7 +2517,6 @@ script:
     - contextPath: Azure.ACR.type
       description: The type of the resource.
       type: String
-  
   - arguments:
     - name: resource_group_name
       type: String
@@ -2620,13 +2611,12 @@ script:
     - contextPath: Azure.ACR.type
       description: The type of the resource.
       type: String
-
   isfetch: false
   runonce: false
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/crypto:1.0.0.3539024
+  dockerimage: demisto/crypto:1.0.0.4834757
 fromversion: 8.11.0
 isCloudProviderIntegration: true
 supportsquickactions: true
