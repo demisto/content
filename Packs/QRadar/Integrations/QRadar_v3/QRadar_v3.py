@@ -442,7 +442,7 @@ class Client(BaseClient):
         username = credentials.get("identifier")
         password = credentials.get("password")
         if username == API_USERNAME:
-            auth_type = "Token"
+            auth_type = "API Key"
             self.base_headers = {"Version": api_version, "SEC": password}
             auth = None
         else:
@@ -454,10 +454,6 @@ class Client(BaseClient):
         self.timeout = timeout  # type: ignore[assignment]
         self.password = password
         self.server = server
-        self._verify = verify
-        self._proxy = proxy
-        self._api_version = api_version
-        self._credentials = credentials
         demisto.debug(f"QRadar client instance initialized with: {server=}, {verify=}, {proxy=}, {api_version=}, {auth_type=}.")
 
     def http_request(
