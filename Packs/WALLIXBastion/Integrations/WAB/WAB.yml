@@ -9278,5 +9278,5 @@ script:
       contextPath: WAB.version_get.wab_complete_version
       description: The WALLIX Bastion complete version, with hotfix level and build date.
   isfetch: false
-sectionOrder:
+sectionorder:
 - Connect

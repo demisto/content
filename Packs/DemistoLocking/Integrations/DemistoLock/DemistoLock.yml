@@ -1,7 +1,7 @@
 commonfields:
   id: Demisto Lock
   version: -1
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 name: Demisto Lock
