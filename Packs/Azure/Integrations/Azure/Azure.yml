@@ -567,6 +567,7 @@ script:
     - auto: PREDEFINED
       name: http20_enabled
       type: bool
+      required: false
       description: Configures a web site to allow clients to connect over http2.0.
       predefined:
       - 'true'
