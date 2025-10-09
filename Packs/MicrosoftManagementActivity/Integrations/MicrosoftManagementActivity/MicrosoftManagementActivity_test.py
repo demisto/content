@@ -381,9 +381,7 @@ def create_client(timeout: int = 15):
 
 @pytest.mark.parametrize(
     "last_run, first_fetch_delta, expected_start_time_in_minutes_from_now, expected_end_time_in_minutes_from_now",
-    [({}, TIME_12_HOURS_AGO, 720, 0),
-     ({}, TIME_48_HOURS_AGO, 2880, 1440),
-     ({"last_fetch": TIME_6_HOURS_AGO_STRING}, 48, 360, 0)],
+    [({}, TIME_12_HOURS_AGO, 720, 0), ({}, TIME_48_HOURS_AGO, 2880, 1440), ({"last_fetch": TIME_6_HOURS_AGO_STRING}, 48, 360, 0)],
 )
 def test_fetch_times_range(
     last_run, first_fetch_delta, expected_start_time_in_minutes_from_now, expected_end_time_in_minutes_from_now
