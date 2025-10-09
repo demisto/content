@@ -460,21 +460,6 @@ class Client(BaseClient):
         self._credentials = credentials
         demisto.debug(f"QRadar client instance initialized with: {server=}, {verify=}, {proxy=}, {api_version=}, {auth_type=}.")
 
-    def create_copy(self):
-        """
-        Creates a new instance of the Client with the same configuration.
-        Useful for multi-threading to ensure each thread has its own client since the client requests.Session is not thread-safe.
-        """
-        demisto.debug("Creating a replica QRadar client instance.")
-        return Client(
-            server=self.server,
-            verify=self._verify,
-            proxy=self._proxy,
-            api_version=self._api_version,
-            credentials=self._credentials,
-            timeout=self.timeout,
-        )
-
     def http_request(
         self,
         method: str,
@@ -2139,7 +2124,7 @@ def is_reset_triggered(ctx: dict | None = None, version: Any = None) -> bool:
         ctx, version = get_integration_context_with_version()
 
     # RESET_KEY must be True if 'qradar-reset-last-run' command was called
-    if ctx and ctx.get(RESET_KEY) is True:
+    if isinstance(ctx, dict) and ctx.get(RESET_KEY) is True:
         print_debug_msg("Reset fetch-incidents.")
         demisto.setLastRun({LAST_FETCH_KEY: 0})
 
@@ -2475,7 +2460,7 @@ def enrich_offense_with_events(client: Client, offense: dict, fetch_mode: FetchM
     indexed when performing the search, and QRadar will return less events than expected.
     Retry mechanism here meant to avoid such cases as much as possible
     Args:
-        client (Client): Client to perform the API calls. A copy is created to ensure thread safety.
+        client (Client): Client to perform the API calls.
         offense (Dict): Offense to enrich with events.
         fetch_mode (str): Which enrichment mode was requested.
                           Can be 'Fetch With All Events', 'Fetch Correlation Events Only'
@@ -2485,7 +2470,6 @@ def enrich_offense_with_events(client: Client, offense: dict, fetch_mode: FetchM
     Returns:
         (Dict): Enriched offense with events.
     """
-    _client = client.create_copy()
     offense_id = str(offense["id"])
     events_count = offense.get("event_count", 0)
     events: List[dict] = []
@@ -2493,15 +2477,15 @@ def enrich_offense_with_events(client: Client, offense: dict, fetch_mode: FetchM
     is_success = True
     for retry in range(EVENTS_SEARCH_TRIES):
         start_time = time.time()
-        search_id = create_search_with_retry(_client, fetch_mode, offense, events_columns, events_limit)
+        search_id = create_search_with_retry(client, fetch_mode, offense, events_columns, events_limit)
         if search_id == QueryStatus.ERROR.value:
             failure_message = "Search for events was failed."
         else:
-            events, failure_message = poll_offense_events_with_retry(_client, search_id, int(offense_id))
+            events, failure_message = poll_offense_events_with_retry(client, search_id, int(offense_id))
         events_fetched = get_num_events(events)
         offense["events_fetched"] = events_fetched
         offense["events"] = events
-        if is_all_events_fetched(_client, fetch_mode, offense_id, events_limit, events):
+        if is_all_events_fetched(client, fetch_mode, offense_id, events_limit, events):
             break
         print_debug_msg(
             f"Not enough events were fetched for offense {offense_id}. Retrying in {FAILURE_SLEEP} seconds."
@@ -4050,7 +4034,7 @@ def qradar_reset_last_run_command() -> str:
         (str): 'fetch-incidents was reset successfully'.
     """
     # Set RESET_KEY to True to identify whether reset was triggered during long running command execution
-    partial_changes = {RESET_KEY: True}  
+    partial_changes = {RESET_KEY: True}
     safely_update_context_data_partial(partial_changes)
 
     return "fetch-incidents was reset successfully."
