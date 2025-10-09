@@ -43,6 +43,24 @@ SERVER_PROD_URL = "https://account.docusign.com"
 
 # -------------------- Utilities --------------------
 
+
+def remove_duplicate_users(fetched_users: list, ids_to_remove: list, time_to_remove: str) -> list:
+    """ remove users from fetched_users if their id appears in ids_to_remove and their _time field equal to time_to_remove"""
+    if not fetched_users or not ids_to_remove:
+        return fetched_users
+    
+    ids_to_remove = set(ids_to_remove)
+    filtered_users = []
+    for user in fetched_users:
+        if not (user.get("id") in ids_to_remove and user.get("_time") == time_to_remove):
+            filtered_users.append(user)
+
+    if not filtered_users:
+        demisto.debug(f"{LOG_PREFIX}No users available for this request after removing duplicates.")
+
+    return filtered_users
+            
+    
 def get_env_from_server_url(server_url: str) -> str: 
     return "dev" if "account-d.docusign.com" in server_url else "prod"
 
@@ -96,7 +114,7 @@ class AuthClient(BaseClient):
         token = jwt.encode(payload, self.private_key_pem, algorithm="RS256", headers=headers)
         return token
 
-    def exchange_jwt_to_access_token(self, jwt: str) -> tuple[str, dt.datetime, str]:
+    def exchange_jwt_to_access_token(self, jwt: str) -> tuple[str, str, str]:
         """Exchange JWT for an access token."""
 
         url = urljoin(self.server_url, "/oauth/token")
@@ -116,7 +134,7 @@ class AuthClient(BaseClient):
             demisto.error(f"{LOG_PREFIX}: Token exchange failed, response missing access_token or expires_in\n{resp}")
             raise DemistoException(f"{LOG_PREFIX}: Token exchange failed, response missing access_token or expires_in\n{resp}")
         
-        expired_at = _utcnow() + dt.timedelta(seconds=expires_in_seconds)
+        expired_at = (_utcnow() + dt.timedelta(seconds=expires_in_seconds)).strftime("%Y-%m-%dT%H:%M:%SZ")
         return access_token, expired_at, scope
 
     def get_user_info(self, access_token: str) -> str:
@@ -152,17 +170,17 @@ class AuthClient(BaseClient):
         demisto.debug(f"{LOG_PREFIX}: /oauth/userinfo missing configuration account id: {account_id}.")
         raise DemistoException(f"{LOG_PREFIX}: /oauth/userinfo missing configuration account id: {account_id}.")
 
-    def get_token(self, scopes: list[str]) -> tuple[str, dt.datetime, str]:
+    def get_token(self, scopes: list[str]) -> tuple[str, str, str]:
         """Exchange JWT for access token using DocuSign OAuth flow."""
         scope_str = " ".join(scopes)
         jwt_token = self.get_jwt(scope_str)
         access_token, expired_at, scope = self.exchange_jwt_to_access_token(jwt_token)
         return access_token, expired_at, scope
 
-def is_access_token_expired(expired_at: dt.datetime) -> bool:
+def is_access_token_expired(expired_at: str) -> bool:
     """Check if access token is expired."""
 
-    is_not_expired = expired_at > _utcnow() + dt.timedelta(minutes=15)
+    is_not_expired = expired_at > (_utcnow() + dt.timedelta(minutes=15)).strftime("%Y-%m-%dT%H:%M:%SZ")
     if is_not_expired:
         demisto.debug(f"{LOG_PREFIX}using existing Access token from integration context (expires at {expired_at}).")
         return False
@@ -398,8 +416,9 @@ def fetch_audit_user_data(last_run: dict, access_token: str, auth_client: AuthCl
         base_uri = auth_client.get_base_uri(access_token, user_data_client.account_id) # TODO: I think I cant move the base_uri to the context, it is permanent
         users, latest_modified = get_user_details(users, base_uri, access_token, user_data_client)
 
-        # Persist the latest modifiedDate for next fetch
-        last_run["latest_modifiedDate"] = latest_modified # TODO: check what is it the correct format to save for step 1?
+        # Persist the latest modifiedDate users for next fetch
+        last_run["latest_modifiedDate"] = latest_modified
+        
 
     except Exception as e:
         demisto.debug(f"{LOG_PREFIX}Exception during fetch user data.\n{e!s}")
@@ -421,6 +440,7 @@ def get_user_details(users: list, base_uri: str, access_token: str, client: User
     '''
     start_time = time.perf_counter()
     latest_modified_dt = None
+    
     for user in users:
         user_data = client.get_user_detail(base_uri, user.get("id"), access_token)
 
@@ -437,10 +457,13 @@ def get_user_details(users: list, base_uri: str, access_token: str, client: User
 
             except Exception as ex:
                 demisto.debug(f"{LOG_PREFIX}Failed to parse modifiedDate '{modified_date}': {ex!s}")
-    
+   
+    latest_modified_iso = latest_modified_dt.strftime("%Y-%m-%dT%H:%M:%SZ")
+
     end_time = time.perf_counter()
     demisto.debug(f"{LOG_PREFIX} get_user_details took {end_time - start_time}s, retrieved modifiedDate from {len(users)} users")
-    return users, latest_modified_dt.strftime("%Y-%m-%dT%H:%M:%SZ")
+    
+    return users, latest_modified_iso
 
 
 def get_user_data(last_run: dict, limit: int, users_per_page: int, client: UserDataClient, access_token: str) -> tuple[list, dict]:
@@ -462,7 +485,7 @@ def get_user_data(last_run: dict, limit: int, users_per_page: int, client: UserD
             request_params = {
                 "start": 0,
                 "take": users_per_page, # api limit - max 250
-                "last_modified_since": last_run.get("last_modified_since") or one_minute_ago
+                "last_modified_since": last_run.get("latest_modifiedDate") or one_minute_ago
             }
             demisto.debug(f"{LOG_PREFIX}Starting new fetch range for Audit Users data.")
 
