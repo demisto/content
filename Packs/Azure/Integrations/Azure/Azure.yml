@@ -1759,7 +1759,7 @@ script:
       defaultValue: '{"jitNetworkAccessMonitoringEffect":{"value":"AuditIfNotExists"}}'
       hidden: true
     name: azure-policy-assignment-create-quick-action
-    description: "Set system updates, security configuration, endpoint protection, disk encryption, network security groups, web application firewall, next generation firewall, vulnerability assessment, storage encryption, jit network access, adaptive application controls, sql auditing and sql encryption to 'AuditIfNotExists'. 'Microsoft.Authorization/policyAssignments/*' permission is required."
+    description: "Applies Microsoft Defender for Cloud built-in recommendations by setting the following to 'AuditIfNotExists': system updates, security configuration, endpoint protection, disk encryption, network security groups, web application firewall, next-generation firewall, vulnerability assessment, storage encryption, JIT network access, adaptive application controls, SQL auditing, and SQL encryption. Requires 'Microsoft.Authorization/policyAssignments/*' permission."
     prettyname: Apply MS Defender Policy
     quickaction: true
     hidden: true
@@ -1834,7 +1834,7 @@ script:
       - Allow
       - Deny
       defaultValue: Deny
-    description: "Updates the access setting of the network security group (NSG) rule to Deny. 'Microsoft.Network/networkSecurityGroups/securityRules/*' permission is required."
+    description: "Updates an NSG rule's access setting to . Requires 'Microsoft.Network/networkSecurityGroups/securityRules/*' permission."
     name: azure-nsg-security-rule-update-quick-action
     prettyname: Update NSG to Block Traffic
     quickaction: true
@@ -1896,7 +1896,7 @@ script:
       required: true
       description: Name of the Web App.
       prettyname: AZ Web App
-    description: "Assigns a system-assigned managed identity to the Web App. This allows the app to securely access other Azure services while removing the need to manage sensitive credentials and the risk of exposing them. 'This allows the app to securely access other Azure services while removing the need to manage sensitive credentials and the risk of exposing them. 'Microsoft.Web/sites/{app_name}/config/*' permission is required."
+    description: "Assigns a system-assigned managed identity to the web app, enabling secure access to other Azure services without managing credentials. Requires 'Microsoft.Web/sites/{app_name}/config/*' permission."
     name: azure-webapp-assign-managed-identity-quick-action
     prettyname: Assign Managed Identity to Web App
     quickaction: true
@@ -2122,7 +2122,7 @@ script:
       - Metrics
       - None
       defaultValue: AzureServices
-    description: "Configures the storage account's network rules to allow traffic from Azure services. 'Microsoft.Storage/storageAccounts/*' permission is required."
+    description: "Configures the storage account's network rules to allow traffic from trusted Azure services. Requires 'Microsoft.Storage/storageAccounts/*' permission."
     name: azure-storage-allow-access-quick-action
     prettyname: Allow Access by Trusted Services
     quickaction: true
@@ -2243,7 +2243,7 @@ script:
       - 'true'
       - 'false'
       defaultValue: 'true'
-    description: "Enables the HTTP/2.0 protocol for the WebApp. 'Microsoft.Web/sites/{app_name}/config/*' permission is required."
+    description: "Enables HTTP 2.0 for the web app. Requires 'Microsoft.Web/sites/{app_name}/config/*' permission."
     name: azure-webapp-set-http-version2.0-quick-action
     prettyname: Set Webapp HTTP Version to 2.0
     quickaction: true
@@ -2356,7 +2356,7 @@ script:
       - 'true'
       - 'false'
       defaultValue: 'true'
-    description: "Enables the app service authentication for the Web App. 'Microsoft.Web/sites/{app_name}/config/authsettings/*' permission is required."
+    description: "Enables App Service Authentication for the web app. Requires 'Microsoft.Web/sites/{app_name}/config/authsettings/*' permission."
     name: azure-webapp-auth-update-quick-action
     prettyname: Enable Azure App Service Auth
     quickaction: true
@@ -2474,7 +2474,7 @@ script:
       - 'true'
       - 'false'
       defaultValue: 'false'
-    description: "Disables cross-tenant object replication for the storage account to prevent data from being copied to other tenants. 'Microsoft.Storage/storageAccounts/*' permission is required."
+    description: "Disables cross-tenant object replication for the storage account, preventing data from being copied to other Azure AD tenants. Requires 'Microsoft.Storage/storageAccounts/*' permission."
     name: azure-disable-storage-account-cross-tenant-replication-quick-action
     prettyname: Disable Storage Account Cross Tenant Replication
     quickaction: true
@@ -2573,7 +2573,7 @@ script:
       defaultValue: 'true'
     name: azure-set-function-app-http-version2-0-quick-action
     prettyname: Set Function App HTTP Version to 2.0
-    description: "Enables the HTTP/2.0 protocol for the FunctionApp. 'Microsoft.Web/sites/config/Write' permission required."
+    description: "Enables HTTP 2.0 for the Function App. Requires 'Microsoft.Web/sites/config/Write' permission."
     quickaction: true
     hidden: true
     outputs:
@@ -2663,8 +2663,7 @@ script:
       type: String
     - contextPath: Azure.WebAppConfig.properties.apiManagementConfig.id
       description: Azure API management integration ID.
-      type: String
-      
+      type: String 
   - arguments:
     - description: The resource group name.
       name: resource_group_name
@@ -2682,7 +2681,7 @@ script:
       - 'false'
       defaultValue: 'false'
     name: azure-storage-disable-public-access-quick-action
-    description: "Disables public access to blobs for the storage account, effectively disabling anonymous/public read access to container and blobs within an Azure storage account. 'Microsoft.Storage/storageAccounts/write' permission is required."
+    description: "Disables public access to blobs for the storage account, blocking anonymous/public read access to containers and blobs. Requires 'Microsoft.Storage/storageAccounts/write' permission."
     prettyname: Disable Public Access / Block Public Access
     hidden: true
     quickaction: true
@@ -2758,7 +2757,6 @@ script:
     - contextPath: Azure.StorageAccount.type
       description: The storage account type.
       type: String
-
   - arguments:
     - name: resource_group_name
       type: string
@@ -2779,7 +2777,7 @@ script:
       - 'true'
       - 'false'
       defaultValue: 'false'
-    description: "Disables remote debugging for the Web App to prevent unauthorized access to the application code.  'Microsoft.Web/sites/config/Write' permission is required."
+    description: "Disables remote debugging for the web app to reduce the risk of unauthorized code access. Requires 'Microsoft.Web/sites/config/Write' permission."
     name: azure-webapp-disable-remote-debugging-quick-action
     prettyname: Disable Remote Debugging on Azure App
     hidden: true
