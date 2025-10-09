@@ -2097,7 +2097,7 @@ def main():
             "azure-postgres-enable-session-connection-logging-quick-action": set_postgres_config_command,
             "azure-network-disable-storage-account-access-quick-action": storage_account_update_command,
             "azure-monitor-log-retention-period-quick-action": monitor_log_profile_update_command,
-            "azure-set-storage-account-https-only-quick-action" : storage_account_update_command,
+            "azure-set-storage-account-https-only-quick-action": storage_account_update_command,
             "azure-postgres-enable-ssl-quick-action": postgres_server_update_command,
         }
         if command == "test-module" and connector_id:

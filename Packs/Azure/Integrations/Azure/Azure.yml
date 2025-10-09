@@ -1737,7 +1737,6 @@ script:
     - contextPath: Azure.CosmosDB.properties.writeLocations
       description: An array that contains the write locations enabled for the Cosmos DB account.
       type: List
-  
   - arguments:
     - name: resource_group_name
       type: string
@@ -1755,15 +1754,14 @@ script:
       defaultValue: 'log_checkpoints'
     - name: value
       type: string
-      description: Value of the configuration.
+      description: Configuration value.
       defaultValue: 'on'
-    description: "Enables checkpoint logging on the PostgreSQL server.  'Microsoft.DBforPostgreSQL servers/configuration/*' permission is required."
+    description: "Enables checkpoint logging on the PostgreSQL server. Requires 'Microsoft.DBforPostgreSQL/servers/configuration/*' permission."
     name: azure-postgres-enable-checkpoint-logging-quick-action
     prettyname: Enable PostgreSQL Checkpoint Logging
     hidden: true
     quickaction: true
     outputs: [] # have no outputs for these command by response
-
   - arguments:
     - name: resource_group_name
       type: string
@@ -1778,14 +1776,14 @@ script:
     - name: min_tls_version
       type: str
       auto: PREDEFINED
-      description: Configures the minimum version of TLS required for SSL requests.
+      description: Minimum TLS version required for SSL requests.
       predefined:
       - '1.0'
       - '1.1'
       - '1.2'
       - '1.3'
       defaultValue: '1.2'
-    description: "Sets the minimum accepted TLS version to 1.2 for the Web App to enhance security. 'Microsoft.Web/sites/{app_name}/config/*' permission is required."
+    description: "Sets the web app's minimum accepted TLS version to 1.2 to enhance security. Requires 'Microsoft.Web/sites/{app_name}/config/*' permission."
     name: azure-webapp-set-min-tls-version-quick-action
     prettyname: Set Web App Min TLS Version
     hidden: true
@@ -1878,7 +1876,6 @@ script:
     - contextPath: Azure.WebAppConfig.properties.apiManagementConfig.id
       description: Azure API management integration ID.
       type: String
-
   - arguments:
     - name: resource_group_name
       type: string
@@ -1893,14 +1890,14 @@ script:
     - name: min_tls_version
       type: str
       auto: PREDEFINED
-      description: Configures the minimum version of TLS required for SSL requests.
+      description: Minimum TLS version required for SSL requests.
       predefined:
       - '1.0'
       - '1.1'
       - '1.2'
       - '1.3'
       defaultValue: '1.2'
-    description: 
+    description: "Sets the Function App's minimum accepted TLS version to 1.2 to enhance security. Requires 'Microsoft.Web/sites/config/Write' permission."
     name: azure-function-app-set-min-tls-version-quick-action
     prettyname: Set Function App Min TLS Version
     hidden: true
@@ -1993,7 +1990,6 @@ script:
     - contextPath: Azure.WebAppConfig.properties.apiManagementConfig.id
       description: Azure API management integration ID.
       type: String
-
   - arguments:
     - name: resource_group_name
       type: string
@@ -2007,19 +2003,18 @@ script:
       prettyname: MySQL Server
     - name: configuration_name
       type: string
-      description: The name of the server configuration.
+      description: Server configuration name.
       defaultValue: 'require_secure_transport'
     - name: value
       type: string
-      description: Value of the configuration.
+      description: Configuration value.
       defaultValue: 'on'
-    description: "Enforces secure transport (SSL/TLS) for connections to the MySQL Flexible Server. 'Microsoft.DBforMySQL/flexibleServers/configurations/write' permission required."
+    description: "Enforces secure transport (SSL/TLS) for connections to the MySQL Flexible Server. Requires 'Microsoft.DBforMySQL/flexibleServers/configurations/write' permission."
     name: azure-mysql-set-secure-transport-quick-action
     prettyname: Set Secure Transport for MySQL
     hidden: true
     quickaction: true
     outputs: [] # No outputs are returned in response
-  
   - arguments:
     - name: resource_group_name
       type: string
@@ -2034,18 +2029,17 @@ script:
     - name: configuration_name
       type: string
       defaultValue: log_disconnections
-      description: The configuration setting name.
+      description: Configuration setting name.
     - name: value
       type: string
-      description: Value of the configuration.
+      description: Configuration value.
       defaultValue: 'on'
-    description: 
+    description: "Enables logging of client disconnections on the PostgreSQL server. Requires 'Microsoft.DBforPostgreSQL/servers/configuration/*' permission."
     name: azure-postgres-enable-disconnection-logging-quick-action
     prettyname: Enable Disconnection Logging on PostgreSQL
     hidden: true
     quickaction: true
     outputs: [] # have no outputs for these command by response
-
   - arguments:
     - name: resource_group_name
       type: string
@@ -2059,36 +2053,35 @@ script:
       prettyname: Postgres Server Name
     - name: configuration_name
       type: string
-      description: The configuration setting name.
+      description: Configuration setting name.
       defaultValue: log_connections
     - name: value
       type: string
-      description: Value of the configuration.
+      description: Configuration value.
       defaultValue: 'on'
-    description: "Enables logging of client connections on the PostgreSQL server. 'Microsoft.DBforPostgreSQL servers/configuration/*' permission is required."
+    description: "Enables logging of client connections on the PostgreSQL server. Requires 'Microsoft.DBforPostgreSQL/servers/configuration/*' permission."
     name: azure-postgres-enable-session-connection-logging-quick-action
     prettyname: Enable Session Connection Logging on PostgreSQL
     hidden: true
     quickaction: true
     outputs: [] # have no outputs for these command by response
-
   - arguments:
     - description: The resource group name.
       name: resource_group_name
       required: true
       prettyname: Resource Group
-    - description: The name of the storage account.
+    - description: Name of the storage account.
       name: account_name
       required: true
       prettyname: Storage Account
     - auto: PREDEFINED
-      description: Specifies the default action of allow or deny when no other rules match.
+      description: Default action when no other network rule matches.
       name: network_ruleset_default_action
       predefined:
       - Allow
       - Deny
       defaultValue: Deny
-    description: "Denies all network traffic to the storage account by default.  Only traffic from explicitly allowed IP addresses, subnets, or trusted Azure services will be able to access the storage account. 'Microsoft.Storage/storageAccounts/*' permission is required."
+    description: "Sets the storage account’s default network action to Deny. Only explicitly allowed IPs, subnets, or trusted Azure services will have access. Requires 'Microsoft.Storage/storageAccounts/*' permission."
     name: azure-network-disable-storage-account-access-quick-action
     prettyname: Disable Network Access to Storage Account
     hidden: true
@@ -2165,10 +2158,9 @@ script:
     - contextPath: Azure.StorageAccount.type
       description: The storage account type.
       type: String
-
   - arguments:
     - name: log_profile_name
-      description: The name of the log profile to update.
+      description: Name of the log profile to update.
       required: true
       type: String
       prettyname: Resource
@@ -2187,7 +2179,7 @@ script:
       - 'true'
       - 'false'
       defaultValue: 'true'
-    description: "Sets the log profile's retention policy to 365 days and enables it for all supported locations. 'Microsoft.Insights/LogProfiles/[Read, Write, Delete]' permission is required."
+    description: "Sets the log profile’s retention policy to 365 days and enables it for all supported locations. Requires 'Microsoft.Insights/logProfiles/*' permission."
     name: azure-monitor-log-retention-period-quick-action
     prettyname: Update Azure Monitor Log Retention Period
     hidden: true
@@ -2226,20 +2218,19 @@ script:
     - contextPath: Azure.LogProfile.properties.retentionPolicy.days
       type: Number
       description: The number of days for the retention policy.  
-
   - arguments:
-    - description: The name of the storage account.
-      name: account_name # Not sure
+    - description: Name of the storage account.
+      name: account_name
       required: true 
       prettyname: Storage Account
     - auto: PREDEFINED
-      description: Allows https traffic only to storage service if sets to true.
+      description: Whether to allow only HTTPS traffic to the storage account.
       name: supports_https_traffic_only
       predefined:
       - 'true'
       - 'false'
       defaultValue: 'true'
-    description: "Enforces HTTPS-only traffic for the storage account, rejecting any requests made over HTTP. 'Microsoft.Storage/storageAccounts/*' permission is required."
+    description: "Enforces HTTPS-only traffic for the storage account, rejecting any requests made over HTTP. Requires 'Microsoft.Storage/storageAccounts/*' permission."
     name: azure-set-storage-account-https-only-quick-action
     prettyname: Set Storage Account to HTTPS only
     hidden: true
@@ -2316,7 +2307,6 @@ script:
     - contextPath: Azure.StorageAccount.type
       description: The storage account type.
       type: String 
-
   - arguments:
     - name: resource_group_name
       type: String
@@ -2335,14 +2325,12 @@ script:
       - Disabled
       - Enabled
       defaultValue: Enabled
-    description: "Enforces SSL/TLS connections for the PostgreSQL server to reject unencrypted traffic.  'Microsoft.DBforPostgreSQL servers/configuration/*' permission is required."
+    description: "Enforces SSL/TLS connections for the PostgreSQL server, rejecting unencrypted traffic. Requires 'Microsoft.DBforPostgreSQL/servers/configuration/*' permission."
     name: azure-postgres-server-enable-ssl-quick-action
     prettyname: Enable SSL on Postgres Server
     hidden: true
     quickaction: true
     outputs: [] # No outputs are returned in the response.
-
-
   isfetch: false
   runonce: false
   script: '-'
