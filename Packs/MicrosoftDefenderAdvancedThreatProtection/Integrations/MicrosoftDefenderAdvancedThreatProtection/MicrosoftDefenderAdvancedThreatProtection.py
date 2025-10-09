@@ -3552,7 +3552,6 @@ def stop_and_quarantine_file_command_polling(args: dict, client: MsClient):
     """
 
     demisto.debug("Stop and Quarantine File command polling started")
-
     headers = ["ID", "Type", "Requestor", "RequestorComment", "Status", "MachineID", "ComputerDNSName"]
 
     def _initial_call():
@@ -3619,22 +3618,12 @@ def stop_and_quarantine_file_command_polling(args: dict, client: MsClient):
 
         demisto.debug(f"Initiated {len(action_ids_to_poll)} quarantine actions. Polling for status...")
         demisto.debug(f"args: {args}")
-
-        demisto.debug(f"Polling arg: {argToBoolean(args.get('polling', False))}")
-
-        if not argToBoolean(args.get("polling", False)):
-            demisto.debug("Polling is disabled.")
-            continue_to_poll = False
-        elif len(action_ids_to_poll) == 0:
-            demisto.debug("No quarantine actions were initiated. Polling is disabled.")
+        if not argToBoolean(args.get("polling", False)) or not action_ids_to_poll:
+            demisto.debug("No quarantine actions were initiated or polling is disabled. ")
             continue_to_poll = False
         else:
-            demisto.debug("Will continue to poll")
             command_results.readable_output = "Quarantine operations are still in progress..."
             continue_to_poll = True
-
-        # Return poll result with args for next poll and also return the results in case polling is disabled
-        demisto.debug(f"Returning poll results with response: {command_results}")
         return PollResult(
             partial_result=command_results,
             continue_to_poll=continue_to_poll,
@@ -3643,22 +3632,16 @@ def stop_and_quarantine_file_command_polling(args: dict, client: MsClient):
         )
 
     def _polling_call():
-        demisto.debug("Polling for status of quarantine actions...")
-        completed_count = 0
         all_context_outputs = []
         all_api_raw_responses = []
-        demisto.debug(f"Polling for status of {len(argToList(args.get('action_ids')))}.")
         action_ids = argToList(args.get("action_ids"))
-
+        action_statuses = []
         for action_id in action_ids:
-            demisto.debug(f"Polling for status of action {action_id}.")
             _, context, _ = get_machine_action_by_id_command(client, {"id": action_id})
             all_api_raw_responses.append(context)
             context_output = context.get("MicrosoftATP.MachineAction(val.ID === obj.ID)")
             all_context_outputs.append(context_output)
-            if context_output.get("Status") in ["Succeeded", "Failed", "Cancelled", "TimeOut"]:
-                demisto.debug(f"Successfully polled for status of action {action_id}. The context output is: {context_output}")
-                completed_count += 1
+            action_statuses.append(context_output.get("Status", "Unknown"))
 
         human_readable = tableToMarkdown(
             name="Completed Quarantine",
@@ -3675,13 +3658,7 @@ def stop_and_quarantine_file_command_polling(args: dict, client: MsClient):
             raw_response=all_api_raw_responses,
         )
 
-        if completed_count == len(action_ids):
-            demisto.debug("All quarantine actions have completed. Polling is disabled.")
-            continue_to_poll = False
-        else:
-            demisto.debug("All quarantine actions have not yet completed. Polling will continue.")
-            command_results.readable_output = "Quarantine operations are still in progress..."
-            continue_to_poll = True
+        continue_to_poll = any(status in ["Pending", "InProgress"] for status in action_statuses)
 
         # Return poll result with args for next poll and also return the results in case polling is disabled
         return PollResult(

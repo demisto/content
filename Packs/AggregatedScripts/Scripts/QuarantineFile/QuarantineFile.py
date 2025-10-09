@@ -714,7 +714,7 @@ class MDEHandler(BrandHandler):
 
         demisto.debug(f"[MDE Handler] Quarantine Kick Off Results: {quarantine_kick_off_results}")
 
-        if not quarantine_kick_off_results or len(quarantine_kick_off_results) == 0:
+        if not quarantine_kick_off_results:
             raise QuarantineException("Failed to initiate quarantine.")
 
         pending_jobs = False

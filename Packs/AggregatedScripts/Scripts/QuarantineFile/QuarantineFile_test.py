@@ -195,7 +195,6 @@ class TestCommand:
 class TestBrands:
     def test_get_values_returns_all_values(self):
         """
-        Given: NA
         When: Executing Brands.values()
         Then: Ensure all values are returned.
         """
@@ -498,7 +497,7 @@ class TestBrandFactory:
 class TestXDRHandler:
     def test_constructor_sets_correct_properties(self):
         """
-        Given: Demisto args
+        Given: EndpointID, FileHash and FilePath
         When: XDRHandler constructor is called
         Then: It properly sets its properties.
         """
@@ -845,7 +844,7 @@ class TestXDRHandler:
 class TestMDEHandler:
     def test_constructor_sets_correct_properties(self):
         """
-        Given: Demisto args
+        Given: EndpointID and FileHash
         When: XDRHandler constructor is called
         Then: It properly sets its properties.
         """
