@@ -1652,6 +1652,63 @@ script:
         defaultValue: 'true'
         hidden: true
 
+  - name: aws-rds-db-instance-enable-deletion-protection-quick-action
+    description: Enables 'deletion protection' for the RDS dB instance by running the aws rds modify-db-instance command in your environment. Successful execution requires 'rds:ModifyDBInstance' permission.
+    prettyname: Enable Deletion Protection on RDS
+    hidden: true
+    quickaction: true
+    arguments:
+      - name: account_id
+        prettyname: Account ID
+        description: The AWS account ID.
+        required: true
+      - name: region
+        prettyname: Region
+        description: The AWS region.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+      - name: db_instance_identifier
+        prettyname: RDS Instance ID
+        description: 'The identifier of DB instance to modify. This value is stored as a lowercase string.'
+        required: true
+      - name: deletion_protection
+        description: 'Weather the DB instance has deletion protection enabled. The database can’t be deleted when deletion protection is enabled. By default, deletion protection isn’t enabled. For more information, see Deleting a DB Instance.'
+        defaultValue: 'true'
+        hidden: true
+
   - name: aws-rds-db-snapshot-attribute-modify
     description: 'Adds or removes permission for the specified AWS account ID to restore the specified DB snapshot.'
     arguments:
@@ -2291,6 +2348,67 @@ script:
       description: 'A new description for the AMI.'
       required: false
 
+  - name: aws-ec2-image-attribute-set-ami-to-private-quick-action
+    description: Revokes public launch permissions for the EC2 AMI by running the aws ec2 modify-image-attribute command in your environment. Successful execution requires the ec2:ModifyImageAttribute permission.
+    prettyname: Set AMI to Private
+    hidden: true
+    quickaction: true
+    arguments:
+      - name: account_id
+        prettyname: Account ID
+        description: The AWS account ID.
+        required: true
+      - name: region
+        prettyname: Region
+        description: The AWS region.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+      - name: image_id
+        prettyname: AMI ID
+        description: 'The ID of the AMI.'
+        required: true
+      - name: attribute
+        description: 'The AMI attribute to modify.'
+        defaultValue: 'launchPermission'
+        hidden: true
+      - name: operation_type
+        description: 'The operation to perform on the attribute.'
+        defaultValue: 'remove'
+        hidden: true
+
   - name: aws-ec2-instance-metadata-options-modify
     description: Modify the EC2 instance metadata parameters on a running or stopped instance.
     arguments:
@@ -2575,6 +2693,65 @@ script:
       - me-central-1
       - sa-east-1
     description: Adds or removes permission settings for the specified snapshot.
+
+  - name: aws-ec2-set-snapshot-to-private-quick-action
+    description: Revokes public access to the EC2 snapshot by running the aws ec2 modify-snapshot-attribute command in your environment. Successful execution requires the ec2:ModifySnapshotAttribute permission.
+    prettyname: Set Snapshot to Private
+    hidden: true
+    quickaction: true
+    arguments:
+      - name: account_id
+        prettyname: Account ID
+        description: The AWS account ID.
+        required: true
+      - name: region
+        prettyname: Region
+        description: The AWS region.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+      - name: snapshot_id
+        prettyname: EC2 Snapshot
+        description: The ID of the EBS snapshot.
+        required: true
+      - name: operation_type
+        defaultValue: 'remove'
+        hidden: true
+      - name: group_names
+        defaultValue: 'all'
+        hidden: true
 
   - name: aws-ecs-update-cluster-settings
     arguments:
