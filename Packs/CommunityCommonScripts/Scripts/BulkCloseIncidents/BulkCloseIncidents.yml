@@ -1,0 +1,27 @@
+args:
+- description: Query for searching incidents.
+  name: query
+  required: true
+- defaultValue: "50"
+  description: Batch size for number of incidents to close at once.
+  name: batch_size
+comment: "Prerequisite:\n- Core REST API integration must be configured. \n\nPurpose: Close incidents in bulk.\n\nDescription: Takes provided query and closes incidents in batches. Default batch size is 50."
+commonfields:
+  id: 'BulkCloseIncidents'
+  version: -1
+dockerimage: demisto/python3:3.12.11.4819260
+enabled: true
+engineinfo: {}
+name: BulkCloseIncidents
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- Utilities
+- Utility
+type: python
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)
