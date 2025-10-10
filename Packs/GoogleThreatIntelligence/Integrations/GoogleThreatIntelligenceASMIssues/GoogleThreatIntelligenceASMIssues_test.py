@@ -450,7 +450,13 @@ def test_fetch_incidents_asm_issue_test_connectivity(mock_client, requests_mock,
         f"{BASE_URL}/{ENDPOINTS['issue_list'].format('last_seen_after:2025-09-29T08:59:20.494Z')}",
         json={"success": True, "result": {"hits": []}},
     )
-    params = {"isFetch": True, "max_fetch": "10", "first_fetch": "2025-09-29T08:59:20.494Z"}
+    params = {
+        "isFetch": True,
+        "max_fetch": "10",
+        "first_fetch": "2025-09-29T08:59:20.494Z",
+        "mirror_direction": "Outgoing",
+        "note_tag": "note",
+    }
 
     # Mock demisto.params() to return our test parameters
     mocker.patch.object(demisto, "params", return_value=params)
@@ -482,7 +488,13 @@ def test_fetch_incidents_asm_issue_max_fetch_params_invalid(mock_client, max_fet
     """
     from GoogleThreatIntelligenceASMIssues import fetch_incidents
 
-    params = {"first_fetch": "3 days", "max_fetch": max_fetch_value, "search_string": ""}
+    params = {
+        "first_fetch": "3 days",
+        "max_fetch": max_fetch_value,
+        "search_string": "",
+        "mirror_direction": "Outgoing",
+        "note_tag": "note",
+    }
 
     with pytest.raises(ValueError) as e:
         fetch_incidents(client=mock_client, last_run={}, params=params)
@@ -511,6 +523,8 @@ def test_fetch_incidents_asm_issue_success_with_no_last_run(mock_client, request
         "max_fetch": "4",
         "search_string": search_string,
         "project_id": "12345",
+        "mirror_direction": "Outgoing",
+        "note_tag": "note",
     }
 
     mock_response = util_load_json("test_data/fetch_asm_issue_success_response.json")
@@ -554,7 +568,13 @@ def test_fetch_incidents_asm_issue_success_with_no_issue_data(mock_client, reque
     """
     from GoogleThreatIntelligenceASMIssues import fetch_incidents
 
-    params = {"first_fetch": "2025-06-30T09:45:30.711Z", "max_fetch": "4", "project_id": "12345"}
+    params = {
+        "first_fetch": "2025-06-30T09:45:30.711Z",
+        "max_fetch": "4",
+        "project_id": "12345",
+        "mirror_direction": "Outgoing",
+        "note_tag": "note",
+    }
 
     mock_response = {"success": True, "result": {"hits": []}}
     last_run = {
@@ -598,7 +618,14 @@ def test_fetch_incidents_asm_issue_index_increment_with_same_last_seen_timestamp
     """
     from GoogleThreatIntelligenceASMIssues import fetch_incidents
 
-    params = {"first_fetch": "2025-06-30T09:45:30.711Z", "max_fetch": "2", "project_id": "12345", "search_string": ""}
+    params = {
+        "first_fetch": "2025-06-30T09:45:30.711Z",
+        "max_fetch": "2",
+        "project_id": "12345",
+        "search_string": "",
+        "mirror_direction": "Outgoing",
+        "note_tag": "note",
+    }
 
     mock_response = util_load_json("test_data/fetch_asm_issue_success_response.json")
 
@@ -645,7 +672,14 @@ def test_fetch_incidents_asm_issue_issue_data_less_than_max_fetch(mock_client, r
     """
     from GoogleThreatIntelligenceASMIssues import fetch_incidents
 
-    params = {"first_fetch": "2025-06-30T09:45:30.711Z", "max_fetch": "3", "project_id": "12345", "search_string": ""}
+    params = {
+        "first_fetch": "2025-06-30T09:45:30.711Z",
+        "max_fetch": "3",
+        "project_id": "12345",
+        "search_string": "",
+        "mirror_direction": "Outgoing",
+        "note_tag": "note",
+    }
 
     mock_response = util_load_json("test_data/fetch_asm_issue_success_response.json")
 
@@ -694,7 +728,14 @@ def test_fetch_incidents_asm_issue_index_limit_reached_timestamp_bump(mock_clien
     """
     from GoogleThreatIntelligenceASMIssues import fetch_incidents
 
-    params = {"first_fetch": "2025-06-30T09:45:30.711Z", "max_fetch": 100, "project_id": "12345", "search_string": ""}
+    params = {
+        "first_fetch": "2025-06-30T09:45:30.711Z",
+        "max_fetch": 100,
+        "project_id": "12345",
+        "search_string": "",
+        "mirror_direction": "Outgoing",
+        "note_tag": "note",
+    }
 
     mock_response = util_load_json("test_data/fetch_asm_issue_success_response.json")
 
@@ -762,6 +803,8 @@ def test_fetch_incidents_asm_issue_max_fetch_change_index_recalculation(
         "max_fetch": new_max_fetch,
         "project_id": "12345",
         "search_string": "collection:google",
+        "mirror_direction": "Outgoing",
+        "note_tag": "note",
     }
 
     mock_response = util_load_json("test_data/fetch_asm_issue_success_response.json")
@@ -834,6 +877,8 @@ def test_fetch_incidents_when_search_string_changes(
         "max_fetch": new_max_fetch,
         "project_id": "12345",
         "search_string": new_search_string,
+        "mirror_direction": "Outgoing",
+        "note_tag": "note",
     }
 
     mock_response = util_load_json("test_data/fetch_asm_issue_success_response.json")
@@ -1172,3 +1217,96 @@ def test_update_remote_system_command_tags_update_mixed_existing_new(mocker, req
 
     # Verify debug message was logged for existing tag
     mock_debug.assert_any_call("Tag existing already exists for issue issue_456")
+
+
+def test_update_remote_system_command_incident_reopen(mocker, requests_mock, mock_client):
+    """
+    Given:
+    - Valid arguments with incident status ACTIVE and incident reopen.
+
+    When:
+    - Running update_remote_system_command
+
+    Then:
+    - Only status should be updated to 'open_in_progress'
+    - No tags or notes should be processed
+    """
+    from GoogleThreatIntelligenceASMIssues import update_remote_system_command
+
+    # Mock UpdateRemoteSystemArgs
+    mock_args = mocker.Mock()
+    mock_args.remote_incident_id = "remote_123"
+    mock_args.data = {"gtiasmissueuid": "issue_456", "id": "xsoar_incident_123"}
+    mock_args.inc_status = 1  # IncidentStatus.ACTIVE
+    mock_args.delta = {"closingUserId": "", "runStatus": ""}
+    mock_args.incident_changed = True
+    mock_args.entries = []
+
+    mocker.patch("GoogleThreatIntelligenceASMIssues.UpdateRemoteSystemArgs", return_value=mock_args)
+
+    # Mock API endpoint for status update only
+    requests_mock.post(f"{BASE_URL}/{ENDPOINTS['issue_status_update'].format('issue_456')}", json={"success": True})
+
+    args = {
+        "remote_incident_id": "remote_123",
+        "data": {"gtiasmissueuid": "issue_456", "id": "xsoar_incident_123"},
+        "inc_status": 1,  # IncidentStatus.ACTIVE
+        "delta": {"closingUserId": "", "runStatus": ""},
+        "incident_changed": True,
+        "entries": [],
+    }
+
+    result = update_remote_system_command(mock_client, args)
+
+    # Verify the result
+    assert result == "remote_123"
+
+    # Verify only one API request was made (status update only)
+    history = requests_mock.request_history
+    assert len(history) == 1
+
+    # Verify status update request
+    status_request = history[0]
+    assert status_request.method == "POST"
+    assert "status" in status_request.url
+    assert status_request.json() == {"status": "open_in_progress"}
+
+
+def test_update_remote_system_command_no_mirror_issue_id(mocker, requests_mock, mock_client):
+    """
+    Given:
+    - Arguments with missing mirror Issue ID
+
+    When:
+    - Running update_remote_system_command
+
+    Then:
+    - No update should be made and no API calls should be sent.
+    """
+    from GoogleThreatIntelligenceASMIssues import update_remote_system_command
+
+    # Mock UpdateRemoteSystemArgs
+    mock_args = mocker.Mock()
+    mock_args.remote_incident_id = "remote_123"
+    mock_args.data = {}  # No issueID
+    mock_args.inc_status = 2
+    mock_args.delta = {"tags": ["test"]}
+    mock_args.incident_changed = True
+
+    mocker.patch("GoogleThreatIntelligenceASMIssues.UpdateRemoteSystemArgs", return_value=mock_args)
+
+    args = {
+        "remote_incident_id": "remote_123",
+        "data": {},  # No issueID
+        "inc_status": 2,
+        "delta": {"tags": ["test"]},
+        "incident_changed": True,
+    }
+
+    result = update_remote_system_command(mock_client, args)
+
+    # Verify the result
+    assert result == "remote_123"
+
+    # Verify no API calls were made
+    assert requests_mock.call_count == 0

@@ -11,6 +11,7 @@ This integration allows the creation of incidents based on ASM Issues from Googl
 | Max Fetch | Maximum number of Issues to fetch each time. Maximum value is 200. | False |
 | First Fetch Time | The date or relative timestamp from which to begin fetching Issues.<br/><br/>Supported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.<br/><br/>For example: 01 May 2025, 01 May 2025 04:45:33, 2025-05-17T14:05:44Z. | False |
 | Mirroring Direction | The mirroring direction in which to mirror the details. You can mirror "Outgoing" \(from XSOAR to GTI\) direction for ASM Issues. | False |
+| Mirror tag for notes | The tag value should be used to mirror the issue note by adding the same tag in the notes. | False |
 | Project ID | Provide the project ID to fetch issues for a specific project.<br/><br/>Note: The specified project ID will be used as a default value for ASM Issue commands. | False |
 | Search String | Search String to filter out the ASM Issues.<br/><br/>For Example: collection:google severity:5 status_new:open scoped:true entity_type:domain<br/><br/>Note: The fields last_seen_after, last_seen_before, and first_seen_after will be ignored from the provided search string. | False |
 | Use system proxy settings |  | False |

@@ -16,8 +16,8 @@ DTM_ALERT_INCIDENT_TYPE = "dtm_alert"
 INTEGRATION_TOOL = "CortexGTI"
 OK_CODES = (200, 401)
 STATUS_CODE_TO_RETRY = [429, *(status_code for status_code in requests.status_codes._codes if status_code >= 500)]  # type: ignore
-MAX_RETRIES = 3
-BACKOFF_FACTOR = 15
+MAX_RETRIES = 4
+BACKOFF_FACTOR = 7.5
 MAX_FETCH = 25
 DEFAULT_MAX_FETCH = 25
 DEFAULT_PAGE_SIZE = 10
@@ -902,6 +902,7 @@ def fetch_incidents(
         )
 
         alert["doc_markdown"] = readable_output
+        alert = remove_empty_elements(alert)
         alert_incidents.append(
             {
                 "name": alert.get("title", ""),

@@ -17,5 +17,6 @@ Your API key carries all your privileges, so keep it secure and don't share it w
 | Max Fetch | Maximum number of Issues to fetch each time. Maximum value is 200. |
 | First Fetch Time | The date or relative timestamp from which to begin fetching Issues.|
 | Mirroring Direction | The mirroring direction in which to mirror the details. You can mirror "Outgoing" \(from XSOAR to GTI\) direction for ASM Issues. |
+| Mirror tag for notes | The tag value should be used to mirror the issue note by adding the same tag in the notes. |
 | Project ID | Provide the project ID to fetch issues for a specific project. |
 | Search String | Search String to filter out the ASM Issues.<br/><br/>For Example: collection:google severity:5 status_new:open scoped:true entity_type:domain |

@@ -449,6 +449,11 @@ def test_gti_update_dtm_alert_status_command_success(mock_client, requests_mock)
     [
         ({"alert_id": ""}, ValueError, MESSAGES["REQUIRED_ARGUMENT"].format("alert_id")),
         ({"alert_id": "dummy123", "status": ""}, ValueError, MESSAGES["REQUIRED_ARGUMENT"].format("status")),
+        (
+            {"alert_id": "dummy123", "status": "test"},
+            ValueError,
+            ERROR_MESSAGES["INVALID_ARGUMENT"].format("test", "status", ALERTS_STATUS_HUMAN_READABLE),
+        ),
     ],
 )
 def test_gti_update_dtm_alert_status_command_when_invalid_input(args, mock_client, exception, error):
@@ -474,7 +479,7 @@ def test_fetch_incidents_test_connectivity_dtm_alerts(mock_client, requests_mock
     """Test test_module function when fetch is enabled."""
     from GoogleThreatIntelligenceDTMAlerts import test_module
 
-    params = {"isFetch": True, "max_fetch": "10", "first_fetch": "1 days"}
+    params = {"isFetch": True, "max_fetch": "10", "first_fetch": "1 days", "mirror_direction": "Outgoing"}
 
     # Mock demisto.params() to return our test parameters
     mocker.patch.object(demisto, "params", return_value=params)
@@ -486,7 +491,7 @@ def test_fetch_incidents_test_connectivity_dtm_alerts(mock_client, requests_mock
     assert result == "ok"
 
 
-def test_fetch_incidents_dtm_alerts_success(mock_client, requests_mock):
+def test_fetch_incidents_dtm_alerts_success(mock_client, requests_mock, mocker):
     from GoogleThreatIntelligenceDTMAlerts import fetch_incidents
 
     mock_response = util_load_json(
@@ -514,7 +519,9 @@ def test_fetch_incidents_dtm_alerts_success(mock_client, requests_mock):
         "alert_type": ["Message"],
         "first_fetch": "1 days",
         "max_fetch": 3,
+        "mirror_direction": "Outgoing",
     }
+    mocker.patch.object(demisto, "params", return_value=params)
 
     alert_incidents, next_run_params = fetch_incidents(client=mock_client, params=params, last_run={})
 
@@ -523,7 +530,7 @@ def test_fetch_incidents_dtm_alerts_success(mock_client, requests_mock):
     assert alert_incidents == incidents
 
 
-def test_fetch_incidents_dtm_alerts_success_with_last_run(mock_client, requests_mock):
+def test_fetch_incidents_dtm_alerts_success_with_last_run(mock_client, requests_mock, mocker):
     from GoogleThreatIntelligenceDTMAlerts import fetch_incidents
 
     params = {
@@ -536,8 +543,9 @@ def test_fetch_incidents_dtm_alerts_success_with_last_run(mock_client, requests_
         "alert_type": ["Message"],
         "first_fetch": "1 days",
         "max_fetch": 3,
+        "mirror_direction": "Outgoing",
     }
-
+    mocker.patch.object(demisto, "params", return_value=params)
     last_run = {
         "alert_ids": ["dummy_001"],
         "last_alert_created_at": "2025-01-01T14:26:37Z",
@@ -564,7 +572,7 @@ def test_fetch_incidents_dtm_alerts_success_with_last_run(mock_client, requests_
     assert alert_incidents == incidents
 
 
-def test_fetch_incidents_dtm_alerts_skip_duplicate_alerts(mock_client, requests_mock):
+def test_fetch_incidents_dtm_alerts_skip_duplicate_alerts(mock_client, requests_mock, mocker):
     from GoogleThreatIntelligenceDTMAlerts import fetch_incidents
 
     params = {
@@ -577,7 +585,9 @@ def test_fetch_incidents_dtm_alerts_skip_duplicate_alerts(mock_client, requests_
         "alert_type": ["Message"],
         "first_fetch": "1 days",
         "max_fetch": 25,
+        "mirror_direction": "Outgoing",
     }
+    mocker.patch.object(demisto, "params", return_value=params)
 
     last_run = {
         "alert_ids": ["dummy_00"],
@@ -995,3 +1005,49 @@ def test_update_remote_system_command_incident_active_and_tags_update(mocker, re
     assert history[2].method == "PATCH"
     expected_update = {"tags": ["Test"]}
     assert history[2].json() == expected_update
+
+
+def test_update_remote_system_command_incident_reopen(mocker, requests_mock, mock_client):
+    """
+    Given:
+    - Valid arguments with incident status ACTIVE and delta present
+
+    When:
+    - Running update_remote_system_command
+
+    Then:
+    - Status should not be updated (only tags if present) via a PATCH request.
+    """
+    from GoogleThreatIntelligenceDTMAlerts import update_remote_system_command
+
+    # Mock UpdateRemoteSystemArgs
+    mock_args = mocker.Mock()
+    mock_args.remote_incident_id = "remote_123"
+    mock_args.data = {"alertid": "alert_456"}
+    mock_args.inc_status = 1  # IncidentStatus.ACTIVE
+    mock_args.delta = {"closingUserId": "", "runStatus": ""}
+    mock_args.incident_changed = True
+
+    mocker.patch("GoogleThreatIntelligenceDTMAlerts.UpdateRemoteSystemArgs", return_value=mock_args)
+
+    # Mock the API endpoint
+    requests_mock.patch(f"{BASE_URL}/{ENDPOINTS['alert_update'].format('alert_456')}", json={"success": True})
+
+    args = {
+        "remote_incident_id": "remote_123",
+        "data": {"alertid": "alert_456"},
+        "inc_status": 1,  # IncidentStatus.ACTIVE
+        "delta": {"closingUserId": "", "runStatus": ""},
+        "incident_changed": True,
+    }
+
+    result = update_remote_system_command(mock_client, args)
+
+    # Verify the result
+    assert result == "remote_123"
+
+    # Verify the PATCH request was made with the correct payload
+    history = requests_mock.request_history
+    assert len(history) == 1
+    assert history[0].method == "PATCH"
+    assert history[0].json() == {"status": "in_progress"}

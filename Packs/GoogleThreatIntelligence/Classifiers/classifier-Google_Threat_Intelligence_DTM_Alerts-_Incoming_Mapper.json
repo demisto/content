@@ -20,9 +20,6 @@
                         "transformers": []
                     }
                 },
-                "GTI DTM Alert AI Doc Summary ": {
-                    "simple": "ai_doc_summary"
-                },
                 "GTI DTM Alert Aggregation ID": {
                     "complex": {
                         "filters": [],
@@ -85,9 +82,6 @@
                         "transformers": []
                     }
                 },
-                "GTI DTM Alert Doc Descritption": {
-                    "simple": "doc.description"
-                },
                 "GTI DTM Alert Doc Details": {
                     "complex": {
                         "filters": [],
@@ -134,9 +128,6 @@
                         "root": "doc",
                         "transformers": []
                     }
-                },
-                "GTI DTM Alert Doc Language ": {
-                    "simple": "doc.language"
                 },
                 "GTI DTM Alert Doc Message ID": {
                     "complex": {
@@ -194,9 +185,6 @@
                         "transformers": []
                     }
                 },
-                "GTI DTM Alert Doc Subject ": {
-                    "simple": "doc.subject"
-                },
                 "GTI DTM Alert Doc Timestamp": {
                     "complex": {
                         "accessor": "timestamp",
@@ -229,9 +217,6 @@
                         "transformers": []
                     }
                 },
-                "GTI DTM Alert Doc URL": {
-                    "simple": "doc_url"
-                },
                 "GTI DTM Alert Email Sent At": {
                     "complex": {
                         "filters": [],
@@ -259,9 +244,6 @@
                         "root": "labels",
                         "transformers": []
                     }
-                },
-                "GTI DTM Alert Labels URL": {
-                    "simple": "labels_url"
                 },
                 "GTI DTM Alert Monitor ID": {
                     "complex": {
@@ -304,9 +286,6 @@
                         "root": "alert_summary",
                         "transformers": []
                     }
-                },
-                "GTI DTM Alert Topic URL": {
-                    "simple": "topics_url"
                 },
                 "GTI DTM Alert Topics": {
                     "complex": {

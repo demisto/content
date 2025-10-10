@@ -131,6 +131,7 @@ configuration:
   name: incidentType
   type: 13
   defaultvalue: Google Threat Intelligence DTM Alert
+  section: Collect
 script:
   script: ''
   type: python

@@ -63,5 +63,6 @@
     "displayedImages": [
         "CoreAlertFields",
         "CommonTypes"
-    ]
+    ],
+    "defaultDataSource": "GoogleThreatIntelligenceDTMAlerts"
 }

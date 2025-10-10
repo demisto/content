@@ -678,10 +678,21 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 4,
+                                "fieldId": "gtidtmalertdocdescription",
+                                "height": 106,
+                                "id": "7e9ee4b0-87dd-11f0-ab3e-058255ec018f",
+                                "index": 8,
+                                "listId": "ff69y8rnqm-field-changed-ff69y8rnqm-03f99140-87d0-11f0-a75c-67351ad19894",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
                                 "fieldId": "gtidtmalertdocrawtext",
                                 "height": 106,
                                 "id": "29f03690-a07d-11f0-8cd2-49d371b27357",
-                                "index": 8,
+                                "index": 10,
                                 "listId": "ff69y8rnqm-field-changed-ff69y8rnqm-03f99140-87d0-11f0-a75c-67351ad19894",
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -691,7 +702,7 @@
                                 "fieldId": "gtidtmalertdocbody",
                                 "height": 106,
                                 "id": "2df89f70-a07d-11f0-8cd2-49d371b27357",
-                                "index": 9,
+                                "index": 11,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -703,15 +714,6 @@
                                 "id": "53e9ee00-87dc-11f0-ab3e-058255ec018f",
                                 "index": 0,
                                 "listId": "ff69y8rnqm-03f99140-87d0-11f0-a75c-67351ad19894",
-                                "sectionItemType": "field",
-                                "startCol": 2
-                            },
-                            {
-                                "endCol": 4,
-                                "fieldId": "gtidtmalertdocdescritption",
-                                "height": 53,
-                                "id": "7e9ee4b0-87dd-11f0-ab3e-058255ec018f",
-                                "index": 1,
                                 "sectionItemType": "field",
                                 "startCol": 2
                             },

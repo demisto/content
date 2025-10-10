@@ -79,6 +79,7 @@ configuration:
   name: incidentType
   type: 13
   defaultvalue: Google Threat Intelligence ASM Issue
+  section: Collect
 script:
   script: ''
   type: python

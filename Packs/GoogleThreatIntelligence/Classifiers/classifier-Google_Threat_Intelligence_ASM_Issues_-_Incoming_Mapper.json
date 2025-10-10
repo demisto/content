@@ -182,14 +182,6 @@
                         "transformers": []
                     }
                 },
-                "GTI ASM Issue status": {
-                    "complex": {
-                        "accessor": "status",
-                        "filters": [],
-                        "root": "summary",
-                        "transformers": []
-                    }
-                },
                 "Incident Link": {
                     "simple": "incident_link"
                 },
@@ -225,14 +217,6 @@
                     "complex": {
                         "filters": [],
                         "root": "mirror_tags",
-                        "transformers": []
-                    }
-                },
-                "severity": {
-                    "complex": {
-                        "accessor": "severity",
-                        "filters": [],
-                        "root": "summary",
                         "transformers": []
                     }
                 }

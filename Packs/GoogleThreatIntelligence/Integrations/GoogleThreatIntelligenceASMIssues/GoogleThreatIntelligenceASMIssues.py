@@ -16,8 +16,8 @@ BASE_URL = "https://www.virustotal.com/api/v3"
 ASM_INCIDENT_LINK = "https://asm.advantage.mandiant.com/issues/{}"
 OK_CODES = (200, 401)
 STATUS_CODE_TO_RETRY = [429, *(status_code for status_code in requests.status_codes._codes if status_code >= 500)]  # type: ignore
-MAX_RETRIES = 3
-BACKOFF_FACTOR = 15
+MAX_RETRIES = 4
+BACKOFF_FACTOR = 7.5
 MAX_FETCH = 200
 DEFAULT_API_MAX_FETCH = 50
 DEFAULT_MAX_FETCH = 100
@@ -787,6 +787,7 @@ def fetch_incidents(
         issue.update(mirror_params)
 
         issue["incident_link"] = ASM_INCIDENT_LINK.format(issue_id)
+        issue = remove_empty_elements(issue)
         issue_incidents.append(
             {
                 "name": issue.get("pretty_name", ""),
