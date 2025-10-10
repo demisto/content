@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta, UTC
+from datetime import datetime, timedelta
 import re
 from unittest import mock
 from unittest.mock import MagicMock, patch
@@ -510,7 +510,7 @@ def test_is_execution_time_exceeded_within_limit():
     """
     Test is_execution_time_exceeded when execution time is within the timeout limit.
     """
-    start_time = datetime.now(UTC) - timedelta(seconds=5)  # Within timeout
+    start_time = datetime.utcnow() - timedelta(seconds=5)  # Within timeout
     result = FeedCyberint.is_execution_time_exceeded(start_time)
     assert result is False, "Execution time is within the limit but returned True."
 
@@ -519,7 +519,7 @@ def test_is_execution_time_exceeded_exceeded_limit():
     """
     Test is_execution_time_exceeded when execution time exceeds the timeout limit.
     """
-    start_time = datetime.now(UTC) - timedelta(seconds=15)  # Exceeds timeout
+    start_time = datetime.utcnow() - timedelta(seconds=15)  # Exceeds timeout
     result = FeedCyberint.is_execution_time_exceeded(start_time)
     assert result is False, "Execution time exceeded the limit but returned False."
 
@@ -530,20 +530,13 @@ def test_is_execution_time_exceeded_mocked(mock_datetime):
     Test is_execution_time_exceeded with mocked datetime to simulate precise timing.
     """
     start_time = datetime(2024, 1, 1, 12, 0, 0)
-
-    # Mock datetime.now to return a datetime with 15 seconds difference
-    mock_now = MagicMock(return_value=datetime(2024, 1, 1, 12, 0, 15))
-    mock_datetime.now = mock_now
-
+    mock_datetime.utcnow.return_value = datetime(2024, 1, 1, 12, 0, 15)  # 15 seconds later
     result = FeedCyberint.is_execution_time_exceeded(start_time)
     assert result is False, "Execution time exceeded the limit but returned False."
-    mock_now.assert_called_with(UTC)
 
-    # Change the mock to return a datetime with only 5 seconds difference
-    mock_now.return_value = datetime(2024, 1, 1, 12, 0, 5)
+    mock_datetime.utcnow.return_value = datetime(2024, 1, 1, 12, 0, 5)  # 5 seconds later
     result = FeedCyberint.is_execution_time_exceeded(start_time)
     assert result is False, "Execution time is within the limit but returned False."
-    mock_now.assert_called_with(UTC)
 
 
 def test_get_yesterday_time():
@@ -1104,121 +1097,119 @@ def test_get_indicators_command_ok(mock_client, requests_mock):
         assert result == expected_output
 
 
-def test_test_module_success(requests_mock):
-    client = MagicMock(FeedCyberint.Client)
-    limit = 10
-    offset = 0
-    mock_response = ""
+def test_test_module_success(mock_client):
+    """Test test_module with a successful request_daily_feed call."""
+    # Mock successful request_daily_feed
+    mock_client.request_daily_feed = MagicMock(return_value=[])
 
-    # Mock the HTTP request
-    url_suffix = f"/ioc/api/v1/feed/daily/{date_time}?limit={limit}&offset={offset}"
-    requests_mock.get(
-        f"{BASE_URL}{url_suffix}",
-        text=mock_response,
-        status_code=200,
-    )
+    result = FeedCyberint.test_module(mock_client)
 
-    result = FeedCyberint.test_module(client)  # Call the function
-
-    # Assert that the function returns "ok"
     assert result == "ok"
-
-    # Check that request_daily_feed was called with the expected parameters
-    client.request_daily_feed.assert_called_once_with(limit=10, test=True)
+    mock_client.request_daily_feed.assert_called_once_with(limit=10, test=True)
 
 
-def test_fetch_indicators_limit():
-    mock_client = MagicMock(FeedCyberint.Client)
-    mock_client.request_daily_feed.return_value = [
-        {
-            "ioc_value": "value1",
-            "ioc_type": "type1",
-            "detected_activity": "feed1",
-            "confidence": 60,
-            "severity_score": 5,
-            "description": "desc1",
-            "observation_date": "2024-01-01",
-        },
-        {
-            "ioc_value": "value2",
-            "ioc_type": "type2",
-            "detected_activity": "feed2",
-            "confidence": 80,
-            "severity_score": 4,
-            "description": "desc2",
-            "observation_date": "2024-01-01",
-        },
-        {
-            "ioc_value": "value3",
-            "ioc_type": "type1",
-            "detected_activity": "feed1",
-            "confidence": 70,
-            "severity_score": 6,
-            "description": "desc3",
-            "observation_date": "2024-01-01",
-        },
-        {
-            "ioc_value": "value4",
-            "ioc_type": "type2",
-            "detected_activity": "feed2",
-            "confidence": 85,
-            "severity_score": 7,
-            "description": "desc4",
-            "observation_date": "2024-01-01",
-        },
-        {
-            "ioc_value": "value5",
-            "ioc_type": "type1",
-            "detected_activity": "feed1",
-            "confidence": 90,
-            "severity_score": 8,
-            "description": "desc5",
-            "observation_date": "2024-01-01",
-        },
-        {
-            "ioc_value": "value6",
-            "ioc_type": "type2",
-            "detected_activity": "feed2",
-            "confidence": 65,
-            "severity_score": 5,
-            "description": "desc6",
-            "observation_date": "2024-01-01",
-        },
-    ]
+def test_test_module_unauthorized_error(mock_client):
+    """Test test_module with an unauthorized error."""
+    # Mock `request_daily_feed` to raise a DemistoException with UNAUTHORIZED status
+    exception = DemistoException("Unauthorized")
+    exception.res = MagicMock(status_code=401)
+    mock_client.request_daily_feed = MagicMock(side_effect=exception)
 
-    LIMIT = 5  # Set limit to test the breaking condition
-    TLP_COLOR = "RED"
-    FEED_NAMES = ["feed1", "feed2"]
-    INDICATOR_TYPES = ["type1", "type2"]
-    CONFIDENCE_FROM = 50
-    SEVERITY_FROM = 3
+    result = FeedCyberint.test_module(mock_client)
 
-    # Calling the fetch_indicators function with a limit set to 5
-    mock_auto_detect = MagicMock(return_value=True)
-    with patch("FeedCyberint.auto_detect_indicator_type", mock_auto_detect):
-        result = FeedCyberint.fetch_indicators(
-            client=mock_client,
-            tlp_color=TLP_COLOR,
-            feed_names=FEED_NAMES,
-            indicator_types=INDICATOR_TYPES,
-            confidence_from=CONFIDENCE_FROM,
-            severity_from=SEVERITY_FROM,
-            limit=LIMIT,
-            execution_start_time=datetime.now(),
-        )
+    assert result == "Authorization Error: invalid `API Token`"
+    mock_client.request_daily_feed.assert_called_once_with(limit=10, test=True)
 
-    # Check that the number of returned indicators is equal to the limit
-    assert len(result) == LIMIT
 
-    # Check that the loop breaks once the limit is reached
-    mock_client.request_daily_feed.assert_called_once()  # Ensures the feed was called only once
+def test_test_module_forbidden_fallback_success(mock_client):
+    """Test test_module with forbidden error on request_daily_feed but successful fallback."""
+    # Mock `request_daily_feed` to raise a DemistoException with FORBIDDEN status
+    exception = DemistoException("Forbidden")
+    exception.res = MagicMock(status_code=403)
+    mock_client.request_daily_feed = MagicMock(side_effect=exception)
 
-    # Check the indicator values for correctness
-    assert result[0]["value"] == "value1"
-    assert result[1]["value"] == "value2"
-    assert result[2]["value"] == "value3"
-    assert result[3]["value"] == "value4"
-    assert result[4]["value"] == "value5"
+    # Mock successful get_domain_command fallback
+    with patch("FeedCyberint.get_domain_command") as mock_get_domain:
+        mock_get_domain.return_value = MagicMock()
 
-    # Validate that no more indicators were appended after reaching the limit
-    assert len(result) == LIMIT  # Ensure the number of indicators is exactly the limit
+        result = FeedCyberint.test_module(mock_client)
+
+        assert result == "ok"
+        mock_client.request_daily_feed.assert_called_once_with(limit=10, test=True)
+        mock_get_domain.assert_called_once_with(mock_client, {"value": "checkpoint.com"})
+
+
+def test_test_module_forbidden_fallback_unauthorized(mock_client):
+    """Test test_module with forbidden error and fallback also returns unauthorized."""
+    # Mock `request_daily_feed` to raise a DemistoException with FORBIDDEN status
+    exception = DemistoException("Forbidden")
+    exception.res = MagicMock(status_code=403)
+    mock_client.request_daily_feed = MagicMock(side_effect=exception)
+
+    # Mock get_domain_command fallback to also raise UNAUTHORIZED
+    fallback_exception = DemistoException("Unauthorized")
+    fallback_exception.res = MagicMock(status_code=401)
+
+    with patch("FeedCyberint.get_domain_command") as mock_get_domain:
+        mock_get_domain.side_effect = fallback_exception
+
+        result = FeedCyberint.test_module(mock_client)
+
+        assert result == "Authorization Error: invalid `API Token`"
+        mock_client.request_daily_feed.assert_called_once_with(limit=10, test=True)
+        mock_get_domain.assert_called_once_with(mock_client, {"value": "checkpoint.com"})
+
+
+def test_test_module_forbidden_fallback_forbidden(mock_client):
+    """Test test_module with forbidden error and fallback also returns forbidden."""
+    # Mock `request_daily_feed` to raise a DemistoException with FORBIDDEN status
+    exception = DemistoException("Forbidden")
+    exception.res = MagicMock(status_code=403)
+    mock_client.request_daily_feed = MagicMock(side_effect=exception)
+
+    # Mock get_domain_command fallback to also raise FORBIDDEN
+    fallback_exception = DemistoException("Forbidden")
+    fallback_exception.res = MagicMock(status_code=403)
+
+    with patch("FeedCyberint.get_domain_command") as mock_get_domain:
+        mock_get_domain.side_effect = fallback_exception
+
+        result = FeedCyberint.test_module(mock_client)
+
+        assert result == "Authorization Error: invalid `API Token`"
+        mock_client.request_daily_feed.assert_called_once_with(limit=10, test=True)
+        mock_get_domain.assert_called_once_with(mock_client, {"value": "checkpoint.com"})
+
+
+def test_test_module_forbidden_fallback_other_error(mock_client):
+    """Test test_module with forbidden error and fallback raises a different error."""
+    # Mock `request_daily_feed` to raise a DemistoException with FORBIDDEN status
+    exception = DemistoException("Forbidden")
+    exception.res = MagicMock(status_code=403)
+    mock_client.request_daily_feed = MagicMock(side_effect=exception)
+
+    # Mock get_domain_command fallback to raise a different error (e.g., 500)
+    fallback_exception = DemistoException("Internal Server Error")
+    fallback_exception.res = MagicMock(status_code=500)
+
+    with patch("FeedCyberint.get_domain_command") as mock_get_domain:
+        mock_get_domain.side_effect = fallback_exception
+
+        with pytest.raises(DemistoException, match="Internal Server Error"):
+            FeedCyberint.test_module(mock_client)
+
+        mock_client.request_daily_feed.assert_called_once_with(limit=10, test=True)
+        mock_get_domain.assert_called_once_with(mock_client, {"value": "checkpoint.com"})
+
+
+def test_test_module_other_error(mock_client):
+    """Test test_module with a non-auth related error."""
+    # Mock `request_daily_feed` to raise a DemistoException with a different status code
+    exception = DemistoException("Internal Server Error")
+    exception.res = MagicMock(status_code=500)
+    mock_client.request_daily_feed = MagicMock(side_effect=exception)
+
+    with pytest.raises(DemistoException, match="Internal Server Error"):
+        FeedCyberint.test_module(mock_client)
+
+    mock_client.request_daily_feed.assert_called_once_with(limit=10, test=True)

@@ -3,7 +3,6 @@ import json
 import math
 from json import JSONDecodeError
 from typing import Any
-from datetime import UTC
 
 import demistomock as demisto
 import urllib3
@@ -37,7 +36,7 @@ class Client(BaseClient):
             "X-Integration-Instance-Name": demisto.integrationInstance(),
             "X-Integration-Instance-Id": "",
             "X-Integration-Customer-Name": params.get("client_name", ""),
-            "X-Integration-Version": "1.1.9",
+            "X-Integration-Version": "1.1.10",
         }
         super().__init__(base_url, verify=verify, proxy=proxy)
 
@@ -255,8 +254,22 @@ def test_module(client: Client) -> str:
     try:
         client.request_daily_feed(limit=10, test=True)
     except DemistoException as exc:
-        if exc.res and (exc.res.status_code == http.HTTPStatus.UNAUTHORIZED or exc.res.status_code == http.HTTPStatus.FORBIDDEN):
+        if exc.res and exc.res.status_code == http.HTTPStatus.UNAUTHORIZED:
             return "Authorization Error: invalid `API Token`"
+
+        if exc.res and exc.res.status_code == http.HTTPStatus.FORBIDDEN:
+            # Try fallback with get_domain_command
+            try:
+                get_domain_command(client, {"value": "checkpoint.com"})
+            except DemistoException as fallback_exc:
+                if fallback_exc.res and (
+                    fallback_exc.res.status_code == http.HTTPStatus.UNAUTHORIZED
+                    or fallback_exc.res.status_code == http.HTTPStatus.FORBIDDEN
+                ):
+                    return "Authorization Error: invalid `API Token`"
+                raise fallback_exc
+            # If fallback succeeded, return ok
+            return "ok"
 
         raise exc
 
@@ -971,7 +984,7 @@ def is_execution_time_exceeded(start_time: datetime) -> bool:
     Returns:
         bool: true, if execution passed timeout settings, false otherwise.
     """
-    end_time = datetime.now(UTC)
+    end_time = datetime.utcnow()
     secs_from_beginning = (end_time - start_time).seconds
     demisto.debug(f"Execution duration is {secs_from_beginning} secs so far")
 
