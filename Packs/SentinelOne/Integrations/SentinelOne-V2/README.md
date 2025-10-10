@@ -1059,7 +1059,7 @@ Deletes Custom Detection Rules that match the specified input filter. Relevant f
 ### sentinelone-get-blocklist
 
 ***
-Add a hash to the blocklist ("blacklist" in SentinelOne documentation). If the `global` flag is `true`, then group_ids, site_ids, and account_ids are ignored.
+Retrieve the blocklist ("blacklist" in SentinelOne documentation). You can filter by SHA1 or SHA256 hash. If the global flag is true, then group_ids, site_ids, and account_ids are ignored.
 
 #### Base Command
 
@@ -1076,6 +1076,8 @@ Add a hash to the blocklist ("blacklist" in SentinelOne documentation). If the `
 | offset | The number of records to skip (for paging). Default is 0. | Optional |
 | limit | The maximum number of records to return. Default is 1000. | Optional |
 | hash | Hash to search for in the blocklist. | Optional |
+| sha1 | SHA1 hash to search for in the blocklist. | Optional |
+| sha256Value | SHA256 hash to search for in the blocklist. | Optional |
 
 #### Context Output
 
@@ -1109,6 +1111,7 @@ If no scope is provided, the hash will be added to the global blocklist.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | sha1 | SHA1 hash to add to the blocklist. | Optional |
+| sha256Value | SHA256 hash to add to the blocklist. | Optional |
 | source | String describing the source of the block. Default is XSOAR. | Optional |
 | os_type | Type of operating system. Possible values are: windows, linux, macos. | Required |
 | description | Note stored in SentinelOne about the block. Default is Blocked from XSOAR. | Optional |
@@ -1139,6 +1142,7 @@ If no scope is provided, the hash will be removed from the global blocklist.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | sha1 | SHA1 hash to remove from the blocklist. | Optional |
+| sha256Value | SHA256 hash to remove from the blocklist. | Optional |
 | os_type | Optional operating system type. If not supplied, will remove the SHA1 hash across all platforms. Possible values are: windows, macos, linux. | Optional |
 | site_ids | Comma-separated string of site IDs to remove the hash from. | Optional |
 | account_ids | Comma-separated string of account IDs to remove the hash from. | Optional |
