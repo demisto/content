@@ -13,7 +13,7 @@
          "is_array":false
       },
       "siteName": {
-         "type":"int",
+         "type":"string",
          "is_array":false
       },
       "averageByteRate": {
