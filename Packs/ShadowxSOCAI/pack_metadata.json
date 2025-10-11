@@ -1,0 +1,35 @@
+{
+    "name": "ShadowX SOCAI",
+    "description": "Analyze security logs with GEN AI to produce response/recommendation, risk/result, and prediction scores. Supports API Key and cookie modes.",
+    "support": "partner",
+    "currentVersion": "1.1.0",
+    "author": "Shadowx AI",
+    "url": "https://shadowx.ai",
+    "email": "info@shadowx.ai",
+    "categories": [
+        "Analytics & SIEM"
+    ],
+    "tags": [
+        "AI",
+        "Threat Analysis",
+        "Enrichment",
+        "Automation"
+    ],
+    "useCases": [
+        "Incident Enrichment",
+        "Failed Login Investigation",
+        "Brute Force Triage",
+        "User Account Lockout Review"
+    ],
+    "keywords": [
+        "ShadowX",
+        "SOCAI",
+        "Security Tasks",
+        "Security Logs",
+        "Prediction Score",
+        "Recommendation"
+    ],
+    "marketplaces": [
+        "xsoar"
+    ]
+}
