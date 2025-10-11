@@ -1,2 +1,2 @@
-Real-Time Threat Intelligence Feeds provide data on the different stages of the domain lifecycle: from first-observed in the wild, to newly re-activated after a period of quiet. Newly Active Domains surfaces apex-level domains seen for the first time or after ten or more days of inactivity. Newly Observed Domains surfaces domains that we observe for the first time.
-This integration was integrated and tested with version 1.0.3 of FeedDomainTools.
+The DomainTools Feed provides real-time access to newly registered and observed domains, enabling proactive threat detection and defense.
+This integration was integrated and tested with version 1.0.4 of FeedDomainTools.
