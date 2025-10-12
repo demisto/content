@@ -221,6 +221,36 @@ def test_query_logs_command_transform_results_1():
     assert results_noxform == {"CDL.Logging": cdl_records}
 
 
+def test_query_logs_sls_command_transform_results_1():
+    """
+    Given:
+        - a list of SLS query results
+    When
+        - running query_logs_sls_command function
+    Then
+        - if transform_results is not specified, SLS query results are mapped into the SLS common context (test 1)
+        - if transform_results is set to false, SLS query results are returned unaltered (test 2)
+    """
+    from CortexDataLake import query_logs_sls_command
+
+    cdl_records = load_test_data("./test_data/test_query_logs_sls_command_transform_results_original.json")
+    cdl_records_xform = load_test_data("./test_data/test_query_logs_sls_command_transform_results_xformed.json")
+
+    class MockClient:
+        def query_loggings(self, query, page_number=None, page_size=None):
+            return cdl_records, []
+
+    # test 1, with no transform_results options, should transform to common context
+    _, results_xform, _ = query_logs_sls_command({"limit": "1", "query": "SELECT * FROM `firewall.traffic`"}, MockClient())
+    assert results_xform == {"SLS.Logging": cdl_records_xform}
+
+    # test 2, with transform_results options, should transform to common context
+    _, results_noxform, _ = query_logs_sls_command(
+        {"limit": "1", "query": "SELECT * FROM `firewall.traffic`", "transform_results": "false"}, MockClient()
+    )
+    assert results_noxform == {"SLS.Logging": cdl_records}
+
+
 def test_query_logs_command_transform_sysmtem_logs():
     """
     Given:
@@ -244,6 +274,29 @@ def test_query_logs_command_transform_sysmtem_logs():
     assert results_xform == {"CDL.Logging": cdl_records_xform}
 
 
+def test_query_logs_sls_command_transform_sysmtem_logs():
+    """
+    Given:
+        - a list of SLS query results from the log.system table.
+    When
+        - running query_logs_sls_command function
+    Then
+        - the SLS query results from the log.system table should be transformed to the system log context format.
+    """
+    from CortexDataLake import query_logs_sls_command
+
+    cdl_records = load_test_data("./test_data/test_query_logs_sls_command_transform_results_system_logs.json")
+    cdl_records_xform = load_test_data("./test_data/test_query_logs_sls_command_transform_results_system_logs_xformed.json")
+
+    class MockClient:
+        def query_loggings(self, query, page_number=None, page_size=None):
+            return cdl_records, []
+
+    _, results_xform, _ = query_logs_sls_command({"limit": "1", "query": "SELECT * FROM `log.system`"}, MockClient())
+
+    assert results_xform == {"SLS.Logging": cdl_records_xform}
+
+
 def test_query_gp_logs_command():
     """
     Given:
@@ -265,6 +318,29 @@ def test_query_gp_logs_command():
     _, results_xform, _ = query_gp_logs_command({"limit": "1", "start_time": "1970-01-01 00:00:00"}, MockClient())
 
     assert results_xform == {"CDL.Logging.GlobalProtect": cdl_records_xform}
+
+
+def test_query_gp_logs_sls_command():
+    """
+    Given:
+        - a list of SLS query results from the firewall.globalprotect table.
+    When
+        - running query_gp_logs_sls_command function
+    Then
+        - the SLS query results from the firewall.globalprotect table should be transformed to the GP log context format.
+    """
+    from CortexDataLake import query_gp_logs_sls_command
+
+    cdl_records = load_test_data("./test_data/test_query_logs_sls_command_transform_results_gp_logs.json")
+    cdl_records_xform = load_test_data("./test_data/test_query_logs_sls_command_transform_results_gp_logs_xformed.json")
+
+    class MockClient:
+        def query_loggings(self, query, page_number=None, page_size=None):
+            return cdl_records, []
+
+    _, results_xform, _ = query_gp_logs_sls_command({"limit": "1", "start_time": "1970-01-01 00:00:00"}, MockClient())
+
+    assert results_xform == {"SLS.Logging.GlobalProtect": cdl_records_xform}
 
 
 class TestPagination:
