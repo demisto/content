@@ -2891,7 +2891,7 @@ script:
       - Enabled
       defaultValue: Enabled
     description: "Enforces SSL/TLS connections for the PostgreSQL server, rejecting unencrypted traffic. Requires 'Microsoft.DBforPostgreSQL/servers/configuration/*' permission."
-    name: azure-postgres-server-enable-ssl-quick-action
+    name: azure-postgres-enable-ssl-quick-action
     prettyname: Enable SSL on Postgres Server
     hidden: true
     quickaction: true
