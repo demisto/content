@@ -353,7 +353,7 @@ def create_dbot_context(indicator, ind_type, ind_score):
     The default score mapping function is: -1 -> 0, [0,3] -> 1, [4,7] -> 2, [8,10] -> 3.
 
     If threshold parameter is set manually, it overrides the default function definition for a
-    malicious indicator, such that TQ score >= threshold iff the DBot score == 3.
+    malicious indicator, such that TQ score >= threshold if the DBot score == 3.
 
     Args:
         indicator (str): The indicator name
