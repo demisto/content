@@ -1,6 +1,6 @@
 {
-    "name": "IBM Security Verify Directory",
-    "description": "IBM Security Verify Directory",
+    "name": "IBM Directory Server for IBM (LDAP)",
+    "description": "IBM Directory Server for IBM (LDAP)",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
