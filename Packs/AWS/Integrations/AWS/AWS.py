@@ -373,7 +373,7 @@ class S3:
     @staticmethod
     def delete_bucket_website_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
         """
-        Deletes the static website configuration from a specified S3 bucket.
+        Deletes the static website configuration from the specified S3 bucket.
         This command performs the 'DeleteBucketWebsite' API operation. If the command succeeds,
         it confirms the removal of the website configuration. Note that the bucket itself is not deleted.
 
