@@ -351,7 +351,7 @@ script:
           description: The hierarchy or structure representing the asset.
         - contextPath: Core.CoreAsset.xdm__asset__type__category
           description: The asset category type.
-        - contextPath: Core.CoreAsset.xdm__cloud__region
+        - contextPath: Core.CoreAsset.xdm__asset__cloud__region
           description: The cloud region where the asset resides.
         - contextPath: Core.CoreAsset.xdm__asset__module_unstructured_fields
           description: The unstructured fields or metadata associated with the asset module.
