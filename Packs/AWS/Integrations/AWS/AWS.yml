@@ -238,6 +238,64 @@ script:
       description: 'The bucket to which to apply the ACL.'
       required: true
 
+  - name: aws-s3-bucket-acl-set-to-private-quick-action
+    description: Sets the Access Control List (ACL) for the S3 bucket to private by running the aws s3api put-bucket-acl command in your environment. Successful execution requires the s3:PutBucketAcl permission.
+    prettyname: Set Bucket ACL to Private
+    hidden: true
+    quickaction: true
+    arguments:
+      - name: account_id
+        prettyname: Account ID
+        description: The AWS account ID.
+        required: true
+      - name: region
+        prettyname: Region
+        description: The AWS region.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+      - name: bucket
+        prettyname: Bucket Name
+        description: 'The bucket to which to apply the ACL.'
+        required: true
+      - name: acl
+        description: 'The canned ACL to apply to the bucket.'
+        defaultValue: 'private'
+        hidden: true
+
+
   - name: aws-s3-bucket-logging-put
     description: Configure logging settings for an AWS S3 bucket, allowing to monitor access to the bucket through detailed access logs that are delivered to a designated target bucket.
     arguments:
@@ -290,6 +348,67 @@ script:
     - description: 'The prefix to be used for log object keys (e.g., "logs/"). Objects will be stored as: targetBucket/targetPrefix/sourceBucket/YYYY-MM-DD-HH-MM-SS-UniqueString.'
       name: target_prefix
       required: false
+
+  - name: aws-s3-bucket-enable-bucket-access-logging-quick-action
+    description: Enables server access logging for the S3 bucket, delivering detailed logs to a target bucket and prefix by running the aws s3api put-bucket-logging command. Successful execution requires the s3:PutBucketLogging permission.
+    prettyname: Enable S3 Access Logging
+    hidden: true
+    quickaction: true
+    arguments:
+      - name: account_id
+        prettyname: Account ID
+        description: The AWS account ID.
+        required: true
+      - name: region
+        prettyname: Region
+        description: The AWS region.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+      - name: bucket
+        prettyname: Bucket Name
+        description: The name of the bucket for which to set the logging parameters.
+        required: true
+      - name: target_bucket
+        description: 'The name of the bucket where server access logs should be delivered. If this is NOT provided, logging will be disabled.'
+        defaultValue: ${target-bucket}
+        hidden: true
+      - name: target_prefix
+        description: 'The prefix to be used for log object keys (e.g., "logs/"). Objects will be stored as: targetBucket/targetPrefix/sourceBucket/YYYY-MM-DD-HH-MM-SS-UniqueString.'
+        defaultValue: ${target-prefix}
+        hidden: true
 
   - name: aws-s3-bucket-versioning-put
     description: Sets the versioning state of an existing bucket.
@@ -1313,7 +1432,7 @@ script:
       - 'true'
       - 'false'
 
-  - name: aws-rds-db-cluster-modify-quick-action
+  - name: aws-rds-db-cluster-enable-iam-auth-quick-action
     description: This action enables 'iam database authentication' for the RDS cluster by running the aws rds modify-db-cluster command in your environment. It requires 'rds:ModifyDBCluster' permission.
     prettyname: Enable IAM Authentication on RDS Cluster
     hidden: true
@@ -1361,17 +1480,17 @@ script:
             - me-south-1
             - me-central-1
             - sa-east-1
-        - name: db_cluster_identifier
-          prettyname: RDS Cluster
-          description: 'The DB cluster identifier for the modified cluster. This parameter is not case sensitive and is valid for Aurora DB and Multi-AZ DB cluster types. It must match the identifier of an existing DB cluster.'
-          required: true
-        - name: enable_iam_database_authentication
-          description: 'Weather to enable mapping of Amazon Web Services Identity and Access Management (IAM) accounts to database accounts. By default, mapping isn’t enabled.'
-          defaultValue: 'true'
-          hidden: true
+      - name: db_cluster_identifier
+        prettyname: RDS Cluster ID
+        description: 'The DB cluster identifier for the modified cluster. This parameter is not case sensitive and is valid for Aurora DB and Multi-AZ DB cluster types. It must match the identifier of an existing DB cluster.'
+        required: true
+      - name: enable_iam_database_authentication
+        description: 'Weather to enable mapping of Amazon Web Services Identity and Access Management (IAM) accounts to database accounts. By default, mapping isn’t enabled.'
+        defaultValue: 'true'
+        hidden: true
 
   - name: aws-rds-db-cluster-snapshot-attribute-modify
-    description: Modifies the attributes associated with a DB cluster snapshot.
+    description: Set RDS Cluster Snapshot to Private
     arguments:
     - name: account_id
       description: The AWS account ID.
@@ -1486,6 +1605,64 @@ script:
             description: 'A CSV list of DB cluster snapshot attributes to remove from the attribute specified by AttributeName. Default is all.'
             defaultValue: 'all'
             hidden: true
+
+  - name: aws-rds-db-cluster-enable-deletion-protection-quick-action
+    description: Enables deletion protection for the RDS DB cluster to prevent accidental deletion by running the aws rds modify-db-cluster command. Successful execution requires the rds:ModifyDBCluster permission.
+    prettyname: Enable RDS Cluster Deletion Protection
+    hidden: true
+    quickaction: true
+    arguments:
+      - name: account_id
+        prettyname: Account ID
+        description: The AWS account ID.
+        required: true
+      - name: region
+        prettyname: Region
+        description: The AWS region.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+            - ap-northeast-3
+            - ap-northeast-2
+            - ap-southeast-1
+            - ap-southeast-2
+            - ap-southeast-7
+            - ap-northeast-1
+            - ca-central-1
+            - ca-west-1
+            - eu-central-1
+            - eu-west-1
+            - eu-west-2
+            - eu-south-1
+            - eu-west-3
+            - eu-south-2
+            - eu-north-1
+            - eu-central-2
+            - il-central-1
+            - mx-central-1
+            - me-south-1
+            - me-central-1
+            - sa-east-1
+          - name: db_cluster_identifier
+            prettyname: RDS Cluster ID
+            description: 'The DB cluster identifier for the modified cluster. This parameter is not case sensitive and is valid for Aurora DB and Multi-AZ DB cluster types. It must match the identifier of an existing DB cluster.'
+            required: true
+          - name: deletion_protection
+            description: 'Weather the DB cluster has deletion protection enabled. The database can’t be deleted when deletion protection is enabled. By default, deletion protection isn’t enabled.'
+            defaultValue: 'true'
+            hidden: true
+
 
   - name: aws-rds-db-instance-modify
     description: "Modifies an Amazon RDS DB instance. Allows changing various settings of an existing DB instance, such as instance class, storage capacity, security groups, and other configuration parameters."
@@ -2311,6 +2488,71 @@ script:
     - name: ip_permissions
       description: 'The sets of IP permissions to authorize, in JSON format. Use this for complex rule configurations or when authorizing multiple rules. Cannot be used together with protocol/port/cidr arguments.'
       required: false
+
+  - name: aws-ec2-security-group-ingress-limit-network-access-quick-action
+    description: This action runs the aws ec2 authorize-security-group-ingress command in your AWS environment to add a new security group ingress rule, allowing incomming traffic as defined by your specified IP ranges, ports and protocols. It requires ec2:AuthorizeSecurityGroupIngress permissions.
+    prettyname: Limit Network Access
+    hidden: true
+    quickaction: true
+    arguments:
+      - name: account_id
+        prettyname: Account ID
+        description: The AWS account ID.
+        required: true
+      - name: region
+        prettyname: Region
+        description: The AWS region.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+      - name: group_id
+        prettyname: Security Group ID
+        description: 'The ID of the security group.'
+        required: true
+      - name: protocol
+        description: 'The IP protocol: tcp, udp, icmp, or icmpv6. Use -1 to specify all protocols. When used with port and cidr arguments for simple rule authorization.'
+        defaultValue: ${protocol}
+        hidden: true
+      - name: port
+        description: 'For TCP or UDP: The range of ports to authorize (e.g., "80" or "80-443"). For ICMP: A single integer or range (type-code) representing the ICMP type and code. Use with protocol and cidr for simple rule authorization.'
+        defaultValue: ${port}
+        hidden: true
+      - name: cidr
+        description: 'The IPv4 address range in CIDR format (e.g., "0.0.0.0/0"). Use with protocol and port for simple rule authorization.'
+        defaultValue: ${cidr}
+        hidden: true
 
   - name: aws-ec2-security-group-egress-revoke
     description: 'Removes the specified outbound (egress) rules from the specified security group.'
