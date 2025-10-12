@@ -487,7 +487,7 @@ script:
           - me-central-1
           - sa-east-1
       - name: bucket
-        description: The name of the Amazon S3 bucket whose OwnershipControls you want to set.
+        description: The name of the Amazon S3 bucket for which to configure Ownership Controls.
         required: true
       - name: ownership_controls_rule
         description: Ownership for a bucket's ownership controls.
