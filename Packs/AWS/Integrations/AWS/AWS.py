@@ -1160,8 +1160,10 @@ class RDS:
 
             if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK:
                 db_instance = response.get("DBInstance", {})
-                readable_output = (f"Successfully modified DB instance {args.get('db_instance_identifier')}"
-                                   f"\n\nUpdated DB Instance details:\n\n")
+                readable_output = (
+                    f"Successfully modified DB instance {args.get('db_instance_identifier')}"
+                    f"\n\nUpdated DB Instance details:\n\n"
+                )
                 if db_instance:
                     db_instance = convert_datetimes_to_iso_safe(db_instance)
                     readable_output += tableToMarkdown("", t=db_instance, removeNull=True)
