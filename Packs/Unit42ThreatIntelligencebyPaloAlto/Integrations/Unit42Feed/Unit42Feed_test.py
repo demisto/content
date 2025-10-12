@@ -268,7 +268,7 @@ def test_test_module_success(client, mocker):
     assert result == "ok"
 
 
-def test_test_module_failure(client, mocker):
+def test_test_module_empty_result(client, mocker):
     """
     Given:
         - A Unit42Feed client
@@ -276,7 +276,7 @@ def test_test_module_failure(client, mocker):
     When:
         - Running test_module function
     Then:
-        - Returns failure message
+        - Returns ok
     """
     mock_response = {"data": []}
     # Mock the _http_request method to avoid actual API calls
@@ -284,7 +284,7 @@ def test_test_module_failure(client, mocker):
 
     result = unit42_test_module(client)
 
-    assert "Failed to connect" in result
+    assert result == "ok"
 
 
 def test_test_module_exception(client, mocker):
@@ -300,9 +300,8 @@ def test_test_module_exception(client, mocker):
     # Mock the _http_request method to raise an exception
     mocker.patch.object(client, "_http_request", side_effect=Exception("API Error"))
 
-    # The test_module function doesn't catch exceptions, so it should raise
-    with pytest.raises(Exception, match="API Error"):
-        unit42_test_module(client)
+    res = unit42_test_module(client)
+    assert "Error: API Error" in res
 
 
 def test_create_location_indicators_and_relationships():
@@ -483,7 +482,7 @@ def test_map_indicator_basic():
     assert result["fields"]["creationdate"] == "2023-01-01T00:00:00Z"
     assert result["fields"]["reportedby"] == "Unit42"
     assert "test_tag" in result["fields"]["tags"]
-    assert result["fields"]["tlp_color"] == "RED"
+    assert result["fields"]["trafficlightprotocol"] == "RED"
     assert result["rawJSON"] == indicator_data
 
 
@@ -616,7 +615,7 @@ def test_map_threat_object_basic(mocker):
     assert threat_obj["fields"]["primarymotivation"] == "Espionage"
     assert threat_obj["fields"]["geocountry"] == "RUSSIA"
     assert "test_tag" in threat_obj["fields"]["tags"]
-    assert threat_obj["fields"]["tlp_color"] == "AMBER"
+    assert threat_obj["fields"]["trafficlightprotocol"] == "AMBER"
 
 
 def test_map_threat_object_with_relationships(mocker):
@@ -826,7 +825,7 @@ def test_fetch_indicators_basic(client, mocker):
         "feed_types": ["Indicators", "Threat Objects"],
         "indicator_types": ["ip", "domain"],
         "feed_tags": ["test_tag"],
-        "tlp_color": "RED",
+        "trafficlightprotocol": "RED",
     }
 
     current_time = datetime.now()

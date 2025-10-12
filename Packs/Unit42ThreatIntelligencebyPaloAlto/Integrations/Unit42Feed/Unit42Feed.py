@@ -738,10 +738,11 @@ def test_module(client: Client) -> str:
         Outputs.
     """
     # Test connection by getting a small number of indicators
-    response = client.get_indicators(limit=1)
-    if response and response.status_code == 200:
+    try:
+        client.get_indicators(limit=1)
         return "ok"
-    return "Failed to connect to Unit 42 API. Check your Server URL and License."
+    except Exception as e:
+        return f"Failed to connect to Unit 42 API. Check your Server URL and License. Error: {str(e)}"
 
 
 def fetch_indicators(client: Client, params: dict, current_time: datetime) -> list:
