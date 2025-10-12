@@ -41,8 +41,16 @@ PERMISSIONS_TO_COMMANDS = {
     "Microsoft.Network/networkSecurityGroups/securityRules/delete": ["azure-nsg-security-rule-delete"],
     "Microsoft.Network/networkInterfaces/read": ["azure-nsg-network-interfaces-list"],
     "Microsoft.Network/publicIPAddresses/read": ["azure-nsg-public-ip-addresses-list"],
-    "Microsoft.Storage/storageAccounts/read": ["azure-storage-account-update"],
-    "Microsoft.Storage/storageAccounts/write": ["azure-storage-account-update"],
+    "Microsoft.Storage/storageAccounts/read": [
+        "azure-storage-account-update",
+        "azure-network-disable-storage-account-access-quick-action",
+        "azure-set-storage-account-https-only-quick-action",
+        ],
+    "Microsoft.Storage/storageAccounts/write": [
+        "azure-storage-account-update",
+        "azure-network-disable-storage-account-access-quick-action",
+        "azure-set-storage-account-https-only-quick-action",
+        ],
     "Microsoft.Storage/storageAccounts/blobServices/containers/write": ["azure-storage-blob-containers-update"],
     "Microsoft.Storage/storageAccounts/blobServices/read": [
         "azure-storage-blob-service-properties-set",
@@ -51,18 +59,55 @@ PERMISSIONS_TO_COMMANDS = {
     "Microsoft.Storage/storageAccounts/blobServices/write": ["azure-storage-blob-service-properties-set"],
     "Microsoft.Authorization/policyAssignments/read": ["azure-policy-assignment-create"],
     "Microsoft.Authorization/policyAssignments/write": ["azure-policy-assignment-create"],
-    "Microsoft.DBforPostgreSQL/servers/read": ["azure-postgres-server-update"],
-    "Microsoft.DBforPostgreSQL/servers/write": ["azure-postgres-server-update"],
-    "Microsoft.DBforPostgreSQL/servers/configurations/read": ["azure-postgres-config-set"],
-    "Microsoft.DBforPostgreSQL/servers/configurations/write": ["azure-postgres-config-set"],
-    "Microsoft.Web/sites/config/read": ["azure-webapp-config-set, azure-webapp-auth-update"],
-    "Microsoft.Web/sites/config/write": ["azure-webapp-config-set, azure-webapp-auth-update"],
+    "Microsoft.DBforPostgreSQL/servers/read": [
+        "azure-postgres-server-update",
+        "azure-postgres-enable-ssl-quick-action"
+        ],
+    "Microsoft.DBforPostgreSQL/servers/write": [
+        "azure-postgres-server-update",
+        "azure-postgres-enable-ssl-quick-action"
+        ],
+    "Microsoft.DBforPostgreSQL/servers/configurations/read": [
+        "azure-postgres-config-set",
+        "azure-postgres-enable-checkpoint-logging-quick-action",
+        "azure-postgres-enable-disconnection-logging-quick-action",
+        "azure-postgres-enable-session-connection-logging-quick-action",
+        ],
+    "Microsoft.DBforPostgreSQL/servers/configurations/write": [
+        "azure-postgres-config-set",
+        "azure-postgres-enable-checkpoint-logging-quick-action",
+        "azure-postgres-enable-disconnection-logging-quick-action",
+        "azure-postgres-enable-session-connection-logging-quick-action",
+        ],
+    "Microsoft.Web/sites/config/read": [
+        "azure-webapp-config-set",
+        "azure-webapp-auth-update",
+        "azure-webapp-set-min-tls-version-quick-action",
+        "azure-function-app-set-min-tls-version-quick-action",
+        ],
+    "Microsoft.Web/sites/config/write": [
+        "azure-webapp-config-set",
+        "azure-webapp-auth-update",
+        "azure-webapp-set-min-tls-version-quick-action","azure-function-app-set-min-tls-version-quick-action",
+        ],
     "Microsoft.Web/sites/read": ["azure-webapp-update"],
     "Microsoft.Web/sites/write": ["azure-webapp-update"],
-    "Microsoft.DBforMySQL/flexibleServers/configurations/read": ["azure-mysql-flexible-server-param-set"],
-    "Microsoft.DBforMySQL/flexibleServers/configurations/write": ["azure-mysql-flexible-server-param-set"],
-    "Microsoft.Insights/logprofiles/read": ["azure-monitor-log-profile-update"],
-    "Microsoft.Insights/logprofiles/write": ["azure-monitor-log-profile-update"],
+    "Microsoft.DBforMySQL/flexibleServers/configurations/read": [
+        "azure-mysql-flexible-server-param-set",
+        "azure-mysql-set-secure-transport-quick-action",
+        ],
+    "Microsoft.DBforMySQL/flexibleServers/configurations/write": [
+        "azure-mysql-flexible-server-param-set",
+        "azure-mysql-set-secure-transport-quick-action",
+        ],
+    "Microsoft.Insights/logprofiles/read": [
+        "azure-monitor-log-profile-update",
+        "azure-monitor-log-retention-period-quick-action",
+        ],
+    "Microsoft.Insights/logprofiles/write": [
+        "azure-monitor-log-profile-update",
+        "azure-monitor-log-retention-period-quick-action",
+        ],
     "Microsoft.Compute/disks/read": ["azure-disk-update"],
     "Microsoft.Compute/disks/write": ["azure-disk-update"],
     "Microsoft.ContainerRegistry/registries/read": ["azure-acr-update"],
@@ -2931,6 +2976,16 @@ def main():
             "azure-nsg-resource-group-list": nsg_resource_group_list_command,
             "azure-nsg-network-interfaces-list": nsg_network_interfaces_list_command,
             "azure-nsg-public-ip-addresses-list": nsg_public_ip_addresses_list_command,
+            "azure-postgres-enable-checkpoint-logging-quick-action": set_postgres_config_command,
+            "azure-webapp-set-min-tls-version-quick-action": set_webapp_config_command,
+            "azure-function-app-set-min-tls-version-quick-action": set_webapp_config_command,
+            "azure-mysql-set-secure-transport-quick-action": mysql_flexible_server_param_set_command,
+            "azure-postgres-enable-disconnection-logging-quick-action": set_postgres_config_command,
+            "azure-postgres-enable-session-connection-logging-quick-action": set_postgres_config_command,
+            "azure-network-disable-storage-account-access-quick-action": storage_account_update_command,
+            "azure-monitor-log-retention-period-quick-action": monitor_log_profile_update_command,
+            "azure-set-storage-account-https-only-quick-action": storage_account_update_command,
+            "azure-postgres-enable-ssl-quick-action": postgres_server_update_command,
         }
         if command == "test-module" and connector_id:
             demisto.debug(f"Running health check for connector ID: {connector_id}")
