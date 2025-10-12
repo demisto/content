@@ -47,26 +47,62 @@ PERMISSIONS_TO_COMMANDS = {
     "Microsoft.Storage/storageAccounts/blobServices/read": [
         "azure-storage-blob-service-properties-set",
         "azure-storage-blob-service-properties-get",
+        "azure-storage-blob-enable-soft-delete-quick-action",
     ],
-    "Microsoft.Storage/storageAccounts/blobServices/write": ["azure-storage-blob-service-properties-set"],
+    "Microsoft.Storage/storageAccounts/blobServices/write": [
+        "azure-storage-blob-service-properties-set",
+        "azure-storage-blob-enable-soft-delete-quick-action",
+        ],
     "Microsoft.Authorization/policyAssignments/read": ["azure-policy-assignment-create"],
     "Microsoft.Authorization/policyAssignments/write": ["azure-policy-assignment-create"],
     "Microsoft.DBforPostgreSQL/servers/read": ["azure-postgres-server-update"],
     "Microsoft.DBforPostgreSQL/servers/write": ["azure-postgres-server-update"],
-    "Microsoft.DBforPostgreSQL/servers/configurations/read": ["azure-postgres-config-set"],
-    "Microsoft.DBforPostgreSQL/servers/configurations/write": ["azure-postgres-config-set"],
+    "Microsoft.DBforPostgreSQL/servers/configurations/read": [
+        "azure-postgres-config-set",
+        "azure-postgres-config-set-log-retention-quick-action",
+        "azure-postgres-enable-statement-logging-quick-action"
+        ],
+    "Microsoft.DBforPostgreSQL/servers/configurations/write": [
+        "azure-postgres-config-set",
+        "azure-postgres-config-set-log-retention-quick-action",
+        "azure-postgres-enable-statement-logging-quick-action"
+        ],
     "Microsoft.Web/sites/config/read": ["azure-webapp-config-set, azure-webapp-auth-update"],
     "Microsoft.Web/sites/config/write": ["azure-webapp-config-set, azure-webapp-auth-update"],
-    "Microsoft.Web/sites/read": ["azure-webapp-update"],
-    "Microsoft.Web/sites/write": ["azure-webapp-update"],
+    "Microsoft.Web/sites/read": [
+        "azure-webapp-update",
+        "azure-webapp-update-assign-managed-identity-quick-action",
+        ],
+    "Microsoft.Web/sites/write": [
+        "azure-webapp-update",
+        "azure-webapp-update-assign-managed-identity-quick-action",
+        ],
     "Microsoft.DBforMySQL/flexibleServers/configurations/read": ["azure-mysql-flexible-server-param-set"],
     "Microsoft.DBforMySQL/flexibleServers/configurations/write": ["azure-mysql-flexible-server-param-set"],
     "Microsoft.Insights/logprofiles/read": ["azure-monitor-log-profile-update"],
     "Microsoft.Insights/logprofiles/write": ["azure-monitor-log-profile-update"],
-    "Microsoft.Compute/disks/read": ["azure-disk-update"],
-    "Microsoft.Compute/disks/write": ["azure-disk-update"],
-    "Microsoft.ContainerRegistry/registries/read": ["azure-acr-update"],
-    "Microsoft.ContainerRegistry/registries/write": ["azure-acr-update"],
+    "Microsoft.Compute/disks/read": [
+        "azure-disk-update",
+        "azure-disable-public-private-access-vm-disk-quick-action",
+        "azure-disk-set-data-access-aad-quick-action",
+        ],
+    "Microsoft.Compute/disks/write": [
+        "azure-disk-update",
+        "azure-disable-public-private-access-vm-disk-quick-action",
+        "azure-disk-set-data-access-aad-quick-action",
+        ],
+    "Microsoft.ContainerRegistry/registries/read": [
+        "azure-acr-update",
+        "azure-acr-disable-public-private-access-quick-action",
+        "azure-acr-disable-authentication-as-arm-quick-action",
+        "azure-acr-disable-anonymous-pull-quick-action",
+        ],
+    "Microsoft.ContainerRegistry/registries/write": [
+        "azure-acr-update",
+        "azure-acr-disable-public-private-access-quick-action",
+        "azure-acr-disable-authentication-as-arm-quick-action",
+        "azure-acr-disable-anonymous-pull-quick-action",
+        ],
     "Microsoft.KeyVault/vaults/read": ["azure-key-vault-update"],
     "Microsoft.KeyVault/vaults/write": ["azure-key-vault-update"],
     "Microsoft.Sql/servers/databases/securityAlertPolicies/read": ["azure-sql-db-threat-policy-update"],
@@ -2931,6 +2967,15 @@ def main():
             "azure-nsg-resource-group-list": nsg_resource_group_list_command,
             "azure-nsg-network-interfaces-list": nsg_network_interfaces_list_command,
             "azure-nsg-public-ip-addresses-list": nsg_public_ip_addresses_list_command,
+            "azure-postgres-config-set-log-retention-quick-action": set_postgres_config_command,
+            "azure-webapp-update-assign-managed-identity-quick-action": webapp_update_command,
+            "azure-storage-blob-enable-soft-delete-quick-action": storage_blob_service_properties_set_command,
+            "azure-postgres-enable-statement-logging-quick-action": set_postgres_config_command,
+            "azure-disable-public-private-access-vm-disk-quick-action": disk_update_command,
+            "azure-disk-set-data-access-aad-quick-action": disk_update_command,
+            "azure-acr-disable-public-private-access-quick-action": acr_update_command,
+            "azure-acr-disable-authentication-as-arm-quick-action": acr_update_command,
+            "azure-acr-disable-anonymous-pull-quick-action": acr_update_command,
         }
         if command == "test-module" and connector_id:
             demisto.debug(f"Running health check for connector ID: {connector_id}")
