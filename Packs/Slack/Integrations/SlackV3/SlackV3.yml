@@ -488,17 +488,15 @@ script:
     - description: Deprecated. Use *conversation_id* instead.
       name: channel_id
       deprecated: true
-    - description: The conversation name. Could be a channel name or username/display name in case of DMs.
-                   Either This value or "conversation_id" are required. When both are specified, conversation_id is used.
+    - description: The name of the conversation. For channels, provide the channel name. For direct messages, use the username or display name. Either this or *conversation_id* is required. If both are provided, *conversation_id* takes precedence.
       name: conversation_name
-    - description: The conversation id.
-                   Either this value or "conversation_name" is required. When both are specified, conversation_id is used.
+    - description: The ID of the conversation. Either this or *conversation_name* is required. If both are provided, *conversation_id* takes precedence.
       name: conversation_id
     - defaultValue: 100
       description: Set this argument to specify how many results to return. If you have more results than the limit you set, you will need to use the cursor argument to paginate your results.
       name: limit
     - description: |
-        Lower bound for conversation history (sent to Slack 'oldest' query parameter). Returns messages with time stamp ≥ this value. Accepts Unix timestamp (e.g., "1727448000.000200"). Results are returned in descending order.
+        Lower bound for conversation history (sent to Slack 'oldest' query parameter). Returns messages with time stamp ≥ this value. Accepts Unix timestamp or ISO strings (e.g., "1727448000.000200", "2025-10-12T09:00:00+03:00"). Results are returned in descending order.
       name: from_time
     description: Fetches a conversation's history of messages and events.
     name: slack-get-conversation-history

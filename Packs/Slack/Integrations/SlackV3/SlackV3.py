@@ -5,7 +5,9 @@ import ssl
 import threading
 from typing import Literal, TypedDict, get_args
 from urllib.parse import urlparse
-
+from datetime import UTC
+import dateparser
+import math
 import aiohttp
 import demistomock as demisto  # noqa: F401
 import slack_sdk
@@ -200,7 +202,7 @@ def next_expiry_time() -> float:
     Returns:
         A float representation of a new expiry time with an offset of 5 seconds
     """
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     unix_timestamp = now.timestamp()
     unix_timestamp_plus_5_seconds = unix_timestamp + 5
     return unix_timestamp_plus_5_seconds
@@ -1500,7 +1502,7 @@ def fetch_context(force_refresh: bool = False) -> dict:
     :return: dict: Either a cached copy of the integration context, or the context itself.
     """
     global CACHED_INTEGRATION_CONTEXT, CACHE_EXPIRY
-    now = int(datetime.now(timezone.utc).timestamp())
+    now = int(datetime.now(UTC).timestamp())
     if (now >= CACHE_EXPIRY) or force_refresh:
         demisto.debug(
             f"Cached context has expired or forced refresh. forced refresh value is {force_refresh}. Fetching new context"
@@ -2735,6 +2737,40 @@ def list_channels():
     )
 
 
+def to_unix_seconds_str(s: str) -> str:
+    if not s:
+        return "0"
+    # already a numeric Unix seconds string
+    try:
+        x = float(s)
+        # treat as seconds
+        if math.isfinite(x) and abs(x) < 1e12:
+            return f"{x:.6f}"
+    except ValueError:
+        pass
+
+    # Fallback: parse human/ISO text with dateparser
+    dt = dateparser.parse(
+        s,
+        settings={
+            "RETURN_AS_TIMEZONE_AWARE": True,
+            "TO_TIMEZONE": "UTC",
+            "PREFER_DAY_OF_MONTH": "first",
+            "DATE_ORDER": "YMD",
+        },
+    )
+    if dt is None:
+        raise ValueError(f"Could not parse time string: {s!r}")
+
+    # Ensure tz-aware UTC
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=UTC)
+    else:
+        dt = dt.astimezone(UTC)
+
+    return f"{dt.timestamp():.6f}"
+
+
 def get_direct_message_channel_id_by_username(username):
     """
     Gets the direct message channel ID for a given username.
@@ -2746,23 +2782,19 @@ def get_direct_message_channel_id_by_username(username):
         str or None: The channel ID of the direct message conversation with the user,
                     or None if the conversation doesn't exist or an error occurs.
     """
-    try:
-        user_info = get_user_by_name(username)
-        if not user_info or not user_info.get("id"):
-            return None
+    user_info = get_user_by_name(username)
+    if not user_info or not user_info.get("id"):
+        return None
 
-        user_id = user_info["id"]
-        raw_response = send_slack_request_sync(
-            CLIENT, "conversations.open", http_verb="POST", body={"users": user_id, "prevent_creation": True}
-        )
+    user_id = user_info["id"]
+    raw_response = send_slack_request_sync(
+        CLIENT, "conversations.open", http_verb="POST", body={"users": user_id, "prevent_creation": True}
+    )
 
-        if not raw_response or not raw_response.get("channel"):
-            return None
+    if not raw_response.get("channel"):
+        return None
 
-        return raw_response["channel"].get("id")
-
-    except Exception as e:
-        demisto.debug(f"Error getting direct message channel for username '{username}': {e}")
+    return raw_response["channel"].get("id")
 
 
 def resolve_conversation_id_from_name(channel_name):
@@ -2789,7 +2821,7 @@ def resolve_conversation_id_from_name(channel_name):
         channel_id = conversation_info.get("id")
 
     if not channel_id:
-        raise DemistoException(f"Channel '{channel_name}' does not exist or could not be found.")
+        raise DemistoException(f"Channel '{channel_name}' does not exist.")
 
     return channel_id
 
@@ -2815,7 +2847,6 @@ def conversation_history():
     readable_output = ""
     raw_response = send_slack_request_sync(CLIENT, "conversations.history", http_verb="GET", body=body)
     messages = raw_response.get("messages", "")
-    demisto.debug(f"Messages: {messages}")
     if not raw_response.get("ok"):
         raise DemistoException(
             f'An error occurred while listing conversation history: {raw_response.get("error")}', res=raw_response
@@ -2860,7 +2891,6 @@ def conversation_history():
         }
         context.append(entry)
     readable_output = tableToMarkdown(f"Channel details from Channel ID - {conversation_id}", context)
-    demisto.debug(f"Context: {context}")
     demisto.results(
         {
             "Type": entryTypes["note"],

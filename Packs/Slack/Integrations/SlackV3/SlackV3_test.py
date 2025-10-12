@@ -5377,5 +5377,5 @@ def test_resolve_conversation_id_from_name_no_channel_found(mocker):
     mocker.patch("SlackV3.get_direct_message_channel_id_by_username", return_value=None)
     mocker.patch("SlackV3.get_conversation_by_name", return_value={})
 
-    with pytest.raises(DemistoException, match="Channel 'nonexistent' does not exist or could not be found."):
+    with pytest.raises(DemistoException, match="Channel 'nonexistent' does not exist."):
         resolve_conversation_id_from_name("nonexistent")
