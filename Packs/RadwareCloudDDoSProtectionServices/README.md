@@ -4,7 +4,8 @@
 
 ## Overview
 
-Radware Cloud DDoS Protection Service provides a robust, multi-layered defense using advanced behavioral algorithms for swift detection and mitigation of volumetric and sophisticated application-layer (L7) DDoS threats. The service is delivered globally via a high-capacity scrubbing network, offering flexible deployment models including Always-On, On-Demand, and Hybrid to align with diverse organizational security requirements
+Radware Cloud DDoS Protection Service provides a robust, multi-layered defense using advanced behavioral algorithms for swift detection and mitigation of volumetric and sophisticated application-layer (L7) DDoS threats.  
+The service is delivered globally via a high-capacity scrubbing network, offering flexible deployment models including Always-On, On-Demand, and Hybrid to align with diverse organizational security requirements
 
 ## This Pack Includes
 
@@ -24,11 +25,11 @@ Radware Cloud DDoS Protection Service provides a robust, multi-layered defense u
 
 ### Configure Radware Cloud DDoS Protection Service
 
-1. Navigate to **Accounts** -> API Keys.
+1. Navigate to **Accounts** -> **API Keys**.
 2. Click on the _+_ icon to create a new API Key.
 3. Fill out the form in the pane.
 4. Click **Save**. The _Add New API Key dialog will appear_.
-5. Copy the API Key that appears in the window
+5. Copy the API Key that appears in the window.
 6. Click **Confirm** to confirm the creation of the new API Key.
 
 Note:  
