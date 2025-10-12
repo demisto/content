@@ -52,7 +52,7 @@ PERMISSIONS_TO_COMMANDS = {
     "Microsoft.Storage/storageAccounts/blobServices/write": [
         "azure-storage-blob-service-properties-set",
         "azure-storage-blob-enable-soft-delete-quick-action",
-        ],
+    ],
     "Microsoft.Authorization/policyAssignments/read": ["azure-policy-assignment-create"],
     "Microsoft.Authorization/policyAssignments/write": ["azure-policy-assignment-create"],
     "Microsoft.DBforPostgreSQL/servers/read": ["azure-postgres-server-update"],
@@ -60,23 +60,23 @@ PERMISSIONS_TO_COMMANDS = {
     "Microsoft.DBforPostgreSQL/servers/configurations/read": [
         "azure-postgres-config-set",
         "azure-postgres-config-set-log-retention-quick-action",
-        "azure-postgres-enable-statement-logging-quick-action"
-        ],
+        "azure-postgres-enable-statement-logging-quick-action",
+    ],
     "Microsoft.DBforPostgreSQL/servers/configurations/write": [
         "azure-postgres-config-set",
         "azure-postgres-config-set-log-retention-quick-action",
-        "azure-postgres-enable-statement-logging-quick-action"
-        ],
+        "azure-postgres-enable-statement-logging-quick-action",
+    ],
     "Microsoft.Web/sites/config/read": ["azure-webapp-config-set, azure-webapp-auth-update"],
     "Microsoft.Web/sites/config/write": ["azure-webapp-config-set, azure-webapp-auth-update"],
     "Microsoft.Web/sites/read": [
         "azure-webapp-update",
         "azure-webapp-update-assign-managed-identity-quick-action",
-        ],
+    ],
     "Microsoft.Web/sites/write": [
         "azure-webapp-update",
         "azure-webapp-update-assign-managed-identity-quick-action",
-        ],
+    ],
     "Microsoft.DBforMySQL/flexibleServers/configurations/read": ["azure-mysql-flexible-server-param-set"],
     "Microsoft.DBforMySQL/flexibleServers/configurations/write": ["azure-mysql-flexible-server-param-set"],
     "Microsoft.Insights/logprofiles/read": ["azure-monitor-log-profile-update"],
@@ -85,24 +85,24 @@ PERMISSIONS_TO_COMMANDS = {
         "azure-disk-update",
         "azure-disable-public-private-access-vm-disk-quick-action",
         "azure-disk-set-data-access-aad-quick-action",
-        ],
+    ],
     "Microsoft.Compute/disks/write": [
         "azure-disk-update",
         "azure-disable-public-private-access-vm-disk-quick-action",
         "azure-disk-set-data-access-aad-quick-action",
-        ],
+    ],
     "Microsoft.ContainerRegistry/registries/read": [
         "azure-acr-update",
         "azure-acr-disable-public-private-access-quick-action",
         "azure-acr-disable-authentication-as-arm-quick-action",
         "azure-acr-disable-anonymous-pull-quick-action",
-        ],
+    ],
     "Microsoft.ContainerRegistry/registries/write": [
         "azure-acr-update",
         "azure-acr-disable-public-private-access-quick-action",
         "azure-acr-disable-authentication-as-arm-quick-action",
         "azure-acr-disable-anonymous-pull-quick-action",
-        ],
+    ],
     "Microsoft.KeyVault/vaults/read": ["azure-key-vault-update"],
     "Microsoft.KeyVault/vaults/write": ["azure-key-vault-update"],
     "Microsoft.Sql/servers/databases/securityAlertPolicies/read": ["azure-sql-db-threat-policy-update"],
