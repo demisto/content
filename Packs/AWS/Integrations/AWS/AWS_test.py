@@ -4210,6 +4210,7 @@ def test_aws_error_handler_handle_client_error_unhandled_exception_debug_logging
 
     mock_debug.assert_any_call("[AWSErrorHandler] Unhandled error: Unexpected error")
 
+
 def test_delete_bucket_website_command_success(mocker):
     """
     Given: A mocked boto3 S3 client and valid bucket name argument.
