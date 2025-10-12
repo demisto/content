@@ -25,18 +25,6 @@ def parse_resource_ids(resource_id: str | None) -> list[str]:
     return resource_ids
 
 
-class ISOEncoder(json.JSONEncoder):
-    """
-    A custom JSONEncoder that converts datetime objects to ISO 8601 strings.
-    """
-
-    def default(self, obj):
-        if isinstance(obj, datetime):
-            return obj.isoformat()
-        # Let the base class handle other objects
-        return json.JSONEncoder.default(self, obj)
-
-
 def convert_datetimes_to_iso_safe(data):
     """
     Converts datetime objects in a data structure to ISO 8601 strings
