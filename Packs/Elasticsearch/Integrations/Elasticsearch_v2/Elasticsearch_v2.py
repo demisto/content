@@ -1200,6 +1200,59 @@ def get_indices_statistics_command(args, proxies):
     )
     return result
 
+def kibana_list_cases_command(args, proxies):
+    kibana_url = demisto.params().get("kibana_url", "").rstrip("/")
+    api_key = demisto.params().get("kibana_api_key")
+    if not kibana_url or not api_key:
+        return_error("Kibana URL and API key must be configured in integration settings")
+    headers = {
+        "Authorization": f"ApiKey {api_key}",
+        "kbn-xsrf": "true",
+        "Content-Type": "application/json"
+    }
+    params = {}
+    if args.get("status"):
+        params["status"] = args["status"]
+    if args.get("owner"):
+        params["owner"] = args["owner"]
+    url = f"{kibana_url}/api/cases"
+    res = requests.get(url, headers=headers, params=params, verify=INSECURE, proxies=proxies)
+    if res.status_code != 200:
+        return_error(f"Failed to list cases: {res.status_code} {res.text}")
+    cases = res.json().get("cases", res.json())
+    return CommandResults(
+        readable_output=tableToMarkdown("Kibana Cases", cases, removeNull=True),
+        outputs_prefix="Kibana.CaseList",
+        outputs_key_field="id",
+        outputs=cases,
+        raw_response=cases
+    )
+def kibana_get_case_command(args, proxies):
+    case_id = args.get("case_id")
+    kibana_url = demisto.params().get("kibana_url", "").rstrip("/")
+    api_key = demisto.params().get("kibana_api_key")
+    if not case_id:
+        return_error("case_id is required")
+    if not kibana_url or not api_key:
+        return_error("Kibana URL and API key must be configured in integration settings")
+    headers = {
+        "Authorization": f"ApiKey {api_key}",
+        "kbn-xsrf": "true",
+        "Content-Type": "application/json"
+    }
+    url = f"{kibana_url}/api/cases/{case_id}"
+    res = requests.get(url, headers=headers, verify=INSECURE, proxies=proxies)
+    if res.status_code != 200:
+        return_error(f"Failed to get case {case_id}: {res.status_code} {res.text}")
+    case_data = res.json()
+    return CommandResults(
+        readable_output=tableToMarkdown("Kibana Case", case_data, removeNull=True),
+        outputs_prefix="Kibana.Case",
+        outputs_key_field="id",
+        outputs=case_data,
+        raw_response=case_data
+    )
+
 
 def main():  # pragma: no cover
     proxies = handle_proxy()
@@ -1225,6 +1278,10 @@ def main():  # pragma: no cover
             return_results(integration_health_check(proxies))
         elif demisto.command() == "es-get-indices-statistics":
             return_results(get_indices_statistics_command(args, proxies))
+        elif demisto.command() == "kibana-list-cases":
+            return_results(kibana_list_cases_command(args, proxies))
+        elif demisto.command() == "kibana-get-case":
+            return_results(kibana_get_case_command(args, proxies))
 
     except Exception as e:
         if "The client noticed that the server is not a supported distribution of Elasticsearch" in str(e):

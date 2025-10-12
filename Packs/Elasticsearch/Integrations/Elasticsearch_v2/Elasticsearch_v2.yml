@@ -113,6 +113,21 @@ configuration:
   section: Connect
   advanced: true
   required: false
+- name: kibana_url
+  display: Kibana Base URL
+  type: 0
+  required: false
+  defaultvalue: ""
+  additionalinfo: "Base URL for Kibana (e.g., https://kibana.example.com)"
+  section: Connect
+  advanced: true
+- name: kibana_api_key
+  display: Kibana API Key
+  type: 4
+  required: false
+  additionalinfo: "API key for Kibana authentication"
+  section: Connect
+  advanced: true
 - display: Incident type
   name: incidentType
   type: 13
@@ -436,6 +451,39 @@ script:
     outputs:
       - contextPath: Elasticsearch.ESQLSearch
         description: ES|QL search result.
+  - name: kibana-list-cases
+    description: List all Kibana cases.
+    arguments:
+      - name: status
+        description: Filter by case status (open, closed, in-progress).
+      - name: owner
+        description: Filter by case owner.
+    outputs:
+      - contextPath: Kibana.CaseList.id
+        description: Case ID.
+        type: String
+      - contextPath: Kibana.CaseList.title
+        description: Case title.
+        type: String
+      - contextPath: Kibana.CaseList.status
+        description: Case status.
+        type: String
+  - name: kibana-get-case
+    description: Get details for a specific Kibana case.
+    arguments:
+      - name: case_id
+        required: true
+        description: The ID of the Kibana case to retrieve.
+    outputs:
+      - contextPath: Kibana.Case.id
+        description: Case ID.
+        type: String
+      - contextPath: Kibana.Case.title
+        description: Case title.
+        type: String
+      - contextPath: Kibana.Case.status
+        description: Case status.
+        type: String
   dockerimage: demisto/elasticsearch:1.0.0.2640600
   isfetch: true
   runonce: false
