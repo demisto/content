@@ -37,6 +37,7 @@ BASE_MOCK_JSON: dict = {
     "tlpLowestAssociated": "mocktlp",
     "active": True,
     "benign": {"value": False, "classification": "U"},
+    "indicatorRiskScore": {"name": "High", "classification": "U"},
     "confidenceLevel": None,
     "exploitStage": None,
     "lastHit": None,
@@ -78,9 +79,30 @@ BASE_MOCK_JSON: dict = {
 }
 MOCK_BATCH_RESPONSE: dict = {
     "results": [
-        {"searchedValue": "google.com", "matchedValue": "google.com", "id": 10336, "other-attributes": "redacted"},
-        {"searchedValue": "1.2.3.4", "matchedValue": "1.2.3.4", "id": 146950461, "other-attributes": "redacted"},
-        {"searchedValue": "conimes.com", "matchedValue": "conimes.com", "id": 983, "other-attributes": "redacted"},
+        {
+            "searchedValue": "google.com",
+            "matchedValue": "google.com",
+            "id": 10336,
+            "benign": {"value": False},
+            "indicatorRiskScore": {"title": "Low"},
+            "other-attributes": "redacted"
+        },
+        {
+            "searchedValue": "1.2.3.4",
+            "matchedValue": "1.2.3.4",
+            "id": 146950461,
+            "benign": {"value": False},
+            "indicatorRiskScore": {"title": "Critical"},
+            "other-attributes": "redacted"
+        },
+        {
+            "searchedValue": "conimes.com",
+            "matchedValue": "conimes.com",
+            "id": 983,
+            "benign": {"value": True},
+            "indicatorRiskScore": {"title": "High"},
+            "other-attributes": "redacted"
+        },
     ]
 }
 MOCK_SENSOR_IOCS: list = [
@@ -282,19 +304,100 @@ def test_analyst1_enrich_http_request_command(requests_mock, mock_client):
     assert enrichment_output.analyst1_context_data.get("ID") == BASE_MOCK_JSON.get("id")
 
 
-def test_malicious_indicator_check_empty(mock_client):
-    data = {}
-    assert mock_client.is_indicator_malicious(data) is False
+def test_get_risk_score_mappings_default():
+    """Test that default risk score mappings are used when no params provided"""
+    params = {}
+    mappings = get_risk_score_mappings(params)
+
+    assert mappings["Lowest"] == 1  # Benign
+    assert mappings["Low"] == 0  # Unknown
+    assert mappings["Moderate"] == 2  # Suspicious
+    assert mappings["High"] == 2  # Suspicious
+    assert mappings["Critical"] == 3  # Malicious
+    assert mappings["Unknown"] == 0  # Unknown
 
 
-def test_malicious_indicator_check_benign_false(mock_client):
-    data = {"benign": {"value": False}}
-    assert mock_client.is_indicator_malicious(data) is True
+def test_get_risk_score_mappings_custom():
+    """Test that custom risk score mappings override defaults"""
+    params = {
+        "riskScoreLowest": "Unknown",
+        "riskScoreLow": "Benign",
+        "riskScoreModerate": "Malicious",
+        "riskScoreHigh": "Malicious",
+        "riskScoreCritical": "Malicious",
+        "riskScoreUnknown": "Suspicious",
+    }
+    mappings = get_risk_score_mappings(params)
+
+    assert mappings["Lowest"] == 0  # Unknown
+    assert mappings["Low"] == 1  # Benign
+    assert mappings["Moderate"] == 3  # Malicious
+    assert mappings["High"] == 3  # Malicious
+    assert mappings["Critical"] == 3  # Malicious
+    assert mappings["Unknown"] == 2  # Suspicious
 
 
-def test_malicious_indicator_check_benign_true(mock_client):
-    data = {"benign": {"value": True}}
-    assert mock_client.is_indicator_malicious(data) is False
+def test_calculate_verdict_benign_override():
+    """Test that benign=True always results in Benign verdict"""
+    params = {}
+
+    # benign=True should override any risk score
+    verdict = calculate_verdict_from_risk_score("Critical", True, params)
+    assert verdict == 1  # Benign
+
+    verdict = calculate_verdict_from_risk_score("High", True, params)
+    assert verdict == 1  # Benign
+
+
+def test_calculate_verdict_from_risk_scores():
+    """Test verdict calculation based on risk scores with default mappings"""
+    params = {}
+
+    # Test each risk score with benign=False (should use risk score mapping)
+    verdict = calculate_verdict_from_risk_score("Lowest", False, params)
+    assert verdict == 1  # Benign (default mapping)
+
+    verdict = calculate_verdict_from_risk_score("Low", False, params)
+    assert verdict == 0  # Unknown (default mapping)
+
+    verdict = calculate_verdict_from_risk_score("Moderate", False, params)
+    assert verdict == 2  # Suspicious (default mapping)
+
+    verdict = calculate_verdict_from_risk_score("High", False, params)
+    assert verdict == 2  # Suspicious (default mapping)
+
+    verdict = calculate_verdict_from_risk_score("Critical", False, params)
+    assert verdict == 3  # Malicious (default mapping)
+
+    verdict = calculate_verdict_from_risk_score("Unknown", False, params)
+    assert verdict == 0  # Unknown (default mapping)
+
+
+def test_calculate_verdict_no_risk_score():
+    """Test that missing risk score returns Unknown"""
+    params = {}
+
+    # No risk score, benign=False should return Unknown
+    verdict = calculate_verdict_from_risk_score(None, False, params)
+    assert verdict == 0  # Unknown
+
+    # No risk score, benign=None should return Unknown
+    verdict = calculate_verdict_from_risk_score(None, None, params)
+    assert verdict == 0  # Unknown
+
+
+def test_calculate_verdict_custom_mappings():
+    """Test verdict calculation with custom mappings"""
+    params = {
+        "riskScoreLow": "Malicious",
+        "riskScoreModerate": "Malicious",
+    }
+
+    verdict = calculate_verdict_from_risk_score("Low", False, params)
+    assert verdict == 3  # Malicious (custom mapping)
+
+    verdict = calculate_verdict_from_risk_score("Moderate", False, params)
+    assert verdict == 3  # Malicious (custom mapping)
 
 
 def test_analyst1_get_indicator_found_normal_ioc(requests_mock, mock_client):

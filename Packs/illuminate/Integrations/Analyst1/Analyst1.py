@@ -29,8 +29,250 @@ MALICIOUS_DATA: dict[str, str] = {
     "Description": "Analyst1 advises assessing the Indicator attributes for malicious context.",
 }
 
+# XSOAR Verdict mappings
+XSOAR_VERDICT_SCORES: dict[str, int] = {
+    "Unknown": 0,
+    "Benign": 1,
+    "Suspicious": 2,
+    "Malicious": 3,
+}
+
+# Default Risk Score to XSOAR Verdict mappings
+DEFAULT_RISK_SCORE_MAPPINGS: dict[str, str] = {
+    "Lowest": "Benign",
+    "Low": "Unknown",
+    "Moderate": "Suspicious",
+    "High": "Suspicious",
+    "Critical": "Malicious",
+    "Unknown": "Unknown",
+}
+
+# Entity type to XSOAR tag mappings for batchCheck (using entity.key values)
+ENTITY_TYPE_TAGS: dict[str, str] = {
+    "ASSET": "Analyst1: Asset",
+    "IN_SYSTEM_RANGE": "Analyst1: In System Range",
+    "IN_HOME_RANGE": "Analyst1: In Home Range",
+    "IN_PRIVATE_RANGE": "Analyst1: In Private Range",
+    "IGNORED_INDICATOR": "Analyst1: Ignored Indicator",
+    "IGNORED_ASSET": "Analyst1: Ignored Asset",
+    "INDICATOR": "Analyst1: Indicator",
+}
+
+# Analyst1 indicator type to XSOAR indicator type mappings
+ANALYST1_TO_XSOAR_TYPE: dict[str, str] = {
+    "domain": "domain",
+    "ip": "ip",
+    "ipv6": "ipv6",
+    "email": "email",
+    "file": "file",
+    "url": "url",
+    "string": "string",
+    "mutex": "mutex",
+    "httpRequest": "url",  # Map httpRequest to url in XSOAR
+    "stixPattern": "string",  # Map stixPattern to string in XSOAR
+    "commandLine": "string",  # Map commandLine to string in XSOAR
+}
+
 
 """ HELPER FUNCTIONS """
+
+
+def get_risk_score_mappings(params: dict) -> dict[str, int]:
+    """
+    Retrieves risk score to XSOAR verdict score mappings from integration configuration.
+
+    Args:
+        params: Integration configuration parameters from demisto.params()
+
+    Returns:
+        Dictionary mapping Analyst1 risk score names to XSOAR verdict scores (0-3)
+    """
+    mappings = {}
+
+    for risk_level in ["Lowest", "Low", "Moderate", "High", "Critical", "Unknown"]:
+        param_name = f"riskScore{risk_level}"
+        verdict_name = params.get(param_name, DEFAULT_RISK_SCORE_MAPPINGS[risk_level])
+        mappings[risk_level] = XSOAR_VERDICT_SCORES.get(verdict_name, 0)
+
+    return mappings
+
+
+def calculate_verdict_from_risk_score(risk_score: str | None, benign_value: bool | None, params: dict) -> int:
+    """
+    Calculates XSOAR verdict score based on Analyst1 risk score and benign flag.
+
+    Priority logic:
+    1. If benign=True, always return Benign (1)
+    2. If risk score is available, map it using configuration
+    3. Otherwise return Unknown (0)
+
+    Args:
+        risk_score: Analyst1 risk score value (Lowest, Low, Moderate, High, Critical, Unknown)
+        benign_value: Analyst1 benign flag value
+        params: Integration configuration parameters
+
+    Returns:
+        XSOAR verdict score: 0=Unknown, 1=Benign, 2=Suspicious, 3=Malicious
+    """
+    # Priority 1: benign=True always results in Benign verdict
+    if benign_value is True:
+        return 1  # Benign
+
+    # Priority 2: Map risk score to verdict using configuration
+    if risk_score:
+        mappings = get_risk_score_mappings(params)
+        return mappings.get(risk_score, 0)  # Default to Unknown if risk_score not recognized
+
+    # Priority 3: No risk score available, return Unknown
+    return 0  # Unknown
+
+
+def get_analyst1_tags_for_batch_result(results_for_indicator: list[dict]) -> list[str]:
+    """
+    Determines which Analyst1 tags should be applied to an indicator based on batch check results.
+
+    An indicator can have multiple entity types (e.g., both "Asset" and "In Home Range"),
+    so this function collects all applicable tags from all results for the same indicator.
+
+    Args:
+        results_for_indicator: List of batch check result objects for a single indicator
+
+    Returns:
+        List of tag strings that should be applied (e.g., ["Analyst1: Asset", "Analyst1: Indicator"])
+    """
+    tags = set()
+
+    for result in results_for_indicator:
+        entity_key = Client.get_nested_data_key(result, "entity", "key")
+        if entity_key and entity_key in ENTITY_TYPE_TAGS:
+            tags.add(ENTITY_TYPE_TAGS[entity_key])
+
+    return list(tags)
+
+
+def get_xsoar_indicator_type_from_batch_result(result: dict) -> str:
+    """
+    Determines the XSOAR indicator type from a batch check result.
+
+    Args:
+        result: A single batch check result object
+
+    Returns:
+        XSOAR indicator type string (e.g., "email", "ip", "domain")
+        Returns "unknown" if the type cannot be determined
+    """
+    analyst1_type = Client.get_nested_data_key(result, "type", "key")
+    if analyst1_type and analyst1_type in ANALYST1_TO_XSOAR_TYPE:
+        return ANALYST1_TO_XSOAR_TYPE[analyst1_type]
+    return "unknown"
+
+
+def calculate_batch_check_verdict(entity_key: str | None, risk_score: str | None, benign_value: bool | None, params: dict) -> int:
+    """
+    Calculates XSOAR verdict score for batchCheck results based on entity.key, risk score, and benign flag.
+
+    Priority logic:
+    1. If benign=True, always return Benign (1)
+    2. If entity.key is ASSET/IN_SYSTEM_RANGE/IN_HOME_RANGE/IN_PRIVATE_RANGE/IGNORED_INDICATOR/IGNORED_ASSET → Benign (1)
+    3. If entity.key is INDICATOR and risk score exists, map it using configuration
+    4. If risk score is null, return Unknown (0)
+
+    Args:
+        entity_key: Analyst1 entity.key value from batchCheck response
+        risk_score: Analyst1 risk score value (Lowest, Low, Moderate, High, Critical, Unknown)
+        benign_value: Analyst1 benign flag value
+        params: Integration configuration parameters
+
+    Returns:
+        XSOAR verdict score: 0=Unknown, 1=Benign, 2=Suspicious, 3=Malicious
+    """
+    # Priority 1: benign=True always results in Benign verdict
+    if benign_value is True:
+        return 1  # Benign
+
+    # Priority 2: Check entity.key for benign categories
+    benign_entity_keys = ["ASSET", "IN_SYSTEM_RANGE", "IN_HOME_RANGE", "IN_PRIVATE_RANGE", "IGNORED_INDICATOR", "IGNORED_ASSET"]
+    if entity_key and entity_key in benign_entity_keys:
+        return 1  # Benign
+
+    # Priority 3: If entity.key is "INDICATOR", use risk score mapping
+    if entity_key and entity_key == "INDICATOR":
+        if risk_score:
+            mappings = get_risk_score_mappings(params)
+            return mappings.get(risk_score, 0)  # Default to Unknown if risk_score not recognized
+        else:
+            # If indicatorRiskScore is null, return Unknown
+            return 0  # Unknown
+
+    # Priority 4: Default to Unknown for any other case
+    return 0  # Unknown
+
+
+def calculate_enrichment_verdict_from_batch_results(results_for_search_value: list[dict], params: dict) -> int:
+    """
+    Calculates XSOAR verdict for enrichment commands based on ALL entity types returned for a search value.
+
+    Priority logic:
+    1. If ANY result has benign=True, return Benign (1)
+    2. If ANY result has entity.key in [ASSET, IN_SYSTEM_RANGE, IN_HOME_RANGE, IN_PRIVATE_RANGE, IGNORED_INDICATOR, IGNORED_ASSET], return Benign (1)
+    3. Otherwise, find the INDICATOR result and use risk score mapping
+    4. If no INDICATOR or no risk score, return Unknown (0)
+
+    Args:
+        results_for_search_value: All batch check results for a single search value
+        params: Integration configuration parameters
+
+    Returns:
+        XSOAR verdict score: 0=Unknown, 1=Benign, 2=Suspicious, 3=Malicious
+    """
+    benign_entity_keys = ["ASSET", "IN_SYSTEM_RANGE", "IN_HOME_RANGE", "IN_PRIVATE_RANGE", "IGNORED_INDICATOR", "IGNORED_ASSET"]
+
+    # Priority 1: Check if ANY result has benign=True
+    for result in results_for_search_value:
+        benign_value = Client.get_nested_data_key(result, "benign", "value")
+        if benign_value is True:
+            return 1  # Benign
+
+    # Priority 2: Check if ANY result has a benign entity type
+    for result in results_for_search_value:
+        entity_key = Client.get_nested_data_key(result, "entity", "key")
+        if entity_key and entity_key in benign_entity_keys:
+            return 1  # Benign
+
+    # Priority 3: Find INDICATOR result and use risk score mapping
+    for result in results_for_search_value:
+        entity_key = Client.get_nested_data_key(result, "entity", "key")
+        if entity_key == "INDICATOR":
+            risk_score = Client.get_nested_data_key(result, "indicatorRiskScore", "title")
+            if risk_score:
+                mappings = get_risk_score_mappings(params)
+                return mappings.get(risk_score, 0)
+            else:
+                return 0  # Unknown - INDICATOR but no risk score
+
+    # Priority 4: No INDICATOR found, return Unknown
+    return 0  # Unknown
+
+
+def find_indicator_in_batch_results(results_for_search_value: list[dict], expected_type: str) -> dict | None:
+    """
+    Finds an INDICATOR entity in batch check results that matches the expected indicator type.
+
+    Args:
+        results_for_search_value: All batch check results for a single search value
+        expected_type: Expected Analyst1 indicator type (e.g., "domain", "email", "ip", "file")
+
+    Returns:
+        The batch check result dict for the matching INDICATOR, or None if not found
+    """
+    for result in results_for_search_value:
+        entity_key = Client.get_nested_data_key(result, "entity", "key")
+        type_key = Client.get_nested_data_key(result, "type", "key")
+
+        if entity_key == "INDICATOR" and type_key == expected_type:
+            return result
+
+    return None
 
 
 class IdNamePair:
@@ -73,8 +315,13 @@ class EnrichmentOutput:
             if extra_context is not None:
                 reputation_context.update(extra_context)
 
-            malicious = Client.is_indicator_malicious(self.raw_data)
-            if malicious:
+            # Calculate verdict using new risk score-based logic
+            risk_score = Client.get_nested_data_key(self.raw_data, "indicatorRiskScore", "name")
+            benign_value = Client.get_nested_data_key(self.raw_data, "benign", "value")
+            verdict_score = calculate_verdict_from_risk_score(risk_score, benign_value, demisto.params())
+
+            # Only add Malicious context if verdict is Malicious (score 3)
+            if verdict_score == 3:
                 reputation_context["Malicious"] = MALICIOUS_DATA
 
             self.add_reputation_context(
@@ -85,10 +332,19 @@ class EnrichmentOutput:
                 "DBotScore",
                 {
                     "Indicator": indicator_value,
-                    "Score": 3 if malicious else 1,
+                    "Score": verdict_score,
                     "Type": indicator_type,
                     "Vendor": INTEGRATION_NAME,
                     "Reliability": demisto.params().get("integrationReliability"),
+                },
+            )
+
+            # Add "Analyst1: Indicator" tag for all enrichment commands
+            self.add_reputation_context(
+                "Common.Indicator(val.Value && val.Value === obj.Value)",
+                {
+                    "Value": indicator_value,
+                    "Tags": ["Analyst1: Indicator"],
                 },
             )
 
@@ -266,11 +522,6 @@ class Client(BaseClient):
         return {} if len(data_list) == 0 else [dict_creator(value_data) for value_data in data_list]
 
     @staticmethod
-    def is_indicator_malicious(data: dict) -> bool:
-        benign = Client.get_nested_data_key(data, "benign", "value")
-        return not (benign is None or benign is True)
-
-    @staticmethod
     def get_context_from_response(data: dict) -> dict:
         result_dict = {
             "ID": Client.get_data_key(data, "id"),
@@ -286,6 +537,7 @@ class Client(BaseClient):
             "Malwares": Client.get_data_key_as_list_of_dicts(data, "malwares", lambda d: {"id": d["id"], "name": d["name"]}),
             "Actors": Client.get_data_key_as_list_of_dicts(data, "actors", lambda d: {"id": d["id"], "name": d["name"]}),
             "Benign": Client.get_nested_data_key(data, "benign", "value"),
+            "RiskScore": Client.get_nested_data_key(data, "indicatorRiskScore", "name"),
             "Analyst1Link": None,
         }
 
@@ -470,6 +722,62 @@ def analyst1_batch_check_command(client: Client, args) -> CommandResults | None:
     raw_data = client.get_batch_search(argsToStr(args, "values"))
     # assume succesful result or client will have errored
     if len(raw_data["results"]) > 0:
+        # Group results by matchedValue to handle multiple entity types per indicator
+        results_by_indicator: dict[str, list[dict]] = {}
+        for result in raw_data["results"]:
+            matched_value = result.get("matchedValue")
+            if matched_value:
+                if matched_value not in results_by_indicator:
+                    results_by_indicator[matched_value] = []
+                results_by_indicator[matched_value].append(result)
+
+        # Process each unique indicator
+        for matched_value, indicator_results in results_by_indicator.items():
+            # Determine tags for this indicator across all its entity types
+            tags = get_analyst1_tags_for_batch_result(indicator_results)
+
+            # Calculate verdict (use first result - they should have same verdict logic per indicator)
+            first_result = indicator_results[0]
+            risk_score = Client.get_nested_data_key(first_result, "indicatorRiskScore", "title")
+            benign_value = Client.get_nested_data_key(first_result, "benign", "value")
+            entity_key = Client.get_nested_data_key(first_result, "entity", "key")
+
+            # Calculate verdict score based on entity.key and risk score
+            verdict_score = calculate_batch_check_verdict(entity_key, risk_score, benign_value, demisto.params())
+
+            # Get the XSOAR indicator type from the batch check result
+            indicator_type = get_xsoar_indicator_type_from_batch_result(first_result)
+
+            # Create DBotScore and indicator context with tags
+            dbot_score = {
+                "Indicator": matched_value,
+                "Score": verdict_score,
+                "Type": indicator_type,
+                "Vendor": INTEGRATION_NAME,
+                "Reliability": demisto.params().get("integrationReliability"),
+            }
+
+            # Add tags to all results for this indicator
+            for result in indicator_results:
+                result["DBotScore"] = dbot_score
+                result["Tags"] = tags
+
+            # Create Common.Indicator context to manage tags
+            # This ensures tags are properly added/removed in XSOAR
+            common_indicator = {
+                "Value": matched_value,
+                "Tags": tags,
+            }
+
+            # Return indicator context to manage tags
+            return_results(
+                CommandResults(
+                    outputs_prefix="Common.Indicator",
+                    outputs_key_field="Value",
+                    outputs=common_indicator,
+                )
+            )
+
         command_results = CommandResults(
             outputs_prefix="Analyst1.BatchResults", outputs_key_field="ID", outputs=raw_data["results"]
         )
@@ -514,6 +822,62 @@ def analyst1_batch_check_post(client: Client, args: dict) -> dict | None:
     raw_data = client.post_batch_search(values)
     # assume succesful result or client will have errored
     if len(raw_data["results"]) > 0:
+        # Group results by matchedValue to handle multiple entity types per indicator
+        results_by_indicator: dict[str, list[dict]] = {}
+        for result in raw_data["results"]:
+            matched_value = result.get("matchedValue")
+            if matched_value:
+                if matched_value not in results_by_indicator:
+                    results_by_indicator[matched_value] = []
+                results_by_indicator[matched_value].append(result)
+
+        # Process each unique indicator
+        for matched_value, indicator_results in results_by_indicator.items():
+            # Determine tags for this indicator across all its entity types
+            tags = get_analyst1_tags_for_batch_result(indicator_results)
+
+            # Calculate verdict (use first result - they should have same verdict logic per indicator)
+            first_result = indicator_results[0]
+            risk_score = Client.get_nested_data_key(first_result, "indicatorRiskScore", "title")
+            benign_value = Client.get_nested_data_key(first_result, "benign", "value")
+            entity_key = Client.get_nested_data_key(first_result, "entity", "key")
+
+            # Calculate verdict score based on entity.key and risk score
+            verdict_score = calculate_batch_check_verdict(entity_key, risk_score, benign_value, demisto.params())
+
+            # Get the XSOAR indicator type from the batch check result
+            indicator_type = get_xsoar_indicator_type_from_batch_result(first_result)
+
+            # Create DBotScore and indicator context with tags
+            dbot_score = {
+                "Indicator": matched_value,
+                "Score": verdict_score,
+                "Type": indicator_type,
+                "Vendor": INTEGRATION_NAME,
+                "Reliability": demisto.params().get("integrationReliability"),
+            }
+
+            # Add tags to all results for this indicator
+            for result in indicator_results:
+                result["DBotScore"] = dbot_score
+                result["Tags"] = tags
+
+            # Create Common.Indicator context to manage tags
+            # This ensures tags are properly added/removed in XSOAR
+            common_indicator = {
+                "Value": matched_value,
+                "Tags": tags,
+            }
+
+            # Return indicator context to manage tags
+            return_results(
+                CommandResults(
+                    outputs_prefix="Common.Indicator",
+                    outputs_key_field="Value",
+                    outputs=common_indicator,
+                )
+            )
+
         command_results = CommandResults(
             outputs_prefix="Analyst1.BatchResults", outputs_key_field="ID", outputs=raw_data["results"]
         )
