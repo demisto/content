@@ -33,32 +33,84 @@ PERMISSIONS_TO_COMMANDS = {
     "Microsoft.Network/networkSecurityGroups/securityRules/read": [
         "azure-nsg-security-rule-update",
         "azure-nsg-security-rule-create",
+        "azure-nsg-security-rule-update-quick-action",
+        "azure-nsg-security-rule-delete-quick-action",
     ],
     "Microsoft.Network/networkSecurityGroups/securityRules/write": [
         "azure-nsg-security-rule-update",
         "azure-nsg-security-rule-create",
+        "azure-nsg-security-rule-update-quick-action",
+        "azure-nsg-security-rule-delete-quick-action"
     ],
-    "Microsoft.Network/networkSecurityGroups/securityRules/delete": ["azure-nsg-security-rule-delete"],
+    "Microsoft.Network/networkSecurityGroups/securityRules/delete": [
+        "azure-nsg-security-rule-delete",
+        "azure-nsg-security-rule-delete-quick-action"
+    ],
     "Microsoft.Network/networkInterfaces/read": ["azure-nsg-network-interfaces-list"],
     "Microsoft.Network/publicIPAddresses/read": ["azure-nsg-public-ip-addresses-list"],
-    "Microsoft.Storage/storageAccounts/read": ["azure-storage-account-update"],
-    "Microsoft.Storage/storageAccounts/write": ["azure-storage-account-update"],
+    "Microsoft.Storage/storageAccounts/read": [
+        "azure-storage-account-update",
+        "azure-storage-allow-access-quick-action",
+        "azure-disable-storage-account-cross-tenant-replication-quick-action",
+        "azure-storage-disable-public-access-quick-action",
+    ],
+    "Microsoft.Storage/storageAccounts/write": [
+        "azure-storage-account-update",
+        "azure-storage-allow-access-quick-action",
+        "azure-disable-storage-account-cross-tenant-replication-quick-action",
+        "azure-storage-disable-public-access-quick-action",
+    ],
     "Microsoft.Storage/storageAccounts/blobServices/containers/write": ["azure-storage-blob-containers-update"],
     "Microsoft.Storage/storageAccounts/blobServices/read": [
         "azure-storage-blob-service-properties-set",
         "azure-storage-blob-service-properties-get",
     ],
-    "Microsoft.Storage/storageAccounts/blobServices/write": ["azure-storage-blob-service-properties-set"],
-    "Microsoft.Authorization/policyAssignments/read": ["azure-policy-assignment-create"],
-    "Microsoft.Authorization/policyAssignments/write": ["azure-policy-assignment-create"],
+    "Microsoft.Storage/storageAccounts/blobServices/write": [
+        "azure-storage-blob-service-properties-set",
+        "azure-storage-blob-service-properties-get",
+    ],
+    "Microsoft.Authorization/policyAssignments/read": [
+        "azure-policy-assignment-create",
+        "azure-policy-assignment-create-quick-action"
+    ],
+    "Microsoft.Authorization/policyAssignments/write": [
+        "azure-policy-assignment-create",
+        "azure-policy-assignment-create-quick-action"
+    ],
     "Microsoft.DBforPostgreSQL/servers/read": ["azure-postgres-server-update"],
     "Microsoft.DBforPostgreSQL/servers/write": ["azure-postgres-server-update"],
-    "Microsoft.DBforPostgreSQL/servers/configurations/read": ["azure-postgres-config-set"],
-    "Microsoft.DBforPostgreSQL/servers/configurations/write": ["azure-postgres-config-set"],
-    "Microsoft.Web/sites/config/read": ["azure-webapp-config-set, azure-webapp-auth-update"],
-    "Microsoft.Web/sites/config/write": ["azure-webapp-config-set, azure-webapp-auth-update"],
-    "Microsoft.Web/sites/read": ["azure-webapp-update"],
-    "Microsoft.Web/sites/write": ["azure-webapp-update"],
+    "Microsoft.DBforPostgreSQL/servers/configurations/read": [
+        "azure-postgres-config-set",
+        "azure-postgres-config-set-quick-action"
+    ],
+    "Microsoft.DBforPostgreSQL/servers/configurations/write": [
+        "azure-postgres-config-set",
+        "azure-postgres-config-set-quick-action"
+    ],
+    "Microsoft.Web/sites/config/read": [
+        "azure-webapp-config-set",
+        "azure-webapp-auth-update",
+        "azure-webapp-set-http-version2.0-quick-action",
+        "azure-set-function-app-http-version2-0-quick-action"
+        "azure-webapp-assign-managed-identity-quick-action",
+        "azure-webapp-disable-remote-debugging-quick-action",
+    ],
+    "Microsoft.Web/sites/config/write": [
+        "azure-webapp-config-set",
+        "azure-webapp-auth-update",
+        "azure-webapp-set-http-version2.0-quick-action",
+        "azure-set-function-app-http-version2-0-quick-action"
+        "azure-webapp-assign-managed-identity-quick-action",
+        "azure-webapp-disable-remote-debugging-quick-action",
+    ],
+    "Microsoft.Web/sites/read": [
+        "azure-webapp-update",
+        "azure-webapp-assign-managed-identity-quick-action"
+    ],
+    "Microsoft.Web/sites/write": [
+        "azure-webapp-update",
+        "azure-webapp-assign-managed-identity-quick-action"
+    ],
     "Microsoft.DBforMySQL/flexibleServers/configurations/read": ["azure-mysql-flexible-server-param-set"],
     "Microsoft.DBforMySQL/flexibleServers/configurations/write": ["azure-mysql-flexible-server-param-set"],
     "Microsoft.Insights/logprofiles/read": ["azure-monitor-log-profile-update"],
@@ -2931,6 +2983,18 @@ def main():
             "azure-nsg-resource-group-list": nsg_resource_group_list_command,
             "azure-nsg-network-interfaces-list": nsg_network_interfaces_list_command,
             "azure-nsg-public-ip-addresses-list": nsg_public_ip_addresses_list_command,
+            "azure-nsg-security-rule-update-quick-action": update_security_rule_command,
+            "azure-webapp-assign-managed-identity-quick-action": webapp_update_command,
+            "azure-storage-allow-access-quick-action": storage_account_update_command,
+            "azure-postgres-config-set-quick-action": set_postgres_config_command,
+            "azure-webapp-set-http-version2.0-quick-action": set_webapp_config_command,
+            "azure-webapp-auth-update-quick-action": update_webapp_auth_command,
+            "azure-disable-storage-account-cross-tenant-replication-quick-action": storage_account_update_command,
+            "azure-set-function-app-http-version2-0-quick-action": set_webapp_config_command,
+            "azure-storage-disable-public-access-quick-action": storage_account_update_command,
+            "azure-webapp-disable-remote-debugging-quick-action": set_webapp_config_command,
+            "azure-policy-assignment-create-quick-action": create_policy_assignment_command,
+            "azure-nsg-security-rule-delete-quick-action": nsg_security_rule_delete_command,
         }
         if command == "test-module" and connector_id:
             demisto.debug(f"Running health check for connector ID: {connector_id}")
