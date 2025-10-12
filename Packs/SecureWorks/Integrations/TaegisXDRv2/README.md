@@ -824,3 +824,29 @@ Note: At least 1 of the above inputs (in addition to id) must be defined
     }
 }
 ```
+
+### taegis-close-investigation
+
+***
+Close an existing investigation.
+
+#### Base Command
+
+`taegis-close-investigation`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | The investigation ID to close. | Required | 
+| title | The title of the investigation. | Optional | 
+| status | New status for the investigation. Possible values are: CLOSED_AUTHORIZED_ACTIVITY, CLOSED_CONFIRMED_SECURITY_INCIDENT, CLOSED_FALSE_POSITIVE_ALERT, CLOSED_INCONCLUSIVE, CLOSED_INFORMATIONAL, CLOSED_NOT_VULNERABLE, CLOSED_THREAT_MITIGATED. | Required | 
+| reason | Closure reason. | Required | 
+| alertsResolutionStatus | When closing an investigation that has alerts, an alertsResolutionStatus is required and all associated alerts will have their status updated. Possible values are: FALSE_POSITIVE, NOT_ACTIONABLE, OPEN, TRUE_POSITIVE_BENIGN, TRUE_POSITIVE_MALICIOUS, OTHER, SUPPRESSED. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| TaegisXDR.InvestigationClose | unknown |  | 
+
