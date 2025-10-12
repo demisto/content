@@ -2276,7 +2276,7 @@ script:
         name: enable_resource_name_dns_aaaa_record_on_launch
       - description: Indicates whether to respond to DNS queries for instance hostnames with DNS A records.
         name: enable_resource_name_dns_a_record_on_launch
-      - description: Specify true to indicate that network interfaces attached to instances created in the specified subnet should be assigned a customer-owned IPv4 address.
+      - description: Set to true to assign a customer-owned IPv4 address to network interfaces attached to instances created in the specified subnet.
         name: map_customer_owned_ip_on_launch
       - description: Specify true to indicate that network interfaces attached to instances created in the specified subnet should be assigned a public IPv4 address.
         name: map_public_ip_on_launch
