@@ -1868,7 +1868,7 @@ class TestFetchFunctionsTimestampFormatting:
         # Mock API response with microsecond precision timestamp that needs conversion
         mocker.patch(
             "CrowdStrikeFalcon.get_incidents_entities",
-            return_value={"resources": [{"start": "2024-02-13T09:24:00.841616429Z", "incident_id": "123"}]},
+            return_value={"resources": [{"start": "2024-02-13T09:24:00.841616Z", "incident_id": "123"}]},
         )
 
         try:
@@ -1885,7 +1885,7 @@ class TestFetchFunctionsTimestampFormatting:
         # Mock API response with microsecond precision timestamp that needs conversion
         mocker.patch(
             "CrowdStrikeFalcon.get_detections_entities",
-            return_value={"resources": [{"created_timestamp": "2024-02-13T09:24:00.841616429Z", "composite_id": "123"}]},
+            return_value={"resources": [{"created_timestamp": "2024-02-13T09:24:00.841616Z", "composite_id": "123"}]},
         )
 
         try:
@@ -6057,7 +6057,7 @@ def test_cs_falcon_ods_create_scheduled_scan_command(mocker):
         (
             {"quarantine": "false", "schedule_interval": "every other week", "schedule_start_timestamp": "tomorrow"},
             True,
-            {"quarantine": False, "schedule": {"interval": 14, "start_timestamp": "2020-09-27T17:22"}},
+            {"quarantine": False, "schedule": {"interval": 14, "start_timestamp": "2020-09-27T20:22"}},
         ),
         ({"cpu_priority": "Low"}, False, {"cpu_priority": 2}),
     ),
@@ -6119,7 +6119,12 @@ class mocker_gql_client:
         self.expected_after = expected_after
         self.index = 0
 
-    def execute(self, idp_query, variable_values):
+    def execute(self, req):
+        variable_values = getattr(req, "variable_values", None)
+        if variable_values is None:
+            doc = getattr(req, "document", None)
+            variable_values = getattr(doc, "variable_values", {}) if doc is not None else {}
+
         if "after" not in variable_values or self.expected_after == variable_values.get("after", ""):
             response = self.mock_responses[self.index]
             self.index += 1

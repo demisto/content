@@ -27,23 +27,23 @@ def introspection_matcher(request):
 
 
 def create_incident_matcher(request):
-    return request.json().get("query") == print_ast(create_incident_mutation)
+    return request.json().get("query") == print_ast(create_incident_mutation.document)
 
 
 def get_severities_matcher(request):
-    return request.json().get("query") == print_ast(get_incident_severities)
+    return request.json().get("query") == print_ast(get_incident_severities.document)
 
 
 def get_types_matcher(request):
-    return request.json().get("query") == print_ast(get_incident_types)
+    return request.json().get("query") == print_ast(get_incident_types.document)
 
 
 def get_incident_matcher(request):
-    return request.json().get("query") == print_ast(get_incident_by_name)
+    return request.json().get("query") == print_ast(get_incident_by_name.document)
 
 
 def get_actions_matcher(request):
-    return request.json().get("query") == print_ast(get_actions_for_incident)
+    return request.json().get("query") == print_ast(get_actions_for_incident.document)
 
 
 def set_up_mocker(m, found_incident=True):
