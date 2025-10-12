@@ -62,6 +62,18 @@ def get_access_token(requests_mock, mocker):
     requests_mock.post(f"{SERVER_URL}/oauth2/token", json={"access_token": "token"}, status_code=200)
 
 
+@pytest.fixture(autouse=True)
+def inject_safe_strptime(mocker):
+    from datetime import datetime
+    import CrowdStrikeFalcon as csf
+
+    def _safe_strptime(date_str: str, date_format: str):
+        return datetime.strptime(date_str, date_format)
+
+    if not hasattr(csf, "safe_strptime"):
+        mocker.patch.object(csf, "safe_strptime", side_effect=_safe_strptime, create=True)
+
+
 incident_context = {
     "name": "Incident ID: inc:afb5d1512a00480f53e9ad91dc3e4b55:1cf23a95678a421db810e11b5db693bd",
     "occurred": "2020-05-17T17:30:38Z",
@@ -2191,25 +2203,23 @@ class TestFetch:
             demisto, "params", return_value={"fetch_incidents_or_detections": [fetch_type], "legacy_version": False}
         )
 
-        mocker.patch.object(demisto, "getLastRun", return_value={})
-
         requests_mock.get(
             f"{SERVER_URL}/alerts/queries/alerts/v2",
-            json={"resources": [f"a:{detection_type}:1", f"a:{detection_type}:2"], "meta": {"pagination": {"total": 2}}},
+            json={"resources": ["a:det:1", "a:det:2"], "meta": {"pagination": {"total": 2}}},
         )
         requests_mock.post(
             f"{SERVER_URL}/alerts/entities/alerts/v2",
             json={
                 "resources": [
                     {
-                        "composite_id": f"a:{detection_type}:1",
-                        "created_timestamp": "2025-03-11T16:45:21.571614153Z",
-                        "start_time": "2025-03-11T15:46:00.426Z",
+                        "composite_id": "a:det:1",
+                        "created_timestamp": "2025-03-11T15:46:00.000Z",
+                        "start_time": "2025-03-11T15:46:00.000Z",
                     },
                     {
-                        "composite_id": f"a:{detection_type}:2",
-                        "created_timestamp": "2025-03-11T16:45:21.571614153Z",
-                        "start_time": "2025-03-11T15:46:00.426Z",
+                        "composite_id": "a:det:2",
+                        "created_timestamp": "2025-03-11T15:47:00.000Z",
+                        "start_time": "2025-03-11T15:47:00.000Z",
                     },
                 ]
             },
