@@ -1013,35 +1013,20 @@ class EC2:
         """
         kwargs = {
             "SubnetId": args.get("subnet_id"),
-            "AssignIpv6AddressOnCreation": args.get("assign_ipv6_address_on_creation"),
+            "AssignIpv6AddressOnCreation": arg_to_bool_or_none(args.get("assign_ipv6_address_on_creation")),
             "CustomerOwnedIpv4Pool": args.get("customer_owned_ipv4_pool"),
-            "DisableLniAtDeviceIndex": args.get("disable_lni_at_device_index"),
-            "EnableDns64": args.get("enable_dns64"),
-            "EnableLniAtDeviceIndex": args.get("enable_lni_at_device_index"),
-            "EnableResourceNameDnsAAAARecordOnLaunch": args.get("enable_resource_name_dns_aaaa_record_on_launch"),
-            "EnableResourceNameDnsARecordOnLaunch": args.get("enable_resource_name_dns_a_record_on_launch"),
-            "MapCustomerOwnedIpOnLaunch": args.get("map_customer_owned_ip_on_launch"),
-            "MapPublicIpOnLaunch": args.get("map_public_ip_on_launch"),
+            "DisableLniAtDeviceIndex": arg_to_bool_or_none(args.get("disable_lni_at_device_index")),
+            "EnableDns64": arg_to_bool_or_none(args.get("enable_dns64")),
+            "EnableLniAtDeviceIndex": arg_to_number(args.get("enable_lni_at_device_index")),
+            "EnableResourceNameDnsAAAARecordOnLaunch": arg_to_bool_or_none(
+                args.get("enable_resource_name_dns_aaaa_record_on_launch")),
+            "EnableResourceNameDnsARecordOnLaunch": arg_to_bool_or_none(args.get("enable_resource_name_dns_a_record_on_launch")),
+            "MapCustomerOwnedIpOnLaunch": arg_to_bool_or_none(args.get("map_customer_owned_ip_on_launch")),
+            "MapPublicIpOnLaunch": arg_to_bool_or_none(args.get("map_public_ip_on_launch")),
             "PrivateDnsHostnameTypeOnLaunch": args.get("private_dns_hostname_type_on_launch"),
         }
 
         remove_nulls_from_dictionary(kwargs)
-        attribute_boolean_value_fields = [
-            "AssignIpv6AddressOnCreation",
-            "DisableLniAtDeviceIndex",
-            "EnableDns64",
-            "EnableResourceNameDnsAAAARecordOnLaunch",
-            "EnableResourceNameDnsARecordOnLaunch",
-            "MapCustomerOwnedIpOnLaunch",
-            "MapPublicIpOnLaunch",
-        ]
-
-        for arg, value in kwargs.items():
-            if arg in attribute_boolean_value_fields:
-                kwargs[arg] = {"Value": argToBoolean(value)}
-            elif arg == "EnableLniAtDeviceIndex" and value is not None and value != "":
-                kwargs[arg] = int(value)
-
         try:
             response = client.modify_subnet_attribute(**kwargs)
             if response["ResponseMetadata"]["HTTPStatusCode"] in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
@@ -1351,14 +1336,12 @@ class RDS:
         """
         kwargs = {
             "SubscriptionName": args.get("subscription_name"),
-            "Enabled": args.get("enabled"),
+            "Enabled": arg_to_bool_or_none(args.get("enabled")),
             "EventCategories": argToList(args.get("event_categories", [])),
             "SnsTopicArn": args.get("sns_topic_arn"),
             "SourceType": args.get("source_type"),
         }
         remove_nulls_from_dictionary(kwargs)
-        if kwargs.get("Enabled"):
-            kwargs["Enabled"] = argToBoolean(kwargs.get("Enabled"))
 
         try:
             response = client.modify_event_subscription(**kwargs)
