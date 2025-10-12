@@ -9,9 +9,19 @@
     "categories": [
         "IT Services"
     ],
-    "tags": [],
-    "useCases": [],
-    "keywords": [],
+    "tags": [
+        "Alerts",
+        "Security",
+        "Threat Intelligence Management"
+    ],
+    "useCases": [
+        "Compliance",
+        "Vulnerability Management",
+        "Threat Intelligence Management"
+    ],
+    "keywords": [
+        "bitsight"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2",
