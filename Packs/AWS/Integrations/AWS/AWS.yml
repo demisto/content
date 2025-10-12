@@ -2262,7 +2262,7 @@ script:
       - description: The ID of the subnet.
         name: subnet_id
         required: true
-      - description: Specify true to indicate that network interfaces created in the specified subnet should be assigned an IPv6 address.
+      - description: Set to true to assign an IPv6 address to network interfaces created in the specified subnet.
         name: assign_ipv6_address_on_creation
       - description: The customer-owned IPv4 address pool associated with the subnet.
         name: customer_owned_ipv4_pool
