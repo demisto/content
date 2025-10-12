@@ -78,7 +78,7 @@ configuration:
   - AMBER
   - GREEN
   - WHITE
-  defaultvalue: GREEN
+  defaultvalue: AMBER
   required: false
   section: Collect
   advanced: true
