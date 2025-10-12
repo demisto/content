@@ -2126,6 +2126,66 @@ class RDS:
         else:
             raise DemistoException(f"Couldn't modify DB snapshot attribute for {args.get('db_snapshot_identifier')}")
 
+    @staticmethod
+    def modify_event_subscription_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Modifies the configuration of an existing Amazon RDS event notification subscription.
+        This command performs the 'ModifyEventSubscription' API operation, allowing updates to the target SNS topic,
+        the list of event categories, the source type, and the enabled state of the subscription.
+
+        Args:
+            client (BotoClient): The initialized Boto3 client.
+            args (Dict[str, Any]): Command arguments, typically containing:
+                - 'subscription_name' (str): The unique name of the subscription to modify. (Required)
+                - 'enabled' (str): Boolean string ('true' or 'false') to activate/deactivate the subscription. (Optional)
+                - 'event_categories' (str | List[str]): A list of event categories to subscribe to. (Optional)
+                - 'sns_topic_arn' (str): The ARN of the new SNS topic to publish events to. (Optional)
+                - 'source_type' (str): The type of resource generating events. (Optional)
+
+        Returns:
+            CommandResults: A CommandResults object containing the modified EventSubscription details.
+        """
+        kwargs = {
+            "SubscriptionName": args.get("subscription_name"),
+            "Enabled": arg_to_bool_or_none(args.get("enabled")),
+            "EventCategories": argToList(args.get("event_categories", [])),
+            "SnsTopicArn": args.get("sns_topic_arn"),
+            "SourceType": args.get("source_type"),
+        }
+        remove_nulls_from_dictionary(kwargs)
+
+        try:
+            response = client.modify_event_subscription(**kwargs)
+
+            if response["ResponseMetadata"]["HTTPStatusCode"] in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
+                headers = [
+                    "CustomerAwsId",
+                    "CustSubscriptionId",
+                    "SnsTopicArn",
+                    "Status",
+                    "SubscriptionCreationTime",
+                    "SourceType",
+                    "EventCategoriesList",
+                    "Enabled",
+                    "EventSubscriptionArn",
+                    "SourceIdsList",
+                ]
+
+                return CommandResults(
+                    readable_output=tableToMarkdown(
+                        name=f"Event subscription {args.get('subscription_name')} successfully modified.",
+                        headers=headers,
+                        t=response.get("EventSubscription"),
+                        removeNull=True,
+                    ),
+                    outputs_prefix="AWS.RDS.EventSubscription",
+                    outputs=response.get("EventSubscription"),
+                    outputs_key_field="CustSubscriptionId",
+                )
+            raise DemistoException(f"Failed to modify event subscription {args.get('subscription_name')}.")
+        except Exception as e:
+            raise DemistoException(f"Error: {str(e)}")
+
 
 class CloudTrail:
     service = AWSServices.CloudTrail
