@@ -12,6 +12,7 @@ urllib3.disable_warnings()
 
 """ CONSTANTS """
 
+DEFAULT_LIMIT = "50"
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 API_VERSION = "2022-09-01"
 NEW_API_VERSION_PARAMS = {"api-version": "2024-05-01"}
@@ -28,11 +29,25 @@ SCOPE_BY_CONNECTION = {
 SCOPE_AZURE = "https://management.azure.com/.default"
 
 PERMISSIONS_TO_COMMANDS = {
-    "Microsoft.Network/networkSecurityGroups/securityRules/read": ["azure-nsg-security-rule-update"],
-    "Microsoft.Network/networkSecurityGroups/securityRules/write": ["azure-nsg-security-rule-update"],
+    "Microsoft.Network/networkSecurityGroups/read": ["azure-nsg-security-groups-list"],
+    "Microsoft.Network/networkSecurityGroups/securityRules/read": [
+        "azure-nsg-security-rule-update",
+        "azure-nsg-security-rule-create",
+    ],
+    "Microsoft.Network/networkSecurityGroups/securityRules/write": [
+        "azure-nsg-security-rule-update",
+        "azure-nsg-security-rule-create",
+    ],
+    "Microsoft.Network/networkSecurityGroups/securityRules/delete": ["azure-nsg-security-rule-delete"],
+    "Microsoft.Network/networkInterfaces/read": ["azure-nsg-network-interfaces-list"],
+    "Microsoft.Network/publicIPAddresses/read": ["azure-nsg-public-ip-addresses-list"],
     "Microsoft.Storage/storageAccounts/read": ["azure-storage-account-update"],
     "Microsoft.Storage/storageAccounts/write": ["azure-storage-account-update"],
-    "Microsoft.Storage/storageAccounts/blobServices/read": ["azure-storage-blob-service-properties-set"],
+    "Microsoft.Storage/storageAccounts/blobServices/containers/write": ["azure-storage-blob-containers-update"],
+    "Microsoft.Storage/storageAccounts/blobServices/read": [
+        "azure-storage-blob-service-properties-set",
+        "azure-storage-blob-service-properties-get",
+    ],
     "Microsoft.Storage/storageAccounts/blobServices/write": ["azure-storage-blob-service-properties-set"],
     "Microsoft.Authorization/policyAssignments/read": ["azure-policy-assignment-create"],
     "Microsoft.Authorization/policyAssignments/write": ["azure-policy-assignment-create"],
@@ -60,15 +75,67 @@ PERMISSIONS_TO_COMMANDS = {
     "Microsoft.DocumentDB/databaseAccounts/write": ["azure-cosmos-db-update"],
     "Microsoft.Sql/servers/databases/transparentDataEncryption/read": ["azure-sql-db-transparent-data-encryption-set"],
     "Microsoft.Sql/servers/databases/transparentDataEncryption/write": ["azure-sql-db-transparent-data-encryption-set"],
+    "Microsoft.Resources/subscriptions/resourceGroups/read": ["azure-nsg-resource-group-list"],
+}
+
+API_FUNCTION_TO_PERMISSIONS = {
+    "acr_update": ["Microsoft.ContainerRegistry/registries/read", "Microsoft.ContainerRegistry/registries/write"],
+    "cosmos_db_update": ["Microsoft.DocumentDB/databaseAccounts/read", "Microsoft.DocumentDB/databaseAccounts/write"],
+    "disk-update": ["Microsoft.Compute/disks/read", "Microsoft.Compute/disks/write"],
+    "update_key_vault_request": ["Microsoft.KeyVault/vaults/read", "Microsoft.KeyVault/vaults/write"],
+    "monitor_log_profile_update": ["Microsoft.Insights/logprofiles/read", "Microsoft.Insights/logprofiles/write"],
+    "flexible_server_param_set": [
+        "Microsoft.DBforMySQL/flexibleServers/configurations/read",
+        "Microsoft.DBforMySQL/flexibleServers/configurations/write",
+    ],
+    "list_networks_interfaces_request": ["Microsoft.Network/networkInterfaces/read"],
+    "list_public_ip_addresses_request": ["Microsoft.Network/publicIPAddresses/read"],
+    "list_resource_groups_request": ["Microsoft.Resources/subscriptions/resourceGroups/read"],
+    "list_network_security_groups": ["Microsoft.Network/networkSecurityGroups/read"],
+    "create_or_update_rule": [
+        "Microsoft.Network/networkSecurityGroups/securityRules/read",
+        "Microsoft.Network/networkSecurityGroups/securityRules/write",
+    ],
+    "delete_rule": ["Microsoft.Network/networkSecurityGroups/securityRules/delete"],
+    "create_policy_assignment": [
+        "Microsoft.Authorization/policyAssignments/read",
+        "Microsoft.Authorization/policyAssignments/write",
+    ],
+    "set_postgres_config": [
+        "Microsoft.DBforPostgreSQL/servers/configurations/read",
+        "Microsoft.DBforPostgreSQL/servers/configurations/write",
+    ],
+    "postgres_server_update": ["Microsoft.DBforPostgreSQL/servers/read", "Microsoft.DBforPostgreSQL/servers/write"],
+    "sql_db_threat_policy_update": [
+        "Microsoft.Sql/servers/databases/securityAlertPolicies/read",
+        "Microsoft.Sql/servers/databases/securityAlertPolicies/write",
+    ],
+    "sql_db_tde_set": [
+        "Microsoft.Sql/servers/databases/transparentDataEncryption/read",
+        "Microsoft.Sql/servers/databases/transparentDataEncryption/write",
+    ],
+    "storage_account_update_request": ["Microsoft.Storage/storageAccounts/read", "Microsoft.Storage/storageAccounts/write"],
+    "storage_blob_service_properties_set_request": [
+        "Microsoft.Storage/storageAccounts/blobServices/read",
+        "Microsoft.Storage/storageAccounts/blobServices/write",
+    ],
+    "update_webapp_auth": ["Microsoft.Web/sites/config/read", "Microsoft.Web/sites/config/write"],
+    "set_webapp_config": ["Microsoft.Web/sites/config/read", "Microsoft.Web/sites/config/write"],
+    "webapp_update": ["Microsoft.Web/sites/read", "Microsoft.Web/sites/write"],
 }
 
 REQUIRED_ROLE_PERMISSIONS = [
+    "Microsoft.Network/networkSecurityGroups/read",
     "Microsoft.Network/networkSecurityGroups/securityRules/read",
     "Microsoft.Network/networkSecurityGroups/securityRules/write",
+    "Microsoft.Network/networkSecurityGroups/securityRules/delete",
+    "Microsoft.Network/networkInterfaces/read",
+    "Microsoft.Network/publicIPAddresses/read",
     "Microsoft.Storage/storageAccounts/read",
     "Microsoft.Storage/storageAccounts/write",
     "Microsoft.Storage/storageAccounts/blobServices/read",
     "Microsoft.Storage/storageAccounts/blobServices/write",
+    "Microsoft.Storage/storageAccounts/blobServices/containers/write",
     "Microsoft.Authorization/policyAssignments/read",
     "Microsoft.Authorization/policyAssignments/write",
     "Microsoft.DBforPostgreSQL/servers/read",
@@ -95,6 +162,8 @@ REQUIRED_ROLE_PERMISSIONS = [
     "Microsoft.DocumentDB/databaseAccounts/write",
     "Microsoft.Sql/servers/databases/transparentDataEncryption/read",
     "Microsoft.Sql/servers/databases/transparentDataEncryption/write",
+    "Microsoft.Resources/subscriptions/read",
+    "Microsoft.Resources/subscriptions/resourceGroups/read",
 ]
 REQUIRED_API_PERMISSIONS = ["GroupMember.ReadWrite.All", "RoleManagement.ReadWrite.Directory"]
 
@@ -162,7 +231,7 @@ class AzureClient:
         params: dict | None = None,
         resp_type: str = "json",
         json_data: dict | None = None,
-    ) -> requests.Response:
+    ) -> requests.Response | dict:
         params = params or {}
         if not params.get("api-version"):
             params["api-version"] = API_VERSION
@@ -188,7 +257,13 @@ class AzureClient:
         )
 
     def handle_azure_error(
-        self, e: Exception, resource_name: str, resource_type: str, subscription_id: str = None, resource_group_name: str = None
+        self,
+        e: Exception,
+        resource_name: str,
+        resource_type: str,
+        api_function_name: str,
+        subscription_id: str = None,
+        resource_group_name: str = None,
     ) -> None:
         """
         Standardized error handling for Azure API calls
@@ -197,6 +272,7 @@ class AzureClient:
             e: The exception that was raised
             resource_name: Name of the resource that caused the error
             resource_type: Type of the resource (e.g., 'Security Rule', 'Storage Account')
+            api_function_name: The api function name, used when need to know the permissions.
             subscription_id: Azure subscription ID (optional, for better error messages)
             resource_group_name: Resource group name (optional, for better error messages)
 
@@ -215,11 +291,20 @@ class AzureClient:
                 error_details += f' under subscription ID "{subscription_id}"'
             raise ValueError(f"{error_details} was not found. {str(e)}")
 
-        elif "403" in error_msg or "forbidden" in error_msg:
-            raise DemistoException(f'Insufficient permissions to access {resource_type} "{resource_name}". {str(e)}')
+        elif ("403" in error_msg or "forbidden" in error_msg) or ("401" in error_msg or "unauthorized" in error_msg):
+            demisto.debug("Permission error, trying to find the missing permission.")
+            found_permission = []
+            # If we have api_function_name, use the reverse mapping for O(1) lookup
+            if api_function_name in API_FUNCTION_TO_PERMISSIONS:
+                found_permission = get_permissions_from_api_function_name(api_function_name, error_msg)
 
-        elif "401" in error_msg or "unauthorized" in error_msg:
-            raise DemistoException(f'Authentication failed when accessing {resource_type} "{resource_name}". {str(e)}')
+            if not found_permission:
+                found_permission = get_permissions_from_required_role_permissions_list(error_msg)
+
+            error_entries = [{"account_id": subscription_id, "message": error_msg, "name": perm} for perm in found_permission]
+
+            demisto.debug(f"Calling return_multiple_permissions_error function with {error_entries=}")
+            return_multiple_permissions_error(error_entries)
 
         elif "400" in error_msg or "bad request" in error_msg:
             if "intercepted by proxydome" in error_msg:
@@ -231,9 +316,11 @@ class AzureClient:
             # Re-raise the original exception for any other errors
             raise DemistoException(f'Failed to access {resource_type} "{resource_name}": {str(e)}')
 
-    def create_rule(self, security_group: str, rule_name: str, properties: dict, subscription_id: str, resource_group_name: str):
+    def create_or_update_rule(
+        self, security_group: str, rule_name: str, properties: dict, subscription_id: str, resource_group_name: str
+    ):
         """
-        Create a security rule in an Azure Network Security Group.
+        Create or update a security rule in an Azure Network Security Group.
         Args:
             security_group: Name of the network security group
             rule_name: Name of the security rule to retrieve
@@ -262,6 +349,7 @@ class AzureClient:
                 e=e,
                 resource_name=f"{security_group}/{rule_name}",
                 resource_type="Security Rule",
+                api_function_name="create_or_update_rule",
                 subscription_id=subscription_id,
                 resource_group_name=resource_group_name,
             )
@@ -294,6 +382,7 @@ class AzureClient:
                 e=e,
                 resource_name=f"{security_group}/{rule_name}",
                 resource_type="Security Rule",
+                api_function_name="get_rule",
                 subscription_id=subscription_id,
                 resource_group_name=resource_group_name,
             )
@@ -377,6 +466,7 @@ class AzureClient:
                 e=e,
                 resource_name=account_name,
                 resource_type="Storage Account",
+                api_function_name="storage_account_update_request",
                 subscription_id=subscription_id,
                 resource_group_name=resource_group_name,
             )
@@ -424,6 +514,94 @@ class AzureClient:
                 e=e,
                 resource_name=f"{account_name}/blobServices",
                 resource_type="Storage Blob Service",
+                api_function_name="storage_blob_service_properties_set_request",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name,
+            )
+
+    def storage_blob_service_properties_get_request(self, account_name: str, resource_group_name: str, subscription_id: str):
+        """
+            Send the get blob service properties request to the API.
+        Args:
+            account_name: The storage account name.
+            resource_group_name: The resource group name.
+            subscription_id: The subscription id.
+
+        Returns:
+            The json response from the API call.
+        Docs:
+            https://learn.microsoft.com/en-us/rest/api/storagerp/blob-services/get-service-properties?view=rest-storagerp-2024-01-01&utm_source=chatgpt.com&tabs=HTTP
+        """
+        full_url = (
+            f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
+            f"/providers/Microsoft.Storage/storageAccounts/{account_name}/blobServices/default"
+        )
+        try:
+            return self.http_request(method="GET", full_url=full_url)
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=f"{account_name}/blobServices",
+                resource_type="Storage Blob Service",
+                api_function_name="storage_blob_service_properties_get_request",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name,
+            )
+
+    def storage_blob_containers_create_update_request(
+        self, subscription_id: str, resource_group_name: str, args: Dict, method: str
+    ):
+        """
+        Create or update a blob container in an Azure Storage account.
+
+        This function constructs the request body from user-provided arguments
+        and sends an HTTP request to the Azure REST API to create or update
+        a blob container under the specified storage account.
+
+        Args:
+            subscription_id (str): The Azure subscription ID.
+            resource_group_name (str): The name of the resource group containing the storage account.
+            args (Dict): User-provided arguments, which can include:
+                - container_name (str): Name of the blob container.
+                - account_name (str): Name of the storage account.
+                - default_encryption_scope (str, optional): Default encryption scope for the container.
+                - deny_encryption_scope_override (bool, optional): Whether to deny overriding the encryption scope.
+                - public_access (str, optional): Public access level for the container (e.g., "None", "Blob", "Container").
+            method (str): HTTP method to use for the request (e.g., "PUT" or "PATCH").
+
+        Returns:
+            dict: The JSON response from the Azure API.
+        """
+        container_name = args.get("container_name", "")
+        account_name = args.get("account_name", "")
+        try:
+            properties = {}
+
+            if "default_encryption_scope" in args:
+                properties["defaultEncryptionScope"] = args.get("default_encryption_scope")
+
+            if "deny_encryption_scope_override" in args:
+                properties["denyEncryptionScopeOverride"] = argToBoolean(args.get("deny_encryption_scope_override"))
+
+            if "public_access" in args:
+                properties["publicAccess"] = args.get("public_access")
+
+            full_url = (
+                f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}/providers/"
+                f"Microsoft.Storage/storageAccounts/{account_name}/blobServices/default/containers/{container_name}"
+            )
+
+            return self.http_request(
+                method=method,
+                full_url=full_url,
+                json_data={"properties": properties},
+            )
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=f"{account_name}/{container_name}",
+                resource_type="Storage Blob Service",
+                api_function_name="storage_blob_containers_create_update_request",
                 subscription_id=subscription_id,
                 resource_group_name=resource_group_name,
             )
@@ -495,6 +673,7 @@ class AzureClient:
                 e=e,
                 resource_name=f"{server_name}/{configuration_name}",
                 resource_type="PostgreSQL Configuration",
+                api_function_name="set_postgres_config",
                 subscription_id=subscription_id,
                 resource_group_name=resource_group_name,
             )
@@ -548,6 +727,7 @@ class AzureClient:
                 resource_name=name,
                 resource_type="Web App",
                 subscription_id=subscription_id,
+                api_function_name="set_webapp_config",
                 resource_group_name=resource_group_name,
             )
 
@@ -579,6 +759,7 @@ class AzureClient:
                 e=e,
                 resource_name=name,
                 resource_type="Web App",
+                api_function_name="get_webapp_auth",
                 subscription_id=subscription_id,
                 resource_group_name=resource_group_name,
             )
@@ -614,6 +795,7 @@ class AzureClient:
                 e=e,
                 resource_name=name,
                 resource_type="Web App",
+                api_function_name="update_webapp_auth",
                 subscription_id=subscription_id,
                 resource_group_name=resource_group_name,
             )
@@ -652,6 +834,7 @@ class AzureClient:
                 e=e,
                 resource_name=f"{server_name}/{configuration_name}",
                 resource_type="MySQL Flexible Server Configuration",
+                api_function_name="flexible_server_param_set",
                 subscription_id=subscription_id,
                 resource_group_name=resource_group_name,
             )
@@ -681,6 +864,7 @@ class AzureClient:
                 e=e,
                 resource_name=log_profile_name,
                 resource_type="Monitor Log Profile",
+                api_function_name="get_monitor_log_profile",
                 subscription_id=subscription_id,
                 resource_group_name=None,
             )
@@ -713,6 +897,7 @@ class AzureClient:
                 e=e,
                 resource_name=log_profile_name,
                 resource_type="Monitor Log Profile",
+                api_function_name="monitor_log_profile_update",
                 subscription_id=subscription_id,
                 resource_group_name=None,
             )
@@ -765,6 +950,7 @@ class AzureClient:
                 e=e,
                 resource_name=disk_name,
                 resource_type="Disk",
+                api_function_name="disk_update",
                 subscription_id=subscription_id,
                 resource_group_name=resource_group_name,
             )
@@ -818,6 +1004,7 @@ class AzureClient:
                 e=e,
                 resource_name=name,
                 resource_type="Web App",
+                api_function_name="webapp_update",
                 subscription_id=subscription_id,
                 resource_group_name=resource_group_name,
             )
@@ -875,6 +1062,7 @@ class AzureClient:
                 e=e,
                 resource_name=registry_name,
                 resource_type="Container Registry",
+                api_function_name="acr_update",
                 subscription_id=subscription_id,
                 resource_group_name=resource_group_name,
             )
@@ -913,6 +1101,7 @@ class AzureClient:
                 e=e,
                 resource_name=server_name,
                 resource_type="PostgreSQL Server",
+                api_function_name="postgres_server_update",
                 subscription_id=subscription_id,
                 resource_group_name=resource_group_name,
             )
@@ -956,6 +1145,7 @@ class AzureClient:
                 e=e,
                 resource_name=vault_name,
                 resource_type="Key Vault",
+                api_function_name="update_key_vault_request",
                 subscription_id=subscription_id,
                 resource_group_name=resource_group_name,
             )
@@ -990,6 +1180,7 @@ class AzureClient:
                 e=e,
                 resource_name=f"{server_name}/{db_name}",
                 resource_type="SQL Database Threat Policy",
+                api_function_name="sql_db_threat_policy_get",
                 subscription_id=subscription_id,
                 resource_group_name=resource_group_name,
             )
@@ -1028,6 +1219,7 @@ class AzureClient:
                 e=e,
                 resource_name=f"{server_name}/{db_name}",
                 resource_type="SQL Database Threat Policy",
+                api_function_name="sql_db_threat_policy_update",
                 subscription_id=subscription_id,
                 resource_group_name=resource_group_name,
             )
@@ -1064,6 +1256,7 @@ class AzureClient:
                 e=e,
                 resource_name=f"{server_name}/{db_name}",
                 resource_type="SQL Database Transparent Data Encryption",
+                api_function_name="sql_db_tde_set",
                 subscription_id=subscription_id,
                 resource_group_name=resource_group_name,
             )
@@ -1106,6 +1299,7 @@ class AzureClient:
                 e=e,
                 resource_name=account_name,
                 resource_type="Cosmos DB Account",
+                api_function_name="cosmos_db_update",
                 subscription_id=subscription_id,
                 resource_group_name=resource_group_name,
             )
@@ -1144,13 +1338,215 @@ class AzureClient:
             method="DELETE", full_url=f"{PREFIX_URL_MS_GRAPH}/groups/{group_id}/members/{user_id}/$ref", resp_type="text"
         )
 
+    def list_network_security_groups(self, subscription_id: str, resource_group_name: str):
+        """
+        List all network security groups in a specific resource group.
+
+        Args:
+            subscription_id: The Azure subscription ID.
+            resource_group_name: The resource group containing the network security groups.
+
+        Return:
+            A dictionary containing the list of network security groups.
+
+        Docs:
+            https://learn.microsoft.com/en-us/rest/api/virtualnetwork/network-security-groups/list?view=rest-virtualnetwork-2024-05-01
+        """
+        full_url = (
+            f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
+            f"/providers/Microsoft.Network/networkSecurityGroups"
+        )
+        try:
+            return self.http_request(method="GET", full_url=full_url)
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=resource_group_name,
+                resource_type="Security Group",
+                api_function_name="list_network_security_groups",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name,
+            )
+
+    def delete_rule(self, security_group_name: str, security_rule_name: str, subscription_id: str, resource_group_name: str):
+        """
+        Delete a specific security rule from a network security group.
+
+        Args:
+            security_group_name: The name of the network security group.
+            security_rule_name: The name of the security rule to delete.
+            subscription_id: The Azure subscription ID.
+            resource_group_name: The resource group containing the network security group.
+
+        Return:
+            The HTTP response object from the delete operation.
+
+        Docs:
+            https://learn.microsoft.com/en-us/rest/api/virtualnetwork/security-rules/delete?view=rest-virtualnetwork-2024-05-01
+        """
+        full_url = (
+            f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
+            f"/providers/Microsoft.Network/networkSecurityGroups/{security_group_name}"
+            f"/securityRules/{security_rule_name}"
+        )
+        try:
+            response = self.http_request(method="DELETE", full_url=full_url, resp_type="response")
+            if response.status_code in (200, 202, 204):  # type: ignore[union-attr]
+                return response
+            else:
+                demisto.debug("Failed to delete security rule.")
+                response.raise_for_status()  # type: ignore[union-attr]
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=f"{security_group_name}/{security_rule_name}",
+                resource_type="Security Group",
+                api_function_name="delete_rule",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name,
+            )
+
+    def list_resource_groups_request(self, subscription_id: str, filter_by_tag: str, limit: str):
+        """
+        List resource groups in a subscription, optionally filtered by tag and limited in number.
+
+        Args:
+            subscription_id: The Azure subscription ID.
+            filter_by_tag: An OData filter expression to filter resource groups by tag.
+            limit: Maximum number of resource groups to return.
+
+        Return:
+            A dictionary containing the list of resource groups.
+
+        Docs:
+            https://learn.microsoft.com/en-us/rest/api/resources/resource-groups/list?view=rest-resources-2021-04-01
+        """
+        full_url = f"{PREFIX_URL_AZURE}{subscription_id}/resourcegroups"
+        try:
+            return self.http_request(method="GET", full_url=full_url, params={"$filter": filter_by_tag, "$top": limit})
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=subscription_id,
+                resource_type="Resource Group",
+                api_function_name="list_resource_groups_request",
+                subscription_id=subscription_id,
+                resource_group_name=None,
+            )
+
+    def list_networks_interfaces_request(self, subscription_id: str, resource_group_name: str):
+        """
+        List all network interfaces in a specific resource group.
+
+        Args:
+            subscription_id: The Azure subscription ID.
+            resource_group_name: The resource group containing the network interfaces.
+
+        Return:
+            A dictionary containing the list of network interfaces.
+
+        Docs:
+            https://learn.microsoft.com/en-us/rest/api/virtualnetwork/network-interfaces/list?view=rest-virtualnetwork-2024-05-01
+        """
+        full_url = (
+            f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}/"
+            f"providers/Microsoft.Network/networkInterfaces"
+        )
+        try:
+            return self.http_request(method="GET", full_url=full_url, params=NEW_API_VERSION_PARAMS)
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=resource_group_name,
+                resource_type="Network Interface",
+                api_function_name="list_networks_interfaces_request",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name,
+            )
+
+    def list_public_ip_addresses_request(self, subscription_id: str, resource_group_name: str):
+        """
+        List all public IP addresses in a specific resource group.
+
+        Args:
+            subscription_id: The Azure subscription ID.
+            resource_group_name: The resource group containing the public IP addresses.
+
+        Return:
+            A dictionary containing the list of public IP addresses.
+
+        Docs:
+            https://learn.microsoft.com/en-us/rest/api/virtualnetwork/public-ip-addresses/list?view=rest-virtualnetwork-2024-05-01
+        """
+        full_url = (
+            f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}/"
+            f"providers/Microsoft.Network/publicIPAddresses"
+        )
+        try:
+            return self.http_request(method="GET", full_url=full_url)
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=resource_group_name,
+                resource_type="Public IP Addresses",
+                api_function_name="list_public_ip_addresses_request",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name,
+            )
+
 
 """ HELPER FUNCTIONS """
 
 
+def get_permissions_from_api_function_name(api_function_name: str, error_msg: str) -> list:
+    """
+    Extract the relevant missing permission by checking command-to-permissions mapping against an error message.
+    Iterates over the permissions mapped to a specific API function and returns the relevant permissions
+    that appear in the given error message.
+
+    Args:
+        api_function_name (str): The name of the API function used for permission lookup.
+        error_msg (str): The error message string to check for missing permissions.
+
+    Returns:
+        list: The matching permission names if found, otherwise an empty list.
+    """
+    permission_names = []
+    for permission in API_FUNCTION_TO_PERMISSIONS[api_function_name]:
+        if permission.lower() in error_msg.lower():
+            demisto.debug(f"Found missing permission via command mapping: {permission}")
+            permission_names.append(permission)
+    return permission_names
+
+
+def get_permissions_from_required_role_permissions_list(error_msg: str) -> list:
+    """
+    Extract the relevant missing permission by searching the required role permissions list against an error message.
+    Iterates over the predefined required role permissions and returns the relevant permissions
+    that appear in the given error message.
+
+    Args:
+        error_msg (str): The error message string to check for missing permissions.
+
+    Returns:
+        list: The matching permission names if found, otherwise an empty list.
+    """
+    permission_names = []
+    permissions_to_check = set(REQUIRED_ROLE_PERMISSIONS)
+    for permission in permissions_to_check:
+        if permission.lower() in error_msg.lower():
+            demisto.debug(f"Found missing permission via fallback search: {permission}")
+            permission_names.append(permission)
+
+    if not permission_names:
+        permission_names.append("N/A")
+
+    return permission_names
+
+
 def format_rule(rule_json: dict | list, security_rule_name: str):
     """
-    format the rule and create the commandResult object with it
+    Format the rule and create the commandResult object with it
     Args:
         rule_json: the json returned from the http_request
         security_rule_name: the name of the rule
@@ -1158,7 +1554,7 @@ def format_rule(rule_json: dict | list, security_rule_name: str):
     Returns:
         CommandResults for the rule
     """
-    # We want to flatten the rules `properties` key as this is the more important key and we'd like
+    # We want to flatten the rules `properties` key as this is the more important key, and we'd like
     # to be able to display it nicely
     if isinstance(rule_json, dict):
         rule_json.update(rule_json.pop("properties", {}))
@@ -1169,6 +1565,29 @@ def format_rule(rule_json: dict | list, security_rule_name: str):
     hr = tableToMarkdown(f"Rules {security_rule_name}", rule_json, removeNull=True)
 
     return CommandResults(outputs_prefix="Azure.NSGRule", outputs_key_field="id", outputs=rule_json, readable_output=hr)
+
+
+def extract_azure_resource_info(resource_id: str) -> tuple[str | None, str | None, str | None]:
+    """Extract subscription ID, resource group, and account name from Azure resource ID.
+
+    Args:
+        resource_id: Azure resource ID string
+
+    Returns:
+        Tuple of (subscription_id, resource_group, account_name)
+    """
+    patterns = {
+        "subscription_id": r"subscriptions/(.+?)/resourceGroups",
+        "resource_group": r"resourceGroups/(.+?)/providers",
+        "account_name": r"storageAccounts/(.+?)/blobServices",
+    }
+
+    results = {}
+    for key, pattern in patterns.items():
+        match = re.search(pattern, resource_id)
+        results[key] = match.group(1) if match else None
+
+    return results["subscription_id"], results["resource_group"], results["account_name"]
 
 
 """ COMMAND FUNCTIONS """
@@ -1261,7 +1680,7 @@ def update_security_rule_command(client: AzureClient, params: dict, args: dict) 
     if access:
         properties.update({"access": access})
 
-    rule = client.create_rule(
+    rule = client.create_or_update_rule(
         security_group=security_group_name,
         rule_name=security_rule_name,
         properties=properties,
@@ -1377,6 +1796,99 @@ def storage_blob_service_properties_set_command(client: AzureClient, params: dic
             removeNull=True,
         ),
         raw_response=response,
+    )
+
+
+def storage_blob_containers_update_command(client: AzureClient, params: dict, args: dict):
+    """
+        Updates a given blob container.
+    Args:
+        client: The Microsoft client.
+        params: The configuration parameters.
+        args: User-provided arguments, such as the account name and container name.
+
+    Returns:
+        CommandResults: The command results, including the Markdown table and context data.
+    """
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+
+    response = client.storage_blob_containers_create_update_request(
+        subscription_id=subscription_id, resource_group_name=resource_group_name, args=args, method="PATCH"
+    )
+
+    subscription_id, resource_group, account_name = extract_azure_resource_info(response.get("id", ""))
+
+    readable_output = {
+        "Name": response.get("name", ""),
+        "Account Name": account_name,
+        "Subscription ID": subscription_id,
+        "Resource Group": resource_group,
+        "Public Access": response.get("properties", {}).get("publicAccess"),
+    }
+
+    return CommandResults(
+        outputs_prefix="Azure.StorageBlobContainer",
+        outputs_key_field="id",
+        outputs=response,
+        raw_response=response,
+        readable_output=tableToMarkdown(
+            name="Azure Storage Blob Containers Properties",
+            t=readable_output,
+            headers=["Name", "Account Name", "Subscription ID", "Resource Group", "Public Access"],
+            removeNull=True,
+        ),
+    )
+
+
+def storage_blob_service_properties_get_command(client: AzureClient, params: dict, args: dict):
+    """
+        Gets the blob service properties for the storage account.
+    Args:
+        client: The AzureClient client.
+        params: The configuration parameters.
+        args: User-provided arguments, such as the account name and container name.
+
+    Returns:
+        CommandResults: The command results, including the Markdown table and context data.
+    """
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+    account_name = args.get("account_name", "")
+    response = client.storage_blob_service_properties_get_request(
+        account_name=account_name, resource_group_name=resource_group_name, subscription_id=subscription_id
+    )
+    subscription_id, resource_group, account_name = extract_azure_resource_info(response.get("id", ""))
+
+    readable_output = {
+        "Name": response.get("name", ""),
+        "Account Name": account_name,
+        "Subscription ID": subscription_id,
+        "Resource Group": resource_group,
+        "Change Feed": response.get("properties", {}).get("changeFeed", {}).get("enabled", ""),
+        "Delete Retention Policy": response.get("properties", {}).get("deleteRetentionPolicy", {}).get("enabled", ""),
+        "Versioning": response.get("properties", {}).get("isVersioningEnabled"),
+    }
+
+    return CommandResults(
+        outputs_prefix="Azure.StorageBlobServiceProperties",
+        outputs_key_field="id",
+        outputs=response,
+        raw_response=response,
+        readable_output=tableToMarkdown(
+            name="Azure Storage Blob Service Properties",
+            t=readable_output,
+            headers=[
+                "Name",
+                "Account Name",
+                "Subscription ID",
+                "Resource Group",
+                "Change Feed",
+                "Delete Retention Policy",
+                "Versioning",
+            ],
+            removeNull=True,
+        ),
     )
 
 
@@ -1934,6 +2446,327 @@ def cosmosdb_update_command(client: AzureClient, params: dict[str, Any], args: D
     )
 
 
+def nsg_security_groups_list_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]) -> CommandResults:
+    """
+        List all network security groups.
+    Args:
+        client: The AzureClient
+        params: configuration parameters
+        args: args dictionary.
+
+    Returns:
+        A detailed list of all network security groups
+    """
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+    response = client.list_network_security_groups(subscription_id=subscription_id, resource_group_name=resource_group_name)
+    network_groups = response.get("value", [])
+
+    # cleans up the tag, remove the "W/\" prefix and the "\" suffix.
+    for group in network_groups:
+        group["etag"] = group.get("etag", "")[3:-1]
+        for rule in group.get("defaultSecurityRules", []):
+            rule["etag"] = rule.get("etag", "")[3:-1]
+
+    hr = tableToMarkdown(
+        name="Network Security Groups",
+        t=network_groups,
+        headers=["name", "id", "type", "etag", "location"],
+        headerTransform=string_to_table_header,
+    )
+    return CommandResults(
+        raw_response=response,
+        outputs_prefix="Azure.NSGSecurityGroup",
+        outputs_key_field="id",
+        outputs=network_groups,
+        readable_output=hr,
+    )
+
+
+def nsg_security_rule_get_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]) -> CommandResults:
+    """
+    This command will get a rule from a security group.
+    Args:
+        client: The AzureClient
+        params: configuration parameters
+        args: args dictionary.
+    Returns:
+        CommandResults: The rule that was requested
+    """
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+    security_group_name = args.get("security_group_name", "")
+    security_rule_name = args.get("security_rule_name", "")
+
+    if not security_rule_name and not security_group_name:
+        return_error("Please provide security_group_name and security_rule_name.")
+
+    rule = client.get_rule(
+        security_group=security_group_name,
+        rule_name=security_rule_name,
+        subscription_id=subscription_id,
+        resource_group_name=resource_group_name,
+    )
+
+    # cleans up the tag, remove the "W/\" prefix and the "\" suffix.
+    rule["etag"] = rule.get("etag", "")[3:-1]
+
+    hr = tableToMarkdown(
+        name=f"Rule {security_rule_name}",
+        t=rule,
+        removeNull=True,
+        headers=["name", "id", "etag", "type"],
+        headerTransform=pascalToSpace,
+    )
+
+    return CommandResults(outputs_prefix="Azure.NSGRule", outputs_key_field="id", outputs=rule, readable_output=hr)
+
+
+def nsg_security_rule_create_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]) -> CommandResults:
+    """
+    This command will create a rule in a security group.
+    Args:
+        client: The AzureClient
+        params: configuration parameters
+        args: args dictionary.
+    Returns:
+        CommandResults: The rule that was created.
+    """
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+    security_group_name = args.get("security_group_name", "")
+    security_rule_name = args.get("security_rule_name", "")
+    direction = args.get("direction", "")  # required in API
+    priority = args.get("priority", "")  # required in API
+    action = args.get("action", "Allow")  # required in API, named as "access" in the API
+    protocol = args.get("protocol", "Any")  # required in API
+    source = args.get("source", "Any")
+    source_ports = args.get("source_ports", "*")
+    destination = args.get("destination", "Any")
+    destination_ports = args.get("destination_ports", "*")
+    description = args.get("description", "")
+
+    if not security_rule_name and not security_group_name and not direction and not priority:
+        return_error("Please provide security_group_name, security_rule_name, direction and priority.")
+
+    # The reason for using 'Any' as default instead of '*' is to adhere to the standards in the UI.
+    properties = {
+        "protocol": "*" if protocol == "Any" else protocol,
+        "access": action,
+        "priority": priority,
+        "direction": direction,
+    }
+    source_ports_list = argToList(source_ports)
+    if len(source_ports_list) > 1:
+        properties["sourcePortRanges"] = source_ports_list
+    else:
+        properties["sourcePortRange"] = source_ports
+
+    dest_ports_list = argToList(destination_ports)
+    if len(dest_ports_list) > 1:
+        properties["destinationPortRanges"] = dest_ports_list
+    else:
+        properties["destinationPortRange"] = destination_ports
+
+    source_list = argToList(source)
+    if len(source_list) > 1:
+        properties["sourceAddressPrefixes"] = source_list
+    else:
+        properties["sourceAddressPrefix"] = "*" if source == "Any" else source
+
+    dest_list = argToList(destination)
+    if len(dest_list) > 1:
+        properties["destinationAddressPrefixes"] = dest_list
+    else:
+        properties["destinationAddressPrefix"] = "*" if destination == "Any" else destination
+
+    if description:
+        properties["description"] = description
+
+    rule = client.create_or_update_rule(
+        security_group=security_group_name,
+        rule_name=security_rule_name,
+        properties=properties,
+        subscription_id=subscription_id,
+        resource_group_name=resource_group_name,
+    )
+
+    # cleans up the tag, remove the "W/\" prefix and the "\" suffix.
+    rule["etag"] = rule.get("etag", "")[3:-1]
+
+    hr = tableToMarkdown(
+        name=f"The security rule {security_rule_name} was created successfully",
+        t=rule,
+        removeNull=True,
+        headerTransform=pascalToSpace,
+    )
+
+    return CommandResults(outputs_prefix="Azure.NSGRule", outputs_key_field="id", outputs=rule, readable_output=hr)
+
+
+def nsg_security_rule_delete_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]) -> CommandResults:
+    """
+    Deletes a rule from a security group
+    Args:
+        client: The AzureClient
+        params: configuration parameters
+        args: args dictionary.
+    Returns:
+        Message that the rule was deleted.
+    """
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+    security_group_name = args.get("security_group_name", "")
+    security_rule_name = args.get("security_rule_name", "")
+
+    if not security_rule_name and not security_group_name:
+        return_error("Please provide security_group_name and security_rule_name.")
+
+    rule_deleted = client.delete_rule(
+        security_group_name=security_group_name,
+        security_rule_name=security_rule_name,
+        subscription_id=subscription_id,
+        resource_group_name=resource_group_name,
+    )
+    message = ""
+    if rule_deleted.status_code == 204:
+        message = (
+            f"Rule {security_rule_name} with resource_group_name "
+            f"{resource_group_name} and subscription id {subscription_id} was not found."
+        )
+    elif rule_deleted.status_code == 200:
+        message = (
+            f"Rule {security_rule_name} with resource_group_name "
+            f"{resource_group_name} and subscription id {subscription_id} "
+            f"was successfully deleted."
+        )
+    elif rule_deleted.status_code == 202:
+        message = (
+            f"The delete request for rule {security_rule_name} with resource_group_name"
+            f"{resource_group_name} and subscription id {subscription_id} "
+            f"was accepted and the operation will complete asynchronously."
+        )
+    return CommandResults(readable_output=message)
+
+
+def nsg_resource_group_list_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]) -> CommandResults:
+    """
+    List all resource groups in the subscription.
+    Args:
+        client (AzureClient): Azure Client.
+        args (Dict[str, Any]): command arguments.
+        params (Dict[str, Any]): configuration parameters.
+    Returns:
+        Command results with raw response, outputs and readable outputs.
+    """
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    filter_by_tag = azure_tag_formatter(args.get("tag")) if args.get("tag") else ""
+    limit = args.get("limit", DEFAULT_LIMIT)
+
+    response = client.list_resource_groups_request(subscription_id=subscription_id, filter_by_tag=filter_by_tag, limit=limit)
+    data_from_response = response.get("value", [])
+
+    readable_output = tableToMarkdown(
+        name="Resource Groups List",
+        t=data_from_response,
+        headers=["name", "location", "tags", "provisioningState"],
+        removeNull=True,
+        headerTransform=string_to_table_header,
+    )
+    return CommandResults(
+        outputs_prefix="Azure.NSGResourceGroup",
+        outputs_key_field="id",
+        outputs=data_from_response,
+        raw_response=response,
+        readable_output=readable_output,
+    )
+
+
+def nsg_network_interfaces_list_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]) -> CommandResults:
+    """
+    List all network interfaces in a resource group.
+    Args:
+        client (AzureClient): Azure Client.
+        args (Dict[str, Any]): command arguments.
+        params (Dict[str, Any]): configuration parameters.
+    Returns:
+        Command results with raw response, outputs and readable outputs.
+    """
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+
+    all_results = argToBoolean(args.get("all_results", "false"))
+    limit = arg_to_number(args.get("limit", DEFAULT_LIMIT))
+
+    response = client.list_networks_interfaces_request(subscription_id=subscription_id, resource_group_name=resource_group_name)
+    data_from_response = response.get("value", [])
+
+    if not all_results:
+        data_from_response = data_from_response[:limit]
+
+    # cleans up the tag, remove the "W/\" prefix and the "\" suffix.
+    for data in data_from_response:
+        data["etag"] = data.get("etag", "")[3:-1]
+
+    readable_output = tableToMarkdown(
+        name="Network Interfaces List",
+        t=data_from_response,
+        headers=["name", "id", "type", "etag", "location", "kind"],
+        removeNull=True,
+        headerTransform=pascalToSpace,
+    )
+
+    return CommandResults(
+        outputs_prefix="Azure.NSGNetworkInterfaces",
+        outputs_key_field="id",
+        outputs=data_from_response,
+        raw_response=response,
+        readable_output=readable_output,
+    )
+
+
+def nsg_public_ip_addresses_list_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]) -> CommandResults:
+    """
+    List all network interfaces in a resource group.
+
+    Args:
+        client (AzureClient): Azure client.
+        args (Dict[str, Any]): command arguments.
+        params (Dict[str, Any]): configuration parameters.
+    Returns:
+        Command results with raw response, outputs and readable outputs.
+    """
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+
+    all_results = argToBoolean(args.get("all_results", "false"))
+    limit = arg_to_number(args.get("limit", DEFAULT_LIMIT))
+
+    response = client.list_public_ip_addresses_request(subscription_id=subscription_id, resource_group_name=resource_group_name)
+    data_from_response = response.get("value", [])
+    if not all_results:
+        data_from_response = data_from_response[:limit]
+
+    # cleans up the tag, remove the "W/\" prefix and the "\" suffix.
+    for output in data_from_response:
+        output["etag"] = output.get("etag", "")[3:-1]
+
+    readable_output = tableToMarkdown(
+        name="Public IP Addresses List",
+        t=data_from_response,
+        headers=["name", "id", "etag", "provisioningState", "publicIPAddressVersion", "ipAddress", "domainNameLabel", "fqdn"],
+        removeNull=True,
+        headerTransform=pascalToSpace,
+    )
+    return CommandResults(
+        outputs_prefix="Azure.NSGPublicIPAddress",
+        outputs_key_field="id",
+        outputs=data_from_response,
+        raw_response=response,
+        readable_output=readable_output,
+    )
+
+
 def remove_member_from_role(client: AzureClient, args: dict) -> CommandResults:
     """Currently not supported in the integration
     Remove a member from a group by group id and user id.
@@ -1998,7 +2831,7 @@ def health_check(shared_creds: dict, subscription_id: str, connector_id: str) ->
     to verify connectivity and permissions.
     Args:
         shared_creds (dict): Pre-fetched cloud credentials (format varies by provider).
-        project_id (str): The Azure subscription ID to check against.
+        subscription_id (str): The Azure subscription ID to check against.
         connector_id (str): The connector ID for the Cloud integration.
     Returns:
         HealthCheckError or None: HealthCheckError if there's an issue, None if successful.
@@ -2075,6 +2908,8 @@ def main():
             "azure-nsg-security-rule-update": update_security_rule_command,
             "azure-storage-account-update": storage_account_update_command,
             "azure-storage-blob-service-properties-set": storage_blob_service_properties_set_command,
+            "azure-storage-blob-service-properties-get": storage_blob_service_properties_get_command,
+            "azure-storage-blob-containers-update": storage_blob_containers_update_command,
             "azure-policy-assignment-create": create_policy_assignment_command,
             "azure-postgres-config-set": set_postgres_config_command,
             "azure-postgres-server-update": postgres_server_update_command,
@@ -2089,6 +2924,13 @@ def main():
             "azure-sql-db-threat-policy-update": sql_db_threat_policy_update_command,
             "azure-sql-db-transparent-data-encryption-set": sql_db_tde_set_command,
             "azure-cosmos-db-update": cosmosdb_update_command,
+            "azure-nsg-security-groups-list": nsg_security_groups_list_command,
+            "azure-nsg-security-rule-get": nsg_security_rule_get_command,
+            "azure-nsg-security-rule-create": nsg_security_rule_create_command,
+            "azure-nsg-security-rule-delete": nsg_security_rule_delete_command,
+            "azure-nsg-resource-group-list": nsg_resource_group_list_command,
+            "azure-nsg-network-interfaces-list": nsg_network_interfaces_list_command,
+            "azure-nsg-public-ip-addresses-list": nsg_public_ip_addresses_list_command,
         }
         if command == "test-module" and connector_id:
             demisto.debug(f"Running health check for connector ID: {connector_id}")
