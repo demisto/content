@@ -592,7 +592,7 @@ def map_indicator(indicator_data: dict, feed_tags: list = [], tlp_color: str | N
         "creationdate": indicator_data.get("first_seen"),
         "reportedby": indicator_data.get("source"),
         "tags": list(set(feed_tags + tags)),
-        "tlp_color": tlp_color,
+        "trafficlightprotocol": tlp_color,
     }
     if xsoar_indicator_type == FeedIndicatorType.File:
         fields["md5"] = demisto.get(indicator_data, "indicator_details.file_hashes.md5")
@@ -667,7 +667,7 @@ def map_threat_object(threat_object: dict, feed_tags: list = [], tlp_color: str 
         "publications": create_publications(threat_object.get("publications", [])),
         "geocountry": demisto.get(threat_object, "battlecard_details.threat_actor_details.origin", "").upper(),
         "tags": tags + feed_tags,
-        "tlp_color": tlp_color,
+        "trafficlightprotocol": tlp_color,
         "ismalwarefamily": "True" if threat_class == "malware_family" else "False",
     }
 
