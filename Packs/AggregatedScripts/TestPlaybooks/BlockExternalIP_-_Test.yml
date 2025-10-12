@@ -1626,10 +1626,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "45":
     id: "45"
-    taskid: 75688785-6456-4896-8a7c-f49197465e6d
+    taskid: f90bce0a-6012-4972-8329-4b973b190b1f
     type: regular
     task:
-      id: 75688785-6456-4896-8a7c-f49197465e6d
+      id: f90bce0a-6012-4972-8329-4b973b190b1f
       version: -1
       name: Delete Rule
       description: Deletes a policy rule.
@@ -1641,8 +1641,6 @@ tasks:
       '#none#':
       - "16"
     scriptarguments:
-      device-group:
-        simple: Lab-Devices
       pre_post:
         simple: pre-rulebase
       rulename:
