@@ -739,7 +739,7 @@ def test_module(client: Client) -> str:
     """
     # Test connection by getting a small number of indicators
     response = client.get_indicators(limit=1)
-    if response and response.get("data"):
+    if response and response.status_code == 200:
         return "ok"
     return "Failed to connect to Unit 42 API. Check your Server URL and License."
 
