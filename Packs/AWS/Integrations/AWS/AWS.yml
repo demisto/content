@@ -440,7 +440,7 @@ script:
           - me-central-1
           - sa-east-1
       - name: bucket
-        description: The bucket name for which you want to remove the website configuration.
+        description: The name of the S3 bucket from which the website configuration will be removed.
         required: true
 
   - name: aws-s3-bucket-ownership-controls-put
