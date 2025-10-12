@@ -2266,7 +2266,7 @@ script:
         name: assign_ipv6_address_on_creation
       - description: The customer-owned IPv4 address pool associated with the subnet.
         name: customer_owned_ipv4_pool
-      - description: Specify true to indicate that local network interfaces at the current position should be disabled.
+      - description: Set to true to disable local network interfaces at the current position.
         name: disable_lni_at_device_index
       - description: Indicates whether DNS queries made to the Amazon-provided DNS Resolver in this subnet should return synthetic IPv6 addresses for IPv4-only destinations.
         name: enable_dns64
