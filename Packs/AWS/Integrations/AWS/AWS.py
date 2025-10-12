@@ -713,21 +713,21 @@ class S3:
     @staticmethod
     def put_bucket_ownership_controls_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
         """
-                Creates or modifies the Ownership Controls configuration for an S3 bucket.
-               Specifies the rule that determines ownership of newly uploaded objects and manages the use of Access Control Lists (ACLs).
+        Specifies the rule that determines ownership of newly uploaded objects and manages the use of
+        Access Control Lists (ACLs).
         Requires a validated JSON structure for 'the ownership_controls' argument.
-                the role of Access Control Lists (ACLs). This operation requires a specific, validated JSON structure for
-                the 'ownership_controls' argument.
+        the role of Access Control Lists (ACLs). This operation requires a specific, validated JSON structure for
+        the 'ownership_controls' argument.
 
-                Args:
-                    client (BotoClient): The initialized Boto3 S3 client.
-                    args (Dict[str, Any]): Command arguments, typically containing:
-                        - 'bucket' (str): The name of the S3 bucket. (Required)
-                        - 'ownership_controls_rule' (str): A predefined rule specifying the desired ownership behavior.
-                         Must be one of the following: BucketOwnerPreferred, ObjectWriter, BucketOwnerEnforced
+        Args:
+            client (BotoClient): The initialized Boto3 S3 client.
+            args (Dict[str, Any]): Command arguments, typically containing:
+                - 'bucket' (str): The name of the S3 bucket. (Required)
+                - 'ownership_controls_rule' (str): A predefined rule specifying the desired ownership behavior.
+                 Must be one of the following: BucketOwnerPreferred, ObjectWriter, BucketOwnerEnforced
 
-                Returns:
-                    CommandResults: A CommandResults object with a success message on status 200/204.
+        Returns:
+            CommandResults: A CommandResults object with a success message on status 200/204.
         """
         ownership_controls = {"Rules": [{"ObjectOwnership": args.get("ownership_controls_rule")}]}
         kwargs = {"Bucket": args.get("bucket"), "OwnershipControls": ownership_controls}
