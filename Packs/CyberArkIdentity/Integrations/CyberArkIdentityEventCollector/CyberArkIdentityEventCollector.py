@@ -200,6 +200,12 @@ def main(command: str, demisto_params: dict):
     request = CyberArkIdentityEventsRequest(**request_params)
     client = CyberArkIdentityEventsClient(request, options, credentials)
     get_events = CyberArkIdentityGetEvents(client, options)
+    credentials = Credentials(**demisto_params.get("credentials", {}))
+    options = CyberArkIdentityEventsOptions(**demisto_params)
+    request_params = get_request_params(**demisto_params)
+    request = CyberArkIdentityEventsRequest(**request_params)
+    client = CyberArkIdentityEventsClient(request, options, credentials)
+    get_events = CyberArkIdentityGetEvents(client, options)
 
     try:
         if command == "test-module":
