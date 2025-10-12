@@ -5,15 +5,14 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 6c1722cd-e0c1-4655-80b1-b2977a904f8b
+    taskid: 4d5d93e9-fb25-4532-8f22-b9971449719d
     type: start
     task:
-      id: 6c1722cd-e0c1-4655-80b1-b2977a904f8b
+      id: 4d5d93e9-fb25-4532-8f22-b9971449719d
       version: -1
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "2"
@@ -22,8 +21,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 60
+          "x": 50,
+          "y": 50
         }
       }
     note: false
@@ -35,10 +34,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 2dffdd93-da14-45d8-9b4e-b2b2ffe5dd11
+    taskid: e9793f0a-0ab7-4a31-8f6e-c3dd3b628559
     type: regular
     task:
-      id: 2dffdd93-da14-45d8-9b4e-b2b2ffe5dd11
+      id: e9793f0a-0ab7-4a31-8f6e-c3dd3b628559
       version: -1
       name: CIsco ASA list rules
       description: Gets a list all rules for the supplied interface.
@@ -54,8 +53,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 360
+          "x": 50,
+          "y": 370
         }
       }
     note: false
@@ -67,16 +66,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 0428c50a-4f33-43f1-ba98-cd24ac45b5ae
+    taskid: f31513dc-b86e-4c3c-81da-6df2aa59561c
     type: title
     task:
-      id: 0428c50a-4f33-43f1-ba98-cd24ac45b5ae
+      id: f31513dc-b86e-4c3c-81da-6df2aa59561c
       version: -1
       name: Prepare CiscoASA
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -85,8 +83,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 200
+          "x": 50,
+          "y": 210
         }
       }
     note: false
@@ -98,10 +96,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 59356e40-5e0c-427f-ab73-b344102ebe58
+    taskid: 7b3041ec-b30c-41d0-8c6a-44635b31d835
     type: condition
     task:
-      id: 59356e40-5e0c-427f-ab73-b344102ebe58
+      id: 7b3041ec-b30c-41d0-8c6a-44635b31d835
       version: -1
       name: Does rule exist?
       type: condition
@@ -128,8 +126,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 520
+          "x": 50,
+          "y": 540
         }
       }
     note: false
@@ -141,10 +139,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: a7c98393-0ac2-439e-abcb-6c29f4a9844e
+    taskid: ce840a85-e0e0-4ce5-8fdf-78d5aa0fa90d
     type: regular
     task:
-      id: a7c98393-0ac2-439e-abcb-6c29f4a9844e
+      id: ce840a85-e0e0-4ce5-8fdf-78d5aa0fa90d
       version: -1
       name: Remove rule if exist
       description: Deletes a rule.
@@ -187,8 +185,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 690
+          "x": 162.5,
+          "y": 710
         }
       }
     note: false
@@ -200,16 +198,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 69936d93-ae23-449d-b0d9-31d86f2fa91d
+    taskid: 8763ecaf-b69e-458b-8fec-f6107f62af58
     type: title
     task:
-      id: 69936d93-ae23-449d-b0d9-31d86f2fa91d
+      id: 8763ecaf-b69e-458b-8fec-f6107f62af58
       version: -1
       name: 'Case 1: Running with cisco ASA twice'
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "6"
@@ -218,8 +215,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 830
+          "x": 50,
+          "y": 880
         }
       }
     note: false
@@ -231,10 +228,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: dbd0e297-7ae8-4522-859f-d99f34b4e8ae
+    taskid: 3df25898-b14b-4cb4-89dc-26894c32d2fe
     type: regular
     task:
-      id: dbd0e297-7ae8-4522-859f-d99f34b4e8ae
+      id: 3df25898-b14b-4cb4-89dc-26894c32d2fe
       version: -1
       name: BlockExternalIP
       description: The script blocks a list of IP addresses in supported integrations.
@@ -260,8 +257,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 980
+          "x": 50,
+          "y": 1040
         }
       }
     note: false
@@ -273,10 +270,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 43ef0c7d-dece-4991-85ee-9b515775e347
+    taskid: f6ee106c-ad3f-44d8-889c-aefe4ebe13a9
     type: condition
     task:
-      id: 43ef0c7d-dece-4991-85ee-9b515775e347
+      id: f6ee106c-ad3f-44d8-889c-aefe4ebe13a9
       version: -1
       name: Verify Outputs
       type: condition
@@ -317,8 +314,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1140
+          "x": 50,
+          "y": 1210
         }
       }
     note: false
@@ -330,13 +327,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 11d217b8-0314-4409-8bc7-cb9d2544b41e
+    taskid: 896fbcf3-3afe-49b5-8e32-9538e6b52a19
     type: regular
     task:
-      id: 11d217b8-0314-4409-8bc7-cb9d2544b41e
+      id: 896fbcf3-3afe-49b5-8e32-9538e6b52a19
       version: -1
       name: Clear context
-      description: "Delete field from context.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      description: "Delete field from context.\n\nThis automation runs using the default
+        Limited User role, unless you explicitly change the permissions.\nFor more
+        information, see the section about permissions here:\n- For Cortex XSOAR 6
+        see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
+        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -352,8 +354,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1300
+          "x": 50,
+          "y": 1380
         }
       }
     note: false
@@ -365,10 +367,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 70be6d15-67c4-456b-ab15-be19719cc6ec
+    taskid: 7e1da896-1262-4301-83b8-c9f70931c57e
     type: condition
     task:
-      id: 70be6d15-67c4-456b-ab15-be19719cc6ec
+      id: 7e1da896-1262-4301-83b8-c9f70931c57e
       version: -1
       name: Verify Outputs
       type: condition
@@ -409,8 +411,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1615
+          "x": 50,
+          "y": 1720
         }
       }
     note: false
@@ -422,10 +424,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 77865b8e-595e-476a-8f18-b1583da90cc8
+    taskid: 267c15ee-ccba-4b3e-816d-1ee9a6b2d703
     type: regular
     task:
-      id: 77865b8e-595e-476a-8f18-b1583da90cc8
+      id: 267c15ee-ccba-4b3e-816d-1ee9a6b2d703
       version: -1
       name: BlockExternalIP
       description: The script blocks a list of IP addresses in supported integrations.
@@ -451,8 +453,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1455
+          "x": 50,
+          "y": 1550
         }
       }
     note: false
@@ -464,16 +466,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 05c9866e-75b4-48b6-ae87-c71c67cb7301
+    taskid: 74cc3d55-1694-4859-8776-854daccde516
     type: title
     task:
-      id: 05c9866e-75b4-48b6-ae87-c71c67cb7301
+      id: 74cc3d55-1694-4859-8776-854daccde516
       version: -1
       name: 'Case 2: Run BlockExternalIP with Panorama'
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "27"
@@ -482,8 +483,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1810
+          "x": 50,
+          "y": 1890
         }
       }
     note: false
@@ -495,10 +496,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: de336cc5-bb93-492e-8845-4b16e04fc444
+    taskid: eb9c8ad8-295e-4f20-8159-c0eb99a87002
     type: regular
     task:
-      id: de336cc5-bb93-492e-8845-4b16e04fc444
+      id: eb9c8ad8-295e-4f20-8159-c0eb99a87002
       version: -1
       name: Get Timestamp
       description: |
@@ -515,8 +516,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 2120
+          "x": 50,
+          "y": 2220
         }
       }
     note: false
@@ -528,10 +529,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: db0e0d0f-0092-4e35-9e76-d473430e3524
+    taskid: b93e6c00-4352-4bd1-89d2-111040a087b8
     type: regular
     task:
-      id: db0e0d0f-0092-4e35-9e76-d473430e3524
+      id: b93e6c00-4352-4bd1-89d2-111040a087b8
       version: -1
       name: BlockExternalIP
       description: The script blocks a list of IP addresses in supported integrations.
@@ -563,8 +564,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 2290
+          "x": 50,
+          "y": 2390
         }
       }
     note: false
@@ -576,16 +577,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 610fda9f-661f-411a-a292-8b6f1286dc94
+    taskid: de17242b-c831-4dc6-8d84-5fc97e2ae089
     type: title
     task:
-      id: 610fda9f-661f-411a-a292-8b6f1286dc94
+      id: de17242b-c831-4dc6-8d84-5fc97e2ae089
       version: -1
       name: 'Case 3: Running with F5Silverline & tag'
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "28"
@@ -594,8 +594,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 2658.75
+          "x": 50,
+          "y": 2900
         }
       }
     note: false
@@ -607,13 +607,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: d07aefa6-f22f-414c-beab-624f56122e95
+    taskid: 897808c7-fee1-4784-87c6-1d37ba122c21
     type: regular
     task:
-      id: d07aefa6-f22f-414c-beab-624f56122e95
+      id: 897808c7-fee1-4784-87c6-1d37ba122c21
       version: -1
       name: Silverline list ip objects
-      description: Gets a dynamic list of threatening IP addresses by the given list type.
+      description: Gets a dynamic list of threatening IP addresses by the given list
+        type.
       script: '|||f5-silverline-ip-objects-list'
       type: regular
       iscommand: true
@@ -629,8 +630,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 2970
+          "x": 50,
+          "y": 3230
         }
       }
     note: false
@@ -642,10 +643,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: b856e858-1ed3-4c72-9fd1-afeeab4a688b
+    taskid: 3d0a90ee-8981-45bf-8c8b-d047369dd1c2
     type: condition
     task:
-      id: b856e858-1ed3-4c72-9fd1-afeeab4a688b
+      id: 3d0a90ee-8981-45bf-8c8b-d047369dd1c2
       version: -1
       name: Is IP in the list?
       type: condition
@@ -672,8 +673,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 3110
+          "x": 50,
+          "y": 3400
         }
       }
     note: false
@@ -685,13 +686,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: eac9a0c7-89bf-42db-a9d7-e29a80c62169
+    taskid: cbe0df64-7681-411e-89bc-089e631d5b8c
     type: regular
     task:
-      id: eac9a0c7-89bf-42db-a9d7-e29a80c62169
+      id: cbe0df64-7681-411e-89bc-089e631d5b8c
       version: -1
       name: F5 Delete IP from list
-      description: Delete an existing particular threatening IP address object by its object ID or by its IP address. If both id and ip are given, delete operation will be done by the given object_id.
+      description: Delete an existing particular threatening IP address object by
+        its object ID or by its IP address. If both id and ip are given, delete operation
+        will be done by the given object_id.
       script: '|||f5-silverline-ip-object-delete'
       type: regular
       iscommand: true
@@ -709,8 +712,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 3260
+          "x": 162.5,
+          "y": 3570
         }
       }
     note: false
@@ -722,10 +725,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 60d3f289-91f1-425c-b671-7e177c530e53
+    taskid: bd80a773-7a4a-4b44-8646-241d9d093676
     type: regular
     task:
-      id: 60d3f289-91f1-425c-b671-7e177c530e53
+      id: bd80a773-7a4a-4b44-8646-241d9d093676
       version: -1
       name: BlockExternalIP
       description: The script blocks a list of IP addresses in supported integrations.
@@ -753,8 +756,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 3410
+          "x": 50,
+          "y": 3740
         }
       }
     note: false
@@ -766,10 +769,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: 186b18d2-c6c0-48ff-aa4f-3593918bacd8
+    taskid: 2b7ebcbe-80e1-42b7-84d8-0881c78bc2e9
     type: condition
     task:
-      id: 186b18d2-c6c0-48ff-aa4f-3593918bacd8
+      id: 2b7ebcbe-80e1-42b7-84d8-0881c78bc2e9
       version: -1
       name: Verify outputs
       type: condition
@@ -832,8 +835,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 3730
+          "x": 50,
+          "y": 4080
         }
       }
     note: false
@@ -845,13 +848,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: a37b0e4c-94ca-43f4-8563-e4a11f835bcd
+    taskid: 780af146-ea13-4e50-83c3-54620dd6402a
     type: regular
     task:
-      id: a37b0e4c-94ca-43f4-8563-e4a11f835bcd
+      id: 780af146-ea13-4e50-83c3-54620dd6402a
       version: -1
       name: Silverline list ip objects
-      description: Gets a dynamic list of threatening IP addresses by the given list type.
+      description: Gets a dynamic list of threatening IP addresses by the given list
+        type.
       script: '|||f5-silverline-ip-objects-list'
       type: regular
       iscommand: true
@@ -867,8 +871,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 3576.25
+          "x": 50,
+          "y": 3910
         }
       }
     note: false
@@ -880,16 +884,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: 6236dd4d-41d5-47e6-948b-4ef6b6ee57f9
+    taskid: 270ada6e-b102-4868-89d3-bdf7a4351692
     type: title
     task:
-      id: 6236dd4d-41d5-47e6-948b-4ef6b6ee57f9
+      id: 270ada6e-b102-4868-89d3-bdf7a4351692
       version: -1
       name: 'Case 5: non existing IP'
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "33"
@@ -898,8 +901,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 5445
+          "x": 50,
+          "y": 5940
         }
       }
     note: false
@@ -911,13 +914,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: 39e70163-c5ee-451c-8360-420856e3873f
+    taskid: e22883a1-5a03-42e9-8fb4-23521a00c818
     type: regular
     task:
-      id: 39e70163-c5ee-451c-8360-420856e3873f
+      id: e22883a1-5a03-42e9-8fb4-23521a00c818
       version: -1
       name: Clear context
-      description: "Delete field from context.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      description: "Delete field from context.\n\nThis automation runs using the default
+        Limited User role, unless you explicitly change the permissions.\nFor more
+        information, see the section about permissions here:\n- For Cortex XSOAR 6
+        see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
+        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -933,8 +941,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1953.75
+          "x": 50,
+          "y": 2050
         }
       }
     note: false
@@ -946,13 +954,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: b3e882c2-7ddb-49ba-8c52-d4a47d670a81
+    taskid: 158c8deb-583c-40bb-8ea5-598b4a567d4f
     type: regular
     task:
-      id: b3e882c2-7ddb-49ba-8c52-d4a47d670a81
+      id: 158c8deb-583c-40bb-8ea5-598b4a567d4f
       version: -1
       name: Clear context
-      description: "Delete field from context.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      description: "Delete field from context.\n\nThis automation runs using the default
+        Limited User role, unless you explicitly change the permissions.\nFor more
+        information, see the section about permissions here:\n- For Cortex XSOAR 6
+        see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
+        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -968,8 +981,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 2823.75
+          "x": 50,
+          "y": 3060
         }
       }
     note: false
@@ -981,10 +994,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: 8986ea6d-7fb7-498f-baaa-3e5f1276ac72
+    taskid: 8c284b10-230d-4381-87fc-5f43268ca89d
     type: condition
     task:
-      id: 8986ea6d-7fb7-498f-baaa-3e5f1276ac72
+      id: 8c284b10-230d-4381-87fc-5f43268ca89d
       version: -1
       name: Verify Outputs
       type: condition
@@ -992,7 +1005,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "16"
+      - "45"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1009,8 +1022,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 2470
+          "x": 50,
+          "y": 2560
         }
       }
     note: false
@@ -1022,10 +1035,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: f8a59e6b-38cf-46db-87b3-d1c0a281dc34
+    taskid: 53ab09f2-ce93-40d9-805c-64dbd87280ed
     type: regular
     task:
-      id: f8a59e6b-38cf-46db-87b3-d1c0a281dc34
+      id: 53ab09f2-ce93-40d9-805c-64dbd87280ed
       version: -1
       name: BlockExternalIP
       description: The script blocks a list of IP addresses in supported integrations.
@@ -1037,10 +1050,10 @@ tasks:
       '#none#':
       - "31"
     scriptarguments:
-      ip_list:
-        simple: non-existing-ip-list
       brands:
         simple: F5Silverline,Cisco ASA
+      ip_list:
+        simple: non-existing-ip-list
     results:
     - push_job_id
     - commit_job_id
@@ -1051,8 +1064,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 5755
+          "x": 50,
+          "y": 6270
         }
       }
     note: false
@@ -1064,10 +1077,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: 85f1bfb4-0b04-43ed-baef-ca14be36f8dd
+    taskid: 8dfd5ca6-411b-4b74-8977-4ef447bb7ff1
     type: condition
     task:
-      id: 85f1bfb4-0b04-43ed-baef-ca14be36f8dd
+      id: 8dfd5ca6-411b-4b74-8977-4ef447bb7ff1
       version: -1
       name: Verify outputs
       type: condition
@@ -1100,8 +1113,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 5910
+          "x": 50,
+          "y": 6440
         }
       }
     note: false
@@ -1113,23 +1126,22 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: cc3a766b-e87c-4dc1-85dd-a3d9fd50ee62
+    taskid: 14aa7f5e-13ed-46bf-87bd-8d9dbb21faa3
     type: title
     task:
-      id: cc3a766b-e87c-4dc1-85dd-a3d9fd50ee62
+      id: 14aa7f5e-13ed-46bf-87bd-8d9dbb21faa3
       version: -1
       name: Finish
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 6100
+          "x": 50,
+          "y": 6610
         }
       }
     note: false
@@ -1141,13 +1153,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: 17c54df8-cf1e-447d-8772-66abb98829af
+    taskid: d2237dcb-6d60-48df-87ae-2717d3c16e4c
     type: regular
     task:
-      id: 17c54df8-cf1e-447d-8772-66abb98829af
+      id: d2237dcb-6d60-48df-87ae-2717d3c16e4c
       version: -1
       name: Clear context
-      description: "Delete field from context.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      description: "Delete field from context.\n\nThis automation runs using the default
+        Limited User role, unless you explicitly change the permissions.\nFor more
+        information, see the section about permissions here:\n- For Cortex XSOAR 6
+        see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
+        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -1163,8 +1180,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 5595
+          "x": 50,
+          "y": 6100
         }
       }
     note: false
@@ -1176,16 +1193,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: 32d6309b-a60d-462f-8b23-31846560d5fb
+    taskid: 5134a04f-2f17-48d9-875b-715c4d068652
     type: title
     task:
-      id: 32d6309b-a60d-462f-8b23-31846560d5fb
+      id: 5134a04f-2f17-48d9-875b-715c4d068652
       version: -1
       name: 'Case 4: Running with 2 brands'
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "36"
@@ -1194,8 +1210,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 3890
+          "x": 50,
+          "y": 4250
         }
       }
     note: false
@@ -1207,13 +1223,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "36":
     id: "36"
-    taskid: c9c05fb9-c6c4-4573-bc50-bba8615cb922
+    taskid: 19ce9338-6233-4704-8e17-cb48d4c04e72
     type: regular
     task:
-      id: c9c05fb9-c6c4-4573-bc50-bba8615cb922
+      id: 19ce9338-6233-4704-8e17-cb48d4c04e72
       version: -1
       name: Clear context
-      description: "Delete field from context.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      description: "Delete field from context.\n\nThis automation runs using the default
+        Limited User role, unless you explicitly change the permissions.\nFor more
+        information, see the section about permissions here:\n- For Cortex XSOAR 6
+        see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
+        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -1229,8 +1250,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 4040
+          "x": 50,
+          "y": 4410
         }
       }
     note: false
@@ -1242,13 +1263,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "37":
     id: "37"
-    taskid: 02826eba-5f7c-46ec-8501-1db246c250e5
+    taskid: 4054f514-234d-4031-84cf-c38e7fbd7913
     type: regular
     task:
-      id: 02826eba-5f7c-46ec-8501-1db246c250e5
+      id: 4054f514-234d-4031-84cf-c38e7fbd7913
       version: -1
       name: Silverline list ip objects
-      description: Gets a dynamic list of threatening IP addresses by the given list type.
+      description: Gets a dynamic list of threatening IP addresses by the given list
+        type.
       script: '|||f5-silverline-ip-objects-list'
       type: regular
       iscommand: true
@@ -1264,8 +1286,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 4186.25
+          "x": 50,
+          "y": 4580
         }
       }
     note: false
@@ -1277,10 +1299,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "38":
     id: "38"
-    taskid: 1d6cddfe-2da5-4ba8-8574-1ac496e3fa2c
+    taskid: d07aa729-0c12-4a91-867a-a74d8490b89b
     type: condition
     task:
-      id: 1d6cddfe-2da5-4ba8-8574-1ac496e3fa2c
+      id: d07aa729-0c12-4a91-867a-a74d8490b89b
       version: -1
       name: Is IP in the list?
       type: condition
@@ -1307,8 +1329,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 4326.25
+          "x": 50,
+          "y": 4750
         }
       }
     note: false
@@ -1320,13 +1342,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "39":
     id: "39"
-    taskid: fca8b856-c903-4ab7-8bfe-2daaa6730efc
+    taskid: 3cbae453-7943-49a1-8755-3130aef00218
     type: regular
     task:
-      id: fca8b856-c903-4ab7-8bfe-2daaa6730efc
+      id: 3cbae453-7943-49a1-8755-3130aef00218
       version: -1
       name: F5 Delete IP from list
-      description: Delete an existing particular threatening IP address object by its object ID or by its IP address. If both id and ip are given, delete operation will be done by the given object_id.
+      description: Delete an existing particular threatening IP address object by
+        its object ID or by its IP address. If both id and ip are given, delete operation
+        will be done by the given object_id.
       script: '|||f5-silverline-ip-object-delete'
       type: regular
       iscommand: true
@@ -1344,8 +1368,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 4476.25
+          "x": 162.5,
+          "y": 4920
         }
       }
     note: false
@@ -1357,10 +1381,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "40":
     id: "40"
-    taskid: f7c4dba4-c86f-40a7-884c-b8bf27733bfc
+    taskid: 4fa1ac4e-6494-48ef-815c-447d769dda91
     type: regular
     task:
-      id: f7c4dba4-c86f-40a7-884c-b8bf27733bfc
+      id: 4fa1ac4e-6494-48ef-815c-447d769dda91
       version: -1
       name: CIsco ASA list rules
       description: Gets a list all rules for the supplied interface.
@@ -1376,8 +1400,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 4635
+          "x": 50,
+          "y": 5090
         }
       }
     note: false
@@ -1389,10 +1413,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "41":
     id: "41"
-    taskid: 4aca05f3-9dce-4c3d-8a92-dac627c7cf52
+    taskid: 046ae33a-f20b-4147-8737-433105c60ece
     type: condition
     task:
-      id: 4aca05f3-9dce-4c3d-8a92-dac627c7cf52
+      id: 046ae33a-f20b-4147-8737-433105c60ece
       version: -1
       name: Does rule exist?
       type: condition
@@ -1419,8 +1443,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 4795
+          "x": 50,
+          "y": 5260
         }
       }
     note: false
@@ -1432,10 +1456,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "42":
     id: "42"
-    taskid: 75c7cf48-2eff-47d5-8635-f1260e9a0a81
+    taskid: 9cf85875-95d7-4609-88db-3f4b30082458
     type: regular
     task:
-      id: 75c7cf48-2eff-47d5-8635-f1260e9a0a81
+      id: 9cf85875-95d7-4609-88db-3f4b30082458
       version: -1
       name: Remove rule if exist
       description: Deletes a rule.
@@ -1478,8 +1502,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 4965
+          "x": 162.5,
+          "y": 5430
         }
       }
     note: false
@@ -1491,10 +1515,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "43":
     id: "43"
-    taskid: db717f16-1656-4a6a-987a-cf390cb7b158
+    taskid: 625324e1-4f70-49d3-8655-07256f3ae816
     type: regular
     task:
-      id: db717f16-1656-4a6a-987a-cf390cb7b158
+      id: 625324e1-4f70-49d3-8655-07256f3ae816
       version: -1
       name: BlockExternalIP
       description: The script blocks a list of IP addresses in supported integrations.
@@ -1520,8 +1544,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 5131.25
+          "x": 50,
+          "y": 5600
         }
       }
     note: false
@@ -1533,10 +1557,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "44":
     id: "44"
-    taskid: 751d580e-335c-4745-9e2f-d2eba64d1373
+    taskid: 73dba813-cfee-40d6-8dbb-b5ff0a10554c
     type: condition
     task:
-      id: 751d580e-335c-4745-9e2f-d2eba64d1373
+      id: 73dba813-cfee-40d6-8dbb-b5ff0a10554c
       version: -1
       name: Verify Outputs
       type: condition
@@ -1589,8 +1613,47 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 5280
+          "x": 50,
+          "y": 5770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: 75688785-6456-4896-8a7c-f49197465e6d
+    type: regular
+    task:
+      id: 75688785-6456-4896-8a7c-f49197465e6d
+      version: -1
+      name: Delete Rule
+      description: Deletes a policy rule.
+      script: Panorama|||pan-os-delete-rule
+      type: regular
+      iscommand: true
+      brand: Panorama
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      device-group:
+        simple: Lab-Devices
+      pre_post:
+        simple: pre-rulebase
+      rulename:
+        simple: test-${TimeNowUnix}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2730
         }
       }
     note: false
@@ -1614,10 +1677,10 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 6100,
-        "width": 380,
-        "x": 450,
-        "y": 60
+        "height": 6620,
+        "width": 492.5,
+        "x": 50,
+        "y": 50
       }
     }
   }
