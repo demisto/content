@@ -1,0 +1,20 @@
+{
+    "name": "EJS",
+    "description": "EJS - Use this tool to verify email sources as fake emails that were used as part of phishing attacks.",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "",
+    "email": "",
+    "created": "2020-04-21T07:41:48Z",
+    "categories": [
+        "IT Services"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}
