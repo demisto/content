@@ -134,6 +134,9 @@ def websocket_connections(
         f"Starting websocket connection to {host} with cluster id: {cluster_id}, sinceTime: {since_time}, toTime: {to_time}"
     )
     url = URL
+    since_time = "2025-09-16T00:00:00Z"
+    to_time = "2025-09-30T23:59:59Z"
+    
     if since_time:
         url += f"&sinceTime={since_time}"
     if to_time:
