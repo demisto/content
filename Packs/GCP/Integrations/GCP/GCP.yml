@@ -2875,6 +2875,7 @@ script:
   subtype: python3
   dockerimage: demisto/googleapi-python3:1.0.0.4892936
 fromversion: 8.11.0
+supportsquickactions: true
 isCloudProviderIntegration: true
 tests:
 - No tests (auto formatted)
