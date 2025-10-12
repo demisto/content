@@ -147,6 +147,8 @@ def get_events(
         demisto.debug(
             f"Iteration {pagination_iteration}: AWS returned {original_count} findings, NextToken present: {has_next_token}"
         )
+        if 'MaxResults' in response:
+            demisto.debug(f"Iteration {pagination_iteration}: AWS returned {response['MaxResults']} findings")
 
         # Filter out events based on id_ignore_set
         result = [event for event in result if event["Id"] not in id_ignore_set]
