@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *
 import urllib3
@@ -41,8 +39,85 @@ SCOPES_PER_FETCH_TYPE = {
 
 SERVER_PROD_URL = "https://account.docusign.com"
 
-# -------------------- Utilities --------------------
+class CustomerEventsClient(BaseClient):
+    """
+    DocuSign Monitor API Client for fetching customer events.
+    Extends BaseClient to support proxy configuration and proper HTTP request handling.
+    """
 
+    def __init__(self, server_url: str, proxy: bool = False, verify: bool = True): 
+        """Initialize the Customer Events Monitor client.
+
+        Args:
+            server_url: Base URL for the DocuSign Monitor API (developer/production environment URI)
+            proxy: Whether to use proxy for requests
+            verify: Whether to verify SSL certificates
+        """
+        env = get_env_from_server_url(server_url)
+        base_url = urljoin(self.get_monitor_base_url(env), "api/v2.0/datasets/monitor/stream")
+        super().__init__(base_url=base_url, verify=verify, proxy=proxy)
+
+    def get_monitor_base_url(self, env: str) -> str: 
+        return "https://lens-d.docusign.net" if env == "dev" else "https://lens.docusign.net"
+
+    def get_customer_events_request(self, cursor: str, limit: int, access_token: str) -> dict:
+        """Send GET request to fetch a stream of customer events from DocuSign Monitor API."""
+
+        headers = {"Authorization": f"Bearer {access_token}", "Accept": "application/json", "Content-Type": "application/json"}
+        params = {"cursor": cursor, "limit": limit}
+
+        demisto.debug(f"{LOG_PREFIX}Requesting customer events\nParams: {params}")
+        resp = self._http_request(method="GET", headers=headers, params=params, resp_type="json")
+        return resp
+
+class UserDataClient(BaseClient):
+    """
+    DocuSign User Data client for fetching user data from DocuSign Admin API.
+
+    Args:
+        account_id: DocuSign account ID
+        organization_id: DocuSign organization ID
+        env: DocuSign environment (dev/production)
+        proxy: Whether to use proxy for requests
+        verify: Whether to verify SSL certificates
+    """
+
+    def __init__(self, account_id: str, organization_id: str, env: str, proxy: bool = False, verify: bool = True):
+        super().__init__(base_url="", verify=verify, proxy=proxy)
+        self.account_id = account_id
+        self.organization_id = organization_id
+        self.env = env
+
+    def get_admin_base_url(self) -> str:
+        return "https://api-d.docusign.net" if self.env == "dev" else "https://api.docusign.net"
+
+    def get_users_request(self, access_token: str, url: str) -> dict:
+        '''
+            DocuSign Admin API
+        '''
+        headers = {"Authorization": f"Bearer {access_token}"}
+        resp = self._http_request(method="GET", full_url=url, headers=headers, resp_type="json")
+        return resp
+
+    def get_users_first_request(self, access_token: str, request_params: Dict[str, Any]) -> tuple[dict, str]:
+        '''
+            DocuSign Admin API
+        '''
+        base = self.get_admin_base_url()
+        url = urljoin(base, f"management/v2/organizations/{self.organization_id}/users")
+
+        headers = {"Authorization": f"Bearer {access_token}"}
+        request_params["account_id"] = self.account_id
+        resp = self._http_request(method="GET", full_url=url, headers=headers, params=request_params, resp_type="json")
+        return resp, url
+
+    def get_user_detail(self, base_uri: str, user_id: str, access_token: str) -> Dict[str, Any]:
+        '''
+            eSignature REST API
+        '''
+        url = urljoin(base_uri, f"restapi/v2.1/accounts/{self.account_id}/users/{user_id}")
+        resp = self._http_request(method="GET", full_url=url, headers={"Authorization": f"Bearer {access_token}"}, resp_type="json")
+        return resp
 
 def remove_duplicate_users(fetched_users: list, ids_to_remove: list, time_to_remove: str) -> list:
     """ remove users from fetched_users if their id appears in ids_to_remove and their _time field equal to time_to_remove"""
@@ -91,7 +166,30 @@ class AuthClient(BaseClient):
         self.server_url = server_url.rstrip("/")
         self.integration_key = integration_key
         self.user_id = user_id
-        self.private_key_pem = private_key_pem
+        
+        self.private_key_pem = self.validate_private_key(private_key_pem)
+
+    def validate_private_key(self, private_key_pem: str) -> str:
+        """Validate the private key format."""
+
+        prefix = "-----BEGIN RSA PRIVATE KEY-----"
+        suffix = "-----END RSA PRIVATE KEY-----"
+        
+        if not private_key_pem.strip().startswith(prefix):
+            demisto.debug(f"{LOG_PREFIX}Private key must start with {prefix}")
+            raise DemistoException(f"{LOG_PREFIX}Private key must start with {prefix}")
+        if not private_key_pem.strip().endswith(suffix):
+            demisto.debug(f"{LOG_PREFIX}Private key must end with {suffix}")
+            raise DemistoException(f"{LOG_PREFIX}Private key must end with {suffix}")
+
+        demisto.debug(f"{LOG_PREFIX}Private key before strip: {private_key_pem}")
+        private_key_pem = private_key_pem.replace(prefix, "").replace(suffix, "")
+        private_key_sections = private_key_pem.strip().split(" ")
+        striped_private_key = "".join(private_key_sections)
+        formatted_private_key = prefix + "\n" + striped_private_key + "\n" + suffix
+
+        demisto.debug(f"{LOG_PREFIX}Private key after strip: {formatted_private_key}")
+        return formatted_private_key
 
     def get_jwt(self, scopes: str) -> str:
         """Generate a JWT for authentication.
@@ -100,6 +198,7 @@ class AuthClient(BaseClient):
             str: Signed JWT token
 
         """
+        demisto.debug(f"{LOG_PREFIX}Generating JWT for authentication.\nprivate_key_pem:\n{self.private_key_pem}")
         now = _utcnow()
         headers = {"alg": "RS256", "typ": "JWT"}
         payload = {
@@ -110,7 +209,6 @@ class AuthClient(BaseClient):
             "exp": int((now + dt.timedelta(hours=1)).timestamp()),
             "scope": scopes,
         }
-
         token = jwt.encode(payload, self.private_key_pem, algorithm="RS256", headers=headers)
         return token
 
@@ -217,6 +315,7 @@ def get_access_token(client: AuthClient) -> str:
     expired_at = integration_context.get("expired_at", "")
     access_token_scopes = integration_context.get("access_token_scopes", [])
     consent_scopes = integration_context.get("consent_scopes", [])
+    demisto.debug(f"{LOG_PREFIX}required scopes: {required_scopes}\nconsent scopes: {consent_scopes}")
 
     # Step 1: Check if we have enough consent scopes to generate a valid access token according to the selected fetch types
     if not is_required_scopes_set(required_scopes, consent_scopes):
@@ -282,87 +381,6 @@ def get_customer_events(last_run: dict, limit: int, client: CustomerEventsClient
         raise DemistoException(f"Exception during get customer events. Exception is {e!s}")
 
 
-class CustomerEventsClient(BaseClient):
-    """
-    DocuSign Monitor API Client for fetching customer events.
-    Extends BaseClient to support proxy configuration and proper HTTP request handling.
-    """
-
-    def __init__(self, server_url: str, proxy: bool = False, verify: bool = True): 
-        """Initialize the Customer Events Monitor client.
-
-        Args:
-            server_url: Base URL for the DocuSign Monitor API (developer/production environment URI)
-            proxy: Whether to use proxy for requests
-            verify: Whether to verify SSL certificates
-        """
-        env = get_env_from_server_url(server_url)
-        base_url = urljoin(self.get_monitor_base_url(env), "api/v2.0/datasets/monitor/stream")
-        super().__init__(base_url=base_url, verify=verify, proxy=proxy)
-
-    def get_monitor_base_url(self, env: str) -> str: 
-        return "https://lens-d.docusign.net" if env == "dev" else "https://lens.docusign.net"
-
-    def get_customer_events_request(self, cursor: str, limit: int, access_token: str) -> dict:
-        """Send GET request to fetch a stream of customer events from DocuSign Monitor API."""
-
-        headers = {"Authorization": f"Bearer {access_token}", "Accept": "application/json", "Content-Type": "application/json"}
-        params = {"cursor": cursor, "limit": limit}
-
-        demisto.debug(f"{LOG_PREFIX}Requesting customer events\nParams: {params}")
-        resp = self._http_request(method="GET", headers=headers, params=params, resp_type="json")
-        return resp
-
-class UserDataClient(BaseClient):
-    """
-    DocuSign User Data client for fetching user data from DocuSign Admin API.
-
-    Args:
-        account_id: DocuSign account ID
-        organization_id: DocuSign organization ID
-        env: DocuSign environment (dev/production)
-        proxy: Whether to use proxy for requests
-        verify: Whether to verify SSL certificates
-    """
-
-    def __init__(self, account_id: str, organization_id: str, env: str, proxy: bool = False, verify: bool = True):
-        super().__init__(base_url="", verify=verify, proxy=proxy)
-        self.account_id = account_id
-        self.organization_id = organization_id
-        self.env = env
-
-    def get_admin_base_url(self) -> str:
-        return "https://api-d.docusign.net" if self.env == "dev" else "https://api.docusign.net"
-
-    def get_users_request(self, access_token: str, url: str) -> dict:
-        '''
-            DocuSign Admin API
-        '''
-        headers = {"Authorization": f"Bearer {access_token}"}
-        resp = self._http_request(method="GET", full_url=url, headers=headers, resp_type="json")
-        return resp
-
-    def get_users_first_request(self, access_token: str, request_params: Dict[str, Any]) -> tuple[dict, str]:
-        '''
-            DocuSign Admin API
-        '''
-        base = self.get_admin_base_url()
-        url = urljoin(base, f"management/v2/organizations/{self.organization_id}/users")
-
-        headers = {"Authorization": f"Bearer {access_token}"}
-        request_params["account_id"] = self.account_id
-        resp = self._http_request(method="GET", full_url=url, headers=headers, params=request_params, resp_type="json")
-        return resp, url
-
-    def get_user_detail(self, base_uri: str, user_id: str, access_token: str) -> Dict[str, Any]:
-        '''
-            eSignature REST API
-        '''
-        url = urljoin(base_uri, f"restapi/v2.1/accounts/{self.account_id}/users/{user_id}")
-        resp = self._http_request(method="GET", full_url=url, headers={"Authorization": f"Bearer {access_token}"}, resp_type="json")
-        return resp
-
-
 def get_remaining_user_data(last_run: dict, client: UserDataClient, access_token: str, limit: int) -> tuple[list, dict]:
     """
     Fetch only the remaining users that were not retrieved from the last page in the previous run
@@ -393,7 +411,7 @@ def get_remaining_user_data(last_run: dict, client: UserDataClient, access_token
         raise DemistoException(f"Exception during get remaining user data. Exception is {e!s}")
 
 
-def fetch_audit_user_data(last_run: dict, access_token: str, auth_client: AuthClient) -> tuple[dict, list]: # TODO: check flow with 0 available users to fetch
+def fetch_audit_user_data(last_run: dict, access_token: str, auth_client: AuthClient) -> tuple[dict, list]:
     params = demisto.params()
     limit = min(MAX_USER_DATA_PER_FETCH, int(params.get("max_user_events_per_fetch", MAX_USER_DATA_PER_FETCH)))
     users_per_page = min(MAX_USER_DATA_PER_PAGE, limit)
@@ -478,8 +496,7 @@ def get_user_data(last_run: dict, limit: int, users_per_page: int, client: UserD
             demisto.debug(f"{LOG_PREFIX}Continuing fetch for Audit data from:\n {url}")
         # First request in the current time range.
         else:
-            # one_minute_ago = timestamp_to_datestring(int(time.time() - 60) * 1000, date_format="%Y-%m-%dT%H:%M:%SZ")
-            one_minute_ago = "2023-06-29T13:14:16Z" # TODO: remove this line => return 16 users
+            one_minute_ago = timestamp_to_datestring(int(time.time() - 60) * 1000, date_format="%Y-%m-%dT%H:%M:%SZ")
             url = ""
             request_params = {
                 "start": 0,
@@ -745,35 +762,40 @@ def generate_consent_url() -> CommandResults:
     # set the new consent scopes for the next authentication step
     integration_context.update({"consent_scopes": consent_scopes})
     set_integration_context(integration_context)
+    demisto.debug(f"{LOG_PREFIX}generated consent URL with the scopes: {consent_scopes}")
 
     return CommandResults(readable_output=f"### DocuSign Consent URL\n[Click here to authorize]({consent_url})")
 
 
-def validate_configuration_params():
+def validate_configuration_params() -> str:
     params = demisto.params()
     selected_fetch_types = params.get("event_types", "")
     
     # Validate authentication parameters
     if not params.get("url") or not params.get("redirect_url") or not params.get("integration_key") or not params.get("user_id") or not params.get("credentials", {}).get("password", ""):
-        raise DemistoException("Please provide Server URL, Integration Key and Redirect URL for authentication flow.")
+        return "Please provide Server URL, Integration Key and Redirect URL for authentication flow."
     
     # Validate server URL value
     if params.get("url") != DEFAULT_SERVER_DEV_URL and params.get("url") != SERVER_PROD_URL:
-        raise DemistoException("Please provide valid Server URL."
-                               f"\n{DEFAULT_SERVER_DEV_URL} for dev environment and {SERVER_PROD_URL} for prod environment.")
+        message = "Please provide valid Server URL.\n"
+        message += f"{DEFAULT_SERVER_DEV_URL} for dev environment and {SERVER_PROD_URL} for prod environment."
+        return message
     
-    # Validate parameters for fetching user data events
-    if USER_DATA_TYPE in selected_fetch_types and (not params.get("account_id") or not params.get("organization_id")):
-        raise DemistoException(f"Please provide Account ID and Organization ID for fetching {USER_DATA_TYPE}.")
-    
-    # Validate parameters for fetching customer events
-    if CUSTOMER_EVENTS_TYPE in selected_fetch_types and not params.get("url"):
-        raise DemistoException(f"Please provide Server URL for fetching {CUSTOMER_EVENTS_TYPE}.")
+    if params.get("isFetch"):
+        # Validate parameters for fetching user data events
+        if USER_DATA_TYPE in selected_fetch_types and (not params.get("account_id") or not params.get("organization_id")):
+            return f"Please provide Account ID and Organization ID for fetching {USER_DATA_TYPE}."
+        
+        # Validate parameters for fetching customer events
+        if CUSTOMER_EVENTS_TYPE in selected_fetch_types and not params.get("url"):
+            return f"Please provide Server URL for fetching {CUSTOMER_EVENTS_TYPE}."
+
+    return "ok"
 
 def test_module() -> str:
     # TODO: add here of access token consent scope checking (compere to the selected types scopes)
-    validate_configuration_params()
-    return "ok"
+    message = validate_configuration_params()
+    return message
   
 def main() -> None:
     try:

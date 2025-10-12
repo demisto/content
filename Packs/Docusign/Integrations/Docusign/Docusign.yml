@@ -27,7 +27,8 @@ configuration:
   required: true
   type: 0
   section: Connect
-- display: Private Key
+- displaypassword: Private Key
+  display: ''
   name: credentials
   required: true
   type: 9
@@ -58,7 +59,7 @@ configuration:
   - Customer events
   - User data
   section: Collect
-- defaultvalue: '10000'
+- defaultvalue: '2000'
   section: Collect
   display: Maximum number of customer events per fetch
   name: max_customer_events_per_fetch
