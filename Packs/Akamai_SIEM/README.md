@@ -31,7 +31,7 @@ Data normalization capabilities:
 10. Click `new credentials` and download or copy it.
 11. Use the credentials to configure Akamai WAF in Cortex XSIAM.
 
-For more information, see <[here](https://techdocs.akamai.com/siem-integration/docs/akamai-siem-integration-for-splunk-and-cef-syslog)>.
+For more information, see [here](https://techdocs.akamai.com/siem-integration/docs/akamai-siem-integration-for-splunk-and-cef-syslog).
 
 ### Cortex XSIAM side - native collector
 

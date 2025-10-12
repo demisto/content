@@ -73,7 +73,7 @@ This playbook does not use any integrations.
 | categories | The list of categories. Relevant from PAN-OS v9.x. |  | Optional |
 | EDLServerIP | This input determines whether Palo Alto Networks Panorama or Firewall External Dynamic Lists are used:<br/>\* The IP address of the web server on which the files are stored.<br/>\* The web server IP address is configured in the integration instance. |  | Optional |
 | UserVerification | Possible values: True/False. <br/>Whether to provide user verification for blocking IPs. <br/><br/>False - No prompt will be displayed to the user.<br/>True - The server will ask the user for blocking verification and will display the blocking list. | False | Optional |
-| AutoBlockIndicators | Possible values: True/False.  Default: True.<br/>Should the given indicators be automatically blocked, or should the user be given the option to choose?<br/><br/>If set to False - no prompt will appear, and all provided indicators will be blocked automatically.<br/>If set to True - the user will be prompted to select which indicators to block. | True | Optional |
+| AutoBlockIndicators | Possible values: True/False.  Default: True.<br/>Should the given indicators be automatically blocked, or should the user be given the option to choose?<br/><br/>If set to True - no prompt will appear, and all provided indicators will be blocked automatically.<br/>If set to False - the user will be prompted to select which indicators to block. | True | Optional |
 | Email | Email address to which to send the questions. |  | Optional |
 | DataCollection | Use a data collection task to answer lessons learned questions based on SANS. Specify 'True' to automatically send the communication task, and 'False'  to prevent it. |  | Optional |
 

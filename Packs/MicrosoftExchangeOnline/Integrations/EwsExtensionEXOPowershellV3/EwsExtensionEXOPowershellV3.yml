@@ -2746,7 +2746,7 @@ script:
     description: Disable mail forwarding for a given user.
   script: ''
   type: powershell
-  dockerimage: demisto/pwsh-exchangev3:1.0.0.116826
+  dockerimage: demisto/pwsh-exchangev3:1.0.0.4904712
 fromversion: 5.5.0
 supportsquickactions: true
 tests:

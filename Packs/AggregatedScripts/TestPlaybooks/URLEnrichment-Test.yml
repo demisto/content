@@ -1,0 +1,2246 @@
+id: URLEnrichment-Test
+version: -1
+vcShouldKeepItemLegacyProdMachine: false
+name: URLEnrichment-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 2d95cfce-5074-486b-8e44-b61162450c72
+    type: start
+    task:
+      id: 2d95cfce-5074-486b-8e44-b61162450c72
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 87cc1eaa-fdca-40b5-82d7-07d59271bca1
+    type: regular
+    task:
+      id: 87cc1eaa-fdca-40b5-82d7-07d59271bca1
+      version: -1
+      name: DeleteContext
+      description: "Delete field from context.\n\nThis automation runs using the default
+        Limited User role, unless you explicitly change the permissions.\nFor more
+        information, see the section about permissions here:\n- For Cortex XSOAR 6
+        see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
+        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "36"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 342591d0-82be-412e-86bb-44fdda172516
+    type: regular
+    task:
+      id: 342591d0-82be-412e-86bb-44fdda172516
+      version: -1
+      name: Run url enrichment script
+      description: |-
+        Running !url-enrichemnt on the base case without external enrichment or additional fields.
+        !url-enrichment url_litst="https://google.com"
+      scriptName: url-enrichment
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+      - "14"
+    scriptarguments:
+      additional_fields:
+        simple: "false"
+      external_enrichment:
+        simple: "false"
+      url_list:
+        simple: https://${TimeNowUnix}.com
+      verbose:
+        simple: "false"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: b37ca6d1-382c-471e-87bc-075f5ffc474e
+    type: condition
+    task:
+      id: b37ca6d1-382c-471e-87bc-075f5ffc474e
+      version: -1
+      name: TIM Result exists
+      description: Make sure the Virus Total indicator returned from tim
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: URLEnrichment.Results.Brand
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: URLEnrichment.Results.Brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: TIM
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 177cadb6-ef8a-43aa-82a5-4c061bf0b73e
+    type: title
+    task:
+      id: 177cadb6-ef8a-43aa-82a5-4c061bf0b73e
+      version: -1
+      name: Case 2 - One Brand
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 1050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: f1eb19b7-83b9-4460-87e7-a8b63d2284fa
+    type: regular
+    task:
+      id: f1eb19b7-83b9-4460-87e7-a8b63d2284fa
+      version: -1
+      name: DeleteContext
+      description: "Delete field from context.\n\nThis automation runs using the default
+        Limited User role, unless you explicitly change the permissions.\nFor more
+        information, see the section about permissions here:\n- For Cortex XSOAR 6
+        see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
+        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 1210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 3749e5a2-c586-4226-8374-1c179283f367
+    type: title
+    task:
+      id: 3749e5a2-c586-4226-8374-1c179283f367
+      version: -1
+      name: Case 1 - Base
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 4165407c-b775-4187-8d18-c22fc304926c
+    type: condition
+    task:
+      id: 4165407c-b775-4187-8d18-c22fc304926c
+      version: -1
+      name: Indicator Main Keys Exists
+      description: MaxScore And MaxVerdict enriched for https://google.com
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: URLEnrichment.Value
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: TimeNowUnix
+                transformers:
+                - operator: concat
+                  args:
+                    prefix:
+                      value:
+                        simple: https://
+                    suffix:
+                      value:
+                        simple: .com
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: URLEnrichment.MaxScore
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: URLEnrichment.MaxVerdict
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: URLEnrichment.TIMScore
+            iscontext: true
+      - - operator: isNotExists
+          left:
+            value:
+              simple: URLEnrichment.Status
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 611d01ce-6a02-49b6-85e6-dc1f43a7f224
+    type: condition
+    task:
+      id: 611d01ce-6a02-49b6-85e6-dc1f43a7f224
+      version: -1
+      name: No additional fields
+      description: Additional fields empty
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotExists
+          left:
+            value:
+              simple: URLEnrichment.Results.AdditionalFields
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 1720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: ae1ad98c-4690-474f-87b4-f9fc15760c98
+    type: title
+    task:
+      id: ae1ad98c-4690-474f-87b4-f9fc15760c98
+      version: -1
+      name: Case 3 - External Enrichment
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 1890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 81e75c38-f3d3-4366-8dcd-dd8351db15ee
+    type: regular
+    task:
+      id: 81e75c38-f3d3-4366-8dcd-dd8351db15ee
+      version: -1
+      name: DeleteContext
+      description: "Delete field from context.\n\nThis automation runs using the default
+        Limited User role, unless you explicitly change the permissions.\nFor more
+        information, see the section about permissions here:\n- For Cortex XSOAR 6
+        see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
+        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "41"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 2050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 8ba19624-1587-489c-80f6-ee854c98da25
+    type: regular
+    task:
+      id: 8ba19624-1587-489c-80f6-ee854c98da25
+      version: -1
+      name: Run url enrichment script
+      description: |-
+        Running !url-enrichemnt on the base case without external enrichment or additional fields.
+        !url-enrichment url_litst="https://google.com"
+      scriptName: url-enrichment
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "42"
+      - "45"
+      - "46"
+      - "60"
+    scriptarguments:
+      additional_fields:
+        simple: "false"
+      external_enrichment:
+        simple: "true"
+      url_list:
+        complex:
+          root: TimeNowUnix
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: https://
+              suffix:
+                value:
+                  simple: .com
+      verbose:
+        simple: "false"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 2390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: 534b2676-7810-409f-8456-9c52b457eb49
+    type: title
+    task:
+      id: 534b2676-7810-409f-8456-9c52b457eb49
+      version: -1
+      name: Case 4 - External Enrichment + Additional Fields
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 2730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 3aa3ad40-a438-43e7-8cc5-2c43d78680a8
+    type: regular
+    task:
+      id: 3aa3ad40-a438-43e7-8cc5-2c43d78680a8
+      version: -1
+      name: DeleteContext
+      description: "Delete field from context.\n\nThis automation runs using the default
+        Limited User role, unless you explicitly change the permissions.\nFor more
+        information, see the section about permissions here:\n- For Cortex XSOAR 6
+        see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
+        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "51"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 2890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: a80a7232-0b87-4496-806b-bdca92a5e665
+    type: title
+    task:
+      id: a80a7232-0b87-4496-806b-bdca92a5e665
+      version: -1
+      name: Case 5 - Multiple Inputs
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "62"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 3570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: 16decc15-a882-4d23-8d8c-1f5cb917747a
+    type: regular
+    task:
+      id: 16decc15-a882-4d23-8d8c-1f5cb917747a
+      version: -1
+      name: Get Time
+      description: |
+        Retrieves the current date and time.
+      scriptName: GetTime
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: 30dea97e-e7f0-41bb-8ee5-31ab2c15bef8
+    type: regular
+    task:
+      id: 30dea97e-e7f0-41bb-8ee5-31ab2c15bef8
+      version: -1
+      name: Get Time
+      description: |
+        Retrieves the current date and time.
+      scriptName: GetTime
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 1380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: 235c555b-c23d-4c1b-8f57-a72667079e0c
+    type: regular
+    task:
+      id: 235c555b-c23d-4c1b-8f57-a72667079e0c
+      version: -1
+      name: Run url enrichment script
+      description: |-
+        Running !url-enrichemnt on the base case without external enrichment or additional fields.
+        !url-enrichment url_litst="https://google.com"
+      scriptName: url-enrichment
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "39"
+      - "40"
+      - "19"
+    scriptarguments:
+      additional_fields:
+        simple: "false"
+      brands:
+        simple: AlienVault OTX v2
+      external_enrichment:
+        simple: "false"
+      url_list:
+        simple: https://${TimeNowUnix}.com
+      verbose:
+        simple: "false"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 1550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: f3ddf9aa-4041-4631-89d2-bc781a748b39
+    type: condition
+    task:
+      id: f3ddf9aa-4041-4631-89d2-bc781a748b39
+      version: -1
+      name: AlienVault OTX v2 Result Only
+      description: Make sure the Virus Total indicator returned from tim
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: URLEnrichment.Results.Brand
+            iscontext: true
+          right:
+            value:
+              simple: AlienVault OTX v2
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: URLEnrichment.Results
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: URLEnrichment.Results.Brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: AlienVault OTX v2
+                accessor: Score
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: URLEnrichment.Results
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: URLEnrichment.Results.Brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: AlienVault OTX v2
+                accessor: Data
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: TimeNowUnix
+                transformers:
+                - operator: concat
+                  args:
+                    prefix:
+                      value:
+                        simple: https://
+                    suffix:
+                      value:
+                        simple: .com
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: URLEnrichment.Results
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: URLEnrichment.Results.Brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: AlienVault OTX v2
+                accessor: Verdict
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: b997f0d8-2d83-417c-802e-f2398154727d
+    type: condition
+    task:
+      id: b997f0d8-2d83-417c-802e-f2398154727d
+      version: -1
+      name: Indicator Main Keys Exists
+      description: MaxScore And MaxVerdict enriched for https://google.com
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: URLEnrichment.Value
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: TimeNowUnix
+                transformers:
+                - operator: concat
+                  args:
+                    prefix:
+                      value:
+                        simple: https://
+                    suffix:
+                      value:
+                        simple: .com
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: URLEnrichment.MaxScore
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: URLEnrichment.MaxVerdict
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: URLEnrichment.TIMScore
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: URLEnrichment.Status
+            iscontext: true
+          right:
+            value:
+              simple: Fresh
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 1720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: 96e9a6a3-36aa-4e7c-8ea5-54b4cf7d4efb
+    type: regular
+    task:
+      id: 96e9a6a3-36aa-4e7c-8ea5-54b4cf7d4efb
+      version: -1
+      name: Get Time
+      description: |
+        Retrieves the current date and time.
+      scriptName: GetTime
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 2220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: f0e7e76b-7d35-4c0d-8450-a7136126c33f
+    type: condition
+    task:
+      id: f0e7e76b-7d35-4c0d-8450-a7136126c33f
+      version: -1
+      name: Indicator Main Keys Exists
+      description: MaxScore And MaxVerdict enriched for https://google.com
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "28"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: URLEnrichment.Value
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: TimeNowUnix
+                transformers:
+                - operator: concat
+                  args:
+                    prefix:
+                      value:
+                        simple: https://
+                    suffix:
+                      value:
+                        simple: .com
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: URLEnrichment.MaxScore
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: URLEnrichment.MaxVerdict
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: URLEnrichment.TIMScore
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: URLEnrichment.Status
+            iscontext: true
+          right:
+            value:
+              simple: Fresh
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: bdfbd6fa-4ec7-4e59-82f6-37c460f9276a
+    type: condition
+    task:
+      id: bdfbd6fa-4ec7-4e59-82f6-37c460f9276a
+      version: -1
+      name: AlienVault OTX v2 Result
+      description: Make sure the Virus Total indicator returned from tim
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "28"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: URLEnrichment.Results
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: URLEnrichment.Results.Brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: AlienVault OTX v2
+                accessor: Score
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: URLEnrichment.Results
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: URLEnrichment.Results.Brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: AlienVault OTX v2
+                accessor: Data
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: TimeNowUnix
+                transformers:
+                - operator: concat
+                  args:
+                    prefix:
+                      value:
+                        simple: https://
+                    suffix:
+                      value:
+                        simple: .com
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: URLEnrichment.Results
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: URLEnrichment.Results.Brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: AlienVault OTX v2
+                accessor: Verdict
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: 2034e221-3038-453f-8f8b-cfd65d8b0b18
+    type: condition
+    task:
+      id: 2034e221-3038-453f-8f8b-cfd65d8b0b18
+      version: -1
+      name: VirusTotal (API v3) Result
+      description: Make sure the Virus Total indicator returned from tim
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "28"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: URLEnrichment.Results
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: URLEnrichment.Results.Brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: VirusTotal (API v3)
+                accessor: Score
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: URLEnrichment.Results
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: URLEnrichment.Results.Brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: VirusTotal (API v3)
+                accessor: Data
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: TimeNowUnix
+                transformers:
+                - operator: concat
+                  args:
+                    prefix:
+                      value:
+                        simple: https://
+                    suffix:
+                      value:
+                        simple: .com
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: URLEnrichment.Results
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: URLEnrichment.Results.Brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: VirusTotal (API v3)
+                accessor: Verdict
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "47":
+    id: "47"
+    taskid: a7c8fdd7-057f-47b5-8b23-404dbd5dec5e
+    type: condition
+    task:
+      id: a7c8fdd7-057f-47b5-8b23-404dbd5dec5e
+      version: -1
+      name: Indicator Main Keys Exists
+      description: MaxScore And MaxVerdict enriched for https://google.com
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "35"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: URLEnrichment.Value
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: TimeNowUnix
+                transformers:
+                - operator: concat
+                  args:
+                    prefix:
+                      value:
+                        simple: https://
+                    suffix:
+                      value:
+                        simple: .com
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: URLEnrichment.MaxScore
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: URLEnrichment.MaxVerdict
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: URLEnrichment.TIMScore
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: URLEnrichment.Status
+            iscontext: true
+          right:
+            value:
+              simple: Fresh
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "48":
+    id: "48"
+    taskid: e3c5b5dd-123c-4d92-8d2d-4abe1b68f9d9
+    type: condition
+    task:
+      id: e3c5b5dd-123c-4d92-8d2d-4abe1b68f9d9
+      version: -1
+      name: AlienVault OTX v2 Result
+      description: Make sure the Virus Total indicator returned from tim
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "35"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: URLEnrichment.Results
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: URLEnrichment.Results.Brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: AlienVault OTX v2
+                accessor: Score
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: URLEnrichment.Results
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: URLEnrichment.Results.Brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: AlienVault OTX v2
+                accessor: Data
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: TimeNowUnix
+                transformers:
+                - operator: concat
+                  args:
+                    prefix:
+                      value:
+                        simple: https://
+                    suffix:
+                      value:
+                        simple: .com
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: URLEnrichment.Results
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: URLEnrichment.Results.Brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: AlienVault OTX v2
+                accessor: Verdict
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 3400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "49":
+    id: "49"
+    taskid: c98a94c2-1f9a-43c6-8abd-436b34a3af70
+    type: condition
+    task:
+      id: c98a94c2-1f9a-43c6-8abd-436b34a3af70
+      version: -1
+      name: VirusTotal (API v3) Result
+      description: Make sure the Virus Total indicator returned from tim
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "35"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: URLEnrichment.Results
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: URLEnrichment.Results.Brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: VirusTotal (API v3)
+                accessor: Score
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: URLEnrichment.Results
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: URLEnrichment.Results.Brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: VirusTotal (API v3)
+                accessor: Data
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: TimeNowUnix
+                transformers:
+                - operator: concat
+                  args:
+                    prefix:
+                      value:
+                        simple: https://
+                    suffix:
+                      value:
+                        simple: .com
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: URLEnrichment.Results
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: URLEnrichment.Results.Brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: VirusTotal (API v3)
+                accessor: Verdict
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "50":
+    id: "50"
+    taskid: 5e20c5f0-a24b-46e8-8438-c4c8ce8011cb
+    type: regular
+    task:
+      id: 5e20c5f0-a24b-46e8-8438-c4c8ce8011cb
+      version: -1
+      name: Run url enrichment script
+      description: |-
+        Running !url-enrichemnt on the base case without external enrichment or additional fields.
+        !url-enrichment url_litst="https://google.com"
+      scriptName: url-enrichment
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "47"
+      - "49"
+      - "48"
+      - "61"
+    scriptarguments:
+      additional_fields:
+        simple: "true"
+      external_enrichment:
+        simple: "true"
+      url_list:
+        complex:
+          root: TimeNowUnix
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: https://
+              suffix:
+                value:
+                  simple: .com
+      verbose:
+        simple: "false"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 3230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "51":
+    id: "51"
+    taskid: 67941d27-b73e-4b62-83f3-8cbaeb215571
+    type: regular
+    task:
+      id: 67941d27-b73e-4b62-83f3-8cbaeb215571
+      version: -1
+      name: Get Time
+      description: |
+        Retrieves the current date and time.
+      scriptName: GetTime
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "50"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 3060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "52":
+    id: "52"
+    taskid: 5e663223-bf6e-4ae5-8e2f-ddb0cf0a94bb
+    type: title
+    task:
+      id: 5e663223-bf6e-4ae5-8e2f-ddb0cf0a94bb
+      version: -1
+      name: Case 1 - Wrong Brand
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "53"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 4400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "53":
+    id: "53"
+    taskid: f253c8f6-7538-49e1-8063-1f09496aa111
+    type: regular
+    task:
+      id: f253c8f6-7538-49e1-8063-1f09496aa111
+      version: -1
+      name: DeleteContext
+      description: "Delete field from context.\n\nThis automation runs using the default
+        Limited User role, unless you explicitly change the permissions.\nFor more
+        information, see the section about permissions here:\n- For Cortex XSOAR 6
+        see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
+        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "54"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 4560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "54":
+    id: "54"
+    taskid: 297a91de-1e91-49ab-83e5-c7b5555b3933
+    type: regular
+    task:
+      id: 297a91de-1e91-49ab-83e5-c7b5555b3933
+      version: -1
+      name: Run url enrichment script
+      description: |-
+        Running !url-enrichemnt on the base case without external enrichment or additional fields.
+        !url-enrichment url_litst="https://google.com"
+      scriptName: url-enrichment
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "55"
+      '#none#':
+      - "58"
+    scriptarguments:
+      additional_fields:
+        simple: "true"
+      brands:
+        simple: aabcd
+      external_enrichment:
+        simple: "true"
+      url_list:
+        complex:
+          root: TimeNowUnix
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: https://
+              suffix:
+                value:
+                  simple: .com
+      verbose:
+        simple: "false"
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 4730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "55":
+    id: "55"
+    taskid: 43ec7afb-2cf2-43e2-8160-f253c5c4cd1b
+    type: title
+    task:
+      id: 43ec7afb-2cf2-43e2-8160-f253c5c4cd1b
+      version: -1
+      name: Case 2 - Wrong Input
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "56"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 4900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "56":
+    id: "56"
+    taskid: eb8b4dad-e540-410a-8e7e-975c6a4b6fd6
+    type: regular
+    task:
+      id: eb8b4dad-e540-410a-8e7e-975c6a4b6fd6
+      version: -1
+      name: DeleteContext
+      description: "Delete field from context.\n\nThis automation runs using the default
+        Limited User role, unless you explicitly change the permissions.\nFor more
+        information, see the section about permissions here:\n- For Cortex XSOAR 6
+        see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
+        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "57"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 5060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "57":
+    id: "57"
+    taskid: a795a0b7-7933-4181-8263-84a1c70bf26e
+    type: regular
+    task:
+      id: a795a0b7-7933-4181-8263-84a1c70bf26e
+      version: -1
+      name: Run url enrichment script
+      description: |-
+        Running !url-enrichemnt on the base case without external enrichment or additional fields.
+        !url-enrichment url_litst="https://google.com"
+      scriptName: url-enrichment
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "59"
+      '#none#':
+      - "58"
+    scriptarguments:
+      additional_fields:
+        simple: "true"
+      external_enrichment:
+        simple: "true"
+      url_list:
+        simple: abcd
+      verbose:
+        simple: "false"
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 5230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "58":
+    id: "58"
+    taskid: 9a2fba74-3bbe-4e01-83dd-23111932b144
+    type: condition
+    task:
+      id: 9a2fba74-3bbe-4e01-83dd-23111932b144
+      version: -1
+      name: Failure
+      type: condition
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: "1"
+          right:
+            value:
+              simple: "2"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 5400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "59":
+    id: "59"
+    taskid: bc9a64c5-5323-4275-875f-34b1cf106f16
+    type: title
+    task:
+      id: bc9a64c5-5323-4275-875f-34b1cf106f16
+      version: -1
+      name: Pass
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 5405
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "60":
+    id: "60"
+    taskid: c337e3cb-5e1d-4c65-876b-691c8162bc79
+    type: condition
+    task:
+      id: c337e3cb-5e1d-4c65-876b-691c8162bc79
+      version: -1
+      name: No additional fields
+      description: Additional fields empty
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "28"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotExists
+          left:
+            value:
+              simple: URLEnrichment.Results.AdditionalFields
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 2560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "61":
+    id: "61"
+    taskid: 151af615-5b96-44fb-8436-529eabe46fad
+    type: condition
+    task:
+      id: 151af615-5b96-44fb-8436-529eabe46fad
+      version: -1
+      name: Additional Fields Exists
+      description: Additional fields empty
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "35"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: URLEnrichment.Results.AdditionalFields
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 3400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "62":
+    id: "62"
+    taskid: 76db3bbc-67e2-40f9-8757-c1a6e00c293b
+    type: regular
+    task:
+      id: 76db3bbc-67e2-40f9-8757-c1a6e00c293b
+      version: -1
+      name: DeleteContext
+      description: "Delete field from context.\n\nThis automation runs using the default
+        Limited User role, unless you explicitly change the permissions.\nFor more
+        information, see the section about permissions here:\n- For Cortex XSOAR 6
+        see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
+        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "63"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 3730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "63":
+    id: "63"
+    taskid: ac24a91b-5a23-46f1-8b32-37eae0fc0a2f
+    type: regular
+    task:
+      id: ac24a91b-5a23-46f1-8b32-37eae0fc0a2f
+      version: -1
+      name: Run url enrichment script
+      description: |-
+        Running !url-enrichemnt on the base case without external enrichment or additional fields.
+        !url-enrichment url_litst="https://google.com"
+      scriptName: url-enrichment
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "70"
+      - "71"
+    scriptarguments:
+      additional_fields:
+        simple: "false"
+      external_enrichment:
+        simple: "true"
+      url_list:
+        simple: '"[\"https://google.com\", \"https://facebook.com\"]"'
+      verbose:
+        simple: "false"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 3900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "69":
+    id: "69"
+    taskid: ba853917-2ac0-4f42-880d-26186bd0443a
+    type: title
+    task:
+      id: ba853917-2ac0-4f42-880d-26186bd0443a
+      version: -1
+      name: Sad Flows
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "52"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 4240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "70":
+    id: "70"
+    taskid: acf28d72-fa4e-4024-a831-1368d307718b
+    type: condition
+    task:
+      id: acf28d72-fa4e-4024-a831-1368d307718b
+      version: -1
+      name: Google Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "69"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: URLEnrichment.Value
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: URLEnrichment.Value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: https://google.com
+            iscontext: true
+          right:
+            value:
+              simple: https://google.com
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: URLEnrichment
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: URLEnrichment.Value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: https://google.com
+                accessor: MaxScore
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: URLEnrichment
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: URLEnrichment.Value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: https://google.com
+                accessor: TIMScore
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 4070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "71":
+    id: "71"
+    taskid: bf7791ff-b62b-4fd7-ba19-a27b61cddebf
+    type: condition
+    task:
+      id: bf7791ff-b62b-4fd7-ba19-a27b61cddebf
+      version: -1
+      name: Facebook Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "69"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: URLEnrichment.Value
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: URLEnrichment.Value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: https://facebook.com
+            iscontext: true
+          right:
+            value:
+              simple: https://facebook.com
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: URLEnrichment
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: URLEnrichment.Value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: https://facebook.com
+                accessor: MaxScore
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: URLEnrichment
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: URLEnrichment.Value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: https://facebook.com
+                accessor: TIMScore
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 4070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 5420,
+        "width": 1670,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+dirtyInputs: true
+marketplaces:
+- platform
+- marketplacev2
+- xsoar

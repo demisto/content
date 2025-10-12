@@ -2075,6 +2075,12 @@ def test_dict_converter():
     Then:
         - Verify that the outputted dictionary contains the expected values.
     """
+    input_dict = {"age": "0"}
+    expected_output = {"age": 0}
+    converted_dict = convert_dict_to_actual_values(input_dict)
+    assert not isinstance(converted_dict["age"], bool)
+    assert converted_dict == expected_output
+
     input_dict = {"enabled": "true", "year": "2024", "name": "Moshe"}
     expected_output = {"enabled": True, "year": 2024, "name": "Moshe"}
     assert convert_dict_to_actual_values(input_dict) == expected_output

@@ -53,8 +53,8 @@ ADVANCED_PARAMETERS_STRING_NAMES = [
 ADVANCED_PARAMETER_INT_NAMES = [
     "EVENTS_INTERVAL_SECS",
     "MAX_SEARCHES_QUEUE",
-    "EVENTS_SEARCH_RETRIES",
-    "EVENTS_POLLING_RETRIES",
+    "EVENTS_SEARCH_TRIES",
+    "EVENTS_POLLING_TRIES",
     "EVENTS_SEARCH_RETRY_SECONDS",
     "FAILURE_SLEEP",
     "FETCH_SLEEP",
@@ -2021,10 +2021,12 @@ def convert_dict_to_actual_values(input_dict: dict) -> dict[str, Any]:
             output_dict[key] = convert_list_to_actual_values(value)
         elif isinstance(value, str):
             try:
-                output_dict[key] = argToBoolean(value)
+                # output_dict[key] = argToBoolean(value)
+                output_dict[key] = arg_to_real_number(value)
             except ValueError:
                 try:
-                    output_dict[key] = arg_to_real_number(value)
+                    # output_dict[key] = arg_to_real_number(value)
+                    output_dict[key] = argToBoolean(value)
                 except ValueError:
                     output_dict[key] = value
         else:
