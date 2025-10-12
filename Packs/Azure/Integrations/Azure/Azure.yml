@@ -2276,7 +2276,7 @@ script:
       type: string
       description: Configuration value.
       defaultValue: '4'
-    description: "Sets the log retention period for the PostgreSQL server to 4 days. 'Microsoft.DBforPostgreSQL/servers/configuration/*' permission is required."
+    description: "Sets the log retention period for the PostgreSQL server to 4 days. Requires 'Microsoft.DBforPostgreSQL/servers/configuration/*' permission."
     name: azure-postgres-config-set-log-retention-quick-action
     prettyname: Set Postgres Log Retention
     hidden: true
@@ -2298,7 +2298,7 @@ script:
       required: true
       description: Name of the Function App.
       prettyname: AZ Function Name
-    description: "Assigns a system-assigned managed identity to the Function App. This allows the app to securely access other Azure services while removing the need to manage sensitive credentials and the risk of exposing them. 'Microsoft.Web/sites/Write' permission is required."
+    description: "Assigns a system-assigned managed identity to the Function App. This allows the app to securely access other Azure services while removing the need to manage sensitive credentials and the risk of exposing them. Requires 'Microsoft.Web/sites/Write' permission."
     name: azure-webapp-update-assign-managed-identity-quick-action
     prettyname: Assign Managed Identity to Function App
     hidden: true
@@ -2531,7 +2531,7 @@ script:
       name: delete_rentention_policy_days
       defaultValue: '30'
       type: number
-    description: "Enables blob soft delete for the storage account to retain deleted blobs for 30 days. 'Microsoft.Storage/storageAccounts/blobServices/write' permission is required."
+    description: "Enables blob soft delete for the storage account to retain deleted blobs for 30 days. Requires 'Microsoft.Storage/storageAccounts/blobServices/write' permission."
     name: azure-storage-blob-enable-soft-delete-quick-action
     prettyname: Enable Soft Delete on Blob
     hidden: true
@@ -2589,7 +2589,7 @@ script:
       type: string
       description: Configuration value.
       defaultValue: 'on'
-    description: "Enables logging of statement execution duration on the PostgreSQL server to help with performance analysis. 'Microsoft.DBforPostgreSQL servers/configuration/*' permission is required."
+    description: "Enables logging of statement execution duration on the PostgreSQL server to help with performance analysis. Requires 'Microsoft.DBforPostgreSQL servers/configuration/*' permission."
     name: azure-postgres-enable-statement-logging-quick-action
     prettyname: Enable Postgres Statement Logging
     hidden: true
@@ -2628,7 +2628,7 @@ script:
       - DenyAll
       description: Policy for accessing the disk via network.
       defaultValue: 'DenyAll'
-    description: "Disables all public and private network access for the managed disk. 'Microsoft.Compute/disks/write' permission is required."
+    description: "Disables all public and private network access for the managed disk. Requires 'Microsoft.Compute/disks/write' permission."
     name: azure-disable-public-private-access-vm-disk-quick-action
     prettyname: Disable Public & Private Access to VM Disk
     hidden: true
@@ -2759,7 +2759,7 @@ script:
       - AzureActiveDirectory
       description: Additional authentication requirements when exporting or uploading to a disk or snapshot.
       defaultValue: AzureActiveDirectory
-    description: "Sets the data access authentication mode for the managed disk to Azure Active Directory. 'Microsoft.Compute/disks/write' permission is required."
+    description: "Sets the data access authentication mode for the managed disk to Azure Active Directory. Requires 'Microsoft.Compute/disks/write' permission."
     name: azure-disk-set-data-access-aad-quick-action
     prettyname: Set Disk Data Access to AAD
     hidden: true
@@ -2898,7 +2898,7 @@ script:
       - disabled
       - enabled
       defaultValue: enabled
-    description: "Disables public network access and content exports for the Azure Container Registry (ACR) to enhance security. 'Microsoft.ContainerRegistry/registries/write' permission is required."
+    description: "Disables public network access and content exports for the Azure Container Registry (ACR) to enhance security. Requires 'Microsoft.ContainerRegistry/registries/write' permission."
     name: azure-acr-disable-public-private-access-quick-action
     prettyname: Disable Public Access and Exports on ACR
     hidden: true
@@ -2996,7 +2996,7 @@ script:
       - enabled
       description: Whether the policy is enabled or not.
       defaultValue: disabled
-    description: "Disables the legacy 'authentication as ARM' feature for the Azure Container Registry (ACR). 'Microsoft.ContainerRegistry/registries/write' permission is required."
+    description: "Disables the legacy 'authentication as ARM' feature for the Azure Container Registry (ACR). Requires 'Microsoft.ContainerRegistry/registries/write' permission."
     name: azure-acr-disable-authentication-as-arm-quick-action
     prettyname: Disable ACR Authentication as ARM
     hidden: true
@@ -3095,7 +3095,7 @@ script:
       - 'true'
       - 'false'
       defaultValue: 'false'
-    description: "Disables anonymous pull access for the Azure Container Registry (ACR), requiring clients to authenticate before pulling images. 'Microsoft.ContainerRegistry/registries/write' permission is required."
+    description: "Disables anonymous pull access for the Azure Container Registry (ACR), requiring clients to authenticate before pulling images. Requires 'Microsoft.ContainerRegistry/registries/write' permission."
     name: azure-acr-disable-anonymous-pull-quick-action
     prettyname: Disable ACR Anonymous Pull
     hidden: true
