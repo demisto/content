@@ -714,7 +714,8 @@ class S3:
     def put_bucket_ownership_controls_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
         """
         Creates or modifies the Ownership Controls configuration for an S3 bucket.
-        This command sets the rule that governs who owns new objects uploaded to the bucket, specifically controlling
+       Specifies the rule that determines ownership of newly uploaded objects and manages the use of Access Control Lists (ACLs).
+Requires a validated JSON structure for 'the ownership_controls' argument.
         the role of Access Control Lists (ACLs). This operation requires a specific, validated JSON structure for
         the 'ownership_controls' argument.
 
