@@ -2779,6 +2779,11 @@ script:
       description: The subscription ID.
       required: true
       prettyname: Subscription ID
+    - name: resource_group_name
+      type: string
+      description: The resource group name.
+      required: true
+      prettyname: Resource Group
     - description: Name of the storage account.
       name: account_name
       required: true 
