@@ -48,4 +48,5 @@ This configuration will collect the data into a dataset named `ibm_ldap_raw`.
 For more information regarding audit log file location please review the following document [here](https://www.ibm.com/docs/en/svd/10.0.4?topic=tools-directory-server-log-configuration-file-locations)
 
 **Please note**: The above configuration uses the default location of the Message Tracking logs. In case your Exchange server saves the Message Tracking logs under a different location, you would need to change it in the yaml (under the `paths` field).
+
 </~XSIAM>
