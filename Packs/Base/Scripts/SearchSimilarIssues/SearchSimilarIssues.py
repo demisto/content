@@ -64,22 +64,24 @@ def replace_keys_recursively(obj, old: str, new: str):
 
 def handle_results(results):
     if isinstance(results, list):
-            readable_output = results[0]
-            final_readable = replace_keys_recursively(readable_output, "alerts", "issues")
-            outputs = results[1]
-            if isinstance(outputs, list):
-                issues_list = replace_keys_recursively(outputs, "Incident", "Issue")
-                issues_list = replace_keys_recursively(issues_list, "Similarity Alert", "SimilarityIssue")
-                issues_list = delete_keys_recursively(issues_list, ["Alert Id"])
-            else:
-                issues_list = outputs.get("DBotFindSimilarIncidents", {}).get("similarIncidentList")
-                
-            final_outputs = {"similarIssueList": issues_list, "isSimilarIssueFound": True if issues_list else False}
-            final_outputs = {"SimilarIssues": final_outputs}
-            if issues_list:
-                final_readable = final_readable + tableToMarkdown(f"Similar Issues", issues_list)
+        readable_output = results[0]
+        final_readable = replace_keys_recursively(readable_output, "alerts", "issues")
+        outputs = results[1]
+        if isinstance(outputs, list):
+            issues_list = replace_keys_recursively(outputs, "Incident", "Issue")
+            issues_list = replace_keys_recursively(issues_list, "Similarity Alert", "SimilarityIssue")
+            issues_list = delete_keys_recursively(issues_list, ["Alert Id"])
+        else:
+            issues_list = outputs.get("DBotFindSimilarIncidents", {}).get("similarIncidentList")
             
-    return final_readable, final_outputs
+        final_outputs = {"similarIssueList": issues_list, "isSimilarIssueFound": True if issues_list else False}
+        final_outputs = {"SimilarIssues": final_outputs}
+        if issues_list:
+            final_readable = final_readable + tableToMarkdown(f"Similar Issues", issues_list)
+            
+        return final_readable, final_outputs
+    
+    return "No similar issues were found.", None
 
 def main():
     try:
@@ -92,7 +94,7 @@ def main():
         return_results(CommandResults(outputs=final_outputs, readable_output=final_readable, outputs_key_field="Id"))
         
     except Exception as ex:
-        return_error(f"Failed to execute FindSimilarIssues. Error: {str(ex)}")
+        return_error(f"Failed to execute SearchSimilarIssues. Error: {str(ex)}")
 
 
 """ ENTRY POINT """
