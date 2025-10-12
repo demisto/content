@@ -3561,7 +3561,6 @@ def stop_and_quarantine_file_command_polling(args: dict, client: MsClient):
         comment = args.get("comment")
 
         action_ids_to_poll = []
-        completed_results = []
         all_context_outputs = []
         all_api_raw_responses = []
 
@@ -3595,7 +3594,6 @@ def stop_and_quarantine_file_command_polling(args: dict, client: MsClient):
                     "commands": None,
                 }
                 context_output = get_machine_action_data(machine_action_response)
-                completed_results.append(context_output)
 
             finally:
                 all_context_outputs.append(context_output)
