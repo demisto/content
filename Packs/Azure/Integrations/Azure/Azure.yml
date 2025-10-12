@@ -2357,7 +2357,7 @@ script:
       - Allow
       - Deny
       defaultValue: Deny
-    description: "Revokes an NSG rule's access setting to Deny, effectively blocking traffic defined by that rule's properties.. Requires 'Microsoft.Network/networkSecurityGroups/securityRules/*' permission."
+    description: "Revokes an NSG rule's access setting to Deny, effectively blocking traffic defined by that rule's properties. Requires 'Microsoft.Network/networkSecurityGroups/securityRules/*' permission."
     name: azure-nsg-security-rule-update-quick-action
     prettyname: Revoke NSG Rule to Stop Traffic
     quickaction: true

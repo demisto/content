@@ -40,11 +40,11 @@ PERMISSIONS_TO_COMMANDS = {
         "azure-nsg-security-rule-update",
         "azure-nsg-security-rule-create",
         "azure-nsg-security-rule-update-quick-action",
-        "azure-nsg-security-rule-delete-quick-action"
+        "azure-nsg-security-rule-delete-quick-action",
     ],
     "Microsoft.Network/networkSecurityGroups/securityRules/delete": [
         "azure-nsg-security-rule-delete",
-        "azure-nsg-security-rule-delete-quick-action"
+        "azure-nsg-security-rule-delete-quick-action",
     ],
     "Microsoft.Network/networkInterfaces/read": ["azure-nsg-network-interfaces-list"],
     "Microsoft.Network/publicIPAddresses/read": ["azure-nsg-public-ip-addresses-list"],
@@ -71,46 +71,38 @@ PERMISSIONS_TO_COMMANDS = {
     ],
     "Microsoft.Authorization/policyAssignments/read": [
         "azure-policy-assignment-create",
-        "azure-policy-assignment-create-quick-action"
+        "azure-policy-assignment-create-quick-action",
     ],
     "Microsoft.Authorization/policyAssignments/write": [
         "azure-policy-assignment-create",
-        "azure-policy-assignment-create-quick-action"
+        "azure-policy-assignment-create-quick-action",
     ],
     "Microsoft.DBforPostgreSQL/servers/read": ["azure-postgres-server-update"],
     "Microsoft.DBforPostgreSQL/servers/write": ["azure-postgres-server-update"],
     "Microsoft.DBforPostgreSQL/servers/configurations/read": [
         "azure-postgres-config-set",
-        "azure-postgres-config-set-quick-action"
+        "azure-postgres-config-set-quick-action",
     ],
     "Microsoft.DBforPostgreSQL/servers/configurations/write": [
         "azure-postgres-config-set",
-        "azure-postgres-config-set-quick-action"
+        "azure-postgres-config-set-quick-action",
     ],
     "Microsoft.Web/sites/config/read": [
         "azure-webapp-config-set",
         "azure-webapp-auth-update",
         "azure-webapp-set-http-version2.0-quick-action",
-        "azure-set-function-app-http-version2-0-quick-action"
-        "azure-webapp-assign-managed-identity-quick-action",
+        "azure-set-function-app-http-version2-0-quick-action" "azure-webapp-assign-managed-identity-quick-action",
         "azure-webapp-disable-remote-debugging-quick-action",
     ],
     "Microsoft.Web/sites/config/write": [
         "azure-webapp-config-set",
         "azure-webapp-auth-update",
         "azure-webapp-set-http-version2.0-quick-action",
-        "azure-set-function-app-http-version2-0-quick-action"
-        "azure-webapp-assign-managed-identity-quick-action",
+        "azure-set-function-app-http-version2-0-quick-action" "azure-webapp-assign-managed-identity-quick-action",
         "azure-webapp-disable-remote-debugging-quick-action",
     ],
-    "Microsoft.Web/sites/read": [
-        "azure-webapp-update",
-        "azure-webapp-assign-managed-identity-quick-action"
-    ],
-    "Microsoft.Web/sites/write": [
-        "azure-webapp-update",
-        "azure-webapp-assign-managed-identity-quick-action"
-    ],
+    "Microsoft.Web/sites/read": ["azure-webapp-update", "azure-webapp-assign-managed-identity-quick-action"],
+    "Microsoft.Web/sites/write": ["azure-webapp-update", "azure-webapp-assign-managed-identity-quick-action"],
     "Microsoft.DBforMySQL/flexibleServers/configurations/read": ["azure-mysql-flexible-server-param-set"],
     "Microsoft.DBforMySQL/flexibleServers/configurations/write": ["azure-mysql-flexible-server-param-set"],
     "Microsoft.Insights/logprofiles/read": ["azure-monitor-log-profile-update"],
