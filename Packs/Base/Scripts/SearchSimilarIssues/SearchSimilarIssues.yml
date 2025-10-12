@@ -68,22 +68,22 @@ enabled: false
 name: SearchSimilarIssues
 isInternal: true
 outputs:
-- contextPath: SimilarIssues.IsSimilarIssueFound
+- contextPath: SimilarIssues.isSimilarIssueFound
   description: Indicates whether similar issues have been found.
   type: boolean
-- contextPath: SimilarIssues.Created
+- contextPath: SimilarIssues.created
   description: The creation date of the linked issue.
   type: date
-- contextPath: SimilarIssues.Id
+- contextPath: SimilarIssues.id
   description: The ID of the linked issue.
   type: string
-- contextPath: SimilarIssues.Name
+- contextPath: SimilarIssues.name
   description: The name of the linked issue.
   type: string
-- contextPath: SimilarIssues.SimilarityIssue
+- contextPath: SimilarIssues.similarityIssue
   description: The similarity of the linked issue represented as a float in the range 0-1.
   type: number
-- contextPath: SimilarIssues.Details
+- contextPath: SimilarIssues.details
   description: The details of the linked issue.
   type: string
 script: '-'
