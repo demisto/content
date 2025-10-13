@@ -632,6 +632,7 @@ def parse_security_signal(data: dict[str, Any]) -> SecuritySignal:
 
     data = convert_datetime_to_str(data)
     attrs = {
+        # list endpoint returns workflow data in attributes.attributes.workflow 
         **data.get("attributes", {}).get("attributes", {}),
         **data.get("attributes", {}),
     }
@@ -1349,87 +1350,61 @@ def update_security_signal_command(
         if state not in valid_states:
             raise DemistoException(f"Invalid state '{state}'. Valid states are: {', '.join(valid_states)}")
 
-    with ApiClient(configuration) as api_client:
-        api_instance = SecurityMonitoringApi(api_client)
-        user_api_instance = UsersApi(api_client)
+    try:
+        with ApiClient(configuration) as api_client:
+            api_instance = SecurityMonitoringApi(api_client)
+            user_api_instance = UsersApi(api_client)
 
-        # TODO: move this call at the end and remove merging partial result in
-        # when fetch security signal endpoint is fixed and consistent.
-        #
-        # Refetch the full original signal
-        signal_response = api_instance.get_security_monitoring_signal(signal_id=signal_id)
-        data = signal_response.to_dict().get("data", {})
-        signal = parse_security_signal(data)
+            if assignee is not None:
+                assignee_uuid = ""
 
-        if assignee is not None:
-            assignee_uuid = ""
+                # Resolve assignee_uuid if assignee is provided
+                if assignee != "":
+                    res = user_api_instance.list_users(
+                        filter_status="Active,Pending",
+                        filter=assignee,
+                    )
+                    users = res.get("data", [])
+                    if len(users) == 0:
+                        raise DemistoException(f"Could not determine any user for name or email: {assignee}")
+                    if len(users) > 1:
+                        users = {u.get("attributes", {}).get("email", "") for u in users}
+                        raise DemistoException(f"Could not determine the user to assign to from list: {users}")
+                    assignee_uuid = users[0].get("id")
 
-            # Resolve assignee_uuid if assignee is provided
-            if assignee != "":
-                res = user_api_instance.list_users(
-                    filter_status="Active,Pending",
-                    filter=assignee,
-                )
-                users = res.get("data", [])
-                if len(users) == 0:
-                    raise DemistoException(f"Could not determine any user for name or email: {assignee}")
-                if len(users) > 1:
-                    users = {u.get("attributes", {}).get("email", "") for u in users}
-                    raise DemistoException(f"Could not determine the user to assign to from list: {users}")
-                assignee_uuid = users[0].get("id")
-
-            # Always update assignee - either with found assignee_uuid or by unassigning
-            assignee_body = SecurityMonitoringSignalAssigneeUpdateRequest(
-                data=SecurityMonitoringSignalAssigneeUpdateData(
-                    attributes=SecurityMonitoringSignalAssigneeUpdateAttributes(
-                        assignee=SecurityMonitoringTriageUser(uuid=assignee_uuid or ""),
+                # Always update assignee - either with found assignee_uuid or by unassigning
+                assignee_body = SecurityMonitoringSignalAssigneeUpdateRequest(
+                    data=SecurityMonitoringSignalAssigneeUpdateData(
+                        attributes=SecurityMonitoringSignalAssigneeUpdateAttributes(
+                            assignee=SecurityMonitoringTriageUser(uuid=assignee_uuid or ""),
+                        ),
                     ),
-                ),
-            )
-            update_response = api_instance.edit_security_monitoring_signal_assignee(
-                signal_id=signal_id,
-                body=assignee_body,
-            )
-            # Merge assignee update into signal
-            update_attrs = update_response.to_dict().get("data", {}).get("attributes", {})
-            if signal.triage and update_attrs.get("assignee"):
-                assignee_data = update_attrs["assignee"]
-                signal.triage.assignee = Assignee(
-                    name=assignee_data.get("name", "Unassigned"),
-                    handle=assignee_data.get("handle", ""),
+                )
+                api_instance.edit_security_monitoring_signal_assignee(
+                    signal_id=signal_id,
+                    body=assignee_body,
                 )
 
-        # Update state if provided
-        if state is not None:
-            state_body = SecurityMonitoringSignalStateUpdateRequest(
-                data=SecurityMonitoringSignalStateUpdateData(
-                    attributes=SecurityMonitoringSignalStateUpdateAttributes(
-                        state=state,
-                        reason=reason,
-                        comment=comment,
+            # Update state if provided
+            if state is not None:
+                state_body = SecurityMonitoringSignalStateUpdateRequest(
+                    data=SecurityMonitoringSignalStateUpdateData(
+                        attributes=SecurityMonitoringSignalStateUpdateAttributes(
+                            state=state,
+                            reason=reason,
+                            comment=comment,
+                        ),
                     ),
-                ),
-            )
-            update_response = api_instance.edit_security_monitoring_signal_state(
-                signal_id=signal_id,
-                body=state_body,
-            )
-            # Merge state update into signal
-            update_attrs = update_response.to_dict().get("data", {}).get("attributes", {})
-            if signal.triage and update_attrs:
-                signal.triage.state = update_attrs.get("state", signal.triage.state)
-                signal.triage.archive_comment = update_attrs.get("archive_comment", signal.triage.archive_comment)
-                signal.triage.archive_reason = update_attrs.get("archive_reason", signal.triage.archive_reason)
+                )
+                api_instance.edit_security_monitoring_signal_state(
+                    signal_id=signal_id,
+                    body=state_body,
+                )
 
-        signal_display = signal.to_display_dict()
-        readable_output = lookup_to_markdown([signal_display], "Security Signal Update")
+            return get_security_signal_command(configuration, {"signal_id": signal_id})
 
-        return CommandResults(
-            readable_output=readable_output,
-            outputs_prefix=SECURITY_SIGNAL_CONTEXT_NAME,
-            outputs_key_field="id",
-            outputs=signal.to_dict(),
-        )
+    except Exception as e:
+        raise DemistoException(f"Failed to update security signals: {str(e)}")
 
 
 def add_security_signal_comment_command(

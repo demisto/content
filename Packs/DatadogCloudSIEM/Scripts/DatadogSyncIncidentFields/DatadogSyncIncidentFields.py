@@ -35,31 +35,37 @@ def main():
         demisto.debug(f"Mapped data: {mapped_data}")
 
         # Convert mapped field names to custom field names (lowercase, no spaces)
-        custom_fields = {}
+        incident_fields = {}
         for key, value in mapped_data.items():
             field_name = "".join(key.lower().split())
-            custom_fields[field_name] = value
+            incident_fields[field_name] = value
 
         # Add owner from signal assignee
         assignee_name = signal.get("triage", {}).get("assignee", {}).get("name")
         if assignee_name:
-            custom_fields["owner"] = assignee_name
+            incident_fields["owner"] = assignee_name
 
         # Close incident if signal is archived
         signal_state = signal.get("triage", {}).get("state")
         if signal_state == "archived":
-            custom_fields["closeReason"] = signal.get("triage", {}).get(
+            incident_fields["closeReason"] = signal.get("triage", {}).get(
                 "archive_reason", "Other"
             )
-            custom_fields["closeNotes"] = signal.get("triage", {}).get(
+            incident_fields["closeNotes"] = signal.get("triage", {}).get(
                 "archive_comment", ""
             )
 
-        demisto.debug(f"Custom fields: {custom_fields}")
+        demisto.debug(f"Custom fields: {incident_fields}")
 
         # Update incident
-        if custom_fields:
-            demisto.executeCommand("setIncident", custom_fields)
+        if incident_fields:
+            demisto.executeCommand(
+                "setIncident",
+                {
+                    **incident_fields,
+                    "id": incident["id"],
+                },
+            )
 
             # Close the incident if signal is archived
             if signal_state == "archived":
