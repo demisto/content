@@ -24,5 +24,34 @@
         "X5",
         "ENT_PLUS",
         "agentix"
+    ],
+    "dependencies": {
+        "CommonScripts": {
+            "mandatory": true,
+            "display_name": "Common Scripts"
+        },
+        "ServiceNow": {
+            "mandatory": false,
+            "display_name": "ServiceNow"
+        },
+        "CommonTypes": {
+            "mandatory": true,
+            "display_name": "Common Types"
+        },
+        "CoreAlertFields": {
+            "mandatory": true,
+            "display_name": "Core Alert Fields"
+        },
+        "FiltersAndTransformers": {
+            "mandatory": true,
+            "display_name": "Filters And Transformers"
+        }
+    },
+    "displayedImages": [
+        "CommonScripts",
+        "ServiceNow",
+        "CommonTypes",
+        "CoreAlertFields",
+        "FiltersAndTransformers"
     ]
 }
