@@ -900,6 +900,7 @@ class JiraCloudClient(JiraBaseClient):
             "read:sprint:jira-software",
             "read:epic:jira-software",
             "read:jql:jira",
+            "read:project:jira",
             "write:sprint:jira-software",
             # For refresh token
             "offline_access",
