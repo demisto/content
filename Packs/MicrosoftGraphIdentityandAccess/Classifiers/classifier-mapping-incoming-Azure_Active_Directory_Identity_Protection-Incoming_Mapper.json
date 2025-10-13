@@ -6,6 +6,18 @@
         "Microsoft Graph Identity and Access": {
             "dontMapEventToLabels": false,
             "internalMapping": {
+                "Additional Data": {
+                    "complex": null,
+                    "simple": "additionalInfo"
+                },
+                "Alert Source": {
+                    "complex": null,
+                    "simple": "source"
+                },
+                "City": {
+                    "complex": null,
+                    "simple": "location.city"
+                },
                 "Microsoft Graph Identity and Access Alert Type": {
                     "complex": null,
                     "simple": "riskEventType"
@@ -39,7 +51,7 @@
                     },
                     "simple": ""
                 },
-                "Location Region": {
+                "Country Code Number": {
                     "complex": null,
                     "simple": "location.countryOrRegion"
                 },
@@ -58,6 +70,10 @@
                 "Subtype": {
                     "complex": null,
                     "simple": "riskDetail"
+                },
+                "User Id": {
+                    "complex": null,
+                    "simple": "userId"
                 },
                 "Username": {
                     "complex": null,
