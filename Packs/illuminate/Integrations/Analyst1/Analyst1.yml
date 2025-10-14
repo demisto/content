@@ -1,8 +1,8 @@
 commonfields:
-  id: Analyst1
+  id: Analyst1_Dev
   version: -1
-name: Analyst1
-display: Analyst1
+name: Analyst1_Dev
+display: Analyst1 (Dev)
 category: Data Enrichment & Threat Intelligence
 description: This integration utilizes Analyst1's system to enrich Demisto indicators with data provided by the Analyst1 REST API, such as actor and malware information, activity and reported dates, evidence and hit counts, and more.
 configuration:
@@ -106,6 +106,12 @@ configuration:
   - Malicious
   type: 15
   required: false
+- display: Apply Analyst1 entity-type tags to indicators
+  name: applyTags
+  defaultvalue: 'false'
+  type: 8
+  required: false
+  additionalinfo: 'Enable to automatically tag indicators with Analyst1 entity type classifications (e.g., "Analyst1: Indicator", "Analyst1: Asset", "Analyst1: In Private Range"). Tags help identify how Analyst1 classifies each indicator.'
 - defaultvalue: indicatorType
   name: feedExpirationPolicy
   display: ''
