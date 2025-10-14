@@ -2780,7 +2780,9 @@ def to_unix_seconds_str(s: str) -> str:
     )
     if dt is None:
         raise ValueError(
-            f"Could not parse time string: {s!r}. Expected either a numeric Unix timestamp (seconds) or a human-readable date string (e.g., '2023-01-01', 'yesterday', '2023-01-01T12:00:00Z')."
+            f"Could not parse time string: {s!r}. "
+            "Expected either a numeric Unix timestamp (seconds) or a human-readable date string "
+            "(e.g., '2023-01-01', 'yesterday', '2023-01-01T12:00:00Z')."
         )
 
     # Ensure tz-aware UTC
