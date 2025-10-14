@@ -1,1 +1,1 @@
-docusign-get-events
+!docusign-generate-consent-url

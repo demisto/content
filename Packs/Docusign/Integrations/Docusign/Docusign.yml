@@ -90,26 +90,6 @@ script:
     description: Generates the DocuSign admin consent URL based on configured parameters and environment.
     arguments: []
     execution: false
-  - name: docusign-get-events
-    description: Gets customer event data from DocuSign Monitor stream.
-    arguments:
-    - name: limit
-      description: Maximum number of records to return in this call (<= 2000). If omitted, uses integration parameter.
-      required: false
-    - name: cursor
-      description: ISO8601 timestamp or cursor string to start from. If omitted, uses stored cursor or 7 days default.
-      required: false
-    execution: false
-  - name: docusign-get-users
-    description: Gets user audit data from DocuSign Admin API with pagination.
-    arguments:
-    - name: last_modified_since
-      description: ISO8601 time to start from. If omitted, uses last run or default 24h lookback.
-      required: false
-    - name: take
-      description: Page size (max 250).
-      required: false
-    execution: false
   dockerimage: demisto/auth-utils:1.0.0.4165551
   isfetchevents: true
   runonce: false
