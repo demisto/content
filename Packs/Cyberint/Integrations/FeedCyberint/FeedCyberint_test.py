@@ -687,7 +687,7 @@ def test_test_module_forbidden_error(mock_client):
     exception.res = MagicMock(status_code=403)
     mock_client.request_daily_feed = MagicMock(side_effect=exception)
 
-    result = FeedCyberint.test_module(mock_client)
+    result = FeedCyberint.test_module(mock_client, feed_enabled=True)
 
     assert result == "Authorization Error: invalid `API Token`"
     mock_client.request_daily_feed.assert_called_once_with(limit=10, test=True)
@@ -700,7 +700,7 @@ def test_test_module_unexpected_error(mock_client):
     FeedCyberint.Client.request_daily_feed = MagicMock(side_effect=exception)
 
     with pytest.raises(DemistoException, match="Unexpected error"):
-        FeedCyberint.test_module(mock_client)
+        FeedCyberint.test_module(mock_client, feed_enabled=True)
 
     FeedCyberint.Client.request_daily_feed.assert_called_once_with(limit=10, test=True)
 
@@ -1542,12 +1542,13 @@ def test_request_daily_feed_with_pagination(mock_client, requests_mock):
                     assert len(result) == 2
 
 
-def test_process_feed_response_empty_feeds(mock_client):
+def test_process_feed_response_empty_feeds(mock_client, capfd):
     """Test process_feed_response handles empty response."""
-    with patch.object(mock_client, "retrieve_indicators_from_api", return_value=""):
-        result = mock_client.process_feed_response("2025-01-01", 100, 0)
+    with capfd.disabled():
+        with patch.object(mock_client, "retrieve_indicators_from_api", return_value=""):
+            result = mock_client.process_feed_response("2025-01-01", 100, 0)
 
-        assert result == []
+            assert result == []
 
 
 def test_get_today_time_format():
