@@ -21,7 +21,8 @@ from slack_sdk.web.async_slack_response import AsyncSlackResponse
 from slack_sdk.web.slack_response import SlackResponse
 
 """ CONSTANTS """
-
+MAX_UNIX_EPOCH_SECONDS = int(datetime(2100, 1, 1, tzinfo=timezone.utc).timestamp())
+MIN_UNIX_EPOCH_SECONDS = int(datetime(2000, 1, 1, tzinfo=timezone.utc).timestamp())
 ALLOWED_HTTP_VERBS = Literal["POST", "GET"]
 SEVERITY_DICT = {"Unknown": 0, "Low": 1, "Medium": 2, "High": 3, "Critical": 4}
 
@@ -2738,14 +2739,32 @@ def list_channels():
 
 
 def to_unix_seconds_str(s: str) -> str:
-    if not s:
+    """
+    Converts a time string to Unix timestamp in seconds.
+
+    Args:
+        s (str): The time string to convert. Can be a numeric Unix seconds string,
+                or a human-readable/ISO format date string.
+
+    Returns:
+        str: Unix timestamp as a string with 6 decimal places precision.
+
+    Raises:
+        ValueError: If the time string cannot be parsed.
+    """
+    if not s or s == "0":
         return "0"
     # already a numeric Unix seconds string
     try:
         x = float(s)
         # treat as seconds
-        if math.isfinite(x) and abs(x) < 1e12:
+        if math.isfinite(x) and (MIN_UNIX_EPOCH_SECONDS <= x < MAX_UNIX_EPOCH_SECONDS):
             return f"{x:.6f}"
+        else:
+            raise DemistoException(
+                f"Invalid time value: {s!r}. Expected a Unix timestamp in seconds (UTC) "
+                f"in the range [2000-01-01T00:00:00Z, 2100-01-01T00:00:00Z)."
+            )
     except ValueError:
         pass
 
@@ -2760,7 +2779,9 @@ def to_unix_seconds_str(s: str) -> str:
         },
     )
     if dt is None:
-        raise ValueError(f"Could not parse time string: {s!r}")
+        raise ValueError(
+            f"Could not parse time string: {s!r}. Expected either a numeric Unix timestamp (seconds) or a human-readable date string (e.g., '2023-01-01', 'yesterday', '2023-01-01T12:00:00Z')."
+        )
 
     # Ensure tz-aware UTC
     if dt.tzinfo is None:
@@ -2843,7 +2864,8 @@ def conversation_history():
     if not conversation_id:
         conversation_id = resolve_conversation_id_from_name(conversation_name)
 
-    body = {"channel": conversation_id, "limit": limit, "oldest": from_time}
+    demisto.debug(f"time is: {to_unix_seconds_str(from_time)}")
+    body = {"channel": conversation_id, "limit": limit, "oldest": to_unix_seconds_str(from_time)}
     readable_output = ""
     raw_response = send_slack_request_sync(CLIENT, "conversations.history", http_verb="GET", body=body)
     messages = raw_response.get("messages", "")
