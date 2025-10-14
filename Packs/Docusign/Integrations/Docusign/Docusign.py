@@ -318,7 +318,14 @@ class AuthClient(BaseClient):
         Returns:
             str: Base URI for the user's account
         """
+        
+        integration_context = get_integration_context()
+        base_uri = integration_context.get("base_uri")
+        if base_uri:
+            demisto.debug(f"{LOG_PREFIX}: using base_uri from integration context: {base_uri}")
+            return base_uri
 
+        demisto.debug(f"{LOG_PREFIX}: fetching base_uri from /oauth/userinfo")
         user_info = self.get_user_info(access_token)
 
         accounts = user_info.get("accounts", [])
@@ -328,7 +335,16 @@ class AuthClient(BaseClient):
 
         for account in accounts:
             if account.get("account_id") == account_id:
-                return account.get("base_uri")
+
+                base_uri = account.get("base_uri")
+
+                # set the base_uri for next run, it is permanent for the account
+                integration_context.update({"base_uri": base_uri})
+                set_integration_context(integration_context)
+                demisto.debug(f"{LOG_PREFIX}update integration context with base_uri: {base_uri}")
+                
+                
+                return base_uri
 
         demisto.debug(f"{LOG_PREFIX}: /oauth/userinfo missing configuration account id: {account_id}.")
         raise DemistoException(f"{LOG_PREFIX}: /oauth/userinfo missing configuration account id: {account_id}.")
@@ -442,9 +458,7 @@ def fetch_audit_user_data(last_run: dict, auth_client: AuthClient) -> tuple[dict
         fetched_users, last_run = get_user_data(last_run, limit, users_per_page, user_data_client, access_token)
         users.extend(fetched_users)
         # ---------- STEP 2: Fetch user details ----------
-        base_uri = auth_client.get_base_uri(
-            access_token, user_data_client.account_id
-        )  # TODO: I think I cant move the base_uri to the context, it is permanent
+        base_uri = auth_client.get_base_uri(access_token, user_data_client.account_id)
         
         latest_modified_dt = last_run.get("latest_modifiedDate")
         latest_modified_dt = datetime.strptime(latest_modified_dt, "%Y-%m-%dT%H:%M:%SZ") if latest_modified_dt else None
@@ -452,7 +466,7 @@ def fetch_audit_user_data(last_run: dict, auth_client: AuthClient) -> tuple[dict
         users, latest_modified = get_user_details(users, base_uri, access_token, user_data_client,latest_modified_dt)
 
         # Persist the latest modifiedDate users for next fetch
-        last_run["latest_modifiedDate"] = latest_modified # TODO: I changed here - check again
+        last_run["latest_modifiedDate"] = latest_modified
 
     except Exception as e:
         demisto.debug(f"{LOG_PREFIX}Exception during fetch user data.\n{e!s}")
@@ -677,7 +691,7 @@ def add_fields_to_customer_events(customer_events: list) -> None:
         event["_time"] = time_value
 
 
-def fetch_events(auth_client: AuthClient) -> tuple[dict, list]: # TODO: edit implementation - function gets auth_client as parameter now.
+def fetch_events(auth_client: AuthClient) -> tuple[dict, list]:
     """
     Fetch events from DocuSign based on configuration. (Customer events and User data)
 
@@ -819,7 +833,6 @@ def validate_configuration_params() -> str:
 
 
 def test_module() -> str:
-    # TODO: add here of access token consent scope checking (compere to the selected types scopes)
     message = validate_configuration_params()
     return message
 
