@@ -1515,9 +1515,9 @@ def test_fetch_indicators_command_with_yesterday(mock_client):
     mock_indicators = [{"indicator": "test.com", "type": "Domain"}]
 
     with (
-            patch("FeedCyberint.is_x_minutes_ago_yesterday", return_value=True),
-            patch("FeedCyberint.get_yesterday_time", return_value="2024-12-31"),
-            patch("FeedCyberint.fetch_indicators", return_value=mock_indicators),
+        patch("FeedCyberint.is_x_minutes_ago_yesterday", return_value=True),
+        patch("FeedCyberint.get_yesterday_time", return_value="2024-12-31"),
+        patch("FeedCyberint.fetch_indicators", return_value=mock_indicators),
     ):
         result = FeedCyberint.fetch_indicators_command(mock_client, params)
 
@@ -1526,11 +1526,10 @@ def test_fetch_indicators_command_with_yesterday(mock_client):
 
 def test_process_feed_response_empty_feeds(mock_client, capfd):
     """Test process_feed_response handles empty response."""
-    with capfd.disabled():
-        with patch.object(mock_client, "retrieve_indicators_from_api", return_value=""):
-            result = mock_client.process_feed_response("2025-01-01", 100, 0)
+    with capfd.disabled(), patch.object(mock_client, "retrieve_indicators_from_api", return_value=""):
+        result = mock_client.process_feed_response("2025-01-01", 100, 0)
 
-            assert result == []
+        assert result == []
 
 
 def test_get_today_time_format():
