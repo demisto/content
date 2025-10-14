@@ -510,7 +510,8 @@ def test_is_execution_time_exceeded_within_limit():
     """
     Test is_execution_time_exceeded when execution time is within the timeout limit.
     """
-    start_time = datetime.utcnow() - timedelta(seconds=5)  # Within timeout
+    # Use utcnow to create a naive UTC datetime consistent with implementation (datetime.utcnow())
+    start_time = datetime.utcnow() - timedelta(seconds=5)  # Well within 20 minute (1200s) timeout
     result = FeedCyberint.is_execution_time_exceeded(start_time)
     assert result is False, "Execution time is within the limit but returned True."
 
@@ -519,9 +520,9 @@ def test_is_execution_time_exceeded_exceeded_limit():
     """
     Test is_execution_time_exceeded when execution time exceeds the timeout limit.
     """
-    start_time = datetime.utcnow() - timedelta(seconds=15)  # Exceeds timeout
+    start_time = datetime.utcnow() - timedelta(seconds=FeedCyberint.EXECUTION_TIMEOUT_SECONDS + 10)  # Exceeds timeout
     result = FeedCyberint.is_execution_time_exceeded(start_time)
-    assert result is False, "Execution time exceeded the limit but returned False."
+    assert result is True, "Execution time exceeded the limit but returned False."
 
 
 @patch("FeedCyberint.datetime")
@@ -530,13 +531,16 @@ def test_is_execution_time_exceeded_mocked(mock_datetime):
     Test is_execution_time_exceeded with mocked datetime to simulate precise timing.
     """
     start_time = datetime(2024, 1, 1, 12, 0, 0)
-    mock_datetime.utcnow.return_value = datetime(2024, 1, 1, 12, 0, 15)  # 15 seconds later
-    result = FeedCyberint.is_execution_time_exceeded(start_time)
-    assert result is False, "Execution time exceeded the limit but returned False."
 
-    mock_datetime.utcnow.return_value = datetime(2024, 1, 1, 12, 0, 5)  # 5 seconds later
+    # Simulate time just over the limit
+    mock_datetime.utcnow.return_value = start_time + timedelta(seconds=FeedCyberint.EXECUTION_TIMEOUT_SECONDS + 1)
     result = FeedCyberint.is_execution_time_exceeded(start_time)
-    assert result is False, "Execution time is within the limit but returned False."
+    assert result is True, "Execution time exceeded the limit but returned False."
+
+    # Simulate time well within the limit
+    mock_datetime.utcnow.return_value = start_time + timedelta(seconds=5)
+    result = FeedCyberint.is_execution_time_exceeded(start_time)
+    assert result is False, "Execution time is within the limit but returned True."
 
 
 def test_get_yesterday_time():
@@ -710,7 +714,7 @@ def test_get_today_time(mock_datetime):
     """Test get_today_time to ensure it returns the correct formatted date."""
     # Define a fixed datetime for testing
     fixed_datetime = datetime(2025, 1, 2, 12, 30, 45)
-    mock_datetime.now.return_value = fixed_datetime
+    mock_datetime.utcnow.return_value = fixed_datetime
     mock_datetime.strftime = datetime.strftime
 
     # Call the function
@@ -718,7 +722,7 @@ def test_get_today_time(mock_datetime):
 
     # Assert the result matches the expected formatted string
     assert result == fixed_datetime.strftime(FeedCyberint.DATE_FORMAT)
-    mock_datetime.now.assert_called_once()
+    mock_datetime.utcnow.assert_called_once()
 
 
 @patch("FeedCyberint.fetch_indicators")
@@ -1533,13 +1537,14 @@ def test_request_daily_feed_with_pagination(mock_client, requests_mock):
     requests_mock.get(url1, text=response1)
     requests_mock.get(url2, text=response2)
 
-    with patch("FeedCyberint.is_execution_time_exceeded", return_value=False):
-        with patch("CommonServerPython.auto_detect_indicator_type", return_value="Domain"):
-            with patch.object(FeedCyberint.demisto, "getIntegrationContext", return_value={"offset": 0}):
-                with patch.object(FeedCyberint.demisto, "setIntegrationContext"):
-                    result = mock_client.request_daily_feed(date_time=date_time, test=False)
-
-                    assert len(result) == 2
+    # Patch demisto.error to avoid emitting to stdout which the autouse fixture forbids
+    with patch("FeedCyberint.is_execution_time_exceeded", return_value=False), \
+            patch("CommonServerPython.auto_detect_indicator_type", return_value="Domain"), \
+            patch.object(FeedCyberint.demisto, "getIntegrationContext", return_value={"offset": 0}), \
+            patch.object(FeedCyberint.demisto, "setIntegrationContext"), \
+            patch.object(FeedCyberint.demisto, "error", MagicMock()):
+        result = mock_client.request_daily_feed(date_time=date_time, test=False)
+        assert len(result) == 2
 
 
 def test_process_feed_response_empty_feeds(mock_client, capfd):
