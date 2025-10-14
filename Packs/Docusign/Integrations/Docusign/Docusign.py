@@ -837,6 +837,22 @@ def test_module() -> str:
     return message
 
 
+def reset_integration_context() -> CommandResults:
+    integration_context = get_integration_context()
+
+    # Note for developer:
+    # "consent_scopes" is not removed to avoid breaking the authentication flow.
+    # "consent_scopes" is the first step of the authentication flow which is set by
+    # running the `docusign-generate-consent-url` command.
+
+    integration_context.pop("access_token", None)
+    integration_context.pop("expired_at", None)
+    integration_context.pop("access_token_scopes", None)
+    integration_context.pop("base_uri", None)
+    set_integration_context(integration_context)
+    return CommandResults(readable_output="Integration context reset successfully.")
+
+
 def main() -> None:  # pragma: no cover
     try:
         command = demisto.command()
@@ -860,9 +876,8 @@ def main() -> None:  # pragma: no cover
         elif command == "docusign-generate-consent-url":
             return_results(generate_consent_url())
             
-        # elif command =="reset-integration-context": # TODO: implement this command ( yml->description->add formatted description.. )
-        #     reset_integration_context()
-        #     return_results("Integration context reset successfully")
+        elif command =="docusign-reset-integration-context":
+            return_results(reset_integration_context())
 
     except Exception as e:
         return_error(f"{LOG_PREFIX}Failed to execute {command} command.\nError:\n{str(e)}")

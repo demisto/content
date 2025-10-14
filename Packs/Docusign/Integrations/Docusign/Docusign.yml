@@ -90,6 +90,10 @@ script:
     description: Generates the DocuSign admin consent URL based on configured parameters and environment.
     arguments: []
     execution: false
+  - name: docusign-reset-integration-context
+    description: Reset integration context. By default, resetting the integration context does not reset the `consent_scopes` field in the integration context.
+    arguments: []
+    execution: false
   dockerimage: demisto/auth-utils:1.0.0.4165551
   isfetchevents: true
   runonce: false
