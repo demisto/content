@@ -445,7 +445,11 @@ def fetch_audit_user_data(last_run: dict, auth_client: AuthClient) -> tuple[dict
         base_uri = auth_client.get_base_uri(
             access_token, user_data_client.account_id
         )  # TODO: I think I cant move the base_uri to the context, it is permanent
-        users, latest_modified = get_user_details(users, base_uri, access_token, user_data_client, last_run["latest_modifiedDate"])
+        
+        latest_modified_dt = last_run.get("latest_modifiedDate")
+        latest_modified_dt = datetime.strptime(latest_modified_dt, "%Y-%m-%dT%H:%M:%SZ") if latest_modified_dt else None
+        
+        users, latest_modified = get_user_details(users, base_uri, access_token, user_data_client,latest_modified_dt)
 
         # Persist the latest modifiedDate users for next fetch
         last_run["latest_modifiedDate"] = latest_modified # TODO: I changed here - check again
@@ -457,7 +461,7 @@ def fetch_audit_user_data(last_run: dict, auth_client: AuthClient) -> tuple[dict
     return last_run, users
 
 
-def get_user_details(users: list, base_uri: str, access_token: str, client: UserDataClient, latest_modified_dt: datetime) -> tuple[list, str]:
+def get_user_details(users: list, base_uri: str, access_token: str, client: UserDataClient, latest_modified_dt: datetime | None) -> tuple[list, str]:
     """
     eSignature REST API.
     Fetches user details for each user in the list.
