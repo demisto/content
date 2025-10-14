@@ -1,4 +1,4 @@
-Collects DocuSign Customer Events and User Data for Cortex XSIAM.
+Collect DocuSign Monitor events and Admin audit users using JWT Grant authentication.
 
 ### Customer Events API
 
@@ -69,3 +69,71 @@ The examples in the how-to section use the developer paths; this table shows the
 |-------------|---------------------|--------------------------|
 | Developer   | `https://api-d.docusign.net/management/` | `https://demo.docusign.net/` |
 | Production  | `https://api.docusign.net/management/`   | `https://{server}.docusign.net/` |
+
+
+## Configure DocuSign in Cortex
+
+
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL |  | True |
+| Integration Key |  | True |
+| User ID |  | True |
+| Redirect URL |  | True |
+| Private Key |  | True |
+| Account ID | For fetching user data only | False |
+| Organization ID | For fetching user data only | False |
+| Fetch events |  | False |
+| Event types to fetch |  | False |
+| Maximum number of customer events per fetch | due to api limitation, max is 2000. | False |
+| Maximum number of user data events per fetch | due to api limitation, max is 1250. | False |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
+
+## Commands
+
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
+After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
+### docusign-generate-consent-url
+
+***
+Generates the DocuSign admin consent URL based on configured parameters and environment.
+
+#### Base Command
+
+`docusign-generate-consent-url`
+
+#### Input
+
+There is no input for this command.
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+
+```!monday-generate-login-url```
+
+#### Human Readable Output
+
+>### DocuSign Consent URL
+>[Click here to authorize]
+
+### docusign-reset-integration-context
+
+***
+Reset integration context, please use with caution. By default, resetting the integration context does not reset the `consent_scopes` field in the integration context.
+
+#### Base Command
+
+`docusign-reset-integration-context`
+
+#### Input
+
+There is no input for this command.
+
+#### Context Output
+
+There is no context output for this command.
