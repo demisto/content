@@ -919,7 +919,7 @@ def main():
     access_token = params.get("access_token").get("password")
     insecure = not params.get("insecure", False)
     proxy = params.get("proxy", False)
-    feed_enabled = demisto.params().get('feed', True)
+    feed_enabled = demisto.params().get("feed", True)
 
     command = demisto.command()
     demisto.debug(f"Command being called is {command}")

@@ -1097,119 +1097,101 @@ def test_get_indicators_command_ok(mock_client, requests_mock):
         assert result == expected_output
 
 
-def test_test_module_success(mock_client):
-    """Test test_module with a successful request_daily_feed call."""
+def test_test_module_feed_enabled_success(mock_client):
+    """Test test_module with feed_enabled=True and successful request_daily_feed call."""
     # Mock successful request_daily_feed
     mock_client.request_daily_feed = MagicMock(return_value=[])
 
-    result = FeedCyberint.test_module(mock_client)
+    result = FeedCyberint.test_module(mock_client, feed_enabled=True)
 
     assert result == "ok"
     mock_client.request_daily_feed.assert_called_once_with(limit=10, test=True)
 
 
-def test_test_module_unauthorized_error(mock_client):
-    """Test test_module with an unauthorized error."""
+def test_test_module_feed_disabled_success(mock_client):
+    """Test test_module with feed_enabled=False and successful retrieve_domain_from_api call."""
+    # Mock successful retrieve_domain_from_api
+    mock_client.retrieve_domain_from_api = MagicMock(return_value={})
+
+    result = FeedCyberint.test_module(mock_client, feed_enabled=False)
+
+    assert result == "ok"
+    mock_client.retrieve_domain_from_api.assert_called_once_with("checkpoint.com")
+
+
+def test_test_module_feed_enabled_unauthorized_error(mock_client):
+    """Test test_module with feed_enabled=True and unauthorized error."""
     # Mock `request_daily_feed` to raise a DemistoException with UNAUTHORIZED status
     exception = DemistoException("Unauthorized")
     exception.res = MagicMock(status_code=401)
     mock_client.request_daily_feed = MagicMock(side_effect=exception)
 
-    result = FeedCyberint.test_module(mock_client)
+    result = FeedCyberint.test_module(mock_client, feed_enabled=True)
 
     assert result == "Authorization Error: invalid `API Token`"
     mock_client.request_daily_feed.assert_called_once_with(limit=10, test=True)
 
 
-def test_test_module_forbidden_fallback_success(mock_client):
-    """Test test_module with forbidden error on request_daily_feed but successful fallback."""
+def test_test_module_feed_enabled_forbidden_error(mock_client):
+    """Test test_module with feed_enabled=True and forbidden error."""
     # Mock `request_daily_feed` to raise a DemistoException with FORBIDDEN status
     exception = DemistoException("Forbidden")
     exception.res = MagicMock(status_code=403)
     mock_client.request_daily_feed = MagicMock(side_effect=exception)
 
-    # Mock successful get_domain_command fallback
-    with patch("FeedCyberint.get_domain_command") as mock_get_domain:
-        mock_get_domain.return_value = MagicMock()
+    result = FeedCyberint.test_module(mock_client, feed_enabled=True)
 
-        result = FeedCyberint.test_module(mock_client)
-
-        assert result == "ok"
-        mock_client.request_daily_feed.assert_called_once_with(limit=10, test=True)
-        mock_get_domain.assert_called_once_with(mock_client, {"value": "checkpoint.com"})
+    assert result == "Authorization Error: invalid `API Token`"
+    mock_client.request_daily_feed.assert_called_once_with(limit=10, test=True)
 
 
-def test_test_module_forbidden_fallback_unauthorized(mock_client):
-    """Test test_module with forbidden error and fallback also returns unauthorized."""
-    # Mock `request_daily_feed` to raise a DemistoException with FORBIDDEN status
+def test_test_module_feed_disabled_unauthorized_error(mock_client):
+    """Test test_module with feed_enabled=False and unauthorized error."""
+    # Mock `retrieve_domain_from_api` to raise a DemistoException with UNAUTHORIZED status
+    exception = DemistoException("Unauthorized")
+    exception.res = MagicMock(status_code=401)
+    mock_client.retrieve_domain_from_api = MagicMock(side_effect=exception)
+
+    result = FeedCyberint.test_module(mock_client, feed_enabled=False)
+
+    assert result == "Authorization Error: invalid `API Token`"
+    mock_client.retrieve_domain_from_api.assert_called_once_with("checkpoint.com")
+
+
+def test_test_module_feed_disabled_forbidden_error(mock_client):
+    """Test test_module with feed_enabled=False and forbidden error."""
+    # Mock `retrieve_domain_from_api` to raise a DemistoException with FORBIDDEN status
     exception = DemistoException("Forbidden")
     exception.res = MagicMock(status_code=403)
-    mock_client.request_daily_feed = MagicMock(side_effect=exception)
+    mock_client.retrieve_domain_from_api = MagicMock(side_effect=exception)
 
-    # Mock get_domain_command fallback to also raise UNAUTHORIZED
-    fallback_exception = DemistoException("Unauthorized")
-    fallback_exception.res = MagicMock(status_code=401)
+    result = FeedCyberint.test_module(mock_client, feed_enabled=False)
 
-    with patch("FeedCyberint.get_domain_command") as mock_get_domain:
-        mock_get_domain.side_effect = fallback_exception
-
-        result = FeedCyberint.test_module(mock_client)
-
-        assert result == "Authorization Error: invalid `API Token`"
-        mock_client.request_daily_feed.assert_called_once_with(limit=10, test=True)
-        mock_get_domain.assert_called_once_with(mock_client, {"value": "checkpoint.com"})
+    assert result == "Authorization Error: invalid `API Token`"
+    mock_client.retrieve_domain_from_api.assert_called_once_with("checkpoint.com")
 
 
-def test_test_module_forbidden_fallback_forbidden(mock_client):
-    """Test test_module with forbidden error and fallback also returns forbidden."""
-    # Mock `request_daily_feed` to raise a DemistoException with FORBIDDEN status
-    exception = DemistoException("Forbidden")
-    exception.res = MagicMock(status_code=403)
-    mock_client.request_daily_feed = MagicMock(side_effect=exception)
-
-    # Mock get_domain_command fallback to also raise FORBIDDEN
-    fallback_exception = DemistoException("Forbidden")
-    fallback_exception.res = MagicMock(status_code=403)
-
-    with patch("FeedCyberint.get_domain_command") as mock_get_domain:
-        mock_get_domain.side_effect = fallback_exception
-
-        result = FeedCyberint.test_module(mock_client)
-
-        assert result == "Authorization Error: invalid `API Token`"
-        mock_client.request_daily_feed.assert_called_once_with(limit=10, test=True)
-        mock_get_domain.assert_called_once_with(mock_client, {"value": "checkpoint.com"})
-
-
-def test_test_module_forbidden_fallback_other_error(mock_client):
-    """Test test_module with forbidden error and fallback raises a different error."""
-    # Mock `request_daily_feed` to raise a DemistoException with FORBIDDEN status
-    exception = DemistoException("Forbidden")
-    exception.res = MagicMock(status_code=403)
-    mock_client.request_daily_feed = MagicMock(side_effect=exception)
-
-    # Mock get_domain_command fallback to raise a different error (e.g., 500)
-    fallback_exception = DemistoException("Internal Server Error")
-    fallback_exception.res = MagicMock(status_code=500)
-
-    with patch("FeedCyberint.get_domain_command") as mock_get_domain:
-        mock_get_domain.side_effect = fallback_exception
-
-        with pytest.raises(DemistoException, match="Internal Server Error"):
-            FeedCyberint.test_module(mock_client)
-
-        mock_client.request_daily_feed.assert_called_once_with(limit=10, test=True)
-        mock_get_domain.assert_called_once_with(mock_client, {"value": "checkpoint.com"})
-
-
-def test_test_module_other_error(mock_client):
-    """Test test_module with a non-auth related error."""
+def test_test_module_feed_enabled_other_error(mock_client):
+    """Test test_module with feed_enabled=True and non-auth related error."""
     # Mock `request_daily_feed` to raise a DemistoException with a different status code
     exception = DemistoException("Internal Server Error")
     exception.res = MagicMock(status_code=500)
     mock_client.request_daily_feed = MagicMock(side_effect=exception)
 
     with pytest.raises(DemistoException, match="Internal Server Error"):
-        FeedCyberint.test_module(mock_client)
+        FeedCyberint.test_module(mock_client, feed_enabled=True)
 
     mock_client.request_daily_feed.assert_called_once_with(limit=10, test=True)
+
+
+def test_test_module_feed_disabled_other_error(mock_client):
+    """Test test_module with feed_enabled=False and non-auth related error."""
+    # Mock `retrieve_domain_from_api` to raise a DemistoException with a different status code
+    exception = DemistoException("Internal Server Error")
+    exception.res = MagicMock(status_code=500)
+    mock_client.retrieve_domain_from_api = MagicMock(side_effect=exception)
+
+    with pytest.raises(DemistoException, match="Internal Server Error"):
+        FeedCyberint.test_module(mock_client, feed_enabled=False)
+
+    mock_client.retrieve_domain_from_api.assert_called_once_with("checkpoint.com")
