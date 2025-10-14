@@ -5,7 +5,7 @@ import demistomock as demisto  # noqa: F401
 # disable insecure warnings
 import urllib3
 from CommonServerPython import *  # noqa: F401
-#from requests_ntlm import HttpNtlmAuth
+from requests_ntlm import HttpNtlmAuth
 
 from CommonServerUserPython import *
 
