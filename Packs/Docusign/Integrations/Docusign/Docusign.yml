@@ -65,6 +65,7 @@ configuration:
   name: max_customer_events_per_fetch
   required: false
   type: 0
+  additionalinfo: due to api limitation max is 2000
 - defaultvalue: '1250'
   section: Collect
   display: Maximum number of user data events per fetch
@@ -94,7 +95,7 @@ script:
     description: Reset integration context. By default, resetting the integration context does not reset the `consent_scopes` field in the integration context.
     arguments: []
     execution: false
-  dockerimage: demisto/auth-utils:1.0.0.4165551
+  dockerimage: demisto/auth-utils:1.0.0.5312400
   isfetchevents: true
   runonce: false
   script: '-'

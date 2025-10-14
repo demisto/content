@@ -170,9 +170,8 @@ class AuthClient(BaseClient):
         self.user_id = user_id
 
         self.private_key_pem = self.validate_private_key(private_key_pem)
-        
-        self.access_token = self.get_access_token()
 
+        self.access_token = self.get_access_token()
 
     def get_access_token(self) -> str:
         """
@@ -300,7 +299,7 @@ class AuthClient(BaseClient):
         expired_at = (_utcnow() + dt.timedelta(seconds=expires_in_seconds)).strftime("%Y-%m-%dT%H:%M:%SZ")
         return access_token, expired_at, scope
 
-    def get_user_info(self, access_token: str) -> str:
+    def get_user_info(self, access_token: str) -> dict:
         """Fetch user information from /oauth/userinfo endpoint."""
 
         url = urljoin(self.server_url, "/oauth/userinfo")
@@ -318,7 +317,7 @@ class AuthClient(BaseClient):
         Returns:
             str: Base URI for the user's account
         """
-        
+
         integration_context = get_integration_context()
         base_uri = integration_context.get("base_uri")
         if base_uri:
@@ -335,15 +334,13 @@ class AuthClient(BaseClient):
 
         for account in accounts:
             if account.get("account_id") == account_id:
-
                 base_uri = account.get("base_uri")
 
                 # set the base_uri for next run, it is permanent for the account
                 integration_context.update({"base_uri": base_uri})
                 set_integration_context(integration_context)
                 demisto.debug(f"{LOG_PREFIX}update integration context with base_uri: {base_uri}")
-                
-                
+
                 return base_uri
 
         demisto.debug(f"{LOG_PREFIX}: /oauth/userinfo missing configuration account id: {account_id}.")
@@ -383,7 +380,7 @@ def get_customer_events(last_run: dict, limit: int, client: CustomerEventsClient
         limit: Maximum number of events to fetch  (api parameter does not currently work)
     Returns:
         tuple: (events, last_run) where last_run is the updated state and events are the fetched events.
-        
+
     """
     one_minute_ago = timestamp_to_datestring(int(time.time() - 60) * 1000, date_format="%Y-%m-%dT%H:%M:%SZ")
     # note for developer - cursor is returned from the api even if response is empty
@@ -459,11 +456,11 @@ def fetch_audit_user_data(last_run: dict, auth_client: AuthClient) -> tuple[dict
         users.extend(fetched_users)
         # ---------- STEP 2: Fetch user details ----------
         base_uri = auth_client.get_base_uri(access_token, user_data_client.account_id)
-        
+
         latest_modified_dt = last_run.get("latest_modifiedDate")
         latest_modified_dt = datetime.strptime(latest_modified_dt, "%Y-%m-%dT%H:%M:%SZ") if latest_modified_dt else None
-        
-        users, latest_modified = get_user_details(users, base_uri, access_token, user_data_client,latest_modified_dt)
+
+        users, latest_modified = get_user_details(users, base_uri, access_token, user_data_client, latest_modified_dt)
 
         # Persist the latest modifiedDate users for next fetch
         last_run["latest_modifiedDate"] = latest_modified
@@ -475,7 +472,9 @@ def fetch_audit_user_data(last_run: dict, auth_client: AuthClient) -> tuple[dict
     return last_run, users
 
 
-def get_user_details(users: list, base_uri: str, access_token: str, client: UserDataClient, latest_modified_dt: datetime | None) -> tuple[list, str]:
+def get_user_details(
+    users: list, base_uri: str, access_token: str, client: UserDataClient, latest_modified_dt: datetime | None
+) -> tuple[list, str]:
     """
     eSignature REST API.
     Fetches user details for each user in the list.
@@ -504,10 +503,12 @@ def get_user_details(users: list, base_uri: str, access_token: str, client: User
                     latest_modified_dt = md_dt
 
             except Exception as ex:
-                demisto.debug(f"{LOG_PREFIX}Failed to parse modifiedDate. user:{user.get('id')} with modifiedDate:{modified_date}"
-                              f"error:{ex!s}")
+                demisto.debug(
+                    f"{LOG_PREFIX}Failed to parse modifiedDate. user:{user.get('id')} with modifiedDate:{modified_date}"
+                    f"error:{ex!s}"
+                )
 
-    latest_modified_iso = latest_modified_dt.strftime("%Y-%m-%dT%H:%M:%SZ")
+    latest_modified_iso = latest_modified_dt.strftime("%Y-%m-%dT%H:%M:%SZ") if latest_modified_dt else None
 
     end_time = time.perf_counter()
     demisto.debug(f"{LOG_PREFIX} get_user_details took {end_time - start_time}s, retrieved modifiedDate from {len(users)} users")
@@ -716,8 +717,9 @@ def fetch_events(auth_client: AuthClient) -> tuple[dict, list]:
     if CUSTOMER_EVENTS_TYPE in selected_fetch_types:
         start = time.perf_counter()
         demisto.info(f"{LOG_PREFIX}Start fetch customer events, Current customer events last_run:\n{last_run_customer_events}")
-        last_run_customer_events, fetched_customer_events = fetch_customer_events(last_run_customer_events,
-                                                                                  auth_client.access_token)
+        last_run_customer_events, fetched_customer_events = fetch_customer_events(
+            last_run_customer_events, auth_client.access_token
+        )
         events.extend(fetched_customer_events)
 
         elapsed = time.perf_counter() - start
@@ -875,8 +877,8 @@ def main() -> None:  # pragma: no cover
 
         elif command == "docusign-generate-consent-url":
             return_results(generate_consent_url())
-            
-        elif command =="docusign-reset-integration-context":
+
+        elif command == "docusign-reset-integration-context":
             return_results(reset_integration_context())
 
     except Exception as e:
