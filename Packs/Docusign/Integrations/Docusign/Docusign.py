@@ -474,7 +474,7 @@ def fetch_audit_user_data(last_run: dict, auth_client: AuthClient) -> tuple[dict
 
 def get_user_details(
     users: list, base_uri: str, access_token: str, client: UserDataClient, latest_modified_dt: datetime | None
-) -> tuple[list, str]:
+) -> tuple[list[Any], str]:
     """
     eSignature REST API.
     Fetches user details for each user in the list.
