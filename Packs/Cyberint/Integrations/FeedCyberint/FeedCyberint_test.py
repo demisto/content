@@ -1233,26 +1233,28 @@ def test_fetch_indicators_with_filters(mock_client):
         },
     ]
 
-    with patch.object(mock_client, "request_daily_feed", return_value=mock_indicators):
-        with patch("FeedCyberint.auto_detect_indicator_type") as mock_auto_detect:
-            mock_auto_detect.side_effect = lambda x: "Domain" if "." in x and not x[0].isdigit() else "IP"
+    with (
+        patch.object(mock_client, "request_daily_feed", return_value=mock_indicators),
+        patch("FeedCyberint.auto_detect_indicator_type") as mock_auto_detect,
+    ):
+        mock_auto_detect.side_effect = lambda x: "Domain" if "." in x and not x[0].isdigit() else "IP"
 
-            result = FeedCyberint.fetch_indicators(
-                client=mock_client,
-                tlp_color="RED",
-                feed_names=["phishing"],
-                indicator_types=["Domain"],
-                confidence_from=60,
-                severity_from=7,
-                feed_tags=["test"],
-                limit=10,
-            )
+        result = FeedCyberint.fetch_indicators(
+            client=mock_client,
+            tlp_color="RED",
+            feed_names=["phishing"],
+            indicator_types=["Domain"],
+            confidence_from=60,
+            severity_from=7,
+            feed_tags=["test"],
+            limit=10,
+        )
 
-            # Should only return the first indicator that matches all filters
-            assert len(result) == 1
-            assert result[0]["value"] == "malicious.com"
-            assert result[0]["fields"]["trafficlightprotocol"] == "RED"
-            assert "test" in result[0]["fields"]["tags"]
+        # Should only return the first indicator that matches all filters
+        assert len(result) == 1
+        assert result[0]["value"] == "malicious.com"
+        assert result[0]["fields"]["trafficlightprotocol"] == "RED"
+        assert "test" in result[0]["fields"]["tags"]
 
 
 def test_fetch_indicators_with_all_types(mock_client):
@@ -1269,20 +1271,22 @@ def test_fetch_indicators_with_all_types(mock_client):
         }
     ]
 
-    with patch.object(mock_client, "request_daily_feed", return_value=mock_indicators):
-        with patch("FeedCyberint.auto_detect_indicator_type", return_value="Domain"):
-            result = FeedCyberint.fetch_indicators(
-                client=mock_client,
-                tlp_color="",
-                feed_names=["All"],
-                indicator_types=["All"],
-                confidence_from=0,
-                severity_from=0,
-                limit=-1,
-            )
+    with (
+        patch.object(mock_client, "request_daily_feed", return_value=mock_indicators),
+        patch("FeedCyberint.auto_detect_indicator_type", return_value="Domain"),
+    ):
+        result = FeedCyberint.fetch_indicators(
+            client=mock_client,
+            tlp_color="",
+            feed_names=["All"],
+            indicator_types=["All"],
+            confidence_from=0,
+            severity_from=0,
+            limit=-1,
+        )
 
-            assert len(result) == 1
-            assert result[0]["value"] == "test.com"
+        assert len(result) == 1
+        assert result[0]["value"] == "test.com"
 
 
 def test_fetch_indicators_limit_reached(mock_client):
@@ -1300,19 +1304,21 @@ def test_fetch_indicators_limit_reached(mock_client):
         for i in range(10)
     ]
 
-    with patch.object(mock_client, "request_daily_feed", return_value=mock_indicators):
-        with patch("FeedCyberint.auto_detect_indicator_type", return_value="Domain"):
-            result = FeedCyberint.fetch_indicators(
-                client=mock_client,
-                tlp_color="",
-                feed_names=["All"],
-                indicator_types=["All"],
-                confidence_from=0,
-                severity_from=0,
-                limit=5,
-            )
+    with (
+        patch.object(mock_client, "request_daily_feed", return_value=mock_indicators),
+        patch("FeedCyberint.auto_detect_indicator_type", return_value="Domain"),
+    ):
+        result = FeedCyberint.fetch_indicators(
+            client=mock_client,
+            tlp_color="",
+            feed_names=["All"],
+            indicator_types=["All"],
+            confidence_from=0,
+            severity_from=0,
+            limit=5,
+        )
 
-            assert len(result) == 5
+        assert len(result) == 5
 
 
 def test_fetch_indicators_no_type_detected(mock_client):
@@ -1329,13 +1335,15 @@ def test_fetch_indicators_no_type_detected(mock_client):
         }
     ]
 
-    with patch.object(mock_client, "request_daily_feed", return_value=mock_indicators):
-        with patch("FeedCyberint.auto_detect_indicator_type", return_value=None):
-            result = FeedCyberint.fetch_indicators(
-                client=mock_client, tlp_color="", feed_names=["All"], indicator_types=["All"], confidence_from=0, severity_from=0
-            )
+    with (
+        patch.object(mock_client, "request_daily_feed", return_value=mock_indicators),
+        patch("FeedCyberint.auto_detect_indicator_type", return_value=None),
+    ):
+        result = FeedCyberint.fetch_indicators(
+            client=mock_client, tlp_color="", feed_names=["All"], indicator_types=["All"], confidence_from=0, severity_from=0
+        )
 
-            assert len(result) == 0
+        assert len(result) == 0
 
 
 def test_get_url_command_with_activities_and_entities(mock_client):
@@ -1506,12 +1514,12 @@ def test_fetch_indicators_command_with_yesterday(mock_client):
 
     mock_indicators = [{"indicator": "test.com", "type": "Domain"}]
 
-    with patch("FeedCyberint.is_x_minutes_ago_yesterday", return_value=True):
-        with patch("FeedCyberint.get_yesterday_time", return_value="2025-01-13"):
-            with patch("FeedCyberint.fetch_indicators", return_value=mock_indicators):
-                result = FeedCyberint.fetch_indicators_command(mock_client, params)
+    with patch("FeedCyberint.is_x_minutes_ago_yesterday", return_value=True), \
+         patch("FeedCyberint.get_yesterday_time", return_value="2024-12-31"), \
+         patch("FeedCyberint.fetch_indicators", return_value=mock_indicators):
+        result = FeedCyberint.fetch_indicators_command(mock_client, params)
 
-                assert len(result) == 2  # Yesterday + today
+        assert len(result) == 2  # Yesterday + today
 
 
 def test_process_feed_response_empty_feeds(mock_client, capfd):
