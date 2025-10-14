@@ -1195,3 +1195,449 @@ def test_test_module_feed_disabled_other_error(mock_client):
         FeedCyberint.test_module(mock_client, feed_enabled=False)
 
     mock_client.retrieve_domain_from_api.assert_called_once_with("checkpoint.com")
+
+
+def test_fetch_indicators_with_filters(mock_client):
+    """Test fetch_indicators with various filters applied."""
+    # Mock the request_daily_feed to return test data
+    mock_indicators = [
+        {
+            "ioc_value": "malicious.com",
+            "ioc_type": "Domain",
+            "detected_activity": "phishing",
+            "confidence": 90,
+            "severity_score": 8,
+            "observation_date": "2025-01-01",
+            "description": "Phishing domain"
+        },
+        {
+            "ioc_value": "1.2.3.4",
+            "ioc_type": "IP",
+            "detected_activity": "malware",
+            "confidence": 50,
+            "severity_score": 5,
+            "observation_date": "2025-01-01",
+            "description": "Malware IP"
+        },
+        {
+            "ioc_value": "safe.com",
+            "ioc_type": "Domain",
+            "detected_activity": "phishing",
+            "confidence": 30,
+            "severity_score": 3,
+            "observation_date": "2025-01-01",
+            "description": "Low confidence domain"
+        }
+    ]
+
+    with patch.object(mock_client, "request_daily_feed", return_value=mock_indicators):
+        with patch("FeedCyberint.auto_detect_indicator_type") as mock_auto_detect:
+            mock_auto_detect.side_effect = lambda x: "Domain" if "." in x and not x[0].isdigit() else "IP"
+
+            result = FeedCyberint.fetch_indicators(
+                client=mock_client,
+                tlp_color="RED",
+                feed_names=["phishing"],
+                indicator_types=["Domain"],
+                confidence_from=60,
+                severity_from=7,
+                feed_tags=["test"],
+                limit=10
+            )
+
+            # Should only return the first indicator that matches all filters
+            assert len(result) == 1
+            assert result[0]["value"] == "malicious.com"
+            assert result[0]["fields"]["trafficlightprotocol"] == "RED"
+            assert "test" in result[0]["fields"]["tags"]
+
+
+def test_fetch_indicators_with_all_types(mock_client):
+    """Test fetch_indicators with 'All' indicator types and feed names."""
+    mock_indicators = [
+        {
+            "ioc_value": "test.com",
+            "ioc_type": "Domain",
+            "detected_activity": "phishing",
+            "confidence": 80,
+            "severity_score": 8,
+            "observation_date": "2025-01-01",
+            "description": "Test domain"
+        }
+    ]
+
+    with patch.object(mock_client, "request_daily_feed", return_value=mock_indicators):
+        with patch("FeedCyberint.auto_detect_indicator_type", return_value="Domain"):
+            result = FeedCyberint.fetch_indicators(
+                client=mock_client,
+                tlp_color="",
+                feed_names=["All"],
+                indicator_types=["All"],
+                confidence_from=0,
+                severity_from=0,
+                limit=-1
+            )
+
+            assert len(result) == 1
+            assert result[0]["value"] == "test.com"
+
+
+def test_fetch_indicators_limit_reached(mock_client):
+    """Test fetch_indicators stops when limit is reached."""
+    mock_indicators = [
+        {
+            "ioc_value": f"test{i}.com",
+            "ioc_type": "Domain",
+            "detected_activity": "phishing",
+            "confidence": 80,
+            "severity_score": 8,
+            "observation_date": "2025-01-01",
+            "description": f"Test domain {i}"
+        }
+        for i in range(10)
+    ]
+
+    with patch.object(mock_client, "request_daily_feed", return_value=mock_indicators):
+        with patch("FeedCyberint.auto_detect_indicator_type", return_value="Domain"):
+            result = FeedCyberint.fetch_indicators(
+                client=mock_client,
+                tlp_color="",
+                feed_names=["All"],
+                indicator_types=["All"],
+                confidence_from=0,
+                severity_from=0,
+                limit=5
+            )
+
+            assert len(result) == 5
+
+
+def test_fetch_indicators_no_type_detected(mock_client):
+    """Test fetch_indicators skips indicators with no detected type."""
+    mock_indicators = [
+        {
+            "ioc_value": "invalid",
+            "ioc_type": "Unknown",
+            "detected_activity": "phishing",
+            "confidence": 80,
+            "severity_score": 8,
+            "observation_date": "2025-01-01",
+            "description": "Invalid indicator"
+        }
+    ]
+
+    with patch.object(mock_client, "request_daily_feed", return_value=mock_indicators):
+        with patch("FeedCyberint.auto_detect_indicator_type", return_value=None):
+            result = FeedCyberint.fetch_indicators(
+                client=mock_client,
+                tlp_color="",
+                feed_names=["All"],
+                indicator_types=["All"],
+                confidence_from=0,
+                severity_from=0
+            )
+
+            assert len(result) == 0
+
+
+def test_client_initialization(mock_client):
+    """Test Client initialization sets correct headers and cookies."""
+    assert mock_client._cookies["access_token"] == TOKEN
+    assert mock_client._headers["X-Integration-Type"] == "XSOAR"
+    assert mock_client._headers["X-Integration-Version"] == "1.1.10"
+
+
+def test_get_url_command_with_activities_and_entities(mock_client):
+    """Test get_url_command with detected activities and related entities."""
+    mock_response = {
+        "data": {
+            "entity": {"type": "url", "value": "http://malicious.com"},
+            "risk": {
+                "malicious_score": 95,
+                "occurrences_count": 10,
+                "detected_activities": [
+                    {
+                        "type": "phishing",
+                        "observation_date": "2025-01-01",
+                        "description": "Phishing activity",
+                        "confidence": 90,
+                        "occurrences_count": 5
+                    }
+                ],
+                "related_entities": [
+                    {
+                        "entity_id": "123",
+                        "entity_type": "domain",
+                        "entity_name": "malicious.com"
+                    }
+                ]
+            },
+            "enrichment": {
+                "ips": ["1.2.3.4"],
+                "hostname": "malicious.com",
+                "domain": "malicious.com",
+                "related_entities": [
+                    {
+                        "entity_id": "456",
+                        "entity_type": "ip",
+                        "entity_name": "1.2.3.4"
+                    }
+                ]
+            },
+            "benign": False
+        }
+    }
+
+    mock_client.retrieve_url_from_api = MagicMock(return_value=mock_response)
+
+    result = FeedCyberint.get_url_command(mock_client, {"value": "http://malicious.com"})
+
+    assert result.outputs["entity"]["value"] == "http://malicious.com"
+    assert result.outputs["risk"]["malicious_score"] == 95
+
+
+def test_get_ipv4_command_with_geo_and_asn(mock_client):
+    """Test get_ipv4_command with geo and ASN data."""
+    mock_response = {
+        "data": {
+            "entity": {"type": "ipv4", "value": "1.2.3.4"},
+            "risk": {
+                "malicious_score": 85,
+                "occurrences_count": 15,
+                "detected_activities": [],
+                "related_entities": []
+            },
+            "enrichment": {
+                "geo": {"country": "US", "city": "New York"},
+                "asn": {"number": "12345", "organization": "Test ISP"},
+                "suspicious_urls": ["http://bad.com"],
+                "suspicious_domains": ["bad.com"]
+            },
+            "benign": False
+        }
+    }
+
+    mock_client.retrieve_ipv4_from_api = MagicMock(return_value=mock_response)
+
+    result = FeedCyberint.get_ipv4_command(mock_client, {"value": "1.2.3.4"})
+
+    assert result.outputs["entity"]["value"] == "1.2.3.4"
+    assert result.outputs["enrichment"]["geo"]["country"] == "US"
+    assert result.outputs["enrichment"]["asn"]["number"] == "12345"
+
+
+def test_get_domain_command_with_whois(mock_client):
+    """Test get_domain_command with WHOIS data."""
+    mock_response = {
+        "data": {
+            "entity": {"type": "domain", "value": "test.com"},
+            "risk": {
+                "malicious_score": 70,
+                "occurrences_count": 8,
+                "detected_activities": [],
+                "related_entities": []
+            },
+            "enrichment": {
+                "ips": ["1.2.3.4"],
+                "whois": {
+                    "registrant_name": "John Doe",
+                    "registrant_email": "john@example.com",
+                    "registrant_organization": "Test Org",
+                    "registrant_country": "US",
+                    "registrant_telephone": "+1234567890",
+                    "technical_contact_email": "tech@example.com",
+                    "technical_contact_name": "Tech Person",
+                    "technical_contact_organization": "Tech Org",
+                    "registrar_name": "Test Registrar",
+                    "admin_contact_name": "Admin Person",
+                    "admin_contact_organization": "Admin Org",
+                    "admin_contact_email": "admin@example.com",
+                    "created_date": "2020-01-01",
+                    "updated_date": "2024-01-01",
+                    "expiration_date": "2026-01-01"
+                }
+            },
+            "benign": False
+        }
+    }
+
+    mock_client.retrieve_domain_from_api = MagicMock(return_value=mock_response)
+
+    result = FeedCyberint.get_domain_command(mock_client, {"value": "test.com"})
+
+    assert result.outputs["entity"]["value"] == "test.com"
+    assert result.outputs["enrichment"]["whois"]["registrant_name"] == "John Doe"
+
+
+def test_get_file_sha256_command_with_activities(mock_client):
+    """Test get_file_sha256_command with detected activities."""
+    mock_response = {
+        "data": {
+            "entity": {"type": "file", "value": "abc123"},
+            "risk": {
+                "malicious_score": 95,
+                "detected_activities": [
+                    {
+                        "type": "malware",
+                        "observation_date": "2025-01-01",
+                        "description": "Malware detected",
+                        "confidence": 95,
+                        "occurrences_count": 3
+                    }
+                ],
+                "related_entities": [
+                    {
+                        "entity_id": "789",
+                        "entity_type": "domain",
+                        "entity_name": "malware.com"
+                    }
+                ]
+            },
+            "enrichment": {
+                "filenames": ["malware.exe", "virus.dll"],
+                "first_seen": "2024-12-01",
+                "download_urls": ["http://bad.com/malware.exe"]
+            },
+            "benign": False
+        }
+    }
+
+    mock_client.retrieve_file_sha256_from_api = MagicMock(return_value=mock_response)
+
+    result = FeedCyberint.get_file_sha256_command(mock_client, {"value": "abc123"})
+
+    assert result.outputs["entity"]["value"] == "abc123"
+    assert len(result.outputs["enrichment"]["filenames"]) == 2
+
+
+def test_fetch_indicators_command_feed_disabled(mock_client):
+    """Test fetch_indicators_command when feed is disabled."""
+    params = {
+        "feed": False,
+        "tlp_color": "RED",
+        "feedTags": "tag1",
+        "severity_from": "0",
+        "confidence_from": "0",
+        "feed_name": "All",
+        "indicator_type": "All",
+        "feedFetchInterval": "30"
+    }
+
+    result = FeedCyberint.fetch_indicators_command(mock_client, params)
+
+    assert result == []
+
+
+def test_fetch_indicators_command_with_yesterday(mock_client):
+    """Test fetch_indicators_command fetches from yesterday when needed."""
+    params = {
+        "feed": True,
+        "tlp_color": "RED",
+        "feedTags": "tag1",
+        "severity_from": "0",
+        "confidence_from": "0",
+        "feed_name": "All",
+        "indicator_type": "All",
+        "feedFetchInterval": "1440"  # 24 hours
+    }
+
+    mock_indicators = [{"indicator": "test.com", "type": "Domain"}]
+
+    with patch("FeedCyberint.is_x_minutes_ago_yesterday", return_value=True):
+        with patch("FeedCyberint.get_yesterday_time", return_value="2025-01-13"):
+            with patch("FeedCyberint.fetch_indicators", return_value=mock_indicators):
+                result = FeedCyberint.fetch_indicators_command(mock_client, params)
+
+                assert len(result) == 2  # Yesterday + today
+
+
+def test_request_daily_feed_with_pagination(mock_client, requests_mock):
+    """Test request_daily_feed handles pagination correctly."""
+    date_time = "2025-01-01"
+
+    # Mock first page response
+    response1 = '{"ioc_value": "test1.com"}\n{"ioc_value": "test2.com"}'
+    # Mock second page (empty)
+    response2 = ''
+
+    url1 = f"{BASE_URL}/ioc/api/v1/feed/daily/{date_time}?limit=1000&offset=0"
+    url2 = f"{BASE_URL}/ioc/api/v1/feed/daily/{date_time}?limit=1000&offset=1000"
+
+    requests_mock.get(url1, text=response1)
+    requests_mock.get(url2, text=response2)
+
+    with patch("FeedCyberint.is_execution_time_exceeded", return_value=False):
+        with patch("CommonServerPython.auto_detect_indicator_type", return_value="Domain"):
+            with patch.object(FeedCyberint.demisto, "getIntegrationContext", return_value={"offset": 0}):
+                with patch.object(FeedCyberint.demisto, "setIntegrationContext"):
+                    result = mock_client.request_daily_feed(date_time=date_time, test=False)
+
+                    assert len(result) == 2
+
+
+def test_process_feed_response_empty_feeds(mock_client):
+    """Test process_feed_response handles empty response."""
+    with patch.object(mock_client, "retrieve_indicators_from_api", return_value=""):
+        result = mock_client.process_feed_response("2025-01-01", 100, 0)
+
+        assert result == []
+
+
+def test_get_today_time_format():
+    """Test get_today_time returns correctly formatted date."""
+    result = FeedCyberint.get_today_time()
+
+    # Should match DATE_FORMAT which is "%Y-%m-%d"
+    assert re.match(r'\d{4}-\d{2}-\d{2}', result)
+
+    # Should be today's date
+    today = datetime.now().strftime("%Y-%m-%d")
+    assert result == today
+
+
+def test_is_execution_time_exceeded_exact_limit():
+    """Test is_execution_time_exceeded at exact timeout limit."""
+    start_time = datetime.utcnow() - timedelta(seconds=FeedCyberint.EXECUTION_TIMEOUT_SECONDS)
+    result = FeedCyberint.is_execution_time_exceeded(start_time)
+
+    # Should return False at exactly the limit (not exceeded yet)
+    assert result is False
+
+
+def test_main_not_implemented_command():
+    """Test main() raises NotImplementedError for unknown commands."""
+    with patch("FeedCyberint.demisto") as mock_demisto:
+        mock_demisto.params.return_value = {
+            "url": "https://example.com",
+            "access_token": {"password": "test-token"},
+            "insecure": False,
+            "proxy": False
+        }
+        mock_demisto.command.return_value = "unknown-command"
+
+        with patch("FeedCyberint.return_error") as mock_return_error:
+            FeedCyberint.main()
+
+            mock_return_error.assert_called_once()
+            assert "not implemented" in mock_return_error.call_args[0][0].lower()
+
+
+def test_main_exception_handling():
+    """Test main() handles exceptions properly."""
+    with patch("FeedCyberint.demisto") as mock_demisto:
+        mock_demisto.params.return_value = {
+            "url": "https://example.com",
+            "access_token": {"password": "test-token"},
+            "insecure": False,
+            "proxy": False
+        }
+        mock_demisto.command.return_value = "test-module"
+
+        with patch("FeedCyberint.Client") as mock_client_class:
+            mock_client_class.side_effect = Exception("Connection failed")
+
+            with patch("FeedCyberint.return_error") as mock_return_error:
+                FeedCyberint.main()
+
+                mock_return_error.assert_called_once()
+                assert "connection failed" in mock_return_error.call_args[0][0].lower()
