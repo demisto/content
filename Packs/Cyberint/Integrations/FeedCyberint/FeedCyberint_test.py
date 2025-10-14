@@ -714,15 +714,14 @@ def test_get_today_time(mock_datetime):
     """Test get_today_time to ensure it returns the correct formatted date."""
     # Define a fixed datetime for testing
     fixed_datetime = datetime(2025, 1, 2, 12, 30, 45)
-    mock_datetime.utcnow.return_value = fixed_datetime
-    mock_datetime.strftime = datetime.strftime
+    mock_datetime.now.return_value = fixed_datetime
 
     # Call the function
     result = FeedCyberint.get_today_time()
 
     # Assert the result matches the expected formatted string
     assert result == fixed_datetime.strftime(FeedCyberint.DATE_FORMAT)
-    mock_datetime.utcnow.assert_called_once()
+    mock_datetime.now.assert_called_once()
 
 
 @patch("FeedCyberint.fetch_indicators")
