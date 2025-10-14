@@ -1208,7 +1208,7 @@ def test_fetch_indicators_with_filters(mock_client):
             "confidence": 90,
             "severity_score": 8,
             "observation_date": "2025-01-01",
-            "description": "Phishing domain"
+            "description": "Phishing domain",
         },
         {
             "ioc_value": "1.2.3.4",
@@ -1217,7 +1217,7 @@ def test_fetch_indicators_with_filters(mock_client):
             "confidence": 50,
             "severity_score": 5,
             "observation_date": "2025-01-01",
-            "description": "Malware IP"
+            "description": "Malware IP",
         },
         {
             "ioc_value": "safe.com",
@@ -1226,8 +1226,8 @@ def test_fetch_indicators_with_filters(mock_client):
             "confidence": 30,
             "severity_score": 3,
             "observation_date": "2025-01-01",
-            "description": "Low confidence domain"
-        }
+            "description": "Low confidence domain",
+        },
     ]
 
     with patch.object(mock_client, "request_daily_feed", return_value=mock_indicators):
@@ -1242,7 +1242,7 @@ def test_fetch_indicators_with_filters(mock_client):
                 confidence_from=60,
                 severity_from=7,
                 feed_tags=["test"],
-                limit=10
+                limit=10,
             )
 
             # Should only return the first indicator that matches all filters
@@ -1262,7 +1262,7 @@ def test_fetch_indicators_with_all_types(mock_client):
             "confidence": 80,
             "severity_score": 8,
             "observation_date": "2025-01-01",
-            "description": "Test domain"
+            "description": "Test domain",
         }
     ]
 
@@ -1275,7 +1275,7 @@ def test_fetch_indicators_with_all_types(mock_client):
                 indicator_types=["All"],
                 confidence_from=0,
                 severity_from=0,
-                limit=-1
+                limit=-1,
             )
 
             assert len(result) == 1
@@ -1292,7 +1292,7 @@ def test_fetch_indicators_limit_reached(mock_client):
             "confidence": 80,
             "severity_score": 8,
             "observation_date": "2025-01-01",
-            "description": f"Test domain {i}"
+            "description": f"Test domain {i}",
         }
         for i in range(10)
     ]
@@ -1306,7 +1306,7 @@ def test_fetch_indicators_limit_reached(mock_client):
                 indicator_types=["All"],
                 confidence_from=0,
                 severity_from=0,
-                limit=5
+                limit=5,
             )
 
             assert len(result) == 5
@@ -1322,19 +1322,14 @@ def test_fetch_indicators_no_type_detected(mock_client):
             "confidence": 80,
             "severity_score": 8,
             "observation_date": "2025-01-01",
-            "description": "Invalid indicator"
+            "description": "Invalid indicator",
         }
     ]
 
     with patch.object(mock_client, "request_daily_feed", return_value=mock_indicators):
         with patch("FeedCyberint.auto_detect_indicator_type", return_value=None):
             result = FeedCyberint.fetch_indicators(
-                client=mock_client,
-                tlp_color="",
-                feed_names=["All"],
-                indicator_types=["All"],
-                confidence_from=0,
-                severity_from=0
+                client=mock_client, tlp_color="", feed_names=["All"], indicator_types=["All"], confidence_from=0, severity_from=0
             )
 
             assert len(result) == 0
@@ -1361,30 +1356,18 @@ def test_get_url_command_with_activities_and_entities(mock_client):
                         "observation_date": "2025-01-01",
                         "description": "Phishing activity",
                         "confidence": 90,
-                        "occurrences_count": 5
+                        "occurrences_count": 5,
                     }
                 ],
-                "related_entities": [
-                    {
-                        "entity_id": "123",
-                        "entity_type": "domain",
-                        "entity_name": "malicious.com"
-                    }
-                ]
+                "related_entities": [{"entity_id": "123", "entity_type": "domain", "entity_name": "malicious.com"}],
             },
             "enrichment": {
                 "ips": ["1.2.3.4"],
                 "hostname": "malicious.com",
                 "domain": "malicious.com",
-                "related_entities": [
-                    {
-                        "entity_id": "456",
-                        "entity_type": "ip",
-                        "entity_name": "1.2.3.4"
-                    }
-                ]
+                "related_entities": [{"entity_id": "456", "entity_type": "ip", "entity_name": "1.2.3.4"}],
             },
-            "benign": False
+            "benign": False,
         }
     }
 
@@ -1401,19 +1384,14 @@ def test_get_ipv4_command_with_geo_and_asn(mock_client):
     mock_response = {
         "data": {
             "entity": {"type": "ipv4", "value": "1.2.3.4"},
-            "risk": {
-                "malicious_score": 85,
-                "occurrences_count": 15,
-                "detected_activities": [],
-                "related_entities": []
-            },
+            "risk": {"malicious_score": 85, "occurrences_count": 15, "detected_activities": [], "related_entities": []},
             "enrichment": {
                 "geo": {"country": "US", "city": "New York"},
                 "asn": {"number": "12345", "organization": "Test ISP"},
-                "suspicious_urls": ["http://bad.com"],
-                "suspicious_domains": ["bad.com"]
+                "suspicious_urls": ["http://dummy.com"],
+                "suspicious_domains": ["dummy.com"],
             },
-            "benign": False
+            "benign": False,
         }
     }
 
@@ -1431,12 +1409,7 @@ def test_get_domain_command_with_whois(mock_client):
     mock_response = {
         "data": {
             "entity": {"type": "domain", "value": "test.com"},
-            "risk": {
-                "malicious_score": 70,
-                "occurrences_count": 8,
-                "detected_activities": [],
-                "related_entities": []
-            },
+            "risk": {"malicious_score": 70, "occurrences_count": 8, "detected_activities": [], "related_entities": []},
             "enrichment": {
                 "ips": ["1.2.3.4"],
                 "whois": {
@@ -1454,10 +1427,10 @@ def test_get_domain_command_with_whois(mock_client):
                     "admin_contact_email": "admin@example.com",
                     "created_date": "2020-01-01",
                     "updated_date": "2024-01-01",
-                    "expiration_date": "2026-01-01"
-                }
+                    "expiration_date": "2026-01-01",
+                },
             },
-            "benign": False
+            "benign": False,
         }
     }
 
@@ -1482,23 +1455,17 @@ def test_get_file_sha256_command_with_activities(mock_client):
                         "observation_date": "2025-01-01",
                         "description": "Malware detected",
                         "confidence": 95,
-                        "occurrences_count": 3
+                        "occurrences_count": 3,
                     }
                 ],
-                "related_entities": [
-                    {
-                        "entity_id": "789",
-                        "entity_type": "domain",
-                        "entity_name": "malware.com"
-                    }
-                ]
+                "related_entities": [{"entity_id": "789", "entity_type": "domain", "entity_name": "malware.com"}],
             },
             "enrichment": {
                 "filenames": ["malware.exe", "virus.dll"],
                 "first_seen": "2024-12-01",
-                "download_urls": ["http://bad.com/malware.exe"]
+                "download_urls": ["http://dummy.com/malware.exe"],
             },
-            "benign": False
+            "benign": False,
         }
     }
 
@@ -1520,7 +1487,7 @@ def test_fetch_indicators_command_feed_disabled(mock_client):
         "confidence_from": "0",
         "feed_name": "All",
         "indicator_type": "All",
-        "feedFetchInterval": "30"
+        "feedFetchInterval": "30",
     }
 
     result = FeedCyberint.fetch_indicators_command(mock_client, params)
@@ -1538,7 +1505,7 @@ def test_fetch_indicators_command_with_yesterday(mock_client):
         "confidence_from": "0",
         "feed_name": "All",
         "indicator_type": "All",
-        "feedFetchInterval": "1440"  # 24 hours
+        "feedFetchInterval": "1440",
     }
 
     mock_indicators = [{"indicator": "test.com", "type": "Domain"}]
@@ -1558,7 +1525,7 @@ def test_request_daily_feed_with_pagination(mock_client, requests_mock):
     # Mock first page response
     response1 = '{"ioc_value": "test1.com"}\n{"ioc_value": "test2.com"}'
     # Mock second page (empty)
-    response2 = ''
+    response2 = ""
 
     url1 = f"{BASE_URL}/ioc/api/v1/feed/daily/{date_time}?limit=1000&offset=0"
     url2 = f"{BASE_URL}/ioc/api/v1/feed/daily/{date_time}?limit=1000&offset=1000"
@@ -1588,7 +1555,7 @@ def test_get_today_time_format():
     result = FeedCyberint.get_today_time()
 
     # Should match DATE_FORMAT which is "%Y-%m-%d"
-    assert re.match(r'\d{4}-\d{2}-\d{2}', result)
+    assert re.match(r"\d{4}-\d{2}-\d{2}", result)
 
     # Should be today's date
     today = datetime.now().strftime("%Y-%m-%d")
@@ -1611,7 +1578,7 @@ def test_main_not_implemented_command():
             "url": "https://example.com",
             "access_token": {"password": "test-token"},
             "insecure": False,
-            "proxy": False
+            "proxy": False,
         }
         mock_demisto.command.return_value = "unknown-command"
 
@@ -1629,7 +1596,7 @@ def test_main_exception_handling():
             "url": "https://example.com",
             "access_token": {"password": "test-token"},
             "insecure": False,
-            "proxy": False
+            "proxy": False,
         }
         mock_demisto.command.return_value = "test-module"
 
