@@ -5,7 +5,7 @@ import demistomock as demisto  # noqa: F401
 # disable insecure warnings
 import urllib3
 from CommonServerPython import *  # noqa: F401
-from requests_ntlm import HttpNtlmAuth
+#from requests_ntlm import HttpNtlmAuth
 
 from CommonServerUserPython import *
 
@@ -127,7 +127,7 @@ def fetch_credentials(client, args: dict):
             {
                 "user": cred.get("UserName"),
                 "password": cred.get("Content"),
-                "name": cred.get("Name"),
+                "name": cred.get("Name") or cred.get("Object"),
             }
         )
     demisto.credentials(credentials)
