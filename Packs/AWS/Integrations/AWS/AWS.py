@@ -684,7 +684,7 @@ class S3:
             return AWSErrorHandler.handle_response_error(response)
 
     @staticmethod
-    def delete_bucket_website_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def delete_bucket_website_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults: #c
         """
         Deletes the static website configuration from the specified S3 bucket.
         Executes the DeleteBucketWebsite API operation. If successful, the website configuration is removed,
