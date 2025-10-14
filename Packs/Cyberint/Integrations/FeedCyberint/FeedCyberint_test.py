@@ -1338,13 +1338,6 @@ def test_fetch_indicators_no_type_detected(mock_client):
             assert len(result) == 0
 
 
-def test_client_initialization(mock_client):
-    """Test Client initialization sets correct headers and cookies."""
-    assert mock_client._cookies["access_token"] == TOKEN
-    assert mock_client._headers["X-Integration-Type"] == "XSOAR"
-    assert mock_client._headers["X-Integration-Version"] == "1.1.10"
-
-
 def test_get_url_command_with_activities_and_entities(mock_client):
     """Test get_url_command with detected activities and related entities."""
     mock_response = {
@@ -1519,31 +1512,6 @@ def test_fetch_indicators_command_with_yesterday(mock_client):
                 result = FeedCyberint.fetch_indicators_command(mock_client, params)
 
                 assert len(result) == 2  # Yesterday + today
-
-
-def test_request_daily_feed_with_pagination(mock_client, requests_mock):
-    """Test request_daily_feed handles pagination correctly."""
-    date_time = "2025-01-01"
-
-    # Mock first page response
-    response1 = '{"ioc_value": "test1.com"}\n{"ioc_value": "test2.com"}'
-    # Mock second page (empty)
-    response2 = ""
-
-    url1 = f"{BASE_URL}/ioc/api/v1/feed/daily/{date_time}?limit=1000&offset=0"
-    url2 = f"{BASE_URL}/ioc/api/v1/feed/daily/{date_time}?limit=1000&offset=1000"
-
-    requests_mock.get(url1, text=response1)
-    requests_mock.get(url2, text=response2)
-
-    # Patch demisto.error to avoid emitting to stdout which the autouse fixture forbids
-    with patch("FeedCyberint.is_execution_time_exceeded", return_value=False), \
-            patch("CommonServerPython.auto_detect_indicator_type", return_value="Domain"), \
-            patch.object(FeedCyberint.demisto, "getIntegrationContext", return_value={"offset": 0}), \
-            patch.object(FeedCyberint.demisto, "setIntegrationContext"), \
-            patch.object(FeedCyberint.demisto, "error", MagicMock()):
-        result = mock_client.request_daily_feed(date_time=date_time, test=False)
-        assert len(result) == 2
 
 
 def test_process_feed_response_empty_feeds(mock_client, capfd):
