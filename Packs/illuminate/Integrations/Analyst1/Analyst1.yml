@@ -1,8 +1,8 @@
 commonfields:
-  id: Analyst1_Dev
+  id: Analyst1
   version: -1
-name: Analyst1_Dev
-display: Analyst1 (Dev)
+name: Analyst1
+display: Analyst1
 category: Data Enrichment & Threat Intelligence
 description: This integration utilizes Analyst1's system to enrich Demisto indicators with data provided by the Analyst1 REST API, such as actor and malware information, activity and reported dates, evidence and hit counts, and more.
 configuration:
