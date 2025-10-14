@@ -1514,9 +1514,11 @@ def test_fetch_indicators_command_with_yesterday(mock_client):
 
     mock_indicators = [{"indicator": "test.com", "type": "Domain"}]
 
-    with patch("FeedCyberint.is_x_minutes_ago_yesterday", return_value=True), \
-         patch("FeedCyberint.get_yesterday_time", return_value="2024-12-31"), \
-         patch("FeedCyberint.fetch_indicators", return_value=mock_indicators):
+    with (
+            patch("FeedCyberint.is_x_minutes_ago_yesterday", return_value=True),
+            patch("FeedCyberint.get_yesterday_time", return_value="2024-12-31"),
+            patch("FeedCyberint.fetch_indicators", return_value=mock_indicators),
+    ):
         result = FeedCyberint.fetch_indicators_command(mock_client, params)
 
         assert len(result) == 2  # Yesterday + today
