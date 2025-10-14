@@ -50,8 +50,8 @@ script:
     description: Activates a CyberArk EPM risk plan for a specified endpoint.
     name: cyberarkepm-activate-risk-plan
     outputs:
-    - contextPath: CyberArkEPMARR.Endpoint.ID
-      description: The ID of the endpoint added to the risk plan.
+    - contextPath: CyberArkEPMARR.Endpoint_IDs
+      description: The IDs of the endpoints added to the risk plan.
       type: String
   - arguments:
     - description: The name of the risk plan to deactivate.
@@ -71,8 +71,8 @@ script:
     description: Deactivates a CyberArk EPM risk plan for a specified endpoint.
     name: cyberarkepm-deactivate-risk-plan
     outputs:
-    - contextPath: CyberArkEPMARR.Endpoint.ID
-      description: The ID of the endpoint removed from the risk plan.
+    - contextPath: CyberArkEPMARR.Endpoint_IDs
+      description: The IDs of the endpoints removed from risk plan.
       type: String
   isfetch: false
   runonce: false

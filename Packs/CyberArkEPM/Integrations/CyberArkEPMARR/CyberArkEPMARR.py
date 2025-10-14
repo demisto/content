@@ -1,5 +1,4 @@
 import urllib3
-from bs4 import BeautifulSoup
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 
@@ -117,7 +116,7 @@ def search_endpoint_group_id(group_name: str, client: Client) -> str:
     return None
 
 
-def add_endpoint_to_group(endpoint_ids: list[str], endpoint_group_id: str, client: Client) -> None:
+def add_endpoint_to_group(endpoint_ids: list[str], endpoint_group_id: str, client: Client) -> dict:
     """Adds an endpoint to a specified group.
 
     Args:
@@ -131,10 +130,10 @@ def add_endpoint_to_group(endpoint_ids: list[str], endpoint_group_id: str, clien
     context = get_integration_context().get(CONTEXT_KEY, {})
     set_id = context.get("set_id")
     url_suffix = f"Sets/{set_id}/Endpoints/Groups/{endpoint_group_id}/Members/ids"
-    client._http_request("POST", url_suffix=url_suffix, json_data=data)
+    return client._http_request("POST", url_suffix=url_suffix, json_data=data)
 
 
-def remove_endpoint_from_group(endpoint_ids: list[str], endpoint_group_id: str, client: Client) -> None:
+def remove_endpoint_from_group(endpoint_ids: list[str], endpoint_group_id: str, client: Client) -> dict:
     """Removes an endpoint from a specified group.
 
     Args:
@@ -148,7 +147,7 @@ def remove_endpoint_from_group(endpoint_ids: list[str], endpoint_group_id: str, 
     context = get_integration_context().get(CONTEXT_KEY, {})
     set_id = context.get("set_id")
     url_suffix = f"Sets/{set_id}/Endpoints/Groups/{endpoint_group_id}/Members/ids/remove"
-    client._http_request("POST", url_suffix=url_suffix, json_data=data)
+    return client._http_request("POST", url_suffix=url_suffix, json_data=data)
 
 """ COMMAND FUNCTIONS """
 
@@ -179,18 +178,25 @@ def change_risk_plan_command(
 
 
     if action == RISK_PLAN_ACTION_ADD:
-        add_endpoint_to_group(endpoint_ids, endpoint_group_id, client)
+        raw_result = add_endpoint_to_group(endpoint_ids, endpoint_group_id, client)
     elif action == RISK_PLAN_ACTION_REMOVE:
-        remove_endpoint_from_group(endpoint_ids, endpoint_group_id, client)
+        raw_result = remove_endpoint_from_group(endpoint_ids, endpoint_group_id, client)
     else:
         raise DemistoException(f"Invalid action: {action}")
-
+    result_context = {
+        "Endpoint_IDs": ",".join(endpoint_ids),
+        "Risk_Plan": risk_plan,
+        "Action": action
+    }
     human_readable = tableToMarkdown(name="Risk Plan changed successfully",
-                                     t={"Endpoint IDs": ",".join(endpoint_ids), "Risk Plan": risk_plan, "Action": action},
-                                     headers=["Endpoint IDs", "Risk Plan", "Action"])
+                                     t=result_context,
+                                     headers=["Endpoint_IDs", "Risk_Plan", "Action"])
     return CommandResults(
         readable_output=human_readable,
-        raw_response=endpoint_ids,
+        outputs_prefix="CyberArkEPMARR",
+        outputs_key_field="Endpoint_IDs",
+        outputs=result_context,
+        raw_response=raw_result,
     )
 
 def test_module(client: Client) -> str:

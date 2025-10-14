@@ -43,9 +43,12 @@ def test_activate_risk_plan_command(requests_mock, mocker):
     }
 
     result = change_risk_plan_command(client, args)
-    print(result)
-
-    assert result.readable_output == "### Risk Plan changed successfully\n|Endpoint IDs|Risk Plan|Action|\n|---|---|---|\n| endpoint_id1,endpoint_id3 | risk_plan1 | add |\n"
+    expected_outputs = {
+        "Endpoint_IDs": "endpoint_id1,endpoint_id3",
+        "Risk_Plan": "risk_plan1",
+        "Action": "add"
+    }
+    assert result.outputs == expected_outputs
 
 def test_activate_single_endpoint_risk_plan_command(requests_mock, mocker):
     """
@@ -71,9 +74,13 @@ def test_activate_single_endpoint_risk_plan_command(requests_mock, mocker):
     }
 
     result = change_risk_plan_command(client, args)
-    print(result)
+    expected_outputs = {
+        "Endpoint_IDs": "endpoint_id1",
+        "Risk_Plan": "risk_plan1",
+        "Action": "add"
+    }
 
-    assert result.readable_output == "### Risk Plan changed successfully\n|Endpoint IDs|Risk Plan|Action|\n|---|---|---|\n| endpoint_id1 | risk_plan1 | add |\n"
+    assert result.outputs == expected_outputs
 
 
 def test_deactivate_risk_plan_command(requests_mock, mocker):
@@ -99,7 +106,10 @@ def test_deactivate_risk_plan_command(requests_mock, mocker):
     }
 
     result = change_risk_plan_command(client, args)
-    print(result)
-
-    assert result.readable_output == "### Risk Plan changed successfully\n|Endpoint IDs|Risk Plan|Action|\n|---|---|---|\n| endpoint_id1,endpoint_id3 | risk_plan1 | remove |\n"
+    expected_outputs = {
+        "Endpoint_IDs": "endpoint_id1,endpoint_id3",
+        "Risk_Plan": "risk_plan1",
+        "Action": "remove"
+    }
+    assert result.outputs == expected_outputs
 
