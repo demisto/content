@@ -425,7 +425,9 @@ When [installing the bot in Microsoft Teams](#add-the-demisto-bot-to-a-team), ac
     ```
 
     *And* the bot's application type was converted *from Multi-tenant to Single-tenant*, the integration may fail to recognize the change, leading to the denial of authorization.
+
     *To resolve this:*
+
     1.Navigate to your instance configuration settings.
     2.Select the *Bot Type Converted to Single-Tenant parameter* in the advanced settings of the Connect section.
     3.Run the command !microsoft-teams-auth-reset in the War Room.
