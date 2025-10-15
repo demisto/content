@@ -79,7 +79,8 @@ def get_events(
     id_ignore_list: list[str] | None = None,
     page_size: int = API_MAX_PAGE_SIZE,
     limit: int = 0,
-) -> Iterator[List["AwsSecurityFindingTypeDef"]]:
+    start_token: str | None = None,
+) -> Iterator[tuple[List["AwsSecurityFindingTypeDef"], bool, str | None]]:
     """
     Fetch events from AWS Security Hub.
 
@@ -97,6 +98,10 @@ def get_events(
     """
     kwargs: dict = {"SortCriteria": [{"Field": TIME_FIELD, "SortOrder": "asc"}]}
     filters: dict = {}
+    
+    # Start from provided token if available
+    if start_token:
+        kwargs["NextToken"] = start_token
 
     if end_time and not start_time:
         raise ValueError("start_time must be set if end_time is used.")
@@ -105,7 +110,7 @@ def get_events(
         filters[TIME_FIELD] = [
             {
                 "Start": start_time.strftime(DATETIME_FORMAT),
-                "End": end_time.strftime(DATETIME_FORMAT) if end_time else dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ"),
+                "End": end_time.strftime(DATETIME_FORMAT) if end_time else dt.datetime.now().strftime(DATETIME_FORMAT),
             }
         ]
 
@@ -122,7 +127,7 @@ def get_events(
     # Collect all raw events first, then filter duplicates at the end
     all_raw_events: list[AwsSecurityFindingTypeDef] = []
     pagination_iteration = 0
-    max_iterations = 1000  # Safety limit to prevent infinite loops
+    max_iterations = 100  # Safety limit to prevent infinite loops
     total_collected_count = 0
 
     demisto.debug(
@@ -145,7 +150,7 @@ def get_events(
         else:
             kwargs["MaxResults"] = page_size
 
-        demisto.debug(f"Iteration {pagination_iteration}: Calling get_findings with MaxResults={kwargs['MaxResults']}")
+        demisto.debug(f"Iteration {pagination_iteration}: Calling get_findings with kwargs: {kwargs}")
         response = client.get_findings(**kwargs)
         result = response.get("Findings", [])
         has_next_token = "NextToken" in response
@@ -192,8 +197,10 @@ def get_events(
         f"({duplicates_filtered} duplicates filtered)"
     )
 
-    # Yield all filtered events at once (even if empty list)
-    yield filtered_events  # type: ignore
+    # Yield filtered events, whether last call had NextToken, and the final NextToken
+    last_had_next_token = "NextToken" in response if 'response' in locals() else False
+    final_next_token = response.get("NextToken") if 'response' in locals() else None
+    yield (filtered_events, last_had_next_token, final_next_token)  # type: ignore
 
 
 def fetch_events(
@@ -213,8 +220,14 @@ def fetch_events(
         page_size (int, optional): Number of results to fetch per request. Defaults to API_MAX_PAGE_SIZE.
         limit (int, optional): Maximum number of events to fetch. Defaults to 0 (no limit).
     """
+    demisto.debug(f"Fetching events with last_run: {last_run}")
     if last_run.get("last_update_date"):
-        start_time = parse_date_string(last_run["last_update_date"])
+        try:
+            # Try parsing with milliseconds first
+            start_time = dt.datetime.strptime(last_run["last_update_date"], DATETIME_FORMAT)
+        except ValueError:
+            # Fallback to parsing without milliseconds
+            start_time = dt.datetime.strptime(last_run["last_update_date"], "%Y-%m-%dT%H:%M:%SZ")
 
     else:
         start_time = first_fetch_time
@@ -223,12 +236,49 @@ def fetch_events(
 
     events: list[AwsSecurityFindingTypeDef] = []
     error = None
-
+    current_limit = limit
+    max_aws_limit = 10000  # AWS API maximum
+    
+    # Fix end_time for all retries to keep NextToken valid
+    end_time = dt.datetime.now()
+    
     try:
-        for events_batch in get_events(
-            client=client, start_time=start_time, id_ignore_list=id_ignore_list, page_size=page_size, limit=limit
-        ):
-            events.extend(events_batch)
+        continuation_token = None
+        while True:
+            original_events_count = len(events)
+            
+            for events_batch, _, final_token in get_events(
+                client=client, start_time=start_time, end_time=end_time, id_ignore_list=id_ignore_list,
+                page_size=page_size, limit=current_limit, start_token=continuation_token
+            ):
+                continuation_token = final_token
+                events.extend(events_batch)
+
+            new_events_count = len(events) - original_events_count
+            
+            # If we got new events, break out of retry loop
+            if new_events_count > 0:
+                demisto.debug(f"Successfully fetched {new_events_count} new events")
+                break
+                
+            # If all events were duplicates and AWS has more events, retry with higher limit
+            if new_events_count == 0 and continuation_token and current_limit > 0 and current_limit < max_aws_limit:
+                new_limit = 100  # Just fetch minimum batch to find non-duplicates
+                demisto.info(
+                    f"All {current_limit} events were duplicates but AWS has more events. "
+                    f"Retrying with increased limit: {new_limit}"
+                )
+                current_limit = new_limit
+                continue
+            else:
+                # Either got new events, no more events from AWS, reached limit, or no duplicates issue
+                if new_events_count == 0 and not continuation_token:
+                    demisto.debug("All events were duplicates and AWS has no more events - reached end")
+                elif new_events_count == 0 and current_limit >= max_aws_limit:
+                    demisto.debug(f"All events were duplicates but reached max limit ({max_aws_limit}) - stopping retries")
+                else:
+                    demisto.debug("Breaking retry loop - either got new events or other condition met")
+                break
 
     except Exception as e:
         demisto.error(f"Error while fetching events.Events fetched so far: {len(events)}Error: {e}")
@@ -262,7 +312,7 @@ def get_events_command(client: "SecurityHubClient", should_push_events: bool, pa
     """
     events = []
 
-    for events_batch in get_events(client=client, page_size=page_size, limit=limit):
+    for events_batch, _ in get_events(client=client, page_size=page_size, limit=limit):
         events.extend(events_batch)
 
     if should_push_events:
@@ -331,7 +381,7 @@ def main():  # pragma: no cover
         demisto.info(f'Executing "{command}" command...')
 
         if command == "test-module":
-            next(get_events(client=client, limit=1))
+            next(get_events(client=client, limit=1))[0]  # Get events from tuple
             return_results("ok")
 
         elif command == "aws-securityhub-get-events":
