@@ -474,7 +474,7 @@ def fetch_audit_user_data(last_run: dict, auth_client: AuthClient) -> tuple[dict
 
 def get_user_details(
     users: list, base_uri: str, access_token: str, client: UserDataClient, latest_modified_dt: datetime | None
-) -> tuple[list[Any], str]:
+) -> tuple[list[Any], str | None]:
     """
     eSignature REST API.
     Fetches user details for each user in the list.
@@ -822,7 +822,6 @@ def validate_configuration_params() -> str:
         message += f"{DEFAULT_SERVER_DEV_URL} for dev environment and {SERVER_PROD_URL} for prod environment."
         return message
 
-    if params.get("isFetch"):
         # Validate parameters for fetching user data events
         if USER_DATA_TYPE in selected_fetch_types and (not params.get("account_id") or not params.get("organization_id")):
             return f"Please provide Account ID and Organization ID for fetching {USER_DATA_TYPE}."

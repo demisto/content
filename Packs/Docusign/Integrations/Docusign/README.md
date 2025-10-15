@@ -46,6 +46,7 @@ This table lists the endpoint base paths for each Docusign environment so you kn
 ## Go-Live - User data type
 
 Before you can begin the Go-Live process for an app that uses the Admin API, you must have:
+
 - Admin API access added to your account  
 - Made at least 20 consecutive successful test eSignature API requests in the developer environment
 
@@ -70,9 +71,7 @@ The examples in the how-to section use the developer paths; this table shows the
 | Developer   | `https://api-d.docusign.net/management/` | `https://demo.docusign.net/` |
 | Production  | `https://api.docusign.net/management/`   | `https://{server}.docusign.net/` |
 
-
 ## Configure DocuSign in Cortex
-
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -119,6 +118,7 @@ There is no context output for this command.
 #### Human Readable Output
 
 >### DocuSign Consent URL
+>
 >[Click here to authorize]
 
 ### docusign-reset-integration-context
