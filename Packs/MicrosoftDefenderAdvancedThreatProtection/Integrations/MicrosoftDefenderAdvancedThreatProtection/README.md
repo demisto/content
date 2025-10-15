@@ -7528,7 +7528,8 @@ Checks the file reputation of the specified hash.
         "Vendor": "Microsoft Defender ATP",
         "Score": 3
     }
-}```
+}
+```
 
 #### Human Readable Output
 
