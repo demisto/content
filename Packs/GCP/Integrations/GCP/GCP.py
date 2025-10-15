@@ -164,6 +164,7 @@ COMMAND_REQUIREMENTS = {
         GCPServices.RESOURCE_MANAGER,
         ["resourcemanager.projects.getIamPolicy", "resourcemanager.projects.setIamPolicy"],
     ),
+    "gcp-iam-folder-iam-policy-get": (GCPServices.RESOURCE_MANAGER, ["resourcemanager.folders.getIamPolicy"]),
     # The following commands are currently unsupported:
     # "gcp-compute-instance-metadata-add": (
     #     GCPServices.COMPUTE,
@@ -949,6 +950,72 @@ def compute_instance_stop(creds: Credentials, args: dict[str, Any]) -> CommandRe
 #
 #     return CommandResults(readable_output=hr)
 
+def gcp_iam_folder_iam_policy_get_command(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Gets the access control policy for a folder.
+    Args:
+        creds (Credentials): GCP credentials with admin directory security scope.
+        args (dict[str, Any]): Must include 'resource_name'.
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    folder_id = args.get("folder_id", "")
+    requested_policy_version = arg_to_number(args.get("requested_policy_version", ""))
+    body = {}
+    if requested_policy_version:
+        body = {"options": {"requestedPolicyVersion": requested_policy_version}}
+    resource_manager = GCPServices.RESOURCE_MANAGER.build(creds)
+    folder_policy_response = resource_manager.folders().getIamPolicy(resource=f"folders/{folder_id}", body=body).execute()
+    readable_header = f"Folder {folder_id} IAM policy information:"
+    readable_output = tableToMarkdown(
+        readable_header,
+        folder_policy_response.get("bindings"),
+        headers=["role", "members"],
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="GCP.IAM.Policy",
+        outputs_key_field="role",
+        outputs=folder_policy_response,
+        raw_response=folder_policy_response,
+    )
+
+
+def gcp_iam_folder_iam_permission_test_command(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Returns permissions that a caller has on the specified folder.
+    Args:
+        creds (Credentials): GCP credentials with admin directory security scope.
+        args (dict[str, Any]): Must include 'resource_name'.
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    folder_id = args.get("folder_id", "")
+    permissions = argToList(args.get("permissions", ""))
+    body = {"permissions": permissions}
+    demisto.debug(f"before executing the command with {body}")
+    resource_manager = GCPServices.RESOURCE_MANAGER.build(creds)
+    response = resource_manager.folders().testIamPermissions(resource=f"folders/{folder_id}", body=body).execute()
+    demisto.debug(f"the response to the command {response}")
+
+    readable_output = tableToMarkdown(
+        f"The folder {folder_id} permissions:",
+        response,
+        headers=["permissions"],
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="GCP.IAM.Permission",
+        outputs_key_field="permissions",
+        outputs=response,
+        raw_response=response,
+    )
+
 
 def _get_commands_for_requirement(requirement: str, req_type: str) -> list[str]:
     """
@@ -1260,6 +1327,8 @@ def main():  # pragma: no cover
             "gcp-container-cluster-security-update": container_cluster_security_update,
             # IAM commands
             "gcp-iam-project-policy-binding-remove": iam_project_policy_binding_remove,
+            "gcp-iam-folder-iam-policy-get": gcp_iam_folder_iam_policy_get_command,
+            "gcp-iam-folder-iam-permission-test": gcp_iam_folder_iam_permission_test_command,
             # The following commands are currently unsupported:
             # # Compute Engine commands
             # "gcp-compute-instance-metadata-add": compute_instance_metadata_add,
@@ -1277,6 +1346,8 @@ def main():  # pragma: no cover
             return_results(run_health_check_for_accounts(connector_id, CloudTypes.GCP.value, health_check))
 
         elif command in command_map:
+            if "folder_id" in args:  # for commands that use folder identifier and not a project id.
+                args["project_id"] = args["folder_id"]
             creds = get_credentials(args, params)
             return_results(command_map[command](creds, args))
         else:
