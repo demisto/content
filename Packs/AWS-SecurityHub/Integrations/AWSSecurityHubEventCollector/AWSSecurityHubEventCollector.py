@@ -17,9 +17,33 @@ VENDOR = "AWS"
 PRODUCT = "Security Hub"
 TIME_FIELD = "CreatedAt"
 DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
+DATETIME_FORMAT_NO_MS = "%Y-%m-%dT%H:%M:%SZ"  # Fallback format without milliseconds
 DEFAULT_FIRST_FETCH = "3 days"
 DEFAULT_MAX_RESULTS = 1000
 API_MAX_PAGE_SIZE = 100  # The API only allows a maximum of 100 results per request. Using more raises an error.
+RETRY_LIMIT_INCREMENT = 100  # How much to increase limit when retrying for duplicates
+MAX_AWS_LIMIT = 10000  # Maximum limit to prevent excessive API calls
+
+
+def parse_aws_timestamp(timestamp_str: str) -> dt.datetime:
+    """
+    Parse AWS timestamp with flexible format support.
+    
+    Args:
+        timestamp_str (str): Timestamp string from AWS API
+        
+    Returns:
+        datetime: Parsed datetime object
+        
+    Raises:
+        ValueError: If timestamp format is not supported
+    """
+    try:
+        # Try parsing with milliseconds first
+        return dt.datetime.strptime(timestamp_str, DATETIME_FORMAT)
+    except ValueError:
+        # Fallback to parsing without milliseconds
+        return dt.datetime.strptime(timestamp_str, DATETIME_FORMAT_NO_MS)
 
 
 def generate_last_run(events: list["AwsSecurityFindingTypeDef"], previous_last_run: dict | None = None) -> dict[str, Any]:
@@ -94,7 +118,10 @@ def get_events(
         limit (int, optional): Maximum number of results to fetch. Defaults to 0.
 
     Yields:
-        tuple[list, CommandResults]: A tuple containing the events and the CommandResults object.
+        tuple: A 3-tuple containing:
+            - Filtered events (list[AwsSecurityFindingTypeDef])
+            - Whether more events exist (bool)
+            - NextToken for continuation (str | None)
     """
     kwargs: dict = {"SortCriteria": [{"Field": TIME_FIELD, "SortOrder": "asc"}]}
     filters: dict = {}
@@ -222,12 +249,7 @@ def fetch_events(
     """
     demisto.debug(f"Fetching events with last_run: {last_run}")
     if last_run.get("last_update_date"):
-        try:
-            # Try parsing with milliseconds first
-            start_time = dt.datetime.strptime(last_run["last_update_date"], DATETIME_FORMAT)
-        except ValueError:
-            # Fallback to parsing without milliseconds
-            start_time = dt.datetime.strptime(last_run["last_update_date"], "%Y-%m-%dT%H:%M:%SZ")
+        start_time = parse_aws_timestamp(last_run["last_update_date"])
 
     else:
         start_time = first_fetch_time
@@ -237,7 +259,7 @@ def fetch_events(
     events: list[AwsSecurityFindingTypeDef] = []
     error = None
     current_limit = limit
-    max_aws_limit = 10000  # AWS API maximum
+    max_aws_limit = MAX_AWS_LIMIT
     
     # Fix end_time for all retries to keep NextToken valid
     end_time = dt.datetime.now()
@@ -263,10 +285,10 @@ def fetch_events(
                 
             # If all events were duplicates and AWS has more events, retry with higher limit
             if new_events_count == 0 and continuation_token and current_limit > 0 and current_limit < max_aws_limit:
-                new_limit = 100  # Just fetch minimum batch to find non-duplicates
+                new_limit = RETRY_LIMIT_INCREMENT  # Just fetch minimum batch to find non-duplicates
                 demisto.info(
-                    f"All {current_limit} events were duplicates but AWS has more events. "
-                    f"Retrying with increased limit: {new_limit}"
+                    f"Infinite loop prevention: All {current_limit} events were duplicates but AWS has more events. "
+                    f"Retrying with limit: {new_limit} (continuing from NextToken)"
                 )
                 current_limit = new_limit
                 continue
@@ -281,7 +303,7 @@ def fetch_events(
                 break
 
     except Exception as e:
-        demisto.error(f"Error while fetching events.Events fetched so far: {len(events)}Error: {e}")
+        demisto.error(f"Error while fetching events. Events fetched so far: {len(events)}. Error: {e}")
         error = e
 
     # --- Set next_run data ---
