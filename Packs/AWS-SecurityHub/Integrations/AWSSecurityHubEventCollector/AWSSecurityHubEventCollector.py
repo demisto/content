@@ -102,14 +102,10 @@ def get_events(
         raise ValueError("start_time must be set if end_time is used.")
 
     if start_time:
-        start_timestamp = start_time.strftime(DATETIME_FORMAT)
-        end_timestamp = end_time.strftime(DATETIME_FORMAT) if end_time else dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ")
-        
-        
         filters[TIME_FIELD] = [
             {
-                "Start": start_timestamp,
-                "End": end_timestamp,
+                "Start": start_time.strftime(DATETIME_FORMAT),
+                "End": end_time.strftime(DATETIME_FORMAT) if end_time else dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ"),
             }
         ]
 
