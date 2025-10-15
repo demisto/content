@@ -1098,6 +1098,27 @@ script:
         - contextPath: Core.CaseExtraData.file_artifacts.data.type
           description: The type of the file artifact.
           type: String
+    - arguments:
+      - name: filter
+        description: A custom filter. When using this argument, other filter arguments are not relevant.
+        type: String
+      - auto: PREDEFINED
+        description: Public API or FE route.
+        name: api_type
+        predefined:
+          - 'public'
+          - 'fe'
+      - name: limit
+        description: The maximum number of assets to return.
+      - name: on_demand_fields
+        description: Extra fields to return for each asset.
+        type:
+      name: core-search-assets
+      description: Search for assets in XDR based on some filters.
+      outputs:
+      - contextPath: Core.CoreAsset
+        description: The asset details.
+        isArray: true
   runonce: false
   script: "-"
   subtype: python3

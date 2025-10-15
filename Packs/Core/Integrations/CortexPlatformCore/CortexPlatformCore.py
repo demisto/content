@@ -118,6 +118,74 @@ class Client(CoreClient):
 
         return reply
 
+    def search_assets(self, filter, limit, on_demand_fields):
+        if not filter:
+            filter = {
+                        "AND": [{
+                            "SEARCH_FIELD": "xdm.asset.type.class",
+                            "SEARCH_TYPE": "NEQ",
+                            "SEARCH_VALUE": "Other"
+                        }]
+                    }
+        on_demand_fields = on_demand_fields or [
+            "xdm.business_application.ids",
+            "xdm.business_application.names",
+            "xdm.asset.tags"
+        ]
+        reply = self._http_request(
+            method="POST",
+            headers=self._headers,
+            json_data={
+                "request_data": {
+                    "filters": filter,
+                    "search_from": 0,
+                    "search_to": limit,
+                    "onDemandFields": on_demand_fields,
+                },
+            },
+            url_suffix="/assets",
+        )
+
+        return reply
+
+    def search_assets_fe(self, filter, limit, on_demand_fields):
+        filter = filter or {
+                "AND": [{
+                    "SEARCH_FIELD": "xdm__asset__type__class",
+                    "SEARCH_TYPE": "NEQ",
+                    "SEARCH_VALUE": "Other"
+                    }]
+                }
+        on_demand_fields = on_demand_fields or [
+            "xdm__business_application__ids",
+            "xdm__business_application__names",
+            "xdm__asset__tags"
+        ]
+        reply = self._http_request(
+            method="POST",
+            headers=self._headers,
+            json_data={
+                "type": "grid",
+                "table_name": "UNIFIED_ASSET_MANAGEMENT_AGGREGATED_ASSETS",
+                "filter_data": {
+                    "filter": filter,
+                    "paging": {
+                        "from": 0,
+                        "to": limit,
+                    },
+                    # "sort": [{
+                    #     "FIELD": "xdm__asset__name",
+                    #     "ORDER": "DESC"
+                    # }],
+                },
+                # "extraData": {"AGGREGATED_ONLY": True},
+                "onDemandFields": on_demand_fields
+            },
+            url_suffix="/get_data",
+        )
+
+        return reply
+
 
 def get_asset_details_command(client: Client, args: dict) -> CommandResults:
     """
@@ -193,6 +261,27 @@ def get_extra_data_for_case_id_command(client, args):
     )
 
 
+def search_assets_command(client: Client, args):
+    """
+    Search for assets in XDR based on some filters.
+    """
+    filter = args.get("filter")
+    api_type = args.get("api_type", "public")
+    limit = arg_to_number(args.get("limit", 100))
+    on_demand_fields = argToList(args.get("on_demand_fields", []))
+    if api_type == "fe":
+        client._base_url = "/api/webapp"
+        response = client.search_assets_fe(filter, limit, on_demand_fields).get("reply", {}).get("DATA", [])
+    else:
+        response = client.search_assets(filter, limit, on_demand_fields).get("reply", {}).get("data", [])
+    return CommandResults(
+        readable_output=tableToMarkdown("Assets", response, headerTransform=string_to_table_header),
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.CoreAssets.{api_type}",
+        outputs=response,
+        raw_response=response,
+    )
+
+
 def main():  # pragma: no cover
     """
     Executes an integration command
@@ -251,6 +340,8 @@ def main():  # pragma: no cover
 
         elif command == "core-get-case-extra-data":
             return_results(get_extra_data_for_case_id_command(client, args))
+        elif command == "core-search-assets":
+            return_results(search_assets_command(client, args))
 
     except Exception as err:
         demisto.error(traceback.format_exc())
