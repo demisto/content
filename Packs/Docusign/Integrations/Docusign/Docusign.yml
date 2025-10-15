@@ -6,7 +6,7 @@ commonfields:
   id: Docusign
   version: -1
 configuration:
-- defaultvalue: https://account-d.docusign.com
+- defaultvalue: https://account.docusign.com
   display: Server URL
   name: url
   required: true
@@ -39,13 +39,13 @@ configuration:
   required: false
   type: 0
   section: Connect
-  additionalinfo: For fetching user data only
+  additionalinfo: For fetching audit users only
 - display: Organization ID
   name: organization_id
   required: false
   type: 0
   section: Connect
-  additionalinfo: For fetching user data only
+  additionalinfo: For fetching audit users only
 - display: Fetch events
   name: isFetch
   required: false
@@ -57,7 +57,7 @@ configuration:
   type: 16
   options:
   - Customer events
-  - User data
+  - Audit Users
   section: Collect
 - defaultvalue: '2000'
   section: Collect
@@ -65,10 +65,11 @@ configuration:
   name: max_customer_events_per_fetch
   required: false
   type: 0
+  hidden: true
   additionalinfo: due to api limitation, max is 2000.
 - defaultvalue: '1250'
   section: Collect
-  display: Maximum number of user data events per fetch
+  display: Maximum number of audit user events per fetch
   name: max_user_events_per_fetch
   required: false
   type: 0
@@ -78,24 +79,27 @@ configuration:
   required: false
   type: 8
   section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
   section: Connect
-description: Collect DocuSign Monitor events and Admin audit users using JWT Grant authentication.
-display: DocuSign
+  advanced: true
+description: DocuSign is a leading provider of electronic signature technology, allowing individuals and organizations to sign, send, and manage documents digitally.
+display: Docusign
 name: Docusign
 script:
   commands:
   - name: docusign-generate-consent-url
-    description: Generates the DocuSign admin consent URL based on configured parameters and environment.
+    description: Generates the Docusign admin consent URL based on configured parameters and environment.
     arguments: []
     execution: false
-  - name: docusign-reset-integration-context
-    description: Reset integration context, please use with caution. By default, resetting the integration context does not reset the `consent_scopes` field in the integration context.
+  - name: docusign-reset-access-token
+    description: Reset access token from integration context.
     arguments: []
     execution: false
+    hidden: true
   dockerimage: demisto/auth-utils:1.0.0.5312400
   isfetchevents: true
   runonce: false

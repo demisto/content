@@ -18,7 +18,7 @@ LOG_PREFIX = "[Docusign]"
 
 # yml parameter names
 CUSTOMER_EVENTS_TYPE = "Customer events"
-USER_DATA_TYPE = "User data"
+USER_DATA_TYPE = "Audit Users"
 
 # yml default values
 DEFAULT_SERVER_DEV_URL = "https://account-d.docusign.com"
@@ -42,7 +42,7 @@ SERVER_PROD_URL = "https://account.docusign.com"
 
 class CustomerEventsClient(BaseClient):
     """
-    DocuSign Monitor API Client for fetching customer events.
+    Docusign Monitor API Client for fetching customer events.
     Extends BaseClient to support proxy configuration and proper HTTP request handling.
     """
 
@@ -50,7 +50,7 @@ class CustomerEventsClient(BaseClient):
         """Initialize the Customer Events Monitor client.
 
         Args:
-            server_url: Base URL for the DocuSign Monitor API (developer/production environment URI)
+            server_url: Base URL for the Docusign Monitor API (developer/production environment URI)
             proxy: Whether to use proxy for requests
             verify: Whether to verify SSL certificates
         """
@@ -62,7 +62,7 @@ class CustomerEventsClient(BaseClient):
         return "https://lens-d.docusign.net" if env == "dev" else "https://lens.docusign.net"
 
     def get_customer_events_request(self, cursor: str, limit: int, access_token: str) -> dict:
-        """Send GET request to fetch a stream of customer events from DocuSign Monitor API."""
+        """Send GET request to fetch a stream of customer events from Docusign Monitor API."""
 
         headers = {"Authorization": f"Bearer {access_token}", "Accept": "application/json", "Content-Type": "application/json"}
         params = {"cursor": cursor, "limit": limit}
@@ -74,12 +74,12 @@ class CustomerEventsClient(BaseClient):
 
 class UserDataClient(BaseClient):
     """
-    DocuSign User Data client for fetching user data from DocuSign Admin API.
+    Docusign Audit Users client for fetching audit users from Docusign Admin API.
 
     Args:
-        account_id: DocuSign account ID
-        organization_id: DocuSign organization ID
-        env: DocuSign environment (dev/production)
+        account_id: Docusign account ID
+        organization_id: Docusign organization ID
+        env: Docusign environment (dev/production)
         proxy: Whether to use proxy for requests
         verify: Whether to verify SSL certificates
     """
@@ -95,7 +95,7 @@ class UserDataClient(BaseClient):
 
     def get_users_request(self, access_token: str, url: str) -> dict:
         """
-        DocuSign Admin API
+        Docusign Admin API
         """
         headers = {"Authorization": f"Bearer {access_token}"}
         resp = self._http_request(method="GET", full_url=url, headers=headers, resp_type="json")
@@ -103,7 +103,7 @@ class UserDataClient(BaseClient):
 
     def get_users_first_request(self, access_token: str, request_params: Dict[str, Any]) -> tuple[dict, str]:
         """
-        DocuSign Admin API
+        Docusign Admin API
         """
         base = self.get_admin_base_url()
         url = urljoin(base, f"management/v2/organizations/{self.organization_id}/users")
@@ -154,12 +154,12 @@ class AuthClient(BaseClient):
         self, server_url: str, integration_key: str, user_id: str, private_key_pem: str, verify: bool = True, proxy: bool = False
     ) -> None:
         """
-        Initialize the DocuSign authenticator.
+        Initialize the Docusign authenticator.
 
         Args:
-            server_url: Base URL for the DocuSign API
-            integration_key: DocuSign Integration Key (OAuth Client ID)
-            user_id: DocuSign User ID for JWT subject
+            server_url: Base URL for the Docusign API
+            integration_key: Docusign Integration Key (OAuth Client ID)
+            user_id: Docusign User ID for JWT subject
             private_key_pem: RSA private key in PEM format for JWT signing
             verify: Whether to verify SSL certificates
             proxy: Whether to use proxy for requests
@@ -175,16 +175,16 @@ class AuthClient(BaseClient):
 
     def get_access_token(self) -> str:
         """
-        Generate JWT and exchange it for access token for DocuSign API OAuth flow.
+        Generate JWT and exchange it for access token for Docusign API OAuth flow.
 
         This function first checks if an access token already exists in the integration context.
-        If not found, it exchanges the JWT for an access token using DocuSign's OAuth token endpoint.
+        If not found, it exchanges the JWT for an access token using Docusign's OAuth token endpoint.
 
         Args:
             client (AuthClient): AuthClient instance for making requests
 
         Returns:
-            str: Access token for DocuSign API authentication
+            str: Access token for Docusign API authentication
         Note:
             The access token is stored in the integration context for reuse in subsequent calls.
         """
@@ -330,7 +330,7 @@ class AuthClient(BaseClient):
         accounts = user_info.get("accounts", [])
         if not accounts:
             demisto.debug(f"{LOG_PREFIX}: /oauth/userinfo missing accounts.")
-            raise DemistoException("DocuSign: /oauth/userinfo missing accounts.")
+            raise DemistoException("Docusign: /oauth/userinfo missing accounts.")
 
         for account in accounts:
             if account.get("account_id") == account_id:
@@ -347,7 +347,7 @@ class AuthClient(BaseClient):
         raise DemistoException(f"{LOG_PREFIX}: /oauth/userinfo missing configuration account id: {account_id}.")
 
     def get_token(self, scopes: list[str]) -> tuple[str, str, str]:
-        """Exchange JWT for access token using DocuSign OAuth flow."""
+        """Exchange JWT for access token using Docusign OAuth flow."""
         scope_str = " ".join(scopes)
         jwt_token = self.get_jwt(scope_str)
         access_token, expired_at, scope = self.exchange_jwt_to_access_token(jwt_token)
@@ -372,17 +372,19 @@ def is_required_scopes_set(required_scopes: list[str], target_scopes: list[str])
 
 
 def get_customer_events(last_run: dict, limit: int, client: CustomerEventsClient, access_token: str) -> tuple[list, dict]:
-    """Fetch customer events from DocuSign Monitor API.
+    """Fetch customer events from Docusign Monitor API.
 
     Args:
-        client: Initialized DocuSign client
+        client: Initialized Docusign client
         last_run: Previous fetch state containing cursor
         limit: Maximum number of events to fetch  (api parameter does not currently work)
     Returns:
         tuple: (events, last_run) where last_run is the updated state and events are the fetched events.
 
     """
-    one_minute_ago = timestamp_to_datestring(int(time.time() - 60) * 1000, date_format="%Y-%m-%dT%H:%M:%SZ")
+    # one_minute_ago = timestamp_to_datestring(int(time.time() - 60) * 1000, date_format="%Y-%m-%dT%H:%M:%SZ")
+    one_minute_ago = "2024-06-29T13:14:16Z"  # TODO: remove this line after the DEMO
+
     # note for developer - cursor is returned from the api even if response is empty
     cursor = last_run.get("cursor") or one_minute_ago
     demisto.debug(f"{LOG_PREFIX}Customer Events: requesting {limit} events with cursor: {cursor}")
@@ -431,8 +433,8 @@ def get_remaining_user_data(last_run: dict, client: UserDataClient, access_token
         return fetched_users, last_run
 
     except Exception as e:
-        demisto.debug(f"{LOG_PREFIX}Exception during get remaining user data. Exception is {e!s}")
-        raise DemistoException(f"Exception during get remaining user data. Exception is {e!s}")
+        demisto.debug(f"{LOG_PREFIX}Exception during get remaining audit users. Exception is {e!s}")
+        raise DemistoException(f"Exception during get remaining audit users. Exception is {e!s}")
 
 
 def fetch_audit_user_data(last_run: dict, auth_client: AuthClient) -> tuple[dict, list]:
@@ -442,7 +444,7 @@ def fetch_audit_user_data(last_run: dict, auth_client: AuthClient) -> tuple[dict
     users = []
     access_token = auth_client.access_token
     try:
-        demisto.debug(f"{LOG_PREFIX} last_run before fetching user data: {last_run}")
+        demisto.debug(f"{LOG_PREFIX} last_run before fetching audit users: {last_run}")
         user_data_client = initiate_user_data_client()
 
         # Handle fetching excess users from last page fetched
@@ -466,8 +468,8 @@ def fetch_audit_user_data(last_run: dict, auth_client: AuthClient) -> tuple[dict
         last_run["latest_modifiedDate"] = latest_modified
 
     except Exception as e:
-        demisto.debug(f"{LOG_PREFIX}Exception during fetch user data.\n{e!s}")
-        raise DemistoException(f"{LOG_PREFIX}Exception during fetch user data.\n{e!s}")
+        demisto.debug(f"{LOG_PREFIX}Exception during fetch audit users.\n{e!s}")
+        raise DemistoException(f"{LOG_PREFIX}Exception during fetch audit users.\n{e!s}")
 
     return last_run, users
 
@@ -495,7 +497,7 @@ def get_user_details(
         if modified_date:
             try:
                 md_dt = datetime.strptime(modified_date, "%m/%d/%Y %I:%M:%S %p")
-                user["_time"] = md_dt.strftime("%Y-%m-%dT%H:%M:%SZ")
+                user["_time"] = md_dt.strftime("%Y-%d-%mT%H:%M:%SZ")  # TODO: roll back - switch d and m after the DEMO
                 user["source_log_type"] = "auditusers"
 
                 # fine the latest modifiedDate
@@ -531,7 +533,9 @@ def get_user_data(
             demisto.debug(f"{LOG_PREFIX}Continuing fetch for Audit data from:\n {url}")
         # First request in the current time range.
         else:
-            one_minute_ago = timestamp_to_datestring(int(time.time() - 60) * 1000, date_format="%Y-%m-%dT%H:%M:%SZ")
+            # one_minute_ago = timestamp_to_datestring(int(time.time() - 60) * 1000, date_format="%Y-%m-%dT%H:%M:%SZ")
+            one_minute_ago = "2023-06-29T13:14:16Z"  # TODO: remove this line after the DEMO
+
             url = ""
             request_params = {
                 "start": 0,
@@ -599,13 +603,13 @@ def get_user_data(
         return total_events[:limit], last_run
 
     except Exception as e:
-        demisto.debug(f"{LOG_PREFIX}Exception during get user data events. Exception is {e!s}")
-        raise DemistoException(f"Exception during get user data events. Exception is {e!s}")
+        demisto.debug(f"{LOG_PREFIX}Exception during get audit users events. Exception is {e!s}")
+        raise DemistoException(f"Exception during get audit users events. Exception is {e!s}")
 
 
 def initiate_user_data_client() -> UserDataClient:
     """
-    Create UserDataClient for making requests to DocuSign Admin API and fetching user data and fetching user details.
+    Create UserDataClient for making requests to Docusign Admin API and fetching audit user and fetching user details.
     """
     params = demisto.params()
     proxy = params.get("proxy", False)
@@ -624,7 +628,7 @@ def initiate_user_data_client() -> UserDataClient:
 
 def initiate_customer_events_client() -> CustomerEventsClient:
     """
-    Create CustomerEventsClient for making requests to DocuSign Monitor API and fetching customer events.
+    Create CustomerEventsClient for making requests to Docusign Monitor API and fetching customer events.
     """
     params = demisto.params()
     proxy = params.get("proxy", False)
@@ -636,7 +640,7 @@ def initiate_customer_events_client() -> CustomerEventsClient:
 
 def initiate_auth_client() -> AuthClient:
     """
-    Create AuthClient for making requests to DocuSign API authentication flow.
+    Create AuthClient for making requests to Docusign API authentication flow.
 
     Returns:
         AuthClient: AuthClient instance
@@ -685,16 +689,16 @@ def fetch_customer_events(last_run: dict, access_token: str) -> tuple[dict, list
 
 def add_fields_to_customer_events(customer_events: list) -> None:
     for event in customer_events:
-        event["source_log_type"] = "eventdata"
+        event["source_log_type"] = "customerevent"
         t_without_milliseconds = event.get("timestamp").split(".")[0]
         dt = datetime.strptime(t_without_milliseconds, "%Y-%m-%dT%H:%M:%S") if t_without_milliseconds else None
-        time_value = dt.strftime("%Y-%m-%dT%H:%M:%SZ") if dt else None
+        time_value = dt.strftime("%Y-%d-%mT%H:%M:%SZ") if dt else None  # TODO: roll back - switch d and m after the DEMO
         event["_time"] = time_value
 
 
 def fetch_events(auth_client: AuthClient) -> tuple[dict, list]:
     """
-    Fetch events from DocuSign based on configuration. (Customer events and User data)
+    Fetch events from Docusign based on configuration. (Customer events and Audit users)
 
     Returns:
         tuple: (last_run, events) where last_run is the updated state and events are the fetched events.
@@ -727,12 +731,12 @@ def fetch_events(auth_client: AuthClient) -> tuple[dict, list]:
 
     if USER_DATA_TYPE in selected_fetch_types:
         start = time.perf_counter()
-        demisto.info(f"{LOG_PREFIX}Start fetch user data, Current user data last_run:\n{last_run_user_data}")
+        demisto.info(f"{LOG_PREFIX}Start fetch audit users, Current audit users last_run:\n{last_run_user_data}")
         last_run_user_data, fetched_user_data = fetch_audit_user_data(last_run_user_data, auth_client)
         events.extend(fetched_user_data)
 
         elapsed = time.perf_counter() - start
-        demisto.debug(f"{LOG_PREFIX}finished fetching user data: {len(fetched_user_data)} in {elapsed:.3f}s")
+        demisto.debug(f"{LOG_PREFIX}finished fetching audit users: {len(fetched_user_data)} in {elapsed:.3f}s")
 
     elapsed = time.perf_counter() - total_start
     demisto.debug(f"{LOG_PREFIX}finished running fetch_events.\n total events: {len(events)} in {elapsed:.3f}s")
@@ -750,7 +754,7 @@ def get_scopes_per_type(selected_fetch_types: str) -> list:
 
 
 def generate_consent_url() -> CommandResults:
-    """Generate a consent URL for DocuSign OAuth flow.
+    """Generate a consent URL for Docusign OAuth flow.
 
     Returns:
         CommandResults: Results to return to Demisto
@@ -775,7 +779,7 @@ def generate_consent_url() -> CommandResults:
 
     # If all required scopes for the selected types are already set
     if is_all_required_scopes_consent:
-        message = f"{LOG_PREFIX}All consent scopes are already set. No need to generate consent URL for those selected types."
+        message = "All consent scopes are already set. No need to generate consent URL for those selected types."
         demisto.debug(message)
         return CommandResults(readable_output=message)
 
@@ -799,7 +803,7 @@ def generate_consent_url() -> CommandResults:
     set_integration_context(integration_context)
     demisto.debug(f"{LOG_PREFIX}generated consent URL with the scopes: {consent_scopes}")
 
-    return CommandResults(readable_output=f"### DocuSign Consent URL\n[Click here to authorize]({consent_url})")
+    return CommandResults(readable_output=f"### Docusign Consent URL\n[Click here to authorize]({consent_url})")
 
 
 def validate_configuration_params() -> str:
@@ -816,42 +820,40 @@ def validate_configuration_params() -> str:
     ):
         return "Please provide Server URL, Integration Key and Redirect URL for authentication flow."
 
-    # Validate server URL value
-    if params.get("url") != DEFAULT_SERVER_DEV_URL and params.get("url") != SERVER_PROD_URL:
-        message = "Please provide valid Server URL.\n"
-        message += f"{DEFAULT_SERVER_DEV_URL} for dev environment and {SERVER_PROD_URL} for prod environment."
-        return message
+    # Validate parameters for fetching audit users events
+    if USER_DATA_TYPE in selected_fetch_types and (not params.get("account_id") or not params.get("organization_id")):
+        return f"Please provide Account ID and Organization ID for fetching {USER_DATA_TYPE}."
 
-        # Validate parameters for fetching user data events
-        if USER_DATA_TYPE in selected_fetch_types and (not params.get("account_id") or not params.get("organization_id")):
-            return f"Please provide Account ID and Organization ID for fetching {USER_DATA_TYPE}."
-
-        # Validate parameters for fetching customer events
-        if CUSTOMER_EVENTS_TYPE in selected_fetch_types and not params.get("url"):
-            return f"Please provide Server URL for fetching {CUSTOMER_EVENTS_TYPE}."
+    # Validate parameters for fetching customer events
+    if CUSTOMER_EVENTS_TYPE in selected_fetch_types and not params.get("url"):
+        return f"Please provide Server URL for fetching {CUSTOMER_EVENTS_TYPE}."
 
     return "ok"
 
 
 def test_module() -> str:
-    message = validate_configuration_params()
-    return message
+    params = demisto.params()
+    selected_fetch_types = params.get("event_types", "")
+    required_scopes = get_scopes_per_type(selected_fetch_types)
 
-
-def reset_integration_context() -> CommandResults:
     integration_context = get_integration_context()
+    consent_scopes = integration_context.get("consent_scopes", [])
+    
+    # step 1: Check if we have enough consent scopes to generate a valid access token according to the selected fetch types
+    if not is_required_scopes_set(required_scopes, consent_scopes):
+        return "Please run docusign-generate-consent-url command to generate a new consent URL for your fetch types."
 
-    # Note for developer:
-    # "consent_scopes" is not removed to avoid breaking the authentication flow.
-    # "consent_scopes" is the first step of the authentication flow which is set by
-    # running the `docusign-generate-consent-url` command.
+    # step 2: Validate configuration parameters
+    return validate_configuration_params()
 
+
+def reset_access_token() -> CommandResults:
+    integration_context = get_integration_context()
     integration_context.pop("access_token", None)
     integration_context.pop("expired_at", None)
     integration_context.pop("access_token_scopes", None)
-    integration_context.pop("base_uri", None)
     set_integration_context(integration_context)
-    return CommandResults(readable_output="Integration context reset successfully.")
+    return CommandResults(readable_output="Access token deleted successfully from integration context.")
 
 
 def main() -> None:  # pragma: no cover
@@ -877,8 +879,8 @@ def main() -> None:  # pragma: no cover
         elif command == "docusign-generate-consent-url":
             return_results(generate_consent_url())
 
-        elif command == "docusign-reset-integration-context":
-            return_results(reset_integration_context())
+        elif command == "docusign-reset-access-token":
+            return_results(reset_access_token())
 
     except Exception as e:
         return_error(f"{LOG_PREFIX}Failed to execute {command} command.\nError:\n{str(e)}")

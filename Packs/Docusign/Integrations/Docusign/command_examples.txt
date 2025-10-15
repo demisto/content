@@ -1,2 +1,2 @@
 !docusign-generate-consent-url
-!docusign-reset-integration-context
+!docusign-reset-access-token

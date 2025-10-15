@@ -1,12 +1,12 @@
-Collect DocuSign Monitor events and Admin audit users using JWT Grant authentication.
+DocuSign is a leading provider of electronic signature technology, allowing individuals and organizations to sign, send, and manage documents digitally.
 
 ### Customer Events API
 
-The DocuSign Monitor API provides access to customer events, which are events that occur in your DocuSign account.  
+The Docusign Monitor API provides access to customer events, which are events that occur in your Docusign account.  
 
 ### User Data API
 
-The DocuSign Admin API provides access to user data, which is information about users in your DocuSign account.  
+The Docusign Admin API provides access to user data, which is information about users in your Docusign account.  
 
 ---
 
@@ -43,7 +43,7 @@ This table lists the endpoint base paths for each Docusign environment so you kn
 
 ---
 
-## Go-Live - User data type
+## Go-Live - Audit Users data type
 
 Before you can begin the Go-Live process for an app that uses the Admin API, you must have:
 
@@ -71,7 +71,7 @@ The examples in the how-to section use the developer paths; this table shows the
 | Developer   | `https://api-d.docusign.net/management/` | `https://demo.docusign.net/` |
 | Production  | `https://api.docusign.net/management/`   | `https://{server}.docusign.net/` |
 
-## Configure DocuSign in Cortex
+## Configure Docusign in Cortex
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -97,7 +97,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### docusign-generate-consent-url
 
 ***
-Generates the DocuSign admin consent URL based on configured parameters and environment.
+Generates the Docusign admin consent URL based on configured parameters and environment.
 
 #### Base Command
 
@@ -117,18 +117,18 @@ There is no context output for this command.
 
 #### Human Readable Output
 
->### DocuSign Consent URL
+>### Docusign Consent URL
 >
 >[Click here to authorize]
 
-### docusign-reset-integration-context
+### docusign-reset-access-token
 
 ***
-Reset integration context, please use with caution. By default, resetting the integration context does not reset the `consent_scopes` field in the integration context.
+Reset access token from integration context.
 
 #### Base Command
 
-`docusign-reset-integration-context`
+`docusign-reset-access-token`
 
 #### Input
 

@@ -1,11 +1,15 @@
-### Customer events
-[Customer events API docs](https://developers.docusign.com/docs/monitor-api/reference/monitor/dataset/getstream/)
+# Prerequisites
 
-### User data
-[User data API docs](https://developers.docusign.com/docs/admin-api/how-to/audit-users/)
+DocuSign app needs to be configured:
+
+| **Data element** | **Description** |
+|------------------|-----------------|
+| You have defined an [integration key](https://developers.docusign.com/platform/configure-app/#integration-key). | An integration key identifies your integration and links to its configuration values. [Create an integration key.](https://developers.docusign.com/platform/configure-app/#how-to-get-an-integration-key) |
+| You have defined a [redirect URI](https://developers.docusign.com/platform/configure-app/#redirect-uri) for your integration key. | The redirect URI is the URI (URL) to which DocuSign will redirect the browser after authentication. [Set a redirect URI.](https://developers.docusign.com/platform/configure-app/#how-to-set-a-redirect-uri) |
+| Your application has an [RSA key pair](https://developers.docusign.com/platform/configure-app/#rsa-key-pair). | [Add the RSA key pair.](https://developers.docusign.com/platform/configure-app/#add-the-rsa-key-pair)<br>Note: You can define a maximum of 5 RSA key pairs. If you have already defined 5 key pairs, you must delete one of them before creating a new one. |
 
 ### Request application consent
-To use the DocuSign integration and allow access to DocuSign events, an administrator has to approve our app using an admin consent flow by running the ***!docusign-generate-consent-url*** command.
+To use the Docusign integration and allow access to Docusign events, an administrator has to approve our app using an admin consent flow by running the ***!docusign-generate-consent-url*** command.
 
 ### IMPORTANT:
 You only need to get consent from a user for a given set of scopes once. In subsequent authentication workflows, you can skip this step unless you are requesting a different set of scopes or authenticating a different user.
