@@ -1,5 +1,4 @@
 import datetime as dt
-from collections.abc import Iterator
 from typing import TYPE_CHECKING, cast
 
 import demistomock as demisto  # noqa: F401
@@ -107,7 +106,7 @@ def get_events(
     page_size: int = API_MAX_PAGE_SIZE,
     limit: int = 0,
     start_token: str | None = None,
-) -> Iterator[tuple[List["AwsSecurityFindingTypeDef"], str | None]]:
+) -> tuple[List["AwsSecurityFindingTypeDef"], str | None]:
     """
     Fetch events from AWS Security Hub.
 
@@ -121,7 +120,7 @@ def get_events(
         limit (int, optional): Maximum number of results to fetch. Defaults to 0.
         start_token (str | None, optional): Token to use for pagination. Defaults to None.
 
-    Yields:
+    Returns:
         tuple: A 2-tuple containing:
             - Filtered events (list[AwsSecurityFindingTypeDef])
             - NextToken for continuation (str | None, None means no more events)
@@ -216,9 +215,9 @@ def get_events(
         f"({duplicates_filtered} duplicates filtered)"
     )
 
-    # Yield filtered events and the final NextToken
+    # Return filtered events and the final NextToken
     final_next_token = response.get("NextToken")
-    yield (filtered_events, final_next_token)  # type: ignore
+    return (filtered_events, final_next_token)
 
 
 def fetch_events(
@@ -260,7 +259,7 @@ def fetch_events(
         while True:
             got_new_events = False
 
-            for filtered_events, final_token in get_events(
+            filtered_events, continuation_token = get_events(
                 client=client,
                 start_time=start_time,
                 end_time=end_time,
@@ -268,11 +267,11 @@ def fetch_events(
                 page_size=page_size,
                 limit=current_limit,
                 start_token=continuation_token,
-            ):
-                continuation_token = final_token
-                if filtered_events:  # If any events returned, they're new (already filtered)
-                    got_new_events = True
-                events.extend(filtered_events)
+            )
+            
+            if filtered_events:  # If any events returned, they're new (already filtered)
+                got_new_events = True
+            events.extend(filtered_events)
 
             # If we got new events, we're done!
             if got_new_events:
@@ -326,10 +325,7 @@ def get_events_command(client: "SecurityHubClient", should_push_events: bool, pa
     Returns:
         CommandResults: CommandResults object containing the events.
     """
-    events = []
-
-    for events_batch, _ in get_events(client=client, page_size=page_size, limit=limit):
-        events.extend(events_batch)
+    events, _ = get_events(client=client, page_size=page_size, limit=limit)
 
     if should_push_events:
         send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
@@ -397,7 +393,7 @@ def main():  # pragma: no cover
         demisto.info(f'Executing "{command}" command...')
 
         if command == "test-module":
-            next(get_events(client=client, limit=1))[0]  # Get events from tuple
+            get_events(client=client, limit=1)[0]  # Get events from tuple
             return_results("ok")
 
         elif command == "aws-securityhub-get-events":
