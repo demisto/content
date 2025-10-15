@@ -5772,28 +5772,42 @@ def create_endpoint_verdict(machine: dict):
 
 def create_filter_for_endpoint_command(hostnames, ips, ids):
     """
-    Creates a filter query for getting the machines according to the given args.
-    The query build is: "or" operator separetes the key and the value between each arg.
+    Creates an efficient OData filter query using the 'in' operator to get machines.
+    This method avoids the 'node count limit' API error by grouping values.
 
-    For example,
-    for fields_to_values: {'computerDnsName': ['b.com', 'a.com'], 'lastIpAddress': ['1.2.3.4'], 'id': ['1','2']}
-    the result is: "computerDnsName eq 'b.com' or computerDnsName eq 'a.com' or lastIpAddress eq '1.2.3.4' or
-    id eq '1' or id eq '2'"
+    For example, for the input:
+    hostnames=['b.com', 'a.com'], ips=['1.2.3.4'], ids=['1','2']
+
+    The result will be:
+    "computerDnsName in ('b.com','a.com') or lastIpAddress in ('1.2.3.4') or id in ('1','2')"
 
     Args:
-        hostnames (list): Comma-separated list of computerDnsName.
-        ips (list): Comma-separated list of lastIpAddress.
-        ids (list): Comma-separated list of id.
+        hostnames (list): A list of computerDnsName strings.
+        ips (list): A list of lastIpAddress strings.
+        ids (list): A list of id strings.
 
-    Returns: A string that represents the filter query according the inputs.
+    Returns:
+        str: An efficient OData filter query string.
     """
-    fields_to_values = {"computerDnsName": hostnames, "lastIpAddress": ips, "id": ids}
-    return " or ".join(
-        f"{field_key} eq '{field_value}'"
-        for (field_key, field_value_list) in fields_to_values.items()
-        if field_value_list
-        for field_value in field_value_list
-    )
+    fields_to_values = {
+        "computerDnsName": hostnames,
+        "lastIpAddress": ips,
+        "id": ids,
+    }
+
+    filter_parts = []
+    for field, values in fields_to_values.items():
+        # Only create a clause if the list of values is not empty
+        if values:
+            # Format each value with single quotes (e.g., 'value1')
+            formatted_values = [f"'{v}'" for v in values]
+            # Join the quoted values with commas (e.g., 'value1','value2')
+            joined_values = ",".join(formatted_values)
+            # Create the final 'in' clause (e.g., "fieldName in ('value1','value2')")
+            filter_parts.append(f"{field} in ({joined_values})")
+
+    # Join the individual 'in' clauses with ' or '
+    return " or ".join(filter_parts)
 
 
 def validate_args_endpoint_command(hostnames, ips, ids):

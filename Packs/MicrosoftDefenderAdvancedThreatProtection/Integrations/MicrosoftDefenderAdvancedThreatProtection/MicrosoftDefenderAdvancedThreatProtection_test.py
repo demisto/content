@@ -940,22 +940,23 @@ def test_reformat_filter_with_list_arg(fields_to_filter_by, field_key_from_type_
 @pytest.mark.parametrize(
     "hostnames, ips, ids, expected_filter",
     [
-        # only one list is given
-        (["example.com"], [], [], "computerDnsName eq 'example.com'"),
-        (["example.com", "b.com"], [], [], "computerDnsName eq 'example.com' or computerDnsName eq 'b.com'"),
-        # each list has only one value
-        (["b.com"], ["1.2.3.4"], ["1"], "computerDnsName eq 'b.com' or lastIpAddress eq '1.2.3.4' or id eq '1'"),
-        # each list has more than 1 value
+        # Test case 1: Only one list with one value
+        (["example.com"], [], [], "computerDnsName in ('example.com')"),
+        # Test case 2: Only one list with multiple values
+        (["example.com", "b.com"], [], [], "computerDnsName in ('example.com','b.com')"),
+        # Test case 3: Each list has exactly one value
+        (["b.com"], ["1.2.3.4"], ["1"], "computerDnsName in ('b.com') or lastIpAddress in ('1.2.3.4') or id in ('1')"),
+        # Test case 4: Each list has multiple values
         (
             ["b.com", "a.com"],
             ["1.2.3.4", "1.2.3.5"],
             ["1", "2"],
-            "computerDnsName eq 'b.com' or computerDnsName eq 'a.com' or "
-            "lastIpAddress eq '1.2.3.4' or "
-            "lastIpAddress eq '1.2.3.5' or "
-            "id eq '1' or "
-            "id eq '2'",
+            "computerDnsName in ('b.com','a.com') or " "lastIpAddress in ('1.2.3.4','1.2.3.5') or " "id in ('1','2')",
         ),
+        # Test case 5: Some lists are empty
+        (["host.local"], [], ["12345", "67890"], "computerDnsName in ('host.local') or id in ('12345','67890')"),
+        # Edge case: All lists are empty, should produce an empty string
+        ([], [], [], ""),
     ],
 )
 def test_create_filter_for_endpoint_command(hostnames, ips, ids, expected_filter):
