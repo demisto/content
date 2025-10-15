@@ -168,6 +168,10 @@ def main():  # pragma: no cover
         sha256_custom_field = prepare_sha256_custom_field(args)
         if sha256_custom_field:
             args["custom_filter"] = sha256_custom_field
+
+        if issue_domain := args.get("issue_domain"):
+            args["issue_domain"] = f"DOMAIN_{issue_domain.upper().replace(' ', '_')}"
+
         args = remove_empty_string_values(args)
         demisto.debug(f"Calling core-get-issues with arguments: {args}")
         results: dict = demisto.executeCommand("core-get-issues", args)[0]  # type: ignore
