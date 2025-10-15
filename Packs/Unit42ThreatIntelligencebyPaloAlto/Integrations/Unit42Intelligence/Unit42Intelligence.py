@@ -1120,16 +1120,36 @@ def main() -> None:
             return_results(result)
 
         elif command == "ip":
-            return_results(ip_command(client, args))
+            ips = args.get("ip", "").split(",")
+            results = []
+            for ip in ips:
+                args["ip"] = ip
+                results.append(ip_command(client, args))
+            return_results(results)
 
         elif command == "domain":
-            return_results(domain_command(client, args))
+            domains = args.get("domain", "").split(",")
+            results = []
+            for domain in domains:
+                args["domain"] = domain
+                results.append(domain_command(client, args))
+            return_results(results)
 
         elif command == "url":
-            return_results(url_command(client, args))
+            urls = args.get("url", "").split(",")
+            results = []
+            for url in urls:
+                args["url"] = url
+                results.append(url_command(client, args))
+            return_results(results)
 
         elif command == "file":
-            return_results(file_command(client, args))
+            files = args.get("file", "").split(",")
+            results = []
+            for file in files:
+                args["file"] = file
+                results.append(file_command(client, args))
+            return_results(results)
 
         else:
             raise NotImplementedError(f"Command {command} is not implemented")
