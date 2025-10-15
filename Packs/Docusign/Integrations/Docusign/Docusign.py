@@ -382,8 +382,7 @@ def get_customer_events(last_run: dict, limit: int, client: CustomerEventsClient
         tuple: (events, last_run) where last_run is the updated state and events are the fetched events.
 
     """
-    # one_minute_ago = timestamp_to_datestring(int(time.time() - 60) * 1000, date_format="%Y-%m-%dT%H:%M:%SZ")
-    one_minute_ago = "2024-06-29T13:14:16Z"  # TODO: remove this line after the DEMO
+    one_minute_ago = timestamp_to_datestring(int(time.time() - 60) * 1000, date_format="%Y-%m-%dT%H:%M:%SZ")
 
     # note for developer - cursor is returned from the api even if response is empty
     cursor = last_run.get("cursor") or one_minute_ago
@@ -497,7 +496,7 @@ def get_user_details(
         if modified_date:
             try:
                 md_dt = datetime.strptime(modified_date, "%m/%d/%Y %I:%M:%S %p")
-                user["_time"] = md_dt.strftime("%Y-%d-%mT%H:%M:%SZ")  # TODO: roll back - switch d and m after the DEMO
+                user["_time"] = md_dt.strftime("%Y-%m-%dT%H:%M:%SZ")
                 user["source_log_type"] = "auditusers"
 
                 # fine the latest modifiedDate
@@ -533,9 +532,7 @@ def get_user_data(
             demisto.debug(f"{LOG_PREFIX}Continuing fetch for Audit data from:\n {url}")
         # First request in the current time range.
         else:
-            # one_minute_ago = timestamp_to_datestring(int(time.time() - 60) * 1000, date_format="%Y-%m-%dT%H:%M:%SZ")
-            one_minute_ago = "2023-06-29T13:14:16Z"  # TODO: remove this line after the DEMO
-
+            one_minute_ago = timestamp_to_datestring(int(time.time() - 60) * 1000, date_format="%Y-%m-%dT%H:%M:%SZ")
             url = ""
             request_params = {
                 "start": 0,
@@ -692,7 +689,7 @@ def add_fields_to_customer_events(customer_events: list) -> None:
         event["source_log_type"] = "customerevent"
         t_without_milliseconds = event.get("timestamp").split(".")[0]
         dt = datetime.strptime(t_without_milliseconds, "%Y-%m-%dT%H:%M:%S") if t_without_milliseconds else None
-        time_value = dt.strftime("%Y-%d-%mT%H:%M:%SZ") if dt else None  # TODO: roll back - switch d and m after the DEMO
+        time_value = dt.strftime("%Y-%m-%dT%H:%M:%SZ") if dt else None
         event["_time"] = time_value
 
 
@@ -832,18 +829,6 @@ def validate_configuration_params() -> str:
 
 
 def test_module() -> str:
-    params = demisto.params()
-    selected_fetch_types = params.get("event_types", "")
-    required_scopes = get_scopes_per_type(selected_fetch_types)
-
-    integration_context = get_integration_context()
-    consent_scopes = integration_context.get("consent_scopes", [])
-    
-    # step 1: Check if we have enough consent scopes to generate a valid access token according to the selected fetch types
-    if not is_required_scopes_set(required_scopes, consent_scopes):
-        return "Please run docusign-generate-consent-url command to generate a new consent URL for your fetch types."
-
-    # step 2: Validate configuration parameters
     return validate_configuration_params()
 
 
