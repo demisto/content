@@ -268,7 +268,7 @@ def fetch_events(
                 limit=current_limit,
                 start_token=continuation_token,
             )
-            
+
             if filtered_events:  # If any events returned, they're new (already filtered)
                 got_new_events = True
             events.extend(filtered_events)
