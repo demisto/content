@@ -270,7 +270,7 @@ tasks:
       id: 6dd5ee89-c445-4115-b4f7-d3400153f3ee
       version: -1
       name: Asset exists?
-      description: Determines if asset information was passed back from the last command.
+      description: Indicates whether asset information was returned by the last command.
       type: condition
       iscommand: false
       brand: ""
@@ -2579,7 +2579,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Determines if there are time entries to add to the asset grid field.
+      description: Indicates whether there are time entries available to add to the asset grid field.
       id: 1fe7257e-edeb-435f-9161-6ef2101e7725
       iscommand: false
       name: Are there ip_range entries?
