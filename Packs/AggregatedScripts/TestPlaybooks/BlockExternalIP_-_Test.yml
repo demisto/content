@@ -549,7 +549,7 @@ tasks:
       brands:
         simple: Panorama
       ip_list:
-        simple: 8.8.8.8
+        simple: 1.1.1.1
       rule_name:
         simple: test-${TimeNowUnix}
       tag:
