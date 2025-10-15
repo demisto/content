@@ -65,11 +65,11 @@ def test_date_str_to_azure_format(date, expected):
 @pytest.mark.parametrize(
     "incident,expected",
     [
-        ({}, {"name": "Azure AD:   ", "occurred": "2022-06-06Z", "rawJSON": "{}"}),
+        ({}, {"name": "Risky Microsoft Entra ID sign-in:  ", "occurred": "2022-06-06Z", "rawJSON": "{}"}),
         (
             {"riskEventType": "3", "riskDetail": "2", "id": "1"},
             {
-                "name": "Azure AD: 1 3 2",
+                "name": "Risky Microsoft Entra ID sign-in: 3 2",
                 "occurred": "2022-06-06Z",
                 "rawJSON": '{"riskEventType": "3", "riskDetail": "2", "id": "1"}',
             },
