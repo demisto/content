@@ -12948,9 +12948,13 @@ class ExecutionTimeout(object):
             return wrapped
         return wrapper
 
+
 class ISOEncoder(json.JSONEncoder):
     """
     A custom JSONEncoder that converts datetime objects to ISO 8601 strings.
+
+    :return: The ISOEncoder object
+    :rtype: ``ISOEncoder``
     """
 
     def default(self, obj):
@@ -12958,6 +12962,7 @@ class ISOEncoder(json.JSONEncoder):
             return obj.isoformat()
         # Let the base class handle other objects
         return json.JSONEncoder.default(self, obj)
+
 
 from DemistoClassApiModule import *  # type:ignore [no-redef]  # noqa:E402
 
