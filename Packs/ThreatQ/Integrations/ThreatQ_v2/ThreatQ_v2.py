@@ -353,7 +353,7 @@ def create_dbot_context(indicator, ind_type, ind_score):
     The default score mapping function is: -1 -> 0, [0,3] -> 1, [4,7] -> 2, [8,10] -> 3.
 
     If threshold parameter is set manually, it overrides the default function definition for a
-    malicious indicator, such that TQ score >= threshold iff the DBot score == 3.
+    malicious indicator, such that TQ score >= threshold if the DBot score == 3.
 
     Args:
         indicator (str): The indicator name
@@ -388,9 +388,10 @@ def get_tq_score_from_response(score_data):
         # score will be max(gen_score, manual_score)
         gen_score = str(score_data.get("generated_score"))
         manual_score = score_data.get("manual_score", 0.0)
-        if manual_score is None:
-            manual_score = -1
-        return max(float(gen_score), float(manual_score))
+
+        if manual_score:
+            return float(manual_score)
+        return float(gen_score)
     else:
         # score is already defined as a number
         return float(score_data)
