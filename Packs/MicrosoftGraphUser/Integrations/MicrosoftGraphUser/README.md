@@ -847,7 +847,7 @@ Providing a password is required (password auto-generation is not supported).
    - `UserAuthenticationMethod.ReadWrite.All` - Delegated
    - `Users.Read.All` - Delegated
 
-3. **Azure App Role Configuration**: 
+3. **Azure App Role Configuration**:
    - The app must have the **Authorization Administrator** role granted to it through the Microsoft Entra Admin Center:
      - Navigate to **Roles and administrators** → Search for **Authorization Administrator**
      - Click on **Authorization Administrator**.

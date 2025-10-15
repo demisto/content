@@ -845,6 +845,9 @@ def test_change_on_premise_password_missing_arg(requests_mock, user: str, passwo
     requests_mock.get(
         f"https://graph.microsoft.com/v1.0/users/{user}/authentication/passwordMethods", json={"value": [{"id": "id"}]}
     )
+    requests_mock.post(
+        "https://graph.microsoft.com/v1.0/users/user/authentication/methods/id/resetPassword", json={"value": [{"id": "id"}]}
+    )
 
     client = MsGraphClient(
         base_url="https://graph.microsoft.com/v1.0",
