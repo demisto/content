@@ -242,7 +242,7 @@ def fetch_events(
         start_time = parse_aws_timestamp(last_run["last_update_date"])
 
     else:
-        start_time = first_fetch_time
+        start_time = cast(dt.datetime, first_fetch_time)
 
     id_ignore_list: list = last_run.get("last_update_date_finding_ids", [])
 
