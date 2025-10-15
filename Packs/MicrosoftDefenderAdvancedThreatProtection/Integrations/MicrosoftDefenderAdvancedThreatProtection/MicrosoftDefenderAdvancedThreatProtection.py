@@ -3474,6 +3474,7 @@ def get_investigation_package_sas_uri_command(client: MsClient, args: dict):
         (str, dict, dict). Human readable, context, raw response
     """
     action_id = args.get("action_id")
+    demisto.debug("Some dummy change")
     response = client.get_investigation_package_sas_uri(action_id)
     link = {"Link": response["value"]}
     human_readable = (
