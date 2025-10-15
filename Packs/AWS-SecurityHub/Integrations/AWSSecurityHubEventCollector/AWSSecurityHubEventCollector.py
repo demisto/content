@@ -102,10 +102,14 @@ def get_events(
         raise ValueError("start_time must be set if end_time is used.")
 
     if start_time:
+        start_timestamp = start_time.strftime(DATETIME_FORMAT)
+        end_timestamp = end_time.strftime(DATETIME_FORMAT) if end_time else dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ")
+        
+        
         filters[TIME_FIELD] = [
             {
-                "Start": start_time.strftime(DATETIME_FORMAT),
-                "End": end_time.strftime(DATETIME_FORMAT) if end_time else dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ"),
+                "Start": start_timestamp,
+                "End": end_timestamp,
             }
         ]
 
@@ -131,13 +135,10 @@ def get_events(
         
         if limit and limit - count < page_size:
             kwargs["MaxResults"] = limit - count
-            demisto.debug(
-                f"Iteration {pagination_iteration}: Requesting final {limit - count} events (limit adjustment)"
-            )
         else:
             kwargs["MaxResults"] = page_size
-            demisto.debug(f"Iteration {pagination_iteration}: Requesting {page_size} events")
 
+        demisto.debug(f"Iteration {pagination_iteration}: Calling get_findings with kwargs: {kwargs}")
         response = client.get_findings(**kwargs)
         result = response.get("Findings", [])
         has_next_token = "NextToken" in response
