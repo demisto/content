@@ -33,7 +33,6 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Quarantine File
 * Wildfire Sandbox - Detonate and Analyze File
 
 ### Integrations
@@ -50,19 +49,19 @@ This playbook does not use any integrations.
 * SetAndHandleEmpty
 * SetMultipleValues
 * UnzipFile
+* file-enrichment
+* quarantine-file
 
 ### Commands
 
 * closeInvestigation
 * core-blocklist-files
+* core-execute-command
 * core-get-cloud-original-alerts
-* core-get-script-execution-results
 * core-retrieve-file-details
 * core-retrieve-files
-* core-run-script-execute-commands
 * core-terminate-causality
 * extractIndicators
-* file
 * wildfire-get-verdict
 
 ## Playbook Inputs

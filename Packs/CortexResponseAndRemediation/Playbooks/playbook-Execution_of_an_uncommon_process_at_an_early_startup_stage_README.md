@@ -40,7 +40,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Quarantine File
+This playbook does not use any sub-playbooks.
 
 ### Integrations
 
@@ -52,6 +52,7 @@ This playbook does not use any integrations.
 * SearchIncidentsV2
 * SetMultipleValues
 * file-enrichment
+* quarantine-file
 
 ### Commands
 

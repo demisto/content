@@ -910,7 +910,7 @@ def main():
                     modules=modules,
                     brand_name="Active Directory Query v2",
                     command_name="ad-get-user",
-                    arg_name="name",
+                    arg_name="username",
                     arg_value=user_name.split("\\")[1],
                     cmd=ad_get_user,
                     additional_fields=additional_fields,
