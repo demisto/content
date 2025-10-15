@@ -5772,7 +5772,7 @@ def create_endpoint_verdict(machine: dict):
 
 def create_filter_for_endpoint_command(hostnames, ips, ids):
     """
-    Creates an efficient OData filter query using the 'in' operator to get machines.
+    Creates an OData filter query using the 'in' operator to get machines.
     This method avoids the 'node count limit' API error by grouping values.
 
     For example, for the input:
@@ -5797,16 +5797,12 @@ def create_filter_for_endpoint_command(hostnames, ips, ids):
 
     filter_parts = []
     for field, values in fields_to_values.items():
-        # Only create a clause if the list of values is not empty
         if values:
             # Format each value with single quotes (e.g., 'value1')
             formatted_values = [f"'{v}'" for v in values]
-            # Join the quoted values with commas (e.g., 'value1','value2')
             joined_values = ",".join(formatted_values)
-            # Create the final 'in' clause (e.g., "fieldName in ('value1','value2')")
             filter_parts.append(f"{field} in ({joined_values})")
 
-    # Join the individual 'in' clauses with ' or '
     return " or ".join(filter_parts)
 
 
