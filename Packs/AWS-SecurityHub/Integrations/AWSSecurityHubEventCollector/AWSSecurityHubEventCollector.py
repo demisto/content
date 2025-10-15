@@ -21,13 +21,16 @@ DATETIME_FORMAT_NO_MS = "%Y-%m-%dT%H:%M:%SZ"  # Fallback format without millisec
 DEFAULT_FIRST_FETCH = "3 days"
 DEFAULT_MAX_RESULTS = 1000
 API_MAX_PAGE_SIZE = 100  # The API only allows a maximum of 100 results per request. Using more raises an error.
-RETRY_LIMIT_INCREMENT = 100  # How much to increase limit when retrying for duplicates
+RETRY_LIMIT_INCREMENT = 100  # How much to increase limit when AWS returns all events as duplicates
 MAX_AWS_LIMIT = 10000  # Maximum limit to prevent excessive API calls
 
 
 def parse_aws_timestamp(timestamp_str: str) -> dt.datetime:
     """
     Parse AWS timestamp with flexible format support.
+    The AWS API returns timestamps in two formats:
+    - With milliseconds: "2023-01-01T00:00:00.000Z"
+    - Without milliseconds: "2023-01-01T00:00:00Z"
     
     Args:
         timestamp_str (str): Timestamp string from AWS API
@@ -104,7 +107,7 @@ def get_events(
     page_size: int = API_MAX_PAGE_SIZE,
     limit: int = 0,
     start_token: str | None = None,
-) -> Iterator[tuple[List["AwsSecurityFindingTypeDef"], bool, str | None]]:
+) -> Iterator[tuple[List["AwsSecurityFindingTypeDef"], str | None]]:
     """
     Fetch events from AWS Security Hub.
 
@@ -116,12 +119,12 @@ def get_events(
             Defaults to None.
         page_size (int, optional): Number of results to fetch per request. Defaults to API_MAX_PAGE_SIZE.
         limit (int, optional): Maximum number of results to fetch. Defaults to 0.
+        start_token (str | None, optional): Token to use for pagination. Defaults to None.
 
     Yields:
-        tuple: A 3-tuple containing:
+        tuple: A 2-tuple containing:
             - Filtered events (list[AwsSecurityFindingTypeDef])
-            - Whether more events exist (bool)
-            - NextToken for continuation (str | None)
+            - NextToken for continuation (str | None, None means no more events)
     """
     kwargs: dict = {"SortCriteria": [{"Field": TIME_FIELD, "SortOrder": "asc"}]}
     filters: dict = {}
@@ -224,10 +227,9 @@ def get_events(
         f"({duplicates_filtered} duplicates filtered)"
     )
 
-    # Yield filtered events, whether last call had NextToken, and the final NextToken
-    last_had_next_token = "NextToken" in response if 'response' in locals() else False
+    # Yield filtered events and the final NextToken
     final_next_token = response.get("NextToken") if 'response' in locals() else None
-    yield (filtered_events, last_had_next_token, final_next_token)  # type: ignore
+    yield (filtered_events, final_next_token)  # type: ignore
 
 
 def fetch_events(
@@ -269,7 +271,7 @@ def fetch_events(
         while True:
             original_events_count = len(events)
             
-            for events_batch, _, final_token in get_events(
+            for events_batch, final_token in get_events(
                 client=client, start_time=start_time, end_time=end_time, id_ignore_list=id_ignore_list,
                 page_size=page_size, limit=current_limit, start_token=continuation_token
             ):
