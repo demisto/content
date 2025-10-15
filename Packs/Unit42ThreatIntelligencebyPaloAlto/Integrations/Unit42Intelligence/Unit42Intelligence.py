@@ -1120,32 +1120,32 @@ def main() -> None:
             return_results(result)
 
         elif command == "ip":
-            ips = args.get("ip", "").split(",")
             results = []
+            ips = argToList(args.get("ip", ""))
             for ip in ips:
                 args["ip"] = ip
                 results.append(ip_command(client, args))
             return_results(results)
 
         elif command == "domain":
-            domains = args.get("domain", "").split(",")
             results = []
+            domains = argToList(args.get("domain", ""))
             for domain in domains:
                 args["domain"] = domain
                 results.append(domain_command(client, args))
             return_results(results)
 
         elif command == "url":
-            urls = args.get("url", "").split(",")
             results = []
+            urls = argToList(args.get("url", ""))
             for url in urls:
                 args["url"] = url
                 results.append(url_command(client, args))
             return_results(results)
 
         elif command == "file":
-            files = args.get("file", "").split(",")
             results = []
+            files = argToList(args.get("file", ""))
             for file in files:
                 args["file"] = file
                 results.append(file_command(client, args))
