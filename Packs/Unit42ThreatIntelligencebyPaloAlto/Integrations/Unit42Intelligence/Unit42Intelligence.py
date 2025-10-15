@@ -101,7 +101,7 @@ def create_dbot_score(
     indicator: str,
     indicator_type: str,
     verdict: str,
-    reliability: str = "A++ - Reputation script",
+    reliability: str = DBotScoreReliability.A_PLUS_PLUS,
 ) -> Common.DBotScore:
     """
     Create DBotScore object
@@ -132,6 +132,33 @@ def create_dbot_score(
     )
 
 
+def remove_mitre_technique_id_prefix(threat_name: str) -> str:
+    """
+    Remove MITRE technique ID prefix from threat name if present
+
+    Args:
+        threat_name: The threat name that may contain MITRE technique ID prefix
+
+    Returns:
+        Threat name with MITRE technique ID prefix removed if applicable
+
+    Examples:
+        >>> remove_mitre_technique_id_prefix("T1590 - Gather Victim Network Information")
+        "Gather Victim Network Information"
+        >>> remove_mitre_technique_id_prefix("Regular Threat Name")
+        "Regular Threat Name"
+        >>> remove_mitre_technique_id_prefix("T123 - Some Technique")
+        "Some Technique"
+        >>> remove_mitre_technique_id_prefix("Not a MITRE ID - Something")
+        "Not a MITRE ID - Something"
+    """
+    if " - " in threat_name:
+        parts = threat_name.split(" - ", 1)
+        if len(parts) == 2 and parts[0].startswith("T") and parts[0][1:].isdigit():
+            return parts[1]
+    return threat_name
+
+
 def create_relationships(
     indicator: str, indicator_type: str, threat_objects: list[dict[str, Any]], create_relationships: bool
 ) -> list[EntityRelationship]:
@@ -157,11 +184,9 @@ def create_relationships(
         threat_name = threat_obj.get("name", "")
         threat_class = threat_obj.get("threat_object_class", "").lower()
 
-        # Remove MITRE technique ID prefix (e.g., "T1590 - " from "T1590 - Gather Victim Network Information")
-        if INDICATOR_TYPE_MAPPING[threat_class] == ThreatIntel.ObjectsNames.ATTACK_PATTERN and " - " in threat_name:
-            parts = threat_name.split(" - ", 1)
-            if len(parts) == 2 and parts[0].startswith("T") and parts[0][1:].isdigit():
-                threat_name = parts[1]
+        # Remove MITRE technique ID prefix for attack patterns
+        if INDICATOR_TYPE_MAPPING[threat_class] == ThreatIntel.ObjectsNames.ATTACK_PATTERN:
+            threat_name = remove_mitre_technique_id_prefix(threat_name)
 
         if not threat_name or threat_class not in INDICATOR_TYPE_MAPPING:
             demisto.debug(f"Skipping create_relationships for threat_name {threat_name} and threat_class {threat_class}")

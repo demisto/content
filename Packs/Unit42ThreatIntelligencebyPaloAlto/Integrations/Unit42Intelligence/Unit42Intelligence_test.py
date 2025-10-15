@@ -7,6 +7,7 @@ from Unit42Intelligence import (
     file_command,
     test_module,
     create_relationships,
+    remove_mitre_technique_id_prefix,
     extract_response_data,
     create_context_data,
     create_dbot_score,
@@ -1422,3 +1423,33 @@ def test_create_location_indicators_null_regions():
     location_indicators = create_location_indicators_and_relationships(threat_obj, "Threat Actor")
 
     assert location_indicators == []
+
+
+def test_remove_mitre_technique_id_prefix():
+    """
+    Given:
+        - Various threat names with and without MITRE technique ID prefixes
+    When:
+        - remove_mitre_technique_id_prefix is called
+    Then:
+        - Returns threat name with MITRE technique ID prefix removed when applicable
+        - Returns original threat name when no valid MITRE prefix is found
+    """
+    # Test cases with valid MITRE technique ID prefixes
+    assert remove_mitre_technique_id_prefix("T1590 - Gather Victim Network Information") == "Gather Victim Network Information"
+    assert remove_mitre_technique_id_prefix("T123 - Some Technique") == "Some Technique"
+    assert remove_mitre_technique_id_prefix("T1 - Single Digit Technique") == "Single Digit Technique"
+    assert remove_mitre_technique_id_prefix("T9999 - Large Number Technique") == "Large Number Technique"
+
+    # Test cases without valid MITRE technique ID prefixes
+    assert remove_mitre_technique_id_prefix("Regular Threat Name") == "Regular Threat Name"
+    assert remove_mitre_technique_id_prefix("Not a MITRE ID - Something") == "Not a MITRE ID - Something"
+    assert remove_mitre_technique_id_prefix("T - Missing Number") == "T - Missing Number"
+    assert remove_mitre_technique_id_prefix("TABC - Non-numeric") == "TABC - Non-numeric"
+    assert remove_mitre_technique_id_prefix("T123") == "T123"  # No separator
+    assert remove_mitre_technique_id_prefix("") == ""  # Empty string
+    assert remove_mitre_technique_id_prefix("T123 - ") == ""  # Empty technique name after prefix
+
+    # Test edge cases
+    assert remove_mitre_technique_id_prefix("T123 - Multiple - Separators") == "Multiple - Separators"
+    assert remove_mitre_technique_id_prefix("123 - No T prefix") == "123 - No T prefix"
