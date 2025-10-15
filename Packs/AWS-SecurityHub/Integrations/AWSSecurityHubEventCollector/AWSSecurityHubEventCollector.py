@@ -119,8 +119,11 @@ def get_events(
         # which raises an error.
         kwargs["Filters"] = filters
 
-    count = 0
+    # Collect all raw events first, then filter duplicates at the end
+    all_raw_events: list[AwsSecurityFindingTypeDef] = []
     pagination_iteration = 0
+    max_iterations = 1000  # Safety limit to prevent infinite loops
+    total_collected_count = 0
 
     demisto.debug(
         f"Starting get_events pagination with limit={limit}, page_size={page_size}, ignore_set_size={len(id_ignore_set)}"
@@ -129,59 +132,68 @@ def get_events(
     while True:
         pagination_iteration += 1
         
-        if limit and limit - count < page_size:
-            kwargs["MaxResults"] = limit - count
+        # Safety check to prevent infinite loops
+        if pagination_iteration > max_iterations:
+            demisto.info(
+                f"Reached maximum iteration limit ({max_iterations}). Breaking pagination to prevent infinite loop. "
+                f"Collected {len(all_raw_events)} raw events so far."
+            )
+            break
+        
+        if limit and total_collected_count + page_size > limit:
+            kwargs["MaxResults"] = limit - total_collected_count
         else:
             kwargs["MaxResults"] = page_size
 
-        demisto.debug(f"Iteration {pagination_iteration}: Calling get_findings with kwargs: {kwargs}")
+        demisto.debug(f"Iteration {pagination_iteration}: Calling get_findings with MaxResults={kwargs['MaxResults']}")
         response = client.get_findings(**kwargs)
         result = response.get("Findings", [])
         has_next_token = "NextToken" in response
 
-        # Store original count before filtering
-        original_count = len(result)
         demisto.debug(
-            f"Iteration {pagination_iteration}: AWS returned {original_count} findings, NextToken present: {has_next_token}"
-        )
-        if 'MaxResults' in response:
-            demisto.debug(f"Iteration {pagination_iteration}: AWS returned {response['MaxResults']} findings")
-
-        # Filter out events based on id_ignore_set
-        result = [event for event in result if event["Id"] not in id_ignore_set]
-        filtered_count = len(result)
-
-        demisto.debug(
-            f"Iteration {pagination_iteration}: After deduplication: {filtered_count} new events "
-            f"({original_count - filtered_count} duplicates filtered)"
+            f"Iteration {pagination_iteration}: AWS returned {len(result)} findings, NextToken present: {has_next_token}"
         )
 
-        # CRITICAL FIX: Break if ALL events were duplicates
-        if original_count > 0 and len(result) == 0:
-            demisto.info(
-                f"Iteration {pagination_iteration}: All {original_count} events were duplicates. "
-                f"Breaking pagination to prevent infinite loop."
-            )
-            break
+        # Collect ALL events without filtering - we'll filter at the end
+        all_raw_events.extend(result)
+        total_collected_count += len(result)
+        
+        demisto.debug(f"Iteration {pagination_iteration}: Total raw events collected so far: {len(all_raw_events)}")
 
-        count += len(result)
-        demisto.debug(f"Iteration {pagination_iteration}: Total events collected so far: {count}")
-        yield result  # type: ignore
+        # Check if we should continue pagination
+        should_continue = (
+            "NextToken" in response and
+            (limit == 0 or total_collected_count < limit) and
+            len(result) > 0  # Stop if AWS returns empty results
+        )
 
-        if "NextToken" in response and (limit == 0 or count < limit):
+        if should_continue:
             kwargs["NextToken"] = response["NextToken"]
             demisto.debug(
-                f"Iteration {pagination_iteration}: Continuing pagination (limit={limit}, count={count})"
+                f"Iteration {pagination_iteration}: Continuing pagination (limit={limit}, collected={total_collected_count})"
             )
         else:
             if not has_next_token:
                 demisto.debug(f"Iteration {pagination_iteration}: No more pages available from AWS")
-            elif limit > 0 and count >= limit:
-                demisto.debug(f"Iteration {pagination_iteration}: Reached limit ({count}/{limit})")
-            demisto.debug(
-                f"get_events completed after {pagination_iteration} iterations with {count} total events"
-            )
+            elif limit > 0 and total_collected_count >= limit:
+                demisto.debug(f"Iteration {pagination_iteration}: Reached limit ({total_collected_count}/{limit})")
+            elif len(result) == 0:
+                demisto.debug(f"Iteration {pagination_iteration}: AWS returned empty results, stopping pagination")
             break
+
+    # Now filter duplicates from ALL collected events
+    demisto.debug(f"Filtering duplicates from {len(all_raw_events)} total collected events")
+    filtered_events = [event for event in all_raw_events if event["Id"] not in id_ignore_set]
+    duplicates_filtered = len(all_raw_events) - len(filtered_events)
+    
+    demisto.debug(
+        f"Pagination completed after {pagination_iteration} iterations. "
+        f"Raw events: {len(all_raw_events)}, After deduplication: {len(filtered_events)} "
+        f"({duplicates_filtered} duplicates filtered)"
+    )
+
+    # Yield all filtered events at once (even if empty list)
+    yield filtered_events  # type: ignore
 
 
 def fetch_events(
