@@ -1533,6 +1533,7 @@ def get_file(file_id: list) -> dict:
     response = http_request("GET", endpoint_url, params=params)
     return response
 
+
 def get_file_id_by_name(file_name: str) -> str:
     """
     Retrieve the file ID for a put-file by its name.
@@ -1543,6 +1544,7 @@ def get_file_id_by_name(file_name: str) -> str:
     params = {"filter": f"name:'{file_name}'"}
     response = http_request("GET", endpoint_url, params=params)
     return response.get("resources", "")
+
 
 def list_files() -> dict:
     """
