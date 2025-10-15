@@ -3,20 +3,6 @@
 ---
 Use the Microsoft Defender for Endpoint (previously Microsoft Defender Advanced Threat Protection (ATP)) integration for preventative protection, post-breach detection, automated investigation, and response.
 
-## Deprecation Announcement
-
-**Note**: Following [this](https://learn.microsoft.com/en-us/defender-endpoint/configure-siem) announcement by Microsoft about migrating from the deprecated SIEM API to the Graph API, we are deprecating the following:
-
-- **14 commands**
-- **Fetch-incidents functionality**
-
-### Replacement Options
-
-- Some commands have direct replacements in the **Microsoft Graph Security** integration.
-- Others do not have exact replacements but offer alternatives that return similar data.
-- A few commands have no available replacements.
-[See Deprecation Details](#deprecation-details) to find details on the deprecated commands and their replacements or alternatives.
-
 ## Microsoft Defender Advanced Threat Protection Playbook
 
 ---
@@ -34,134 +20,89 @@ Microsoft Defender Advanced Threat Protection Get Machine Action Status
 ## Authentication
 
 ---
+There are two different authentication methods for self-deployed configuration:
 
-Microsoft integrations (Graph and Azure) in Cortex use Azure Active Directory applications to authenticate with Microsoft APIs. These integrations use OAuth 2.0 and OpenID Connect standard-compliant authentication services, which use an Application to sign-in or delegate authentication. For more information, see the [Microsoft identity platform overview](https://learn.microsoft.com/en-us/entra/identity-platform/v2-overview).
-
-Two application authentication methods are available:
-
-- [Cortex XSOAR Application](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#cortex-xsoar-application)
-- [Self-Deployed Azure Application (via Microsoft Entra ID)](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#self-deployed-application)
-
+- [Client Credentials flow](https://learn.microsoft.com/en-us/microsoft-365/security/defender-endpoint/exposed-apis-create-app-webapp?view=o365-worldwide)
+- [Authorization Code flow](https://learn.microsoft.com/en-us/microsoft-365/security/defender-endpoint/exposed-apis-create-app-nativeapp?view=o365-worldwide)
 For more details about the authentication used in this integration, see [Microsoft Integrations - Authentication](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication).
 
-**Note**: When using the Authorization Code flow (either via the Cortex XSOAR application or by choosing delegated permissions for a self-deployed app), ensure the authenticated user has the required role permissions. This can be done via the Microsoft Defender Portal:
+**Note**: If you previously configured the Windows Defender ATP integration, you need to perform the authentication flow again for this integration and enter the authentication parameters you receive when configuring the integration instance.
 
-- If you are using the new unified RBAC permissions model, navigate to [**Defender Portal** > **Permissions**](https://security.microsoft.com/securitypermissions) and select **Roles** under **Microsoft Defender XDR**.
-- If you are using the legacy permissions model, navigate to [**Defender Portal** > **Settings** > **Endpoints** > **Roles**](https://security.microsoft.com/securitysettings/endpoints/user_roles).
-
-For a detailed comparison between the new and legacy permission models, refer to the [permission mapping table](https://learn.microsoft.com/en-us/defender-xdr/compare-rbac-roles#map-defender-for-endpoint-and-defender-vulnerability-management-permissions-to-the-microsoft-defender-xdr-rbac-permissions).
-
-### Cortex XSOAR Application
-
-To configure Cortex XSOAR application access to Microsoft Defender for Endpoint:
-
-1. Navigate to the [Cortex Authorization page for Microsoft Defender for Endpoint](https://oproxy.demisto.ninja/ms-defender-atp).
-2. Select the user account with sufficient role permissions.
-3. After authorizing the application, copy the *ID*, *Token*, and *Key* values and insert them in integration instance settings corresponding fields.
-4. Ensure *Authentication Type* field is set to the **Authorization Code** option.
-5. Save the instance.
-6. Run the `!microsoft-atp-test` command in the War Room to verify correct configuration.
-
-### Self-deployed Azure Application
-
-1. Navigate to the [Azure portal](https://portal.azure.com/) and search for **Microsoft Entra ID**.
-2. On the **App registrations** page, click **New registration**.
-3. Click **API Permissions** > **Add permission** > **APIs my organization uses**, and type **WindowsDefenderATP**.
-4. Choose the type of permissions:
-    - **Delegated Permissions** - used by applications that act on behalf of a signed-in user. The application will have access to the resources that the user has access to, limited by the permissions granted to the application. Choose this option if you prefer the **Authorization Code** flow.
-    - **Application Permissions** - used by applications that run without a signed-in user. The application acts as its own identity and is granted direct access to data or resources. This is common for background services or daemons. Choose this option if you prefer the the **Client Credentials** flow.
-5. Select the [permissions required by the integration](#required-permissions) (based on the chosen permission type), click **Add permissions** and **Grant consent**.
-6. To add a secret to the application, select **Certificates & secrets**, add a meaningful description, and click **Add**.
-7. In the integration instance settings, select the **Use a self-deployed Azure Application** checkbox and copy the application details based on the chosen permissions type:
-    - For **Delegated Permissions**:
-        - In the *ID* field, enter the application (client) ID.
-        - In the *Token* field, enter the directory (tenant) ID.
-        - In the *Key* field, enter the client secret.
-        - In the *Authentication Type* field, select the **Authorization Code** option.
-        - In the *Application Redirect URI* field, enter the Application redirect URI.
-        - Save the instance.
-        - Run the `!microsoft-atp-generate-login-url` command in the War Room and follow the instructions.
-    - For **Application Permissions**:
-        - In the *ID* field, enter the application (client) ID.
-        - In the *Token* field, enter the directory (tenant) ID.
-        - In the *Key* field, enter the client secret.
-        - In the *Authentication Type* field, select the **Client Credentials** option.
-        - Click **Test** to verify correct configuration.
-        - Save the instance.
-
-**Note**: If you previously configured the *Windows* Defender ATP integration, you need to perform the authentication flow again for this integration and enter the authentication parameters you receive when configuring the integration instance.
+**Note**: When using the Authorization Code Flow, please make sure the user you authenticate with has the required role permissions. See [this](https://docs.microsoft.com/en-us/microsoft-365/security/defender-endpoint/initiate-autoir-investigation?view=o365-worldwide#permissions) as an example.
 
 ### Required Permissions
 
-Add the following **WindowsDefenderATP** API permissions during app registration.
-Choose **Application Permissions** for the Client Credentials flow, or **Delegated Permissions** for the Authorization Code flow.
+Please add the following permissions to the app registration. Choose application permissions for the Client Credentials flow, and delegated permissions for the Authorization Code flow.
 
-- AdvancedQuery.Read.All - Application / AdvancedQuery.Read - Delegated
-- Alert.ReadWrite.All - Application / Alert.ReadWrite - Delegated
-- File.Read.All - Application / Delegated
-- Ip.Read.All - Application / Delegated
-- Machine.CollectForensics - Application / Delegated
-- Machine.Isolate - Application / Delegated
-- Machine.ReadWrite.All - Application / Machine.ReadWrite - Delegated
-- Machine.RestrictExecution - Application / Delegated
-- Machine.Scan - Application / Delegated
-- Machine.StopAndQuarantine - Application / Delegated
-- ThreatIndicators.ReadWrite.OwnedBy - Application / Delegated.
-  **Note**: This permission is only used for the deprecated `!microsoft-atp-indicator-list` command. If you are not using this command, it is not required.
-- Url.Read.All - Application / Delegated
-- User.Read.All - Application / Delegated
-- Ti.ReadWrite (Read and write IOCs belonging to the app) - Application / Delegated
-- Vulnerability.Read.All - Application / Vulnerability.Read - Delegated
-- Software.Read.All - Application / Software.Read - Delegated
-- Machine.LiveResponse - Application / Delegated
-- Machine.Read.All - Application / Machine.Read - Delegated
+- WindowsDefenderATP - AdvancedQuery.Read.All - Application / AdvancedQuery.Read - Delegated
+- WindowsDefenderATP - Alert.ReadWrite.All - Application / Alert.ReadWrite - Delegated
+- WindowsDefenderATP - File.Read.All - Application / Delegated
+- WindowsDefenderATP - Ip.Read.All - Application / Delegated
+- WindowsDefenderATP - Machine.CollectForensics - Application / Delegated
+- WindowsDefenderATP - Machine.Isolate - Application / Delegated
+- WindowsDefenderATP - Machine.ReadWrite.All - Application / Machine.ReadWrite - Delegated
+- WindowsDefenderATP - Machine.RestrictExecution - Application / Delegated
+- WindowsDefenderATP - Machine.Scan - Application / Delegated
+- WindowsDefenderATP - Machine.StopAndQuarantine - Application / Delegated
+- WindowsDefenderATP - ThreatIndicators.ReadWrite.OwnedBy - Application / Delegated. Please note - this permission is only used for the deprecated indicators command. If you are not using the deprecated indicators command, it is not required.
+- WindowsDefenderATP - Url.Read.All - Application / Delegated
+- WindowsDefenderATP - User.Read.All - Application / Delegated
+- WindowsDefenderATP - Ti.ReadWrite (Read and write IOCs belonging to the app) - Application / Delegated
+- WindowsDefenderATP - Vulnerability.Read.All - Application / Vulnerability.Read - Delegated
+- WindowsDefenderATP - Software.Read.All - Application / Software.Read - Delegated
+- WindowsDefenderATP - Machine.LiveResponse - Application / Delegated
+- WindowsDefenderATP - Machine.Read.All - Application / Machine.Read - Delegated
 
-**Note**: Access permissions can be verified by running the `!microsoft-atp-list-auth-permissions` command after configuring the integration instance.
-
-## Configure Microsoft Defender for Endpoint in Cortex
+## Configure Microsoft Defender for Endpoint on Cortex XSOAR
 
 ---
 
-| **Parameter** | **Description** | **Example** |
+1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+2. Search for Microsoft Defender for Endpoint.
+3. Click **Add instance** to create and configure a new integration instance.
+
+| **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Name | A meaningful name for the integration instance. | XXXXX Instance Alpha |
-| Endpoint Type | The endpoint for accessing Microsoft Defender for Endpoint, see table below.  | Worldwide  |
-| Fetches Incidents | Whether to fetch the incidents. | False |
-| Incident Type | The type of incident to select. | Phishing |
-| ID | The ID used to gain access to the integration. Your Client/Application ID. | |
-| Token | A piece of data that servers use to verify for authenticity. This is your Tenant ID.| eea810f5-a6f6 |
-| Key | Your client secret. | |
-| Certificate Thumbprint | Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.| A97BF50B7BB6D909CE8CAAF9FA8109A571134C33 |
-| Private Key| Used for certificate authentication. The private key of the registered certificate. | eea810f5-a6f6 |
-| Authentication Type | Type of authentication - either Authorization Code \(recommended\) or Client Credentials. ||
-| Application redirect URI (for authorization code mode)  | | False|
-| Authorization code  | for user-auth mode - received from the authorization step. see Detailed Instructions section | False|
-| Azure Managed Identities Client ID | The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM. | UUID |
-| Status for fetching alerts as incidents  | The property values are, "New", "InProgress" or "Resolved". Comma-separated lists are supported, e.g., New,Resolved. | New,In Progress,Resolved |
-| DetecitonSource to filter out alters for fetching as incidents. | The property values are, "Antivirus", "CustomDetection", "CustomTI", "EDR" and "MDO". Comma-separated lists are supported, e.g., Antivirus,EDR. | CustomDetection,EDR |
-| Severity for fetching alerts as incidents | The property values are, "Informational", "Low", "Medium" and "High". Comma-separated lists are supported, e.g., Medium,High. | Medium,High |
-| Maximum number of incidents to fetch | The maximum number of incidents to retrieve per fetch.| 50|
-| Trust any Certificate (Not Secure) | When selected, certificates are not checked. | |
-| Fetch alert evidence | When selected, fetches alerts in Microsoft Defender.  |  |
-| Use system proxy settings | Runs the integration instance using the proxy server (HTTP or HTTPS) that you defined in the server configuration.| <https://proxyserver.com> |
-| Use a self-deployed Azure Application | For authorization code flow, mark this as true. | |
-| First Fetch Timestamp | The first timestamp to be fetched in the format \<number\> \<time unit\>. | 12 hours, 7 days |
-| Server URL | The URL to the Microsoft Defender for Endpoint server, including the scheme, see note below. | `https://api.securitycenter.windows.com` |
+| Endpoint Type | When selecting the Custom option, the Server URL parameter must be filled. More information can be found on the integration page - https://xsoar.pan.dev/docs/reference/integrations/microsoft-defender-advanced-threat-protection | False |
+| ID |  | False |
+| Token |  | False |
+| Key |  | False |
+| Certificate Thumbprint |  | False |
+| Private Key |  | False |
+| Authentication Type | Type of authentication - either Authorization Code \(recommended\) or Client Credentials. | False |
+| Application redirect URI (for authorization code mode) |  | False |
+| Authorization code | for user-auth mode - received from the authorization step. see Detailed Instructions section | False |
+| Azure Managed Identities Client ID | The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM. | False |
+| Source Reliability | Reliability of the source providing the intelligence data. | False |
+| Fetch incidents |  | False |
+| Incident type |  | False |
+| Status for fetching alerts as incidents. Comma-separated lists are supported, e.g., New,Resolved. |  | False |
+| DetectionSource to filter out alerts for fetching as incidents. |  | False |
+| Severity for fetching alerts as incidents. Comma-separated lists are supported, e.g., Medium,High. |  | False |
+| Maximum number of incidents to fetch |  | False |
+| Server URL (e.g., https://api.securitycenter.microsoft.com) | More information can be found on https://cortex.marketplace.pan.dev/marketplace/details/MicrosoftDefenderAdvancedThreatProtection/ | False |
+| Use a self-deployed Azure Application | Select this checkbox if you are using a self-deployed Azure application. | False |
+| Trust any certificate (not secure) |  | False |
+| Fetch alert evidence |  | False |
+| Use system proxy settings |  | False |
+| First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
 
-#### Endpoint Type options
+4. Endpoint Type options
 
- | **Endpoint Type** | **Description** |
- | --- | --- |
- | Worldwide | The publicly accessible Microsoft Defender for Endpoint  |
- | EU Geo Proximity | Microsoft Defender for Endpoint Geo proximity end point for the UK customers. |
- | UK Geo Proximity | Microsoft Defender for Endpoint Geo proximity end point for the UK customers. |
- | US Geo Proximity | Microsoft Defender for Endpoint Geo proximity end point for the US customers. |
- | US GCC  | Microsoft Defender for Endpoint for the USA Government Cloud Community (GCC)  |
- | US GCC-High| Microsoft Defender for Endpoint for the USA Government Cloud Community High (GCC-High) |
- | DoD | Microsoft Defender for Endpoint for the USA Department of Defence (DoD) |
- | Custom | Custom endpoint configuration to the Microsoft Defender for Endpoint, please see note below. |
+    | Endpoint Type    | Description                                                                                  |
+    |------------------|----------------------------------------------------------------------------------------------|
+    | Worldwide        | The publicly accessible Microsoft Defender for Endpoint                                      |
+    | EU Geo Proximity | Microsoft Defender for Endpoint Geo proximity end point for the UK customers.                |
+    | UK Geo Proximity | Microsoft Defender for Endpoint Geo proximity end point for the UK customers.                |
+    | US Geo Proximity | Microsoft Defender for Endpoint Geo proximity end point for the US customers.                |
+    | US GCC           | Microsoft Defender for Endpoint for the USA Government Cloud Community (GCC)                 |
+    | US GCC-High      | Microsoft Defender for Endpoint for the USA Government Cloud Community High (GCC-High)       |
+    | DoD              | Microsoft Defender for Endpoint for the USA Department of Defence (DoD)                      |
+    | Custom           | Custom endpoint configuration to the Microsoft Defender for Endpoint, please see note below. |
 
-**Note**: In most cases, setting the Endpoint type is preferred over setting the Server URL. Only set the Server URL when a custom URL is required for accessing a national cloud, or for self-deployment.
+   - Note: In most cases setting Endpoint type is preferred to setting Server URL, only use it cases where a custom URL is required for accessing a national cloud or for cases of self-deployment.
+
+5. Click **Test** to validate the URLs, token, and connection.
 
 ## Fetched Incidents Data
 
@@ -203,14 +144,14 @@ After you successfully execute a command, a DBot message appears in the War Room
 4. microsoft-atp-get-file-related-machines
 5. microsoft-atp-get-machine-details
 6. microsoft-atp-run-antivirus-scan
-7. microsoft-atp-list-alerts (Deprecated)
-8. microsoft-atp-update-alert (Deprecated)
-9. microsoft-atp-advanced-hunting (Deprecated)
-10. microsoft-atp-create-alert (Deprecated)
-11. microsoft-atp-get-alert-related-user (Deprecated)
-12. microsoft-atp-get-alert-related-files (Deprecated)
-13. microsoft-atp-get-alert-related-ips (Deprecated)
-14. microsoft-atp-get-alert-related-domains (Deprecated)
+7. microsoft-atp-list-alerts
+8. microsoft-atp-update-alert
+9. microsoft-atp-advanced-hunting
+10. microsoft-atp-create-alert
+11. microsoft-atp-get-alert-related-user
+12. microsoft-atp-get-alert-related-files
+13. microsoft-atp-get-alert-related-ips
+14. microsoft-atp-get-alert-related-domains
 15. microsoft-atp-list-machine-actions-details
 16. microsoft-atp-collect-investigation-package
 17. microsoft-atp-get-investigation-package-sas-uri
@@ -220,21 +161,21 @@ After you successfully execute a command, a DBot message appears in the War Room
 21. microsoft-atp-list-investigations
 22. microsoft-atp-start-investigation
 23. microsoft-atp-get-domain-statistics
-24. microsoft-atp-get-domain-alerts (Deprecated)
+24. microsoft-atp-get-domain-alerts
 25. microsoft-atp-get-domain-machines
 26. microsoft-atp-get-file-statistics
-27. microsoft-atp-get-file-alerts (Deprecated)
+27. microsoft-atp-get-file-alerts
 28. microsoft-atp-get-ip-statistics
-29. microsoft-atp-get-ip-alerts (Deprecated)
-30. microsoft-atp-get-user-alerts (Deprecated)
+29. microsoft-atp-get-ip-alerts
+30. microsoft-atp-get-user-alerts
 31. microsoft-atp-get-user-machines
 32. microsoft-atp-add-remove-machine-tag
-33. microsoft-atp-indicator-list (Deprecated)
-34. microsoft-atp-indicator-get-by-id (Deprecated)
-35. microsoft-atp-indicator-create-network (Deprecated)
-36. microsoft-atp-indicator-create-file (Deprecated)
-37. microsoft-atp-indicator-update (Deprecated)
-38. microsoft-atp-indicator-delete (Deprecated)
+33. microsoft-atp-indicator-list (deprecated)
+34. microsoft-atp-indicator-get-by-id (deprecated)
+35. microsoft-atp-indicator-create-network (deprecated)
+36. microsoft-atp-indicator-create-file (deprecated)
+37. microsoft-atp-indicator-update (deprecated)
+38. microsoft-atp-indicator-delete (deprecated)
 39. microsoft-atp-sc-indicator-list
 40. microsoft-atp-sc-indicator-get-by-id
 41. microsoft-atp-sc-indicator-create
@@ -244,7 +185,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 45. microsoft-atp-get-file-info
 46. endpoint
 47. microsoft-atp-indicator-batch-update
-48. microsoft-atp-get-alert-by-id (Deprecated)
+48. microsoft-atp-get-alert-by-id
 49. microsoft-atp-request-and-download-investigation-package
 50. microsoft-atp-offboard-machine
 51. microsoft-atp-list-software
@@ -254,9 +195,6 @@ After you successfully execute a command, a DBot message appears in the War Room
 55. microsoft-atp-list-vulnerabilities-by-machine
 56. microsoft-atp-list-vulnerabilities
 57. microsoft-atp-list-missing-kb-by-software
-58. microsoft-atp-get-machine-vulnerabilities
-59. microsoft-atp-get-machine-software
-60. microsoft-atp-get-machine-missing-kbs
 
 ### 1. microsoft-atp-isolate-machine
 
@@ -265,9 +203,7 @@ Isolates a machine from accessing external network.
 
 ##### Required Permissions
 
-Machine.Isolate
-
-**Note**: When using the Authorization Code flow (either via the Cortex XSOAR application or by choosing delegated permissions for a self-deployed app), ensure the authenticated user has the “Active Remediation Actions” role assigned. Refer to the [Microsoft documentation on creating and managing roles](https://learn.microsoft.com/en-us/defender-endpoint/user-roles).
+Machine.Isolate 
 
 ##### Base Command
 
@@ -361,7 +297,7 @@ Remove a machine from isolation.
 
 ##### Required Permissions
 
-Machine.Isolate
+Machine.Isolate 
 
 ##### Base Command
 
@@ -911,9 +847,7 @@ Initiates Microsoft Defender Antivirus scan on a machine.
 
 ##### Required Permissions
 
-Machine.Scan
-
-**Note**: When using the Authorization Code flow (either via the Cortex XSOAR application or by choosing delegated permissions for a self-deployed app), ensure the authenticated user has the “Active Remediation Actions” role assigned. Refer to the [Microsoft documentation on creating and managing roles](https://learn.microsoft.com/en-us/defender-endpoint/user-roles).
+Machine.Scan 
 
 #### Base Command
 
@@ -1000,16 +934,14 @@ Machine.Scan
 >| 98cf0adc | RunAntiVirusScan | 2f48b784-5da5-4e61-9957-012d2630f1e4 | test3 | Pending | f70f9fe6 | desktop-s9 |
 >| ecee8124 | RunAntiVirusScan | 2f48b784-5da5-4e61-9957-012d2630f1e4 | test3 | Pending | 48990365 | desktop-s8 |
 
-### 7. microsoft-atp-list-alerts (Deprecated)
-
-This command has been deprecated. Use the 'msg-search-alerts' command in the 'Microsoft Graph Security' integration instead.
+### 7. microsoft-atp-list-alerts
 
 ---
 Gets a list of alerts that are present on the system. Filtering can be done on a single argument only.
 
 ##### Required Permissions
 
-Alert.ReadWrite.All
+Alert.ReadWrite.All 
 
 ##### Base Command
 
@@ -1147,16 +1079,14 @@ Alert.ReadWrite.All
 >|---|---|---|---|---|---|---|---|---|
 >| da637798264000574516_1915313662 | 'Test_File' malware was prevented | Malware and unwanted software are undesirable applications that perform annoying, disruptive, or harmful actions on affected machines. Some of these undesirable applications can replicate and spread from one machine to another. Others are able to receive commands from remote attackers and perform activities associated with cyber attacks.<br/><br/>This detection might indicate that the malware was stopped from delivering its payload. However, it is prudent to check the machine for signs of infection. | 648 | Informational | Resolved | Malware | Test_File | 4cceb3c642212014e0e9553aa8b59e999ea515ff |
 
-### 8. microsoft-atp-update-alert (Deprecated)
-
-This command has been deprecated. Use the 'msg-update-alert' command in the 'Microsoft Graph Security' integration instead.
+### 8. microsoft-atp-update-alert
 
 ---
 Updates the properties of an alert entity.
 
 ##### Required Permissions
 
-Alert.ReadWrite.All
+Alert.ReadWrite.All 
 
 ##### Base Command
 
@@ -1222,9 +1152,7 @@ Alert.ReadWrite.All
 
 The alert da637200417169017725_183736971 has been updated successfully
 
-### 9. microsoft-atp-advanced-hunting (Deprecated)
-
-This command has been deprecated. Use the 'msg-advanced-hunting' command in the 'Microsoft Graph Security' integration instead.
+### 9. microsoft-atp-advanced-hunting
 
 ---
 Runs programmatic queries in Microsoft Defender ATP Portal (<https://securitycenter.windows.com/hunting>).
@@ -1238,7 +1166,7 @@ lists all the tables in the schema. Each table name links to a page describing t
 
 ##### Required Permissions
 
-AdvancedQuery.Read.All
+AdvancedQuery.Read.All 
 
 ##### Base Command
 
@@ -1322,16 +1250,14 @@ AdvancedQuery.Read.All
 |---|---|---|
 | 2020-02-23T07:14:42.1599815Z | 4899036531e374137f63289c3267bad772c13fef | 35275 |
 
-### 10. microsoft-atp-create-alert (Deprecated)
-
-This command has been deprecated. No available replacement.
+### 10. microsoft-atp-create-alert
 
 ---
 Creates a new alert entity using event data, as obtained from the Advanced Hunting.
 
 ##### Required Permissions
 
-Alert.ReadWrite.All
+Alert.ReadWrite.All 
 
 ##### Base Command
 
@@ -1431,16 +1357,14 @@ Alert.ReadWrite.All
 |---|---|---|---|---|---|---|---|
 | da637204886635759335_1480542752 | testing alert | test | 18 | Low | New | Backdoor | 4899036531e374137f63289c3267bad772c13fef |
 
-### 11. microsoft-atp-get-alert-related-user (Deprecated)
-
-This command has been deprecated. An alternative is to use the 'msg-get-alert-details' command in the 'Microsoft Graph Security' integration, which can retrieve `userAccount` information as part of the alert details.
+### 11. microsoft-atp-get-alert-related-user
 
 ---
 Retrieves the user associated with a specific alert.
 
 ##### Required Permissions
 
-User.Read.All
+User.Read.All 
 
 ##### Base Command
 
@@ -1506,16 +1430,14 @@ User.Read.All
 |---|---|---|---|---|---|---|---|---|---|---|
 | desktop-s2455r8 | demisto | S-1-5-21-4197691174-1403503641-4006700887-1001 | false | 2020-02-23T07:14:42Z | desktop-s2455r8\demisto | 2020-03-03T12:32:51Z | 4899036531e374137f63289c3267bad772c13fef | 1 | 4899036531e374137f63289c3267bad772c13fef | false |
 
-### 12. microsoft-atp-get-alert-related-files (Deprecated)
-
-This command has been deprecated. An alternative is to use the 'msg-get-alert-details' command in the 'Microsoft Graph Security' integration, which can retrieve `fileDetails` as part of the alert details.
+### 12. microsoft-atp-get-alert-related-files
 
 ---
 Retrieves the files associated to a specific alert.
 
 ##### Required Permissions
 
-File.Read.All
+File.Read.All 
 
 ##### Base Command
 
@@ -1606,16 +1528,14 @@ File.Read.All
 | d487580502354c61808c7180d1a336beb7ad4624 | f1d62648ef915d85cb4fc140359e925395d315c70f3566b63bb3e21151cb2ce3 | 181248 |
 | 36c5d12033b2eaf251bae61c00690ffb17fddc87 | 908b64b1971a979c7e3e8ce4621945cba84854cb98d76367b791a6e22b5f6d53 | 451584 |
 
-### 13. microsoft-atp-get-alert-related-ips (Deprecated)
+### 13. microsoft-atp-get-alert-related-ips
 
-This command has been deprecated. An alternative is to use the 'msg-get-alert-details' command in the 'Microsoft Graph Security' integration, which can retrieve `IpAddress` as part of the alert details
 ---
-
 Retrieves the IP addresses associated to a specific alert.
 
 ##### Required Permissions
 
-Ip.Read.All
+Ip.Read.All 
 
 ##### Base Command
 
@@ -1655,16 +1575,14 @@ Ip.Read.All
 
 Alert da637200417169017725_183736971 Related IPs: []
 
-### 14. microsoft-atp-get-alert-related-domains (Deprecated)
-
-This command has been deprecated. An alternative is to use the 'msg-get-alert-details' command in the 'Microsoft Graph Security' integration to retrieve `DomainName` as part of the alert details.
+### 14. microsoft-atp-get-alert-related-domains
 
 ---
 Retrieves the domains associated with a specific alert.
 
 ##### Required Permissions
 
-URL.Read.All
+URL.Read.All 
 
 ##### Base Command
 
@@ -1812,8 +1730,6 @@ Collects an investigation package from a machine.
 
 Machine.CollectForensics
 
-**Note**: When using the Authorization Code flow (either via the Cortex XSOAR application or by choosing delegated permissions for a self-deployed app), ensure the authenticated user has the “Active Remediation Actions” role assigned. Refer to the [Microsoft documentation on creating and managing roles](https://learn.microsoft.com/en-us/defender-endpoint/user-roles).
-
 ##### Base Command
 
 `microsoft-atp-collect-investigation-package`
@@ -1886,8 +1802,6 @@ Gets a URI that allows downloading of an investigation package.
 
 Machine.CollectForensics
 
-**Note**: When using the Authorization Code flow (either via the Cortex XSOAR application or by choosing delegated permissions for a self-deployed app), ensure the authenticated user has the “Active Remediation Actions” role assigned. Refer to the [Microsoft documentation on creating and managing roles](https://learn.microsoft.com/en-us/defender-endpoint/user-roles).
-
 ##### Base Command
 
 `microsoft-atp-get-investigation-package-sas-uri`
@@ -1931,8 +1845,6 @@ Restricts the execution of all applications on the machine except a predefined s
 ##### Required Permissions
 
 Machine.RestrictExecution
-
-**Note**: When using the Authorization Code flow (either via the Cortex XSOAR application or by choosing delegated permissions for a self-deployed app), ensure the authenticated user has the “Active Remediation Actions” role assigned. Refer to the [Microsoft documentation on creating and managing roles](https://learn.microsoft.com/en-us/defender-endpoint/user-roles).
 
 ##### Base Command
 
@@ -2006,8 +1918,6 @@ Enables the execution of any application on the machine.
 
 Machine.RestrictExecution
 
-**Note**: When using the Authorization Code flow (either via the Cortex XSOAR application or by choosing delegated permissions for a self-deployed app), ensure the authenticated user has the “Active Remediation Actions” role assigned. Refer to the [Microsoft documentation on creating and managing roles](https://learn.microsoft.com/en-us/defender-endpoint/user-roles).
-
 ##### Base Command
 
 `microsoft-atp-remove-app-restriction`
@@ -2078,9 +1988,7 @@ Stops the execution of a file on a machine and deletes it.
 
 ##### Required Permissions
 
-Machine.StopAndQuarantine
-
-**Note**: When using the Authorization Code flow (either via the Cortex XSOAR application or by choosing delegated permissions for a self-deployed app), ensure the authenticated user has the “Active Remediation Actions” role assigned. Refer to the [Microsoft documentation on creating and managing roles](https://learn.microsoft.com/en-us/defender-endpoint/user-roles).
+Machine.StopAndQuarantine 
 
 ##### Base Command
 
@@ -2150,7 +2058,7 @@ Retrieves a collection of investigations or retrieves a specific investigation b
 
 ##### Required Permissions
 
-Alert.ReadWrite.All
+Alert.ReadWrite.All 
 
 ##### Base Command
 
@@ -2241,7 +2149,7 @@ Starts an automated investigation on a machine.
 
 ##### Required Permissions
 
-Alert.ReadWrite.All
+Alert.ReadWrite.All 
 
 ##### Base Command
 
@@ -2306,7 +2214,7 @@ Retrieves statistics on the given domain.
 ##### Required Permissions
 
 URL.Read.All
-
+ 
 ##### Base Command
 
 `microsoft-atp-get-domain-statistics`
@@ -2354,16 +2262,14 @@ URL.Read.All
 |---|---|---|---|
 | google.com | 2020-02-24T12:50:04Z | 2020-02-24T13:14:54Z | 1 |
 
-### 24. microsoft-atp-get-domain-alerts (Deprecated)
+### 24. microsoft-atp-get-domain-alerts
 
-This command has been deprecated. No available replacement
 ---
-
 Retrieves a collection of alerts related to a given domain address.
 
 ##### Required Permissions
 
-Alert.ReadWrite.All
+Alert.ReadWrite.All 
 
 ##### Base Command
 
@@ -2523,7 +2429,7 @@ Retrieves statistics for the given file.
 
 ##### Required Permissions
 
-File.Read.All
+File.Read.All 
 
 ##### Base Command
 
@@ -2540,22 +2446,13 @@ File.Read.All
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | MicrosoftATP.FileStatistics.Sha1 | String | The file SHA1 hash. |
-| MicrosoftATP.FileStatistics.Statistics.OrgPrevalence | String | The number of times the file is detected in the organization. |
-| MicrosoftATP.FileStatistics.Statistics.OrganizationPrevalence | Number | The number of times the file is detected in the organization. |
+| MicrosoftATP.FileStatistics.Statistics.OrgPrevalence | String | The prevalence of the file in the organization. |
 | MicrosoftATP.FileStatistics.Statistics.OrgFirstSeen | Date | The first date and time the file was seen in the organization. |
 | MicrosoftATP.FileStatistics.Statistics.OrgLastSeen | Date | The last date and time the file was seen in the organization. |
-| MicrosoftATP.FileStatistics.Statistics.GlobalPrevalence | String | The number of times the file is detected across all organizations by Microsoft Defender ATP. |
-| MicrosoftATP.FileStatistics.Statistics.GloballyPrevalence | Number | The number of times the file is detected across all organizations by Microsoft Defender ATP. |
+| MicrosoftATP.FileStatistics.Statistics.GlobalPrevalence | String | The global prevalence of the file. |
 | MicrosoftATP.FileStatistics.Statistics.GlobalFirstObserved | Date | The first global observation date and time of the file. |
 | MicrosoftATP.FileStatistics.Statistics.GlobalLastObserved | Date | The last global observation date and time of the file. |
 | MicrosoftATP.FileStatistics.Statistics.TopFileNames | String | The top names of the file. |
-| File.SHA1 | String | The SHA1 hash of the file. |
-| File.OrganizationPrevalence | Number | The number of times the indicator is detected in the organization. |
-| File.GlobalPrevalence | Number | The number of times the indicator is detected across all organizations by Microsoft Defender ATP. |
-| File.OrganizationFirstSeen | Date | The date and time when the indicator was first seen in the organization. |
-| File.OrganizationLastSeen | Date | The date and time when the indicator was last seen in the organization. |
-| File.FirstSeenBySource | Date | The date and time when the indicator was first seen by Microsoft Defender ATP. |
-| File.LastSeenBySource | Date | The date and time when the indicator was last seen by Microsoft Defender ATP. |
 
 ##### Command Example
 
@@ -2565,33 +2462,16 @@ File.Read.All
 
 ```json
 {
-    "File": {
-        "SHA1": "9fe3ba25e5660c23dfe478d577cfacde5795870c",
-        "FirstSeenBySource": "2019-04-03T04:10:18.1001071Z",
-        "LastSeenBySource": "2020-03-23T09:24:54.169574Z",
-        "GlobalPrevalence": 1355899,
-        "Hashes":[
-            {
-                "type" :"SHA1",
-                "value": "9fe3ba25e5660c23dfe478d577cfacde5795870c"
-            }
-        ],
-        "OrganizationPrevalence": 0
-    },
-    "MicrosoftATP": {
-        "FileStatistics": {
-            "Sha1": "9fe3ba25e5660c23dfe478d577cfacde5795870c", 
-            "Statistics": {
-                "TopFileNames": [
-                    "lsass.exe"
-                ], 
-                "GlobalFirstObserved": "2019-04-03T04:10:18.1001071Z", 
-                "GlobalPrevalence": "1355899",
-                "GloballyPrevalence": 1355899,
-                "OrgPrevalence": "0",
-                "OrganizationPrevalence": 0,
-                "GlobalLastObserved": "2020-03-23T09:24:54.169574Z"
-            }
+    "MicrosoftATP.FileStatistics": {
+        "Sha1": "9fe3ba25e5660c23dfe478d577cfacde5795870c", 
+        "Statistics": {
+            "TopFileNames": [
+                "lsass.exe"
+            ], 
+            "GlobalFirstObserved": "2019-04-03T04:10:18.1001071Z", 
+            "GlobalPrevalence": "1355899", 
+            "OrgPrevalence": "0", 
+            "GlobalLastObserved": "2020-03-23T09:24:54.169574Z"
         }
     }
 }
@@ -2601,26 +2481,18 @@ File.Read.All
 
 ##### Statistics on 9fe3ba25e5660c23dfe478d577cfacde5795870c file
 
-|Global First Observed|Global Last Observed|Global Prevalence|Organization Prevalence|Top File Names|
+|GlobalFirstObserved|GlobalLastObserved|GlobalPrevalence|OrgPrevalence|TopFileNames|
 |---|---|---|---|---|
 | 2019-04-03T04:10:18.1001071Z | 2020-03-23T09:24:54.169574Z | 1355899 | 0 | lsass.exe |
 
-##### File Indicator Example
-
-| Type | Value | Verdict | Related Incidents | Expiration | Global Prevalence | Organization Prevalence | First Seen By Source | Last Seen By Source | Organization First Seen | Organization Last Seen |
-|---|---|---|---|---|---|---|---|---|---|---|
-| File | 50ef7c645fd5cbb95d50fbaddf6213800f9296ec | Benign | 2 | Never | 195803 | 0 | April 03, 2019 4:10 AM | March 23, 2020 9:24 AM | N/A | N/A |
-
-### 27. microsoft-atp-get-file-alerts (Deprecated)
-
-This command has been deprecated. No available replacement.
+### 27. microsoft-atp-get-file-alerts
 
 ---
 Retrieves a collection of alerts related to a given file hash.
 
 ##### Required Permissions
 
-Alert.ReadWrite.All
+Alert.ReadWrite.All 
 
 ##### Base Command
 
@@ -2746,7 +2618,7 @@ Retrieves statistics for the given IP address.
 
 ##### Required Permissions
 
-Ip.Read.All
+Ip.Read.All 
 
 ##### Base Command
 
@@ -2794,16 +2666,14 @@ Ip.Read.All
 |---|---|---|
 | 2020-02-22T12:52:35Z | 2020-03-01T15:19:40Z | 1 |
 
-### 29. microsoft-atp-get-ip-alerts (Deprecated)
-
-This command has been deprecated. No available replacement.
+### 29. microsoft-atp-get-ip-alerts
 
 ---
 Retrieves a collection of alerts related to a given IP address.
 
 ##### Required Permissions
 
-Alert.ReadWrite.All
+Alert.ReadWrite.All 
 
 ##### Base Command
 
@@ -2867,16 +2737,14 @@ Alert.ReadWrite.All
 
 **No entries.**
 
-### 30. microsoft-atp-get-user-alerts (Deprecated)
-
-This command has been deprecated. No available replacement.
+### 30. microsoft-atp-get-user-alerts
 
 ---
 Retrieves a collection of alerts related to a given user ID.
 
 ##### Required Permissions
 
-Alert.ReadWrite.All
+Alert.ReadWrite.All 
 
 ##### Base Command
 
@@ -4036,12 +3904,8 @@ To ensure that the application is accessible to all indicators, the 'Ti.ReadWrit
 
 ### microsoft-atp-sc-indicator-update
 
----
+***
 Updates the specified indicator.
-
-### Permissions
-
-`Ti.ReadWrite`
 
 #### Base Command
 
@@ -4052,15 +3916,17 @@ Updates the specified indicator.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | indicator_value | The value of the indicator to update. | Required |
-| indicator_type | Indicator Type. Possible values are: FileSha1, FileSha256, IpAddress, DomainName, Url. | Required |
-| action | The action taken if the indicator is discovered in the organization. Possible values are: Alert, AlertAndBlock, Allowed. | Required |
-| severity | The severity of the malicious behavior identified by the data within the indicator. Possible values: "Informational", "Low", "Medium", and "High", where High is the most severe and Informational is not severe at all. | Optional |
+| indicator_type | Indicator Type. Possible values are: FileSha1, FileSha256, FileMd5, IpAddress, DomainName, Url. | Required |
+| action | The action taken if the indicator is discovered in the organization. Possible values are: Audit, Block, BlockAndRemediate, Allowed, Warn. | Required |
+| severity | The severity of the malicious behavior identified by the data within the indicator, where High is the most severe and Informational is not severe at all. Possible values are: Informational, Low, Medium, High. | Optional |
 | expiration_time | DateTime string indicating when the indicator expires. Format: (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days). Default is 14 days. | Optional |
 | indicator_description | Brief description (100 characters or less) of the threat represented by the indicator. | Required |
-| indicator_title | Indicator alert title. | Required |
+| indicator_title | The indicator alert title. | Required |
 | indicator_application | The application associated with the indicator. | Optional |
-| recommended_actions | TI indicator alert recommended actions. | Optional |
-| rbac_group_names | Comma-separated list of RBAC group names the indicator is applied to. | Optional |
+| recommended_actions | The indicator alert recommended actions. | Optional |
+| rbac_group_names | A comma-separated list of RBAC group names the indicator is applied to. | Optional |
+| ran_once_flag | Flag for the rate limit retry. | Optional |
+| generate_alert | Whether to generate an alert for the indicator. | Optional |
 
 #### Context Output
 
@@ -4069,87 +3935,34 @@ Updates the specified indicator.
 | MicrosoftATP.Indicators.id | String | Created by the system when the indicator is ingested. Generated GUID/unique identifier. |
 | MicrosoftATP.Indicators.action | String | The action to apply if the indicator is matched from within the targetProduct security tool. Possible values: "unknown", "allow", "block", and "alert". |
 | MicrosoftATP.Indicators.description | String | Brief description \(100 characters or less\) of the threat represented by the indicator. |
-| MicrosoftATP.Indicators.expirationTime | Date | DateTime string indicating when the indicator expires. To avoid stale indicators persisting in the system, all indicators must have an expiration date. The timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z' |
+| MicrosoftATP.Indicators.expirationTime | Date | DateTime string indicating when the indicator expires. To avoid stale indicators persisting in the system, all indicators must have an expiration date. The timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z'. |
 | MicrosoftATP.Indicators.severity | String | The severity of the malicious behavior identified by the data within the indicator. Possible values: "Informational", "Low", "Medium", and "High", where High is the most severe and Informational is not severe at all. |
 | MicrosoftATP.Indicators.indicatorValue | String | The value of the indicator. |
 | MicrosoftATP.Indicators.recommendedActions | String | Recommended actions for the indicator. |
 | MicrosoftATP.Indicators.generateAlert | Boolean | Whether an alert was generated. |
 | MicrosoftATP.Indicators.rbacGroupNames | Unknown | A list of RBAC device group names where the indicator is exposed and active. Empty list if it is exposed to all devices. |
 | MicrosoftATP.Indicators.mitreTechniques | Unknown | A list of MITRE techniques. |
-| MicrosoftATP.Indicators.indicatorType | String | Indicator Type. Possible values: "FileSha1", "FileSha256", "IpAddress", "DomainName" and "Url". |
+| MicrosoftATP.Indicators.indicatorType | String | The indicator type. Possible values: "FileSha1", "FileSha256", "IpAddress", "DomainName" and "Url". |
 | MicrosoftATP.Indicators.lastUpdateTime | Date | The last time the indicator was updated. |
 | MicrosoftATP.Indicators.createdByDisplayName | String | Display name of the created app. |
 | MicrosoftATP.Indicators.application | String | The application associated with the indicator. |
-| MicrosoftATP.Indicators.title | String | Indicator title. |
-| MicrosoftATP.Indicators.createdBySource | String | Source of indicator creation. For example, PublicApi. |
+| MicrosoftATP.Indicators.title | String | The indicator title. |
+| MicrosoftATP.Indicators.createdBySource | String | The source of indicator creation. For example, PublicApi. |
 | MicrosoftATP.Indicators.historicalDetection | Boolean | Whether a historical detection exists. |
-| MicrosoftATP.Indicators.lastUpdatedBy | String | Identity of the user/application that last updated the indicator. |
-| MicrosoftATP.Indicators.creationTimeDateTimeUtc | Date | The date and time when the indicator was created. |
+| MicrosoftATP.Indicators.lastUpdatedBy | String | The identity of the user/application that last updated the indicator. |
+| MicrosoftATP.Indicators.creationTimeDateTimeUtc | Date | The date and time the indicator was created. |
 | MicrosoftATP.Indicators.category | Number | An number representing the indicator category. |
 | MicrosoftATP.Indicators.createdBy | String | Unique identity of the user/application that submitted the indicator. |
 | File.MD5 | String | The MD5 hash of the file. |
 | File.SHA1 | String | The SHA1 hash of the file. |
 | File.SHA256 | String | The SHA256 hash of the file. |
 | Domain.Name | String | The domain name, for example: "google.com". |
-| IP.Address | String | IP address. |
+| IP.Address | String | The IP address. |
 | URL.Data | String | The URL. |
 | DBotScore.Indicator | String | The indicator that was tested. |
 | DBotScore.Type | String | The indicator type. |
 | DBotScore.Vendor | String | The vendor used to calculate the score. |
 | DBotScore.Score | Number | The actual score. |
-
-#### Command Example
-
-```!microsoft-atp-sc-indicator-update action=Allowed indicator_description=test indicator_title=title indicator_type=IpAddress indicator_value=2.2.2.2 expiration_time="1 day" severity=Low```
-
-#### Context Example
-
-```json
-{
-    "DBotScore": {
-        "Indicator": "2.2.2.2",
-        "Score": 0,
-        "Type": "ip",
-        "Vendor": "Microsoft Defender Advanced Threat Protection test"
-    },
-    "IP": {
-        "Address": "2.2.2.2"
-    },
-    "MicrosoftATP": {
-        "Indicators": {
-            "@odata.context": "https://api.securitycenter.microsoft.com/api/$metadata#Indicators/$entity",
-            "action": "Allowed",
-            "category": 1,
-            "createdBy": "1281a70f-8ffb-4b3c-bc82-eef2a44dbb2a",
-            "createdByDisplayName": "MS Graph ATP",
-            "createdBySource": "PublicApi",
-            "creationTimeDateTimeUtc": "2021-08-17T08:58:12.0340768Z",
-            "description": "test",
-            "expirationTime": "2021-08-18T08:58:12Z",
-            "generateAlert": false,
-            "historicalDetection": false,
-            "id": "5143",
-            "indicatorType": "IpAddress",
-            "indicatorValue": "2.2.2.2",
-            "lastUpdateTime": "2021-08-17T08:58:13.5312934Z",
-            "lastUpdatedBy": "1281a70f-8ffb-4b3c-bc82-eef2a44dbb2a",
-            "mitreTechniques": [],
-            "rbacGroupIds": [],
-            "rbacGroupNames": [],
-            "severity": "Low",
-            "title": "title"
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->### Indicator 2.2.2.2 was updated successfully
->
->|id|action|indicatorValue|indicatorType|severity|title|description|
->|---|---|---|---|---|---|---|
->| 5143 | Allowed | 2.2.2.2 | IpAddress | Low | title | test |
 
 ### microsoft-atp-sc-indicator-get-by-id
 
@@ -4327,7 +4140,52 @@ Creates a new indicator.
 | indicator_title | Indicator alert title. | Required |
 | indicator_application | The application associated with the indicator. | Optional |
 | recommended_actions | TI indicator alert recommended actions. | Optional |
-| rbac_group_names | Comma-separated list of RBAC group names the indicator is applied to. | Optional |
+
+### microsoft-atp-sc-indicator-delete
+
+***
+Deletes the specified indicator.
+
+#### Base Command
+
+`microsoft-atp-sc-indicator-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| indicator_id | The ID of the indicator to delete. The ID can be retrieved by running the microsoft-atp-sc-indicator-list command. | Required |
+| ran_once_flag | Flag for the rate limit retry. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+### microsoft-atp-sc-indicator-create
+
+***
+Creates a new indicator.
+
+#### Base Command
+
+`microsoft-atp-sc-indicator-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| indicator_value | The value of the indicator to update. | Required |
+| indicator_type | Indicator Type. Possible values are: FileSha1, FileSha256, FileMd5, IpAddress, DomainName, Url. | Required |
+| action | The action taken if the indicator is discovered in the organization. Possible values are: Audit, Block, BlockAndRemediate, Allowed, Warn. | Required |
+| severity | The severity of the malicious behavior identified by the data within the indicator, where High is the most severe and Informational is not severe at all. Possible values are: Informational, Low, Medium, High. | Optional |
+| expiration_time | DateTime string indicating when the indicator expires. Format: (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days). Default is 14 days. | Optional |
+| indicator_description | Brief description (100 characters or less) of the threat represented by the indicator. | Required |
+| indicator_title | The indicator alert title. | Required |
+| indicator_application | The application associated with the indicator. | Optional |
+| recommended_actions | The indicator alert recommended actions. | Optional |
+| rbac_group_names | A comma-separated list of RBAC group names the indicator is applied to. | Optional |
+| ran_once_flag | Flag for the rate limit retry. | Optional |
+| generate_alert | Whether to generate an alert for the indicator. | Optional |
 
 #### Context Output
 
@@ -4336,22 +4194,22 @@ Creates a new indicator.
 | MicrosoftATP.Indicators.id | String | Created by the system when the indicator is ingested. Generated GUID/unique identifier. |
 | MicrosoftATP.Indicators.action | String | The action to apply if the indicator is matched from within the targetProduct security tool. Possible values: "unknown", "allow", "block", "alert". |
 | MicrosoftATP.Indicators.description | String | Brief description \(100 characters or less\) of the threat represented by the indicator. |
-| MicrosoftATP.Indicators.expirationTime | Date | DateTime string indicating when the indicator expires. To avoid stale indicators persisting in the system, all indicators must have an expiration date. The timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z' |
+| MicrosoftATP.Indicators.expirationTime | Date | DateTime string indicating when the indicator expires. To avoid stale indicators persisting in the system, all indicators must have an expiration date. The timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z'. |
 | MicrosoftATP.Indicators.severity | String | The severity of the malicious behavior identified by the data within the indicator. Possible values: "Informational", "Low", "Medium", and "High", where High is the most severe and Informational is not severe at all. |
 | MicrosoftATP.Indicators.indicatorValue | String | The value of the indicator. |
 | MicrosoftATP.Indicators.recommendedActions | String | Recommended actions for the indicator. |
 | MicrosoftATP.Indicators.generateAlert | Boolean | Whether an alert was generated. |
 | MicrosoftATP.Indicators.rbacGroupNames | Unknown | A list of RBAC device group names where the indicator is exposed and active. Empty list if it is exposed to all devices. |
 | MicrosoftATP.Indicators.mitreTechniques | Unknown | A list of MITRE techniques. |
-| MicrosoftATP.Indicators.indicatorType | String | Type of the indicator. Possible values: "FileSha1", "FileSha256", "IpAddress", "DomainName" and "Url". |
+| MicrosoftATP.Indicators.indicatorType | String | Indicator Type. Possible values: "FileSha1", "FileSha256", "IpAddress", "DomainName" and "Url". |
 | MicrosoftATP.Indicators.lastUpdateTime | Date | The last time the indicator was updated. |
-| MicrosoftATP.Indicators.createdByDisplayName | String | Display name of the created app. |
+| MicrosoftATP.Indicators.createdByDisplayName | String | The display name of the created app. |
 | MicrosoftATP.Indicators.application | String | The application associated with the indicator. |
-| MicrosoftATP.Indicators.title | String | Indicator title. |
+| MicrosoftATP.Indicators.title | String | The indicator title. |
 | MicrosoftATP.Indicators.createdBySource | String | Source of indicator creation. For example, PublicApi. |
 | MicrosoftATP.Indicators.historicalDetection | Boolean | Whether a historical detection exists. |
-| MicrosoftATP.Indicators.lastUpdatedBy | String | Identity of the user/application that last updated the indicator. |
-| MicrosoftATP.Indicators.creationTimeDateTimeUtc | Date | The date and time when the indicator was created. |
+| MicrosoftATP.Indicators.lastUpdatedBy | String | The identity of the user/application that last updated the indicator. |
+| MicrosoftATP.Indicators.creationTimeDateTimeUtc | Date | The date and time the indicator was created. |
 | MicrosoftATP.Indicators.category | Number | An number representing the indicator category. |
 | MicrosoftATP.Indicators.createdBy | String | Unique identity of the user/application that submitted the indicator. |
 | File.MD5 | String | The MD5 hash of the file. |
@@ -4364,115 +4222,6 @@ Creates a new indicator.
 | DBotScore.Type | String | The indicator type. |
 | DBotScore.Vendor | String | The vendor used to calculate the score. |
 | DBotScore.Score | Number | The actual score. |
-
-#### Command Example
-
-```!microsoft-atp-sc-indicator-create action=Allowed indicator_description=test indicator_title=title indicator_type=IpAddress indicator_value=2.2.2.2 expiration_time="1 day" severity=Informational```
-
-#### Context Example
-
-```json
-{
-    "DBotScore": {
-        "Indicator": "2.2.2.2",
-        "Score": 0,
-        "Type": "ip",
-        "Vendor": "Microsoft Defender Advanced Threat Protection test"
-    },
-    "IP": {
-        "Address": "2.2.2.2"
-    },
-    "MicrosoftATP": {
-        "Indicators": {
-            "@odata.context": "https://api.securitycenter.microsoft.com/api/$metadata#Indicators/$entity",
-            "action": "Allowed",
-            "createdBy": "1281a70f-8ffb-4b3c-bc82-eef2a44dbb2a",
-            "createdByDisplayName": "MS Graph ATP",
-            "createdBySource": "PublicApi",
-            "creationTimeDateTimeUtc": "2021-08-17T08:58:12.0340768Z",
-            "description": "test",
-            "expirationTime": "2021-08-18T08:58:11Z",
-            "generateAlert": false,
-            "historicalDetection": false,
-            "id": "5143",
-            "indicatorType": "IpAddress",
-            "indicatorValue": "2.2.2.2",
-            "lastUpdateTime": "2021-08-17T08:58:12.0438875Z",
-            "mitreTechniques": [],
-            "rbacGroupIds": [],
-            "rbacGroupNames": [],
-            "severity": "Informational",
-            "title": "title"
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->### Indicator 2.2.2.2 was updated successfully
->
->|id|action|indicatorValue|indicatorType|severity|title|description|
->|---|---|---|---|---|---|---|
->| 5143 | Allowed | 2.2.2.2 | IpAddress | Informational | title | test |
-
-### microsoft-atp-list-machines-by-vulnerability
-
----
-Retrieves a list of machines affected by a vulnerability.
-
-##### Required Permissions
-
-Vulnerability.Read.All
-
-#### Base Command
-
-`microsoft-atp-list-machines-by-vulnerability`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| cve_id | A comma-separated list of CVE IDs used for getting the machines. | Required |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| MicrosoftATP.CveMachine.ID | String | The machine ID. |
-| MicrosoftATP.CveMachine.ComputerDNSName | String | The machine hostname. |
-| MicrosoftATP.CveMachine.OSPlatform | String | The operating system platform. |
-| MicrosoftATP.CveMachine.RBACGroupName | String | The machine RBAC group name. |
-| MicrosoftATP.CveMachine.CVE | Unknown | The given CVE IDs related to this machine. |
-
-#### Command example
-
-```!microsoft-atp-list-machines-by-vulnerability cve_id=CVE-2021-32810,CVE-2020-12321```
-
-#### Context Example
-
-```json
-{
-    "MicrosoftATP": {
-        "CveMachine": [
-            {
-                "ComputerDNSName": "ec2amaz",
-                "ID": "f3bba49a",
-                "OSPlatform": "WindowsServer2016",
-                "RBACGroupID": 0,
-                "CVE": ["CVE-2021-32810", "CVE-2020-12321"]
-            },
-            {
-                "ComputerDNSName": "msde-agent-host-centos7",
-                "ID": "48a62a74",
-                "OSPlatform": "Linux",
-                "RBACGroupID": 0,
-                "CVE": ["CVE-2020-12321"]
-            }
-        ]
-    }
-}
-```
 
 #### Human Readable Output
 
@@ -4875,16 +4624,14 @@ We suggest using the [TransformIndicatorToMSDefenderIOC automation](https://gith
 >| 5217 | 220e7d15b011d7fac48f2bd61114db1022197f7f | false |
 >| 5218 | 2233223322332233223322332233223322332233223322332233223322332222 | false |
 
-### microsoft-atp-get-alert-by-id (Deprecated)
-
-This command has been deprecated. Use 'msg-get-alert-details' in the 'Microsoft Graph Security' integration instead.
+### microsoft-atp-get-alert-by-id
 
 ---
 Retrieves specific alert by the given alert ID.
 
 ##### Required Permissions
 
-Alert.ReadWrite.All
+Alert.ReadWrite.All 
 
 #### Base Command
 
@@ -6289,9 +6036,7 @@ User.Read.All
 >|---|---|---|---|---|---|---|---|
 >| contoso\\user1 | user1 | contoso | 2019-12-18T08:02:54Z | 2020-01-06T08:01:48Z | Interactive | True | False |
 
-### microsoft-atp-get-machine-alerts (Deprecated)
-
-This command has been deprecated. No available replacement.
+### microsoft-atp-get-machine-alerts
 
 ---
 Retrieves all alerts related to a specific device.
@@ -6368,7 +6113,7 @@ Offboard a machine from microsoft ATP.
 
 ##### Required Permissions
 
-Machine.Offboard
+Machine.Offboard 
 
 ##### Base Command
 
@@ -6484,81 +6229,40 @@ Collect and download an investigation package as a gz file.
 
 ##### Command example
 
-```!microsoft-atp-isolate-machine comment=isolate_test_3 isolation_type=Full machine_id="12342c13fef,12342c13fef8f06606"```
+### microsoft-atp-offboard-machine
 
-##### Context Example
-
-```json
-{
-    "MicrosoftATP": {
-        "MachineAction": [
-            {
-                "ComputerDNSName": "desktop-s2455r8",
-                "CreationDateTimeUtc": "2022-01-25T14:25:52.6227941Z",
-                "ID": "1f3098e20464",
-                "LastUpdateTimeUtc": null,
-                "MachineID": "12342c13fef",
-                "RelatedFileInfo": {
-                    "FileIdentifier": null,
-                    "FileIdentifierType": null
-                },
-                "Requestor": "2f48b784-5da5-4e61-9957-012d2630f1e4",
-                "RequestorComment": "isolate_test_3",
-                "Scope": "Full",
-                "Status": "Pending",
-                "Type": "Isolate"
-            },
-            {
-                "ComputerDNSName": "desktop-s2455r9",
-                "CreationDateTimeUtc": "2022-01-25T14:25:53.2395007Z",
-                "ID": "6d39a3da0744",
-                "LastUpdateTimeUtc": null,
-                "MachineID": "12342c13fef8f06606",
-                "RelatedFileInfo": {
-                    "FileIdentifier": null,
-                    "FileIdentifierType": null
-                },
-                "Requestor": "2f48b784-5da5-4e61-9957-012d2630f1e4",
-                "RequestorComment": "isolate_test_3",
-                "Scope": "Full",
-                "Status": "Pending",
-                "Type": "Isolate"
-            }
-        ]
-    }
-}
-```
-
-##### Human Readable Output
-
->##### The isolation request has been submitted successfully
->
->|ID|Type|Requestor|RequestorComment|Status|MachineID|ComputerDNSName|
->|---|---|---|---|---|---|---|
->| 1f3098e20464 | Isolate | 2f48b784-5da5-4e61-9957-012d2630f1e4 | isolate_test_3 | Pending | 12342c13fef | desktop-s2455r8 |
->| 6d39a3da0744 | Isolate | 2f48b784-5da5-4e61-9957-012d2630f1e4 | isolate_test_3 | Pending | 12342c13fef8f06606 | desktop-s2455r9 |
-
-### microsoft-atp-test
-
----
-Tests connectivity to Microsoft Defender for Endpoint.
+***
+Offboard a machine from Microsoft Defender for Endpoint.
 
 #### Base Command
 
-`microsoft-atp-test`
+`microsoft-atp-offboard-machine`
 
 #### Input
 
-There are no input arguments for this command.
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| machine_id | A comma-separated list of machine IDs to be used for offboarding. e.g., 0a3250e0693a109f1affc9217be9459028aa8426,0a3250e0693a109f1affc9217be9459028aa8424. | Required |
+| comment | A comment to associate with the action. | Required |
+| ran_once_flag | Flag for the rate limit retry. | Optional |
 
 #### Context Output
 
-There is no context output for this command.
-
-### microsoft-atp-list-software
-
----
-Retrieves the organization software inventory.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftATP.OffboardMachine.ID | String | The machine action ID. |
+| MicrosoftATP.OffboardMachine.Type | String | Type of the machine action. |
+| MicrosoftATP.OffboardMachine.Scope | Unknown | Scope of the action. |
+| MicrosoftATP.OffboardMachine.Requestor | String | The ID of the user that executed the action. |
+| MicrosoftATP.OffboardMachine.RequestorComment | String | Comment that was written when issuing the action. |
+| MicrosoftATP.OffboardMachine.Status | String | The current status of the command. |
+| MicrosoftATP.OffboardMachine.MachineID | String | The machine ID on which the action was executed. |
+| MicrosoftATP.OffboardMachine.ComputerDNSName | String | The machine DNS name on which the action was executed. |
+| MicrosoftATP.OffboardMachine.CreationDateTimeUtc | Date | The date and time when the action was created. |
+| MicrosoftATP.OffboardMachine.LastUpdateTimeUtc | Date | The last date and time when the action status was updated. |
+| MicrosoftATP.OffboardMachine.cancellationDateTimeUtc | Date | The date and time when the action was canceled. |
+| MicrosoftATP.OffboardMachine.RelatedFileInfo | String | The file info. |
+| MicrosoftATP.OffboardMachine.troubleshootInfo | String | Troubleshooting information. |
 
 #### Base Command
 
@@ -6919,7 +6623,7 @@ Retrieves a list of all the vulnerabilities affecting the organization per machi
 >
 >|id|cveId|machineId|productName|productVendor|productVersion|severity|
 >|---|---|---|---|---|---|---|
->| 1111111111111111111111111111111111111111-*-CVE-1111-1111-*-some_vendor-*-some_name-*-11.11.11.11111111-_- | CVE-1111-1111 | 1111111111111111111111111111111111111111 | some_name | some_vendor | 11.11.11.11111111 | Medium |
+>| 1111111111111111111111111111111111111111-_-CVE-1111-1111-_-some_vendor-_-some_name-_-11.11.11.11111111-_- | CVE-1111-1111 | 1111111111111111111111111111111111111111 | some_name | some_vendor | 11.11.11.11111111 | Medium |
 
 ### microsoft-atp-list-vulnerabilities
 
@@ -7135,6 +6839,120 @@ There are no input arguments for this command.
 
 There is no context output for this command.
 
+### microsoft-atp-get-machine-missing-kbs
+
+***
+Get the specific machine's missing security updates (KBs).
+
+#### Base Command
+
+`microsoft-atp-get-machine-missing-kbs`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| machine_id | The machine ID. Can be retrieved by running the 'microsoft-atp-get-machines' command. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftATP.PublicProductFix.ID | String | The missing KB ID. |
+| MicrosoftATP.PublicProductFix.Name | String | The missing KB name. |
+| MicrosoftATP.PublicProductFix.ProductsNames | String | The product names. |
+| MicrosoftATP.PublicProductFix.URL | String | The KB URL. |
+| MicrosoftATP.PublicProductFix.MachineMissedOn | Number | The amount of machines that is missing this KB. |
+| MicrosoftATP.PublicProductFix.CVEAddressed | Number | The CVE addressed by this KB. |
+| MicrosoftATP.PublicProductFix.OSBuild | String | The OS build. |
+
+### microsoft-atp-get-machine-software
+
+***
+Get the specific machine's software details.
+
+#### Base Command
+
+`microsoft-atp-get-machine-software`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| machine_id | The machine ID. Can be retrieved by running the 'microsoft-atp-get-machines' command. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftATP.Software.ID | String | The software ID. |
+| MicrosoftATP.Software.Name | String | The software name. |
+| MicrosoftATP.Software.Vendor | String | The software vendor name. |
+| MicrosoftATP.Software.Weaknesses | Number | The amount of weaknesses present in the software. |
+| MicrosoftATP.Software.PublicExploit | Boolean | Does this software have a public exploit? |
+| MicrosoftATP.Software.ActiveAlert | Boolean | Does this software have an active alert? |
+| MicrosoftATP.Software.ExposedMachines | Number | The amount of machines exposed to this software. |
+| MicrosoftATP.Software.InstalledMachines | Number | The amount of machines with this software installed. |
+| MicrosoftATP.Software.ImpactScore | Number | The impact score of the software. |
+| MicrosoftATP.Software.IsNormalized | Boolean | Is the software value normalized? |
+| MicrosoftATP.Software.Category | String | The software category. |
+| MicrosoftATP.Software.Distributions | String | The distributions on which this software is present. |
+
+### microsoft-atp-get-machine-vulnerabilities
+
+***
+Get the specific machine's vulnerabilities.
+
+#### Base Command
+
+`microsoft-atp-get-machine-vulnerabilities`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| machine_id | The machine ID. Can be retrieved by running the 'microsoft-atp-get-machines' command. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftATP.PublicVulnerability.ID | String | The vulnerability ID. |
+| MicrosoftATP.PublicVulnerability.Name | String | The vulnerability name. |
+| MicrosoftATP.PublicVulnerability.CVESupportability | String | The CVE supportability. |
+| MicrosoftATP.PublicVulnerability.CVSSV3 | Number | The CVSS V3. |
+| MicrosoftATP.PublicVulnerability.CVSSVector | String | The CVSS vector. |
+| MicrosoftATP.PublicVulnerability.Description | String | A description of this vulnerability. |
+| MicrosoftATP.PublicVulnerability.EPSS | Number | The EPSS. |
+| MicrosoftATP.PublicVulnerability.ExploitInKit | Boolean | Is this vulnerability in an exploit kit? |
+| MicrosoftATP.PublicVulnerability.ExploitTypes | String | The type\(s\) of exploit\(s\). |
+| MicrosoftATP.PublicVulnerability.ExploitUris | String | The exploit URIs. |
+| MicrosoftATP.PublicVulnerability.ExploitVerified | Boolean | Is this exploit verified? |
+| MicrosoftATP.PublicVulnerability.ExposedMachines | Number | The amount of machines exposed to this vulnerability. |
+| MicrosoftATP.PublicVulnerability.FirstDetected | String | The date and time when this vulnerability was first detected. |
+| MicrosoftATP.PublicVulnerability.PublicExploit | Boolean | Does this vulnerability have a public exploit? |
+| MicrosoftATP.PublicVulnerability.PublishedOn | String | The date and time when this vulnerability was published. |
+| MicrosoftATP.PublicVulnerability.Severity | String | The severity of this vulnerability. |
+| MicrosoftATP.PublicVulnerability.Tags | String | The tags associated with this vulnerability. |
+| MicrosoftATP.PublicVulnerability.UpdatedOn | String | The date and time when this vulnerability was last updated. |
+
+### microsoft-atp-list-auth-permissions
+
+***
+This command gets the permissions from the currently configured credentials. Use for debugging and detecting permission issues.
+
+#### Base Command
+
+`microsoft-atp-list-auth-permissions`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
+
 ### microsoft-atp-get-machine-by-ip
 
 ***
@@ -7181,263 +6999,47 @@ Find Machines seen with the requested internal IP in the time range of 15 minute
 | MicrosoftATP.Machine.IPAddresses.type | String | The machine IP address type. |
 | MicrosoftATP.Machine.AgentVersion | String | The machine Agent version. |
 
-#### Command example
-
-```!microsoft-atp-get-machine-by-ip ip=8.8.8.8 timestamp=2024-05-23T10:15:00Z```
-
-#### Human Readable Output
-
->### Microsoft Defender ATP Machine
->
->|ID|ComputerDNSName|OSPlatform|LastIPAddress|LastExternalIPAddress|HealthStatus|RiskScore|ExposureLevel|
->|---|---|---|---|---|---|---|---|
->| f3bba49a | ec2amaz-ua9hieu | WindowsServer2016 | 1.2.3.4 | 127.0.0.1 | Active | None | High |
-
-## Deprecation Details
-
-| **Deprecated Commands**                     | **Replacement**                                                                                                                                               |
-|----------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `Fetch incidents`    | Use `Fetch incidents` in the `Microsoft Graph Security` integration, and select `Graph Security Alert` under the `Alert type`.                                                   |
-| `microsoft-atp-create-alert`    | No available replacement.                                                                                                                                     |
-| `microsoft-atp-get-alert-by-id` | Use `msg-get-alert-details` in the `Microsoft Graph Security` integration instead.                                                                            |
-| `microsoft-atp-get-alert-related-files` | An alternative is to use the `msg-get-alert-details` command in the `Microsoft Graph Security` integration, which can retrieve `fileDetails` as part of the alert details. See Microsoft documentation [here](https://learn.microsoft.com/en-us/graph/api/resources/security-fileevidence?view=graph-rest-1.0). |
-| `microsoft-atp-get-alert-related-ips`   | An alternative is to use the `msg-get-alert-details` command in the `Microsoft Graph Security` integration, which can retrieve `IpAddress` as part of the alert details. See Microsoft documentation [here](https://learn.microsoft.com/en-us/graph/api/resources/security-ipevidence?view=graph-rest-1.0). |
-| `microsoft-atp-get-alert-related-user`  | An alternative is to use the `msg-get-alert-details` command in the `Microsoft Graph Security` integration, which can retrieve `userAccount` information as part of the alert details. See Microsoft documentation [here](https://learn.microsoft.com/en-us/graph/api/resources/security-userevidence?view=graph-rest-1.0). |
-| `microsoft-atp-get-alert-related-domains` | An alternative is to use the `msg-get-alert-details` command in the `Microsoft Graph Security` integration to retrieve `DomainName` as part of the alert details. See Microsoft documentation [here](https://learn.microsoft.com/en-us/graph/api/resources/security-userevidence?view=graph-rest-1.0). |
-| `microsoft-atp-get-domain-alerts`       | No available replacement.                                                                                                                                 |
-| `microsoft-atp-get-file-alerts`         | No available replacement.                                                                                                                                 |
-| `microsoft-atp-get-ip-alerts`           | No available replacement.                                                                                                                                 |
-| `microsoft-atp-get-machine-alerts`      | No available replacement.                                                                                                                                 |
-| `microsoft-atp-get-user-alerts`         | No available replacement.                                                                                                                                 |
-| `microsoft-atp-list-alerts`             | Use the `msg-search-alerts` command in the `Microsoft Graph Security` integration instead.                                                                |
-| `microsoft-atp-update-alert`            | Use the `msg-update-alert` command in the `Microsoft Graph Security` integration instead.                                                                 |
-| `microsoft-atp-advanced-hunting`        | Use the `msg-advanced-hunting` command in the `Microsoft Graph Security` integration instead.                                                             |
-
-### microsoft-atp-get-machine-vulnerabilities
+### file
 
 ***
-Run this command to get the vulnerabilities from a specific machine.
+Checks the file reputation of the specified hash.
 
 #### Base Command
 
-`microsoft-atp-get-machine-vulnerabilities`
+`file`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| machine_id | Machine ID. Use the !microsoft-atp-get-machines command to get the ID. | Required |
+| file | Hash of the file to query. Supports MD5, SHA1, and SHA256. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftATP.PublicVulnerability.ID | String | The vulnerability ID. |
-| MicrosoftATP.PublicVulnerability.Name | String | The vulnerability name. |
-| MicrosoftATP.PublicVulnerability.CVESupportability | String | The CVE supportability. |
-| MicrosoftATP.PublicVulnerability.CVSSV3 | Number | The CVSS V3. |
-| MicrosoftATP.PublicVulnerability.CVSSVector | String | The CVSS vector. |
-| MicrosoftATP.PublicVulnerability.Description | String | A description of this vulnerability. |
-| MicrosoftATP.PublicVulnerability.EPSS | Number | The EPSS. |
-| MicrosoftATP.PublicVulnerability.ExploitInKit | Boolean | Is this vulnerability in an exploit kit? |
-| MicrosoftATP.PublicVulnerability.ExploitTypes | String | The type(s) of exploit(s). |
-| MicrosoftATP.PublicVulnerability.ExploitUris | String | The exploit URIs. |
-| MicrosoftATP.PublicVulnerability.ExploitVerified | Boolean | Is this exploit verified? |
-| MicrosoftATP.PublicVulnerability.ExposedMachines | Number | The amount of machines exposed to this vulnerability. |
-| MicrosoftATP.PublicVulnerability.FirstDetected | String | The date and time when this vulnerability was first detected. |
-| MicrosoftATP.PublicVulnerability.PublicExploit | Boolean | Does this vulnerability have a public exploit? |
-| MicrosoftATP.PublicVulnerability.PublishedOn | String | The date and time when this vulnerability was published. |
-| MicrosoftATP.PublicVulnerability.Severity | String | The severity of this vulnerability. |
-| MicrosoftATP.PublicVulnerability.Tags | String | The tags associated with this vulnerability. |
-| MicrosoftATP.PublicVulnerability.UpdatedOn | String | The date and time when this vulnerability was last updated. |
-
-#### Command example
-
-```!microsoft-atp-get-machine-vulnerabilities machine_id="12342c13fef```
-
-#### Context Example
-
-```json
-{
-  "MicrosoftATP": {
-      "PublicVulnerability": {
-        "@odata.context": "https://api.securitycenter.windows.com/api/$metadata#Collection(microsoft.windowsDefenderATP.api.PublicVulnerabilityDto)",
-        "CVESupportability": "Supported",
-        "CVSSV3": 3.7,
-        "CVSSVector": "CVSS:3.0/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:L/E:F/RL:O/RC:C",
-        "Description": "Summary: Foo is vulnerable to a denial of service due to improper server configuration validation.",  # noqa: E501
-        "EPSS": 0,
-        "ExploitInKit": False,
-        "ExploitTypes": [
-            "Remote"
-        ],
-        "ExploitUris": [],
-        "ExploitVerified": False,
-        "ExposedMachines": 1,
-        "FirstDetected": "20XX-MM-DDThh:mm:ssZ",
-        "ID": "CVE-20XX-1234",
-        "Name": "CVE-20XX-1234",
-        "PublicExploit": False,
-        "PublishedOn": "20XX-MM-DDThh:mm:ssZ",
-        "Severity": "Low",
-        "Tags": [],
-        "UpdatedOn": "20XX-MM-DDThh:mm:ssZ"
-    }
-  }
-}
-```
-
-#### Human Readable Output
-
->### Microsoft Defender ATP Vulnerability
->
->| ID | Name | CVESupportability | CVSSV3 | CVSSVector | Description | EPSS | ExploitInKit | ExploitTypes | ExploitVerified | ExposedMachines | FirstDetected | PublicExploit | PublishedOn | Severity | UpdatedOn |
->|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| CVE-20XX-1234 | CVE-20XX-1234 | Supported | 3.7 | CVSS:3.0/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:L/E:F/RL:O/RC:C | Summary: Foo is vulnerable to a denial of service due to improper server configuration validation. | 0 | false | Remote | false | 1 | 20XX
-
-### microsoft-atp-get-machine-software
-
-***
-Run this command to get the sofware installed on a specific machine.
-
-#### Base Command
-
-`microsoft-atp-get-machine-software`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| machine_id | Machine ID. Use the !microsoft-atp-get-machines command to get the ID. | Required |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| MicrosoftATP.Software.ID | String | The Software ID. |
-| MicrosoftATP.Software.Name | String | The software name. |
-| MicrosoftATP.Software.Vendor | String | The software vendor name. |
-| MicrosoftATP.Software.Weaknesses | Number | The amount of weaknesses present in the software. |
-| MicrosoftATP.Software.PublicExploit | Boolean | Does this software have a public exploit? |
-| MicrosoftATP.Software.ActiveAlert | Boolean | Does this software have an active alert? |
-| MicrosoftATP.Software.ExposedMachines | Number | The amount of machines exposed to this software. |
-| MicrosoftATP.Software.InstalledMachines | Number | The amount of machines with this software installed. |
-| MicrosoftATP.Software.ImpactScore | Number | The impact score of the software. |
-| MicrosoftATP.Software.IsNormalized | Number | Is the software value normalized? |
-| MicrosoftATP.Software.Category | String | The software category. |
-| MicrosoftATP.Software.Distributions | String | The distributions on which this software is present. |
-
-#### Command example
-
-```!microsoft-atp-get-machine-software machine_id="12342c13fef```
-
-#### Context Example
-
-```json
-{
-  "MicrosoftATP": {
-      "Software": {
-        "@odata.context": "https://api.securitycenter.windows.com/api/$metadata#Software",
-        "ID": "some_id",
-        "Name": "some_name",
-        "Vendor": "some_vendor",
-        "Weaknesses": 0,
-        "PublicExploit": false,
-        "ActiveAlert": false,
-        "ExposedMachines": 0,
-        "InstalledMachines": 1,
-        "ImpactScore": 0,
-        "IsNormalized": false,
-        "Category": "",
-        "Distributions": []
-    }
-  }
-}
-```
-
-#### Human Readable Output
->
->### Microsoft Defender ATP Software
->
->| ID         | Name         | Vendor         | PublicExploit | ActiveAlert | ExposedMachines | InstalledMachines | ImpactScore | IsNormalized |
->|------------|--------------|----------------|---------------|-------------|-----------------|-------------------|-------------|--------------|
->| some_id    | some_name    | some_vendor    | false         | false       | 0               | 1                 | 0           | false        |
->| another_id | another_name | another_vendor | true          | true        | 0               | 1                 | 0           | false        |
-
-### microsoft-atp-get-machine-missing-kbs
-
-***
-Run this command to get the missing security updates (KBs) from a specific machine.
-
-#### Base Command
-
-`microsoft-atp-get-machine-missing-kbs`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| machine_id | Machine ID. Use the !microsoft-atp-get-machines command to get the ID. | Required |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| MicrosoftATP.PublicProductFix.ID | String | Software ID. |
-| MicrosoftATP.PublicProductFix.Name | String | Software name. |
-| MicrosoftATP.PublicProductFix.ProductsNames | String | The product names. |
-| MicrosoftATP.PublicProductFix.URL | String | URL. |
-| MicrosoftATP.PublicProductFix.MachineMissedOn | Number | Machine missed on. |
-| MicrosoftATP.PublicProductFix.CVEAddressed | Number | CVE addressed. |
-| MicrosoftATP.PublicProductFix.OSBuild | String | The OS Build version. |
-
-#### Command example
-
-```!microsoft-atp-get-machine-missing-kbs machine_id="12342c13fef,12342c13fef8f06606```
-
-#### Context Example
-
-```json
-{
-  "MicrosoftATP": {
-      "PublicProductFix": {
-        "@odata.context": "https://api.securitycenter.windows.com/api/$metadata#Collection(microsoft.windowsDefenderATP.api.PublicProductFixDto)",
-        "ID": "1234567",
-        "Name": "March 20XX Security Updates",
-        "ProductsNames": [
-            "windows_10",
-            "edge",
-            "internet_explorer"
-        ],
-        "URL": "https://catalog.update.microsoft.com/v7/site/Search.aspx?q=KB1234567",
-        "MachineMissedOn": 1,
-        "CVEAddressed": 97,
-        "OSBuild": 12345
-    }
-  }
-}
-```
-
-#### Human Readable Output
->
->### Microsoft Defender ATP Security Update
->
->|ID|Name|OSBuild|URL|MachineMissedOn|CVEAddressed|\n|---|---|---|---|---|---|
->| 1234567 | March 20XX Security Updates | 12345 | [https://catalog.update.microsoft.com/v7/site/Search.aspx?q=KB1234567](https://catalog.update.microsoft.com/v7/site/Search.aspx?q=KB1234567) | 1 | 97 |
-
-### microsoft-atp-list-auth-permissions
-
-***
-This command gets the permissions from the currently configured credentials. Use for debugging and detecting permission issues.
-
-#### Base Command
-
-`microsoft-atp-list-auth-permissions`
-
-#### Input
-
-There are no input arguments for this command.
-
-#### Context Output
-
-There is no context output for this command.
+| MicrosoftATP.File.Sha1 | String | The SHA1 hash of the file. |
+| MicrosoftATP.File.MD5 | String | The MD5 hash of the file. |
+| MicrosoftATP.File.Sha256 | String | The SHA256 hash of the file. |
+| MicrosoftATP.File.GlobalPrevalence | Number | The file prevalence across the organization. |
+| MicrosoftATP.File.GlobalFirstObserved | Date | The first time the file was observed. |
+| MicrosoftATP.File.GlobalLastObserved | Date | The last time the file was observed. |
+| MicrosoftATP.File.Size | Number | The size of the file. |
+| MicrosoftATP.File.FileType | String | The type of the file. |
+| MicrosoftATP.File.IsPeFile | Boolean | True if the file is portable executable, False otherwise. |
+| MicrosoftATP.File.FilePublisher | String | The file's publisher. |
+| MicrosoftATP.File.FileProductName | String | The file product name. |
+| MicrosoftATP.File.Signer | String | The file signer. |
+| MicrosoftATP.File.Issuer | String | The file issuer. |
+| MicrosoftATP.File.SignerHash | String | The hash of the signing certificate. |
+| MicrosoftATP.File.IsValidCertificate | Boolean | Was signing certificate successfully verified by Microsoft Defender ATP agent. |
+| MicrosoftATP.File.DeterminationValue | String | The file determination value. |
+| MicrosoftATP.File.DeterminationType | String | The file determination type. |
+| File.SHA1 | String | The SHA1 hash of the file. |
+| File.SHA256 | String | The SHA256 hash of the file. |
+| File.Type | String | The file type. |
+| File.Size | Number | The file size. |
+| DBotScore.Indicator | String | The indicator that was tested. |
+| DBotScore.Type | String | The indicator type. |
+| DBotScore.Vendor | String | The vendor used to calculate the score. |
+| DBotScore.Score | Number | The actual score. |
