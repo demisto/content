@@ -46,6 +46,7 @@ def prepare_start_end_time(args: dict):
 
 
 def main():  # pragma: nocover
+    
     """
     Gets cases using the core-get-cases command with the given arguments.
     """
