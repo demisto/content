@@ -493,7 +493,7 @@ def get_indicators(client: Client, params, base_commit_sha, head_commit, is_firs
     except Exception as err:
         demisto.error(str(err))
         raise ValueError(f"Could not parse returned data as indicator. \n\nError massage: {err}")
-    demisto.debug(f"Fetched {len(indicators)} indicators with values: {[indicator.get("value") for indicator in indicators]}.")
+    demisto.debug(f"Fetched {len(indicators)} indicators with values: {[indicator.get('value') for indicator in indicators]}.")
     return indicators, last_commit_info
 
 
