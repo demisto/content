@@ -1,6 +1,7 @@
 import demistomock as demisto
 import plyara
 import plyara.utils
+from plyara.exceptions import ParseError as YaraParseError
 import tldextract
 from CommonServerPython import *
 from TAXII2ApiModule import *
@@ -174,12 +175,12 @@ def parse_and_map_yara_content(content_item: dict[str, str]) -> list:
 
     text_content = list(content_item.values())[0]
     file_path = list(content_item.keys())[0]
-    parsed_rules = []
-    parser = plyara.Plyara()
-    raw_rules = parser.parse_string(text_content)
     current_time = datetime.now().isoformat()
-    for parsed_rule in raw_rules:
-        try:
+    parser = plyara.Plyara()
+    parsed_rules = []
+    try:
+        raw_rules = parser.parse_string(text_content)
+        for parsed_rule in raw_rules:
             metadata = {key: value for d in parsed_rule["metadata"] for key, value in d.items()}
             value_ = parsed_rule["rule_name"]
             type_ = "YARA Rule"
@@ -205,9 +206,8 @@ def parse_and_map_yara_content(content_item: dict[str, str]) -> list:
                 "rawJSON": {"value": value_, "type": type_},
             }
             parsed_rules.append(indicator_obj)
-        except Exception as e:
-            demisto.error(f"Rull: {parsed_rule} cannot be processed. Error Message: {e}")
-            continue
+    except YaraParseError as e:
+        demisto.error(f"File: {file_path!r} cannot be processed. Error Message: {e}")
     return parsed_rules
 
 
@@ -493,7 +493,7 @@ def get_indicators(client: Client, params, base_commit_sha, head_commit, is_firs
     except Exception as err:
         demisto.error(str(err))
         raise ValueError(f"Could not parse returned data as indicator. \n\nError massage: {err}")
-    demisto.debug(f"fetching {len(indicators)} indicators")
+    demisto.debug(f"Fetched {len(indicators)} indicators with values: {[indicator.get("value") for indicator in indicators]}.")
     return indicators, last_commit_info
 
 
