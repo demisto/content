@@ -4209,3 +4209,131 @@ def test_aws_error_handler_handle_client_error_unhandled_exception_debug_logging
         AWSErrorHandler.handle_client_error(client_error, "accountID")
 
     mock_debug.assert_any_call("[AWSErrorHandler] Unhandled error: Unexpected error")
+
+
+def test_delete_bucket_website_command_success(mocker):
+    """
+    Given: A mocked boto3 S3 client and valid bucket name argument.
+    When: delete_bucket_website_command is called.
+    Then: It should return `CommandResults` with a success message confirming the bucket website deletion.
+    """
+    from AWS import S3
+
+    mock_client = mocker.Mock()
+    mock_client.delete_bucket_website.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
+    args = {"bucket": "mock_bucket_name"}
+    result = S3.delete_bucket_website_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert "Successfully removed the static website configuration from mock_bucket_name bucket." in result.readable_output
+
+
+def test_delete_bucket_website_command_failure(mocker):
+    """
+    Given: A mocked boto3 S3 client and valid bucket name argument.
+    When: delete_bucket_website_command is called.
+    Then: It should return CommandResults with error entry type and error message.
+    """
+    from AWS import S3
+
+    mock_client = mocker.Mock()
+    mock_client.delete_bucket_website.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
+    args = {"bucket": "mock_bucket_name"}
+
+    with pytest.raises(DemistoException, match="Failed to delete bucket website for mock_bucket_name."):
+        S3.delete_bucket_website_command(mock_client, args)
+
+
+def test_modify_event_subscription_command_success(mocker):
+    """
+    Given: A mocked boto3 RDS client and valid bucket subscription and event categories arguments.
+    When: modify_event_subscription_command is called.
+    Then: It should return `CommandResults` with a success message confirming event subscription modification.
+    """
+    from AWS import RDS
+
+    mock_client = mocker.Mock()
+    mock_client.modify_event_subscription.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
+    args = {"subscription_name": "mock_subscription_name", "event_categories": "maintenance, recovery"}
+    result = RDS.modify_event_subscription_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert "Event subscription mock_subscription_name successfully modified." in result.readable_output
+
+
+def test_modify_event_subscription_command_failure(mocker):
+    """
+    Given: A mocked boto3 RDS client and valid bucket subscription and event categories arguments.
+    When: modify_event_subscription_command is called.
+    Then: It should return CommandResults with error entry type and error message.
+    """
+    from AWS import RDS
+
+    mock_client = mocker.Mock()
+    mock_client.modify_event_subscription.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
+    args = {"subscription_name": "mock_subscription_name", "event_categories": "maintenance, recovery"}
+
+    with pytest.raises(DemistoException, match="Failed to modify event subscription mock_subscription_name."):
+        RDS.modify_event_subscription_command(mock_client, args)
+
+
+def test_put_bucket_ownership_controls_command_success(mocker):
+    """
+    Given: A mocked boto3 S3 client and valid bucket name and ownership controls rule arguments.
+    When: put_bucket_ownership_controls_command is called.
+    Then: It should return `CommandResults` with a success message confirming bucket ownership controls modification.
+    """
+    from AWS import S3
+
+    mock_client = mocker.Mock()
+    mock_client.put_bucket_ownership_controls.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
+    args = {"bucket": "mock_bucket_name", "ownership_controls_rule": "maintenance, recovery"}
+    result = S3.put_bucket_ownership_controls_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert "Bucket Ownership Controls successfully updated for mock_bucket_name" in result.readable_output
+
+
+def test_put_bucket_ownership_controls_command_failure(mocker):
+    """
+    Given: A mocked boto3 S3 client and valid bucket name and ownership controls rule arguments.
+    When: put_bucket_ownership_controls_command is called.
+    Then: It should return CommandResults with error entry type and error message.
+    """
+    from AWS import S3
+
+    mock_client = mocker.Mock()
+    mock_client.put_bucket_ownership_controls.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
+    args = {"bucket": "mock_bucket_name", "ownership_controls_rule": "maintenance, recovery"}
+
+    with pytest.raises(DemistoException, match="Failed to set Bucket Ownership Controls for mock_bucket_name."):
+        S3.put_bucket_ownership_controls_command(mock_client, args)
+
+
+def test_modify_subnet_attribute_command_success(mocker):
+    """
+    Given: A mocked boto3 RC2 client and valid subnet ID and additional argument to modify.
+    When: modify_subnet_attribute_command is called.
+    Then: It should return `CommandResults` with a success message confirming subnet configuration modification.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.modify_subnet_attribute.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
+    args = {"subnet_id": "mock_subnet_id", "enable_dns64": "true"}
+    result = EC2.modify_subnet_attribute_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert "Subnet configuration successfully updated." in result.readable_output
+
+
+def test_modify_subnet_attribute_command_failure(mocker):
+    """
+    Given: A mocked boto3 RC2 client and valid subnet ID and additional argument to modify.
+    When: modify_subnet_attribute_command is called.
+    Then: It should return CommandResults with error entry type and error message.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.modify_subnet_attribute.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
+    args = {"subnet_id": "mock_subnet_id", "enable_dns64": "true"}
+
+    with pytest.raises(DemistoException, match="Modification could not be performed."):
+        EC2.modify_subnet_attribute_command(mock_client, args)
