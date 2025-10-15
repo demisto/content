@@ -40,6 +40,7 @@ configuration:
   type: 9
   displaypassword: Secret Key
   required: false
+  section: Connect
 - defaultvalue: 3 days
   display: First fetch time (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
   name: first_fetch
