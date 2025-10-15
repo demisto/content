@@ -1,7 +1,6 @@
 import demistomock as demisto
 import plyara
 import plyara.utils
-from plyara.exceptions import ParseError as YaraParseError
 import tldextract
 from CommonServerPython import *
 from TAXII2ApiModule import *
@@ -206,7 +205,7 @@ def parse_and_map_yara_content(content_item: dict[str, str]) -> list:
                 "rawJSON": {"value": value_, "type": type_},
             }
             parsed_rules.append(indicator_obj)
-    except YaraParseError as e:
+    except Exception as e:
         demisto.error(f"File: {file_path!r} cannot be processed. Error Message: {e}")
     return parsed_rules
 
