@@ -3428,6 +3428,7 @@ def get_machine_action_data(machine_action_response):
 
     Returns:
         dict. Machine action's info
+        Some change
     """
     action_data = {
         "ID": machine_action_response.get("id"),
