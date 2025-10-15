@@ -22,7 +22,7 @@
 
    Most commands require a **User** or **Team** token that has admin level access to the workspace.
 
-   Fetching audit trail events requires an **Audit trail** or **Organization** token.
+   <~XSIAM>Fetching audit trail events requires an **Audit trail** or **Organization** token. </~XSIAM>
 
    For additional details, refer to the integration documentation and [HashiCorp Terraform API Tokens](https://developer.hashicorp.com/terraform/cloud-docs/users-teams-organizations/api-tokens).
 
@@ -34,6 +34,7 @@
 
 6. Copy the token from the box and save it in a secure location. Use it to configure an instance of this integration.
 
+<~XSIAM>
 ---
 
 ### How to Fetch Access Audit Trail Events
@@ -45,3 +46,5 @@ The organization should have the `audit-logging` entitlement to fetch access aud
 #### Rate Limits
 
 The HashiCorp Terraform API can return up to 1,000 access audit trail events per request and supports up to 30 requests per second. If the *Maximum Number of Audit Events Per Fetch* is set too high, the integration instance may encounter HTTP 429 "Too Many Requests" errors. Refer to [HashiCorp Terraform API Rate Limits](https://developer.hashicorp.com/terraform/enterprise/api-docs#rate-limits).
+
+</~XSIAM>

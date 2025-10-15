@@ -50,7 +50,7 @@ configuration:
   hidden:
   - xsoar
 - display: Maximum Number of Audit Events Per Fetch
-  name: max_fetch  # for fetch-events on XSIAM and PLATFORM
+  name: max_fetch  # for fetch-events on XSIAM 
   defaultvalue: 10000
   type: 0
   section: Collect
@@ -241,7 +241,7 @@ script:
       description: Link to the Terraform run data.
       type: String
   - name: terraform-get-events
-    description: Gets Terraform audit trail events. This command is supported in Cortex XSIAM only and is intended to be used for debugging purposes as it may result in duplicate events.
+    description: Retrieves Terraform audit trail events. This command is supported in Cortex XSIAM only and is intended for development and debugging purposes, as it may produce duplicate events.
     arguments:
     - name: from_date
       description: The start date for the audit trails as a relative time expression (e.g., '3 days ago') or an absolute time in ISO 8601 format (e.g., '2025-09-01T00:00:00Z').
@@ -250,7 +250,7 @@ script:
       description: The maximum number of events to retrieve.
       defaultValue: "10"
     - name: should_push_events
-      description: If true, the command will push the events to the Cortex XSIAM dataset. Otherwise, it will only display them. 
+      description: If true, the command will push the events to the Cortex XSIAM dataset; otherwise, it will only display them. 
       auto: PREDEFINED
       predefined:
       - "true"
@@ -660,7 +660,7 @@ script:
   type: python
   subtype: python3
   dockerimage: demisto/auth-utils:1.0.0.4578605
-  # Fetch events (XSIAM and PLATFORM only)
+  # Fetch events (XSIAM only)
   isfetchevents: true
   isfetchevents:xsoar: false
 fromversion: 6.10.0

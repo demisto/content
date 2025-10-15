@@ -48,11 +48,12 @@ VENDOR = "HashiCorp"
 PRODUCT = "Terraform"
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
-DEFAULT_PAGE_SIZE = 1000
 DEFAULT_GET_EVENTS_LIMIT = 10
 DEFAULT_FETCH_EVENTS_LIMIT = 10000
 
-DEFAULT_AUDIT_TRAIL_FROM_TIME = datetime.now(tz=UTC) - timedelta(hours=1)
+DEFAULT_AUDIT_TRAIL_PAGE_SIZE = 1000
+DEFAULT_AUDIT_TRAIL_FROM_DATE = datetime.now(tz=UTC) - timedelta(hours=1)
+DEFAULT_AUDIT_TRAIL_MAX_RETRIES = 3
 
 
 class Client(BaseClient):
@@ -194,20 +195,26 @@ class Client(BaseClient):
 class AsyncClient:
     """An asynchronous client for interacting with the HashiCorp Terraform API; used for SIEM event collection"""
 
-    def __init__(self, base_url: str, token: str, verify_ssl: bool, is_proxy: bool):
+    def __init__(self, base_url: str, token: str, verify: bool, proxy: bool):
         self.base_url = base_url
         self._headers = {"Authorization": f"Bearer {token}"}
-        self._verify_ssl = verify_ssl
-        self._proxy_url = handle_proxy().get("http") if is_proxy else None
+        self._verify = verify
+        self._proxy_url = handle_proxy().get("http") if proxy else None
 
     async def __aenter__(self):
-        self._session = aiohttp.ClientSession(headers=self._headers, connector=aiohttp.TCPConnector(ssl=self._verify_ssl))
+        self._session = aiohttp.ClientSession(headers=self._headers, connector=aiohttp.TCPConnector(ssl=self._verify))
         return self
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
         await self._session.close()
 
-    async def get_audit_trails(self, from_date: str, page_number: int, page_size: int = DEFAULT_PAGE_SIZE) -> dict[str, Any]:
+    async def get_audit_trails(
+        self,
+        from_date: str,
+        page_number: int,
+        page_size: int = DEFAULT_AUDIT_TRAIL_PAGE_SIZE,
+        max_retries: int = DEFAULT_AUDIT_TRAIL_MAX_RETRIES,
+    ) -> dict[str, Any]:
         """
         Retrieves audit trails from Terraform.
 
@@ -215,6 +222,7 @@ class AsyncClient:
             from_date (str): The start date for the audit trails in ISO 8601 format.
             page_number (int): The page number to retrieve.
             page_size (int): The number of items per page. Default is 1000.
+            max_retries (int): The maximum number of retries following HTTP 429 errors. Default is 3.
 
         Returns:
             dict[str, Any]: A dictionary containing the audit trails raw API response.
@@ -222,7 +230,6 @@ class AsyncClient:
         params: dict[str, str] = {"since": from_date, "page[number]": str(page_number), "page[size]": str(page_size)}
         url = urljoin(self.base_url, "/organization/audit-trail")
 
-        max_retries = 5
         backoff_factor = 1
 
         for attempt in range(max_retries):
@@ -233,14 +240,14 @@ class AsyncClient:
                     response.raise_for_status()
                     response_json = await response.json()
                     response_data = response_json.get("data", [])
-                    min_event_time = max_event_time = None
+                    oldest_event_time = newest_event_time = None
                     if response_data:
                         # The first event is the newest, and the last event is the oldest
-                        max_event_time = response_data[0]["timestamp"]
-                        min_event_time = response_data[-1]["timestamp"]
+                        newest_event_time = response_data[0]["timestamp"]
+                        oldest_event_time = response_data[-1]["timestamp"]
                     demisto.debug(
                         f"Finished request for audit trails using {params=}. "
-                        f"Got {len(response_data)} items: {min_event_time=}, {max_event_time=}."
+                        f"Got {len(response_data)} items: {oldest_event_time=}, {newest_event_time=}."
                     )
                     return response_json
 
@@ -264,7 +271,7 @@ def deduplicate_and_format_events(
     Processes events from a raw API response, deduplicates them, and adds the _time field.
 
     Args:
-        raw_response (dict[str, Any]): A dictionary containing the audit trails raw API response.
+        raw_response (dict[str, Any]): A dictionary containing the raw API response of the audit trails.
         all_fetched_ids (set[str]): A set of event IDs that have already been fetched.
 
     Returns:
@@ -292,8 +299,7 @@ async def get_audit_trail_events(
 ) -> list[dict[str, Any]]:
     """
     Asynchronously fetches audit trail events from Terraform, handling pagination.
-    Since the API returns events from newest to oldest, we fetch pages from last to first
-    to get the oldest events first.
+    Since the API returns events from newest to oldest, pages are fetched in reverse order to process the oldest events first.
 
     Args:
         client (AsyncClient): An instance of the AsyncClient.
@@ -304,22 +310,16 @@ async def get_audit_trail_events(
     Returns:
         list[dict[str, Any]]: A list of new audit trail events, sorted from oldest to newest.
     """
-    if last_fetched_ids is None:
-        last_fetched_ids = []
-
-    if limit <= 0:
-        demisto.debug("Limit is less than or equal to 0. Returning empty list.")
-        return []
-
+    last_fetched_ids = last_fetched_ids or []
     all_fetched_ids = set(last_fetched_ids)
     all_events = []
 
-    # Get the first page to determine the total number of pages
+    # Get the first page to determine the total number of pages since the API returns events from newest to oldest
     first_page_raw_response = await client.get_audit_trails(from_date=from_date, page_number=1)
     total_pages = first_page_raw_response.get("pagination", {}).get("total_pages", 1)
 
     # Calculate the number of pages to fetch to meet the limit
-    page_size = DEFAULT_PAGE_SIZE
+    page_size = DEFAULT_AUDIT_TRAIL_PAGE_SIZE
     required_pages = math.ceil(limit / page_size)
     pages_to_fetch = min(total_pages, int(required_pages))
 
@@ -334,7 +334,7 @@ async def get_audit_trail_events(
             for page_number in range(start_page, stop_page, -1)
         ]
 
-        # Gather responses from all API requests
+        # Gather responses from all API requests. If one page fails, all will fail to avoid missing events
         raw_responses = await asyncio.gather(*audit_trail_tasks)
 
         for raw_response in raw_responses:
@@ -358,7 +358,7 @@ async def get_events_command(client: AsyncClient, args: dict[str, Any]) -> tuple
     Returns:
         tuple[list[dict[str, Any]], CommandResults]: A tuple of the events list and the CommandResults with human-readable output.
     """
-    from_date = (arg_to_datetime(args.get("from_date")) or DEFAULT_AUDIT_TRAIL_FROM_TIME).strftime(DATE_FORMAT)
+    from_date = (arg_to_datetime(args.get("from_date")) or DEFAULT_AUDIT_TRAIL_FROM_DATE).strftime(DATE_FORMAT)
     limit = arg_to_number(args.get("limit")) or DEFAULT_GET_EVENTS_LIMIT
 
     events = await get_audit_trail_events(client, from_date, limit)
@@ -383,7 +383,7 @@ async def fetch_events_command(
         tuple[dict[str, Any], list[dict[str, Any]]]: A tuple of the the next run object and a list of fetched events.
     """
     demisto.debug(f"Starting fetching events with {last_run=}.")
-    from_date = last_run.get("from_date") or DEFAULT_AUDIT_TRAIL_FROM_TIME.strftime(DATE_FORMAT)
+    from_date = last_run.get("from_date") or DEFAULT_AUDIT_TRAIL_FROM_DATE.strftime(DATE_FORMAT)
     last_fetched_ids = last_run.get("last_fetched_ids", [])
 
     all_events = await get_audit_trail_events(
@@ -567,9 +567,11 @@ def test_module(client: Client) -> str:
     return "ok"
 
 
-def main() -> None:
-    params: Dict[str, Any] = demisto.params()
-    args: Dict[str, Any] = demisto.args()
+async def main() -> None:
+    params: dict[str, Any] = demisto.params()
+    args: dict[str, Any] = demisto.args()
+    command: str = demisto.command()
+
     url = params.get("server_url", "https://app.terraform.io/api/v2").rstrip("/")
     token = params.get("credentials", {}).get("password")
     default_workspace_id = params.get("default_workspace_id")
@@ -579,47 +581,53 @@ def main() -> None:
     is_fetch_events = params.get("isFetchEvents", False)
     max_fetch = arg_to_number(params.get("max_fetch")) or DEFAULT_FETCH_EVENTS_LIMIT
 
-    command = demisto.command()
     demisto.debug(f"Command being called is {command}")
 
+    sync_commands: dict[str, Callable] = {
+        "terraform-runs-list": runs_list_command,
+        "terraform-run-action": run_action_command,
+        "terraform-plan-get": plan_get_command,
+        "terraform-policies-list": policies_list_command,
+        "terraform-policy-set-list": policy_set_list_command,
+        "terraform-policies-checks-list": policies_checks_list_command,
+    }
+
+    async_commands: tuple[str, str] = ("terraform-get-events", "fetch-events")
+
     try:
-        client: Client = Client(url, token, default_organization_name, default_workspace_id, verify_certificate, proxy)
 
-        async def _run_async_command(command_function: Callable, *pargs, **kwargs):
-            async with AsyncClient(base_url=url, token=token, verify_ssl=verify_certificate, is_proxy=proxy) as async_client:
-                return await command_function(async_client, *pargs, **kwargs)
+        def _initialize_sync_client() -> Client:
+            return Client(url, token, default_organization_name, default_workspace_id, verify_certificate, proxy)
 
-        sync_commands: dict[str, Callable] = {
-            "terraform-runs-list": runs_list_command,
-            "terraform-run-action": run_action_command,
-            "terraform-plan-get": plan_get_command,
-            "terraform-policies-list": policies_list_command,
-            "terraform-policy-set-list": policy_set_list_command,
-            "terraform-policies-checks-list": policies_checks_list_command,
-        }
+        def _initialize_async_client() -> AsyncClient:
+            return AsyncClient(base_url=url, token=token, verify=verify_certificate, proxy=proxy)
 
         if command == "test-module":
+            client: Client = _initialize_sync_client()
             test_results = test_module(client)
             if is_fetch_events:
-                asyncio.run(_run_async_command(fetch_events_command, last_run={}, max_fetch=1))
+                async with _initialize_async_client() as async_client:
+                    await fetch_events_command(async_client, last_run={}, max_fetch=1)
             return_results(test_results)
 
-        elif command == "terraform-get-events" and (is_xsiam() or is_platform()):
-            should_push_events = argToBoolean(args.pop("should_push_events", False))
-            events, command_results = asyncio.run(_run_async_command(get_events_command, args))
-            return_results(command_results)
-            if should_push_events:
-                send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
-
-        elif command == "fetch-events" and (is_xsiam() or is_platform()):
-            last_run = demisto.getLastRun()
-            next_run, events = asyncio.run(_run_async_command(fetch_events_command, last_run=last_run, max_fetch=max_fetch))
-            send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
-            demisto.setLastRun(next_run)
-
         elif command in sync_commands:
+            client = _initialize_sync_client()
             command_results = sync_commands[command](client, args)
             return_results(command_results)
+
+        elif command in async_commands and (is_xsiam() or is_platform()):
+            async with _initialize_async_client() as async_client:
+                if command == "fetch-events":
+                    last_run = demisto.getLastRun()
+                    next_run, events = await fetch_events_command(async_client, last_run=last_run, max_fetch=max_fetch)
+                    send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+                    demisto.setLastRun(next_run)
+                elif command == "terraform-get-events":
+                    should_push_events = argToBoolean(args.pop("should_push_events", False))
+                    events, command_results = await get_events_command(async_client, args)
+                    return_results(command_results)
+                    if should_push_events:
+                        send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
 
         else:
             raise NotImplementedError(f"{command} command is not implemented.")
@@ -629,4 +637,4 @@ def main() -> None:
 
 
 if __name__ in ["__main__", "builtin", "builtins"]:
-    main()
+    asyncio.run(main())

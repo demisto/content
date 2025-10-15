@@ -15,7 +15,7 @@ from HashiCorpTerraform import (
     policy_set_list_command,
     run_action_command,
     runs_list_command,
-    DEFAULT_PAGE_SIZE,
+    DEFAULT_AUDIT_TRAIL_PAGE_SIZE,
 )
 
 SERVER_URL = "https://test_url.com"
@@ -33,7 +33,7 @@ def client():
 
 @pytest.fixture()
 def async_client():
-    return AsyncClient(base_url=SERVER_URL, token="test_token", verify_ssl=False, is_proxy=False)
+    return AsyncClient(base_url=SERVER_URL, token="test_token", verify=False, proxy=False)
 
 
 def mock_async_session_response(response_json: None | dict = None, status_code: int = 200) -> AsyncMock:
@@ -204,7 +204,7 @@ async def test_client_get_audit_trails(async_client: AsyncClient, mocker: Mocker
     assert response_json == mock_response_json
     assert _client._session.get.call_args.kwargs == {
         "url": f"{SERVER_URL}/organization/audit-trail",
-        "params": {"since": from_date, "page[number]": str(page_number), "page[size]": str(DEFAULT_PAGE_SIZE)},
+        "params": {"since": from_date, "page[number]": str(page_number), "page[size]": str(DEFAULT_AUDIT_TRAIL_PAGE_SIZE)},
         "proxy": None,
     }
     assert _client._session.get.call_count == 1
@@ -222,17 +222,18 @@ async def test_get_audit_trail_events_pagination(async_client: AsyncClient, mock
     """
     from HashiCorpTerraform import get_audit_trail_events
 
+    page_size = DEFAULT_AUDIT_TRAIL_PAGE_SIZE
     mock_response_jsons = [
         {  # Page 1 (Newest events)
-            "data": [{"id": f"event-A{i}", "timestamp": "2025-01-01T00:02:00.000Z"} for i in range(DEFAULT_PAGE_SIZE)],
+            "data": [{"id": f"event-A{i}", "timestamp": "2025-01-01T00:02:00.000Z"} for i in range(page_size)],
             "pagination": {"current_page": 1, "total_pages": 3},
         },
         {  # Page 2
-            "data": [{"id": f"event-B{i}", "timestamp": "2025-01-01T00:01:00.000Z"} for i in range(DEFAULT_PAGE_SIZE)],
+            "data": [{"id": f"event-B{i}", "timestamp": "2025-01-01T00:01:00.000Z"} for i in range(page_size)],
             "pagination": {"current_page": 2, "total_pages": 3},
         },
         {  # Page 3 (Oldest events)
-            "data": [{"id": f"event-C{i}", "timestamp": "2025-01-01T00:00:00.000Z"} for i in range(DEFAULT_PAGE_SIZE)],
+            "data": [{"id": f"event-C{i}", "timestamp": "2025-01-01T00:00:00.000Z"} for i in range(page_size)],
             "pagination": {"current_page": 3, "total_pages": 3},
         },
     ]
@@ -243,7 +244,7 @@ async def test_get_audit_trail_events_pagination(async_client: AsyncClient, mock
         mock_async_session_response(mock_response_jsons[1]),  # Third call to second to last page (newer events than last page)
     ]
 
-    limit = DEFAULT_PAGE_SIZE + 5
+    limit = DEFAULT_AUDIT_TRAIL_PAGE_SIZE + 5
     async with async_client as _client:
         mocker.patch.object(_client._session, "get", side_effect=mock_responses)
         events = await get_audit_trail_events(async_client, from_date="2025-01-01T00:00:00Z", limit=limit)
@@ -403,7 +404,7 @@ async def test_fetch_events_command(
      - Ensure that get_audit_trail_events is called with the correct arguments.
      - Ensure that the next_run object and events are returned correctly.
     """
-    from HashiCorpTerraform import fetch_events_command, DEFAULT_AUDIT_TRAIL_FROM_TIME, DATE_FORMAT
+    from HashiCorpTerraform import fetch_events_command, DEFAULT_AUDIT_TRAIL_FROM_DATE, DATE_FORMAT
 
     get_audit_trail_events_mock = mocker.patch("HashiCorpTerraform.get_audit_trail_events", return_value=mock_events)
 
@@ -411,7 +412,7 @@ async def test_fetch_events_command(
 
     assert get_audit_trail_events_mock.call_args.kwargs == {
         "client": async_client,
-        "from_date": last_run.get("from_date") or DEFAULT_AUDIT_TRAIL_FROM_TIME.strftime(DATE_FORMAT),
+        "from_date": last_run.get("from_date") or DEFAULT_AUDIT_TRAIL_FROM_DATE.strftime(DATE_FORMAT),
         "limit": max_fetch,
         "last_fetched_ids": last_run.get("last_fetched_ids", []),
     }

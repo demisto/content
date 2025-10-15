@@ -793,7 +793,7 @@ This command requires a **User** or **Team** token that has admin level access t
 ### terraform-get-events
 
 ***
-Gets Terraform audit trail events. This command is supported in Cortex XSIAM only and is intended to be used for debugging purposes as it may result in duplicate events.
+Retrieves Terraform audit trail events. This command is supported in Cortex XSIAM only and is intended for development and debugging purposes, as it may produce duplicate events.
 
 #### Base Command
 
@@ -809,7 +809,7 @@ This command requires the `audit-logging` feature entitlement for the organizati
 | --- | --- | --- |
 | from_date | The start date for the audit trails as a relative time expression (e.g., '3 days ago') or an absolute time in ISO 8601 format (e.g., '2025-09-01T00:00:00Z'). Default is 1 hour ago. | Optional |
 | limit | The maximum number of events to retrieve. Default is 10. | Optional |
-| should_push_events | If true, the command will push the events to the Cortex XSIAM dataset. Otherwise, it will only display them. Default is false. | Optional |
+| should_push_events | If true, the command will push the events to the Cortex XSIAM dataset; otherwise, it will only display them. Default is false. | Optional |
 
 #### Context Output
 
