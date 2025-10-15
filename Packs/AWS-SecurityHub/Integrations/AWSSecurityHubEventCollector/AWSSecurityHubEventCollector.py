@@ -31,13 +31,13 @@ def parse_aws_timestamp(timestamp_str: str) -> dt.datetime:
     The AWS API returns timestamps in two formats:
     - With milliseconds: "2023-01-01T00:00:00.000Z"
     - Without milliseconds: "2023-01-01T00:00:00Z"
-    
+
     Args:
         timestamp_str (str): Timestamp string from AWS API
-        
+
     Returns:
         datetime: Parsed datetime object
-        
+
     Raises:
         ValueError: If timestamp format is not supported
     """
@@ -66,7 +66,7 @@ def generate_last_run(events: list["AwsSecurityFindingTypeDef"], previous_last_r
         dict: Last run object.
     """
     last_update_date = events[-1].get(TIME_FIELD)
-    
+
     # Smart ignore list accumulation logic
     if previous_last_run and previous_last_run.get("last_update_date") == last_update_date:
         # Same timestamp - ACCUMULATE ignore list from previous run
@@ -92,7 +92,7 @@ def generate_last_run(events: list["AwsSecurityFindingTypeDef"], previous_last_r
             ignore_list.append(event["Id"])
 
     demisto.debug(f"Generated ignore list with {len(ignore_list)} IDs for timestamp {last_update_date}")
-    
+
     return {
         "last_update_date": last_update_date,
         "last_update_date_finding_ids": ignore_list,
@@ -128,7 +128,7 @@ def get_events(
     """
     kwargs: dict = {"SortCriteria": [{"Field": TIME_FIELD, "SortOrder": "asc"}]}
     filters: dict = {}
-    
+
     # Start from provided token if available
     if start_token:
         kwargs["NextToken"] = start_token
@@ -165,7 +165,7 @@ def get_events(
 
     while True:
         pagination_iteration += 1
-        
+
         if limit and total_collected_count + page_size > limit:
             kwargs["MaxResults"] = limit - total_collected_count
         else:
@@ -179,18 +179,16 @@ def get_events(
         demisto.debug(
             f"Iteration {pagination_iteration}: AWS returned {len(result)} findings, NextToken present: {has_next_token}"
         )
-
-        # Collect ALL events without filtering - we'll filter at the end
         all_raw_events.extend(result)
         total_collected_count += len(result)
-        
+
         demisto.debug(f"Iteration {pagination_iteration}: Total raw events collected so far: {len(all_raw_events)}")
 
         # Check if we should continue pagination
         should_continue = (
-            "NextToken" in response and
-            (limit == 0 or total_collected_count < limit) and
-            len(result) > 0  # Stop if AWS returns empty results
+            has_next_token
+            and (limit == 0 or total_collected_count < limit)
+            and len(result) > 0  # Stop if AWS returns empty results
         )
 
         if should_continue:
@@ -211,7 +209,7 @@ def get_events(
     demisto.debug(f"Filtering duplicates from {len(all_raw_events)} total collected events")
     filtered_events = [event for event in all_raw_events if event["Id"] not in id_ignore_set]
     duplicates_filtered = len(all_raw_events) - len(filtered_events)
-    
+
     demisto.debug(
         f"Pagination completed after {pagination_iteration} iterations. "
         f"Raw events: {len(all_raw_events)}, After deduplication: {len(filtered_events)} "
@@ -219,7 +217,7 @@ def get_events(
     )
 
     # Yield filtered events and the final NextToken
-    final_next_token = response.get("NextToken") if 'response' in locals() else None
+    final_next_token = response.get("NextToken")
     yield (filtered_events, final_next_token)  # type: ignore
 
 
@@ -253,47 +251,50 @@ def fetch_events(
     error = None
     current_limit = limit
     max_aws_limit = MAX_AWS_LIMIT
-    
-    # Fix end_time for all retries to keep NextToken valid
+
+    # Fix end_time for all additional retries to keep NextToken valid
     end_time = dt.datetime.now()
-    
+
     try:
         continuation_token = None
         while True:
-            original_events_count = len(events)
-            
-            for events_batch, final_token in get_events(
-                client=client, start_time=start_time, end_time=end_time, id_ignore_list=id_ignore_list,
-                page_size=page_size, limit=current_limit, start_token=continuation_token
+            got_new_events = False
+
+            for filtered_events, final_token in get_events(
+                client=client,
+                start_time=start_time,
+                end_time=end_time,
+                id_ignore_list=id_ignore_list,
+                page_size=page_size,
+                limit=current_limit,
+                start_token=continuation_token,
             ):
                 continuation_token = final_token
-                events.extend(events_batch)
+                if filtered_events:  # If any events returned, they're new (already filtered)
+                    got_new_events = True
+                events.extend(filtered_events)
 
-            new_events_count = len(events) - original_events_count
-            
-            # If we got new events, break out of retry loop
-            if new_events_count > 0:
-                demisto.debug(f"Successfully fetched {new_events_count} new events")
+            # If we got new events, we're done!
+            if got_new_events:
+                demisto.debug(f"Successfully fetched {len(events)} new events")
                 break
-                
-            # If all events were duplicates and AWS has more events, retry with higher limit
-            if new_events_count == 0 and continuation_token and current_limit > 0 and current_limit < max_aws_limit:
-                new_limit = RETRY_LIMIT_INCREMENT  # Just fetch minimum batch to find non-duplicates
+
+            # No new events - should we increase the requested limit in order to exit the loop?
+            if continuation_token and current_limit < max_aws_limit:
+                # AWS has more events and we haven't hit the max API limit - continue from NextToken with a small amount
+                current_limit = RETRY_LIMIT_INCREMENT
                 demisto.info(
-                    f"Infinite loop prevention: All {current_limit} events were duplicates but AWS has more events. "
-                    f"Retrying with limit: {new_limit} (continuing from NextToken)"
+                    f"Infinite loop prevention: All events were duplicates but AWS has more events. "
+                    f"Retrying with limit: {current_limit} (continuing from NextToken)"
                 )
-                current_limit = new_limit
                 continue
+
+            # Can't or shouldn't retry - explain why and exit
+            if not continuation_token:
+                demisto.debug("All events were duplicates and AWS has no more events - reached end")
             else:
-                # Either got new events, no more events from AWS, reached limit, or no duplicates issue
-                if new_events_count == 0 and not continuation_token:
-                    demisto.debug("All events were duplicates and AWS has no more events - reached end")
-                elif new_events_count == 0 and current_limit >= max_aws_limit:
-                    demisto.debug(f"All events were duplicates but reached max limit ({max_aws_limit}) - stopping retries")
-                else:
-                    demisto.debug("Breaking retry loop - either got new events or other condition met")
-                break
+                demisto.debug(f"All events were duplicates but reached max limit ({max_aws_limit}) - stopping retries")
+            break
 
     except Exception as e:
         demisto.error(f"Error while fetching events. Events fetched so far: {len(events)}. Error: {e}")
