@@ -18,7 +18,7 @@ args:
   defaultValue: 300
 - name: brands
   description: |-
-    A comma-seperated list of brands brands for which to execute the 'quarantine-file' command. If not specified, all available instances will run.
+    A comma-separated list of brands for which to execute the 'quarantine-file' command. If not specified, all available instances will run.
     Currently supported brands are: "Cortex XDR - IR", "Cortex Core - IR", "Microsoft Defender Advanced Threat Protection".
   isArray: true
   auto: PREDEFINED
@@ -34,12 +34,12 @@ args:
   - 'false'
   defaultValue: 'false'
 - name: completed_results
-  description: a list of the already completed jobs before quarantine (automatically filled by polling).
+  description: A list of completed jobs before quarantine (automatically filled by polling).
   deprecated: true
 - name: pending_jobs
-  description: a list of the jobs that need to poll quarantine status for (automatically filled by polling).
+  description: A list of jobs for which to poll quarantine status (automatically filled by polling).
   deprecated: true
-comment: This script executes the 'quarantine-file' command on a specified file via the appropriate agent. This script is used to isolate files identified as suspicious. Currently supported on brands "Cortex XDR - IR", "Cortex Core - IR", "Microsoft Defender Advanced Threat Protection".
+comment: This script executes the 'quarantine-file' command on a specified file via the appropriate agent. This script is used to isolate files identified as suspicious. Currently supported brands are "Cortex XDR - IR", "Cortex Core - IR", and "Microsoft Defender Advanced Threat Protection".
 name: quarantine-file
 outputs:
 - contextPath: QuarantineFile.FilePath

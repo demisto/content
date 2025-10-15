@@ -959,7 +959,7 @@ class QuarantineOrchestrator:
                 f"{', '.join(supported_brands_for_hash)}"
             )
 
-        # Return only the brands to run which match the hash type intersected with the given brands to run.
+        # Return only the list of brands that both support the given hash type and are included in the specified set of brands to run.
         return list(set(brands_to_run).intersection(supported_brands_for_hash))
 
     def _sanitize_and_validate_args(self):
