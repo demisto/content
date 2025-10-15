@@ -156,9 +156,8 @@ def get_events(
 
     # Collect all raw events first, then filter duplicates at the end
     all_raw_events: list[AwsSecurityFindingTypeDef] = []
-    pagination_iteration = 0
-    max_iterations = 100  # Safety limit to prevent infinite loops
     total_collected_count = 0
+    pagination_iteration = 0
 
     demisto.debug(
         f"Starting get_events pagination with limit={limit}, page_size={page_size}, ignore_set_size={len(id_ignore_set)}"
@@ -166,14 +165,6 @@ def get_events(
 
     while True:
         pagination_iteration += 1
-        
-        # Safety check to prevent infinite loops
-        if pagination_iteration > max_iterations:
-            demisto.info(
-                f"Reached maximum iteration limit ({max_iterations}). Breaking pagination to prevent infinite loop. "
-                f"Collected {len(all_raw_events)} raw events so far."
-            )
-            break
         
         if limit and total_collected_count + page_size > limit:
             kwargs["MaxResults"] = limit - total_collected_count
