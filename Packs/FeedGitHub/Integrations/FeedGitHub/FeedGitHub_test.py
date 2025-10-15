@@ -159,6 +159,29 @@ def test_parse_and_map_yara_content(mocker):
     assert list_parsed_rules == util_load_json("test_data/list-parsed-rules-res.json")
 
 
+def test_parse_and_map_yara_content_invalid_rule(mocker):
+    """
+    Given:
+     - An invalid YARA rule file as input.
+    When:
+     - Parsing and mapping the YARA content using the parse_and_map_yara_content function.
+    Then:
+     - Ensure an empty list is returned and an error is logged.
+    """
+    from FeedGitHub import parse_and_map_yara_content
+
+    demisto_error_mock = mocker.patch.object(demisto, "error")
+
+    yara_rule_file = {"invalid-yara-rule.yar": "invalid yara rule"}
+
+    parsed_rules = parse_and_map_yara_content(yara_rule_file)
+
+    assert parsed_rules == []
+    assert demisto_error_mock.call_args[0][0] == (
+        "File: 'invalid-yara-rule.yar' cannot be processed. Error Message: Unknown text invalid for token of type ID on line 1"
+    )
+
+
 @freeze_time("2024-05-12T15:30:49.330015")
 def test_extract_text_indicators():
     """
