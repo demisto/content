@@ -1,0 +1,9 @@
+{
+    "okta_asa_raw": {
+      "id": {
+        "type": "string",
+        "is_array": false
+      }
+
+    }
+  }
