@@ -72,10 +72,7 @@ tasks:
       id: cab79f8e-88bf-4a0e-87f2-3d2c19a0b153
       version: -1
       name: aws-ec2-describe-images
-      description: Describes one or more of the images (AMIs, AKIs, and ARIs) available
-        to you. Images available to you include public images, private images that
-        you own, and private images owned by other AWS accounts but for which you
-        have explicit launch permissions.
+      description: Describes one or more of the images (AMIs, AKIs, and ARIs) available to you. Images available to you include public images, private images that you own, and private images owned by other AWS accounts but for which you have explicit launch permissions.
       script: AWS - EC2|||aws-ec2-describe-images
       type: regular
       iscommand: true
@@ -404,8 +401,7 @@ tasks:
       id: bdbbc50c-8fbe-469a-8dd9-7c9e2176cf66
       version: -1
       name: aws-ec2-create-launch-template
-      description: Creates a launch template. A launch template contains the parameters
-        to launch an instance.
+      description: Creates a launch template. A launch template contains the parameters to launch an instance.
       script: '|||aws-ec2-create-launch-template'
       type: regular
       iscommand: true
@@ -448,8 +444,7 @@ tasks:
       id: 6d72ab6b-d3d9-4c47-8a1a-d5f1e7d0ccc2
       version: -1
       name: aws-ec2-delete-launch-template
-      description: Deletes a launch template. Deleting a launch template deletes all
-        of its versions.
+      description: Deletes a launch template. Deleting a launch template deletes all of its versions.
       script: '|||aws-ec2-delete-launch-template'
       type: regular
       iscommand: true
@@ -1111,3 +1106,6 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.0.0
+supportedModules:
+- xsiam
+- agentix

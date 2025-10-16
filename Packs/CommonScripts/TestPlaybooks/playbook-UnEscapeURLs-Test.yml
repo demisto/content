@@ -582,8 +582,7 @@ tasks:
       id: f0f550dd-a059-4520-8e4d-de3c4c42daba
       version: -1
       name: Verify that the output URL is correct
-      description: Check whether the values provided in arguments are equal. If either
-        of the arguments are missing, no is returned.
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
       scriptName: AreValuesEqual
       type: condition
       iscommand: false
@@ -875,8 +874,7 @@ tasks:
       humanReadableEntryId:
         simple: ${lastCompletedTaskEntries}
       substring:
-        simple: "http://example.example.com/test/test.php?r\x11111111111&msgid\x11\
-          1111111118&act=F00B&c=1778479&destination=4077.aaaaaaaaaaa.net/test.test08#test.test@test.com"
+        simple: "http://example.example.com/test/test.php?r\x11111111111&msgid\x111111111118&act=F00B&c=1778479&destination=4077.aaaaaaaaaaa.net/test.test08#test.test@test.com"
     separatecontext: false
     view: |-
       {
@@ -1039,3 +1037,6 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.0.0
+supportedModules:
+- xsiam
+- agentix

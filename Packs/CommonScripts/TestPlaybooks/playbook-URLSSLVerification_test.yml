@@ -2,8 +2,7 @@ id: URLSSLVerification_test
 version: -1
 vcShouldKeepItemLegacyProdMachine: false
 name: URLSSLVerification_test
-description: This test can only run successfully on a non-local machine (due to SSL
-  verification)
+description: This test can only run successfully on a non-local machine (due to SSL verification)
 starttaskid: "0"
 tasks:
   "0":
@@ -239,3 +238,6 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.0.0
+supportedModules:
+- xsiam
+- agentix

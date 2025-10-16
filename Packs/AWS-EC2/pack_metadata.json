@@ -27,6 +27,7 @@
         "asm",
         "exposure_management",
         "agentix",
-        "xsiam"
+        "xsiam",
+        "cloud_runtime_security"
     ]
 }

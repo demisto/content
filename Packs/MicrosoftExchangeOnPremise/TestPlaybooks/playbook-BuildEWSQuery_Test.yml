@@ -41,14 +41,14 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-        - "2"
+      - "2"
     scriptarguments:
       all:
         simple: "yes"
-      index: { }
-      key: { }
-      keysToKeep: { }
-      subplaybook: { }
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
     separatecontext: false
     view: |-
       {
@@ -161,3 +161,6 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.0.0
+supportedModules:
+- xsiam
+- agentix

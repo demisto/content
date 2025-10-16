@@ -2,8 +2,7 @@ id: GoogleSheets-Test
 version: -1
 vcShouldKeepItemLegacyProdMachine: false
 name: GoogleSheets-Test
-description: Test play book for all the GoogleSheets commands - Notice the last task
-  is from Google Drive integration to delete the created file
+description: Test play book for all the GoogleSheets commands - Notice the last task is from Google Drive integration to delete the created file
 starttaskid: "0"
 tasks:
   "0":
@@ -163,8 +162,7 @@ tasks:
       id: 6ee1a780-2420-4afb-89d3-0549599f4469
       version: -1
       name: google-sheets-sheet-create
-      description: Adds a new sheet. When a sheet is added at a given index, all subsequent
-        sheets' indexes are incremented
+      description: Adds a new sheet. When a sheet is added at a given index, all subsequent sheets' indexes are incremented
       script: GoogleSheets|||google-sheets-sheet-create
       type: regular
       iscommand: true
@@ -207,8 +205,7 @@ tasks:
       id: 5ce21c95-68a0-4702-8b2f-d5be731774dc
       version: -1
       name: google-sheets-value-update
-      description: Sets values in a range of a spreadsheet. The caller must specify
-        the spreadsheet ID, range, and a valueInputOption.
+      description: Sets values in a range of a spreadsheet. The caller must specify the spreadsheet ID, range, and a valueInputOption.
       script: GoogleSheets|||google-sheets-value-update
       type: regular
       iscommand: true
@@ -427,14 +424,7 @@ tasks:
       id: e3a61d28-9c0d-4a38-82e8-cd8652e93d4c
       version: -1
       name: google-sheets-value-append
-      description: Appends values to a spreadsheet. The input range is used to search
-        for existing data and find a "table" within that range. Values will be appended
-        to the next row of the table, starting with the first column of the table.
-        See the guide and sample code for specific details of how tables are detected
-        and data is appended.  The caller must specify the spreadsheet ID, range,
-        and a valueInputOption. The valueInputOption only controls how the input data
-        will be added to the sheet (column-wise or row-wise), it does not influence
-        what cell the data starts being written to.
+      description: Appends values to a spreadsheet. The input range is used to search for existing data and find a "table" within that range. Values will be appended to the next row of the table, starting with the first column of the table. See the guide and sample code for specific details of how tables are detected and data is appended.  The caller must specify the spreadsheet ID, range, and a valueInputOption. The valueInputOption only controls how the input data will be added to the sheet (column-wise or row-wise), it does not influence what cell the data starts being written to.
       script: GoogleSheets|||google-sheets-value-append
       type: regular
       iscommand: true
@@ -532,8 +522,7 @@ tasks:
       id: 6730b775-36b3-48ca-82bf-20ee32ca1afd
       version: -1
       name: google-sheets-range-delete
-      description: Deletes a range of cells, shifting other cells into the deleted
-        area.
+      description: Deletes a range of cells, shifting other cells into the deleted area.
       script: GoogleSheets|||google-sheets-range-delete
       type: regular
       iscommand: true
@@ -588,9 +577,7 @@ tasks:
       id: abdee68c-6d3d-4ded-83e8-b1ce655b751a
       version: -1
       name: google-sheets-sheet-clear
-      description: Clears values from a spreadsheet. The caller must specify the spreadsheet
-        ID and range. Only values are cleared -- all other properties of the cell
-        (such as formatting, data validation, etc..) are kept.
+      description: Clears values from a spreadsheet. The caller must specify the spreadsheet ID and range. Only values are cleared -- all other properties of the cell (such as formatting, data validation, etc..) are kept.
       script: GoogleSheets|||google-sheets-sheet-clear
       type: regular
       iscommand: true
@@ -686,8 +673,7 @@ tasks:
       id: 11e787f8-b622-45cc-81a4-c5b2d7cebf8a
       version: -1
       name: google-sheets-dimension-delete
-      description: Deletes the dimensions from the sheet. notice the indexing starts
-        from 0
+      description: Deletes the dimensions from the sheet. notice the indexing starts from 0
       script: GoogleSheets|||google-sheets-dimension-delete
       type: regular
       iscommand: true
@@ -775,9 +761,7 @@ tasks:
       id: 0cb54d82-d401-459a-86b6-68f15284e19f
       version: -1
       name: google-sheets-spreadsheet-update
-      description: Applies one or more updates to the spreadsheet.  Each request is
-        validated before being applied. If any request is not valid then the entire
-        request will fail and nothing will be applied.
+      description: Applies one or more updates to the spreadsheet.  Each request is validated before being applied. If any request is not valid then the entire request will fail and nothing will be applied.
       script: GoogleSheets|||google-sheets-spreadsheet-update
       type: regular
       iscommand: true
@@ -925,3 +909,6 @@ tests:
 - No tests (auto formatted)
 fromversion: 6.1.0
 
+supportedModules:
+- xsiam
+- agentix

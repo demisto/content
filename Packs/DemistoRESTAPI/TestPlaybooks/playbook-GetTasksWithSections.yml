@@ -529,8 +529,7 @@ tasks:
       id: 7b7fc399-6923-4f42-8480-17a240f8843d
       version: -1
       name: SetIrProcedures
-      description: Creates a markdown table based on te info of the GetTasksWithSection
-        command
+      description: Creates a markdown table based on te info of the GetTasksWithSection command
       scriptName: SetIRProceduresMarkdown
       type: regular
       iscommand: false
@@ -632,6 +631,9 @@ view: |-
       }
     }
   }
-inputs: [ ]
-outputs: [ ]
+inputs: []
+outputs: []
 fromversion: 5.0.0
+supportedModules:
+- xsiam
+- agentix

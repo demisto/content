@@ -274,8 +274,7 @@ tasks:
       id: 3f7835f1-7040-4433-837e-f64d095c8812
       version: -1
       name: ews-get-items-from-folder
-      description: Retrieves items from a specified folder in a mailbox. The items
-        are order by the item created time, most recent is first.
+      description: Retrieves items from a specified folder in a mailbox. The items are order by the item created time, most recent is first.
       script: EWSO365|||ews-get-items-from-folder
       type: regular
       iscommand: true
@@ -311,9 +310,7 @@ tasks:
       id: 9615cddc-6dc6-4e65-8226-f9108d7b1d67
       version: -1
       name: checkValue Subject
-      description: "Gets a value and return it. This is to be used in playbook conditional
-        tasks - get a value from incident field, label or context, and act accordingly.
-        \nIf an array is returned. the first value will be the decision making value."
+      description: "Gets a value and return it. This is to be used in playbook conditional tasks - get a value from incident field, label or context, and act accordingly. \nIf an array is returned. the first value will be the decision making value."
       type: condition
       iscommand: false
       brand: ""
@@ -357,9 +354,7 @@ tasks:
       id: abfd6ba5-0bcd-48a8-854e-71c20ceeefb0
       version: -1
       name: checkValue regular attachment
-      description: "Gets a value and return it. This is to be used in playbook conditional
-        tasks - get a value from incident field, label or context, and act accordingly.
-        \nIf an array is returned. the first value will be the decision making value."
+      description: "Gets a value and return it. This is to be used in playbook conditional tasks - get a value from incident field, label or context, and act accordingly. \nIf an array is returned. the first value will be the decision making value."
       type: condition
       iscommand: false
       brand: ""
@@ -409,9 +404,7 @@ tasks:
       id: dc06a9c6-d414-4711-825e-10db18998dc4
       version: -1
       name: checkValue transient attachment
-      description: "Gets a value and return it. This is to be used in playbook conditional
-        tasks - get a value from incident field, label or context, and act accordingly.
-        \nIf an array is returned. the first value will be the decision making value."
+      description: "Gets a value and return it. This is to be used in playbook conditional tasks - get a value from incident field, label or context, and act accordingly. \nIf an array is returned. the first value will be the decision making value."
       type: condition
       iscommand: false
       brand: ""
@@ -461,9 +454,7 @@ tasks:
       id: 4c974a16-cf32-4ef4-84f5-07fa3c11ce2c
       version: -1
       name: checkValue body
-      description: "Gets a value and return it. This is to be used in playbook conditional
-        tasks - get a value from incident field, label or context, and act accordingly.
-        \nIf an array is returned. the first value will be the decision making value."
+      description: "Gets a value and return it. This is to be used in playbook conditional tasks - get a value from incident field, label or context, and act accordingly. \nIf an array is returned. the first value will be the decision making value."
       type: condition
       iscommand: false
       brand: ""
@@ -555,8 +546,7 @@ tasks:
       id: b9a4893b-9d4d-4c75-8abe-b3f72bbaf8bb
       version: -1
       name: ews-get-items-from-folder
-      description: Retrieves items from a specified folder in a mailbox. The items
-        are order by the item created time, most recent is first.
+      description: Retrieves items from a specified folder in a mailbox. The items are order by the item created time, most recent is first.
       script: EWSO365|||ews-get-items-from-folder
       type: regular
       iscommand: true
@@ -592,9 +582,7 @@ tasks:
       id: fc5b9fcc-487e-40b4-88ea-5e77364d2d42
       version: -1
       name: checkValue Subject
-      description: "Gets a value and return it. This is to be used in playbook conditional
-        tasks - get a value from incident field, label or context, and act accordingly.
-        \nIf an array is returned. the first value will be the decision making value."
+      description: "Gets a value and return it. This is to be used in playbook conditional tasks - get a value from incident field, label or context, and act accordingly. \nIf an array is returned. the first value will be the decision making value."
       type: condition
       iscommand: false
       brand: ""
@@ -694,9 +682,7 @@ tasks:
       id: d378e1db-628f-4f70-8fdb-12d2a9b48294
       version: -1
       name: checkValue custom header
-      description: "Gets a value and return it. This is to be used in playbook conditional
-        tasks - get a value from incident field, label or context, and act accordingly.
-        \nIf an array is returned. the first value will be the decision making value."
+      description: "Gets a value and return it. This is to be used in playbook conditional tasks - get a value from incident field, label or context, and act accordingly. \nIf an array is returned. the first value will be the decision making value."
       type: condition
       iscommand: false
       brand: ""
@@ -761,3 +747,6 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.0.0
+supportedModules:
+- xsiam
+- agentix

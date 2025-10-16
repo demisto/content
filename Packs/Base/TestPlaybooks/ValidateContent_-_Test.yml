@@ -81,10 +81,7 @@ tasks:
       id: 941baa94-011b-48c8-9db6-a06415d01d4b
       version: -1
       name: ValidateContent
-      description: Runs validation and linting using the Demisto SDK on content items,
-        such as integrations, automations and content packs. This automation script
-        is used as part of the content validation that runs as part of the contribution
-        flow.
+      description: Runs validation and linting using the Demisto SDK on content items, such as integrations, automations and content packs. This automation script is used as part of the content validation that runs as part of the contribution flow.
       scriptName: ValidateContent
       type: regular
       iscommand: false
@@ -199,3 +196,6 @@ inputs: []
 outputs: []
 fromversion: 6.10.0
 description: ''
+supportedModules:
+- xsiam
+- agentix

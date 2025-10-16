@@ -26,7 +26,11 @@
         "X5",
         "ENT_PLUS",
         "agentix",
-        "xsiam"
+        "xsiam",
+        "cloud",
+        "cloud_runtime_security",
+        "edr",
+        "cloud_posture"
     ],
     "githubUser": []
 }

@@ -16,8 +16,5 @@
     "fromVersion": "6.10.0",
     "marketplaces": [
         "marketplacev2"
-    ],
-    "supportedModules": [
-        "xsiam"
     ]
 }

@@ -346,3 +346,6 @@ outputs:
   type: string
 - contextPath: AutoFocus.TopTagResults
   type: unknown
+supportedModules:
+- xsiam
+- agentix

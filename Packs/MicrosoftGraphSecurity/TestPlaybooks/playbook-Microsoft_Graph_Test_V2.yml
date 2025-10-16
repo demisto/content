@@ -41,8 +41,7 @@ tasks:
       id: 7e797b0b-0831-4e8b-8ee4-5ba9d68ca03f
       version: -1
       name: msg-search-alerts
-      description: List alerts (security issues) within a customer's tenant that Microsoft
-        or partner security solutions have identified.
+      description: List alerts (security issues) within a customer's tenant that Microsoft or partner security solutions have identified.
       script: '|||msg-search-alerts'
       type: regular
       iscommand: true
@@ -117,9 +116,7 @@ tasks:
       id: 5ad762ce-84e8-4586-8030-56c2c49b7958
       version: -1
       name: msg-update-alert
-      description: Update an editable alert property within any integrated solution
-        to keep alert status and assignments in sync across solutions using its reference
-        ID.
+      description: Update an editable alert property within any integrated solution to keep alert status and assignments in sync across solutions using its reference ID.
       script: '|||msg-update-alert'
       type: regular
       iscommand: true
@@ -348,8 +345,7 @@ tasks:
       id: 5f3dc15c-8fa0-4c98-8b40-7219427d1426
       version: -1
       name: 'msg-advanced-hunting '
-      description: Advanced hunting is a threat-hunting tool that uses specially constructed
-        queries to examine the past 30 days of event data in Microsoft Graph Security.
+      description: Advanced hunting is a threat-hunting tool that uses specially constructed queries to examine the past 30 days of event data in Microsoft Graph Security.
       script: '|||msg-advanced-hunting'
       type: regular
       iscommand: true
@@ -386,9 +382,7 @@ tasks:
       id: 06df56df-a6c7-4873-885f-4e35c0352d4f
       version: -1
       name: msg-list-security-incident
-      description: Get a list of incident objects that Microsoft 365 Defender created
-        to track attacks in an organization. If you want a specific incident, just
-        enter incident_id.
+      description: Get a list of incident objects that Microsoft 365 Defender created to track attacks in an organization. If you want a specific incident, just enter incident_id.
       script: '|||msg-list-security-incident'
       type: regular
       iscommand: true
@@ -466,3 +460,6 @@ inputs: []
 outputs: []
 sourceplaybookid: Microsoft Graph Security Test
 fromversion: 5.0.0
+supportedModules:
+- xsiam
+- agentix

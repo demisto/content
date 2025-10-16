@@ -150,9 +150,7 @@ tasks:
       id: a275b932-02c4-4983-8248-22d30c6a6632
       version: -1
       name: Send a file
-      description: Sends a file in Slack to a user, channel, or group. If a user,
-        channel, or group is not specified, the file is sent to the mirrored investigation
-        channel (if it exists).
+      description: Sends a file in Slack to a user, channel, or group. If a user, channel, or group is not specified, the file is sent to the mirrored investigation channel (if it exists).
       script: SlackV2|||slack-send-file
       type: regular
       iscommand: true
@@ -745,11 +743,7 @@ tasks:
       - "6"
     scriptarguments:
       blocks:
-        simple: "[\n\t\t{\n\t\t\t\"type\": \"section\",\n\t\t\t\"text\": {\n\t\t\t\t\"type\":
-          \"mrkdwn\",\n\t\t\t\t\"text\": \"This is a test. \"\n\t\t\t},\n\t\t\t\"accessory\":
-          {\n\t\t\t\t\"type\": \"button\",\n\t\t\t\t\"text\": {\n\t\t\t\t\t\"type\":
-          \"plain_text\",\n\t\t\t\t\t\"text\": \"Button\",\n\t\t\t\t\t\"emoji\": true\n\t\t\t\t},\n\t\t\t\t\"value\":
-          \"testing\"\n\t\t\t}\n\t\t}\n\t]"
+        simple: "[\n\t\t{\n\t\t\t\"type\": \"section\",\n\t\t\t\"text\": {\n\t\t\t\t\"type\": \"mrkdwn\",\n\t\t\t\t\"text\": \"This is a test. \"\n\t\t\t},\n\t\t\t\"accessory\": {\n\t\t\t\t\"type\": \"button\",\n\t\t\t\t\"text\": {\n\t\t\t\t\t\"type\": \"plain_text\",\n\t\t\t\t\t\"text\": \"Button\",\n\t\t\t\t\t\"emoji\": true\n\t\t\t\t},\n\t\t\t\t\"value\": \"testing\"\n\t\t\t}\n\t\t}\n\t]"
       channel:
         complex:
           root: ${TimeNowUnix}
@@ -866,3 +860,6 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.0.0
+supportedModules:
+- xsiam
+- agentix

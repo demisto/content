@@ -29,6 +29,10 @@
     "supportedModules": [
         "exposure_management",
         "edr",
-        "xsiam"
+        "xsiam",
+        "cloud",
+        "cloud_runtime_security",
+        "agentix",
+        "cloud_posture"
     ]
 }

@@ -70,9 +70,7 @@ tasks:
       id: f7b9a5a7-9ccb-4aa2-823d-47ed3680bf42
       version: -1
       name: Verify error occurred
-      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
-        to check the previous task entries. If array is provided, will return yes
-        if one of the entries returned an error.
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries} to check the previous task entries. If array is provided, will return yes if one of the entries returned an error.
       scriptName: isError
       type: condition
       iscommand: false
@@ -168,3 +166,6 @@ inputs: []
 outputs: []
 fromversion: 5.0.0
 description: ''
+supportedModules:
+- xsiam
+- agentix

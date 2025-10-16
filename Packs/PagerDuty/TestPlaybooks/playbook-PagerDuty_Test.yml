@@ -602,8 +602,7 @@ tasks:
       id: df399c85-70a3-4909-875a-2cee857a9044
       version: -1
       name: Submit event
-      description: Creates a new event/incident in PagerDuty(In order to use this
-        command you have to enter the Service Key in the integration settings)
+      description: Creates a new event/incident in PagerDuty(In order to use this command you have to enter the Service Key in the integration settings)
       script: '|||PagerDuty-submit-event'
       type: regular
       iscommand: true
@@ -924,3 +923,6 @@ inputs: []
 outputs: []
 fromversion: 5.0.0
 description: test
+supportedModules:
+- xsiam
+- agentix

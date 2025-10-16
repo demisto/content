@@ -2328,3 +2328,7 @@ supportedModules:
 - ENT_PLUS
 - edr
 - xsiam
+- agentix
+- cloud
+- cloud_posture
+- cloud_runtime_security

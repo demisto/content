@@ -108,13 +108,7 @@ tasks:
       id: 010f4e1b-b0bf-4718-84a7-a0a1248a54fd
       version: -1
       name: ParseEmailFiles
-      description: Parse an email from an eml or msg file and populate all relevant
-        context data to investigate the email. Also extracts inner attachments and
-        returns them to the war room. The incident labels themselves are preserved
-        and not modified - only the "Label/x" context items that originated from the
-        labels, and the best practice is to rely on these for the remainder of the
-        playbook. Requires pip and access to python repository to install "olefile"
-        package.
+      description: Parse an email from an eml or msg file and populate all relevant context data to investigate the email. Also extracts inner attachments and returns them to the war room. The incident labels themselves are preserved and not modified - only the "Label/x" context items that originated from the labels, and the best practice is to rely on these for the remainder of the playbook. Requires pip and access to python repository to install "olefile" package.
       scriptName: ParseEmailFilesV2
       type: regular
       iscommand: false
@@ -256,8 +250,7 @@ tasks:
       id: 3b6924af-b6bb-46ff-8539-d0ff82585787
       version: -1
       name: AreValuesEqual - verify pdf attachment
-      description: Check whether the values provided in arguments are equal. If either
-        of the arguments are missing, no is returned.
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
       scriptName: AreValuesEqual
       type: condition
       iscommand: false
@@ -333,8 +326,7 @@ tasks:
       id: 08eb67ca-eefb-4591-8311-ec40a9489394
       version: -1
       name: AreValuesEqual - verify docx attachment
-      description: Check whether the values provided in arguments are equal. If either
-        of the arguments are missing, no is returned.
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
       scriptName: AreValuesEqual
       type: condition
       iscommand: false
@@ -499,13 +491,7 @@ tasks:
       id: 3d46f623-da22-4106-868f-de23f03f354c
       version: -1
       name: ParseEmailFiles
-      description: Parse an email from an eml or msg file and populate all relevant
-        context data to investigate the email. Also extracts inner attachments and
-        returns them to the war room. The incident labels themselves are preserved
-        and not modified - only the "Label/x" context items that originated from the
-        labels, and the best practice is to rely on these for the remainder of the
-        playbook. Requires pip and access to python repository to install "olefile"
-        package.
+      description: Parse an email from an eml or msg file and populate all relevant context data to investigate the email. Also extracts inner attachments and returns them to the war room. The incident labels themselves are preserved and not modified - only the "Label/x" context items that originated from the labels, and the best practice is to rely on these for the remainder of the playbook. Requires pip and access to python repository to install "olefile" package.
       scriptName: ParseEmailFilesV2
       type: regular
       iscommand: false
@@ -555,13 +541,7 @@ tasks:
       id: ff04d7f0-3a7a-47a8-8d35-5c34045dc3b6
       version: -1
       name: ParseEmailFiles
-      description: Parse an email from an eml or msg file and populate all relevant
-        context data to investigate the email. Also extracts inner attachments and
-        returns them to the war room. The incident labels themselves are preserved
-        and not modified - only the "Label/x" context items that originated from the
-        labels, and the best practice is to rely on these for the remainder of the
-        playbook. Requires pip and access to python repository to install "olefile"
-        package.
+      description: Parse an email from an eml or msg file and populate all relevant context data to investigate the email. Also extracts inner attachments and returns them to the war room. The incident labels themselves are preserved and not modified - only the "Label/x" context items that originated from the labels, and the best practice is to rely on these for the remainder of the playbook. Requires pip and access to python repository to install "olefile" package.
       scriptName: ParseEmailFilesV2
       type: regular
       iscommand: false
@@ -649,13 +629,7 @@ tasks:
       id: 07079cef-2fdf-438f-83c7-17c1a538e997
       version: -1
       name: ParseEmailFiles With No Content Type
-      description: Parse an email from an eml or msg file and populate all relevant
-        context data to investigate the email. Also extracts inner attachments and
-        returns them to the war room. The incident labels themselves are preserved
-        and not modified - only the "Label/x" context items that originated from the
-        labels, and the best practice is to rely on these for the remainder of the
-        playbook. Requires pip and access to python repository to install "olefile"
-        package.
+      description: Parse an email from an eml or msg file and populate all relevant context data to investigate the email. Also extracts inner attachments and returns them to the war room. The incident labels themselves are preserved and not modified - only the "Label/x" context items that originated from the labels, and the best practice is to rely on these for the remainder of the playbook. Requires pip and access to python repository to install "olefile" package.
       scriptName: ParseEmailFilesV2
       type: regular
       iscommand: false
@@ -856,12 +830,7 @@ tasks:
       id: da51f58b-b03c-4a66-8df2-27e258a5d14d
       version: -1
       name: ParseEmailFiles
-      description: Parse an email from an eml or msg file and populate all relevant
-        context data to investigate the email. Also extracts inner attachments and
-        returns them to the war room. The incident labels themselves are preserved
-        and not modified - only the "Label/x" context items that originated from the
-        labels, and the best practice is to rely on these for the remainder of the
-        playbook.
+      description: Parse an email from an eml or msg file and populate all relevant context data to investigate the email. Also extracts inner attachments and returns them to the war room. The incident labels themselves are preserved and not modified - only the "Label/x" context items that originated from the labels, and the best practice is to rely on these for the remainder of the playbook.
       scriptName: ParseEmailFilesV2
       type: regular
       iscommand: false
@@ -915,3 +884,6 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.0.0
+supportedModules:
+- xsiam
+- agentix

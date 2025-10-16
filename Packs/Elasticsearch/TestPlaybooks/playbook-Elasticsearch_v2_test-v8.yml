@@ -507,3 +507,6 @@ inputs: []
 outputs: []
 fromversion: 6.5.0
 description: Tests the es-search, es-eql-search commands' functionality.
+supportedModules:
+- xsiam
+- agentix

@@ -1672,7 +1672,7 @@ tasks:
       key:
         simple: eml_data
       value:
-        simple: "©\U0001F978"
+        simple: "©🥸"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1965,3 +1965,6 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.0.0
+supportedModules:
+- xsiam
+- agentix

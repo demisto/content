@@ -707,10 +707,7 @@ tasks:
       id: 87136239-fde5-4a31-8181-b368c7684efe
       version: -1
       name: commentsToContext
-      description: "Takes the comments of a given entry ID and stores them in the\
-        \ incident context, under a provided context key. \nFor accessing the last\
-        \ executed task's comments, provide ${lastCompletedTaskEntries.[0]} as the\
-        \ value for the entryId input parameter."
+      description: "Takes the comments of a given entry ID and stores them in the incident context, under a provided context key. \nFor accessing the last executed task's comments, provide ${lastCompletedTaskEntries.[0]} as the value for the entryId input parameter."
       scriptName: commentsToContext
       type: regular
       iscommand: false
@@ -1125,10 +1122,7 @@ tasks:
       id: 083015fb-1732-47ae-8ee1-fc51f8aca242
       version: -1
       name: comments to context
-      description: "Takes the comments of a given entry ID and stores them in the\
-        \ incident context, under a provided context key. \nFor accessing the last\
-        \ executed task's comments, provide ${lastCompletedTaskEntries.[0]} as the\
-        \ value for the entryId input parameter."
+      description: "Takes the comments of a given entry ID and stores them in the incident context, under a provided context key. \nFor accessing the last executed task's comments, provide ${lastCompletedTaskEntries.[0]} as the value for the entryId input parameter."
       scriptName: commentsToContext
       type: regular
       iscommand: false
@@ -1975,3 +1969,6 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 6.2.0
+supportedModules:
+- xsiam
+- agentix

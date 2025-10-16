@@ -121,8 +121,7 @@ tasks:
       id: c869e950-bb9f-4b94-8089-9ae5250a25a8
       version: -1
       name: Make test fail
-      description: Causes the test playbook to fail if the correct email addresses
-        were not extracted.
+      description: Causes the test playbook to fail if the correct email addresses were not extracted.
       scriptName: PrintErrorEntry
       type: regular
       iscommand: false
@@ -786,8 +785,7 @@ tasks:
       id: 3e7c1e5c-5343-4e68-89a9-b9b11d49cc8e
       version: -1
       name: Were the correct indicators extracted?
-      description: Checks whether specific indicators were extracted from each one
-        of the downloaded files.
+      description: Checks whether specific indicators were extracted from each one of the downloaded files.
       type: condition
       iscommand: false
       brand: ""
@@ -886,3 +884,6 @@ view: |-
   }
 inputs: []
 outputs: []
+supportedModules:
+- xsiam
+- agentix

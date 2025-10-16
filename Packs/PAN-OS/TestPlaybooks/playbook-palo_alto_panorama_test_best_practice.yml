@@ -217,8 +217,7 @@ tasks:
     skipunavailable: false
     task:
       brand: Panorama
-      description: Enforces wildfire best practices to upload files to the maximum
-        size, forwards all file types, and updates the schedule.
+      description: Enforces wildfire best practices to upload files to the maximum size, forwards all file types, and updates the schedule.
       id: 450e1918-1ecd-4f63-819d-33c7f0b61d68
       iscommand: true
       name: enforce-wildfire-best-practice
@@ -604,10 +603,7 @@ tasks:
     skipunavailable: false
     task:
       brand: Panorama
-      description: Commits a configuration to the Palo Alto firewall or Panorama,
-        but does not validate if the commit was successful. Committing to Panorama
-        does not push the configuration to the firewalls. To push the configuration,
-        run the panorama-push-to-device-group command.
+      description: Commits a configuration to the Palo Alto firewall or Panorama, but does not validate if the commit was successful. Committing to Panorama does not push the configuration to the firewalls. To push the configuration, run the panorama-push-to-device-group command.
       id: 7befe6d7-f713-48f7-813c-4215d3dc5917
       iscommand: true
       name: pan-os-commit
@@ -1562,8 +1558,7 @@ tasks:
     skipunavailable: false
     task:
       brand: Panorama
-      description: Apply a security profile to specific rules or rules with a specific
-        tag.
+      description: Apply a security profile to specific rules or rules with a specific tag.
       id: 70d99feb-b136-4585-830e-ac31c6a30aef
       iscommand: true
       name: apply-security-profile
@@ -1700,3 +1695,6 @@ view: |-
     }
   }
 fromversion: 6.1.0
+supportedModules:
+- xsiam
+- agentix

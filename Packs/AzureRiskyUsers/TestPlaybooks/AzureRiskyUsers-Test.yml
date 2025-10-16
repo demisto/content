@@ -296,8 +296,7 @@ tasks:
       id: d774e4da-b30e-4bbb-8d9a-1d6213650012
       version: -1
       name: azure-risky-users-risk-detections-list
-      description: Returns a comma separated list of the Risk Detection objects and
-        their properties.
+      description: Returns a comma separated list of the Risk Detection objects and their properties.
       script: AzureRiskyUsers|||azure-risky-users-risk-detections-list
       type: regular
       iscommand: true
@@ -664,3 +663,6 @@ inputs: []
 outputs: []
 fromversion: 6.0.0
 description: ''
+supportedModules:
+- xsiam
+- agentix

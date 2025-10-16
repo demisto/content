@@ -102,3 +102,6 @@ tests:
 - No test
 fromversion: 5.0.0
 description: ''
+supportedModules:
+- xsiam
+- agentix

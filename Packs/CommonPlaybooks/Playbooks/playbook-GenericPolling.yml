@@ -306,12 +306,3 @@ tests:
 - No test
 contentitemexportablefields:
   contentitemfields: {}
-supportedModules:
-- agentix
-- ENT_PLUS
-- X5
-- X1
-- X3
-- cloud
-- X0
-- xsiam

@@ -109,8 +109,7 @@ tasks:
       id: fb4dac3b-ec98-487b-8eeb-1019693b85db
       version: -1
       name: Update User
-      description: Updates an existing user with the data passed in the user-profile
-        argument.
+      description: Updates an existing user with the data passed in the user-profile argument.
       script: '|||iam-update-user'
       type: regular
       iscommand: true
@@ -180,8 +179,7 @@ tasks:
       id: 707b6f8f-7eb1-4d48-8f43-4579797cd6f6
       version: -1
       name: Enable User Using Update Command
-      description: Updates an existing user with the data passed in the user-profile
-        argument.
+      description: Updates an existing user with the data passed in the user-profile argument.
       script: '|||iam-update-user'
       type: regular
       iscommand: true
@@ -275,11 +273,7 @@ tasks:
       - "10"
     scriptarguments:
       message:
-        simple: "The following instances failed: ${IAM.Vendor(val.success==false).instanceName}\
-          \ \nwith error codes: ${IAM.Vendor(val.success==false).errorCode}\nand the\
-          \ following error messages: ${IAM.Vendor(val.success==false).errorMessage}.\n\
-          \nPlease work to fix the errors and proceed only once the incident can be\
-          \ closed."
+        simple: "The following instances failed: ${IAM.Vendor(val.success==false).instanceName} \nwith error codes: ${IAM.Vendor(val.success==false).errorCode}\nand the following error messages: ${IAM.Vendor(val.success==false).errorMessage}.\n\nPlease work to fix the errors and proceed only once the incident can be closed."
     separatecontext: false
     view: |-
       {
@@ -474,8 +468,7 @@ view: |-
 inputs:
 - key: userprofile
   value:
-    simple: '{"email": "TestID@paloaltonetworks.com", "username": "TestID@paloaltonetworks.com",
-     "givenname": "testgiven", "surname":"demisto", "locationregion": "Americas"}'
+    simple: '{"email": "TestID@paloaltonetworks.com", "username": "TestID@paloaltonetworks.com", "givenname": "testgiven", "surname":"demisto", "locationregion": "Americas"}'
   required: true
   description: Test user profile data.
   playbookInputQuery:
@@ -483,3 +476,6 @@ outputs: []
 sourceplaybookid: 266bcc20-b5f3-4a64-8d93-af843bd24add
 fromversion: 6.1.0
 description: 'Test user profile data using github user info, due to the fact that the relevant classifiers are in SCIM pack.'
+supportedModules:
+- xsiam
+- agentix

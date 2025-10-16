@@ -193,9 +193,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
-        to check the previous task entries. If array is provided, will return yes
-        if one of the entries returned an error.
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries} to check the previous task entries. If array is provided, will return yes if one of the entries returned an error.
       id: 0184c90f-f257-425e-8f66-3fc1ce6f2cd5
       iscommand: false
       name: Verify Error
@@ -255,8 +253,7 @@ tasks:
     quietmode: 0
     scriptarguments:
       expression:
-        simple: ReturnOutputs 'ArgToList length should be 4' @{ArgToListTest = $(ArgToList
-          '1,2,3,4').length}  | out-null
+        simple: ReturnOutputs 'ArgToList length should be 4' @{ArgToListTest = $(ArgToList '1,2,3,4').length}  | out-null
     separatecontext: false
     skipunavailable: false
     task:
@@ -725,3 +722,6 @@ view: |-
     }
   }
 fromversion: 5.5.0
+supportedModules:
+- xsiam
+- agentix

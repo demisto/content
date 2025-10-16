@@ -38,8 +38,7 @@ tasks:
       id: 89ee8703-a437-45b1-81cd-3e26c0ca3971
       version: -1
       name: Mirror Investigation
-      description: Mirrors the Demisto investigation to the specified Microsoft Teams
-        channel.
+      description: Mirrors the Demisto investigation to the specified Microsoft Teams channel.
       script: '|||mirror-investigation'
       type: regular
       iscommand: true
@@ -105,3 +104,6 @@ inputs: []
 outputs: []
 fromversion: 5.0.0
 description: ''
+supportedModules:
+- xsiam
+- agentix

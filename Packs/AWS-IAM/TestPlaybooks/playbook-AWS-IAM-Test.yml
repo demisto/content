@@ -143,8 +143,7 @@ tasks:
       id: 764d6ba7-950b-41bf-80dc-313b289bdc40
       version: -1
       name: aws-iam-list-policies
-      description: Lists all the managed policies that are available in your AWS account,
-        including your own customer-defined managed policies and all AWS managed policies.
+      description: Lists all the managed policies that are available in your AWS account, including your own customer-defined managed policies and all AWS managed policies.
       script: AWS - IAM|||aws-iam-list-policies
       type: regular
       iscommand: true
@@ -214,8 +213,7 @@ tasks:
       id: f72bae99-7b75-4e8c-8b32-04fac427926b
       version: -1
       name: aws-iam-delete-group
-      description: Deletes the specified IAM group. The group must not contain any
-        users or have any attached policies.
+      description: Deletes the specified IAM group. The group must not contain any users or have any attached policies.
       script: AWS - IAM|||aws-iam-delete-group
       type: regular
       iscommand: true
@@ -286,8 +284,7 @@ tasks:
       id: c1e1f573-71e7-4356-8265-056771ad0075
       version: -1
       name: aws-iam-delete-instance-profile
-      description: Deletes the specified instance profile. The instance profile must
-        not have an associated role.
+      description: Deletes the specified instance profile. The instance profile must not have an associated role.
       script: AWS - IAM|||aws-iam-delete-instance-profile
       type: regular
       iscommand: true
@@ -355,10 +352,7 @@ tasks:
       id: 0d557d4e-c198-437c-888f-51d29e2b8a8e
       version: -1
       name: aws-iam-add-role-to-instance-profile
-      description: Adds the specified IAM role to the specified instance profile.
-        An instance profile can contain only one role, and this limit cannot be increased.
-        You can remove the existing role and then add a different role to an instance
-        profile.
+      description: Adds the specified IAM role to the specified instance profile. An instance profile can contain only one role, and this limit cannot be increased. You can remove the existing role and then add a different role to an instance profile.
       script: AWS - IAM|||aws-iam-add-role-to-instance-profile
       type: regular
       iscommand: true
@@ -396,8 +390,7 @@ tasks:
       id: 68ad5382-33ec-4e24-8698-cb1f3d5167f8
       version: -1
       name: aws-iam-remove-role-from-instance-profile
-      description: Removes the specified IAM role from the specified EC2 instance
-        profile.
+      description: Removes the specified IAM role from the specified EC2 instance profile.
       script: AWS - IAM|||aws-iam-remove-role-from-instance-profile
       type: regular
       iscommand: true
@@ -434,8 +427,7 @@ tasks:
       id: e4442717-56f2-427f-82ac-365f62587976
       version: -1
       name: aws-iam-list-instance-profiles-for-role
-      description: Lists the instance profiles that have the specified associated
-        IAM role.
+      description: Lists the instance profiles that have the specified associated IAM role.
       script: AWS - IAM|||aws-iam-list-instance-profiles-for-role
       type: regular
       iscommand: true
@@ -542,8 +534,7 @@ tasks:
       id: 24e338cc-277b-4b54-82fd-0e868a625e45
       version: -1
       name: aws-iam-delete-role
-      description: 'Deletes the specified role. The role must not have any policies
-        attached. '
+      description: 'Deletes the specified role. The role must not have any policies attached. '
       script: AWS - IAM|||aws-iam-delete-role
       type: regular
       iscommand: true
@@ -1622,8 +1613,7 @@ tasks:
       id: 8542053e-b430-461f-81ba-3186a949a6db
       version: -1
       name: List Role Policies
-      description: Lists the names of the inline policies that are embedded in the
-        specified IAM role.
+      description: Lists the names of the inline policies that are embedded in the specified IAM role.
       script: AWS - IAM|||aws-iam-list-role-policies
       type: regular
       iscommand: true
@@ -1728,8 +1718,7 @@ tasks:
       id: 16eead7c-4cba-4e5a-8e53-05288e5537b0
       version: -1
       name: aws-iam-get-role-policy
-      description: Retrieves the specified inline policy document that is embedded
-        with the specified IAM role.
+      description: Retrieves the specified inline policy document that is embedded with the specified IAM role.
       script: AWS - IAM|||aws-iam-get-role-policy
       type: regular
       iscommand: true
@@ -1766,8 +1755,7 @@ tasks:
       id: e3f214a1-45f4-41a0-8fe3-51399b93bb96
       version: -1
       name: aws-iam-list-role-policies
-      description: Lists the names of the inline policies that are embedded in the
-        specified IAM role.
+      description: Lists the names of the inline policies that are embedded in the specified IAM role.
       script: AWS - IAM|||aws-iam-list-role-policies
       type: regular
       iscommand: true
@@ -1985,9 +1973,7 @@ tasks:
       id: 3dabfd18-853d-4cfe-8541-47659694649f
       version: -1
       name: aws-iam-tag-role
-      description: Adds one or more tags to an IAM role. The role can be a regular
-        role or a service-linked role. If a tag with the same key name already exists,
-        then that tag is overwritten with the new value.
+      description: Adds one or more tags to an IAM role. The role can be a regular role or a service-linked role. If a tag with the same key name already exists, then that tag is overwritten with the new value.
       script: '|||aws-iam-tag-role'
       type: regular
       iscommand: true
@@ -2195,3 +2181,6 @@ inputs: []
 outputs: []
 fromversion: 5.0.0
 description: ''
+supportedModules:
+- xsiam
+- agentix

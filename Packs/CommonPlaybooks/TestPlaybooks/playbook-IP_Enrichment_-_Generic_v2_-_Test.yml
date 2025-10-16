@@ -42,8 +42,7 @@ tasks:
       id: 577faa8e-12f7-47d5-8316-e1694226fd97
       version: -1
       name: Delete Context
-      description: Deletes the context of the incident to start the test with no unnecessary
-        data.
+      description: Deletes the context of the incident to start the test with no unnecessary data.
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -198,8 +197,7 @@ tasks:
       id: d3c5f8a5-dcfd-4e06-87b4-b818f2fa3f69
       version: -1
       name: Was external IP resolved?
-      description: Checks whether one of the external IPs was resolved to the yahoo.com
-        domain.
+      description: Checks whether one of the external IPs was resolved to the yahoo.com domain.
       type: condition
       iscommand: false
       brand: ""
@@ -252,8 +250,7 @@ tasks:
       id: 96f4d0cb-b2d7-4ebd-8a02-5ed273bee699
       version: -1
       name: Was internal IP resolved?
-      description: Checks whether the internal IP specified in this test, has been
-        resolved.
+      description: Checks whether the internal IP specified in this test, has been resolved.
       type: condition
       iscommand: false
       brand: ""
@@ -371,9 +368,7 @@ tasks:
       - "4"
     scriptarguments:
       message:
-        simple: IP Enrichment has failed. Please check the conditions and see which
-          one was not met, or if another error has occurred during the enrichment
-          process.
+        simple: IP Enrichment has failed. Please check the conditions and see which one was not met, or if another error has occurred during the enrichment process.
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -428,8 +423,7 @@ tasks:
       id: fb8f4b79-6675-44b6-88bf-d46f9eb9c150
       version: -1
       name: Delete Context
-      description: Deletes the context of the incident to start the test with no unnecessary
-        data.
+      description: Deletes the context of the incident to start the test with no unnecessary data.
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -561,10 +555,10 @@ inputs:
   value:
     simple: "True"
   required: false
-  description: Determines whether the IP Enrichment - Generic playbook should convert
-    IP addresses to hostnames using a DNS query. You can set this to either True or
-    False.
-  playbookInputQuery: null
+  description: Determines whether the IP Enrichment - Generic playbook should convert IP addresses to hostnames using a DNS query. You can set this to either True or False.
+  playbookInputQuery:
 outputs: []
-description: IP Enrichment V2 Test playbook check the IP Enrichment V2 playbook with
-  different inputs.
+description: IP Enrichment V2 Test playbook check the IP Enrichment V2 playbook with different inputs.
+supportedModules:
+- xsiam
+- agentix

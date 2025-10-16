@@ -913,3 +913,6 @@ outputs:
   description: The File object.
   type: unknown
 fromversion: 6.0.0
+supportedModules:
+- xsiam
+- agentix

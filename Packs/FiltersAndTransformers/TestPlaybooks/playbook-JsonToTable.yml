@@ -284,8 +284,7 @@ tasks:
       title:
         simple: tableToMarkdown test
       value:
-        simple: '{"name":{"first": {"item":"test", "hello":"world"}, "last": "here"}
-          , "value": 2}'
+        simple: '{"name":{"first": {"item":"test", "hello":"world"}, "last": "here"} , "value": 2}'
     separatecontext: false
     view: |-
       {
@@ -321,8 +320,7 @@ tasks:
       humanReadableEntryId:
         simple: ${lastCompletedTaskEntries}
       substring:
-        simple: "### tableToMarkdown test\n|name|value|\n|---|---|\n| **first**:<br>\t***item***:
-          test<br>\t***hello***: world<br><br>***last***: here | 2 |\n"
+        simple: "### tableToMarkdown test\n|name|value|\n|---|---|\n| **first**:<br>\t***item***: test<br>\t***hello***: world<br><br>***last***: here | 2 |\n"
     separatecontext: false
     view: |-
       {
@@ -360,8 +358,7 @@ tasks:
       title:
         simple: tableToMarkdown test
       value:
-        simple: '{"name":{"first": {"item":"test", "hello":"world"}, "last": "here"}
-          , "value": 2}'
+        simple: '{"name":{"first": {"item":"test", "hello":"world"}, "last": "here"} , "value": 2}'
     separatecontext: false
     view: |-
       {
@@ -458,3 +455,6 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.0.0
+supportedModules:
+- xsiam
+- agentix

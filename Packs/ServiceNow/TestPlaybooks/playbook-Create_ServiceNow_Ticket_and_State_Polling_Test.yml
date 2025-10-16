@@ -1,13 +1,7 @@
 id: Create ServiceNow Ticket and State Polling Test
 version: -1
 name: Create ServiceNow Ticket and State Polling Test
-description: "Create ServiceNow Ticket allows you to open new tickets as a task from\
-  \ a parent playbook.\nIt is an option to set sync with the ticket's state, which\
-  \ will wait for the ticket to resolve or close with StatePolling. \nYou can alternatively\
-  \ select to mirror the ServiceNow ticket and incident fields. Mirroring includes\
-  \ its equivalent for StatePolling -  FieldPolling.\nTo apply either of these options,\
-  \ set the SyncTicket value in the playbook inputs to one of the following options:\
-  \ \n1. StatePolling\n2. Mirror\n3. Leave Blank to use none."
+description: "Create ServiceNow Ticket allows you to open new tickets as a task from a parent playbook.\nIt is an option to set sync with the ticket's state, which will wait for the ticket to resolve or close with StatePolling. \nYou can alternatively select to mirror the ServiceNow ticket and incident fields. Mirroring includes its equivalent for StatePolling -  FieldPolling.\nTo apply either of these options, set the SyncTicket value in the playbook inputs to one of the following options: \n1. StatePolling\n2. Mirror\n3. Leave Blank to use none."
 starttaskid: "0"
 tasks:
   "0":
@@ -547,8 +541,7 @@ inputs:
   value:
     simple: "2"
   required: false
-  description: Set severity to the new ticket, leave empty for ServiceNow default
-    severity.
+  description: Set severity to the new ticket, leave empty for ServiceNow default severity.
   playbookInputQuery:
 - key: Comment
   value:
@@ -560,14 +553,7 @@ inputs:
   value:
     simple: StatePolling
   required: false
-  description: "Set the value of the desired sync method with ServiceNow Ticket. you\
-    \ can choose one of three options:\n1. StatePolling\n2. Mirror \n3. Blank for\
-    \ none \n\nGenericPolling uses as cold sync, which polls for the state of the\
-    \ ticket.\nGenericPoliing will run until the ticket state is either resolved or\
-    \ closed. \n\nMirror - You can use the Mirror option to perform a full sync with\
-    \ ServiceNow Ticket. The ticket data is synced automatically between ServiceNow\
-    \ and Cortex xSOAR with the ServiceNow mirror feature.\nIf this option is selected,\
-    \ FieldPolling is true by default. "
+  description: "Set the value of the desired sync method with ServiceNow Ticket. you can choose one of three options:\n1. StatePolling\n2. Mirror \n3. Blank for none \n\nGenericPolling uses as cold sync, which polls for the state of the ticket.\nGenericPoliing will run until the ticket state is either resolved or closed. \n\nMirror - You can use the Mirror option to perform a full sync with ServiceNow Ticket. The ticket data is synced automatically between ServiceNow and Cortex xSOAR with the ServiceNow mirror feature.\nIf this option is selected, FieldPolling is true by default. "
   playbookInputQuery:
 - key: PollingInterval
   value:
@@ -589,11 +575,7 @@ inputs:
   value:
     simple: Using
   required: false
-  description: "In this use case, Additional polling commands are relevant when using\
-    \ StatePolling, and there is more than one ServiceNow instance. It will specify\
-    \ the polling command to use a specific instance to run on. \nIf so, please add\
-    \ \"Using\" to the value. \nThe playbook will then take the instance name as the\
-    \ instance to use. "
+  description: "In this use case, Additional polling commands are relevant when using StatePolling, and there is more than one ServiceNow instance. It will specify the polling command to use a specific instance to run on. \nIf so, please add \"Using\" to the value. \nThe playbook will then take the instance name as the instance to use. "
   playbookInputQuery:
 - key: InstanceName
   value:
@@ -625,8 +607,7 @@ inputs:
   value:
     simple: Both
   required: false
-  description: "Set the mirror direction, should be one of the following: \n1. Out\n\
-    2. Both"
+  description: "Set the mirror direction, should be one of the following: \n1. Out\n2. Both"
   playbookInputQuery:
 - key: MirrorCommentTags
   value:
@@ -645,3 +626,6 @@ inputs:
   playbookInputQuery:
 outputs: []
 fromversion: 6.0.0
+supportedModules:
+- xsiam
+- agentix

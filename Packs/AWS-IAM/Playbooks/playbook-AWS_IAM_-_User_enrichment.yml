@@ -176,3 +176,6 @@ outputs:
 tests:
 - No tests
 fromversion: 5.5.0
+supportedModules:
+- agentix
+- xsiam

@@ -544,3 +544,6 @@ outputs:
 sourceplaybookid: Active Directory - Get User Manager Details
 fromversion: 5.0.0
 description: Checked the Automatic Pagination, in case limit argument was given
+supportedModules:
+- xsiam
+- agentix

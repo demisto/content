@@ -148,3 +148,6 @@ inputs: []
 outputs: []
 fromversion: 6.9.0
 description: Test for IsIntegrationAvailable automation
+supportedModules:
+- xsiam
+- agentix

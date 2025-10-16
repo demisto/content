@@ -40,8 +40,7 @@ tasks:
       id: f7947f6e-3575-4fac-8f59-4bc913d610f9
       version: -1
       name: run-script
-      description: Return indicators appears in resolved incidents, and resolved incident
-        ids.
+      description: Return indicators appears in resolved incidents, and resolved incident ids.
       scriptName: IndicatorMaliciousRatioCalculation
       type: regular
       iscommand: false
@@ -105,3 +104,6 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.0.0
+supportedModules:
+- xsiam
+- agentix

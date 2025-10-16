@@ -74,8 +74,7 @@ tasks:
       id: 65af145a-2bb1-4d10-8012-7c5570d49372
       version: -1
       name: List *Shared* Directory
-      description: Returns a list containing the names of the entries in the directory
-        given by path.
+      description: Returns a list containing the names of the entries in the directory given by path.
       script: '|||smb-directory-list'
       type: regular
       iscommand: true
@@ -329,8 +328,7 @@ tasks:
       id: d1404f74-e874-41e2-8038-3777ad818726
       version: -1
       name: List *Shared* Directory
-      description: Returns a list containing the names of the entries in the directory
-        given by path.
+      description: Returns a list containing the names of the entries in the directory given by path.
       script: '|||smb-directory-list'
       type: regular
       iscommand: true
@@ -472,3 +470,6 @@ inputs: []
 outputs: []
 fromversion: 5.0.0
 description: ''
+supportedModules:
+- xsiam
+- agentix

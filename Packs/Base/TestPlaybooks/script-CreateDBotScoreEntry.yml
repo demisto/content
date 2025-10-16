@@ -27,56 +27,58 @@ script: |+
       main()
 
 type: python
-tags: [ ]
+tags: []
 comment: |-
   Creates a DBotScore entry.
   The script is being used by the test playbook `Test-CreateDBotScore-With-Reliability`.
 enabled: true
 args:
-  - name: indicator_type
-    required: true
-    auto: PREDEFINED
-    predefined:
-      - ip
-      - file
-      - domain
-      - url
-      - cve
-      - account
-      - cider
-      - domainglob
-      - certificate
-      - cryptocurrency
-    description: The Indicator type.
-  - name: value
-    required: true
-    description: The Indicator value.
-  - name: score
-    auto: PREDEFINED
-    predefined:
-      - "0"
-      - "1"
-      - "2"
-      - "3"
-    description: The Indicator actual score.
-  - name: reliability
-    auto: PREDEFINED
-    predefined:
-      - A+ - 3rd party enrichment
-      - A - Completely reliable
-      - B - Usually reliable
-      - C - Fairly reliable
-      - D - Not usually reliable
-      - E - Unreliable
-      - F - Reliability cannot be judged
-    description: The reliability of the source providing the intelligence data.
-  - name: malicious_description
-    description: if the indicator is malicious and have explanation for it then set.
-      it to this field
-  - name: integration_name
-    description: The vendor name.
+- name: indicator_type
+  required: true
+  auto: PREDEFINED
+  predefined:
+  - ip
+  - file
+  - domain
+  - url
+  - cve
+  - account
+  - cider
+  - domainglob
+  - certificate
+  - cryptocurrency
+  description: The Indicator type.
+- name: value
+  required: true
+  description: The Indicator value.
+- name: score
+  auto: PREDEFINED
+  predefined:
+  - "0"
+  - "1"
+  - "2"
+  - "3"
+  description: The Indicator actual score.
+- name: reliability
+  auto: PREDEFINED
+  predefined:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  description: The reliability of the source providing the intelligence data.
+- name: malicious_description
+  description: if the indicator is malicious and have explanation for it then set. it to this field
+- name: integration_name
+  description: The vendor name.
 scripttarget: 0
 subtype: python3
 runonce: false
 dockerimage: demisto/python3:3.9.1.14969
 fromversion: 5.5.0
+supportedModules:
+- xsiam
+- agentix

@@ -1,8 +1,7 @@
 id: CVSS Calculator Test
 version: -1
 name: CVSS Calculator Test
-description: This playbook simply tests that the calculator works and does not error.
-  It makes use of all the input cariables possible.
+description: This playbook simply tests that the calculator works and does not error. It makes use of all the input cariables possible.
 starttaskid: "0"
 fromversion: 5.0.0
 tasks:
@@ -41,9 +40,7 @@ tasks:
       id: d7a5abaa-f15e-43be-8783-c897b2ca956c
       version: -1
       name: CVSSCalculator
-      description: This script calculates the CVSS Base Score, Temporal Score and
-        Environmental Score using either the CVSS 3.0 or 3.1 calculator according
-        to https://www.first.org/cvss/ calculation documentation.
+      description: This script calculates the CVSS Base Score, Temporal Score and Environmental Score using either the CVSS 3.0 or 3.1 calculator according to https://www.first.org/cvss/ calculation documentation.
       scriptName: CVSSCalculator
       type: regular
       iscommand: false
@@ -150,3 +147,6 @@ view: |-
   }
 inputs: []
 outputs: []
+supportedModules:
+- xsiam
+- agentix

@@ -427,8 +427,7 @@ tasks:
       id: a25685b8-cf6a-4d58-85cc-ad870be1d0de
       version: -1
       name: ews-user-list
-      description: Use the ews-user-list command to view existing user objects in
-        your organization.
+      description: Use the ews-user-list command to view existing user objects in your organization.
       script: '|||ews-user-list'
       type: regular
       iscommand: true
@@ -462,9 +461,7 @@ tasks:
       id: 06e0d26d-8cc0-4977-8eb9-567d1896081f
       version: -1
       name: ews-federation-configuration-get
-      description: Use the ews-federation-configuration-get command to retrieve the
-        Exchange organization's federated organization identifier and related details,
-        such as federated domains, organization contact and status.
+      description: Use the ews-federation-configuration-get command to retrieve the Exchange organization's federated organization identifier and related details, such as federated domains, organization contact and status.
       script: EwsExtension|||ews-federation-configuration-get
       type: regular
       iscommand: true
@@ -497,8 +494,7 @@ tasks:
       id: 2b0f88fb-abd4-4c2e-87a7-59e757fccd34
       version: -1
       name: ews-federation-trust-get
-      description: Use the ews-federation-trust-get command to view the federation
-        trust configured for the Exchange organization.
+      description: Use the ews-federation-trust-get command to view the federation trust configured for the Exchange organization.
       script: EwsExtension|||ews-federation-trust-get
       type: regular
       iscommand: true
@@ -530,8 +526,7 @@ tasks:
       id: 41474a6a-45d3-45f2-8c84-3f09f4758cc9
       version: -1
       name: ews-mailbox-audit-bypass-association-list
-      description: Use the Get-User command to view existing user objects in your
-        organization.
+      description: Use the Get-User command to view existing user objects in your organization.
       script: EwsExtension|||ews-mailbox-audit-bypass-association-list
       type: regular
       iscommand: true
@@ -567,9 +562,7 @@ tasks:
       id: 8dbbadfd-04de-4c4c-872b-24b99b23d620
       version: -1
       name: ews-remote-domain-get
-      description: View the configuration information for the remote domains configured
-        in your organization. This command is available only in the Exchange Online
-        PowerShell V2 module.
+      description: View the configuration information for the remote domains configured in your organization. This command is available only in the Exchange Online PowerShell V2 module.
       script: EwsExtension|||ews-remote-domain-get
       type: regular
       iscommand: true
@@ -759,12 +752,15 @@ inputs:
     simple: avishai@demistodev.onmicrosoft.com
   required: true
   description: Mail box for testing
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: add_conf
   value:
     simple: test@gmail.com
   required: true
   description: Configuration to add when verifying integration.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
 fromversion: 5.5.0
+supportedModules:
+- xsiam
+- agentix

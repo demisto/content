@@ -619,3 +619,6 @@ inputs: []
 outputs: []
 fromversion: 5.0.0
 description: Testing output of the Stix Export button
+supportedModules:
+- xsiam
+- agentix

@@ -40,8 +40,7 @@ tasks:
       id: 88cc8b02-35cd-446e-8d8a-93138161f73d
       version: -1
       name: msg-search-alerts
-      description: List alerts (security issues) within a customer's tenant that Microsoft
-        or partner security solutions have identified.
+      description: List alerts (security issues) within a customer's tenant that Microsoft or partner security solutions have identified.
       script: '|||msg-search-alerts'
       type: regular
       iscommand: true
@@ -116,9 +115,7 @@ tasks:
       id: 57fb7006-d2d7-4a84-85c2-3c463cf4e0c6
       version: -1
       name: msg-update-alert
-      description: Update an editable alert property within any integrated solution
-        to keep alert status and assignments in sync across solutions using its reference
-        ID.
+      description: Update an editable alert property within any integrated solution to keep alert status and assignments in sync across solutions using its reference ID.
       script: '|||msg-update-alert'
       type: regular
       iscommand: true
@@ -377,3 +374,6 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.0.0
+supportedModules:
+- xsiam
+- agentix
