@@ -891,7 +891,7 @@ def test_enrich_with_batch_check_case3_asset_entity(requests_mock, mock_client, 
     requests_mock.post(f"https://{MOCK_SERVER}/api/1_0/batchCheck", json=batch_response)
 
     # Mock demisto.params() for applyTags and integrationReliability
-    mocker.patch("Analyst1.demisto.params", return_value={"applyTags": False, "integrationReliability": "B"})
+    mocker.patch("Analyst1.demisto.params", return_value={"applyTags": False, "integrationReliability": "B - Usually reliable"})
 
     enrichment_output = enrich_with_batch_check(mock_client, "10.0.0.1", "ip", "Address", "IP")
 
@@ -920,7 +920,7 @@ def test_enrich_with_batch_check_case3_ignored_indicator(requests_mock, mock_cli
     requests_mock.post(f"https://{MOCK_SERVER}/api/1_0/batchCheck", json=batch_response)
 
     # Mock demisto.params()
-    mocker.patch("Analyst1.demisto.params", return_value={"applyTags": False, "integrationReliability": "B"})
+    mocker.patch("Analyst1.demisto.params", return_value={"applyTags": False, "integrationReliability": "B - Usually reliable"})
 
     enrichment_output = enrich_with_batch_check(mock_client, "ignored.com", "domain", "Name", "Domain")
 
@@ -947,7 +947,7 @@ def test_enrich_with_batch_check_case3_private_range(requests_mock, mock_client,
     requests_mock.post(f"https://{MOCK_SERVER}/api/1_0/batchCheck", json=batch_response)
 
     # Mock demisto.params()
-    mocker.patch("Analyst1.demisto.params", return_value={"applyTags": False, "integrationReliability": "B"})
+    mocker.patch("Analyst1.demisto.params", return_value={"applyTags": False, "integrationReliability": "B - Usually reliable"})
 
     enrichment_output = enrich_with_batch_check(mock_client, "192.168.1.1", "ip", "Address", "IP")
 
@@ -967,7 +967,7 @@ def test_enrich_with_batch_check_case3_multiple_entities(requests_mock, mock_cli
     requests_mock.post(f"https://{MOCK_SERVER}/api/1_0/batchCheck", json=batch_response)
 
     # Mock demisto.params()
-    mocker.patch("Analyst1.demisto.params", return_value={"applyTags": False, "integrationReliability": "B"})
+    mocker.patch("Analyst1.demisto.params", return_value={"applyTags": False, "integrationReliability": "B - Usually reliable"})
 
     enrichment_output = enrich_with_batch_check(mock_client, "10.0.0.1", "ip", "Address", "IP")
 
@@ -1012,7 +1012,7 @@ def test_enrich_with_batch_check_with_tagging_enabled(requests_mock, mock_client
     requests_mock.post(f"https://{MOCK_SERVER}/api/1_0/batchCheck", json=batch_response)
 
     # Mock demisto.params() with tagging enabled
-    mocker.patch("Analyst1.demisto.params", return_value={"applyTags": True, "integrationReliability": "B"})
+    mocker.patch("Analyst1.demisto.params", return_value={"applyTags": True, "integrationReliability": "B - Usually reliable"})
 
     enrichment_output = enrich_with_batch_check(mock_client, "10.0.0.1", "ip", "Address", "IP")
 
@@ -1318,7 +1318,7 @@ def test_enrichment_output_return_outputs_with_indicator(mocker):
     enrichment.add_reputation_context("Domain(val.Name && val.Name === obj.Name)", {"Name": "example.com"})
 
     mock_return_results = mocker.patch("Analyst1.return_results")
-    mocker.patch("Analyst1.demisto.params", return_value={"integrationReliability": "B"})
+    mocker.patch("Analyst1.demisto.params", return_value={"integrationReliability": "B - Usually reliable"})
 
     enrichment.return_outputs()
 
@@ -1337,7 +1337,7 @@ def test_enrichment_output_create_common_indicator_domain(mocker):
     enrichment.verdict_score = 2  # Suspicious
     enrichment.tags = ["Analyst1: Indicator"]
 
-    mocker.patch("Analyst1.demisto.params", return_value={"integrationReliability": "B"})
+    mocker.patch("Analyst1.demisto.params", return_value={"integrationReliability": "B - Usually reliable"})
 
     indicator = enrichment._create_common_indicator_with_tags()
 
@@ -1353,7 +1353,7 @@ def test_enrichment_output_create_common_indicator_email(mocker):
     enrichment.verdict_score = 3  # Malicious
     enrichment.tags = ["Analyst1: Indicator"]
 
-    mocker.patch("Analyst1.demisto.params", return_value={"integrationReliability": "A"})
+    mocker.patch("Analyst1.demisto.params", return_value={"integrationReliability": "A - Completely reliable"})
 
     indicator = enrichment._create_common_indicator_with_tags()
 
@@ -1369,7 +1369,7 @@ def test_enrichment_output_create_common_indicator_ip(mocker):
     enrichment.verdict_score = 1  # Benign
     enrichment.tags = ["Analyst1: Asset"]
 
-    mocker.patch("Analyst1.demisto.params", return_value={"integrationReliability": "B"})
+    mocker.patch("Analyst1.demisto.params", return_value={"integrationReliability": "B - Usually reliable"})
 
     indicator = enrichment._create_common_indicator_with_tags()
 
@@ -1385,7 +1385,7 @@ def test_enrichment_output_create_common_indicator_ipv6(mocker):
     enrichment.verdict_score = 0  # Unknown
     enrichment.tags = []
 
-    mocker.patch("Analyst1.demisto.params", return_value={"integrationReliability": "C"})
+    mocker.patch("Analyst1.demisto.params", return_value={"integrationReliability": "C - Fairly reliable"})
 
     indicator = enrichment._create_common_indicator_with_tags()
 
@@ -1402,7 +1402,7 @@ def test_enrichment_output_create_common_indicator_url(mocker):
     enrichment.verdict_score = 3  # Malicious
     enrichment.tags = ["Analyst1: Indicator"]
 
-    mocker.patch("Analyst1.demisto.params", return_value={"integrationReliability": "B"})
+    mocker.patch("Analyst1.demisto.params", return_value={"integrationReliability": "B - Usually reliable"})
 
     indicator = enrichment._create_common_indicator_with_tags()
 
@@ -1419,7 +1419,7 @@ def test_enrichment_output_create_common_indicator_file_sha1(mocker):
     enrichment.verdict_score = 3  # Malicious
     enrichment.tags = ["Analyst1: Indicator"]
 
-    mocker.patch("Analyst1.demisto.params", return_value={"integrationReliability": "B"})
+    mocker.patch("Analyst1.demisto.params", return_value={"integrationReliability": "B - Usually reliable"})
 
     indicator = enrichment._create_common_indicator_with_tags()
 
@@ -1436,7 +1436,7 @@ def test_enrichment_output_create_common_indicator_file_sha256(mocker):
     enrichment.verdict_score = 2  # Suspicious
     enrichment.tags = ["Analyst1: Indicator"]
 
-    mocker.patch("Analyst1.demisto.params", return_value={"integrationReliability": "B"})
+    mocker.patch("Analyst1.demisto.params", return_value={"integrationReliability": "B - Usually reliable"})
 
     indicator = enrichment._create_common_indicator_with_tags()
 
@@ -1452,7 +1452,7 @@ def test_enrichment_output_create_common_indicator_file_md5(mocker):
     enrichment.verdict_score = 1  # Benign
     enrichment.tags = []
 
-    mocker.patch("Analyst1.demisto.params", return_value={"integrationReliability": "B"})
+    mocker.patch("Analyst1.demisto.params", return_value={"integrationReliability": "B - Usually reliable"})
 
     indicator = enrichment._create_common_indicator_with_tags()
 
@@ -1487,7 +1487,7 @@ def test_enrichment_output_create_common_indicator_with_tags_none(mocker):
     enrichment.verdict_score = 1
     enrichment.tags = None  # Explicitly set to None
 
-    mocker.patch("Analyst1.demisto.params", return_value={"integrationReliability": "B"})
+    mocker.patch("Analyst1.demisto.params", return_value={"integrationReliability": "B - Usually reliable"})
 
     indicator = enrichment._create_common_indicator_with_tags()
 
@@ -1502,7 +1502,7 @@ def test_enrichment_output_create_common_indicator_with_empty_tags(mocker):
     enrichment.verdict_score = 1
     enrichment.tags = []  # Empty list
 
-    mocker.patch("Analyst1.demisto.params", return_value={"integrationReliability": "B"})
+    mocker.patch("Analyst1.demisto.params", return_value={"integrationReliability": "B - Usually reliable"})
 
     indicator = enrichment._create_common_indicator_with_tags()
 

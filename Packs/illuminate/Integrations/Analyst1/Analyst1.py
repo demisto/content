@@ -659,7 +659,9 @@ class EnrichmentOutput:
             indicator_type=dbot_type,
             score=self.verdict_score,
             integration_name=INTEGRATION_NAME,
-            reliability=demisto.params().get("integrationReliability"),
+            reliability=DBotScoreReliability.get_dbot_score_reliability_from_str(
+                demisto.params().get("integrationReliability", "B - Usually reliable")
+            ),
         )
 
         # Create the appropriate Common indicator object based on type with tags
