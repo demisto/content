@@ -943,6 +943,13 @@ script:
       - sn_si_incident
     description: Deletes a ticket from ServiceNow.
     name: servicenow-delete-ticket
+    outputs:
+    - contextPath: ServiceNow.Ticket.ID
+      description: Ticket ID.
+      type: string
+    - contextPath: ServiceNow.Ticket.DeleteMessage
+      description: A Message indicating the result of the ticket deletion operation.
+      type: string
   - arguments:
     - description: Attachment File ID.
       name: file_sys_id

@@ -1,0 +1,519 @@
+id: Unit 42 Intelligence Test
+version: -1
+name: Unit 42 Intelligence Test
+description: Test playbook for Unit 42 Intelligence integration.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 3a4b5c6d-7e8f-9012-3456-789012345678
+    type: start
+    task:
+      id: 3a4b5c6d-7e8f-9012-3456-789012345678
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 4b5c6d7e-8f90-1234-5678-901234567890
+    type: regular
+    task:
+      id: 4b5c6d7e-8f90-1234-5678-901234567890
+      version: -1
+      name: Test IP enrichment
+      description: Test IP enrichment with Unit 42 Intelligence
+      script: Unit 42 Intelligence|||ip
+      type: regular
+      iscommand: true
+      brand: Unit 42 Intelligence
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      ip:
+        simple: 8.8.8.8
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 086103ab-a53f-42e5-8b35-efb165e2f7fd
+    type: regular
+    task:
+      id: 086103ab-a53f-42e5-8b35-efb165e2f7fd
+      version: -1
+      name: Test Domain enrichment
+      description: Test Domain enrichment with Unit 42 Intelligence
+      script: Unit 42 Intelligence|||domain
+      type: regular
+      iscommand: true
+      brand: Unit 42 Intelligence
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      domain:
+        simple: google.com
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 983df2dc-97fc-4a79-8170-ba223e42c70e
+    type: regular
+    task:
+      id: 983df2dc-97fc-4a79-8170-ba223e42c70e
+      version: -1
+      name: Test URL enrichment
+      description: Test URL enrichment with Unit 42 Intelligence
+      script: Unit 42 Intelligence|||url
+      type: regular
+      iscommand: true
+      brand: Unit 42 Intelligence
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      url:
+        simple: https://www.google.com
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 63be1bdb-94c7-4996-8e75-ba04668dfa17
+    type: regular
+    task:
+      id: 63be1bdb-94c7-4996-8e75-ba04668dfa17
+      version: -1
+      name: Test File enrichment
+      description: Test File enrichment with Unit 42 Intelligence
+      script: Unit 42 Intelligence|||file
+      type: regular
+      iscommand: true
+      brand: Unit 42 Intelligence
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      file:
+        simple: 178ba564b39bd07577e974a9b677dfd86ffa1f1d0299dfd958eb883c5ef6c3e1
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 4b5c6d7e-8f90-1234-5678-901234567891
+    type: condition
+    task:
+      id: 4b5c6d7e-8f90-1234-5678-901234567891
+      version: -1
+      name: Verify IP Context
+      description: Verify IP enrichment context data
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: IP
+                accessor: Address
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: IP
+                accessor: Address
+            iscontext: true
+          right:
+            value:
+              simple: "8.8.8.8"
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: DBotScore
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DBotScore.Indicator
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "8.8.8.8"
+                accessor: Score
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Unit42Intelligence
+                accessor: IP.Value
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 5c6d7e8f-9012-3456-7890-123456789013
+    type: condition
+    task:
+      id: 5c6d7e8f-9012-3456-7890-123456789013
+      version: -1
+      name: Verify Domain Context
+      description: Verify Domain enrichment context data
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Domain
+                accessor: Name
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Domain
+                accessor: Name
+            iscontext: true
+          right:
+            value:
+              simple: "google.com"
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: DBotScore
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DBotScore.Indicator
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "google.com"
+                accessor: Score
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Unit42Intelligence
+                accessor: Domain.Value
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 6d7e8f90-1234-5678-9012-345678901235
+    type: condition
+    task:
+      id: 6d7e8f90-1234-5678-9012-345678901235
+      version: -1
+      name: Verify URL Context
+      description: Verify URL enrichment context data
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: URL
+                accessor: Data
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: URL
+                accessor: Data
+            iscontext: true
+          right:
+            value:
+              simple: "https://www.google.com"
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: DBotScore
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DBotScore.Indicator
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "https://www.google.com"
+                accessor: Score
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Unit42Intelligence
+                accessor: URL.Value
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 7e8f9012-3456-7890-1234-567890123457
+    type: condition
+    task:
+      id: 7e8f9012-3456-7890-1234-567890123457
+      version: -1
+      name: Verify File Context
+      description: Verify File enrichment context data
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: File
+                accessor: SHA256
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: File
+                accessor: SHA256
+            iscontext: true
+          right:
+            value:
+              simple: "178ba564b39bd07577e974a9b677dfd86ffa1f1d0299dfd958eb883c5ef6c3e1"
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: DBotScore
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DBotScore.Indicator
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "178ba564b39bd07577e974a9b677dfd86ffa1f1d0299dfd958eb883c5ef6c3e1"
+                accessor: Score
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Unit42Intelligence
+                accessor: File.Value
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 8f901234-5678-9012-3456-789012345678
+    type: title
+    task:
+      id: 8f901234-5678-9012-3456-789012345678
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1610,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.10.0
