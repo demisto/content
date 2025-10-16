@@ -3,6 +3,7 @@ import re
 import pytest
 from pytest_mock import MockerFixture
 from requests_mock import Mocker as RequestsMocker
+from aiohttp import ClientResponseError, RequestInfo
 from unittest.mock import AsyncMock
 from freezegun import freeze_time
 from CommonServerPython import *
@@ -36,11 +37,23 @@ def async_client():
     return AsyncClient(base_url=SERVER_URL, token="test_token", verify=False, proxy=False)
 
 
-def mock_async_session_response(response_json: None | dict = None, status_code: int = 200) -> AsyncMock:
+def mock_async_session_response(
+    response_json: dict | None = None,
+    error_status_code: int | None = None,
+    error_message: str = "Server error",
+) -> AsyncMock | ClientResponseError:
     mock_response = AsyncMock()
     mock_response.json = AsyncMock(return_value=response_json)
-    mock_response.raise_for_status = AsyncMock()
-    mock_response.status_code = status_code
+    if error_status_code:
+        return ClientResponseError(
+            status=error_status_code,
+            history=(),
+            request_info=RequestInfo("", "GET", {}),
+            message=error_message,
+        )
+    else:
+        mock_response.raise_for_status = AsyncMock()
+        mock_response.status_code = 200
     return AsyncMock(__aenter__=AsyncMock(return_value=mock_response))
 
 
@@ -197,8 +210,13 @@ async def test_client_get_audit_trails(async_client: AsyncClient, mocker: Mocker
 
     mock_response_json = {"data": [{"id": "event-1", "timestamp": "2025-01-01T00:00:00Z"}], "pagination": {"total_pages": 1}}
 
+    mock_responses = [
+        mock_async_session_response(error_status_code=429),  # mock rate limit error
+        mock_async_session_response(mock_response_json),  # mock successful response
+    ]
+
     async with async_client as _client:
-        mocker.patch.object(_client._session, "get", return_value=mock_async_session_response(mock_response_json))
+        mocker.patch.object(_client._session, "get", side_effect=mock_responses)
         response_json = await _client.get_audit_trails(from_date=from_date, page_number=page_number)
 
     assert response_json == mock_response_json
@@ -207,18 +225,18 @@ async def test_client_get_audit_trails(async_client: AsyncClient, mocker: Mocker
         "params": {"since": from_date, "page[number]": str(page_number), "page[size]": str(DEFAULT_AUDIT_TRAIL_PAGE_SIZE)},
         "proxy": None,
     }
-    assert _client._session.get.call_count == 1
+    assert _client._session.get.call_count == 2  # First time failed, retry again
 
 
 @pytest.mark.asyncio
-async def test_get_audit_trail_events_pagination(async_client: AsyncClient, mocker: MockerFixture):
+async def test_get_audit_trail_events_pagination_success(async_client: AsyncClient, mocker: MockerFixture):
     """
     Given:
      - A limit that requires fetching two pages of events.
     When:
      - Calling get_audit_trail_events.
     Then:
-     - Ensure that two API calls are made and the events are aggregated.
+     - Ensure that three API calls are made and the events are aggregated (one for pagination, two others for events).
     """
     from HashiCorpTerraform import get_audit_trail_events
 
@@ -253,6 +271,48 @@ async def test_get_audit_trail_events_pagination(async_client: AsyncClient, mock
     assert events[0]["timestamp"] < events[-1]["timestamp"]
     assert events[-1]["_time"] == "2025-01-01T00:01:00Z"
     assert _client._session.get.call_count == 3
+
+
+@pytest.mark.asyncio
+async def test_get_audit_trail_events_pagination_error(async_client: AsyncClient, mocker: MockerFixture):
+    """
+    Given:
+     - A limit that requires fetching two pages of events.
+    When:
+     - Calling get_audit_trail_events.
+    Then:
+     - Ensure that the correct error message appears if one of the pagination requests fails.
+    """
+    from HashiCorpTerraform import get_audit_trail_events
+
+    page_size = DEFAULT_AUDIT_TRAIL_PAGE_SIZE
+    mock_response_jsons = [
+        {  # Page 1 (Newest events)
+            "data": [{"id": f"event-A{i}", "timestamp": "2025-01-01T00:02:00.000Z"} for i in range(page_size)],
+            "pagination": {"current_page": 1, "total_pages": 3},
+        },
+        {  # Page 3 (Oldest events)
+            "data": [{"id": f"event-C{i}", "timestamp": "2025-01-01T00:00:00.000Z"} for i in range(page_size)],
+            "pagination": {"current_page": 3, "total_pages": 3},
+        },
+    ]
+
+    mock_responses = [
+        mock_async_session_response(mock_response_jsons[0]),  # First call successful
+        mock_async_session_response(error_status_code=500, error_message="Server error"),  # Second call fails
+        mock_async_session_response(mock_response_jsons[1]),  # Third call successful
+    ]
+
+    mock_demisto_error = mocker.patch.object(demisto, "error")
+
+    limit = DEFAULT_AUDIT_TRAIL_PAGE_SIZE + 5
+    async with async_client as _client:
+        mocker.patch.object(_client._session, "get", side_effect=mock_responses)
+        with pytest.raises(Exception):
+            await get_audit_trail_events(async_client, from_date="2025-01-01T00:00:00Z", limit=limit)
+
+    assert mock_demisto_error.call_count == 1
+    assert mock_demisto_error.call_args[0][0] == "Request failed with status 500: Server error"
 
 
 @freeze_time("2025-01-02T00:00:00Z")

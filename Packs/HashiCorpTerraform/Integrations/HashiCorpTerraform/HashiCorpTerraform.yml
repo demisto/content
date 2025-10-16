@@ -28,19 +28,19 @@ configuration:
   name: default_workspace_id
   type: 0
   required: false
-  section: Collect
+  section: Connect
   additionalinfo: There is an option to override with an input parameter. If not provided, some commands should require the workspace ID.
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
-  section: Collect
+  section: Connect
   advanced: true
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
-  section: Collect
+  section: Connect
   advanced: true
 - display: Fetch events
   name: isFetchEvents
