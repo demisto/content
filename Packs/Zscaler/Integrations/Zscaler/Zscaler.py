@@ -116,8 +116,8 @@ def http_request(method, url_suffix, data=None, headers=None, resp_type="json"):
         )
 
     except Exception as e:
-        demisto.debug(f"Zscaler request failed with url suffix={url_suffix}\tdata={data}")
-        demisto.debug(e)
+        LOG(f"Zscaler request failed with url suffix={url_suffix}\tdata={data}")
+        LOG(e)
         raise e
     return res
 
@@ -1205,7 +1205,7 @@ def main():  # pragma: no cover
             if command == "test-module":
                 return_results(test_module())
             elif command == "url":
-                return_results(url_lookup(args))
+                return_results(url_lookup(demisto.args()))
             elif command == "ip":
                 return_results(ip_lookup(args.get("ip")))
             elif command == "zscaler-blacklist-url":
@@ -1253,21 +1253,21 @@ def main():  # pragma: no cover
             elif command == "zscaler-url-quota":
                 return_results(url_quota_command())
             elif command == "zscaler-get-users":
-                return_results(get_users_command(args))
+                return_results(get_users_command(demisto.args()))
             elif command == "zscaler-update-user":
-                return_results(set_user_command(args))
+                return_results(set_user_command(demisto.args()))
             elif command == "zscaler-get-departments":
-                return_results(get_departments_command(args))
+                return_results(get_departments_command(demisto.args()))
             elif command == "zscaler-get-usergroups":
-                return_results(get_usergroups_command(args))
+                return_results(get_usergroups_command(demisto.args()))
             elif command == "zscaler-list-ip-destination-groups":
-                return_results(list_ip_destination_groups(args))
+                return_results(list_ip_destination_groups(demisto.args()))
             elif command == "zscaler-create-ip-destination-group":
-                return_results(create_ip_destination_group(args))
+                return_results(create_ip_destination_group(demisto.args()))
             elif command == "zscaler-edit-ip-destination-group":
                 return_results(edit_ip_destination_group(args))
             elif command == "zscaler-delete-ip-destination-groups":
-                return_results(delete_ip_destination_groups(args))
+                return_results(delete_ip_destination_groups(demisto.args()))
             else:
                 raise NotImplementedError(f"Command {command} is not implemented")
         except Exception as e:
