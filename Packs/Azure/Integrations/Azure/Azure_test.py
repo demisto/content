@@ -3027,4 +3027,3 @@ def test_azure_billing_usage_list_command_with_pagination_token(mocker, client, 
 
     assert isinstance(result, CommandResults)
     assert result.outputs["Azure.Billing.Usage"][0]["properties"]["product"] == "Networking"
-    

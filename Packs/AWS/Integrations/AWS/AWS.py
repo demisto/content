@@ -188,6 +188,7 @@ def parse_tag_field(tags_string: str | None):
 
     return tags
 
+
 def convert_datetimes_to_iso_safe(data):
     """
     Converts datetime objects in a data structure to ISO 8601 strings

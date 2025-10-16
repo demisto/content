@@ -1501,7 +1501,7 @@ class AzureClient:
                 subscription_id=subscription_id,
                 resource_group_name=resource_group_name,
             )
-    
+
     def billing_usage_list(
         self,
         subscription_id: str,
@@ -3219,7 +3219,6 @@ def parse_forecast_table_to_dict(response: dict) -> list[dict]:
 
     except (KeyError, TypeError) as e:
         raise DemistoException(f"Failed to parse API response. Malformed data structure: {e}")
-
 
 
 def test_module(client: AzureClient) -> str:
