@@ -2967,6 +2967,7 @@ script:
       description: "A comma-separated list of instance IDs to terminate. If you specify multiple instances and the request fails (for example, because of a single incorrect instance ID), none of the instances are terminated."
       required: true
       isArray: true
+
   - name: aws-ec2-instances-run
     description: Launches a specified number of instances using an AMI you have access to. You can save time by creating a launch template containing your parameters and using the template instead of entering the parameters each time. An instance is ready for you to use when it is in the running state. You can check the state of your instance using aws-ec2-instances-describe.
     execution: true
@@ -3403,6 +3404,176 @@ script:
     - contextPath: AWS.EC2.Instances.PublicIpAddress
       description: The public IPv4 address assigned to the instance.
       type: String
+
+  - name: aws-ec2-latest-ami-get
+    description: Get The latest AMI.
+    execution: true
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        required: true
+      - name: region
+        description: The AWS region where instances will be created. Must be a valid AWS region identifier.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+      - name: filters
+        description: One or more filters Separated by ';'. See AWS documentation for details & filter options.
+      - name: owners
+        description: Filters the images by the owner. Specify an AWS account ID, self (owner is the sender of the request), or an AWS owner alias (valid values are amazon | aws-marketplace | microsoft ). Omitting this option returns all images for which you have launch permissions, regardless of ownership.
+      - name: executableUsers
+        description: Scopes the images by users with explicit launch permissions. Specify an AWS account ID, self (the sender of the request), or all (public AMIs).
+      - name: roleArn
+        description: The Amazon Resource Name (ARN) of the role to assume.
+      - name: roleSessionName
+        description: An identifier for the assumed role session.
+      - name: roleSessionDuration
+        description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+    outputs:
+      - contextPath: AWS.EC2.Images.Architecture
+        description: The architecture of the image.
+        type: string
+      - contextPath: AWS.EC2.Images.CreationDate
+        description: The date and time the image was created.
+        type: date
+      - contextPath: AWS.EC2.Images.ImageId
+        description: The ID of the AMI.
+        type: string
+      - contextPath: AWS.EC2.Images.ImageLocation
+        description: The location of the AMI.
+        type: string
+      - contextPath: AWS.EC2.Images.ImageType
+        description: The type of image.
+        type: string
+      - contextPath: AWS.EC2.Images.Public
+        description: Indicates whether the image has public launch permissions. The value is true if this image has public launch permissions or false if it has only implicit and explicit launch permissions.
+        type: boolean
+      - contextPath: AWS.EC2.Images.KernelId
+        description: The kernel associated with the image, if any. Only applicable for machine images.
+        type: string
+      - contextPath: AWS.EC2.Images.OwnerId
+        description: The AWS account ID of the image owner.
+        type: string
+      - contextPath: AWS.EC2.Images.Platform
+        description: The value is Windows for Windows AMIs; otherwise blank.
+        type: string
+      - contextPath: AWS.EC2.Images.ProductCodes.ProductCodeId
+        description: The product code.
+        type: string
+      - contextPath: AWS.EC2.Images.ProductCodes.ProductCodeType
+        description: The type of product code.
+        type: string
+      - contextPath: AWS.EC2.Images.RamdiskId
+        description: The RAM disk associated with the image, if any. Only applicable for machine images.
+        type: string
+      - contextPath: AWS.EC2.Images.State
+        description: The current state of the AMI. If the state is available , the image is successfully registered and can be used to launch an instance.
+        type: string
+      - contextPath: AWS.EC2.Images.BlockDeviceMappings.DeviceName
+        description: The device name (for example, /dev/sdh or xvdh ).
+        type: string
+      - contextPath: AWS.EC2.Images.BlockDeviceMappings.VirtualName
+        description: The virtual device name (ephemeral N).
+        type: string
+      - contextPath: AWS.EC2.Images.BlockDeviceMappings.Ebs.Encrypted
+        description: Indicates whether the EBS volume is encrypted.
+        type: boolean
+      - contextPath: AWS.EC2.Images.BlockDeviceMappings.Ebs.DeleteOnTermination
+        description: Indicates whether the EBS volume is deleted on instance termination.
+        type: boolean
+      - contextPath: AWS.EC2.Images.BlockDeviceMappings.Ebs.Iops
+        description: The number of I/O operations per second (IOPS) that the volume supports.
+        type: number
+      - contextPath: AWS.EC2.Images.BlockDeviceMappings.Ebs.KmsKeyId
+        description: Identifier (key ID, key alias, ID ARN, or alias ARN) for a user-managed CMK under which the EBS volume is encrypted.
+        type: string
+      - contextPath: AWS.EC2.Images.BlockDeviceMappings.Ebs.SnapshotId
+        description: The ID of the snapshot.
+        type: string
+      - contextPath: AWS.EC2.Images.BlockDeviceMappings.Ebs.VolumeSize
+        description: The size of the volume, in GiB.
+        type: number
+      - contextPath: AWS.EC2.Images.BlockDeviceMappings.Ebs.VolumeType
+        description: The volume type.
+        type: string
+      - contextPath: AWS.EC2.Images.BlockDeviceMappings.NoDevice
+        description: Suppresses the specified device included in the block device mapping of the AMI.
+        type: string
+      - contextPath: AWS.EC2.Images.Description
+        description: The description of the AMI that was provided during image creation.
+        type: string
+      - contextPath: AWS.EC2.Images.EnaSupport
+        description: Specifies whether enhanced networking with ENA is enabled.
+        type: boolean
+      - contextPath: AWS.EC2.Images.Hypervisor
+        description: The hypervisor type of the image.
+        type: string
+      - contextPath: AWS.EC2.Images.ImageOwnerAlias
+        description: The AWS account alias (for example, amazon , self ) or the AWS account ID of the AMI owner.
+        type: string
+      - contextPath: AWS.EC2.Images.Name
+        description: The name of the AMI that was provided during image creation.
+        type: string
+      - contextPath: AWS.EC2.Images.RootDeviceName
+        description: The device name of the root device volume (for example, /dev/sda1).
+        type: string
+      - contextPath: AWS.EC2.Images.RootDeviceType
+        description: The type of root device used by the AMI. The AMI can use an EBS volume or an instance store volume.
+        type: string
+      - contextPath: AWS.EC2.Images.SriovNetSupport
+        description: Specifies whether enhanced networking with the Intel 82599 Virtual Function interface is enabled.
+        type: string
+      - contextPath: AWS.EC2.Images.StateReason.Code
+        description: The reason code for the state change.
+        type: string
+      - contextPath: AWS.EC2.Images.StateReason.Message
+        description: The message for the state change.
+        type: string
+      - contextPath: AWS.EC2.Images.Tags.Key
+        description: The key of the tag.
+        type: string
+      - contextPath: AWS.EC2.Images.Tags.Value
+        description: The value of the tag.
+        type: string
+      - contextPath: AWS.EC2.Images.VirtualizationType
+        description: The type of virtualization of the AMI.
+        type: string
+      - contextPath: AWS.EC2.Images.AccountId
+        description: The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided.
+        type: string
+
   - name: aws-cloudtrail-trails-describe
     description: Retrieves settings for the specified trail or returns information about all trails in the current AWS account.
     arguments:

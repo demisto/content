@@ -1766,6 +1766,66 @@ class EC2:
         except Exception as e:
             raise DemistoException(f"Error: {str(e)}")
 
+    def get_latest_ami_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        kwargs = {
+            "Filters": parse_filter_field(args.get("filters")),
+            "Owners": parse_resource_ids(args.get("owners")),
+            "ExecutableUsers": parse_resource_ids(args.get("executableUsers")),
+            "RoleArn": args.get("roleArn"),
+            "RoleSessionName": args.get("roleSessionName"),
+            "RoleSessionDuration": args.get("roleSessionDuration"),
+        }
+
+        remove_nulls_from_dictionary(kwargs)
+        try:
+            response = client.describe_images(**kwargs)
+            demisto.info(f"{response=}")
+            if response["ResponseMetadata"]["HTTPStatusCode"] in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
+                # demisto.debug(f"RequestId={response.get('ResponseMetadata').get('RequestId')}")
+                return CommandResults(readable_output="Subnet configuration successfully updated.")
+            raise DemistoException("Modification could not be performed.")
+        except Exception as e:
+            raise DemistoException(f"Error: {str(e)}")
+
+    # def get_latest_ami_command(args: dict) -> CommandResults:
+    #     client = build_client(args)
+    #     obj = vars(client._client_config)
+    #     kwargs = {}
+    #     data = {}  # type: dict
+    #
+    #     if args.get("filters") is not None:
+    #         kwargs.update({"Filters": parse_filter_field(args.get("filters"))})
+    #     if args.get("imageIds") is not None:
+    #         kwargs.update({"ImageIds": parse_resource_ids(args.get("imageIds"))})
+    #     if args.get("owners") is not None:
+    #         kwargs.update({"Owners": parse_resource_ids(args.get("owners"))})
+    #     if args.get("executableUsers") is not None:
+    #         kwargs.update({"ExecutableUsers": parse_resource_ids(args.get("executableUsers"))})
+    #     response = client.describe_images(**kwargs)
+    #     amis = sorted(response["Images"], key=lambda x: x["CreationDate"], reverse=True)
+    #     image = amis[0]
+    #     data = {
+    #         "CreationDate": image["CreationDate"],
+    #         "ImageId": image["ImageId"],
+    #         "Public": image["Public"],
+    #         "Name": image["Name"],
+    #         "State": image["State"],
+    #         "Region": obj["_user_provided_options"]["region_name"],
+    #     }
+    #     if "Description" in image:
+    #         data.update({"Description": image["Description"]})
+    #     if "Tags" in image:
+    #         for tag in image["Tags"]:
+    #             data.update({tag["Key"]: tag["Value"]})
+    #
+    #     try:
+    #         raw = json.loads(json.dumps(image, cls=DatetimeEncoder))
+    #         raw.update({"Region": obj["_user_provided_options"]["region_name"]})
+    #     except ValueError as err_msg:
+    #         raise DemistoException(f"Could not decode/encode the raw response - {err_msg}")
+    #     return CommandResults(outputs=image, outputs_prefix="AWS.EC2.Images",
+    #                           readable_output=tableToMarkdown("AWS EC2 Images", data))
+
 
 class EKS:
     service = AWSServices.EKS
@@ -2386,6 +2446,7 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-ec2-create-snapshot": EC2.create_snapshot_command,
     "aws-ec2-modify-snapshot-permission": EC2.modify_snapshot_permission_command,
     "aws-ec2-subnet-attribute-modify": EC2.modify_subnet_attribute_command,
+    "aws-ec2-latest-ami-get": EC2.get_latest_ami_command,
     "aws-eks-cluster-config-update": EKS.update_cluster_config_command,
     "aws-eks-describe-cluster": EKS.describe_cluster_command,
     "aws-eks-associate-access-policy": EKS.associate_access_policy_command,
@@ -2434,6 +2495,7 @@ REQUIRED_ACTIONS: list[str] = [
     "ec2:ModifySnapshotAttribute",
     "ec2:RevokeSecurityGroupIngress",
     "ec2:CreateSnapshot",
+    "ec2:DescribeImages",
     "eks:DescribeCluster",
     "eks:AssociateAccessPolicy",
     "ec2:CreateSecurityGroup",
