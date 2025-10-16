@@ -396,6 +396,107 @@ script:
       description: 'The bucket policy to apply as a JSON string.'
       required: true
 
+  - name: aws-s3-bucket-website-delete
+    description: Removes the website configuration for a bucket.
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        required: true
+      - name: region
+        description: The AWS region.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+      - name: bucket
+        description: The name of the S3 bucket from which the website configuration will be removed.
+        required: true
+
+  - name: aws-s3-bucket-ownership-controls-put
+    description: Creates or modifies OwnershipControls for an Amazon S3 bucket.
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        required: true
+      - name: region
+        description: The AWS region.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+      - name: bucket
+        description: The name of the Amazon S3 bucket for which to configure Ownership Controls.
+        required: true
+      - name: ownership_controls_rule
+        description: Ownership for a bucket's ownership controls.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - BucketOwnerPreferred
+          - ObjectWriter
+          - BucketOwnerEnforced
 
   - name: aws-iam-account-password-policy-get
     description: Gets the AWS account password policy.
@@ -837,9 +938,252 @@ script:
       description: "A JSON representation of the VPC configuration used by the cluster control plane. For example \"{'subnetIds': ['string'], 'securityGroupIds': ['string'], 'endpointPublicAccess': True, 'endpointPrivateAccess': True, 'publicAccessCidrs': ['string']}\"."
       required: false
 
+  - name: aws-eks-describe-cluster
+    description: Describes an Amazon EKS cluster.
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: cluster_name
+      description: The name of the cluster to describe.
+      required: true
+    - name: region
+      description: 'The AWS Region.'
+      auto: PREDEFINED
+      required: true
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+    outputs:
+    - contextPath: AWS.EKS.Cluster.name
+      description: The name of your cluster.
+      type: String
+    - contextPath: AWS.EKS.Cluster.arn
+      description: The Amazon Resource Name (ARN) of the cluster.
+      type: String
+    - contextPath: AWS.EKS.Cluster.createdAt
+      description: The creation date of the object.
+      type: String
+    - contextPath: AWS.EKS.Cluster.version
+      description: The Kubernetes server version for the cluster.
+      type: String
+    - contextPath: AWS.EKS.Cluster.endpoint
+      description: The endpoint for your Kubernetes API server.
+      type: String
+    - contextPath: AWS.EKS.Cluster.roleArn
+      description: The Amazon Resource Name (ARN) of the IAM role that provides permissions for the Kubernetes control plane to make calls to Amazon Web Services API operations on your behalf.
+      type: String
+    - contextPath: AWS.EKS.Cluster.resourcesVpcConfig.subnetIds
+      description: The subnets associated with your cluster.
+      type: List
+    - contextPath: AWS.EKS.Cluster.resourcesVpcConfig.securityGroupIds
+      description: The security groups associated with the cross-account elastic network interfaces that are used to allow communication between your nodes and the Kubernetes control plane.
+      type: List
+    - contextPath: AWS.EKS.Cluster.resourcesVpcConfig.clusterSecurityGroupId
+      description: The cluster security group that was created by Amazon EKS for the cluster. Managed node groups use this security group for control-plane-to-data-plane communication.
+      type: String
+    - contextPath: AWS.EKS.Cluster.resourcesVpcConfig.vpcId
+      description: The VPC associated with your cluster.
+      type: String
+    - contextPath: AWS.EKS.Cluster.resourcesVpcConfig.endpointPublicAccess
+      description: Whether the public API server endpoint is enabled.
+      type: Boolean
+    - contextPath: AWS.EKS.Cluster.resourcesVpcConfig.endpointPrivateAccess
+      description: This parameter indicates whether the Amazon EKS private API server endpoint is enabled.
+      type: Boolean
+    - contextPath: AWS.EKS.Cluster.resourcesVpcConfig.publicAccessCidrs
+      description: The CIDR blocks that are allowed access to your cluster’s public Kubernetes API server endpoint.
+      type: List
+    - contextPath: AWS.EKS.Cluster.kubernetesNetworkConfig.serviceIpv4Cidr
+      description: The CIDR block that Kubernetes Pod and Service object IP addresses are assigned from.
+      type: String
+    - contextPath: AWS.EKS.Cluster.kubernetesNetworkConfig.serviceIpv6Cidr
+      description: The CIDR block that Kubernetes Pod and Service IP addresses are assigned from if you created a 1.21 or later cluster with version 1.10.1 or later of the Amazon VPC CNI add-on and specified ipv6 for ipFamily when you created the cluster.
+      type: String
+    - contextPath: AWS.EKS.Cluster.kubernetesNetworkConfig.ipFamily
+      description: The IP family used to assign Kubernetes Pod and Service objects IP addresses.
+      type: String
+    - contextPath: AWS.EKS.Cluster.logging.clusterLogging
+      description: The cluster control plane logging configuration for your cluster.
+      type: Object
+    - contextPath: AWS.EKS.Cluster.identity
+      description: The identity provider information for the cluster.
+      type: Object
+    - contextPath: AWS.EKS.Cluster.status
+      description: The current status of the cluster.
+      type: String
+    - contextPath: AWS.EKS.Cluster.certificateAuthority.data
+      description: The Base64-encoded certificate data required to communicate with your cluster.
+      type: String
+    - contextPath: AWS.EKS.Cluster.clientRequestToken
+      description: A unique, case-sensitive identifier that you provide to ensure the idempotency of the request.
+      type: String
+    - contextPath: AWS.EKS.Cluster.platformVersion
+      description: The platform version of your Amazon EKS cluster.
+      type: String
+    - contextPath: AWS.EKS.Cluster.tags
+      description: A dictionary containing metadata for categorization and organization.
+      type: Object
+    - contextPath: AWS.EKS.Cluster.encryptionConfig.resources
+      description: Specifies the resources to be encrypted. The only supported value is secrets.
+      type: List
+    - contextPath: AWS.EKS.Cluster.encryptionConfig.provider
+      description: Key Management Service (KMS) key.
+      type: Object
+    - contextPath: AWS.EKS.Cluster.connectorConfig.activationId
+      description: A unique ID associated with the cluster for registration purposes.
+      type: String
+    - contextPath: AWS.EKS.Cluster.connectorConfig.activationCode
+      description: A unique code associated with the cluster for registration purposes.
+      type: String
+    - contextPath: AWS.EKS.Cluster.connectorConfig.activationExpiry
+      description: The expiration time of the connected cluster.
+      type: String
+    - contextPath: AWS.EKS.Cluster.connectorConfig.provider
+      description: The cluster’s cloud service provider.
+      type: String
+    - contextPath: AWS.EKS.Cluster.connectorConfig.roleArn
+      description: The Amazon Resource Name (ARN) of the role to communicate with services from the connected Kubernetes cluster.
+      type: String
+    - contextPath: AWS.EKS.Cluster.id
+      description: The ID of your local Amazon EKS cluster on an Amazon Web Services Outpost.
+      type: String
+    - contextPath: AWS.EKS.Cluster.health.issues
+      description: An object representing the health issues of your local Amazon EKS cluster on an Amazon Web Services Outpost.
+      type: List
+    - contextPath: AWS.EKS.Cluster.outpostConfig.outpostArns
+      description: An object representing the configuration of your local Amazon EKS cluster on an Amazon Web Services Outpost.
+      type: Object
+    - contextPath: AWS.EKS.Cluster.outpostConfig.controlPlaneInstanceType
+      description: The Amazon EC2 instance type used for the control plane.
+      type: String
+    - contextPath: AWS.EKS.Cluster.outpostConfig.controlPlanePlacement
+      description: An object representing the placement configuration for all the control plane instances of your local Amazon EKS cluster on an Amazon Web Services Outpost.
+      type: Object
+    - contextPath: AWS.EKS.Cluster.accessConfig.bootstrapClusterCreatorAdminPermissions
+      description: Specifies whether or not the cluster creator IAM principal was set as a cluster admin access entry during cluster creation time.
+      type: Boolean
+    - contextPath: AWS.EKS.Cluster.accessConfig.authenticationMode
+      description: The current authentication mode of the cluster.
+      type: String
+
+  - name: aws-eks-associate-access-policy
+    description: Associates an access policy and its scope to an access entry.
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: cluster_name
+      description: The name of the cluster for which to create an access entry.
+      required: true
+    - name: principal_arn
+      description: 'The Amazon Resource Name (ARN) of the IAM user or role for the AccessEntry that you’re associating the access policy to.'
+      required: true
+    - name: policy_arn
+      description: 'The ARN of the AccessPolicy that you’re associating.'
+      required: true
+    - name: type
+      description: 'The scope type of an access policy.'
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - cluster
+      - namespace
+    - name: namespaces
+      description: 'A comma-separated list of Kubernetes namespaces that an access policy is scoped to. A value is required if you specified namespace for type.'
+      required: false
+    - auto: PREDEFINED
+      description: The AWS Region.
+      name: region
+      required: true
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+    outputs:
+    - contextPath: AWS.EKS.AssociatedAccessPolicy.clusterName
+      description: The name of your cluster.
+      type: String
+    - contextPath: AWS.EKS.AssociatedAccessPolicy.principalArn
+      description: The ARN of the IAM principal for the AccessEntry.
+      type: String
+    - contextPath: AWS.EKS.AssociatedAccessPolicy.policyArn
+      description: The ARN of the AccessPolicy.
+      type: String
+    - contextPath: AWS.EKS.AssociatedAccessPolicy.accessScope.type
+      description: The scope type of an access policy.
+      type: String
+    - contextPath: AWS.EKS.AssociatedAccessPolicy.accessScope.namespaces
+      description: A Kubernetes namespace that an access policy is scoped to.
+      type: String
+    - contextPath: AWS.EKS.AssociatedAccessPolicy.associatedAt
+      description: The date and time the AccessPolicy was associated with an AccessEntry.
+      type: String
+    - contextPath: AWS.EKS.AssociatedAccessPolicy.modifiedAt
+      description: The date and time for the last modification to the object.
+      type: String
 
   - name: aws-rds-db-cluster-modify
-    description: Modifies settings for an Amazon RDS DB cluster. Allows you to update cluster settings such as port, master credentials, VPC security groups, deletion protection, and other configuration options.
+    description: "Modifies settings for an Amazon RDS DB cluster. Allows you to update cluster settings such as port, master credentials, VPC security groups, deletion protection, and other configuration options."
     arguments:
     - name: account_id
       description: The AWS account ID.
@@ -952,6 +1296,7 @@ script:
       description: 'A CSV list of DB cluster snapshot attributes to add to the attribute specified by AttributeName.'
       required: false
 
+
   - name: aws-rds-db-instance-modify
     description: "Modifies an Amazon RDS DB instance. Allows changing various settings of an existing DB instance, such as instance class, storage capacity, security groups, and other configuration parameters."
     arguments:
@@ -995,6 +1340,7 @@ script:
       - me-south-1
       - me-central-1
       - sa-east-1
+
     - name: db_instance_identifier
       description: 'The identifier of DB instance to modify. This value is stored as a lowercase string.'
       required: true
@@ -1022,6 +1368,7 @@ script:
     - name: backup_retention_period
       description: 'The number of days to retain automated backups. Setting this parameter to a positive number enables backups. Setting this parameter to 0 disables automated backups.'
       required: false
+
     - name: enable_iam_database_authentication
       description: 'Weather to enable mapping of Amazon Web Services Identity and Access Management (IAM) accounts to database accounts. By default, mapping isn’t enabled.'
       required: false
@@ -1051,7 +1398,7 @@ script:
       - 'true'
       - 'false'
   - name: aws-rds-db-snapshot-attribute-modify
-    description: Adds or removes permission for the specified AWS account ID to restore the specified DB snapshot.
+    description: 'Adds or removes permission for the specified AWS account ID to restore the specified DB snapshot.'
     arguments:
     - name: account_id
       description: The AWS account ID.
@@ -1093,6 +1440,7 @@ script:
       - me-south-1
       - me-central-1
       - sa-east-1
+
     - name: db_snapshot_identifier
       description: 'The identifier for the DB snapshot to modify the attributes for.'
       required: true
@@ -1105,9 +1453,95 @@ script:
       isArray: true
     - name: values_to_remove
       description: 'A list of DB snapshot attributes to remove from the attribute specified by AttributeName.'
-      isArray: true
       required: false
+      isArray: true
 
+  - name: aws-rds-event-subscription-modify
+    description: Modifies an existing RDS event notification subscription.
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        required: true
+      - name: region
+        description: The AWS region.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+      - name: subscription_name
+        description: The name of the RDS event notification subscription.
+        required: true
+      - name: enabled
+        description: Specifies whether to activate the subscription.
+      - name: event_categories
+        description: A list of event categories for a source type (SourceType) that you want to subscribe to.
+        isArray: true
+      - name: sns_topic_arn
+        description: The Amazon Resource Name (ARN) of the SNS topic created for event notification.
+      - name: source_type
+        description: The type of source that is generating the events.
+    outputs:
+      - contextPath: AWS.RDS.EventSubscription.CustomerAwsId
+        description: The AWS customer account associated with the RDS event notification subscription.
+        type: string
+      - contextPath: AWS.RDS.EventSubscription.CustSubscriptionId
+        description: The RDS event notification subscription Id.
+        type: string
+      - contextPath: AWS.RDS.EventSubscription.Enabled
+        description: Specifies whether the subscription is enabled. True indicates the subscription is enabled.
+        type: boolean
+      - contextPath: AWS.RDS.EventSubscription.EventCategoriesList
+        description: A list of event categories for the RDS event notification subscription.
+        type: array
+      - contextPath: AWS.RDS.EventSubscription.EventSubscriptionArn
+        description: The Amazon Resource Name (ARN) for the event subscription.
+        type: string
+      - contextPath: AWS.RDS.EventSubscription.SnsTopicArn
+        description: The topic ARN of the RDS event notification subscription.
+        type: string
+      - contextPath: AWS.RDS.EventSubscription.SourceIdsList
+        description: A list of source IDs for the RDS event notification subscription.
+        type: array
+      - contextPath: AWS.RDS.EventSubscription.SourceType
+        description: The source type for the RDS event notification subscription.
+        type: string
+      - contextPath: AWS.RDS.EventSubscription.Status
+        description: The status of the RDS event notification subscription.
+        type: string
+      - contextPath: AWS.RDS.EventSubscription.SubscriptionCreationTime
+        description: The time the RDS event notification subscription was created.
+        type: string
 
   - name: aws-ec2-security-group-ingress-revoke
     description: 'Revokes one or more ingress rules in a security group.'
@@ -1168,7 +1602,6 @@ script:
     - name: ip_permissions
       description: 'The sets of IP permissions to revoke, in JSON format. Use this for complex rule configurations or when revoking multiple rules. Cannot be used together with protocol/port/cidr arguments.'
       required: false
-
   - name: aws-ec2-security-group-ingress-authorize
     description: 'Adds the specified inbound (ingress) rules to a security group.'
     arguments:
@@ -1228,7 +1661,6 @@ script:
     - name: ip_permissions
       description: 'The sets of IP permissions to authorize, in JSON format. Use this for complex rule configurations or when authorizing multiple rules. Cannot be used together with protocol/port/cidr arguments.'
       required: false
-
   - name: aws-ec2-security-group-egress-revoke
     description: 'Removes the specified outbound (egress) rules from the specified security group.'
     arguments:
@@ -1287,8 +1719,8 @@ script:
       required: false
     - name: ip_permissions
       description: 'The sets of IP permissions to revoke, in JSON format. Use this for complex rule configurations or when revoking multiple rules. Cannot be used together with protocol/port/cidr arguments.'
-      required: false
 
+      required: false
   - name: aws-ec2-snapshot-attribute-modify
     description: 'Adds or removes permission settings for the specified snapshot. Note: snapshots encrypted with the AWS-managed default key (alias/aws/ebs) cannot be shared—use unencrypted snapshots or those encrypted with a customer-managed KMS key to allow permission modifications.'
     arguments:
@@ -1362,11 +1794,11 @@ script:
   - name: aws-ec2-instance-attribute-modify
     description: Modifies the specified attribute of the specified instance. You can specify only one attribute at a time.
     arguments:
-    - name: account_id
-      description: The AWS account ID.
+    - description: The AWS account ID.
+      name: account_id
       required: true
-    - name: region
-      description: The AWS region.
+    - description: The AWS region.
+      name: region
       required: true
       auto: PREDEFINED
       predefined:
@@ -1402,17 +1834,16 @@ script:
       - me-south-1
       - me-central-1
       - sa-east-1
-
-    - name: instance_id
-      description: 'The ID of the instance.'
+    - description: The ID of the instance.
+      name: instance_id
       required: true
-    - name: disable_api_stop
-      description: Whether an instance is enabled for stop protection.
+    - description: Whether an instance is enabled for stop protection.
+      name: disable_api_stop
       predefined:
       - 'true'
       - 'false'
-    - name: groups
-      description: "A comma-separated list of security groups to replace the instance's current security groups. You must specify the ID of at least one security group, even if it’s just the default security group for the VPC."
+    - description: "A comma-separated list of security groups to replace the instance's current security groups. You must specify the ID of at least one security group, even if it’s just the default security group for the VPC."
+      name: groups
     - name: attribute
       description: 'The name of the attribute to modify. Possible values: sourceDestCheck, groupSet, ebsOptimized, sriovNetSupport, enaSupport, enclaveOptions, disableApiStop.'
       predefined:
@@ -1478,7 +1909,6 @@ script:
       - me-south-1
       - me-central-1
       - sa-east-1
-
     - name: image_id
       description: 'The ID of the AMI.'
       required: true
@@ -1497,25 +1927,24 @@ script:
       - 'add'
       - 'remove'
     - name: user_ids
-      isArray: true
       description: 'The AWS account IDs to add to or remove from the list of users that have launch permissions for the AMI.'
       required: false
-    - name: user_groups
       isArray: true
+    - name: user_groups
       description: 'The user groups to add to or remove from the list of user groups that have launch permissions for the AMI.'
       required: false
+      isArray: true
     - name: description
       description: 'A new description for the AMI.'
       required: false
-
   - name: aws-ec2-instance-metadata-options-modify
     description: Modify the EC2 instance metadata parameters on a running or stopped instance.
     arguments:
-    - description: The AWS account ID.
-      name: account_id
+    - name: account_id
+      description: The AWS account ID.
       required: true
-    - description: The AWS region.
-      name: region
+    - name: region
+      description: The AWS region.
       required: true
       auto: PREDEFINED
       predefined:
@@ -1551,9 +1980,10 @@ script:
       - me-south-1
       - me-central-1
       - sa-east-1
-    - description: The ID of the instance.
-      name: instance_id
+    - name: instance_id
+      description: 'The ID of the instance.'
       required: true
+
     - description: Whether IMDSv2 is required.
       auto: PREDEFINED
       name: http_tokens
@@ -1567,6 +1997,291 @@ script:
       - 'disabled'
       - 'enabled'
 
+  - name: aws-ec2-create-snapshot
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - description: The ID of the EBS volume.
+      name: volume_id
+      required: true
+    - description: A description for the snapshot.
+      name: description
+    - description: The tags to apply to the snapshot during creation.
+      name: tags
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+    description: Creates a snapshot of an EBS volume and stores it in Amazon S3. You can use snapshots for backups, to make copies of EBS volumes, and to save data before shutting down an instance.
+    outputs:
+    - contextPath: AWS.EC2.Snapshot.DataEncryptionKeyId
+      description: The data encryption key identifier for the snapshot.
+      type: string
+    - contextPath: AWS.EC2.Snapshot.Description
+      description: The description for the snapshot.
+      type: string
+    - contextPath: AWS.EC2.Snapshot.Encrypted
+      description: Indicates whether the snapshot is encrypted.
+      type: number
+    - contextPath: AWS.EC2.Snapshot.KmsKeyId
+      description: The full ARN of the AWS Key Management Service (AWS KMS) customer master key (CMK) that was used to protect the volume encryption key for the parent volume.
+      type: string
+    - contextPath: AWS.EC2.Snapshot.OwnerId
+      description: The AWS account ID of the EBS snapshot owner.
+      type: string
+    - contextPath: AWS.EC2.Snapshot.Progress
+      description: The progress of the snapshot, as a percentage.
+      type: string
+    - contextPath: AWS.EC2.Snapshot.SnapshotId
+      description: The ID of the snapshot.
+      type: string
+    - contextPath: AWS.EC2.Snapshot.StartTime
+      description: The time stamp when the snapshot was initiated.
+      type: date
+    - contextPath: AWS.EC2.Snapshot.State
+      description: The snapshot state.
+      type: string
+    - contextPath: AWS.EC2.Snapshot.StateMessage
+      description: this field displays error state details to help you diagnose why the error occurred.
+      type: string
+    - contextPath: AWS.EC2.Snapshot.VolumeId
+      description: The ID of the volume that was used to create the snapshot.
+      type: string
+    - contextPath: AWS.EC2.Snapshot.VolumeSize
+      description: The size of the volume, in GiB.
+      type: number
+    - contextPath: AWS.EC2.Snapshot.OwnerAlias
+      description: Value from an Amazon-maintained list of snapshot owners.
+      type: string
+    - contextPath: AWS.EC2.Snapshot.Tags.Key
+      description: The key of the tag.
+      type: string
+    - contextPath: AWS.EC2.Snapshot.Tags.Value
+      description: The value of the tag.
+      type: string
+    - contextPath: AWS.EC2.Snapshot.AccountId
+      description: The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided.
+      type: string
+
+  - name: aws-ec2-modify-snapshot-permission
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - description: The ID of the EBS snapshot.
+      name: snapshot_id
+      required: true
+    - auto: PREDEFINED
+      predefined:
+      - 'add'
+      - 'remove'
+      description: The operation type, add or remove.
+      name: operation_type
+      required: true
+    - description: CSV of security group names. This parameter can be used only when UserIds not provided.
+      name: group_names
+    - description: CSV of AWS account IDs. This parameter can be used only when groupNames not provided.
+      name: user_ids
+    - auto: PREDEFINED
+      description: Checks whether you have the required permissions for the action, without actually making the request, and provides an error response.
+      name: dry_run
+      predefined:
+      - 'True'
+      - 'False'
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+    description: Adds or removes permission settings for the specified snapshot.
+
+  - name: aws-ecs-update-cluster-settings
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - description: The name of the cluster.
+      name: cluster_name
+      required: true
+    - description: The value of the containerInsights setting to update.
+      name: value
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - 'enabled'
+      - 'disabled'
+      - 'enhanced'
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+    description: Updates the containerInsights setting of an ECS cluster.
+
+  - name: aws-ec2-subnet-attribute-modify
+    description: Modifies a subnet attribute.
+    arguments:
+      - description: The AWS account ID.
+        name: account_id
+        required: true
+      - description: The AWS region.
+        name: region
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+      - description: The ID of the subnet.
+        name: subnet_id
+        required: true
+      - description: Set to true to assign an IPv6 address to network interfaces created in the specified subnet.
+        name: assign_ipv6_address_on_creation
+      - description: The customer-owned IPv4 address pool associated with the subnet.
+        name: customer_owned_ipv4_pool
+      - description: Set to true to disable local network interfaces at the current position.
+        name: disable_lni_at_device_index
+      - description: Indicates whether DNS queries made to the Amazon-provided DNS Resolver in this subnet should return synthetic IPv6 addresses for IPv4-only destinations.
+        name: enable_dns64
+      - description: Indicates the device position for local network interfaces in this subnet.
+        name: enable_lni_at_device_index
+      - description: Indicates whether to respond to DNS queries for instance hostnames with DNS AAAA records.
+        name: enable_resource_name_dns_aaaa_record_on_launch
+      - description: Indicates whether to respond to DNS queries for instance hostnames with DNS A records.
+        name: enable_resource_name_dns_a_record_on_launch
+      - description: Set to true to assign a customer-owned IPv4 address to network interfaces attached to instances created in the specified subnet.
+        name: map_customer_owned_ip_on_launch
+      - description: Set to true to assign a public IPv4 address to network interfaces attached to instances created in the specified subnet.
+        name: map_public_ip_on_launch
+      - description: The type of hostname to assign to instances in the subnet at launch.
+        name: private_dns_hostname_type_on_launch
 
   - name: aws-cloudtrail-trail-update
     description: 'Updates trail settings that control what events you are logging, and how to handle log files. Changes to a trail do not require stopping the CloudTrail service. Use this action to designate an existing bucket for log delivery. If the existing bucket has previously been a target for CloudTrail log files, an IAM policy exists for the bucket. UpdateTrail must be called from the Region in which the trail was created; otherwise, an InvalidHomeRegionException is thrown.'
@@ -1749,13 +2464,1297 @@ script:
     - name: name
       description: 'The name or the CloudTrail ARN of the trail for which CloudTrail logs Amazon Web Services API calls. e.g. arn:aws:cloudtrail:us-east-2:123456789012:trail/MyTrail.'
       required: true
+  - name: aws-ec2-instances-describe
+    description: "Describes specified instances or all instances."
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region to query instances from. Must be a valid AWS region identifier.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+    - name: instance_ids
+      description: "A comma-separated list of instance IDs to describe. If empty, returns all accessible instances in the specified region."
+      required: false
+      isArray: true
+    - name: filters
+      description: "One or more custom filters to apply, separated by ';' (for example, name=<name>;values=<values>).You can specify up to 50 filters and up to 200 values per filter in a single request."
+      required: false
+      isArray: true
+    - name: next_token
+      description: "Token for pagination when retrieving large result sets. Use the InstancesNextToken value from a previous response to continue listing instances."
+      required: false
+    - name: limit
+      description: "Maximum number of instances to return in a single request. You cannot specify this parameter and the instance IDs parameter in the same request."
+      required: false
+      defaultValue: 50
+    outputs:
+    - contextPath: AWS.EC2.InstancesNextToken
+      description: Token to use for pagination in subsequent requests.
+      type: String
+    - contextPath: AWS.EC2.Instances.Architecture
+      description: The architecture of the image.
+      type: String
+    - contextPath: AWS.EC2.Instances.BlockDeviceMappings.DeviceName
+      description: The device name.
+      type: String
+    - contextPath: AWS.EC2.Instances.BlockDeviceMappings.Ebs
+      description: Parameters used to automatically set up EBS volumes when the instance is launched.
+      type: Dictionary
+    - contextPath: AWS.EC2.Instances.ClientToken
+      description: The idempotency token you provided when you launched the instance, if applicable.
+      type: String
+    - contextPath: AWS.EC2.Instances.EbsOptimized
+      description: Indicates whether the instance is optimized for Amazon EBS I/O.
+      type: Boolean
+    - contextPath: AWS.EC2.Instances.EnaSupport
+      description: Specifies whether enhanced networking with ENA is enabled.
+      type: Boolean
+    - contextPath: AWS.EC2.Instances.Hypervisor
+      description: The hypervisor type of the instance.
+      type: String
+    - contextPath: AWS.EC2.Instances.IamInstanceProfile.Arn
+      description: The Amazon Resource Name (ARN) of the instance profile.
+      type: String
+    - contextPath: AWS.EC2.Instances.IamInstanceProfile.Id
+      description: The ID of the instance profile.
+      type: String
+    - contextPath: AWS.EC2.Instances.InstanceLifecycle
+      description: Indicates whether this is a Spot Instance or a Scheduled Instance.
+      type: String
+    - contextPath: AWS.EC2.Instances.NetworkInterfaces.Association
+      description: The association information for an Elastic IPv4 associated with the network interface.
+      type: Dictionary
+    - contextPath: AWS.EC2.Instances.NetworkInterfaces.Attachment
+      description: The network interface attachment.
+      type: Dictionary
+    - contextPath: AWS.EC2.Instances.NetworkInterfaces.Description
+      description: The description of the network interface. Applies only if creating a network interface when launching an instance.
+      type: String
+    - contextPath: AWS.EC2.Instances.NetworkInterfaces.Groups
+      description: The security groups.
+      type: Dictionary
+    - contextPath: AWS.EC2.Instances.NetworkInterfaces.Ipv6Addresses
+      description: The IPv6 addresses associated with the network interface.
+      type: Dictionary
+    - contextPath: AWS.EC2.Instances.NetworkInterfaces.MacAddress
+      description: The MAC address.
+      type: String
+    - contextPath: AWS.EC2.Instances.NetworkInterfaces.NetworkInterfaceId
+      description: The ID of the network interface.
+      type: String
+    - contextPath: AWS.EC2.Instances.NetworkInterfaces.OwnerId
+      description: The ID of the AWS account that owns the network interface.
+      type: String
+    - contextPath: AWS.EC2.Instances.NetworkInterfaces.PrivateDnsName
+      description: The private DNS name.
+      type: String
+    - contextPath: AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress
+      description: The IPv4 address of the network interface within the subnet.
+      type: String
+    - contextPath: AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddresses
+      description: The private IPv4 addresses associated with the network interface.
+      type: Array
+    - contextPath: AWS.EC2.Instances.NetworkInterfaces.SourceDestCheck
+      description: Indicates whether to validate network traffic to or from this network interface.
+      type: Boolean
+    - contextPath: AWS.EC2.Instances.NetworkInterfaces.Status
+      description: The status of the network interface.
+      type: String
+    - contextPath: AWS.EC2.Instances.NetworkInterfaces.SubnetId
+      description: The ID of the subnet associated with the network interface. Applies only if creating a network interface when launching an instance.
+      type: String
+    - contextPath: AWS.EC2.Instances.NetworkInterfaces.VpcId
+      description: The ID of the VPC.
+      type: String
+    - contextPath: AWS.EC2.Instances.NetworkInterfaces.InterfaceType
+      description: The type of network interface.
+      type: String
+    - contextPath: AWS.EC2.Instances.NetworkInterfaces.Ipv4Prefixes
+      description: The IPv4 prefixes assigned to the network interface.
+      type: Array
+    - contextPath: AWS.EC2.Instances.NetworkInterfaces.Ipv6Prefixes
+      description: The IPv6 prefixes assigned to the network interface.
+      type: Array
+    - contextPath: AWS.EC2.Instances.NetworkInterfaces.ConnectionTrackingConfiguration
+      description: A security group connection tracking configuration that enables you to set the timeout for connection tracking on an Elastic network interface.
+      type: Dictionary
+    - contextPath: AWS.EC2.Instances.NetworkInterfaces.Operator
+      description: The service provider that manages the network interface.
+      type: Dictionary
+    - contextPath: AWS.EC2.Instances.OutpostArn
+      description: The Amazon Resource Name (ARN) of the Outpost.
+      type: String
+    - contextPath: AWS.EC2.Instances.RootDeviceName
+      description: The device name of the root device volume.
+      type: String
+    - contextPath: AWS.EC2.Instances.RootDeviceType
+      description: The root device type used by the AMI.
+      type: String
+    - contextPath: AWS.EC2.Instances.SecurityGroups.GroupId
+      description: The ID of the security group.
+      type: String
+    - contextPath: AWS.EC2.Instances.SecurityGroups.GroupName
+      description: The name of the security group.
+      type: String
+    - contextPath: AWS.EC2.Instances.SourceDestCheck
+      description: Indicates whether source/destination checking is enabled.
+      type: Boolean
+    - contextPath: AWS.EC2.Instances.SpotInstanceRequestId
+      description: The ID of the request for a Spot Instance request.
+      type: String
+    - contextPath: AWS.EC2.Instances.SriovNetSupport
+      description: Specifies whether enhanced networking with the Intel 82599 Virtual Function interface is enabled.
+      type: String
+    - contextPath: AWS.EC2.Instances.StateReason
+      description: The reason for the most recent state transition. May be an empty string.
+      type: Dictionary
+    - contextPath: AWS.EC2.Instances.Tags.Key
+      description: The key of the tag.
+      type: String
+    - contextPath: AWS.EC2.Instances.Tags.Value
+      description: The value of the tag.
+      type: String
+    - contextPath: AWS.EC2.Instances.VirtualizationType
+      description: The virtualization type of the instance.
+      type: String
+    - contextPath: AWS.EC2.Instances.CpuOptions
+      description: The CPU options for the instance.
+      type: Dictionary
+    - contextPath: AWS.EC2.Instances.CapacityBlockId
+      description: The ID of the Capacity Block.
+      type: String
+    - contextPath: AWS.EC2.Instances.CapacityReservationId
+      description: The ID of the Capacity Reservation.
+      type: String
+    - contextPath: AWS.EC2.Instances.CapacityReservationSpecification
+      description: Information about the Capacity Reservation targeting option.
+      type: Dictionary
+    - contextPath: AWS.EC2.Instances.HibernationOptions.Configured
+      description: Indicates whether the instance is enabled for hibernation.
+      type: Boolean
+    - contextPath: AWS.EC2.Instances.Licenses.LicenseConfigurationArn
+      description: The Amazon Resource Name (ARN) of the license configuration.
+      type: String
+    - contextPath: AWS.EC2.Instances.MetadataOptions
+      description: The metadata options for the instance.
+      type: Dictionary
+    - contextPath: AWS.EC2.Instances.EnclaveOptions.Enabled
+      description: Indicates whether the instance is enabled for Amazon Web Services Nitro Enclaves.
+      type: Boolean
+    - contextPath: AWS.EC2.Instances.BootMode
+      description: The boot mode that was specified by the AMI.
+      type: String
+    - contextPath: AWS.EC2.Instances.PlatformDetails
+      description: The platform details value for the instance.
+      type: String
+    - contextPath: AWS.EC2.Instances.UsageOperation
+      description: The usage operation value for the instance.
+      type: String
+    - contextPath: AWS.EC2.Instances.UsageOperationUpdateTime
+      description: The time that the usage operation was last updated.
+      type: Date
+    - contextPath: AWS.EC2.Instances.PrivateDnsNameOptions.HostnameType
+      description: The type of hostname to assign to an instance.
+      type: String
+    - contextPath: AWS.EC2.Instances.PrivateDnsNameOptions.EnableResourceNameDnsARecord
+      description: Indicates whether to respond to DNS queries for instance hostnames with DNS A records.
+      type: Boolean
+    - contextPath: AWS.EC2.Instances.PrivateDnsNameOptions.EnableResourceNameDnsAAAARecord
+      description: Indicates whether to respond to DNS queries for instance hostnames with DNS AAAA records.
+      type: Boolean
+    - contextPath: AWS.EC2.Instances.Ipv6Address
+      description: The IPv6 address assigned to the instance.
+      type: String
+    - contextPath: AWS.EC2.Instances.TpmSupport
+      description: If the instance is configured for NitroTPM support, the value is v2.0.
+      type: String
+    - contextPath: AWS.EC2.Instances.MaintenanceOptions.AutoRecovery
+      description: Information on the current automatic recovery behavior of your instance.
+      type: String
+    - contextPath: AWS.EC2.Instances.MaintenanceOptions.RebootMigration
+      description: Specifies whether to attempt reboot migration during a user-initiated reboot of an instance that has a scheduled system-reboot event.
+      type: String
+    - contextPath: AWS.EC2.Instances.CurrentInstanceBootMode
+      description: The boot mode that is used to boot the instance at launch or start.
+      type: String
+    - contextPath: AWS.EC2.Instances.NetworkPerformanceOptions.BandwidthWeighting
+      description: Contains settings for the network performance options for your instance.
+      type: String
+    - contextPath: AWS.EC2.Instances.Operator
+      description: The service provider that manages the instance.
+      type: Dictionary
+    - contextPath: AWS.EC2.Instances.InstanceId
+      description: The ID of the instance.
+      type: String
+    - contextPath: AWS.EC2.Instances.ImageId
+      description: The ID of the AMI used to launch the instance.
+      type: String
+    - contextPath: AWS.EC2.Instances.State.Code
+      description: The current state of the instance as a 16-bit unsigned integer.
+      type: Number
+    - contextPath: AWS.EC2.Instances.State.Name
+      description: The current state of the instance.
+      type: String
+    - contextPath: AWS.EC2.Instances.PrivateDnsName
+      description: The private DNS hostname name assigned to the instance.
+      type: String
+    - contextPath: AWS.EC2.Instances.PublicDnsName
+      description: The public DNS name assigned to the instance.
+      type: String
+    - contextPath: AWS.EC2.Instances.StateTransitionReason
+      description: The reason for the most recent state transition. May be an empty string.
+      type: String
+    - contextPath: AWS.EC2.Instances.KeyName
+      description: The name of the key pair used when the instance was launched.
+      type: String
+    - contextPath: AWS.EC2.Instances.AmiLaunchIndex
+      description: The AMI launch index, which can be used to find this instance in the launch group.
+      type: Number
+    - contextPath: AWS.EC2.Instances.ProductCodes
+      description: The product codes attached to this instance, if applicable.
+      type: Dictionary
+    - contextPath: AWS.EC2.Instances.InstanceType
+      description: The instance type.
+      type: String
+    - contextPath: AWS.EC2.Instances.LaunchTime
+      description: The time the instance was launched.
+      type: String
+    - contextPath: AWS.EC2.Instances.Placement.AvailabilityZoneId
+      description: The ID of the Availability Zone of the instance.
+      type: String
+    - contextPath: AWS.EC2.Instances.Placement.Affinity
+      description: The affinity setting for the instance on the Dedicated Host.
+      type: String
+    - contextPath: AWS.EC2.Instances.Placement.GroupName
+      description: The name of the placement group the instance is in.
+      type: String
+    - contextPath: AWS.EC2.Instances.Placement.PartitionNumber
+      description: The number of the partition that the instance is in.
+      type: Number
+    - contextPath: AWS.EC2.Instances.Placement.HostId
+      description: The ID of the Dedicated Host on which the instance resides.
+      type: String
+    - contextPath: AWS.EC2.Instances.Placement.Tenancy
+      description: The tenancy of the instance.
+      type: String
+    - contextPath: AWS.EC2.Instances.Placement.HostResourceGroupArn
+      description: The ARN of the host resource group in which to launch the instances.
+      type: String
+    - contextPath: AWS.EC2.Instances.Placement.GroupId
+      description: The ID of the placement group that the instance is in.
+      type: String
+    - contextPath: AWS.EC2.Instances.Placement.AvailabilityZone
+      description: The availability zone of the instance.
+      type: String
+    - contextPath: AWS.EC2.Instances.KernelId
+      description: The kernel associated with this instance, if applicable.
+      type: String
+    - contextPath: AWS.EC2.Instances.RamdiskId
+      description: The RAM disk associated with this instance, if applicable.
+      type: String
+    - contextPath: AWS.EC2.Instances.Platform
+      description: The platform the instance uses. The value is Windows for Windows instances; otherwise, blank.
+      type: String
+    - contextPath: AWS.EC2.Instances.Monitoring.State
+      description: Indicates whether detailed monitoring is enabled.
+      type: String
+    - contextPath: AWS.EC2.Instances.SubnetId
+      description: The ID of the subnet in which the instance is running.
+      type: String
+    - contextPath: AWS.EC2.Instances.VpcId
+      description: The ID of the VPC in which the instance is running.
+      type: String
+    - contextPath: AWS.EC2.Instances.PrivateIpAddress
+      description: The private IPv4 address assigned to the instance.
+      type: String
+    - contextPath: AWS.EC2.Instances.PublicIpAddress
+      description: The public IPv4 address assigned to the instance.
+      type: String
 
+  - name: aws-ec2-instances-start
+    description: "Starts an Amazon EBS-backed instance that was previously stopped."
+    execution: true
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region where target instances are located.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+    - name: instance_ids
+      description: "A comma-separated list of instance IDs to start, in i-xxxxxxxxx format. Must be in 'stopped' state and user must have permissions."
+      required: true
+      isArray: true
+
+  - name: aws-ec2-instances-stop
+    description: "Stops an Amazon EBS-backed instance."
+    execution: true
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region where target instances are located. Must be a valid AWS region identifier.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+    - name: instance_ids
+      description: "A comma-separated list of instance IDs to stop. Must be in 'running' or 'pending' state. User must have stop permissions for each instance."
+      required: true
+      isArray: true
+    - name: force
+      description: "Force stop instances without graceful shutdown. Default: false. Use with caution, as it may cause data loss."
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
+    - name: hibernate
+      description: "Hibernates the instance if the instance was enabled for hibernation at launch. If the instance cannot hibernate successfully, a normal shutdown occurs."
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
+  - name: aws-ec2-instances-terminate
+    description: "Shuts down specified instances. This operation is idempotent; you can terminate an instance multiple times without causing an error."
+    execution: true
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region where target instances are located. Must be a valid AWS region identifier.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+    - name: instance_ids
+      description: "A comma-separated list of instance IDs to terminate. If you specify multiple instances and the request fails (for example, because of a single incorrect instance ID), none of the instances are terminated."
+      required: true
+      isArray: true
+  - name: aws-ec2-instances-run
+    description: Launches a specified number of instances using an AMI you have access to. You can save time by creating a launch template containing your parameters and using the template instead of entering the parameters each time. An instance is ready for you to use when it is in the running state. You can check the state of your instance using aws-ec2-instances-describe.
+    execution: true
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region where instances will be created. Must be a valid AWS region identifier.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+    - name: count
+      description: "The number of instances to launch. Must be greater than 0."
+      required: true
+      defaultValue: "1"
+    - name: image_id
+      description: "The ID of the AMI. An AMI ID is required to launch an instance and must be specified here or in a launch template."
+      required: false
+    - name: instance_type
+      description: "The instance type, for example: t2.large, t3.medium, m5.xlarge."
+      required: false
+    - name: security_group_ids
+      description: "A comma-separated list of security group IDs. Use this for VPC instances. If you don’t specify a security group ID, we use the default security group for the VPC."
+      required: false
+      isArray: true
+    - name: security_groups_names
+      description: "A comma-separated list of security group names. For a nondefault VPC, you must use security group IDs instead."
+      required: false
+      isArray: true
+    - name: subnet_id
+      description: "The ID of the subnet to launch the instance into. If you don't choose a subnet, we will use a default one from your default VPC. If you don't have a default VPC, you must specify a subnet ID yourself in the request."
+      required: false
+    - name: user_data
+      description: "The user data to make available to the instance. This value will be base64 encoded automatically. Do not base64 encode this value prior to performing the operation."
+      required: false
+    - name: disable_api_termination
+      description: "Indicates whether termination protection is enabled for the instance. The default is false, which means that you can terminate the instance using the Amazon EC2 console, command line tools, or API."
+      required: false
+      auto: PREDEFINED
+      defaultValue: 'false'
+      predefined:
+      - 'true'
+      - 'false'
+    - name: iam_instance_profile_arn
+      description: "The Amazon Resource Name (ARN) of the instance profile. Both iam_instance_profile_arn and iam_instance_profile_name are required if you would like to associate an instance profile."
+      required: false
+    - name: iam_instance_profile_name
+      description: "The name of the instance profile. Both iam_instance_profile_arn and iam_instance_profile_name are required if you would like to associate an instance profile."
+      required: false
+    - name: key_name
+      description: "The name of the key pair. Warning - If you do not specify a key pair, you can't connect to the instance unless you choose an AMI that is configured to allow users another way to log in."
+      required: false
+    - name: ebs_optimized
+      description: "Indicates whether the instance is optimized for Amazon EBS I/O."
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: device_name
+      description: "The device name (for example, /dev/sdh or xvdh). If the argument is given, EBS arguments must also be specified."
+      required: false
+    - name: ebs_volume_size
+      description: "The size of the volume, in GiBs. You must specify either an ebs_snapshot_id or an ebs_volume_size. If you specify a snapshot, the default is the snapshot size. You can specify a volume size that is equal to or larger than the snapshot size."
+      required: false
+    - name: ebs_volume_type
+      description: "The volume type."
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - gp2
+      - gp3
+      - io1
+      - io2
+      - st1
+      - sc1
+      - standard
+    - name: ebs_iops
+      description: "The number of I/O operations per second (IOPS). For gp3, io1, and io2 volumes, this represents the number of IOPS that are provisioned for the volume. For gp2 volumes, this represents the baseline performance of the volume and the rate at which the volume accumulates I/O credits for bursting. This parameter is required for io1 and io2 volumes. The default for gp3 volumes is 3,000 IOPS."
+      required: false
+    - name: ebs_delete_on_termination
+      description: "Indicates whether the EBS volume is deleted on instance termination."
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: ebs_kms_key_id
+      description: "Identifier (key ID, key alias, ID ARN, or alias ARN) for a user-managed CMK under which the EBS volume is encrypted."
+      required: false
+    - name: ebs_snapshot_id
+      description: "The ID of the snapshot."
+      required: false
+    - name: ebs_encrypted
+      description: "Indicates whether the encryption state of an EBS volume is changed while being restored from a backing snapshot."
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: launch_template_id
+      description: "The ID of the launch template to use to launch the instances. Any parameters that you specify in the command override the same parameters in the launch template. You can specify either the name or ID of a launch template, but not both."
+      required: false
+    - name: launch_template_name
+      description: "The name of the launch template to use to launch the instances. Any parameters that you specify in the command override the same parameters in the launch template. You can specify either the name or ID of a launch template, but not both."
+      required: false
+    - name: launch_template_version
+      description: "The launch template version number, $Latest, or $Default."
+      required: false
+    - name: tags
+      description: "One or more tags to apply to a resource when the resource is being created, separated by ';' (for example, key=<name>;value=<value>)."
+      required: false
+    - name: host_id
+      description: "The Dedicated Host ID."
+      required: false
+    - name: enabled_monitoring
+      description: "Indicates whether detailed monitoring is enabled. Otherwise, basic monitoring is enabled."
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
+    outputs:
+    - contextPath: AWS.EC2.Instances.Architecture
+      description: The architecture of the image.
+      type: String
+    - contextPath: AWS.EC2.Instances.BlockDeviceMappings.DeviceName
+      description: The device name.
+      type: String
+    - contextPath: AWS.EC2.Instances.BlockDeviceMappings.Ebs
+      description: Parameters used to automatically set up EBS volumes when the instance is launched.
+      type: Dictionary
+    - contextPath: AWS.EC2.Instances.ClientToken
+      description: The idempotency token you provided when you launched the instance, if applicable.
+      type: String
+    - contextPath: AWS.EC2.Instances.EbsOptimized
+      description: Indicates whether the instance is optimized for Amazon EBS I/O.
+      type: Boolean
+    - contextPath: AWS.EC2.Instances.EnaSupport
+      description: Specifies whether enhanced networking with ENA is enabled.
+      type: Boolean
+    - contextPath: AWS.EC2.Instances.Hypervisor
+      description: The hypervisor type of the instance.
+      type: String
+    - contextPath: AWS.EC2.Instances.IamInstanceProfile.Arn
+      description: The Amazon Resource Name (ARN) of the instance profile.
+      type: String
+    - contextPath: AWS.EC2.Instances.IamInstanceProfile.Id
+      description: The ID of the instance profile.
+      type: String
+    - contextPath: AWS.EC2.Instances.InstanceLifecycle
+      description: Indicates whether this is a Spot Instance or a Scheduled Instance.
+      type: String
+    - contextPath: AWS.EC2.Instances.NetworkInterfaces.Association
+      description: The association information for an Elastic IPv4 associated with the network interface.
+      type: Dictionary
+    - contextPath: AWS.EC2.Instances.NetworkInterfaces.Attachment
+      description: The network interface attachment.
+      type: Dictionary
+    - contextPath: AWS.EC2.Instances.NetworkInterfaces.Description
+      description: The description of the network interface. Applies only if creating a network interface when launching an instance.
+      type: String
+    - contextPath: AWS.EC2.Instances.NetworkInterfaces.Groups
+      description: The security groups.
+      type: Dictionary
+    - contextPath: AWS.EC2.Instances.NetworkInterfaces.Ipv6Addresses
+      description: The IPv6 addresses associated with the network interface.
+      type: Dictionary
+    - contextPath: AWS.EC2.Instances.NetworkInterfaces.MacAddress
+      description: The MAC address.
+      type: String
+    - contextPath: AWS.EC2.Instances.NetworkInterfaces.NetworkInterfaceId
+      description: The ID of the network interface.
+      type: String
+    - contextPath: AWS.EC2.Instances.NetworkInterfaces.OwnerId
+      description: The private DNS name.
+      type: String
+    - contextPath: AWS.EC2.Instances.NetworkInterfaces.PrivateDnsName
+      description: The IPv4 address of the network interface within the subnet.
+      type: String
+    - contextPath: AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress
+      description: The IPv4 address of the network interface within the subnet.
+      type: String
+    - contextPath: AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddresses
+      description: The private IPv4 addresses associated with the network interface.
+      type: Array
+    - contextPath: AWS.EC2.Instances.NetworkInterfaces.SourceDestCheck
+      description: Indicates whether to validate network traffic to or from this network interface.
+      type: Boolean
+    - contextPath: AWS.EC2.Instances.NetworkInterfaces.Status
+      description: The status of the network interface.
+      type: String
+    - contextPath: AWS.EC2.Instances.NetworkInterfaces.SubnetId
+      description: The ID of the subnet associated with the network interface. Applies only if creating a network interface when launching an instance.
+      type: String
+    - contextPath: AWS.EC2.Instances.NetworkInterfaces.VpcId
+      description: The ID of the VPC.
+      type: String
+    - contextPath: AWS.EC2.Instances.NetworkInterfaces.InterfaceType
+      description: The type of network interface.
+      type: String
+    - contextPath: AWS.EC2.Instances.NetworkInterfaces.Ipv4Prefixes
+      description: The IPv4 prefixes assigned to the network interface.
+      type: Array
+    - contextPath: AWS.EC2.Instances.NetworkInterfaces.Ipv6Prefixes
+      description: The IPv6 prefixes assigned to the network interface.
+      type: Array
+    - contextPath: AWS.EC2.Instances.NetworkInterfaces.ConnectionTrackingConfiguration
+      description: A security group connection tracking configuration that enables you to set the timeout for connection tracking on an Elastic network interface.
+      type: Dictionary
+    - contextPath: AWS.EC2.Instances.NetworkInterfaces.Operator
+      description: The service provider that manages the network interface.
+      type: Dictionary
+    - contextPath: AWS.EC2.Instances.OutpostArn
+      description: The Amazon Resource Name (ARN) of the Outpost.
+      type: String
+    - contextPath: AWS.EC2.Instances.RootDeviceName
+      description: The device name of the root device volume.
+      type: String
+    - contextPath: AWS.EC2.Instances.RootDeviceType
+      description: The root device type used by the AMI.
+      type: String
+    - contextPath: AWS.EC2.Instances.SecurityGroups.GroupId
+      description: The ID of the security group.
+      type: String
+    - contextPath: AWS.EC2.Instances.SecurityGroups.GroupName
+      description: The name of the security group.
+      type: String
+    - contextPath: AWS.EC2.Instances.SourceDestCheck
+      description: Indicates whether source/destination checking is enabled.
+      type: Boolean
+    - contextPath: AWS.EC2.Instances.SpotInstanceRequestId
+      description: The ID of the request for a Spot Instance request.
+      type: String
+    - contextPath: AWS.EC2.Instances.SriovNetSupport
+      description: Specifies whether enhanced networking with the Intel 82599 Virtual Function interface is enabled.
+      type: String
+    - contextPath: AWS.EC2.Instances.StateReason
+      description: The reason for the most recent state transition. May be an empty string.
+      type: Dictionary
+    - contextPath: AWS.EC2.Instances.Tags.Key
+      description: The key of the tag.
+      type: String
+    - contextPath: AWS.EC2.Instances.Tags.Value
+      description: The value of the tag.
+      type: String
+    - contextPath: AWS.EC2.Instances.VirtualizationType
+      description: The virtualization type of the instance.
+      type: String
+    - contextPath: AWS.EC2.Instances.CpuOptions
+      description: The CPU options for the instance.
+      type: Dictionary
+    - contextPath: AWS.EC2.Instances.CapacityBlockId
+      description: The ID of the Capacity Block.
+      type: String
+    - contextPath: AWS.EC2.Instances.CapacityReservationId
+      description: The ID of the Capacity Reservation.
+      type: String
+    - contextPath: AWS.EC2.Instances.CapacityReservationSpecification
+      description: Information about the Capacity Reservation targeting option.
+      type: Dictionary
+    - contextPath: AWS.EC2.Instances.HibernationOptions.Configured
+      description: Indicates whether the instance is enabled for hibernation.
+      type: Boolean
+    - contextPath: AWS.EC2.Instances.Licenses.LicenseConfigurationArn
+      description: The Amazon Resource Name (ARN) of the license configuration.
+      type: String
+    - contextPath: AWS.EC2.Instances.MetadataOptions
+      description: The metadata options for the instance.
+      type: Dictionary
+    - contextPath: AWS.EC2.Instances.EnclaveOptions.Enabled
+      description: Indicates whether the instance is enabled for Amazon Web Services Nitro Enclaves.
+      type: Boolean
+    - contextPath: AWS.EC2.Instances.BootMode
+      description: The boot mode that was specified by the AMI.
+      type: String
+    - contextPath: AWS.EC2.Instances.PlatformDetails
+      description: The platform details value for the instance.
+      type: String
+    - contextPath: AWS.EC2.Instances.UsageOperation
+      description: The usage operation value for the instance.
+      type: String
+    - contextPath: AWS.EC2.Instances.UsageOperationUpdateTime
+      description: The time that the usage operation was last updated.
+      type: Date
+    - contextPath: AWS.EC2.Instances.PrivateDnsNameOptions.HostnameType
+      description: The type of hostname to assign to an instance.
+      type: String
+    - contextPath: AWS.EC2.Instances.PrivateDnsNameOptions.EnableResourceNameDnsARecord
+      description: Indicates whether to respond to DNS queries for instance hostnames with DNS A records.
+      type: Boolean
+    - contextPath: AWS.EC2.Instances.PrivateDnsNameOptions.EnableResourceNameDnsAAAARecord
+      description: Indicates whether to respond to DNS queries for instance hostnames with DNS AAAA records.
+      type: Boolean
+    - contextPath: AWS.EC2.Instances.Ipv6Address
+      description: The IPv6 address assigned to the instance.
+      type: String
+    - contextPath: AWS.EC2.Instances.TpmSupport
+      description: If the instance is configured for NitroTPM support, the value is v2.0.
+      type: String
+    - contextPath: AWS.EC2.Instances.MaintenanceOptions.AutoRecovery
+      description: Information on the current automatic recovery behavior of your instance.
+      type: String
+    - contextPath: AWS.EC2.Instances.MaintenanceOptions.RebootMigration
+      description: Specifies whether to attempt reboot migration during a user-initiated reboot of an instance that has a scheduled system-reboot event.
+      type: String
+    - contextPath: AWS.EC2.Instances.CurrentInstanceBootMode
+      description: The boot mode that is used to boot the instance at launch or start.
+      type: String
+    - contextPath: AWS.EC2.Instances.NetworkPerformanceOptions.BandwidthWeighting
+      description: Contains settings for the network performance options for your instance.
+      type: String
+    - contextPath: AWS.EC2.Instances.Operator
+      description: The service provider that manages the instance.
+      type: Dictionary
+    - contextPath: AWS.EC2.Instances.InstanceId
+      description: The ID of the instance.
+      type: String
+    - contextPath: AWS.EC2.Instances.ImageId
+      description: The ID of the AMI used to launch the instance.
+      type: String
+    - contextPath: AWS.EC2.Instances.State.Code
+      description: The current state of the instance as a 16-bit unsigned integer.
+      type: Number
+    - contextPath: AWS.EC2.Instances.State.Name
+      description: The current state of the instance.
+      type: String
+    - contextPath: AWS.EC2.Instances.PrivateDnsName
+      description: The private DNS hostname name assigned to the instance.
+      type: String
+    - contextPath: AWS.EC2.Instances.PublicDnsName
+      description: The public DNS name assigned to the instance.
+      type: String
+    - contextPath: AWS.EC2.Instances.StateTransitionReason
+      description: The reason for the most recent state transition. May be an empty string.
+      type: String
+    - contextPath: AWS.EC2.Instances.KeyName
+      description: The name of the key pair used when the instance was launched.
+      type: String
+    - contextPath: AWS.EC2.Instances.AmiLaunchIndex
+      description: The AMI launch index, which can be used to find this instance in the launch group.
+      type: Number
+    - contextPath: AWS.EC2.Instances.ProductCodes
+      description: The product codes attached to this instance, if applicable.
+      type: Dictionary
+    - contextPath: AWS.EC2.Instances.InstanceType
+      description: The instance type.
+      type: String
+    - contextPath: AWS.EC2.Instances.LaunchTime
+      description: The time the instance was launched.
+      type: String
+    - contextPath: AWS.EC2.Instances.Placement.AvailabilityZoneId
+      description: The ID of the Availability Zone of the instance.
+      type: String
+    - contextPath: AWS.EC2.Instances.Placement.Affinity
+      description: The affinity setting for the instance on the Dedicated Host.
+      type: String
+    - contextPath: AWS.EC2.Instances.Placement.GroupName
+      description: The name of the placement group the instance is in.
+      type: String
+    - contextPath: AWS.EC2.Instances.Placement.PartitionNumber
+      description: The number of the partition that the instance is in.
+      type: Number
+    - contextPath: AWS.EC2.Instances.Placement.HostId
+      description: The ID of the Dedicated Host on which the instance resides.
+      type: String
+    - contextPath: AWS.EC2.Instances.Placement.Tenancy
+      description: The tenancy of the instance.
+      type: String
+    - contextPath: AWS.EC2.Instances.Placement.HostResourceGroupArn
+      description: The ARN of the host resource group in which to launch the instances.
+      type: String
+    - contextPath: AWS.EC2.Instances.Placement.GroupId
+      description: The ID of the placement group that the instance is in.
+      type: String
+    - contextPath: AWS.EC2.Instances.Placement.AvailabilityZone
+      description: The availability zone of the instance.
+      type: String
+    - contextPath: AWS.EC2.Instances.KernelId
+      description: The kernel associated with this instance, if applicable.
+      type: String
+    - contextPath: AWS.EC2.Instances.RamdiskId
+      description: The RAM disk associated with this instance, if applicable.
+      type: String
+    - contextPath: AWS.EC2.Instances.Platform
+      description: The platform the instance uses. The value is Windows for Windows instances; otherwise, blank.
+      type: String
+    - contextPath: AWS.EC2.Instances.Monitoring.State
+      description: Indicates whether detailed monitoring is enabled.
+      type: String
+    - contextPath: AWS.EC2.Instances.SubnetId
+      description: The ID of the subnet in which the instance is running.
+      type: String
+    - contextPath: AWS.EC2.Instances.VpcId
+      description: The ID of the VPC in which the instance is running.
+      type: String
+    - contextPath: AWS.EC2.Instances.PrivateIpAddress
+      description: The private IPv4 address assigned to the instance.
+      type: String
+    - contextPath: AWS.EC2.Instances.PublicIpAddress
+      description: The public IPv4 address assigned to the instance.
+      type: String
+  - name: aws-cloudtrail-trails-describe
+    description: Retrieves settings for the specified trail or returns information about all trails in the current AWS account.
+    arguments:
+    - description: A comma-separated list of trail names or trail ARNs. If the list is empty, it returns information for the trail in the current region.
+      name: trail_names
+    - auto: PREDEFINED
+      description: Include shadow trails in the response. A shadow trail is a replication in a region of a trail created in another region.
+      name: include_shadow_trails
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: 'true'
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+    outputs:
+    - contextPath: AWS.CloudTrail.Trails.Name
+      description: The name of the trail, as set in CreateTrail.
+      type: string
+    - contextPath: AWS.CloudTrail.Trails.S3BucketName
+      description: The name of the Amazon S3 bucket where CloudTrail delivers trail files.
+      type: string
+    - contextPath: AWS.CloudTrail.Trails.S3KeyPrefix
+      description: The Amazon S3 key prefix appended to the bucket name designated for log file delivery.
+      type: string
+    - contextPath: AWS.CloudTrail.Trails.SnsTopicARN
+      description: The ARN of the Amazon SNS topic that CloudTrail uses to send notifications when log files are delivered.
+      type: string
+    - contextPath: AWS.CloudTrail.Trails.IncludeGlobalServiceEvents
+      description: Whether to include AWS API calls from AWS global services such as IAM.
+      type: boolean
+    - contextPath: AWS.CloudTrail.Trails.IsMultiRegionTrail
+      description: Specifies whether the trail belongs only to one region or exists in all regions.
+      type: boolean
+    - contextPath: AWS.CloudTrail.Trails.HomeRegion
+      description: The region where the trail was created.
+      type: string
+    - contextPath: AWS.CloudTrail.Trails.TrailARN
+      description: The ARN of the trail.
+      type: string
+    - contextPath: AWS.CloudTrail.Trails.LogFileValidationEnabled
+      description: Whether log file validation is enabled.
+      type: boolean
+    - contextPath: AWS.CloudTrail.Trails.CloudWatchLogsLogGroupArn
+      description: The ARN of the CloudWatch log group to which CloudTrail logs are delivered.
+      type: string
+    - contextPath: AWS.CloudTrail.Trails.CloudWatchLogsRoleArn
+      description: The role assumed by CloudTrail to write logs to the CloudWatch log group.
+      type: string
+    - contextPath: AWS.CloudTrail.KmsKeyId
+      description: The KMS key ID that encrypts logs delivered by CloudTrail.
+      type: string
+    - contextPath: AWS.CloudTrail.HasCustomEventSelectors
+      description: Specifies if the trail has custom event selectors.
+      type: boolean
+    - contextPath: AWS.CloudTrail.HasInsightSelectors
+      description: Specifies whether a trail has insight types specified in an InsightSelector list.
+      type: boolean
+    - contextPath: AWS.CloudTrail.IsOrganizationTrail
+      description: Specifies whether the trail is an organization trail.
+      type: boolean
+  - name: aws-s3-bucket-policy-delete
+    description: Deletes the bucket policy from an Amazon S3 bucket. This operation removes all policy-based access controls from the bucket, potentially changing access permissions.
+    execution: true
+    arguments:
+    - description: The AWS account ID.
+      name: account_id
+      required: true
+    - description: The AWS region.
+      name: region
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+    - description: The name of the Amazon S3 bucket from which to delete the bucket policy.
+      name: bucket
+      required: true
+
+  - name: aws-s3-public-access-block-get
+    description: Retrieves the public access block configuration for an Amazon S3 bucket. Shows the current settings that control public access to the bucket and its objects.
+    arguments:
+    - description: The AWS account ID.
+      name: account_id
+      required: true
+    - description: The AWS region.
+      name: region
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+    - description: The name of the Amazon S3 bucket to retrieve public access block configuration from.
+      name: bucket
+      required: true
+    - description: The account ID of the expected bucket owner. If the account ID that you provide does not match the actual owner of the bucket, the request fails.
+      name: expected_bucket_owner
+    outputs:
+    - contextPath: AWS.S3-Buckets.BucketName
+      description: Name of the S3 bucket.
+      type: string
+    - contextPath: AWS.S3-Buckets.PublicAccessBlock.BlockPublicAcls
+      description: Whether Amazon S3 blocks public access control lists (ACLs) for this bucket and objects in this bucket.
+      type: boolean
+    - contextPath: AWS.S3-Buckets.PublicAccessBlock.IgnorePublicAcls
+      description: Whether Amazon S3 ignores public ACLs for this bucket and objects in this bucket.
+      type: boolean
+    - contextPath: AWS.S3-Buckets.PublicAccessBlock.BlockPublicPolicy
+      description: Whether Amazon S3 blocks public bucket policies for this bucket.
+      type: boolean
+    - contextPath: AWS.S3-Buckets.PublicAccessBlock.RestrictPublicBuckets
+      description: Whether Amazon S3 restricts public bucket policies for this bucket.
+      type: boolean
+
+
+  - name: aws-s3-bucket-encryption-get
+    description: Retrieves the default encryption configuration for an Amazon S3 bucket. Shows the server-side encryption settings that are applied to new objects stored in the bucket.
+    arguments:
+    - description: The AWS account ID.
+      name: account_id
+      required: true
+    - description: The AWS region.
+      name: region
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+    - description: Name of the S3 bucket to retrieve encryption configuration from. Must follow S3 naming conventions.
+      name: bucket
+      required: true
+    outputs:
+    - contextPath: AWS.S3-Buckets.BucketName
+      description: Name of the S3 bucket.
+      type: string
+    - contextPath: AWS.S3-Buckets.ServerSideEncryptionConfiguration.Rules
+      description: Container for information about a particular server-side encryption configuration rule.
+      type: array
+
+  - name: aws-s3-bucket-policy-get
+    description: Retrieves the bucket policy for an Amazon S3 bucket. Returns the policy document in JSON format if one exists.
+    execution: true
+    arguments:
+    - description: The AWS account ID.
+      name: account_id
+      required: true
+    - description: The AWS region.
+      name: region
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+    - description: The name of the S3 bucket whose policy you want to retrieve. Must follow S3 naming conventions.
+      name: bucket
+      required: true
+    - description: The account ID of the expected bucket owner. If the account ID that you provide does not match the actual owner of the bucket, the request fails.
+      name: expected_bucket_owner
+    outputs:
+    - contextPath: AWS.S3-Buckets.BucketName
+      description: Name of the S3 bucket.
+      type: string
+    - contextPath: AWS.S3-Buckets.Policy.Version
+      description: The version of the policy.
+      type: string
+    - contextPath: AWS.S3-Buckets.Policy.Id
+      description: The id of the policy.
+      type: string
+    - contextPath: AWS.S3-Buckets.Policy.Statement.Sid
+      description: Statement identifier.
+      type: string
+    - contextPath: AWS.S3-Buckets.Policy.Statement.Effect
+      description: Allow or Deny.
+      type: string
+    - contextPath: AWS.S3-Buckets.Policy.Statement.Principal
+      description: Principal to whom the statement applies.
+      type: string
+    - contextPath: AWS.S3-Buckets.Policy.Statement.Action
+      description: List of actions the statement applies to.
+      type: Array
+    - contextPath: AWS.S3-Buckets.Policy.Statement.Resource
+      description: List of actions the statement applies to.
+      type: Array
+    - contextPath: AWS.S3-Buckets.Policy.Statement.Condition
+      description: Conditions for when the statement applies.
+      type: string
+    - contextPath: AWS.S3-Buckets.PolicyExists
+      description: Whether a bucket policy exists.
+      type: boolean
   isfetch: false
   runonce: false
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/boto3py3:1.0.0.5295752
+  dockerimage: demisto/boto3py3:1.0.0.4688278
 fromversion: 5.5.0
 tests:
 - No test - No playbook part of this release.
