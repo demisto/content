@@ -5,6 +5,19 @@ import pytest
 from freezegun import freeze_time
 from AWSSecurityHubEventCollector import *
 
+# Import test findings data from dedicated test data file
+from test_data.test_constants import SAMPLE_FINDINGS, IGNORED_FINDINGS
+
+# Test configuration constants - moved to top for parametrized test
+FIXED_END_TIME = dt.datetime(2023, 1, 1, 13, 0, 0)
+FIRST_FETCH_TIME = dt.datetime(2023, 1, 1, 10, 0, 0)
+TEST_START_TIME = dt.datetime(2023, 1, 1, 10, 0, 0)
+TEST_END_TIME = dt.datetime(2023, 1, 1, 14, 0, 0)
+
+# Common ignore list patterns used in multiple tests
+STANDARD_IGNORE_LIST = ["ignore-me", "also-ignore"]
+DUPLICATE_IGNORE_LIST = ["ignore-1", "ignore-2"]
+
 
 def load_test_data(folder: str, file_name: str) -> dict:
     """
@@ -473,20 +486,7 @@ def test_get_events__end_to_end(
         ), f"Expected debug message '{expected_msg}' not found in: {debug_calls}"
 
 
-# Import test findings data from dedicated test data file
-from test_data.test_constants import (
-    SAMPLE_FINDINGS,
-)
-
-# Test configuration constants
-FIXED_END_TIME = dt.datetime(2023, 1, 1, 13, 0, 0)
-FIRST_FETCH_TIME = dt.datetime(2023, 1, 1, 10, 0, 0)
-TEST_START_TIME = dt.datetime(2023, 1, 1, 10, 0, 0)
-TEST_END_TIME = dt.datetime(2023, 1, 1, 14, 0, 0)
-
-# Common ignore list patterns used in multiple tests
-STANDARD_IGNORE_LIST = ["ignore-me", "also-ignore"]
-DUPLICATE_IGNORE_LIST = ["ignore-1", "ignore-2"]
+# Test findings data and constants imported at top of file
 
 
 @pytest.fixture
@@ -535,7 +535,7 @@ def test_fetch_events_first_fetch_success(fetch_events_mocks):
     mocks = fetch_events_mocks
 
     # Configure test-specific mocks
-    mocks["get_events"].return_value = (SAMPLE_FINDINGS, None)
+    mocks["get_events"].return_value = (SAMPLE_FINDINGS[:2], None)
     next_run = {
         "last_update_date": "2023-01-01T12:01:00.000Z",
         "last_update_date_finding_ids": ["finding-2"],
@@ -610,9 +610,9 @@ def test_fetch_events_infinite_loop_prevention(fetch_events_mocks):
     # Verify loop behavior: should make 2 calls
     assert mocks["get_events"].call_count == 2
 
-    # Verify second call has increased limit (RETRY_LIMIT_INCREMENT = 10)
+    # Verify second call has increased limit (RETRY_LIMIT_INCREMENT = 100)
     second_call = mocks["get_events"].call_args_list[1]
-    expected_retry_limit = 10  # RETRY_LIMIT_INCREMENT value from code
+    expected_retry_limit = 100  # RETRY_LIMIT_INCREMENT value from code
     assert second_call.kwargs["limit"] == expected_retry_limit
 
     # Verify both calls use same fixed end_time
