@@ -708,7 +708,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: 'Graph Test - User #4'
+              simple: 'Graph user - will fail'
       - - operator: isEmpty
           left:
             value:
