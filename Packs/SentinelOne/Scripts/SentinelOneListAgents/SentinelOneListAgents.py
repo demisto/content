@@ -18,7 +18,8 @@ def filter_by_agent_ip(ip: str, entry_outputs) -> CommandResults:
     matching_agents = []
 
     def check_agent_ip(agent):
-        agent_external_ip = agent.get("ExternalIP")
+        agent_external_ip = agent.get("externalIp")
+        demisto.debug(f"{agent_external_ip=}")
         return agent_external_ip and str(agent_external_ip) == ip
 
     # Handle case when command_res is a list
@@ -46,7 +47,7 @@ def filter_by_agent_ip(ip: str, entry_outputs) -> CommandResults:
             metadata="Provides summary information and details for all the agents that matched your search criteria",
         ),
         outputs_prefix="SentinelOne.Agents",
-        outputs_key_field="ID",
+        outputs_key_field="id",
         outputs=matching_agents,
         raw_response=matching_agents,
     )

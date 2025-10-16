@@ -1,19 +1,19 @@
 id: MergeDictArray - Test
 version: -1
 name: MergeDictArray - Test
+description: Test playbook for MergeDictArray
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: fa38edfa-c238-4bd9-86c5-d9362bc93fcc
+    taskid: 5d7a9e2d-2233-4cc4-8f9f-f6e65bea4f2c
     type: start
     task:
-      id: fa38edfa-c238-4bd9-86c5-d9362bc93fcc
+      id: 5d7a9e2d-2233-4cc4-8f9f-f6e65bea4f2c
       version: -1
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -35,10 +35,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 6db11def-cc06-4f20-8e8a-bca7ac6fa9a6
+    taskid: 25e9b49d-7fd8-4310-8eec-982d76277df2
     type: regular
     task:
-      id: 6db11def-cc06-4f20-8e8a-bca7ac6fa9a6
+      id: 25e9b49d-7fd8-4310-8eec-982d76277df2
       version: -1
       name: Set test data
       description: Set a value in context under the key you entered.
@@ -121,20 +121,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 3af98f85-5611-4c17-8bc9-7aabff3c9908
+    taskid: adfc009b-23bd-4217-87d6-459fa4535de9
     type: regular
     task:
-      id: 3af98f85-5611-4c17-8bc9-7aabff3c9908
+      id: adfc009b-23bd-4217-87d6-459fa4535de9
       version: -1
       name: Run MergeDictArray
-      description: |-
-        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
-        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
-        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      description: "Set a value in context using the specified key. If no value is provided, the script does nothing. This automation runs with the default Limited User role unless permissions are changed."
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -187,23 +180,22 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 2c333809-15a5-4c09-8f04-296a6d51fc8a
+    taskid: fcabe90c-e42b-42ba-8090-8e6e2e6688d6
     type: title
     task:
-      id: 2c333809-15a5-4c09-8f04-296a6d51fc8a
+      id: fcabe90c-e42b-42ba-8090-8e6e2e6688d6
       version: -1
       name: Done
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 2300
+          "y": 2670
         }
       }
     note: false
@@ -215,20 +207,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 48cf6373-19a4-413f-8061-6ddeca985a80
+    taskid: 79cbb213-6ccb-4e21-8194-9dfe7969c178
     type: regular
     task:
-      id: 48cf6373-19a4-413f-8061-6ddeca985a80
+      id: 79cbb213-6ccb-4e21-8194-9dfe7969c178
       version: -1
       name: Normalize result
-      description: |-
-        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
-        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
-        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      description: "Set a value in context using the specified key. If no value is provided, the script does nothing. This automation runs with the default Limited User role unless permissions are changed."
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -306,20 +291,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: f358456d-8c4e-4f69-862a-95fd979ec922
+    taskid: e453a5b3-eddb-4770-8d57-3452b24ed7b9
     type: regular
     task:
-      id: f358456d-8c4e-4f69-862a-95fd979ec922
+      id: e453a5b3-eddb-4770-8d57-3452b24ed7b9
       version: -1
       name: Normalize expected result
-      description: |-
-        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
-        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
-        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      description: "Set a value in context using the specified key. If no value is provided, the script does nothing. This automation runs with the default Limited User role unless permissions are changed."
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -398,10 +376,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 1245ecb4-5e46-4c6a-8474-ad34b16a6d30
+    taskid: 4c8a8b48-cc23-45c0-8368-df3f662195bc
     type: condition
     task:
-      id: 1245ecb4-5e46-4c6a-8474-ad34b16a6d30
+      id: 4c8a8b48-cc23-45c0-8368-df3f662195bc
       version: -1
       name: Validate result
       type: condition
@@ -440,10 +418,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 07f5df20-9ee5-4c70-8baa-1e5e664af360
+    taskid: 89646221-c55e-46d3-887f-e255a613f980
     type: regular
     task:
-      id: 07f5df20-9ee5-4c70-8baa-1e5e664af360
+      id: 89646221-c55e-46d3-887f-e255a613f980
       version: -1
       name: Set test data
       description: Set a value in context under the key you entered.
@@ -529,20 +507,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: fc7edd39-04a8-4b85-8eea-4e5e10df1653
+    taskid: e5440e1b-a95a-4f64-8ef3-1990ac8dad69
     type: regular
     task:
-      id: fc7edd39-04a8-4b85-8eea-4e5e10df1653
+      id: e5440e1b-a95a-4f64-8ef3-1990ac8dad69
       version: -1
       name: Run MergeDictArray
-      description: |-
-        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
-        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
-        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      description: "Set a value in context using the specified key. If no value is provided, the script does nothing. This automation runs with the default Limited User role unless permissions are changed."
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -597,20 +568,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: b7d84a95-1c95-452c-8953-f0f4e4162c15
+    taskid: 66bcb302-ac68-4a30-834b-6056c3db3e12
     type: regular
     task:
-      id: b7d84a95-1c95-452c-8953-f0f4e4162c15
+      id: 66bcb302-ac68-4a30-834b-6056c3db3e12
       version: -1
       name: Normalize result
-      description: |-
-        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
-        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
-        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      description: "Set a value in context using the specified key. If no value is provided, the script does nothing. This automation runs with the default Limited User role unless permissions are changed."
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -688,20 +652,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 86df8eb2-3b03-47e1-8aff-3de6d57d8a0d
+    taskid: f19a396c-dd38-445f-83af-089794b53c05
     type: regular
     task:
-      id: 86df8eb2-3b03-47e1-8aff-3de6d57d8a0d
+      id: f19a396c-dd38-445f-83af-089794b53c05
       version: -1
       name: Normalize expected result
-      description: |-
-        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
-        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
-        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      description: "Set a value in context using the specified key. If no value is provided, the script does nothing. This automation runs with the default Limited User role unless permissions are changed."
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -780,10 +737,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: d71e2bd2-2e32-4357-8200-782ab6389763
+    taskid: 02d04fc5-50e2-4a67-8d95-629d9aa117be
     type: condition
     task:
-      id: d71e2bd2-2e32-4357-8200-782ab6389763
+      id: 02d04fc5-50e2-4a67-8d95-629d9aa117be
       version: -1
       name: Validate result
       type: condition
@@ -822,10 +779,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: edc24d4d-2dab-4947-8a25-72c550573b61
+    taskid: 46182774-9b1f-4829-8419-628e027c5adf
     type: regular
     task:
-      id: edc24d4d-2dab-4947-8a25-72c550573b61
+      id: 46182774-9b1f-4829-8419-628e027c5adf
       version: -1
       name: Set test data
       description: Set a value in context under the key you entered.
@@ -910,20 +867,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: a995a1d5-6e9a-4492-8523-c323ee34409b
+    taskid: 15cb7682-b8d0-4fe5-81a7-83e5c5fa286d
     type: regular
     task:
-      id: a995a1d5-6e9a-4492-8523-c323ee34409b
+      id: 15cb7682-b8d0-4fe5-81a7-83e5c5fa286d
       version: -1
       name: Run MergeDictArray
-      description: |-
-        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
-        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
-        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      description: "Set a value in context using the specified key. If no value is provided, the script does nothing. This automation runs with the default Limited User role unless permissions are changed."
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -978,20 +928,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 3002896f-261b-4aa1-83b9-d5dafb1f61fc
+    taskid: 525d5c70-cb68-4d5c-845d-aea402588725
     type: regular
     task:
-      id: 3002896f-261b-4aa1-83b9-d5dafb1f61fc
+      id: 525d5c70-cb68-4d5c-845d-aea402588725
       version: -1
       name: Normalize result
-      description: |-
-        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
-        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
-        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      description: "Set a value in context using the specified key. If no value is provided, the script does nothing. This automation runs with the default Limited User role unless permissions are changed."
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1069,20 +1012,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 63a1505f-0c45-433c-854e-4d5fa547e8d9
+    taskid: 8e761622-2b64-4321-8419-9f0250c989bb
     type: regular
     task:
-      id: 63a1505f-0c45-433c-854e-4d5fa547e8d9
+      id: 8e761622-2b64-4321-8419-9f0250c989bb
       version: -1
       name: Normalize expected result
-      description: |-
-        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
-        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
-        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      description: "Set a value in context using the specified key. If no value is provided, the script does nothing. This automation runs with the default Limited User role unless permissions are changed."
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1161,10 +1097,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 1ef78041-ab12-402e-8fb5-25884f138676
+    taskid: df6315a5-5fe2-4311-8b6c-857e3f60a897
     type: condition
     task:
-      id: 1ef78041-ab12-402e-8fb5-25884f138676
+      id: df6315a5-5fe2-4311-8b6c-857e3f60a897
       version: -1
       name: Validate result
       type: condition
@@ -1172,7 +1108,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "4"
+      - "18"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1201,12 +1137,118 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: f5de4be1-4d79-45a6-8156-a56292fb9da1
+    type: regular
+    task:
+      id: f5de4be1-4d79-45a6-8156-a56292fb9da1
+      version: -1
+      name: Run MergeDictArray
+      description: "Set a value in context under the key you entered. If no value
+        is entered, the script doesn't do anything.\n\nThis automation runs using
+        the default Limited User role, unless you explicitly change the permissions.\nFor
+        more information, see the section about permissions here:\n- For Cortex XSOAR
+        6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
+        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      append:
+        simple: "false"
+      force:
+        simple: "true"
+      key:
+        simple: result
+      value:
+        complex:
+          root: test
+          accessor: empty
+          transformers:
+          - operator: MergeDictArray
+            args:
+              appendable: {}
+              array_path: {}
+              conflict_strategy: {}
+              mapping:
+                value:
+                  simple: name:name
+              merge_with:
+                value:
+                  simple: test.empty
+                iscontext: true
+              out_key: {}
+              out_path:
+                value:
+                  simple: out
+              overwrite_by_destination: {}
+              overwrite_by_source: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: e1543b36-ffd9-4968-857c-e8baf50012d4
+    type: condition
+    task:
+      id: e1543b36-ffd9-4968-857c-e8baf50012d4
+      version: -1
+      name: Validate result
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEmpty
+          left:
+            value:
+              simple: result
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2315,
+        "height": 2685,
         "width": 810,
         "x": 50,
         "y": 50
@@ -1215,5 +1257,3 @@ view: |-
   }
 inputs: []
 outputs: []
-fromversion: 6.10.0
-description: Test playbook for MergeDictArray

@@ -21,7 +21,7 @@ Eradication:
 
 Requirements:
 
-For any response action, you will need one of the following integrations: 
+For any response action, you will need one of the following integrations:
 - Microsoft Graph User
 - G-Suite Admin
 - AWS-IAM.

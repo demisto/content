@@ -1,0 +1,137 @@
+{
+    "raw_response": {
+        "data": {
+            "threatHuntObjectMetrics": {
+                "totalObjectsScanned": 100,
+                "totalAffectedObjects": 5,
+                "totalUnaffectedObjects": 95,
+                "totalObjectsUnscannable": 0,
+                "unaffectedObjectsFromDb": 95,
+                "cleanRecoverableObjectLimit": 999,
+                "__typename": "ThreatHuntObjectMetricsReply"
+            },
+            "threatHuntDetailV2": {
+                "totalObjectFids": 100,
+                "startTime": "2025-01-01T08:00:00.000Z",
+                "endTime": "2025-01-01T09:00:00.000Z",
+                "status": "SUCCEEDED",
+                "totalMatchedSnapshots": 10,
+                "totalScannedSnapshots": 200,
+                "totalUniqueFileMatches": 3,
+                "clusters": [
+                    {
+                        "id": "dummy-cluster-id-123",
+                        "name": "Dummy_Cluster",
+                        "type": "DummyType",
+                        "__typename": "Cluster"
+                    }
+                ],
+                "baseConfig": {
+                    "name": "Dummy Threat Hunt Config",
+                    "notes": "Dummy note here.",
+                    "maxMatchesPerSnapshot": 0,
+                    "threatHuntType": "TURBO_THREAT_HUNT",
+                    "ioc": {
+                        "iocList": {
+                            "indicatorsOfCompromise": [
+                                {
+                                    "iocKind": "IOC_HASH",
+                                    "iocValue": "dummyhashvalue0000000000000000000001",
+                                    "__typename": "IndicatorOfCompromise"
+                                },
+                                {
+                                    "iocKind": "IOC_HASH",
+                                    "iocValue": "dummyhashvalue0000000000000000000002",
+                                    "__typename": "IndicatorOfCompromise"
+                                }
+                            ],
+                            "__typename": "IndicatorOfCompromiseInputOutputListType"
+                        },
+                        "__typename": "Ioc"
+                    },
+                    "snapshotScanLimit": {
+                        "scanLimit": {
+                            "scanConfig": {
+                                "maxSnapshotsPerObject": 5,
+                                "startTime": "2025-01-01T00:00:00.000Z",
+                                "endTime": "2025-01-10T00:00:00.000Z",
+                                "__typename": "SnapshotScanConfig"
+                            },
+                            "objectSnapshotConfig": null,
+                            "__typename": "ScanLimit"
+                        },
+                        "__typename": "HuntScanSnapshotLimit"
+                    },
+                    "fileScanCriteria": null,
+                    "__typename": "ThreatHuntBaseConfig"
+                },
+                "__typename": "ThreatHuntDetailsV2"
+            }
+        }
+    },
+    "outputs": {
+        "hunt_id": "test-hunt-id",
+        "totalObjectFids": 100,
+        "startTime": "2025-01-01T08:00:00.000Z",
+        "endTime": "2025-01-01T09:00:00.000Z",
+        "status": "SUCCEEDED",
+        "totalMatchedSnapshots": 10,
+        "totalScannedSnapshots": 200,
+        "totalUniqueFileMatches": 3,
+        "clusters": [
+            {
+                "id": "dummy-cluster-id-123",
+                "name": "Dummy_Cluster",
+                "type": "DummyType",
+                "__typename": "Cluster"
+            }
+        ],
+        "baseConfig": {
+            "name": "Dummy Threat Hunt Config",
+            "notes": "Dummy note here.",
+            "maxMatchesPerSnapshot": 0,
+            "threatHuntType": "TURBO_THREAT_HUNT",
+            "ioc": {
+                "iocList": {
+                    "indicatorsOfCompromise": [
+                        {
+                            "iocKind": "IOC_HASH",
+                            "iocValue": "dummyhashvalue0000000000000000000001",
+                            "__typename": "IndicatorOfCompromise"
+                        },
+                        {
+                            "iocKind": "IOC_HASH",
+                            "iocValue": "dummyhashvalue0000000000000000000002",
+                            "__typename": "IndicatorOfCompromise"
+                        }
+                    ],
+                    "__typename": "IndicatorOfCompromiseInputOutputListType"
+                },
+                "__typename": "Ioc"
+            },
+            "snapshotScanLimit": {
+                "scanLimit": {
+                    "scanConfig": {
+                        "maxSnapshotsPerObject": 5,
+                        "startTime": "2025-01-01T00:00:00.000Z",
+                        "endTime": "2025-01-10T00:00:00.000Z",
+                        "__typename": "SnapshotScanConfig"
+                    },
+                    "__typename": "ScanLimit"
+                },
+                "__typename": "HuntScanSnapshotLimit"
+            },
+            "__typename": "ThreatHuntBaseConfig"
+        },
+        "__typename": "ThreatHuntDetailsV2",
+        "threatHuntObjectMetrics": {
+            "totalObjectsScanned": 100,
+            "totalAffectedObjects": 5,
+            "totalUnaffectedObjects": 95,
+            "totalObjectsUnscannable": 0,
+            "unaffectedObjectsFromDb": 95,
+            "cleanRecoverableObjectLimit": 999,
+            "__typename": "ThreatHuntObjectMetricsReply"
+        }
+    }
+}

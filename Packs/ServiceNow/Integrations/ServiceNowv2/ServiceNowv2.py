@@ -403,7 +403,6 @@ def get_ticket_human_readable(tickets, ticket_type: str, additional_fields: list
         priority = ticket.get("priority", "")
         if priority:
             hr["Priority"] = TICKET_PRIORITY.get(priority, priority)
-
         state = ticket.get("state", "")
         if state:
             mapped_state = state
@@ -1498,7 +1497,7 @@ def create_ticket_command(client: Client, args: dict, is_quick_action: bool = Fa
     return human_readable, entry_context, result, True
 
 
-def delete_ticket_command(client: Client, args: dict) -> tuple[str, dict, dict, bool]:
+def delete_ticket_command(client: Client, args: dict) -> CommandResults:
     """Delete a ticket.
 
     Args:
@@ -1506,14 +1505,28 @@ def delete_ticket_command(client: Client, args: dict) -> tuple[str, dict, dict, 
         args: Usually demisto.args()
 
     Returns:
-        Demisto Outputs.
+        CommandResults object.
     """
     ticket_id = str(args.get("id", ""))
     ticket_type = client.get_table_name(str(args.get("ticket_type", "")))
 
     result = client.delete(ticket_type, ticket_id)
 
-    return f"Ticket with ID {ticket_id} was successfully deleted.", {}, result, True
+    demisto.debug(f"Ticket deletion result: {result}")
+    is_success = result == ""
+
+    if is_success:
+        human_readable = f"Ticket with ID {ticket_id} was successfully deleted from {ticket_type} table."
+    else:
+        human_readable = f"Failed to delete ticket {ticket_id} from {ticket_type} table. Record may not exist."
+
+    return CommandResults(
+        readable_output=human_readable,
+        outputs_prefix="ServiceNow.Ticket",
+        outputs_key_field="ID",
+        outputs={"ID": ticket_id, "DeleteMessage": human_readable},
+        raw_response=result,
+    )
 
 
 def query_tickets_command(client: Client, args: dict) -> tuple[str, dict, dict, bool]:
@@ -1713,7 +1726,7 @@ def upload_file_command(client: Client, args: dict) -> tuple[str, dict, dict, bo
     return human_readable, entry_context, result, True
 
 
-def delete_attachment_command(client: Client, args: dict) -> tuple[str, dict, dict, bool]:
+def delete_attachment_command(client: Client, args: dict) -> tuple[str, dict[Any, Any], dict, bool]:
     """Deletes an attachment file.
     Note: This function exclusively returns 404 error responses,
     while all other types of errors are managed within the send_request function.
@@ -3155,9 +3168,8 @@ def pre_process_parsed_args(parsed_args: UpdateRemoteSystemArgs) -> UpdateRemote
     return parsed_args
 
 
-def modify_closure_delta(
+def add_default_closure_fields_to_delta(
     delta: dict,
-    state: str,
     close_code: str = "Resolved by caller",
     close_notes: str = "This is the resolution note required by ServiceNow to move the incident to the Resolved state.",
 ):
@@ -3175,13 +3187,12 @@ def modify_closure_delta(
     Returns:
         The modified delta dictionary.
     """
-    delta.setdefault("state", state)
     delta.setdefault("close_code", close_code)
     delta.setdefault("close_notes", close_notes)
     return delta
 
 
-def pre_process_close_incident_args(
+def set_state_according_to_closure_case_and_ticket_type(
     parsed_args: UpdateRemoteSystemArgs, closure_case: str, ticket_type: str, close_custom_state: Optional[str]
 ) -> UpdateRemoteSystemArgs:
     """
@@ -3196,15 +3207,18 @@ def pre_process_close_incident_args(
     Returns:
         UpdateRemoteSystemArgs: The pre-processed parsed arguments.
     """
-    if (parsed_args.inc_status == IncidentStatus.DONE) or ("state" in parsed_args.delta):
-        demisto.debug("Closing incident by closure case")
-        if (closure_case and ticket_type in {"sc_task", "sc_req_item", SIR_INCIDENT}) or parsed_args.delta.get("state") == "3":
+    if parsed_args.inc_status == IncidentStatus.DONE:
+        demisto.debug("Modifying incident status by closure case")
+        if closure_case and ticket_type in {"sc_task", "sc_req_item", SIR_INCIDENT}:
+            demisto.debug("Setting state to 3 for sc_task, sc_req_item, SIR_INCIDENT and closing case.")
             parsed_args.delta["state"] = "3"
         # These ticket types are closed by changing their state.
-        if (closure_case == "closed" and ticket_type == INCIDENT) or parsed_args.delta.get("state") == "7":
-            parsed_args.delta = modify_closure_delta(parsed_args.delta, "7")
-        elif (closure_case == "resolved" and ticket_type == INCIDENT) or parsed_args.delta.get("state") == "6":
-            parsed_args.delta = modify_closure_delta(parsed_args.delta, "6")
+        if closure_case == "closed" and ticket_type == INCIDENT:
+            demisto.debug("Setting state to 7 for incident and closing case closed.")
+            parsed_args.delta["state"] = "7"  # Closing incident ticket.
+        elif closure_case == "resolved" and ticket_type == INCIDENT:
+            demisto.debug("Setting state to 6 for incident and closing case resolved.")
+            parsed_args.delta["state"] = "6"  # resolving incident ticket.
         if close_custom_state:  # Closing by custom state
             demisto.debug(f"Closing by custom state = {close_custom_state}")
             parsed_args.delta["state"] = close_custom_state
@@ -3212,7 +3226,7 @@ def pre_process_close_incident_args(
 
 
 def update_incident_closure_fields(
-    parsed_args: UpdateRemoteSystemArgs, fields: dict, ticket_type: str, close_custom_state: Optional[str]
+    parsed_args: UpdateRemoteSystemArgs, fields: dict, ticket_type: str, is_custom_close: bool
 ) -> dict:
     """
     Handle closing fields of an incident.
@@ -3224,12 +3238,12 @@ def update_incident_closure_fields(
         parsed_args (UpdateRemoteSystemArgs): The parsed arguments.
         fields (dict): The fields to update.
         ticket_type (str): The type of the ticket.
-        close_custom_state (Optional[str]): The custom state to use if given.
+        is_custom_close (Optional[str]):  Whether the incident is closed by a custom state.
 
     Returns:
         dict: The fields to update, excluding "closed_at" and "resolved_at".
     """
-    if parsed_args.delta.get("state") == "7 - Closed" and not close_custom_state:
+    if parsed_args.delta.get("state") == "7 - Closed" and not is_custom_close:
         fields["state"] = TICKET_TYPE_TO_CLOSED_STATE[ticket_type]
 
     excluded_fields = {"closed_at", "resolved_at"}
@@ -3260,6 +3274,34 @@ def handle_missing_custom_state(client: Client, fields: dict, ticket_id: str, ti
     return result
 
 
+def set_default_fields(
+    parsed_args: UpdateRemoteSystemArgs, ticket_type: str, close_custom_state: Optional[str]
+) -> UpdateRemoteSystemArgs:
+    """
+    Set default closure fields of an incident if missing.
+
+    If the incident state is 7 (closed) or 6 (resolved), or the custom state is given and the ticket type is incident,
+    add default values for the close_code and close_notes fields
+    if they are missing in the delta dictionary.
+
+    Args:
+        parsed_args (UpdateRemoteSystemArgs): The parsed arguments, containing the delta and other information.
+        ticket_type(str): The type of the ticket to update.
+        close_custom_state (Optional[str]): The custom state to use when closing the ticket.
+
+    Returns:
+        UpdateRemoteSystemArgs: The parsed arguments with default closure fields if they were missing.
+    """
+    state = parsed_args.delta.get("state")
+    if (state in {"7", "6"}) or (ticket_type == "incident" and close_custom_state and state == close_custom_state):
+        demisto.debug(
+            f"State {state} is 7 or 6 or custom {close_custom_state} and ticket type is incident - Setting default "
+            f"closure fields if missing"
+        )
+        parsed_args.delta = add_default_closure_fields_to_delta(parsed_args.delta)
+    return parsed_args
+
+
 def update_remote_system_on_incident_change(
     client: Client,
     parsed_args: UpdateRemoteSystemArgs,
@@ -3279,18 +3321,19 @@ def update_remote_system_on_incident_change(
         close_custom_state: The custom state to use when closing the ticket.
         ticket_id: The ID of the ticket to update.
     """
+    is_custom_close: bool = bool((parsed_args.inc_status == IncidentStatus.DONE) and close_custom_state)
     demisto.debug(f"Incident changed: {parsed_args.incident_changed}")
-    parsed_args = pre_process_close_incident_args(parsed_args, closure_case, ticket_type, close_custom_state)
+    parsed_args = set_state_according_to_closure_case_and_ticket_type(parsed_args, closure_case, ticket_type, close_custom_state)
+    parsed_args = set_default_fields(parsed_args, ticket_type, close_custom_state)
     fields = get_ticket_fields(parsed_args.delta, ticket_type=ticket_type)
     demisto.debug(f"all fields= {fields}")
     if closure_case:
-        fields = update_incident_closure_fields(parsed_args, fields, ticket_type, close_custom_state)
-
+        fields = update_incident_closure_fields(parsed_args, fields, ticket_type, is_custom_close)
     demisto.debug(f"Sending update request to server {ticket_type}, {ticket_id}, {fields}")
     result = client.update(ticket_type, ticket_id, fields)
 
     # Handle case of custom state doesn't exist, reverting to the original close state
-    if close_custom_state and demisto.get(result, "result.state") != close_custom_state:
+    if is_custom_close and demisto.get(result, "result.state") != close_custom_state:
         result = handle_missing_custom_state(client, fields, ticket_id, ticket_type)
 
     demisto.info(f"Ticket Update result {result}")
@@ -3855,7 +3898,6 @@ def main():
             "servicenow-oauth-login": login_command,
             "servicenow-update-ticket": update_ticket_command,
             "servicenow-create-ticket": create_ticket_command,
-            "servicenow-delete-ticket": delete_ticket_command,
             "servicenow-query-tickets": query_tickets_command,
             "servicenow-add-link": add_link_command,
             "servicenow-add-comment": add_comment_command,
@@ -3883,6 +3925,8 @@ def main():
             demisto.incidents(incidents)
         elif command == "servicenow-get-ticket":
             demisto.results(get_ticket_command(client, args))
+        elif command == "servicenow-delete-ticket":
+            return_results(delete_ticket_command(client, args))
         elif command == "servicenow-generic-api-call":
             return_results(generic_api_call_command(client, args))
         elif command == "get-remote-data":

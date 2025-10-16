@@ -2,9 +2,9 @@ commonfields:
   id: FireEye ETP
   version: -1
 name: FireEye ETP
-display: FireEye ETP
+display: Trellix Email Security - Cloud
 category: Network Security
-description: 'FireEye Email Threat Prevention (ETP Cloud) is a cloud-based platform that protects against advanced email attacks.'
+description: 'Trellix Email Security - Cloud is a cloud-based platform that protects against advanced email attacks.'
 configuration:
 - display: 'Server URL'
   name: server
@@ -366,7 +366,7 @@ script:
       Cloud message ID.
   isfetch: true
   subtype: python3
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.11.4508456
 tests:
 - No Test
 

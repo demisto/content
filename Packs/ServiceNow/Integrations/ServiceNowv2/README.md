@@ -896,26 +896,36 @@ Deletes a ticket from ServiceNow.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | Ticket System ID | Required |
+| id | Ticket System ID. | Required |
 | ticket_type | Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", "sc_req_item", or "sn_si_incident". | Optional |
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| ServiceNow.Ticket.ID | string | Ticket ID. |
+| ServiceNow.Ticket.DeleteMessage | string | Message indicating the result of the ticket deletion operation. |
 
 #### Command Example
 
-```!servicenow-delete-ticket id=id```
+```!servicenow-delete-ticket id=existingId"```
+
+#### Human Readable Output
+
+Ticket with ID id was successfully deleted from incident table.
 
 #### Context Example
 
 ```json
-{}
+{
+    "ServiceNow": {
+        "Ticket": {
+            "ID": "id",
+            "DeleteMessage": "Ticket with ID id was successfully deleted from incident table.",
+        }
+    }
+}
 ```
-
-#### Human Readable Output
-
->Ticket with ID id was successfully deleted.
 
 ### servicenow-query-tickets
 

@@ -1,7 +1,7 @@
 import json
 import pytest
 from pytest_mock import MockerFixture
-from FileEnrichment import Brands, Command, CommandResults, ContextPaths, EntryType
+from FileEnrichment import Brands, Command, CommandResults, ContextPaths, EntryType, Any
 
 
 """ TEST CONSTANTS """
@@ -224,6 +224,45 @@ def test_merge_context_outputs():
     expected_merged_context = util_load_json("test_data/merged_context_expected.json")
 
     assert merge_context_outputs(per_command_context, include_additional_fields=True) == expected_merged_context
+
+
+@pytest.mark.parametrize(
+    "dbot_scores, file_context, expected_result",
+    [
+        # A standard case with a valid match.
+        (
+            [{"Indicator": MD5_HASH, "Vendor": "TestVendor"}],
+            {"MD5": MD5_HASH, "SHA256": "abc"},
+            {"Indicator": MD5_HASH, "Vendor": "TestVendor"},
+        ),
+        # No matching hash found.
+        ([{"Indicator": "no_match_here", "Vendor": "TestVendor"}], {"MD5": MD5_HASH}, {}),
+        # The function should correctly find the SHA256 match and ignore the None MD5.
+        (
+            [{"Indicator": SHA_256_HASH, "Vendor": "VirusTotal"}],
+            {"MD5": None, "SHA256": SHA_256_HASH, "Verdict": "-102"},
+            {"Indicator": SHA_256_HASH, "Vendor": "VirusTotal"},
+        ),
+        # The indicator value in `dbot_scores` is None or an empty string.
+        ([{"Indicator": None, "Vendor": "TestVendor"}], {"MD5": MD5_HASH}, {}),
+    ],
+)
+def test_find_matching_dbot_score(dbot_scores: list[dict], file_context: dict[str, Any], expected_result: dict):
+    """
+    Given:
+        - dbot_scores: List of "DBotScore" objects.
+        - file_context: Context output from a single war room result entry.
+
+    When:
+        - Calling `find_matching_dbot_score`.
+
+    Assert:
+        - Ensure correct output from "find_matching_dbot_score" is returned.
+    """
+
+    from FileEnrichment import find_matching_dbot_score
+
+    assert find_matching_dbot_score(dbot_scores, file_context) == expected_result
 
 
 def test_execute_file_reputation(mocker: MockerFixture):
@@ -463,25 +502,102 @@ def test_run_external_enrichment(mocker: MockerFixture):
         verbose_command_results=[],
     )
 
-    assert mock_enrich_with_command.call_count == 3
+    assert mock_enrich_with_command.call_count == 1
 
-    # A. Run file reputation command
+    # Run file reputation command
     file_reputation_command = mock_enrich_with_command.call_args_list[0].kwargs["command"]
 
     assert file_reputation_command.name == "file"
     assert file_reputation_command.args == {"file": SHA_256_HASH, "using-brand": ",".join(enrichment_brands)}
 
+
+def test_run_internal_enrichment(mocker: MockerFixture):
+    """
+    Given:
+        - A SHA256 file hash and enabled instances of all source brands.
+
+    When:
+        - Calling `run_internal_enrichment`.
+
+    Assert:
+        - Ensure all the commands from all the source brands run with the correct arguments.
+    """
+    from FileEnrichment import run_internal_enrichment
+
+    enabled_brands = [Brands.WILDFIRE_V2.value, Brands.CORE_IR.value]
+    mock_enrich_with_command = mocker.patch("FileEnrichment.enrich_with_command")
+
+    run_internal_enrichment(
+        hashes_by_type={"SHA256": [SHA_256_HASH]},
+        enabled_brands=enabled_brands,
+        enrichment_brands=[],
+        per_command_context={},
+        verbose_command_results=[],
+    )
+
+    assert mock_enrich_with_command.call_count == 2
+
     # B. Run Wildfire Verdict command
-    wildfire_verdict_command = mock_enrich_with_command.call_args_list[1].kwargs["command"]
+    wildfire_verdict_command = mock_enrich_with_command.call_args_list[0].kwargs["command"]
 
     assert wildfire_verdict_command.name == "wildfire-get-verdict"
     assert wildfire_verdict_command.args == {"hash": SHA_256_HASH}
 
     # C. Run Core IR Hash Analytics command
-    hash_analytics_command = mock_enrich_with_command.call_args_list[2].kwargs["command"]
+    hash_analytics_command = mock_enrich_with_command.call_args_list[1].kwargs["command"]
 
     assert hash_analytics_command.name == "core-get-hash-analytics-prevalence"
     assert hash_analytics_command.args == {"sha256": SHA_256_HASH}
+
+
+@pytest.mark.parametrize(
+    "enrichment_brands, expected_results",
+    [
+        # No enrichment brands: only internal enrichment brands should run.
+        pytest.param([], {"internal_enrichment_should_run": [True, True]}, id="No Enrichment Brands"),
+        # Only WildFire in enrichment brands: only Wildfire should run
+        pytest.param(
+            [Brands.WILDFIRE_V2.value], {"internal_enrichment_should_run": [True, False]}, id="Enrichment Brands Include Wildfire"
+        ),
+        # Enrichment brands is not empty and does not include internal: no internal enrichment brands should run.
+        pytest.param(
+            [Brands.TIM.value],
+            {"internal_enrichment_should_run": [False, False]},
+            id="Enrichment Brands Does NotInclude Wildfire",
+        ),
+    ],
+)
+def test_run_internal_enrichment_with_specified_enrichment_brand(
+    mocker: MockerFixture, enrichment_brands: list[str], expected_results: dict
+):
+    """
+    Given:
+        - A SHA256 file hash and enabled instances of all source brands.
+        - A list of enrichment brands
+        - A list of expected results
+
+    When:
+        - Calling `run_internal_enrichment`.
+
+    Assert:
+        - Ensure that the correct commands run according to the specified enrichment brand
+    """
+    from FileEnrichment import run_internal_enrichment
+
+    enabled_brands = [Brands.WILDFIRE_V2.value, Brands.CORE_IR.value]
+    mock_ir = mocker.patch("FileEnrichment.execute_ir_hash_analytics", return_value=({}, []))
+    mock_wildfire = mocker.patch("FileEnrichment.execute_wildfire_verdict", return_value=({}, []))
+
+    run_internal_enrichment(
+        hashes_by_type={"SHA256": [SHA_256_HASH]},
+        enabled_brands=enabled_brands,
+        enrichment_brands=enrichment_brands,
+        per_command_context={},
+        verbose_command_results=[],
+    )
+
+    assert mock_wildfire.call_count == int(expected_results["internal_enrichment_should_run"][0])
+    assert mock_ir.call_count == int(expected_results["internal_enrichment_should_run"][1])
 
 
 def test_summarize_command_results_successful_commands(mocker: MockerFixture):
@@ -622,6 +738,7 @@ def test_main_valid_hash(mocker: MockerFixture, external_enrichment: bool):
 
     mock_search_file_indicator = mocker.patch("FileEnrichment.search_file_indicator")
     mock_demisto_get_modules = mocker.patch("FileEnrichment.demisto.getModules")
+    mock_run_internal_enrichment = mocker.patch("FileEnrichment.run_internal_enrichment")
     mock_run_external_enrichment = mocker.patch("FileEnrichment.run_external_enrichment")
     mock_summarize_command_results = mocker.patch("FileEnrichment.summarize_command_results")
 
@@ -631,7 +748,8 @@ def test_main_valid_hash(mocker: MockerFixture, external_enrichment: bool):
     assert mock_search_file_indicator.call_count == 1
 
     # Should not run if external_enrichment is False
-    assert mock_demisto_get_modules.call_count == int(external_enrichment)
+    assert mock_demisto_get_modules.call_count == 1
+    assert mock_run_internal_enrichment.call_count == 1
     assert mock_run_external_enrichment.call_count == int(external_enrichment)
 
     assert mock_summarize_command_results.call_count == 1

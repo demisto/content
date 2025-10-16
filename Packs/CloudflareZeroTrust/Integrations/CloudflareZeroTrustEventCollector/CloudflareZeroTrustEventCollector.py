@@ -2,6 +2,7 @@ from typing import Any
 
 import demistomock as demisto
 import urllib3
+from enum import Enum
 from CommonServerPython import *
 
 # Disable insecure warnings
@@ -20,9 +21,17 @@ DEFAULT_MAX_FETCH_USER_AUDIT = 5000
 DEFAULT_MAX_FETCH_ACCESS_AUTHENTICATION = 5000
 DEFAULT_COMMAND_LIMIT = 10
 
+FETCH_EVENTS_TIMEOUT = 180  # allow up to 3 minutes to fetch events of all types
+
 ACCOUNT_AUDIT_TYPE = "Account Audit Logs"
 USER_AUDIT_TYPE = "User Audit Logs"
 ACCESS_AUTHENTICATION_TYPE = "Access Authentication Logs"
+
+
+class AuthTypes(Enum):
+    GLOBAL_API_KEY = "Global API Key (Legacy)"
+    API_TOKEN = "API Token"
+
 
 """ CLIENT CLASS """
 
@@ -72,7 +81,16 @@ class Client(BaseClient):
             ACCESS_AUTHENTICATION_TYPE: f"/client/v4/accounts/{self.account_id}/access/logs/access_requests",
         }
         params = {"per_page": page_size, "page": page, "since": start_date, "direction": "asc"}
-        return self._http_request(method="GET", url_suffix=endpoint_urls[event_type], headers=self.headers, params=params)
+        try:
+            return self._http_request(method="GET", url_suffix=endpoint_urls[event_type], headers=self.headers, params=params)
+        except DemistoException as e:
+            demisto.debug(f"Caught exception when calling the '{endpoint_urls[event_type]}' endpoint: {str(e)}.")
+            is_using_access_token = "Authorization" in self.headers
+            if event_type == ACCESS_AUTHENTICATION_TYPE and is_using_access_token:
+                raise DemistoException(
+                    f"The {event_type!r} event type does not support the {AuthTypes.API_TOKEN.value} authorization type."
+                ) from e
+            raise
 
 
 def test_module(client: Client, event_types: list) -> str:
@@ -184,35 +202,70 @@ def fetch_events(
             - dict[str, Any]: The updated last run data for all event types.
             - list[dict[str, Any]]: The aggregated list of fetched events.
     """
-    events = []
-    next_run = {}
+    demisto.debug(f"Starting to fetch events. Got {last_run=}.")
+    events: list[dict[str, Any]] = []
+    next_run: dict[str, Any] = {}
 
-    event_type_params = {
+    account_audit_last_run = last_run.get(ACCOUNT_AUDIT_TYPE, {})
+    user_audit_last_run = last_run.get(USER_AUDIT_TYPE, {})
+    access_authentication_last_run = last_run.get(ACCESS_AUTHENTICATION_TYPE, {})
+
+    event_type_kwargs = {
         ACCOUNT_AUDIT_TYPE: {
-            "last_run": last_run.get(ACCOUNT_AUDIT_TYPE, {}),
-            "max_fetch": max_fetch_account_audit,
+            "last_run": account_audit_last_run,
+            "max_fetch": account_audit_last_run.pop("max_fetch", max_fetch_account_audit),
             "event_type": ACCOUNT_AUDIT_TYPE,
             "max_page_size": ACCOUNT_AUDIT_PAGE_SIZE,
         },
         USER_AUDIT_TYPE: {
-            "last_run": last_run.get(USER_AUDIT_TYPE, {}),
-            "max_fetch": max_fetch_user_audit,
+            "last_run": user_audit_last_run,
+            "max_fetch": user_audit_last_run.pop("max_fetch", max_fetch_user_audit),
             "event_type": USER_AUDIT_TYPE,
             "max_page_size": USER_AUDIT_PAGE_SIZE,
         },
         ACCESS_AUTHENTICATION_TYPE: {
-            "last_run": last_run.get(ACCESS_AUTHENTICATION_TYPE, {}),
-            "max_fetch": max_fetch_authentication,
+            "last_run": access_authentication_last_run,
+            "max_fetch": access_authentication_last_run.pop("max_fetch", max_fetch_authentication),
             "event_type": ACCESS_AUTHENTICATION_TYPE,
             "max_page_size": ACCESS_AUTHENTICATION_PAGE_SIZE,
         },
     }
+    event_type_is_finished: dict[str, bool] = {}
 
     for event_type in event_types_to_fetch:
-        fetched_events, updated_last_run = fetch_events_for_type(client=client, **event_type_params[event_type])
-        next_run[event_type] = updated_last_run
-        events.extend(fetched_events)
+        event_type_is_finished[event_type] = False
+        event_type_timeout = FETCH_EVENTS_TIMEOUT // len(event_types_to_fetch)
+        event_type_max_fetch = event_type_kwargs[event_type]["max_fetch"]
 
+        with ExecutionTimeout(event_type_timeout):
+            demisto.debug(f"Starting to fetch {event_type=} with {event_type_max_fetch=} and {event_type_timeout=}.")
+            fetched_events, event_type_next_run = fetch_events_for_type(client=client, **event_type_kwargs[event_type])
+            event_type_is_finished[event_type] = True
+
+        if event_type_is_finished[event_type]:
+            demisto.debug(
+                f"Completed fetching {event_type=} with {event_type_max_fetch=} and {event_type_timeout=}. "
+                f"Adding {len(fetched_events)} events to the list of all events."
+            )
+            next_run[event_type] = event_type_next_run
+            events.extend(fetched_events)
+
+        else:
+            demisto.debug(
+                f"Timed out fetching {event_type=} with {event_type_max_fetch=} and {event_type_timeout=}. "
+                f"Setting next run for {event_type=} with reduced limit."
+            )
+            # If timed out, keep event type last run and reduce its max fetch limit to ensure it completes in the next iteration
+            event_type_last_run = event_type_kwargs[event_type]["last_run"]
+            next_run[event_type] = {**event_type_last_run, "max_fetch": max(event_type_max_fetch // 2, 1)}
+
+    if any(event_type_is_finished.values()):
+        demisto.debug("At least one event type finished in time. Triggering immediate next fetch iteration.")
+        next_run["nextTrigger"] = "0"
+    else:
+        demisto.debug("All event types timed out. Next fetch will be called according to configured fetch interval.")
+
+    demisto.debug(f"Finished fetching {len(events)} events. Setting {next_run=}.")
     return next_run, events
 
 
@@ -334,6 +387,50 @@ def add_time_to_events(events: list[dict[str, Any]] | None):
             event["_time"] = create_time.strftime(DATE_FORMAT) if create_time else None
 
 
+def validate_headers(params: dict) -> dict:
+    """
+    Validates the provided the configuration parameters and returns the authorization headers.
+
+    Args:
+        params (dict): Configuration parameters to validate.
+
+    Raises:
+        DemistoException: If the credentials do not match the selected authorization type.
+
+    Returns:
+        dict: Validated request authorization headers.
+    """
+    auth_type = params.get("auth_type")
+    demisto.debug(f"Starting to validate parameters for {auth_type=}.")
+
+    # API Token credentials
+    token = params.get("token_credentials", {}).get("password")
+    # Global API Key credentials
+    auth_email = params.get("credentials", {}).get("identifier")
+    auth_key = params.get("credentials", {}).get("password")
+
+    if auth_type == AuthTypes.API_TOKEN.value:
+        if not token:
+            raise DemistoException(f"API Token is required for the {auth_type} authorization type.")
+        if auth_email or auth_key:
+            raise DemistoException(f"API Email and Global API Key should be left blank for the {auth_type} authorization type.")
+
+        demisto.debug(f"Found API token matching {auth_type=}. Creating request headers.")
+        return {"Authorization": f"Bearer {token}"}
+
+    elif auth_type == AuthTypes.GLOBAL_API_KEY.value:
+        if not (auth_email and auth_key):
+            raise DemistoException(f"API Email and Global API Key are required for the {auth_type} authorization type.")
+        if token:
+            raise DemistoException(f"API Token should be left blank for the {auth_type} authorization type.")
+
+        demisto.debug(f"Found API email and global key matching {auth_type=}. Creating request headers.")
+        return {"X-Auth-Email": auth_email, "X-Auth-Key": auth_key}
+
+    else:
+        raise DemistoException(f"Invalid authorization type: {auth_type!r}.")
+
+
 def validate_args(args: dict):
     """
     Validates the provided arguments for fetch events command.
@@ -373,19 +470,15 @@ def main() -> None:  # pragma: no cover
 
     demisto.debug(f"Command being called is {command}")
 
-    credentials = params.get("credentials", {})
     max_fetch_account_audit = arg_to_number(params.get("max_fetch_account_audit_logs")) or DEFAULT_MAX_FETCH_ACCOUNT_AUDIT
     max_fetch_user_audit = arg_to_number(params.get("max_fetch_user_audit_logs")) or DEFAULT_MAX_FETCH_USER_AUDIT
     max_fetch_authentication = (
         arg_to_number(params.get("max_fetch_access_authentication_logs")) or DEFAULT_MAX_FETCH_ACCESS_AUTHENTICATION
     )
-    event_types_to_fetch = argToList(params.get("event_types_to_fetch"))
+    event_types_to_fetch = argToList(params.get("event_types_to_fetch"), transform=lambda event_type: event_type.strip())
 
     try:
-        headers = {
-            "X-Auth-Email": credentials.get("identifier"),
-            "X-Auth-Key": credentials.get("password"),
-        }
+        headers = validate_headers(params)
         client = Client(
             base_url=params.get("url", ""),
             verify=not params.get("insecure", False),

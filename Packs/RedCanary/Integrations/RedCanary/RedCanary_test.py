@@ -455,3 +455,80 @@ def test_get_unacknowledged_detections(mocker):
     mocker.patch.object(RedCanary, "list_detections", return_value=[])
     results = list(RedCanary.get_unacknowledged_detections(t=datetime.now()))
     assert len(results) == 0
+
+
+def test_process_timeline(mocker):
+    """Unit test
+    Given
+    - a detection ID and mock timeline data containing process execution events
+    When
+    - processing the timeline to extract activities, files, and processes
+    Then
+    - verify that the timeline is correctly parsed and structured data is returned
+    - ensure activities contain proper time, type, and notes information
+    - confirm files and processes are extracted with expected attributes
+    """
+    detection_id = "12345"
+
+    mock_timeline_data = [
+        {
+            "type": "activity_timelines.EventActivityOccurred",
+            "attributes": {
+                "occurred_at": "2023-10-31T10:00:00Z",
+                "analyst_notes": "Process execution detected",
+                "type": "process_activity_occurred",
+                "process_execution": {
+                    "attributes": {
+                        "operating_system_process": {
+                            "attributes": {
+                                "image": {
+                                    "type": "primitives.File",
+                                    "attributes": {"md5": None, "sha256": None, "path": None, "file_type": None},
+                                },
+                                "command_line": {
+                                    "type": "primitives.ProcessCommandLine",
+                                    "attributes": {"command_line": "", "command_line_decoded": "", "identified_encodings": []},
+                                },
+                                "started_at": "2023-10-31T09:59:00Z",
+                            }
+                        }
+                    }
+                },
+            },
+        }
+    ]
+
+    # Mock the get_full_timeline function
+    mocker.patch.object(RedCanary, "get_full_timeline", return_value=mock_timeline_data)
+
+    # Call the function
+    activities, _, files, _, processes = RedCanary.process_timeline(detection_id)
+
+    # Verify that get_full_timeline was called with correct detection_id
+    RedCanary.get_full_timeline.assert_called_once_with(detection_id)
+
+    # Verify activities
+    assert len(activities) == 1
+
+    # Check first activity (process)
+    assert activities[0]["Time"] == "2023-10-31T10:00:00Z"
+    assert activities[0]["Type"] == "process activity occurred"
+    assert activities[0]["Notes"] == "Process execution detected"
+    assert activities[0]["Activity Details"] == {}
+
+    # Verify files
+    assert len(files) == 1
+    expected_file = {"Name": "", "MD5": None, "SHA256": None, "Path": None, "Extension": ""}
+    assert files[0] == expected_file
+
+    # Verify processes
+    assert len(processes) == 1
+    expected_process = {
+        "Name": "",
+        "Path": None,
+        "MD5": None,
+        "SHA256": None,
+        "StartTime": "2023-10-31T09:59:00Z",
+        "CommandLine": "",
+    }
+    assert processes[0] == expected_process

@@ -950,6 +950,13 @@ script:
       - sn_si_incident
     description: Deletes a ticket from ServiceNow.
     name: servicenow-delete-ticket
+    outputs:
+    - contextPath: ServiceNow.Ticket.ID
+      description: Ticket ID.
+      type: string
+    - contextPath: ServiceNow.Ticket.DeleteMessage
+      description: A Message indicating the result of the ticket deletion operation.
+      type: string
   - arguments:
     - description: Attachment File ID.
       name: file_sys_id
@@ -1951,7 +1958,7 @@ script:
       description: Ticket close code.
       type: string
 
-  dockerimage: demisto/auth-utils:1.0.0.3562326
+  dockerimage: demisto/auth-utils:1.0.0.4578605
   isfetch: true
   ismappable: true
   isremotesyncin: true

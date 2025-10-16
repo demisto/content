@@ -1,20 +1,19 @@
-from distutils.version import LooseVersion
-
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+from packaging.version import Version
 
 
 def get_relevant_versions(changelog, current_version):
     data = {}
     for version, version_info in changelog.items():
-        if LooseVersion(version) > current_version:
+        if Version(version) > current_version:
             data[version] = version_info
 
     return data
 
 
 def update_pack_info(pack_info):
-    current_version = LooseVersion(pack_info.get("currentVersion", "1.0.0"))
+    current_version = Version(pack_info.get("currentVersion", "1.0.0"))
     changelog = pack_info.get("changelog", {})
     pack_info["changelog"] = get_relevant_versions(changelog, current_version)
 

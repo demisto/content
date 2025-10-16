@@ -39,8 +39,8 @@ class Client(CoreClient):
         url = "/api/webapp/"
         if not FORWARD_USER_RUN_RBAC:
             url = params.get("url", "")
-            if not url:
-                url = "http://" + demisto.getLicenseCustomField("Core.ApiHost") + "/api/webapp/"  # type: ignore
+            if not all((url, params.get("apikey"), params.get("apikey_id"))):
+                raise DemistoException("Please provide the following parameters: Server URL, API Key, API Key ID")
         self._base_url: str = urljoin(url, "/public_api/v1/indicators/")
         self._verify_cert: bool = not params.get("insecure", False)
         self._params = params
@@ -51,7 +51,12 @@ class Client(CoreClient):
             return CoreClient._http_request(self, method="POST", url_suffix=url_suffix, data=requests_kwargs)
         if requests_kwargs is None:
             requests_kwargs = {}
-        res = requests.post(url=self._base_url + url_suffix, verify=self._verify_cert, headers=self._headers, **requests_kwargs)
+        res = requests.post(
+            url=self._base_url + url_suffix,
+            verify=self._verify_cert,
+            headers=self._headers,
+            **requests_kwargs,
+        )
 
         if not res.ok:
             status_code = res.status_code
@@ -61,7 +66,11 @@ class Client(CoreClient):
         try:
             return res.json()
         except json.decoder.JSONDecodeError as e:
-            raise DemistoException(f"Could not parse json out of {res.content.decode()}", exception=e, res=res)
+            raise DemistoException(
+                f"Could not parse json out of {res.content.decode()}",
+                exception=e,
+                res=res,
+            )
 
     @property
     def _headers(self):
@@ -70,19 +79,14 @@ class Client(CoreClient):
 
 
 def get_headers(params: dict) -> dict:
-    api_key: str = str(params.get("apikey"))
-    api_key_id: str = str(params.get("apikey_id"))
-    if not api_key or not api_key_id:
-        headers = {
-            "HOST": demisto.getLicenseCustomField("Core.ApiHostName"),
-            demisto.getLicenseCustomField("Core.ApiHeader"): demisto.getLicenseCustomField("Core.ApiKey"),
-            "Content-Type": "application/json",
-        }
-        add_sensitive_log_strs(demisto.getLicenseCustomField("Core.ApiKey"))
-    else:
-        headers = {"Content-Type": "application/json", "x-xdr-auth-id": str(api_key_id), "Authorization": api_key}
-        add_sensitive_log_strs(api_key)
-
+    api_key = str(params.get("apikey"))
+    api_key_id = str(params.get("apikey_id"))
+    headers = {
+        "Content-Type": "application/json",
+        "x-xdr-auth-id": api_key_id,
+        "Authorization": api_key,
+    }
+    add_sensitive_log_strs(api_key)
     return headers
 
 
@@ -169,7 +173,11 @@ def demisto_vendors_to_core(demisto_vendors) -> list[dict]:
         reputation = demisto_score_to_core.get(data.get("score"), "UNKNOWN")
         if module_id and reputation and reliability:
             core_vendors.append(
-                {"vendor_name": data.get("sourceBrand", module_id), "reputation": reputation, "reliability": reliability}
+                {
+                    "vendor_name": data.get("sourceBrand", module_id),
+                    "reputation": reputation,
+                    "reliability": reliability,
+                }
             )
     return core_vendors
 
@@ -194,7 +202,13 @@ def demisto_ioc_to_core(ioc: dict) -> dict:
             "expiration_date": demisto_expiration_to_core(ioc.get("expiration")),
         }
         # get last 'IndicatorCommentRegular'
-        comment: dict = next(filter(lambda x: x.get("type") == "IndicatorCommentRegular", reversed(ioc.get("comments", []))), {})
+        comment: dict = next(
+            filter(
+                lambda x: x.get("type") == "IndicatorCommentRegular",
+                reversed(ioc.get("comments", [])),
+            ),
+            {},
+        )
         if comment:
             core_ioc["comment"] = comment.get("content")
         if ioc.get("aggregatedReliability"):
@@ -316,7 +330,11 @@ def iocs_command(client: Client):
 
 
 def core_ioc_to_timeline(iocs: list) -> dict:
-    ioc_time_line = {"Value": ",".join(iocs), "Message": "indicator updated in Cortex.", "Category": "Integration Update"}
+    ioc_time_line = {
+        "Value": ",".join(iocs),
+        "Message": "indicator updated in Cortex.",
+        "Category": "Integration Update",
+    }
     return ioc_time_line
 
 
@@ -401,7 +419,7 @@ def set_sync_time(time: str):
             "iocs_to_keep_time": create_iocs_to_keep_time(),
         }
     )
-    return_results(f"set sync time to {time} seccedded.")
+    return_results(f"Successfully set sync time to {time}.")
 
 
 def get_sync_file():
@@ -415,8 +433,8 @@ def get_sync_file():
 
 
 def upload_file_to_bucket(file_path: str) -> None:
-    gcpconf_project_id = demisto.getLicenseCustomField("Core.gcpconf_project_id")
-    gcpconf_papi_bucket = demisto.getLicenseCustomField("Core.gcpconf_papi_bucket")
+    gcpconf_project_id = None  # removed
+    gcpconf_papi_bucket = None  # removed
     try:
         client = storage.Client(project=gcpconf_project_id)
         bucket = client.get_bucket(gcpconf_papi_bucket)
@@ -450,7 +468,7 @@ def main():
         elif command in commands:
             commands[command](client)
         elif command == "core-iocs-sync":
-            core_iocs_sync_command(client, demisto.args().get("firstTime") == "true")
+            raise DemistoException("Command unavailable.")
         else:
             raise NotImplementedError(command)
     except Exception as error:

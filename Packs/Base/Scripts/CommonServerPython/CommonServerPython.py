@@ -347,6 +347,7 @@ class QuickActionPreview(object):
     :return: None
     :rtype: ``None``.
     """
+
     def __init__(self, id=None, title=None, description=None, status=None,
                  assignee=None, creation_date=None, severity=None):
         """
@@ -395,6 +396,7 @@ class MirrorObject(object):
     :return: None
     :rtype: ``None``.
     """
+
     def __init__(self, object_url=None, object_id=None, object_name=None):
         """
         A container class for storing ticket metadata used in mirroring integrations.
@@ -518,6 +520,7 @@ class DBotScoreReliability(object):
     :rtype: ``None``
     """
 
+    A_PLUS_PLUS = 'A++ - Reputation script'
     A_PLUS = 'A+ - 3rd party enrichment'
     A = 'A - Completely reliable'
     B = 'B - Usually reliable'
@@ -535,6 +538,7 @@ class DBotScoreReliability(object):
         # type: (str) -> bool
 
         return _type in (
+            DBotScoreReliability.A_PLUS_PLUS,
             DBotScoreReliability.A_PLUS,
             DBotScoreReliability.A,
             DBotScoreReliability.B,
@@ -546,6 +550,8 @@ class DBotScoreReliability(object):
 
     @staticmethod
     def get_dbot_score_reliability_from_str(reliability_str):  # pragma: no cover
+        if reliability_str == DBotScoreReliability.A_PLUS_PLUS:
+            return DBotScoreReliability.A_PLUS_PLUS
         if reliability_str == DBotScoreReliability.A_PLUS:
             return DBotScoreReliability.A_PLUS
         elif reliability_str == DBotScoreReliability.A:
@@ -598,7 +604,7 @@ class ErrorTypes(object):
 
 
 class FeedIndicatorType(object):
-    """Type of Indicator (Reputations), used in TIP integrations"""
+    """Type of Indicator (Reputations), used in TIM integrations"""
     Account = "Account"
     CVE = "CVE"
     Domain = "Domain"
@@ -2079,20 +2085,21 @@ def argToBoolean(value):
         :param value: the value to evaluate
         :type value: ``string|bool``
 
-        :return: a boolean representatation of 'value'
+        :return: a boolean representation of 'value'
         :rtype: ``bool``
     """
     if isinstance(value, bool):
         return value
     if isinstance(value, STRING_OBJ_TYPES):
-        if value.lower() in ['true', 'yes']:
+        if value.lower() in ('y', 'yes', 't', 'true', 'on', '1'):
             return True
-        elif value.lower() in ['false', 'no']:
+        elif value.lower() in ('n', 'no', 'f', 'false', 'off', '0'):
             return False
         else:
             raise ValueError('Argument does not contain a valid boolean-like value')
     else:
         raise ValueError('Argument is neither a string nor a boolean')
+
 
 def arg_to_bool_or_none(value):
     """
@@ -2108,6 +2115,7 @@ def arg_to_bool_or_none(value):
         return None
     else:
         return argToBoolean(value)
+
 
 def appendContext(key, data, dedup=False):
     """
@@ -2953,6 +2961,24 @@ def is_ipv6_valid(address):
         return False
     return True
 
+def is_ip_address_internal(ip):
+    """
+    Checks if an IP address is an internal (RFC 1918) IP, Available from python3.
+
+    :return: True if the given IP address is an internal.
+    :rtype: ``bool``
+    """
+    if IS_PY3:
+        # pylint: disable=import-error
+        import ipaddress
+        # pylint: enable=import-error
+        try:
+            ip_obj = ipaddress.ip_address(ip)
+            return ip_obj.is_private
+        except ValueError:
+            return False
+    else:
+        return False
 
 def is_ip_valid(s, accept_v6_ips=False):
     """
@@ -8489,6 +8515,29 @@ def response_to_context(reponse_obj, user_predefiend_keys=None):
         return reponse_obj
 
 
+def safe_strptime(date_str, datetime_format, strptime=datetime.strptime):
+    """
+    Parses a date string to a datetime object, handling cases where the microsecond component is missing.
+    
+    :type date_str: ``str``
+    :param date_str: The date string to parse (required)
+    
+    :type datetime_format: ``str``
+    :param datetime_format: The format of the date string (required)
+    
+    :type strptime: ``Callable``
+    :param strptime: The function to use for parsing the date string (optional)
+    
+    :return: The parsed datetime object
+    :rtype: ``datetime.datetime``
+    """
+    try:
+        return strptime(date_str, datetime_format)
+    except ValueError as e:
+        demisto.debug('Failed to parse date {} with format {}: {}'.format(date_str, datetime_format, str(e)))
+        return strptime(date_str, datetime_format.replace('.%f', ''))
+
+
 def parse_date_range(date_range, date_format=None, to_timestamp=False, timezone=0, utc=True):
     """
         THIS FUNCTTION IS DEPRECATED - USE dateparser.parse instead
@@ -8604,7 +8653,7 @@ def date_to_timestamp(date_str_or_dt, date_format='%Y-%m-%dT%H:%M:%S'):
       :rtype: ``int``
     """
     if isinstance(date_str_or_dt, STRING_OBJ_TYPES):
-        return int(time.mktime(time.strptime(date_str_or_dt, date_format)) * 1000)
+        return int(time.mktime(safe_strptime(date_str_or_dt, date_format, time.strptime)) * 1000)
 
     # otherwise datetime.datetime
     return int(time.mktime(date_str_or_dt.timetuple()) * 1000)
@@ -9093,7 +9142,7 @@ def parse_date_string(date_string, date_format='%Y-%m-%dT%H:%M:%S'):
         :rtype: ``(datetime.datetime, datetime.datetime)``
     """
     try:
-        return datetime.strptime(date_string, date_format)
+        return safe_strptime(date_string, date_format)
     except ValueError as e:
         error_message = str(e)
 
@@ -9140,7 +9189,7 @@ def parse_date_string(date_string, date_format='%Y-%m-%dT%H:%M:%S'):
         #      '2022-01-23T12:34:56.123456789' to '2022-01-23T12:34:56.123456'
         date_string = re.sub(r'([0-9]+\.[0-9]{6})[0-9]*([Zz]|[+-]\S+?)?', '\\1\\2', date_string)
 
-        return datetime.strptime(date_string, date_format)
+        return safe_strptime(date_string, date_format)
 
 
 def build_dbot_entry(indicator, indicator_type, vendor, score, description=None, build_malicious=True):
@@ -11640,10 +11689,10 @@ def get_latest_incident_created_time(incidents, created_time_field, date_format=
     :rtype: ``str``
     """
     demisto.debug('lb: Getting latest incident created time')
-    latest_incident_time = datetime.strptime(incidents[0][created_time_field], date_format)
+    latest_incident_time = safe_strptime(incidents[0][created_time_field], date_format)
 
     for incident in incidents:
-        incident_time = datetime.strptime(incident[created_time_field], date_format)
+        incident_time = safe_strptime(incident[created_time_field], date_format)
         if incident_time > latest_incident_time:
             latest_incident_time = incident_time
 
@@ -11675,9 +11724,15 @@ def remove_old_incidents_ids(found_incidents_ids, current_time, look_back):
     deletion_threshold_in_seconds = look_back_in_seconds * 2
 
     new_found_incidents_ids = {}
+    latest_incident_time = max(found_incidents_ids.values() or [current_time])
+    demisto.debug('lb: latest_incident_time is {}'.format(latest_incident_time))
+
     for inc_id, addition_time in found_incidents_ids.items():
 
-        if current_time - addition_time <= deletion_threshold_in_seconds:
+        if (
+            current_time - addition_time <= deletion_threshold_in_seconds
+            or addition_time == latest_incident_time  # The latest IDs must be kept to avoid duplicate incidents
+        ):
             new_found_incidents_ids[inc_id] = addition_time
             demisto.debug('lb: Adding incident id: {}, its addition time: {}, deletion_threshold_in_seconds: {}'.format(
                 inc_id, addition_time, deletion_threshold_in_seconds))
@@ -11686,6 +11741,7 @@ def remove_old_incidents_ids(found_incidents_ids, current_time, look_back):
                 inc_id, addition_time, deletion_threshold_in_seconds))
     demisto.debug('lb: Number of new found ids: {}, their ids: {}'.format(
         len(new_found_incidents_ids), new_found_incidents_ids.keys()))
+
     return new_found_incidents_ids
 
 
@@ -12745,7 +12801,7 @@ def execute_polling_command(
     :raises DemistoException: If no command result entry is received, or if the polling times out.
     """
     polling_interval = arg_to_number(args.get(polling_interval_arg_name)) or default_polling_interval
-    polling_timeout =  arg_to_number(args.get(polling_timeout_arg_name)) or default_polling_timeout
+    polling_timeout = arg_to_number(args.get(polling_timeout_arg_name)) or default_polling_timeout
 
     if using_brand:
         args["using-brand"] = using_brand
@@ -12782,7 +12838,8 @@ def execute_polling_command(
             command_results.append(CommandResults(readable_output=human_readable, outputs=context_output))
 
         metadata = execution_result.get("Metadata", {})
-        demisto.debug("Command: {command_name} has entry metadata: {metadata}.".format(command_name=command_name, metadata=metadata))
+        demisto.debug("Command: {command_name} has entry metadata: {metadata}.".format(
+            command_name=command_name, metadata=metadata))
         if not metadata.get("polling"):
             demisto.debug("Finished running command: {command_name} with args: {args}. Returning results to war room.".format(
                 command_name=command_name, args=args))
@@ -12793,7 +12850,8 @@ def execute_polling_command(
         if using_brand:
             args["using-brand"] = using_brand
 
-        demisto.debug("Sleeping {polling_interval} seconds before next command execution.".format(polling_interval=polling_interval))
+        demisto.debug("Sleeping {polling_interval} seconds before next command execution.".format(
+            polling_interval=polling_interval))
         time.sleep(polling_interval)  # pylint: disable=E9003
 
     raise DemistoException("Timed out waiting for command: {command_name}.".format(command_name=command_name))
@@ -12867,7 +12925,7 @@ class ExecutionTimeout(object):
         demisto.debug("Resetting timed signal")
         signal.alarm(0)  # Cancel SIGALRM if it's scheduled
         return exc_type is SignalTimeoutError  # True if a timeout is reacched, False otherwise
-    
+
     @classmethod
     def limit_time(cls, seconds, default_return_value=None):
         """
@@ -12889,6 +12947,21 @@ class ExecutionTimeout(object):
                 return return_value
             return wrapped
         return wrapper
+
+
+class ISOEncoder(json.JSONEncoder):
+    """
+    A custom JSONEncoder that converts datetime objects to ISO 8601 strings.
+
+    :return: The ISOEncoder object
+    :rtype: ``ISOEncoder``
+    """
+
+    def default(self, obj):
+        if isinstance(obj, datetime):
+            return obj.isoformat()
+        # Let the base class handle other objects
+        return json.JSONEncoder.default(self, obj)
 
 
 from DemistoClassApiModule import *  # type:ignore [no-redef]  # noqa:E402
