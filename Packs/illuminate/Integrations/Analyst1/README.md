@@ -59,16 +59,17 @@ For additional example playbooks please contact support@analyst1.com.
 
 The Analyst1 integration uses the Risk Score from Analyst1 indicators to determine the XSOAR Verdict (Unknown, Benign, Suspicious, Malicious).
 
-**Important Notes:**
-- If an indicator has `benign=true` in Analyst1, the XSOAR Verdict will always be set to **Benign**, regardless of the risk score.
-- The risk score mappings are configurable per integration instance, allowing you to customize how Analyst1 risk scores map to XSOAR verdicts.
-- Default mappings:
-  - **Lowest** → Benign (1)
-  - **Low** → Unknown (0)
-  - **Moderate** → Suspicious (2)
-  - **High** → Suspicious (2)
-  - **Critical** → Malicious (3)
-  - **Unknown** → Unknown (0)
+__Important Notes:__
+
+* If an indicator has `benign=true` in Analyst1, the XSOAR Verdict will always be set to __Benign__, regardless of the risk score.
+* The risk score mappings are configurable per integration instance, allowing you to customize how Analyst1 risk scores map to XSOAR verdicts.
+* Default mappings:
+  * __Lowest__ → Benign (1)
+  * __Low__ → Unknown (0)
+  * __Moderate__ → Suspicious (2)
+  * __High__ → Suspicious (2)
+  * __Critical__ → Malicious (3)
+  * __Unknown__ → Unknown (0)
 
 ## Commands
 
