@@ -964,8 +964,8 @@ def test_reformat_filter_with_list_arg(fields_to_filter_by, field_key_from_type_
         "single_value_for_each_field",
         "multiple_values_for_each_field",
         "some_lists_empty",
-        "all_lists_empty"
-    ]
+        "all_lists_empty",
+    ],
 )
 def test_create_filter_for_endpoint_command(hostnames, ips, ids, expected_filter):
     from MicrosoftDefenderAdvancedThreatProtection import create_filter_for_endpoint_command
