@@ -28,7 +28,7 @@ MAX_USER_DATA_PER_FETCH = 1250
 
 # API limits
 MAX_USER_DATA_PER_PAGE = 250
-# due to API limitation, max per fetch is 2000 and only single request is recommended per minute.
+# Due to API limitations, a maximum of 2,000 items can be fetched per request. Only one request per minute is recommended.
 MAX_CUSTOMER_EVENTS_PER_FETCH = 2000
 
 # scopes
@@ -45,7 +45,7 @@ SERVER_PROD_URL = "https://account.docusign.com"
 
 class CustomerEventsClient(BaseClient):
     """
-    Docusign Monitor API Client for fetching customer events.
+    Client for DocuSign Monitor API to fetch customer events.
     Extends BaseClient to support proxy configuration and proper HTTP request handling.
     """
 
@@ -54,7 +54,7 @@ class CustomerEventsClient(BaseClient):
 
         Args:
             server_url: Base URL for the Docusign Monitor API (developer/production environment URI)
-            proxy: Whether to use proxy for requests
+            proxy: Whether to use a proxy for requests
             verify: Whether to verify SSL certificates
         """
         env = get_env_from_server_url(server_url)
@@ -77,13 +77,13 @@ class CustomerEventsClient(BaseClient):
 
 class UserDataClient(BaseClient):
     """
-    Docusign Audit Users client for fetching audit users from Docusign Admin API.
+    Docusign Audit Users client for fetching audit users from the Docusign Admin API.
 
     Args:
         account_id: Docusign account ID
         organization_id: Docusign organization ID
         env: Docusign environment (dev/production)
-        proxy: Whether to use proxy for requests
+        proxy: Whether to use a proxy for requests
         verify: Whether to verify SSL certificates
     """
 
@@ -128,7 +128,7 @@ class UserDataClient(BaseClient):
 
 
 def remove_duplicate_users(fetched_users: list, ids_to_remove: list, time_to_remove: str) -> list:
-    """remove users from fetched_users if their id appears in ids_to_remove and their _time field equal to time_to_remove"""
+    """remove users from fetched_users whose id appears in ids_to_remove and whose their _time field equals to time_to_remove"""
     if not fetched_users or not ids_to_remove:
         return fetched_users
 
@@ -139,7 +139,7 @@ def remove_duplicate_users(fetched_users: list, ids_to_remove: list, time_to_rem
             filtered_users.append(user)
 
     if not filtered_users:
-        demisto.debug(f"{LOG_PREFIX}No users available for this request after removing duplicates.")
+        demisto.debug(f"{LOG_PREFIX}No users remain for this request after removing duplicates.")
 
     return filtered_users
 
@@ -169,10 +169,10 @@ class AuthClient(BaseClient):
         Args:
             server_url: Base URL for the Docusign API
             integration_key: Docusign Integration Key (OAuth Client ID)
-            user_id: Docusign User ID for JWT subject
+            user_id: Docusign User ID used as the JWT subject
             private_key_pem: RSA private key in PEM format for JWT signing
             verify: Whether to verify SSL certificates
-            proxy: Whether to use proxy for requests
+            proxy: Whether to use a proxy for requests
         """
         super().__init__(base_url="", verify=verify, proxy=proxy)
         self.server_url = server_url.rstrip("/")
@@ -185,13 +185,13 @@ class AuthClient(BaseClient):
 
     def get_access_token(self) -> str:
         """
-        Generate JWT and exchange it for access token for Docusign API OAuth flow.
+        Generate a JWT and exchange it for access token for the Docusign API OAuth flow.
 
         This function first checks if an access token already exists in the integration context.
         If not found, it exchanges the JWT for an access token using Docusign's OAuth token endpoint.
 
         Args:
-            client (AuthClient): AuthClient instance for making requests
+            client (AuthClient): AuthClient instance used for making requests
 
         Returns:
             str: Access token for Docusign API authentication
@@ -287,7 +287,7 @@ class AuthClient(BaseClient):
         return token
 
     def exchange_jwt_to_access_token(self, jwt: str) -> tuple[str, str, str]:
-        """Exchange JWT for an access token."""
+        """Exchange a JWT for an access token."""
 
         url = urljoin(self.server_url, "/oauth/token")
         data = {
@@ -318,7 +318,7 @@ class AuthClient(BaseClient):
         return resp
 
     def get_base_uri(self, access_token: str, account_id: str) -> str:
-        """Fetch user information including base_uri for the account.
+        """Fetch user information including the base_uri for the account.
 
         Args:
             access_token: Valid access token
@@ -346,7 +346,7 @@ class AuthClient(BaseClient):
             if account.get("account_id") == account_id:
                 base_uri = account.get("base_uri")
 
-                # set the base_uri for next run, it is permanent for the account
+                # Set the base_uri for future runs; it remains constant for the account.
                 integration_context.update({"base_uri": base_uri})
                 set_integration_context(integration_context)
                 demisto.debug(f"{LOG_PREFIX}update integration context with base_uri: {base_uri}")
@@ -393,7 +393,6 @@ def get_customer_events(last_run: dict, limit: int, client: CustomerEventsClient
 
     """
     one_minute_ago = timestamp_to_datestring(int(time.time() - 60) * 1000, date_format="%Y-%m-%dT%H:%M:%SZ")
-
     # note for developer - cursor is returned from the api even if response is empty
     cursor = last_run.get("cursor") or one_minute_ago
     demisto.debug(f"{LOG_PREFIX}Customer Events: requesting {limit} events with cursor: {cursor}")
