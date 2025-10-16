@@ -1218,6 +1218,7 @@ This command returns a maximum of 5,000 results. If your data exceeds the result
 Pagination isn't supported in this command due to API limitations. To query subsequent data, use the *starting_recipient_address* and *end_date* parameters with the values from the Recipient address and Received Time properties respectively of the previous result in the next query.
 
 **Best Practices:**
+
 - Use the *limit* argument to adjust the size of your results.
 - Be as precise as possible. Narrow the gap between *start_date* and *end_date* and use additional arguments (for example, *starting_recipient_address*) where possible.
 - Use message_id where possible (required for messages sent to more than 1000 recipients).
