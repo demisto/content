@@ -188,6 +188,14 @@ def parse_tag_field(tags_string: str | None):
 
     return tags
 
+def convert_datetimes_to_iso_safe(data):
+    """
+    Converts datetime objects in a data structure to ISO 8601 strings
+    by serializing to and then deserializing from JSON using a custom encoder.
+    """
+    json_string = json.dumps(data, cls=ISOEncoder)
+    return json.loads(json_string)
+
 
 class AWSErrorHandler:
     """
