@@ -1,22 +1,26 @@
 {
-    "name": "AutoFocus by Palo Alto Networks",
-    "description": "Use the Palo Alto Networks AutoFocus integration to distinguish the most\n  important threats from everyday commodity attacks.",
+    "name": "Unit 42 Threat Intelligence by Palo Alto Networks",
+    "description": "Use the Unit 42 Threat Intelligence by Palo Alto Networks integrations to enrich indicators with threat intelligence data and fetch threat intelligence feeds.",
     "support": "xsoar",
-    "currentVersion": "2.3.0",
+    "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
-    "created": "2020-04-01T09:45:32Z",
+    "created": "2025-08-19T05:19:37Z",
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
     "tags": [
+        "TIM",
         "Threat Intelligence Management",
         "Palo Alto Networks Products"
     ],
     "useCases": [],
     "keywords": [
+        "Feed",
         "TIM",
+        "Unit 42",
+        "Threat Intelligence",
         "Palo Alto Networks"
     ],
     "dependencies": {
