@@ -39,8 +39,10 @@ PERMISSIONS_TO_COMMANDS = {
         "azure-nsg-security-rule-create",
     ],
     "Microsoft.Network/networkSecurityGroups/securityRules/delete": ["azure-nsg-security-rule-delete"],
-    "Microsoft.Network/networkInterfaces/read": ["azure-nsg-network-interfaces-list"],
-    "Microsoft.Network/publicIPAddresses/read": ["azure-nsg-public-ip-addresses-list"],
+    "Microsoft.Network/networkInterfaces/read": ["azure-nsg-network-interfaces-list",
+                                                 "azure-vm-get-nic-details"],
+    "Microsoft.Network/publicIPAddresses/read": ["azure-nsg-public-ip-addresses-list",
+                                                 "azure-vm-get-public-ip-details"],
     "Microsoft.Storage/storageAccounts/read": ["azure-storage-account-update"],
     "Microsoft.Storage/storageAccounts/write": ["azure-storage-account-update"],
     "Microsoft.Storage/storageAccounts/blobServices/containers/write": ["azure-storage-blob-containers-update"],
@@ -65,6 +67,9 @@ PERMISSIONS_TO_COMMANDS = {
     "Microsoft.Insights/logprofiles/write": ["azure-monitor-log-profile-update"],
     "Microsoft.Compute/disks/read": ["azure-disk-update"],
     "Microsoft.Compute/disks/write": ["azure-disk-update"],
+    "Microsoft.Compute/virtualMachines/read": ["azure-vm-get-instance-details"],
+    "Microsoft.Compute/virtualMachines/start/action": ["azure-vm-start-instance"],
+    "Microsoft.Compute/virtualMachines/deallocate/action": ["azure-vm-poweroff-instance"],
     "Microsoft.ContainerRegistry/registries/read": ["azure-acr-update"],
     "Microsoft.ContainerRegistry/registries/write": ["azure-acr-update"],
     "Microsoft.KeyVault/vaults/read": ["azure-key-vault-update"],
@@ -122,6 +127,12 @@ API_FUNCTION_TO_PERMISSIONS = {
     "update_webapp_auth": ["Microsoft.Web/sites/config/read", "Microsoft.Web/sites/config/write"],
     "set_webapp_config": ["Microsoft.Web/sites/config/read", "Microsoft.Web/sites/config/write"],
     "webapp_update": ["Microsoft.Web/sites/read", "Microsoft.Web/sites/write"],
+    "start_vm_request": ["Microsoft.Compute/virtualMachines/start/action"],
+    "poweroff_vm_request": ["Microsoft.Compute/virtualMachines/deallocate/action"],
+    "get_vm_request": ["Microsoft.Compute/virtualMachines/read"],
+    "get_network_interface_request": ["Microsoft.Network/networkInterfaces/read"],
+    "get_public_ip_details_request": ["Microsoft.Network/publicIPAddresses/read"],
+    "get_all_public_ip_details_request": ["Microsoft.Network/publicIPAddresses/read"]
 }
 
 REQUIRED_ROLE_PERMISSIONS = [
