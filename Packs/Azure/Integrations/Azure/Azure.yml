@@ -64,7 +64,8 @@ configuration:
 description: Cloud integrations are installed from the **Data Sources** page. To configure a cloud integration, go to Settings > Data Sources and click "Add Data Source", select Azure, then in Advanced Settings > Security Capabilities, enable "Automation".
 display: Azure
 name: Azure
-commands:
+script:
+  commands:
   - arguments:
     - description: The subscription ID.
       name: subscription_id
