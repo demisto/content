@@ -1530,7 +1530,12 @@ class AzureClient:
             f"virtualMachines/{vm_name}/start"
         )
         try:
-            return self.ms_client.http_request(method="POST", full_url=full_url, params={"api-version": VM_API_VERSION}, resp_type="response")
+            response = self.ms_client.http_request(method="POST", full_url=full_url, params={"api-version": VM_API_VERSION}, resp_type="response")
+            if response.status_code in (200, 202, 204):  # type: ignore[union-attr]
+                return response
+            else:
+                demisto.debug(f"Failed to start vm {vm_name}.")
+                response.raise_for_status()  # type: ignore[union-attr]
         except Exception as e:
             self.handle_azure_error(
                 e=e,
@@ -1564,7 +1569,12 @@ class AzureClient:
         )
         parameters = {"skipShutdown": skip_shutdown} | {"api-version": VM_API_VERSION}
         try:
-            return self.ms_client.http_request(method="POST", full_url=full_url, params=parameters, resp_type="response")
+            response = self.ms_client.http_request(method="POST", full_url=full_url, params=parameters, resp_type="response")
+            if response.status_code in (200, 202, 204):  # type: ignore[union-attr]
+                return response
+            else:
+                demisto.debug(f"Failed to power off vm {vm_name}.")
+                response.raise_for_status()  # type: ignore[union-attr]
         except Exception as e:
             self.handle_azure_error(
                 e=e,
