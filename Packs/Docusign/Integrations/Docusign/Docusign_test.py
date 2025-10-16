@@ -9,7 +9,7 @@ from Docusign import (
     add_fields_to_customer_events,
     get_user_data,
     fetch_audit_user_data,
-    UserDataClient
+    UserDataClient,
 )
 
 
@@ -25,7 +25,7 @@ class TestGetCustomerEvents:
             - It should return the events and update last_run["cursor"] to endCursor
         """
 
-        example_response = { # note: each item includes partial data, those are not the full event data (There are more fields)
+        example_response = {  # note: each item includes partial data, those are not the full event data (There are more fields)
             "endCursor": "aa_638553500560000000_638553500560000000_0",
             "data": [
                 {
@@ -65,7 +65,6 @@ class TestGetCustomerEvents:
         assert kwargs["headers"]["Authorization"] == f"Bearer {token}"
         assert kwargs["params"]["cursor"] == "prev_cursor"
         assert kwargs["params"]["limit"] == limit
-        
 
     def test_get_customer_events_returns_empty_list(self, mocker):
         """
@@ -129,22 +128,23 @@ class TestGetCustomerEvents:
         Then:
             - It should add source_log_type and _time fields to each event
         """
-        
+
         events = [{"timestamp": "2024-06-30T07:08:06.3038365Z"}, {"timestamp": "2024-06-30T06:44:26.8948106Z"}]
-        
+
         add_fields_to_customer_events(events)
-        
+
         assert events[0]["source_log_type"] == "customerevent"
         assert events[0]["_time"] == "2024-06-30T07:08:06Z"
         assert events[1]["source_log_type"] == "customerevent"
         assert events[1]["_time"] == "2024-06-30T06:44:26Z"
 
+
 class TestGetUserData:
     """
-        - limit ≤ per_page -> per_page = limit -> fetch full page, remaining logs mechanism is not used.
-        - limit > per_page -> per_page = max_users_per_page -> fetch partial page, remaining logs mechanism is used.
+    - limit ≤ per_page -> per_page = limit -> fetch full page, remaining logs mechanism is not used.
+    - limit > per_page -> per_page = max_users_per_page -> fetch partial page, remaining logs mechanism is used.
 
-        CRITICAL: per_page is ALWAYS constant during all the fetch user data runs.
+    CRITICAL: per_page is ALWAYS constant during all the fetch user data runs.
     """
 
     def test_get_user_data_with_continuing_fetch_when_limit_less_than_max_logs_per_page(self, mocker):
@@ -161,14 +161,14 @@ class TestGetUserData:
         """
         limit = 8
         mock_params = {
-            "url": "https://test.monday.com",
+            "url": "url",
         }
         mocker.patch.object(demisto, "params", return_value=mock_params)
         mocker.patch.object(demisto, "debug")
 
         # --- FIRST FETCH: no continuing fetch mechanism ---
         # Mock 8 users from first page (per_page=8, but more users available)
-        users_1 =  [ # note: "id" key is the only relevant key, this is a partial response (each user includes more fields)
+        users_1 = [  # note: "id" key is the only relevant key, this is a partial response (each user includes more fields)
             {"id": "11111111-1111-1111-1111-111111111111", "user_name": "user1"},
             {"id": "22222222-2222-2222-2222-222222222222", "user_name": "user2"},
             {"id": "33333333-3333-3333-3333-333333333333", "user_name": "user3"},
@@ -181,12 +181,12 @@ class TestGetUserData:
 
         next_url = "next_url_1"
         paging = {
-        "result_set_size": 8,
-        "result_set_start_position": 0,
-        "result_set_end_position": 7,
-        "total_set_size": 1000,
-        "next": next_url
-    }
+            "result_set_size": 8,
+            "result_set_start_position": 0,
+            "result_set_end_position": 7,
+            "total_set_size": 1000,
+            "next": next_url,
+        }
 
         mock_response = MagicMock()
         mock_response.status_code = 200
@@ -213,10 +213,9 @@ class TestGetUserData:
         # Verify request used per_page = limit
         assert mock_client.get_users_first_request.call_args[0][1]["take"] == limit
 
-
         # --- SECOND FETCH: Continuing fetch mechanism, page=2---
         # Mock page 2 users - 8 more users
-        users_2 =  [
+        users_2 = [
             {"id": "99999999-9999-9999-9999-999999999999", "user_name": "user9"},
             {"id": "10101010-1010-1010-1010-101010101010", "user_name": "user10"},
             {"id": "11111111-1111-1111-1111-111111111111", "user_name": "user11"},
@@ -232,7 +231,7 @@ class TestGetUserData:
             "result_set_start_position": 8,
             "result_set_end_position": 15,
             "total_set_size": 1000,
-            "next": next_url
+            "next": next_url,
         }
 
         mock_response_page2 = MagicMock()
@@ -244,15 +243,15 @@ class TestGetUserData:
         mock_client.reset_mock()
 
         continuing_last_run = result_last_run
-        result_logs_2, result_last_run_2 = get_user_data(continuing_last_run, limit, limit, client=mock_client, access_token="tok")
-
+        result_logs_2, result_last_run_2 = get_user_data(
+            continuing_last_run, limit, limit, client=mock_client, access_token="tok"
+        )
 
         assert len(result_logs_2) == limit
 
         assert result_last_run_2["continuing_fetch_info"] is not None  # More pages available
         assert result_last_run_2["continuing_fetch_info"]["url"] == next_url
         assert mock_client.get_users_request.call_count == 1
-
 
     def test_fetch_audit_user_data_with_remaining_logs_mechanism(self, mocker):
         """
@@ -326,7 +325,7 @@ class TestGetUserData:
             {"id": "21", "user_name": "user21"},
             {"id": "22", "user_name": "user22"},
         ]
-        
+
         # Mock responses for both API calls
         mock_response_page1 = MagicMock()
         mock_response_page1.status_code = 200
@@ -350,9 +349,7 @@ class TestGetUserData:
 
         mock_first_request = mocker.patch(
             "Docusign.UserDataClient.get_users_first_request",
-            side_effect=[
-                (mock_response_page1.json(), "next_url_1")
-            ],
+            side_effect=[(mock_response_page1.json(), "next_url_1")],
         )
         # Configure mock to return different responses for each call
         mock_requests_get = mocker.patch(
@@ -371,18 +368,14 @@ class TestGetUserData:
         mock_timestamp_to_datestring.return_value = "2024-06-03T15:00:00.000Z"
 
         user_data_client = UserDataClient(
-            account_id="account_id",
-            organization_id="organization_id",
-            env="dev",
-            proxy=False,
-            verify=True
+            account_id="account_id", organization_id="organization_id", env="dev", proxy=False, verify=True
         )
         mocker.patch("Docusign.initiate_user_data_client", return_value=user_data_client)
-        
+
         # create a mock for auth client
         mock_auth_client = mocker.MagicMock()
         mock_auth_client.access_token = "access_token"
-        
+
         # Initial state - first fetch
         initial_last_run = {}
         result_last_run, users = fetch_audit_user_data(initial_last_run, mock_auth_client, test_mode=True)
@@ -401,7 +394,7 @@ class TestGetUserData:
         # Should set excess_users_info for unused users from page 2
         assert result_last_run["excess_users_info"].get("offset") == 3
         assert result_last_run["excess_users_info"].get("url") == "next_url_1"
-        
+
         # --- SECOND CALL TO fetch_audit_user_data: Process excess users from previous fetch before fetching new page ---
 
         # Second fetch using last_run from first fetch
@@ -440,4 +433,3 @@ class TestGetUserData:
         assert result_last_run_3["excess_users_info"] is None
         # Should remove continuing_fetch_info from last run (next page is none, next fetch will start a new fetch window)
         assert result_last_run_3["continuing_fetch_info"] is None
-

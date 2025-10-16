@@ -5,6 +5,8 @@ import datetime as dt
 import time
 from typing import Any
 import jwt  # PyJWT
+from urllib.parse import urlparse
+
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -143,7 +145,14 @@ def remove_duplicate_users(fetched_users: list, ids_to_remove: list, time_to_rem
 
 
 def get_env_from_server_url(server_url: str) -> str:
-    return "dev" if "account-d.docusign.com" in server_url else "prod"
+    try:
+        parsed_url = urlparse(server_url)
+        hostname = parsed_url.hostname or ""
+
+        return "dev" if hostname == "account-d.docusign.com" else "prod"
+    except Exception:
+        demisto.debug(f"{LOG_PREFIX}Failed to parse server URL: {server_url}")
+        raise DemistoException(f"Failed to parse server URL: {server_url}")
 
 
 def _utcnow() -> dt.datetime:
@@ -669,11 +678,11 @@ def initiate_auth_client() -> AuthClient:
 
 
 def fetch_customer_events(last_run: dict, access_token: str) -> tuple[dict, list]:
-    '''
+    """
     Note to developer:
     MAX_CUSTOMER_EVENTS_PER_FETCH is set to 2000 due to API limitation.
     limit parameter is not behaving as expected on the API side - so configuration limit parameter is not supported at this point.
-    '''
+    """
     limit = MAX_CUSTOMER_EVENTS_PER_FETCH
     try:
         demisto.debug(f"{LOG_PREFIX} last_run before fetching customer events: {last_run}")
