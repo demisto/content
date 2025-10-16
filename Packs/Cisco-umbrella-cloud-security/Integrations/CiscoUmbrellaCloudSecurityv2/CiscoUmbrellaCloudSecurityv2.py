@@ -880,7 +880,7 @@ def main() -> None:
     params: dict[str, Any] = demisto.params()
     args: dict[str, Any] = demisto.args()
     command: str = demisto.command()
-    base_url = params["baseURL"]
+    base_url = params.get("baseURL") or "https://api.umbrella.com"
 
     api_key: str = params["credentials"]["identifier"]
     api_secret: str = params["credentials"]["password"]
