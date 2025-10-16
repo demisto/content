@@ -223,53 +223,6 @@ def calculate_batch_check_verdict(entity_key: str | None, risk_score: str | None
     return 0  # Unknown
 
 
-def calculate_enrichment_verdict_from_batch_results(results_for_search_value: list[dict], params: dict) -> int:
-    """
-    Calculates XSOAR verdict for enrichment commands based on ALL entity types returned for a search value.
-
-    Priority logic:
-    1. If ANY result has benign=True, return Benign (1)
-    2. If ANY result has entity.key in [ASSET, IN_SYSTEM_RANGE, IN_HOME_RANGE, IN_PRIVATE_RANGE,
-       IGNORED_INDICATOR, IGNORED_ASSET], return Benign (1)
-    3. Otherwise, find the INDICATOR result and use risk score mapping
-    4. If no INDICATOR or no risk score, return Unknown (0)
-
-    Args:
-        results_for_search_value: All batch check results for a single search value
-        params: Integration configuration parameters
-
-    Returns:
-        XSOAR verdict score: 0=Unknown, 1=Benign, 2=Suspicious, 3=Malicious
-    """
-    benign_entity_keys = ["ASSET", "IN_SYSTEM_RANGE", "IN_HOME_RANGE", "IN_PRIVATE_RANGE", "IGNORED_INDICATOR", "IGNORED_ASSET"]
-
-    # Priority 1: Check if ANY result has benign=True
-    for result in results_for_search_value:
-        benign_value = get_nested_value(result, "benign", "value")
-        if benign_value is True:
-            return 1  # Benign
-
-    # Priority 2: Check if ANY result has a benign entity type
-    for result in results_for_search_value:
-        entity_key = get_nested_value(result, "entity", "key")
-        if entity_key and entity_key in benign_entity_keys:
-            return 1  # Benign
-
-    # Priority 3: Find INDICATOR result and use risk score mapping
-    for result in results_for_search_value:
-        entity_key = get_nested_value(result, "entity", "key")
-        if entity_key == "INDICATOR":
-            risk_score = get_nested_value(result, "indicatorRiskScore", "title")
-            if risk_score:
-                mappings = get_risk_score_mappings(params)
-                return mappings.get(risk_score, 0)
-            else:
-                return 0  # Unknown - INDICATOR but no risk score
-
-    # Priority 4: No INDICATOR found, return Unknown
-    return 0  # Unknown
-
-
 def find_indicator_in_batch_results(results_for_search_value: list[dict], expected_type: str) -> dict | None:
     """
     Finds an INDICATOR entity in batch check results that matches the expected indicator type.
@@ -716,8 +669,6 @@ class Client(BaseClient):
     def post_evidence(
         self, fileName: str, fileContent: str, fileEntryId: str, evidenceFileClassification: str, tlp: str, sourceId: str
     ) -> dict:
-        # warRoomFileId: str, may want to be added in as a future capability
-        # but access from those files were inconsistent, so current scope is only content or file entry
         data_to_submit = {"evidenceFileClassification": evidenceFileClassification, "tlp": tlp, "sourceId": sourceId}
 
         evidence_to_submit = None
@@ -736,7 +687,7 @@ class Client(BaseClient):
                 raise DemistoException("Possibly invalid File.EntryID provided to submission: " + fileEntryId, vale)
 
         if evidence_to_submit is None:
-            raise DemistoException("either fileContent, fileEntryId, or warRoomFileId must be specified to submit Evidence")
+            raise DemistoException("either fileContent or fileEntryId must be specified to submit Evidence")
 
         x = requests.post(self._base_url + "evidence", files=evidence_to_submit, data=data_to_submit, auth=self._auth)
         if x is not None and x.status_code == 200:
@@ -825,11 +776,6 @@ class Client(BaseClient):
     def get_nested_data_key(data: dict, key: str, nested_key: str) -> Any | None:
         top_level = Client.get_data_key(data, key)
         return None if top_level is None or nested_key not in top_level else top_level[nested_key]
-
-    @staticmethod
-    def get_data_key_as_date(data: dict, key: str, fmt: str) -> str | None:
-        value = Client.get_data_key(data, key)
-        return None if value is None else datetime.fromtimestamp(value / 1000.0).strftime(fmt)
 
     @staticmethod
     def get_data_key_as_list(data: dict, key: str) -> list[Any]:
@@ -1198,8 +1144,6 @@ def analyst1_evidence_submit(client: Client, args: dict) -> CommandResults | Non
         argsToStr(args, "tlp"),
         argsToStr(args, "sourceId"),
     )
-    # args.get('warRoomFileId'), may be added back in at a future time
-    # for now it is left out on purpose
     command_results = CommandResults(outputs_prefix="Analyst1.EvidenceSubmit", outputs_key_field="uuid", outputs=raw_data)
     return_results(command_results)
     return command_results
