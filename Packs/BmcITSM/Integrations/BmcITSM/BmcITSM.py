@@ -1990,7 +1990,7 @@ def incident_update_command(client: Client, args: Dict[str, Any]) -> CommandResu
     last_name = args.get("last_name")
     service_type = args.get("service_type")
     reported_source = args.get("reported_source")
-    details = args.get("details")
+    details = args.get("detailed_description")
     company = args.get("location_company")
     assigned_support_organization = args.get("assigned_support_organization")
     assigned_support_company = args.get("assigned_support_company")
@@ -3892,6 +3892,7 @@ def main() -> None:
     credentials = params.get("credentials")
     username = credentials.get("identifier")  # type: ignore[union-attr]
     password = credentials.get("password")  # type: ignore[union-attr]
+    add_sensitive_log_strs(password)
 
     max_fetch = arg_to_number(params.get("max_fetch", DEFAULT_MAX_FETCH))
     first_fetch = params.get("first_fetch")
