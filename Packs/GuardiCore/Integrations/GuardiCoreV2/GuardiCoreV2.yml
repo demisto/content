@@ -107,6 +107,7 @@ configuration:
   name: incidentType
   type: 13
   required: false
+  section: Collect
 description: GuardiCore v2 Integration enables you to get information about incidents and endpoints (assets) via the GuardiCore API.
 display: GuardiCore v2
 fromversion: 6.0.0
