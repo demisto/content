@@ -1260,7 +1260,7 @@ class AzureClient:
         }
 
         if filter_param:
-            body["dataset"]["filter"] = filter_param # type: ignore[index]
+            body["dataset"]["filter"] = filter_param  # type: ignore[index]
 
         demisto.debug(f"Azure billing forecast \nrequest body: \n{body}")
         params_ = {"api-version": api_version}
