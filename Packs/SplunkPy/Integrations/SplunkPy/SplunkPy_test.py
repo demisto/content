@@ -3994,6 +3994,48 @@ def test_mirror_in_with_enrichment_enabled(mocker):
     assert all(actual_mirrored_notable_delta[k] == v for k, v in notable_delta.items())
 
 
+def test_format_splunk_note_for_xsoar_basic():
+    """
+    Given:
+        - A Splunk note with URL-encoded title and content.
+    When:
+        - Formatting the note for XSOAR.
+    Then:
+        - The title and content are URL-decoded and separated by a blank line, ending with a newline.
+    """
+    note = {"title": "My%20Title", "content": "Line%201%0ALine%202"}
+    expected = "My Title\n\nLine 1\nLine 2\n"
+    assert splunk.format_splunk_note_for_xsoar(note) == expected
+
+
+def test_format_splunk_note_for_xsoar_empty_content():
+    """
+    Given:
+        - A Splunk note with a URL-encoded title and empty content.
+    When:
+        - Formatting the note for XSOAR.
+    Then:
+        - The title is URL-decoded and followed by two newlines (current implementation behavior).
+    """
+    note = {"title": "Only%20Title", "content": ""}
+    expected = "Only Title\n\n"
+    assert splunk.format_splunk_note_for_xsoar(note) == expected
+
+
+def test_format_splunk_note_for_xsoar_missing_fields():
+    """
+    Given:
+        - A Splunk note missing both title and content.
+    When:
+        - Formatting the note for XSOAR.
+    Then:
+        - Returns two newlines as per current implementation.
+    """
+    note = {}
+    expected = "\n\n"
+    assert splunk.format_splunk_note_for_xsoar(note) == expected
+
+
 def test_user_mapping_used_cache(mocker):
     """
     Given:
@@ -4283,3 +4325,539 @@ def test_get_modified_remote_data_skips_cached_events(mocker):
     results = demisto.results.call_args[0][0]
     assert len(results) == 0
     assert extensive_log_mock.call_args_list[0].contains("mirror-in: no notables was changed since")
+
+
+# ============================================================================================
+# COMMENT HANDLING TESTS FOR get_modified_remote_data_command for supported Splunk ES versions
+# ============================================================================================
+
+
+def test_get_modified_remote_data_legacy_comment_mechanism(mocker):
+    """
+    Test the legacy comment mechanism for Splunk ES versions below 8.0.0.
+
+    Given:
+        - Splunk ES version is below 8.0.0
+        - A notable with comments in the 'comment' field from incident_review
+    When:
+        - get_modified_remote_data_command is called
+    Then:
+        - Comments are extracted from the 'comment' field in the notable data
+        - Comment entries are created with proper tags
+        - The notable search is performed to get full event details
+    """
+    from SplunkPy import get_modified_remote_data_command
+
+    test_id = "legacy_comment_test"
+    timestamp = "1737547610.49"
+    comment_text = "This is a legacy comment from Splunk"
+
+    func_call_kwargs = {
+        "args": {"lastUpdate": "2021-02-09T16:41:30.589575+02:00", "id": "id"},
+        "close_incident": False,
+        "close_end_statuses": False,
+        "close_extra_labels": ["Custom"],
+        "mapper": splunk.UserMappingObject(MagicMock(), False),
+        "comment_tag_from_splunk": "from_splunk",
+    }
+
+    # Mock incident_review response
+    incident_review_response = [
+        {
+            "rule_id": test_id,
+            "last_modified_timestamp": timestamp,
+            "event_id": test_id,
+            "comment": comment_text,
+        }
+    ]
+
+    # Mock notable search response with full event details
+    notable_search_response = [
+        {
+            "rule_id": test_id,
+            "event_id": test_id,
+            "comment": [comment_text, "Additional comment"],
+            "status": "new",
+        }
+    ]
+
+    # Mock Splunk ES version check to return False (legacy version)
+    mocker.patch("SplunkPy.is_splunk_es_version_or_higher", return_value=False)
+    mocker.patch("splunklib.results.JSONResultsReader", side_effect=[incident_review_response, notable_search_response])
+    mocker.patch("SplunkPy.get_integration_context", return_value={})
+    mocker.patch("SplunkPy.set_integration_context")
+    mocker.patch("SplunkPy.demisto.params", return_value={"timezone": "0"})
+    results_mock = mocker.patch("SplunkPy.demisto.results")
+
+    get_modified_remote_data_command(MagicMock(), **func_call_kwargs)
+
+    # Verify results structure
+    results = results_mock.call_args[0][0]
+    assert len(results) == 2  # 1 notable entry + 1 comment entry
+
+    # Verify notable entry
+    notable_entry = results[0]
+    assert notable_entry["EntryContext"]["mirrorRemoteId"] == test_id
+    assert notable_entry["Contents"]["rule_id"] == test_id
+
+    # Verify comment entry
+    comment_entry = results[1]
+    assert comment_entry["Type"] == 1  # EntryType.NOTE
+    assert comment_entry["Tags"] == ["from_splunk"]
+    assert comment_entry["Note"] is True
+    assert comment_entry["EntryContext"]["mirrorRemoteId"] == test_id
+
+    # Verify that all comments are stored under SplunkComments in the notable data
+    notable_data = notable_entry["Contents"]
+    assert "SplunkComments" in notable_data
+    assert isinstance(notable_data["SplunkComments"], list)
+    assert len(notable_data["SplunkComments"]) == 2  # Both comments from notable search
+
+    # Verify comment structure and content
+    splunk_comments = notable_data["SplunkComments"]
+    comment_texts = [comment["Comment"] for comment in splunk_comments]
+    assert comment_text in comment_texts
+    assert "Additional comment" in comment_texts
+
+    # Verify each comment has the correct structure
+    for comment in splunk_comments:
+        assert isinstance(comment, dict)
+        assert "Comment" in comment
+        assert isinstance(comment["Comment"], str)
+
+
+def test_get_modified_remote_data_new_comment_mechanism_es8(mocker):
+    """
+    Test the new comment mechanism for Splunk ES version 8.0.0 and above.
+
+    Given:
+        - Splunk ES version is 8.0.0 or higher
+        - A notable that was modified
+        - Comments are stored in mc_notes KV store
+    When:
+        - get_modified_remote_data_command is called
+    Then:
+        - Comments are fetched from mc_notes KV store via get_comments_data_new
+        - Comment entries are created with proper structure
+        - No additional notable search is performed
+    """
+    from SplunkPy import get_modified_remote_data_command
+
+    test_id = "new_comment_test"
+    timestamp = "1737547610.49"
+
+    func_call_kwargs = {
+        "args": {"lastUpdate": "2021-02-09T16:41:30.589575+02:00", "id": "id"},
+        "close_incident": False,
+        "close_end_statuses": False,
+        "close_extra_labels": ["Custom"],
+        "mapper": splunk.UserMappingObject(MagicMock(), False),
+        "comment_tag_from_splunk": "from_splunk",
+    }
+
+    # Mock incident_review response
+    incident_review_response = [
+        {
+            "rule_id": test_id,
+            "last_modified_timestamp": timestamp,
+            "event_id": test_id,
+        }
+    ]
+
+    # Mock KV store response with comments data
+    # Note: create_time needs to be greater than lastUpdate (1612874490.589575) to create entry
+    mock_comments_data = [
+        {
+            "notable_id": test_id,
+            "comment": "New comment from mc_notes",
+            "update_time": 1757409703.589575,  # Greater than lastUpdate
+            "create_time": 1757409703,  # Greater than lastUpdate
+        }
+    ]
+
+    # Mock Splunk ES version check to return True (ES 8.0+)
+    mocker.patch("SplunkPy.is_splunk_es_version_or_higher", return_value=True)
+    mocker.patch("splunklib.results.JSONResultsReader", return_value=incident_review_response)
+
+    # Mock KV store operations instead of get_comments_data_new
+    mock_service = MagicMock()
+    mock_kv_store = MagicMock()
+    mock_kv_store.data.query.return_value = mock_comments_data
+    mock_service.kvstore.__getitem__.return_value = mock_kv_store
+
+    # Mock the helper functions used by get_comments_data_new
+    mocker.patch("SplunkPy.get_comments_data_old", return_value=[])
+    mocker.patch("SplunkPy.format_splunk_note_for_xsoar", return_value="New comment from mc_notes")
+
+    mocker.patch("SplunkPy.get_integration_context", return_value={})
+    mocker.patch("SplunkPy.set_integration_context")
+    mocker.patch("SplunkPy.demisto.params", return_value={"timezone": "0"})
+    results_mock = mocker.patch("SplunkPy.demisto.results")
+
+    get_modified_remote_data_command(mock_service, **func_call_kwargs)
+
+    # Verify results structure
+    results = results_mock.call_args[0][0]
+    assert len(results) == 2  # 1 notable entry + 1 comment entry
+
+    # Verify notable entry
+    notable_entry = results[0]
+    assert notable_entry["EntryContext"]["mirrorRemoteId"] == test_id
+
+    # Verify comment entry from new mechanism
+    comment_entry = results[1]
+    assert comment_entry["Type"] == 1  # EntryType.NOTE
+    assert comment_entry["Tags"] == ["from_splunk"]
+    assert comment_entry["Contents"] == "New comment from mc_notes"
+    assert comment_entry["ContentsFormat"] == "markdown"  # Verify MD format
+
+
+def test_get_modified_remote_data_new_mechanism_with_multiple_comments(mocker):
+    """
+    Test the new comment mechanism handles multiple comments correctly.
+
+    Given:
+        - Splunk ES version is 8.0.0 or higher
+        - Multiple comments exist for a notable in mc_notes
+    When:
+        - get_modified_remote_data_command is called
+    Then:
+        - All comments are fetched and processed
+        - Multiple comment entries are created
+        - Comments are properly tagged and formatted
+    """
+    from SplunkPy import get_modified_remote_data_command
+
+    test_id = "multi_comment_test"
+    timestamp = "1737547610.49"
+
+    func_call_kwargs = {
+        "args": {"lastUpdate": "2021-02-09T16:41:30.589575+02:00", "id": "id"},
+        "close_incident": False,
+        "close_end_statuses": False,
+        "close_extra_labels": ["Custom"],
+        "mapper": splunk.UserMappingObject(MagicMock(), False),
+        "comment_tag_from_splunk": "from_splunk",
+    }
+
+    # Mock incident_review response
+    incident_review_response = [
+        {
+            "rule_id": test_id,
+            "last_modified_timestamp": timestamp,
+            "event_id": test_id,
+        }
+    ]
+
+    # Mock KV store response with multiple comments data
+    mock_comments_data = [
+        {
+            "notable_id": test_id,
+            "comment": "First comment from mc_notes",
+            "update_time": 1757409703.589575,
+            "create_time": 1757409703,
+        },
+        {
+            "notable_id": test_id,
+            "comment": "Second comment from mc_notes",
+            "update_time": 1757409704.589575,
+            "create_time": 1757409704,
+        },
+    ]
+
+    # Mock Splunk ES version check to return True (ES 8.0+)
+    mocker.patch("SplunkPy.is_splunk_es_version_or_higher", return_value=True)
+    mocker.patch("splunklib.results.JSONResultsReader", return_value=incident_review_response)
+
+    # Mock KV store operations
+    mock_service = MagicMock()
+    mock_kv_store = MagicMock()
+    mock_kv_store.data.query.return_value = mock_comments_data
+    mock_service.kvstore.__getitem__.return_value = mock_kv_store
+
+    # Mock the helper functions used by get_comments_data_new
+    mocker.patch("SplunkPy.get_comments_data_old", return_value=[])
+    mocker.patch("SplunkPy.format_splunk_note_for_xsoar", side_effect=lambda note: note["comment"])
+
+    mocker.patch("SplunkPy.get_integration_context", return_value={})
+    mocker.patch("SplunkPy.set_integration_context")
+    mocker.patch("SplunkPy.demisto.params", return_value={"timezone": "0"})
+    results_mock = mocker.patch("SplunkPy.demisto.results")
+
+    get_modified_remote_data_command(mock_service, **func_call_kwargs)
+
+    # Verify results structure
+    results = results_mock.call_args[0][0]
+    assert len(results) == 3  # 1 notable entry + 2 comment entries
+
+    # Verify notable entry
+    notable_entry = results[0]
+    assert notable_entry["EntryContext"]["mirrorRemoteId"] == test_id
+
+    # Verify both comment entries
+    comment_entries = results[1:]
+    assert len(comment_entries) == 2
+    for comment_entry in comment_entries:
+        assert comment_entry["Type"] == 1
+        assert comment_entry["Tags"] == ["from_splunk"]
+        assert comment_entry["ContentsFormat"] == "markdown"
+        assert "comment from mc_notes" in comment_entry["Contents"]
+
+
+def test_get_modified_remote_data_legacy_vs_new_mechanism_behavior(mocker):
+    """
+    Test that the correct comment mechanism is used based on Splunk ES version.
+
+    Given:
+        - Same notable data and test conditions
+    When:
+        - get_modified_remote_data_command is called with different ES versions
+    Then:
+        - Legacy mechanism (< 8.0.0) uses get_comments_data_old and notable search
+        - New mechanism (>= 8.0.0) uses get_comments_data_new and mc_notes
+    """
+    from SplunkPy import get_modified_remote_data_command
+
+    test_id = "version_comparison_test"
+    timestamp = "1737547610.49"
+
+    func_call_kwargs = {
+        "args": {"lastUpdate": "2021-02-09T16:41:30.589575+02:00", "id": "id"},
+        "close_incident": False,
+        "close_end_statuses": False,
+        "close_extra_labels": ["Custom"],
+        "mapper": splunk.UserMappingObject(MagicMock(), False),
+        "comment_tag_from_splunk": "from_splunk",
+    }
+
+    incident_review_response = [
+        {
+            "rule_id": test_id,
+            "last_modified_timestamp": timestamp,
+            "event_id": test_id,
+            "comment": "Legacy comment",
+        }
+    ]
+
+    notable_search_response = [
+        {
+            "rule_id": test_id,
+            "event_id": test_id,
+            "comment": "Legacy comment",
+        }
+    ]
+
+    # Test Legacy Mechanism (ES < 8.0.0)
+    mocker.patch("splunklib.results.JSONResultsReader", side_effect=[incident_review_response, notable_search_response])
+    mocker.patch("SplunkPy.get_integration_context", side_effect=[{}, {}])
+    mocker.patch("SplunkPy.set_integration_context")
+    mocker.patch("SplunkPy.demisto.params", return_value={"timezone": "0"})
+
+    mocker.patch("SplunkPy.is_splunk_es_version_or_higher", return_value=False)
+    get_comments_data_old_mock = mocker.patch("SplunkPy.get_comments_data_old", return_value=[])
+    get_comments_data_new_mock = mocker.patch("SplunkPy.get_comments_data_new", return_value=[])
+    results_mock = mocker.patch("SplunkPy.demisto.results")
+
+    mock_service_legacy = MagicMock()
+    get_modified_remote_data_command(mock_service_legacy, **func_call_kwargs)
+
+    # Verify legacy mechanism was used
+    get_comments_data_old_mock.assert_called_once()
+    get_comments_data_new_mock.assert_not_called()
+
+    # Reset mocks for new mechanism test
+    get_comments_data_old_mock.reset_mock()
+    get_comments_data_new_mock.reset_mock()
+    results_mock.reset_mock()
+
+    # Test New Mechanism (ES >= 8.0.0)
+    mocker.patch("SplunkPy.is_splunk_es_version_or_higher", return_value=True)
+    mocker.patch("splunklib.results.JSONResultsReader", return_value=incident_review_response)
+
+    mock_service_new = MagicMock()
+    get_modified_remote_data_command(mock_service_new, **func_call_kwargs)
+
+    # Verify new mechanism was used
+    get_comments_data_new_mock.assert_called_once()
+    get_comments_data_old_mock.assert_not_called()
+
+
+def test_fetch_notables_with_comments_es8_mechanism(mocker):
+    """
+    Test that fetch brings comments even when they're not part of the main fetch query results in ES 8.0+.
+
+    Given:
+        - Splunk ES version is 8.0.0 or higher
+        - Fetch operation is running
+        - Comments exist in mc_notes but not in the main notable search results
+    When:
+        - fetch_notables is called
+    Then:
+        - Comments are fetched via get_comments_data_new with is_fetch=True
+        - Comments are stored in the notable under 'comment' key for incident creation
+        - The fetch process includes comments even if they weren't in the original search
+    """
+    from SplunkPy import fetch_notables
+
+    test_id = "fetch_comment_test"
+
+    # Mock notable data without comments in the main search
+    notable_data = {
+        "rule_id": test_id,
+        "event_id": test_id,
+        "_time": "2021-02-09T16:41:30.589575+02:00",
+        "rule_name": "Test Rule",
+        "status": "new",
+    }
+
+    # Mock search results (no comments in main search)
+    search_results = [notable_data]
+
+    # Mock that ES version check returns True
+    mocker.patch("SplunkPy.is_splunk_es_version_or_higher", return_value=True)
+
+    # Mock the search execution
+    mocker.patch("splunklib.results.JSONResultsReader", return_value=search_results)
+
+    # Mock KV store operations for get_comments_data_new
+    mock_comments_data = [
+        {
+            "notable_id": test_id,
+            "comment": "Comment from fetch",
+            "update_time": 1757409703.589575,
+            "create_time": 1757409703,
+        }
+    ]
+
+    mock_kv_store = MagicMock()
+    mock_kv_store.data.query.return_value = mock_comments_data
+
+    # Mock helper functions
+    mocker.patch("SplunkPy.get_comments_data_old", return_value=[])
+    mocker.patch("SplunkPy.get_fetch_start_times", return_value=("", ""))
+    mocker.patch("SplunkPy.remove_irrelevant_incident_ids")
+    mocker.patch("SplunkPy.format_splunk_note_for_xsoar", return_value="Comment from fetch")
+
+    # Mock other dependencies
+    mocker.patch("SplunkPy.demisto.getLastRun", return_value={})
+    mocker.patch(
+        "SplunkPy.demisto.params",
+        return_value={
+            "timezone": "0",
+            "fetchQuery": "|`notable`",
+            "earliest_fetch_time_fieldname": "_time",
+            "latest_fetch_time_fieldname": "_time",
+        },
+    )
+    mocker.patch("SplunkPy.demisto.setLastRun")
+    mocker.patch("SplunkPy.demisto.incidents")
+    mocker.patch("SplunkPy.get_current_splunk_time", return_value="2021-02-09T17:41:30.589575+02:00")
+
+    # Create mock service and mapper
+    mock_service = MagicMock()
+    mock_service.jobs.oneshot.return_value = MagicMock()
+    mock_service.kvstore.__getitem__.return_value = mock_kv_store
+    mock_mapper = splunk.UserMappingObject(MagicMock(), False)
+
+    # Call fetch_notables
+    fetch_notables(
+        service=mock_service,
+        mapper=mock_mapper,
+        comment_tag_to_splunk="to_splunk",
+        comment_tag_from_splunk="from_splunk",
+    )
+
+    # Verify that KV store was accessed (indicating get_comments_data_new was called)
+    mock_service.kvstore.__getitem__.assert_called_with("mc_notes")
+
+
+def test_fetch_vs_mirror_comment_storage_difference(mocker):
+    """
+    Test that comments are stored differently in fetch vs mirror-in operations.
+
+    Given:
+        - Same notable and comment data
+        - ES version 8.0.0 or higher
+    When:
+        - get_comments_data_new is called with is_fetch=True vs is_fetch=False
+    Then:
+        - In fetch (is_fetch=True): comments stored under 'comment' key as list of strings
+        - In mirror-in (is_fetch=False): comments stored under 'SplunkComments' key as list of dicts
+    """
+    from SplunkPy import get_comments_data_new
+
+    test_id = "comment_storage_test"
+
+    # Mock notable map
+    id_to_notable_map = {
+        test_id: {
+            "rule_id": test_id,
+            "event_id": test_id,
+        }
+    }
+
+    # Mock KV store response with comments
+    mock_comments_data = [
+        {
+            "notable_id": test_id,
+            "comment": "First comment",
+            "update_time": 1612874490.589575,
+            "create_time": 1612874490,
+        },
+        {
+            "notable_id": test_id,
+            "comment": "Second comment",
+            "update_time": 1612874500.589575,
+            "create_time": 1612874500,
+        },
+    ]
+
+    # Mock service and KV store
+    mock_service = MagicMock()
+    mock_kv_store = MagicMock()
+    mock_kv_store.data.query.return_value = mock_comments_data
+    mock_service.kvstore.__getitem__.return_value = mock_kv_store
+
+    # Mock helper functions
+    mocker.patch("SplunkPy.get_comments_data_old", return_value=[])
+    mocker.patch("SplunkPy.format_splunk_note_for_xsoar", side_effect=lambda note: note["comment"])
+
+    # Test fetch mode (is_fetch=True)
+    fetch_notable_map = id_to_notable_map.copy()
+    get_comments_data_new(
+        service=mock_service,
+        id_to_notable_map=fetch_notable_map,
+        comment_tag_from_splunk="from_splunk",
+        last_update_splunk_timestamp=1612874430.589575,
+        is_fetch=True,
+    )
+
+    # Verify fetch storage format
+    assert "comment" in fetch_notable_map[test_id]
+    assert isinstance(fetch_notable_map[test_id]["comment"], list)
+    assert all(isinstance(comment, str) for comment in fetch_notable_map[test_id]["comment"])
+    assert "Second comment" in fetch_notable_map[test_id]["comment"]  # Most recent first
+    assert "First comment" in fetch_notable_map[test_id]["comment"]
+
+    # Test mirror-in mode (is_fetch=False)
+    mirror_notable_map = {
+        test_id: {
+            "rule_id": test_id,
+            "event_id": test_id,
+        }
+    }
+
+    get_comments_data_new(
+        service=mock_service,
+        id_to_notable_map=mirror_notable_map,
+        comment_tag_from_splunk="from_splunk",
+        last_update_splunk_timestamp=1612874430.589575,
+        is_fetch=False,
+    )
+
+    # Verify mirror-in storage format
+    assert "SplunkComments" in mirror_notable_map[test_id]
+    assert isinstance(mirror_notable_map[test_id]["SplunkComments"], list)
+    assert all(isinstance(comment, dict) and "Comment" in comment for comment in mirror_notable_map[test_id]["SplunkComments"])
+    assert mirror_notable_map[test_id]["SplunkComments"][0]["Comment"] == "Second comment"  # Most recent first
+    assert mirror_notable_map[test_id]["SplunkComments"][1]["Comment"] == "First comment"

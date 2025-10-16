@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "The DetectionSummaryEvent event type is deprecated as of September 30th, 2025. Use the EppDetectionSummaryEvent event type instead.\n\n**Changes Made:**\n- Updated the CrowdStrike Falcon Streaming - Classifier to support EppDetectionSummaryEvent event type\n- Deprecated DetectionSummaryEvent across the integration\n\n**Impact:** Users should update any custom configurations, playbooks, or scripts that reference DetectionSummaryEvent to use EppDetectionSummaryEvent instead."
+}

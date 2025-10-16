@@ -71,5 +71,3 @@ tests:
   - No tests (auto formatted)
 marketplaces:
   - platform
-supportedModules:
-  - agentix
