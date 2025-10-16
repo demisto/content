@@ -59,14 +59,6 @@ configuration:
   - Customer events
   - Audit Users
   section: Collect
-- defaultvalue: '2000'
-  section: Collect
-  display: Maximum number of customer events per fetch
-  name: max_customer_events_per_fetch
-  required: false
-  type: 0
-  hidden: true
-  additionalinfo: due to api limitation, max is 2000.
 - defaultvalue: '1250'
   section: Collect
   display: Maximum number of audit user events per fetch

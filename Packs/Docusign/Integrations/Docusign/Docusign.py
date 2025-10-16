@@ -22,11 +22,12 @@ USER_DATA_TYPE = "Audit Users"
 
 # yml default values
 DEFAULT_SERVER_DEV_URL = "https://account-d.docusign.com"
-MAX_CUSTOMER_EVENTS_PER_FETCH = 2000
 MAX_USER_DATA_PER_FETCH = 1250
 
 # API limits
 MAX_USER_DATA_PER_PAGE = 250
+# due to API limitation, max per fetch is 2000 and only single request is recommended per minute.
+MAX_CUSTOMER_EVENTS_PER_FETCH = 2000
 
 # scopes
 CUSTOMER_EVENTS_SCOPE = ["signature", "impersonation"]
@@ -241,10 +242,10 @@ class AuthClient(BaseClient):
 
         if not private_key_pem.strip().startswith(prefix):
             demisto.debug(f"{LOG_PREFIX}Private key must start with {prefix}")
-            raise DemistoException(f"{LOG_PREFIX}Private key must start with {prefix}")
+            raise DemistoException(f"Private key must start with {prefix}")
         if not private_key_pem.strip().endswith(suffix):
             demisto.debug(f"{LOG_PREFIX}Private key must end with {suffix}")
-            raise DemistoException(f"{LOG_PREFIX}Private key must end with {suffix}")
+            raise DemistoException(f"Private key must end with {suffix}")
 
         demisto.debug(f"{LOG_PREFIX}Private key before strip: {private_key_pem}")
         private_key_pem = private_key_pem.replace(prefix, "").replace(suffix, "")
@@ -294,7 +295,7 @@ class AuthClient(BaseClient):
 
         if not access_token or not expires_in_seconds:
             demisto.error(f"{LOG_PREFIX}: Token exchange failed, response missing access_token or expires_in\n{resp}")
-            raise DemistoException(f"{LOG_PREFIX}: Token exchange failed, response missing access_token or expires_in\n{resp}")
+            raise DemistoException(f"Token exchange failed, response missing access_token or expires_in\n{resp}")
 
         expired_at = (_utcnow() + dt.timedelta(seconds=expires_in_seconds)).strftime("%Y-%m-%dT%H:%M:%SZ")
         return access_token, expired_at, scope
@@ -344,7 +345,7 @@ class AuthClient(BaseClient):
                 return base_uri
 
         demisto.debug(f"{LOG_PREFIX}: /oauth/userinfo missing configuration account id: {account_id}.")
-        raise DemistoException(f"{LOG_PREFIX}: /oauth/userinfo missing configuration account id: {account_id}.")
+        raise DemistoException(f"/oauth/userinfo missing configuration account id: {account_id}.")
 
     def get_token(self, scopes: list[str]) -> tuple[str, str, str]:
         """Exchange JWT for access token using Docusign OAuth flow."""
@@ -468,7 +469,7 @@ def fetch_audit_user_data(last_run: dict, auth_client: AuthClient) -> tuple[dict
 
     except Exception as e:
         demisto.debug(f"{LOG_PREFIX}Exception during fetch audit users.\n{e!s}")
-        raise DemistoException(f"{LOG_PREFIX}Exception during fetch audit users.\n{e!s}")
+        raise DemistoException(f"Exception during fetch audit users.\n{e!s}")
 
     return last_run, users
 
@@ -618,7 +619,7 @@ def initiate_user_data_client() -> UserDataClient:
 
     if not account_id or not organization_id:
         demisto.debug(f"{LOG_PREFIX} initiate_user_data_client function: Account ID or Organization ID is missing.")
-        raise DemistoException(f"{LOG_PREFIX}. initiate_user_data_client function: Account ID or Organization ID is missing.")
+        raise DemistoException("initiate_user_data_client function: Account ID or Organization ID is missing.")
 
     return UserDataClient(account_id=account_id, organization_id=organization_id, env=env, proxy=proxy, verify=verify)
 
@@ -653,9 +654,7 @@ def initiate_auth_client() -> AuthClient:
 
     if not integration_key or not user_id or not private_key_pem:
         demisto.debug(f"{LOG_PREFIX}initiate_auth_client function: Integration Key, User ID  or  Private Key is missing.")
-        raise DemistoException(
-            f"{LOG_PREFIX}. initiate_auth_client function: Integration Key, User ID  or  Private Key is missing."
-        )
+        raise DemistoException("initiate_auth_client function: Integration Key, User ID  or  Private Key is missing.")
 
     auth = AuthClient(
         server_url=server_url,
@@ -669,8 +668,12 @@ def initiate_auth_client() -> AuthClient:
 
 
 def fetch_customer_events(last_run: dict, access_token: str) -> tuple[dict, list]:
-    params = demisto.params()
-    limit = min(MAX_CUSTOMER_EVENTS_PER_FETCH, int(params.get("max_customer_events_per_fetch", MAX_CUSTOMER_EVENTS_PER_FETCH)))
+    '''
+    Note to developer:
+    MAX_CUSTOMER_EVENTS_PER_FETCH is set to 2000 due to API limitation.
+    limit parameter is not behaving as expected on the API side - so configuration limit parameter is not supported at this point.
+    '''
+    limit = MAX_CUSTOMER_EVENTS_PER_FETCH
     try:
         demisto.debug(f"{LOG_PREFIX} last_run before fetching customer events: {last_run}")
         client = initiate_customer_events_client()
@@ -678,7 +681,7 @@ def fetch_customer_events(last_run: dict, access_token: str) -> tuple[dict, list
 
     except Exception as e:
         demisto.debug(f"{LOG_PREFIX}Exception during fetch customer events.\n{e!s}")
-        raise DemistoException(f"{LOG_PREFIX}Exception during fetch customer events.\n{e!s}")
+        raise DemistoException(f"Exception during fetch customer events.\n{e!s}")
 
     add_fields_to_customer_events(customer_events)
     return last_run, customer_events
@@ -820,10 +823,6 @@ def validate_configuration_params() -> str:
     # Validate parameters for fetching audit users events
     if USER_DATA_TYPE in selected_fetch_types and (not params.get("account_id") or not params.get("organization_id")):
         return f"Please provide Account ID and Organization ID for fetching {USER_DATA_TYPE}."
-
-    # Validate parameters for fetching customer events
-    if CUSTOMER_EVENTS_TYPE in selected_fetch_types and not params.get("url"):
-        return f"Please provide Server URL for fetching {CUSTOMER_EVENTS_TYPE}."
 
     return "ok"
 
