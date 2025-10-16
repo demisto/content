@@ -180,6 +180,7 @@ KEY_VAULT_API_VERSION = "2022-07-01"
 SQL_DB_API_VERSION = "2021-11-01"
 COSMOS_DB_API_VERSION = "2024-11-15"
 PERMISSIONS_VERSION = "2022-04-01"
+VM_API_VERSION = "2023-03-01"
 
 """ CLIENT CLASS """
 
@@ -1494,20 +1495,57 @@ class AzureClient:
                 resource_group_name=resource_group_name,
             )
 
-    def start_vm(self, resource_group, vm_name):
-        url_suffix = f"{resource_group}/providers/Microsoft.Compute/virtualMachines/{vm_name}/start"
-        return self.ms_client.http_request(method="POST", url_suffix=url_suffix, params=self.default_params, resp_type="response")
+    def start_vm_request(self, subscription_id: str, resource_group_name: str, vm_name: str):
+        full_url = (
+            f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Compute/virtualMachines/{vm_name}/start"
+        )
+        try:
+            return self.ms_client.http_request(method="POST", full_url=full_url, params={"api-version": VM_API_VERSION}, resp_type="response")
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=f"{resource_group_name}/{vm_name}",
+                resource_type="Virtual Machines",
+                api_function_name="start_vm_request",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name,
+            )
 
-    def poweroff_vm(self, resource_group, vm_name, skip_shutdown):
-        url_suffix = f"{resource_group}/providers/Microsoft.Compute/virtualMachines/{vm_name}/powerOff"
-        parameters = {"skipShutdown": skip_shutdown} | self.default_params
+    def poweroff_vm_request(self, subscription_id: str, resource_group_name: str, vm_name: str, skip_shutdown: str):
+        full_url = (
+            f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Compute/"
+            f"virtualMachines/{vm_name}/powerOff"
+        )
+        parameters = {"skipShutdown": skip_shutdown} | {"api-version": VM_API_VERSION}
+        try:
+            return self.ms_client.http_request(method="POST", full_url=full_url, params=parameters, resp_type="response")
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=f"{resource_group_name}/{vm_name}",
+                resource_type="Virtual Machines",
+                api_function_name="poweroff_vm_request",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name,
+            )
 
-        return self.ms_client.http_request(method="POST", url_suffix=url_suffix, params=parameters, resp_type="response")
-
-    def get_vm(self, resource_group, vm_name, expand="instanceView"):
-        url_suffix = f"{resource_group}/providers/Microsoft.Compute/virtualMachines/{vm_name}"
-        parameters = {"$expand": expand} | self.default_params
-        return self.ms_client.http_request(method="GET", url_suffix=url_suffix, params=parameters)
+    def get_vm_request(self, subscription_id: str, resource_group_name: str, vm_name: str, expand: str = "instanceView"):
+        full_url = (
+            f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Compute/"
+            f"virtualMachines/{vm_name}"
+        )
+        parameters = {"$expand": expand} | {"api-version": VM_API_VERSION}
+        try:
+            return self.ms_client.http_request(method="GET", full_url=full_url, params=parameters)
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=f"{resource_group_name}/{vm_name}",
+                resource_type="Virtual Machines",
+                api_function_name="get_vm_request",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name,
+            )
 
     def validate_provisioning_state(self, resource_group, vm_name):
         """
@@ -1523,7 +1561,7 @@ class AzureClient:
         returns:
             None
         """
-        response = self.get_vm(resource_group, vm_name)
+        response = self.get_vm_request(resource_group, vm_name)
         # Retrieve relevant properties for checking provisioning state and returning
         # informative error messages if necessary
 
@@ -1548,11 +1586,24 @@ class AzureClient:
             err_msg = PROVISIONING_STATE_TO_ERRORS.get(provisioning_state.lower())
             raise Exception(err_msg)
 
-    def get_network_interface(self, resource_group, interface_name):
-        url_suffix = f"{resource_group}/providers/Microsoft.Network/networkInterfaces/{interface_name}"
-        return self.ms_client.http_request(method="GET", url_suffix=url_suffix, params={"api-version": "2023-05-01"})
+    def get_network_interface_request(self, subscription_id: str, resource_group_name: str, interface_name: str):
+        full_url = (
+            f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Network/"
+            f"networkInterfaces/{interface_name}"
+        )
+        try:
+            return self.ms_client.http_request(method="GET", full_url=full_url, params={"api-version": "2023-05-01"})
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=f"{resource_group_name}/{interface_name}",
+                resource_type="Network Interfaces",
+                api_function_name="get_network_interface_request",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name,
+            )
 
-    def get_public_ip_details(self, resource_group, address_name):
+    def get_public_ip_details_request(self, subscription_id: str, resource_group_name: str, address_name: str):
         """
         Gets the specified public IP address in a specified resource group.
 
@@ -1562,10 +1613,23 @@ class AzureClient:
         Docs:
             https://learn.microsoft.com/en-us/rest/api/virtualnetwork/public-ip-addresses/get?view=rest-virtualnetwork-2024-10-01
         """
-        url_suffix = f"{resource_group}/providers/Microsoft.Network/publicIPAddresses/{address_name}"
-        return self.ms_client.http_request(method="GET", url_suffix=url_suffix, params={"api-version": "2023-05-01"})
+        full_url = (
+            f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Network/"
+            f"publicIPAddresses/{address_name}"
+        )
+        try:
+            return self.ms_client.http_request(method="GET", full_url=full_url, params={"api-version": "2023-05-01"})
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=f"{resource_group_name}/{address_name}",
+                resource_type="Public IP Addresses",
+                api_function_name="get_public_ip_details_request",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name,
+            )
 
-    def get_all_public_ip_details(self):
+    def get_all_public_ip_details_request(self, subscription_id: str):
         """
         List all public IPs belonging to your Azure subscription
 
@@ -1575,11 +1639,19 @@ class AzureClient:
         Docs:
             https://learn.microsoft.com/en-us/rest/api/virtualnetwork/public-ip-addresses/list-all?tabs=HTTP
         """
-        url_suffix = "/providers/Microsoft.Network/publicIPAddresses"
-        parameters = {"api-version": "2022-09-01"}
-        base_url = f"{PREFIX_URL_AZURE}/{self.subscription_id}"
-        self.ms_client._base_url = base_url
-        return self.ms_client.http_request(method="GET", url_suffix=url_suffix, params=parameters)
+        full_url = f"{PREFIX_URL_AZURE}{subscription_id}/providers/Microsoft.Network/publicIPAddresses"
+        try:
+            return self.ms_client.http_request(method="GET", full_url=full_url)
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=f"{subscription_id}",
+                resource_type="Public IP Addresses",
+                api_function_name="get_all_public_ip_details_request",
+                subscription_id=subscription_id,
+                resource_group_name=None,
+            )
+
 
 """ HELPER FUNCTIONS """
 
@@ -2894,7 +2966,7 @@ def start_vm_command(client: AzureClient, params: dict[str, Any], args: Dict[str
 
     client.validate_provisioning_state(resource_group, vm_name)
 
-    client.start_vm(resource_group, vm_name)
+    client.start_vm_request(resource_group, vm_name)
     vm_name = vm_name.lower()  # type: ignore
     vm = {"Name": vm_name, "ResourceGroup": resource_group, "PowerState": "VM starting"}
 
@@ -2914,7 +2986,7 @@ def poweroff_vm_command(client: AzureClient, params: dict[str, Any], args: Dict[
     # Raise an exception if the VM isn't in the proper provisioning state
     client.validate_provisioning_state(resource_group, vm_name)
 
-    client.poweroff_vm(resource_group, vm_name, skip_shutdown)
+    client.poweroff_vm_request(resource_group, vm_name, skip_shutdown)
 
     vm_name = vm_name.lower()  # type: ignore
     vm = {"Name": vm_name, "ResourceGroup": resource_group, "PowerState": "VM stopping"}
@@ -2931,7 +3003,7 @@ def get_vm_command(client: AzureClient, params: dict[str, Any], args: Dict[str, 
     resource_group = get_from_args_or_params(args=args, params=params, key="resource_group")
     vm_name = args.get("virtual_machine_name")
     expand = args.get("expand", "")
-    response = client.get_vm(resource_group, vm_name, expand)
+    response = client.get_vm_request(resource_group, vm_name, expand)
     # Retrieve relevant properties to return to context
     vm_name = vm_name.lower()  # type: ignore
     properties = response.get("properties")
@@ -2982,7 +3054,7 @@ def get_vm_command(client: AzureClient, params: dict[str, Any], args: Dict[str, 
 def get_network_interface_command(client: AzureClient, params: dict[str, Any], args: Dict[str, Any]):
     resource_group = get_from_args_or_params(args=args, params=params, key="resource_group")
     interface_name = args.get("nic_name")
-    response = client.get_network_interface(resource_group, interface_name)
+    response = client.get_network_interface_request(resource_group, interface_name)
     properties = response.get("properties")
 
     ip_configurations = properties.get("ipConfigurations", [])
@@ -3048,10 +3120,10 @@ def get_network_interface_command(client: AzureClient, params: dict[str, Any], a
 def get_public_ip_details_command(client: AzureClient, params: dict[str, Any], args: Dict[str, Any]):
     address_name = args.get("address_name")
     if resource_group := (args.get("resource_group") or params.get("resource_group")):
-        response = client.get_public_ip_details(resource_group, address_name)
+        response = client.get_public_ip_details_request(resource_group, address_name)
         address_id = response.get("id")
     else:
-        response_for_all_ips = client.get_all_public_ip_details().get("value")
+        response_for_all_ips = client.get_all_public_ip_details_request().get("value")
         response = get_single_ip_details_from_list_of_ip_details(response_for_all_ips, address_name)
         if not response:
             raise ValueError(
