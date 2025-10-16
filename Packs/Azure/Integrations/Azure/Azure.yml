@@ -2259,11 +2259,12 @@ script:
     arguments:
     - description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
       name: subscription_id
+      required: true
     - description: |
         Resource Group to which the virtual machine belongs.
         To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command. If none are present, navigate to the Azure Web Portal to create resource groups.
-        Note: This argument will override the instance parameter ‘Default Resource Group Name'.
       name: resource_group
+      required: true
     - description: Name of the virtual machine to power on. To see all virtual machines and their associated names for a specific resource group, run the `azure-vm-list-instances` command.
       name: virtual_machine_name
       required: true
@@ -2367,11 +2368,13 @@ script:
     arguments:
     - description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
       name: subscription_id
+      required: true
     - description: |
         The resource group to which the network interface belongs.
         To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command. If none are present, navigate to the Azure Web Portal to create resource groups.
         Note: This argument will override the instance parameter ‘Default Resource Group Name'.
       name: resource_group
+      required: true
     - description: The name of the network interface you want to view the details of.
       name: nic_name
       required: true
@@ -2420,11 +2423,13 @@ script:
     arguments:
     - description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
       name: subscription_id
+      required: true
     - description: |
         The resource group to which the IP address belongs.
         To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command. If none are present, navigate to the Azure Web Portal to create resource groups.
         Note: This argument will override the instance parameter ‘Default Resource Group Name'.
       name: resource_group
+      required: true
     - description: The IP address name.
       name: address_name
       required: true
