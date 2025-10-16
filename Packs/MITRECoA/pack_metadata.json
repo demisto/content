@@ -47,10 +47,6 @@
             "display_name": "Common Scripts",
             "mandatory": true
         },
-        "CortexXDR": {
-            "display_name": "Palo Alto Networks Cortex XDR - Investigation and Response",
-            "mandatory": false
-        },
         "FeedMitreAttack": {
             "display_name": "MITRE ATT&CK",
             "mandatory": false
