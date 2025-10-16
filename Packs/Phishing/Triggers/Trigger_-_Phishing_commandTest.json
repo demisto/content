@@ -1,6 +1,5 @@
 {
   "trigger_id": "quickActionCommand",
-  "playbook_id": "",
   "suggestion_reason": "Provides a comprehensive response to command quickActions.",
   "description": "This trigger is responsible for running the command quickActions Phishing - Generic v3 playbook on Phishing alerts.",
   "trigger_name": "Phishing Playbook command Trigger",
