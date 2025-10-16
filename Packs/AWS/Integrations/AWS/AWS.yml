@@ -2283,6 +2283,204 @@ script:
       - description: The type of hostname to assign to instances in the subnet at launch.
         name: private_dns_hostname_type_on_launch
 
+  - arguments:
+    - description: One or more filters Separated by ';'. See AWS documentation for details & filter options.
+      name: filters
+    - description: A comma-separated list of VPC IDs.
+      name: vpc_ids
+    - description: The AWS account ID.
+      name: account_id
+      required: true
+    - description: The AWS region.
+      name: region
+      required: true
+      auto: PREDEFINED
+      predefined:
+        - us-east-1
+        - us-east-2
+        - us-west-1
+        - us-west-2
+        - af-south-1
+        - ap-east-1
+        - ap-south-2
+        - ap-southeast-3
+        - ap-southeast-5
+        - ap-southeast-4
+        - ap-south-1
+        - ap-northeast-3
+        - ap-northeast-2
+        - ap-southeast-1
+        - ap-southeast-2
+        - ap-southeast-7
+        - ap-northeast-1
+        - ca-central-1
+        - ca-west-1
+        - eu-central-1
+        - eu-west-1
+        - eu-west-2
+        - eu-south-1
+        - eu-west-3
+        - eu-south-2
+        - eu-north-1
+        - eu-central-2
+        - il-central-1
+        - mx-central-1
+        - me-south-1
+        - me-central-1
+        - sa-east-1
+    description: Describes one or more of your VPCs.
+    name: aws-ec2-describe-vpcs
+    outputs:
+    - contextPath: AWS.EC2.Vpcs.CidrBlock
+      description: The primary IPv4 CIDR block for the VPC.
+      type: string
+    - contextPath: AWS.EC2.Vpcs.DhcpOptionsId
+      description: The ID of the set of DHCP options you have associated with the VPC.
+      type: string
+    - contextPath: AWS.EC2.Vpcs.State
+      description: The current state of the VPC.
+      type: string
+    - contextPath: AWS.EC2.Vpcs.VpcId
+      description: The ID of the VPC.
+      type: string
+    - contextPath: AWS.EC2.Vpcs.InstanceTenancy
+      description: The allowed tenancy of instances launched into the VPC.
+      type: string
+    - contextPath: AWS.EC2.Vpcs.IsDefault
+      description: Indicates whether the VPC is the default VPC.
+      type: string
+    - contextPath: AWS.EC2.Vpcs.Tags.Key
+      description: The key of the tag.
+      type: string
+    - contextPath: AWS.EC2.Vpcs.Tags.Value
+      description: The value of the tag.
+      type: string
+    - contextPath: AWS.EC2.Vpcs.Tags.Ipv6CidrBlockAssociationSet.AssociationId
+      description: The association ID for the IPv6 CIDR block.
+      type: string
+    - contextPath: AWS.EC2.Vpcs.Tags.Ipv6CidrBlockAssociationSet.Ipv6CidrBlock
+      description: The IPv6 CIDR block.
+      type: string
+    - contextPath: AWS.EC2.Vpcs.Tags.Ipv6CidrBlockAssociationSet.Ipv6CidrBlockState.State
+      description: The state of the CIDR block.
+      type: string
+    - contextPath: AWS.EC2.Vpcs.Tags.Ipv6CidrBlockAssociationSet.Ipv6CidrBlockState.StatusMessage
+      description: A message about the status of the CIDR block, if applicable.
+      type: string
+    - contextPath: AWS.EC2.Vpcs.Tags.CidrBlockAssociationSet.AssociationId
+      description: The association ID for the IPv4 CIDR block.
+      type: string
+    - contextPath: AWS.EC2.Vpcs.Tags.CidrBlockAssociationSet.CidrBlock
+      description: The IPv4 CIDR block.
+      type: string
+    - contextPath: AWS.EC2.Vpcs.Tags.CidrBlockAssociationSet.CidrBlockState.State
+      description: The state of the CIDR block.
+      type: string
+    - contextPath: AWS.EC2.Vpcs.Tags.CidrBlockAssociationSet.CidrBlockState.StatusMessage
+      description: A message about the status of the CIDR block, if applicable.
+      type: string
+    - contextPath: AWS.EC2.Vpcs.AccountId
+      description: The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided.
+      type: string
+
+  - arguments:
+    - description: One or more filters Separated by ';'. See AWS documentation for details & filter options.
+      name: filters
+    - description: A comma-separated list of subnet IDs.
+      name: subnet_ids
+    - description: The AWS account ID.
+      name: account_id
+      required: true
+    - description: The AWS region.
+      name: region
+      required: true
+      auto: PREDEFINED
+      predefined:
+        - us-east-1
+        - us-east-2
+        - us-west-1
+        - us-west-2
+        - af-south-1
+        - ap-east-1
+        - ap-south-2
+        - ap-southeast-3
+        - ap-southeast-5
+        - ap-southeast-4
+        - ap-south-1
+        - ap-northeast-3
+        - ap-northeast-2
+        - ap-southeast-1
+        - ap-southeast-2
+        - ap-southeast-7
+        - ap-northeast-1
+        - ca-central-1
+        - ca-west-1
+        - eu-central-1
+        - eu-west-1
+        - eu-west-2
+        - eu-south-1
+        - eu-west-3
+        - eu-south-2
+        - eu-north-1
+        - eu-central-2
+        - il-central-1
+        - mx-central-1
+        - me-south-1
+        - me-central-1
+        - sa-east-1
+    description: Describes one or more of your subnets.
+    name: aws-ec2-describe-subnets
+    outputs:
+    - contextPath: AWS.EC2.Subnets.AvailabilityZone
+      description: The Availability Zone of the subnet.
+      type: string
+    - contextPath: AWS.EC2.Subnets.AvailableIpAddressCount
+      description: The number of unused private IPv4 addresses in the subnet. Note that the IPv4 addresses for any stopped instances are considered unavailable.
+      type: number
+    - contextPath: AWS.EC2.Subnets.CidrBlock
+      description: The IPv4 CIDR block assigned to the subnet.
+      type: string
+    - contextPath: AWS.EC2.Subnets.DefaultForAz
+      description: Indicates whether this is the default subnet for the Availability Zone.
+      type: boolean
+    - contextPath: AWS.EC2.Subnets.MapPublicIpOnLaunch
+      description: Indicates whether instances launched in this subnet receive a public IPv4 address.
+      type: boolean
+    - contextPath: AWS.EC2.Subnets.State
+      description: The current state of the subnet.
+      type: string
+    - contextPath: AWS.EC2.Subnets.SubnetId
+      description: The ID of the subnet.
+      type: string
+    - contextPath: AWS.EC2.Subnets.VpcId
+      description: The ID of the VPC the subnet is in.
+      type: string
+    - contextPath: AWS.EC2.Subnets.AssignIpv6AddressOnCreation
+      description: Indicates whether a network interface created in this subnet (including a network interface created by RunInstances) receives an IPv6 address.
+      type: boolean
+    - contextPath: AWS.EC2.Subnets.Ipv6CidrBlockAssociationSet.AssociationId
+      description: The association ID for the CIDR block.
+      type: string
+    - contextPath: AWS.EC2.Subnets.Ipv6CidrBlockAssociationSet.Ipv6CidrBlock
+      description: The IPv6 CIDR block.
+      type: string
+    - contextPath: AWS.EC2.Subnets.Ipv6CidrBlockAssociationSet.Ipv6CidrBlockState.State
+      description: The state of a CIDR block.
+      type: string
+    - contextPath: AWS.EC2.Subnets.Ipv6CidrBlockAssociationSet.Ipv6CidrBlockState.StatusMessage
+      description: A message about the status of the CIDR block, if applicable.
+      type: string
+    - contextPath: AWS.EC2.Subnets.Tags.Key
+      description: The key of the tag.
+      type: string
+    - contextPath: AWS.EC2.Subnets.Tags.Value
+      description: The value of the tag.
+      type: string
+    - contextPath: AWS.EC2.Subnets.AccountId
+      description: The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided.
+      type: string
+
+
   - name: aws-cloudtrail-trail-update
     description: 'Updates trail settings that control what events you are logging, and how to handle log files. Changes to a trail do not require stopping the CloudTrail service. Use this action to designate an existing bucket for log delivery. If the existing bucket has previously been a target for CloudTrail log files, an IAM policy exists for the bucket. UpdateTrail must be called from the Region in which the trail was created; otherwise, an InvalidHomeRegionException is thrown.'
     arguments:
