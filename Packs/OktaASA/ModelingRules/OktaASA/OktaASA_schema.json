@@ -4,10 +4,6 @@
             "type": "string",
             "is_array": false
         },
-        "timestamp": {
-            "type": "datetime",
-            "is_array": false
-        },
         "details": {
             "type": "string",
             "is_array": false
@@ -25,10 +21,6 @@
             "is_array": false
         },
         "project": {
-            "type": "string",
-            "is_array": false
-        },
-        "group": {
             "type": "string",
             "is_array": false
         }
