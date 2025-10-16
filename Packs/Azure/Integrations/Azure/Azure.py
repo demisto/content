@@ -1260,7 +1260,7 @@ class AzureClient:
         }
 
         if filter_param:
-            body["dataset"]["filter"] = filter_param
+            body["dataset"]["filter"] = filter_param # type: ignore[index]
 
         demisto.debug(f"Azure billing forecast \nrequest body: \n{body}")
         params_ = {"api-version": api_version}
@@ -2151,14 +2151,16 @@ def azure_billing_usage_list_command(client: AzureClient, params: dict, args: di
     demisto.debug(f"Azure billing usage response - results count: {len(items)},\n nextLink: {bool(next_token)}")
     results = []
     for item in items:
+        start_date = item.get("properties", {}).get("billingPeriodStartDate")
+        end_date = item.get("properties", {}).get("billingPeriodEndDate")
         results.append(
             {
                 "Name": item.get("name"),
                 "Product": item.get("properties", {}).get("product"),
                 "PayGCostUSD": item.get("properties", {}).get("payGPrice"),
                 "UsageQuantity": item.get("properties", {}).get("quantity"),
-                "PeriodStartDate": item.get("properties", {}).get("billingPeriodStartDate"),
-                "PeriodEndDate": item.get("properties", {}).get("billingPeriodEndDate"),
+                "PeriodStartDate": datetime.strptime(start_date, "%Y-%m-%dT%H:%M:%S.%f0Z").strftime("%Y-%m-%d"),
+                "PeriodEndDate": datetime.strptime(end_date, "%Y-%m-%dT%H:%M:%S.%f0Z").strftime("%Y-%m-%d"),
             }
         )
     outputs = {"Azure.Billing.Usage": items}

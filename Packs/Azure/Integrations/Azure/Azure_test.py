@@ -2056,8 +2056,8 @@ def test_azure_billing_usage_list_command_success(mocker, client, mock_params):
                     "meterName": "D2s v3",
                     "paygCost": {"amount": 125.75},
                     "quantity": 24.5,
-                    "usageStart": "2023-10-01T00:00:00Z",
-                    "usageEnd": "2023-10-01T23:59:59Z",
+                    "billingPeriodStartDate": "2025-10-01T00:00:00.0000000Z",
+                    "billingPeriodEndDate": "2025-10-01T23:59:59.0000000Z",
                 },
             }
         ],
@@ -2231,8 +2231,8 @@ def test_azure_billing_usage_list_command_no_next_token(mocker, client, mock_par
                     "product": "Storage",
                     "paygCost": {"amount": 15.25},
                     "quantity": 100.0,
-                    "usageStart": "2023-10-02T00:00:00Z",
-                    "usageEnd": "2023-10-02T23:59:59Z",
+                    "billingPeriodStartDate": "2025-10-01T00:00:00.0000000Z",
+                    "billingPeriodEndDate": "2025-10-02T23:59:59.0000000Z",
                 },
             }
         ]
@@ -2266,8 +2266,8 @@ def test_azure_billing_usage_list_command_with_pagination_token(mocker, client, 
                     "product": "Networking",
                     "paygCost": {"amount": 5.50},
                     "quantity": 10.0,
-                    "usageStart": "2023-10-03T00:00:00Z",
-                    "usageEnd": "2023-10-03T23:59:59Z",
+                    "billingPeriodStartDate": "2025-10-04T00:00:00.0000000Z",
+                    "billingPeriodEndDate": "2025-10-04T23:59:59.0000000Z",
                 },
             }
         ]
