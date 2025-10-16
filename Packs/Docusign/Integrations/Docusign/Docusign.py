@@ -437,7 +437,7 @@ def get_remaining_user_data(last_run: dict, client: UserDataClient, access_token
         raise DemistoException(f"Exception during get remaining audit users. Exception is {e!s}")
 
 
-def fetch_audit_user_data(last_run: dict, auth_client: AuthClient) -> tuple[dict, list]:
+def fetch_audit_user_data(last_run: dict, auth_client: AuthClient, test_mode: bool = False) -> tuple[dict, list]:
     params = demisto.params()
     limit = min(MAX_USER_DATA_PER_FETCH, int(params.get("max_user_events_per_fetch", MAX_USER_DATA_PER_FETCH)))
     users_per_page = min(MAX_USER_DATA_PER_PAGE, limit)
@@ -457,15 +457,16 @@ def fetch_audit_user_data(last_run: dict, auth_client: AuthClient) -> tuple[dict
         fetched_users, last_run = get_user_data(last_run, limit, users_per_page, user_data_client, access_token)
         users.extend(fetched_users)
         # ---------- STEP 2: Fetch user details ----------
-        base_uri = auth_client.get_base_uri(access_token, user_data_client.account_id)
+        if not test_mode:
+            base_uri = auth_client.get_base_uri(access_token, user_data_client.account_id)
 
-        latest_modified_dt = last_run.get("latest_modifiedDate")
-        latest_modified_dt = datetime.strptime(latest_modified_dt, "%Y-%m-%dT%H:%M:%SZ") if latest_modified_dt else None
+            latest_modified_dt = last_run.get("latest_modifiedDate")
+            latest_modified_dt = datetime.strptime(latest_modified_dt, "%Y-%m-%dT%H:%M:%SZ") if latest_modified_dt else None
 
-        users, latest_modified = get_user_details(users, base_uri, access_token, user_data_client, latest_modified_dt)
+            users, latest_modified = get_user_details(users, base_uri, access_token, user_data_client, latest_modified_dt)
 
-        # Persist the latest modifiedDate users for next fetch
-        last_run["latest_modifiedDate"] = latest_modified
+            # Persist the latest modifiedDate users for next fetch
+            last_run["latest_modifiedDate"] = latest_modified
 
     except Exception as e:
         demisto.debug(f"{LOG_PREFIX}Exception during fetch audit users.\n{e!s}")
