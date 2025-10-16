@@ -2960,13 +2960,15 @@ def remove_member_from_group_command(client: AzureClient, args: dict) -> Command
     human_readable = f'User {user_id} was removed from the Group "{group_id}" successfully.'
     return CommandResults(readable_output=human_readable)
 
+
 def start_vm_command(client: AzureClient, params: dict[str, Any], args: Dict[str, Any]):
+    subscription_id = get_from_args_or_params(args=args, params=params, key="subscription_id")
     resource_group = get_from_args_or_params(args=args, params=params, key="resource_group")
     vm_name = args.get("virtual_machine_name")
 
     client.validate_provisioning_state(resource_group, vm_name)
 
-    client.start_vm_request(resource_group, vm_name)
+    client.start_vm_request(subscription_id, resource_group, vm_name)
     vm_name = vm_name.lower()  # type: ignore
     vm = {"Name": vm_name, "ResourceGroup": resource_group, "PowerState": "VM starting"}
 
@@ -2974,11 +2976,16 @@ def start_vm_command(client: AzureClient, params: dict[str, Any], args: Dict[str
     human_readable = tableToMarkdown(title, vm, removeNull=True)
 
     return CommandResults(
-        outputs_prefix="Azure.Compute", outputs_key_field="Name", outputs=vm, readable_output=human_readable, raw_response=vm
+        outputs_prefix="Azure.Compute",
+        outputs_key_field="Name",
+        outputs=vm,
+        readable_output=human_readable,
+        raw_response=vm
     )
 
 
 def poweroff_vm_command(client: AzureClient, params: dict[str, Any], args: Dict[str, Any]):
+    subscription_id = get_from_args_or_params(args=args, params=params, key="subscription_id")
     resource_group = get_from_args_or_params(args=args, params=params, key="resource_group")
     vm_name = args.get("virtual_machine_name")
     skip_shutdown = argToBoolean(args.get("skip_shutdown", False))
@@ -2986,38 +2993,35 @@ def poweroff_vm_command(client: AzureClient, params: dict[str, Any], args: Dict[
     # Raise an exception if the VM isn't in the proper provisioning state
     client.validate_provisioning_state(resource_group, vm_name)
 
-    client.poweroff_vm_request(resource_group, vm_name, skip_shutdown)
+    client.poweroff_vm_request(subscription_id, resource_group, vm_name, str(skip_shutdown))
 
     vm_name = vm_name.lower()  # type: ignore
     vm = {"Name": vm_name, "ResourceGroup": resource_group, "PowerState": "VM stopping"}
 
     title = f'Power-off of Virtual Machine "{vm_name}" Successfully Initiated'
-    human_readable = tableToMarkdown(title, vm, removeNull=True)
+    human_readable = tableToMarkdown(name=title, t=vm, removeNull=True)
 
     return CommandResults(
-        outputs_prefix="Azure.Compute", outputs_key_field="Name", outputs=vm, readable_output=human_readable, raw_response=vm
+        outputs_prefix="Azure.Compute",
+        outputs_key_field="Name",
+        outputs=vm,
+        readable_output=human_readable,
+        raw_response=vm
     )
 
 
 def get_vm_command(client: AzureClient, params: dict[str, Any], args: Dict[str, Any]):
+    subscription_id = get_from_args_or_params(args=args, params=params, key="subscription_id")
     resource_group = get_from_args_or_params(args=args, params=params, key="resource_group")
     vm_name = args.get("virtual_machine_name")
-    expand = args.get("expand", "")
-    response = client.get_vm_request(resource_group, vm_name, expand)
-    # Retrieve relevant properties to return to context
-    vm_name = vm_name.lower()  # type: ignore
+
+    response = client.get_vm_request(subscription_id, resource_group, vm_name, expand=args.get("expand", ""))
+
     properties = response.get("properties")
-    os_disk = properties.get("storageProfile", {}).get("osDisk")
-    datadisk = os_disk.get("diskSizeGB", "NA")
-    vm_id = properties.get("vmId")
-    os_type = os_disk.get("osType")
-    provisioning_state = properties.get("provisioningState")
-    location = response.get("location")
-    user_data = properties.get("userData")
-    tags = response.get("tags")
-    network_interfaces = properties.get("networkProfile", {}).get("networkInterfaces")
+    os_disk = properties.get("storageProfile", {}).get("osDisk", {})
     statuses = properties.get("instanceView", {}).get("statuses", [])
     power_state = None
+
     for status in statuses:
         status_code = status.get("code")
         status_code_prefix = status_code[: status_code.find("/")]
@@ -3025,17 +3029,17 @@ def get_vm_command(client: AzureClient, params: dict[str, Any], args: Dict[str, 
             power_state = status.get("displayStatus")
 
     vm = {
-        "Name": vm_name,
-        "ID": vm_id,
-        "Size": datadisk,
-        "OS": os_type,
-        "ProvisioningState": provisioning_state,
-        "Location": location,
+        "Name": vm_name.lower(),  # type: ignore
+        "ID": properties.get("vmId"),
+        "Size": os_disk.get("diskSizeGB", "NA"),
+        "OS": os_disk.get("osType"),
+        "ProvisioningState": properties.get("provisioningState"),
+        "Location": response.get("location"),
         "PowerState": power_state,
         "ResourceGroup": resource_group,
-        "NetworkInterfaces": network_interfaces,
-        "UserData": user_data,
-        "Tags": tags,
+        "NetworkInterfaces": properties.get("networkProfile", {}).get("networkInterfaces"),
+        "UserData": properties.get("userData"),
+        "Tags": response.get("tags"),
     }
 
     title = f'Properties of VM "{vm_name}"'
@@ -3052,9 +3056,10 @@ def get_vm_command(client: AzureClient, params: dict[str, Any], args: Dict[str, 
 
 
 def get_network_interface_command(client: AzureClient, params: dict[str, Any], args: Dict[str, Any]):
+    subscription_id = get_from_args_or_params(args=args, params=params, key="subscription_id")
     resource_group = get_from_args_or_params(args=args, params=params, key="resource_group")
     interface_name = args.get("nic_name")
-    response = client.get_network_interface_request(resource_group, interface_name)
+    response = client.get_network_interface_request(subscription_id, resource_group, interface_name)
     properties = response.get("properties")
 
     ip_configurations = properties.get("ipConfigurations", [])
@@ -3118,9 +3123,10 @@ def get_network_interface_command(client: AzureClient, params: dict[str, Any], a
 
 
 def get_public_ip_details_command(client: AzureClient, params: dict[str, Any], args: Dict[str, Any]):
+    subscription_id = get_from_args_or_params(args=args, params=params, key="subscription_id")
     address_name = args.get("address_name")
     if resource_group := (args.get("resource_group") or params.get("resource_group")):
-        response = client.get_public_ip_details_request(resource_group, address_name)
+        response = client.get_public_ip_details_request(subscription_id, resource_group, address_name)
         address_id = response.get("id")
     else:
         response_for_all_ips = client.get_all_public_ip_details_request().get("value")
