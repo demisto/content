@@ -21,7 +21,7 @@ CUSTOMER_EVENTS_TYPE = "Customer events"
 USER_DATA_TYPE = "Audit Users"
 
 # yml default values
-DEFAULT_SERVER_DEV_URL = "https://account-d.docusign.com"
+DEFAULT_SERVER_DEV_URL = "https://account.docusign.com"
 MAX_USER_DATA_PER_FETCH = 1250
 
 # API limits
