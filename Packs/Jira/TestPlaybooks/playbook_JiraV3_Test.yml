@@ -3,8 +3,7 @@ version: 63
 vcShouldKeepItemLegacyProdMachine: false
 name: JiraV3 Test
 fromversion: 6.8.0
-description: This test playbook is used to test both Cloud, and on-prem instances
-  (currently we don't have a functioning on-prem instance)
+description: This test playbook is used to test both Cloud, and on-prem instances (currently we don't have a functioning on-prem instance)
 starttaskid: "0"
 tasks:
   "0":
@@ -245,8 +244,7 @@ tasks:
       id: 6de07fb7-b0ff-44e2-806c-c78dcfebf590
       version: -1
       name: Delete Second Issue
-      description: Deletes an issue in Jira. Issue's sub-tasks will also be deleted
-        if there are any.
+      description: Deletes an issue in Jira. Issue's sub-tasks will also be deleted if there are any.
       script: Jira V3|||jira-delete-issue
       type: regular
       iscommand: true
@@ -819,8 +817,7 @@ tasks:
       id: 5790d96a-ed7c-4165-8066-3686103bf1b1
       version: -1
       name: Delete First Issue
-      description: Deletes an issue in Jira. Issue's sub-tasks will also be deleted
-        if there are any.
+      description: Deletes an issue in Jira. Issue's sub-tasks will also be deleted if there are any.
       script: Jira V3|||jira-delete-issue
       type: regular
       iscommand: true
@@ -1064,8 +1061,7 @@ tasks:
       id: 2825adca-a8d0-4a2c-8e68-e0c5683e8432
       version: -1
       name: Get Issue Attachment
-      description: Download attachments for a specific issue (Will download a file
-        to war room).
+      description: Download attachments for a specific issue (Will download a file to war room).
       script: Jira V3|||jira-issue-get-attachment
       type: regular
       iscommand: true
@@ -1509,9 +1505,7 @@ tasks:
       id: bc77d6d4-da50-41d1-8d57-57815da25f8e
       version: -1
       name: Boards List
-      description: Get board data. If board_id is given, then only the board that
-        corresponds to the board_id is returned, otherwise, the the command will return
-        boards that match the project_key_id, type, or board_name arguments.
+      description: Get board data. If board_id is given, then only the board that corresponds to the board_id is returned, otherwise, the the command will return boards that match the project_key_id, type, or board_name arguments.
       script: Jira V3|||jira-board-list
       type: regular
       iscommand: true
@@ -1586,8 +1580,7 @@ tasks:
       id: e35276e7-a119-4dc3-80d9-5fafcdc3a5b7
       version: -1
       name: Backlog Issues of Board
-      description: Get issues from backlog of specific board. For Jira OnPrem, the
-        board must be of type scrum.
+      description: Get issues from backlog of specific board. For Jira OnPrem, the board must be of type scrum.
       script: Jira V3|||jira-board-backlog-list
       type: regular
       iscommand: true
@@ -1702,8 +1695,7 @@ tasks:
       id: af713e85-f257-4702-8fb1-084f0813e202
       version: -1
       name: Issues to Sprints
-      description: Moves issues to a sprint, for a given sprint ID. Issues can only
-        be moved to open or active sprints. At most 50 issues may be moved at once.
+      description: Moves issues to a sprint, for a given sprint ID. Issues can only be moved to open or active sprints. At most 50 issues may be moved at once.
       script: Jira V3|||jira-sprint-issue-move
       type: regular
       iscommand: true
@@ -1740,9 +1732,7 @@ tasks:
       id: fc07e746-c07b-4491-8372-96f6630fcb9a
       version: -1
       name: Move Issues to Board
-      description: Moves issues from backlog to board, the command does not work with
-        boards with sprints. At most 50 issues may be moved at once. This command
-        is only supported for Jira Cloud instance.
+      description: Moves issues from backlog to board, the command does not work with boards with sprints. At most 50 issues may be moved at once. This command is only supported for Jira Cloud instance.
       script: Jira V3|||jira-issue-to-board
       type: regular
       iscommand: true
@@ -1779,9 +1769,7 @@ tasks:
       id: 3259e700-c292-4e23-8119-ac8bc32b3b1f
       version: -1
       name: Move Issues to Backlog
-      description: Moves issues to backlog. If the issues supplied are NOT part of
-        a board that supports sprints, then the board_id argument is required. At
-        most 50 issues may be moved at once.
+      description: Moves issues to backlog. If the issues supplied are NOT part of a board that supports sprints, then the board_id argument is required. At most 50 issues may be moved at once.
       script: Jira V3|||jira-issue-to-backlog
       type: regular
       iscommand: true
@@ -1819,9 +1807,7 @@ tasks:
       id: e2762e43-7199-479f-88d6-cb06c8b8f76d
       version: -1
       name: Move Issues to Backlog
-      description: Moves issues to backlog. If the issues supplied are NOT part of
-        a board that supports sprints, then the board_id argument is required. At
-        most 50 issues may be moved at once.
+      description: Moves issues to backlog. If the issues supplied are NOT part of a board that supports sprints, then the board_id argument is required. At most 50 issues may be moved at once.
       script: Jira V3|||jira-issue-to-backlog
       type: regular
       iscommand: true
@@ -2375,3 +2361,6 @@ view: |-
 inputs: []
 outputs: []
 quiet: true
+supportedModules:
+- xsiam
+- agentix

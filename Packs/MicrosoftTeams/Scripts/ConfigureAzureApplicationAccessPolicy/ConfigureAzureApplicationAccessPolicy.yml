@@ -32,9 +32,3 @@ dockerimage: demisto/powershell-teams:1.0.0.116826
 fromversion: 5.5.0
 tests:
 - No test
-supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
-- agentix

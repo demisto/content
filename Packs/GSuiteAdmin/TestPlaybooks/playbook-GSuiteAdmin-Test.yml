@@ -615,8 +615,7 @@ tasks:
       id: cfc38b87-627f-4f3e-8c26-6b42697fa918
       version: -1
       name: gsuite-user-reset-password
-      description: Indicates if the user is forced to change their password at next
-        login.
+      description: Indicates if the user is forced to change their password at next login.
       script: '|||gsuite-user-reset-password'
       type: regular
       iscommand: true
@@ -746,3 +745,6 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.0.0
+supportedModules:
+- xsiam
+- agentix

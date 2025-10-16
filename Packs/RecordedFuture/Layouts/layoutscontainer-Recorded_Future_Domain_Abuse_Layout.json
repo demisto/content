@@ -422,7 +422,7 @@
                                     "entryIDs": {
                                         "simple": "${File.EntryID}"
                                     }
-                                },   
+                                },
                                 "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "",
@@ -505,5 +505,7 @@
         ]
     },
     "fromVersion": "6.0.0",
-    "marketplaces": ["xsoar"]
+    "marketplaces": [
+        "xsoar"
+    ]
 }

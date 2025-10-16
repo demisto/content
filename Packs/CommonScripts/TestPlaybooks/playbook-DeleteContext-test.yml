@@ -779,8 +779,7 @@ tasks:
       id: 82947d8f-ec1b-47da-86e5-476140294fea
       version: -1
       name: Add DBotScore To Context
-      description: Add DBot score to context for indicators with custom vendor, score,
-        reliability, and type.
+      description: Add DBot score to context for indicators with custom vendor, score, reliability, and type.
       scriptName: AddDBotScoreToContext
       type: regular
       iscommand: false
@@ -958,3 +957,6 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.0.0
+supportedModules:
+- xsiam
+- agentix

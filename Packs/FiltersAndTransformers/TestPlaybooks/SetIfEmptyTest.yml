@@ -929,3 +929,6 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 6.9.0
+supportedModules:
+- xsiam
+- agentix

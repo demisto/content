@@ -92,8 +92,7 @@ tasks:
       id: 3b57f8af-4f25-4bd0-89b7-d1cc302b42ba
       version: -1
       name: Validate Search Action Context Output
-      description: Check whether the values provided in arguments are equal. If either
-        of the arguments are missing, no is returned.
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
       type: condition
       iscommand: false
       brand: ""
@@ -205,3 +204,6 @@ inputs: []
 outputs: []
 fromversion: 5.5.0
 description: This playbook tests the context output of the Search Action Results output.
+supportedModules:
+- xsiam
+- agentix

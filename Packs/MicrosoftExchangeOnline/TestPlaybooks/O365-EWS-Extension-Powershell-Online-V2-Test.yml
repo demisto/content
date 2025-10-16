@@ -39,8 +39,7 @@ tasks:
       id: 3d1cdc29-3f96-4d05-8bef-8d40ff9a89e3
       version: -1
       name: ews-mailbox-list
-      description: Use the ews-mailbox-list command to view mailbox objects and attributes,
-        populate property pages, or supply mailbox information to other tasks.
+      description: Use the ews-mailbox-list command to view mailbox objects and attributes, populate property pages, or supply mailbox information to other tasks.
       script: EWS Extension Online Powershell v2|||ews-mailbox-list
       type: regular
       iscommand: true
@@ -77,8 +76,7 @@ tasks:
       id: 9d68eff6-03dc-4fa2-8a3e-ac8b7b8956fd
       version: -1
       name: ews-cas-mailbox-list
-      description: Use the ews-cas-mailbox-list command to view Client Access settings
-        that are configured on mailboxes.
+      description: Use the ews-cas-mailbox-list command to view Client Access settings that are configured on mailboxes.
       script: EWS Extension Online Powershell v2|||ews-cas-mailbox-list
       type: regular
       iscommand: true
@@ -149,9 +147,7 @@ tasks:
       id: 143328ae-b0fe-40b0-82e2-c4497b999c24
       version: -1
       name: ews-recipient-list
-      description: View existing recipient objects in your organization. This command
-        returns all mail-enabled objects (for example, mailboxes, mail users, mail
-        contacts, and distribution groups).
+      description: View existing recipient objects in your organization. This command returns all mail-enabled objects (for example, mailboxes, mail users, mail contacts, and distribution groups).
       script: EWS Extension Online Powershell v2|||ews-recipient-list
       type: regular
       iscommand: true
@@ -405,3 +401,6 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.5.0
+supportedModules:
+- xsiam
+- agentix

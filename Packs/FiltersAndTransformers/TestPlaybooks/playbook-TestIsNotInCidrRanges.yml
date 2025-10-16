@@ -315,3 +315,6 @@ outputs: []
 fromversion: 6.9.0
 sourceplaybookid: TestIsNotInCidrRanges
 description: ''
+supportedModules:
+- xsiam
+- agentix

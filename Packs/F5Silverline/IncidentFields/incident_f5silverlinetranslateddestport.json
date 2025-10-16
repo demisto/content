@@ -28,6 +28,6 @@
     "threshold": 72,
     "fromVersion": "6.0.0",
     "marketplaces": [
-       "xsoar"
+        "xsoar"
     ]
 }

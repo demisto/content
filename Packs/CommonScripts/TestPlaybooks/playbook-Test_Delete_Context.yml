@@ -1223,8 +1223,7 @@ tasks:
       key:
         simple: Bug
       value:
-        simple: '[{"hello": "world", "name": "john"}, {"hello": "kitty", "name": "john
-          b"}]'
+        simple: '[{"hello": "world", "name": "john"}, {"hello": "kitty", "name": "john b"}]'
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1548,8 +1547,7 @@ tasks:
       key:
         simple: Case2
       value:
-        simple: '[{"hello": "world", "name": "john"}, {"hello": "kitty", "name": "john
-          b"}]'
+        simple: '[{"hello": "world", "name": "john"}, {"hello": "kitty", "name": "john b"}]'
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1730,3 +1728,6 @@ view: |-
 inputs: []
 outputs: []
 dirtyInputs: true
+supportedModules:
+- xsiam
+- agentix

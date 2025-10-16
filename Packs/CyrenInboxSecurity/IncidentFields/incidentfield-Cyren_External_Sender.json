@@ -1,9 +1,9 @@
 {
-	"associatedTypes": [
-		"Cyren Inbox Security"
-	],
-	"systemAssociatedTypes": null,
-	"associatedToAll": false,
+    "associatedTypes": [
+        "Cyren Inbox Security"
+    ],
+    "systemAssociatedTypes": null,
+    "associatedToAll": false,
     "caseInsensitive": true,
     "cliName": "cyrenexternalsender",
     "closeForm": false,

@@ -39,9 +39,7 @@ tasks:
       id: afce03dd-087a-41f0-8f47-d0b2179cfaf1
       version: -1
       name: Run CreateCertificate
-      description: Creates a public key (.cer file), a private key (.pfx) file, and
-        a Base64 encoded private key to use to authenticate the EWS Extension Online
-        Powershell v2 integration.
+      description: Creates a public key (.cer file), a private key (.pfx) file, and a Base64 encoded private key to use to authenticate the EWS Extension Online Powershell v2 integration.
       scriptName: CreateCertificate
       type: regular
       iscommand: false
@@ -205,3 +203,6 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.5.0
+supportedModules:
+- xsiam
+- agentix

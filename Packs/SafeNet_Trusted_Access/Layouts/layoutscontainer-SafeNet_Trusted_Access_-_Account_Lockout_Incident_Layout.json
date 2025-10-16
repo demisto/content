@@ -1088,8 +1088,8 @@
         ]
     },
     "group": "incident",
-    "id": "SafeNet Trusted Access – Account Lockout Incident Layout",
-    "name": "SafeNet Trusted Access – Account Lockout Incident Layout",
+    "id": "SafeNet Trusted Access \u2013 Account Lockout Incident Layout",
+    "name": "SafeNet Trusted Access \u2013 Account Lockout Incident Layout",
     "quickView": {
         "sections": [
             {
@@ -1613,5 +1613,7 @@
     "system": false,
     "version": -1,
     "fromVersion": "6.0.0",
-    "marketplaces": ["xsoar"]
+    "marketplaces": [
+        "xsoar"
+    ]
 }

@@ -75,8 +75,7 @@ tasks:
       id: d4801f74-d305-4d7b-8eb9-e8a65eb10481
       version: -1
       name: aws-ec2-associate-address
-      description: Associates an Elastic IP address with an instance or a network
-        interface.
+      description: Associates an Elastic IP address with an instance or a network interface.
       script: AWS - EC2|||aws-ec2-associate-address
       type: regular
       iscommand: true
@@ -112,9 +111,7 @@ tasks:
       id: 4bc1896e-4c0e-4a3a-8b50-2b04c10645ee
       version: -1
       name: aws-ec2-create-snapshot
-      description: Creates a snapshot of an EBS volume and stores it in Amazon S3.
-        You can use snapshots for backups, to make copies of EBS volumes, and to save
-        data before shutting down an instance.
+      description: Creates a snapshot of an EBS volume and stores it in Amazon S3. You can use snapshots for backups, to make copies of EBS volumes, and to save data before shutting down an instance.
       script: AWS - EC2|||aws-ec2-create-snapshot
       type: regular
       iscommand: true
@@ -186,8 +183,7 @@ tasks:
       id: a86dfa5a-d51c-4d77-8f48-1ed6b77d2037
       version: -1
       name: aws-ec2-create-image
-      description: Creates an Amazon EBS-backed AMI from an Amazon EBS-backed instance
-        that is either running or stopped.
+      description: Creates an Amazon EBS-backed AMI from an Amazon EBS-backed instance that is either running or stopped.
       script: AWS - EC2|||aws-ec2-create-image
       type: regular
       iscommand: true
@@ -262,8 +258,7 @@ tasks:
       id: 6c89a871-9548-4a96-8595-83757e288a8b
       version: -1
       name: aws-ec2-modify-volume
-      description: You can modify several parameters of an existing EBS volume, including
-        volume size, volume type, and IOPS capacity.
+      description: You can modify several parameters of an existing EBS volume, including volume size, volume type, and IOPS capacity.
       script: AWS - EC2|||aws-ec2-modify-volume
       type: regular
       iscommand: true
@@ -301,8 +296,7 @@ tasks:
       id: e3cc5f59-f098-495c-84d3-88a4840991d2
       version: -1
       name: aws-ec2-create-tags
-      description: Adds or overwrites one or more tags for the specified Amazon EC2
-        resource or resources.
+      description: Adds or overwrites one or more tags for the specified Amazon EC2 resource or resources.
       script: AWS - EC2|||aws-ec2-create-tags
       type: regular
       iscommand: true
@@ -338,8 +332,7 @@ tasks:
       id: 2f700e3f-adcf-4c5c-838c-583015b24c02
       version: -1
       name: aws-ec2-disassociate-address
-      description: Disassociates an Elastic IP address from the instance or network
-        interface its associated with.
+      description: Disassociates an Elastic IP address from the instance or network interface its associated with.
       script: AWS - EC2|||aws-ec2-disassociate-address
       type: regular
       iscommand: true
@@ -475,8 +468,7 @@ tasks:
       id: 4b48efec-ec45-4a18-8a8b-03c4cad9b0a3
       version: -1
       name: aws-ec2-terminate-instances
-      description: Shuts down one or more instances. This operation is idempotent;
-        if you terminate an instance more than once, each call succeeds.
+      description: Shuts down one or more instances. This operation is idempotent; if you terminate an instance more than once, each call succeeds.
       script: AWS - EC2|||aws-ec2-terminate-instances
       type: regular
       iscommand: true
@@ -510,8 +502,7 @@ tasks:
       id: eb49a711-2fb7-4bc5-81b8-47371ea9522a
       version: -1
       name: aws-ec2-create-volume
-      description: Creates an EBS volume that can be attached to an instance in the
-        same Availability Zone.
+      description: Creates an EBS volume that can be attached to an instance in the same Availability Zone.
       script: AWS - EC2|||aws-ec2-create-volume
       type: regular
       iscommand: true
@@ -551,8 +542,7 @@ tasks:
       id: 96367453-befb-4620-8fe7-43b8da2172e8
       version: -1
       name: aws-ec2-attach-volume
-      description: Attaches an EBS volume to a running or stopped instance and exposes
-        it to the instance with the specified device name.
+      description: Attaches an EBS volume to a running or stopped instance and exposes it to the instance with the specified device name.
       script: AWS - EC2|||aws-ec2-attach-volume
       type: regular
       iscommand: true
@@ -628,8 +618,7 @@ tasks:
       id: 2b585eaf-71b5-457f-852c-1ec9d5495cdf
       version: -1
       name: aws-ec2-delete-volume
-      description: Deletes the specified EBS volume. The volume must be in the available
-        state (not attached to an instance).
+      description: Deletes the specified EBS volume. The volume must be in the available state (not attached to an instance).
       script: AWS - EC2|||aws-ec2-delete-volume
       type: regular
       iscommand: true
@@ -663,12 +652,7 @@ tasks:
       id: f18d787d-2074-420a-8106-ac87b2741f15
       version: -1
       name: aws-ec2-run-instances
-      description: Launches the specified number of instances using an AMI for which
-        you have permissions. You can create a launch template , which is a resource
-        that contains the parameters to launch an instance. When you launch an instance
-        using RunInstances , you can specify the launch template instead of specifying
-        the launch parameters. An instance is ready for you to use when its in the
-        running state. You can check the state of your instance using DescribeInstances.
+      description: Launches the specified number of instances using an AMI for which you have permissions. You can create a launch template , which is a resource that contains the parameters to launch an instance. When you launch an instance using RunInstances , you can specify the launch template instead of specifying the launch parameters. An instance is ready for you to use when its in the running state. You can check the state of your instance using DescribeInstances.
       script: AWS - EC2|||aws-ec2-run-instances
       type: regular
       iscommand: true
@@ -724,8 +708,7 @@ tasks:
       id: d64ef895-3803-4957-8387-4e74466d62d6
       version: -1
       name: aws-ec2-waiter-instance-running
-      description: A waiter function that runs every 15  seconds until a successful
-        state is reached.
+      description: A waiter function that runs every 15  seconds until a successful state is reached.
       script: AWS - EC2|||aws-ec2-waiter-instance-running
       type: regular
       iscommand: true
@@ -759,8 +742,7 @@ tasks:
       id: ec434951-5c73-40cb-8904-960810bcb0e4
       version: -1
       name: aws-ec2-waiter-instance-status-ok
-      description: A waiter function that runs every 15  seconds until a successful
-        state is reached
+      description: A waiter function that runs every 15  seconds until a successful state is reached
       script: AWS - EC2|||aws-ec2-waiter-instance-status-ok
       type: regular
       iscommand: true
@@ -794,8 +776,7 @@ tasks:
       id: bc98147b-97cd-4b70-8ab6-b87903f4cd55
       version: -1
       name: aws-ec2-waiter-instance-stopped
-      description: A waiter function that runs every 15  seconds until a successful
-        state is reached
+      description: A waiter function that runs every 15  seconds until a successful state is reached
       script: AWS - EC2|||aws-ec2-waiter-instance-stopped
       type: regular
       iscommand: true
@@ -829,8 +810,7 @@ tasks:
       id: 04169bd3-2106-4ad2-80e9-43f47127a77f
       version: -1
       name: aws-ec2-waiter-instance-terminated
-      description: A waiter function that runs every 15  seconds until a successful
-        state is reached
+      description: A waiter function that runs every 15  seconds until a successful state is reached
       script: AWS - EC2|||aws-ec2-waiter-instance-terminated
       type: regular
       iscommand: true
@@ -1083,9 +1063,7 @@ tasks:
       id: 3a0edd5b-2131-4043-80b2-b3ae4579498c
       version: -1
       name: aws-ec2-revoke-security-group-ingress-rule
-      description: Removes egress rule from a security group. To remove a rule, the
-        values that you specify (for example, ports) must match the existing rule's
-        values exactly.
+      description: Removes egress rule from a security group. To remove a rule, the values that you specify (for example, ports) must match the existing rule's values exactly.
       script: AWS - EC2|||aws-ec2-revoke-security-group-ingress-rule
       type: regular
       iscommand: true
@@ -2409,11 +2387,7 @@ tasks:
       id: 2d1f2bcc-ca3d-4005-8d08-f69b903a16c8
       version: -1
       name: aws-ec2-reboot-instances
-      description: Requests a reboot of one or more instances. This operation is asynchronous;
-        it only queues a request to reboot the specified instances. The operation
-        succeeds if the instances are valid and belong to you. Requests to reboot
-        terminated instances are ignored.  If an instance does not cleanly shut down
-        within four minutes, Amazon EC2 performs a hard reboot.
+      description: Requests a reboot of one or more instances. This operation is asynchronous; it only queues a request to reboot the specified instances. The operation succeeds if the instances are valid and belong to you. Requests to reboot terminated instances are ignored.  If an instance does not cleanly shut down within four minutes, Amazon EC2 performs a hard reboot.
       script: AWS - EC2_copy|||aws-ec2-reboot-instances
       type: regular
       iscommand: true
@@ -2512,8 +2486,7 @@ tasks:
       id: 0ca1a87f-c9f4-4552-8d5a-17ba8ef85253
       version: -1
       name: aws-ec2-copy-image
-      description: Initiates the copy of an AMI from the specified source region to
-        the current region.
+      description: Initiates the copy of an AMI from the specified source region to the current region.
       script: AWS - EC2_copy|||aws-ec2-copy-image
       type: regular
       iscommand: true
@@ -2551,9 +2524,7 @@ tasks:
       id: d662f2ed-dd33-4be7-87fd-72b4820cb731
       version: -1
       name: aws-ec2-copy-snapshot
-      description: Copies a point-in-time snapshot of an EBS volume and stores it
-        in Amazon S3. You can copy the snapshot within the same region or from one
-        region to another.
+      description: Copies a point-in-time snapshot of an EBS volume and stores it in Amazon S3. You can copy the snapshot within the same region or from one region to another.
       script: AWS - EC2_copy|||aws-ec2-copy-snapshot
       type: regular
       iscommand: true
@@ -2660,13 +2631,7 @@ tasks:
       id: e898d485-2b12-4015-855a-694108bfda17
       version: -1
       name: aws-ec2-modify-instance-attribute
-      description: Modifies the specified attribute of the specified instance. You
-        can specify only one attribute at a time. Using this action to change the
-        security groups associated with an elastic network interface (ENI) attached
-        to an instance in a VPC can result in an error if the instance has more than
-        one ENI. To change the security groups associated with an ENI attached to
-        an instance that has multiple ENIs, we recommend that you use the ModifyNetworkInterfaceAttribute
-        action.
+      description: Modifies the specified attribute of the specified instance. You can specify only one attribute at a time. Using this action to change the security groups associated with an elastic network interface (ENI) attached to an instance in a VPC can result in an error if the instance has more than one ENI. To change the security groups associated with an ENI attached to an instance that has multiple ENIs, we recommend that you use the ModifyNetworkInterfaceAttribute action.
       script: AWS - EC2_copy|||aws-ec2-modify-instance-attribute
       type: regular
       iscommand: true
@@ -2700,8 +2665,7 @@ tasks:
       id: db821b22-44fb-48f7-89c6-097e5f64ef75
       version: -1
       name: aws-ec2-modify-network-interface-attribute
-      description: Modifies the specified network interface attribute. You can specify
-        only one attribute at a time.
+      description: Modifies the specified network interface attribute. You can specify only one attribute at a time.
       script: AWS - EC2_copy|||aws-ec2-modify-network-interface-attribute
       type: regular
       iscommand: true
@@ -2735,9 +2699,7 @@ tasks:
       id: dcb85a0e-5517-4032-8c4f-d43b0cd4a921
       version: -1
       name: aws-ec2-revoke-security-group-egress-rule
-      description: Removes egress rule from a security group. To remove a rule, the
-        values that you specify (for example, ports) must match the existing rule's
-        values exactly.
+      description: Removes egress rule from a security group. To remove a rule, the values that you specify (for example, ports) must match the existing rule's values exactly.
       script: AWS - EC2|||aws-ec2-revoke-security-group-egress-rule
       type: regular
       iscommand: true
@@ -2823,3 +2785,6 @@ view: |-
   }
 inputs: []
 outputs: []
+supportedModules:
+- xsiam
+- agentix

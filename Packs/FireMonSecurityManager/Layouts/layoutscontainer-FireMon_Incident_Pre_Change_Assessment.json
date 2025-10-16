@@ -323,5 +323,7 @@
     "name": "FireMon Incident Pre Change Assessment",
     "system": false,
     "version": -1,
-    "marketplaces": ["xsoar"]
+    "marketplaces": [
+        "xsoar"
+    ]
 }

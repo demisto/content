@@ -693,8 +693,7 @@ tasks:
       interval:
         simple: "1"
       query_expression:
-        simple: SELECT DOMAINNAME(1) AS 'Domain name' FROM events GROUP BY 'Domain
-          name'
+        simple: SELECT DOMAINNAME(1) AS 'Domain name' FROM events GROUP BY 'Domain name'
       range: {}
       timeout:
         simple: "60"
@@ -757,8 +756,7 @@ tasks:
       id: 316d38ad-474f-4f8d-8c5c-328f130a132e
       version: -1
       name: qradar-create-reference-set
-      description: Creates a new reference set. If the provided name is already in
-        use, this command will fail
+      description: Creates a new reference set. If the provided name is already in use, this command will fail
       script: '|||qradar-create-reference-set'
       type: regular
       iscommand: true
@@ -832,9 +830,7 @@ tasks:
       id: 73bf403e-34e0-4b4d-8470-c63c4590866f
       version: -1
       name: qradar-get-reference-by-name
-      description: Information about the reference set that had data added or updated.
-        This returns information set but not the contained data. This feature is supported
-        from version 8.1 and upward.
+      description: Information about the reference set that had data added or updated. This returns information set but not the contained data. This feature is supported from version 8.1 and upward.
       script: '|||qradar-get-reference-by-name'
       type: regular
       iscommand: true
@@ -944,9 +940,7 @@ tasks:
       id: dcb5fc14-b77b-47ab-8665-8ed50673cac5
       version: -1
       name: qradar-get-reference-by-name
-      description: Information about the reference set that had data added or updated.
-        This returns information set but not the contained data. This feature is supported
-        from version 8.1 and upward.
+      description: Information about the reference set that had data added or updated. This returns information set but not the contained data. This feature is supported from version 8.1 and upward.
       script: '|||qradar-get-reference-by-name'
       type: regular
       iscommand: true
@@ -1362,3 +1356,6 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 6.0.0
+supportedModules:
+- xsiam
+- agentix

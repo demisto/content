@@ -1656,10 +1656,7 @@ inputs:
   value:
     simple: session,sample
   required: true
-  description: "Which Autofocus search types should be executed. \n\nPossible values are session, sample, tag, or all. Session and sample are the recommended search types for this playbook. 
-  \n\nSample-based search detects threat indicators or identifiers within samples sent to WildFire for analysis.
-  \n\nSession-based search detects threat indicators or identifiers within various context details and session data provided by samples during sample submission.
-  \n\nTag-based search identifies the most popular tags."
+  description: "Which Autofocus search types should be executed. \n\nPossible values are session, sample, tag, or all. Session and sample are the recommended search types for this playbook. \n\nSample-based search detects threat indicators or identifiers within samples sent to WildFire for analysis. \n\nSession-based search detects threat indicators or identifiers within various context details and session data provided by samples during sample submission. \n\nTag-based search identifies the most popular tags."
   playbookInputQuery:
 - key: Scope
   value:
@@ -1838,3 +1835,4 @@ supportedModules:
 - X5
 - ENT_PLUS
 - agentix
+- xsiam

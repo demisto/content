@@ -103,9 +103,7 @@ tasks:
       id: 82ea9245-d514-4453-8001-8882a2e47ef0
       version: -1
       name: PyLogging in debug-mode
-      description: Run executeCommand in a generic manner. Can be used to dynamically
-        execute a command and also for cases when there is need to pass arguments
-        not defined in the command's configuration.
+      description: Run executeCommand in a generic manner. Can be used to dynamically execute a command and also for cases when there is need to pass arguments not defined in the command's configuration.
       scriptName: ExecuteCommandGeneric
       type: regular
       iscommand: false
@@ -298,3 +296,6 @@ inputs: []
 outputs: []
 fromversion: 5.0.0
 description: ''
+supportedModules:
+- xsiam
+- agentix

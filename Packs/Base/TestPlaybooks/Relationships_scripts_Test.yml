@@ -40,9 +40,7 @@ tasks:
       id: aaad1ea7-bb3c-4bb5-856b-3cb3b6b83514
       version: -1
       name: Create Relationships
-      description: '[Enter a description of the script, including what function it
-        performs and any important information users need to know, for example required
-        permissions.]'
+      description: '[Enter a description of the script, including what function it performs and any important information users need to know, for example required permissions.]'
       scriptName: CreateIndicatorRelationship
       type: regular
       iscommand: false
@@ -90,11 +88,7 @@ tasks:
       id: e00c01d4-52c6-4deb-8701-9efc3caebf60
       version: -1
       name: Search For Relationships of indicator
-      description: This automation outputs the indicator relationships to context
-        according to the provided query. Using the entities, entityTypes, relationships
-        argument. All arguments will be with the AND operator. For example using the
-        following arguments entities=8.8.8.8 entities_types=Domain will provide just
-        relationships that the 8.8.8.8 indicator has with indicators of type domain.
+      description: This automation outputs the indicator relationships to context according to the provided query. Using the entities, entityTypes, relationships argument. All arguments will be with the AND operator. For example using the following arguments entities=8.8.8.8 entities_types=Domain will provide just relationships that the 8.8.8.8 indicator has with indicators of type domain.
       scriptName: SearchIndicatorRelationships
       type: regular
       iscommand: false
@@ -192,8 +186,7 @@ tasks:
       id: 58b564aa-6013-47e4-8c3a-6eacf452788e
       version: -1
       name: Delete Relationships
-      description: This automation allows to delete a relationship between indicator
-        objects based on the relationship id.
+      description: This automation allows to delete a relationship between indicator objects based on the relationship id.
       scriptName: DeleteIndicatorRelationships
       type: regular
       iscommand: false
@@ -227,11 +220,7 @@ tasks:
       id: 9d526545-06e1-45e7-8800-a9ffec3dd992
       version: -1
       name: Search for deleted Relationship
-      description: This automation outputs the indicator relationships to context
-        according to the provided query. Using the entities, entityTypes, relationships
-        argument. All arguments will be with the AND operator. For example using the
-        following arguments entities=8.8.8.8 entities_types=Domain will provide just
-        relationships that the 8.8.8.8 indicator has with indicators of type domain.
+      description: This automation outputs the indicator relationships to context according to the provided query. Using the entities, entityTypes, relationships argument. All arguments will be with the AND operator. For example using the following arguments entities=8.8.8.8 entities_types=Domain will provide just relationships that the 8.8.8.8 indicator has with indicators of type domain.
       scriptName: SearchIndicatorRelationships
       type: regular
       iscommand: false
@@ -305,11 +294,7 @@ tasks:
       id: b2426126-b6de-4e4d-8bdb-7f17426c76e2
       version: -1
       name: Search For Relationships of indicator with verbose
-      description: This automation outputs the indicator relationships to context
-        according to the provided query. Using the entities, entityTypes, relationships
-        argument. All arguments will be with the AND operator. For example using the
-        following arguments entities=8.8.8.8 entities_types=Domain will provide just
-        relationships that the 8.8.8.8 indicator has with indicators of type domain.
+      description: This automation outputs the indicator relationships to context according to the provided query. Using the entities, entityTypes, relationships argument. All arguments will be with the AND operator. For example using the following arguments entities=8.8.8.8 entities_types=Domain will provide just relationships that the 8.8.8.8 indicator has with indicators of type domain.
       scriptName: SearchIndicatorRelationships
       type: regular
       iscommand: false
@@ -544,3 +529,6 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 6.2.0
+supportedModules:
+- xsiam
+- agentix

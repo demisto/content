@@ -109,9 +109,7 @@ tasks:
       id: 1d501d03-da5a-48f4-8a5f-7fd3661a14d6
       version: -1
       name: azure-key-vault-list
-      description: The List operation gets information about the vaults associated
-        with the subscription. For a limit greater than 25, more than one API call
-        will be required and the command might take longer time.
+      description: The List operation gets information about the vaults associated with the subscription. For a limit greater than 25, more than one API call will be required and the command might take longer time.
       script: '|||azure-key-vault-list'
       type: regular
       iscommand: true
@@ -143,8 +141,7 @@ tasks:
       id: 7edb91c9-1a01-49c1-81d6-2df412566e7d
       version: -1
       name: azure-key-vault-access-policy-update
-      description: Update access policies in a key vault in the specified subscription.
-        The update regards only the access policy for the specified object ID.
+      description: Update access policies in a key vault in the specified subscription. The update regards only the access policy for the specified object ID.
       script: '|||azure-key-vault-access-policy-update'
       type: regular
       iscommand: true
@@ -185,9 +182,7 @@ tasks:
       id: 6b3bdf4a-107f-40d6-86bb-3886bd2ece8f
       version: -1
       name: azure-key-vault-secret-get
-      description: Get a specified secret from a given key vault. The GET operation
-        is applicable to any secret stored in Azure Key Vault. This operation requires
-        the secrets/get permission.
+      description: Get a specified secret from a given key vault. The GET operation is applicable to any secret stored in Azure Key Vault. This operation requires the secrets/get permission.
       script: '|||azure-key-vault-secret-get'
       type: regular
       iscommand: true
@@ -290,9 +285,7 @@ tasks:
       id: d2243cd7-38df-42aa-84e4-111bbe042e80
       version: -1
       name: azure-key-vault-secret-list
-      description: List secrets in a specified key vault. For a limit greater than
-        25, more than one API call will be required and the command might take longer
-        time. This operation requires the secrets/list permission.
+      description: List secrets in a specified key vault. For a limit greater than 25, more than one API call will be required and the command might take longer time. This operation requires the secrets/list permission.
       script: '|||azure-key-vault-secret-list'
       type: regular
       iscommand: true
@@ -400,8 +393,7 @@ tasks:
       id: 64a4e3eb-3b3e-49ca-8135-4cc18e151424
       version: -1
       name: azure-key-vault-certificate-get
-      description: Gets information about a specific certificate. This operation requires
-        the certificates/get permission.
+      description: Gets information about a specific certificate. This operation requires the certificates/get permission.
       script: '|||azure-key-vault-certificate-get'
       type: regular
       iscommand: true
@@ -529,9 +521,7 @@ tasks:
       id: ccdba078-84d9-41f1-8a80-c8685d96c5df
       version: -1
       name: azure-key-vault-certificate-list
-      description: List certificates in a specified key vault. For a limit greater
-        than 25, more than one API call will be required and the command might take
-        longer time. This operation requires the certificates/list permission.
+      description: List certificates in a specified key vault. For a limit greater than 25, more than one API call will be required and the command might take longer time. This operation requires the certificates/list permission.
       script: '|||azure-key-vault-certificate-list'
       type: regular
       iscommand: true
@@ -626,8 +616,7 @@ tasks:
       id: aba30de3-37b7-4b95-87ba-d577aa01d2f5
       version: -1
       name: azure-key-vault-certificate-policy-get
-      description: Get the policy of the specified certificate.This operation requires
-        the certificates/get permission.
+      description: Get the policy of the specified certificate.This operation requires the certificates/get permission.
       script: '|||azure-key-vault-certificate-policy-get'
       type: regular
       iscommand: true
@@ -1277,3 +1266,6 @@ inputs: []
 outputs: []
 fromversion: 6.0.1
 description: Testing Azure Key Vault integration
+supportedModules:
+- xsiam
+- agentix

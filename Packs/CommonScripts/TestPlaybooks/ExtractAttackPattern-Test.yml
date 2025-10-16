@@ -204,9 +204,7 @@ tasks:
       id: e40006d0-e174-416d-84d1-005bc0d8a8a9
       version: -1
       name: GetIndicatorsByQuery
-      description: Gets a list of indicator objects and the associated indicator outputs
-        that match the specified query and filters. The results are returned in a
-        structured data file.
+      description: Gets a list of indicator objects and the associated indicator outputs that match the specified query and filters. The results are returned in a structured data file.
       scriptName: GetIndicatorsByQuery
       type: regular
       iscommand: false
@@ -288,3 +286,6 @@ inputs: []
 outputs: []
 fromversion: 6.2.0
 description: Extract Attack Pattern Threat Intel Object - Test
+supportedModules:
+- xsiam
+- agentix

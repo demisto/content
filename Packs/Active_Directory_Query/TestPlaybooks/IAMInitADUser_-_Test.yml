@@ -495,3 +495,6 @@ inputs: []
 outputs: []
 sourceplaybookid: IAMInitOktaUser - Test
 fromversion: 6.8.0
+supportedModules:
+- xsiam
+- agentix

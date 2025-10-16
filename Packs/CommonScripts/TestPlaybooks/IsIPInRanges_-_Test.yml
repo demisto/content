@@ -70,8 +70,7 @@ tasks:
       id: a2e029b8-ffd2-4a75-8373-399af81e609b
       version: -1
       name: Is 0.0.0.0 in range ?
-      description: Returns yes if the IP is in one of the ranges provided, returns
-        no otherwise.
+      description: Returns yes if the IP is in one of the ranges provided, returns no otherwise.
       scriptName: IsIPInRanges
       type: regular
       iscommand: false
@@ -174,3 +173,6 @@ inputs: []
 outputs: []
 fromversion: 5.0.0
 description: ''
+supportedModules:
+- xsiam
+- agentix

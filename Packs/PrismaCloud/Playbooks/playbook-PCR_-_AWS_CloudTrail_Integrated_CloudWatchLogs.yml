@@ -1,9 +1,7 @@
-id: Prisma Cloud Remediation - AWS CloudTrail Is Not Integrated With CloudWatch
-  Logs
+id: Prisma Cloud Remediation - AWS CloudTrail Is Not Integrated With CloudWatch Logs
 version: -1
 fromversion: 5.0.0
-name: Prisma Cloud Remediation - AWS CloudTrail Is Not Integrated With CloudWatch
-  Logs
+name: Prisma Cloud Remediation - AWS CloudTrail Is Not Integrated With CloudWatch Logs
 description: |-
   This playbook remediates the following Prisma Cloud AWS CloudTrail alerts.
 
@@ -47,8 +45,7 @@ tasks:
       id: db7aa259-3956-4937-833f-ef14ba111aae
       version: -1
       name: Get CloudTrail detail
-      description: Retrieves settings for the trail associated with the current region
-        for your account.
+      description: Retrieves settings for the trail associated with the current region for your account.
       script: AWS - CloudTrail|||aws-cloudtrail-describe-trails
       type: regular
       iscommand: true
@@ -240,8 +237,7 @@ tasks:
       id: cd721010-a423-4862-8f1b-074b8e146b7d
       version: -1
       name: Update CloudTrail
-      description: Updates the settings that specify delivery of log files. Changes
-        to a trail do not require stopping the CloudTrail service.
+      description: Updates the settings that specify delivery of log files. Changes to a trail do not require stopping the CloudTrail service.
       script: AWS - CloudTrail|||aws-cloudtrail-update-trail
       type: regular
       iscommand: true
@@ -321,9 +317,7 @@ tasks:
       id: 84d70025-c146-4d08-867f-b61db82004ae
       version: -1
       name: Get CloudWatchLogs group name
-      description: Lists the specified log groups. You can list all your log groups
-        or filter the results by prefix. The results are ASCII-sorted by log group
-        name.
+      description: Lists the specified log groups. You can list all your log groups or filter the results by prefix. The results are ASCII-sorted by log group name.
       script: AWS - CloudWatchLogs|||aws-logs-describe-log-groups
       type: regular
       iscommand: true
@@ -511,9 +505,7 @@ tasks:
       id: 05ecada6-dd9e-4739-818c-bcac9b62c8f8
       version: -1
       name: Create Logs policy
-      description: Creates a new managed policy for your AWS account.  This operation
-        creates a policy version with a version identifier of v1 and sets v1 as the
-        policy's default version.
+      description: Creates a new managed policy for your AWS account.  This operation creates a policy version with a version identifier of v1 and sets v1 as the policy's default version.
       script: '|||aws-iam-create-policy'
       type: regular
       iscommand: true
@@ -628,9 +620,7 @@ tasks:
       id: 72f872ae-ca5a-46e8-8944-3c5453c1b3a1
       version: -1
       name: Check for existing Logs group
-      description: Lists the specified log groups. You can list all your log groups
-        or filter the results by prefix. The results are ASCII-sorted by log group
-        name.
+      description: Lists the specified log groups. You can list all your log groups or filter the results by prefix. The results are ASCII-sorted by log group name.
       script: AWS - CloudWatchLogs|||aws-logs-describe-log-groups
       type: regular
       iscommand: true
@@ -669,8 +659,7 @@ tasks:
       id: c2d782bd-a10e-4ce2-8b2a-e50040152765
       version: -1
       name: Missing Logs group?
-      description: If the CloudWatch Logs group is missing, we'll create one. Otherwise,
-        use the existing CloudWatch Logs group.
+      description: If the CloudWatch Logs group is missing, we'll create one. Otherwise, use the existing CloudWatch Logs group.
       type: condition
       iscommand: false
       brand: ""
@@ -903,9 +892,3 @@ inputs: []
 outputs: []
 tests:
 - No Test
-supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
-- agentix

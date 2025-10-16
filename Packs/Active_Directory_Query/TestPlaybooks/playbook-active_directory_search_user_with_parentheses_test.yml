@@ -41,9 +41,7 @@ tasks:
       id: 8378214b-b94c-4306-87b9-5a57a8e9da14
       version: -1
       name: ad-get-user by dn
-      description: Retrieves detailed information about a user account. The user can
-        be specified by name, email address, or as an Active Directory Distinguished
-        Name (DN). If no filter is specified, all users are returned.
+      description: Retrieves detailed information about a user account. The user can be specified by name, email address, or as an Active Directory Distinguished Name (DN). If no filter is specified, all users are returned.
       script: Active Directory Query v2|||ad-get-user
       type: regular
       iscommand: true
@@ -104,9 +102,7 @@ tasks:
       id: 75b2feb3-34c5-47c4-838d-3cb9504bb7cc
       version: -1
       name: ad-get-user by name
-      description: Retrieves detailed information about a user account. The user can
-        be specified by name, email address, or as an Active Directory Distinguished
-        Name (DN). If no filter is specified, all users are returned.
+      description: Retrieves detailed information about a user account. The user can be specified by name, email address, or as an Active Directory Distinguished Name (DN). If no filter is specified, all users are returned.
       script: Active Directory Query v2|||ad-get-user
       type: regular
       iscommand: true
@@ -140,9 +136,7 @@ tasks:
       id: 0fd5be0f-997c-4d41-8be4-0f99f0c9ac61
       version: -1
       name: ad-get-user by email
-      description: Retrieves detailed information about a user account. The user can
-        be specified by name, email address, or as an Active Directory Distinguished
-        Name (DN). If no filter is specified, all users are returned.
+      description: Retrieves detailed information about a user account. The user can be specified by name, email address, or as an Active Directory Distinguished Name (DN). If no filter is specified, all users are returned.
       script: Active Directory Query v2|||ad-get-user
       type: regular
       iscommand: true
@@ -176,9 +170,7 @@ tasks:
       id: c202a57f-26a3-43bd-8739-668c2de6bf50
       version: -1
       name: ad-get-user by username
-      description: Retrieves detailed information about a user account. The user can
-        be specified by name, email address, or as an Active Directory Distinguished
-        Name (DN). If no filter is specified, all users are returned.
+      description: Retrieves detailed information about a user account. The user can be specified by name, email address, or as an Active Directory Distinguished Name (DN). If no filter is specified, all users are returned.
       script: Active Directory Query v2|||ad-get-user
       type: regular
       iscommand: true
@@ -218,3 +210,6 @@ view: |-
   }
 inputs: []
 outputs: []
+supportedModules:
+- xsiam
+- agentix

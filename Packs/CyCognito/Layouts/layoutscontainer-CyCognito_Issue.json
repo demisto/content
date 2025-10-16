@@ -504,7 +504,7 @@
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
-                        "name": "Owners \u0026 Locations",
+                        "name": "Owners & Locations",
                         "static": false,
                         "w": 1,
                         "x": 1,
@@ -640,7 +640,7 @@
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
-                        "name": "Threat \u0026 Impact",
+                        "name": "Threat & Impact",
                         "static": false,
                         "w": 2,
                         "x": 0,
@@ -2304,5 +2304,7 @@
     "system": false,
     "version": -1,
     "fromVersion": "6.2.0",
-    "marketplaces": ["xsoar"]
+    "marketplaces": [
+        "xsoar"
+    ]
 }

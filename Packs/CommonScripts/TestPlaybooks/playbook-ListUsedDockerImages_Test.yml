@@ -216,3 +216,6 @@ inputs: []
 outputs: []
 fromversion: 6.1.0
 description: This a test play to validate and run !ListUsedDockerImages automation script.
+supportedModules:
+- xsiam
+- agentix

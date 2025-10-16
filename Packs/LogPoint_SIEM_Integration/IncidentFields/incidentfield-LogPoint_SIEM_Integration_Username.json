@@ -37,6 +37,6 @@
     "useAsKpi": false,
     "validationRegex": "",
     "marketplaces": [
-       "xsoar"
+        "xsoar"
     ]
 }

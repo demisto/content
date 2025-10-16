@@ -331,3 +331,6 @@ outputs: []
 quiet: true
 fromversion: 6.9.0
 description: Test playbook for PaloAltoAIOps integration
+supportedModules:
+- xsiam
+- agentix

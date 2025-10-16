@@ -227,3 +227,6 @@ inputs: []
 outputs: []
 fromversion: 6.5.0
 description: Verify CIDR test playbook
+supportedModules:
+- xsiam
+- agentix

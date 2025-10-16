@@ -264,3 +264,6 @@ inputs:
 outputs: []
 fromversion: 5.5.0
 description: This test playbook tests if the Get Endpoint Details playbooks runs as expected with both empty and provided inputs
+supportedModules:
+- xsiam
+- agentix

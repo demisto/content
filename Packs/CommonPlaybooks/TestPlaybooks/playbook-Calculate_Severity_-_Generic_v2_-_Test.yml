@@ -993,3 +993,6 @@ view: |-
 inputs: []
 outputs: []
 description: This Playbook tests The Calculate Severity Generic V2 playbook with multiple input.
+supportedModules:
+- xsiam
+- agentix

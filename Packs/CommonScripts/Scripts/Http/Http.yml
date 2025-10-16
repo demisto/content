@@ -24,8 +24,7 @@ args:
   required: true
   description: The url for the http request
 - name: headers
-  description: The headers for the http request, in the format of 'key1:value1,key2:value2,
-    ...'
+  description: The headers for the http request, in the format of 'key1:value1,key2:value2, ...'
 - name: insecure
   auto: PREDEFINED
   description: Trust any certificate (not secure)

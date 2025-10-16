@@ -362,7 +362,7 @@
                         "y": 0
                     },
                     {
-						"displayType": "CARD",
+                        "displayType": "CARD",
                         "h": 5,
                         "hideName": false,
                         "i": "caseinfoid-field-changed-caseinfoid-568f2110-1497-11eb-9980-5f8e6bceb89a",

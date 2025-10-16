@@ -403,7 +403,9 @@
     "group": "incident",
     "id": "Sumo Logic Signal",
     "name": "Sumo Logic Signal",
-    "marketplaces": ["xsoar"],
+    "marketplaces": [
+        "xsoar"
+    ],
     "system": false,
     "version": -1,
     "fromVersion": "6.8.0"

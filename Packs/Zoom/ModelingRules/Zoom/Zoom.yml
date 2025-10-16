@@ -4,3 +4,6 @@ name: Zoom Modeling Rule
 rules: ''
 schema: ''
 tags: Zoom
+supportedModules:
+- xsiam
+- agentix

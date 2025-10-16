@@ -29,7 +29,7 @@
         "AWS IAM Policy Misconfiguration",
         "AWS EC2 Instance Misconfiguration",
         "AWS Security Hub Finding",
-		"Prisma Cloud - VM Alert Prioritization",
+        "Prisma Cloud - VM Alert Prioritization",
         "Rapid7 ThreatCommand Alert",
         "Prisma Cloud - VM Alert Prioritization",
         "FreshworksFreshservice Ticket",

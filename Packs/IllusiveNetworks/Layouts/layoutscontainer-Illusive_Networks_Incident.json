@@ -502,5 +502,7 @@
             }
         ]
     },
-    "marketplaces": ["xsoar"]
-  }
+    "marketplaces": [
+        "xsoar"
+    ]
+}

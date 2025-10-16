@@ -670,13 +670,13 @@ inputs:
               simple: policyId
   required: false
   description: Grab the Prima Cloud policy ID.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: AutoRemediateKubernetesEngine
   value:
     simple: "no"
   required: false
   description: Execute GCP Kubernetes Engine remediation automatically?
-  playbookInputQuery: null
+  playbookInputQuery:
 inputSections:
 - inputs:
   - policyId
@@ -685,8 +685,7 @@ inputSections:
 - inputs:
   - AutoRemediateKubernetesEngine
   name: Remediation
-  description: Remediation settings and data, including containment, eradication,
-    and recovery.
+  description: Remediation settings and data, including containment, eradication, and recovery.
 outputSections:
 - outputs: []
   name: General (Outputs group)
@@ -695,9 +694,3 @@ outputs: []
 tests:
 - No tests (auto formatted)
 fromversion: 6.5.0
-supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
-- agentix

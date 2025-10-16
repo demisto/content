@@ -40,12 +40,7 @@ tasks:
       id: bc4e1676-42c7-44dd-85d8-3a874f4344a7
       version: -1
       name: Run Audit Log Search Command
-      description: Use the o365-search-auditlog command to search the unified audit
-        log. This log contains events from Exchange Online, SharePoint Online, OneDrive
-        for Business, Azure Active Directory, Microsoft Teams, Power BI, and other
-        Microsoft 365 services. You can search for all events in a specified date
-        range, or you can filter the results based on specific criteria, such as the
-        action, the user who performed the action, or the target object.
+      description: Use the o365-search-auditlog command to search the unified audit log. This log contains events from Exchange Online, SharePoint Online, OneDrive for Business, Azure Active Directory, Microsoft Teams, Power BI, and other Microsoft 365 services. You can search for all events in a specified date range, or you can filter the results based on specific criteria, such as the action, the user who performed the action, or the target object.
       script: MicrosoftPolicyAndComplianceAuditLog|||o365-auditlog-search
       type: regular
       iscommand: true
@@ -218,3 +213,6 @@ inputs: []
 outputs: []
 fromversion: 5.5.0
 description: Test playbook of Microsoft Policy And Compliance (Audit Log)
+supportedModules:
+- xsiam
+- agentix

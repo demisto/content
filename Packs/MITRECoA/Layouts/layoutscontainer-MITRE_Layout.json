@@ -343,7 +343,7 @@
                         "y": 0
                     },
                     {
-                        "description": "This section dynamically displays the handled techniques in a MITRE ATT\u0026CK - Courses of Action investigation.",
+                        "description": "This section dynamically displays the handled techniques in a MITRE ATT&CK - Courses of Action investigation.",
                         "displayType": "CARD",
                         "h": 3,
                         "hideItemTitleOnlyOne": true,
@@ -370,7 +370,7 @@
                         "y": 3
                     },
                     {
-                        "description": "This section dynamically displays the list of MITRE ATT\u0026CK techniques that were not yet handled using the Courses of Action playbook.",
+                        "description": "This section dynamically displays the list of MITRE ATT&CK techniques that were not yet handled using the Courses of Action playbook.",
                         "displayType": "CARD",
                         "h": 3,
                         "hideItemTitleOnlyOne": true,
@@ -517,7 +517,7 @@
                         "y": 4
                     },
                     {
-                        "description": "Collection consists of techniques adversaries may use to gather information and the sources information is collected from that are relevant to following through on the adversary’s objectives.",
+                        "description": "Collection consists of techniques adversaries may use to gather information and the sources information is collected from that are relevant to following through on the adversary\u2019s objectives.",
                         "displayType": "ROW",
                         "h": 3,
                         "hideItemTitleOnlyOne": true,
@@ -1762,5 +1762,7 @@
     "version": -1,
     "fromVersion": "6.5.0",
     "description": "",
-    "marketplaces": ["xsoar"]
+    "marketplaces": [
+        "xsoar"
+    ]
 }

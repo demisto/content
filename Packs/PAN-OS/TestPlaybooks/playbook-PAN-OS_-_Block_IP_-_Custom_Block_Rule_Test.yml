@@ -104,3 +104,6 @@ view: |-
   }
 inputs: []
 outputs: []
+supportedModules:
+- xsiam
+- agentix

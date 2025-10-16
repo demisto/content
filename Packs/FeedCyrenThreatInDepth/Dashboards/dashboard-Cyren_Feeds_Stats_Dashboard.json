@@ -842,7 +842,7 @@
                 "propagationLabels": [
                     "all"
                 ],
-                "query": "sourceBrands:CyrenThreatInDepth incident.created:\u003e=\"2000-01-01T00:00:00 +0000\"",
+                "query": "sourceBrands:CyrenThreatInDepth incident.created:>=\"2000-01-01T00:00:00 +0000\"",
                 "shouldCommit": false,
                 "size": 0,
                 "sort": null,
@@ -889,9 +889,7 @@
                 "params": {
                     "colors": {
                         "isEnabled": false,
-                        "items": {
-
-                        },
+                        "items": {},
                         "type": "above"
                     },
                     "tableColumns": [
@@ -1014,9 +1012,7 @@
                 "params": {
                     "colors": {
                         "isEnabled": false,
-                        "items": {
-
-                        },
+                        "items": {},
                         "type": "above"
                     },
                     "tableColumns": [
@@ -1414,7 +1410,7 @@
                 "propagationLabels": [
                     "all"
                 ],
-                "query": "sourceBrands:CyrenThreatInDepth and type:IP and cyreniprisk:\u003e=80",
+                "query": "sourceBrands:CyrenThreatInDepth and type:IP and cyreniprisk:>=80",
                 "shouldCommit": false,
                 "size": 0,
                 "sort": null,
@@ -1648,9 +1644,7 @@
                     "text": "# Cyren Threat InDepth Feed Stats\n\nThis demo dashboard focusses on an overview of all indicators provided by Cyren Threat InDepth. "
                 },
                 "prevName": "Text Widget",
-                "propagationLabels": [
-
-                ],
+                "propagationLabels": [],
                 "query": "",
                 "shouldCommit": false,
                 "size": 0,

@@ -607,5 +607,7 @@
     "version": -1,
     "fromVersion": "6.0.0",
     "description": "The Carbon Black Endpoint Standard Layout",
-    "marketplaces": ["xsoar"]
+    "marketplaces": [
+        "xsoar"
+    ]
 }

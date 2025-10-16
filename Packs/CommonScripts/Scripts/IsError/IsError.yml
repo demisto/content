@@ -7,9 +7,7 @@ type: javascript
 tags:
 - Condition
 - Utility
-comment: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
-  to check the previous task entries. If array is provided, will return yes if one
-  of the entries returned an error.
+comment: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries} to check the previous task entries. If array is provided, will return yes if one of the entries returned an error.
 enabled: true
 args:
 - name: entryId

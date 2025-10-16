@@ -341,9 +341,3 @@ tests:
 - Isolate and unisolate endpoint - test
 fromversion: 5.5.0
 toversion: 6.7.9
-supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
-- agentix

@@ -341,9 +341,7 @@ tasks:
       id: 7d19d801-309a-4c58-87f2-516b5a90c514
       version: -1
       name: Run IsInCidrRanges directly
-      description: Determines whether an IPv4 address is contained in at least one
-        of the comma-delimited CIDR ranges. Multiple IPv4 addresses can be passed
-        comma-delimited and each will be tested.
+      description: Determines whether an IPv4 address is contained in at least one of the comma-delimited CIDR ranges. Multiple IPv4 addresses can be passed comma-delimited and each will be tested.
       scriptName: IsInCidrRanges
       type: regular
       iscommand: false
@@ -430,3 +428,6 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 6.5.0
+supportedModules:
+- xsiam
+- agentix

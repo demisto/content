@@ -567,5 +567,7 @@
     },
     "fromVersion": "6.5.0",
     "description": "Layout for Skyhigh Security Threat incident type.",
-    "marketplaces": ["xsoar"]
+    "marketplaces": [
+        "xsoar"
+    ]
 }

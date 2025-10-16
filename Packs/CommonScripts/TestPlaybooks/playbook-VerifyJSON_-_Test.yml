@@ -74,8 +74,7 @@ tasks:
       id: e4873ea1-979a-40d5-8482-37a923339732
       version: -1
       name: Valid Json
-      description: Verfiy a JSON string is valid and optionally verify against a provided
-        schema. Utilizes Powershell's Test-JSON cmdlet.
+      description: Verfiy a JSON string is valid and optionally verify against a provided schema. Utilizes Powershell's Test-JSON cmdlet.
       scriptName: VerifyJSON
       type: regular
       iscommand: false
@@ -108,8 +107,7 @@ tasks:
       id: 26608542-8b55-48c8-82a9-b1d0ed109bb5
       version: -1
       name: Verify context result
-      description: Verfiy a JSON string is valid and optionally verify against a provided
-        schema. Utilizes Powershell's Test-JSON cmdlet.
+      description: Verfiy a JSON string is valid and optionally verify against a provided schema. Utilizes Powershell's Test-JSON cmdlet.
       type: condition
       iscommand: false
       brand: ''
@@ -147,8 +145,7 @@ tasks:
       id: 47074bc4-4e22-4cdb-8ae0-1dee1955e3b6
       version: -1
       name: Invalid Json
-      description: Verfiy a JSON string is valid and optionally verify against a provided
-        schema. Utilizes Powershell's Test-JSON cmdlet.
+      description: Verfiy a JSON string is valid and optionally verify against a provided schema. Utilizes Powershell's Test-JSON cmdlet.
       scriptName: VerifyJSON
       type: regular
       iscommand: false
@@ -211,9 +208,7 @@ tasks:
       id: 393b45df-12a9-46ca-8333-121bd1260afe
       version: -1
       name: Verify Error
-      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
-        to check the previous task entries. If array is provided, will return yes
-        if one of the entries returned an error.
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries} to check the previous task entries. If array is provided, will return yes if one of the entries returned an error.
       scriptName: isError
       type: condition
       iscommand: false
@@ -247,8 +242,7 @@ tasks:
       id: 9e3a2abe-4aea-4e3b-8065-efe13fececb8
       version: -1
       name: Verify Schema with bad json
-      description: Verfiy a JSON string is valid and optionally verify against a provided
-        schema. Utilizes Powershell's Test-JSON cmdlet.
+      description: Verfiy a JSON string is valid and optionally verify against a provided schema. Utilizes Powershell's Test-JSON cmdlet.
       scriptName: VerifyJSON
       type: regular
       iscommand: false
@@ -344,9 +338,7 @@ tasks:
       id: 7b3896ad-2cd3-44f9-805f-086a78cac17a
       version: -1
       name: Verify error
-      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
-        to check the previous task entries. If array is provided, will return yes
-        if one of the entries returned an error.
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries} to check the previous task entries. If array is provided, will return yes if one of the entries returned an error.
       scriptName: isError
       type: condition
       iscommand: false
@@ -415,3 +407,6 @@ inputs: []
 outputs: []
 description: ''
 fromversion: 5.5.0
+supportedModules:
+- xsiam
+- agentix

@@ -170,8 +170,7 @@ tasks:
       max-results: {}
       page-token: {}
       query:
-        simple: from:${Testmail.Sender} subject:special test via playbook (${RandomString})
-          newer_than:1d
+        simple: from:${Testmail.Sender} subject:special test via playbook (${RandomString}) newer_than:1d
       user-id:
         simple: ${Testmail.Sender}
     separatecontext: false
@@ -360,8 +359,7 @@ tasks:
       max-results: {}
       page-token: {}
       query:
-        simple: from:${Testmail.Sender} subject:special test via playbook (${RandomString})
-          newer_than:1d
+        simple: from:${Testmail.Sender} subject:special test via playbook (${RandomString}) newer_than:1d
       user-id:
         simple: ${Testmail.Sender}
     separatecontext: false
@@ -642,8 +640,7 @@ tasks:
       max-results: {}
       page-token: {}
       query:
-        simple: from:${Testmail.Sender} subject:special test via playbook (${RandomString})
-          newer_than:1d
+        simple: from:${Testmail.Sender} subject:special test via playbook (${RandomString}) newer_than:1d
       user-id:
         simple: ${Testmail.Sender}
     separatecontext: false
@@ -845,8 +842,7 @@ tasks:
       max-results: {}
       page-token: {}
       query:
-        simple: from:${Testmail.Sender} subject:multi attachment test via playbook
-          (${RandomString}) newer_than:1d
+        simple: from:${Testmail.Sender} subject:multi attachment test via playbook (${RandomString}) newer_than:1d
       user-id:
         simple: ${Testmail.Sender}
     separatecontext: false
@@ -960,8 +956,7 @@ tasks:
       max-results: {}
       page-token: {}
       query:
-        simple: from:${Testmail.Sender} subject:multi attachment test via playbook
-          (${RandomString}) newer_than:1d
+        simple: from:${Testmail.Sender} subject:multi attachment test via playbook (${RandomString}) newer_than:1d
       user-id:
         simple: ${Testmail.Sender}
     separatecontext: false
@@ -1111,8 +1106,7 @@ tasks:
       max-results: {}
       page-token: {}
       query:
-        simple: from:${Testmail.Sender} subject:multi attachment test via playbook
-          (${RandomString}) newer_than:1d
+        simple: from:${Testmail.Sender} subject:multi attachment test via playbook (${RandomString}) newer_than:1d
       user-id:
         simple: ${Testmail.Sender}
     separatecontext: false
@@ -1521,3 +1515,6 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.0.0
+supportedModules:
+- xsiam
+- agentix

@@ -2,9 +2,9 @@
     "associatedToAll": false,
     "associatedTypes": [
         "SysAid Change",
-		"SysAid Incident",
-		"SysAid Problem",
-		"SysAid Request",
+        "SysAid Incident",
+        "SysAid Problem",
+        "SysAid Request",
         "IAM - New Hire",
         "IAM - Terminate User",
         "IAM - Update User",

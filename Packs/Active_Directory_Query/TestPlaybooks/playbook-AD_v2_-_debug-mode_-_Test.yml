@@ -36,9 +36,7 @@ tasks:
       id: 039da81b-f874-4db4-802b-8ecbc15f440b
       version: -1
       name: ad-search with debug-mode
-      description: Run executeCommand in a generic manner. Can be used to dynamically
-        execute a command and also for cases when there is need to pass arguments
-        not defined in the command's configuration.
+      description: Run executeCommand in a generic manner. Can be used to dynamically execute a command and also for cases when there is need to pass arguments not defined in the command's configuration.
       scriptName: ExecuteCommandGeneric
       type: regular
       iscommand: false
@@ -256,3 +254,6 @@ view: |-
   }
 inputs: []
 outputs: []
+supportedModules:
+- xsiam
+- agentix

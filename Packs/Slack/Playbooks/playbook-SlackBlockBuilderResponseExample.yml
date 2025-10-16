@@ -42,11 +42,7 @@ tasks:
       id: a9997f13-b0d9-41da-8310-8bf606a2ade8
       version: -1
       name: Ask a question via SLACK
-      description: SlackBlockBuilder will format a given Slack block into a format
-        readable by the SlackV3 integration. The script will also send the block to
-        the given destination. Make sure to mark **Trust any certificate** and fill
-        the **XSOAR API Key integration** parameters if you want to get a response
-        to the incident context.
+      description: SlackBlockBuilder will format a given Slack block into a format readable by the SlackV3 integration. The script will also send the block to the given destination. Make sure to mark **Trust any certificate** and fill the **XSOAR API Key integration** parameters if you want to get a response to the incident context.
       scriptName: SlackBlockBuilder
       type: regular
       iscommand: false
@@ -163,3 +159,4 @@ supportedModules:
 - X5
 - ENT_PLUS
 - agentix
+- xsiam

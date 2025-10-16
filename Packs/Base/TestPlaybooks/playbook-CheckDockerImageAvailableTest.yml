@@ -90,9 +90,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Check if a docker image is available for performing docker pull.
-        Script simulates the docker pull flow but doesn't actually pull the image.
-        Returns an entry with 'ok' if all is good otherwise will return an error.
+      description: Check if a docker image is available for performing docker pull. Script simulates the docker pull flow but doesn't actually pull the image. Returns an entry with 'ok' if all is good otherwise will return an error.
       id: f3a80147-0400-4041-85ae-ec859f682a2a
       iscommand: false
       name: Check docker valid image (docker hub)
@@ -131,9 +129,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Check if a docker image is available for performing docker pull.
-        Script simulates the docker pull flow but doesn't actually pull the image.
-        Returns an entry with 'ok' if all is good otherwise will return an error.
+      description: Check if a docker image is available for performing docker pull. Script simulates the docker pull flow but doesn't actually pull the image. Returns an entry with 'ok' if all is good otherwise will return an error.
       id: 52a13f7d-5721-4fa6-8f5d-b8e5159cf717
       iscommand: false
       name: Check docker in-valid image
@@ -295,9 +291,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Check if a docker image is available for performing docker pull.
-        Script simulates the docker pull flow but doesn't actually pull the image.
-        Returns an entry with 'ok' if all is good otherwise will return an error.
+      description: Check if a docker image is available for performing docker pull. Script simulates the docker pull flow but doesn't actually pull the image. Returns an entry with 'ok' if all is good otherwise will return an error.
       id: d5885717-6643-4275-8d08-9184a9d6a274
       iscommand: false
       name: Check docker valid image (gcr.io)
@@ -335,9 +329,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Check if a docker image is available for performing docker pull.
-        Script simulates the docker pull flow but doesn't actually pull the image.
-        Returns an entry with 'ok' if all is good otherwise will return an error.
+      description: Check if a docker image is available for performing docker pull. Script simulates the docker pull flow but doesn't actually pull the image. Returns an entry with 'ok' if all is good otherwise will return an error.
       id: dba55464-1f1d-4e37-8e17-dcea2fd58200
       iscommand: false
       name: Check docker valid image (gcr.io)
@@ -368,3 +360,6 @@ view: |-
     }
   }
 fromversion: 5.0.0
+supportedModules:
+- xsiam
+- agentix

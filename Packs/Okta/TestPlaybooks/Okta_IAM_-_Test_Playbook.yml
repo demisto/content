@@ -6,8 +6,7 @@ inputs:
   playbookInputQuery:
   required: true
   value:
-    simple: '{"email": "testdemisto2222@paloaltonetworks.com", "username": "testdemisto2222@paloaltonetworks.com",
-      "givenname": "test", "surname": "demisto", "locationregion": "Americas"}'
+    simple: '{"email": "testdemisto2222@paloaltonetworks.com", "username": "testdemisto2222@paloaltonetworks.com", "givenname": "test", "surname": "demisto", "locationregion": "Americas"}'
 name: Okta IAM - Test Playbook
 outputs: []
 sourceplaybookid: 266bcc20-b5f3-4a64-8d93-af843bd24add
@@ -140,8 +139,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Updates an existing user with the data passed in the user-profile
-        argument.
+      description: Updates an existing user with the data passed in the user-profile argument.
       id: f26ddaa7-5840-464a-8c93-36fb500a2a1e
       iscommand: true
       name: Update User
@@ -217,8 +215,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Updates an existing user with the data passed in the user-profile
-        argument.
+      description: Updates an existing user with the data passed in the user-profile argument.
       id: 250b5717-4a37-4704-8911-4cc31fc1965c
       iscommand: true
       name: Enable User Using Update Command
@@ -721,3 +718,6 @@ view: |-
     }
   }
 fromversion: 6.0.0
+supportedModules:
+- xsiam
+- agentix

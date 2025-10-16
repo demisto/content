@@ -158,8 +158,7 @@ tasks:
       id: 3c7a063e-e49f-4e41-8926-633698a1859e
       version: -1
       name: Get Delta (mobilePhone)
-      description: Get newly created, updated, or deleted users without having to
-        perform a full read of the entire user collection.
+      description: Get newly created, updated, or deleted users without having to perform a full read of the entire user collection.
       script: '|||msgraph-user-get-delta'
       type: regular
       iscommand: true
@@ -477,8 +476,7 @@ tasks:
       id: 361903a2-5683-47ab-8b19-014ccc16df10
       version: -1
       name: 'Get User #3'
-      description: 'Retrieves the properties and relationships of user object. for
-        more information, visit: https://docs.microsoft.com/en-us/graph/api/user-update?view=graph-rest-1.0)'
+      description: 'Retrieves the properties and relationships of user object. for more information, visit: https://docs.microsoft.com/en-us/graph/api/user-update?view=graph-rest-1.0)'
       script: '|||msgraph-user-get'
       type: regular
       iscommand: true
@@ -580,8 +578,7 @@ tasks:
       id: a3cf7551-da86-4d13-8415-a2de9bb2bdff
       version: -1
       name: 'Assign manager #4 to test user #3'
-      description: 'Assigns a manager to the user. Permissions: - User.ReadWrite.All
-        (Delegated & Application)'
+      description: 'Assigns a manager to the user. Permissions: - User.ReadWrite.All (Delegated & Application)'
       script: '|||msgraph-user-assign-manager'
       type: regular
       iscommand: true
@@ -653,8 +650,7 @@ tasks:
       id: b73afbcd-0c1f-448c-8c73-f29d400056c7
       version: -1
       name: 'Get user #4 direct reports'
-      description: Retrieves the direct reports for a user. Direct reports are the
-        people who have that user configured as their manager.
+      description: Retrieves the direct reports for a user. Direct reports are the people who have that user configured as their manager.
       script: '|||msgraph-direct-reports'
       type: regular
       iscommand: true
@@ -1040,16 +1036,7 @@ tasks:
       id: 3f4c76c0-49d8-4aeb-82f9-a175775cb3b4
       version: -1
       name: GeneratePassword
-      description: "This function generates a password and allows various parameters
-        to customize the properties of the password depending on the use case (e.g.
-        password complexity requirements).  The default behavior is to generate a
-        password of  *random length* including all four character classes (upper,
-        lower, digits, symbols) with at least five and at most ten characters per
-        class. \n\nThe min_* values all default to 0. This means that if the command
-        is executed in this way:\n!GeneratePassword max_lcase=10\nIt is possible that
-        a password of length zero could be generated. It is therefore recommended
-        to always include a min_* parameter that matches. \n\nThe debug parameter
-        will print certain properties of the command into the WarRoom for easy diagnostics."
+      description: "This function generates a password and allows various parameters to customize the properties of the password depending on the use case (e.g. password complexity requirements).  The default behavior is to generate a password of  *random length* including all four character classes (upper, lower, digits, symbols) with at least five and at most ten characters per class. \n\nThe min_* values all default to 0. This means that if the command is executed in this way:\n!GeneratePassword max_lcase=10\nIt is possible that a password of length zero could be generated. It is therefore recommended to always include a min_* parameter that matches. \n\nThe debug parameter will print certain properties of the command into the WarRoom for easy diagnostics."
       scriptName: GeneratePassword
       type: regular
       iscommand: false
@@ -1176,9 +1163,7 @@ tasks:
       id: eb1217c9-2db5-4962-9783-5727505dc3b1
       version: -1
       name: 'get the TAP policy for user #2'
-      description: "Tests the existence of the new TAP policy that was created on
-        #36.\n*This command will only return a single object in the collection \nas
-        a user can have only one Temporary Access Pass method.\n\nPermission:UserAuthenticationMethod.Read.All"
+      description: "Tests the existence of the new TAP policy that was created on #36.\n*This command will only return a single object in the collection \nas a user can have only one Temporary Access Pass method.\n\nPermission:UserAuthenticationMethod.Read.All"
       script: '|||msgraph-user-tap-policy-list'
       type: regular
       iscommand: true
@@ -1265,5 +1250,8 @@ inputs:
     simple: demistodev.onmicrosoft.com
   required: true
   description: Base url of your instance
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
+supportedModules:
+- xsiam
+- agentix

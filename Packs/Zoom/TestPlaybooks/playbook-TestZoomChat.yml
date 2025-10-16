@@ -372,8 +372,7 @@ tasks:
       id: e3694e14-519c-4f15-8d3f-ea67f2f5d89d
       version: -1
       name: Remove user from channel
-      description: Removes a member from a chat channel. A channel can have one or
-        many members.
+      description: Removes a member from a chat channel. A channel can have one or many members.
       script: '|||zoom-remove-from-channel'
       type: regular
       iscommand: true
@@ -763,8 +762,7 @@ tasks:
       id: 14225472-3e51-4c2c-825a-153183d41cb9
       version: -1
       name: Send message to Channel
-      description: Sends a file on Zoom to either an individual user in your contact
-        list or a channel of which you are a member.
+      description: Sends a file on Zoom to either an individual user in your contact list or a channel of which you are a member.
       script: '|||zoom-send-message'
       type: regular
       iscommand: true
@@ -1274,3 +1272,6 @@ view: |-
 inputs: []
 outputs: []
 sourceplaybookid: Zoom_Test
+supportedModules:
+- xsiam
+- agentix

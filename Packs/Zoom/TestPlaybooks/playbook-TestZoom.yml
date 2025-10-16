@@ -16,7 +16,7 @@ tasks:
       description: ""
     nexttasks:
       "#none#":
-        - "1"
+      - "1"
     separatecontext: false
     view: |-
       {
@@ -47,7 +47,7 @@ tasks:
       brand: ""
     nexttasks:
       "#none#":
-        - "2"
+      - "2"
     scriptarguments:
       all:
         simple: "yes"
@@ -81,7 +81,7 @@ tasks:
       brand: ""
     nexttasks:
       "#none#":
-        - "3"
+      - "3"
     separatecontext: false
     view: |-
       {
@@ -113,7 +113,7 @@ tasks:
       description: Create a new user in zoom account
     nexttasks:
       "#none#":
-        - "4"
+      - "4"
     scriptarguments:
       email:
         simple: ${GeneratedEmail}
@@ -152,7 +152,7 @@ tasks:
       description: Delete a user from Zoom
     nexttasks:
       "#none#":
-        - "5"
+      - "5"
     scriptarguments:
       user:
         simple: ${Zoom.User.email}
@@ -187,44 +187,44 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-        - "6"
+      - "6"
     separatecontext: false
     conditions:
-      - label: "yes"
-        condition:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: Zoom.User.first_name
-                iscontext: true
-              right:
-                value:
-                  simple: Testy
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: Zoom.User.last_name
-                iscontext: true
-              right:
-                value:
-                  simple: McTesty
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: Zoom.User.email
-                iscontext: true
-              right:
-                value:
-                  simple: GeneratedEmail
-                iscontext: true
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: Zoom.User.type
-                iscontext: true
-              right:
-                value:
-                  simple: "1"
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Zoom.User.first_name
+            iscontext: true
+          right:
+            value:
+              simple: Testy
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Zoom.User.last_name
+            iscontext: true
+          right:
+            value:
+              simple: McTesty
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Zoom.User.email
+            iscontext: true
+          right:
+            value:
+              simple: GeneratedEmail
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Zoom.User.type
+            iscontext: true
+          right:
+            value:
+              simple: "1"
     view: |-
       {
         "position": {
@@ -254,7 +254,7 @@ tasks:
       brand: ""
     nexttasks:
       "#none#":
-        - "7"
+      - "7"
     scriptarguments:
       all:
         simple: "yes"
@@ -288,7 +288,7 @@ tasks:
       brand: ""
     nexttasks:
       "#none#":
-        - "11"
+      - "11"
     separatecontext: false
     view: |-
       {
@@ -319,7 +319,7 @@ tasks:
       brand: ""
     nexttasks:
       "#none#":
-        - "16"
+      - "16"
     scriptarguments:
       all:
         simple: "yes"
@@ -354,7 +354,7 @@ tasks:
       description: List the existing users
     nexttasks:
       "#none#":
-        - "17"
+      - "17"
     separatecontext: false
     view: |-
       {
@@ -384,19 +384,19 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-        - "18"
+      - "18"
     separatecontext: false
     conditions:
-      - label: "yes"
-        condition:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: Zoom.User.email
-                iscontext: true
-              right:
-                value:
-                  simple: admin@demistodev.com
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Zoom.User.email
+            iscontext: true
+          right:
+            value:
+              simple: admin@demistodev.com
     view: |-
       {
         "position": {
@@ -427,7 +427,7 @@ tasks:
       description: Create a new zoom meeting (scheduled or instant)
     nexttasks:
       "#none#":
-        - "19"
+      - "19"
     scriptarguments:
       topic:
         simple: Testing
@@ -487,7 +487,7 @@ tasks:
     isautoswitchedtoquietmode: false
     nexttasks:
       "#none#":
-        - "22"
+      - "22"
     continueonerrortype: ""
   "20":
     id: "20"
@@ -535,7 +535,7 @@ tasks:
       brand: ""
     nexttasks:
       "#none#":
-        - "27"
+      - "27"
     scriptarguments:
       topic:
         simple: Testing#2
@@ -576,7 +576,7 @@ tasks:
       brand: ""
     nexttasks:
       "#none#":
-        - "24"
+      - "24"
     scriptarguments:
       meeting_id:
         simple: ${Zoom.Meeting.id}
@@ -610,7 +610,7 @@ tasks:
       brand: ""
     nexttasks:
       "#none#":
-        - "25"
+      - "25"
     scriptarguments:
       fields:
         simple: id
@@ -648,7 +648,7 @@ tasks:
       brand: ""
     nexttasks:
       "#none#":
-        - "26"
+      - "26"
     scriptarguments:
       user_id:
         simple: admin@demistodev.com
@@ -681,60 +681,60 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-        - "20"
-        - "20"
-        - "20"
-        - "20"
-        - "20"
-        - "20"
-        - "20"
-        - "20"
-        - "20"
-        - "20"
-        - "20"
-        - "20"
-        - "20"
-        - "20"
-        - "20"
-        - "20"
-        - "20"
-        - "20"
-        - "20"
-        - "20"
-        - "20"
-        - "20"
-        - "20"
-        - "20"
-        - "20"
-        - "20"
-        - "20"
-        - "20"
-        - "20"
-        - "20"
-        - "20"
-        - "20"
-        - "20"
-        - "20"
-        - "20"
-        - "20"
-        - "20"
-        - "20"
-        - "20"
-        - "20"
-        - "20"
-        - "20"
+      - "20"
+      - "20"
+      - "20"
+      - "20"
+      - "20"
+      - "20"
+      - "20"
+      - "20"
+      - "20"
+      - "20"
+      - "20"
+      - "20"
+      - "20"
+      - "20"
+      - "20"
+      - "20"
+      - "20"
+      - "20"
+      - "20"
+      - "20"
+      - "20"
+      - "20"
+      - "20"
+      - "20"
+      - "20"
+      - "20"
+      - "20"
+      - "20"
+      - "20"
+      - "20"
+      - "20"
+      - "20"
+      - "20"
+      - "20"
+      - "20"
+      - "20"
+      - "20"
+      - "20"
+      - "20"
+      - "20"
+      - "20"
+      - "20"
     separatecontext: false
     conditions:
-      - label: "yes"
-        condition:
-          - - operator: greaterThanOrEqual
-              left:
-                value:
-                  simple: Zoom.Meeting.total_records
-                iscontext: true
-              right:
-                value:
-                  simple: "2"
+    - label: "yes"
+      condition:
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: Zoom.Meeting.total_records
+            iscontext: true
+          right:
+            value:
+              simple: "2"
     continueonerrortype: ""
     view: |-
       {
@@ -765,7 +765,7 @@ tasks:
       brand: ""
     nexttasks:
       "#none#":
-        - "23"
+      - "23"
     scriptarguments:
       seconds:
         simple: "2"
@@ -800,3 +800,6 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.0.0
+supportedModules:
+- xsiam
+- agentix

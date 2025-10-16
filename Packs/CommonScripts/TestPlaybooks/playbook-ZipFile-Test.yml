@@ -84,8 +84,7 @@ tasks:
       id: f67ae4a7-1e1d-4cbe-8aa4-c698016b4295
       version: -1
       name: UnzipFile
-      description: Unzip a file using fileName or entryID to specify a file. Files
-        unzipped will be pushed to the war room and names will be pushed to the context.
+      description: Unzip a file using fileName or entryID to specify a file. Files unzipped will be pushed to the war room and names will be pushed to the context.
       scriptName: UnzipFile
       type: regular
       iscommand: false
@@ -278,8 +277,7 @@ tasks:
       id: 26ec4556-c5ed-41fc-8375-88de51034824
       version: -1
       name: Unzip with wrong password
-      description: Unzip a file using fileName or entryID to specify a file. Unzipped
-        files will be loaded to the War Room and names will be put into the context.
+      description: Unzip a file using fileName or entryID to specify a file. Unzipped files will be loaded to the War Room and names will be put into the context.
       scriptName: UnzipFile
       type: regular
       iscommand: false
@@ -662,8 +660,7 @@ tasks:
       id: 7016ce7d-f825-4199-87c6-cbdfbcb49871
       version: -1
       name: Unzip
-      description: Unzip a file using fileName or entryID to specify a file. Unzipped
-        files will be loaded to the War Room and names will be put into the context.
+      description: Unzip a file using fileName or entryID to specify a file. Unzipped files will be loaded to the War Room and names will be put into the context.
       scriptName: UnzipFile
       type: regular
       iscommand: false
@@ -936,6 +933,9 @@ inputs:
     simple: "123"
   required: false
   description: ""
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
 fromversion: 5.0.0
+supportedModules:
+- xsiam
+- agentix

@@ -556,7 +556,7 @@ script:
       name: role_name
     description: Adds the user to a project.
     name: jira-add-user-to-project
-  - arguments: 
+  - arguments:
     - description: An ID or key for a service project to list all organizations associated with.
       name: projectKey
       required: false
@@ -617,4 +617,5 @@ supportedModules:
 - X3
 - X5
 - agentix
+- xsiam
 fromversion: 5.0.0

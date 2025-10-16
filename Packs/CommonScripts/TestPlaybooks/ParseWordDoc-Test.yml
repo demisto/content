@@ -113,8 +113,7 @@ tasks:
       id: b17b9d43-c8d3-4e00-812f-8c0f33c67dd3
       version: -1
       name: Parse Word
-      description: Takes an input docx file (entryID) as an input and saves an output
-        text file (file entry) with the original file's contents.
+      description: Takes an input docx file (entryID) as an input and saves an output text file (file entry) with the original file's contents.
       scriptName: ParseWordDoc
       type: regular
       iscommand: false
@@ -221,3 +220,6 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.0.0
+supportedModules:
+- xsiam
+- agentix

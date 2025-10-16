@@ -106,8 +106,7 @@ tasks:
       id: 5c86e0fd-5b8b-46ce-8ee8-905b478836fb
       version: -1
       name: Remove search
-      description: Remove compliance search by name from the Security & Compliance
-        Center.
+      description: Remove compliance search by name from the Security & Compliance Center.
       script: '|||o365-sc-remove-search'
       type: regular
       iscommand: true
@@ -226,8 +225,7 @@ tasks:
       id: b9c86fad-4ad5-41d3-8c90-bd87535b5516
       version: -1
       name: Remove search
-      description: Remove compliance search by name from the Security & Compliance
-        Center.
+      description: Remove compliance search by name from the Security & Compliance Center.
       script: '|||o365-sc-remove-search'
       type: regular
       iscommand: true
@@ -375,8 +373,7 @@ tasks:
       id: b6f21599-2d87-426c-8072-c9ac2523d0c8
       version: -1
       name: Remove search action
-      description: Remove compliance search action by search action name from the
-        Security & Compliance Center.
+      description: Remove compliance search action by search action name from the Security & Compliance Center.
       script: '|||o365-sc-remove-search-action'
       type: regular
       iscommand: true
@@ -452,8 +449,7 @@ tasks:
       id: 70c827d3-1c21-4ce5-8bfa-67c67267c01f
       version: -1
       name: Set search
-      description: Modify non-running compliance search in the Security & Compliance
-        Center.
+      description: Modify non-running compliance search in the Security & Compliance Center.
       script: '|||o365-sc-set-search'
       type: regular
       iscommand: true
@@ -533,8 +529,7 @@ tasks:
       id: e3a6250b-ff26-486e-891c-1f4e63704e64
       version: -1
       name: Remove search action
-      description: Remove compliance search action by search action name from the
-        Security & Compliance Center.
+      description: Remove compliance search action by search action name from the Security & Compliance Center.
       script: '|||o365-sc-remove-search-action'
       type: regular
       iscommand: true
@@ -710,8 +705,7 @@ tasks:
       id: 6924f760-17a0-4224-81c2-6d48fcdf30eb
       version: -1
       name: Start search
-      description: Starts stopped, completed, or not started compliance search in
-        the Security & Compliance Center.
+      description: Starts stopped, completed, or not started compliance search in the Security & Compliance Center.
       script: '|||o365-sc-start-search'
       type: regular
       iscommand: true
@@ -758,33 +752,33 @@ inputs:
     simple: Demisto-Test
   required: true
   description: The name of the compliance search.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: kql
   value:
     simple: Rodrigo
   required: true
-  description: Text search string or a query that's formatted by using the Keyword
-    Query Language (KQL).
-  playbookInputQuery: null
+  description: Text search string or a query that's formatted by using the Keyword Query Language (KQL).
+  playbookInputQuery:
 - key: description
   value:
     simple: Demisto description
   required: true
   description: Description for the compliance search.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: allow_not_found_exchange_locations
   value:
     simple: "true"
   required: true
-  description: Whether to include mailboxes other than regular user mailboxes in the
-    compliance search.
-  playbookInputQuery: null
+  description: Whether to include mailboxes other than regular user mailboxes in the compliance search.
+  playbookInputQuery:
 - key: exchange_location
   value:
     simple: avishai@demistodev.onmicrosoft.com,notexists@demistodev.onmicrosoft.com
   required: true
-  description: Mailboxes/distribution group to include, or you can use the value "All"
-    to include all. (Comma separated)
-  playbookInputQuery: null
+  description: Mailboxes/distribution group to include, or you can use the value "All" to include all. (Comma separated)
+  playbookInputQuery:
 version: -1
 fromversion: 5.5.0
+supportedModules:
+- xsiam
+- agentix

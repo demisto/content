@@ -74,8 +74,7 @@ tasks:
       id: 686b1e9f-d468-49e2-8b85-4832b65d93e3
       version: -1
       name: Parse HTML Indicators
-      description: This script will extract indicators from given HTML and will handle
-        bad top-level domains to avoid false positives caused by file extensions.
+      description: This script will extract indicators from given HTML and will handle bad top-level domains to avoid false positives caused by file extensions.
       scriptName: ParseHTMLIndicators
       type: regular
       iscommand: false
@@ -230,3 +229,6 @@ inputs: []
 outputs: []
 fromversion: 5.5.0
 description: This is a test playbook for ParseHTMLIndicators automation.
+supportedModules:
+- xsiam
+- agentix

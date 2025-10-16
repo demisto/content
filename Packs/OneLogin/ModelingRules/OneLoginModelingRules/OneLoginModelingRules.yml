@@ -5,3 +5,6 @@ toversion: 6.9.9
 tags: onelogin
 rules: ''
 schema: ''
+supportedModules:
+- xsiam
+- agentix

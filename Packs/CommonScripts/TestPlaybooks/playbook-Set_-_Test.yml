@@ -204,10 +204,7 @@ tasks:
       - "4"
     scriptarguments:
       message:
-        simple: The number was not saved as string, or the number was saved as string
-          instead of a number. Does your PR change the Stringify parameter of the
-          Set command? Or was Demisto suddenly able to save the number 14444444444444444444
-          as the actual number it is?
+        simple: The number was not saved as string, or the number was saved as string instead of a number. Does your PR change the Stringify parameter of the Set command? Or was Demisto suddenly able to save the number 14444444444444444444 as the actual number it is?
     reputationcalc: 1
     separatecontext: false
     continueonerrortype: ""
@@ -355,8 +352,7 @@ tasks:
       id: 36c3c8c1-1fb9-4508-8080-1f2f3573b285
       version: -1
       name: Verify Context
-      description: Check whether the values provided in arguments are equal. If either
-        of the arguments are missing, no is returned.
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
       scriptName: AreValuesEqual
       type: condition
       iscommand: false
@@ -468,8 +464,7 @@ tasks:
       id: dc69dffc-68c8-4f08-8093-86afb3ff9677
       version: -1
       name: Verify Context
-      description: Check whether the values provided in arguments are equal. If either
-        of the arguments are missing, no is returned.
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
       scriptName: AreValuesEqual
       type: condition
       iscommand: false
@@ -733,3 +728,6 @@ view: |-
     }
   }
 fromversion: 5.0.0
+supportedModules:
+- xsiam
+- agentix

@@ -398,3 +398,6 @@ inputs: []
 outputs: []
 quiet: true
 fromversion: 6.10.0
+supportedModules:
+- xsiam
+- agentix

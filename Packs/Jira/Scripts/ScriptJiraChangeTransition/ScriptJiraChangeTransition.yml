@@ -16,9 +16,3 @@ comment: |-
   This script applies the transition supplied by the user from the Jira Transitions incident field. It gets the new Jira status after applying the transition and updates the Cortex XSOAR incident status.
 tests:
 - No tests
-supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
-- agentix

@@ -57,8 +57,7 @@ tasks:
         simple: URL.Data
       stringify: {}
       value:
-        simple: http://www.software995.net/bin/pdf995s.exe, https://www.demisto.com,
-          https://www.paloaltonetworks.com
+        simple: http://www.software995.net/bin/pdf995s.exe, https://www.demisto.com, https://www.paloaltonetworks.com
     separatecontext: false
     view: |-
       {
@@ -272,3 +271,6 @@ view: |-
   }
 inputs: []
 outputs: []
+supportedModules:
+- xsiam
+- agentix
