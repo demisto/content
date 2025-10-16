@@ -5,7 +5,7 @@ import dateparser
 import demistomock as demisto
 import pytest
 import requests_mock
-from CommonServerPython import DemistoException, snakify
+from CommonServerPython import DemistoException, snakify, outputPaths
 from freezegun import freeze_time
 from MicrosoftDefenderAdvancedThreatProtection import (
     MICROSOFT_DEFENDER_FOR_ENDPOINT_API,
@@ -420,6 +420,26 @@ ALERT_RELATED_USER_API_RESPONSE = {
     "logOnMachinesCount": 1,
     "isDomainAdmin": "false",
     "isOnlyNetworkUser": "false",
+}
+
+GET_FILE_API_RESPONSE = {
+    "@odata.context": "https://api.security.microsoft.com/api/$metadata#Files/$entity",
+    "sha1": "4388963aaa83afe2042a46a3c017ad50bdcdafb3",
+    "sha256": "413c58c8267d2c8648d8f6384bacc2ae9c929b2b96578b6860b5087cd1bd6462",
+    "globalPrevalence": 180022,
+    "globalFirstObserved": "2017-09-19T03:51:27.6785431Z",
+    "globalLastObserved": "2020-01-06T03:59:21.3229314Z",
+    "size": 22139496,
+    "fileType": "APP",
+    "isPeFile": True,
+    "filePublisher": "CHENGDU YIWO Tech Development Co., Ltd.",
+    "fileProductName": "EaseUS MobiSaver for Android",
+    "signer": "CHENGDU YIWO Tech Development Co., Ltd.",
+    "issuer": "VeriSign Class 3 Code Signing 2010 CA",
+    "signerHash": "6c3245d4a9bc0244d99dff27af259cbbae2e2d16",
+    "isValidCertificate": False,
+    "determinationType": "Pua",
+    "determinationValue": "PUA:Win32/FusionCore",
 }
 
 FILE_STATISTICS_API_RESPONSE = {
@@ -3808,3 +3828,70 @@ def test_list_auth_permissions_command(mocker):
     command_results = list_auth_permissions_command(client_mocker)
 
     assert command_results.readable_output == "### Permissions\nEvent.Write\nUser.Read"
+
+
+def test_file_command(mocker):
+    """
+    Given:
+    - SHA1 File hash
+
+    When:
+    - Calling the file_command function
+
+    Then:
+    - Assert correct context output and raw response
+    """
+    from MicrosoftDefenderAdvancedThreatProtection import file_command, get_file_data
+
+    # Set
+    response = GET_FILE_API_RESPONSE
+    mocker.patch.object(client_mocker, "get_file_data", return_value=response)
+
+    # Arrange
+    mocker.patch.object(demisto, "args", return_value={"file": "4388963aaa83afe2042a46a3c017ad50bdcdafb3"})
+    results = file_command(client_mocker, args=demisto.args())
+
+    entry_context = results[0].to_context()["EntryContext"]
+
+    assert results[0].raw_response == get_file_data(response)
+    assert entry_context == {
+        f"{outputPaths.get('file')}": [
+            {
+                "Hashes": [
+                    {"type": "SHA1", "value": "4388963aaa83afe2042a46a3c017ad50bdcdafb3"},
+                    {"type": "SHA256", "value": "413c58c8267d2c8648d8f6384bacc2ae9c929b2b96578b6860b5087cd1bd6462"},
+                ],
+                "SHA1": "4388963aaa83afe2042a46a3c017ad50bdcdafb3",
+                "SHA256": "413c58c8267d2c8648d8f6384bacc2ae9c929b2b96578b6860b5087cd1bd6462",
+                "Type": "APP",
+                "Malicious": {"Vendor": "Microsoft Defender ATP", "Description": None},
+            }
+        ],
+        "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": [
+            {
+                "Indicator": "4388963aaa83afe2042a46a3c017ad50bdcdafb3",
+                "Type": "file",
+                "Vendor": "Microsoft Defender ATP",
+                "Score": 3,
+            }
+        ],
+        "MicrosoftATP.File(val.Sha1 && val.Sha1 == obj.Sha1)": {
+            "Sha1": "4388963aaa83afe2042a46a3c017ad50bdcdafb3",
+            "Size": 22139496,
+            "Sha256": "413c58c8267d2c8648d8f6384bacc2ae9c929b2b96578b6860b5087cd1bd6462",
+            "GlobalPrevalence": 180022,
+            "GlobalFirstObserved": "2017-09-19T03:51:27.6785431Z",
+            "GlobalLastObserved": "2020-01-06T03:59:21.3229314Z",
+            "SizeInBytes": 22139496,
+            "FileType": "APP",
+            "IsPeFile": True,
+            "FilePublisher": "CHENGDU YIWO Tech Development Co., Ltd.",
+            "FileProductName": "EaseUS MobiSaver for Android",
+            "Signer": "CHENGDU YIWO Tech Development Co., Ltd.",
+            "Issuer": "VeriSign Class 3 Code Signing 2010 CA",
+            "SignerHash": "6c3245d4a9bc0244d99dff27af259cbbae2e2d16",
+            "IsValidCertificate": False,
+            "DeterminationType": "Pua",
+            "DeterminationValue": "PUA:Win32/FusionCore",
+        },
+    }
