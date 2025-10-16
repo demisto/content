@@ -621,6 +621,59 @@ script:
         description: The name of the S3 bucket from which the website configuration will be removed.
         required: true
 
+  - name: aws-s3-bucket-website-disable-hosting-quick-action
+    description: Removes the static website hosting configuration from an S3 bucket by running the aws s3api delete-bucket-website command. Successful execution requires the s3:DeleteBucketWebsite permission.
+    prettyname: Disable S3 Website Hosting
+    hidden: true
+    quickaction: true
+    arguments:
+      - name: account_id
+        prettyname: Account ID
+        description: The AWS account ID.
+        required: true
+      - name: region
+        prettyname: Region
+        description: The AWS region.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+      - name: bucket
+        prettyname: Bucket Name
+        description: The name of the S3 bucket from which the website configuration will be removed.
+        required: true
+
   - name: aws-s3-bucket-ownership-controls-put
     description: Creates or modifies OwnershipControls for an Amazon S3 bucket.
     arguments:
@@ -1990,7 +2043,7 @@ script:
 
   - name: aws-rds-db-instance-modify-enable-automatic-backup-quick-action
     description: Enables the automatic backup settings for the RDS dB instance with a default retention period of 30 days by running the aws rds modify-db-instance command in your environment. Successful execution requires 'rds:ModifyDBInstance' permission.
-    prettyname: Enable Automatic Backup for RDS dB
+    prettyname: Enable Automatic Backup for RDS DB
     hidden: true
     quickaction: true
     arguments:
@@ -3798,6 +3851,112 @@ script:
     - contextPath: AWS.CloudTrail.Trail.IsOrganizationTrail
       description: Weather the trail is an organization trail.
       type: boolean
+
+  - name: aws-cloudtrail-trail-enable-log-validation-quick-action
+    description: Enables log file validation for the reported CloudTrail by running the aws-cloudtrail-update-trail command in your environment. Successful execution requires 'cloudtrail:UpdateTrail' permission.
+    prettyname: Enable CloudTrail Log Validation
+    hidden: true
+    quickaction: true
+    arguments:
+      - name: account_id
+        prettyname: Account ID
+        description: The AWS account ID.
+        required: true
+      - name: region
+        prettyname: Region
+        description: The AWS region.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+      - name: name
+        prettyname: Name
+        description: The name of the trail or trail ARN.
+        required: true
+      - name: enable_log_file_validation
+        description: Weather log file validation is enabled. The default is false.
+        defaultValue: 'true'
+        hidden: true
+    outputs:
+      - contextPath: AWS.CloudTrail.Trail.TrailARN
+        description: The Amazon Resource Name (ARN) of the trail.
+        type: string
+      - contextPath: AWS.CloudTrail.Trail.Name
+        description: The name of the trail.
+        type: string
+      - contextPath: AWS.CloudTrail.Trail.S3BucketName
+        description: The name of the Amazon S3 bucket into which CloudTrail delivers your trail files.
+        type: string
+      - contextPath: AWS.CloudTrail.Trail.S3KeyPrefix
+        description: The Amazon S3 key prefix that comes after the name of the bucket you have designated for log file delivery.
+        type: string
+      - contextPath: AWS.CloudTrail.Trail.SnsTopicName
+        description: The name of the Amazon SNS topic defined for notification of log file delivery.
+        type: string
+      - contextPath: AWS.CloudTrail.Trail.SnsTopicARN
+        description: The Amazon Resource Name (ARN) of the Amazon SNS topic defined for notification of log file delivery.
+        type: string
+      - contextPath: AWS.CloudTrail.Trail.IncludeGlobalServiceEvents
+        description: Set to True to include AWS API calls from AWS global services such as IAM.
+        type: boolean
+      - contextPath: AWS.CloudTrail.Trail.IsMultiRegionTrail
+        description: Weather the trail exists only in one region or exists in all regions.
+        type: boolean
+      - contextPath: AWS.CloudTrail.Trail.HomeRegion
+        description: The region in which the trail was created.
+        type: string
+      - contextPath: AWS.CloudTrail.Trail.LogFileValidationEnabled
+        description: Weather log file validation is enabled.
+        type: boolean
+      - contextPath: AWS.CloudTrail.Trail.CloudWatchLogsLogGroupArn
+        description: Amazon Resource Name (ARN), a unique identifier that represents the log group to which CloudTrail logs will be delivered.
+        type: string
+      - contextPath: AWS.CloudTrail.Trail.CloudWatchLogsRoleArn
+        description: The role for the CloudWatch Logs endpoint to assume to write to a user's log group.
+        type: string
+      - contextPath: AWS.CloudTrail.Trail.KMSKeyId
+        description: The KMS key ID that encrypts the logs delivered by CloudTrail.
+        type: string
+      - contextPath: AWS.CloudTrail.Trail.HasCustomEventSelectors
+        description: Specifies if the trail has custom event selectors.
+        type: boolean
+      - contextPath: AWS.CloudTrail.Trail.HasInsightSelectors
+        description: Weather a trail has insight selectors enabled.
+        type: boolean
+      - contextPath: AWS.CloudTrail.Trail.IsOrganizationTrail
+        description: Weather the trail is an organization trail.
+        type: boolean
 
   - name: aws-cloudtrail-logging-start
     description: Starts the recording of AWS API calls and log file delivery for a trail. For a trail that is enabled in all regions, this operation must be called from the region in which the trail was created. This operation cannot be called on the shadow trails (replicated trails in other regions) of a trail that is enabled in all regions.
