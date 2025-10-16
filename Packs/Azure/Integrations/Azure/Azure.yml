@@ -64,8 +64,7 @@ configuration:
 description: Cloud integrations are installed from the **Data Sources** page. To configure a cloud integration, go to Settings > Data Sources and click "Add Data Source", select Azure, then in Advanced Settings > Security Capabilities, enable "Automation".
 display: Azure
 name: Azure
-script:
-  commands:
+commands:
   - arguments:
     - description: The subscription ID.
       name: subscription_id
@@ -1824,7 +1823,6 @@ script:
     - contextPath: Azure.CosmosDB.properties.writeLocations
       description: An array that contains the write locations enabled for the Cosmos DB account.
       type: List
-<<<<<<< HEAD
   - name: azure-nsg-security-groups-list
     description: List all network security groups.
     outputs:
