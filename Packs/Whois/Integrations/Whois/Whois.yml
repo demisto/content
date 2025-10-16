@@ -51,7 +51,7 @@ configuration:
   type: 15
   section: Collect
 - additionalinfo: The number of times to try when getting a Rate Limit response.
-  defaultvalue: '0'
+  defaultvalue: '2'
   display: Rate Limit Retry Count
   name: rate_limit_retry_count
   type: 0
@@ -1328,7 +1328,7 @@ script:
       name: ip
       required: true
     - description: 'The number of times to try when getting a Rate Limit response.'
-      defaultValue: 0
+      defaultValue: 2
       name: rate_limit_retry_count
     - description: 'The number of seconds to wait each iteration when getting a Rate Limit response.'
       defaultValue: 120

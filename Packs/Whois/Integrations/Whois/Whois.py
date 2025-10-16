@@ -12,7 +12,7 @@ import whois
 from whois.parser import PywhoisError  # pylint: disable=E0401,E0611
 import dateparser.search
 
-RATE_LIMIT_RETRY_COUNT_DEFAULT: int = 0
+RATE_LIMIT_RETRY_COUNT_DEFAULT: int = 2
 RATE_LIMIT_WAIT_SECONDS_DEFAULT: int = 120
 RATE_LIMIT_ERRORS_SUPPRESSEDL_DEFAULT: bool = False
 
@@ -3172,18 +3172,19 @@ def get_whois_ip(
 ) -> Optional[Dict[str, Any]]:
     """
     Performs an Registration Data Access Protocol (RDAP) lookup for an IP.
+    Uses multiple RDAP sources and built-in retry logic to handle rate limiting.
 
     See https://ipwhois.readthedocs.io/en/latest/RDAP.html
 
     Arguments:
         - `ip` (``str``): The IP to perform the lookup for.
         - `retry_count` (``int``): The number of times to retry the lookup in case of rate limiting error.
-        - `rate_limit_timeout` (``int``): How long in seconds to wait before retrying the lookup in case of rate limiting error.
+        - `rate_limit_timeout` (``int``): Timeout in seconds to wait before retrying the lookup in case of rate limiting error.
+        - `rate_limit_errors_suppressed` (``bool``): Whether to suppress rate limit errors.
 
     Returns:
         - `Dict[str, None]` with the result of the lookup.
     """
-
     from urllib.request import build_opener, ProxyHandler
 
     proxy_opener = None
@@ -3195,19 +3196,65 @@ def get_whois_ip(
     else:
         ip_obj = ipwhois.IPWhois(ip)
 
-    try:
-        rate_limit_timeout_actual = rate_limit_timeout
-        if retry_count > 0:
-            rate_limit_timeout_actual = 0
-        ret_value = ip_obj.lookup_rdap(depth=1, retry_count=retry_count, rate_limit_timeout=rate_limit_timeout_actual)
-        return ret_value
-    except urllib.error.HTTPError as e:
-        if rate_limit_errors_suppressed:
-            demisto.debug(f"Suppressed HTTPError when trying to lookup rdap info. Error: {e}")
-            return None
+    # Try multiple RDAP sources to distribute load and avoid rate limits
+    rdap_sources = [
+        None,  # Default (auto-detected)
+        "arin",  # American Registry for Internet Numbers
+        "ripe",  # Réseaux IP Européens Network Coordination Centre
+        "apnic",  # Asia-Pacific Network Information Centre
+        "lacnic",  # Latin America and Caribbean Network Information Centre
+        "afrinic",  # African Network Information Centre
+    ]
 
-        demisto.error(f"HTTPError when trying to lookup rdap info. Error: {e}")
-        raise e
+    last_exception = None
+
+    for rdap_source in rdap_sources:
+        try:
+            demisto.debug(f"Attempting RDAP lookup for {ip} using source: {rdap_source or 'auto'}")
+
+            if rdap_source:
+                # Try specific RDAP source with built-in retry logic
+                ret_value = ip_obj.lookup_rdap(
+                    depth=1,
+                    bootstrap=True,
+                    rdap_url=f"https://rdap.{rdap_source}.net",
+                    retry_count=retry_count,
+                    rate_limit_timeout=rate_limit_timeout,
+                )
+            else:
+                # Use default auto-detection with built-in retry logic
+                ret_value = ip_obj.lookup_rdap(depth=1, retry_count=retry_count, rate_limit_timeout=rate_limit_timeout)
+
+            demisto.debug(f"RDAP lookup successful for {ip} using source: {rdap_source or 'auto'}")
+            return ret_value
+
+        except ipwhois.exceptions.HTTPRateLimitError as e:
+            last_exception = e
+            demisto.debug(f"Rate limit exceeded for {ip} with source {rdap_source or 'auto'}, trying next source")
+            continue
+
+        except (urllib.error.HTTPError, ipwhois.exceptions.HTTPLookupError) as e:
+            last_exception = e
+            demisto.debug(f"HTTP error for {ip} with source {rdap_source or 'auto'}: {e}, trying next source")
+            continue
+
+        except Exception as e:
+            last_exception = e
+            demisto.debug(f"Unexpected error for {ip} with source {rdap_source or 'auto'}: {e}, trying next source")
+            continue
+
+    # All sources exhausted
+    if rate_limit_errors_suppressed and isinstance(last_exception, ipwhois.exceptions.HTTPRateLimitError):
+        demisto.debug(f"Suppressed rate limit error for IP {ip}: {last_exception}")
+        return None
+    elif isinstance(last_exception, urllib.error.HTTPError):
+        demisto.error(f"HTTPError when trying to lookup RDAP info for {ip}: {last_exception}")
+        raise last_exception
+    else:
+        demisto.error(f"Failed to lookup RDAP info for {ip} after trying all sources: {last_exception}")
+        if last_exception:
+            raise last_exception
+        return None
 
 
 def get_param_or_arg(param_key: str, arg_key: str):
