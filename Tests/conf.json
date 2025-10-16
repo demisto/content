@@ -429,6 +429,13 @@
             "timeout": 1500
         },
         {
+            "integrations": "SecurityAndCompliance",
+            "playbookID": "O365-SecurityAndCompliance-ContextResults-Test",
+            "fromversion": "5.5.0",
+            "memory_threshold": 300,
+            "timeout": 1500
+        },
+        {
             "integrations": "SecurityAndComplianceV2",
             "playbookID": "O365-SecurityAndComplianceV2-Test",
             "fromversion": "5.5.0",
@@ -5958,6 +5965,7 @@
         "PAN-OS - Block IP and URL - External Dynamic List v2 Test": "uses deprecated integration, un-skip when playbook is updated",
         "MISP V2 Test": "The integration is deprecated as we released MISP V3",
         "Github IAM - Test Playbook": "Issue 32383",
+        "O365-SecurityAndCompliance-ContextResults-Test": "Deprecated. There is another implementation for V2",
         "Workday - Test": "No credentials Issue 29595",
         "McAfee-MAR_Test": "Issue CIAC-4521",
         "G Suite Security Alert Center-Test": "Issue CIAC-5682",
