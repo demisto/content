@@ -152,6 +152,9 @@ REQUIRED_ROLE_PERMISSIONS = [
     "Microsoft.Insights/logprofiles/write",
     "Microsoft.Compute/disks/read",
     "Microsoft.Compute/disks/write",
+    "Microsoft.Compute/virtualMachines/read",
+    "Microsoft.Compute/virtualMachines/start/action",
+    "Microsoft.Compute/virtualMachines/deallocate/action",
     "Microsoft.ContainerRegistry/registries/read",
     "Microsoft.ContainerRegistry/registries/write",
     "Microsoft.KeyVault/vaults/read",
@@ -164,6 +167,7 @@ REQUIRED_ROLE_PERMISSIONS = [
     "Microsoft.Sql/servers/databases/transparentDataEncryption/write",
     "Microsoft.Resources/subscriptions/read",
     "Microsoft.Resources/subscriptions/resourceGroups/read",
+
 ]
 REQUIRED_API_PERMISSIONS = ["GroupMember.ReadWrite.All", "RoleManagement.ReadWrite.Directory"]
 
@@ -1496,8 +1500,23 @@ class AzureClient:
             )
 
     def start_vm_request(self, subscription_id: str, resource_group_name: str, vm_name: str):
+        """
+        Starts the specified virtual machine in a given resource group.
+
+        Args:
+            subscription_id (str): The ID of the Azure subscription.
+            resource_group_name (str): The name of the resource group containing the virtual machine.
+            vm_name (str): The name of the virtual machine to start.
+
+        Returns:
+            The HTTP response object of the start request.
+
+        Docs:
+            https://learn.microsoft.com/en-us/rest/api/compute/virtual-machines/start?view=rest-azure-2024-04-01
+        """
         full_url = (
-            f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Compute/virtualMachines/{vm_name}/start"
+            f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Compute/"
+            f"virtualMachines/{vm_name}/start"
         )
         try:
             return self.ms_client.http_request(method="POST", full_url=full_url, params={"api-version": VM_API_VERSION}, resp_type="response")
@@ -1511,7 +1530,23 @@ class AzureClient:
                 resource_group_name=resource_group_name,
             )
 
-    def poweroff_vm_request(self, subscription_id: str, resource_group_name: str, vm_name: str, skip_shutdown: str):
+    def poweroff_vm_request(self, subscription_id: str, resource_group_name: str, vm_name: str, skip_shutdown: bool):
+        """
+        Powers off the specified virtual machine in a given resource group.
+
+        Args:
+            subscription_id (str): The ID of the Azure subscription.
+            resource_group_name (str): The name of the resource group containing the virtual machine.
+            vm_name (str): The name of the virtual machine to power off.
+            skip_shutdown (str): Whether to skip the OS shutdown before powering off.
+                                Expected values are "true" or "false".
+
+        Returns:
+            The HTTP response object of the power-off request.
+
+        Docs:
+            https://learn.microsoft.com/en-us/rest/api/compute/virtual-machines/power-off?view=rest-azure-2024-04-01
+        """
         full_url = (
             f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Compute/"
             f"virtualMachines/{vm_name}/powerOff"
@@ -1530,6 +1565,21 @@ class AzureClient:
             )
 
     def get_vm_request(self, subscription_id: str, resource_group_name: str, vm_name: str, expand: str = "instanceView"):
+        """
+        Gets the specified virtual machine in a given resource group.
+
+        Args:
+            subscription_id (str): The ID of the Azure subscription.
+            resource_group_name (str): The name of the resource group containing the virtual machine.
+            vm_name (str): The name of the virtual machine.
+            expand (str, optional): Additional properties to include in the response. Defaults to "instanceView".
+
+        Returns:
+            The detailed virtual machine object, including optional expanded properties.
+
+        Docs:
+            https://learn.microsoft.com/en-us/rest/api/compute/virtual-machines/get?view=rest-azure-2024-04-01
+        """
         full_url = (
             f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Compute/"
             f"virtualMachines/{vm_name}"
@@ -1587,6 +1637,20 @@ class AzureClient:
             raise Exception(err_msg)
 
     def get_network_interface_request(self, subscription_id: str, resource_group_name: str, interface_name: str):
+        """
+        Gets the specified network interface in a given resource group.
+
+        Args:
+            subscription_id (str): The ID of the Azure subscription.
+            resource_group_name (str): The name of the resource group containing the network interface.
+            interface_name (str): The name of the network interface.
+
+        Returns:
+            The detailed network interface object.
+
+        Docs:
+            https://learn.microsoft.com/en-us/rest/api/virtualnetwork/network-interfaces/get?view=rest-virtualnetwork-2023-05-01
+        """
         full_url = (
             f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Network/"
             f"networkInterfaces/{interface_name}"
@@ -1605,10 +1669,15 @@ class AzureClient:
 
     def get_public_ip_details_request(self, subscription_id: str, resource_group_name: str, address_name: str):
         """
-        Gets the specified public IP address in a specified resource group.
+        Gets the specified public IP address in a given resource group.
+
+        Args:
+            subscription_id (str): The ID of the Azure subscription.
+            resource_group_name (str): The name of the resource group containing the public IP.
+            address_name (str): The name of the public IP address.
 
         Returns:
-            The detailed object.
+            The detailed public IP address object.
 
         Docs:
             https://learn.microsoft.com/en-us/rest/api/virtualnetwork/public-ip-addresses/get?view=rest-virtualnetwork-2024-10-01
@@ -1631,10 +1700,13 @@ class AzureClient:
 
     def get_all_public_ip_details_request(self, subscription_id: str):
         """
-        List all public IPs belonging to your Azure subscription
+        Lists all public IP addresses in the specified Azure subscription.
+
+        Args:
+            subscription_id (str): The ID of the Azure subscription.
 
         Returns:
-            List of PublicIPAddressListResult Objects
+            List of PublicIPAddressListResult objects.
 
         Docs:
             https://learn.microsoft.com/en-us/rest/api/virtualnetwork/public-ip-addresses/list-all?tabs=HTTP
@@ -2993,7 +3065,7 @@ def poweroff_vm_command(client: AzureClient, params: dict[str, Any], args: Dict[
     # Raise an exception if the VM isn't in the proper provisioning state
     client.validate_provisioning_state(resource_group, vm_name)
 
-    client.poweroff_vm_request(subscription_id, resource_group, vm_name, str(skip_shutdown))
+    client.poweroff_vm_request(subscription_id, resource_group, vm_name, skip_shutdown)
 
     vm_name = vm_name.lower()  # type: ignore
     vm = {"Name": vm_name, "ResourceGroup": resource_group, "PowerState": "VM stopping"}
@@ -3129,7 +3201,7 @@ def get_public_ip_details_command(client: AzureClient, params: dict[str, Any], a
         response = client.get_public_ip_details_request(subscription_id, resource_group, address_name)
         address_id = response.get("id")
     else:
-        response_for_all_ips = client.get_all_public_ip_details_request().get("value")
+        response_for_all_ips = client.get_all_public_ip_details_request(subscription_id).get("value")
         response = get_single_ip_details_from_list_of_ip_details(response_for_all_ips, address_name)
         if not response:
             raise ValueError(
