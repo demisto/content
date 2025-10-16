@@ -5,7 +5,6 @@ from CommonServerUserPython import *
 
 """ IMPORTS """
 
-
 import json
 import traceback
 from collections.abc import Callable, Collection
@@ -17,9 +16,7 @@ import urllib3
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-
 """ CONSTANTS """
-
 
 # Integration information
 INTEGRATION_NAME = "Analyst1"
@@ -72,7 +69,6 @@ ANALYST1_TO_XSOAR_TYPE: dict[str, str] = {
     "stixPattern": "string",  # Map stixPattern to string in XSOAR
     "commandLine": "string",  # Map commandLine to string in XSOAR
 }
-
 
 """ HELPER FUNCTIONS """
 
@@ -233,7 +229,8 @@ def calculate_enrichment_verdict_from_batch_results(results_for_search_value: li
 
     Priority logic:
     1. If ANY result has benign=True, return Benign (1)
-    2. If ANY result has entity.key in [ASSET, IN_SYSTEM_RANGE, IN_HOME_RANGE, IN_PRIVATE_RANGE, IGNORED_INDICATOR, IGNORED_ASSET], return Benign (1)
+    2. If ANY result has entity.key in [ASSET, IN_SYSTEM_RANGE, IN_HOME_RANGE, IN_PRIVATE_RANGE,
+       IGNORED_INDICATOR, IGNORED_ASSET], return Benign (1)
     3. Otherwise, find the INDICATOR result and use risk score mapping
     4. If no INDICATOR or no risk score, return Unknown (0)
 
@@ -331,7 +328,7 @@ def enrich_with_batch_check(
     indicator_type: str,
     primary_key: str,
     reputation_key: str,
-    extra_context: dict | None = None
+    extra_context: dict | None = None,
 ) -> "EnrichmentOutput":
     """
     Unified enrichment with batch-check-first approach for standard reputation commands.
@@ -356,7 +353,9 @@ def enrich_with_batch_check(
     batch_raw_data = client.post_batch_search(indicator_value)
 
     # DEBUG: Log what we got from batch check
-    demisto.debug(f"enrich_with_batch_check: indicator_value={indicator_value}, batch_raw_data keys={list(batch_raw_data.keys())}")
+    demisto.debug(
+        f"enrich_with_batch_check: indicator_value={indicator_value}, batch_raw_data keys={list(batch_raw_data.keys())}"
+    )
 
     # Step 2: Get all results from batch check
     all_results = batch_raw_data.get("results", [])
@@ -364,10 +363,7 @@ def enrich_with_batch_check(
     # Step 3: Filter by searchedValue to prevent tag pollution from regex matches
     # (matchedValue can be regex like "*@company.com", searchedValue is the literal searched value)
     # If searchedValue doesn't exist in results, use all results (for backwards compatibility)
-    results_for_indicator = [
-        r for r in all_results
-        if r.get("searchedValue") == indicator_value
-    ]
+    results_for_indicator = [r for r in all_results if r.get("searchedValue") == indicator_value]
 
     # If no results matched by searchedValue but we have results, check if searchedValue field exists
     # If it doesn't exist in the API response, fall back to using all results
@@ -399,7 +395,11 @@ def enrich_with_batch_check(
 
         # Log if enrichment data is unexpectedly empty for debugging
         if not enrichment_data.has_context_data():
-            demisto.debug(f"WARNING: Batch check found INDICATOR but enrichment returned no data: indicator_value={indicator_value}, indicator_type={indicator_type}, raw_data keys={list(enrichment_data.raw_data.keys())}")
+            demisto.debug(
+                f"WARNING: Batch check found INDICATOR but enrichment returned no data: "
+                f"indicator_value={indicator_value}, indicator_type={indicator_type}, "
+                f"raw_data keys={list(enrichment_data.raw_data.keys())}"
+            )
 
         # If benign entities exist alongside INDICATOR, override verdict to Benign
         # This handles cases where an indicator is both a threat indicator AND an asset/private range
@@ -410,10 +410,13 @@ def enrich_with_batch_check(
         if enrichment_data.has_context_data():
             # Full enrichment available - use it
             enrichment_data.generate_reputation_context(
-                primary_key, indicator_value, indicator_type, reputation_key,
+                primary_key,
+                indicator_value,
+                indicator_type,
+                reputation_key,
                 extra_context=extra_context,
                 verdict_score_override=verdict_override,
-                tags_override=tags if apply_tags else None
+                tags_override=tags if apply_tags else None,
             )
         else:
             # No enrichment data but indicator exists in batch check - create minimal indicator with verdict from batch
@@ -440,8 +443,7 @@ def enrich_with_batch_check(
             if extra_context:
                 reputation_context.update(extra_context)
             enrichment_data.add_reputation_context(
-                f"{reputation_key}(val.{primary_key} && val.{primary_key} === obj.{primary_key})",
-                reputation_context
+                f"{reputation_key}(val.{primary_key} && val.{primary_key} === obj.{primary_key})", reputation_context
             )
 
         return enrichment_data
@@ -462,10 +464,7 @@ def enrich_with_batch_check(
         return EnrichmentOutput({}, {}, indicator_type, indicator_value)
 
     # Create minimal analyst1_context_data for human-readable output
-    minimal_context = {
-        "Indicator": indicator_value,
-        "Classification": ", ".join(entity_types)
-    }
+    minimal_context = {"Indicator": indicator_value, "Classification": ", ".join(entity_types)}
     enrichment_data = EnrichmentOutput(minimal_context, {}, indicator_type, indicator_value)
 
     # Always set enrichment_data.tags to enable proper output (even if empty list)
@@ -488,8 +487,7 @@ def enrich_with_batch_check(
     # Adding them here causes XSOAR to create a duplicate indicator entry
 
     enrichment_data.add_reputation_context(
-        f"{reputation_key}(val.{primary_key} && val.{primary_key} === obj.{primary_key})",
-        reputation_context
+        f"{reputation_key}(val.{primary_key} && val.{primary_key} === obj.{primary_key})", reputation_context
     )
 
     return enrichment_data
@@ -505,7 +503,9 @@ class IdNamePair:
 
 
 class EnrichmentOutput:
-    def __init__(self, analyst1_context_data: dict, raw_data: dict, indicator_type: str, indicator_value: str | None = None) -> None:
+    def __init__(
+        self, analyst1_context_data: dict, raw_data: dict, indicator_type: str, indicator_value: str | None = None
+    ) -> None:
         self.analyst1_context_data = analyst1_context_data
         self.raw_data = raw_data
         self.indicator_type = indicator_type
@@ -545,7 +545,7 @@ class EnrichmentOutput:
         reputation_key: str,
         extra_context: dict | None = None,
         verdict_score_override: int | None = None,
-        tags_override: list[str] | None = None
+        tags_override: list[str] | None = None,
     ):
         if self.has_context_data():
             reputation_context: dict[str, Any] = {primary_key: indicator_value}
@@ -611,7 +611,7 @@ class EnrichmentOutput:
                 outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.{self.indicator_type.capitalize()}",
                 outputs_key_field="ID",
                 outputs=self.analyst1_context_data if self.has_context_data() else None,
-                raw_response=self.raw_data
+                raw_response=self.raw_data,
             )
             return_results(results)
         else:
@@ -659,7 +659,7 @@ class EnrichmentOutput:
             indicator_type=dbot_type,
             score=self.verdict_score,
             integration_name=INTEGRATION_NAME,
-            reliability=demisto.params().get("integrationReliability")
+            reliability=demisto.params().get("integrationReliability"),
         )
 
         # Create the appropriate Common indicator object based on type with tags
@@ -914,10 +914,7 @@ def domain_command(client: Client, args: dict) -> list[EnrichmentOutput]:
 
 
 def email_command(client: Client, args: dict) -> list[EnrichmentOutput]:
-    return [
-        enrich_with_batch_check(client, email, "email", "From", "Email")
-        for email in argToList(args.get("email"))
-    ]
+    return [enrich_with_batch_check(client, email, "email", "From", "Email") for email in argToList(args.get("email"))]
 
 
 def ip_command(client: Client, args: dict) -> list[EnrichmentOutput]:
@@ -954,8 +951,7 @@ def ip_command(client: Client, args: dict) -> list[EnrichmentOutput]:
 
 def file_command(client: Client, args: dict) -> list[EnrichmentOutput]:
     return [
-        enrich_with_batch_check(client, file, "file", get_hash_type(file).upper(), "File")
-        for file in argToList(args.get("file"))
+        enrich_with_batch_check(client, file, "file", get_hash_type(file).upper(), "File") for file in argToList(args.get("file"))
     ]
 
 
@@ -1004,10 +1000,7 @@ def analyst1_enrich_http_request_command(client: Client, args: dict) -> list[Enr
 
 
 def url_command(client: Client, args: dict) -> list[EnrichmentOutput]:
-    return [
-        enrich_with_batch_check(client, url, "url", "Data", "URL")
-        for url in argToList(args.get("url"))
-    ]
+    return [enrich_with_batch_check(client, url, "url", "Data", "URL") for url in argToList(args.get("url"))]
 
 
 def argsToStr(args: dict, key: str) -> str:
@@ -1129,9 +1122,9 @@ def analyst1_batch_check_post(client: Client, args: dict) -> dict | None:
 
     # Support both comma and newline delimiters for values parameter
     # POST API expects newline-separated format (file upload)
-    if values and ',' in values and '\n' not in values:
+    if values and "," in values and "\n" not in values:
         # Comma-delimited input - split and convert to newline-delimited
-        values = "\n".join(val.strip() for val in values.split(','))
+        values = "\n".join(val.strip() for val in values.split(","))
 
     raw_data = client.post_batch_search(values)
     # assume succesful result or client will have errored
