@@ -1,6 +1,6 @@
 # Docusign
 
-Docusign is the world's leading electronic signature and digital transaction management platform. Use this pack to fetch Customer events and Audit Users logs from Docusign for threat detection and compliance monitoring in Cortex XSIAM.
+Docusign is the world's leading electronic signature and digital transaction management platform. Use this pack to fetch Customer Events and Audit Users logs from Docusign for threat detection and compliance monitoring in Cortex XSIAM.
 
 ## What does this pack do?
 

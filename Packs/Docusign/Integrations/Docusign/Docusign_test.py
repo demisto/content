@@ -24,8 +24,8 @@ class TestGetCustomerEvents:
         Then:
             - It should return the events and update last_run["cursor"] to endCursor
         """
-
-        example_response = {  # note: each item includes partial data, those are not the full event data (There are more fields)
+        # Note: each item contains partial data; these are not the full event records (additional fields exist)
+        example_response = {
             "endCursor": "aa_638553500560000000_638553500560000000_0",
             "data": [
                 {
@@ -425,7 +425,7 @@ class TestGetUserData:
         actual_users_ids_3 = [user["id"] for user in users_3]
         assert actual_users_ids_3 == expected_users_ids_3
 
-        # Third fetch should make exactly 1 API calls (4 users remaining from page 5)
+        # Third fetch should make exactly 1 API call (4 users remaining from page 5)
         # (First fetch made 2 API calls, second fetch made 3 API calls)
         assert mock_requests_get.call_count + mock_first_request.call_count == 7
 

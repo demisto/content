@@ -387,13 +387,13 @@ def get_customer_events(last_run: dict, limit: int, client: CustomerEventsClient
     Args:
         client: Initialized Docusign client
         last_run: Previous fetch state containing cursor
-        limit: Maximum number of events to fetch  (api parameter does not currently work)
+        limit: Maximum number of events to fetch  (API parameter does not currently work)
     Returns:
-        tuple: (events, last_run) where last_run is the updated state and events are the fetched events.
+        tuple: (events, last_run) where events are the fetched events and last_run is the updated state.
 
     """
     one_minute_ago = timestamp_to_datestring(int(time.time() - 60) * 1000, date_format="%Y-%m-%dT%H:%M:%SZ")
-    # note for developer - cursor is returned from the api even if response is empty
+    # note for developer - cursor is returned from the API even if the response is empty
     cursor = last_run.get("cursor") or one_minute_ago
     demisto.debug(f"{LOG_PREFIX}Customer Events: requesting {limit} events with cursor: {cursor}")
 
@@ -417,7 +417,7 @@ def get_customer_events(last_run: dict, limit: int, client: CustomerEventsClient
 
 def get_remaining_user_data(last_run: dict, client: UserDataClient, access_token: str, limit: int) -> tuple[list, dict]:
     """
-    Fetch only the remaining users that were not retrieved from the last page in the previous run
+    Fetch only users that were not retrieved in the last page from the previous run
     """
     excess_users_info = last_run.get("excess_users_info", {})
     if not excess_users_info:
@@ -535,7 +535,7 @@ def get_user_data(
     remaining_to_fetch = 0
 
     try:
-        # next url was existing in the last response, meaning we are continuing a fetch from the last run
+        # A next URL exists from the last response, indicating that fetching continues from the previous run.
         if last_run.get("continuing_fetch_info"):
             url = last_run.get("continuing_fetch_info", {}).get("url")
             request_params = {}
@@ -552,7 +552,7 @@ def get_user_data(
         demisto.debug(f"{LOG_PREFIX}Starting new fetch range for Audit Users data.\n{request_params=}")
 
         """
-        The first condition that reached will exit the loop:
+        The loop exits when the first of the following conditions is met:
         1. len(total_events) >= limit
         2. next_url is None
         """
@@ -590,7 +590,7 @@ def get_user_data(
             prev_url = url
             url = next_url
 
-        # At this point, limit is reached before next_url. (it means there are more pages to fetch)
+        # At this point, the limit has been reached before next_url is None (there are more pages to fetch).
         last_run["continuing_fetch_info"] = {"url": url}
         demisto.debug(
             f"{LOG_PREFIX} limit is reached and there are more pages to fetch"
@@ -616,7 +616,7 @@ def get_user_data(
 
 def initiate_user_data_client() -> UserDataClient:
     """
-    Create UserDataClient for making requests to Docusign Admin API and fetching audit user and fetching user details.
+    Create a UserDataClient for interacting with the Docusign Admin API to fetch audit users and user details.
     """
     params = demisto.params()
     proxy = params.get("proxy", False)
@@ -635,7 +635,7 @@ def initiate_user_data_client() -> UserDataClient:
 
 def initiate_customer_events_client() -> CustomerEventsClient:
     """
-    Create CustomerEventsClient for making requests to Docusign Monitor API and fetching customer events.
+    Create a CustomerEventsClient for interacting with the Docusign Monitor API to fetch customer events.
     """
     params = demisto.params()
     proxy = params.get("proxy", False)
@@ -647,7 +647,7 @@ def initiate_customer_events_client() -> CustomerEventsClient:
 
 def initiate_auth_client() -> AuthClient:
     """
-    Create AuthClient for making requests to Docusign API authentication flow.
+    Create an AuthClient for making requests to the Docusign API authentication flow.
 
     Returns:
         AuthClient: AuthClient instance
@@ -680,7 +680,7 @@ def fetch_customer_events(last_run: dict, access_token: str) -> tuple[dict, list
     """
     Note to developer:
     MAX_CUSTOMER_EVENTS_PER_FETCH is set to 2000 due to API limitation.
-    limit parameter is not behaving as expected on the API side - so configuration limit parameter is not supported at this point.
+    The limit parameter does not work as expected on the API side, so it is not currently supported in the configuration.
     """
     limit = MAX_CUSTOMER_EVENTS_PER_FETCH
     try:
@@ -792,7 +792,7 @@ def generate_consent_url() -> CommandResults:
         demisto.debug(message)
         return CommandResults(readable_output=message)
 
-    # not all required scopes are set, validate authentication parameters before generating consent URL
+    # not all required scopes are set, validate authentication parameters before generating the consent URL
     server_url = params.get("url", DEFAULT_SERVER_DEV_URL).rstrip("/")
     integration_key = params.get("integration_key", "")
     redirect_url = params.get("redirect_url", "")
@@ -802,7 +802,7 @@ def generate_consent_url() -> CommandResults:
         demisto.debug(f"{LOG_PREFIX}{message}")
         raise DemistoException(message)
 
-    # generate consent URL with the new required scopes
+    # generate the consent URL including the newly required scopes
     scopes = "%20".join(consent_scopes)
     params = f"response_type=code&scope={scopes}&client_id={integration_key}&redirect_uri={redirect_url}"
     consent_url = f"{server_url}/oauth/auth?" + params

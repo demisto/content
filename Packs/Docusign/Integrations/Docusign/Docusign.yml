@@ -61,11 +61,11 @@ configuration:
   section: Collect
 - defaultvalue: '1250'
   section: Collect
-  display: Maximum number of audit user events per fetch
+  display: Maximum number of audit user events to fetch per request
   name: max_user_events_per_fetch
   required: false
   type: 0
-  additionalinfo: due to api limitation, max is 1250.
+  additionalinfo: Due to API limitations, the maximum value is 1250.
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -78,17 +78,17 @@ configuration:
   type: 8
   section: Connect
   advanced: true
-description: DocuSign is a leading provider of electronic signature technology, allowing individuals and organizations to sign, send, and manage documents digitally.
+description: Docusign is a leading provider of electronic signature technology, allowing individuals and organizations to sign, send, and manage documents digitally.
 display: Docusign
 name: Docusign
 script:
   commands:
   - name: docusign-generate-consent-url
-    description: Generates the Docusign admin consent URL based on configured parameters and environment.
+    description: Generates the Docusign Admin consent URL based on the configured parameters and environment.
     arguments: []
     execution: false
   - name: docusign-reset-access-token
-    description: Reset access token from integration context.
+    description: Resets the access token stored in the integration context.
     arguments: []
     execution: false
     hidden: true
