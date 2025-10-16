@@ -10,7 +10,7 @@ This integration utilizes Analyst1's system API to:
 2. submit Evidence as content created in XSOAR, downloaded by XSOAR, or a synthesis of both back to Analsyt1 as 'evidence'.
 3. access the Analyst1 Sensor records to get indicator and/or signature tasking definitions for deployment to IDS/IPS/Firewall/XDR/other boundary tools.
 
-This integration was integrated and tested with version 2.1.0 of Analyst1.
+This integration was integrated and tested with version 2.1.12 of Analyst1.
 
 For full documentation on the Analyst1 API, please access the "Help" or "Guides" section within your Analyst1 instance. For help please contact support@analyst1.com.
 
