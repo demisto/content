@@ -25,14 +25,10 @@ def main():
         if not signal:
             return_error("No signal data returned from Datadog.")
 
-        demisto.debug(f"Signal data: {signal}")
-
         # Map using the mapper
         mapped_data = demisto.mapObject(
             signal, "Datadog Cloud SIEM - Incoming Mapper", "DatadogCloudSIEM"
         )
-
-        demisto.debug(f"Mapped data: {mapped_data}")
 
         # Convert mapped field names to custom field names (lowercase, no spaces)
         incident_fields = {}
@@ -41,9 +37,9 @@ def main():
             incident_fields[field_name] = value
 
         # Add owner from signal assignee
-        assignee_name = signal.get("triage", {}).get("assignee", {}).get("name")
-        if assignee_name:
-            incident_fields["owner"] = assignee_name
+        incident_fields["owner"] = (
+            signal.get("triage", {}).get("assignee", {}).get("name")
+        )
 
         # Close incident if signal is archived
         signal_state = signal.get("triage", {}).get("state")
@@ -55,14 +51,13 @@ def main():
                 "archive_comment", ""
             )
 
-        demisto.debug(f"Custom fields: {incident_fields}")
-
         # Update incident
         if incident_fields:
             demisto.executeCommand(
                 "setIncident",
                 {
                     **incident_fields,
+                    "customFields": incident_fields,
                     "id": incident["id"],
                 },
             )

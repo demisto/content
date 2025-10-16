@@ -54,9 +54,6 @@
                 },
                 "Datadog Security Signal Triage Assignee Name": {
                     "simple": "triage.assignee.name"
-                },
-                "Datadog Security Signal Triage Assignee Handle": {
-                    "simple": "triage.assignee.handle"
                 }
             }
         }
