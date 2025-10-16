@@ -955,9 +955,17 @@ def test_reformat_filter_with_list_arg(fields_to_filter_by, field_key_from_type_
         ),
         # Test case 5: Some lists are empty
         (["host.local"], [], ["12345", "67890"], "computerDnsName in ('host.local') or id in ('12345','67890')"),
-        # Edge case: All lists are empty, should produce an empty string
+        # Test case 6: Edge case: All lists are empty, should produce an empty string
         ([], [], [], ""),
     ],
+    ids=[
+        "single_hostname",
+        "multiple_hostnames",
+        "single_value_for_each_field",
+        "multiple_values_for_each_field",
+        "some_lists_empty",
+        "all_lists_empty"
+    ]
 )
 def test_create_filter_for_endpoint_command(hostnames, ips, ids, expected_filter):
     from MicrosoftDefenderAdvancedThreatProtection import create_filter_for_endpoint_command
