@@ -50,7 +50,7 @@ configuration:
   required: false
 - name: severity
   display: Incident Severity
-  defaultvalue:
+  defaultvalue: All
   type: 16
   additionalinfo: GuardiCore incident severity
   options:
