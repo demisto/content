@@ -1130,3 +1130,490 @@ def test_enrichment_output_indicator_value():
     # Test without indicator_value
     enrichment = EnrichmentOutput({}, {}, "domain")
     assert enrichment.indicator_value is None
+
+
+# Tests for previously untested EnrichmentOutput methods
+
+
+def test_idnamepair_class():
+    """Test IdNamePair class initialization and string representation"""
+    pair = IdNamePair(123, "TestActor")
+    assert pair.id == 123
+    assert pair.name == "TestActor"
+    assert str(pair) == "id = 123, name = TestActor"
+
+
+def test_enrichment_output_get_human_readable_output_simple(mocker):
+    """Test get_human_readable_output with simple data"""
+    context_data = {"ID": 1, "Indicator": "example.com", "RiskScore": "High"}
+    enrichment = EnrichmentOutput(context_data, {}, "domain", "example.com")
+
+    # Mock tableToMarkdown to capture what it's called with
+    mock_table = mocker.patch("Analyst1.tableToMarkdown", return_value="markdown output")
+
+    output = enrichment.get_human_readable_output()
+
+    assert output == "markdown output"
+    mock_table.assert_called_once()
+    # Verify the table was called with our data
+    call_args = mock_table.call_args
+    assert call_args[1]["t"]["ID"] == 1
+    assert call_args[1]["t"]["Indicator"] == "example.com"
+
+
+def test_enrichment_output_get_human_readable_output_with_actors_malwares(mocker):
+    """Test get_human_readable_output with actors and malwares"""
+    context_data = {
+        "ID": 1,
+        "Indicator": "example.com",
+        "Actors": [{"id": 10, "name": "APT28"}, {"id": 20, "name": "Lazarus"}],
+        "Malwares": [{"id": 5, "name": "Zeus"}],
+    }
+    enrichment = EnrichmentOutput(context_data, {}, "domain", "example.com")
+
+    mock_table = mocker.patch("Analyst1.tableToMarkdown", return_value="markdown output")
+
+    output = enrichment.get_human_readable_output()
+
+    assert output == "markdown output"
+    # Verify actors and malwares were converted to IdNamePair objects
+    call_args = mock_table.call_args
+    actors_list = call_args[1]["t"]["Actors"]
+    assert len(actors_list) == 2
+    assert isinstance(actors_list[0], IdNamePair)
+    assert actors_list[0].id == 10
+    assert actors_list[0].name == "APT28"
+
+
+def test_enrichment_output_get_human_readable_output_with_tags(mocker):
+    """Test get_human_readable_output includes tags"""
+    context_data = {"ID": 1, "Indicator": "example.com"}
+    enrichment = EnrichmentOutput(context_data, {}, "domain", "example.com")
+    enrichment.tags = ["Analyst1: Indicator", "Analyst1: Asset"]
+
+    mock_table = mocker.patch("Analyst1.tableToMarkdown", return_value="markdown output")
+
+    output = enrichment.get_human_readable_output()
+
+    # Verify output was created
+    assert output == "markdown output"
+    # Verify tags were added to human-readable data
+    call_args = mock_table.call_args
+    assert "XSOAR Tags" in call_args[1]["t"]
+    assert call_args[1]["t"]["XSOAR Tags"] == "Analyst1: Indicator, Analyst1: Asset"
+
+
+def test_enrichment_output_build_analyst1_context():
+    """Test build_analyst1_context creates proper DT expression"""
+    context_data = {"ID": 1, "Indicator": "example.com", "RiskScore": "High"}
+    enrichment = EnrichmentOutput(context_data, {}, "domain", "example.com")
+
+    context = enrichment.build_analyst1_context()
+
+    # Should have DT expression as key
+    expected_key = "Analyst1.Domain(val.ID && val.ID === obj.ID)"
+    assert expected_key in context
+    assert context[expected_key] == context_data
+
+
+def test_enrichment_output_build_all_context():
+    """Test build_all_context merges Analyst1 and reputation context"""
+    analyst1_data = {"ID": 1, "Indicator": "example.com"}
+    enrichment = EnrichmentOutput(analyst1_data, {}, "domain", "example.com")
+
+    # Add reputation context
+    enrichment.add_reputation_context("Domain(val.Name && val.Name === obj.Name)", {"Name": "example.com"})
+
+    all_context = enrichment.build_all_context()
+
+    # Should have both contexts
+    assert "Analyst1.Domain(val.ID && val.ID === obj.ID)" in all_context
+    assert "Domain(val.Name && val.Name === obj.Name)" in all_context
+    assert all_context["Analyst1.Domain(val.ID && val.ID === obj.ID)"]["ID"] == 1
+    assert all_context["Domain(val.Name && val.Name === obj.Name)"]["Name"] == "example.com"
+
+
+def test_enrichment_output_build_all_context_empty_reputation():
+    """Test build_all_context when reputation context is empty"""
+    analyst1_data = {"ID": 1}
+    enrichment = EnrichmentOutput(analyst1_data, {}, "domain")
+
+    all_context = enrichment.build_all_context()
+
+    # Should only have Analyst1 context
+    assert "Analyst1.Domain(val.ID && val.ID === obj.ID)" in all_context
+    assert len(all_context) == 1
+
+
+def test_enrichment_output_add_analyst1_context():
+    """Test add_analyst1_context updates context dict"""
+    enrichment = EnrichmentOutput({"ID": 1}, {}, "domain")
+
+    enrichment.add_analyst1_context("NewKey", "NewValue")
+
+    assert enrichment.analyst1_context_data["NewKey"] == "NewValue"
+    assert enrichment.analyst1_context_data["ID"] == 1
+
+
+def test_enrichment_output_add_reputation_context():
+    """Test add_reputation_context updates reputation dict"""
+    enrichment = EnrichmentOutput({}, {}, "domain")
+
+    enrichment.add_reputation_context("Domain(val.Name)", {"Name": "example.com"})
+
+    assert "Domain(val.Name)" in enrichment.reputation_context
+    assert enrichment.reputation_context["Domain(val.Name)"]["Name"] == "example.com"
+
+
+def test_enrichment_output_has_context_data():
+    """Test has_context_data returns correct boolean"""
+    # With data
+    enrichment = EnrichmentOutput({"ID": 1}, {}, "domain")
+    assert enrichment.has_context_data() is True
+
+    # Without data
+    enrichment_empty = EnrichmentOutput({}, {}, "domain")
+    assert enrichment_empty.has_context_data() is False
+
+
+def test_enrichment_output_return_outputs_no_reputation_context(mocker):
+    """Test return_outputs when indicator doesn't exist (no reputation context)"""
+    enrichment = EnrichmentOutput({}, {}, "domain", "nonexistent.com")
+
+    mock_return_results = mocker.patch("Analyst1.return_results")
+
+    enrichment.return_outputs()
+
+    # Should call return_results with "not found" message
+    mock_return_results.assert_called_once()
+    call_args = mock_return_results.call_args[0][0]
+    assert isinstance(call_args, CommandResults)
+    assert "nonexistent.com" in call_args.readable_output
+    assert "was not found" in call_args.readable_output
+
+
+def test_enrichment_output_return_outputs_no_indicator_value(mocker):
+    """Test return_outputs with no reputation context and no indicator_value"""
+    enrichment = EnrichmentOutput({}, {}, "domain")
+
+    mock_return_results = mocker.patch("Analyst1.return_results")
+
+    enrichment.return_outputs()
+
+    # Should call return_results with empty message
+    mock_return_results.assert_called_once()
+    call_args = mock_return_results.call_args[0][0]
+    assert call_args.readable_output == ""
+
+
+def test_enrichment_output_return_outputs_with_indicator(mocker):
+    """Test return_outputs creates CommandResults with Common.Indicator"""
+    context_data = {"ID": 1, "Indicator": "example.com"}
+    raw_data = get_base_mock_json("example.com", "domain")
+    enrichment = EnrichmentOutput(context_data, raw_data, "domain", "example.com")
+
+    # Set up enrichment with reputation context and verdict
+    enrichment.verdict_score = 2  # Suspicious
+    enrichment.tags = ["Analyst1: Indicator"]
+    enrichment.add_reputation_context("Domain(val.Name && val.Name === obj.Name)", {"Name": "example.com"})
+
+    mock_return_results = mocker.patch("Analyst1.return_results")
+    mocker.patch("Analyst1.demisto.params", return_value={"integrationReliability": "B"})
+
+    enrichment.return_outputs()
+
+    # Should call return_results with CommandResults containing indicator
+    mock_return_results.assert_called_once()
+    call_args = mock_return_results.call_args[0][0]
+    assert isinstance(call_args, CommandResults)
+    assert call_args.indicator is not None
+    assert call_args.outputs_prefix == "Analyst1.Domain"
+    assert call_args.outputs_key_field == "ID"
+
+
+def test_enrichment_output_create_common_indicator_domain(mocker):
+    """Test _create_common_indicator_with_tags creates Common.Domain"""
+    enrichment = EnrichmentOutput({}, {}, "domain", "example.com")
+    enrichment.verdict_score = 2  # Suspicious
+    enrichment.tags = ["Analyst1: Indicator"]
+
+    mocker.patch("Analyst1.demisto.params", return_value={"integrationReliability": "B"})
+
+    indicator = enrichment._create_common_indicator_with_tags()
+
+    assert indicator is not None
+    assert isinstance(indicator, Common.Domain)
+    assert indicator.domain == "example.com"
+    assert indicator.dbot_score.score == 2
+
+
+def test_enrichment_output_create_common_indicator_email(mocker):
+    """Test _create_common_indicator_with_tags creates Common.EMAIL"""
+    enrichment = EnrichmentOutput({}, {}, "email", "user@example.com")
+    enrichment.verdict_score = 3  # Malicious
+    enrichment.tags = ["Analyst1: Indicator"]
+
+    mocker.patch("Analyst1.demisto.params", return_value={"integrationReliability": "A"})
+
+    indicator = enrichment._create_common_indicator_with_tags()
+
+    assert indicator is not None
+    assert isinstance(indicator, Common.EMAIL)
+    assert indicator.address == "user@example.com"
+    assert indicator.dbot_score.score == 3
+
+
+def test_enrichment_output_create_common_indicator_ip(mocker):
+    """Test _create_common_indicator_with_tags creates Common.IP for IPv4"""
+    enrichment = EnrichmentOutput({}, {}, "ip", "192.0.2.1")
+    enrichment.verdict_score = 1  # Benign
+    enrichment.tags = ["Analyst1: Asset"]
+
+    mocker.patch("Analyst1.demisto.params", return_value={"integrationReliability": "B"})
+
+    indicator = enrichment._create_common_indicator_with_tags()
+
+    assert indicator is not None
+    assert isinstance(indicator, Common.IP)
+    assert indicator.ip == "192.0.2.1"
+    assert indicator.dbot_score.score == 1
+
+
+def test_enrichment_output_create_common_indicator_ipv6(mocker):
+    """Test _create_common_indicator_with_tags creates Common.IP for IPv6"""
+    enrichment = EnrichmentOutput({}, {}, "ipv6", "2001:db8::1")
+    enrichment.verdict_score = 0  # Unknown
+    enrichment.tags = []
+
+    mocker.patch("Analyst1.demisto.params", return_value={"integrationReliability": "C"})
+
+    indicator = enrichment._create_common_indicator_with_tags()
+
+    assert indicator is not None
+    assert isinstance(indicator, Common.IP)
+    assert indicator.ip == "2001:db8::1"
+    assert indicator.dbot_score.score == 0
+    assert indicator.dbot_score.indicator_type == DBotScoreType.IP
+
+
+def test_enrichment_output_create_common_indicator_url(mocker):
+    """Test _create_common_indicator_with_tags creates Common.URL"""
+    enrichment = EnrichmentOutput({}, {}, "url", "https://example.com/malware")
+    enrichment.verdict_score = 3  # Malicious
+    enrichment.tags = ["Analyst1: Indicator"]
+
+    mocker.patch("Analyst1.demisto.params", return_value={"integrationReliability": "B"})
+
+    indicator = enrichment._create_common_indicator_with_tags()
+
+    assert indicator is not None
+    assert isinstance(indicator, Common.URL)
+    assert indicator.url == "https://example.com/malware"
+    assert indicator.dbot_score.score == 3
+
+
+def test_enrichment_output_create_common_indicator_file_sha1(mocker):
+    """Test _create_common_indicator_with_tags creates Common.File with SHA1"""
+    sha1_hash = "D8474A07411C6400E47C13D73700DC602F90262A"
+    enrichment = EnrichmentOutput({}, {}, "file", sha1_hash)
+    enrichment.verdict_score = 3  # Malicious
+    enrichment.tags = ["Analyst1: Indicator"]
+
+    mocker.patch("Analyst1.demisto.params", return_value={"integrationReliability": "B"})
+
+    indicator = enrichment._create_common_indicator_with_tags()
+
+    assert indicator is not None
+    assert isinstance(indicator, Common.File)
+    assert indicator.sha1 == sha1_hash
+    assert indicator.dbot_score.score == 3
+
+
+def test_enrichment_output_create_common_indicator_file_sha256(mocker):
+    """Test _create_common_indicator_with_tags creates Common.File with SHA256"""
+    sha256_hash = "F5A64DE9087B138608CCF036B067D91A47302259269FB05B3349964CA4060E7A"
+    enrichment = EnrichmentOutput({}, {}, "file", sha256_hash)
+    enrichment.verdict_score = 2  # Suspicious
+    enrichment.tags = ["Analyst1: Indicator"]
+
+    mocker.patch("Analyst1.demisto.params", return_value={"integrationReliability": "B"})
+
+    indicator = enrichment._create_common_indicator_with_tags()
+
+    assert indicator is not None
+    assert isinstance(indicator, Common.File)
+    assert indicator.sha256 == sha256_hash
+
+
+def test_enrichment_output_create_common_indicator_file_md5(mocker):
+    """Test _create_common_indicator_with_tags creates Common.File with MD5"""
+    md5_hash = "6318E219B7F6E7F96192E0CDFEA1742A"
+    enrichment = EnrichmentOutput({}, {}, "file", md5_hash)
+    enrichment.verdict_score = 1  # Benign
+    enrichment.tags = []
+
+    mocker.patch("Analyst1.demisto.params", return_value={"integrationReliability": "B"})
+
+    indicator = enrichment._create_common_indicator_with_tags()
+
+    assert indicator is not None
+    assert isinstance(indicator, Common.File)
+    assert indicator.md5 == md5_hash
+
+
+def test_enrichment_output_create_common_indicator_no_verdict():
+    """Test _create_common_indicator_with_tags returns None when verdict_score is None"""
+    enrichment = EnrichmentOutput({}, {}, "domain", "example.com")
+    enrichment.verdict_score = None  # No verdict set
+
+    indicator = enrichment._create_common_indicator_with_tags()
+
+    assert indicator is None
+
+
+def test_enrichment_output_create_common_indicator_no_value():
+    """Test _create_common_indicator_with_tags returns None when indicator_value is None"""
+    enrichment = EnrichmentOutput({}, {}, "domain")
+    enrichment.verdict_score = 2
+
+    indicator = enrichment._create_common_indicator_with_tags()
+
+    assert indicator is None
+
+
+def test_enrichment_output_create_common_indicator_with_tags_none(mocker):
+    """Test _create_common_indicator_with_tags when tags is None"""
+    enrichment = EnrichmentOutput({}, {}, "domain", "example.com")
+    enrichment.verdict_score = 1
+    enrichment.tags = None  # Explicitly set to None
+
+    mocker.patch("Analyst1.demisto.params", return_value={"integrationReliability": "B"})
+
+    indicator = enrichment._create_common_indicator_with_tags()
+
+    assert indicator is not None
+    # When tags is None, it should pass None to Common.Domain
+    assert indicator.tags is None
+
+
+def test_enrichment_output_create_common_indicator_with_empty_tags(mocker):
+    """Test _create_common_indicator_with_tags when tags is empty list"""
+    enrichment = EnrichmentOutput({}, {}, "domain", "example.com")
+    enrichment.verdict_score = 1
+    enrichment.tags = []  # Empty list
+
+    mocker.patch("Analyst1.demisto.params", return_value={"integrationReliability": "B"})
+
+    indicator = enrichment._create_common_indicator_with_tags()
+
+    assert indicator is not None
+    assert indicator.tags == []
+
+
+# Tests for get_xsoar_indicator_type_from_batch_result edge cases
+
+
+def test_get_xsoar_indicator_type_from_batch_result_standard_types():
+    """Test get_xsoar_indicator_type_from_batch_result with standard types"""
+    # Test domain
+    result = {"type": {"key": "domain"}}
+    assert get_xsoar_indicator_type_from_batch_result(result) == "domain"
+
+    # Test email
+    result = {"type": {"key": "email"}}
+    assert get_xsoar_indicator_type_from_batch_result(result) == "email"
+
+    # Test ip
+    result = {"type": {"key": "ip"}}
+    assert get_xsoar_indicator_type_from_batch_result(result) == "ip"
+
+
+def test_get_xsoar_indicator_type_from_batch_result_special_mappings():
+    """Test get_xsoar_indicator_type_from_batch_result with special type mappings"""
+    # Test httpRequest -> url mapping
+    result = {"type": {"key": "httpRequest"}}
+    assert get_xsoar_indicator_type_from_batch_result(result) == "url"
+
+    # Test stixPattern -> string mapping
+    result = {"type": {"key": "stixPattern"}}
+    assert get_xsoar_indicator_type_from_batch_result(result) == "string"
+
+    # Test commandLine -> string mapping
+    result = {"type": {"key": "commandLine"}}
+    assert get_xsoar_indicator_type_from_batch_result(result) == "string"
+
+
+def test_get_xsoar_indicator_type_from_batch_result_unknown():
+    """Test get_xsoar_indicator_type_from_batch_result with unknown type"""
+    # Test unrecognized type
+    result = {"type": {"key": "unknown_type"}}
+    assert get_xsoar_indicator_type_from_batch_result(result) == "unknown"
+
+    # Test missing type key
+    result = {"type": {}}
+    assert get_xsoar_indicator_type_from_batch_result(result) == "unknown"
+
+    # Test missing type dict
+    result = {}
+    assert get_xsoar_indicator_type_from_batch_result(result) == "unknown"
+
+
+# Tests for argsToInt
+
+
+def test_argsToInt_with_value():
+    """Test argsToInt returns int when value exists"""
+    args = {"timeout": "200", "page": 5}
+    assert argsToInt(args, "timeout", 100) == 200
+    assert argsToInt(args, "page", 1) == 5
+
+
+def test_argsToInt_with_default():
+    """Test argsToInt returns default when key doesn't exist"""
+    args = {"other_key": "value"}
+    assert argsToInt(args, "missing_key", 42) == 42
+
+
+def test_argsToInt_with_none():
+    """Test argsToInt returns default when value is None"""
+    args = {"timeout": None}
+    assert argsToInt(args, "timeout", 100) == 100
+
+
+# Tests for generate_reputation_context with malicious verdict
+
+
+def test_generate_reputation_context_malicious(mocker):
+    """Test generate_reputation_context adds Malicious data when verdict is 3"""
+    raw_data = get_base_mock_json("malicious.com", "domain")
+    raw_data["indicatorRiskScore"] = {"name": "Critical"}
+    raw_data["benign"] = {"value": False}
+
+    enrichment = EnrichmentOutput({"ID": 1}, raw_data, "domain", "malicious.com")
+
+    mocker.patch("Analyst1.demisto.params", return_value={})
+
+    enrichment.generate_reputation_context("Name", "malicious.com", "domain", "Domain")
+
+    # Should have Malicious data
+    domain_key = "Domain(val.Name && val.Name === obj.Name)"
+    assert domain_key in enrichment.reputation_context
+    assert "Malicious" in enrichment.reputation_context[domain_key]
+    assert enrichment.reputation_context[domain_key]["Malicious"]["Vendor"] == "Analyst1"
+    assert enrichment.verdict_score == 3
+
+
+def test_generate_reputation_context_with_extra_context(mocker):
+    """Test generate_reputation_context includes extra_context"""
+    raw_data = get_base_mock_json("example.com", "domain")
+    raw_data["ipResolution"] = {"name": "192.0.2.1"}
+
+    enrichment = EnrichmentOutput({"ID": 1}, raw_data, "domain", "example.com")
+
+    mocker.patch("Analyst1.demisto.params", return_value={})
+
+    enrichment.generate_reputation_context("Name", "example.com", "domain", "Domain", extra_context={"DNS": "192.0.2.1"})
+
+    # Should have extra context
+    domain_key = "Domain(val.Name && val.Name === obj.Name)"
+    assert enrichment.reputation_context[domain_key]["DNS"] == "192.0.2.1"
