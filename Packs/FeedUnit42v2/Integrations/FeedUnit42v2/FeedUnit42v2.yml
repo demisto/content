@@ -110,9 +110,10 @@ configuration:
   type: 8
   required: false
   section: Collect
-description: Unit 42 feed of published IOCs, which contains known malicious indicators.
-display: Unit 42 ATOMs Feed
+description: Deprecated use Unit42 Feed instead. Unit 42 feed of published IOCs, which contains known malicious indicators.
+display: Unit 42 ATOMs Feed (Deprecated)
 name: Unit42v2 Feed
+deprecated: true
 script:
   commands:
   - arguments:
