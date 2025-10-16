@@ -476,8 +476,6 @@ def test_get_events__end_to_end(
 # Import test findings data from dedicated test data file
 from test_data.test_constants import (
     SAMPLE_FINDINGS,
-    IGNORED_FINDINGS,
-    DUPLICATE_FINDING,
 )
 
 # Test configuration constants
