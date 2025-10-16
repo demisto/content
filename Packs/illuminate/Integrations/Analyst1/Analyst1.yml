@@ -4,28 +4,34 @@ commonfields:
 name: Analyst1
 display: Analyst1
 category: Data Enrichment & Threat Intelligence
-description: This integration utilizes Analyst1's system to enrich Demisto indicators with data provided by the Analyst1 REST API, such as actor and malware information, activity and reported dates, evidence and hit counts, and more.
+sectionOrder:
+- Connect
+- Collect
+description: This integration utilizes Analyst1's system to enrich XSOAR indicators with data provided by the Analyst1 REST API, such as actor and malware information, activity and reported dates, evidence and hit counts, and more.
 configuration:
 - display: Analyst1 API Credentials (username/password)
   name: credentials
   type: 9
   required: true
+  section: Connect
 - display: Domain of Analyst1 server to use
   name: server
-  defaultvalue: partner.cloud.analyst1.com
   type: 0
   required: true
-  additionalinfo: Format - server.that_you_use.com - No http/https
+  additionalinfo: 'Format: server.analyst1.com (do not include http:// or https://)'
+  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
   defaultvalue: 'false'
   type: 8
   required: false
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   defaultvalue: 'false'
   type: 8
   required: false
+  section: Connect
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: B - Usually reliable
   display: Source Reliability
@@ -40,6 +46,7 @@ configuration:
   - F - Reliability cannot be judged
   type: 15
   required: false
+  section: Collect
 - defaultvalue: Benign
   name: riskScoreLowest
   display: 'Risk Score Mapping: Lowest'
@@ -51,6 +58,7 @@ configuration:
   type: 15
   required: false
   additionalinfo: 'XSOAR Verdict to set when Analyst1 Risk Score is "Lowest".'
+  section: Collect
 - defaultvalue: 'Unknown'
   name: riskScoreLow
   display: 'Risk Score Mapping: Low'
@@ -62,6 +70,7 @@ configuration:
   - Benign
   - Suspicious
   - Malicious
+  section: Collect
 - additionalinfo: 'XSOAR Verdict to set when Analyst1 Risk Score is "Moderate".'
   defaultvalue: Suspicious
   display: 'Risk Score Mapping: Moderate'
@@ -73,6 +82,7 @@ configuration:
   - Malicious
   type: 15
   required: false
+  section: Collect
 - additionalinfo: 'XSOAR Verdict to set when Analyst1 Risk Score is "High".'
   defaultvalue: Suspicious
   display: 'Risk Score Mapping: High'
@@ -84,6 +94,7 @@ configuration:
   - Malicious
   type: 15
   required: false
+  section: Collect
 - additionalinfo: 'XSOAR Verdict to set when Analyst1 Risk Score is "Critical".'
   defaultvalue: Malicious
   display: 'Risk Score Mapping: Critical'
@@ -95,6 +106,7 @@ configuration:
   - Malicious
   type: 15
   required: false
+  section: Collect
 - additionalinfo: 'XSOAR Verdict to set when Analyst1 Risk Score is "Unknown" or not present.'
   defaultvalue: Unknown
   display: 'Risk Score Mapping: Unknown'
@@ -106,12 +118,14 @@ configuration:
   - Malicious
   type: 15
   required: false
+  section: Collect
 - display: Apply Analyst1 entity-type tags to indicators
   name: applyTags
   defaultvalue: 'false'
   type: 8
   required: false
   additionalinfo: 'Enable to automatically tag indicators with Analyst1 entity type classifications (e.g., "Analyst1: Indicator", "Analyst1: Asset", "Analyst1: In Private Range"). Tags help identify how Analyst1 classifies each indicator.'
+  section: Collect
 - defaultvalue: indicatorType
   name: feedExpirationPolicy
   display: ''
@@ -122,11 +136,13 @@ configuration:
   - suddenDeath
   type: 17
   required: false
+  section: Collect
 - defaultvalue: '20160'
   name: feedExpirationInterval
   display: ''
   type: 1
   required: false
+  section: Collect
 script:
   script: '-'
   type: python
@@ -796,9 +812,9 @@ script:
   - name: analyst1-batch-check-post
     arguments:
     - name: values
-      description: Newline delimited text for many Indicator or other observable inputs. Either valeus_array or values must be provided.
+      description: Comma or newline delimited text for many Indicator or other observable inputs. Either values_array or values must be provided.
     - name: values_array
-      description: Array of text, each being an Indicator or other observable value to search. Either valeus_array or values must be provided.
+      description: Array of text, each being an Indicator or other observable value to search. Either values_array or values must be provided.
     outputs:
     - contextPath: Analyst1
       description: Full Batch Check JSON.
@@ -806,7 +822,7 @@ script:
       description: Matched ID values. May not all be Indicators. Could reflect Indicator, Asset, Ignore List, or System records.
     - contextPath: Analyst1.matchedValue
       description: The matched terms from Indicators, Assets, Ignore List, or System CIDR entries.
-    description: Similar to analyst1-batch-check, however the inputs can be more complex. The 'values' input is an option for a pre-formatted newline separated file. This allows for more complex Indicators or larger Indicator sets to be searched. The 'valeus_array' allows for preformed array inputs or array-like inputs to be sumitted. Output is the same.
+    description: Similar to analyst1-batch-check, however the inputs can be more complex. The 'values' input accepts comma or newline delimited text. This allows for more complex Indicators or larger Indicator sets to be searched. The 'values_array' allows for preformed array inputs or array-like inputs to be submitted. Output is the same.
   - name: analyst1-evidence-submit
     arguments:
     - name: sourceId
@@ -845,7 +861,7 @@ script:
     - contextPath: Analyst1.EvidenceStatus.processingComplete
       description: True or false to indicate if processing of the Evidence upload is done. Determined by evaluating the id or message are present and populated. If an id is returned but blank, this is false, indicating the upload is still in progress.
     description: Check on the status of the analyst1-evidence-submit action by using its output UUID.
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.8.3720084
   subtype: python3
   runonce: false
 fromversion: 5.0.0
