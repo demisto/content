@@ -68,7 +68,7 @@ def replace_keys_recursively_multi(obj, replacements: dict):
     else:
         return obj
 
-def handle_results(results):
+def handle_results(results) -> tuple[str, dict]:
     combined_human_readable = ""
     final_outputs = {}
     for d in results:
@@ -104,9 +104,9 @@ def main():
     try:
         args = demisto.args()
         new_args = update_args(args)
-        required_fields = ["similarTextField", "similarCategoricalField", "similarJsonField"]
+        required_fields = ["similarTextField", "similarCategoricalField", "similarJsonField", "useAllFields"]
         if not any(args.get(field) for field in required_fields):
-            return_error('At least one of the following arguments muse be provided: "similarTextField", "similarCategoricalField", or "similarJsonField".')
+            return_error(f"At least one of the following arguments muse be provided: {', '.join(required_fields)}.")
         
         demisto.debug("Calling DBotFindSimilarIncidents.")
         results = execute_command("DBotFindSimilarIncidents", new_args, extract_contents=False)
