@@ -1824,6 +1824,7 @@ script:
     - contextPath: Azure.CosmosDB.properties.writeLocations
       description: An array that contains the write locations enabled for the Cosmos DB account.
       type: List
+<<<<<<< HEAD
   - name: azure-nsg-security-groups-list
     description: List all network security groups.
     outputs:
@@ -2252,6 +2253,212 @@ script:
         predefined:
           - "false"
           - "true"
+  - name: azure-vm-start-instance
+    description: Powers on a given virtual machine.
+    execution: true
+    arguments:
+    - description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+      name: subscription_id
+    - description: |
+        Resource Group to which the virtual machine belongs.
+        To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command. If none are present, navigate to the Azure Web Portal to create resource groups.
+        Note: This argument will override the instance parameter ‘Default Resource Group Name'.
+      name: resource_group
+    - description: Name of the virtual machine to power on. To see all virtual machines and their associated names for a specific resource group, run the `azure-vm-list-instances` command.
+      name: virtual_machine_name
+      required: true
+    outputs:
+    - contextPath: Azure.Compute.Name
+      description: Name of the VM that was started.
+      type: string
+    - contextPath: Azure.Compute.ResourceGroup
+      description: Resource group the VM resides in.
+      type: string
+    - contextPath: Azure.Compute.PowerState
+      description: Whether the VM instance is powered on or off.
+      type: string
+  - name: azure-vm-poweroff-instance
+    description: Powers off a given virtual machine.
+    execution: true
+    arguments:
+    - description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+      name: subscription_id
+    - description: |
+        The resource group to which the virtual machine belongs.
+        To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command. If none are present, navigate to the Azure Web Portal to create resource groups.
+        Note: This argument will override the instance parameter ‘Default Resource Group Name'.
+      name: resource_group
+    - description: The name of the virtual machine to power off. To see all virtual machines with their associated names for a specific resource group, run the `azure-vm-list-instances` command.
+      name: virtual_machine_name
+      required: true
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Set to True to request non-graceful VM shutdown. Default value is False.
+      name: skip_shutdown
+      predefined:
+        - 'true'
+        - 'false'
+    outputs:
+    - contextPath: Azure.Compute.Name
+      description: The name of the virtual machine that was powered off.
+      type: string
+    - contextPath: Azure.Compute.ResourceGroup
+      description: The resource group in which the virtual machine resides.
+      type: string
+    - contextPath: Azure.Compute.PowerState
+      description: Whether the virtual machine instance is powered on or off.
+      type: string
+  - name: azure-vm-get-instance-details
+    description: Gets the properties of a given virtual machine.
+    arguments:
+    - description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+      name: subscription_id
+    - description: |
+        The resource group to which the virtual machine belongs.
+        To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command. If none are present, navigate to the Azure Web Portal to create resource groups.
+        Note: This argument will override the instance parameter ‘Default Resource Group Name'.
+      name: resource_group
+    - description: The name of the virtual machine you want to view the details of. To see all the virtual machines with their associated names for a specific resource group, run the `azure-vm-list-instances` command.
+      name: virtual_machine_name
+      required: true
+    - auto: PREDEFINED
+      defaultValue: instanceView
+      description: The expand expression to apply on the operation. 'instanceView' retrieves a snapshot of the runtime properties of the virtual machine that is managed by the platform and can change outside of control plane operations. 'userData' retrieves the UserData property as part of the VM model view that was provided by the user during the VM Create/Update operation. Default value is False.
+      name: expand
+      predefined:
+        - instanceView
+        - 'userData'
+    outputs:
+    - contextPath: Azure.Compute.Name
+      description: The name of the virtual machine you want to get details of.
+      type: string
+    - contextPath: Azure.Compute.ID
+      description: The ID of the virtual machine.
+      type: string
+    - contextPath: Azure.Compute.Size
+      description: The size of the deployed virtual machine (in gigabytes).
+      type: number
+    - contextPath: Azure.Compute.OS
+      description: The OS running on the given virtual machine.
+      type: string
+    - contextPath: Azure.Compute.ProvisioningState
+      description: The provisioning state of the deployed virtual machine.
+      type: string
+    - contextPath: Azure.Compute.Location
+      description: The region in which the virtual machine is hosted.
+      type: string
+    - contextPath: Azure.Compute.PowerState
+      description: Whether the virtual machine instance is powered on or off.
+      type: string
+    - contextPath: Azure.Compute.ResourceGroup
+      description: The resource group to which the virtual machine belongs.
+      type: string
+    - contextPath: Azure.Compute.NetworkInterfaces
+      description: The list of network interfaces attached to this machine.
+      type: string
+    - contextPath: Azure.Compute.UserData
+      description: UserData for the VM.
+      type: string
+    - contextPath: Azure.Compute.Tags
+      description: Tags associated with the VM.
+      type: string
+  - name: azure-vm-get-nic-details
+    description: Gets the properties of a given network interface.
+    arguments:
+    - description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+      name: subscription_id
+    - description: |
+        The resource group to which the network interface belongs.
+        To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command. If none are present, navigate to the Azure Web Portal to create resource groups.
+        Note: This argument will override the instance parameter ‘Default Resource Group Name'.
+      name: resource_group
+    - description: The name of the network interface you want to view the details of.
+      name: nic_name
+      required: true
+    outputs:
+    - contextPath: Azure.Network.Interfaces.AttachedVirtualMachine
+      description: The attached virtual machine to this interface.
+      type: String
+    - contextPath: Azure.Network.Interfaces.IsPrimaryInterface
+      description: True if this interface is a primary interface of the attached virtual machine.
+      type: String
+    - contextPath: Azure.Network.Interfaces.NICType
+      description: The interface type.
+      type: String
+    - contextPath: Azure.Network.Interfaces.IPConfigurations.ConfigID
+      description: The interface IP configuration ID.
+      type: String
+    - contextPath: Azure.Network.Interfaces.IPConfigurations.ConfigName
+      description: The interface IP configuration name.
+      type: String
+    - contextPath: Azure.Network.Interfaces.IPConfigurations.PrivateIPAddress
+      description: The interface private IP address.
+      type: String
+    - contextPath: Azure.Network.Interfaces.IPConfigurations.PublicIPAddressID
+      description: The interface public IP address ID.
+      type: Unknown
+    - contextPath: Azure.Network.Interfaces.MACAddress
+      description: The interface MAC address.
+      type: String
+    - contextPath: Azure.Network.Interfaces.Name
+      description: The interface name.
+      type: String
+    - contextPath: Azure.Network.Interfaces.ResourceGroup
+      description: The interface resource group.
+      type: String
+    - contextPath: Azure.Network.Interfaces.NetworkSecurityGroup.id
+      description: The interface network security group ID.
+      type: String
+    - contextPath: Azure.Network.Interfaces.Location
+      description: The interface location.
+      type: String
+    - contextPath: Azure.Network.Interfaces.ID
+      description: The interface ID.
+      type: String
+  - name: azure-vm-get-public-ip-details
+    description: Gets the properties of a given public IP address.
+    arguments:
+    - description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+      name: subscription_id
+    - description: |
+        The resource group to which the IP address belongs.
+        To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command. If none are present, navigate to the Azure Web Portal to create resource groups.
+        Note: This argument will override the instance parameter ‘Default Resource Group Name'.
+      name: resource_group
+    - description: The IP address name.
+      name: address_name
+      required: true
+    outputs:
+    - contextPath: Azure.Network.IPConfigurations.PublicIPAddress
+      description: The public IP address.
+      type: String
+    - contextPath: Azure.Network.IPConfigurations.PublicIPAddressFQDN
+      description: The address fully-qualified domain name (FQDN).
+      type: String
+    - contextPath: Azure.Network.IPConfigurations.PublicIPAddressAllocationMethod
+      description: The address allocation method.
+      type: String
+    - contextPath: Azure.Network.IPConfigurations.PublicConfigID
+      description: The address configuration ID.
+      type: String
+    - contextPath: Azure.Network.IPConfigurations.ResourceGroup
+      description: The address resource group.
+      type: String
+    - contextPath: Azure.Network.IPConfigurations.PublicIPAddressDomainName
+      description: The address domain name.
+      type: String
+    - contextPath: Azure.Network.IPConfigurations.PublicIPAddressVersion
+      description: The address version.
+      type: String
+    - contextPath: Azure.Network.IPConfigurations.Location
+      description: The address location.
+      type: String
+    - contextPath: Azure.Network.IPConfigurations.PublicConfigName
+      description: The address configuration name.
+      type: String
+    - contextPath: Azure.Network.IPConfigurations.PublicIPAddressID
+      description: The address ID.
+      type: String
   isfetch: false
   runonce: false
   script: '-'
