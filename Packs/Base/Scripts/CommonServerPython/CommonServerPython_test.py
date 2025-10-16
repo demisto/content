@@ -3570,6 +3570,22 @@ def test_http_client_debug_int_logger_sensitive_query_params(mocker):
             assert 'apikey=<XX_REPLACED>' in arg[0][0]
 
 
+def test_safe_strptime():
+    """
+    Given: A string and a format that is missing the milliseconds
+    When: Calling safe_strptime
+    Then: Verify the result is as expected
+    """
+    from CommonServerPython import safe_strptime
+    
+    assert safe_strptime("2024-01-15 17:00:00Z", "%Y-%m-%d %H:%M:%S.%fZ") == datetime(2024, 1, 15, 17, 0, 0)
+    assert safe_strptime("2024-01-15 17:00:00", "%Y-%m-%d %H:%M:%S") == datetime(2024, 1, 15, 17, 0, 0)
+    assert safe_strptime("2024-01-15 17:00:00", "%Y-%m-%d %H:%M:%S", strptime=time.strptime) == time.strptime("2024-01-15 17:00:00", "%Y-%m-%d %H:%M:%S")
+    
+    with pytest.raises(ValueError):
+        safe_strptime("2024-01-15 17:00:00", "%Y-%m-%dT%H:%M:%S")
+
+
 class TestParseDateRange:
     @staticmethod
     @freeze_time("2024-01-15 17:00:00 UTC")
