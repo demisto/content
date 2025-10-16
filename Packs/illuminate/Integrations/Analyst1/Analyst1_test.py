@@ -5,7 +5,7 @@ from Analyst1 import *
 MOCK_SERVER: str = "mock.com"
 MOCK_USER: str = "mock"
 MOCK_PASS: str = "mock"
-MOCK_INDICATOR: str = "mock-indicator"
+MOCK_INDICATOR: str = "192.0.2.1"  # Valid test IP from RFC 5737
 
 BASE_MOCK_NOTFOUND: dict = {"message": "The requested resource was not found."}
 BASE_MOCK_JSON: dict = {
@@ -84,25 +84,31 @@ MOCK_BATCH_RESPONSE: dict = {
             "searchedValue": "google.com",
             "matchedValue": "google.com",
             "id": 10336,
+            "entity": {"key": "INDICATOR"},
+            "type": {"key": "domain"},
             "benign": {"value": False},
             "indicatorRiskScore": {"title": "Low"},
-            "other-attributes": "redacted"
+            "other-attributes": "redacted",
         },
         {
             "searchedValue": "1.2.3.4",
             "matchedValue": "1.2.3.4",
             "id": 146950461,
+            "entity": {"key": "INDICATOR"},
+            "type": {"key": "ip"},
             "benign": {"value": False},
             "indicatorRiskScore": {"title": "Critical"},
-            "other-attributes": "redacted"
+            "other-attributes": "redacted",
         },
         {
             "searchedValue": "conimes.com",
             "matchedValue": "conimes.com",
             "id": 983,
+            "entity": {"key": "INDICATOR"},
+            "type": {"key": "domain"},
             "benign": {"value": True},
             "indicatorRiskScore": {"title": "High"},
-            "other-attributes": "redacted"
+            "other-attributes": "redacted",
         },
     ]
 }
@@ -228,9 +234,24 @@ def mock_client():
 
 
 def mock_indicator_search(indicator_type: str, requests_mock):
+    # Mock the GET /indicator/match endpoint (for old enrichment flow)
     requests_mock.get(
         f"https://{MOCK_SERVER}/api/1_0/indicator/match?type={indicator_type}&value={MOCK_INDICATOR}", json=BASE_MOCK_JSON
     )
+    # Mock the POST /batchCheck endpoint (for new batch-check-first enrichment flow)
+    batch_response = {
+        "results": [
+            {
+                "searchedValue": MOCK_INDICATOR,
+                "matchedValue": MOCK_INDICATOR,
+                "entity": {"key": "INDICATOR"},
+                "type": {"key": indicator_type},
+                "indicatorRiskScore": {"title": "High"},
+                "benign": {"value": False},
+            }
+        ]
+    }
+    requests_mock.post(f"https://{MOCK_SERVER}/api/1_0/batchCheck", json=batch_response)
 
 
 def test_domain_command(requests_mock, mock_client):
@@ -435,7 +456,11 @@ def test_analyst1_batch_check_command(requests_mock, mock_client):
     assert command_results is not None
     assert command_results.outputs_prefix == "Analyst1.BatchResults"
     assert command_results.outputs_key_field == "ID"
-    assert command_results.outputs == MOCK_BATCH_RESPONSE.get("results")
+    # Verify that the command adds DBotScore and Tags to results
+    assert len(command_results.outputs) == 3
+    for result in command_results.outputs:
+        assert "DBotScore" in result
+        assert "Tags" in result
 
 
 HELPER_MOCK_NEWLINEVALUES: str = """ioc1
@@ -456,7 +481,11 @@ def assert_batch_check_post(output_check):
     assert output_check is not None
     assert output_check["command_results"].outputs_prefix == "Analyst1.BatchResults"
     assert output_check["command_results"].outputs_key_field == "ID"
-    assert output_check["command_results"].outputs == MOCK_BATCH_RESPONSE.get("results")
+    # Verify that the command adds DBotScore and Tags to results
+    assert len(output_check["command_results"].outputs) == 3
+    for result in output_check["command_results"].outputs:
+        assert "DBotScore" in result
+        assert "Tags" in result
     assert output_check["submitted_values"] == HELPER_MOCK_NEWLINEVALUES
 
 
@@ -701,9 +730,7 @@ def test_enrich_with_batch_check_case1_no_results(requests_mock, mock_client, mo
     # Mock demisto.params() for applyTags
     mocker.patch("Analyst1.demisto.params", return_value={"applyTags": False})
 
-    enrichment_output = enrich_with_batch_check(
-        mock_client, "nonexistent.com", "domain", "Name", "Domain"
-    )
+    enrichment_output = enrich_with_batch_check(mock_client, "nonexistent.com", "domain", "Name", "Domain")
 
     # Should return empty EnrichmentOutput with indicator value set
     assert enrichment_output.analyst1_context_data == {}
@@ -723,24 +750,19 @@ def test_enrich_with_batch_check_case2_indicator_entity(requests_mock, mock_clie
                 "entity": {"key": "INDICATOR"},
                 "type": {"key": "domain"},
                 "indicatorRiskScore": {"title": "High"},
-                "benign": {"value": False}
+                "benign": {"value": False},
             }
         ]
     }
     requests_mock.post(f"https://{MOCK_SERVER}/api/1_0/batchCheck", json=batch_response)
 
     # Mock the full enrichment call
-    requests_mock.get(
-        f"https://{MOCK_SERVER}/api/1_0/indicator/match?type=domain&value=malicious.com",
-        json=BASE_MOCK_JSON
-    )
+    requests_mock.get(f"https://{MOCK_SERVER}/api/1_0/indicator/match?type=domain&value=malicious.com", json=BASE_MOCK_JSON)
 
     # Mock demisto.params() for applyTags and risk score mappings
     mocker.patch("Analyst1.demisto.params", return_value={"applyTags": False})
 
-    enrichment_output = enrich_with_batch_check(
-        mock_client, "malicious.com", "domain", "Name", "Domain"
-    )
+    enrichment_output = enrich_with_batch_check(mock_client, "malicious.com", "domain", "Name", "Domain")
 
     # Should have full context data from indicator/match endpoint
     assert enrichment_output.analyst1_context_data.get("ID") == BASE_MOCK_JSON.get("id")
@@ -757,7 +779,7 @@ def test_enrich_with_batch_check_case3_asset_entity(requests_mock, mock_client, 
                 "matchedValue": "10.0.0.1",
                 "entity": {"key": "ASSET"},
                 "type": {"key": "ip"},
-                "benign": {"value": False}
+                "benign": {"value": False},
             }
         ]
     }
@@ -766,17 +788,14 @@ def test_enrich_with_batch_check_case3_asset_entity(requests_mock, mock_client, 
     # Mock demisto.params() for applyTags and integrationReliability
     mocker.patch("Analyst1.demisto.params", return_value={"applyTags": False, "integrationReliability": "B"})
 
-    enrichment_output = enrich_with_batch_check(
-        mock_client, "10.0.0.1", "ip", "Address", "IP"
-    )
+    enrichment_output = enrich_with_batch_check(mock_client, "10.0.0.1", "ip", "Address", "IP")
 
     # Should have minimal context with classification
     assert enrichment_output.analyst1_context_data.get("Indicator") == "10.0.0.1"
     assert enrichment_output.analyst1_context_data.get("Classification") == "Asset"
 
-    # Should have DBotScore with Benign verdict
-    assert "DBotScore" in enrichment_output.reputation_context
-    assert enrichment_output.reputation_context["DBotScore"]["Score"] == 1  # Benign
+    # Should have verdict score set to Benign (DBotScore is in Common.Indicator, not reputation_context)
+    assert enrichment_output.verdict_score == 1  # Benign
 
 
 def test_enrich_with_batch_check_case3_ignored_indicator(requests_mock, mock_client, mocker):
@@ -789,7 +808,7 @@ def test_enrich_with_batch_check_case3_ignored_indicator(requests_mock, mock_cli
                 "matchedValue": "ignored.com",
                 "entity": {"key": "IGNORED_INDICATOR"},
                 "type": {"key": "domain"},
-                "benign": {"value": False}
+                "benign": {"value": False},
             }
         ]
     }
@@ -798,13 +817,12 @@ def test_enrich_with_batch_check_case3_ignored_indicator(requests_mock, mock_cli
     # Mock demisto.params()
     mocker.patch("Analyst1.demisto.params", return_value={"applyTags": False, "integrationReliability": "B"})
 
-    enrichment_output = enrich_with_batch_check(
-        mock_client, "ignored.com", "domain", "Name", "Domain"
-    )
+    enrichment_output = enrich_with_batch_check(mock_client, "ignored.com", "domain", "Name", "Domain")
 
     # Should show "Ignored Indicator" classification
     assert enrichment_output.analyst1_context_data.get("Classification") == "Ignored Indicator"
-    assert enrichment_output.reputation_context["DBotScore"]["Score"] == 1  # Benign
+    # Should have verdict score set to Benign (DBotScore is in Common.Indicator, not reputation_context)
+    assert enrichment_output.verdict_score == 1  # Benign
 
 
 def test_enrich_with_batch_check_case3_private_range(requests_mock, mock_client, mocker):
@@ -817,7 +835,7 @@ def test_enrich_with_batch_check_case3_private_range(requests_mock, mock_client,
                 "matchedValue": "192.168.1.1",
                 "entity": {"key": "IN_PRIVATE_RANGE"},
                 "type": {"key": "ip"},
-                "benign": {"value": False}
+                "benign": {"value": False},
             }
         ]
     }
@@ -826,9 +844,7 @@ def test_enrich_with_batch_check_case3_private_range(requests_mock, mock_client,
     # Mock demisto.params()
     mocker.patch("Analyst1.demisto.params", return_value={"applyTags": False, "integrationReliability": "B"})
 
-    enrichment_output = enrich_with_batch_check(
-        mock_client, "192.168.1.1", "ip", "Address", "IP"
-    )
+    enrichment_output = enrich_with_batch_check(mock_client, "192.168.1.1", "ip", "Address", "IP")
 
     # Should show "In Private Range" classification
     assert enrichment_output.analyst1_context_data.get("Classification") == "In Private Range"
@@ -839,18 +855,8 @@ def test_enrich_with_batch_check_case3_multiple_entities(requests_mock, mock_cli
     # Mock batch check returning multiple entity types
     batch_response = {
         "results": [
-            {
-                "searchedValue": "10.0.0.1",
-                "matchedValue": "10.0.0.1",
-                "entity": {"key": "ASSET"},
-                "type": {"key": "ip"}
-            },
-            {
-                "searchedValue": "10.0.0.1",
-                "matchedValue": "10.0.0.1",
-                "entity": {"key": "IN_HOME_RANGE"},
-                "type": {"key": "ip"}
-            }
+            {"searchedValue": "10.0.0.1", "matchedValue": "10.0.0.1", "entity": {"key": "ASSET"}, "type": {"key": "ip"}},
+            {"searchedValue": "10.0.0.1", "matchedValue": "10.0.0.1", "entity": {"key": "IN_HOME_RANGE"}, "type": {"key": "ip"}},
         ]
     }
     requests_mock.post(f"https://{MOCK_SERVER}/api/1_0/batchCheck", json=batch_response)
@@ -858,9 +864,7 @@ def test_enrich_with_batch_check_case3_multiple_entities(requests_mock, mock_cli
     # Mock demisto.params()
     mocker.patch("Analyst1.demisto.params", return_value={"applyTags": False, "integrationReliability": "B"})
 
-    enrichment_output = enrich_with_batch_check(
-        mock_client, "10.0.0.1", "ip", "Address", "IP"
-    )
+    enrichment_output = enrich_with_batch_check(mock_client, "10.0.0.1", "ip", "Address", "IP")
 
     # Should show both classifications
     classification = enrichment_output.analyst1_context_data.get("Classification")
@@ -877,7 +881,7 @@ def test_enrich_with_batch_check_case3_unrecognized_entity(requests_mock, mock_c
                 "searchedValue": "unknown.com",
                 "matchedValue": "unknown.com",
                 "entity": {"key": "UNKNOWN_ENTITY_TYPE"},
-                "type": {"key": "domain"}
+                "type": {"key": "domain"},
             }
         ]
     }
@@ -886,9 +890,7 @@ def test_enrich_with_batch_check_case3_unrecognized_entity(requests_mock, mock_c
     # Mock demisto.params()
     mocker.patch("Analyst1.demisto.params", return_value={"applyTags": False})
 
-    enrichment_output = enrich_with_batch_check(
-        mock_client, "unknown.com", "domain", "Name", "Domain"
-    )
+    enrichment_output = enrich_with_batch_check(mock_client, "unknown.com", "domain", "Name", "Domain")
 
     # Should return empty like CASE 1
     assert enrichment_output.analyst1_context_data == {}
@@ -900,40 +902,27 @@ def test_enrich_with_batch_check_with_tagging_enabled(requests_mock, mock_client
     """Test that tags are applied when applyTags is enabled"""
     # Mock batch check returning ASSET entity
     batch_response = {
-        "results": [
-            {
-                "searchedValue": "10.0.0.1",
-                "matchedValue": "10.0.0.1",
-                "entity": {"key": "ASSET"},
-                "type": {"key": "ip"}
-            }
-        ]
+        "results": [{"searchedValue": "10.0.0.1", "matchedValue": "10.0.0.1", "entity": {"key": "ASSET"}, "type": {"key": "ip"}}]
     }
     requests_mock.post(f"https://{MOCK_SERVER}/api/1_0/batchCheck", json=batch_response)
 
     # Mock demisto.params() with tagging enabled
     mocker.patch("Analyst1.demisto.params", return_value={"applyTags": True, "integrationReliability": "B"})
 
-    enrichment_output = enrich_with_batch_check(
-        mock_client, "10.0.0.1", "ip", "Address", "IP"
-    )
+    enrichment_output = enrich_with_batch_check(mock_client, "10.0.0.1", "ip", "Address", "IP")
 
-    # Should have tags set
+    # Should have tags set (tags are ONLY in Common.Indicator, NOT in reputation_context)
     assert enrichment_output.tags == ["Analyst1: Asset"]
 
-    # Tags should be in reputation context
+    # Verify reputation context exists but does NOT contain Tags (architecture requirement)
     ip_context_key = "IP(val.Address && val.Address === obj.Address)"
-    assert "Tags" in enrichment_output.reputation_context[ip_context_key]
-    assert enrichment_output.reputation_context[ip_context_key]["Tags"] == ["Analyst1: Asset"]
+    assert ip_context_key in enrichment_output.reputation_context
+    assert "Tags" not in enrichment_output.reputation_context[ip_context_key]
 
 
 def test_get_analyst1_tags_for_batch_result():
     """Test tag extraction from batch results"""
-    results = [
-        {"entity": {"key": "ASSET"}},
-        {"entity": {"key": "IN_HOME_RANGE"}},
-        {"entity": {"key": "INDICATOR"}}
-    ]
+    results = [{"entity": {"key": "ASSET"}}, {"entity": {"key": "IN_HOME_RANGE"}}, {"entity": {"key": "INDICATOR"}}]
 
     tags = get_analyst1_tags_for_batch_result(results)
 
@@ -946,10 +935,7 @@ def test_get_analyst1_tags_for_batch_result():
 def test_has_benign_entity_type():
     """Test detection of benign entity types"""
     # Test with benign entity types
-    results_benign = [
-        {"entity": {"key": "ASSET"}},
-        {"entity": {"key": "INDICATOR"}}
-    ]
+    results_benign = [{"entity": {"key": "ASSET"}}, {"entity": {"key": "INDICATOR"}}]
     assert has_benign_entity_type(results_benign) is True
 
     # Test with IGNORED_INDICATOR
@@ -974,7 +960,7 @@ def test_find_indicator_in_batch_results():
     results = [
         {"entity": {"key": "ASSET"}, "type": {"key": "ip"}},
         {"entity": {"key": "INDICATOR"}, "type": {"key": "domain"}},
-        {"entity": {"key": "INDICATOR"}, "type": {"key": "ip"}}
+        {"entity": {"key": "INDICATOR"}, "type": {"key": "ip"}},
     ]
 
     # Should find the domain INDICATOR
