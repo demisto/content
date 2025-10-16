@@ -595,6 +595,38 @@ tasks:
           left:
             value:
               complex:
+                root: PaloAltoNetworksXDR.Incident.alerts
+                accessor: action_process_signature_vendor
+                transformers:
+                - operator: append
+                  args:
+                    item:
+                      value:
+                        simple: ${PaloAltoNetworksXDR.Incident.alerts.os_actor_process_signature_vendor}
+                      iscontext: true
+                - operator: append
+                  args:
+                    item:
+                      value:
+                        simple: ${PaloAltoNetworksXDR.Incident.alerts.actor_process_signature_vendor}
+                      iscontext: true
+                - operator: append
+                  args:
+                    item:
+                      value:
+                        simple: ${PaloAltoNetworksXDR.Incident.alerts.causality_actor_process_signature_vendor}
+                      iscontext: true
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: inputs.TrustedPublishers
+            iscontext: true
+          ignorecase: true
+        - operator: inList
+          left:
+            value:
+              complex:
                 root: alert
                 accessor: processexecutionsigner
                 transformers:
@@ -619,8 +651,7 @@ tasks:
             iscontext: true
           right:
             value:
-              complex:
-                root: inputs.TrustedPublishers
+              simple: inputs.TrustedPublishers
             iscontext: true
           ignorecase: true
     view: |-
