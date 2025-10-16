@@ -3,7 +3,7 @@ sectionOrder:
 - Connect
 - Collect
 commonfields:
-  id: ZscalerDev
+  id: Zscaler dev test #TODO remove
   version: -1
 configuration:
 - display: Client ID (OAuth 2.0)
@@ -19,24 +19,12 @@ configuration:
   type: 0
   section: Connect
   additionalinfo: Your Zscaler cloud instance (e.g. https://zsapi.zscalertwo.net).
-- name: org_id
+- display: Domain Name (OAuth 2.0)
+  name: domain
   type: 0
   section: Connect
   required: false
-  display: Org ID (OAuth 2.0)
-  additionalinfo: OAuth 2.0 Organization ID from ZIA Admin Portal.
-- display: API Role (OAuth 2.0)
-  name: api_role
-  type: 0
-  section: Connect
-  required: false
-  additionalinfo: OAuth 2.0 API role from ZIA Admin Portal.
-- display: OAuth Token URL (OAuth 2.0)
-  name: oauth_token_url
-  type: 0
-  section: Connect
-  required: false
-  additionalinfo: 'OAuth 2.0 token endpoint URL. Example: https://your-vanity.zslogin.net/oauth2/v1/token'
+  additionalinfo: Domain name used by your organization. Example... TODO
 - additionalinfo: Basic Auth username.
   display: Username (Basic Auth)
   name: credentials
@@ -56,6 +44,11 @@ configuration:
   hidden: true
   section: Connect
   required: false
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  required: false
+  defaultvalue: "true"
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: 'C - Fairly reliable'
   display: Source Reliability
@@ -107,9 +100,9 @@ configuration:
   section: Connect
   advanced: true
   required: false
-description: Zscaler is a cloud security solution built for performance and flexible scalability. This integration enables you to manage URL and IP address allow lists and block lists, manage and update categories, get Sandbox reports, create, manage, and update IP destination groups and manually log in, log out, and activate changes in a Zscaler session. This is the development version with OAuth 2.0 support.
-display: Zscaler Internet Access (OAuth 2.0 Dev)
-name: ZscalerDev
+description: Zscaler is a cloud security solution built for performance and flexible scalability. This integration enables you to manage URL and IP address allow lists and block lists, manage and update categories, get Sandbox reports, create, manage, and update IP destination groups and manually log in, log out, and activate changes in a Zscaler session.
+display: Zscaler Internet Access dev test #TODO remove
+name: Zscaler dev test #TODO remove
 script:
   commands:
   - arguments:
@@ -1972,6 +1965,7 @@ script:
   subtype: python3
   dockerimage: demisto/python3:3.12.8.3296088
   type: python
+  isfetch: true
 fromversion: 5.0.0
 tests:
 - Zscaler Test

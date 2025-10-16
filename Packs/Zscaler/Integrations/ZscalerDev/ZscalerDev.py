@@ -12,22 +12,20 @@ SUSPICIOUS_CATEGORIES = ["SUSPICIOUS_DESTINATION", "SPYWARE_OR_ADWARE"]
 oauth_creds = demisto.params().get("oauth_credentials", {})
 CLIENT_ID = oauth_creds.get("identifier") if oauth_creds else None
 CLIENT_SECRET = oauth_creds.get("password") if oauth_creds else None
-CLOUD_NAME = demisto.params().get("cloud", "")
-ORG_ID = demisto.params().get("org_id", "")
-API_ROLE = demisto.params().get("api_role", "")
+CLOUD_NAME = demisto.params().get("cloud", "") or ""
+DOMAIN = demisto.params().get("domain", "") or ""
 
 # Basic Auth parameters
 USERNAME = demisto.params().get("credentials", {}).get("identifier", "")
 PASSWORD = demisto.params().get("credentials", {}).get("password", "")
 API_KEY = str(demisto.params().get("creds_key", {}).get("password", "")) or str(demisto.params().get("key", ""))
-OAUTH_TOKEN_URL = demisto.params().get("oauth_token_url", "")
 
 # Validate required Cloud Name for both authentication methods
 if not CLOUD_NAME:
     raise Exception("Cloud Name is required.")
 
 # Check which authentication parameters are provided
-oauth_fields = [CLIENT_ID, CLIENT_SECRET, ORG_ID, API_ROLE, OAUTH_TOKEN_URL]
+oauth_fields = [CLIENT_ID, CLIENT_SECRET, DOMAIN]
 basic_fields = [USERNAME, PASSWORD, API_KEY]
 
 oauth_provided = [bool(field) for field in oauth_fields]
@@ -43,12 +41,13 @@ if (oauth_complete or oauth_partial) and (basic_complete or basic_partial):
     raise Exception("Cannot mix OAuth 2.0 and Basic Auth parameters. Please use only one authentication method.")
 elif oauth_complete:
     IS_OAUTH = True
+    OAUTH_TOKEN_URL = f"https://{DOMAIN}.zslogin.net/oauth2/v1/token"
     demisto.debug(f"Using OAuth 2.0 authentication with URL: {OAUTH_TOKEN_URL}")
 elif basic_complete:
     IS_OAUTH = False
     demisto.debug("Using Basic Auth. OAuth 2.0 is recommended for enhanced security.")
 elif oauth_partial:
-    oauth_field_names = ['Client ID', 'Client Secret', 'Org ID', 'API Role', 'OAuth Token URL']
+    oauth_field_names = ['Client ID', 'Client Secret', 'Domain']
     missing_oauth = [name for name, provided in zip(oauth_field_names, oauth_provided) if not provided]
     raise Exception(f"OAuth 2.0 authentication is incomplete. Missing: {', '.join(missing_oauth)}.")
 elif basic_partial:
@@ -229,8 +228,7 @@ def fetch_oauth_token():
     demisto.debug("[DEBUG] Starting OAuth token fetch process")
     demisto.debug(f"[DEBUG] OAuth token URL: {OAUTH_TOKEN_URL}")
     demisto.debug(f"[DEBUG] Cloud name: {CLOUD_NAME}")
-    demisto.debug(f"[DEBUG] Organization ID: {ORG_ID}")
-    demisto.debug(f"[DEBUG] API Role: {API_ROLE}")
+    demisto.debug(f"[DEBUG] Domain: {DOMAIN}")
     demisto.debug(f"[DEBUG] Client ID: {CLIENT_ID[:10]}...")
     demisto.debug(f"[DEBUG] Client Secret: {'*' * 10}...")
     
@@ -1431,6 +1429,8 @@ def delete_ip_destination_groups(args: dict):
 
 
 def main():  # pragma: no cover
+    demisto.debug("Starting Zscaler testing")
+
     command = demisto.command()
 
     add_sensitive_log_strs(USERNAME)
