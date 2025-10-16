@@ -28,15 +28,14 @@ def get_indicators_by_source(source_name: str, limit: int = 1000) -> list[dict[s
     demisto.debug(f"Searching for indicators from source: {source_name}")
 
     # Search for indicators with the specific source
-    search_args = {"query": f'source:"{source_name}"', "size": str(limit)}
+    search_args = {"query": f'sourceInstances:"{source_name}"', "size": limit}
 
     res = demisto.executeCommand("searchIndicators", search_args)
 
-    if is_error(res):
-        raise DemistoException(f"Failed to search indicators: {get_error(res)}")
-
-    indicators = res[0].get("Contents", {}).get("iocs", [])
-    demisto.debug(f"Found {len(indicators)} indicators from source {source_name}")
+    indicators: list[dict[str, Any]] = []
+    if isinstance(res, dict) and (total_indicators := res.get("total", 0)) > 0:
+        demisto.debug(f"Found {total_indicators} indicators from source {source_name}")
+        indicators = res.get("iocs", [])
 
     return indicators
 

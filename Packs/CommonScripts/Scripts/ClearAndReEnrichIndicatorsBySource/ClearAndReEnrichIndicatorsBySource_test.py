@@ -21,7 +21,7 @@ class TestClearAndReEnrichIndicatorsBySource:
         """
         # Given
         source_name = "VirusTotal"
-        mock_response = [{"Contents": {"iocs": [{"value": "1.1.1.1", "type": "IP"}, {"value": "example.com", "type": "Domain"}]}}]
+        mock_response = {"total": 2, "iocs": [{"value": "1.1.1.1", "type": "IP"}, {"value": "example.com", "type": "Domain"}]}
         mock_demisto.executeCommand.return_value = mock_response
 
         # When
@@ -32,8 +32,27 @@ class TestClearAndReEnrichIndicatorsBySource:
         assert result[0]["value"] == "1.1.1.1"
         assert result[1]["value"] == "example.com"
         mock_demisto.executeCommand.assert_called_once_with(
-            "searchIndicators", {"query": f'source:"{source_name}"', "size": "1000"}
+            "searchIndicators", {"query": f'sourceInstances:"{source_name}"', "size": 1000}
         )
+
+    @patch("ClearAndReEnrichIndicatorsBySource.demisto")
+    def test_get_indicators_by_source_no_results(self, mock_demisto):
+        """
+        Given: A source name with no indicators
+        When: get_indicators_by_source is called
+        Then: Returns empty list
+        """
+        # Given
+        source_name = "EmptySource"
+        mock_response = {"total": 0, "iocs": []}
+        mock_demisto.executeCommand.return_value = mock_response
+
+        # When
+        result = get_indicators_by_source(source_name)
+
+        # Then
+        assert len(result) == 0
+        assert result == []
 
     def test_extract_indicator_values(self):
         """
