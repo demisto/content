@@ -1864,6 +1864,50 @@ class EC2:
         except Exception as e:
             raise DemistoException(f"Error: {str(e)}")
 
+    @staticmethod
+    def get_ipam_discovered_public_addresses_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        aws-ec2-get-ipam-discovered-public-addresses: Gets the public IP addresses that have been discovered by IPAM.
+
+        Args:
+            args (dict): all command arguments, usually passed from ``demisto.args()``.
+
+        Returns:
+            CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains public IP addresses
+            that have been discovered by IPAM.
+        """
+        pass
+
+    # client = build_client(args)
+    #
+    # if (args.get("IpamResourceDiscoveryId") is None) or (args.get("AddressRegion") is None):
+    #     return_error("IpamResourceDiscoveryId and AddressRegion need to be defined")
+    #
+    # kwargs = {}
+    # kwargs.update({"IpamResourceDiscoveryId": args.get("IpamResourceDiscoveryId"), "AddressRegion": args.get("AddressRegion")})
+    # if (filters := args.get("Filters")) is not None:
+    #     kwargs.update({"Filters": parse_filter_field(filters)})
+    # if (max_results := args.get("MaxResults")) is not None:
+    #     kwargs.update({"MaxResults": int(max_results)})
+    # if (next_token := args.get("NextToken")) is not None:
+    #     kwargs.update({"NextToken": next_token})
+    #
+    # response = client.get_ipam_discovered_public_addresses(**kwargs)
+    #
+    # if len(response["IpamDiscoveredPublicAddresses"]) == 0:
+    #     return CommandResults(readable_output="No Ipam Discovered Public Addresses were found.")
+    #
+    # output = json.loads(json.dumps(response, cls=DatetimeEncoder))
+    #
+    # human_readable = tableToMarkdown("Ipam Discovered Public Addresses", output["IpamDiscoveredPublicAddresses"])
+    # command_results = CommandResults(
+    #     outputs_prefix="AWS.EC2.IpamDiscoveredPublicAddresses",
+    #     outputs_key_field="Address",
+    #     outputs=output["IpamDiscoveredPublicAddresses"],
+    #     raw_response=output,
+    #     readable_output=human_readable,
+    # )
+    # return command_results
 
 class EKS:
     service = AWSServices.EKS
@@ -2486,6 +2530,7 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-ec2-subnet-attribute-modify": EC2.modify_subnet_attribute_command,
     "aws-ec2-latest-ami-get": EC2.get_latest_ami_command,
     "aws-ec2-create-network-acl": EC2.create_network_acl_command,
+    "aws-ec2-get-ipam-discovered-public-addresses": EC2.get_ipam_discovered_public_addresses_command,
     "aws-eks-cluster-config-update": EKS.update_cluster_config_command,
     "aws-eks-describe-cluster": EKS.describe_cluster_command,
     "aws-eks-associate-access-policy": EKS.associate_access_policy_command,
