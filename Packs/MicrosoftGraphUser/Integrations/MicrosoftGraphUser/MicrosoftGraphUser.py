@@ -175,7 +175,8 @@ class MsGraphClient:
 
     def fetch_password_method_id(self, user: str) -> str:
         """
-        fetches the password method ID, to be used later. See API docs for reference.
+        fetches the password method ID, to be used later. See API docs for reference:
+         https://learn.microsoft.com/en-us/graph/api/authentication-list-passwordmethods?view=graph-rest-1.0&tabs=http
         """
         password_method_id_response = None
         try:
@@ -195,9 +196,9 @@ class MsGraphClient:
             method="POST",
             url_suffix=f"users/{quote(user)}/authentication/methods/{password_method_id}/resetPassword",
             ok_codes=(202,),
+            empty_valid_codes=(202,),
             json_data={"newPassword": password},
             return_empty_response=True,
-            resp_type=None,
         )
 
     def get_delta(self, properties):
@@ -455,14 +456,13 @@ def change_password_user_saas_command(client: MsGraphClient, args: dict):
 
 def validate_input_password(args: dict[str, Any]):
     """
-    Get the file's password argument inserted by the user. The password can be inserted either in the sensitive
+    Get the user's password argument inserted by the user. The password can be inserted either in the sensitive
     argument (named 'password') or nonsensitive argument (named 'nonsensitive_password). This function asserts these
     arguments are used properly and raises an error if both are inserted and have a different value.
-    so this
     Args:
         args: script's arguments
     Returns:
-        the password given for the file.
+        the password given for the user.
     """
     sensitive_password = args.get("password")
     nonsensitive_password = args.get("nonsensitive_password")
@@ -477,9 +477,6 @@ def change_password_user_on_premise_command(client: MsGraphClient, args: dict[st
     """
     user = str(args.get("user", ""))
     password = validate_input_password(args) or ""  # either password or nonsensitive_password can be used
-
-    if not password:
-        raise DemistoException("Password cannot be empty. Use the password or non_sensitive_password argument.")
 
     password_method_id = client.fetch_password_method_id(user)
     demisto.debug("Got password method id")

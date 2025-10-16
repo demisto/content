@@ -630,7 +630,7 @@ script:
     - User Soft Remediation
   - name: msgraph-user-change-password-on-premise
     description: |-
-      Changes the password of an on-premise user. Requires the UserAuthenticationMethod.Read.All permission. 
+      Changes the password of an on-premise user. See documentation for full permissions and roles to execute this command. 
       Providing a password is required (password auto-generation is not supported).
     execution: true
     arguments:
