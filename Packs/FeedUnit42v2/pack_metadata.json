@@ -1,6 +1,6 @@
 {
     "name": "Unit 42 ATOMs Feed (Deprecated)",
-    "description": "Deprecated. Use Unit 42 Threat Intelligence by Palo Alto Networks instead.",
+    "description": "Deprecated. Use the Unit 42 Threat Intelligence by Palo Alto Networks instead.",
     "support": "xsoar",
     "currentVersion": "1.1.0",
     "author": "Cortex XSOAR",

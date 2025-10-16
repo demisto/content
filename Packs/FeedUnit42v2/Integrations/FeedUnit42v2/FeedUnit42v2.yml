@@ -110,7 +110,7 @@ configuration:
   type: 8
   required: false
   section: Collect
-description: Deprecated use Unit42 Feed instead.
+description: Deprecated. Use the Unit42 Feed instead.
 display: Unit 42 ATOMs Feed (Deprecated)
 name: Unit42v2 Feed
 deprecated: true
