@@ -4,7 +4,8 @@ alter
     ldap_operation_scope = _raw_log -> opDetails.scope,
     ldap_auth_choice = _raw_log -> opDetails.choice,
     client_ip_address = client -> ip,
-    fix_filter = replex(_raw_log ,"filter", "filter_used")
+    fix_filter = replex(_raw_log ,"filter", "filter_used"),
+    event_outcome = _raw_log -> result
 | alter
     client_ipv4 = if(client_ip_address ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", client_ip_address ,null),
     client_ipv6 = if(client_ip_address ~= "^((?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4})$", client_ip_address ,null)
@@ -15,7 +16,7 @@ alter
     xdm.source.ipv4 = client_ipv4,
     xdm.source.ipv6 = client_ipv6,
     xdm.network.ldap.attributes = arraycreate(_raw_log -> bindDn, _raw_log -> opDetails.base),
-    xdm.event.outcome = _raw_log -> result,
+    xdm.event.outcome = if(event_outcome = "Success", XDM_CONST.OUTCOME_SUCCESS, event_outcome),
     xdm.event.operation = _raw_log -> operation,
     xdm.network.ldap.filter = fix_filter -> opDetails.filter_used,
     xdm.network.ldap.returned_entries = to_integer(_raw_log -> opDetails.numberOfEntriesReturned),
