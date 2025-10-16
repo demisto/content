@@ -56,6 +56,7 @@ class Client:
         """
         headers = {"Content-Type": "application/json", "Accept": "application/json"}
         self.use_oauth = use_oauth
+        self.use_jwt = bool(jwt_params)
         self.snow_client: ServiceNowClient = ServiceNowClient(
             credentials=credentials,
             use_oauth=use_oauth,
@@ -470,7 +471,8 @@ def test_module(client: Client) -> str:
     :rtype: ``str``
     """
     # Notify the user that test button can't be used when using OAuth 2.0:
-    if client.use_oauth:
+
+    if client.use_oauth and not client.use_jwt:
         return_error(
             "Test button cannot be used when using OAuth 2.0. Please use the !servicenow-cmdb-oauth-login "
             "command followed by the !servicenow-cmdb-oauth-test command to test the instance."
