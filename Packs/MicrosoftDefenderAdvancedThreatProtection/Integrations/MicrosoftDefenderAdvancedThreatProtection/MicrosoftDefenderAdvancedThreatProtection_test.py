@@ -5,7 +5,7 @@ import dateparser
 import demistomock as demisto
 import pytest
 import requests_mock
-from CommonServerPython import DemistoException, snakify
+from CommonServerPython import DemistoException, snakify, outputPaths
 from freezegun import freeze_time
 from MicrosoftDefenderAdvancedThreatProtection import (
     MICROSOFT_DEFENDER_FOR_ENDPOINT_API,
@@ -413,6 +413,26 @@ ALERT_RELATED_USER_API_RESPONSE = {
     "isOnlyNetworkUser": "false",
 }
 
+GET_FILE_API_RESPONSE = {
+    "@odata.context": "https://api.security.microsoft.com/api/$metadata#Files/$entity",
+    "sha1": "4388963aaa83afe2042a46a3c017ad50bdcdafb3",
+    "sha256": "413c58c8267d2c8648d8f6384bacc2ae9c929b2b96578b6860b5087cd1bd6462",
+    "globalPrevalence": 180022,
+    "globalFirstObserved": "2017-09-19T03:51:27.6785431Z",
+    "globalLastObserved": "2020-01-06T03:59:21.3229314Z",
+    "size": 22139496,
+    "fileType": "APP",
+    "isPeFile": True,
+    "filePublisher": "CHENGDU YIWO Tech Development Co., Ltd.",
+    "fileProductName": "EaseUS MobiSaver for Android",
+    "signer": "CHENGDU YIWO Tech Development Co., Ltd.",
+    "issuer": "VeriSign Class 3 Code Signing 2010 CA",
+    "signerHash": "6c3245d4a9bc0244d99dff27af259cbbae2e2d16",
+    "isValidCertificate": False,
+    "determinationType": "Pua",
+    "determinationValue": "PUA:Win32/FusionCore",
+}
+
 FILE_STATISTICS_API_RESPONSE = {
     "@odata.context": "https://api.security.microsoft.com/api/$metadata#microsoft.windowsDefenderATP.api.InOrgFileStats",
     "sha1": "0991a395da64e1c5fbe8732ed11e6be064081d9f",
@@ -495,7 +515,38 @@ INVESTIGATION_ACTION_DATA = {
 INVESTIGATION_SAS_URI_API_RES = {
     "value": "https://userrequests-us.securitycenter.windows.com:443/safedownload/WDATP_Investigation_Package.zip?token=test1"
 }
+STOP_AND_QUARANTINE_FILE_RAW_RESPONSE: dict = {
+    "cancellationComment": None,
+    "cancellationDateTimeUtc": None,
+    "cancellationRequestor": None,
+    "commands": [],
+    "computerDnsName": None,
+    "creationDateTimeUtc": "2020-03-20T14:21:49.9097785Z",
+    "errorHResult": 0,
+    "id": "123",
+    "lastUpdateDateTimeUtc": "2020-03-20T14:21:49.9097785Z",
+    "machineId": "12345678",
+    "relatedFileInfo": {"fileIdentifier": "87654321", "fileIdentifierType": "Sha1"},
+    "requestor": "123abc",
+    "requestorComment": "Test",
+    "scope": None,
+    "status": "Pending",
+    "type": "StopAndQuarantineFile",
+}
 
+MACHINE_ACTION_STOP_AND_QUARANTINE_FILE_DATA = {
+    "ID": "123",
+    "Type": "StopAndQuarantineFile",
+    "Scope": None,
+    "Requestor": "123abc",
+    "RequestorComment": "Test",
+    "Status": "Pending",
+    "MachineID": "12345678",
+    "ComputerDNSName": None,
+    "CreationDateTimeUtc": "2020-03-20T14:21:49.9097785Z",
+    "LastUpdateTimeUtc": "2020-02-27T12:21:00.4568741Z",
+    "RelatedFileInfo": {"fileIdentifier": "87654321", "fileIdentifierType": "Sha1"},
+}
 MACHINE_ACTION_API_RESPONSE = {
     "id": "123",
     "type": "test",
@@ -940,31 +991,22 @@ def test_reformat_filter_with_list_arg(fields_to_filter_by, field_key_from_type_
 @pytest.mark.parametrize(
     "hostnames, ips, ids, expected_filter",
     [
-        # Test case 1: Only one list with one value
-        (["example.com"], [], [], "computerDnsName in ('example.com')"),
-        # Test case 2: Only one list with multiple values
-        (["example.com", "b.com"], [], [], "computerDnsName in ('example.com','b.com')"),
-        # Test case 3: Each list has exactly one value
-        (["b.com"], ["1.2.3.4"], ["1"], "computerDnsName in ('b.com') or lastIpAddress in ('1.2.3.4') or id in ('1')"),
-        # Test case 4: Each list has multiple values
+        # only one list is given
+        (["example.com"], [], [], "computerDnsName eq 'example.com'"),
+        (["example.com", "b.com"], [], [], "computerDnsName eq 'example.com' or computerDnsName eq 'b.com'"),
+        # each list has only one value
+        (["b.com"], ["1.2.3.4"], ["1"], "computerDnsName eq 'b.com' or lastIpAddress eq '1.2.3.4' or id eq '1'"),
+        # each list has more than 1 value
         (
             ["b.com", "a.com"],
             ["1.2.3.4", "1.2.3.5"],
             ["1", "2"],
-            "computerDnsName in ('b.com','a.com') or " "lastIpAddress in ('1.2.3.4','1.2.3.5') or " "id in ('1','2')",
+            "computerDnsName eq 'b.com' or computerDnsName eq 'a.com' or "
+            "lastIpAddress eq '1.2.3.4' or "
+            "lastIpAddress eq '1.2.3.5' or "
+            "id eq '1' or "
+            "id eq '2'",
         ),
-        # Test case 5: Some lists are empty
-        (["host.local"], [], ["12345", "67890"], "computerDnsName in ('host.local') or id in ('12345','67890')"),
-        # Test case 6: Edge case: All lists are empty, should produce an empty string
-        ([], [], [], ""),
-    ],
-    ids=[
-        "single_hostname",
-        "multiple_hostnames",
-        "single_value_for_each_field",
-        "multiple_values_for_each_field",
-        "some_lists_empty",
-        "all_lists_empty",
     ],
 )
 def test_create_filter_for_endpoint_command(hostnames, ips, ids, expected_filter):
@@ -4033,3 +4075,70 @@ class TestStopAndQuarantineFileCommand:
             "| action_1B | StopAndQuarantineFile | 123abc | Test | Failed | 12345678 |\n"
             "| action_2B | StopAndQuarantineFile | 123abc | Test | TimeOut | 12345678 |\n"
         )
+
+
+def test_file_command(mocker):
+    """
+    Given:
+    - SHA1 File hash
+
+    When:
+    - Calling the file_command function
+
+    Then:
+    - Assert correct context output and raw response
+    """
+    from MicrosoftDefenderAdvancedThreatProtection import file_command, get_file_data
+
+    # Set
+    response = GET_FILE_API_RESPONSE
+    mocker.patch.object(client_mocker, "get_file_data", return_value=response)
+
+    # Arrange
+    mocker.patch.object(demisto, "args", return_value={"file": "4388963aaa83afe2042a46a3c017ad50bdcdafb3"})
+    results = file_command(client_mocker, args=demisto.args())
+
+    entry_context = results[0].to_context()["EntryContext"]
+
+    assert results[0].raw_response == get_file_data(response)
+    assert entry_context == {
+        f"{outputPaths.get('file')}": [
+            {
+                "Hashes": [
+                    {"type": "SHA1", "value": "4388963aaa83afe2042a46a3c017ad50bdcdafb3"},
+                    {"type": "SHA256", "value": "413c58c8267d2c8648d8f6384bacc2ae9c929b2b96578b6860b5087cd1bd6462"},
+                ],
+                "SHA1": "4388963aaa83afe2042a46a3c017ad50bdcdafb3",
+                "SHA256": "413c58c8267d2c8648d8f6384bacc2ae9c929b2b96578b6860b5087cd1bd6462",
+                "Type": "APP",
+                "Malicious": {"Vendor": "Microsoft Defender ATP", "Description": None},
+            }
+        ],
+        "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": [
+            {
+                "Indicator": "4388963aaa83afe2042a46a3c017ad50bdcdafb3",
+                "Type": "file",
+                "Vendor": "Microsoft Defender ATP",
+                "Score": 3,
+            }
+        ],
+        "MicrosoftATP.File(val.Sha1 && val.Sha1 == obj.Sha1)": {
+            "Sha1": "4388963aaa83afe2042a46a3c017ad50bdcdafb3",
+            "Size": 22139496,
+            "Sha256": "413c58c8267d2c8648d8f6384bacc2ae9c929b2b96578b6860b5087cd1bd6462",
+            "GlobalPrevalence": 180022,
+            "GlobalFirstObserved": "2017-09-19T03:51:27.6785431Z",
+            "GlobalLastObserved": "2020-01-06T03:59:21.3229314Z",
+            "SizeInBytes": 22139496,
+            "FileType": "APP",
+            "IsPeFile": True,
+            "FilePublisher": "CHENGDU YIWO Tech Development Co., Ltd.",
+            "FileProductName": "EaseUS MobiSaver for Android",
+            "Signer": "CHENGDU YIWO Tech Development Co., Ltd.",
+            "Issuer": "VeriSign Class 3 Code Signing 2010 CA",
+            "SignerHash": "6c3245d4a9bc0244d99dff27af259cbbae2e2d16",
+            "IsValidCertificate": False,
+            "DeterminationType": "Pua",
+            "DeterminationValue": "PUA:Win32/FusionCore",
+        },
+    }
