@@ -362,7 +362,7 @@ def identify_json_structure(json_data) -> Any:
     return None
 
 
-def filtering_stix_files(content_files: list) -> list:
+def filtering_stix_files(file_names: list, file_contents: list) -> list:
     """
     Filters a list of content files to include only those in STIX format.
 
@@ -373,13 +373,25 @@ def filtering_stix_files(content_files: list) -> list:
         list: A list of STIX files or dictionaries found in the input list.
     """
     stix_files = []
-    for file in content_files:
-        for tab in file:
-            file_type = identify_json_structure(tab)
-            if file_type in ("Envelope", "Bundle"):
-                stix_files.append(tab)
-            if isinstance(file_type, dict):
-                stix_files.append(file_type)
+    for file_name, file_content in zip(file_names, file_contents):
+        try:
+            json_data = json.loads(file_content)
+        except json.JSONDecodeError as e:
+            demisto.debug(f"Invalid JSON data in {file_name!r}. Error: {str(e)}.")
+            continue
+
+        file_type = identify_json_structure(json_data)
+        if file_type in ("Envelope", "Bundle"):
+            demisto.debug(f"Identified STIX {file_type} object in {file_name!r}.")
+            stix_files.append(json_data)
+
+        elif isinstance(file_type, dict):
+            demisto.debug(f"Constructed STIX object in {file_name!r}.")
+            stix_files.append(file_type)
+
+        else:
+            demisto.debug(f"Could not identify STIX objects in {file_name!r}.")
+
     return stix_files
 
 
@@ -396,12 +408,9 @@ def create_stix_generator(content_files: list[dict]):
     Returns:
         Generator: A generator that yields each STIX file from the filtered list one at a time.
     """
-    content_files1 = [list(content_file.values())[0] for content_file in content_files]
-    return get_stix_files_generator(filtering_stix_files(content_files1))
-
-
-def get_stix_files_generator(json_files):
-    yield from json_files
+    file_names = [list(content_file.keys())[0] for content_file in content_files]
+    file_contents = [list(content_file.values())[0] for content_file in content_files]
+    yield from filtering_stix_files(file_names=file_names, file_contents=file_contents)
 
 
 def test_module(client: Client, params) -> str:

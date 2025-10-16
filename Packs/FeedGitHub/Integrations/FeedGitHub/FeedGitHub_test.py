@@ -212,8 +212,9 @@ def test_get_stix_indicators():
     """
     from FeedGitHub import get_stix_indicators
 
-    stix_indicators_input = util_load_json("test_data/taxii_test.json")
-    res_indicators = get_stix_indicators(stix_indicators_input)
+    with open("test_data/taxii_test.json", encoding="utf-8") as f:
+        file_name_contents = [{"taxii_test.json": f.read()}]
+        res_indicators = get_stix_indicators(file_name_contents)
     assert res_indicators == util_load_json("test_data/taxii_test_res.json")
 
 
@@ -475,17 +476,18 @@ def test_filtering_stix_files():
     """
     from FeedGitHub import filtering_stix_files
 
-    content_files = [
-        [{"type": "indicator", "id": "indicator--12345678-1234-5678-1234-567812345678"}],  # STIX format
-        [{"bundle": {"type": "bundle", "id": "bundle--12345678-1234-5678-1234-567812345678"}}],  # STIX format
-        [{"type": "non-stix", "id": "non-stix--12345678-1234-5678-1234-567812345678"}],  # Non-STIX format
+    file_names = ["fileA.json", "fileB.json", "fileC.json"]
+    file_contents = [
+        '{"type": "indicator", "id": "indicator--12345678-1234-5678-1234-567812345678"}',  # STIX format
+        '{"bundle": {"type": "bundle", "id": "bundle--12345678-1234-5678-1234-567812345678"}}',  # STIX format
+        '{"type": "non-stix", "id": "non-stix--12345678-1234-5678-1234-567812345678"}',  # Non-STIX format
     ]
     expected_result = [
         {"type": "indicator", "id": "indicator--12345678-1234-5678-1234-567812345678"},
         {"bundle": {"type": "bundle", "id": "bundle--12345678-1234-5678-1234-567812345678"}},
         {"type": "non-stix", "id": "non-stix--12345678-1234-5678-1234-567812345678"},
     ]
-    assert filtering_stix_files(content_files) == expected_result
+    assert filtering_stix_files(file_names=file_names, file_contents=file_contents) == expected_result
 
 
 def test_fetch_indicators_command_with_tlp_color_red(mocker):
