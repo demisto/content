@@ -390,45 +390,53 @@ def test_url_command(requests_mock, mock_client):
 
 
 def test_analyst1_enrich_string_command(requests_mock, mock_client):
-    # Note: string type uses old enrichment flow, not batch-check-first
+    # String type returns CommandResults with JSON context, not EnrichmentOutput
     mock_json = get_base_mock_json(MOCK_STRING, "string")
     requests_mock.get(f"https://{MOCK_SERVER}/api/1_0/indicator/match?type=string&value={MOCK_STRING}", json=mock_json)
     args: dict = {"string": MOCK_STRING}
 
-    enrichment_output: EnrichmentOutput = analyst1_enrich_string_command(mock_client, args)[0]
-    assert enrichment_output.analyst1_context_data.get("ID") == 1
+    command_result: CommandResults = analyst1_enrich_string_command(mock_client, args)[0]
+    assert command_result.outputs_prefix == "Analyst1.String"
+    assert command_result.outputs_key_field == "ID"
+    assert command_result.outputs.get("ID") == 1
 
 
 def test_analyst1_enrich_ipv6_command(requests_mock, mock_client):
-    # IPv6 uses old enrichment flow, not batch-check-first
+    # IPv6 type returns CommandResults with JSON context, not EnrichmentOutput
     # Using RFC 3849 documentation IPv6 address (simplified format to avoid secrets detection)
     ipv6_addr = "2001:db8::1"
     mock_json = get_base_mock_json(ipv6_addr, "ipv6")
     requests_mock.get(f"https://{MOCK_SERVER}/api/1_0/indicator/match?type=ipv6&value={ipv6_addr}", json=mock_json)
     args: dict = {"ip": ipv6_addr}
 
-    enrichment_output: EnrichmentOutput = analyst1_enrich_ipv6_command(mock_client, args)[0]
-    assert enrichment_output.analyst1_context_data.get("ID") == 1
+    command_result: CommandResults = analyst1_enrich_ipv6_command(mock_client, args)[0]
+    assert command_result.outputs_prefix == "Analyst1.Ipv6"
+    assert command_result.outputs_key_field == "ID"
+    assert command_result.outputs.get("ID") == 1
 
 
 def test_analyst1_enrich_mutex_command(requests_mock, mock_client):
-    # Mutex uses old enrichment flow, not batch-check-first
+    # Mutex type returns CommandResults with JSON context, not EnrichmentOutput
     mock_json = get_base_mock_json(MOCK_MUTEX, "mutex")
     requests_mock.get(f"https://{MOCK_SERVER}/api/1_0/indicator/match?type=mutex&value={MOCK_MUTEX}", json=mock_json)
     args: dict = {"mutex": MOCK_MUTEX}
 
-    enrichment_output: EnrichmentOutput = analyst1_enrich_mutex_command(mock_client, args)[0]
-    assert enrichment_output.analyst1_context_data.get("ID") == 1
+    command_result: CommandResults = analyst1_enrich_mutex_command(mock_client, args)[0]
+    assert command_result.outputs_prefix == "Analyst1.Mutex"
+    assert command_result.outputs_key_field == "ID"
+    assert command_result.outputs.get("ID") == 1
 
 
 def test_analyst1_enrich_http_request_command(requests_mock, mock_client):
-    # HTTP request uses old enrichment flow, not batch-check-first
+    # HTTP request type returns CommandResults with JSON context, not EnrichmentOutput
     mock_json = get_base_mock_json(MOCK_HTTP_REQUEST, "httpRequest")
     requests_mock.get(f"https://{MOCK_SERVER}/api/1_0/indicator/match?type=httpRequest&value={MOCK_HTTP_REQUEST}", json=mock_json)
     args: dict = {"http-request": MOCK_HTTP_REQUEST}
 
-    enrichment_output: EnrichmentOutput = analyst1_enrich_http_request_command(mock_client, args)[0]
-    assert enrichment_output.analyst1_context_data.get("ID") == 1
+    command_result: CommandResults = analyst1_enrich_http_request_command(mock_client, args)[0]
+    assert command_result.outputs_prefix == "Analyst1.HTTPRequest"
+    assert command_result.outputs_key_field == "ID"
+    assert command_result.outputs.get("ID") == 1
 
 
 def test_get_risk_score_mappings_default():

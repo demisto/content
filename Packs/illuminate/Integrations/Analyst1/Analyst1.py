@@ -558,6 +558,7 @@ class EnrichmentOutput:
         # DBotScore is ONLY embedded in the Common.Indicator object, never in reputation_context
         indicator_obj = self._create_common_indicator_with_tags()
         if indicator_obj:
+            # For standard indicators (Email, IP, Domain, URL, File): include outputs context
             results = CommandResults(
                 indicator=indicator_obj,
                 readable_output=self.get_human_readable_output(),
@@ -646,6 +647,8 @@ class EnrichmentOutput:
             elif hash_type == "sha256":
                 return Common.File(sha256=indicator_value, dbot_score=dbot_score, tags=tags_list)
 
+        # Custom indicator types (string, mutex, httprequest) are now handled by separate commands
+        # that return CommandResults directly, so they should never reach this method
         return None
 
     def add_analyst1_context(self, key: str, data: Any):
@@ -903,48 +906,104 @@ def file_command(client: Client, args: dict) -> list[EnrichmentOutput]:
     ]
 
 
-def analyst1_enrich_string_command(client: Client, args: dict) -> list[EnrichmentOutput]:
+def analyst1_enrich_string_command(client: Client, args: dict) -> list[CommandResults]:
     strings: list[str] = argToList(args.get("string"))
-    enrichment_data_list: list[EnrichmentOutput] = []
+    results_list: list[CommandResults] = []
 
     for string in strings:
-        enrichment_data_list.append(client.enrich_indicator(string, "string"))
+        raw_data = client.indicator_search("string", string)
 
-    return enrichment_data_list
+        if raw_data and len(raw_data) > 0:
+            context_data = client.get_context_from_response(raw_data)
+            results = CommandResults(
+                outputs_prefix="Analyst1.String",
+                outputs_key_field="ID",
+                outputs=context_data,
+                readable_output=tableToMarkdown("Analyst1 String Information", context_data, removeNull=True),
+                raw_response=raw_data,
+            )
+        else:
+            results = CommandResults(readable_output=f'String "{string}" was not found in Analyst1.')
+
+        results_list.append(results)
+
+    return results_list
 
 
-def analyst1_enrich_ipv6_command(client: Client, args: dict) -> list[EnrichmentOutput]:
+def analyst1_enrich_ipv6_command(client: Client, args: dict) -> list[CommandResults]:
     ips: list[str] = argToList(args.get("ip"))
-    enrichment_data_list: list[EnrichmentOutput] = []
+    results_list: list[CommandResults] = []
 
     for ip in ips:
         # Validate IPv6 address format
         if not is_ip_valid(ip, accept_v6_ips=True):
             raise ValueError(f'Invalid IPv6 address format: "{ip}"')
 
-        enrichment_data_list.append(client.enrich_indicator(ip, "ipv6"))
+        raw_data = client.indicator_search("ipv6", ip)
 
-    return enrichment_data_list
+        if raw_data and len(raw_data) > 0:
+            context_data = client.get_context_from_response(raw_data)
+            results = CommandResults(
+                outputs_prefix="Analyst1.Ipv6",
+                outputs_key_field="ID",
+                outputs=context_data,
+                readable_output=tableToMarkdown("Analyst1 IPv6 Information", context_data, removeNull=True),
+                raw_response=raw_data,
+            )
+        else:
+            results = CommandResults(readable_output=f'IPv6 address "{ip}" was not found in Analyst1.')
+
+        results_list.append(results)
+
+    return results_list
 
 
-def analyst1_enrich_mutex_command(client: Client, args: dict) -> list[EnrichmentOutput]:
+def analyst1_enrich_mutex_command(client: Client, args: dict) -> list[CommandResults]:
     mutexes: list[str] = argToList(args.get("mutex"))
-    enrichment_data_list: list[EnrichmentOutput] = []
+    results_list: list[CommandResults] = []
 
     for mutex in mutexes:
-        enrichment_data_list.append(client.enrich_indicator(mutex, "mutex"))
+        raw_data = client.indicator_search("mutex", mutex)
 
-    return enrichment_data_list
+        if raw_data and len(raw_data) > 0:
+            context_data = client.get_context_from_response(raw_data)
+            results = CommandResults(
+                outputs_prefix="Analyst1.Mutex",
+                outputs_key_field="ID",
+                outputs=context_data,
+                readable_output=tableToMarkdown("Analyst1 Mutex Information", context_data, removeNull=True),
+                raw_response=raw_data,
+            )
+        else:
+            results = CommandResults(readable_output=f'Mutex "{mutex}" was not found in Analyst1.')
+
+        results_list.append(results)
+
+    return results_list
 
 
-def analyst1_enrich_http_request_command(client: Client, args: dict) -> list[EnrichmentOutput]:
+def analyst1_enrich_http_request_command(client: Client, args: dict) -> list[CommandResults]:
     http_requests: list[str] = argToList(args.get("http-request"))
-    enrichment_data_list: list[EnrichmentOutput] = []
+    results_list: list[CommandResults] = []
 
     for http_request in http_requests:
-        enrichment_data_list.append(client.enrich_indicator(http_request, "httpRequest"))
+        raw_data = client.indicator_search("httpRequest", http_request)
 
-    return enrichment_data_list
+        if raw_data and len(raw_data) > 0:
+            context_data = client.get_context_from_response(raw_data)
+            results = CommandResults(
+                outputs_prefix="Analyst1.HTTPRequest",
+                outputs_key_field="ID",
+                outputs=context_data,
+                readable_output=tableToMarkdown("Analyst1 HTTP Request Information", context_data, removeNull=True),
+                raw_response=raw_data,
+            )
+        else:
+            results = CommandResults(readable_output=f'HTTP Request "{http_request}" was not found in Analyst1.')
+
+        results_list.append(results)
+
+    return results_list
 
 
 def url_command(client: Client, args: dict) -> list[EnrichmentOutput]:
@@ -1318,12 +1377,17 @@ def analyst1_get_sensor_config_command(client: Client, args):
 
 
 def main():
-    commands = {
+    # Commands that return EnrichmentOutput (use .return_outputs())
+    enrichment_commands = {
         "domain": domain_command,
         "email": email_command,
         "file": file_command,
         "ip": ip_command,
         "url": url_command,
+    }
+
+    # Commands that return CommandResults (use return_results())
+    command_result_commands = {
         "analyst1-enrich-string": analyst1_enrich_string_command,
         "analyst1-enrich-ipv6": analyst1_enrich_ipv6_command,
         "analyst1-enrich-mutex": analyst1_enrich_mutex_command,
@@ -1359,9 +1423,12 @@ def main():
             analyst1_get_sensor_diff(client, demisto.args())
         if command == "analyst1-indicator-by-id":
             analyst1_get_indicator(client, demisto.args())
-        elif command in commands:
-            enrichment_outputs: list[EnrichmentOutput] = commands[command](client, demisto.args())
+        elif command in enrichment_commands:
+            enrichment_outputs: list[EnrichmentOutput] = enrichment_commands[command](client, demisto.args())
             [e.return_outputs() for e in enrichment_outputs]
+        elif command in command_result_commands:
+            command_results: list[CommandResults] = command_result_commands[command](client, demisto.args())
+            [return_results(r) for r in command_results]
     except DemistoException as e:
         if "[404]" in str(e):
             demisto.results("No Results")
