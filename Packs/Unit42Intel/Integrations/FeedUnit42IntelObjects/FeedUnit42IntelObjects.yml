@@ -101,7 +101,7 @@ configuration:
   name: proxy
   type: 8
   required: false
-description: Deprecated. Use the Unit42 Feed instead.
+description: Deprecated. Use the Unit 42 Feed instead.
 display: Unit 42 Intel Objects Feed (Deprecated)
 name: Unit42IntelObjectsFeed
 deprecated: true
