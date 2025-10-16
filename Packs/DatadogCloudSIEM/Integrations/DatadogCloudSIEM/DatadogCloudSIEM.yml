@@ -20,12 +20,12 @@ configuration:
   - additionalinfo: The API Key to use for authentication
     display: API Key
     name: api_key
-    type: 9
+    type: 4
     required: true
   - additionalinfo: The APP Key to use for authentication
     display: APP Key
     name: app_key
-    type: 9
+    type: 4
     required: true
   - display: Fetch incidents
     name: isFetch
