@@ -1,0 +1,54 @@
+args:
+- description: The name of the source/instance to collect indicators from.
+  name: source
+  required: true
+- description: Maximum number of indicators to process (default is 1000).
+  name: limit
+  defaultValue: "1000"
+comment: |-
+  Collects all indicators from a specific source, clears their source data, and re-enriches them.
+  
+  This script performs the following steps:
+  1. Searches for all indicators from the specified source
+  2. Extracts the indicator values
+  3. Clears the source data using clearIndicatorSourceData command
+  4. Re-enriches the indicators using enrichIndicators command
+  
+  This is useful for refreshing indicator data when you want to clear old enrichment data and get fresh results.
+commonfields:
+  id: ClearAndReEnrichIndicatorsBySource
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+enabled: true
+name: ClearAndReEnrichIndicatorsBySource
+outputs:
+- contextPath: ClearAndReEnrichIndicatorsBySource.Source
+  description: The source name that was processed.
+  type: String
+- contextPath: ClearAndReEnrichIndicatorsBySource.ProcessedCount
+  description: Number of indicators that were processed.
+  type: Number
+- contextPath: ClearAndReEnrichIndicatorsBySource.IndicatorValues
+  description: List of indicator values that were processed.
+  type: Unknown
+- contextPath: ClearAndReEnrichIndicatorsBySource.ClearResult
+  description: Result from the clearIndicatorSourceData command.
+  type: Unknown
+- contextPath: ClearAndReEnrichIndicatorsBySource.EnrichResult
+  description: Result from the enrichIndicators command.
+  type: Unknown
+runas: DBotWeakRole
+script: '-'
+scripttarget: 0
+tags:
+- Utility
+- Indicators
+- ThreatIntel
+type: python
+subtype: python3
+dockerimage: demisto/python3:3.12.8.3296088
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
