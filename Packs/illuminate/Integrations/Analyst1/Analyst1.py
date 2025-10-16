@@ -397,16 +397,51 @@ def enrich_with_batch_check(
     if indicator_result:
         enrichment_data = client.enrich_indicator(indicator_value, indicator_type)
 
-        if enrichment_data.has_context_data():
-            # Calculate verdict override if benign entities exist alongside INDICATOR
-            verdict_override = 1 if has_benign else None  # 1 = Benign
+        # Log if enrichment data is unexpectedly empty for debugging
+        if not enrichment_data.has_context_data():
+            demisto.debug(f"WARNING: Batch check found INDICATOR but enrichment returned no data: indicator_value={indicator_value}, indicator_type={indicator_type}, raw_data keys={list(enrichment_data.raw_data.keys())}")
 
-            # Generate reputation context with batch-derived tags (only if tagging is enabled)
+        # If benign entities exist alongside INDICATOR, override verdict to Benign
+        # This handles cases where an indicator is both a threat indicator AND an asset/private range
+        verdict_override = 1 if has_benign else None  # 1 = Benign
+
+        # ALWAYS generate reputation context for INDICATOR entities, even if enrichment data is empty
+        # This ensures DBotScore and tags are set properly from batch check results
+        if enrichment_data.has_context_data():
+            # Full enrichment available - use it
             enrichment_data.generate_reputation_context(
                 primary_key, indicator_value, indicator_type, reputation_key,
                 extra_context=extra_context,
                 verdict_score_override=verdict_override,
                 tags_override=tags if apply_tags else None
+            )
+        else:
+            # No enrichment data but indicator exists in batch check - create minimal indicator with verdict from batch
+            # Calculate verdict from batch check result
+            risk_score = get_nested_value(indicator_result, "indicatorRiskScore", "title")
+            benign_data = indicator_result.get("benign")
+            if isinstance(benign_data, dict):
+                benign_value = benign_data.get("value")
+            else:
+                benign_value = benign_data
+
+            entity_key = get_nested_value(indicator_result, "entity", "key")
+            verdict_score = calculate_batch_check_verdict(entity_key, risk_score, benign_value, demisto.params())
+            if verdict_override is not None:
+                verdict_score = verdict_override
+
+            # Set verdict and tags manually
+            enrichment_data.verdict_score = verdict_score
+            enrichment_data.indicator_value = indicator_value
+            enrichment_data.tags = tags if (apply_tags and len(tags) > 0) else ["Analyst1: Indicator"]
+
+            # Create reputation context
+            reputation_context = {primary_key: indicator_value}
+            if extra_context:
+                reputation_context.update(extra_context)
+            enrichment_data.add_reputation_context(
+                f"{reputation_key}(val.{primary_key} && val.{primary_key} === obj.{primary_key})",
+                reputation_context
             )
 
         return enrichment_data
@@ -431,7 +466,7 @@ def enrich_with_batch_check(
         "Indicator": indicator_value,
         "Classification": ", ".join(entity_types)
     }
-    enrichment_data = EnrichmentOutput(minimal_context, {}, indicator_type)
+    enrichment_data = EnrichmentOutput(minimal_context, {}, indicator_type, indicator_value)
 
     # Always set enrichment_data.tags to enable proper output (even if empty list)
     # This ensures the indicator appears in the war room
@@ -441,24 +476,16 @@ def enrich_with_batch_check(
     # These should appear as benign indicators in XSOAR with entity-type tags
     verdict_score = 1  # Benign
 
-    # Create DBotScore context
-    enrichment_data.add_reputation_context(
-        "DBotScore",
-        {
-            "Indicator": indicator_value,
-            "Score": verdict_score,
-            "Type": indicator_type,
-            "Vendor": INTEGRATION_NAME,
-            "Reliability": demisto.params().get("integrationReliability"),
-        },
-    )
+    # Store verdict score for Common.Indicator creation
+    enrichment_data.verdict_score = verdict_score
 
-    # Create reputation context - only include tags in context if tagging is enabled
+    # Create reputation context
     reputation_context = {primary_key: indicator_value}
-    if apply_tags:
-        reputation_context["Tags"] = tags
     if extra_context:
         reputation_context.update(extra_context)
+
+    # DO NOT add Tags to reputation_context - tags are ONLY in the Common.Indicator object
+    # Adding them here causes XSOAR to create a duplicate indicator entry
 
     enrichment_data.add_reputation_context(
         f"{reputation_key}(val.{primary_key} && val.{primary_key} === obj.{primary_key})",
@@ -485,6 +512,7 @@ class EnrichmentOutput:
         self.indicator_value = indicator_value
         self.reputation_context: dict = {}
         self.tags: list[str] | None = None
+        self.verdict_score: int | None = None  # Store verdict score for Common.Indicator creation
 
     def get_human_readable_output(self) -> str:
         human_readable_data = self.analyst1_context_data.copy()
@@ -497,7 +525,7 @@ class EnrichmentOutput:
 
         # Add tags to human-readable output if they exist
         if self.tags:
-            human_readable_data["Tags"] = ", ".join(self.tags)
+            human_readable_data["XSOAR Tags"] = ", ".join(self.tags)
 
         return tableToMarkdown(
             t=human_readable_data, name=f"{INTEGRATION_NAME} {self.indicator_type.capitalize()} Information", removeNull=True
@@ -534,14 +562,18 @@ class EnrichmentOutput:
                 benign_value = Client.get_nested_data_key(self.raw_data, "benign", "value")
                 verdict_score = calculate_verdict_from_risk_score(risk_score, benign_value, demisto.params())
 
-            # Use tags override if provided, otherwise use default "Analyst1: Indicator" tag
-            tags = tags_override if tags_override is not None else ["Analyst1: Indicator"]
+            # Store verdict score AND indicator_value for Common.Indicator creation
+            self.verdict_score = verdict_score
+            self.indicator_value = indicator_value  # Store for _create_common_indicator_with_tags()
 
-            # Store tags for human-readable output
+            # Use tags override if provided (and not empty), otherwise use default "Analyst1: Indicator" tag
+            tags = tags_override if (tags_override is not None and len(tags_override) > 0) else ["Analyst1: Indicator"]
+
+            # Store tags for human-readable output and Common.Indicator creation
             self.tags = tags
 
-            # Add tags to the type-specific reputation context (standard approach used by other TI integrations)
-            reputation_context["Tags"] = tags
+            # DO NOT add Tags to reputation_context - tags are ONLY in the Common.Indicator object
+            # Adding them here causes XSOAR to create a duplicate indicator entry
 
             # Only add Malicious context if verdict is Malicious (score 3)
             if verdict_score == 3:
@@ -549,17 +581,6 @@ class EnrichmentOutput:
 
             self.add_reputation_context(
                 f"{reputation_key}(val.{primary_key} && val.{primary_key} === obj.{primary_key})", reputation_context
-            )
-
-            self.add_reputation_context(
-                "DBotScore",
-                {
-                    "Indicator": indicator_value,
-                    "Score": verdict_score,
-                    "Type": indicator_type,
-                    "Vendor": INTEGRATION_NAME,
-                    "Reliability": demisto.params().get("integrationReliability"),
-                },
             )
 
     def build_all_context(self) -> dict:
@@ -571,28 +592,8 @@ class EnrichmentOutput:
         return all_context
 
     def return_outputs(self):
-        # Apply tags to the indicator itself using CommandResults with Common indicator objects
-        # Use `is not None` to handle both non-empty lists and empty lists (for CASE 3 with tags disabled)
-        if self.tags is not None and len(self.reputation_context) > 0:
-            indicator_obj = self._create_common_indicator_with_tags()
-            if indicator_obj:
-                # Use CommandResults to set the indicator with tags, along with human readable and context
-                tag_results = CommandResults(
-                    indicator=indicator_obj,
-                    readable_output=self.get_human_readable_output(),
-                    outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.{self.indicator_type.capitalize()}",
-                    outputs_key_field="ID",
-                    outputs=self.analyst1_context_data if self.has_context_data() else None,
-                    raw_response=self.raw_data
-                )
-                return_results(tag_results)
-                return
-
-        # Fallback to legacy output method if no tags or no reputation context
-        # This handles CASE 1 (no batch results) where we return empty output
+        # CASE 1: No reputation context means indicator doesn't exist
         if len(self.reputation_context) == 0:
-            # No reputation context means indicator doesn't exist
-            # Return informative message similar to VirusTotal
             if self.indicator_value:
                 message = f'{self.indicator_type.capitalize()} "{self.indicator_value}" was not found in Analyst1.'
             else:
@@ -600,15 +601,30 @@ class EnrichmentOutput:
             return_results(CommandResults(readable_output=message))
             return
 
-        entry = {
-            "Type": entryTypes["note"],
-            "HumanReadable": self.get_human_readable_output(),
-            "ContentsFormat": formats["json"],
-            "Contents": self.raw_data,
-            "EntryContext": self.build_all_context(),
-            "IgnoreAutoExtract": True,
-        }
-        demisto.results(entry)
+        # CASE 2: Always use CommandResults with Common.Indicator (like VirusTotal V3)
+        # DBotScore is ONLY embedded in the Common.Indicator object, never in reputation_context
+        indicator_obj = self._create_common_indicator_with_tags()
+        if indicator_obj:
+            results = CommandResults(
+                indicator=indicator_obj,
+                readable_output=self.get_human_readable_output(),
+                outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.{self.indicator_type.capitalize()}",
+                outputs_key_field="ID",
+                outputs=self.analyst1_context_data if self.has_context_data() else None,
+                raw_response=self.raw_data
+            )
+            return_results(results)
+        else:
+            # Fallback if Common.Indicator creation fails - should never happen
+            entry = {
+                "Type": entryTypes["note"],
+                "HumanReadable": self.get_human_readable_output(),
+                "ContentsFormat": formats["json"],
+                "Contents": self.raw_data,
+                "EntryContext": self.build_all_context(),
+                "IgnoreAutoExtract": True,
+            }
+            demisto.results(entry)
 
     def _create_common_indicator_with_tags(self) -> Common.Indicator | None:
         """
@@ -617,21 +633,19 @@ class EnrichmentOutput:
         Returns:
             A Common indicator object (IP, Domain, Email, URL, or File) with tags, or None if creation fails
         """
-        if "DBotScore" not in self.reputation_context:
+        # Use stored verdict_score and indicator_value
+        if self.verdict_score is None or not self.indicator_value:
             return None
 
-        dbot_context = self.reputation_context["DBotScore"]
-        if not isinstance(dbot_context, dict):
-            return None
-
-        # Get indicator type string
-        indicator_type_str = dbot_context.get("Type", "").lower()
-        indicator_value = dbot_context.get("Indicator")
+        indicator_value = self.indicator_value
 
         # Map indicator type string to DBotScoreType enum
+        # Note: IPv6 uses DBotScoreType.IP (there is no separate IPV6 type in XSOAR)
+        indicator_type_str = self.indicator_type.lower()
         type_map = {
             "email": DBotScoreType.EMAIL,
             "ip": DBotScoreType.IP,
+            "ipv6": DBotScoreType.IP,  # IPv6 uses the same IP type as IPv4
             "domain": DBotScoreType.DOMAIN,
             "url": DBotScoreType.URL,
             "file": DBotScoreType.FILE,
@@ -639,25 +653,26 @@ class EnrichmentOutput:
 
         dbot_type = type_map.get(indicator_type_str, DBotScoreType.IP)
 
-        # Create DBotScore object
+        # Create DBotScore object using stored verdict_score
         dbot_score = Common.DBotScore(
             indicator=indicator_value,
             indicator_type=dbot_type,
-            score=dbot_context.get("Score", 0),
+            score=self.verdict_score,
             integration_name=INTEGRATION_NAME,
-            reliability=dbot_context.get("Reliability")
+            reliability=demisto.params().get("integrationReliability")
         )
 
         # Create the appropriate Common indicator object based on type with tags
         indicator_type = self.indicator_type.lower()
 
         # Pass tags as list (like Anomali ThreatStream v3)
-        tags_list = self.tags if self.tags else None
+        # Use self.tags if it exists and is not None (even if empty list)
+        tags_list = self.tags if self.tags is not None else None
 
         if indicator_type == "email":
             return Common.EMAIL(address=indicator_value, dbot_score=dbot_score, tags=tags_list)
 
-        elif indicator_type == "ip":
+        elif indicator_type == "ip" or indicator_type == "ipv6":
             return Common.IP(ip=indicator_value, dbot_score=dbot_score, tags=tags_list)
 
         elif indicator_type == "domain":
@@ -906,10 +921,35 @@ def email_command(client: Client, args: dict) -> list[EnrichmentOutput]:
 
 
 def ip_command(client: Client, args: dict) -> list[EnrichmentOutput]:
-    return [
-        enrich_with_batch_check(client, ip, "ip", "Address", "IP")
-        for ip in argToList(args.get("ip"))
-    ]
+    """
+    Handles both IPv4 and IPv6 addresses from the !ip command.
+    XSOAR uses the !ip command for both IPv4 and IPv6 auto-enrichment.
+    """
+    import ipaddress
+
+    enrichment_data_list: list[EnrichmentOutput] = []
+
+    for ip in argToList(args.get("ip")):
+        # Validate IP address format (accepts both IPv4 and IPv6)
+        if not is_ip_valid(ip, accept_v6_ips=True):
+            raise ValueError(f'Invalid IP address format: "{ip}"')
+
+        # Detect if IP is IPv4 or IPv6
+        try:
+            ip_obj = ipaddress.ip_address(ip)
+            if isinstance(ip_obj, ipaddress.IPv6Address):
+                # IPv6 address
+                enrichment_data = enrich_with_batch_check(client, ip, "ipv6", "Address", "IP")
+            else:
+                # IPv4 address
+                enrichment_data = enrich_with_batch_check(client, ip, "ip", "Address", "IP")
+            enrichment_data_list.append(enrichment_data)
+        except ValueError:
+            # Invalid IP address - treat as IPv4 for backwards compatibility
+            enrichment_data = enrich_with_batch_check(client, ip, "ip", "Address", "IP")
+            enrichment_data_list.append(enrichment_data)
+
+    return enrichment_data_list
 
 
 def file_command(client: Client, args: dict) -> list[EnrichmentOutput]:
@@ -934,6 +974,10 @@ def analyst1_enrich_ipv6_command(client: Client, args: dict) -> list[EnrichmentO
     enrichment_data_list: list[EnrichmentOutput] = []
 
     for ip in ips:
+        # Validate IPv6 address format
+        if not is_ip_valid(ip, accept_v6_ips=True):
+            raise ValueError(f'Invalid IPv6 address format: "{ip}"')
+
         enrichment_data_list.append(client.enrich_indicator(ip, "ipv6"))
 
     return enrichment_data_list
@@ -993,14 +1037,16 @@ def analyst1_batch_check_command(client: Client, args) -> CommandResults | None:
     raw_data = client.get_batch_search(argsToStr(args, "values"))
     # assume succesful result or client will have errored
     if len(raw_data["results"]) > 0:
-        # Group results by matchedValue to handle multiple entity types per indicator
+        # Group results by searchedValue (the actual value searched) to handle multiple entity types per indicator
+        # Note: matchedValue can be a regex pattern, searchedValue is always the literal searched value
+        # We ONLY group by searchedValue - never fall back to matchedValue as it would be incorrect
         results_by_indicator: dict[str, list[dict]] = {}
         for result in raw_data["results"]:
-            matched_value = result.get("matchedValue")
-            if matched_value:
-                if matched_value not in results_by_indicator:
-                    results_by_indicator[matched_value] = []
-                results_by_indicator[matched_value].append(result)
+            searched_value = result.get("searchedValue")
+            if searched_value:  # Only process results with searchedValue
+                if searched_value not in results_by_indicator:
+                    results_by_indicator[searched_value] = []
+                results_by_indicator[searched_value].append(result)
 
         # Process each unique indicator
         for matched_value, indicator_results in results_by_indicator.items():
@@ -1009,9 +1055,16 @@ def analyst1_batch_check_command(client: Client, args) -> CommandResults | None:
 
             # Calculate verdict (use first result - they should have same verdict logic per indicator)
             first_result = indicator_results[0]
-            risk_score = Client.get_nested_data_key(first_result, "indicatorRiskScore", "title")
-            benign_value = Client.get_nested_data_key(first_result, "benign", "value")
-            entity_key = Client.get_nested_data_key(first_result, "entity", "key")
+            risk_score = get_nested_value(first_result, "indicatorRiskScore", "title")
+
+            # Handle benign field - can be either a dict with "value" key or a direct boolean
+            benign_data = first_result.get("benign")
+            if isinstance(benign_data, dict):
+                benign_value = benign_data.get("value")
+            else:
+                benign_value = benign_data
+
+            entity_key = get_nested_value(first_result, "entity", "key")
 
             # Calculate verdict score based on entity.key and risk score
             verdict_score = calculate_batch_check_verdict(entity_key, risk_score, benign_value, demisto.params())
@@ -1074,17 +1127,25 @@ def analyst1_batch_check_post(client: Client, args: dict) -> dict | None:
         "runpath": runpath,
     }
 
+    # Support both comma and newline delimiters for values parameter
+    # POST API expects newline-separated format (file upload)
+    if values and ',' in values and '\n' not in values:
+        # Comma-delimited input - split and convert to newline-delimited
+        values = "\n".join(val.strip() for val in values.split(','))
+
     raw_data = client.post_batch_search(values)
     # assume succesful result or client will have errored
     if len(raw_data["results"]) > 0:
-        # Group results by matchedValue to handle multiple entity types per indicator
+        # Group results by searchedValue (the actual value searched) to handle multiple entity types per indicator
+        # Note: matchedValue can be a regex pattern, searchedValue is always the literal searched value
+        # We ONLY group by searchedValue - never fall back to matchedValue as it would be incorrect
         results_by_indicator: dict[str, list[dict]] = {}
         for result in raw_data["results"]:
-            matched_value = result.get("matchedValue")
-            if matched_value:
-                if matched_value not in results_by_indicator:
-                    results_by_indicator[matched_value] = []
-                results_by_indicator[matched_value].append(result)
+            searched_value = result.get("searchedValue")
+            if searched_value:  # Only process results with searchedValue
+                if searched_value not in results_by_indicator:
+                    results_by_indicator[searched_value] = []
+                results_by_indicator[searched_value].append(result)
 
         # Process each unique indicator
         for matched_value, indicator_results in results_by_indicator.items():
@@ -1093,9 +1154,16 @@ def analyst1_batch_check_post(client: Client, args: dict) -> dict | None:
 
             # Calculate verdict (use first result - they should have same verdict logic per indicator)
             first_result = indicator_results[0]
-            risk_score = Client.get_nested_data_key(first_result, "indicatorRiskScore", "title")
-            benign_value = Client.get_nested_data_key(first_result, "benign", "value")
-            entity_key = Client.get_nested_data_key(first_result, "entity", "key")
+            risk_score = get_nested_value(first_result, "indicatorRiskScore", "title")
+
+            # Handle benign field - can be either a dict with "value" key or a direct boolean
+            benign_data = first_result.get("benign")
+            if isinstance(benign_data, dict):
+                benign_value = benign_data.get("value")
+            else:
+                benign_value = benign_data
+
+            entity_key = get_nested_value(first_result, "entity", "key")
 
             # Calculate verdict score based on entity.key and risk score
             verdict_score = calculate_batch_check_verdict(entity_key, risk_score, benign_value, demisto.params())
