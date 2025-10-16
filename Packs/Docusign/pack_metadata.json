@@ -1,21 +1,18 @@
 {
-    "name": "BMC Helix ITSM",
-    "description": "BMC Helix ITSM allows customers to manage service request, incident, change request, task, problem investigation, known error and work order tickets.",
+    "name": "Docusign",
+    "description": "The Docusign pack for Cortex XSIAM allows you to collect and analyze security and audit events from your Docusign account. This provides visibility into user logins, document actions, and administrative changes to help you detect threats and ensure compliance.",
     "support": "xsoar",
-    "currentVersion": "1.0.35",
+    "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
-    "created": "2020-06-29T16:53:01Z",
     "categories": [
-        "IT Services"
+        "Analytics & SIEM"
     ],
     "tags": [],
     "useCases": [],
     "keywords": [],
-    "dependencies": {},
     "marketplaces": [
-        "xsoar",
         "marketplacev2",
         "platform"
     ],
