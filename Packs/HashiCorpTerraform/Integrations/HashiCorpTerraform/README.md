@@ -828,3 +828,10 @@ There is no context output for this command.
 >| --- | --- | --- | --- | --- | --- |
 >| 2025-09-21T11:24:26.541Z | ae66e491-aaaa-457c-8445-9c908ee726aa | 0 | Resource | {"accessor_id": "user-xxxxxxxxxxxx", "description": "example-userA"} | {"id": "4df584d4-7e2a-aaaa-6cc0-4adbefa020e6"} |
 >| 2025-09-21T11:24:26.541Z | ae66e491-bbbb-457c-8445-9c908ee726bb | 0 | Resource | {"accessor_id": "user-yyyyyyyyyyyy", "description": "example-userB"} | {"id": "4df584d4-7e2a-bbbb-6cc0-4adbefa020e6"} |
+
+## Troubleshooting
+
+- **HTTP 429 (Too many requests) Errors**
+  - Typically occur when the 30 requests per second API limit is exceeded when paginating over audit trail events.
+  - To avoid such errors, reduce the *Maximum Number of Audit Events Per Fetch* parameter value.
+  - For additional information, refer to [HashiCorp Terraform API Rate Limits](https://developer.hashicorp.com/terraform/enterprise/api-docs#rate-limits).

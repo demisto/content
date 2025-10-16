@@ -39,12 +39,6 @@
 
 ### How to Fetch Access Audit Trail Events
 
-#### Feature Entitlements
-
-The organization should have the `audit-logging` entitlement to fetch access audit trail events. Refer to [HashiCorp Terraform Feature Entitlements](https://developer.hashicorp.com/terraform/cloud-docs/api-docs#feature-entitlements).
-
-#### Rate Limits
-
-The HashiCorp Terraform API can return up to 1,000 access audit trail events per request and supports up to 30 requests per second. If the *Maximum Number of Audit Events Per Fetch* is set too high, the integration instance may encounter HTTP 429 "Too Many Requests" errors. Refer to [HashiCorp Terraform API Rate Limits](https://developer.hashicorp.com/terraform/enterprise/api-docs#rate-limits).
+The organization should have the `audit-logging` feature entitlement to fetch access audit trail events. Refer to [HashiCorp Terraform Feature Entitlements](https://developer.hashicorp.com/terraform/cloud-docs/api-docs#feature-entitlements).
 
 </~XSIAM>

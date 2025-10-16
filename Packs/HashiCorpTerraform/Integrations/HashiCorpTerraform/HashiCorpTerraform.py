@@ -206,6 +206,13 @@ class AsyncClient:
         return self
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
+        if exc_type is not None:
+            exception_traceback = "".join(traceback.format_exception(exc_type, exc_val, exc_tb))
+            demisto.error(f"AsyncClient context exited with an exception: {exception_traceback}.")
+        else:
+            demisto.debug("AsyncClient context exited normally.")
+
+        # Always ensure HTTP client session is closed
         await self._session.close()
 
     async def get_audit_trails(
