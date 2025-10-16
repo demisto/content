@@ -188,6 +188,7 @@ def parse_tag_field(tags_string: str | None):
 
     return tags
 
+
 def convert_datetimes_to_iso_safe(data):
     """
     Converts datetime objects in a data structure to ISO 8601 strings
@@ -1766,6 +1767,113 @@ class EC2:
         except Exception as e:
             raise DemistoException(f"Error: {str(e)}")
 
+    @staticmethod
+    def describe_vpcs_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Describes one or more of your VPCs.
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including VPC IDs
+
+        Returns:
+            CommandResults: Results of the operation with VPC information
+        """
+        kwargs = {}
+        data = []
+        if args.get("filters"):
+            kwargs.update({"Filters": parse_filter_field(args.get("filters"))})
+        if args.get("vpc_ids"):
+            kwargs.update({"VpcIds": parse_resource_ids(args.get("vpc_ids"))})
+
+        response = client.describe_vpcs(**kwargs)
+
+        if len(response["Vpcs"]) == 0:
+            return CommandResults(readable_output="No VPCs were found.")
+        for i, vpc in enumerate(response["Vpcs"]):
+            data.append(
+                {
+                    "CidrBlock": vpc["CidrBlock"],
+                    "DhcpOptionsId": vpc["DhcpOptionsId"],
+                    "State": vpc["State"],
+                    "VpcId": vpc["VpcId"],
+                    "InstanceTenancy": vpc["InstanceTenancy"],
+                    "IsDefault": vpc["IsDefault"],
+                    "Region": args["region"],
+                }
+            )
+
+            if "Tags" in vpc:
+                for tag in vpc["Tags"]:
+                    data[i].update({tag["Key"]: tag["Value"]})
+
+        try:
+            output = json.dumps(response["Vpcs"], cls=DatetimeEncoder)
+            raw = json.loads(output)
+            raw[0].update({"Region": args["region"]})
+        except ValueError as e:
+            raise DemistoException(f"Could not decode/encode the raw response - {e}")
+        return CommandResults(
+            outputs=raw,
+            outputs_prefix="AWS.EC2.Vpcs",
+            outputs_key_field="VpcId",
+            readable_output=tableToMarkdown("AWS EC2 Vpcs", data, removeNull=True),
+            raw_response=response,
+        )
+
+    @staticmethod
+    def describe_subnets_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Describes one or more of your subnets.
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including subnet IDs
+
+        Returns:
+            CommandResults: Results of the operation with subnet information
+        """
+        kwargs = {}
+        data = []
+        if args.get("filters"):
+            kwargs.update({"Filters": parse_filter_field(args.get("filters"))})
+        if args.get("subnet_ids"):
+            kwargs.update({"SubnetIds": parse_resource_ids(args.get("subnet_ids"))})
+
+        response = client.describe_subnets(**kwargs)
+
+        if len(response["Subnets"]) == 0:
+            return CommandResults(readable_output="No subnets were found.")
+        for i, subnet in enumerate(response["Subnets"]):
+            data.append(
+                {
+                    "AvailabilityZone": subnet["AvailabilityZone"],
+                    "AvailableIpAddressCount": subnet["AvailableIpAddressCount"],
+                    "CidrBlock": subnet.get("CidrBlock", ""),
+                    "DefaultForAz": subnet["DefaultForAz"],
+                    "State": subnet["State"],
+                    "SubnetId": subnet["SubnetId"],
+                    "VpcId": subnet["VpcId"],
+                    "Region": args["region"],
+                }
+            )
+
+            if "Tags" in subnet:
+                for tag in subnet["Tags"]:
+                    data[i].update({tag["Key"]: tag["Value"]})
+
+        try:
+            output = json.dumps(response["Subnets"], cls=DatetimeEncoder)
+            raw = json.loads(output)
+            raw[0].update({"Region": args["region"]})
+        except ValueError as e:
+            raise DemistoException(f"Could not decode/encode the raw response - {e}")
+        return CommandResults(
+            outputs=raw,
+            outputs_prefix="AWS.EC2.Subnets",
+            outputs_key_field="SubnetId",
+            readable_output=tableToMarkdown("AWS EC2 Subnets", data, removeNull=True),
+            raw_response=response,
+        )
+
 
 class EKS:
     service = AWSServices.EKS
@@ -2386,6 +2494,8 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-ec2-create-snapshot": EC2.create_snapshot_command,
     "aws-ec2-modify-snapshot-permission": EC2.modify_snapshot_permission_command,
     "aws-ec2-subnet-attribute-modify": EC2.modify_subnet_attribute_command,
+    "aws-ec2-describe-vpcs": EC2.describe_vpcs_command,
+    "aws-ec2-describe-subnets": EC2.describe_subnets_command,
     "aws-eks-cluster-config-update": EKS.update_cluster_config_command,
     "aws-eks-describe-cluster": EKS.describe_cluster_command,
     "aws-eks-associate-access-policy": EKS.associate_access_policy_command,
@@ -2434,6 +2544,10 @@ REQUIRED_ACTIONS: list[str] = [
     "ec2:ModifySnapshotAttribute",
     "ec2:RevokeSecurityGroupIngress",
     "ec2:CreateSnapshot",
+    "ec2:DescribeVpcs",
+    "ec2:DescribeSubnets",
+    "ec2:DescribeIpamResourceDiscoveries",
+    "ec2:DescribeIpamResourceDiscoveryAssociations",
     "eks:DescribeCluster",
     "eks:AssociateAccessPolicy",
     "ec2:CreateSecurityGroup",
