@@ -64,4 +64,4 @@ fromversion: 6.5.0
 tests:
 - No tests (auto formatted)
 marketplaces:
-- platform
+  - platform

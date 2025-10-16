@@ -164,4 +164,4 @@ isInternal: true
 tests:
 - No tests (auto formatted)
 marketplaces:
-- platform
+  - platform

@@ -27,10 +27,13 @@ outputs:
   type: List
 scripttarget: 0
 subtype: python3
-dockerimage: demisto/python3:3.12.8.3296088
+dockerimage: demisto/python3:3.12.11.4819260
 fromversion: 6.1.0
 isInternal: true
 tests:
 - No tests (auto formatted)
 marketplaces:
 - platform
+supportedModules:
+- agentix_xsiam
+- xsiam

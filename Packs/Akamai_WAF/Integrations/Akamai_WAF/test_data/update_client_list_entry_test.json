@@ -1,0 +1,37 @@
+{
+    "existing_list": {
+        "items": [
+            {
+                "value": "1.2.3.4",
+                "description": "Old description",
+                "expirationDate": null,
+                "tags": ["old_tag"]
+            }
+        ]
+    },
+    "raw_response": {
+        "listId": "12345",
+        "items": [
+            {
+                "value": "1.2.3.4",
+                "description": "New description",
+                "expirationDate": null,
+                "tags": ["new_tag"]
+            }
+        ]
+    },
+    "human_readable": "### Entry '1.2.3.4' in Akamai WAF Client List 12345 updated successfully\n|items|listId|\n|---|---|\n| {'value': '1.2.3.4', 'description': 'New description', 'expirationDate': None, 'tags': ['new_tag']} | 12345 |\n",
+    "context_entry": {
+        "Akamai.ClientList": {
+            "listId": "12345",
+            "items": [
+                {
+                    "value": "1.2.3.4",
+                    "description": "New description",
+                    "expirationDate": null,
+                    "tags": ["new_tag"]
+                }
+            ]
+        }
+    }
+}
