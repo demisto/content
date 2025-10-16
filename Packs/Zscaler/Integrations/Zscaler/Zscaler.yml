@@ -3,7 +3,7 @@ sectionorder:
 - Connect
 - Collect
 commonfields:
-  id: Zscaler_sk
+  id: Zscaler_test
   version: -1
 configuration:
 - display: Cloud Name (i.e., <https://zsapi.zscalertwo.net>)
@@ -80,8 +80,8 @@ configuration:
   advanced: true
   required: false
 description: Zscaler is a cloud security solution built for performance and flexible scalability. This integration enables you to manage URL and IP address allow lists and block lists, manage and update categories, get Sandbox reports, create, manage, and update IP destination groups and manually log in, log out, and activate changes in a Zscaler session.
-display: Zscaler Internet Access Shmuel K
-name: Zscaler_sk
+display: Zscaler Internet Access (Test)
+name: Zscaler_test
 script:
   commands:
   - arguments:
@@ -1942,7 +1942,7 @@ script:
     description: Deletes the IP destination groups for the specified group ID.
   script: ''
   subtype: python3
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.11.4819260
   type: python
 fromversion: 5.0.0
 tests:
