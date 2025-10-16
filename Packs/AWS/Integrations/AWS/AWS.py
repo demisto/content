@@ -1766,6 +1766,7 @@ class EC2:
         except Exception as e:
             raise DemistoException(f"Error: {str(e)}")
 
+    @staticmethod
     def get_latest_ami_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
         kwargs = {
             "Filters": parse_filter_field(args.get("filters")),
@@ -1782,8 +1783,8 @@ class EC2:
             demisto.info(f"{response=}")
             if response["ResponseMetadata"]["HTTPStatusCode"] in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
                 # demisto.debug(f"RequestId={response.get('ResponseMetadata').get('RequestId')}")
-                return CommandResults(readable_output="Subnet configuration successfully updated.")
-            raise DemistoException("Modification could not be performed.")
+                return CommandResults(readable_output="xxxxxxx")
+            raise DemistoException("xxxxxxx")
         except Exception as e:
             raise DemistoException(f"Error: {str(e)}")
 
@@ -1825,6 +1826,43 @@ class EC2:
     #         raise DemistoException(f"Could not decode/encode the raw response - {err_msg}")
     #     return CommandResults(outputs=image, outputs_prefix="AWS.EC2.Images",
     #                           readable_output=tableToMarkdown("AWS EC2 Images", data))
+
+
+    @staticmethod
+    def create_network_acl_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        kwargs = {
+            "DryRun": arg_to_bool_or_none(args.get("DryRun")),
+            "VpcId": args.get("VpcId"),
+            "RoleArn": args.get("roleArn"),
+            "RoleSessionName": args.get("roleSessionName"),
+            "RoleSessionDuration": args.get("roleSessionDuration"),
+        }
+
+        remove_nulls_from_dictionary(kwargs)
+        try:
+            response = client.create_network_acl(**kwargs)
+            demisto.info(f"{response=}")
+            if response["ResponseMetadata"]["HTTPStatusCode"] in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
+                network_acl = response.get("NetworkAcl")
+                readable_data = {
+                    "Associations": network_acl.get("Associations"),
+                    "IsDefault": network_acl.get("IsDefault"),
+                    "NetworkAclId": network_acl.get("NetworkAclId"),
+                    "Tags": network_acl.get("Tags"),
+                    "VpcId": network_acl.get("VpcId"),
+                }
+                return CommandResults(
+                    outputs=network_acl,
+                    outputs_prefix="AWS.EC2.VpcId.NetworkAcl",
+                    outputs_key_field="VpcId",
+                    readable_output=(
+                        tableToMarkdown("AWS EC2 ACL Entries", [entry for entry in network_acl.get("Entries")], removeNull=True)
+                        + tableToMarkdown("AWS EC2 Instance ACL", readable_data, removeNull=True)
+                    ),
+                )
+            raise DemistoException("xxxxxxx")
+        except Exception as e:
+            raise DemistoException(f"Error: {str(e)}")
 
 
 class EKS:
@@ -2447,6 +2485,7 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-ec2-modify-snapshot-permission": EC2.modify_snapshot_permission_command,
     "aws-ec2-subnet-attribute-modify": EC2.modify_subnet_attribute_command,
     "aws-ec2-latest-ami-get": EC2.get_latest_ami_command,
+    "aws-ec2-create-network-acl": EC2.create_network_acl_command,
     "aws-eks-cluster-config-update": EKS.update_cluster_config_command,
     "aws-eks-describe-cluster": EKS.describe_cluster_command,
     "aws-eks-associate-access-policy": EKS.associate_access_policy_command,
