@@ -5,7 +5,7 @@
     "propagationLabels": [
         "all"
     ],
-    "name": "BmcITSM Assignee",
+    "name": "Bmc Assignee",
     "ownerOnly": false,
     "cliName": "bmcassignee",
     "type": "grid",
@@ -84,5 +84,12 @@
     ],
     "sla": 0,
     "threshold": 72,
-    "fromVersion": "6.2.0"
+    "fromVersion": "6.2.0",
+    "Aliases": [
+        {
+            "cliName": "bmcitsmassignee",
+            "type": "grid",
+            "name": "BmcITSM Assignee"
+        }
+    ]
 }
