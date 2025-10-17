@@ -1,0 +1,26 @@
+{
+    "name": "Docusign",
+    "description": "The Docusign pack for Cortex XSIAM allows you to collect and analyze security and audit events from your Docusign account. This provides visibility into user logins, document actions, and administrative changes to help you detect threats and ensure compliance.",
+    "support": "xsoar",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "categories": [
+        "Analytics & SIEM"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS",
+        "agentix"
+    ]
+}
