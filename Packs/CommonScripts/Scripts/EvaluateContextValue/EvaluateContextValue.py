@@ -50,7 +50,7 @@ def main():
     try:
         args = demisto.args()
         dt_encoding = args.get("dt_encoding") or "raw"
-        value_dt = decode(args.get("value_dt"), dt_encoding) or ''
+        value_dt = decode(args.get("value_dt"), dt_encoding) or ""
         eval_dt = decode(args.get("eval_dt") or "", dt_encoding)
 
         context = demisto.context()
