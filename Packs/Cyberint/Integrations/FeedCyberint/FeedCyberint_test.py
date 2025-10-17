@@ -407,7 +407,7 @@ def test_get_file_sha256_command(
 
 
 @mock.patch("FeedCyberint.is_execution_time_exceeded")
-def test_fetch_indicators_command_ok(is_execution_time_exceeded_mock, mock_client: FeedCyberint, requests_mock):
+def test_fetch_indicators_command_ok(is_execution_time_exceeded_mock, mock_client: FeedCyberint.Client, requests_mock):
     """
     Scenario:
     - Test retrieving indicators by filters from feed.
@@ -435,7 +435,7 @@ def test_fetch_indicators_command_ok(is_execution_time_exceeded_mock, mock_clien
         patch("CommonServerPython.auto_detect_indicator_type") as mock_auto_detect,
     ):
         mock_auto_detect.side_effect = lambda x: "IP" if x == "1.1.1.1" else None
-        result = FeedCyberint.fetch_indicators_command(mock_client)
+        result = FeedCyberint.fetch_indicators_command(mock_client, {})  # pass empty params dict
 
         assert result is not None
 
@@ -510,8 +510,8 @@ def test_is_execution_time_exceeded_within_limit():
     """
     Test is_execution_time_exceeded when execution time is within the timeout limit.
     """
-    # Use utcnow to create a naive UTC datetime consistent with implementation (datetime.utcnow())
-    start_time = datetime.utcnow() - timedelta(seconds=5)  # Well within 20 minute (1200s) timeout
+    # Use now to create a naive datetime consistent with implementation (datetime.now())
+    start_time = datetime.now() - timedelta(seconds=5)  # Well within 20 minute (1200s) timeout
     result = FeedCyberint.is_execution_time_exceeded(start_time)
     assert result is False, "Execution time is within the limit but returned True."
 
@@ -520,7 +520,7 @@ def test_is_execution_time_exceeded_exceeded_limit():
     """
     Test is_execution_time_exceeded when execution time exceeds the timeout limit.
     """
-    start_time = datetime.utcnow() - timedelta(seconds=FeedCyberint.EXECUTION_TIMEOUT_SECONDS + 10)  # Exceeds timeout
+    start_time = datetime.now() - timedelta(seconds=FeedCyberint.EXECUTION_TIMEOUT_SECONDS + 10)  # Exceeds timeout
     result = FeedCyberint.is_execution_time_exceeded(start_time)
     assert result is True, "Execution time exceeded the limit but returned False."
 
@@ -529,17 +529,20 @@ def test_is_execution_time_exceeded_exceeded_limit():
 def test_is_execution_time_exceeded_mocked(mock_datetime):
     """
     Test is_execution_time_exceeded with mocked datetime to simulate precise timing.
+    Patch now() instead of utcnow() to match implementation.
     """
-    start_time = datetime(2024, 1, 1, 12, 0, 0)
+    # Preserve ability to construct new datetime objects
+    mock_datetime.side_effect = lambda *args, **kwargs: datetime(*args, **kwargs)
+    base_time = datetime(2024, 1, 1, 12, 0, 0)
 
     # Simulate time just over the limit
-    mock_datetime.utcnow.return_value = start_time + timedelta(seconds=FeedCyberint.EXECUTION_TIMEOUT_SECONDS + 1)
-    result = FeedCyberint.is_execution_time_exceeded(start_time)
+    mock_datetime.now.return_value = base_time + timedelta(seconds=FeedCyberint.EXECUTION_TIMEOUT_SECONDS + 1)
+    result = FeedCyberint.is_execution_time_exceeded(base_time)
     assert result is True, "Execution time exceeded the limit but returned False."
 
     # Simulate time well within the limit
-    mock_datetime.utcnow.return_value = start_time + timedelta(seconds=5)
-    result = FeedCyberint.is_execution_time_exceeded(start_time)
+    mock_datetime.now.return_value = base_time + timedelta(seconds=5)
+    result = FeedCyberint.is_execution_time_exceeded(base_time)
     assert result is False, "Execution time is within the limit but returned True."
 
 
@@ -1546,7 +1549,7 @@ def test_get_today_time_format():
 
 def test_is_execution_time_exceeded_exact_limit():
     """Test is_execution_time_exceeded at exact timeout limit."""
-    start_time = datetime.utcnow() - timedelta(seconds=FeedCyberint.EXECUTION_TIMEOUT_SECONDS)
+    start_time = datetime.now() - timedelta(seconds=FeedCyberint.EXECUTION_TIMEOUT_SECONDS)
     result = FeedCyberint.is_execution_time_exceeded(start_time)
 
     # Should return False at exactly the limit (not exceeded yet)
