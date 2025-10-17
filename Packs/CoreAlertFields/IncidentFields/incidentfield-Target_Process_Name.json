@@ -35,5 +35,6 @@
             "type": "multiSelect",
             "name": "Child Process"
         }
-    ]
+    ],
+    "toVersion": "8.11.9"
 }

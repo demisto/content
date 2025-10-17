@@ -130,5 +130,6 @@
             "type": "shortText",
             "name": "Device Username"
         }
-    ]
+    ],
+    "toVersion": "8.11.9"
 }

@@ -35,5 +35,6 @@
             "type": "shortText",
             "name": "Symantec ESC Email Subject"
         }
-    ]
+    ],
+    "toVersion": "8.11.9"
 }

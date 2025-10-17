@@ -35,5 +35,6 @@
             "type": "multiSelect",
             "name": "Parent CMD line"
         }
-    ]
+    ],
+    "toVersion": "8.11.9"
 }

@@ -143,5 +143,6 @@
             "type": "shortText",
             "name": "Symantec ESC Email Malware Category"
         }
-    ]
+    ],
+    "toVersion": "8.11.9"
 }

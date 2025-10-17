@@ -40,5 +40,6 @@
             "type": "shortText",
             "name": "RiskIQ Asset GCP Firewall Name"
         }
-    ]
+    ],
+    "toVersion": "8.11.9"
 }

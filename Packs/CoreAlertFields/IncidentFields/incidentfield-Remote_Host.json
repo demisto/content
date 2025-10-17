@@ -40,5 +40,6 @@
             "type": "shortText",
             "name": "Detected External Hosts"
         }
-    ]
+    ],
+    "toVersion": "8.11.9"
 }
