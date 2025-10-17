@@ -159,17 +159,14 @@ class RecoClient(BaseClient):
         demisto.info("Update incident timeline, enter")
         try:
             response = self._http_request(
-                method="PUT",
-                url_suffix=f"/incident-timeline/{incident_id}",
+                method="POST",
+                url_suffix="/share-service/share-comment",
                 timeout=RECO_API_TIMEOUT_IN_SECONDS,
                 data=json.dumps(
                     {
-                        "event": {
-                            "eventType": RECO_TIMELINE_EVENT_TYPE,
-                            "eventTime": datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
-                            "title": "Comment added by XSOAR",
-                            "content": comment,
-                        }
+                        "content": comment,
+                        "entityId": incident_id,  # alert_id
+                        "entityType": "alert",
                     }
                 ),
             )
@@ -1599,11 +1596,21 @@ def main() -> None:  # pragma: no cover
             )
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
-        elif command == "reco-update-incident-timeline":
-            incident_id = demisto.args()["incident_id"]
+        elif command == "reco-add-comment-to-alert":
+            incident_id = demisto.args()["alert_id"]
             response = reco_client.update_reco_incident_timeline(
                 incident_id=incident_id,
                 comment=demisto.args()["comment"],
+            )
+            return_results(
+                CommandResults(
+                    raw_response=response,
+                    readable_output=f"Commented added to alert {incident_id}",
+                )
+            )
+        elif command == "reco-update-incident-timeline":
+            response = reco_client.update_reco_incident_timeline(
+                incident_id=demisto.args()["incident_id"], comment=demisto.args()["comment"]
             )
             return_results(
                 CommandResults(
