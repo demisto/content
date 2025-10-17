@@ -5,7 +5,7 @@
     "propagationLabels": [
         "all"
     ],
-    "name": "Bmc Sub-Type",
+    "name": "BmcITSM Sub-Type",
     "ownerOnly": false,
     "cliName": "bmcsubtype",
     "type": "shortText",
@@ -35,12 +35,5 @@
     "caseInsensitive": true,
     "sla": 0,
     "threshold": 72,
-    "fromVersion": "6.2.0",
-    "Aliases": [
-        {
-            "cliName": "bmcitsmsubtype",
-            "type": "shortText",
-            "name": "BmcITSM Sub-Type"
-        }
-    ]
+    "fromVersion": "6.2.0"
 }
