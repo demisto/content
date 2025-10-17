@@ -127,7 +127,7 @@ def fetch_credentials(client, args: dict):
             {
                 "user": cred.get("UserName"),
                 "password": cred.get("Content"),
-                "name": cred.get("Name"),
+                "name": cred.get("Name") or cred.get("Object"),
             }
         )
     demisto.credentials(credentials)
