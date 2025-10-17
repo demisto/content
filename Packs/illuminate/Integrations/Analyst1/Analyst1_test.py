@@ -1296,8 +1296,8 @@ def test_enrichment_output_return_outputs_no_reputation_context(mocker):
     mock_return_results.assert_called_once()
     call_args = mock_return_results.call_args[0][0]
     assert isinstance(call_args, CommandResults)
-    assert "nonexistent.com" in call_args.readable_output
-    assert "was not found" in call_args.readable_output
+    # Check for the full expected message format to avoid CodeQL substring sanitization warnings
+    assert call_args.readable_output == 'Domain "nonexistent.com" was not found in Analyst1.'
 
 
 def test_enrichment_output_return_outputs_no_indicator_value(mocker):
