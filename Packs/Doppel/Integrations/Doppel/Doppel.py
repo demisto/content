@@ -14,6 +14,8 @@ and the commands to perform different updates on the alerts
 
 import urllib3
 from typing import Any, Callable  # noqa: UP035
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -30,6 +32,34 @@ MIRROR_DIRECTION = {
 }
 DOPPEL_ALERT = "Doppel Alert"
 DOPPEL_INCIDENT = "Doppel Incident"
+DEFAULT_RETRY_TOTAL = 3
+DEFAULT_RETRY_BACKOFF_FACTOR = 2
+DEFAULT_RETRY_STATUS_LIST = [429, 500, 502, 503, 504]
+
+class FixedRetry(Retry):
+    """Retry with logging + fixed 10s fallback delay."""
+
+    def get_backoff_time(self, response=None):
+        """Return wait time before retrying, respecting Retry-After or falling back to 10s."""
+        retry_after = None
+        if response is not None:
+            retry_after = self.get_retry_after(response)
+
+        if retry_after:
+            demisto.debug(f"[Doppel] ⚠️ Server requested retry after {retry_after}s")
+            return retry_after
+
+        # Otherwise, fixed fallback delay
+        demisto.debug("[Doppel] ⚠️ No Retry-After header present — using fixed 10s delay before next retry.")
+        return 10
+
+    def increment(self, *args, **kwargs):
+        """Log retry attempts with URLs."""
+        new_retry = super().increment(*args, **kwargs)
+        attempt = self.total - new_retry.total
+        url = kwargs.get("url", "")
+        demisto.debug(f"[Doppel] 🔁 Retry attempt #{attempt} for {url}")
+        return new_retry
 
 """ CLIENT CLASS """
 
@@ -44,11 +74,35 @@ class Client(BaseClient):
     For this  implementation, no special attributes defined
     """
 
-    def __init__(self, base_url, api_key, user_api_key=None):
-        super().__init__(base_url)
+    def __init__(self, base_url, api_key, user_api_key=None, organization_code=None, verify=None, proxy=None, retry_total=DEFAULT_RETRY_TOTAL, retry_backoff_factor=DEFAULT_RETRY_BACKOFF_FACTOR, retry_status_list=DEFAULT_RETRY_STATUS_LIST):
+
+        super().__init__(base_url, verify=verify, proxy=proxy)
+
         self._headers = {"accept": "application/json", "x-api-key": api_key}
         if user_api_key:
             self._headers["x-user-api-key"] = user_api_key
+        if organization_code:
+            self._headers["x-organization-code"] = organization_code
+
+
+        retry_strategy = FixedRetry(
+            total=retry_total,
+            backoff_factor=retry_backoff_factor,
+            status_forcelist=retry_status_list,
+            allowed_methods=["GET", "POST", "PUT", "PATCH", "DELETE"],
+            raise_on_status=False,
+            respect_retry_after_header=True,
+        )
+
+        adapter = HTTPAdapter(max_retries=retry_strategy)
+        self._session.mount("https://", adapter)
+        self._session.mount("http://", adapter)
+
+        demisto.debug(
+            f"Initialized retry-enabled HTTP client: total={retry_total}, "
+            f"backoff_factor={retry_backoff_factor}, status_list={retry_status_list}"
+        )
+
 
     def get_alert(self, id: str, entity: str) -> dict[str, str]:
         """Return the alert's details when provided the Alert ID or Entity as input
@@ -669,6 +723,11 @@ def main() -> None:
     """Main function, parses params and runs command functions."""
     api_key = demisto.params().get("credentials", {}).get("password")
     user_api_key = demisto.params().get("user_credentials", {}).get("password")
+    organization_code = demisto.params().get("organization_code")
+    verify = not demisto.params().get("insecure") 
+    proxy = demisto.params().get("proxy")
+
+    demisto.debug(f"Verify SSL: {verify} and Proxy: {proxy}")
 
     # Get the service API URL
     base_url = urljoin(demisto.params()["url"], "/v1")
@@ -694,7 +753,7 @@ def main() -> None:
     demisto.info(f"Command being called is {current_command}")
 
     try:
-        client = Client(base_url=base_url, api_key=api_key, user_api_key=user_api_key)
+        client = Client(base_url=base_url, api_key=api_key, user_api_key=user_api_key, organization_code=organization_code, verify=verify, proxy=proxy)
 
         if current_command in supported_commands_test_module:
             # Calls test_module(client) without args
