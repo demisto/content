@@ -15,6 +15,7 @@ from json import dumps as json_dumps
 import base64
 from cyberintegrations.exception import ConnectionException
 from cyberintegrations.cyberintegrations import Parser
+from cyberintegrations.const import TechnicalConsts
 
 # Disable insecure warnings
 urllib3_disable_warnings(InsecureRequestWarning)
@@ -239,7 +240,7 @@ class Client(BaseClient):
             except Exception as e:
                 demisto.debug(f"get_brands failed: {e}")
                 return []
-        demisto.debug("DRPPoller.get_brands is not available; returning empty list")
+        demisto.debug(f"DRPPoller.get_brands is not available; returning empty list. Library version: {TechnicalConsts.library_version}")
         return []
 
     def get_formatted_subscriptions(self) -> list[str]:
@@ -249,7 +250,7 @@ class Client(BaseClient):
             except Exception as e:
                 demisto.debug(f"get_subscriptions failed: {e}")
                 return []
-        demisto.debug("DRPPoller.get_subscriptions is not available; returning empty list")
+        demisto.debug(f"DRPPoller.get_subscriptions is not available; returning empty list. Library version: {TechnicalConsts.library_version}")
         return []
 
     def get_file(self, file_sha: str) -> tuple[bytes, str] | None:
