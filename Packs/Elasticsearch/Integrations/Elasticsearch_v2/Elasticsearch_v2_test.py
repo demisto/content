@@ -1181,3 +1181,93 @@ def test_search_command_with_query_esql(mocker):
     assert res.raw_response == magic_mock.body
     assert call_args["headers"] == EXPECTED_HEADERS
     assert call_args["body"] == {"query": f"{query}| LIMIT 2"}
+
+
+@patch("Elasticsearch_v2.demisto")
+@patch("Elasticsearch_v2.requests.get")
+def test_kibana_list_cases_command(mock_get, mock_demisto):
+    """Test kibana-list-cases returns expected CommandResults."""
+    mock_demisto.params.return_value = {
+        "kibana_url": "https://kibana.example.com",
+        "kibana_api_key": "fakekey"
+    }
+    mock_demisto.args.return_value = {"status": "open"}
+    
+    mock_get.return_value.status_code = 200
+    mock_get.return_value.json.return_value = {
+        "cases": [
+            {"id": "case-123", "title": "Test Case", "status": "open"}
+        ]
+    }
+    
+    from Elasticsearch_v2 import kibana_list_cases_command
+    result = kibana_list_cases_command({"status": "open"}, proxies=None)
+    
+    assert result.outputs_prefix == "Kibana.CaseList"
+    assert result.outputs[0]["id"] == "case-123"
+    assert result.outputs[0]["title"] == "Test Case"
+    assert result.outputs[0]["status"] == "open"
+
+
+@patch("Elasticsearch_v2.demisto")
+@patch("Elasticsearch_v2.requests.get")
+def test_kibana_get_case_command(mock_get, mock_demisto):
+    """Test kibana-get-case returns expected CommandResults."""
+    mock_demisto.params.return_value = {
+        "kibana_url": "https://kibana.example.com",
+        "kibana_api_key": "fakekey"
+    }
+    mock_demisto.args.return_value = {"case_id": "case-123"}
+    
+    mock_get.return_value.status_code = 200
+    mock_get.return_value.json.return_value = {
+        "id": "case-123",
+        "title": "Test Case",
+        "status": "open"
+    }
+    
+    from Elasticsearch_v2 import kibana_get_case_command
+    result = kibana_get_case_command({"case_id": "case-123"}, proxies=None)
+    
+    assert result.outputs_prefix == "Kibana.Case"
+    assert result.outputs["id"] == "case-123"
+    assert result.outputs["title"] == "Test Case"
+    assert result.outputs["status"] == "open"
+
+
+@patch("Elasticsearch_v2.demisto")
+@patch("Elasticsearch_v2.requests.get")
+def test_kibana_get_case_not_found(mock_get, mock_demisto):
+    """Test kibana-get-case handles 404 Not Found."""
+    mock_demisto.params.return_value = {
+        "kibana_url": "https://kibana.example.com",
+        "kibana_api_key": "fakekey"
+    }
+    mock_demisto.args.return_value = {"case_id": "missing-case"}
+    
+    mock_get.return_value.status_code = 404
+    mock_get.return_value.text = "Not Found"
+    
+    from Elasticsearch_v2 import kibana_get_case_command
+    
+    with pytest.raises(SystemExit):  # return_error calls sys.exit
+        kibana_get_case_command({"case_id": "missing-case"}, proxies=None)
+
+
+@patch("Elasticsearch_v2.demisto")
+@patch("Elasticsearch_v2.requests.get")
+def test_kibana_list_cases_forbidden(mock_get, mock_demisto):
+    """Test kibana-list-cases handles 403 Forbidden."""
+    mock_demisto.params.return_value = {
+        "kibana_url": "https://kibana.example.com",
+        "kibana_api_key": "fakekey"
+    }
+    mock_demisto.args.return_value = {"status": "open"}
+    
+    mock_get.return_value.status_code = 403
+    mock_get.return_value.text = "Forbidden"
+    
+    from Elasticsearch_v2 import kibana_list_cases_command
+    
+    with pytest.raises(SystemExit):  # return_error calls sys.exit
+        kibana_list_cases_command({"status": "open"}, proxies=None)
