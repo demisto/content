@@ -2,7 +2,7 @@ category: Analytics & SIEM
 commonfields:
   id: Orca Event Collector
   version: -1
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 description: Orca Security event collector integration for Cortex XSIAM.

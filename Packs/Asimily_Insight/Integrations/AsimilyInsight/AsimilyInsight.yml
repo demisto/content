@@ -2,7 +2,7 @@ category: Network Security
 commonfields:
   id: Asimily Insight
   version: -1
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 configuration:

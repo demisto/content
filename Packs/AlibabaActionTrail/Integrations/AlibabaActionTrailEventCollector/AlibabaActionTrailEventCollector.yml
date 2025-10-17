@@ -1,7 +1,7 @@
 commonfields:
   id: Alibaba Action Trail Event Collector
   version: -1
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 name: Alibaba Action Trail Event Collector

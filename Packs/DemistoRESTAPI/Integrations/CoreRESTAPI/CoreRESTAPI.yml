@@ -1,4 +1,4 @@
-sectionOrder:
+sectionorder:
 - Connect
 commonfields:
   id: Core REST API

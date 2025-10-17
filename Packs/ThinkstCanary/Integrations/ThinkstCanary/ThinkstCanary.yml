@@ -1,7 +1,7 @@
 commonfields:
   id: Thinkst Canary
   version: -1
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 name: Thinkst Canary
