@@ -1,7 +1,6 @@
 commonfields:
   id: EvaluateContextValue
-  version: 60
-vcShouldKeepItemLegacyProdMachine: false
+  version: -1
 name: EvaluateContextValue
 script: ''
 type: python
@@ -28,9 +27,7 @@ args:
 - name: eval_dt
   description: The DT expression for retrieving data for the evaluation from the value.
 - name: eval_key
-  description: The key name that is associated with the value before it's passed to
-    eval_dt. If this parameter is provided, eval_dt receives a key-value pair (the
-    key name and the value for the evaluation) in a dictionary.
+  description: The key name that is associated with the value before it's passed to eval_dt. If this parameter is provided, eval_dt receives a key-value pair (the key name and the value for the evaluation) in a dictionary.
 - name: playbook_id
   description: The sub-playbook ID to get its local context from the context data.
 outputs:
@@ -42,9 +39,10 @@ outputs:
   type: boolean
 scripttarget: 0
 subtype: python3
-pswd: ''
 runonce: false
-dockerimage: demisto/python3:3.12.8.3296088
+dockerimage: demisto/python3:3.12.11.4819260
 runas: DBotWeakRole
 engineinfo: {}
-mainengineinfo: {}
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)
