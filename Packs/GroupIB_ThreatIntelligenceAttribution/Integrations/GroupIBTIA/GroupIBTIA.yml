@@ -76,17 +76,25 @@ configuration:
   type: 0
 - defaultvalue: "false"
   section: Collect
-  display: Exclude All with Combolist type
-  name: exclude_combolist
+  display: Include combolist type in data
+  name: combolist
   required: false
   type: 8
+  additionalinfo: Works only for compromised/account_group. If the parameter is enabled, the response contains combolist data. If you enable “Include unique type in data” with this filter, the response will contain data of both types. If “Include combolist type in data” and “Include unique type in data” are disabled, the response will contain data of both types.
+- defaultvalue: "false"
+  section: Collect
+  display: Include unique type in data
+  name: unique
+  required: false
+  type: 8
+  additionalinfo: Works only for compromised/account_group. If the parameter is enabled, the response contains unique data. If you enable “Include combolist type in data” with this filter, the response will contain data of both types. If “Include combolist type in data” and “Include unique type in data” are disabled, the response will contain data of both types.
 - display: Enable filter "Probable Corporate Access"
   name: enable_probable_corporate_access
   section: Collect
   required: false
   type: 8
   defaultvalue: "false"
-  additionalinfo: Enable filter "Probable Corporate Access"
+  additionalinfo: Works only for compromised/account_group
 - display: Number of requests per collection
   name: max_fetch
   section: Collect
