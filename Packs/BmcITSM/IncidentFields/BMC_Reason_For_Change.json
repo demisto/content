@@ -27,12 +27,5 @@
     "caseInsensitive": true,
     "sla": 0,
     "threshold": 72,
-    "fromVersion": "6.2.0",
-    "Aliases": [
-        {
-            "cliName": "bmcreasonforchange",
-            "type": "shortText",
-            "name": "Bmc Reason For Change"
-        }
-    ]
+    "fromVersion": "6.2.0"
 }
