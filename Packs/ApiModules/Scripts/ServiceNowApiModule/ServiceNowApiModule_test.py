@@ -1,9 +1,10 @@
 import demistomock as demisto
+from Packs.ServiceNow.Integrations.ServiceNowv2.test_data.response_constants import JWT_PARAMS
 from ServiceNowApiModule import *
 
 PARAMS = {
     "insecure": False,
-    "credentials": {"identifier": "user1", "password:": "12345"},
+    "credentials": {"identifier": "user1", "password": "12345"},
     "proxy": False,
     "client_id": "client_id",
     "client_secret": "client_secret",
@@ -86,3 +87,83 @@ def test_separate_client_id_and_refresh_token():
         headers=PARAMS.get("headers", ""),
     )
     assert client.client_id == "client_id"
+
+
+def test_validate_and_format_private_key_valid():
+    valid_key = "-----BEGIN PRIVATE KEY-----" "MIIEvQIBADANBgkqhkiG9w0BAQEFAASC" "-----END PRIVATE KEY-----"
+    result = ServiceNowClient._validate_and_format_private_key(valid_key)
+    assert result.startswith("-----BEGIN PRIVATE KEY-----")
+    assert result.endswith("-----END PRIVATE KEY-----")
+    assert " " not in result.replace("-----BEGIN PRIVATE KEY-----", "").replace("-----END PRIVATE KEY-----", "")
+
+
+def test_validate_and_format_private_key_invalid():
+    invalid_key = "INVALID KEY CONTENT"
+    try:
+        ServiceNowClient._validate_and_format_private_key(invalid_key)
+    except ValueError as e:
+        assert "Invalid private key format" in str(e)
+    else:
+        assert False, "ValueError not raised for invalid key"
+
+
+def test_validate_and_format_private_key_spaces():
+    key_with_spaces = "-----BEGIN PRIVATE KEY----- MIIE vQIBADAN Bgkqh kiG9w0 BAEF AASC -----END PRIVATE KEY-----"
+    result = ServiceNowClient._validate_and_format_private_key(key_with_spaces)
+    assert " " not in result
+    assert result.count("\n") > 2
+
+
+def test_validate_and_format_private_key_double_newlines():
+    key_with_double_newlines = "-----BEGIN PRIVATE KEY-----\n\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASC\n\n-----END PRIVATE KEY-----"
+    result = ServiceNowClient._validate_and_format_private_key(key_with_double_newlines)
+    assert "\n\n" not in result
+
+
+def test_servicenow_client_jwt_init(mocker):
+    """
+    Given:
+    - JWT credentials (jwt_params)
+    When:
+    - Initializing ServiceNowClient with jwt_params
+    Then:
+    - JWT is created and assigned to self.jwt
+    - No exceptions are raised
+    """
+    mocker.patch("jwt.encode", return_value="jwt_token_stub")
+    client = ServiceNowClient(
+        credentials=PARAMS["credentials"],
+        use_oauth=True,
+        client_id=PARAMS["client_id"],
+        client_secret=PARAMS["client_secret"],
+        url="https://example.com",
+        verify=PARAMS["insecure"],
+        proxy=PARAMS["proxy"],
+        headers=None,
+        jwt_params=JWT_PARAMS,
+    )
+    assert hasattr(client, "jwt")
+    assert client.jwt == "jwt_token_stub"
+
+
+def test_servicenow_client_jwt_none():
+    """
+    Given:
+    - No jwt_params provided
+    When:
+    - Initializing ServiceNowClient
+    Then:
+    - The client should not have a 'jwt' attribute
+    """
+    client = ServiceNowClient(
+        credentials=PARAMS["credentials"],
+        use_oauth=True,
+        client_id=PARAMS["client_id"],
+        client_secret=PARAMS["client_secret"],
+        url="https://example.com",
+        verify=PARAMS["insecure"],
+        proxy=PARAMS["proxy"],
+        headers=None,
+        jwt_params=None,
+    )
+    assert not hasattr(client, "jwt") or client.jwt is None
