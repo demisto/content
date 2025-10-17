@@ -220,7 +220,7 @@ def main():  # pragma: no cover
             return_results(move_email_command(client, args))
         elif command == "msgraph-mail-get-email-as-eml":
             return_results(get_email_as_eml_command(client, args))
-        elif command == "msgraph-mail-get-email-as-string":
+        elif command == "msgraph-mail-get-email-as-eml-string":
             return_results(get_email_as_eml_string_command(client, args))
         elif command == "msgraph-mail-send-draft":
             return_results(send_draft_command(client, args))  # pylint: disable=E1123
