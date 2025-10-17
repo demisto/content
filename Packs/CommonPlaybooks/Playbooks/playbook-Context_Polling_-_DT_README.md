@@ -43,4 +43,4 @@ There are no outputs for this playbook.
 
 ---
 
-![Context Polling - DT](../doc_files/Context_Polling_-DT.png)
+![Context Polling - DT](../doc_files/Context_Polling_-_DT.png)
