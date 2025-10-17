@@ -4,6 +4,7 @@ msgraph-mail-delete-folder user_id=dev@demistodev.onmicrosoft.com folder_id=Test
 msgraph-mail-get-attachment attachment_id=AQMkADY0ZjMxZmMyLWU3MjgtNDNiOS04ZDZmLTYxZDVkYzk1MTg5MwBGAAADbTQIjNRTu0OcDJw7xPpreQcAdQ8OJfUvxEa-MxMBZHrT7QAAAgEMAAAAdQ8OJfUvxEa-MxMBZHrT7QAB3Wln6QAAAAESABAARmHS0ZRrfE2rGy1-02TDIQ== message_id=AQMkADY0ZjMxZmMyLWU3MjgtNDNiOS04ZDZmLTYxZDVkYzk1MTg5MwBGAAADbTQIjNRTu0OcDJw7xPpreQcAdQ8OJfUvxEa-MxMBZHrT7QAAAgEMAAAAdQ8OJfUvxEa-MxMBZHrT7QAB3Wln6QAAAA== user_id=dev@demistodev.onmicrosoft.com
 msgraph-mail-get-email message_AAAA== user_id=dev@demistodev.onmicrosoft.com
 msgraph-mail-get-email-as-eml message_AAAA== user_id=dev@demistodev.onmicrosoft.com
+msgraph-mail-get-email-as-eml-string message_AAAA== user_id=dev@demistodev.onmicrosoft.com
 msgraph-mail-list-attachments message_id=AQMkADY0ZjMxZmMyLWU3MjgtNDNiOS04ZDZmLTYxZDVkYzk1MTg5MwBGAAADbTQIjNRTu0OcDJw7xPpreQcAdQ8OJfUvxEa-MxMBZHrT7QAAAgEMAAAAdQ8OJfUvxEa-MxMBZHrT7QAB3Wln6QAAAA== user_id=dev@demistodev.onmicrosoft.com
 msgraph-mail-list-child-folders user_id=dev@demistodev.onmicrosoft.com parent_folder_id=inbox
 msgraph-mail-list-emails user_id=dev@demistodev.onmicrosoft.com search="Demo" folder_id=inbox

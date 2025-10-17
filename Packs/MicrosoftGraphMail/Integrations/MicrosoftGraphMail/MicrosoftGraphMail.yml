@@ -718,6 +718,29 @@ script:
       type: String
     polling: true
   - arguments:
+    - description: User ID or principal ID (usually an email address in the format someuser@example.com).
+      name: user_id
+      required: true
+    - description: The unique Exchange ID of the mail. This is not the same as the 'MessageID' key in the form '<message-id>'.
+      name: message_id
+      required: true
+    - deprecated: true
+      description: flag for rate limit retry.
+      name: ran_once_flag
+    description: Retrieves an email message by message ID and uploads the content as an EML file.
+    name: msgraph-mail-get-email-as-eml-string
+    outputs:
+    - contextPath: MSGraphMail.EML.ID
+      description: The ID of the email.
+      type: String
+    - contextPath: MSGraphMail.EML.UserID
+      description: The ID of the user.
+      type: String
+    - contextPath: MSGraphMail.EML.Content
+      description: The raw EML string of the requested message.
+      type: String
+    polling: true
+  - arguments:
     - description: A comma-separated list of email addresses for the 'to' field.
       isArray: true
       name: to

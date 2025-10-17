@@ -2041,6 +2041,24 @@ def get_email_as_eml_command(client: MsGraphMailBaseClient, args):
     return file_result
 
 
+def get_email_as_eml_string_command(client: MsGraphMailBaseClient, args):
+    user_id = args.get("user_id")
+    message_id = GraphMailUtils.handle_message_id(args.get("message_id", ""))
+    
+    eml_content_raw = client.get_email_as_eml(user_id, message_id)
+
+    eml_string_output = {"ID": message_id, "UserID": user_id, "Content": eml_content}
+    eml_string_output_readable = tableToMarkdown("The email EML file was retrieved successfully. Email EML data:", eml_string_output)
+
+    return CommandResults(
+        outputs_prefix="MSGraphMail.EML",
+        outputs_key_field="ID",
+        outputs=eml_string_output,
+        readable_output=eml_string_output_readable,
+        raw_response=eml_content_raw,
+    )
+
+
 def send_draft_command(client: MsGraphMailBaseClient, args):
     email = args.get("from")
     draft_id = args.get("draft_id")
