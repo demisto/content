@@ -1,0 +1,2 @@
+!shadowx-submit-task log="failed login from 1.1.1.1" ip_addr="192.168.1.100" user_name="svc-admin" policy_id="cf85454c-7374-4106-8995-62ca68f8e651" wait_seconds=10
+!shadowx-get-task task_id="f3f46d7e-4932-4b4a-9220-9fd9a6a4ad02"
