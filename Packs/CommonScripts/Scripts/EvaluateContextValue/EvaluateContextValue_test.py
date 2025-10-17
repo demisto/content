@@ -39,6 +39,9 @@ class TestEvaluateContextValue:
 
         return demisto.get(obj, dt)
 
+    def __side_effect_demisto_error(self, err):
+        pass
+
     def __return_error(
         self,
         message: str,
@@ -49,6 +52,7 @@ class TestEvaluateContextValue:
 
     def test_main(self, mocker):
         mocker.patch.object(demisto, "dt", side_effect=self.__side_effect_demisto_dt)
+        mocker.patch.object(demisto, "error", side_effect=self.__side_effect_demisto_error)
 
         with open("./test_data/main.json") as f:
             test_cases = json.load(f)
