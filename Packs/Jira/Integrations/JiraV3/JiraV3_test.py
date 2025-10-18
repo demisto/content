@@ -46,7 +46,7 @@ def jira_cloud_client_mock() -> JiraCloudClient:
         client_secret="dummy_secret",
         callback_url="dummy_url",
         cloud_id="dummy_cloud_id",
-        server_url="dummy_server_url",
+        server_url="https://dummy_server_url",
         username="",
         api_key="",
         pat="",
@@ -60,7 +60,7 @@ def jira_onprem_client_mock() -> JiraOnPremClient:
         client_id="dummy_client_id",
         client_secret="dummy_secret",
         callback_url="dummy_url",
-        server_url="dummy_server_url",
+        server_url="https://dummy_server_url",
         username="",
         api_key="",
         pat="",
@@ -194,28 +194,38 @@ CREATE_ISSUE_QUERY_CASES = [
         "some_jql_string",
         None,
         None,
-        {"jql": "some_jql_string", "nextPageToken": "", "maxResults": 50},
+        {"jql": "some_jql_string", "maxResults": 50},
+        "",
     ),
     (
         "some_jql_string",
         12,
         None,
         {"jql": "some_jql_string", "startAt": 12, "maxResults": 50},
+        "",
     ),
     (
         "some_jql_string",
         1,
         80,
         {"jql": "some_jql_string", "startAt": 1, "maxResults": 80},
+        "",
+    ),
+    (
+        "some_jql_string",
+        5,
+        80,
+        {"jql": "some_jql_string", "nextPageToken": "dummy_page_token", "maxResults": 80},
+        "dummy_page_token",
     ),
 ]
 
 
-@pytest.mark.parametrize("jql, start_at, max_results, expected_query_params", CREATE_ISSUE_QUERY_CASES)
-def test_create_query_params(jql, start_at, max_results, expected_query_params):
+@pytest.mark.parametrize("jql, start_at, max_results, expected_query_params, next_page_token", CREATE_ISSUE_QUERY_CASES)
+def test_create_query_params(jql, start_at, max_results, expected_query_params, next_page_token):
     from JiraV3 import create_query_params
 
-    query_params = create_query_params(jql_query=jql, start_at=start_at, max_results=max_results)
+    query_params = create_query_params(jql_query=jql, start_at=start_at, max_results=max_results, next_page_token=next_page_token)
     assert query_params == expected_query_params
 
 
@@ -1946,10 +1956,10 @@ class TestJiraIssueQueryField:
             assert expected_command_result["EntryContext"] == command_result.to_context()["EntryContext"]
             assert expected_command_result["HumanReadable"] == command_result.to_context()["HumanReadable"]
 
-    def test_issue_query_command_uses_new_endpoint(self, requests_mock):
+    def test_issue_query_command_uses_new_endpoint_for_cloud(self, mocker, requests_mock):
         """
         Given:
-            - A Jira client
+            - A Cloud Jira client
         When
             - When calling the jira-issue-query
         Then
@@ -1957,10 +1967,11 @@ class TestJiraIssueQueryField:
         """
         from JiraV3 import issue_query_command
 
-        client = jira_base_client_mock(username="user", api_key="key")
+        client = jira_cloud_client_mock()
+        mocker.patch.object(client, "get_headers_with_access_token", return_value={})
         issue_query_raw_response = util_load_json("test_data/get_issue_query_test/raw_response.json")
         expected_command_results = util_load_json("test_data/get_issue_query_test/parsed_result.json")
-        requests_mock.get("https://dummy_url/rest/api/999/search/jql", json=issue_query_raw_response)
+        requests_mock.get("https://dummy_server_url/dummy_cloud_id/rest/api/3/search/jql", json=issue_query_raw_response)
 
         command_results = issue_query_command(client=client, args={"fields": "watches,rank"})
         command_results = command_results if isinstance(command_results, list) else [command_results]
@@ -1968,7 +1979,30 @@ class TestJiraIssueQueryField:
             assert expected_command_result["EntryContext"] == command_result.to_context()["EntryContext"]
             assert expected_command_result["HumanReadable"] == command_result.to_context()["HumanReadable"]
 
-    def test_issue_query_command_with_start_at(self, requests_mock):
+    def test_issue_query_command_uses_old_endpoint_for_onprem(self, mocker, requests_mock):
+        """
+        Given:
+            - An on-prem Jira client
+        When
+            - When calling the jira-issue-query
+        Then
+            - Validate that the old endpoint is used and the command returns the expected output.
+        """
+        from JiraV3 import issue_query_command
+
+        client = jira_onprem_client_mock()
+        mocker.patch.object(client, "get_headers_with_access_token", return_value={})
+        issue_query_raw_response = util_load_json("test_data/get_issue_query_test/raw_response.json")
+        expected_command_results = util_load_json("test_data/get_issue_query_test/parsed_result.json")
+        requests_mock.get("https://dummy_server_url/rest/api/2/search", json=issue_query_raw_response)
+
+        command_results = issue_query_command(client=client, args={"fields": "watches,rank"})
+        command_results = command_results if isinstance(command_results, list) else [command_results]
+        for expected_command_result, command_result in zip(expected_command_results, command_results):
+            assert expected_command_result["EntryContext"] == command_result.to_context()["EntryContext"]
+            assert expected_command_result["HumanReadable"] == command_result.to_context()["HumanReadable"]
+
+    def test_issue_query_command_with_start_at(self, mocker, requests_mock):
         """
         Given:
             - A Jira client
@@ -1979,10 +2013,11 @@ class TestJiraIssueQueryField:
         """
         from JiraV3 import issue_query_command
 
-        client = jira_base_client_mock(username="user", api_key="key")
+        client = jira_cloud_client_mock()
+        mocker.patch.object(client, "get_headers_with_access_token", return_value={})
         issue_query_raw_response = util_load_json("test_data/get_issue_query_test/raw_response.json")
         expected_command_results = util_load_json("test_data/get_issue_query_test/parsed_result.json")
-        requests_mock.get("https://dummy_url/rest/api/999/search", json=issue_query_raw_response)
+        requests_mock.get("https://dummy_server_url/dummy_cloud_id/rest/api/3/search", json=issue_query_raw_response)
 
         command_results = issue_query_command(client=client, args={"start_at": "10", "fields": "watches,rank"})
         command_results = command_results if isinstance(command_results, list) else [command_results]

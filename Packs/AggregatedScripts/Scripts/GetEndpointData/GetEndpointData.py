@@ -10,6 +10,7 @@ from CommonServerPython import *
 
 COMMAND_SUCCESS_MSG = "Command successful"
 COMMAND_FAILED_MSG = "Command failed - no endpoint found"
+IRRISKLEVEL = {"LOW": 0, "MED": 1, "HIGH": 2, 0: "LOW", 1: "MED", 2: "HIGH"}
 
 
 class Brands(StrEnum):
@@ -46,7 +47,6 @@ class Command:
         additional_args: dict = None,
         prepare_args_mapping: Callable[[dict[str, str]], dict[str, str]] | None = None,
         post_processing: Callable[[Any, list[dict[str, Any]], dict[str, str]], list[dict[str, Any]]] | None = None,
-        main_key: str = "ID",
     ):
         """
         Initialize a MappedCommand object.
@@ -63,7 +63,6 @@ class Command:
             prepare_args_mapping (Callable[[dict[str, str]], dict[str, str]], optional):
                 A function to prepare arguments mapping. Defaults to None.
             post_processing (Callable, optional): A function for post-processing command results. Defaults to None.
-            main_key (str, optional): The key to use for merging duplicate endpoints. Defaults to "ID".
         """
         self.brand = brand
         self.name = name
@@ -75,7 +74,6 @@ class Command:
         self.additional_args = additional_args
         self.prepare_args_mapping = prepare_args_mapping
         self.post_processing = post_processing
-        self.main_key = main_key
 
     def __repr__(self):
         return f"{{ name: {self.name}, brand: {self.brand} }}"
@@ -472,7 +470,6 @@ def initialize_commands(
                 "Vendor": "Brand",
             },
             post_processing=generic_endpoint_post,
-            main_key="ID",
         ),
         Command(
             brand=Brands.ACTIVE_DIRECTORY_QUERY_V2,
@@ -481,7 +478,6 @@ def initialize_commands(
             args_mapping={"name": "endpoint_hostname"},
             output_mapping={"dn": "ID", "name": "Hostname"},
             post_processing=active_directory_post,
-            main_key="ID",
         ),
         Command(
             brand=Brands.MCAFEE_EPO_V2,
@@ -492,7 +488,6 @@ def initialize_commands(
             output_mapping={"ID": "ID", "Hostname": "Hostname", "IPAddress": "IPAddress"},
             get_endpoint_output=True,
             not_found_checker="No systems found",
-            main_key="ID",
         ),
         Command(
             brand=Brands.CORTEX_XDR_IR,
@@ -501,7 +496,6 @@ def initialize_commands(
             args_mapping={"host_id": "endpoint_hostname"},
             output_mapping={"id": "Hostname", "risk_level": "RiskLevel"},
             not_found_checker="was not found",
-            main_key="Hostname",
         ),
         Command(
             brand=Brands.CORTEX_CORE_IR,
@@ -509,7 +503,6 @@ def initialize_commands(
             output_keys=["Core.RiskyHost"],
             args_mapping={"host_id": "endpoint_hostname"},
             output_mapping={"id": "Hostname", "risk_level": "RiskLevel"},
-            main_key="Hostname",
         ),
         Command(
             brand=Brands.FIREEYE_HX_V2,
@@ -523,7 +516,6 @@ def initialize_commands(
                 "containment_state": "Status",
             },
             not_found_checker="is not correct",
-            main_key="ID",
         ),
     ]
 
@@ -541,7 +533,6 @@ def initialize_commands(
                 "IsIsolated": "IsIsolated",
             },
             get_endpoint_output=True,
-            main_key="Hostname",
         ),
         Command(
             brand=Brands.CORTEX_XDR_IR,
@@ -556,7 +547,6 @@ def initialize_commands(
                 "IsIsolated": "IsIsolated",
             },
             get_endpoint_output=True,
-            main_key="Hostname",
         ),
         Command(
             brand=Brands.CROWDSTRIKE_FALCON,
@@ -573,7 +563,6 @@ def initialize_commands(
             },
             get_endpoint_output=True,
             not_found_checker="Could not find any devices.",
-            main_key="ID",
         ),
     ]
 
@@ -585,7 +574,7 @@ def run_single_args_commands(
     single_args_commands,
     command_runner: EndpointCommandRunner,
     verbose: bool,
-    endpoint_mapping: dict[str, Any],
+    ir_mapping: dict[str, Any],
 ) -> tuple[list[dict[str, Any]], list[CommandResults]]:
     """
     Runs the single-argument commands for each endpoint individually and returns the command results,
@@ -596,7 +585,7 @@ def run_single_args_commands(
         single_args_commands (List[Command]): A list of single-argument commands to run.
         command_runner (EndpointCommandRunner): The EndpointCommandRunner instance to use for running the commands.
         verbose (bool): A flag indicating whether to print verbose output.
-        endpoint_mapping (dict[str, Any]): A dictionary mapping endpoints by main_key and brands.
+        ir_mapping (dict[str, Any]): A dictionary mapping endpoints for core/xdr IR.
 
     Returns:
         tuple[list[dict[str, Any]], list[CommandResults]]:
@@ -614,14 +603,16 @@ def run_single_args_commands(
             )
 
             if endpoint_output:
-                endpoint_outputs_list.extend(endpoint_output)
-                add_endpoint_to_mapping(endpoint_output, endpoint_mapping, command.main_key)
+                if command.brand in [Brands.CORTEX_XDR_IR, Brands.CORTEX_CORE_IR]:
+                    update_endpoint_in_mapping(endpoint_output, ir_mapping)
+                else:
+                    endpoint_outputs_list.extend(endpoint_output)
             single_endpoint_readable_outputs.extend(readable_outputs)
 
         if verbose:
             command_results_list.extend(single_endpoint_readable_outputs)
 
-    demisto.debug(f"ending single arg loop with {len(endpoint_outputs_list)} endpoints")
+    demisto.debug(f"ending single arg loop with {len(endpoint_outputs_list)} new endpoints")
     return endpoint_outputs_list, command_results_list
 
 
@@ -632,7 +623,7 @@ def run_list_args_commands(
     endpoint_ips,
     endpoint_hostnames,
     verbose,
-    endpoint_mapping: dict[str, Any],
+    ir_mapping: dict[str, Any],
 ) -> tuple[list[dict[str, Any]], list[CommandResults]]:
     """
     Runs the list-argument commands for multiple endpoints and returns the command results,
@@ -645,7 +636,7 @@ def run_list_args_commands(
         endpoint_ips (List[str]): A list of endpoint IP addresses.
         endpoint_hostnames (List[str]): A list of endpoint hostnames.
         verbose (bool): A flag indicating whether to print verbose output.
-        endpoint_mapping (dict[str, Any]): A dictionary mapping endpoints by main_key and brands.
+        ir_mapping (dict[str, Any]): A dictionary mapping endpoints for core/xdr IR.
 
     Returns:
         tuple[list[dict[str, Any]], list[CommandResults]]:
@@ -665,8 +656,11 @@ def run_list_args_commands(
         )
 
         if endpoint_output:
-            multiple_endpoint_outputs.extend(endpoint_output)
-            add_endpoint_to_mapping(endpoint_output, endpoint_mapping, command.main_key)
+            if command.brand in [Brands.CORTEX_XDR_IR, Brands.CORTEX_CORE_IR]:
+                add_endpoint_to_mapping(endpoint_output, ir_mapping)
+            else:
+                multiple_endpoint_outputs.extend(endpoint_output)
+
         if verbose:
             multiple_endpoint_readable_outputs.extend(readable_outputs)
 
@@ -961,70 +955,33 @@ def entry_context_to_endpoints(command: Command, entry_context: list, add_additi
     return endpoints
 
 
-def add_endpoint_to_mapping(endpoints: list[dict[str, Any]], endpoint_mapping: dict[str, Any], main_key: str):
+def add_endpoint_to_mapping(endpoints: list[dict[str, Any]], ir_mapping: dict[str, Any]):
     """
     Adds endpoints to the endpoint mapping.
     Args:
         endpoints (list[dict[str, Any]]): A list of endpoint dictionaries.
-        endpoint_mapping (dict[str, Any]): A dictionary of endpoint mappings.
-        main_key (str): The main key to use for the endpoint mapping.
+        ir_mapping (dict[str, Any]): A dictionary mapping endpoints for core/xdr IR.
     """
     for endpoint in endpoints:
         if COMMAND_SUCCESS_MSG not in endpoint.get("Message", ""):
             demisto.debug(f"skipping endpoint due to failure: {endpoint}")
             continue
-        brand = endpoint.get("Brand")
-        if isinstance(brand, StrEnum):
-            brand = brand.value
-        if brand in endpoint_mapping:
-            if endpoint_mapping[brand].get(endpoint[main_key]):
-                demisto.debug(f"found another value for {brand=}, where {main_key} = {endpoint[main_key]}")
-                additional_fields = {}
-                if "AdditionalFields" in endpoint_mapping[brand][endpoint[main_key]] and "AdditionalFields" in endpoint:
-                    additional_fields = endpoint_mapping[brand][endpoint[main_key]]["AdditionalFields"]
-                    additional_fields.update(endpoint["AdditionalFields"])
-                endpoint_mapping[brand][endpoint[main_key]].update(endpoint)
-                if additional_fields:
-                    endpoint_mapping[brand][endpoint[main_key]]["AdditionalFields"] = additional_fields
-            else:
-                endpoint_mapping[brand][endpoint[main_key]] = endpoint
-        else:
-            endpoint_mapping[brand] = {endpoint[main_key]: endpoint}  # type: ignore[index]
+        ir_mapping[endpoint["ID"]] = endpoint
 
 
-def endpoint_mapping_to_list(mapped_endpoints: dict[str, Any]) -> list[dict[str, Any]]:
-    """
-    Merges the endpoint mappings into a list of endpoint dictionaries.
-
-    Args:
-        mapped_endpoints (dict[str, Any]): A dictionary of endpoint mappings.
-
-    Returns:
-        list[dict[str, Any]]: List of merged endpoint dictionaries.
-    """
-    merged_endpoints = []
-    for brand in mapped_endpoints.values():
-        for endpoint in brand.values():
-            merged_endpoints.append(endpoint)
-    return merged_endpoints
-
-
-def get_extended_hostnames_set(mapped_endpoints: dict[str, Any]) -> set[str]:
+def get_extended_hostnames_set(Ir_endpoints: dict[str, Any]) -> set[str]:
     """
     Retrieves a set of extended hostnames from the endpoint mappings.
 
     Args:
-        mapped_endpoints (dict[str, Any]): A dictionary of endpoint mappings.
+        Ir_endpoints (dict[str, Any]): A dictionary of endpoint mappings.
 
     Returns:
         set[str]: Set of extended hostnames.
     """
     hostnames = set()
-    xdr_brands = set(mapped_endpoints.keys()).intersection({Brands.CORTEX_XDR_IR.value, Brands.CORTEX_CORE_IR.value})
-    demisto.debug(f"getting hostnames for brands: {xdr_brands}")
-    for brand in xdr_brands:
-        for endpoint in mapped_endpoints[brand].values():
-            hostnames.add(endpoint["Hostname"])
+    for endpoint in Ir_endpoints.values():
+        hostnames.add(endpoint["Hostname"])
     return hostnames
 
 
@@ -1132,6 +1089,30 @@ def create_using_brand_argument_to_generic_command(brands_to_run: list, generic_
     generic_command.create_additional_args({"using-brand": joined_brands})
 
 
+def update_endpoint_in_mapping(endpoints: list[dict[str, Any]], ir_mapping: dict[str, Any]):
+    """
+    Adds endpoints to the endpoint mapping.
+    Args:
+        endpoints (list[dict[str, Any]]): A list of endpoint dictionaries.
+        ir_mapping (dict[str, Any]): A dictionary mapping endpoints for core/xdr IR.
+    """
+    for endpoint in endpoints:
+        if COMMAND_SUCCESS_MSG not in endpoint.get("Message", ""):
+            demisto.debug(f"skipping endpoint due to failure: {endpoint}")
+            continue
+        for ir_endpoint in ir_mapping.values():
+            if ir_endpoint.get("Hostname") == endpoint.get("Hostname"):
+                if not isinstance(endpoint.get("RiskLevel"), list):
+                    endpoint["RiskLevel"] = [endpoint.get("RiskLevel")]
+                for risk in endpoint.get("RiskLevel", []):
+                    if "RiskLevel" in ir_endpoint:
+                        ir_endpoint["RiskLevel"] = IRRISKLEVEL[max(IRRISKLEVEL[risk], IRRISKLEVEL[ir_endpoint.get("RiskLevel")])]  # type: ignore
+                    else:
+                        ir_endpoint["RiskLevel"] = risk
+                if "additional_fields" in endpoint:
+                    ir_endpoint.update(endpoint["additional_fields"])
+
+
 """ MAIN FUNCTION """
 
 
@@ -1153,7 +1134,7 @@ def main():  # pragma: no cover
 
         endpoint_outputs_list: list[dict[str, Any]] = []
         command_results_list: list[CommandResults] = []
-        endpoint_mapping: dict[str, Any] = {}
+        ir_mapping: dict[str, Any] = {}
 
         command_runner, single_args_commands, list_args_commands = initialize_commands(module_manager, add_additional_fields)
 
@@ -1163,20 +1144,24 @@ def main():  # pragma: no cover
         zipped_args: list[tuple] = list(zip_longest(endpoint_ids, endpoint_ips, endpoint_hostnames, fillvalue=""))
 
         endpoint_outputs_list_commands, command_results_list_commands = run_list_args_commands(
-            list_args_commands, command_runner, endpoint_ids, endpoint_ips, endpoint_hostnames, verbose, endpoint_mapping
+            list_args_commands, command_runner, endpoint_ids, endpoint_ips, endpoint_hostnames, verbose, ir_mapping
         )
         endpoint_outputs_list.extend(endpoint_outputs_list_commands)
         command_results_list.extend(command_results_list_commands)
 
-        if extended_hostnames_set := get_extended_hostnames_set(endpoint_mapping):
+        if extended_hostnames_set := get_extended_hostnames_set(ir_mapping):
             demisto.debug(f"got extended hostnames set: {extended_hostnames_set}")
             hostnames_to_run = set(endpoint_hostnames).union(extended_hostnames_set)
             demisto.debug(f"got total of hostnames to run: {hostnames_to_run}")
             zipped_args = list(zip_longest(endpoint_ids, endpoint_ips, hostnames_to_run, fillvalue=""))
 
         endpoint_outputs_single_commands, command_results_single_commands = run_single_args_commands(
-            zipped_args, single_args_commands, command_runner, verbose, endpoint_mapping
+            zipped_args, single_args_commands, command_runner, verbose, ir_mapping
         )
+
+        demisto.debug("preparing to convert endpoint mapping to list.")
+        endpoint_outputs_single_commands.extend(list(ir_mapping.values()))
+
         endpoint_outputs_list.extend(endpoint_outputs_single_commands)
         command_results_list.extend(command_results_single_commands)
 
@@ -1190,9 +1175,6 @@ def main():  # pragma: no cover
                 )
             )
         if endpoint_outputs_list:
-            demisto.debug("preparing to convert endpoint mapping to list.")
-            endpoint_outputs_list = endpoint_mapping_to_list(endpoint_mapping)
-            demisto.debug(f"endpoint mapping to list prepared, got {len(endpoint_outputs_list)} endpoints.")
             command_results_list.append(
                 CommandResults(
                     outputs_prefix="EndpointData",
