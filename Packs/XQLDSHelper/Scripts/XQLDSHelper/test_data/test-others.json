@@ -3697,5 +3697,77 @@
         }
       ]
     }
+  },
+  "######### query.locking: default parameters",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL",
+            "locking": {
+            }
+          },
+          "entry": {
+            "type": "duration",
+            "duration": {
+              "field": "_duration"
+            }
+          }
+        }
+      }
+    },
+    "xql": {
+      "responses": "./test_data/qr_duration.json"
+    },
+    "results": {
+      "Entry": {
+        "Type": 17,
+        "ContentsFormat": "duration",
+        "Contents": {
+          "stats": 1234
+        }
+      }
+    }
+  },
+  "######### query.locking: all parameters",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL",
+            "locking": {
+              "name": "XQLDSHelper.name",
+              "info": "XQLDSHelper.info",
+              "timeout": 300,
+              "using": "Core Lock_instance_default"
+            }
+          },
+          "entry": {
+            "type": "duration",
+            "duration": {
+              "field": "_duration"
+            }
+          }
+        }
+      }
+    },
+    "xql": {
+      "responses": "./test_data/qr_duration.json"
+    },
+    "results": {
+      "Entry": {
+        "Type": 17,
+        "ContentsFormat": "duration",
+        "Contents": {
+          "stats": 1234
+        }
+      }
+    }
   }
 ]
