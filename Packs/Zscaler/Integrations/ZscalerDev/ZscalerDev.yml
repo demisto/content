@@ -44,11 +44,11 @@ configuration:
   hidden: true
   section: Connect
   required: false
-- display: Fetch incidents
+- display: Fetch incidents  # TODO: remove this section
   name: isFetch
   type: 8
   required: false
-  defaultvalue: "true"
+  defaultvalue: "false"
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: 'C - Fairly reliable'
   display: Source Reliability
@@ -1965,7 +1965,7 @@ script:
   subtype: python3
   dockerimage: demisto/python3:3.12.8.3296088
   type: python
-  isfetch: true
+  isfetch: true # TODO: remove this line 
 fromversion: 5.0.0
 tests:
 - Zscaler Test
