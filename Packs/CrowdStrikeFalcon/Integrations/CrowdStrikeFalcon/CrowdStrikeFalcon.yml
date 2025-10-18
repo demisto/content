@@ -14,7 +14,7 @@ configuration:
   advanced: true
   additionalinfo: "Use the legacy version of the API, which refers to versions prior to the 'Next Generation Raptor release.'"
 - display: Server URL (e.g., https://api.crowdstrike.com)
-  name: url
+  name: urll
   type: 0
   section: Connect
   required: true
