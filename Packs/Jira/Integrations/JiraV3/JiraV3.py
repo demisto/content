@@ -3554,7 +3554,7 @@ def jira_test_module(client: JiraBaseClient, params: Dict[str, Any]) -> str:
     cloudid = params.get("cloud_id")
     hostname = get_hostname_from_url(url)
 
-    if hostname.endswith("atlassian.net") and not cloudid:
+    if hostname.endswith((".atlassian.net", ".atlassian.com")) and not cloudid:
         raise DemistoException(
             "Cloud ID is required for Jira Cloud instances. Refer to the integration help section for more information."
         )
@@ -4799,7 +4799,7 @@ Please update the server URL in the instance configuration and try again.
 Original error: {str(err)}
             """
 
-    elif "410" in err and not cloud_id and hostname.endswith("atlassian.net"):
+    elif "410" in err and not cloud_id and (hostname.endswith((".atlassian.net", ".atlassian.com"))):
         err = f"""
 (Error 410) The requested endpoint has been removed from Jira On-Prem.
 It appears you are using a Jira Cloud instance. Please update the Cloud ID in the instance configuration and try again.
