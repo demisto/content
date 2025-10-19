@@ -2146,6 +2146,7 @@ registrant_regexes = [
     # EDU domains
     "Registrant Organization: (?P<organization>.+)\nRegistrant State/Province: (?P<state>.*)\nRegistrant Country: (?P<country>[A-Z]+)",
     "Registrant:\n\t(?P<organization>.+)\n\t(?P<street>.*)\n\t(?P<city>.+), (?P<state>.*) (?P<postalcode>.+)\n\t(?P<country>.+)",
+    r"Registrant Organization:\s*(?P<organization>.+)\nRegistrant Country:\s*(?P<country>.+)\nRegistrant Email:\s*(?P<email>.+)",
 ]
 
 tech_contact_regexes = [

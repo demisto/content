@@ -235,16 +235,16 @@ def process_timeline(detection_id):
                 }
                 files.append(
                     {
-                        "Name": os.path.basename(image.get("path", "")),
+                        "Name": os.path.basename(image.get("path") or ""),
                         "MD5": image.get("md5"),
                         "SHA256": image.get("sha256"),
                         "Path": image.get("path"),
-                        "Extension": os.path.splitext(image.get("path", ""))[-1],
+                        "Extension": os.path.splitext(image.get("path") or "")[-1],
                     }
                 )
                 processes.append(
                     {
-                        "Name": os.path.basename(image.get("path", "")),
+                        "Name": os.path.basename(image.get("path") or ""),
                         "Path": image.get("path"),
                         "MD5": image.get("md5"),
                         "SHA256": image.get("sha256"),

@@ -1,0 +1,23 @@
+{
+    "name": "Azure Open AI Service",
+    "description": "The primary purpose of this Cortex XSOAR integration is to bridge the gap between human-level security analysis and automated incident response by leveraging the power of Azure OpenAI. It effectively transforms a large language model, like GPT-4o, into a consistent, on-demand cybersecurity analyst that integrates directly into automated workflows.\n\nUnlike a simple chatbot, this integration is built for reliability and automation. Its core function is to send unstructured security data (such as email headers, logs, or observables) to the AI and compel it to return its analysis in a strictly defined, structured JSON format. This is achieved through a combination of specific API parameters and a detailed system prompt that instructs the AI on its role, the analysis to perform, and the exact schema to use for its response.\n\nOnce the structured JSON is received, the integration performs two key actions:\n\nAutomated Incident Enrichment: It parses the JSON and uses the data to automatically populate custom fields within the XSOAR incident. This enriches the incident with an AI-generated verdict, a summary, a justification, and a confidence score, all without manual intervention.\n\nEnhanced Playbook Automation: By providing predictable, machine-readable output, the integration allows playbooks to make intelligent, data-driven decisions. For example, a playbook can automatically escalate a high-confidence \"Malicious\" incident or close a \"Benign\" one, significantly accelerating the response lifecycle.\n\nThe integration also includes robust error handling to ensure it functions reliably in a production environment. In essence, it operationalizes artificial intelligence for security operations, turning expert knowledge into a scalable, automated resource that enhances both the speed and quality of incident response.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Jeremy Garcia",
+    "url": "",
+    "email": "jegarcia@paloaltonetworks.com",
+    "created": "2025-07-25T14:23:23Z",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "unlik3s"
+    ]
+}

@@ -1,0 +1,10 @@
+[INGEST:vendor="tigera", product="calico", target_dataset="tigera_calico_raw", no_hit = keep]
+alter
+    tmp_tigera_start_time = arrayindex(regextract(_raw_log ,"({.*})"), 0)
+| alter 
+    tmp_epoch_length = len(tmp_tigera_start_time -> start_time)
+| filter tmp_epoch_length = 10
+| alter
+    _time = to_timestamp(to_integer(tmp_tigera_start_time -> start_time), "SECONDS")
+| fields - tmp_*;
+

@@ -33,6 +33,7 @@ class FormType(Enum):  # Used for 'send-message', and by the MicrosoftTeamsAsk s
 EXTERNAL_FORM_URL_DEFAULT_HEADER = "Microsoft Teams Form"
 PARAMS: dict = demisto.params()
 BOT_ID: str = PARAMS.get("credentials", {}).get("identifier", "") or PARAMS.get("bot_id", "")
+IS_SINGLE_TENANT_BOT_TYPE: bool = PARAMS.get("is_single_tenant_bot_type") or False
 BOT_PASSWORD: str = PARAMS.get("credentials", {}).get("password", "") or PARAMS.get("bot_password", "")
 APP: Flask = Flask("demisto-teams")
 PLAYGROUND_INVESTIGATION_TYPE: int = 9
@@ -324,7 +325,6 @@ def handle_teams_proxy_and_ssl():
 
 
 PROXIES, USE_SSL = handle_teams_proxy_and_ssl()
-
 
 """ HELPER FUNCTIONS """
 
@@ -857,7 +857,7 @@ def get_bot_access_token() -> str:
     integration_context: dict = get_integration_context()
     access_token: str = integration_context.get("bot_access_token", "")
     valid_until: int = integration_context.get("bot_valid_until", 0)
-    bot_type: str = integration_context.get("bot_type", "multi-tenant")
+    bot_type: str = "single-tenant" if IS_SINGLE_TENANT_BOT_TYPE else integration_context.get("bot_type", "multi-tenant")
     if access_token and valid_until and epoch_seconds() < valid_until:
         return access_token
 
@@ -1058,6 +1058,8 @@ channel was added to the bot in the Azure portal during setup.
 Refer to steps #13-14 of the "Creating the Demisto Bot using Microsoft Azure Portal" \
 section in the integration documentation for more information.
 
+If the problem is not resolved, see Troubleshooting step #5 in the integration documentation.
+
 (Error Message): {error}"""
 
             raise ValueError(f"Error code [{response.status_code}] in API call to Microsoft Teams:\n{error}")
@@ -1109,7 +1111,7 @@ def integration_health():
 
     api_health_output: list = [{"Bot Framework API Health": bot_framework_api_health, "Graph API Health": graph_api_health}]
 
-    adi_health_human_readable: str = tableToMarkdown("Microsoft API Health", api_health_output)
+    api_health_human_readable: str = tableToMarkdown("Microsoft API Health", api_health_output)
 
     mirrored_channels_output = []
     integration_context: dict = get_integration_context()
@@ -1132,13 +1134,9 @@ def integration_health():
     else:
         mirrored_channels_human_readable = "No mirrored channels."
 
-    demisto.results(
-        {
-            "ContentsFormat": formats["json"],
-            "Type": entryTypes["note"],
-            "HumanReadable": adi_health_human_readable + mirrored_channels_human_readable,
-            "Contents": adi_health_human_readable + mirrored_channels_human_readable,
-        }
+    res = api_health_human_readable + mirrored_channels_human_readable
+    return_results(
+        CommandResults(raw_response=res, readable_output=res, entry_type=EntryType.NOTE, content_format=EntryFormat.MARKDOWN)
     )
 
 
