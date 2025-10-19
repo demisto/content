@@ -110,7 +110,9 @@ def test_fetch(client, page_size: int, limit: int, expected_api_calls_count: int
 
     client.reset()
 
-    result = get_events_command(client=client, should_push_events=False, page_size=page_size, limit=limit)
+    result = get_events_command(
+        client=client, should_push_events=False, page_size=page_size, limit=limit, start_time=None, end_time=None
+    )
 
     assert client.calls_count == expected_api_calls_count
     assert result.readable_output == tableToMarkdown("AWS Security Hub Events", expected_output, sort_headers=False)
