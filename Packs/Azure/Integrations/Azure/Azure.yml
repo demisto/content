@@ -2528,27 +2528,6 @@ script:
         type: String
       - contextPath: Azure.Billing.Forecast.properties
         description: Properties object containing forecast data.
-      - contextPath: Azure.Billing.Forecast.properties.currency
-        description: Currency for the forecast resource.
-        type: String
-      - contextPath: Azure.Billing.Forecast.properties.usageDate
-        description: Usage date for the forecast (as provided by the API response). 
-        type: String
-      - contextPath: Azure.Billing.Forecast.properties.grain
-        description: The granularity of the forecast returned by the API.
-        type: String
-      - contextPath: Azure.Billing.Forecast.properties.chargeType
-        description: The charge type included in the forecast results.
-        type: String
-      - contextPath: Azure.Billing.Forecast.properties.charge
-        description: The total charge value included in the forecast results.
-        type: Number
-      - contextPath: Azure.Billing.Forecast.properties.forecastType
-        description: The forecast type used for the query.
-        type: String
-      - contextPath: Azure.Billing.Forecast.properties.confidenceLevel
-        description: Confidence level used for the forecast.
-        type: Number
       - contextPath: Azure.Billing.Forecast.properties.nextLink
         description: Next link for pagination.
         type: String

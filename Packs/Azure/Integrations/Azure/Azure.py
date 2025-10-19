@@ -1551,6 +1551,7 @@ class AzureClient:
                 resource_name=subscription_id,
                 resource_type="Usage Details",
                 subscription_id=subscription_id,
+                api_function_name="billing_usage_list"
             )
 
     def billing_forecast_list(
@@ -1616,6 +1617,7 @@ class AzureClient:
                 resource_name=subscription_id,
                 resource_type="Cost Forecast",
                 subscription_id=subscription_id,
+                api_function_name="billing_forecast_list"
             )
 
     def billing_budgets_list(
@@ -1651,6 +1653,7 @@ class AzureClient:
                 resource_name=budget_name or subscription_id,
                 resource_type="Budget",
                 subscription_id=subscription_id,
+                api_function_name="billing_budgets_list"
             )
 
 
