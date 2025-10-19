@@ -24,4 +24,9 @@
 !azure-nsg-security-rule-create subscription_id="my-subscription-id" resource_group_name="my_resource_group_name" security_group_name="my-security-group-name" security_rule_name="my-security-rule" direction=Inbound
 !azure-nsg-security-rule-get subscription_id="my-subscription-id" resource_group_name="my_resource_group_name" security_group_name="my-security-group-name" security_rule_name="my-security-rule"
 !azure-nsg-security-rule-delete subscription_id="my-subscription-id" resource_group_name="my_resource_group_name" security_group_name="my-security-group-name" security_rule_name="my-security-rule"
+!azure-vm-get-public-ip-details subscription_id="my-subscription-id" resource_group="my_resource_group_name" address_name=d0453ebf-8ddc-4e58-bfcf-00e63763c627-outbound-pip-v4
+!azure-vm-get-nic-details subscription_id="my-subscription-id" resource_group_name="my_resource_group_name" nic_name="network_interface"
+!azure-vm-get-instance-details subscription_id="my-subscription-id" resource_group_name="my_resource_group_name" virtual_machine_name="my_vm"
+!azure-vm-start-instance subscription_id="my-subscription-id" resource_group_name="my_resource_group_name" virtual_machine_name="my_vm"
+!azure-vm-poweroff-instance subscription_id="my-subscription-id" resource_group_name="my_resource_group_name" virtual_machine_name="my_vm"
 
