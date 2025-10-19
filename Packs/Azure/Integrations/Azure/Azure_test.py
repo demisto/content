@@ -2778,3 +2778,125 @@ def test_extract_azure_resource_info():
     assert subscription_id == "12345678-1234-1234-1234-123456789012"
     assert resource_group == "test-rg"
     assert account_name is None
+
+def test_get_network_interface_command(mocker):
+    """
+    Given: A subscription, resource group, and network interface name.
+    When: get_network_interface_command is called with these parameters.
+    Then: It should call get_network_interface_request and return correct CommandResults
+          with properly formatted network interface details.
+    """
+    # Mock client and parameters
+    mock_client = mocker.Mock()
+    mock_params = {"subscription_id": "sub-id", "resource_group_name": "rg1"}
+    args = {"subscription_id": "sub-id", "resource_group_name": "rg1", "nic_name": "nic1"}
+
+    # Mock API response
+    mock_response = {
+        "id": "/subscriptions/sub-id/resourceGroups/rg1/providers/Microsoft.Network/networkInterfaces/nic1",
+        "name": "nic1",
+        "location": "eastus",
+        "properties": {
+            "macAddress": "00:11:22:33:44:55",
+            "primary": True,
+            "networkSecurityGroup": {"id": "nsg-id"},
+            "nicType": "Standard",
+            "virtualMachine": {"id": "vm-id"},
+            "dnsSettings": {"internalDomainNameSuffix": "internal.local"},
+            "ipConfigurations": [
+                {
+                    "name": "ipconfig1",
+                    "id": "ipconfig-id",
+                    "properties": {
+                        "privateIPAddress": "10.0.0.4",
+                        "publicIPAddress": {"id": "public-ip-id"}
+                    }
+                }
+            ],
+        },
+    }
+
+    # Patch the client method
+    mocker.patch.object(mock_client, "get_network_interface_request", return_value=mock_response)
+
+    # Call the function
+    result = get_network_interface_command(mock_client, mock_params, args)
+
+    # Verify the client method was called correctly
+    mock_client.get_network_interface_request.assert_called_once_with("sub-id", "rg1", "nic1")
+
+    # Verify the returned CommandResults
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "Azure.Network.Interfaces"
+    assert result.outputs_key_field == "ID"
+    assert result.outputs["Name"] == "nic1"
+    assert result.outputs["MACAddress"] == "00:11:22:33:44:55"
+    assert result.outputs["ResourceGroup"] == "rg1"
+    assert result.outputs["IPConfigurations"][0]["PrivateIPAddress"] == "10.0.0.4"
+    assert result.outputs["IPConfigurations"][0]["PublicIPAddressID"] == "public-ip-id"
+    assert "nic1" in result.readable_output
+
+
+def test_get_single_ip_details_from_list_of_ip_details():
+    """
+    Given: A subscription, resource group, and public IP name.
+    When: get_public_ip_details_command is called with these parameters.
+    Then: It should call get_public_ip_details_request and return correct CommandResults.
+    """
+    from Azure import get_single_ip_details_from_list_of_ip_details
+    list_of_ips = [
+        {"properties": {"ipAddress": "1.1.1.1"}},
+        {"properties": {"ipAddress": "2.2.2.2"}},
+        {"properties": {"nested": {"ipAddress": "3.3.3.3"}}},
+    ]
+
+    # Flatten structure for testing recursive search
+    ip1 = get_single_ip_details_from_list_of_ip_details(list_of_ips, "1.1.1.1")
+    ip2 = get_single_ip_details_from_list_of_ip_details(list_of_ips, "2.2.2.2")
+    ip3 = get_single_ip_details_from_list_of_ip_details(list_of_ips, "3.3.3.3")
+    ip_missing = get_single_ip_details_from_list_of_ip_details(list_of_ips, "4.4.4.4")
+
+    assert ip1 == {"properties": {"ipAddress": "1.1.1.1"}}
+    assert ip2 == {"properties": {"ipAddress": "2.2.2.2"}}
+    assert ip3 == {"properties": {"nested": {"ipAddress": "3.3.3.3"}}}
+    assert ip_missing is None
+
+
+def test_get_public_ip_details_command_with_resource_group(mocker):
+    """
+    Given: A subscription, resource group, and public IP name.
+    When: get_public_ip_details_command is called with these parameters.
+    Then: It should call get_public_ip_details_request and return correct CommandResults.
+    """
+    from Azure import get_public_ip_details_command
+    mock_client = mocker.Mock()
+    mock_params = {"subscription_id": "sub-id", "resource_group_name": "rg1"}
+    args = {"subscription_id": "sub-id", "resource_group_name": "rg1", "address_name": "ip1"}
+
+    mock_response = {
+        "id": "/subscriptions/sub-id/resourceGroups/rg1/providers/Microsoft.Network/publicIPAddresses/ip1",
+        "name": "ip1",
+        "location": "eastus",
+        "properties": {
+            "ipAddress": "1.2.3.4",
+            "publicIPAddressVersion": "IPv4",
+            "publicIPAllocationMethod": "Static",
+            "ipConfiguration": {"id": "config-id"},
+            "dnsSettings": {"domainNameLabel": "label1", "fqdn": "ip1.eastus.cloudapp.azure.com"}
+        }
+    }
+
+    mocker.patch.object(mock_client, "get_public_ip_details_request", return_value=mock_response)
+
+    result = get_public_ip_details_command(mock_client, mock_params, args)
+
+    mock_client.get_public_ip_details_request.assert_called_once_with("sub-id", "rg1", "ip1")
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "Azure.Network.IPConfigurations"
+    assert result.outputs_key_field == "PublicIPAddressID"
+    assert result.outputs["PublicIPAddress"] == "1.2.3.4"
+    assert result.outputs["ResourceGroup"] == "rg1"
+    assert "ip1" in result.readable_output
+
+
