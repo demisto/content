@@ -335,6 +335,7 @@ class Client(BaseClient):
         jwt_token = self.retrieve_access_token(username, password)
         self._headers = {}
         self._headers["Authorization"] = f"AR-JWT {jwt_token}"
+        add_sensitive_log_strs(jwt_token)
 
     def retrieve_access_token(self, username: str, password: str) -> str:
         """
@@ -3892,8 +3893,6 @@ def main() -> None:
     credentials = params.get("credentials")
     username = credentials.get("identifier")  # type: ignore[union-attr]
     password = credentials.get("password")  # type: ignore[union-attr]
-    add_sensitive_log_strs(password)
-
     max_fetch = arg_to_number(params.get("max_fetch", DEFAULT_MAX_FETCH))
     first_fetch = params.get("first_fetch")
     ticket_types = argToList(params.get("ticket_type"))
