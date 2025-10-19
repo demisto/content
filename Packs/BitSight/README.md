@@ -10,8 +10,6 @@ Data normalization capabilities:
 * Modeling rules normalize logs ingested via the Cortex XSIAM event collector.
 * The *`bitsight_bitsight_raw`* dataset enables querying ingested Bitsight logs in XQL Search.
 
-***
-
 ## Data Collection
 
 ### Bitsight side
