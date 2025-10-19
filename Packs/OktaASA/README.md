@@ -47,7 +47,7 @@ For more information, see [here](https://developer.okta.com/docs/api/openapi/asa
 
 To access the Okta ASA integration on your Cortex XSIAM tenant:
 
-1. In the navigation pane, click **Settings** and click **Data Sources**.
+1. In the navigation pane, click **Settings** and then click **Data Sources**.
 2. At the top-right corner, click **Add Data Source**.
 3. Search for **Okta ASA** and click **Connect**.
 4. Set the following values:
