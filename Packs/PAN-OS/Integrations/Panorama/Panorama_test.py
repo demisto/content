@@ -8780,6 +8780,69 @@ class TestDynamicUpdateCommands:
         assert returned_commandresults.outputs == expected_returned_output
         assert returned_commandresults.readable_output == expected_returned_readable
 
+    def test_panorama_check_latest_dynamic_update_command_no_wildfire_license(self, mocker):
+        """
+        Tests the scenario were there is no WildFire license on the Firewall.
+
+        Given:
+            - a Panorama instance.
+            - Mock response for the 'panorama_check_latest_dynamic_update_content' api call, with an exception regarding the
+            WildFire missing license.
+
+        When:
+            - Calling the panorama_check_latest_dynamic_update_command.
+
+        Then:
+            - Verify that the outputs include the versions of the content, antivirus and the error message regarding
+              the WildFire missing license.
+            - Verify that the human-readable output includes the versions of the versions of the content, antivirus and
+              the error message regarding the WildFire missing license.
+        """
+
+        from Panorama import panorama_check_latest_dynamic_update_command
+
+        # Side-effect function to return the proper NGFW API response for the requested dynamic update type
+        def side_effect_function(update_type, target):
+            if update_type.name == "APP_THREAT":
+                return load_json("test_data/pan-os-check-latest-dynamic-update-status_apiresponse_app-threat.json")
+
+            elif update_type.name == "ANTIVIRUS":
+                return load_json("test_data/pan-os-check-latest-dynamic-update-status_apiresponse_antivirus.json")
+
+            elif update_type.name == "GP":
+                return load_json("test_data/pan-os-check-latest-dynamic-update-status_apiresponse_gp.json")
+
+            elif update_type.name == "WILDFIRE":
+                raise Exception("There is not wildfire license on the box")
+
+            else:
+                return None
+
+        mock_api_call = mocker.patch("Panorama.panorama_check_latest_dynamic_update_content")
+        mock_api_call.side_effect = side_effect_function
+
+        mock_return_results = mocker.patch("Panorama.return_results")
+
+        panorama_check_latest_dynamic_update_command({"target": "1337"})
+
+        # Prepare results for comparison
+        returned_commandresults: CommandResults = mock_return_results.call_args[0][0]
+        expected_returned_output = load_json(
+            "test_data/pan-os-check-latest-dynamic-update-status_expected-returned-outputs-no-wildfire" "-license.json"
+        )
+        expected_returned_readable = (
+            "### Dynamic Update Status Summary\n|Update Type|Is Up To Date|Latest Available "
+            "Version|Currently Installed Version|\n|---|---|---|---|\n|"
+            " Content | True | 8987-9481 | 8987-9481 |\n| "
+            "AntiVirus | False | 5212-5732 | 5211-5731 |\n|"
+            " WILDFIRE | False | An Error received from Panorama API: 'There is not wildfire license on the box.' | N/A |\n|"
+            " GP | True | 98-260 | 98-260 |\n\n\n"
+            "**Total Content Types Outdated: 1**"
+        )
+
+        assert returned_commandresults.outputs == expected_returned_output
+        assert returned_commandresults.readable_output == expected_returned_readable
+
     @pytest.mark.parametrize(
         "update_phase, job_id, api_response_payload",
         [
