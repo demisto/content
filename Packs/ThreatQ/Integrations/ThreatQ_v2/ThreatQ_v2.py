@@ -581,7 +581,9 @@ def get_malicious_data(tq_score):
 
 
 def set_indicator_entry_context(indicator_type, indicator, generic_context):
-    dbot_context = create_dbot_context(indicator.get("Value"), indicator_type, indicator.get("TQScore", -1), indicator.get("Status"))
+    dbot_context = create_dbot_context(
+        indicator.get("Value"), indicator_type, indicator.get("TQScore", -1), indicator.get("Status")
+    )
 
     indicator_type = INDICATOR_TYPES.get(indicator_type) or indicator_type
     generic_context_path = outputPaths.get(indicator_type, "Indicator(val.ID && val.ID == obj.ID)")
