@@ -1275,10 +1275,10 @@ def main():  # pragma: no cover
         finally:
             try:
                 # activate changes only when required
-                if demisto.params().get("auto_activate") and command in AUTO_ACTIVATE_CHANGES_COMMANDS:
+                if params.get("auto_activate") and command in AUTO_ACTIVATE_CHANGES_COMMANDS:
                     demisto.debug(f"Activating changes for command {command}")
                     activate_changes()
-                if demisto.params().get("auto_logout"):
+                if params.get("auto_logout"):
                     demisto.debug("Logging out")
                     logout()
             except Exception as err:
