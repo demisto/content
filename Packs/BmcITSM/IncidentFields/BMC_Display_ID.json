@@ -5,7 +5,7 @@
     "propagationLabels": [
         "all"
     ],
-    "name": "Bmc Display ID",
+    "name": "BmcITSM Display ID",
     "ownerOnly": false,
     "cliName": "bmcdisplayid",
     "type": "shortText",
@@ -41,7 +41,7 @@
         {
             "cliName": "bmcitsmdisplayid",
             "type": "shortText",
-            "name": "BmcITSM Display ID"
+            "name": "Bmc Display ID"
         }
     ]
 }

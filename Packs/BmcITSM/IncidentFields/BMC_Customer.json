@@ -5,7 +5,7 @@
     "propagationLabels": [
         "all"
     ],
-    "name": "Bmc Customer",
+    "name": "BmcITSM Customer",
     "ownerOnly": false,
     "cliName": "bmccustomer",
     "type": "grid",
@@ -128,7 +128,7 @@
         {
             "cliName": "bmcitsmcustomer",
             "type": "grid",
-            "name": "BmcITSM Customer"
+            "name": "Bmc Customer"
         }
     ]
 }
