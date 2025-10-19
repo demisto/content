@@ -13,7 +13,7 @@ Data normalization capabilities:
 
 * Okta ASA audit logs that are ingested via the integration into Cortex XSIAM.
 * The ingested Okta ASA logs can be queried in XQL Search using the *`okta_asa_raw`* dataset.
-* Timestamp parsing support is under the assumption that a UTC +0000 format is being used.
+* Timestamp parsing support assumes a UTC +0000 format is used.
 
 ## Supported log categories
 
