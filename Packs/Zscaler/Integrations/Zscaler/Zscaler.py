@@ -1152,7 +1152,6 @@ def edit_ip_destination_group(args: dict):
     json_data = json.dumps(payload)
     demisto.debug(f"Updating IP destination group {ip_group_id} with payload={payload}")
     response = http_request("PUT", cmd_url, json_data, DEFAULT_HEADERS)
-    demisto.debug(f"Update response: {response}")
     content = {
         "ID": int(response.get("id", "")),
         "Name": response.get("name", ""),
