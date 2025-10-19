@@ -1,3 +1,4 @@
+import hashlib
 from typing import Any
 
 import demistomock as demisto
@@ -81,16 +82,7 @@ class Client(BaseClient):
             ACCESS_AUTHENTICATION_TYPE: f"/client/v4/accounts/{self.account_id}/access/logs/access_requests",
         }
         params = {"per_page": page_size, "page": page, "since": start_date, "direction": "asc"}
-        try:
-            return self._http_request(method="GET", url_suffix=endpoint_urls[event_type], headers=self.headers, params=params)
-        except DemistoException as e:
-            demisto.debug(f"Caught exception when calling the '{endpoint_urls[event_type]}' endpoint: {str(e)}.")
-            is_using_access_token = "Authorization" in self.headers
-            if event_type == ACCESS_AUTHENTICATION_TYPE and is_using_access_token:
-                raise DemistoException(
-                    f"The {event_type!r} event type does not support the {AuthTypes.API_TOKEN.value} authorization type."
-                ) from e
-            raise
+        return self._http_request(method="GET", url_suffix=endpoint_urls[event_type], headers=self.headers, params=params)
 
 
 def test_module(client: Client, event_types: list) -> str:
@@ -171,6 +163,7 @@ def fetch_events_for_type(
         event["SOURCE_LOG_TYPE"] = event_type
 
     if unique_events:
+        format_events(unique_events)
         start_date, previous_event_ids = prepare_next_run(unique_events)
 
     new_last_run = {"last_fetch": start_date, "events_ids": previous_event_ids}
@@ -374,9 +367,10 @@ def handle_duplicates(events: list[dict[str, Any]], previous_event_ids: list[str
     return unique_events
 
 
-def add_time_to_events(events: list[dict[str, Any]] | None):
+def format_events(events: list[dict[str, Any]] | None):
     """
-    Adds the '_time' key to events based on their creation or occurrence timestamp.
+    Adds the `_time` key to events based on their creation or occurrence timestamp.
+    For events without a unique ID, it adds the `id` key based on the event JSON contents.
 
     Args:
         events (list[dict[str, Any]] | None): A list of events.
@@ -385,6 +379,13 @@ def add_time_to_events(events: list[dict[str, Any]] | None):
         for event in events:
             create_time = arg_to_datetime(arg=event.get("when") or event.get("created_at"))
             event["_time"] = create_time.strftime(DATE_FORMAT) if create_time else None
+            if "id" not in event:
+                # Access authentication logs do *not* have an "id" field, so we need to generate a unique hash for deduplication
+                # https://developers.cloudflare.com/api/resources/zero_trust/subresources/access/subresources/logs/subresources/access_requests/
+                encoded_event: bytes = json.dumps(event, sort_keys=True).encode("utf-8")
+                event_id = str(hashlib.sha256(encoded_event).hexdigest())
+                event["id"] = event_id
+                demisto.debug(f"Generated a unique SHA256 {event_id=} using the contents of {event=}.")
 
 
 def validate_headers(params: dict) -> dict:
@@ -495,7 +496,6 @@ def main() -> None:  # pragma: no cover
             events, results = get_events_command(client=client, args=args)
             return_results(results)
             if events and argToBoolean(args.get("should_push_events")):
-                add_time_to_events(events)
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
 
         elif command == "fetch-events":
@@ -508,8 +508,6 @@ def main() -> None:  # pragma: no cover
                 max_fetch_authentication=max_fetch_authentication,
                 event_types_to_fetch=event_types_to_fetch,
             )
-
-            add_time_to_events(events)
             send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
             demisto.setLastRun(next_run)
 
