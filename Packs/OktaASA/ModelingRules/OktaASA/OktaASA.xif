@@ -18,7 +18,7 @@ alter //Extraction of fields
     server_instance_details_internal_ip = server -> instance_details.internal_ip
 | alter //Mapping to XDM fields
     xdm.event.id = id,
-    xdm.event.tags = arraycreate(XDM_CONST.EVENT_TAG_AUTHENTICATION),
+    xdm.event.tags = arraycreate(XDM_CONST.EVENT_TAG_SAAS),
     xdm.event.operation_sub_type = coalesce(details -> session_type,details_user_status),// Maps the operation sub-type: uses 'session_type' for 'auth_token_issue' event type and 'user_status' for user events.
     xdm.observer.unique_identifier = details -> team_id,
     xdm.observer.name = details -> team_name,
