@@ -34,7 +34,7 @@ Data normalization capabilities:
 1. From the **Advanced Server Access** dashboard, click **Users**.
 2. Select the **Service Users** tab.
 3. Click **Create Service User**.
-4. Enter a username for the service user. Okta ASA automatically creates corresponding Linux and Windows usernames.
+4. In the **Create Service User** page, enter a username for the service user. Okta ASA automatically creates corresponding Linux and Windows usernames.
 5. Click **Create Service User** to finish creating the service user.
 6. Click **Create API Key**. The API Key Secret Rotated page will appears.
 7. Copy and store your API key ID and your API key secret from this page.
