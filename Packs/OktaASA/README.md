@@ -56,7 +56,7 @@ To access the Okta ASA integration on your Cortex XSIAM tenant:
 |-----------------------------------------------|--------------------------------------------------------|---------------|
 | Server URL (e.g. https://app.scaleft.com)     |                                                        | True          |
 | API Key ID                                    | The API Key ID to use for connection.                  | True          |
-| API Key Secret                                | The API Key Secret to use for connection.              | True          |
+| API Key Secret                                | The API key secret to use for connection.              | True          |
 | Team Name                                     | A named group of users who can authenticate with Okta. | True          |
 | The maximum number of audit events per fetch. |                                                        | False         |
 | Trust any certificate (not secure)            |                                                        | False         |
