@@ -1129,7 +1129,6 @@ def edit_ip_destination_group(args: dict):
         "Countries",
         "IpCategories",
     ]
-    demisto.debug(f"edit_ip_destination_group called with args={args}")
     payload: dict = {}
     ip_group_id = args["ip_group_id"].strip()
 
