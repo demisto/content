@@ -1,7 +1,4 @@
 category: Network Security
-sectionOrder:
-- Connect
-- Collect
 commonfields:
   id: Zscaler
   version: -1
@@ -22,6 +19,7 @@ configuration:
   hiddenusername: true
   section: Connect
   required: false
+  display: ''
 - display: API Key
   name: key
   type: 4
@@ -228,8 +226,6 @@ script:
       required: true
     description: Removes the specified IP addresses from the block list.
     name: zscaler-undo-blacklist-ip
-    compliantpolicies:
-    - IP Blockage
   - arguments:
     - default: true
       description: A comma-separated list of IP addresses to add to the block list. For example, 8.8.8.8,1.2.3.4.
@@ -239,8 +235,6 @@ script:
     description: Adds the specified IP addresses to the block list.
     execution: true
     name: zscaler-blacklist-ip
-    compliantpolicies:
-    - IP Blockage
   - arguments:
     - description: The ID of the category to add the specified URLs to. For example, RADIO_STATIONS. You can retrieve the category IDs by running the 'zscaler-get-categories' command.
       name: category-id
@@ -248,11 +242,9 @@ script:
     - description: A comma-separated list of URLs to add to the specified category. For example, pandora.com,spotify.com.
       isArray: true
       name: url
-      required: false
     - description: A comma-separated list of URLs to add to the retaining parent category section inside the specified category. For example, pandora.com,spotify.com.
       isArray: true
       name: retaining-parent-category-url
-      required: false
     description: Adds URLs to the specified category.
     name: zscaler-category-add-url
     outputs:
@@ -275,11 +267,9 @@ script:
     - description: A comma-separated list of IP address to add to the specified category. For example, 1.2.3.4,8.8.8.8.
       isArray: true
       name: ip
-      required: false
     - description: A comma-separated list of IP address to add to the retaining parent category section inside the specified category. For example, 1.2.3.4,8.8.8.8.
       isArray: true
       name: retaining-parent-category-ip
-      required: false
     description: Adds IP address to the specified category.
     name: zscaler-category-add-ip
     outputs:
@@ -302,11 +292,9 @@ script:
     - description: A comma-separated list of URLs to remove from the specified category. For example, pandora.com,spotify.com.
       isArray: true
       name: url
-      required: false
     - description: A comma-separated list of URLs to remove from the retaining parent category section inside the specified category. For example, pandora.com,spotify.com.
       isArray: true
       name: retaining-parent-category-url
-      required: false
     description: Removes URLs from the specified category.
     name: zscaler-category-remove-url
     outputs:
@@ -329,11 +317,9 @@ script:
     - description: A comma-separated list of IP addresses to remove from the specified category. For example, 1.2.3.4,8.8.8.8.
       isArray: true
       name: ip
-      required: false
     - description: A comma-separated list of IP address to remove from the retaining parent category section inside the specified category. For example, 1.2.3.4,8.8.8.8.
       isArray: true
       name: retaining-parent-category-ip
-      required: false
     description: Removes IP address from the specified category.
     name: zscaler-category-remove-ip
     outputs:
@@ -1835,6 +1821,14 @@ script:
       description: If set to true, the destination IP address group is non-editable. This field is applicable only to predefined IP address groups, which cannot be modified.
       defaultValue: "False"
       type: textArea
+    - auto: PREDEFINED
+      defaultValue: append
+      description: if set to append, the IPs in the addresses argument will be appended to the  destination group , if set to remove the IPs will be removed from the group and if it is replace the current IPs in the destination group will be dropped and replaced by the IPs in the addresses argument. default is append.
+      name: operation
+      predefined:
+      - append
+      - remove
+      - replace
     outputs:
     - contextPath: Zscaler.IPDestinationGroup.ID
       description: Unique identifier for the destination IP group.
@@ -1942,8 +1936,9 @@ script:
     description: Deletes the IP destination groups for the specified group ID.
   script: ''
   subtype: python3
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.11.4819260
   type: python
+  runonce: false
 fromversion: 5.0.0
 tests:
 - Zscaler Test
