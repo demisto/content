@@ -3893,6 +3893,7 @@ def main() -> None:
     credentials = params.get("credentials")
     username = credentials.get("identifier")  # type: ignore[union-attr]
     password = credentials.get("password")  # type: ignore[union-attr]
+
     max_fetch = arg_to_number(params.get("max_fetch", DEFAULT_MAX_FETCH))
     first_fetch = params.get("first_fetch")
     ticket_types = argToList(params.get("ticket_type"))
