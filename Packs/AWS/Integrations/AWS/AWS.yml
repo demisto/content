@@ -3749,6 +3749,59 @@ script:
     - contextPath: AWS.S3-Buckets.PolicyExists
       description: Whether a bucket policy exists.
       type: boolean
+  - arguments:
+    - description: Entry ID of the file to upload.
+      name: entryID
+      required: true
+    - description: The name of the bucket to upload to.
+      name: bucket
+      required: true
+    - description: The name of the key to upload to.
+      name: key
+      required: true
+    - description: The AWS Region, if not specified the default region will be used.
+      name: region
+    - description: The Amazon Resource Name (ARN) of the role to assume.
+      name: roleArn
+    - description: An identifier for the assumed role session.
+      name: roleSessionName
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      name: roleSessionDuration
+    description: Upload file to S3 bucket.
+    name: aws-s3-upload-file
+  - arguments:
+    - description: The name of S3 bucket.
+      name: bucket
+    - description: The S3 object key to download.
+      name: key
+    - description: The AWS Region, if not specified the default region will be used.
+      name: region
+    - description: The Amazon Resource Name (ARN) of the role to assume.
+      name: roleArn
+    - description: An identifier for the assumed role session.
+      name: roleSessionName
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      name: roleSessionDuration
+    description: Download a file from S3 bucket to war room.
+    name: aws-s3-download-file
+  - arguments:
+    - description: The AWS Region, if not specified the default region will be used.
+      name: region
+    - description: The Amazon Resource Name (ARN) of the role to assume.
+      name: roleArn
+    - description: An identifier for the assumed role session.
+      name: roleSessionName
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      name: roleSessionDuration
+    description: List all S3 buckets in AWS account.
+    name: aws-s3-list-buckets
+    outputs:
+    - contextPath: AWS.S3.Buckets.BucketName
+      description: The name of the bucket.
+      type: string
+    - contextPath: AWS.S3.Buckets.CreationDate
+      description: Date the bucket was created.
+      type: date
   isfetch: false
   runonce: false
   script: '-'

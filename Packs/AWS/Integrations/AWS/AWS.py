@@ -748,6 +748,63 @@ class S3:
             raise DemistoException(f"Failed to set Bucket Ownership Controls for {args.get('bucket')}.")
         except Exception as e:
             raise DemistoException(f"Error: {str(e)}")
+        
+    @staticmethod
+    def download_file_command(client: BotoClient, args: Dict[str, Any]):
+        """
+        Download a file from an S3 bucket.
+
+        Args:
+            client (BotoClient): The initialized Boto3 S3 client.
+            args (Dict[str, Any]): Command arguments, typically containing:
+                - 'bucket' (str): The name of the S3 bucket. (Required)
+                - 'key' (str): The key of the file to download. (Required)
+
+        Returns:
+            CommandResults: A CommandResults object with the downloaded file.
+        """
+        try:
+            data = io.BytesIO()
+            client.download_fileobj(args.get("bucket", "").lower(), args.get("key"), data)
+            return fileResult(args.get("key"), data.getvalue())
+        except Exception as e:
+            raise DemistoException(f"Error: {str(e)}")
+        
+    @staticmethod
+    def upload_file_command(client: BotoClient, args: Dict[str, Any]):
+        """
+        Upload a file to an S3 bucket.
+
+        Args:
+            client (BotoClient): The initialized Boto3 S3 client.
+            args (Dict[str, Any]): Command arguments, typically containing:
+                - 'bucket' (str): The name of the S3 bucket. (Required)
+                - 'key' (str): The key of the file to upload. (Required)
+                - 'entryID' (str): The ID of the file to upload. (Required)
+
+        Returns:
+            CommandResults: A CommandResults object with a success message on status 200/204.
+        """
+        path = get_file_path(args.get("entryID"))
+        try:
+            with open(path["path"], "rb") as data:
+                client.upload_fileobj(data, args.get("bucket"), args.get("key"))
+                return CommandResults(readable_output=f"File {args.get('key')} was uploaded successfully to {args.get('bucket')}")
+        except Exception as e:
+            raise DemistoException(f"Error: {str(e)}")
+    
+    @staticmethod
+    def list_buckets_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        data = []
+        response = client.list_buckets()
+        for bucket in response["Buckets"]:
+            data.append(
+                {"BucketName": bucket["Name"], "CreationDate": datetime.strftime(bucket["CreationDate"], "%Y-%m-%dT%H:%M:%S")}
+            )
+        human_readable = tableToMarkdown("AWS S3 Buckets", data)
+        return CommandResults(
+            readable_output=human_readable, outputs_prefix="AWS.S3.Buckets", outputs_key_field="BucketName", outputs=data
+        )
 
 
 class IAM:
@@ -2360,6 +2417,10 @@ class ECS:
                 f"{json.dumps(response)}"
             )
 
+def get_file_path(file_id):
+    filepath_result = demisto.getFilePath(file_id)
+    return filepath_result
+
 
 COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResults | None]] = {
     "aws-s3-public-access-block-update": S3.put_public_access_block_command,
@@ -2369,6 +2430,9 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-s3-bucket-policy-put": S3.put_bucket_policy_command,
     "aws-s3-bucket-website-delete": S3.delete_bucket_website_command,
     "aws-s3-bucket-ownership-controls-put": S3.put_bucket_ownership_controls_command,
+    "aws-s3-upload-file": S3.upload_file_command,
+    "aws-s3-download-file": S3.download_file_command,
+    "aws-s3-list-buckets": S3.list_buckets_command,
     "aws-iam-account-password-policy-get": IAM.get_account_password_policy_command,
     "aws-iam-account-password-policy-update": IAM.update_account_password_policy_command,
     "aws-iam-role-policy-put": IAM.put_role_policy_command,
@@ -2428,6 +2492,8 @@ REQUIRED_ACTIONS: list[str] = [
     "s3:PutBucketVersioning",
     "s3:PutBucketPolicy",
     "s3:PutBucketPublicAccessBlock",
+    "s3:PutObject",
+    "s3:GetObject",
     "ec2:RevokeSecurityGroupEgress",
     "ec2:ModifyImageAttribute",
     "ec2:ModifyInstanceAttribute",
@@ -2630,7 +2696,7 @@ def execute_aws_command(command: str, args: dict, params: dict) -> CommandResult
     Returns:
         CommandResults: Command execution results with outputs and status
     """
-    account_id: str = args.get("account_id", "")
+    account_id: str = args.get("account_id") or params.get("account_id")
     credentials: dict = {}
     if get_connector_id():
         credentials = get_cloud_credentials(CloudTypes.AWS.value, account_id)
