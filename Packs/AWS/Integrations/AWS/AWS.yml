@@ -1613,27 +1613,27 @@ script:
           - ap-southeast-5
           - ap-southeast-4
           - ap-south-1
-            - ap-northeast-3
-            - ap-northeast-2
-            - ap-southeast-1
-            - ap-southeast-2
-            - ap-southeast-7
-            - ap-northeast-1
-            - ca-central-1
-            - ca-west-1
-            - eu-central-1
-            - eu-west-1
-            - eu-west-2
-            - eu-south-1
-            - eu-west-3
-            - eu-south-2
-            - eu-north-1
-            - eu-central-2
-            - il-central-1
-            - mx-central-1
-            - me-south-1
-            - me-central-1
-            - sa-east-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
       - name: db_cluster_identifier
         prettyname: RDS Cluster ID
         description: 'The DB cluster identifier for the modified cluster. This parameter is not case sensitive and is valid for Aurora DB and Multi-AZ DB cluster types. It must match the identifier of an existing DB cluster.'
@@ -1726,39 +1726,39 @@ script:
           - ap-southeast-5
           - ap-southeast-4
           - ap-south-1
-            - ap-northeast-3
-            - ap-northeast-2
-            - ap-southeast-1
-            - ap-southeast-2
-            - ap-southeast-7
-            - ap-northeast-1
-            - ca-central-1
-            - ca-west-1
-            - eu-central-1
-            - eu-west-1
-            - eu-west-2
-            - eu-south-1
-            - eu-west-3
-            - eu-south-2
-            - eu-north-1
-            - eu-central-2
-            - il-central-1
-            - mx-central-1
-            - me-south-1
-            - me-central-1
-            - sa-east-1
-          - name: db_cluster_snapshot_identifier
-            prettyname: RDS Cluster Snapshot ID
-            description: 'The identifier for the DB cluster snapshot to modify the attributes for.'
-            required: true
-          - name: attribute_name
-            description: 'The name of the DB cluster snapshot attribute to modify.'
-            defaultValue: 'restore'
-            hidden: true
-          - name: values_to_remove
-            description: 'A CSV list of DB cluster snapshot attributes to remove from the attribute specified by AttributeName. Default is all.'
-            defaultValue: 'all'
-            hidden: true
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+      - name: db_cluster_snapshot_identifier
+        prettyname: RDS Cluster Snapshot ID
+        description: 'The identifier for the DB cluster snapshot to modify the attributes for.'
+        required: true
+      - name: attribute_name
+        description: 'The name of the DB cluster snapshot attribute to modify.'
+        defaultValue: 'restore'
+        hidden: true
+      - name: values_to_remove
+        description: 'A CSV list of DB cluster snapshot attributes to remove from the attribute specified by AttributeName. Default is all.'
+        defaultValue: 'all'
+        hidden: true
 
   - name: aws-rds-db-cluster-enable-deletion-protection-quick-action
     description: Enables deletion protection for the RDS DB cluster to prevent accidental deletion by running the aws rds modify-db-cluster command. Successful execution requires the rds:ModifyDBCluster permission.
@@ -1787,35 +1787,35 @@ script:
           - ap-southeast-5
           - ap-southeast-4
           - ap-south-1
-            - ap-northeast-3
-            - ap-northeast-2
-            - ap-southeast-1
-            - ap-southeast-2
-            - ap-southeast-7
-            - ap-northeast-1
-            - ca-central-1
-            - ca-west-1
-            - eu-central-1
-            - eu-west-1
-            - eu-west-2
-            - eu-south-1
-            - eu-west-3
-            - eu-south-2
-            - eu-north-1
-            - eu-central-2
-            - il-central-1
-            - mx-central-1
-            - me-south-1
-            - me-central-1
-            - sa-east-1
-          - name: db_cluster_identifier
-            prettyname: RDS Cluster ID
-            description: 'The DB cluster identifier for the modified cluster. This parameter is not case sensitive and is valid for Aurora DB and Multi-AZ DB cluster types. It must match the identifier of an existing DB cluster.'
-            required: true
-          - name: deletion_protection
-            description: 'Weather the DB cluster has deletion protection enabled. The database can’t be deleted when deletion protection is enabled. By default, deletion protection isn’t enabled.'
-            defaultValue: 'true'
-            hidden: true
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+      - name: db_cluster_identifier
+        prettyname: RDS Cluster ID
+        description: 'The DB cluster identifier for the modified cluster. This parameter is not case sensitive and is valid for Aurora DB and Multi-AZ DB cluster types. It must match the identifier of an existing DB cluster.'
+        required: true
+      - name: deletion_protection
+        description: 'Weather the DB cluster has deletion protection enabled. The database can’t be deleted when deletion protection is enabled. By default, deletion protection isn’t enabled.'
+        defaultValue: 'true'
+        hidden: true
 
 
   - name: aws-rds-db-instance-modify
