@@ -376,7 +376,6 @@ def create_dbot_context(indicator, ind_type, ind_score, ind_status):
 
     if ind_status and ind_status.lower() == "whitelisted":
         ret["Score"] = 1
-        print("changed")
     elif ind_score >= THRESHOLD:
         ret["Score"] = 3
     else:
