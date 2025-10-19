@@ -29,7 +29,7 @@ Data normalization capabilities:
 
 ### Okta ASA side
 
-#### Create a service user and an API key
+In Okta ASA, create a service user and an API key.
 
 1. From the **Advanced Server Access** dashboard, click **Users**.
 2. Select the **Service Users** tab.
