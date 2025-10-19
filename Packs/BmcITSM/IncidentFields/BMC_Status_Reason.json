@@ -130,12 +130,5 @@
     "caseInsensitive": true,
     "sla": 0,
     "threshold": 72,
-    "fromVersion": "6.2.0",
-    "Aliases": [
-        {
-            "cliName": "bmcstatusreason",
-            "type": "singleSelect",
-            "name": "Bmc Status Reason"
-        }
-    ]
+    "fromVersion": "6.2.0"
 }

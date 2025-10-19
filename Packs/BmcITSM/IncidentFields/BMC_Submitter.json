@@ -5,7 +5,7 @@
     "propagationLabels": [
         "all"
     ],
-    "name": "Bmc Submitter",
+    "name": "BmcITSM Submitter",
     "ownerOnly": false,
     "cliName": "bmcsubmitter",
     "type": "shortText",
@@ -36,12 +36,5 @@
     "caseInsensitive": true,
     "sla": 0,
     "threshold": 72,
-    "fromVersion": "6.2.0",
-    "Aliases": [
-        {
-            "cliName": "bmcitsmsubmitter",
-            "type": "shortText",
-            "name": "BmcITSM Submitter"
-        }
-    ]
+    "fromVersion": "6.2.0"
 }

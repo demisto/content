@@ -32,12 +32,5 @@
     "caseInsensitive": true,
     "sla": 0,
     "threshold": 72,
-    "fromVersion": "6.2.0",
-    "Aliases": [
-        {
-            "cliName": "bmcvipflag",
-            "type": "singleSelect",
-            "name": "Bmc VIP Flag"
-        }
-    ]
+    "fromVersion": "6.2.0"
 }

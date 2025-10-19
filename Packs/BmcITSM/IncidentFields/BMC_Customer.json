@@ -5,7 +5,7 @@
     "propagationLabels": [
         "all"
     ],
-    "name": "Bmc Customer",
+    "name": "BmcITSM Customer",
     "ownerOnly": false,
     "cliName": "bmccustomer",
     "type": "grid",
@@ -123,12 +123,5 @@
     ],
     "sla": 0,
     "threshold": 72,
-    "fromVersion": "6.2.0",
-    "Aliases": [
-        {
-            "cliName": "bmcitsmcustomer",
-            "type": "grid",
-            "name": "BmcITSM Customer"
-        }
-    ]
+    "fromVersion": "6.2.0"
 }
