@@ -312,7 +312,14 @@ def fetch_events(
     return events, next_run, error
 
 
-def get_events_command(client: "SecurityHubClient", should_push_events: bool, page_size: int, limit: int = 0) -> CommandResults:
+def get_events_command(
+    client: "SecurityHubClient",
+    should_push_events: bool,
+    page_size: int,
+    limit: int = 0,
+    start_time: dt.datetime | None = None,
+    end_time: dt.datetime | None = None,
+) -> CommandResults:
     """
     Fetch events from AWS Security Hub.
 
@@ -321,11 +328,13 @@ def get_events_command(client: "SecurityHubClient", should_push_events: bool, pa
         should_push_events (bool): Whether to push events to XSIAM.
         page_size (int, optional): Number of results to fetch per request. Defaults to API_MAX_PAGE_SIZE.
         limit (int, optional): Maximum number of events to fetch. Defaults to 0 (no limit).
+        start_time (dt.datetime, optional): Start time for filtering events. Defaults to None.
+        end_time (dt.datetime, optional): End time for filtering events. Defaults to None.
 
     Returns:
         CommandResults: CommandResults object containing the events.
     """
-    events, _ = get_events(client=client, page_size=page_size, limit=limit)
+    events, _ = get_events(client=client, page_size=page_size, limit=limit, start_time=start_time, end_time=end_time)
 
     if should_push_events:
         send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
@@ -408,8 +417,19 @@ def main():  # pragma: no cover
             if limit is None or limit <= 0:
                 raise ValueError("Max fetch value cannot be lower than 1.")
 
+            # Parse optional start_time and end_time arguments
+            start_time = arg_to_datetime(args.get("start_time")) if args.get("start_time") else None
+            end_time = arg_to_datetime(args.get("end_time")) if args.get("end_time") else None
+
             return_results(
-                get_events_command(client=client, should_push_events=should_push_events, page_size=page_size, limit=limit)
+                get_events_command(
+                    client=client,
+                    should_push_events=should_push_events,
+                    page_size=page_size,
+                    limit=limit,
+                    start_time=start_time,
+                    end_time=end_time,
+                )
             )
 
         elif command == "fetch-events":

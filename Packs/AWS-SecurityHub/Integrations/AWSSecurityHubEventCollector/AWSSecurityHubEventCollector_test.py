@@ -119,27 +119,23 @@ def test_fetch(client, page_size: int, limit: int, expected_api_calls_count: int
 class TestParseAwsTimestamp:
     """Test the new flexible timestamp parsing functionality."""
 
-    def test_parse_timestamp_with_milliseconds(self):
+    @pytest.mark.parametrize(
+        "timestamp_str, expected_result",
+        [
+            # Valid timestamp with milliseconds
+            ("2023-01-01T12:30:45.123Z", dt.datetime(2023, 1, 1, 12, 30, 45, 123000)),
+            # Valid timestamp without milliseconds
+            ("2023-01-01T12:30:45Z", dt.datetime(2023, 1, 1, 12, 30, 45)),
+        ],
+    )
+    def test_parse_timestamp_valid_formats(self, timestamp_str, expected_result):
         """
-        Given: A timestamp string with milliseconds from AWS API.
+        Given: A valid timestamp string from AWS API (with or without milliseconds).
         When: Parsing the timestamp using parse_aws_timestamp.
-        Then: Should return correct datetime object.
+        Then: Should return the correct datetime object.
         """
-        timestamp_with_ms = "2023-01-01T12:30:45.123Z"
-        result = parse_aws_timestamp(timestamp_with_ms)
-        expected = dt.datetime(2023, 1, 1, 12, 30, 45, 123000)
-        assert result == expected
-
-    def test_parse_timestamp_without_milliseconds(self):
-        """
-        Given: A timestamp string without milliseconds from AWS API.
-        When: Parsing the timestamp using parse_aws_timestamp.
-        Then: Should return correct datetime object using fallback format.
-        """
-        timestamp_without_ms = "2023-01-01T12:30:45Z"
-        result = parse_aws_timestamp(timestamp_without_ms)
-        expected = dt.datetime(2023, 1, 1, 12, 30, 45)
-        assert result == expected
+        result = parse_aws_timestamp(timestamp_str)
+        assert result == expected_result
 
     def test_parse_timestamp_invalid_format(self):
         """

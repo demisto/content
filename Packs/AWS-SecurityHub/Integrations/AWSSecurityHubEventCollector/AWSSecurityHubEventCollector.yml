@@ -124,6 +124,10 @@ script:
       name: page_size
     - description: Maximum results to return. Must be a positive integer (higher than 0).
       name: limit
+    - description: Start time for filtering events (e.g., 2023-01-01T00:00:00Z, '3 days ago', 'yesterday').
+      name: start_time
+    - description: End time for filtering events (e.g., 2023-01-01T23:59:59Z, '1 hour ago', 'now').
+      name: end_time
     description: Fetch events from AWS Security Hub.
     name: aws-securityhub-get-events
   dockerimage: demisto/boto3py3:1.0.0.5295752
