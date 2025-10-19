@@ -3579,3 +3579,28 @@ def test_get_remote_data_preview_command():
 
     # Validate interactions
     mock_client.get_issue.assert_called_once_with(issue_id_or_key="JIRA-123")
+
+
+@pytest.mark.parametrize(
+    "url, expected_is_cloud",
+    [
+        ("https://yourcompany.atlassian.net", True),
+        ("https://api.atlassian.com/ex/jira/", True),
+        ("https://www.callback.com", False),
+        ("https://test.atlassian.net.evil.com", False),
+        ("https://dummy_url", False),
+    ],
+)
+def test_is_jira_cloud_url(url, expected_is_cloud):
+    """
+    Given:
+        - Various URL strings including Jira Cloud URLs, on-premises URLs, and invalid URLs
+    When:
+        - Calling is_jira_cloud_url function
+    Then:
+        - Validate that True is returned for Jira Cloud URLs and False for others
+    """
+    from JiraV3 import is_jira_cloud_url
+
+    result = is_jira_cloud_url(url)
+    assert result == expected_is_cloud

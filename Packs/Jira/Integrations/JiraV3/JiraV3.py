@@ -3552,16 +3552,15 @@ def jira_test_module(client: JiraBaseClient, params: Dict[str, Any]) -> str:
     """
     url = params.get("server_url", "").rstrip("/")
     cloudid = params.get("cloud_id")
-    hostname = get_hostname_from_url(url)
 
-    if hostname.endswith((".atlassian.net", ".atlassian.com")) and not cloudid:
+    if is_jira_cloud_url(url) and not cloudid:
         raise DemistoException(
             "Cloud ID is required for Jira Cloud instances. Refer to the integration help section for more information."
         )
     if cloudid and url != "https://api.atlassian.com/ex/jira":
         raise DemistoException(
             "Jira Cloud instances must use the default Server URL: `https://api.atlassian.com/ex/jira`."
-            " Please update the Server URL in your instance configuration."
+            " Please update the Server URL in the instance configuration."
         )
 
     if client.is_basic_auth or client.is_pat_auth:
@@ -4760,20 +4759,22 @@ def validate_auth_params(username: str, api_key: str, client_id: str, client_sec
         raise DemistoException("To use OAuth 2.0, the 'Client ID' and 'Client Secret' parameters are mandatory.")
 
 
-def get_hostname_from_url(url: str) -> str:
+def is_jira_cloud_url(url: str) -> bool:
     """
-    Safely extract hostname from URL.
+    Check if the given URL is a Jira Cloud Server URL.
 
     Args:
         url (str): The URL to parse.
 
     Returns:
-        str: The hostname or empty string if parsing fails.
+        bool: True if the URL is a Jira Cloud URL, False otherwise.
     """
     try:
-        return urlparse(url).hostname or ""
+        hostname = urlparse(url).hostname or ""
+        return hostname.endswith((".atlassian.net", ".atlassian.com"))
+
     except (ValueError, AttributeError):
-        return ""
+        return False
 
 
 def add_config_error_messages(err: str, cloud_id: str, server_url: str) -> str:
@@ -4788,21 +4789,20 @@ def add_config_error_messages(err: str, cloud_id: str, server_url: str) -> str:
     Returns:
         str: The error message with additional information if applicable.
     """
-    hostname = get_hostname_from_url(server_url)
 
     if "404" in err and cloud_id and server_url.rstrip("/") != "https://api.atlassian.com/ex/jira":
         err = f"""
 (Error 404) Jira Cloud instances must use the default Server URL: `https://api.atlassian.com/ex/jira`.
-Please update the Server URL in your instance configuration and try again.
+Please update the Server URL in the instance configuration and try again.
 
 
 Original error: {err}
             """
 
-    elif "410" in err and not cloud_id and (hostname.endswith((".atlassian.net", ".atlassian.com"))):
+    elif "410" in err and not cloud_id and is_jira_cloud_url(server_url):
         err = f"""
 (Error 410) The requested endpoint has been removed from Jira On-Prem.
-It appears you are using a Jira Cloud instance. Please update the Cloud ID in the instance configuration and try again.
+This appears to be a Jira Cloud instance. Please update the Cloud ID in the instance configuration and try again.
 Refer to the integration help section for more information.
 
 
