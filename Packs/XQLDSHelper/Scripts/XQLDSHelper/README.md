@@ -127,6 +127,7 @@ The summary of the template structure in the templates is provided below.
       },
       "conditions": <conditions>,
       "locking": {
+        "module": "<locking module>",
         "name": "<name of lock>",
         "info": "<info for lock>",
         "timeout": <timeout>,
@@ -225,6 +226,7 @@ Using Variable Substitution to pass the entire data to variables like `${.=val.u
 | .query.time_range.round_time.earliest_time | [Optional] The value (in seconds) used to round down the base time for `earliest_time`. | String or Number |
 | .query.time_range.round_time.latest_time | [Optional] The value (in seconds) used to round down the base time for `latest_time`. | String or Number |
 | .query.conditions | [Optional] Conditions for executing XQL: it will only be executed if the conditions evaluate to true or are not specified. If the conditions evaluate to false, the `.entry.default` will be applied if it is specified and the conditions defined for it are satisfied, otherwise, an empty record set will be returned. | Any |
+| .query.locking.module | [Optional] The locking module to use. Must be either `core-lock` or `demisto-lock` \(Default = core-lock\). | String |
 | .query.locking.name | [Optional] The lock name passed as the `name` parameter to the `core-lock-get` command. | String |
 | .query.locking.info | [Optional] Additional information provided for the lock instance via the `info` parameter of the `core-lock-get` command. | String |
 | .query.locking.timeout | [Optional] The timeout value (in seconds) passed to the `timeout` parameter of the `core-lock-get` command. | String or Number |
@@ -1509,7 +1511,7 @@ dataset = panw_ngfw_traffic_raw
 In Cortex XSIAM and Cortex XDR, the number of concurrent XQL query executions via the REST API is limited to four.
 Submitting more queries than this may lead to errors.
 The script XQLDSHelper supports retry logic and can wait until execution becomes possible, but by holding onto an execution slot it might impact other playbooks running queries in parallel.
-To prevent this, exclusive locking is supported via the Core Lock mechanism.
+To prevent this, exclusive locking is supported via the Core Lock or Demisto Lock mechanism.
 When `.query.locking` is enabled, XQLDSHelper acquires a lock during query execution and releases it afterward.
 This ensures that multiple queries do not run concurrently and allows coordinated execution alongside other playbooks.
 

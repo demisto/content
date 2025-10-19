@@ -544,6 +544,7 @@ class CoreLock:
 
     def __init__(
         self,
+        module: str,
         name: str | None,
         info: str | None,
         timeout: int | None,
@@ -551,11 +552,21 @@ class CoreLock:
     ) -> None:
         """Initializes a lock instance.
 
+        :param module: The name for the locking functions must be either core-lock or demisto-lock.
         :param name: The name to identify the lock.
         :param info: Additional information to provide for the lock.
         :param timeout: Timeout (seconds) for wait on lock to be freed.
         :param using: The name of an lock integration instance.
         """
+        if module == "core-lock":
+            self.__func_lock = "core-lock-get"
+            self.__func_unlock = "core-lock-release"
+        elif module == "demisto-lock":
+            self.__func_lock = "demisto-lock-get"
+            self.__func_unlock = "demisto-lock-release"
+        else:
+            raise DemistoException(f"locking module must be either core-lock or demisto-lock - {module}")
+
         self.__name = name
         self.__info = info
         self.__timeout = timeout
@@ -564,18 +575,18 @@ class CoreLock:
     def lock(
         self,
     ) -> None:
-        """Acquire a specific lock via core-lock-get."""
+        """Acquire a specific lock via *-lock-get."""
         args = assign_params(
             name=self.__name,
             info=self.__info,
             timeout=self.__timeout,
             using=self.__using,
         )
-        args_str = ", ".join(f"{k}={v}" for k, v in args.items())
+        args_str = ", ".join(f"{k}={v}" for k, v in args.items()) or "default"
 
-        demisto.debug(f"Attempting to acquire lock: {args_str}")
-        execute_command("core-lock-get", args, extract_contents=False)
-        demisto.debug(f"Lock successfully acquired: {args_str}")
+        demisto.debug(f"Attempting to acquire lock: {self.__func_lock} - {args_str}")
+        execute_command(self.__func_lock, args, extract_contents=False)
+        demisto.debug(f"Lock successfully acquired: {self.__func_lock} - {args_str}")
 
     def unlock(
         self,
@@ -585,8 +596,10 @@ class CoreLock:
             name=self.__name,
             using=self.__using,
         )
-        execute_command("core-lock-release", args, extract_contents=False)
-        demisto.debug("Lock released: " + ", ".join(f"{k}={v}" for k, v in args.items()))
+        args_str = ", ".join(f"{k}={v}" for k, v in args.items()) or "default"
+
+        execute_command(self.__func_unlock, args, extract_contents=False)
+        demisto.debug(f"Lock released: {self.__func_unlock} - {args_str}")
 
 
 class XQLQuery:
@@ -2213,11 +2226,13 @@ class Main:
         :return: A lock instance.
         """
         if locking := demisto.get(query_node, "locking"):
+            module = locking.get("module") or "core-lock"
             timeout = locking.get("timeout")
             return CoreLock(
-                timeout=None if timeout is None else arg_to_number(timeout),
+                module=module,
                 name=locking.get("name"),
                 info=locking.get("info"),
+                timeout=None if timeout is None else arg_to_number(timeout),
                 using=locking.get("using"),
             )
         return None

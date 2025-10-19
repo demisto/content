@@ -356,14 +356,14 @@ class MainTester:
                 else:
                     raise RuntimeError(f"Invalid data type - {data_type}")
             raise RuntimeError("No List - {list_name}")
-        elif command == "core-lock-get":
+        elif command in ("core-lock-get", "demisto-lock-get"):
             for k in ["name", "info", "timeout", "using"]:
                 av = args.get(k)
                 lv = self.__locking_params.get(k)
                 if av != lv:
                     raise ValueError(f"Incorrect locking parameter - {k}: {av} is not {lv}")
             return []
-        elif command == "core-lock-release":
+        elif command in ("core-lock-release", "demisto-lock-release"):
             for k in ["name", "using"]:
                 av = args.get(k)
                 lv = self.__locking_params.get(k)

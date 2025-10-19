@@ -3698,7 +3698,7 @@
       ]
     }
   },
-  "######### query.locking: default parameters",
+  "######### query.locking: default core-lock",
   {
     "args": {
       "templates_type": "raw",
@@ -3732,7 +3732,7 @@
       }
     }
   },
-  "######### query.locking: all parameters",
+  "######### query.locking: core-lock - default parameters",
   {
     "args": {
       "templates_type": "raw",
@@ -3742,10 +3742,120 @@
           "query": {
             "xql": "Dummy XQL",
             "locking": {
+              "module": "core-lock"
+            }
+          },
+          "entry": {
+            "type": "duration",
+            "duration": {
+              "field": "_duration"
+            }
+          }
+        }
+      }
+    },
+    "xql": {
+      "responses": "./test_data/qr_duration.json"
+    },
+    "results": {
+      "Entry": {
+        "Type": 17,
+        "ContentsFormat": "duration",
+        "Contents": {
+          "stats": 1234
+        }
+      }
+    }
+  },
+  "######### query.locking: core-lock - all parameters",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL",
+            "locking": {
+              "module": "core-lock",
               "name": "XQLDSHelper.name",
               "info": "XQLDSHelper.info",
               "timeout": 300,
               "using": "Core Lock_instance_default"
+            }
+          },
+          "entry": {
+            "type": "duration",
+            "duration": {
+              "field": "_duration"
+            }
+          }
+        }
+      }
+    },
+    "xql": {
+      "responses": "./test_data/qr_duration.json"
+    },
+    "results": {
+      "Entry": {
+        "Type": 17,
+        "ContentsFormat": "duration",
+        "Contents": {
+          "stats": 1234
+        }
+      }
+    }
+  },
+  "######### query.locking: demisto-lock - default parameters",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL",
+            "locking": {
+              "module": "demisto-lock"
+            }
+          },
+          "entry": {
+            "type": "duration",
+            "duration": {
+              "field": "_duration"
+            }
+          }
+        }
+      }
+    },
+    "xql": {
+      "responses": "./test_data/qr_duration.json"
+    },
+    "results": {
+      "Entry": {
+        "Type": 17,
+        "ContentsFormat": "duration",
+        "Contents": {
+          "stats": 1234
+        }
+      }
+    }
+  },
+  "######### query.locking: demisto-lock - all parameters",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL",
+            "locking": {
+              "module": "demisto-lock",
+              "name": "XQLDSHelper.name",
+              "info": "XQLDSHelper.info",
+              "timeout": 300,
+              "using": "Demisto Lock_instance_default"
             }
           },
           "entry": {
