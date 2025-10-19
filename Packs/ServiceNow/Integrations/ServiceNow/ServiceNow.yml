@@ -100,6 +100,9 @@ script:
     - contextPath: ServiceNow.Ticket.ID
       description: ServiceNow ticket ID
       type: string
+    - contextPath: ServiceNow.Ticket
+      description: The ServiceNow ticket fields.
+      type: string
     - contextPath: ServiceNow.Ticket.OpenedBy
       description: ServiceNow ticket opener ID
       type: string

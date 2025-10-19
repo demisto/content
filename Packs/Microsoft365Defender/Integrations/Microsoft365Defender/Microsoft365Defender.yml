@@ -406,7 +406,7 @@ script:
     - contextPath: Microsoft365Defender.Hunt.query
       description: The query used, also acted as a key.
       type: String
-    - contextPath: Microsoft365Defender.Hunt.results.
+    - contextPath: Microsoft365Defender.Hunt.results
       description: The results of the query.
       type: Unknown
   - arguments:
