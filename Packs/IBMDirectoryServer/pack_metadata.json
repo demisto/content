@@ -13,9 +13,7 @@
     "tags": [
         "IT"
     ],
-    "useCases": [
-        "Identity And Access Management"
-    ],
+    "useCases": [],
     "keywords": [
         "LDAP"
     ],
