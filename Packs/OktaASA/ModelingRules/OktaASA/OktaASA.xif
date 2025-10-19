@@ -73,7 +73,7 @@ alter //Extraction of fields
         user_type = "human", XDM_CONST.USER_TYPE_REGULAR,
         user_type = "service" OR details -> unix_user_name != null, XDM_CONST.USER_TYPE_SERVICE_ACCOUNT,
         user_type),
-    xdm.source.user.roles = user -> role_grants[],
+    xdm.source.user.roles = json_extract_scalar_array(user, "$.role_grants"),
     xdm.source.host.hostname = client -> hostname,
     xdm.source.host.device_id = client -> id,
     xdm.source.host.os = client -> os,
