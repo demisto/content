@@ -13,14 +13,15 @@ Data normalization capabilities:
 
 ## Supported log categories
 
-| Category                 | Category Display Name                 |
-|:-------------------------|:--------------------------------------|
-| DNS <link_if_exist>      | Category 1                            |
-| HTTP <link_if_exist>     | Category 2                            |
-| NTLM <link_if_exist>     | Category 1                            |
-| SYSLOG <link_if_exist>   | Category 2                            |
-| CONN <link_if_exist>     | Category 1                            |
-| KERBEROS <link_if_exist> | Category 2                            |
+| Category | Category Display Name |
+|:---------|:----------------------|
+| DNS      | dns.log               |
+| HTTP     | http.log              |
+| NTLM     | ntlm.log              |
+| Syslog   | syslog.log            |
+| CONN     | conn.log              |
+| Kerberos | kerberos.log          |
+| DCE/RPC  | dce_rpc.log           |
 
 ### Supported timestamp format
 
