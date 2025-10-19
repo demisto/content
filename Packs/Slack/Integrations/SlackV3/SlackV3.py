@@ -2813,7 +2813,7 @@ def get_direct_message_channel_id_by_username(username):
     raw_response = send_slack_request_sync(
         CLIENT, "conversations.open", http_verb="POST", body={"users": user_id, "prevent_creation": True}
     )
-
+    demisto.debug(f"response from send slack request: {raw_response}")
     if not raw_response.get("channel"):
         return None
 
@@ -2866,7 +2866,6 @@ def conversation_history():
     if not conversation_id:
         conversation_id = resolve_conversation_id_from_name(conversation_name)
 
-    demisto.debug(f"time is: {to_unix_seconds_str(from_time)}")
     body = {"channel": conversation_id, "limit": limit, "oldest": to_unix_seconds_str(from_time)}
     readable_output = ""
     raw_response = send_slack_request_sync(CLIENT, "conversations.history", http_verb="GET", body=body)
