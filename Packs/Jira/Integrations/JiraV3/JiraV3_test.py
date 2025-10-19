@@ -303,7 +303,7 @@ def test_test_module_basic_auth(mocker):
 
     client = jira_base_client_mock("dummy_username", "dummy_api_key")
     mocker.patch.object(client, "jira_test_instance_connection")
-    assert jira_test_module(client) == "ok"
+    assert jira_test_module(client, params={}) == "ok"
 
 
 def test_test_module_pat(mocker):
@@ -319,7 +319,7 @@ def test_test_module_pat(mocker):
 
     client = jira_base_client_mock(pat="dummy_pat")
     mocker.patch.object(client, "jira_test_instance_connection")
-    assert jira_test_module(client) == "ok"
+    assert jira_test_module(client, params={}) == "ok"
 
 
 def test_module_oauth2(mocker):
@@ -336,7 +336,7 @@ def test_module_oauth2(mocker):
     client = jira_base_client_mock()
     mocker.patch.object(client, "jira_test_instance_connection")
     with pytest.raises(DemistoException, match="In order to authorize the instance, first run the command `!jira-oauth-start`."):
-        jira_test_module(client)
+        jira_test_module(client, params={})
 
 
 @pytest.mark.parametrize(

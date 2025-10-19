@@ -3550,14 +3550,13 @@ def jira_test_module(client: JiraBaseClient, params: Dict[str, Any]) -> str:
     they have to run a separate command, therefore, pressing the `test` button on the configuration screen will
     show them the steps in order to test the instance.
     """
-    url = params.get("server_url", "").rstrip('/')
+    url = params.get("server_url", "").rstrip("/")
     cloudid = params.get("cloud_id")
     hostname = get_hostname_from_url(url)
 
-    if hostname.endswith('atlassian.net') and not cloudid:
+    if hostname.endswith("atlassian.net") and not cloudid:
         raise DemistoException(
-            "Cloud ID is required for Jira Cloud instances."
-            " Refer to the integration help section for more information."
+            "Cloud ID is required for Jira Cloud instances. Refer to the integration help section for more information."
         )
     if cloudid and url != "https://api.atlassian.com/ex/jira":
         raise DemistoException(
@@ -4791,7 +4790,7 @@ def add_config_error_messages(err: str, cloud_id: str, server_url: str) -> str:
     """
     hostname = get_hostname_from_url(server_url)
 
-    if "404" in err and cloud_id and server_url.rstrip('/') != "https://api.atlassian.com/ex/jira":
+    if "404" in err and cloud_id and server_url.rstrip("/") != "https://api.atlassian.com/ex/jira":
         err = f"""
 (Error 404) Jira Cloud instances should use the default Server URL `https://api.atlassian.com/ex/jira`.
 Please update the server URL in the instance configuration and try again.
@@ -4811,6 +4810,7 @@ Original error: {str(err)}
             """
 
     return err
+
 
 def main():  # pragma: no cover
     params: Dict[str, Any] = demisto.params()
