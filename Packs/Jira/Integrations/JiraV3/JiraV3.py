@@ -3560,8 +3560,8 @@ def jira_test_module(client: JiraBaseClient, params: Dict[str, Any]) -> str:
         )
     if cloudid and url != "https://api.atlassian.com/ex/jira":
         raise DemistoException(
-            "Jira Cloud instances should use the default Server URL `https://api.atlassian.com/ex/jira`."
-            " Please update the server URL in the instance configuration."
+            "Jira Cloud instances must use the default Server URL: `https://api.atlassian.com/ex/jira`."
+            " Please update the Server URL in your instance configuration."
         )
 
     if client.is_basic_auth or client.is_pat_auth:
@@ -4792,11 +4792,11 @@ def add_config_error_messages(err: str, cloud_id: str, server_url: str) -> str:
 
     if "404" in err and cloud_id and server_url.rstrip("/") != "https://api.atlassian.com/ex/jira":
         err = f"""
-(Error 404) Jira Cloud instances should use the default Server URL `https://api.atlassian.com/ex/jira`.
-Please update the server URL in the instance configuration and try again.
+(Error 404) Jira Cloud instances must use the default Server URL: `https://api.atlassian.com/ex/jira`.
+Please update the Server URL in your instance configuration and try again.
 
 
-Original error: {str(err)}
+Original error: {err}
             """
 
     elif "410" in err and not cloud_id and (hostname.endswith((".atlassian.net", ".atlassian.com"))):
@@ -4806,7 +4806,7 @@ It appears you are using a Jira Cloud instance. Please update the Cloud ID in th
 Refer to the integration help section for more information.
 
 
-Original error: {str(err)}
+Original error: {err}
             """
 
     return err
