@@ -623,6 +623,37 @@ tasks:
                 root: inputs.TrustedPublishers
             iscontext: true
           ignorecase: true
+        - operator: inList
+          left:
+            value:
+              complex:
+                root: alert
+                accessor: processexecutionsigner
+                transformers:
+                - operator: append
+                  args:
+                    item:
+                      value:
+                        simple: alert.osparentsigner
+                      iscontext: true
+                - operator: append
+                  args:
+                    item:
+                      value:
+                        simple: alert.initiatorsigner
+                      iscontext: true
+                - operator: append
+                  args:
+                    item:
+                      value:
+                        simple: alert.cgosigner
+                      iscontext: true
+            iscontext: true
+          right:
+            value:
+              simple: inputs.TrustedPublishers
+            iscontext: true
+          ignorecase: true
     view: |-
       {
         "position": {
