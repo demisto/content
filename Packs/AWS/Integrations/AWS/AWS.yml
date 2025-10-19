@@ -2480,6 +2480,139 @@ script:
       description: The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided.
       type: string
 
+  - arguments:
+    - description: A comma-separated list of the IPAM resource discovery IDs.
+      name: ipam_resource_discovery_ids
+    - description: One or more filters separated by ';'. See AWS documentation for details & filter options (https://docs.aws.amazon.com/cli/latest/userguide/cli-usage-filter.html).
+      name: filters
+    - description: The maximum number of results to return in a single call. Specify a value between 5 and 1000.
+      name: max_results
+    - description: The token for the next set of results.
+      name: next_token
+    - description: The Amazon Web Services region for the IP address.
+      name: address_region
+    - description: The AWS account ID.
+      name: account_id
+      required: true
+    - description: The AWS region.
+      name: region
+      required: true
+      auto: PREDEFINED
+      predefined:
+        - us-east-1
+        - us-east-2
+        - us-west-1
+        - us-west-2
+        - af-south-1
+        - ap-east-1
+        - ap-south-2
+        - ap-southeast-3
+        - ap-southeast-5
+        - ap-southeast-4
+        - ap-south-1
+        - ap-northeast-3
+        - ap-northeast-2
+        - ap-southeast-1
+        - ap-southeast-2
+        - ap-southeast-7
+        - ap-northeast-1
+        - ca-central-1
+        - ca-west-1
+        - eu-central-1
+        - eu-west-1
+        - eu-west-2
+        - eu-south-1
+        - eu-west-3
+        - eu-south-2
+        - eu-north-1
+        - eu-central-2
+        - il-central-1
+        - mx-central-1
+        - me-south-1
+        - me-central-1
+        - sa-east-1
+    outputs:
+    - contextPath: AWS.EC2.IpamResourceDiscoveries.IpamResourceDiscoveryId
+      description: The resource discovery ID.
+      type: String
+    - contextPath: AWS.EC2.IpamResourceDiscoveries.OwnerId
+      description: The ID of the owner.
+      type: String
+    - contextPath: AWS.EC2.IpamResourceDiscoveries.IpamResourceDiscoveryRegion
+      description: The resource discovery region.
+      type: String
+    - contextPath: AWS.EC2.IpamResourceDiscoveries.AccountId
+      description: The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided.
+      type: string
+    description: Describes IPAM resource discoveries. A resource discovery is an IPAM component that enables IPAM to manage and monitor resources that belong to the owning account.
+    name: aws-ec2-describe-ipam-resource-discoveries
+
+  - arguments:
+    - description: A comma-separated list of the resource discovery association IDs.
+      name: ipam_resource_discovery_association_ids
+    - description: One or more filters separated by ';'. See AWS documentation for details & filter options (https://docs.aws.amazon.com/cli/latest/userguide/cli-usage-filter.html).
+      name: filters
+    - description: The maximum number of results to return in a single call. Specify a value between 5 and 1000.
+      name: max_results
+    - description: The token for the next set of results.
+      name: next_token
+    - description: The Amazon Web Services region for the IP address.
+      name: address_region
+    - description: The AWS account ID.
+      name: account_id
+      required: true
+    - description: The AWS region.
+      name: region
+      required: true
+      auto: PREDEFINED
+      predefined:
+        - us-east-1
+        - us-east-2
+        - us-west-1
+        - us-west-2
+        - af-south-1
+        - ap-east-1
+        - ap-south-2
+        - ap-southeast-3
+        - ap-southeast-5
+        - ap-southeast-4
+        - ap-south-1
+        - ap-northeast-3
+        - ap-northeast-2
+        - ap-southeast-1
+        - ap-southeast-2
+        - ap-southeast-7
+        - ap-northeast-1
+        - ca-central-1
+        - ca-west-1
+        - eu-central-1
+        - eu-west-1
+        - eu-west-2
+        - eu-south-1
+        - eu-west-3
+        - eu-south-2
+        - eu-north-1
+        - eu-central-2
+        - il-central-1
+        - mx-central-1
+        - me-south-1
+        - me-central-1
+        - sa-east-1
+    outputs:
+    - contextPath: AWS.EC2.IpamResourceDiscoveryAssociations.IpamResourceDiscoveryAssociationId
+      description: The resource discovery association ID.
+      type: String
+    - contextPath: AWS.EC2.IpamResourceDiscoveryAssociations.IpamResourceDiscoveryId
+      description: The resource discovery ID.
+      type: String
+    - contextPath: AWS.EC2.IpamResourceDiscoveryAssociations.IpamRegion
+      description: The IPAM home region.
+      type: String
+    - contextPath: AWS.EC2.IpamResourceDiscoveryAssociations.AccountId
+      description: The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided.
+      type: string
+    description: Describes resource discovery association with an Amazon VPC IPAM. An associated resource discovery is a resource discovery that has been associated with an IPAM.
+    name: aws-ec2-describe-ipam-resource-discovery-associations
 
   - name: aws-cloudtrail-trail-update
     description: 'Updates trail settings that control what events you are logging, and how to handle log files. Changes to a trail do not require stopping the CloudTrail service. Use this action to designate an existing bucket for log delivery. If the existing bucket has previously been a target for CloudTrail log files, an IAM policy exists for the bucket. UpdateTrail must be called from the Region in which the trail was created; otherwise, an InvalidHomeRegionException is thrown.'

@@ -1874,6 +1874,78 @@ class EC2:
             raw_response=response,
         )
 
+    @staticmethod
+    def describe_ipam_resource_discoveries_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """Describes one or more IPAM resource discoveries.
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including filters, max results, next token, and IPAM resource discovery IDs
+
+        Returns:
+            CommandResults: Results of the operation with IPAM resource discovery information
+        """
+        kwargs = {}
+        if args.get("filters"):
+            kwargs.update({"Filters": parse_filter_field(args.get("filters"))})
+        if args.get("max_results"):
+            kwargs.update({"MaxResults": int(args.get("max_results"))})
+        if args.get("next_token"):
+            kwargs.update({"NextToken": args.get("next_token")})
+        if args.get("ipam_resource_discovery_ids"):
+            kwargs.update({"IpamResourceDiscoveryIds": argToList(args.get("ipam_resource_discovery_ids"))})
+
+        response = client.describe_ipam_resource_discoveries(**kwargs)
+
+        if len(response["IpamResourceDiscoveries"]) == 0:
+            return CommandResults(readable_output="No Ipam Resource Discoveries were found.")
+
+        human_readable = tableToMarkdown("Ipam Resource Discoveries", response["IpamResourceDiscoveries"], removeNull=True)
+        command_results = CommandResults(
+            outputs_prefix="AWS.EC2.IpamResourceDiscoveries",
+            outputs_key_field="IpamResourceDiscoveryId",
+            outputs=response["IpamResourceDiscoveries"],
+            raw_response=response,
+            readable_output=human_readable,
+        )
+        return command_results
+
+    @staticmethod
+    def describe_ipam_resource_discovery_associations_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """Describes one or more IPAM resource discovery associations.
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including filters, max results, next token, and IPAM resource discovery IDs
+
+        Returns:
+            CommandResults: Results of the operation with IPAM resource discovery association information
+        """
+        kwargs = {}
+        if args.get("filters"):
+            kwargs.update({"Filters": parse_filter_field(args.get("filters"))})
+        if args.get("max_results"):
+            kwargs.update({"MaxResults": int(args.get("max_results"))})
+        if args.get("next_token"):
+            kwargs.update({"NextToken": args.get("next_token")})
+        if args.get("ipam_resource_discovery_association_ids"):
+            kwargs.update({"IpamResourceDiscoveryAssociationIds": argToList(args.get("ipam_resource_discovery_association_ids"))})
+
+        response = client.describe_ipam_resource_discovery_associations(**kwargs)
+
+        if len(response["IpamResourceDiscoveryAssociations"]) == 0:
+            return CommandResults(readable_output="No Ipam Resource Discovery Associations were found.")
+
+        human_readable = tableToMarkdown(
+            "Ipam Resource Discovery Associations", response["IpamResourceDiscoveryAssociations"], removeNull=True
+        )  # noqa: E501
+        command_results = CommandResults(
+            outputs_prefix="AWS.EC2.IpamResourceDiscoveryAssociations",
+            outputs_key_field="IpamResourceDiscoveryId",
+            outputs=response["IpamResourceDiscoveryAssociations"],
+            raw_response=response,
+            readable_output=human_readable,
+        )
+        return command_results
+
 
 class EKS:
     service = AWSServices.EKS
@@ -2496,6 +2568,8 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-ec2-subnet-attribute-modify": EC2.modify_subnet_attribute_command,
     "aws-ec2-describe-vpcs": EC2.describe_vpcs_command,
     "aws-ec2-describe-subnets": EC2.describe_subnets_command,
+    "aws-ec2-describe-ipam-resource-discoveries": EC2.describe_ipam_resource_discoveries_command,
+    "aws-ec2-describe-ipam-resource-discovery-associations": EC2.describe_ipam_resource_discovery_associations_command,
     "aws-eks-cluster-config-update": EKS.update_cluster_config_command,
     "aws-eks-describe-cluster": EKS.describe_cluster_command,
     "aws-eks-associate-access-policy": EKS.associate_access_policy_command,
