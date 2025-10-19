@@ -76,7 +76,7 @@ tasks:
           operator: isEqualString
           right:
             value:
-              simple: willFail
+              simple: test
       label: "yes"
     id: "2"
     ignoreworker: false
@@ -500,7 +500,7 @@ tasks:
           operator: isEqualString
           right:
             value:
-              simple: willFail
+              simple: test
       label: "yes"
     id: "14"
     ignoreworker: false
