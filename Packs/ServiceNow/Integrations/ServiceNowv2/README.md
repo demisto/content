@@ -113,7 +113,6 @@ If MFA is enabled for your user, follow the next steps:
 1. When using basic authorization, you will have to update your password with the current OTP every time the current code expires (30 seconds), hence we recommend using OAuth 2.0 authorization.
 2. For using OAuth 2.0 see the above instructions. The OTP code should be appended to the password parameter in the `!servicenow-oauth-login` command.
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | ServiceNow URL, in the format https://company.service-now.com/ |  | True |

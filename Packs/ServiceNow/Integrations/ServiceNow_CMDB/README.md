@@ -74,7 +74,6 @@ If MFA is enabled for your user, perform the following steps:
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
 
-
 ## Commands
 
 You can execute these commands from the CLI, as part of an automation, or in a playbook.

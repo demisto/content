@@ -188,7 +188,7 @@ class ServiceNowClient(BaseClient):
         key_content = re.sub(r"[^A-Za-z0-9+/=]", "", key_content)
 
         # Format content into 64-character lines
-        key_lines = [key_content[i: i + 64] for i in range(0, len(key_content), 64)]
+        key_lines = [key_content[i : i + 64] for i in range(0, len(key_content), 64)]
 
         # Reattach markers
         processed_key = f"-----BEGIN {key_type}-----\n" + "\n".join(key_lines) + f"\n-----END {key_type}-----"
