@@ -599,6 +599,15 @@ script:
     - description: The name of the Blob to retrieve.
       name: blob_name
       required: true
+    - description: "The subscription ID."
+      name: subscription_id
+      required: true
+    - description: "The resource group name."
+      name: resource_group_name
+      required: true
+    - description: The storage account name.
+      name: account_name
+      required: true
     description: Retrieve Blob from Container.
     name: azure-storage-container-blob-get
     outputs:
@@ -631,6 +640,29 @@ script:
       type: Unknown
     - contextPath: File.Extension
       description: The file extension.
+      type: String
+
+  - arguments:
+    - description: The name of the Blob Container.
+      name: container_name
+      required: true
+    - description: The name of the blob.
+      name: blob_name
+      required: true
+    description: Retrieve the tags of the specified Blob.
+    name: azure-storage-container-blob-tag-get
+    outputs:
+    - contextPath: AzureStorageContainer.Container.Blob.Tag.Key
+      description: Tag key.
+      type: String
+    - contextPath: AzureStorageContainer.Container.Blob.Tag.Value
+      description: Tag value.
+      type: String
+    - contextPath: AzureStorageContainer.Container.Blob.name
+      description: Blob name.
+      type: String
+    - contextPath: AzureStorageContainer.Container.name
+      description: Container name.
       type: String
 
   - arguments:
