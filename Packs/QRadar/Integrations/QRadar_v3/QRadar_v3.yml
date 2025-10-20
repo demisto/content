@@ -1,7 +1,7 @@
 commonfields:
   id: QRadar v3
   version: -1
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 name: QRadar v3

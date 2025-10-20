@@ -82,19 +82,6 @@ configuration:
   required: false
   section: Collect
   advanced: true
-- display: Indicator Reputation
-  name: feedReputation
-  additionalinfo: Indicators from this integration instance will be marked with this reputation.
-  type: 18
-  options:
-  - "None"
-  - "Good"
-  - "Suspicious"
-  - "Bad"
-  defaultvalue: "Bad"
-  required: true
-  section: Collect
-  advanced: true
 - display: ''
   name: feedExpirationPolicy
   additionalinfo: The feed's expiration policy.
