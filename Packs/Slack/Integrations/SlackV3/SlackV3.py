@@ -2794,8 +2794,6 @@ def get_direct_message_channel_id_by_username(username):
     raw_response = send_slack_request_sync(
         CLIENT, "conversations.open", http_verb="POST", body={"users": user_id, "prevent_creation": True}
     )
-    if not raw_response.get("channel"):
-        return None
 
     return raw_response["channel"].get("id")
 
