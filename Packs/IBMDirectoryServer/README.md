@@ -12,21 +12,21 @@ IBM® Security Verify Directory is a trusted identity infrastructure with LDAP, 
 
 ## Filebeat Collection
 
-In order to use the collector, you need to use the following option to collect events from the vendor:
+To use the collector, use the following option to collect events from the vendor:
 
 - [XDRC (XDR Collector)](#xdrc-xdr-collector)
 
-You will need to configure the vendor and product for this specific collector.
+Configure the vendor and product for this specific collector. 
 
 ## XDRC (XDR Collector)
 
-You will need to use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/XDR-Collectors).
+1. Refer to the official XDR Collector documentation [XDR Collectors](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/XDR-Collectors).  
 
-You can configure the vendor and product by replacing [vendor]\_[product]\_raw with ibm_ldap_raw
+2. Replace [vendor]\_[product]\_raw with ibm_ldap_raw in your configuration. 
 
 When configuring the instance, you should use a YAML that configures the vendor and product, just as seen in the below configuration for the IBM Security Verify Directory product.
 
-Copy and paste the below YAML in the "Filebeat Configuration File" section (inside the relevant profile under the "XDR Collectors Profiles").
+When configuring the instance, use a YAML file that specifies the vendor and product, as shown in the Filebeat Configuration File example below.
 
 #### Filebeat Configuration file
 
@@ -43,10 +43,10 @@ Copy and paste the below YAML in the "Filebeat Configuration File" section (insi
             product: ldap
 ```
 
-This configuration will collect the data into a dataset named `ibm_ldap_raw`.
+This configuration collects data into a dataset named `ibm_ldap_raw`.  
 
-For more information regarding audit log file location please review the following document [here](https://www.ibm.com/docs/en/svd/10.0.4?topic=tools-directory-server-log-configuration-file-locations)
+For more information on audit log file locations, see [here](https://www.ibm.com/docs/en/svd/10.0.4?topic=tools-directory-server-log-configuration-file-locations)  
 
-**Please note**: The above configuration uses the default location of the Message Tracking logs. In case your Exchange server saves the Message Tracking logs under a different location, you would need to change it in the yaml (under the `paths` field).
+**Note**: The configuration uses the default location of the Message Tracking logs. If your Exchange server stores the logs in a different location, update the `paths` field in the YAML accordingly.  
 
 </~XSIAM>
