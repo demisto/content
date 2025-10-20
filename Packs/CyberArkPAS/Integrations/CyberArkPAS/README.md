@@ -876,9 +876,6 @@ To run this command, you must have *View Safe Members* permission in the Safe.
 
 ***
 Add an existing user as a safe member.
-Uses the V1 of the API and may change in the future.
-
-To run this command, you must have *Manage Safe Members* permission in the Vault.
 
 #### Base Command
 
@@ -886,137 +883,23 @@ To run this command, you must have *Manage Safe Members* permission in the Vault
 
 #### Input
 
-| **Argument Name**            | **Description**                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          | **Required** |
-|------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
-| member_name                  | The name of the user to add as a safe member.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            | Required |
-| search_in                    | Search for the member in the vault or domain.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            | Optional |
-| membership_expiration_date   | The membership expiration date in the format MM\DD\YY. Leave empty if there is no expiration date.                                                                                                                                                                                                                                                                                                                                                                                                                                       | Optional |
-| permissions                  | The user’s permissions in the safe.<br/>Valid values: UseAccounts, RetrieveAccounts, ListAccounts, AddAccounts, UpdateAccountContent, UpdateAccountProperties, InitiateCPMAccountManagementOperations, InitiateCPMAccountManagementOperations, SpecifyNextAccountContent, RenameAccounts, DeleteAccounts, UnlockAccounts, ManageSafe, ManageSafeMembers, BackupSafe, ViewAuditLog, ViewAuditLog, ViewSafeMembers, AccessWithoutConfirmation, CreateFolders, DeleteFolders, MoveAccountsAndFolders<br/>e.g., UseAccounts,RetrieveAccounts | Optional |
-| safe_name                  | The URL encoded name of the safe to add a member to.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     | Required |
-| requests_authorization_level | The request authorization levels.<br/>0 – cannot authorize<br/>1 – authorization level 1<br/>2 – authorization level 2<br/>Default is '0'.                                                                                                                                                                                                                                                                                                                                                                                               | Optional |
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| member_name | The name of the user to add as a safe member. | Required | 
+| search_in | Search for the member in the vault or domain. | Optional | 
+| membership_expiration_date | The membership expiration date in the format MM\DD\YY. Leave empty if there is no expiration date. | Optional | 
+| permissions | The user’s permissions in the safe.<br/>Valid values: UseAccounts, RetrieveAccounts, ListAccounts, AddAccounts, UpdateAccountContent, UpdateAccountProperties, InitiateCPMAccountManagementOperations, InitiateCPMAccountManagementOperations, SpecifyNextAccountContent, RenameAccounts, DeleteAccounts, UnlockAccounts, ManageSafe, ManageSafeMembers, BackupSafe, ViewAuditLog, ViewAuditLog, ViewSafeMembers, AccessWithoutConfirmation, CreateFolders, DeleteFolders, MoveAccountsAndFolders<br/>e.g., UseAccounts,RetrieveAccounts. | Optional | 
+| safe_name | The URL encoded name of the safe to add a member to. | Required | 
+| requests_authorization_level | The request authorization levels.<br/>0 – cannot authorize<br/>1 – authorization level 1<br/>2 – authorization level 2<br/>Default is '0'. Possible values are: 0, 1, 2. Default is 0. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CyberArkPAS.Safes.Members.MemberName | String | The name of the safe member. |
-| CyberArkPAS.Safes.Members.MembershipExpirationDate | Number | The expiration date of the safe member. |
-| CyberArkPAS.Safes.Members.Permissions | Unknown | The permissions of the safe member. |
-| CyberArkPAS.Safes.Members.SearchIn | String | The vault or domain where the user or group was found. |
-
-#### Command Example
-
-```!cyberark-pas-safe-member-add member_name="TestUser1" safe_name="UpdatedName1"```
-
-#### Context Example
-
-```
-{
-    "CyberArkPAS": {
-        "Safes": {
-            "Members": {
-                "MemberName": "TestUser1",
-                "MembershipExpirationDate": "",
-                "Permissions": [
-                    {
-                        "Key": "UseAccounts",
-                        "Value": false
-                    },
-                    {
-                        "Key": "RetrieveAccounts",
-                        "Value": false
-                    },
-                    {
-                        "Key": "ListAccounts",
-                        "Value": false
-                    },
-                    {
-                        "Key": "AddAccounts",
-                        "Value": false
-                    },
-                    {
-                        "Key": "UpdateAccountContent",
-                        "Value": false
-                    },
-                    {
-                        "Key": "UpdateAccountProperties",
-                        "Value": false
-                    },
-                    {
-                        "Key": "InitiateCPMAccountManagementOperations",
-                        "Value": false
-                    },
-                    {
-                        "Key": "SpecifyNextAccountContent",
-                        "Value": false
-                    },
-                    {
-                        "Key": "RenameAccounts",
-                        "Value": false
-                    },
-                    {
-                        "Key": "DeleteAccounts",
-                        "Value": false
-                    },
-                    {
-                        "Key": "UnlockAccounts",
-                        "Value": false
-                    },
-                    {
-                        "Key": "ManageSafe",
-                        "Value": false
-                    },
-                    {
-                        "Key": "ManageSafeMembers",
-                        "Value": false
-                    },
-                    {
-                        "Key": "BackupSafe",
-                        "Value": false
-                    },
-                    {
-                        "Key": "ViewAuditLog",
-                        "Value": false
-                    },
-                    {
-                        "Key": "ViewSafeMembers",
-                        "Value": false
-                    },
-                    {
-                        "Key": "AccessWithoutConfirmation",
-                        "Value": false
-                    },
-                    {
-                        "Key": "CreateFolders",
-                        "Value": false
-                    },
-                    {
-                        "Key": "DeleteFolders",
-                        "Value": false
-                    },
-                    {
-                        "Key": "MoveAccountsAndFolders",
-                        "Value": false
-                    },
-                    {
-                        "Key": "RequestsAuthorizationLevel",
-                        "Value": 0
-                    }
-                ],
-                "SearchIn": "vault"
-            }
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->### Results
->
->|MemberName|MembershipExpirationDate|Permissions|SearchIn|
->|---|---|---|---|
->| TestUser1 |  | {'Key': 'UseAccounts', 'Value': False},<br/>{'Key': 'RetrieveAccounts', 'Value': False},<br/>{'Key': 'ListAccounts', 'Value': False},<br/>{'Key': 'AddAccounts', 'Value': False},<br/>{'Key': 'UpdateAccountContent', 'Value': False},<br/>{'Key': 'UpdateAccountProperties', 'Value': False},<br/>{'Key': 'InitiateCPMAccountManagementOperations', 'Value': False},<br/>{'Key': 'SpecifyNextAccountContent', 'Value': False},<br/>{'Key': 'RenameAccounts', 'Value': False},<br/>{'Key': 'DeleteAccounts', 'Value': False},<br/>{'Key': 'UnlockAccounts', 'Value': False},<br/>{'Key': 'ManageSafe', 'Value': False},<br/>{'Key': 'ManageSafeMembers', 'Value': False},<br/>{'Key': 'BackupSafe', 'Value': False},<br/>{'Key': 'ViewAuditLog', 'Value': False},<br/>{'Key': 'ViewSafeMembers', 'Value': False},<br/>{'Key': 'AccessWithoutConfirmation', 'Value': False},<br/>{'Key': 'CreateFolders', 'Value': False},<br/>{'Key': 'DeleteFolders', 'Value': False},<br/>{'Key': 'MoveAccountsAndFolders', 'Value': False},<br/>{'Key': 'RequestsAuthorizationLevel', 'Value': 0} | vault |
+| CyberArkPAS.Safes.Members.MemberName | String | The name of the safe member. | 
+| CyberArkPAS.Safes.Members.MembershipExpirationDate | Number | The expiration date of the safe member. | 
+| CyberArkPAS.Safes.Members.Permissions | Unknown | The permissions of the safe member. | 
+| CyberArkPAS.Safes.Members.SearchIn | String | The vault or domain where the user or group was found. | 
 
 ### cyberark-pas-safe-member-update
 
@@ -1032,13 +915,13 @@ To run this command, you must have *Manage Safe Members* permission in the Vault
 
 #### Input
 
-| **Argument Name**            | **Description**                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | **Required** |
-|------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
-| member_name                  | The member name that will be updated.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | Required |
-| membership_expiration_date   | The membership expiration date in the format MM\DD\YY. Leave empty if there is no expiration date.                                                                                                                                                                                                                                                                                                                                                                                                                                                                           | Optional |
-| permissions                  | The user’s permissions in the safe.<br/>Valid values are:<br/>UseAccounts, RetrieveAccounts, ListAccounts, AddAccounts, UpdateAccountContent, UpdateAccountProperties, InitiateCPMAccountManagementOperations, InitiateCPMAccountManagementOperations, SpecifyNextAccountContent, RenameAccounts, DeleteAccounts, UnlockAccounts, ManageSafe, ManageSafeMembers, BackupSafe, ViewAuditLog, ViewAuditLog, ViewSafeMembers, RequestsAuthorizationLevel, AccessWithoutConfirmation, CreateFolders, DeleteFolders, MoveAccountsAndFolders<br/>e.g., UseAccounts,RetrieveAccounts | Optional |
-| safe_name                  | The URL encoded name of the safe to which the safe member belongs.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           | Required |
-| requests_authorization_level | Request authorization levels.<br/>0 – cannot authorize<br/>1 – authorization level 1<br/>2 – authorization level 2<br/>Default is: '0'.                                                                                                                                                                                                                                                                                                                                                                                                                                      | Optional |
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| member_name | The member name that will be updated. | Required |
+| membership_expiration_date | The membership expiration date in the format MM\DD\YY. Leave empty if there is no expiration date. | Optional |
+| permissions | The user’s permissions in the safe.<br/>Valid values are:<br/>UseAccounts, RetrieveAccounts, ListAccounts, AddAccounts, UpdateAccountContent, UpdateAccountProperties, InitiateCPMAccountManagementOperations, InitiateCPMAccountManagementOperations, SpecifyNextAccountContent, RenameAccounts, DeleteAccounts, UnlockAccounts, ManageSafe, ManageSafeMembers, BackupSafe, ViewAuditLog, ViewAuditLog, ViewSafeMembers, RequestsAuthorizationLevel, AccessWithoutConfirmation, CreateFolders, DeleteFolders, MoveAccountsAndFolders<br/>e.g., UseAccounts,RetrieveAccounts | Optional |
+| safe_name | The name of the safe to which the safe member belongs. | Required |
+| requests_authorization_level | Request authorization levels.<br/>0 – cannot authorize<br/>1 – authorization level 1<br/>2 – authorization level 2<br/>Default is: '0'. | Optional |
 
 #### Context Output
 
@@ -1135,149 +1018,34 @@ To run this command, you must have *Manage Safe Members* permission in the Vault
                         "Value": false
                     },
                     {
-                        "Key": "DeleteFolders",
-                        "Value": false
-                    },
-                    {
-                        "Key": "MoveAccountsAndFolders",
-                        "Value": false
-                    },
-                    {
-                        "Key": "RequestsAuthorizationLevel",
-                        "Value": 0
-                    }
-                ]
-            }
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->### Results
->
->|MembershipExpirationDate|Permissions|
->|---|---|
->|  | {'Key': 'UseAccounts', 'Value': True},<br/>{'Key': 'RetrieveAccounts', 'Value': False},<br/>{'Key': 'ListAccounts', 'Value': False},<br/>{'Key': 'AddAccounts', 'Value': False},<br/>{'Key': 'UpdateAccountContent', 'Value': False},<br/>{'Key': 'UpdateAccountProperties', 'Value': False},<br/>{'Key': 'InitiateCPMAccountManagementOperations', 'Value': False},<br/>{'Key': 'SpecifyNextAccountContent', 'Value': False},<br/>{'Key': 'RenameAccounts', 'Value': False},<br/>{'Key': 'DeleteAccounts', 'Value': False},<br/>{'Key': 'UnlockAccounts', 'Value': False},<br/>{'Key': 'ManageSafe', 'Value': False},<br/>{'Key': 'ManageSafeMembers', 'Value': False},<br/>{'Key': 'BackupSafe', 'Value': False},<br/>{'Key': 'ViewAuditLog', 'Value': False},<br/>{'Key': 'ViewSafeMembers', 'Value': False},<br/>{'Key': 'AccessWithoutConfirmation', 'Value': False},<br/>{'Key': 'CreateFolders', 'Value': False},<br/>{'Key': 'DeleteFolders', 'Value': False},<br/>{'Key': 'MoveAccountsAndFolders', 'Value': False},<br/>{'Key': 'RequestsAuthorizationLevel', 'Value': 0} |
-
-### cyberark-pas-safe-member-delete
+### cyberark-pas-safe-member-update
 
 ***
-Remove a specific member from a safe.
-Uses the V1 of the API and may change in the future.
-
-To run this command, you must have *Manage Safe Members* permission in the Safe.
+Update an existing safe member.
 
 #### Base Command
 
-`cyberark-pas-safe-member-delete`
-
-#### Input
-
-| **Argument Name** | **Description**                                                        | **Required** |
-|-------------------|------------------------------------------------------------------------| --- |
-| safe_name       | The URL encoded name of the safe to delete a member from.              | Required |
-| member_name       | The name of the safe member to delete from the safe’s list of members. | Required |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| CyberArkPAS.Safes.Members.Deleted | Boolean | Whether the safe member was deleted. |
-
-#### Command Example
-
-```!cyberark-pas-safe-member-delete member_name=TestUser1 safe_name=UpdatedName1```
-
-#### Context Example
-
-```
-{
-    "CyberArkPAS": {
-        "Safes": {
-            "Members": {
-                "Deleted": true,
-                "MemberName": "TestUser1"
-            }
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->Member TestUser1 was deleted from UpdatedName1 safe
-
-### cyberark-pas-account-add
-
-***
-Add a new privileged account or SSH key to the vault.
-
-To run this command, you must have the following permissions in the Vault:
-
-* *Add Account*
-* *Update Password* or *Update Password Properties*
-
-#### Base Command
-
-`cyberark-pas-account-add`
+`cyberark-pas-safe-member-update`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| account_name | The name of the account. | Required |
-| address | The name or address of the machine where the account will be used. | Required |
-| platform_id | The platform assigned to this account. | Required |
-| safe_name | The name of the safe where the account will be created. | Required |
-| secret_type | The type of password. Valid values are: 'password', 'key'. Default is 'password'. | Optional |
-| username | The The user name of the account. | Required |
-| password | The password that the user will use to log on for the first time. | Required |
-| properties | Object containing key-value pairs to associate with the account, as defined by the account platform.<br/>e.g., {"Location": "IT", "OwnerName": "MSSPAdmin"} | Optional |
-| automatic_management_enabled | Whether the account secret is automatically managed by the Central Policy Manager (CPM). Can be 'true' or 'false'. Default is 'true'. | Optional |
-| manual_management_reason | The reason for disabling automatic secret management. | Optional |
-| remote_machines | List of remote machines, separated by semicolons.<br/>e.g., server1.cyberark.com;server2.cyberark.com | Optional |
-| access_restricted_to_remote_machines | Whether or not to restrict access to specified remote machines only. Can be 'true' or 'false'. Default is: 'true'. | Optional |
+| member_name | The member name that will be updated. | Required | 
+| membership_expiration_date | The membership expiration date in the format MM\DD\YY. Leave empty if there is no expiration date. | Optional | 
+| permissions | The user’s permissions in the safe.<br/>Valid values are:<br/>UseAccounts, RetrieveAccounts, ListAccounts, AddAccounts, UpdateAccountContent, UpdateAccountProperties, InitiateCPMAccountManagementOperations, InitiateCPMAccountManagementOperations, SpecifyNextAccountContent, RenameAccounts, DeleteAccounts, UnlockAccounts, ManageSafe, ManageSafeMembers, BackupSafe, ViewAuditLog, ViewAuditLog, ViewSafeMembers, RequestsAuthorizationLevel, AccessWithoutConfirmation, CreateFolders, DeleteFolders, MoveAccountsAndFolders<br/>e.g., UseAccounts,RetrieveAccounts. | Optional | 
+| safe_name | The URL encoded name of the safe to which the safe member belongs. | Required | 
+| requests_authorization_level | Request authorization levels.<br/>0 – cannot authorize<br/>1 – authorization level 1<br/>2 – authorization level 2<br/>Default is: '0'. Possible values are: 0, 1, 2. Default is 0. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CyberArkPAS.Accounts.id | String | The unique ID of the account. |
-| CyberArkPAS.Accounts.categoryModificationTime | Number | The last modified date of the account. |
-| CyberArkPAS.Accounts.createdTime | Number | The date the account was created. |
-| CyberArkPAS.Accounts.name | String | The name of the account. |
-| CyberArkPAS.Accounts.platformId | String | The platform assigned to this account. |
-| CyberArkPAS.Accounts.safeName | String | The safe where the account is created. |
-| CyberArkPAS.Accounts.secretManagement | String | Whether the account secret is automatically managed by the CPM. |
-| CyberArkPAS.Accounts.secretType | String | The type of password. |
-| CyberArkPAS.Accounts.userName | String | The name of the account user. |
-| CyberArkPAS.Accounts.address | String | The name or address of the machine where the account will be used. |
+| CyberArkPAS.Safes.Members.MemberName | String | The name of the safe member. | 
+| CyberArkPAS.Safes.Members.MembershipExpirationDate | Number | The expiration date of the safe member. | 
+| CyberArkPAS.Safes.Members.Permissions | Unknown | The permissions of the safe member. | 
+| CyberArkPAS.Safes.Members.SearchIn | String | The vault or domain where the user or group was found. | 
 
-#### Command Example
-
-```!cyberark-pas-account-add safe_name=TestSafe1 account_name=TestAccount1 address=/ password=12345Aa platform_id=WinServerLocal username=TestUser```
-
-#### Context Example
-
-```
-{
-    "CyberArkPAS": {
-        "Accounts": {
-            "address": "/",
-            "categoryModificationTime": 1597863168,
-            "createdTime": 1597863168,
-            "id": "89_3",
-            "name": "TestAccount1",
-            "platformId": "WinServerLocal",
-            "safeName": "TestSafe1",
-            "secretManagement": {
-                "automaticManagementEnabled": true,
-                "lastModifiedTime": 1597848768
-            },
-            "secretType": "password",
-            "userName": "TestUser"
         }
     }
 }
@@ -1393,54 +1161,28 @@ To run this command, you must have the following permissions in the Safe:
             "platformId": "WinServerLocal",
             "safeName": "TestSafe1",
             "secretManagement": {
-                "automaticManagementEnabled": true,
-                "lastModifiedTime": 1597848768
-            },
-            "secretType": "password",
-            "userName": "TestUser"
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->### Results
->
->|address|categoryModificationTime|createdTime|id|name|platformId|safeName|secretManagement|secretType|userName|
->|---|---|---|---|---|---|---|---|---|---|
->| / | 1597863168 | 1597863168 | 89_3 | NewName | WinServerLocal | TestSafe1 | automaticManagementEnabled: true<br/>lastModifiedTime: 1597848768 | password | TestUser |
-
-### cyberark-pas-accounts-list
+### cyberark-pas-safe-member-delete
 
 ***
-Return a list of all the accounts in the vault.
-
-To run this command, you must have *List Accounts* permission in the Safe.
+Remove a specific member from a safe.
 
 #### Base Command
 
-`cyberark-pas-accounts-list`
+`cyberark-pas-safe-member-delete`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| search | List of keywords to search for in the accounts.<br/>Separated with a space, e.g,. Windows admin | Optional |
-| sort | Property or properties by which to sort the returned accounts. <br/>The properties are followed by a comma and then 'asc' (default) or 'desc' to control the sort direction,<br/>e.g., Windows,asc | Optional |
-| offset | The offset of the first account that is returned in the collection of results. Default is '0'. | Optional |
-| limit | Maximum number of accounts in the returned list. Default is '50'. | Optional |
-| filter | Search for accounts filtered by a specific safe,<br/>e.g., safeName eq 'mySafe'. | Optional |
+| safe_name | The URL encoded name of the safe to delete a member from. | Required | 
+| member_name | The name of the safe member to delete from the safe’s list of members. | Required | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CyberArkPAS.Accounts.id | String | The unique IDs of the accounts. |
-| CyberArkPAS.Accounts.categoryModificationTime | Number | Last modified dates of the accounts. |
-| CyberArkPAS.Accounts.createdTime | Number | Date the account was created. |
-| CyberArkPAS.Accounts.name | String | The names of the accounts. |
-| CyberArkPAS.Accounts.platformId | String | The platforms assigned to these accounts. |
+| CyberArkPAS.Safes.Members.Deleted | Boolean | Whether the safe member was deleted. | 
+
 | CyberArkPAS.Accounts.safeName | String | The safes where the accounts were created. |
 | CyberArkPAS.Accounts.secretManagement | String | Whether the accounts secrets were automatically managed by the CPM. |
 | CyberArkPAS.Accounts.secretType | String | The type of passwords. |
