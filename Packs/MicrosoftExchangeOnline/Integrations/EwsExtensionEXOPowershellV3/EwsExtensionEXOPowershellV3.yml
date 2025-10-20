@@ -704,13 +704,13 @@ script:
     - description: A comma-separated list of recipient email addresses by which to filter the results.
       isArray: true
       name: recipient_address
-    - description: The source IP address by which to filter the results. For incoming messages, the value of from_ip is the public IP address of the SMTP email server that sent the message. For outgoing messages from Exchange Online, the value is blank.
+    - description: The source IP address used to filter results. For incoming messages, from_ip is the public IP of the SMTP server that sent the message. For outgoing messages from Exchange Online, the value is blank.
       name: from_ip
-    - description: The destination IP address by which to filter the results. For outgoing messages, the value of to_ip is the public IP address in the resolved MX record for the destination domain. For incoming messages to Exchange Online, the value is blank.
+    - description: The destination IP address used to filter results. For outgoing messages, the to_ip value is the public IP address in the resolved MX record for the destination domain. For incoming messages to Exchange Online, this value is blank.
       name: to_ip
     - description: The Message-ID header field of the message by which to filter the results. This value is also known as the Client ID. The format of the Message-ID depends on the messaging server that sent the message. The value should be unique for each message. However, not all messaging servers create values for the Message-ID in the same way. Be sure to include the full Message ID string (which may include angle brackets) and enclose the value in quotation marks (for example,"d9683b4c-127b-413a-ae2e-fa7dfb32c69d@DM3NAM06BG401.Eop-nam06.prod.protection.outlook.com").
       name: message_id
-    - description: The message trace ID to be used with the recipient address to uniquely identify a message trace and obtain more details. A message trace ID is generated for every message that''s processed by the system.
+    - description: The message trace ID to be used with the recipient address to uniquely identify a message trace and obtain more details. A message trace ID is generated for every message that's processed by the system.
       name: message_trace_id
     - defaultValue: '1'
       description: The page number of the results you want to view. Can be an integer between 1 and 1000.
@@ -790,11 +790,11 @@ script:
       - description: A comma-separated list of recipient email addresses by which to filter the results.
         isArray: true
         name: recipient_address
-      - description: The source IP address by which to filter the results. For incoming messages, the value of from_ip is the public IP address of the SMTP email server that sent the message. For outgoing messages from Exchange Online, the value is blank.
+      - description: The source IP address used to filter results. For incoming messages, from_ip is the public IP of the SMTP server that sent the message. For outgoing messages from Exchange Online, the value is blank.
         name: from_ip
-      - description: The destination IP address by which to filter the results. For outgoing messages, the value of to_ip is the public IP address in the resolved MX record for the destination domain. For incoming messages to Exchange Online, the value is blank.
+      - description: The destination IP address used to filter results. For outgoing messages, the to_ip value is the public IP address in the resolved MX record for the destination domain. For incoming messages to Exchange Online, this value is blank.
         name: to_ip
-      - description: The Message-ID header field of the message by which to filter the results. This value is also known as the Client ID. The format of the Message-ID depends on the messaging server that sent the message. The value should be unique for each message. However, not all messaging servers create values for the Message-ID in the same way. Be sure to include the full Message ID string (which may include angle brackets) and enclose the value in quotation marks (for example,"d9683b4c-127b-413a-ae2e-fa7dfb32c69d@DM3NAM06BG401.Eop-nam06.prod.protection.outlook.com").
+      - description: The Message-ID header field used to filter results, also known as the Client ID, should be unique for each message. The format depends on the sending server, and not all servers generate it the same way. Include the full Message-ID string (may include angle brackets) and enclose it in quotes, e.g., "d9683b4c-127b-413a-ae2e-fa7dfb32c69d@DM3NAM06BG401.Eop-nam06.prod.protection.outlook.com".
         isArray: true
         name: message_id
       - description: The message trace ID to be used with the recipient address to uniquely identify a message trace and obtain more details. A message trace ID is generated for every message that''s processed by the system.

@@ -1123,10 +1123,10 @@ class ExchangeOnlinePowershellV3Client
         [string]$starting_recipient_address, [int32]$limit) {
         $response = ""
         try {
-            # Establish session to remote
+            # Create Exchange Online session
             $this.CreateSession()
             $cmd_params = @{}
-            # Import and Execute command
+            # Import and Execute a command
             if ($sender_address) {
                 $cmd_params.SenderAddress = $sender_address
             }
@@ -1173,13 +1173,13 @@ class ExchangeOnlinePowershellV3Client
             $response = Get-MessageTraceV2 @cmd_params
         }
         finally {
-            # Close session to remote
+            # Disconnect Exchange Online session
             $this.DisconnectSession()
         }
         return $response
         <#
             .DESCRIPTION
-            Search message data for the last 90 days.
+            Search message data from the last 90 days.
 
             .PARAMETER sender_address
             The sender_address parameter filters the results by the sender's email address.
@@ -1209,30 +1209,30 @@ class ExchangeOnlinePowershellV3Client
 
             .PARAMETER start_date
             The start_date parameter specifies the start date of the date range.
-            Use the short date format that's defined in the Regional Options settings on the computer where you're running the command. For example, if the computer is configured to use the short date format mm/dd/yyyy,
-            enter 09/01/2018 to specify September 1, 2018. You can enter the date only, or you can enter the date and time of day.
+            Use the short date format defined in the computer's Regional Options settings. For example, if the computer is configured to use the short date format mm/dd/yyyy, enter 09/01/2018 to specify September 1, 2018.
+            You can enter the date only, or you can enter the date and time of day.
             If you enter the date and time of day, enclose the value in quotation marks ("), for example, "09/01/2018 5:00 PM".
-            Valid input for this parameter is from 10 days - now ago. The default value is 48 hours ago.
+            Valid input is from 10 days ago up to the current time. The default is 48 hours ago.
 
             .PARAMETER end_date
             The end_date parameter specifies the end date of the date range.
-            Use the short date format that's defined in the Regional Options settings on the computer where you're running the command.
+            Use the short date format in the computer's Regional Options settings.
             For example, if the computer is configured to use the short date format mm/dd/yyyy, enter 09/01/2018 to specify September 1, 2018.
             You can enter the date only, or you can enter the date and time of day.
             If you enter the date and time of day, enclose the value in quotation marks ("), for example, "09/01/2018 5:00 PM".
-            Valid input for this parameter is from start_date - now. The default value is now.
+            Valid input is from start_date up to the current time. The default is the current time.
 
             .PARAMETER status
-            * GettingStatus: The message is waiting for status update.
-            * Failed: Message delivery was attempted and it failed or the message was filtered as spam or malware, or by transport rules.
-            * Pending: Message delivery is underway or was deferred and is being retried.
-            * Delivered: The message was delivered to its destination.
-            * Expanded: There was no message delivery because the message was addressed to a distribution group and the membership of the distribution was expanded.
+            * GettingStatus: The message is pending a status update.
+            * Failed: The message delivery was attempted but failed, or the message was filtered as spam, malware, or by transport rules.
+            * Pending: Message delivery is in progress or was deferred and is being retried
+            * Delivered: The message was successfully delivered to its destination.
+            * Expanded: No message was delivered because the message was sent to a distribution group; the group's membership was expanded instead.
             * Quarantined: The message was quarantined.
             * FilteredAsSpam: The message was marked as spam.
 
             .PARAMETER subject
-            The subject parameter filters the results by the subject of the message. If the value contains spaces, enclose the value in quotation marks (").
+            Filters results by the subject of the message. If the value contains spaces, enclose it in quotation marks (")
 
             .PARAMETER subject_filter_type
             The subject_filter_type parameter specifies how the value of the subject parameter is evaluated. Valid values are:
@@ -1242,15 +1242,15 @@ class ExchangeOnlinePowershellV3Client
             It is recommend to use StartsWith or EndsWith instead of Contains whenever possible.
 
             .PARAMETER starting_recipient_address
-            The starting_recipient_address parameter is used with the end_date parameter to query subsequent data for partial results while avoiding duplication.
-            Query subsequent data by taking the Recipient address and Received Time values of the last record of the partial results and using them as the values for the starting_recipient_address and end_date parameters respectively in the next query.
+            The starting_recipient_address parameter is used with the end_date parameter to query subsequent data while avoiding duplicates.
+            For subsequent queries, use the Recipient address and Received Time from the last record of the previous results as the values for starting_recipient_address and end_date, respectively.
 
             .PARAMETER limit
             The limit parameter specifies the maximum number of results to return.
-            A valid value is from 1 to 5000. The default value is 1000.
+            Valid values are 1 to 5000. The default is 1000.
 
             .OUTPUTS
-            psobject - Raw response.
+            [PSObject] – Returns the raw response.
 
             .LINK
             https://docs.microsoft.com/en-us/powershell/module/exchange/get-messagetracev2?view=exchange-ps
