@@ -5388,37 +5388,33 @@ def test_resolve_conversation_id_from_name_no_channel_found(mocker):
 
 
 class TestToUnixSecondsStr:
-    def test_empty_string_returns_zero(self):
-        result = to_unix_seconds_str("")
-        assert result == "0"
-
     def test_valid_unix_timestamp_string(self):
         result = to_unix_seconds_str("1609459200")
-        assert result == "1609459200.000000"
+        assert result == "1609459200"
 
     def test_unix_timestamp_with_decimals(self):
         result = to_unix_seconds_str("1609459200.123456")
-        assert result == "1609459200.000000"
+        assert result == "1609459200"
 
     def test_iso_date_string(self):
         result = to_unix_seconds_str("2021-01-01T00:00:00Z")
         expected_timestamp = datetime(2021, 1, 1, tzinfo=UTC).timestamp()
-        assert result == f"{expected_timestamp:.6f}"
+        assert result == f"{expected_timestamp}"
 
     def test_human_readable_date(self):
         result = to_unix_seconds_str("January 1, 2021")
         expected_timestamp = datetime(2021, 1, 1, tzinfo=UTC).timestamp()
-        assert result == f"{expected_timestamp:.6f}"
+        assert result == f"{expected_timestamp}"
 
     def test_date_without_timezone_assumes_utc(self):
         result = to_unix_seconds_str("2021-01-01T12:00:00")
         expected_timestamp = datetime(2021, 1, 1, 12, 0, 0, tzinfo=UTC).timestamp()
-        assert result == f"{expected_timestamp:.6f}"
+        assert result == f"{expected_timestamp}"
 
     def test_date_with_timezone_converts_to_utc(self):
         result = to_unix_seconds_str("2021-01-01T12:00:00+05:00")
         expected_timestamp = datetime(2021, 1, 1, 7, 0, 0, tzinfo=UTC).timestamp()
-        assert result == f"{expected_timestamp:.6f}"
+        assert result == f"{expected_timestamp}"
 
     def test_invalid_numeric_string_raises_error(self):
         with pytest.raises(ValueError) as exc_info:

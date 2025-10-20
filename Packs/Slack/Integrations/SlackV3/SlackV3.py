@@ -2744,7 +2744,7 @@ def to_unix_seconds_str(s: str) -> str:
                 or a human-readable/ISO format date string.
 
     Returns:
-        str: Unix timestamp as a string with 6 decimal places precision.
+        str: Unix timestamp as a string.
 
     Raises:
         ValueError: If the time string cannot be parsed.
@@ -2767,7 +2767,7 @@ def to_unix_seconds_str(s: str) -> str:
             "(e.g., '2023-01-01', 'yesterday', '2023-01-01T12:00:00Z')."
         )
 
-    return f"{dt.timestamp():.6f}"
+    return f"{dt.timestamp()}"
 
 
 def get_direct_message_channel_id_by_username(username):
