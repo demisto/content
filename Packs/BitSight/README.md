@@ -7,6 +7,7 @@ Bitsight for Security Performance Management (SPM) enables CISOs to use an exter
 ## This pack includes
 
 Data normalization capabilities:
+
 * Modeling rules normalize logs ingested via the Cortex XSIAM event collector.
 * The *`bitsight_bitsight_raw`* dataset enables querying ingested Bitsight logs in XQL Search.
 
@@ -38,7 +39,6 @@ To access the BitSight on your Cortex XSIAM tenant:
 | Fetch events | | True |
 | Max events per fetch | | False |
 | Events Fetch Interval | | False |
-
 
 ####
 
