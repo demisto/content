@@ -91,12 +91,7 @@ def test_separate_client_id_and_refresh_token():
     assert client.client_id == "client_id"
 
 
-@pytest.mark.parametrize("label", [
-    "PRIVATE KEY",
-    "RSA PRIVATE KEY",
-    "EC PRIVATE KEY",
-    "ENCRYPTED PRIVATE KEY"
-])
+@pytest.mark.parametrize("label", ["PRIVATE KEY", "RSA PRIVATE KEY", "EC PRIVATE KEY", "ENCRYPTED PRIVATE KEY"])
 def test_valid_private_key_formatting(label):
     """
     Given:
@@ -121,7 +116,7 @@ def test_valid_private_key_formatting(label):
     result = ServiceNowClient._validate_and_format_private_key(raw_key)
 
     expected_lines = key_data.replace("\n", "").replace(" ", "")
-    expected_lines = [expected_lines[i:i + 64] for i in range(0, len(expected_lines), 64)]
+    expected_lines = [expected_lines[i : i + 64] for i in range(0, len(expected_lines), 64)]
     expected_key = f"-----BEGIN {label}-----\n" + "\n".join(expected_lines) + f"\n-----END {label}-----"
 
     assert result == expected_key
@@ -167,7 +162,7 @@ def test_private_key_with_extra_characters_is_cleaned():
     result = ServiceNowClient._validate_and_format_private_key(raw_key)
 
     clean_base64 = re.sub(r"[^A-Za-z0-9+/=]", "", key_data)
-    expected_lines = [clean_base64[i:i + 64] for i in range(0, len(clean_base64), 64)]
+    expected_lines = [clean_base64[i : i + 64] for i in range(0, len(clean_base64), 64)]
     expected_key = f"-----BEGIN {label}-----\n" + "\n".join(expected_lines) + f"\n-----END {label}-----"
 
     assert result == expected_key
@@ -192,7 +187,7 @@ def test_private_key_preserves_label():
 
     result = ServiceNowClient._validate_and_format_private_key(raw_key)
 
-    expected_lines = [content[i:i + 64] for i in range(0, len(content), 64)]
+    expected_lines = [content[i : i + 64] for i in range(0, len(content), 64)]
     expected_key = f"-----BEGIN {label}-----\n" + "\n".join(expected_lines) + f"\n-----END {label}-----"
 
     assert result == expected_key

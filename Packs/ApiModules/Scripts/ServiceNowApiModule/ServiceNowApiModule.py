@@ -173,10 +173,8 @@ class ServiceNowClient(BaseClient):
         """
         # Match and extract the first valid private key block
         pem_pattern = re.compile(
-            r"-----BEGIN (?P<label>(ENCRYPTED )?(RSA |EC )?PRIVATE KEY)-----\s*"
-            r"(?P<content>.*?)"
-            r"\s*-----END \1-----",
-            re.DOTALL
+            r"-----BEGIN (?P<label>(ENCRYPTED )?(RSA |EC )?PRIVATE KEY)-----\s*" r"(?P<content>.*?)" r"\s*-----END \1-----",
+            re.DOTALL,
         )
 
         match = pem_pattern.search(private_key)
@@ -190,7 +188,7 @@ class ServiceNowClient(BaseClient):
         key_content = re.sub(r"[^A-Za-z0-9+/=]", "", key_content)
 
         # Format content into 64-character lines
-        key_lines = [key_content[i:i + 64] for i in range(0, len(key_content), 64)]
+        key_lines = [key_content[i : i + 64] for i in range(0, len(key_content), 64)]
 
         # Reattach markers
         processed_key = f"-----BEGIN {key_type}-----\n" + "\n".join(key_lines) + f"\n-----END {key_type}-----"
