@@ -28,5 +28,6 @@
     "useAsKpi": false,
     "version": -1,
     "fromVersion": "6.5.0",
-    "x2_fields": "causality_actor_process_signature_vendor"
+    "x2_fields": "causality_actor_process_signature_vendor",
+    "toVersion": "8.11.9"
 }

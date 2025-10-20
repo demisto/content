@@ -35,5 +35,6 @@
             "type": "shortText",
             "name": "Alert URL"
         }
-    ]
+    ],
+    "toVersion": "8.11.9"
 }

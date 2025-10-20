@@ -28,5 +28,6 @@
     "useAsKpi": false,
     "version": -1,
     "fromVersion": "6.5.0",
-    "x2_fields": "action_process_image_command_line"
+    "x2_fields": "action_process_image_command_line",
+    "toVersion": "8.11.9"
 }

@@ -26,5 +26,6 @@
     "sla": 0,
     "threshold": 72,
     "fromVersion": "6.9.0",
-    "marketplaces": ["marketplacev2", "platform"]
+    "marketplaces": ["marketplacev2", "platform"],
+    "toVersion": "8.11.9"
 }

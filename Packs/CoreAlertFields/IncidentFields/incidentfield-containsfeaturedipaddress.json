@@ -27,5 +27,6 @@
     "useAsKpi": false,
     "version": -1,
     "fromVersion": "6.5.0",
-    "x2_fields": "contains_featured_ip"
+    "x2_fields": "contains_featured_ip",
+    "toVersion": "8.11.9"
 }

@@ -28,5 +28,6 @@
     "useAsKpi": false,
     "version": -1,
     "fromVersion": "6.5.0",
-	"x2_fields": "fw_app_technology"
+	"x2_fields": "fw_app_technology",
+    "toVersion": "8.11.9"
 }

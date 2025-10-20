@@ -40,5 +40,6 @@
             "type": "shortText",
             "name": "MD5"
         }
-    ]
+    ],
+    "toVersion": "8.11.9"
 }
