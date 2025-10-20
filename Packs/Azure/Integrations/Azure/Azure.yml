@@ -536,6 +536,103 @@ script:
           - Blob
           - Container
           - None
+
+  - arguments:
+    - description: The name of the Container.
+      name: container_name
+      required: true
+    - description: "The subscription ID."
+      name: subscription_id
+      required: true
+    - description: "The resource group name."
+      name: resource_group_name
+      required: true
+    - description: The storage account name.
+      name: account_name
+      required: true
+    description: Retrieve properties for the specified Container.
+    name: azure-storage-container-property-get
+    outputs:
+    - contextPath: AzureStorageContainer.Container.Property.last_modified
+      description: Last modified time of the container.
+      type: Date
+    - contextPath: AzureStorageContainer.Container.Property.etag
+      description: The entity tag for the container.
+      type: String
+    - contextPath: AzureStorageContainer.Container.Property.lease_status
+      description: The lease status of the container.
+      type: String
+    - contextPath: AzureStorageContainer.Container.Property.lease_state
+      description: The lease state of the container.
+      type: String
+    - contextPath: AzureStorageContainer.Container.Property.has_immutability_policy
+      description: Indicates whether the container has an immutability policy set on it.
+      type: String
+    - contextPath: AzureStorageContainer.Container.Property.has_legal_hold
+      description: Indicates whether the container has a legal hold.
+      type: String
+    - contextPath: AzureStorageContainer.Container.name
+      description: Container name.
+      type: String
+
+  - arguments:
+    - description: The name of the Container to delete.
+      name: container_name
+      required: true
+    - description: "The subscription ID."
+      name: subscription_id
+      required: true
+    - description: "The resource group name."
+      name: resource_group_name
+      required: true
+    - description: The storage account name.
+      name: account_name
+      required: true
+    description: Marks the specified Container for deletion. The Container and any Blobs contained within it, will be deleted during garbage collection.
+    execution: true
+    name: azure-storage-container-delete
+
+  - arguments:
+    - description: The name of the Blob Container.
+      name: container_name
+      required: true
+    - description: The name of the Blob to retrieve.
+      name: blob_name
+      required: true
+    description: Retrieve Blob from Container.
+    name: azure-storage-container-blob-get
+    outputs:
+    - contextPath: File.Size
+      description: The size of the file.
+      type: String
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.Name
+      description: The name of the file.
+      type: String
+    - contextPath: File.SSDeep
+      description: The SSDeep hash of the file.
+      type: String
+    - contextPath: File.EntryID
+      description: The entry ID of the file.
+      type: String
+    - contextPath: File.Info
+      description: File information.
+      type: String
+    - contextPath: File.Type
+      description: The file type.
+      type: String
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: Unknown
+    - contextPath: File.Extension
+      description: The file extension.
+      type: String
+
   - arguments:
     - name: name
       required: true
