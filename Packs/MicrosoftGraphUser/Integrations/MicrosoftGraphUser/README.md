@@ -836,7 +836,7 @@ This command will only return a single object in the collection as a user can ha
 ### msgraph-user-change-password-on-premise
 
 ***
-Changes the password of an on-premise user. Requires the UserAuthenticationMethod.Read.All - delegated, Users.Read.All - delegated permissions.
+Changes the password of an on-premise user. Requires the following permissions: -UserAuthenticationMethod.Read.All - delegated, Users.Read.All - delegated.
 Providing a password is required (password auto-generation is not supported).
 
 **Prerequisites and Configuration Requirements:**
@@ -850,16 +850,15 @@ Providing a password is required (password auto-generation is not supported).
 3. **Azure App Role Configuration**:
    - The app must have the **Authorization Administrator** role granted to it through the Microsoft Entra Admin Center:
      - Navigate to **Roles and administrators** → Search for **Authorization Administrator**
-     - Click on **Authorization Administrator**.
-     - Click on **Add assignments**.
+     - Click **Authorization Administrator** → **Add assignments**.
      - Select the app you want to configure the instance with and click **Save**.
    - Additionally, create a new app role in the Azure Portal for the app you want to configure the instance with:
      - Navigate to **App roles** → **Create Role App**
-     - Set the **Value** to `UserAuthenticationMethod.ReadWrite.All`
-     - Set the **Allowed member types** to `Both`.
+     - Set **Value** to `UserAuthenticationMethod.ReadWrite.All`
+     - Set **Allowed member types** to `Both`.
      - Click on **Create**.
 
-4. **User Role Requirements**: The logged-in user (the one authenticating through the Authorization Code flow) must have the **Authorization Administrator** role in Azure AD.
+4. **User Role Requirements**: The logged-in user (authenticating via Authorization Code flow) must have the Authorization Administrator role in Azure AD.
 
 #### Base Command
 
@@ -871,7 +870,7 @@ Providing a password is required (password auto-generation is not supported).
 | --- | --- | --- |
 | user | User ID or userPrincipalName to update password for. | Required |
 | password | The new password. | Optional |
-| nonsensitive_password | The new password. This argument can eb used in playbooks, but note its value will NOT be hidden in logs. | Optional |
+| nonsensitive_password | The new password. This argument can be used in playbooks, but note its value will NOT be hidden in logs. | Optional |
 
 #### Context Output
 
