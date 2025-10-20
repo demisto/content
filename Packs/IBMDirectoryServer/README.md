@@ -16,13 +16,13 @@ To use the collector, use the following option to collect events from the vendor
 
 - [XDRC (XDR Collector)](#xdrc-xdr-collector)
 
-Configure the vendor and product for this specific collector. 
+Configure the vendor and product for this specific collector.
 
 ## XDRC (XDR Collector)
 
 1. Refer to the official XDR Collector documentation [XDR Collectors](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/XDR-Collectors).  
 
-2. Replace [vendor]\_[product]\_raw with ibm_ldap_raw in your configuration. 
+2. Replace [vendor]\_[product]\_raw with ibm_ldap_raw in your configuration.
 
 When configuring the instance, you should use a YAML that configures the vendor and product, just as seen in the below configuration for the IBM Security Verify Directory product.
 
