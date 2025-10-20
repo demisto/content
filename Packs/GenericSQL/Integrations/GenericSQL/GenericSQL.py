@@ -342,11 +342,11 @@ def test_module(client: Client, *_) -> tuple[str, dict[Any, Any], list[Any]]:
 
     if params.get("isFetch"):
         dialect = params.get("dialect")
-        if params.get("dialect") not in {MY_SQL, MICROSOFT_SQL_SERVER, MS_ODBC_DRIVER}:
+        if params.get("dialect") not in {MY_SQL, MICROSOFT_SQL_SERVER, MS_ODBC_DRIVER ,TRINO}:
             return (
                 (
                     f"Fetch Incidents is supported only for the following SQL databases: "
-                    f"'{MICROSOFT_SQL_SERVER}', '{MS_ODBC_DRIVER}', and '{MY_SQL}'. "
+                    f"'{MICROSOFT_SQL_SERVER}', '{MS_ODBC_DRIVER}', '{MY_SQL} and {TRINO}'. "
                     f"Current dialect '{dialect}' is not supported."
                 ),
                 {},
@@ -499,6 +499,15 @@ def initialize_last_run(fetch_parameters: str, first_fetch: str):
     last_run["ids"] = []
 
     return last_run
+
+
+def create_sql_query_for_trine(params: dict, last_run:Optional[dict]) -> str:
+    current_id = last_run.get("id") or 0
+    query = params.get("query", "")
+    id_column_name = params.get("column_name", "")
+    limit = params.get("max_fetch") or FETCH_DEFAULT_LIMIT
+
+    return f"{query} WHERE {id_column_name} > {current_id} ORDER BY id ASC LIMIT {limit}"
 
 
 def create_sql_query(last_run: dict, query: str, column_name: str, max_fetch: str):
@@ -664,6 +673,33 @@ def fetch_incidents(client: Client, params: dict):
     return incidents, last_run
 
 
+def fetch_incidents_for_trino(client: Client, params: dict):
+    last_run = demisto.getLastRun()
+    demisto.debug("GenericSQL - Start fetching for Trino")
+    sql_query = create_sql_query_for_trine(params, last_run)
+    demisto.debug(f"GenericSQL - Query sent to the server: {sql_query}")
+
+    result, headers = client.sql_query_execute_request(sql_query, bind_vars={}, fetch_limit=0)
+    table = convert_sqlalchemy_to_readable_table(result)
+    incidents: list[dict[str, Any]] = table_to_incidents(
+        table,
+        last_run,
+        params.get("fetch_parameters", ""),
+        params.get("column_name", ""),
+        params.get("id_column", ""),
+        params.get("incident_name", ""),
+    )
+    demisto.debug(f"This is the table: {table}")
+    if table:
+        last_run = {"id": table[-1].get(params.get("id_column"))}
+
+    demisto.debug(f"GenericSQL - Next run after incidents fetching: {json.dumps(last_run)}")
+    demisto.debug(f"GenericSQL - Number of result: {len(incidents)}")
+
+    demisto.info(f"last record now is: {last_run}, number of incidents fetched is {len(incidents)}")
+
+    return incidents, last_run
+
 # list of loggers we should set to debug when running in debug_mode
 # taken from: https://docs.sqlalchemy.org/en/13/core/engines.html#configuring-logging
 SQL_LOGGERS = [
@@ -729,7 +765,10 @@ def main():
             return_outputs(*commands[command](client, demisto.args(), command))
 
         elif command == "fetch-incidents":
-            incidents, last_run = fetch_incidents(client, params)
+            if params.get("dialect") == TRINO:
+                incidents, last_run = fetch_incidents_for_trino(client, params)
+            else:
+                incidents, last_run = fetch_incidents(client, params)
             demisto.setLastRun(last_run)
             demisto.incidents(incidents)
         else:
