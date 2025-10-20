@@ -178,6 +178,6 @@ script:
 tests:
 - ACTI Indicator Feed Test
 fromversion: 5.5.0
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
