@@ -2268,13 +2268,13 @@ script:
       name: virtual_machine_name
       required: true
     outputs:
-    - contextPath: Azure.Compute.Name
+    - contextPath: Azure.Compute.name
       description: Name of the VM that was started.
       type: string
-    - contextPath: Azure.Compute.ResourceGroup
+    - contextPath: Azure.Compute.resourceGroup
       description: Resource group the VM resides in.
       type: string
-    - contextPath: Azure.Compute.PowerState
+    - contextPath: Azure.Compute.powerState
       description: Whether the VM instance is powered on or off.
       type: string
   - name: azure-vm-poweroff-instance
@@ -2300,13 +2300,13 @@ script:
         - 'true'
         - 'false'
     outputs:
-    - contextPath: Azure.Compute.Name
+    - contextPath: Azure.Compute.name
       description: The name of the virtual machine that was powered off.
       type: string
-    - contextPath: Azure.Compute.ResourceGroup
+    - contextPath: Azure.Compute.resourceGroup
       description: The resource group in which the virtual machine resides.
       type: string
-    - contextPath: Azure.Compute.PowerState
+    - contextPath: Azure.Compute.powerState
       description: Whether the virtual machine instance is powered on or off.
       type: string
   - name: azure-vm-get-instance-details
@@ -2331,11 +2331,14 @@ script:
         - instanceView
         - 'userData'
     outputs:
-    - contextPath: Azure.Compute.Name
+    - contextPath: Azure.Compute.name
       description: The name of the virtual machine you want to get details of.
       type: string
-    - contextPath: Azure.Compute.ID
+    - contextPath: Azure.Compute.id
       description: The ID of the virtual machine.
+      type: string
+    - contextPath: Azure.Compute.location
+      description: The region in which the virtual machine is hosted.
       type: string
     - contextPath: Azure.Compute.Size
       description: The size of the deployed virtual machine (in gigabytes).
@@ -2343,26 +2346,38 @@ script:
     - contextPath: Azure.Compute.OS
       description: The OS running on the given virtual machine.
       type: string
-    - contextPath: Azure.Compute.ProvisioningState
+    - contextPath: Azure.Compute.properties.provisioningState
       description: The provisioning state of the deployed virtual machine.
       type: string
-    - contextPath: Azure.Compute.Location
-      description: The region in which the virtual machine is hosted.
+    - contextPath: Azure.Compute.networkProfile.networkInterfaces
+      description: The list of network interfaces attached to this virtual machine.
       type: string
-    - contextPath: Azure.Compute.PowerState
-      description: Whether the virtual machine instance is powered on or off.
+    - contextPath: Azure.Compute.properties.hardwareProfile.vmSize
+      description: The size or SKU of the virtual machine, defining CPU, memory, and storage capacity.
       type: string
-    - contextPath: Azure.Compute.ResourceGroup
-      description: The resource group to which the virtual machine belongs.
+    - contextPath: Azure.Compute.properties.provisioningState
+      description: The current provisioning state of the virtual machine (e.g., Succeeded, Updating, Failed).
       type: string
-    - contextPath: Azure.Compute.NetworkInterfaces
-      description: The list of network interfaces attached to this machine.
+    - contextPath: Azure.Compute.properties.osProfile
+      description: The operating system configuration of the virtual machine, including admin credentials and hostname.
       type: string
-    - contextPath: Azure.Compute.UserData
-      description: UserData for the VM.
+    - contextPath: Azure.Compute.properties.storageProfile
+      description: The storage settings for the virtual machine, including OS and data disks.
       type: string
-    - contextPath: Azure.Compute.Tags
-      description: Tags associated with the VM.
+    - contextPath: Azure.Compute.properties.vmId
+      description: The unique identifier assigned to the virtual machine instance.
+      type: string
+    - contextPath: Azure.Compute.properties.instanceView
+      description: Detailed runtime status information about the virtual machine, such as power state and extensions.
+      type: string
+    - contextPath: Azure.Compute.properties.timeCreated
+      description: The timestamp when the virtual machine was created.
+      type: string
+    - contextPath: Azure.Compute.properties.networkProfile
+      description: The network configuration of the virtual machine, including associated network interfaces and settings.
+      type: string
+    - contextPath: Azure.Compute.properties.diagnosticsProfile
+      description: The configuration for boot diagnostics and monitoring of the virtual machine.
       type: string
   - name: azure-vm-get-nic-details
     description: Gets the properties of a given network interface.
@@ -2379,44 +2394,47 @@ script:
       name: nic_name
       required: true
     outputs:
-    - contextPath: Azure.Network.Interfaces.AttachedVirtualMachine
-      description: The attached virtual machine to this interface.
-      type: String
-    - contextPath: Azure.Network.Interfaces.IsPrimaryInterface
-      description: True if this interface is a primary interface of the attached virtual machine.
-      type: String
-    - contextPath: Azure.Network.Interfaces.NICType
-      description: The interface type.
-      type: String
-    - contextPath: Azure.Network.Interfaces.IPConfigurations.ConfigID
-      description: The interface IP configuration ID.
-      type: String
-    - contextPath: Azure.Network.Interfaces.IPConfigurations.ConfigName
-      description: The interface IP configuration name.
-      type: String
-    - contextPath: Azure.Network.Interfaces.IPConfigurations.PrivateIPAddress
-      description: The interface private IP address.
-      type: String
-    - contextPath: Azure.Network.Interfaces.IPConfigurations.PublicIPAddressID
+    - contextPath: Azure.Network.Interfaces.properties.ipConfigurations
       description: The interface public IP address ID.
       type: Unknown
-    - contextPath: Azure.Network.Interfaces.MACAddress
+    - contextPath: Azure.Network.Interfaces.properties.macAddress
       description: The interface MAC address.
       type: String
-    - contextPath: Azure.Network.Interfaces.Name
+    - contextPath: Azure.Network.Interfaces.name
       description: The interface name.
       type: String
-    - contextPath: Azure.Network.Interfaces.ResourceGroup
-      description: The interface resource group.
-      type: String
-    - contextPath: Azure.Network.Interfaces.NetworkSecurityGroup.id
-      description: The interface network security group ID.
-      type: String
-    - contextPath: Azure.Network.Interfaces.Location
+    - contextPath: Azure.Network.Interfaces.location
       description: The interface location.
       type: String
-    - contextPath: Azure.Network.Interfaces.ID
+    - contextPath: Azure.Network.Interfaces.id
       description: The interface ID.
+      type: String
+    - contextPath: Azure.Network.Interfaces.location
+      description: The Azure region where the network interface is deployed.
+      type: String
+    - contextPath: Azure.Network.Interfaces.etag
+      description: A unique read-only string that changes whenever the network interface resource is updated.
+      type: String
+    - contextPath: Azure.Network.Interfaces.kind
+      description: The type of the network interface resource, used for Azure internal classification.
+      type: String
+    - contextPath: Azure.Network.Interfaces.properties.tapConfigurations
+      description: The list of tap configurations attached to the network interface for traffic mirroring.
+      type: String
+    - contextPath: Azure.Network.Interfaces.properties.allowPort25Out
+      description: Indicates whether outbound traffic on port 25 (SMTP) is allowed from this network interface.
+      type: String
+    - contextPath: Azure.Network.Interfaces.properties.nicType
+      description: Specifies the type of network interface, such as Standard or Elastic.
+      type: String
+    - contextPath: Azure.Network.Interfaces.properties.provisioningState
+      description: The current provisioning state of the network interface (e.g., Succeeded, Updating, Failed).
+      type: String
+    - contextPath: Azure.Network.Interfaces.properties.dnsSettings
+      description: The DNS configuration of the network interface, including DNS servers and domain name.
+      type: String
+    - contextPath: Azure.Network.Interfaces.properties.enableIPForwarding
+      description: Indicates whether IP forwarding is enabled for the network interface.
       type: String
   - name: azure-vm-get-public-ip-details
     description: Gets the properties of a given public IP address.
@@ -2433,35 +2451,41 @@ script:
       name: address_name
       required: true
     outputs:
-    - contextPath: Azure.Network.IPConfigurations.PublicIPAddress
-      description: The public IP address.
+    - contextPath: Azure.Network.IPConfigurations.location
+      description: The Azure region where the IP configuration resource is located.
       type: String
-    - contextPath: Azure.Network.IPConfigurations.PublicIPAddressFQDN
-      description: The address fully-qualified domain name (FQDN).
+    - contextPath: Azure.Network.IPConfigurations.id
+      description: The unique resource ID of the IP configuration.
       type: String
-    - contextPath: Azure.Network.IPConfigurations.PublicIPAddressAllocationMethod
-      description: The address allocation method.
+    - contextPath: Azure.Network.IPConfigurations.name
+      description: The name of the IP configuration.
       type: String
-    - contextPath: Azure.Network.IPConfigurations.PublicConfigID
-      description: The address configuration ID.
+    - contextPath: Azure.Network.IPConfigurations.etag
+      description: A unique read-only string that changes whenever the IP configuration resource is updated.
       type: String
-    - contextPath: Azure.Network.IPConfigurations.ResourceGroup
-      description: The address resource group.
+    - contextPath: Azure.Network.IPConfigurations.properties.idleTimeoutInMinutes
+      description: The idle timeout value in minutes for the associated public IP address.
       type: String
-    - contextPath: Azure.Network.IPConfigurations.PublicIPAddressDomainName
-      description: The address domain name.
+    - contextPath: Azure.Network.IPConfigurations.properties.ipAddress
+      description: The private IP address assigned to the network interface or resource.
       type: String
-    - contextPath: Azure.Network.IPConfigurations.PublicIPAddressVersion
-      description: The address version.
+    - contextPath: Azure.Network.IPConfigurations.properties.provisioningState
+      description: The current provisioning state of the IP configuration (e.g., Succeeded, Updating, Failed).
       type: String
-    - contextPath: Azure.Network.IPConfigurations.Location
-      description: The address location.
+    - contextPath: Azure.Network.IPConfigurations.properties.ipConfiguration
+      description: The reference to another IP configuration associated with this resource.
       type: String
-    - contextPath: Azure.Network.IPConfigurations.PublicConfigName
-      description: The address configuration name.
+    - contextPath: Azure.Network.IPConfigurations.properties.publicIPAddressVersion
+      description: The version of the public IP address (IPv4 or IPv6).
       type: String
-    - contextPath: Azure.Network.IPConfigurations.PublicIPAddressID
-      description: The address ID.
+    - contextPath: Azure.Network.IPConfigurations.properties.publicIPAllocationMethod
+      description: Defines how the public IP address is allocated — Static or Dynamic.
+      type: String
+    - contextPath: Azure.Network.IPConfigurations.properties.resourceGuid
+      description: The unique Azure resource GUID for the IP configuration.
+      type: String
+    - contextPath: Azure.Network.IPConfigurations.properties.sku
+      description: The SKU of the public IP address associated with the configuration, defining its performance tier.
       type: String
   isfetch: false
   runonce: false

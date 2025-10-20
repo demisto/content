@@ -3100,14 +3100,14 @@ def start_vm_command(client: AzureClient, params: dict[str, Any], args: dict[str
 
     client.start_vm_request(subscription_id, resource_group_name, vm_name)
     vm_name = vm_name.lower()  # type: ignore
-    vm = {"Name": vm_name, "ResourceGroup": resource_group_name, "PowerState": "VM starting"}
+    vm = {"name": vm_name, "resourceGroup": resource_group_name, "powerState": "VM starting"}
 
     title = f'Power-on of Virtual Machine "{vm_name}" Successfully Initiated'
     human_readable = tableToMarkdown(title, vm, removeNull=True)
 
     return CommandResults(
         outputs_prefix="Azure.Compute",
-        outputs_key_field="Name",
+        outputs_key_field="name",
         outputs=vm,
         readable_output=human_readable,
         raw_response=vm
@@ -3139,14 +3139,14 @@ def poweroff_vm_command(client: AzureClient, params: dict[str, Any], args: dict[
     client.poweroff_vm_request(subscription_id, resource_group_name, vm_name, skip_shutdown)
 
     vm_name = vm_name.lower()  # type: ignore
-    vm = {"Name": vm_name, "ResourceGroup": resource_group_name, "PowerState": "VM stopping"}
+    vm = {"name": vm_name, "resourceGroup": resource_group_name, "powerState": "VM stopping"}
 
     title = f'Power-off of Virtual Machine "{vm_name}" Successfully Initiated'
     human_readable = tableToMarkdown(name=title, t=vm, removeNull=True)
 
     return CommandResults(
         outputs_prefix="Azure.Compute",
-        outputs_key_field="Name",
+        outputs_key_field="name",
         outputs=vm,
         readable_output=human_readable,
         raw_response=vm
@@ -3204,7 +3204,7 @@ def get_vm_command(client: AzureClient, params: dict[str, Any], args: dict[str, 
 
     return CommandResults(
         outputs_prefix="Azure.Compute",
-        outputs_key_field="Name",
+        outputs_key_field="name",
         outputs=response,
         readable_output=human_readable,
         raw_response=response,
@@ -3268,9 +3268,12 @@ def get_network_interface_command(client: AzureClient, params: dict[str, Any], a
     ]
     human_readable = tableToMarkdown(name=title, t=human_readable_network_config, headers=table_headers, removeNull=True)
 
+    for ip_configuration in response.get("properties", {}).get("ipConfigurations", []):
+        ip_configuration["etag"] = ip_configuration.get("etag", "")[3:-1]
+
     return CommandResults(
         outputs_prefix="Azure.Network.Interfaces",
-        outputs_key_field="ID",
+        outputs_key_field="name",
         outputs=response,
         readable_output=human_readable,
         raw_response=response,
@@ -3335,6 +3338,7 @@ def get_public_ip_details_command(client: AzureClient, params: dict[str, Any], a
         address_id = response.get("id")
         resource_group_name = address_id.split("resourceGroups/")[1].split("/providers")[0]
 
+    response["etag"] = response.get("etag", "")[3:-1]
     properties = response.get("properties")
 
     human_readable_ip_config = {
@@ -3359,7 +3363,7 @@ def get_public_ip_details_command(client: AzureClient, params: dict[str, Any], a
 
     return CommandResults(
         outputs_prefix="Azure.Network.IPConfigurations",
-        outputs_key_field="PublicIPAddressID",
+        outputs_key_field="id",
         outputs=response,
         readable_output=human_readable,
         raw_response=response,
