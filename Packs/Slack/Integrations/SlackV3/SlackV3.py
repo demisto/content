@@ -1828,7 +1828,6 @@ def get_conversation_by_name(conversation_name: str) -> dict:
     Returns:
         The slack conversation
     """
-
     conversation_to_search = conversation_name.lower()
     conversation: dict = {}
     # Checks if the channel is defined in the integration params
@@ -2735,7 +2734,7 @@ def list_channels():
     )
 
 
-def to_unix_seconds_str(s: str) -> str:
+def to_unix_seconds_str(time: str) -> str:
     """
     Converts a time string to Unix timestamp in seconds.
 
@@ -2749,8 +2748,9 @@ def to_unix_seconds_str(s: str) -> str:
     Raises:
         ValueError: If the time string cannot be parsed.
     """
-    dt = dateparser.parse(
-        s,
+
+    parsed_datetime = dateparser.parse(
+        time,
         settings={
             "TIMEZONE": "UTC",
             "RETURN_AS_TIMEZONE_AWARE": True,
@@ -2760,14 +2760,14 @@ def to_unix_seconds_str(s: str) -> str:
         },
     )
 
-    if dt is None:
+    if parsed_datetime is None:
         raise ValueError(
-            f"Could not parse time string: {s!r}. "
+            f"Could not parse time string: {time}. "
             "Expected either a numeric Unix timestamp (seconds) or a human-readable date string "
             "(e.g., '2023-01-01', 'yesterday', '2023-01-01T12:00:00Z')."
         )
 
-    return f"{dt.timestamp()}"
+    return f"{parsed_datetime.timestamp()}"
 
 
 def get_direct_message_channel_id_by_username(username):
@@ -2842,6 +2842,7 @@ def conversation_history():
     body = {"channel": conversation_id, "limit": limit}
     if from_time:
         body["oldest"] = to_unix_seconds_str(from_time)
+        
     readable_output = ""
     raw_response = send_slack_request_sync(CLIENT, "conversations.history", http_verb="GET", body=body)
     messages = raw_response.get("messages", "")

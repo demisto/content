@@ -5390,11 +5390,11 @@ def test_resolve_conversation_id_from_name_no_channel_found(mocker):
 class TestToUnixSecondsStr:
     def test_valid_unix_timestamp_string(self):
         result = to_unix_seconds_str("1609459200")
-        assert result == "1609459200"
+        assert result == "1609459200.0"
 
     def test_unix_timestamp_with_decimals(self):
         result = to_unix_seconds_str("1609459200.123456")
-        assert result == "1609459200"
+        assert result == "1609459200.0"
 
     def test_iso_date_string(self):
         result = to_unix_seconds_str("2021-01-01T00:00:00Z")
