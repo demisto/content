@@ -41,7 +41,7 @@
         {
             "cliName": "bmcitsmrequestid",
             "type": "shortText",
-            "name": "BmcITSM Request ID"
+            "name": "Bmc Request ID"
         }
     ]
 }
