@@ -113,42 +113,50 @@ If MFA is enabled for your user, follow the next steps:
 1. When using basic authorization, you will have to update your password with the current OTP every time the current code expires (30 seconds), hence we recommend using OAuth 2.0 authorization.
 2. For using OAuth 2.0 see the above instructions. The OTP code should be appended to the password parameter in the `!servicenow-oauth-login` command.
 
-    | **Parameter** | **Description** | **Required** |
-    |--------| --- | --- |
-    | ServiceNow URL, in the format <https://company.service-now.com/> |  | True |
-    | Username/Client ID |  | False |
-    | Password |  | False |
-    | Use OAuth Login | Select this checkbox if to use OAuth 2.0 authentication. See \(?\) for more information. | False |
-    | Default ticket type for running ticket commands and fetching incidents | The ticket type can be: incident, problem, change_request, sc_request, sc_task or sc_req_item. | False |
-    | ServiceNow API Version (e.g. 'v1') |  | False |
-    | Fetch incidents |  | False |
-    | The query to use when fetching incidents |  | False |
-    | How many incidents to fetch each time |  | False |
-    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days, 3 months, 1 year) |  | False |
-    | Timestamp field to filter by (e.g., `opened_at`) This is how the filter is applied to the query: "ORDERBYopened_at^opened_at&gt;[Last Run]".<br/>To prevent duplicate incidents, this field is mandatory for fetching incidents. |  | False |
-    | ServiceNow ticket column to be set as the incident name. Default is the incident number |  | False |
-    | Incident type |  | False |
-    | Get incident attachments |  | False |
-    | Incident Mirroring Direction | Choose the direction to mirror the incident: Incoming \(from ServiceNow to Cortex XSOAR\), Outgoing \(from Cortex XSOAR to ServiceNow\), or Incoming and Outgoing \(from/to Cortex XSOAR and ServiceNow\). | False |
-    | Use Display Value | Select this checkbox to retrieve comments and work notes without accessing the \`sys_field_journal\` table. | False |
-    | Instance Date Format | Select the date format of your ServiceNow instance. Mandatory when using the \`Use Display Value\` option. More details under the troubleshooting section in the documentation of the integration. The integration supports the ServiceNow default time format (full form) `HH:mm:ss` with support to `a` notation for AM/PM. | False |
-    | Comment Entry Tag | Choose the tag to add to an entry to mirror it as a comment in ServiceNow. | False |
-    | Work Note Entry Tag | Choose the tag to add to an entry to mirror it as a work note in ServiceNow. | False |
-    | File Entry Tag To ServiceNow | Choose the tag to add to an entry to mirror it as a file in ServiceNow. | False |
-    | File Entry Tag From ServiceNow | Choose the tag to add to an entry to mirror it as a file from ServiceNow. | False |
-    | Timestamp field to query for updates as part of the mirroring flow | According to the timestamp in this field, records will be queried to check for updates. | False |
-    | How many incidents to mirror incoming each time | If a greater number of incidents than the limit were modified, then they won't be mirrored in. | False |
-    | Custom Fields to Mirror | Custom \(user defined\) fields in the format: u_fieldname1,u_fieldname2 custom fields start with a 'u_'. These fields will be included in the mirroring capabilities, if added here. | False |
-    | Mirrored XSOAR Ticket closure method | Define how to close the mirrored tickets in Cortex XSOAR. Choose 'resolved' to enable reopening from the UI. Otherwise, choose 'closed'. Choose 'None' to disable closing the mirrored tickets in Cortex XSOAR. | False |
-    | Mirrored XSOAR Ticket custom close state code | Define how to close the mirrored tickets in Cortex XSOAR with a custom state. Enter here a comma-separated list of custom closure state codes and their labels (acceptable format example: “10=Design,11=Development,12=Testing”) to override the default closure method. Note that a matching user-defined list of custom close reasons must be configured as a "Server configuration" in Cortex XSOAR. Not following this format will result in closing the incident with a default close reason. | False |
-    | Mirrored XSOAR Ticket custom close resolution code | Define how to close the mirrored tickets in Cortex XSOAR with a custom resolution code. Enter a comma-separated list of custom resolution codes and their labels (acceptable format example: “10=Design,11=Development,12=Testing”) to override the default closure method. Note that a matching user-defined list of custom close reasons must be configured as a "Server configuration" in Cortex XSOAR. Not following this format will result in closing the incident with a default close reason. | False |
-    | Mirrored ServiceNow Ticket closure method | Define how to close the mirrored tickets in ServiceNow, choose 'resolved' to enable reopening from the UI. Otherwise, choose 'closed'. | False |
-    | Mirrored ServiceNow Ticket custom close state code | Define how to close the mirrored tickets in ServiceNow with custom state. Enter here the custom closure state code \(should be an integer\) to override the default closure method. If the closure code does not exist, the default one will be used instead. | False |
-    | Mirror Existing Notes For New Fetched Incidents | When enabled, comments and work notes are mirrored as note entries for each newly fetched incident. Note: This setting triggers an API call for each incident during the first mirroring, potentially causing overload if numerous incidents are present. | False |
-    | Use system proxy settings |  | False |
-    | Trust any certificate (not secure) |  | False |
-    | Incidents Fetch Interval |  | False |
-    | Advanced: Minutes to look back when fetching | Use this parameter to determine how long backward to look in the search for incidents that were created before the last run time and did not match the query when they were created. | False |
+
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| ServiceNow URL, in the format https://company.service-now.com/ |  | True |
+| Use OAuth Login | Select this checkbox if to use OAuth 2.0 authentication. See \(?\) for more information. | False |
+| Use JWT Authentication | Select this checkbox to use JWT authentication. See \(?\) for more information. | False |
+| Username/Client ID/JWT Audience (aud) |  | False |
+| Password/Client Secret |  | False |
+| Private key |  | False |
+| kid (Key Id) |  | False |
+| sub |  | False |
+| iss (Issuer) | If not set, Client ID will be used. | False |
+| Default ticket type for running ticket commands and fetching incidents | The ticket type can be: incident, problem, change_request, sc_request, sc_task or sc_req_item. | False |
+| ServiceNow API Version (e.g. 'v1') |  | False |
+| Fetch incidents |  | False |
+| The query to use when fetching incidents |  | False |
+| How many incidents to fetch each time |  | False |
+| First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days, 3 months, 1 year) |  | False |
+| Timestamp field to filter by (e.g., `opened_at`) This is how the filter is applied to the query: "ORDERBYopened_at^opened_at&gt;[Last Run]".<br/>To prevent duplicate incidents, this field is mandatory for fetching incidents. |  | False |
+| ServiceNow ticket column to be set as the incident name. Default is the incident number |  | False |
+| Incident type |  | False |
+| Get incident attachments |  | False |
+| Incident Mirroring Direction | Choose the direction to mirror the incident: Incoming \(from ServiceNow to Cortex XSOAR\), Outgoing \(from Cortex XSOAR to ServiceNow\), or Incoming and Outgoing \(from/to Cortex XSOAR and ServiceNow\). | False |
+| Use Display Value | Select this checkbox to retrieve comments and work notes without accessing the \`sys_field_journal\` table. | False |
+| Instance Date Format | Select the date format of your ServiceNow instance. Mandatory when using the \`Use Display Value\` option. More details under the troubleshooting section in the documentation of the integration. The integration supports the ServiceNow default time format \(full form\) \`HH:mm:ss\` with support to \`a\` notation for AM/PM. | False |
+| Comment Entry Tag To ServiceNow | Choose the tag to add to an entry to mirror it as a comment in ServiceNow. | False |
+| Comment Entry Tag From ServiceNow | Choose the tag to add to an entry to mirror it as a comment from ServiceNow. | False |
+| Work Note Entry Tag To ServiceNow | Choose the tag to add to an entry to mirror it as a work note in ServiceNow. | False |
+| Work Note Entry Tag From ServiceNow | Choose the tag to add to an entry to mirror it as a work note from ServiceNow. | False |
+| File Entry Tag To ServiceNow | Choose the tag to add to an entry to mirror it as a file in ServiceNow. | False |
+| File Entry Tag From ServiceNow | Choose the tag to add to an entry to mirror it as a file from ServiceNow. | False |
+| Timestamp field to query for updates as part of the mirroring flow | According to the timestamp in this field, records will be queried to check for updates. | False |
+| How many incidents to mirror incoming each time | If a greater number of incidents than the limit were modified, then they won't be mirrored in. | False |
+| Custom Fields to Mirror | Custom \(user defined\) fields in the format: u_fieldname1,u_fieldname2 custom fields start with a 'u_'. These fields will be included in the mirroring capabilities, if added here. | False |
+| Mirrored XSOAR Ticket closure method | When selected, closing the ServiceNow ticket is mirrored in Cortex XSOAR. | False |
+| Mirrored XSOAR Ticket custom close state code | Define how to close the mirrored tickets in Cortex XSOAR with a custom state. Enter here a comma-separated list of custom closure state codes and their labels \(acceptable format example: “10=Design,11=Development,12=Testing”\) to override the default closure method. Note that a matching user-defined list of custom close reasons must be configured as a "Server configuration" in Cortex XSOAR. Not following this format will result in closing the incident with a default close reason. | False |
+| Mirrored XSOAR Ticket custom close resolution code (overwrites the custom close state) | Define how to close the mirrored tickets in Cortex XSOAR with a custom resolution code. Enter a comma-separated list of custom resolution codes and their labels \(acceptable format example: “10=Design,11=Development,12=Testing”\) to override the default closure method. Note that a matching user-defined list of custom close reasons must be configured as a "Server configuration" in Cortex XSOAR. Not following this format will result in closing the incident with a default close reason. | False |
+| Mirrored ServiceNow Ticket closure method | Define how to close the mirrored tickets in ServiceNow. Choose 'resolved' to enable reopening from the UI. Otherwise, choose 'closed'. | False |
+| Mirrored ServiceNow Ticket custom close state code | Define how to close the mirrored tickets in ServiceNow with a custom state. Enter here the custom closure state code \(should be an integer\) to override the default closure method. If the closure code does not exist, the default code will be used instead. | False |
+| Mirror Existing Notes For New Fetched Incidents | When enabled, comments and work notes are mirrored as note entries for each newly fetched incident. Note: This setting triggers an API call for each incident during the first mirroring, potentially causing overload if numerous incidents are present. | False |
+| Use system proxy settings |  | False |
+| Trust any certificate (not secure) |  | False |
+| Incidents Fetch Interval |  | False |
+| Advanced: Minutes to look back when fetching | Use this parameter to determine how long backward to look in the search for incidents that were created before the last run time and did not match the query when they were created. | False |
 
 3. Click **Test** to validate the URLs, token, and connection.
 4. Click **Done.**
