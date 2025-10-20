@@ -3096,7 +3096,7 @@ def start_vm_command(client: AzureClient, params: dict[str, Any], args: dict[str
     """
     subscription_id = get_from_args_or_params(args=args, params=params, key="subscription_id")
     resource_group_name = get_from_args_or_params(args=args, params=params, key="resource_group_name")
-    vm_name = args.get("virtual_machine_name")
+    vm_name = args.get("virtual_machine_name", "")
 
     client.validate_provisioning_state(subscription_id, resource_group_name, vm_name)
 
@@ -3129,7 +3129,7 @@ def poweroff_vm_command(client: AzureClient, params: dict[str, Any], args: dict[
     """
     subscription_id = get_from_args_or_params(args=args, params=params, key="subscription_id")
     resource_group_name = get_from_args_or_params(args=args, params=params, key="resource_group_name")
-    vm_name = args.get("virtual_machine_name")
+    vm_name = args.get("virtual_machine_name", "")
     skip_shutdown = argToBoolean(args.get("skip_shutdown", False))
 
     client.validate_provisioning_state(subscription_id, resource_group_name, vm_name)
@@ -3221,7 +3221,7 @@ def get_network_interface_command(client: AzureClient, params: dict[str, Any], a
     """
     subscription_id = get_from_args_or_params(args=args, params=params, key="subscription_id")
     resource_group_name = get_from_args_or_params(args=args, params=params, key="resource_group_name")
-    interface_name = args.get("nic_name")
+    interface_name = args.get("nic_name", "")
     response = client.get_network_interface_request(subscription_id, resource_group_name, interface_name)
     properties = response.get("properties")
 
@@ -3319,7 +3319,7 @@ def get_public_ip_details_command(client: AzureClient, params: dict[str, Any], a
         CommandResults: An CommandResults object: Dictionary of the Public IP configuration details
     """
     subscription_id = get_from_args_or_params(args=args, params=params, key="subscription_id")
-    address_name = args.get("address_name")
+    address_name = args.get("address_name", "")
     if resource_group_name := (args.get("resource_group_name") or params.get("resource_group_name")):
         response = client.get_public_ip_details_request(subscription_id, resource_group_name, address_name)
     else:
