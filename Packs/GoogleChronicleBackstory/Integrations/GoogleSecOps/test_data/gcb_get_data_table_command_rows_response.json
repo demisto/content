@@ -1,0 +1,41 @@
+{
+    "dataTableRows": [
+        {
+            "name": "projects/dummy_project_id/locations/dummy_location/instances/dummy_instance_id/dataTables/test_table/dataTableRows/row1",
+            "values": [
+                "1",
+                "[]/+*a"
+            ],
+            "createTime": "2025-08-19T05:11:53.230367Z",
+            "updateTime": "2025-08-19T05:11:53.230367Z"
+        },
+        {
+            "name": "projects/dummy_project_id/locations/dummy_location/instances/dummy_instance_id/dataTables/test_table/dataTableRows/row2",
+            "values": [
+                "2",
+                "^[a-zA-Z]+$"
+            ],
+            "createTime": "2025-08-19T05:11:53.230367Z",
+            "updateTime": "2025-08-19T05:11:53.230367Z"
+        },
+        {
+            "name": "projects/dummy_project_id/locations/dummy_location/instances/dummy_instance_id/dataTables/test_table/dataTableRows/row3",
+            "values": [
+                "3",
+                "[]/+*b"
+            ],
+            "createTime": "2025-08-19T05:11:53.230367Z",
+            "updateTime": "2025-08-19T05:11:53.230367Z"
+        },
+        {
+            "name": "projects/dummy_project_id/locations/dummy_location/instances/dummy_instance_id/dataTables/test_table/dataTableRows/row4",
+            "values": [
+                "4",
+                "^[a-zA-Z]+$"
+            ],
+            "createTime": "2025-08-19T05:11:53.230367Z",
+            "updateTime": "2025-08-19T05:11:53.230367Z"
+        }
+    ],
+    "nextPageToken": "dummy_page_token"
+}

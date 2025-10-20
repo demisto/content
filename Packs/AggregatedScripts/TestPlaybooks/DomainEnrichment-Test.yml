@@ -1,0 +1,2164 @@
+id: DomainEnrichment-Test
+version: -1
+vcShouldKeepItemLegacyProdMachine: false
+name: DomainEnrichment-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 37583ebd-9402-4956-83cf-f2d2de0af66c
+    type: start
+    task:
+      id: 37583ebd-9402-4956-83cf-f2d2de0af66c
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 582.5,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: dc5fa6df-891f-4e0e-8f83-4be6bb4de1a3
+    type: regular
+    task:
+      id: dc5fa6df-891f-4e0e-8f83-4be6bb4de1a3
+      version: -1
+      name: DeleteContext
+      description: "Delete field from context.\n\nThis automation runs using the default
+        Limited User role, unless you explicitly change the permissions.\nFor more
+        information, see the section about permissions here:\n- For Cortex XSOAR 6
+        see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
+        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 582.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 878d8941-5fcb-41e7-912c-24fc45bf5133
+    type: regular
+    task:
+      id: 878d8941-5fcb-41e7-912c-24fc45bf5133
+      version: -1
+      name: Run domain enrichment script
+      description: This script gathers domain reputation data from multiple integrations
+        and returns a "DomainEnrichment" object with consolidated information to the
+        context output.
+      scriptName: domain-enrichment
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+      - "15"
+      - "13"
+    scriptarguments:
+      additional_fields:
+        simple: "false"
+      domain_list:
+        simple: google.com
+      external_enrichment:
+        simple: "false"
+      verbose:
+        simple: "false"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 582.5,
+          "y": 540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: d352e1ff-70fa-4819-b293-15fdf77c338d
+    type: title
+    task:
+      id: d352e1ff-70fa-4819-b293-15fdf77c338d
+      version: -1
+      name: Case 2 - Brand
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "58"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 1220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: e7a5de69-2e1b-4e3d-8da8-e759a8d10418
+    type: title
+    task:
+      id: e7a5de69-2e1b-4e3d-8da8-e759a8d10418
+      version: -1
+      name: Case 1 - Base
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 582.5,
+          "y": 210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 49393b2b-723d-4bb2-8bc7-5abfd564aaf5
+    type: condition
+    task:
+      id: 49393b2b-723d-4bb2-8bc7-5abfd564aaf5
+      version: -1
+      name: Core Returned
+      description: Make sure Context output from wildfire
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "36"
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Core.AnalyticsPrevalence.Domain
+            iscontext: true
+          right:
+            value:
+              simple: https://google.com
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 2da12ad5-bfc0-433b-979f-14cb5e0b45db
+    type: condition
+    task:
+      id: 2da12ad5-bfc0-433b-979f-14cb5e0b45db
+      version: -1
+      name: Is Indicator Enrichment
+      description: MaxScore And MaxVerdict enriched for https://google.com
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DomainEnrichment.Value
+            iscontext: true
+          right:
+            value:
+              simple: google.com
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: DomainEnrichment
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DomainEnrichment.Value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: google.com
+                accessor: MaxScore
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: DomainEnrichment
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DomainEnrichment.Value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: google.com
+                accessor: MaxVerdict
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: DomainEnrichment.Results.Brand
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DomainEnrichment.Results.Brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: TIM
+            iscontext: true
+          right:
+            value:
+              simple: TIM
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 152.5,
+          "y": 1050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 5b68022c-96ad-4393-81d4-ee6c131a49f2
+    type: condition
+    task:
+      id: 5b68022c-96ad-4393-81d4-ee6c131a49f2
+      version: -1
+      name: No additional fields
+      description: Additional fields empty
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotExists
+          left:
+            value:
+              simple: DomainEnrichment.Results.AdditionalFields
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 582.5,
+          "y": 1050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 926fb5b0-5981-48d9-b247-b8aeab10f202
+    type: title
+    task:
+      id: 926fb5b0-5981-48d9-b247-b8aeab10f202
+      version: -1
+      name: Case 4 - External Enrichment + Additional Fields
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 797.5,
+          "y": 2900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 1d5dede1-7cfa-4a3d-8968-c2eba73987da
+    type: regular
+    task:
+      id: 1d5dede1-7cfa-4a3d-8968-c2eba73987da
+      version: -1
+      name: DeleteContext
+      description: "Delete field from context.\n\nThis automation runs using the default
+        Limited User role, unless you explicitly change the permissions.\nFor more
+        information, see the section about permissions here:\n- For Cortex XSOAR 6
+        see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
+        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 797.5,
+          "y": 3060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: 8954f856-0d6b-4275-bd03-d58224108759
+    type: regular
+    task:
+      id: 8954f856-0d6b-4275-bd03-d58224108759
+      version: -1
+      name: Run domain enrichment script
+      description: This script gathers domain reputation data from multiple integrations
+        and returns a "DomainEnrichment" object with consolidated information to the
+        context output.
+      scriptName: domain-enrichment
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "50"
+      - "49"
+      - "51"
+    scriptarguments:
+      additional_fields:
+        simple: "true"
+      domain_list:
+        simple: google.com
+      external_enrichment:
+        simple: "true"
+      verbose:
+        simple: "false"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 797.5,
+          "y": 3230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: 74e58f91-dc85-45e9-b9ba-884eb168e272
+    type: title
+    task:
+      id: 74e58f91-dc85-45e9-b9ba-884eb168e272
+      version: -1
+      name: Case 5 - Multiple Inputs
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "80"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 797.5,
+          "y": 3570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: 99c6f7a0-5b15-4414-8f11-4aab1b0f49cd
+    type: regular
+    task:
+      id: 99c6f7a0-5b15-4414-8f11-4aab1b0f49cd
+      version: -1
+      name: Run core-get-domain-analytics-prevalence
+      description: Get the prevalence of a domain, identified by domain_name.
+      script: '|||core-get-domain-analytics-prevalence'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      domain_name:
+        simple: google.com
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1012.5,
+          "y": 880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: 78961d50-1459-469a-87f9-a455057e8faa
+    type: condition
+    task:
+      id: 78961d50-1459-469a-87f9-a455057e8faa
+      version: -1
+      name: Make sure analytics not exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotExists
+          left:
+            value:
+              simple: Core.AnalyticsPrevalence.Domain
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1012.5,
+          "y": 1050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "49":
+    id: "49"
+    taskid: 5c484fa9-f84a-4ea3-83db-0c359410a2cf
+    type: condition
+    task:
+      id: 5c484fa9-f84a-4ea3-83db-0c359410a2cf
+      version: -1
+      name: Both Indicator Exists
+      description: Make sure the Virus Total indicator returned from tim
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "35"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: DomainEnrichment.Results.Brand
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DomainEnrichment.Results.Brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: AlienVault OTX v2
+            iscontext: true
+          right:
+            value:
+              simple: AlienVault OTX v2
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: DomainEnrichment.Results.Brand
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DomainEnrichment.Results.Brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: VirusTotal (API v3)
+            iscontext: true
+          right:
+            value:
+              simple: VirusTotal (API v3)
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 3400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "50":
+    id: "50"
+    taskid: 58cba67d-2e1c-461b-a411-b5a5a927dde5
+    type: condition
+    task:
+      id: 58cba67d-2e1c-461b-a411-b5a5a927dde5
+      version: -1
+      name: Is Indicator Enrichment
+      description: MaxScore And MaxVerdict enriched for https://google.com
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "35"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DomainEnrichment.Value
+            iscontext: true
+          right:
+            value:
+              simple: google.com
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: DomainEnrichment
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DomainEnrichment.Value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: google.com
+                accessor: MaxScore
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: DomainEnrichment
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DomainEnrichment.Value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: google.com
+                accessor: MaxVerdict
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 3400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "51":
+    id: "51"
+    taskid: 0d4f641d-a013-4aa1-8d77-71f316fc7429
+    type: condition
+    task:
+      id: 0d4f641d-a013-4aa1-8d77-71f316fc7429
+      version: -1
+      name: Additional fields Exists
+      description: Additional fields empty
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "35"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: DomainEnrichment.Results.AdditionalFields
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 3400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "58":
+    id: "58"
+    taskid: 906e1ea2-993b-413a-884a-10362e0570d4
+    type: regular
+    task:
+      id: 906e1ea2-993b-413a-884a-10362e0570d4
+      version: -1
+      name: Delete Context
+      description: "Delete field from context.\n\nThis automation runs using the default
+        Limited User role, unless you explicitly change the permissions.\nFor more
+        information, see the section about permissions here:\n- For Cortex XSOAR 6
+        see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
+        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "59"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 1380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "59":
+    id: "59"
+    taskid: 95db9071-a3d4-4969-8ac0-5b311992b7dd
+    type: regular
+    task:
+      id: 95db9071-a3d4-4969-8ac0-5b311992b7dd
+      version: -1
+      name: Get Time
+      description: |
+        Retrieves the current date and time.
+      scriptName: GetTime
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "60"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 1550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "60":
+    id: "60"
+    taskid: 2bcf3adb-c62e-4747-b5b9-1b6ecc03ad47
+    type: regular
+    task:
+      id: 2bcf3adb-c62e-4747-b5b9-1b6ecc03ad47
+      version: -1
+      name: Run Domain Enrichment
+      description: This script gathers domain reputation data from multiple integrations
+        and returns a "DomainEnrichment" object with consolidated information to the
+        context output.
+      scriptName: domain-enrichment
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "61"
+      - "62"
+      - "63"
+    scriptarguments:
+      additional_fields:
+        simple: "false"
+      brands:
+        simple: VirusTotal (API v3)
+      domain_list:
+        complex:
+          root: TimeNowUnix
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: .com
+      external_enrichment:
+        simple: "false"
+      verbose:
+        simple: "false"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 1720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "61":
+    id: "61"
+    taskid: 63effc8f-787e-4e18-bc55-66c097c077d5
+    type: condition
+    task:
+      id: 63effc8f-787e-4e18-bc55-66c097c077d5
+      version: -1
+      name: Main Keys Exists With Results
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "64"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DomainEnrichment.Value
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: TimeNowUnix
+                transformers:
+                - operator: concat
+                  args:
+                    prefix: {}
+                    suffix:
+                      value:
+                        simple: .com
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: DomainEnrichment.MaxScore
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: DomainEnrichment.MaxVerdict
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: DomainEnrichment.Results
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: DomainEnrichment.TIMScore
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DomainEnrichment.Status
+            iscontext: true
+          right:
+            value:
+              simple: Fresh
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 367.5,
+          "y": 1890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "62":
+    id: "62"
+    taskid: 0216587a-801d-49d5-8d41-82c1e5eba665
+    type: condition
+    task:
+      id: 0216587a-801d-49d5-8d41-82c1e5eba665
+      version: -1
+      name: No Additional Fields
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "64"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotExists
+          left:
+            value:
+              simple: DomainEnrichment.Results.AdditionalFields
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 797.5,
+          "y": 1890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "63":
+    id: "63"
+    taskid: 7d843128-a606-4702-8f26-21e974f2aeaf
+    type: condition
+    task:
+      id: 7d843128-a606-4702-8f26-21e974f2aeaf
+      version: -1
+      name: VirusTotal (API v3) Result Only Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "64"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DomainEnrichment.Results.Brand
+            iscontext: true
+          right:
+            value:
+              simple: VirusTotal (API v3)
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: DomainEnrichment.Results
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DomainEnrichment.Results.Brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: VirusTotal (API v3)
+                accessor: Name
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: TimeNowUnix
+                transformers:
+                - operator: concat
+                  args:
+                    prefix: {}
+                    suffix:
+                      value:
+                        simple: .com
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: DomainEnrichment.Results
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DomainEnrichment.Results.Brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: VirusTotal (API v3)
+                accessor: Score
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: DomainEnrichment.Results
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DomainEnrichment.Results.Brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: VirusTotal (API v3)
+                accessor: Verdict
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1227.5,
+          "y": 1890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "64":
+    id: "64"
+    taskid: 92f1a81a-a35a-4d8f-9b44-96ca23dee3fe
+    type: title
+    task:
+      id: 92f1a81a-a35a-4d8f-9b44-96ca23dee3fe
+      version: -1
+      name: Case 3 - External Enrichment
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "65"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 2060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "65":
+    id: "65"
+    taskid: a40d36e5-8344-4fb2-83f4-de3fd0995e43
+    type: regular
+    task:
+      id: a40d36e5-8344-4fb2-83f4-de3fd0995e43
+      version: -1
+      name: Delete Context
+      description: "Delete field from context.\n\nThis automation runs using the default
+        Limited User role, unless you explicitly change the permissions.\nFor more
+        information, see the section about permissions here:\n- For Cortex XSOAR 6
+        see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
+        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "87"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 2220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "67":
+    id: "67"
+    taskid: 1384cc88-82d3-4dfb-aa9c-05482c5880a1
+    type: regular
+    task:
+      id: 1384cc88-82d3-4dfb-aa9c-05482c5880a1
+      version: -1
+      name: Run Domain Enrichment
+      description: This script gathers domain reputation data from multiple integrations
+        and returns a "DomainEnrichment" object with consolidated information to the
+        context output.
+      scriptName: domain-enrichment
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "68"
+      - "69"
+      - "70"
+      - "71"
+    scriptarguments:
+      additional_fields:
+        simple: "false"
+      domain_list:
+        complex:
+          root: TimeNowUnix
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: .com
+      external_enrichment:
+        simple: "true"
+      verbose:
+        simple: "false"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 2560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "68":
+    id: "68"
+    taskid: 46b90e70-e2e7-4dc9-bf08-e8fa78375508
+    type: condition
+    task:
+      id: 46b90e70-e2e7-4dc9-bf08-e8fa78375508
+      version: -1
+      name: Main Keys Exists + Fresh
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DomainEnrichment.Value
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: TimeNowUnix
+                transformers:
+                - operator: concat
+                  args:
+                    prefix: {}
+                    suffix:
+                      value:
+                        simple: .com
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: DomainEnrichment.MaxScore
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: DomainEnrichment.MaxVerdict
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: DomainEnrichment.Results
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: DomainEnrichment.TIMScore
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DomainEnrichment.Status
+            iscontext: true
+          right:
+            value:
+              simple: Fresh
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "69":
+    id: "69"
+    taskid: 0e02e922-7326-4ecf-a4ea-e85734208e17
+    type: condition
+    task:
+      id: 0e02e922-7326-4ecf-a4ea-e85734208e17
+      version: -1
+      name: No Additional Fields
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotExists
+          left:
+            value:
+              simple: DomainEnrichment.Results.AdditionalFields
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "70":
+    id: "70"
+    taskid: dffebe20-dd52-495a-9d50-ca30a88d89a8
+    type: condition
+    task:
+      id: dffebe20-dd52-495a-9d50-ca30a88d89a8
+      version: -1
+      name: AlienVault OTX v2 Result Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: DomainEnrichment.Results
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DomainEnrichment.Results.Brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: AlienVault OTX v2
+                accessor: Name
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: TimeNowUnix
+                transformers:
+                - operator: concat
+                  args:
+                    prefix: {}
+                    suffix:
+                      value:
+                        simple: .com
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: DomainEnrichment.Results
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DomainEnrichment.Results.Brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: AlienVault OTX v2
+                accessor: Score
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: DomainEnrichment.Results
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DomainEnrichment.Results.Brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: AlienVault OTX v2
+                accessor: Verdict
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "71":
+    id: "71"
+    taskid: 4f26fd15-aad2-4a32-a42a-fbb6ed14c0b6
+    type: condition
+    task:
+      id: 4f26fd15-aad2-4a32-a42a-fbb6ed14c0b6
+      version: -1
+      name: VirusTotal (API v3) Result Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: DomainEnrichment.Results
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DomainEnrichment.Results.Brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: VirusTotal (API v3)
+                accessor: Name
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: TimeNowUnix
+                transformers:
+                - operator: concat
+                  args:
+                    prefix: {}
+                    suffix:
+                      value:
+                        simple: .com
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: DomainEnrichment.Results
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DomainEnrichment.Results.Brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: VirusTotal (API v3)
+                accessor: Score
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: DomainEnrichment.Results
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DomainEnrichment.Results.Brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: VirusTotal (API v3)
+                accessor: Verdict
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 2730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "72":
+    id: "72"
+    taskid: 88a5a3ab-cb97-4fd2-89c8-891e0ffc8fcf
+    type: regular
+    task:
+      id: 88a5a3ab-cb97-4fd2-89c8-891e0ffc8fcf
+      version: -1
+      name: DeleteContext
+      description: "Delete field from context.\n\nThis automation runs using the default
+        Limited User role, unless you explicitly change the permissions.\nFor more
+        information, see the section about permissions here:\n- For Cortex XSOAR 6
+        see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
+        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "73"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 797.5,
+          "y": 4560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "73":
+    id: "73"
+    taskid: 9e9f9790-29a9-46b8-804c-c683e92f1c15
+    type: regular
+    task:
+      id: 9e9f9790-29a9-46b8-804c-c683e92f1c15
+      version: -1
+      name: Run domain enrichment script
+      description: This script gathers domain reputation data from multiple integrations
+        and returns a "DomainEnrichment" object with consolidated information to the
+        context output.
+      scriptName: domain-enrichment
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "76"
+      '#none#':
+      - "75"
+    scriptarguments:
+      additional_fields:
+        simple: "true"
+      domain_list:
+        simple: asdasdasd
+      external_enrichment:
+        simple: "true"
+      verbose:
+        simple: "false"
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 797.5,
+          "y": 4730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "74":
+    id: "74"
+    taskid: 9fc0a758-6347-43d2-81bc-025037d8db32
+    type: title
+    task:
+      id: 9fc0a758-6347-43d2-81bc-025037d8db32
+      version: -1
+      name: Case 1 - Bad Input
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "72"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 797.5,
+          "y": 4400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "75":
+    id: "75"
+    taskid: 5f96bd0c-815a-4b8e-8124-a1538c46751c
+    type: condition
+    task:
+      id: 5f96bd0c-815a-4b8e-8124-a1538c46751c
+      version: -1
+      name: Failure
+      type: condition
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: "1"
+          right:
+            value:
+              simple: "2"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 5400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "76":
+    id: "76"
+    taskid: 896841fe-f414-4794-85b8-9ed4f1a3f9f0
+    type: title
+    task:
+      id: 896841fe-f414-4794-85b8-9ed4f1a3f9f0
+      version: -1
+      name: Case 2 - Bad Brand
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "77"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 4900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "77":
+    id: "77"
+    taskid: 67bc4985-ffcf-4c80-8c03-243b58d7416a
+    type: regular
+    task:
+      id: 67bc4985-ffcf-4c80-8c03-243b58d7416a
+      version: -1
+      name: DeleteContext
+      description: "Delete field from context.\n\nThis automation runs using the default
+        Limited User role, unless you explicitly change the permissions.\nFor more
+        information, see the section about permissions here:\n- For Cortex XSOAR 6
+        see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
+        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "78"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 5060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "78":
+    id: "78"
+    taskid: 05b18f05-bbbb-4cd8-8f6a-dfa3d9f84a03
+    type: regular
+    task:
+      id: 05b18f05-bbbb-4cd8-8f6a-dfa3d9f84a03
+      version: -1
+      name: Run domain enrichment script
+      description: This script gathers domain reputation data from multiple integrations
+        and returns a "DomainEnrichment" object with consolidated information to the
+        context output.
+      scriptName: domain-enrichment
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "79"
+      '#none#':
+      - "75"
+    scriptarguments:
+      additional_fields:
+        simple: "true"
+      brands:
+        simple: asdasd
+      domain_list:
+        simple: google.com
+      external_enrichment:
+        simple: "true"
+      verbose:
+        simple: "false"
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 5230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "79":
+    id: "79"
+    taskid: 493988f1-a0f0-4abd-80b7-aa7753b7c853
+    type: title
+    task:
+      id: 493988f1-a0f0-4abd-80b7-aa7753b7c853
+      version: -1
+      name: Pass
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 5405
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "80":
+    id: "80"
+    taskid: 26658c2b-cf18-4d9e-8bfb-a5bdbf6cc6d8
+    type: regular
+    task:
+      id: 26658c2b-cf18-4d9e-8bfb-a5bdbf6cc6d8
+      version: -1
+      name: DeleteContext
+      description: "Delete field from context.\n\nThis automation runs using the default
+        Limited User role, unless you explicitly change the permissions.\nFor more
+        information, see the section about permissions here:\n- For Cortex XSOAR 6
+        see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
+        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "81"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 797.5,
+          "y": 3730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "81":
+    id: "81"
+    taskid: 0c0d9c2e-be4d-4e79-bf03-43cc147632f0
+    type: regular
+    task:
+      id: 0c0d9c2e-be4d-4e79-bf03-43cc147632f0
+      version: -1
+      name: Run domain enrichment script
+      description: This script gathers domain reputation data from multiple integrations
+        and returns a "DomainEnrichment" object with consolidated information to the
+        context output.
+      scriptName: domain-enrichment
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "83"
+      - "86"
+    scriptarguments:
+      additional_fields:
+        simple: "false"
+      domain_list:
+        simple: google.com,facebook.com
+      external_enrichment:
+        simple: "false"
+      verbose:
+        simple: "false"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 797.5,
+          "y": 3900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "83":
+    id: "83"
+    taskid: 09592adb-309f-49a0-bf20-c1e7ba7ceb2f
+    type: condition
+    task:
+      id: 09592adb-309f-49a0-bf20-c1e7ba7ceb2f
+      version: -1
+      name: Facebook exists
+      description: MaxScore And MaxVerdict enriched for https://google.com
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "85"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: DomainEnrichment
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DomainEnrichment.Value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: facebook.com
+                accessor: Value
+            iscontext: true
+          right:
+            value:
+              simple: facebook.com
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: DomainEnrichment
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DomainEnrichment.Value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: facebook.com
+                accessor: MaxScore
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: DomainEnrichment
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DomainEnrichment.Value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: facebook.com
+                accessor: MaxVerdict
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 4070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "85":
+    id: "85"
+    taskid: 2664f86e-4114-492a-8308-31ca610c6d4d
+    type: title
+    task:
+      id: 2664f86e-4114-492a-8308-31ca610c6d4d
+      version: -1
+      name: Sad Flows
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "74"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 797.5,
+          "y": 4240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "86":
+    id: "86"
+    taskid: 8bc07bd8-86cd-40ae-95b3-4670bd60f6ec
+    type: condition
+    task:
+      id: 8bc07bd8-86cd-40ae-95b3-4670bd60f6ec
+      version: -1
+      name: Google exists
+      description: MaxScore And MaxVerdict enriched for https://google.com
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "85"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: DomainEnrichment.Value
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DomainEnrichment.Value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: google.com
+            iscontext: true
+          right:
+            value:
+              simple: google.com
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: DomainEnrichment
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DomainEnrichment.Value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: google.com
+                accessor: MaxScore
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: DomainEnrichment
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DomainEnrichment.Value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: google.com
+                accessor: MaxVerdict
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 4070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "87":
+    id: "87"
+    taskid: 524d32a7-031e-4c9a-8716-a4a85a11a9f4
+    type: regular
+    task:
+      id: 524d32a7-031e-4c9a-8716-a4a85a11a9f4
+      version: -1
+      name: Get Time
+      description: |
+        Retrieves the current date and time.
+      scriptName: GetTime
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "67"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 2390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 5420,
+        "width": 1670,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+sourceplaybookid: 110f76de-5574-4854-853e-8675a01d8eb0
+dirtyInputs: true
+marketplaces:
+- platform
+- marketplacev2
+- xsoar

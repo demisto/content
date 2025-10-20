@@ -6868,7 +6868,7 @@ script:
   - arguments:
     - description: Serial number of the firewall on which to run the command. Use only for a Panorama instance.
       name: target
-    description: Checks for the latest available dynamic update versions and returns a list of latest available / currently installed content.
+    description: Checks for the latest available dynamic update versions and returns a list of latest available / currently installed content. When running from a Panorama instance, the 'target' argument must be specified.
     name: pan-os-check-dynamic-updates-status
     outputs:
     - contextPath: Panorama.DynamicUpdates.AntiVirus.CurrentlyInstalled.app-version
@@ -7247,7 +7247,7 @@ script:
       description: Version of the dynamic update package.
       type: String
   - arguments:
-    - description: Serial number of the firewall on which to run the command. Use only for a Panorama instance.
+    - description: Serial number of the firewall on which to run the command. Mandatory for Panorama instances.
       name: target
     - description: Job ID for a running download process. Used for status polling.
       name: job_id
