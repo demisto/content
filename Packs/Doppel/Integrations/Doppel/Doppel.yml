@@ -1,5 +1,5 @@
 category: Data Enrichment & Threat Intelligence
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -19,6 +19,14 @@ configuration:
   hiddenusername: true
   name: credentials
   required: true
+  type: 9
+  section: Connect
+- additionalinfo: The User API Key (Optional) to use for connection with Doppel.
+  display: ""
+  displaypassword: User API Key
+  hiddenusername: true
+  name: user_credentials
+  required: false
   type: 9
   section: Connect
 - display: Fetch incidents
@@ -442,7 +450,7 @@ script:
     description: Get remote data from a remote incident. This method does not update the current incident, and should be used for debugging purposes only.
     execution: false
     name: get-remote-data
-  dockerimage: demisto/python3:3.12.8.1983910
+  dockerimage: demisto/python3:3.12.11.4819260
   script: '-'
   type: python
   subtype: python3

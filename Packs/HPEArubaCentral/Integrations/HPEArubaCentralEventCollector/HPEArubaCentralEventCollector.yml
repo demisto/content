@@ -1,5 +1,5 @@
 category: Analytics & SIEM
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -91,7 +91,11 @@ script:
     description: Gets events from Aruba Central.
     execution: false
     name: aruba-central-get-events
-  dockerimage: demisto/python3:3.12.8.3296088
+  - description: Use this command to test the connectivity of the HPE Aruba Central instance.
+    name: aruba-auth-test
+    execution: false
+    deprecated: false
+  dockerimage: demisto/python3:3.12.11.4508456
   isfetchevents: true
   runonce: false
   script: '-'

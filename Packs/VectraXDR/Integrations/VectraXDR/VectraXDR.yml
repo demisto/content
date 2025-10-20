@@ -1,5 +1,5 @@
 category: Network Security
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -61,6 +61,13 @@ configuration:
   - Incoming And Outgoing
   required: false
   type: 15
+  section: Collect
+- additionalinfo: "If selected, new incidents will be created. If not selected, it reopens previously closed incidents.\n\nNote: This flow is triggered only when the relevant entity is still active and the previously fetched incident is closed."
+  defaultvalue: "false"
+  display: Re-Fetch closed incidents via mirroring
+  name: refetch_closed_incidents
+  required: false
+  type: 8
   section: Collect
 - additionalinfo: The tag value should be used to mirror the entity note by adding the same tag in the notes.
   defaultvalue: note
@@ -232,6 +239,8 @@ script:
       - host
       required: false
       secret: false
+    - description: Filter by matching entity name.
+      name: name
     - default: false
       description: Filter by a tag or a comma-separated list of tags.
       isArray: false
@@ -2189,7 +2198,7 @@ script:
     - contextPath: Vectra.Group.rules.description
       description: Description of the rule.
       type: String
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.11.4508456
   feed: false
   isfetch: true
   isremotesyncin: true

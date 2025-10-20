@@ -1,0 +1,117 @@
+category: Analytics & SIEM
+sectionorder:
+- Connect
+- Collect
+commonfields:
+  id: MondayEventCollector
+  version: -1
+configuration:
+- display: Activity logs Server URL
+  defaultvalue: https://api.monday.com
+  name: activity_logs_url
+  required: false
+  type: 0
+  section: Connect
+- display: Client ID
+  name: credentials
+  type: 9
+  displaypassword: Client Secret
+  section: Connect
+  required: false
+  additionalinfo: "needed for Activity Logs only"
+- displaypassword: Authorization code
+  name: auth_code
+  type: 9
+  section: Connect
+  required: false
+  display: ''
+  hiddenusername: true
+  additionalinfo: "The code received from the redirect URL after running the monday-generate-login-url command (needed for Activity Logs only)."
+- display: Board IDs
+  name: board_ids
+  required: false
+  additionalinfo: "Comma-separated list of board IDs (needed for Activity Logs only)."
+  type: 0
+  section: Connect
+- display: Events Fetch Interval
+  defaultvalue: '1'
+  name: eventFetchInterval
+  type: 19
+  section: Collect
+  advanced: true
+  required: false
+- display: Maximum number of Activity Logs per board per fetch
+  defaultvalue: 10000
+  section: Collect
+  name: max_activity_logs_per_fetch
+  required: false
+  type: 0
+- display: Audit Server URL
+  name: audit_logs_url
+  required: false
+  type: 0
+  section: Connect
+- displaypassword: Audit API token
+  display: ''
+  name: audit_token
+  type: 9
+  section: Connect
+  required: false
+  hiddenusername: true
+  additionalinfo: "In the Admin section of your account, click the 'Security' section and then the 'Audit' tab. Select the 'Monitor by API' button."
+- display: Maximum number of Audit Logs per fetch
+  defaultvalue: 5000
+  section: Collect
+  name: max_audit_logs_per_fetch
+  required: false
+  type: 0
+- display: Fetch events
+  name: isFetchEvents
+  type: 8
+  section: Collect
+  required: false
+  defaultvalue: 'true'
+  hidden:
+  - xsoar
+- display: Event types
+  defaultvalue: 'Audit Logs,Activity Logs'
+  name: selected_event_types
+  type: 16
+  section: Collect
+  required: true
+  options:
+  - Audit Logs
+  - Activity Logs
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+  section: Connect
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+  section: Connect
+description: Collects Monday.com audit logs and activity events for Cortex XSIAM using OAuth 2.0 authentication.
+display: MondayEventCollector
+name: MondayEventCollector
+script:
+  commands:
+  - name: monday-generate-login-url
+    description: Generate the login url used for Authorization code flow.
+    arguments: []
+  - name: monday-auth-test
+    description: Run this command to test the connectivity to Monday.
+    arguments: []
+  dockerimage: demisto/python3:3.12.11.4508456
+  isfetchevents: true
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+marketplaces:
+- marketplacev2
+- platform
+fromversion: 8.3.0
+tests:
+- No tests (auto formatted)

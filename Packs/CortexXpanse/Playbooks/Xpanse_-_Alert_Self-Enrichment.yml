@@ -264,13 +264,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "97":
     id: "97"
-    taskid: 60961560-078f-44c7-8336-0418d94977cc
+    taskid: 6dd5ee89-c445-4115-b4f7-d3400153f3ee
     type: condition
     task:
-      id: 60961560-078f-44c7-8336-0418d94977cc
+      id: 6dd5ee89-c445-4115-b4f7-d3400153f3ee
       version: -1
       name: Asset exists?
-      description: Determines if asset information was passed back from the last command.
+      description: Indicates whether asset information was returned by the last command.
       type: condition
       iscommand: false
       brand: ""
@@ -346,9 +346,9 @@ tasks:
       id: bb5c3806-9983-40ce-85d2-e224942d135b
       iscommand: false
       name: Set service information (Service Name)
-      script: GridFieldSetup
       type: regular
       version: -1
+      scriptName: GridFieldSetup
     taskid: bb5c3806-9983-40ce-85d2-e224942d135b
     timertriggers: []
     type: regular
@@ -398,9 +398,9 @@ tasks:
       id: fdaef9a9-d071-4b8d-8361-2a77e159353f
       iscommand: false
       name: Set service information (Is Active)
-      script: GridFieldSetup
       type: regular
       version: -1
+      scriptName: GridFieldSetup
     taskid: fdaef9a9-d071-4b8d-8361-2a77e159353f
     timertriggers: []
     type: regular
@@ -450,9 +450,9 @@ tasks:
       id: 667637a3-7289-42a3-88f8-38f9085aabe1
       iscommand: false
       name: Set service information (Potential CVEs)
-      script: GridFieldSetup
       type: regular
       version: -1
+      scriptName: GridFieldSetup
     taskid: 667637a3-7289-42a3-88f8-38f9085aabe1
     timertriggers: []
     type: regular
@@ -501,9 +501,9 @@ tasks:
       id: edcabcaa-be6e-45ec-86a5-add2df3e2734
       iscommand: false
       name: Set service information (Active Classifications)
-      script: GridFieldSetup
       type: regular
       version: -1
+      scriptName: GridFieldSetup
     taskid: edcabcaa-be6e-45ec-86a5-add2df3e2734
     timertriggers: []
     type: regular
@@ -629,6 +629,12 @@ tasks:
                   simple: Certificate
           root: ASM.AssetInternetExposure
           transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: '0'
           - operator: TimeStampToDate
       val4:
         complex:
@@ -762,6 +768,12 @@ tasks:
                   simple: Certificate
           root: ASM.AssetInternetExposure
           transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: '0'
           - operator: TimeStampToDate
       val11:
         complex:
@@ -790,13 +802,13 @@ tasks:
       description: |-
         Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. Example of command:
         `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
-      id: 7ec17610-c685-49ca-8a65-935721a02bcb
+      id: 14e9b355-fd87-4347-8ccb-eb714758de2f
       iscommand: false
       name: Set asset information (with time)
-      script: GridFieldSetup
       type: regular
       version: -1
-    taskid: 7ec17610-c685-49ca-8a65-935721a02bcb
+      scriptName: GridFieldSetup
+    taskid: 14e9b355-fd87-4347-8ccb-eb714758de2f
     timertriggers: []
     type: regular
     view: |-
@@ -921,6 +933,12 @@ tasks:
                   simple: ResponsiveIP
           root: ASM.AssetInternetExposure
           transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: '0'
           - operator: TimeStampToDate
       val4:
         complex:
@@ -963,7 +981,7 @@ tasks:
       val6:
         complex:
           accessor: IP_VERSION
-          root: range_info
+          root: IPRangeData
           transformers:
           - operator: SetIfEmpty
             args:
@@ -974,7 +992,7 @@ tasks:
       val7:
         complex:
           accessor: handle
-          root: range_info.DETAILS.networkRecords
+          root: IPRangeData.DETAILS.networkRecords
           transformers:
           - operator: uniq
           - args:
@@ -985,7 +1003,7 @@ tasks:
       val8:
         complex:
           accessor: ASN_HANDLES
-          root: range_info
+          root: IPRangeData
           transformers:
           - args:
               separator:
@@ -995,7 +1013,7 @@ tasks:
       val9:
         complex:
           accessor: ASN_COUNTRIES
-          root: range_info
+          root: IPRangeData
           transformers:
           - args:
               applyIfEmpty: {}
@@ -1010,22 +1028,16 @@ tasks:
       description: |-
         Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. Example of command:
         `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
-      id: 49969165-0261-4433-892f-71ea9f797a60
+      id: 38735e1d-d723-4098-b976-ed2e9bf2b409
       iscommand: false
       name: Set asset information (with time)
-      script: GridFieldSetup
       type: regular
       version: -1
-    taskid: 49969165-0261-4433-892f-71ea9f797a60
+      scriptName: GridFieldSetup
+    taskid: 38735e1d-d723-4098-b976-ed2e9bf2b409
     timertriggers: []
     type: regular
-    view: |-
-      {
-        "position": {
-          "x": 1400,
-          "y": 1340
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 1390,\n    \"y\": 1450\n  }\n}"
   "107":
     continueonerrortype: ""
     id: "107"
@@ -1065,9 +1077,9 @@ tasks:
       id: 8772970e-8dfc-43a2-83d8-96655ad71ec0
       iscommand: false
       name: Set service information (Confirmed Vulnerable CVEs)
-      script: GridFieldSetup
       type: regular
       version: -1
+      scriptName: GridFieldSetup
     taskid: 8772970e-8dfc-43a2-83d8-96655ad71ec0
     timertriggers: []
     type: regular
@@ -1113,9 +1125,9 @@ tasks:
       id: 8802dbed-5fb6-4fb5-8857-e06df0702af4
       iscommand: false
       name: Set service information (First Observed)
-      script: GridFieldSetup
       type: regular
       version: -1
+      scriptName: GridFieldSetup
     taskid: 8802dbed-5fb6-4fb5-8857-e06df0702af4
     timertriggers: []
     type: regular
@@ -1161,9 +1173,9 @@ tasks:
       id: 8a838e32-b013-4f73-8d8c-f98c71a36f9e
       iscommand: false
       name: Set service information (Last Observed)
-      script: GridFieldSetup
       type: regular
       version: -1
+      scriptName: GridFieldSetup
     taskid: 8a838e32-b013-4f73-8d8c-f98c71a36f9e
     timertriggers: []
     type: regular
@@ -1172,63 +1184,6 @@ tasks:
         "position": {
           "x": 190,
           "y": 1670
-        }
-      }
-  "110":
-    continueonerrortype: ""
-    id: "110"
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
-    nexttasks:
-      '#none#':
-      - "105"
-    note: false
-    quietmode: 0
-    scriptarguments:
-      append:
-        simple: "false"
-      key:
-        simple: range_info
-      value:
-        complex:
-          accessor: details.ip_ranges
-          filters:
-          - - left:
-                iscontext: true
-                value:
-                  simple: ASM.AssetInternetExposure.type
-              operator: isEqualString
-              right:
-                value:
-                  simple: ResponsiveIP
-          root: ASM.AssetInternetExposure
-          transformers:
-          - args:
-              field:
-                iscontext: true
-                value:
-                  simple: ASM.AssetInternetExposure.name
-            operator: getField
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Set a value in context under the key you entered.
-      id: 66051cf8-3404-4693-8b4c-5a7dae07b230
-      iscommand: false
-      name: Set temp context
-      script: Set
-      type: regular
-      version: -1
-    taskid: 66051cf8-3404-4693-8b4c-5a7dae07b230
-    timertriggers: []
-    type: regular
-    view: |-
-      {
-        "position": {
-          "x": 1400,
-          "y": 1180
         }
       }
   "111":
@@ -1584,6 +1539,12 @@ tasks:
                   simple: Certificate
           root: ASM.AssetInternetExposure
           transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: '0'
           - operator: TimeStampToDate
       val4:
         complex:
@@ -1732,13 +1693,13 @@ tasks:
       description: |-
         Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. Example of command:
         `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
-      id: 71564cd0-f13d-4ec0-8e38-7d6006061f45
+      id: 7e98aef7-ea93-4d3d-a1d7-f6971d9ad922
       iscommand: false
       name: Set asset information (without time)
-      script: GridFieldSetup
       type: regular
       version: -1
-    taskid: 71564cd0-f13d-4ec0-8e38-7d6006061f45
+      scriptName: GridFieldSetup
+    taskid: 7e98aef7-ea93-4d3d-a1d7-f6971d9ad922
     timertriggers: []
     type: regular
     view: |-
@@ -1817,6 +1778,12 @@ tasks:
                   simple: Domain
           root: ASM.AssetInternetExposure
           transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: '0'
           - operator: TimeStampToDate
       val4:
         complex:
@@ -1890,6 +1857,12 @@ tasks:
                   simple: Domain
           root: ASM.AssetInternetExposure
           transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: '0'
           - operator: TimeStampToDate
       val8:
         complex:
@@ -1977,13 +1950,13 @@ tasks:
       description: |-
         Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. Example of command:
         `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
-      id: 04d78478-e2e2-4867-85b8-067411f75680
+      id: 6814daca-90b1-4ca2-8cce-24fd96b332a4
       iscommand: false
       name: Set asset information (with time)
-      script: GridFieldSetup
       type: regular
       version: -1
-    taskid: 04d78478-e2e2-4867-85b8-067411f75680
+      scriptName: GridFieldSetup
+    taskid: 6814daca-90b1-4ca2-8cce-24fd96b332a4
     timertriggers: []
     type: regular
     view: |-
@@ -2062,6 +2035,12 @@ tasks:
                   simple: CloudIntegration
           root: ASM.AssetInternetExposure
           transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: '0'
           - operator: TimeStampToDate
       val4:
         complex:
@@ -2166,13 +2145,13 @@ tasks:
       description: |-
         Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. Example of command:
         `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
-      id: 792fb7b0-2162-4b00-8ae1-c6ca8e3ddd9e
+      id: e74e7f95-57c4-4e95-9949-ea142bd3b9ae
       iscommand: false
       name: Set asset information (with time)
-      script: GridFieldSetup
       type: regular
       version: -1
-    taskid: 792fb7b0-2162-4b00-8ae1-c6ca8e3ddd9e
+      scriptName: GridFieldSetup
+    taskid: e74e7f95-57c4-4e95-9949-ea142bd3b9ae
     timertriggers: []
     type: regular
     view: |-
@@ -2305,6 +2284,12 @@ tasks:
                   simple: Domain
           root: ASM.AssetInternetExposure
           transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: '0'
           - operator: TimeStampToDate
       val4:
         complex:
@@ -2452,13 +2437,13 @@ tasks:
       description: |-
         Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. Example of command:
         `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
-      id: fa63614a-ca49-4bf3-8051-b862ab3f97b0
+      id: cd3caf87-1dc2-44e5-9063-3dca38edd7e8
       iscommand: false
       name: Set asset information (without time)
-      script: GridFieldSetup
       type: regular
       version: -1
-    taskid: fa63614a-ca49-4bf3-8051-b862ab3f97b0
+      scriptName: GridFieldSetup
+    taskid: cd3caf87-1dc2-44e5-9063-3dca38edd7e8
     timertriggers: []
     type: regular
     view: |-
@@ -2498,12 +2483,12 @@ tasks:
     task:
       brand: ""
       description: Determines if there is an asset ID to enrich.
-      id: b21b79b5-bb5f-43d8-818a-46be4de44320
+      id: 848e9d8a-635d-4081-b60a-bccf90e2f67c
       iscommand: false
       name: Is Xpanse Asset IDs defined?
       type: condition
       version: -1
-    taskid: b21b79b5-bb5f-43d8-818a-46be4de44320
+    taskid: 848e9d8a-635d-4081-b60a-bccf90e2f67c
     timertriggers: []
     type: condition
     view: |-
@@ -2576,16 +2561,7 @@ tasks:
                       value:
                         simple: ResponsiveIP
                 root: ASM.AssetInternetExposure
-                transformers:
-                - args:
-                    field:
-                      iscontext: true
-                      value:
-                        simple: ASM.AssetInternetExposure.name
-                  operator: getField
-          operator: isExists
-          right:
-            value: {}
+          operator: isNotEmpty
       label: "yes"
     continueonerrortype: ""
     id: "130"
@@ -2596,20 +2572,20 @@ tasks:
       '#default#':
       - "131"
       "yes":
-      - "110"
+      - '132'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
-      description: Determines if there are time entries to add to the asset grid field.
-      id: f81c2323-d804-4a83-8972-b59dc47930ae
+      description: Indicates whether there are time entries available to add to the asset grid field.
+      id: 1fe7257e-edeb-435f-9161-6ef2101e7725
       iscommand: false
       name: Are there ip_range entries?
       type: condition
       version: -1
-    taskid: f81c2323-d804-4a83-8972-b59dc47930ae
+    taskid: 1fe7257e-edeb-435f-9161-6ef2101e7725
     timertriggers: []
     type: condition
     view: |-
@@ -2688,6 +2664,12 @@ tasks:
                   simple: ResponsiveIP
           root: ASM.AssetInternetExposure
           transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: '0'
           - operator: TimeStampToDate
       val4:
         complex:
@@ -2742,13 +2724,13 @@ tasks:
       description: |-
         Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. Example of command:
         `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
-      id: 4719d617-837d-4aef-81ea-da9214bba227
+      id: 1dfb0fc2-7576-40d4-9763-79aa9da6d657
       iscommand: false
       name: Set asset information (with time)
-      script: GridFieldSetup
       type: regular
       version: -1
-    taskid: 4719d617-837d-4aef-81ea-da9214bba227
+      scriptName: GridFieldSetup
+    taskid: 1dfb0fc2-7576-40d4-9763-79aa9da6d657
     timertriggers: []
     type: regular
     view: |-
@@ -2758,33 +2740,101 @@ tasks:
           "y": 1180
         }
       }
-view: |-
-  {
-    "linkLabelsPosition": {
-      "102_38_#default#": 0.17,
-      "104_38_#default#": 0.54,
-      "111_38_#default#": 0.33,
-      "118_38_#default#": 0.72,
-      "119_38_#default#": 0.1,
-      "11_38_#default#": 0.1,
-      "128_38_#default#": 0.2,
-      "129_38_#default#": 0.11,
-      "130_110_yes": 0.54,
-      "130_131_#default#": 0.29,
-      "90_38_#default#": 0.14,
-      "97_38_#default#": 0.14
-    },
-    "paper": {
-      "dimensions": {
-        "height": 2305,
-        "width": 3560,
-        "x": -230,
-        "y": -400
-      }
-    }
-  }
+  '132':
+    id: '132'
+    taskid: 6284c229-fd6c-4005-bc0f-4bce605135f7
+    type: regular
+    task:
+      id: 6284c229-fd6c-4005-bc0f-4bce605135f7
+      version: -1
+      name: Store Responsive IP Address
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '133'
+    scriptarguments:
+      key:
+        simple: ResponsiveIPAddress
+      value:
+        complex:
+          root: ASM.AssetInternetExposure
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: ASM.AssetInternetExposure.type
+                iscontext: true
+              right:
+                value:
+                  simple: ResponsiveIP
+          accessor: name
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 1390,\n    \"y\": 1180\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '133':
+    id: '133'
+    taskid: 3009de0b-7f1b-4f52-9122-3e07de2be510
+    type: regular
+    task:
+      id: 3009de0b-7f1b-4f52-9122-3e07de2be510
+      version: -1
+      name: Store Temp IP Range Data
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '105'
+    scriptarguments:
+      key:
+        simple: IPRangeData
+      value:
+        complex:
+          root: ASM.AssetInternetExposure
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: ASM.AssetInternetExposure.type
+                iscontext: true
+              right:
+                value:
+                  simple: ResponsiveIP
+          accessor: details.ip_ranges
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: ResponsiveIPAddress
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 1390,\n    \"y\": 1310\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: "{\n  \"linkLabelsPosition\": {\n    \"102_38_#default#\": 0.17,\n    \"104_38_#default#\": 0.54,\n    \"111_38_#default#\": 0.33,\n    \"118_38_#default#\": 0.72,\n    \"119_38_#default#\": 0.1,\n    \"11_38_#default#\": 0.1,\n    \"128_38_#default#\": 0.2,\n    \"129_38_#default#\": 0.11,\n    \"130_131_#default#\": 0.29,\n    \"90_38_#default#\": 0.14,\n    \"97_38_#default#\": 0.14\n  },\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 2300,\n      \"width\": 3560,\n      \"x\": -230,\n      \"y\": -400\n    }\n  }\n}"
 inputs: []
 outputs: []
 tests:
 - No tests (auto formatted)
 fromversion: 6.8.0
+system: true

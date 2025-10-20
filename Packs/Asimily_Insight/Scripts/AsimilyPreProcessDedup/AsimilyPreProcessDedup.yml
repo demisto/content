@@ -14,7 +14,7 @@ dependson:
   must: []
 timeout: 5m0s
 runonce: false
-dockerimage: demisto/python3:3.12.8.3296088
+dockerimage: demisto/python3:3.12.11.4508456
 runas: DBotWeakRole
 engineinfo: {}
 tests:
