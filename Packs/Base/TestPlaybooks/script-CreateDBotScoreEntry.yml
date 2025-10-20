@@ -79,6 +79,3 @@ subtype: python3
 runonce: false
 dockerimage: demisto/python3:3.9.1.14969
 fromversion: 5.5.0
-supportedModules:
-- xsiam
-- agentix

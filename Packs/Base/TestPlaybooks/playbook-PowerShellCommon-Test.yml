@@ -722,6 +722,3 @@ view: |-
     }
   }
 fromversion: 5.5.0
-supportedModules:
-- xsiam
-- agentix

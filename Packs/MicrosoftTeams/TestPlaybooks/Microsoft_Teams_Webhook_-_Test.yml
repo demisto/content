@@ -185,6 +185,3 @@ inputs: []
 outputs: []
 fromversion: 6.5.0
 description: Test playbook to test MS Teams Webhook integration
-supportedModules:
-- xsiam
-- agentix

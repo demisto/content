@@ -320,6 +320,3 @@ inputs:
   required: false
   description: ''
 outputs: []
-supportedModules:
-- xsiam
-- agentix

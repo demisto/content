@@ -1272,6 +1272,3 @@ view: |-
 inputs: []
 outputs: []
 sourceplaybookid: Zoom_Test
-supportedModules:
-- xsiam
-- agentix

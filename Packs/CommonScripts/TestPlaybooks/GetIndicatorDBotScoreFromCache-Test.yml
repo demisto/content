@@ -107,6 +107,3 @@ inputs: []
 outputs: []
 fromversion: 6.0.0
 description: ''
-supportedModules:
-- xsiam
-- agentix

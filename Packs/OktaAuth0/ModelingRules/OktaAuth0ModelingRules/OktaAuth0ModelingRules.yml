@@ -4,6 +4,3 @@ name: Auth0 Okta Modeling Rule
 rules: ''
 schema: ''
 tags: auth0
-supportedModules:
-- xsiam
-- agentix

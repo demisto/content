@@ -133,6 +133,3 @@ inputs:
   description: Test MD5 hash.
   playbookInputQuery:
 outputs: []
-supportedModules:
-- xsiam
-- agentix

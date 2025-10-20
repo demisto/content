@@ -337,6 +337,3 @@ inputs:
   required: false
   description: A comma-separated list of internal domains
 outputs: []
-supportedModules:
-- xsiam
-- agentix

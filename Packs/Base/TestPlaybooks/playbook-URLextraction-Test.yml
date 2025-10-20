@@ -981,6 +981,3 @@ inputs: []
 outputs: []
 fromversion: 6.5.0
 description: Test playbook for URL extraction flow.
-supportedModules:
-- xsiam
-- agentix

@@ -359,6 +359,3 @@ inputs: []
 outputs: []
 fromversion: 6.2.0
 description: Test Playbook
-supportedModules:
-- xsiam
-- agentix

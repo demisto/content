@@ -4,6 +4,9 @@
             "id": "AggregatedScripts",
             "supportedModules": [
                 "agentix",
+                "cloud",
+                "cloud_runtime_security",
+                "edr",
                 "xsiam"
             ]
         },
@@ -19,7 +22,18 @@
             ]
         },
         {
-            "id": "Base"
+            "id": "Base",
+            "supportedModules": [
+                "agentix",
+                "asm",
+                "cloud",
+                "cloud_appsec",
+                "cloud_posture",
+                "cloud_runtime_security",
+                "edr",
+                "exposure_management",
+                "xsiam"
+            ]
         },
         {
             "id": "CommonPlaybooks",

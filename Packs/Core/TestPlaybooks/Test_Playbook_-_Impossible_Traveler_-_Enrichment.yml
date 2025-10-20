@@ -7723,6 +7723,3 @@ fromversion: 6.6.0
 marketplaces:
 - platform
 - marketplacev2
-supportedModules:
-- xsiam
-- agentix

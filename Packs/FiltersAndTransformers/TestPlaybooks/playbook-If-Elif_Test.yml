@@ -778,6 +778,3 @@ inputs: []
 outputs: []
 fromversion: 6.9.0
 description: Test playbook for If-Elif Transformer
-supportedModules:
-- xsiam
-- agentix

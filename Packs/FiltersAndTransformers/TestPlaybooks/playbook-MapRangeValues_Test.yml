@@ -875,6 +875,3 @@ outputs: []
 quiet: true
 fromversion: 6.1.0
 description: ''
-supportedModules:
-- xsiam
-- agentix

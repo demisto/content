@@ -582,6 +582,3 @@ inputs: []
 outputs: []
 sourceplaybookid: X509Certificate Test Playbook
 fromversion: 6.0.0
-supportedModules:
-- xsiam
-- agentix

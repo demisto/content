@@ -460,6 +460,3 @@ inputs: []
 outputs: []
 sourceplaybookid: Microsoft Graph Security Test
 fromversion: 5.0.0
-supportedModules:
-- xsiam
-- agentix

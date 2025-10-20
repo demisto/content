@@ -39,6 +39,9 @@
         "X5",
         "ENT_PLUS",
         "agentix",
-        "xsiam"
+        "xsiam",
+        "cloud_runtime_security",
+        "edr",
+        "cloud"
     ]
 }

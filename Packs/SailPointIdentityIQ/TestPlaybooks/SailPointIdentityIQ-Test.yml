@@ -1089,6 +1089,3 @@ tasks:
 view: '{"linkLabelsPosition": {}, "paper": {"dimensions": {"height": 200, "width": 380, "x": 50, "y": 50}}}'
 inputs: []
 outputs: []
-supportedModules:
-- xsiam
-- agentix

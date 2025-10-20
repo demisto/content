@@ -280,6 +280,3 @@ view: |-
       }
     }
   }
-supportedModules:
-- xsiam
-- agentix

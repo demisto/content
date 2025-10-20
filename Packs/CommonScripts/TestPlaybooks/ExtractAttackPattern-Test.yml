@@ -286,6 +286,3 @@ inputs: []
 outputs: []
 fromversion: 6.2.0
 description: Extract Attack Pattern Threat Intel Object - Test
-supportedModules:
-- xsiam
-- agentix

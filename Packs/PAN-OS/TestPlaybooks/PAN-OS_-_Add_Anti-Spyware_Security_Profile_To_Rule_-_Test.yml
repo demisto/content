@@ -802,6 +802,3 @@ inputs:
 outputs: []
 fromversion: 6.9.0
 description: Test playbook for adding an anti spyware profile to a security rule in PAN-OS.
-supportedModules:
-- xsiam
-- agentix

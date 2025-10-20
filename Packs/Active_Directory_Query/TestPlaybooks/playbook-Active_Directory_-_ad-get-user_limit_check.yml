@@ -300,6 +300,3 @@ outputs:
   type: unknown
 sourceplaybookid: Active Directory - Get User Manager Details
 fromversion: 5.0.0
-supportedModules:
-- xsiam
-- agentix

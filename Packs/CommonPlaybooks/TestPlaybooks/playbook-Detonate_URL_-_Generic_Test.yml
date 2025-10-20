@@ -292,6 +292,3 @@ view: |-
 inputs: []
 outputs: []
 description: This Playbook tests the validity of the Dtonate URL Generic Playbook, the test includes tests for Empty Inputs and a Test URL Inputs
-supportedModules:
-- xsiam
-- agentix

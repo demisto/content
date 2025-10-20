@@ -559,6 +559,3 @@ inputs:
   playbookInputQuery:
 outputs: []
 description: IP Enrichment V2 Test playbook check the IP Enrichment V2 playbook with different inputs.
-supportedModules:
-- xsiam
-- agentix

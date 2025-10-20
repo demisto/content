@@ -1728,6 +1728,3 @@ view: |-
 inputs: []
 outputs: []
 dirtyInputs: true
-supportedModules:
-- xsiam
-- agentix

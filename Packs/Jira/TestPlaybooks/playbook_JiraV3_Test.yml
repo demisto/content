@@ -2361,6 +2361,3 @@ view: |-
 inputs: []
 outputs: []
 quiet: true
-supportedModules:
-- xsiam
-- agentix

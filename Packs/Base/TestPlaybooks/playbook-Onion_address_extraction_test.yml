@@ -601,6 +601,3 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 6.10.0
-supportedModules:
-- xsiam
-- agentix

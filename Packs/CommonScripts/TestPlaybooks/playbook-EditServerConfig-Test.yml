@@ -522,6 +522,3 @@ inputs: []
 outputs: []
 fromversion: 6.0.0
 description: Test EditServerConfig script.
-supportedModules:
-- xsiam
-- agentix

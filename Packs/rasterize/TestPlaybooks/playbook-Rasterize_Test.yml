@@ -1462,6 +1462,3 @@ view: |-
 inputs: []
 outputs: []
 description: ''
-supportedModules:
-- xsiam
-- agentix

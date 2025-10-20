@@ -204,6 +204,3 @@ inputs: []
 outputs: []
 fromversion: 5.5.0
 description: This playbook tests the context output of the Search Action Results output.
-supportedModules:
-- xsiam
-- agentix

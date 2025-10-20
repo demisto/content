@@ -127,6 +127,3 @@ inputs:
 outputs: []
 sourceplaybookid: PAN-OS EDL Setup Test
 description: ''
-supportedModules:
-- xsiam
-- agentix

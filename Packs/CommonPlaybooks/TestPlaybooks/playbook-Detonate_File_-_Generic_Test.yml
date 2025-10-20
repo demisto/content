@@ -314,6 +314,3 @@ view: |-
 inputs: []
 outputs: []
 description: Detonate File Generic Tests including empty inputs"
-supportedModules:
-- xsiam
-- agentix

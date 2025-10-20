@@ -122,6 +122,3 @@ view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n
 inputs: []
 outputs: []
 description: ''
-supportedModules:
-- xsiam
-- agentix

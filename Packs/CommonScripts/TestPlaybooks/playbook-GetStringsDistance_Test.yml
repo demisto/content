@@ -192,6 +192,3 @@ inputs: []
 outputs: []
 fromversion: 5.0.0
 description: 'Test playbook for GetStringsDistance'
-supportedModules:
-- xsiam
-- agentix

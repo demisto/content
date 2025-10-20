@@ -1266,6 +1266,3 @@ inputs: []
 outputs: []
 fromversion: 6.0.1
 description: Testing Azure Key Vault integration
-supportedModules:
-- xsiam
-- agentix

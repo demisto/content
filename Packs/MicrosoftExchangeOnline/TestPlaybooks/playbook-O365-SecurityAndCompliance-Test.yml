@@ -779,6 +779,3 @@ inputs:
   playbookInputQuery:
 version: -1
 fromversion: 5.5.0
-supportedModules:
-- xsiam
-- agentix

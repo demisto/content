@@ -476,6 +476,3 @@ outputs: []
 sourceplaybookid: 266bcc20-b5f3-4a64-8d93-af843bd24add
 fromversion: 6.1.0
 description: 'Test user profile data using github user info, due to the fact that the relevant classifiers are in SCIM pack.'
-supportedModules:
-- xsiam
-- agentix
