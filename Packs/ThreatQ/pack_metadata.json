@@ -1,6 +1,6 @@
 {
     "name": "ThreatQ",
-    "description": "Platform for collecting and interpreting intelligence data from open sources and managing indicator scores, types, and attributes.",
+    "description": "Platform for collecting and interpreting intelligence data from open sources, and for managing indicator scores, types, and attributes.",
     "support": "xsoar",
     "currentVersion": "1.0.32",
     "author": "Cortex XSOAR",
