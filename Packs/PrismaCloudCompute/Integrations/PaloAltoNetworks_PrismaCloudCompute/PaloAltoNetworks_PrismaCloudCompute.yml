@@ -2927,6 +2927,6 @@ tests:
 fromversion: 5.0.0
 defaultmapperin: PaloAltoNetworks_PrismaCloudCompute-mapper
 defaultclassifier: PaloAltoNetworks_PrismaCloudCompute
-sectionOrder:
+sectionorder:
 - Connect
 - Collect

@@ -320,7 +320,7 @@ script:
     outputs: []
   dockerimage: demisto/carbon-black-cloud:1.0.0.4418569
   subtype: python3
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 tests:
