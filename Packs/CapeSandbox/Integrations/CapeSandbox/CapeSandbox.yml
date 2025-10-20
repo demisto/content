@@ -7,6 +7,7 @@ category: Forensics & Malware Analysis
 description: CAPE Sandbox is an Open Source software for automating analysis of suspicious files.
 sectionOrder:
   - Connect
+  - Collect
 configuration:
   - name: url
     display: Server URL
@@ -79,6 +80,52 @@ script:
         - contextPath: Cape.Task
           description: Task data returned from CAPE when analysis is ready
           type: Unknown
+    - name: cape-file-view
+      description: View file information by Task ID, MD5, or SHA256.
+      arguments:
+        - name: task_id
+          description: Task ID
+        - name: md5
+          description: MD5 hash
+        - name: sha256
+          description: SHA256 hash
+      outputs:
+        - contextPath: Cape.File.id
+          description: File/task ID
+          type: String
+        - contextPath: Cape.File.file_type
+          description: File type
+          type: String
+        - contextPath: Cape.File.md5
+          description: MD5
+          type: String
+        - contextPath: Cape.File.crc32
+          description: CRC32
+          type: String
+        - contextPath: Cape.File.sha256
+          description: SHA256
+          type: String
+        - contextPath: Cape.File.sha512
+          description: SHA512
+          type: String
+        - contextPath: Cape.File.parent
+          description: Parent
+          type: String
+        - contextPath: Cape.File.source_url
+          description: Source URL
+          type: String
+    - name: cape-sample-download
+      description: Download a sample from a Task by Task ID, MD5, SHA1 or SHA256.
+      arguments:
+        - name: task_id
+          description: Task ID
+        - name: md5
+          description: MD5 hash
+        - name: sha1
+          description: SHA1 hash
+        - name: sha256
+          description: SHA256 hash
+      outputs: []
     - name: cape-url-submit
       description: Submit a URL for analysis. Polls until the task is reported and then returns the task view.
       arguments:
@@ -111,47 +158,12 @@ script:
         - contextPath: Cape.Task
           description: Task data returned from CAPE when analysis is ready
           type: Unknown
-    - name: cape-file-view
-      description: View file information by task ID, MD5, or SHA256.
-      arguments:
-        - name: task_id
-          description: Task ID
-        - name: md5
-          description: MD5 hash
-        - name: sha256
-          description: SHA256 hash
-      outputs:
-        - contextPath: Cape.Task.File.id
-          description: File/task ID
-          type: String
-        - contextPath: Cape.Task.File.file_type
-          description: File type
-          type: String
-        - contextPath: Cape.Task.File.md5
-          description: MD5
-          type: String
-        - contextPath: Cape.Task.File.crc32
-          description: CRC32
-          type: String
-        - contextPath: Cape.Task.File.sha256
-          description: SHA256
-          type: String
-        - contextPath: Cape.Task.File.sha512
-          description: SHA512
-          type: String
-        - contextPath: Cape.Task.File.parent
-          description: Parent
-          type: String
-        - contextPath: Cape.Task.File.source_url
-          description: Source URL
-          type: String
     - name: cape-task-delete
-      description: Delete CAPE task(s) by ID. When multiple IDs are provided, each is deleted sequentially.
+      description: Delete CAPE task by ID.
       arguments:
         - name: task_id
-          description: Task ID(s) to delete
+          description: Task ID to delete
           required: true
-          isArray: true
       outputs: []
     - name: cape-tasks-list
       description: Returns list of tasks. If task_id is provided, returns the task details.
@@ -160,15 +172,15 @@ script:
           description: Task ID to retrieve (optional)
         - name: page
           description: Page number (starts at 1)
-        - name: page_siz
+        - name: page_size
           description: Page size (API max is 50)
-        - name: limit
-          description: Alias for page_size (API max is 50)
-          defaultValue: "50"
+          defaultValue: 50
+        # REMOVED: The 'limit' argument is removed as it was redundant with page_size.
       outputs:
         - contextPath: Cape.Task
           description: Task data
           type: Unknown
+          isArray: true
     - name: cape-task-report-get
       description: Returns the report associated with the specified task ID. If zip=true, a ZIP file is returned for download.
       arguments:
@@ -183,39 +195,25 @@ script:
           type: 8
           defaultValue: "false"
       outputs:
-        - contextPath: Cape.Task.Report.id
+        - contextPath: Cape.Task.Report
+          description: Details from the CAPE analysis report info object
+          type: Unknown
+    - name: cape-pcap-file-download
+      description: Download the PCAP network dump file associated with the task ID.
+      arguments:
+        - name: task_id
           description: Task ID
-          type: String
-        - contextPath: Cape.Task.Report.started
-          description: Started time
-          type: String
-        - contextPath: Cape.Task.Report.ended
-          description: Ended time
-          type: String
-        - contextPath: Cape.Task.Report.category
-          description: Category
-          type: String
-        - contextPath: Cape.Task.Report.machine
-          description: Machine
-          type: String
-        - contextPath: Cape.Task.Report.package
-          description: Package
-          type: String
-        - contextPath: Cape.Task.Report.tlp
-          description: TLP
-          type: String
-        - contextPath: Cape.Task.Report.options
-          description: Options
-          type: String
-        - contextPath: Cape.Task.Report.source_url
-          description: Source URL
-          type: String
-        - contextPath: Cape.Task.Report.route
-          description: Route
-          type: String
-        - contextPath: Cape.Task.Report.user_id
-          description: User ID
-          type: String
+          required: true
+      outputs: []
+    - name: cape-task-screenshot-download
+      description: Download screenshots for a task. If 'screenshot' is provided, downloads that single screenshot.
+      arguments:
+        - name: task_id
+          description: Task ID
+          required: true
+        - name: screenshot
+          description: Specific screenshot number to download (optional). If not provided, all are downloaded.
+      outputs: []
     - name: cape-machines-list
       description: Returns a list of analysis machines. If machine_name is provided, returns details for that machine.
       arguments:
@@ -227,18 +225,18 @@ script:
           defaultValue: "false"
         - name: limit
           description: Maximum number of machines to return when listing
-          defaultValue: "50"
+          defaultValue: 50
       outputs:
         - contextPath: Cape.Machine
           description: Machine data
           type: Unknown
-    - name: cape-status-get
+    - name: cape-cuckoo-status-get
       description: Returns overall CAPE/Cuckoo status. Human-readable only.
       arguments: []
       outputs: []
 tests:
   - No tests (auto formatted)
 fromversion: 6.10.0
-marketplaces: #TODO remove marketplacev2?
+marketplaces:
   - xsoar
   - marketplacev2
