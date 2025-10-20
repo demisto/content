@@ -250,9 +250,9 @@ script:
     - name: account_id
       default: true
       description: Numeric identifier of the account to operate on. If not specified, operation will be performed on the account identified by the authentication parameters.
-    description: 'Tokens are used instead of user/password based authentication to log in to the Incapsula management console.  Use this operation to generate a token for an account. The token is valid for 15 minutes.
+    description: 'Tokens are used instead of user/password based authentication to log in to the Incapsula management console. Use this operation to generate a token for an account. The token is valid for 15 minutes.
 
-      In order to use the token, the user must use the following link:  https://my.incapsula.com/?token={generated_token}.'
+      In order to use the token, the user must use the following link: https://my.incapsula.com/?token={generated_token}.'
   - name: incap-delete-managed-account
     arguments:
     - name: account_id
@@ -272,11 +272,11 @@ script:
       default: true
       description: Numeric identifier of the account to operate on. If not specified, operation will be performed on the account identified by the authentication parameters.
     - name: time_range
-      description: 'Time range to fetch data for. For a detailed description, see https://docs.incapsula.com/Content/API/api.htm'
+      description: 'Time range to fetch data for. For a detailed description, see https://docs-cybersec.thalesgroup.com/bundle/api-docs/page/api/api-overview.htm'
     - name: start
-      description: 'Start date in milliseconds since 1970. For a detailed description, see https://docs.incapsula.com/Content/API/api.htm'
+      description: 'Start date in milliseconds since 1970. For a detailed description, see https://docs-cybersec.thalesgroup.com/bundle/api-docs/page/api/api-overview.htm'
     - name: end
-      description: 'End date in milliseconds since 1970. For a detailed description, see https://docs.incapsula.com/Content/API/api.htm'
+      description: 'End date in milliseconds since 1970. For a detailed description, see https://docs-cybersec.thalesgroup.com/bundle/api-docs/page/api/api-overview.htm'
     - name: type
       description: The api key of the event type, such as audit.account_login.
     - name: page_size
@@ -358,7 +358,7 @@ script:
     - name: value
       required: true
       description: According to the param value.
-    description: Use this operation to change one of the basic configuration settings of the site. To watch param table, visit https://my.incapsula.com/api/docs/v1/sites#modifySiteConfig
+    description: Use this operation to change one of the basic configuration settings of the site. To watch param table, visit https://docs-cybersec.thalesgroup.com/bundle/api-docs/page/site-management-api-definition.htm?operationId=operations-Site_Management-modifySiteConfiguration.
   - name: incap-modify-site-log-level
     arguments:
     - name: site_id
@@ -400,7 +400,7 @@ script:
     - name: security_rule_action
       description: 'The action that should be taken when a threat is detected, for example: api.threats.action.block_ip. Different actions are allowed per different threats, e.g. backdoors may only be quarantined, ignored or trigger an alert. For possible values see below.'
     - name: quarantined_urls
-      description: A comma seperated list of encoded URLs to be kept in quarantine.
+      description: A comma separated list of encoded URLs to be kept in quarantine.
     - name: ddos_traffic_threshold
       description: Consider site to be under DDoS if the request rate is above this threshold. The valid values are 10, 20, 50, 100, 200, 500, 750, 1000, 2000, 3000, 4000, 5000.
     description: Use this operation to change the security configuration of a site.
@@ -416,13 +416,13 @@ script:
     - name: urls
       description: A comma separated list of resource paths. For example, /home and /admin/index.html are resource paths, however http://www.example.com/home is not. Each URL should be encoded separately using percent encoding as specified by RFC 3986 (http://tools.ietf.org/html/rfc3986#section-2.1). An empty URL list will remove all URLs.
     - name: url_patterns
-      description: 'A comma seperated list of url patterns, one of: contains | equals | prefix | suffix | not_equals | not_contain | not_prefix | not_suffix. The patterns should be in accordance with the matching urls sent by the urls parameter.'
+      description: 'A comma separated list of url patterns, one of: contains | equals | prefix | suffix | not_equals | not_contain | not_prefix | not_suffix. The patterns should be in accordance with the matching urls sent by the urls parameter.'
     - name: countries
-      description: "A comma seperated list of country codes."
+      description: "A comma separated list of country codes."
     - name: continents
-      description: "A comma seperated list of continent codes."
+      description: "A comma separated list of continent codes."
     - name: ips
-      description: 'A comma seperated list of IPs or IP ranges, e.g: 192.168.1.1, 192.168.1.1-192.168.1.100 or 192.168.1.1/24.'
+      description: 'A comma separated list of IPs or IP ranges, e.g: 192.168.1.1, 192.168.1.1-192.168.1.100 or 192.168.1.1/24.'
     description: Use this operation to change the ACL configuration of a site. To modify the configuration for a specific ACL rule, its values are required, as documented below. To delete an entire ACL list, send an empty string as the list values.
   - name: incap-modify-site-wl-config
     arguments:
@@ -433,26 +433,28 @@ script:
     - name: rule_id
       required: true
       description: The id of the rule (either a security or an acl rule), e.g api.acl.blacklisted_ips. See other examples below.
-    - name: whitelist_id
-      description: The id (an integer) of the allow list to be set. This field is optional - in case no id is supplied, a new allow list will be created.
-    - name: delete_whitelist
+    - name: allowlist_id
+      description: The id (an integer) of the allowlist to be set. This field is optional - in case no id is supplied, a new allowlist will be created.
+    - name: delete_allowlist
       description: An optional boolean parameter, in case it is set to "true" and a allow list id is sent, then the allow list will be deleted.
     - name: urls
-      description: A comma separated list of resource paths. For example, /home and /admin/index.html are resource paths, however http://www.example.com/home is not. Each URL should be encoded separately using percent encoding as specified by RFC 3986 (http://tools.ietf.org/html/rfc3986#section-2.1). An empty URL list will remove all URLs.
+      description: 'A comma separated list of resource paths. For example, /home and /admin/index.html are resource paths, however http://www.example.com/home is not. Each URL should be encoded separately using percent encoding as specified by RFC 3986 (http://tools.ietf.org/html/rfc3986#section-2.1). An empty URL list will remove all URLs.'
     - name: countries
-      description: A comma seperated list of country codes.
+      description: 'A comma separated list of country codes. Example : US.'
     - name: continents
-      description: A comma seperated list of continent codes.
+      description: 'A comma separated list of continent codes. Example : SA.'
     - name: ips
-      description: 'A comma seperated list of IPs or IP ranges, e.g: 192.168.1.1, 192.168.1.1-192.168.1.100 or 192.168.1.1/24.'
+      description: 'A comma separated list of IPs or IP ranges, e.g: 192.168.1.1, 192.168.1.1-192.168.1.100 or 192.168.1.1/24.'
     - name: client_app_types
-      description: A comma seperated list of client application types.
+      description: 'A comma separated list of client application types. Example : Browser.'
     - name: client_apps
-      description: A comma seperated list of client application ids.
+      description: 'A comma separated list of client application ids. Example : 3.'
     - name: parameters
-      description: A comma seperated list of encoded user agents.
+      description: 'A comma separated list of encoded parameters.'
     - name: user_agents
-      description: A comma seperated list of encoded user agents.
+      description: 'A comma separated list of encoded user agents. Example : Googlebot-2.1.'
+    - name: exception_id_only
+      description: 'Return only the new/edited exception id. Example : true.'
     description: Use this operation to set allow lists to security rules or ACLs. To update an existing allow list, send its ID in the id parameter. If the id parameter does not exist a new allow list will be created.
   - name: incap-delete-site
     arguments:
@@ -695,9 +697,9 @@ script:
       default: true
       description: Numeric identifier of the site to operate on.
     - name: resource_url
-      description: Comma seperated list of URLs where the resource is located.
+      description: Comma separated list of URLs where the resource is located.
     - name: resource_pattern
-      description: 'Comma seperated list of pattern, one of: contains | equals | prefix | suffix | not_equals | not_contains | not_prefix | not_suffix.'
+      description: 'Comma separated list of pattern, one of: contains | equals | prefix | suffix | not_equals | not_contains | not_prefix | not_suffix.'
     - name: should_purge_all_site_resources
       description: Should purge all cached resources on site.
     description: Use this operation to purge site resources.
@@ -708,15 +710,15 @@ script:
       default: true
       description: Numeric identifier of the site to operate on.
     - name: always_cache_resource_url
-      description: "Comma seperated list of always cache resources url."
+      description: "Comma separated list of always cache resources url."
     - name: always_cache_resource_pattern
-      description: 'Comma seperated list of always cache resources pattern, one of: contains | equals | prefix | suffix | not_equals | not_contains | not_prefix | not_suffix.'
+      description: 'Comma separated list of always cache resources pattern, one of: contains | equals | prefix | suffix | not_equals | not_contains | not_prefix | not_suffix.'
     - name: always_cache_resource_duration
-      description: 'Duration that resources will be in cache, pass number followed by "_" and one of: hr | min | sec | days | weeks. Either provide a comma seperated list of duration expressions, matching the number of always cache rules, or a single duration expression to be used for all always cache rules.'
+      description: 'Duration that resources will be in cache, pass number followed by "_" and one of: hr | min | sec | days | weeks. Either provide a comma separated list of duration expressions, matching the number of always cache rules, or a single duration expression to be used for all always cache rules.'
     - name: never_cache_resource_url
-      description: Comma seperated list of never cache resources url.
+      description: Comma separated list of never cache resources url.
     - name: never_cahce_resource_pattern
-      description: Comma seperated list of cached headers seperated with comma.
+      description: Comma separated list of cached headers separated with comma.
     - name: clear_always_cache_rules
       description: An optional boolean parameter, in case it is set to "true", the site's always cache rules will be cleared.
     - name: clear_never_cache_rules
@@ -734,7 +736,7 @@ script:
       description: Name of configuration parameter to set.
     - name: value
       description: According to the param value.
-    description: Use this operation to modify advanced caching settings. For more information, https://my.incapsula.com/api/docs/v1/sites#modifyAdvancedCachingSettings
+    description: Use this operation to modify advanced caching settings. For more information, see https://docs-cybersec.thalesgroup.com/bundle/api-docs/page/site-management-api-definition.htm?operationId=operations-Site_Management-modifyAdvancedCachingSettings.
   - name: incap-purge-hostname-from-cache
     arguments:
     - name: host_name
@@ -787,7 +789,7 @@ script:
       - "RULE_ACTION_CAPTCHA"
       description: Rule action.
     - name: filter
-      description: 'Rule will trigger only a request that matches this filter. For more details on filter guidelines, see https://docs.incapsula.com/Content/IncapRules/syntax-guide.htm
+      description: 'Rule will trigger only a request that matches this filter. For more details on filter guidelines, see https://docs-cybersec.thalesgroup.com/bundle/cloud-application-security/page/rules/rule-syntax.htm
 
         The filter may contain up to 400 characters.'
     - name: response_code
@@ -861,7 +863,7 @@ script:
       - "RULE_ACTION_CAPTCHA"
       description: Rule action.
     - name: filter
-      description: 'Rule will trigger only a request that matches this filter. For more details on filter guidelines, see https://docs.incapsula.com/Content/IncapRules/syntax-guide.htm
+      description: 'Rule will trigger only a request that matches this filter. For more details on filter guidelines, see https://docs-cybersec.thalesgroup.com/bundle/cloud-application-security/page/rules/rule-syntax.htm
 
         The filter may contain up to 400 characters.'
     - name: response_code
@@ -1112,7 +1114,7 @@ script:
     - name: time_range
       required: true
       default: true
-      description: Time range to fetch data for. See https://my.incapsula.com/api/docs/v1#timeRange
+      description: Time range to fetch data for. See https://docs-cybersec.thalesgroup.com/bundle/api-docs/page/api/api-overview-v1.htm#:~:text=Time%20range%20specification.
     - name: start
       description: Start date in milliseconds since 1970. See the introduction of the API documentation for a detailed description.
     - name: end
@@ -1121,7 +1123,7 @@ script:
       description: 'Numeric identifier of the site to fetch data for. Multiple sites can be specified in a comma separated list. For example: 123,124,125.'
     - name: stats
       required: true
-      description: Statistics to fetch, see options at https://my.incapsula.com/api/docs/v1/data#getStats
+      description: Statistics to fetch, see options at https://docs-cybersec.thalesgroup.com/bundle/api-docs/page/traffic-stats-api-definition.htm?operationId=operations-Traffic_Statistics_and_Logs-getStats
     - name: granularity
       description: Time interval in milliseconds between data points for time series stats. Default is 86400000 (1 day) for a range of less than 30 days and 259200000 (3 days) for a range of less than 90 days.
     description: Use this operation to get site statistics for one or more sites. This operation may return multiple statistics, as specified in the stats parameter.
@@ -1188,11 +1190,11 @@ script:
     - name: traffic_type
       description: 'A comma separated list of specific traffic types. Any of: UDP, TCP, DNS, DNS_RESPONSE, ICMP, SYN, FRAG, LARGE_SYN, NTP, NETFLOW, SSDP, GENERAL. Cannot be used together with the pop parameter.'
     - name: pop
-      description: 'A comma separated list of specific PoP names. For example: iad, tko. Cannot be used together with the traffic_type parameter. For the list of PoP codes and locations, see https://docs.incapsula.com/Content/read-more/pops.htm'
+      description: 'A comma separated list of specific PoP names. For example: iad, tko. Cannot be used together with the traffic_type parameter. For the list of PoP codes and locations, see https://docs-cybersec.thalesgroup.com/bundle/cloud-application-security/page/more/pops.htm'
     - name: start
-      description: The start date in milliseconds, since 1970. For a detailed description, see https://docs.incapsula.com/Content/API/api.htm
+      description: The start date in milliseconds, since 1970. For a detailed description, see https://docs-cybersec.thalesgroup.com/bundle/api-docs/page/api/api-overview.htm
     - name: end
-      description: The end date in milliseconds, since 1970. For a detailed description, see https://docs.incapsula.com/Content/API/api.htm
+      description: The end date in milliseconds, since 1970. For a detailed description, see https://docs-cybersec.thalesgroup.com/bundle/api-docs/page/api/api-overview.htm
     description: Use this operation to get Infrastructure Protection statistics for an account or IP range.
     outputs:
     - contextPath: Imperva.EventStats.stats.payload.ipPrefix
@@ -1220,9 +1222,9 @@ script:
     - name: page_num
       description: 'The page to return starting from 0. Default: 0.'
     - name: start
-      description: The start date in milliseconds, since 1970. For a detailed description, see https://docs.incapsula.com/Content/API/api.htm
+      description: The start date in milliseconds, since 1970. For a detailed description, see https://docs-cybersec.thalesgroup.com/bundle/api-docs/page/api/api-overview.htm
     - name: end
-      description: The end date in milliseconds, since 1970. For a detailed description, see https://docs.incapsula.com/Content/API/api.htm
+      description: The end date in milliseconds, since 1970. For a detailed description, see https://docs-cybersec.thalesgroup.com/bundle/api-docs/page/api/api-overview.htm
     description: Use this operation to get Infrastructure Protection event information for an account.
   # Login Protect
   - name: incap-add-login-protect
@@ -1259,9 +1261,9 @@ script:
     - name: phone
       description: 'Phone number, country code - number, for example: "1-8662507659".'
     - name: is_email_verified
-      description: Whether or not to skip E-Mail address verificaion.
+      description: Whether or not to skip E-Mail address verification.
     - name: is_phone_verified
-      description: Whether or not to skip phone address verificaion.
+      description: Whether or not to skip phone address verification.
     - name: should_send_activation_email
       description: "Whether or not to send activation E-Mail to user."
     description: Use this operation to edit Login Protect user's settings.
@@ -1302,17 +1304,17 @@ script:
     - name: enabled
       description: Pass true to enable login protect on site, and false to disable it. Default is true.
     - name: specific_users_list
-      description: Comma seperated E-Mail list to set login protect users for the site, if the list is empty all users will be allowed to access the site using Login Protect.
+      description: Comma separated E-Mail list to set login protect users for the site, if the list is empty all users will be allowed to access the site using Login Protect.
     - name: send_lp_notifications
       description: Pass true to send notification on successful login using login protect. Default is false.
     - name: allow_all_users
-      description: Pass true to allow all login protect users to access the site. If you choose to allow only spesific list of users to access the site using Login Protect set this to false, and add the list to specific_user_list. Default value is true.
+      description: Pass true to allow all login protect users to access the site. If you choose to allow only specific list of users to access the site using Login Protect set this to false, and add the list to specific_user_list. Default value is true.
     - name: authentication_methods
-      description: Comma seperated list of allowed authentication methods sms | email | ga.
+      description: Comma separated list of allowed authentication methods sms | email | ga.
     - name: urls
       description: A comma separated list of resource paths. For example, /home and /admin/index.html are resource paths, however http://www.example.com/home is not. Each URL should be encoded separately using percent encoding as specified by RFC 3986 (http://tools.ietf.org/html/rfc3986#section-2.1). An empty URL list will remove all URLs.
     - name: url_patterns
-      description: 'A comma seperated list of url patterns, one of: contains | equals | prefix | suffix | not_equals | not_contain | not_prefix | not_suffix. The patterns should be in accordance with the matching urls sent by the urls parameter.'
+      description: 'A comma separated list of url patterns, one of: contains | equals | prefix | suffix | not_equals | not_contain | not_prefix | not_suffix. The patterns should be in accordance with the matching urls sent by the urls parameter.'
     description: Use this operation to change Login Protect settings for site.
   - name: incap-configure-app
     arguments:

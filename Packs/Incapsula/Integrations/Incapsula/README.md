@@ -279,8 +279,8 @@ There is no context output for this command.
 ### incap-get-account-login-token
 
 ***
-Tokens are used instead of user/password based authentication to log in to the Incapsula management console.  Use this operation to generate a token for an account. The token is valid for 15 minutes.
-In order to use the token, the user must use the following link:  https://my.incapsula.com/?token={generated_token}
+Tokens are used instead of user/password based authentication to log in to the Incapsula management console. Use this operation to generate a token for an account. The token is valid for 15 minutes.
+In order to use the token, the user must use the following link: https://my.incapsula.com/?token={generated_token}.
 
 #### Base Command
 
@@ -348,9 +348,9 @@ Use this operation to get audit events for an account.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | account_id | Numeric identifier of the account to operate on. If not specified, operation will be performed on the account identified by the authentication parameters. | Optional |
-| time_range | Time range to fetch data for. For a detailed description, see https://docs.incapsula.com/Content/API/api.htm. | Optional |
-| start | Start date in milliseconds since 1970. For a detailed description, see https://docs.incapsula.com/Content/API/api.htm. | Optional |
-| end | End date in milliseconds since 1970. For a detailed description, see https://docs.incapsula.com/Content/API/api.htm. | Optional |
+| time_range | Time range to fetch data for. For a detailed description, see https://docs-cybersec.thalesgroup.com/bundle/api-docs/page/api/api-overview.htm. | Optional |
+| start | Start date in milliseconds since 1970. For a detailed description, see https://docs-cybersec.thalesgroup.com/bundle/api-docs/page/api/api-overview.htm. | Optional |
+| end | End date in milliseconds since 1970. For a detailed description, see https://docs-cybersec.thalesgroup.com/bundle/api-docs/page/api/api-overview.htm. | Optional |
 | type | The api key of the event type, such as audit.account_login. | Optional |
 | page_size | The number of objects to return in the response.<br/>Default: 50.<br/>Maximum: 100. | Optional |
 | page_num | The page to return starting from 0. Default: 0. | Optional |
@@ -466,7 +466,7 @@ There is no context output for this command.
 ### incap-modify-site-configuration
 
 ***
-Use this operation to change one of the basic configuration settings of the site. To watch param table, visit https://my.incapsula.com/api/docs/v1/sites#modifySiteConfig
+Use this operation to change one of the basic configuration settings of the site. To watch param table, visit https://docs-cybersec.thalesgroup.com/bundle/api-docs/page/site-management-api-definition.htm?operationId=operations-Site_Management-modifySiteConfiguration.
 
 #### Base Command
 
@@ -527,7 +527,7 @@ There is no context output for this command.
 ### incap-modify-site-scurity-config
 
 ***
-Use this operation to change the security configuration of a site
+Use this operation to change the security configuration of a site.
 
 #### Base Command
 
@@ -543,7 +543,7 @@ Use this operation to change the security configuration of a site
 | challenge_suspected_bots | Whether or not to send a challenge to clients that are suspected to be bad bots (CAPTCHA for example). One of: true, false. | Optional |
 | activation_mode | One of the following: off (security measures are disabled even if site is under a DDoS attack), auto (security measures will be activated automatically when the system suspects site is under a DDoS attack), on (security measures are enabled even if site is not under a DDoS attack). The syntax is as follows: api.threats.ddos.activation_mode.( e.g. for "off", use "api.threats.ddos.activation_mode.off" ). | Optional |
 | security_rule_action | The action that should be taken when a threat is detected, for example: api.threats.action.block_ip. Different actions are allowed per different threats, e.g. backdoors may only be quarantined, ignored or trigger an alert. For possible values see below. | Optional |
-| quarantined_urls | A comma seperated list of encoded URLs to be kept in quarantine. | Optional |
+| quarantined_urls | A comma separated list of encoded URLs to be kept in quarantine. | Optional |
 | ddos_traffic_threshold | Consider site to be under DDoS if the request rate is above this threshold. The valid values are 10, 20, 50, 100, 200, 500, 750, 1000, 2000, 3000, 4000, 5000. | Optional |
 
 #### Context Output
@@ -553,7 +553,7 @@ There is no context output for this command.
 ### incap-modify-site-acl-config
 
 ***
-Use this operation to change the ACL configuration of a site. To modify the configuration for a specific ACL rule, its values are required, as documented below. To delete an entire ACL list, send an empty string as the list values
+Use this operation to change the ACL configuration of a site. To modify the configuration for a specific ACL rule, its values are required, as documented below. To delete an entire ACL list, send an empty string as the list values.
 
 #### Base Command
 
@@ -566,10 +566,10 @@ Use this operation to change the ACL configuration of a site. To modify the conf
 | site_id | Numeric identifier of the site to operate on. | Required |
 | rule_id | The id of the acl, e.g api.acl.blacklisted_ips. One of: api.acl.blacklisted_countries, api.acl.blacklisted_urls, api.acl.blacklisted_ips, api.acl.whitelisted_ips. | Required |
 | urls | A comma separated list of resource paths. For example, /home and /admin/index.html are resource paths, however http://www.example.com/home is not. Each URL should be encoded separately using percent encoding as specified by RFC 3986 (http://tools.ietf.org/html/rfc3986#section-2.1). An empty URL list will remove all URLs. | Optional |
-| url_patterns | A comma seperated list of url patterns, one of: contains \| equals \| prefix \| suffix \| not_equals \| not_contain \| not_prefix \| not_suffix. The patterns should be in accordance with the matching urls sent by the urls parameter. | Optional |
-| countries | A comma seperated list of country codes. | Optional |
-| continents | A comma seperated list of continent codes. | Optional |
-| ips | A comma seperated list of IPs or IP ranges, e.g: 192.168.1.1, 192.168.1.1-192.168.1.100 or 192.168.1.1/24. | Optional |
+| url_patterns | A comma separated list of url patterns, one of: contains \| equals \| prefix \| suffix \| not_equals \| not_contain \| not_prefix \| not_suffix. The patterns should be in accordance with the matching urls sent by the urls parameter. | Optional |
+| countries | A comma separated list of country codes. | Optional |
+| continents | A comma separated list of continent codes. | Optional |
+| ips | A comma separated list of IPs or IP ranges, e.g: 192.168.1.1, 192.168.1.1-192.168.1.100 or 192.168.1.1/24. | Optional |
 
 #### Context Output
 
@@ -578,7 +578,7 @@ There is no context output for this command.
 ### incap-modify-site-wl-config
 
 ***
-Use this operation to set allow lists to security rules or ACLs. To update an existing allow list, send its ID in the id parameter. If the id parameter does not exist a new allow list will be created
+Use this operation to set allow lists to security rules or ACLs. To update an existing allow list, send its ID in the id parameter. If the id parameter does not exist a new allow list will be created.
 
 #### Base Command
 
@@ -593,13 +593,13 @@ Use this operation to set allow lists to security rules or ACLs. To update an ex
 | whitelist_id | The id (an integer) of the allow list to be set. This field is optional - in case no id is supplied, a new allow list will be created. | Optional |
 | delete_whitelist | An optional boolean parameter, in case it is set to "true" and a allow list id is sent, then the allow list will be deleted. | Optional |
 | urls | A comma separated list of resource paths. For example, /home and /admin/index.html are resource paths, however http://www.example.com/home is not. Each URL should be encoded separately using percent encoding as specified by RFC 3986 (http://tools.ietf.org/html/rfc3986#section-2.1). An empty URL list will remove all URLs. | Optional |
-| countries | A comma seperated list of country codes. | Optional |
-| continents | A comma seperated list of continent codes. | Optional |
-| ips | A comma seperated list of IPs or IP ranges, e.g: 192.168.1.1, 192.168.1.1-192.168.1.100 or 192.168.1.1/24. | Optional |
-| client_app_types | A comma seperated list of client application types. | Optional |
-| client_apps | A comma seperated list of client application ids. | Optional |
-| parameters | A comma seperated list of encoded user agents. | Optional |
-| user_agents | A comma seperated list of encoded user agents. | Optional |
+| countries | A comma separated list of country codes. | Optional |
+| continents | A comma separated list of continent codes. | Optional |
+| ips | A comma separated list of IPs or IP ranges, e.g: 192.168.1.1, 192.168.1.1-192.168.1.100 or 192.168.1.1/24. | Optional |
+| client_app_types | A comma separated list of client application types. | Optional |
+| client_apps | A comma separated list of client application ids. | Optional |
+| parameters | A comma separated list of encoded user agents. | Optional |
+| user_agents | A comma separated list of encoded user agents. | Optional |
 
 #### Context Output
 
@@ -974,8 +974,8 @@ Use this operation to purge site resources
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | site_id | Numeric identifier of the site to operate on. | Required |
-| resource_url | Comma seperated list of URLs where the resource is located. | Optional |
-| resource_pattern | Comma seperated list of pattern, one of: contains \| equals \| prefix \| suffix \| not_equals \| not_contains \| not_prefix \| not_suffix. | Optional |
+| resource_url | Comma separated list of URLs where the resource is located. | Optional |
+| resource_pattern | Comma separated list of pattern, one of: contains \| equals \| prefix \| suffix \| not_equals \| not_contains \| not_prefix \| not_suffix. | Optional |
 | should_purge_all_site_resources | Should purge all cached resources on site. | Optional |
 
 #### Context Output
@@ -985,7 +985,7 @@ There is no context output for this command.
 ### incap-modify-caching-rules
 
 ***
-Use this operation to set-up advanced caching rules
+Use this operation to set-up advanced caching rules.
 
 #### Base Command
 
@@ -996,11 +996,11 @@ Use this operation to set-up advanced caching rules
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | site_id | Numeric identifier of the site to operate on. | Required |
-| always_cache_resource_url | Comma seperated list of always cache resources url. | Optional |
-| always_cache_resource_pattern | Comma seperated list of always cache resources pattern, one of: contains \| equals \| prefix \| suffix \| not_equals \| not_contains \| not_prefix \| not_suffix. | Optional |
-| always_cache_resource_duration | Duration that resources will be in cache, pass number followed by "_" and one of: hr \| min \| sec \| days \| weeks. Either provide a comma seperated list of duration expressions, matching the number of always cache rules, or a single duration expression to be used for all always cache rules. | Optional |
-| never_cache_resource_url | Comma seperated list of never cache resources url. | Optional |
-| never_cahce_resource_pattern | Comma seperated list of cached headers seperated with comma. | Optional |
+| always_cache_resource_url | Comma separated list of always cache resources url. | Optional |
+| always_cache_resource_pattern | Comma separated list of always cache resources pattern, one of: contains \| equals \| prefix \| suffix \| not_equals \| not_contains \| not_prefix \| not_suffix. | Optional |
+| always_cache_resource_duration | Duration that resources will be in cache, pass number followed by "_" and one of: hr \| min \| sec \| days \| weeks. Either provide a comma separated list of duration expressions, matching the number of always cache rules, or a single duration expression to be used for all always cache rules. | Optional |
+| never_cache_resource_url | Comma separated list of never cache resources url. | Optional |
+| never_cahce_resource_pattern | Comma separated list of cached headers separated with comma. | Optional |
 | clear_always_cache_rules | An optional boolean parameter, in case it is set to "true", the site's always cache rules will be cleared. | Optional |
 | clear_never_cache_rules | An optional boolean parameter, in case it is set to "true", the site's never cache rules will be cleared. | Optional |
 | clear_cache_headers_rules | An optional boolean parameter, in case it is set to "true", the site's cache headers rules will be cleared. | Optional |
@@ -1012,7 +1012,7 @@ There is no context output for this command.
 ### incap-set-advanced-caching-settings
 
 ***
-Use this operation to modify advanced caching settings. For more information, https://my.incapsula.com/api/docs/v1/sites#modifyAdvancedCachingSettings
+Use this operation to modify advanced caching settings. For more information, see https://docs-cybersec.thalesgroup.com/bundle/api-docs/page/site-management-api-definition.htm?operationId=operations-Site_Management-modifyAdvancedCachingSettings.
 
 #### Base Command
 
@@ -1104,7 +1104,7 @@ Use this operation to add a rule (Delivery Rules or IncapRules).
 | site_id | Numeric identifier of the site to operate on. | Required |
 | name | Rule name. | Optional |
 | action | Rule action. Possible values are: RULE_ACTION_REDIRECT, RULE_ACTION_REWRITE_URL, RULE_ACTION_REWRITE_HEADER, RULE_ACTION_REWRITE_COOKIE, RULE_ACTION_DELETE_HEADER, RULE_ACTION_DELETE_COOKIE, RULE_ACTION_FORWARD_TO_DC, RULE_ACTION_ALERT, RULE_ACTION_BLOCK, RULE_ACTION_BLOCK_USER, RULE_ACTION_BLOCK_IP, RULE_ACTION_RETRY, RULE_ACTION_INTRUSIVE_HTML, RULE_ACTION_CAPTCHA. | Optional |
-| filter | Rule will trigger only a request that matches this filter. For more details on filter guidelines, see https://docs.incapsula.com/Content/IncapRules/syntax-guide.htm<br/>The filter may contain up to 400 characters. | Optional |
+| filter | Rule will trigger only a request that matches this filter. For more details on filter guidelines, see https://docs-cybersec.thalesgroup.com/bundle/cloud-application-security/page/rules/rule-syntax.htm<br/>The filter may contain up to 400 characters. | Optional |
 | response_code | Redirect rule's response code. Possible values are: 301, 302, 303, 307, 308. | Optional |
 | protocol | Protocol. | Optional |
 | add_missing | Add cookie or header if it doesn't exist (Rewrite cookie rule only). | Optional |
@@ -1135,7 +1135,7 @@ Use this operation to edit an existing rule (Delivery Rules or IncapRules).
 | rule_id | Rule ID. | Required |
 | name | Rule name. | Optional |
 | action | Rule action. Possible values are: RULE_ACTION_REDIRECT, RULE_ACTION_REWRITE_URL, RULE_ACTION_REWRITE_HEADER, RULE_ACTION_REWRITE_COOKIE, RULE_ACTION_DELETE_HEADER, RULE_ACTION_DELETE_COOKIE, RULE_ACTION_FORWARD_TO_DC, RULE_ACTION_ALERT, RULE_ACTION_BLOCK, RULE_ACTION_BLOCK_USER, RULE_ACTION_BLOCK_IP, RULE_ACTION_RETRY, RULE_ACTION_INTRUSIVE_HTML, RULE_ACTION_CAPTCHA. | Optional |
-| filter | Rule will trigger only a request that matches this filter. For more details on filter guidelines, see https://docs.incapsula.com/Content/IncapRules/syntax-guide.htm<br/>The filter may contain up to 400 characters. | Optional |
+| filter | Rule will trigger only a request that matches this filter. For more details on filter guidelines, see https://docs-cybersec.thalesgroup.com/bundle/cloud-application-security/page/rules/rule-syntax.htm<br/>The filter may contain up to 400 characters. | Optional |
 | response_code | Redirect rule's response code. Possible values are: 301, 302, 303, 307, 308. | Optional |
 | protocol | Protocol. | Optional |
 | add_missing | Add cookie or header if it doesn't exist (Rewrite cookie rule only). | Optional |
@@ -1418,11 +1418,11 @@ Use this operation to get site statistics for one or more sites. This operation 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | account_id | Numeric identifier of the account to fetch data for. If not specified, data will be fetched for all site of the account identified by the authentication parameters. | Optional |
-| time_range | Time range to fetch data for. See https://my.incapsula.com/api/docs/v1#timeRange. | Required |
+| time_range | Time range to fetch data for. See https://docs-cybersec.thalesgroup.com/bundle/api-docs/page/api/api-overview-v1.htm#:~:text=Time%20range%20specification. | Required |
 | start | Start date in milliseconds since 1970. See the introduction of the API documentation for a detailed description. | Optional |
 | end | End date in milliseconds since 1970. See the introduction of the API documentation for a detailed description. | Optional |
 | site_id | Numeric identifier of the site to fetch data for. Multiple sites can be specified in a comma separated list. For example: 123,124,125. | Optional |
-| stats | Statistics to fetch, see options at https://my.incapsula.com/api/docs/v1/data#getStats. | Required |
+| stats | Statistics to fetch, see options at https://docs-cybersec.thalesgroup.com/bundle/api-docs/page/traffic-stats-api-definition.htm?operationId=operations-Traffic_Statistics_and_Logs-getStats. | Required |
 | granularity | Time interval in milliseconds between data points for time series stats. Default is 86400000 (1 day) for a range of less than 30 days and 259200000 (3 days) for a range of less than 90 days. | Optional |
 
 #### Context Output
@@ -1515,17 +1515,17 @@ Use this operation to get Infrastructure Protection statistics for an account or
 | ip_prefix | Specific Protected IP or IP range. For example, 1.1.1.0/24. | Optional |
 | traffic | Specific traffic. One of: Total, Passed, Blocked. Possible values are: Total, Passed, Blocked. | Optional |
 | traffic_type | A comma separated list of specific traffic types. Any of: UDP, TCP, DNS, DNS_RESPONSE, ICMP, SYN, FRAG, LARGE_SYN, NTP, NETFLOW, SSDP, GENERAL. Cannot be used together with the pop parameter. | Optional |
-| pop | A comma separated list of specific PoP names. For example: iad, tko. Cannot be used together with the traffic_type parameter. For the list of PoP codes and locations, see https://docs.incapsula.com/Content/read-more/pops.htm. | Optional |
-| start | The start date in milliseconds, since 1970. For a detailed description, see https://docs.incapsula.com/Content/API/api.htm. | Optional |
-| end | The end date in milliseconds, since 1970. For a detailed description, see https://docs.incapsula.com/Content/API/api.htm. | Optional |
+| pop | A comma separated list of specific PoP names. For example: iad, tko. Cannot be used together with the traffic_type parameter. For the list of PoP codes and locations, see https://docs-cybersec.thalesgroup.com/bundle/cloud-application-security/page/more/pops.htm. | Optional |
+| start | The start date in milliseconds, since 1970. For a detailed description, see https://docs-cybersec.thalesgroup.com/bundle/api-docs/page/api/api-overview.htm. | Optional |
+| end | The end date in milliseconds, since 1970. For a detailed description, see https://docs-cybersec.thalesgroup.com/bundle/api-docs/page/api/api-overview.htm. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Imperva.EventStats.stats.payload.ipPrefix | string | IP prefix |
-| Imperva.EventStats.stats.payload.ipPrefixType | string | IP prefix type |
-| Imperva.EventStats.stats.payload.traffic | unknown | Traffic state, such as blocked or passed |
+| Imperva.EventStats.stats.payload.ipPrefix | string | IP prefix. |
+| Imperva.EventStats.stats.payload.ipPrefixType | string | IP prefix type. |
+| Imperva.EventStats.stats.payload.traffic | unknown | Traffic state, such as blocked or passed. |
 
 ### incap-get-infra-protection-events
 
@@ -1545,8 +1545,8 @@ Use this operation to get Infrastructure Protection event information for an acc
 | ip_prefix | Specific Protected IP or IP range. For example, 1.1.1.0/24. | Optional |
 | page_size | The number of objects to return in the response.<br/>Default: 50<br/>Maximum: 100. | Optional |
 | page_num | The page to return starting from 0. Default: 0. | Optional |
-| start | The start date in milliseconds, since 1970. For a detailed description, see https://docs.incapsula.com/Content/API/api.htm. | Optional |
-| end | The end date in milliseconds, since 1970. For a detailed description, see https://docs.incapsula.com/Content/API/api.htm. | Optional |
+| start | The start date in milliseconds, since 1970. For a detailed description, see https://docs-cybersec.thalesgroup.com/bundle/api-docs/page/api/api-overview.htm. | Optional |
+| end | The end date in milliseconds, since 1970. For a detailed description, see https://docs-cybersec.thalesgroup.com/bundle/api-docs/page/api/api-overview.htm. | Optional |
 
 #### Context Output
 
@@ -1594,8 +1594,8 @@ Use this operation to edit Login Protect user's settings
 | email | E-mail address, for example: "joe@example.com". | Required |
 | name | Example: John Smith. | Optional |
 | phone | Phone number, country code - number, for example: "1-8662507659". | Optional |
-| is_email_verified | Whether or not to skip E-Mail address verificaion. | Optional |
-| is_phone_verified | Whether or not to skip phone address verificaion. | Optional |
+| is_email_verified | Whether or not to skip E-Mail address verification. | Optional |
+| is_phone_verified | Whether or not to skip phone address verification. | Optional |
 | should_send_activation_email | Whether or not to send activation E-Mail to user. | Optional |
 
 #### Context Output
@@ -1677,12 +1677,12 @@ Use this operation to change Login Protect settings for site
 | --- | --- | --- |
 | site_id | Numeric identifier of the site to operate on. | Required |
 | enabled | Pass true to enable login protect on site, and false to disable it. Default is true. | Optional |
-| specific_users_list | Comma seperated E-Mail list to set login protect users for the site, if the list is empty all users will be allowed to access the site using Login Protect. | Optional |
+| specific_users_list | Comma separated E-Mail list to set login protect users for the site, if the list is empty all users will be allowed to access the site using Login Protect. | Optional |
 | send_lp_notifications | Pass true to send notification on successful login using login protect. Default is false. | Optional |
-| allow_all_users | Pass true to allow all login protect users to access the site. If you choose to allow only spesific list of users to access the site using Login Protect set this to false, and add the list to specific_user_list. Default value is true. | Optional |
-| authentication_methods | Comma seperated list of allowed authentication methods sms \| email \| ga. | Optional |
+| allow_all_users | Pass true to allow all login protect users to access the site. If you choose to allow only specific list of users to access the site using Login Protect set this to false, and add the list to specific_user_list. Default value is true. | Optional |
+| authentication_methods | Comma separated list of allowed authentication methods sms \| email \| ga. | Optional |
 | urls | A comma separated list of resource paths. For example, /home and /admin/index.html are resource paths, however http://www.example.com/home is not. Each URL should be encoded separately using percent encoding as specified by RFC 3986 (http://tools.ietf.org/html/rfc3986#section-2.1). An empty URL list will remove all URLs. | Optional |
-| url_patterns | A comma seperated list of url patterns, one of: contains \| equals \| prefix \| suffix \| not_equals \| not_contain \| not_prefix \| not_suffix. The patterns should be in accordance with the matching urls sent by the urls parameter. | Optional |
+| url_patterns | A comma separated list of url patterns, one of: contains \| equals \| prefix \| suffix \| not_equals \| not_contain \| not_prefix \| not_suffix. The patterns should be in accordance with the matching urls sent by the urls parameter. | Optional |
 
 #### Context Output
 
