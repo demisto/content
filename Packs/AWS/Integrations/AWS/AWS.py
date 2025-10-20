@@ -2701,7 +2701,7 @@ def execute_aws_command(command: str, args: dict, params: dict) -> CommandResult
     Returns:
         CommandResults: Command execution results with outputs and status
     """
-    account_id: str = args.get("account_id") or params.get("account_id")
+    account_id: str = args.get("account_id", "")
     credentials: dict = {}
     if get_connector_id():
         credentials = get_cloud_credentials(CloudTypes.AWS.value, account_id)
