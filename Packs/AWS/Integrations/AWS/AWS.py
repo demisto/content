@@ -762,7 +762,7 @@ class S3:
                 - 'key' (str): The key of the file to download. (Required)
 
         Returns:
-            CommandResults: A CommandResults object with the downloaded file.
+            fileResult: fileResult object
         """
         bucket = args.get("bucket")
         key = args.get("key", "")
@@ -796,7 +796,7 @@ class S3:
                 - 'entryID' (str): The ID of the file to upload. (Required)
 
         Returns:
-            CommandResults: A CommandResults object with a success message on status 200/204.
+            CommandResults: A CommandResults object with a success/fail message.
         """
         bucket = args.get("bucket")
         key = args.get("key")
