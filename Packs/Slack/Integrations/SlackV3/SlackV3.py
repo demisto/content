@@ -20,8 +20,6 @@ from slack_sdk.web.async_slack_response import AsyncSlackResponse
 from slack_sdk.web.slack_response import SlackResponse
 
 """ CONSTANTS """
-MAX_UNIX_EPOCH_SECONDS = int(datetime(2100, 1, 1, tzinfo=timezone.utc).timestamp())
-MIN_UNIX_EPOCH_SECONDS = int(datetime(2000, 1, 1, tzinfo=timezone.utc).timestamp())
 ALLOWED_HTTP_VERBS = Literal["POST", "GET"]
 SEVERITY_DICT = {"Unknown": 0, "Low": 1, "Medium": 2, "High": 3, "Critical": 4}
 
