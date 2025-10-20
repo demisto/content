@@ -545,7 +545,7 @@ def get_cases_in_batches(
     return all_cases, start_time, last_fetched_ids
 
 
-def filter_existing_cases(cases: list[dict], ids_exists: list[str]) -> list:
+def filter_existing_cases(cases: list[dict], ids_exists: list[str], last_run: str) -> list:
     """
     Filters out cases that already exist in the provided list of existing IDs.
 
@@ -565,7 +565,13 @@ def filter_existing_cases(cases: list[dict], ids_exists: list[str]) -> list:
             if case_id not in ids_exists:
                 filtered_cases.append(case)
             else:
-                demisto.debug(f"Case with ID {case_id} already exists, skipping.")
+                case_creation_timestamp = timestamp_to_datestring(
+                    case.get("caseCreationTimestamp", 0) / 1000, date_format=DATE_FORMAT
+                )
+                if case_creation_timestamp == last_run:
+                    filtered_cases.append(case)
+                else:
+                    demisto.debug(f"Case with ID {case_id} already exists, skipping.")
         demisto.debug(f"After filtered cases count: {len(filtered_cases)}")
     else:
         filtered_cases = cases
@@ -609,8 +615,13 @@ def update_last_run(cases: list, end_time: str) -> dict:
     """
     if cases:
         max_timestamp = max(case.get("caseCreationTimestamp", 0) for case in cases)
-        list_ids = [case.get("caseId", "") for case in cases if case.get("caseCreationTimestamp", 0) == max_timestamp]
-        last_run_time = timestamp_to_datestring(max_timestamp / 1000, date_format=DATE_FORMAT)
+        max_time_in_format = timestamp_to_datestring(max_timestamp / 1000, date_format=DATE_FORMAT)
+        list_ids = []
+        for case in cases:
+            case_time_in_format = timestamp_to_datestring(case.get("caseCreationTimestamp", 0) / 1000, date_format=DATE_FORMAT)
+            if case_time_in_format == max_time_in_format:
+                list_ids.append(case.get("caseId", ""))
+        last_run_time = max_time_in_format
     else:
         last_run_time = end_time
         list_ids = []
@@ -991,7 +1002,7 @@ def fetch_incidents(client: Client, params: dict[str, str], last_run) -> tuple[l
     demisto.debug(f"Response contain {len(cases)} cases")
 
     ids_exists = last_run.get("last_ids", [])
-    cases = filter_existing_cases(cases, ids_exists)
+    cases = filter_existing_cases(cases, ids_exists, start_time)
 
     last_run = update_last_run(cases, end_time)
     demisto.debug(f"Last run after the fetch run: {last_run}")
