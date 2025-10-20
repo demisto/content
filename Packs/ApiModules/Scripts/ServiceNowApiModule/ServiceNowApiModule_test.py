@@ -1,3 +1,5 @@
+import pytest
+
 import demistomock as demisto
 from Packs.ServiceNow.Integrations.ServiceNowv2.test_data.response_constants import JWT_PARAMS
 from ServiceNowApiModule import *
@@ -89,36 +91,85 @@ def test_separate_client_id_and_refresh_token():
     assert client.client_id == "client_id"
 
 
-def test_validate_and_format_private_key_valid():
-    valid_key = "-----BEGIN PRIVATE KEY-----" "MIIEvQIBADANBgkqhkiG9w0BAQEFAASC" "-----END PRIVATE KEY-----"
-    result = ServiceNowClient._validate_and_format_private_key(valid_key)
-    assert result.startswith("-----BEGIN PRIVATE KEY-----")
-    assert result.endswith("-----END PRIVATE KEY-----")
-    assert " " not in result.replace("-----BEGIN PRIVATE KEY-----", "").replace("-----END PRIVATE KEY-----", "")
+@pytest.mark.parametrize("label", [
+    "PRIVATE KEY",
+    "RSA PRIVATE KEY",
+    "EC PRIVATE KEY",
+    "ENCRYPTED PRIVATE KEY"
+])
+def test_valid_private_key_formatting(label):
+    """
+    GIVEN a private key with extra whitespace and inconsistent newlines
+    WHEN _validate_and_format_private_key is called
+    THEN it returns a cleaned and properly formatted PEM key
+    """
+    key_data = "MIIBVgIBADANBgkqhkiG9w0BAQEFAASCAT8wggE7AgEAAkEAlS3dJdfO8Xf\nj57s\n=="
+    raw_key = f"""-----BEGIN {label}-----
+
+    {key_data}
+
+    -----END {label}-----
+    """
+    result = ServiceNowClient._validate_and_format_private_key(raw_key)
+
+    # Expect clean formatting
+    expected_lines = key_data.replace("\n", "").replace(" ", "")
+    expected_lines = [expected_lines[i:i + 64] for i in range(0, len(expected_lines), 64)]
+    expected_key = f"-----BEGIN {label}-----\n" + "\n".join(expected_lines) + f"\n-----END {label}-----"
+
+    assert result == expected_key
 
 
-def test_validate_and_format_private_key_invalid():
-    invalid_key = "INVALID KEY CONTENT"
-    try:
+def test_invalid_private_key_raises():
+    """
+    GIVEN a malformed private key without proper BEGIN/END markers
+    WHEN _validate_and_format_private_key is called
+    THEN it raises a ValueError
+    """
+    invalid_key = "this is not a private key"
+
+    with pytest.raises(ValueError, match="Invalid private key format."):
         ServiceNowClient._validate_and_format_private_key(invalid_key)
-    except ValueError as e:
-        assert "Invalid private key format" in str(e)
-    else:
-        assert False, "ValueError not raised for invalid key"
 
 
-def test_validate_and_format_private_key_spaces():
-    key_with_spaces = "-----BEGIN PRIVATE KEY----- MIIE vQIBADAN Bgkqh kiG9w0 BAEF AASC -----END PRIVATE KEY-----"
-    result = ServiceNowClient._validate_and_format_private_key(key_with_spaces)
-    assert " " not in result
-    assert result.count("\n") > 2
+def test_private_key_with_extra_characters_is_cleaned():
+    """
+    GIVEN a private key that contains tabs, extra spaces, and line breaks
+    WHEN _validate_and_format_private_key is called
+    THEN it returns a cleaned PEM with 64-character lines and no invalid characters
+    """
+    label = "RSA PRIVATE KEY"
+    key_data = "MIIB\tVgI BADA\nNBgkqhkiG9w0BAQ EFAASCAT8wggE7AgEAAkEA\nlS3dJd=="
+
+    raw_key = f"""-----BEGIN {label}-----
+    {key_data}
+    -----END {label}-----"""
+
+    result = ServiceNowClient._validate_and_format_private_key(raw_key)
+
+    clean_base64 = re.sub(r"[^A-Za-z0-9+/=]", "", key_data)
+    expected_lines = [clean_base64[i:i + 64] for i in range(0, len(clean_base64), 64)]
+    expected_key = f"-----BEGIN {label}-----\n" + "\n".join(expected_lines) + f"\n-----END {label}-----"
+
+    assert result == expected_key
 
 
-def test_validate_and_format_private_key_double_newlines():
-    key_with_double_newlines = "-----BEGIN PRIVATE KEY-----\n\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASC\n\n-----END PRIVATE KEY-----"
-    result = ServiceNowClient._validate_and_format_private_key(key_with_double_newlines)
-    assert "\n\n" not in result
+def test_private_key_preserves_label():
+    """
+    GIVEN a valid EC PRIVATE KEY with base64 content
+    WHEN _validate_and_format_private_key is called
+    THEN the returned PEM retains the original label in both BEGIN and END lines
+    """
+    label = "EC PRIVATE KEY"
+    content = "A" * 70  # arbitrary base64 content
+    raw_key = f"-----BEGIN {label}-----\n{content}\n-----END {label}-----"
 
+    result = ServiceNowClient._validate_and_format_private_key(raw_key)
+
+    expected_lines = [content[i:i + 64] for i in range(0, len(content), 64)]
+    expected_key = f"-----BEGIN {label}-----\n" + "\n".join(expected_lines) + f"\n-----END {label}-----"
+
+    assert result == expected_key
 
 def test_servicenow_client_jwt_init(mocker):
     """
