@@ -5,7 +5,7 @@
     "propagationLabels": [
         "all"
     ],
-    "name": "Bmc Requester",
+    "name": "BmcITSM Requester",
     "ownerOnly": false,
     "cliName": "bmcrequester",
     "type": "grid",
@@ -115,7 +115,7 @@
         {
             "cliName": "bmcitsmrequester",
             "type": "grid",
-            "name": "BmcITSM Requester"
+            "name": "Bmc Requester"
         }
     ]
 }
