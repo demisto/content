@@ -194,7 +194,7 @@ script:
   dockerimage: demisto/python3:3.12.11.4819260
   commands:
   - name: bmc-itsm-user-list
-    description: Retrieves a list of user profiles from BMC Helix ITSM. The records are retrieved by the query argument or by the filtering arguments. When using filtering arguments, each one defines a 'LIKE' operation and an 'AND' operator is used between them. To see the entire JSON then you can use the raw_response=true at the end of the command.
+    description: Retrieves a list of user profiles from BMC Helix ITSM. The records are retrieved by the query argument or by the filtering arguments. When using filtering arguments, each one performs a `LIKE` operation, and multiple filters are combined using the `AND` operator. To view the full JSON response, add raw_response=true to the end of the command.
     outputs:
     - contextPath: BmcITSM.User.Id
       description: The user ID.
