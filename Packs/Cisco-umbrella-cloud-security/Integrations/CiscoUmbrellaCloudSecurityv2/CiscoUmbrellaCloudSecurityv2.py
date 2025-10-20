@@ -20,6 +20,7 @@ ID_OUTPUTS_KEY_FIELD = "id"
 
 MAX_LIMIT = 100
 DEFAULT_LIMIT = 50
+DEFAULT_URL = "https://api.umbrella.com"
 
 DESTINATION_LIST_HEADERS = ["id", "name", "access", "isGlobal", "destinationCount"]
 DESTINATION_LIST_JSON_TRANSFORMER = JsonTransformer(keys=DESTINATION_LIST_HEADERS, is_nested=True)
@@ -880,7 +881,7 @@ def main() -> None:
     params: dict[str, Any] = demisto.params()
     args: dict[str, Any] = demisto.args()
     command: str = demisto.command()
-    base_url = params["baseURL"]
+    base_url = params.get("baseURL") or DEFAULT_URL
 
     api_key: str = params["credentials"]["identifier"]
     api_secret: str = params["credentials"]["password"]
