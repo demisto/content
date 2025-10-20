@@ -41,7 +41,10 @@ def main(args):
         },
     )
 
-    indicators = indicator_res["response"]["iocObjects"]
+    if is_demisto_version_ge("8.0.0"):
+        indicators = indicator_res[0]["response"]["iocObjects"]
+    else:
+        indicators = indicator_res["response"]["iocObjects"]
 
     res = []
     for indicator in indicators:
