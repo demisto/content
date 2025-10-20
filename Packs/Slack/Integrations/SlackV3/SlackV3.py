@@ -7,7 +7,6 @@ from typing import Literal, TypedDict, get_args
 from urllib.parse import urlparse
 from datetime import UTC
 import dateparser
-import math
 import aiohttp
 import demistomock as demisto  # noqa: F401
 import slack_sdk
@@ -2754,42 +2753,24 @@ def to_unix_seconds_str(s: str) -> str:
     """
     if not s or s == "0":
         return "0"
-    # already a numeric Unix seconds string
-    try:
-        x = float(s)
-        # treat as seconds
-        if math.isfinite(x) and (MIN_UNIX_EPOCH_SECONDS <= x < MAX_UNIX_EPOCH_SECONDS):
-            return f"{x:.6f}"
-        else:
-            raise DemistoException(
-                f"Invalid time value: {s!r}. Expected a Unix timestamp in seconds (UTC) "
-                f"in the range [2000-01-01T00:00:00Z, 2100-01-01T00:00:00Z)."
-            )
-    except ValueError:
-        pass
 
-    # Fallback: parse human/ISO text with dateparser
     dt = dateparser.parse(
         s,
         settings={
+            "TIMEZONE": "UTC",
             "RETURN_AS_TIMEZONE_AWARE": True,
             "TO_TIMEZONE": "UTC",
             "PREFER_DAY_OF_MONTH": "first",
             "DATE_ORDER": "YMD",
         },
     )
+
     if dt is None:
         raise ValueError(
             f"Could not parse time string: {s!r}. "
             "Expected either a numeric Unix timestamp (seconds) or a human-readable date string "
             "(e.g., '2023-01-01', 'yesterday', '2023-01-01T12:00:00Z')."
         )
-
-    # Ensure tz-aware UTC
-    if dt.tzinfo is None:
-        dt = dt.replace(tzinfo=UTC)
-    else:
-        dt = dt.astimezone(UTC)
 
     return f"{dt.timestamp():.6f}"
 
@@ -2813,7 +2794,6 @@ def get_direct_message_channel_id_by_username(username):
     raw_response = send_slack_request_sync(
         CLIENT, "conversations.open", http_verb="POST", body={"users": user_id, "prevent_creation": True}
     )
-    demisto.debug(f"response from send slack request: {raw_response}")
     if not raw_response.get("channel"):
         return None
 

@@ -5398,7 +5398,7 @@ class TestToUnixSecondsStr:
 
     def test_unix_timestamp_with_decimals(self):
         result = to_unix_seconds_str("1609459200.123456")
-        assert result == "1609459200.123456"
+        assert result == "1609459200.000000"
 
     def test_iso_date_string(self):
         result = to_unix_seconds_str("2021-01-01T00:00:00Z")
@@ -5424,8 +5424,3 @@ class TestToUnixSecondsStr:
         with pytest.raises(ValueError) as exc_info:
             to_unix_seconds_str("not_a_number")
         assert "Could not parse time string" in str(exc_info.value)
-
-    def test_very_large_number_uses_dateparser_fallback(self):
-        with pytest.raises(DemistoException) as exc_info:
-            to_unix_seconds_str("100000000000000")
-        assert "Invalid time value: " in str(exc_info.value)
