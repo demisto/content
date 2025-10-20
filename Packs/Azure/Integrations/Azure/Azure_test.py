@@ -2788,6 +2788,7 @@ def test_start_vm_command(mocker):
           and return correct CommandResults with VM starting state.
     """
     from Azure import start_vm_command
+
     mock_client = mocker.Mock()
     params = {"subscription_id": "sub-id", "resource_group_name": "rg1"}
     args = {"subscription_id": "sub-id", "resource_group_name": "rg1", "virtual_machine_name": "vm1"}
@@ -2814,6 +2815,7 @@ def test_poweroff_vm_command(mocker):
           and return correct CommandResults with VM stopping state.
     """
     from Azure import poweroff_vm_command
+
     mock_client = mocker.Mock()
     params = {"subscription_id": "sub-id", "resource_group_name": "rg1"}
     args = {"subscription_id": "sub-id", "resource_group_name": "rg1", "virtual_machine_name": "vm1", "skip_shutdown": True}
@@ -2840,6 +2842,7 @@ def test_get_vm_command(mocker):
           including OS, size, power state, and network interfaces.
     """
     from Azure import get_vm_command
+
     mock_client = mocker.Mock()
     params = {"subscription_id": "sub-id", "resource_group_name": "rg1"}
     args = {"subscription_id": "sub-id", "resource_group_name": "rg1", "virtual_machine_name": "vm1", "expand": ""}
@@ -2902,7 +2905,7 @@ def test_get_network_interface_command(mocker):
                     "name": "ipconfig1",
                     "id": "ipconfig-id",
                     "properties": {"privateIPAddress": "10.0.0.4", "publicIPAddress": {"id": "public-ip-id"}},
-                    "etag": "W/\"12345\""
+                    "etag": 'W/"12345"',
                 }
             ],
         },
@@ -2988,4 +2991,3 @@ def test_get_public_ip_details_command_with_resource_group(mocker):
     assert result.outputs["properties"]["publicIPAllocationMethod"] == "Static"
     assert result.outputs["etag"] == "12345"
     assert "ip1" in result.readable_output
-
