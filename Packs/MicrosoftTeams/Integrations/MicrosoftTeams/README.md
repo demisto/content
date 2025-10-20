@@ -139,27 +139,28 @@ To configure the integration, do the following:
 1. Search for Microsoft Teams integration after you have installed it from the Marketplace.
 2. Click **Add instance** to create and configure a new integration instance by using one of the flows. Instructions below.
 
-    | **Parameter** | **Description**                                                                                                                                                             | **Required** |
-    | --- |-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
-    | Name | The integration instance name.<br />If using Cortex XSOAR/XSIAM rerouting configuration, insert here the instance name you configured in the messaging endpoint.                  | True |
-    | Bot ID | Bot ID.                                                                                                                                                                     | True |
-    | Bot Password | Bot Password.                                                                                                                                                               | True |
-    | Authentication Type | Can be Client Credentials or Authorization Code. Please check the limitations for each flow.                                                                                | True |
-    | Application redirect URI | **Used for Authorization Code flow**. Need to be configured in the Teams application in the Azure portal as well.                                                           | False |
-    | Authorization code | **Used for Authorization Code flow**. Received from the authorization step, after running generate-login-url command. See the Detailed instructions under the Help section. | False |
-    | Default team | The team to which messages and notifications are sent. If a team is specified as a command argument, it overrides this parameter.                                           | True |
-    | Notifications channel |                                                                                                                                                                             | True |
-    | Certificate (Required for HTTPS) |                                                                                                                                                                             | False |
-    | Private Key (Required for HTTPS) |                                                                                                                                                                             | False |
-    | Minimum incident severity to send notifications to Teams by |                                                                                                                                                                             | False |
-    | Disable Automatic Notifications | Whether to disable automatic notifications to the configured notifications channel.                                                                                         | False |
-    | Allow external users to create incidents via direct message |                                                                                                                                                                             | False |
-    | The header of an external form hyperlink. |                                                                                                                                                                             | False |
-    | Trust any certificate (not secure) | Do not check for Cortex XSOAR version 8 and Cortex XSIAM.                                                                                                                   | False |
-    | Use system proxy settings |                                                                                                                                                                             | False |
-    | Long running instance | **Must be checked when using the Bot.**                                                                                                                                     | True |
-    | Listen port, e.g., 7000 (Required for investigation mirroring and direct messages) | The long running port.                                                                                                                                                      | False |
-    | Incident type | Incident type.                                                                                                                                                              | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Bot ID |  | False |
+| Bot Password |  | False |
+| Authentication Type | When switching from the 'Client Credentials Flow' to the 'Authorization Code Flow' do as follow: Save the instance, run the 'microsoft-teams-generate-login-url' command and follow the instructions mentioned there. Once done, test the validity of your instance by running the 'microsoft-teams-auth-test' command.<br/>When switching from the 'Authorization Code Flow' to the 'Client Credentials Flow', test the validity of the instance by clicking the 'Test' button. | False |
+| Application redirect URI (for Authorization Code mode) |  | False |
+| Authorization code |  | False |
+| Default team |  | True |
+| Notifications channel |  | True |
+| Certificate (Required for HTTPS) |  | False |
+| Private Key (Required for HTTPS) |  | False |
+| Bot Type Converted to Single-Tenant | Select this option if the bot was originally created as multi-tenant and later converted to single-tenant. The system will detect the bot type automatically in all other standard cases. | False |
+| Minimum incident severity to send notifications to Teams by |  | False |
+| Disable Automatic Notifications | Whether to disable automatic notifications to the configured notifications channel. | False |
+| Allow external users to create incidents via direct message |  | False |
+| The header of an external form hyperlink. |  | False |
+| Trust any certificate (not secure) | Do not check for Cortex XSOAR version 8 | False |
+| Use system proxy settings |  | False |
+| Custom New Incident Welcome Message | Optional - Welcome message when creating new incidents using the bot. If left empty \(default option\) the current default welcome message will be used, i.e., "Successfully created incident &lt;incident_name&gt;. View it on: &lt;incident_link&gt;". If the parameter is set to "no_welcome_message" value, no message will be displayed. Any non-empty string value set will be used as the custom new incident welcome message. | False |
+| Long running instance |  | False |
+| Listen port | E.g., 7000 \(Required for investigation mirroring and direct messages\). | False |
+| Incident type |  | False |
 
 ### Authentication Using the Client Credentials Flow
 
@@ -414,6 +415,24 @@ When [installing the bot in Microsoft Teams](#add-the-demisto-bot-to-a-team), ac
     - If your authentication type is the `Authorization Code Flow`, after running the `microsoft-teams-auth-reset` command you will need to regenerate the **Authorization code** parameter by running the ***microsoft-teams-generate-login-url*** command, and to verify the authentication by running the ***!microsoft-teams-auth-test*** command.
 3. Since the integration works based on Docker port mapping, it can't function if the Docker is set to run with the host networking (`--network=host`). For more details, refer to the [Docker documentation](https://docs.docker.com/network/host/).
 4. If you are receiving repeated `Connection reset by peer` errors, the requests might be getting blocked temporarily by Azure due to repeated permission errors. Ensure you are not missing any permissions that might cause constant failures and eventually leading to server timeouts.
+5. If you encounter the following error:
+
+    ```
+    Error code [401] in API call to Microsoft Teams:
+    Authorization error in call to the Microsoft Bot Framework, ensure the "Microsoft Teams" channel was added to the bot in the Azure portal during setup.
+
+    (Error Message): {"message":"Authorization has been denied for this request."}
+    ```
+
+    *And* the bot's application type was converted *from Multi-tenant to Single-tenant*, the integration may fail to recognize the change, leading to the denial of authorization.
+
+    *To resolve this:*
+
+    1.Navigate to your instance configuration settings.
+    2.Select the *Bot Type Converted to Single-Tenant parameter* in the advanced settings of the Connect section.
+    3.Run the command !microsoft-teams-auth-reset in the War Room.
+
+    Your bot should now be properly authorized and functional.
 
 ## Download Demisto Bot
 

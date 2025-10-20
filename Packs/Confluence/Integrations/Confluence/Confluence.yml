@@ -4,7 +4,7 @@ commonfields:
 name: Atlassian Confluence Server
 display: Atlassian Confluence Server
 category: Utilities
-sectionOrder:
+sectionorder:
 - Connect
 description: Atlassian Confluence Server API.
 configuration:

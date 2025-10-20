@@ -1,6 +1,6 @@
 category: Endpoint
 defaultEnabled: true
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
