@@ -3163,7 +3163,7 @@ def get_vm_command(client: AzureClient, params: dict[str, Any], args: dict[str, 
     """
     subscription_id = get_from_args_or_params(args=args, params=params, key="subscription_id")
     resource_group_name = get_from_args_or_params(args=args, params=params, key="resource_group_name")
-    vm_name = args.get("virtual_machine_name")
+    vm_name = args.get("virtual_machine_name", "")
 
     response = client.get_vm_request(subscription_id, resource_group_name, vm_name, expand=args.get("expand", ""))
 
