@@ -436,7 +436,7 @@ script:
     - name: allowlist_id
       description: The id (an integer) of the allowlist to be set. This field is optional - in case no id is supplied, a new allowlist will be created.
     - name: delete_allowlist
-      description: An optional boolean parameter, in case it is set to "true" and a allow list id is sent, then the allow list will be deleted.
+      description: An optional boolean parameter. If it is set to "true" and a allowlist id is sent, the allowlist will be deleted.
     - name: urls
       description: 'A comma separated list of resource paths. For example, /home and /admin/index.html are resource paths, however http://www.example.com/home is not. Each URL should be encoded separately using percent encoding as specified by RFC 3986 (http://tools.ietf.org/html/rfc3986#section-2.1). An empty URL list will remove all URLs.'
     - name: countries
