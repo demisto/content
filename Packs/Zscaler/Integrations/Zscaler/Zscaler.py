@@ -1,5 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+import re
 
 
 """ GLOBAL VARS """
@@ -1140,12 +1141,25 @@ def edit_ip_destination_group(args: dict):
     payload["name"] = args.get("name", response_data["name"])
     payload["countries"] = argToList(args.get("countries", response_data["countries"]))
     payload["ipCategories"] = argToList(args.get("ip_categories", response_data["ipCategories"]))
-    payload["addresses"] = argToList(args.get("addresses", response_data["addresses"]))
     payload["description"] = args.get("description", response_data["description"])
     payload["isNonEditable"] = args.get("is_non_editable", False)
     payload["type"] = response_data["type"]
 
     cmd_url = f"/ipDestinationGroups/{ip_group_id}"
+
+    if args.get("operation") == 'append':
+        payload["addresses"] = response_data["addresses"]
+        pattern = re.compile(r'^(\d{1,3}\.){3}\d{1,3}$')
+        for x in argToList(args.get("addresses")):
+            if pattern.match(x) and x not in payload["addresses"]:
+                # this will avoid the error of adding an IP already in the destination group and  assures only IPv4 addresses can be added
+                payload["addresses"].append(x)
+
+    elif args.get("operation") == 'remove':
+        payload["addresses"] = [x for x in response_data["addresses"] if x not in argToList(args.get("addresses"))]
+        print(payload["addresses"])
+    else:
+        payload["addresses"] = argToList(args.get("addresses", response_data["addresses"]))
     json_data = json.dumps(payload)
     response = http_request("PUT", cmd_url, json_data, DEFAULT_HEADERS)
     content = {
