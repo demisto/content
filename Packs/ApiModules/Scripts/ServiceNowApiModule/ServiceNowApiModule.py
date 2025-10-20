@@ -42,12 +42,12 @@ class ServiceNowClient(BaseClient):
         if self.use_oauth:  # if user selected the `Use OAuth` box use OAuth authorization, else use basic authorization
             self.client_id = client_id
             self.client_secret = client_secret
-        if jwt_params:
-            self.jwt = self.create_jwt(jwt_params)
         else:
             self.username = credentials.get("identifier")
             self.password = credentials.get("password")
             self.auth = (self.username, self.password)
+
+        self.jwt = self.create_jwt(jwt_params) if jwt_params else None
 
         if "@" in client_id:  # for use in OAuth test-playbook
             self.client_id, refresh_token = client_id.split("@")
@@ -188,7 +188,7 @@ class ServiceNowClient(BaseClient):
         key_content = re.sub(r"[^A-Za-z0-9+/=]", "", key_content)
 
         # Format content into 64-character lines
-        key_lines = [key_content[i : i + 64] for i in range(0, len(key_content), 64)]
+        key_lines = [key_content[i: i + 64] for i in range(0, len(key_content), 64)]
 
         # Reattach markers
         processed_key = f"-----BEGIN {key_type}-----\n" + "\n".join(key_lines) + f"\n-----END {key_type}-----"
