@@ -108,8 +108,11 @@ class MsGraphClient:
 
     def search_alerts(self, params):
         cmd_url = CMD_URL
-        demisto.debug(f"Fetching MS Graph Security incidents with params: {params}")
-        response = self.ms_client.http_request(method="GET", url_suffix=cmd_url, params=params)
+        headers = {"Prefer": "include-unknown-enum-members"}
+        # This header maps unknownFutureValue value to the appropriate service resource.
+        # https://learn.microsoft.com/en-us/graph/api/resources/security-alert?view=graph-rest-1.0#:~:text=microsoftThreatIntelligence.%20Use%20the%20Prefer%3A-,include%2Dunknown%2Denum%2Dmembers,-request%20header%20to%20get%20the
+        demisto.debug(f"Fetching MS Graph Security incidents with params: {params} and header: {headers}")
+        response = self.ms_client.http_request(method="GET", url_suffix=cmd_url, params=params, headers=headers)
         return response
 
     def get_alert_details(self, alert_id):
@@ -628,11 +631,13 @@ def create_filter_query(filter_param: str, providers_param: str, service_sources
                 providers_query.append(f"vendorInformation/provider eq '{provider}'")
             filter_query = " or ".join(providers_query)
         elif API_VER == API_V2 and service_sources_param:
-            service_sources_query = []
-            service_sources_lst = service_sources_param.split(",")
-            for service_source in service_sources_lst:
-                service_sources_query.append(f"serviceSource eq '{service_source}'")
-            filter_query = " or ".join(service_sources_query)
+            demisto.debug("In API V2 and service sources param")
+            service_sources_lst = [source.strip() for source in service_sources_param.split(",")]
+            # This creates a string like: "serviceSource in ('source1','source2')"
+            # see docs supporting this operation: https://learn.microsoft.com/en-us/graph/filter-query-parameter?tabs=http
+            quoted_sources = [f"'{source}'" for source in service_sources_lst]
+            filter_query = f"serviceSource in ({','.join(quoted_sources)})"
+    demisto.debug("filter query: " + str(filter_query))
     return filter_query
 
 
@@ -2081,7 +2086,6 @@ def main():
     }
     command = demisto.command()
     LOG(f"Command being called is {command}")
-
     try:
         auth_code = params.get("auth_code", {}).get("password")
         redirect_uri = params.get("redirect_uri")
