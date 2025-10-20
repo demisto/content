@@ -206,7 +206,7 @@ def test_client_jwt_param_usage(mocker):
     assert client.snow_client.jwt == "jwt_token_stub"
 
 
-def test_client_jwt_param_usage(mocker):
+def test_client_empty_jwt_param_usage(mocker):
     """
     Given:
     - no JWT params provided to the ServiceNow CMDB Client
