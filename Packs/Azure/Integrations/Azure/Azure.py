@@ -1601,10 +1601,10 @@ class AzureClient:
         Docs:
             https://learn.microsoft.com/en-us/rest/api/compute/virtual-machines/get?view=rest-azure-2024-04-01
         """
-        # result = self.http_request(method="GET", full_url=f"https://management.azure.com/subscriptions/{subscription_id}/"
-        #                                                   f"resourceGroups/{resource_group_name}/providers/Microsoft.Compute/"
-        #                                                   f"virtualMachines", resp_type="json", params={"api-version":"2025-04-01"})
-        # demisto.debug(result)
+        result = self.http_request(method="GET", full_url=f"https://management.azure.com/subscriptions/{subscription_id}/"
+                                                          f"resourceGroups/{resource_group_name}/providers/Microsoft.Compute/"
+                                                          f"virtualMachines", resp_type="json", params={"api-version":"2025-04-01"})
+        demisto.debug(result)
         full_url = (
             f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Compute/"
             f"virtualMachines/{vm_name}"
@@ -3205,7 +3205,7 @@ def get_vm_command(client: AzureClient, params: dict[str, Any], args: dict[str, 
     return CommandResults(
         outputs_prefix="Azure.Compute",
         outputs_key_field="Name",
-        outputs=vm,
+        outputs=response,
         readable_output=human_readable,
         raw_response=response,
     )
@@ -3244,20 +3244,6 @@ def get_network_interface_command(client: AzureClient, params: dict[str, Any], a
             }
         )
 
-    network_config = {
-        "Name": interface_name.lower(),  # type: ignore
-        "ID": response.get("id"),
-        "MACAddress": properties.get("macAddress", "NA"),
-        "NetworkSecurityGroup": properties.get("networkSecurityGroup", "NA"),
-        "IsPrimaryInterface": properties.get("primary", "NA"),
-        "Location": response.get("location"),
-        "AttachedVirtualMachine": properties.get("virtualMachine", {}).get("id", "NA"),
-        "ResourceGroup": resource_group_name,
-        "NICType": properties.get("nicType", "NA"),
-        "DNSSuffix": properties.get("dnsSettings", {}).get("internalDomainNameSuffix"),
-        "IPConfigurations": ip_configs,
-    }
-
     human_readable_network_config = {
         "Name": interface_name.lower(),  # type: ignore
         "ID": response.get("id"),
@@ -3285,7 +3271,7 @@ def get_network_interface_command(client: AzureClient, params: dict[str, Any], a
     return CommandResults(
         outputs_prefix="Azure.Network.Interfaces",
         outputs_key_field="ID",
-        outputs=network_config,
+        outputs=response,
         readable_output=human_readable,
         raw_response=response,
     )
@@ -3339,7 +3325,6 @@ def get_public_ip_details_command(client: AzureClient, params: dict[str, Any], a
     address_name = args.get("address_name")
     if resource_group_name := (args.get("resource_group_name") or params.get("resource_group_name")):
         response = client.get_public_ip_details_request(subscription_id, resource_group_name, address_name)
-        address_id = response.get("id")
     else:
         response_for_all_ips = client.get_all_public_ip_details_request(subscription_id).get("value")
         response = get_single_ip_details_from_list_of_ip_details(response_for_all_ips, address_name)
@@ -3351,19 +3336,6 @@ def get_public_ip_details_command(client: AzureClient, params: dict[str, Any], a
         resource_group_name = address_id.split("resourceGroups/")[1].split("/providers")[0]
 
     properties = response.get("properties")
-
-    ip_config = {
-        "PublicIPAddressID": address_id,
-        "PublicConfigName": response.get("name"),
-        "Location": response.get("location"),
-        "PublicConfigID": properties.get("ipConfiguration", {}).get("id"),
-        "ResourceGroup": resource_group_name,
-        "PublicIPAddress": properties.get("ipAddress", "NA"),
-        "PublicIPAddressVersion": properties.get("publicIPAddressVersion", "NA"),
-        "PublicIPAddressAllocationMethod": properties.get("publicIPAllocationMethod", "NA"),
-        "PublicIPAddressDomainName": properties.get("dnsSettings", {}).get("domainNameLabel", "NA"),
-        "PublicIPAddressFQDN": properties.get("dnsSettings", {}).get("fqdn", "NA"),
-    }
 
     human_readable_ip_config = {
         "PublicConfigName": response.get("name"),
@@ -3388,7 +3360,7 @@ def get_public_ip_details_command(client: AzureClient, params: dict[str, Any], a
     return CommandResults(
         outputs_prefix="Azure.Network.IPConfigurations",
         outputs_key_field="PublicIPAddressID",
-        outputs=ip_config,
+        outputs=response,
         readable_output=human_readable,
         raw_response=response,
     )
