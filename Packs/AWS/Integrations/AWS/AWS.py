@@ -768,11 +768,9 @@ class S3:
         key = args.get("key", "")
         try:
             resp = client.get_object(Bucket=bucket, Key=key)
-            body_stream = resp["Body"]
-            try:
-                data = body_stream.read()
-            finally:
-                body_stream.close()
+            with closing(resp["Body"]) as body:
+                data = body.read()
+            
             filename = key.rsplit("/", 1)[-1]
             return fileResult(filename, data)
         except ClientError as err:
