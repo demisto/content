@@ -43,8 +43,4 @@ This playbook does not use any custom lists.
 ---
 This playbook outputs a new domain indicator based on the iris search hash result.
 
-## Playbook Image
-
----
-
-![DomainTools_Check_New_Domains_by_Iris_Hash](../../doc_files/DomainTools_Check_New_Domains_by_Iris_Hash.png)
+![Playbook Image](../../doc_files/DomainTools_Check_New_Domains_by_Iris_Hash.png)
