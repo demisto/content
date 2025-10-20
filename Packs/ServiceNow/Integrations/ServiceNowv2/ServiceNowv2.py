@@ -1914,7 +1914,7 @@ def get_entries_for_notes(notes: list[dict], params) -> list[dict]:
                     "Type": note.get("type", 1),
                     "Category": note.get("category"),
                     "Contents": f"Type: {note.get('element')}\nCreated By: {note.get('sys_created_by')}\n"
-                    f"Created On: {note.get('sys_created_on')}\n{note.get('value')}",
+                                f"Created On: {note.get('sys_created_on')}\n{note.get('value')}",
                     "ContentsFormat": note.get("format"),
                     "Tags": tags,
                     "Note": True,
@@ -3770,14 +3770,12 @@ def main():
     use_oauth = params.get("use_oauth", False)
     use_jwt = params.get("use_jwt", False)
     oauth_params = {}
-    jwt_params = {}
-
     # use jwt only with OAuth
     if use_jwt and use_oauth:
         raise ValueError("Please choose only one authentication method (OAuth or JWT)")
     elif use_jwt:
         use_oauth = True
-    jwt_params = {}
+    jwt_params: dict = {}
     if use_oauth:  # if the `Use OAuth` checkbox was checked, client id & secret should be in the credentials fields
         username = ""
         password = ""
