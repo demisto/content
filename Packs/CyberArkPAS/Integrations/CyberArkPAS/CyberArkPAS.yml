@@ -514,7 +514,7 @@ script:
       isArray: true
       name: permissions
     - description: The URL encoded name of the safe to add a member to.
-      name: safe_url_id
+      name: safe_name
       required: true
     - auto: PREDEFINED
       defaultValue: '0'
@@ -558,7 +558,7 @@ script:
       isArray: true
       name: permissions
     - description: The URL encoded name of the safe to which the safe member belongs.
-      name: safe_url_id
+      name: safe_name
       required: true
     - auto: PREDEFINED
       defaultValue: '0'
@@ -590,7 +590,7 @@ script:
       type: String
   - arguments:
     - description: The URL encoded name of the safe to delete a member from.
-      name: safe_url_id
+      name: safe_name
       required: true
     - description: The name of the safe member to delete from the safe’s list of members.
       name: member_name

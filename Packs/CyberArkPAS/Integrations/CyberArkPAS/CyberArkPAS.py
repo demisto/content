@@ -311,14 +311,14 @@ class Client(BaseClient):
 
     def add_safe_member(
         self,
-        safe_url_id: str,
+        safe_name: str,
         member_name: str,
         requests_authorization_level: str,
         membership_expiration_date: str,
         permissions: list,
         search_in: str,
     ):
-        url_suffix = f"/PasswordVault/API/Safes/{safe_url_id}/Members"
+        url_suffix = f"/PasswordVault/API/Safes/{safe_name}/Members"
 
         body = {
             "member": {
@@ -394,7 +394,7 @@ class Client(BaseClient):
 
     def update_safe_member(
         self,
-        safe_url_id: str,
+        safe_name: str,
         member_name: str,
         requests_authorization_level: str,
         membership_expiration_date: str,
@@ -403,7 +403,7 @@ class Client(BaseClient):
         """
         This function uses the V1 CyberArk PAS api, currently there is no matching function in V2
         """
-        url_suffix = f"/PasswordVault/API/Safes/{safe_url_id}/Members/{member_name}"
+        url_suffix = f"/PasswordVault/API/Safes/{safe_name}/Members/{member_name}"
 
         body = {
             "member": {
@@ -440,13 +440,13 @@ class Client(BaseClient):
 
     def delete_safe_member(
         self,
-        safe_url_id: str,
+        safe_name: str,
         member_name: str,
     ):
         """
         This function uses the V1 CyberArk PAS api, currently there is no matching function in V2
         """
-        url_suffix = f"/PasswordVault/API/Safes/{safe_url_id}/Members/{member_name}"
+        url_suffix = f"/PasswordVault/API/Safes/{safe_name}/Members/{member_name}"
 
         self._http_request("DELETE", url_suffix, resp_type="text")
 
@@ -924,7 +924,7 @@ def list_safe_members_command(client: Client, safe_name: str) -> CommandResults:
 
 def add_safe_member_command(
     client: Client,
-    safe_url_id: str,
+    safe_name: str,
     member_name: str,
     requests_authorization_level: str = "0",
     membership_expiration_date: str = "",
@@ -933,7 +933,7 @@ def add_safe_member_command(
 ) -> CommandResults:
     """Add an existing user as a safe member.
     :param client: The client object with an access token
-    :param safe_url_id: The URL encoded name of the safe to add a member to.
+    :param safe_name: The URL encoded name of the safe to add a member to.
     :param member_name: The name of the user to add as a Safe member.
     :param requests_authorization_level: Requests authorization level, can be 0/1/2.
     :param membership_expiration_date: MM|DD|YY or empty if there is no expiration date.
@@ -943,7 +943,7 @@ def add_safe_member_command(
     """
     permissions_list = argToList(permissions)
     response = client.add_safe_member(
-        safe_url_id, member_name, requests_authorization_level, membership_expiration_date, permissions_list, search_in
+        safe_name, member_name, requests_authorization_level, membership_expiration_date, permissions_list, search_in
     )
     results = CommandResults(raw_response=response, outputs_prefix="CyberArkPAS.Safes.Members", outputs=response.get("member"))
     return results
@@ -951,7 +951,7 @@ def add_safe_member_command(
 
 def update_safe_member_command(
     client: Client,
-    safe_url_id: str,
+    safe_name: str,
     member_name: str,
     requests_authorization_level: str = "0",
     membership_expiration_date: str = "",
@@ -959,7 +959,7 @@ def update_safe_member_command(
 ) -> CommandResults:
     """Update an existing safe member.
     :param client: The client object with an access token
-    :param safe_url_id: URL encoded name of the safe to which the safe member belongs.
+    :param safe_name: URL encoded name of the safe to which the safe member belongs.
     :param member_name: Member name that will be updated.
     :param requests_authorization_level: Requests authorization level, can be 0/1/2.
     :param membership_expiration_date: MM|DD|YY or empty if there is no expiration date.
@@ -968,7 +968,7 @@ def update_safe_member_command(
     """
     permissions_list = argToList(permissions)
     response = client.update_safe_member(
-        safe_url_id, member_name, requests_authorization_level, membership_expiration_date, permissions_list
+        safe_name, member_name, requests_authorization_level, membership_expiration_date, permissions_list
     )
     results = CommandResults(
         raw_response=response,
@@ -981,19 +981,19 @@ def update_safe_member_command(
 
 def delete_safe_member_command(
     client: Client,
-    safe_url_id: str,
+    safe_name: str,
     member_name: str,
 ) -> CommandResults:
     """Remove a specific member from a safe.
     :param client: The client object with an access token
-    :param safe_url_id: URL encoded name of the safe to which the safe member belongs.
+    :param safe_name: URL encoded name of the safe to which the safe member belongs.
     :param member_name: The name of the safe member to delete from the safe’s list of members.
     :return: CommandResults
     """
     # the response should be an empty string, if an error raised it would be caught in the main block
-    client.delete_safe_member(safe_url_id, member_name)
+    client.delete_safe_member(safe_name, member_name)
     return CommandResults(
-        readable_output=f"Member {member_name} was deleted from {safe_url_id} safe",
+        readable_output=f"Member {member_name} was deleted from {safe_name} safe",
         outputs_prefix="CyberArkPAS.Safes.Members",
         outputs_key_field="MemberName",
         outputs={"MemberName": member_name, "Deleted": True},
