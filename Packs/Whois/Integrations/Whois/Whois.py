@@ -3790,6 +3790,9 @@ def main():  # pragma: no cover
         raise Exception("Please provide a valid value for the Source Reliability parameter.")
 
     old_version = argToBoolean(params.get("old-version", "true"))
+
+    setup_proxy()
+
     if old_version == False and command != "ip":
         demisto.debug("Run by new context data layout")
         if command == "domain" or command == "whois":
@@ -3804,7 +3807,6 @@ def main():  # pragma: no cover
 
             else:
                 org_socket = socket.socket
-                setup_proxy()
                 if command == "test-module":
                     results = test_command()
 
