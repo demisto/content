@@ -62,11 +62,18 @@ If MFA is enabled for your user, perform the following steps:
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| url | ServiceNow URL, in the format https://company.service-now.com/ | True |
-| credentials | Username/Client ID | True |
-| use_oauth | Use OAuth Login | False |
-| insecure | Trust any certificate \(not secure\) | False |
-| proxy | Use system proxy settings | False |
+| ServiceNow URL, in the format https://company.service-now.com/ |  | True |
+| Use OAuth Login | Check this box to use OAuth 2.0 authentication. See \(?\) for more information. | False |
+| Use JWT Authentication | Select this checkbox to use JWT authentication. See \(?\) for more information. | False |
+| Username/Client ID/JWT Audience (aud) |  | False |
+| Password/Client Secret |  | False |
+| Private key |  | False |
+| Kid (Key Id) |  | False |
+| Sub |  | False |
+| Iss (Issuer) | If not set, Client ID will be used. | False |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
+
 
 ## Commands
 
