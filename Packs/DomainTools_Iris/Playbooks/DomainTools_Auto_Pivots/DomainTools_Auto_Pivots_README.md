@@ -156,3 +156,9 @@ This playbook extracts results from the 'domaintoolsiris-pivot' command and inco
 | DomainTools.Pivots.PivotedDomains.Hosting.RedirectsTo.count | The redirects to count of the domain. | Number |
 | DomainTools.Pivots.PivotedDomains.Analytics.GoogleAdsenseTrackingCode | The tracking code of Google Adsense. | Number |
 | DomainTools.Pivots.PivotedDomains.Analytics.GoogleAnalyticTrackingCode | The tracking code of Google Analytics. | Number |
+
+## Playbook Image
+
+---
+
+![DomainTools Auto Pivots](../../doc_files/DomainTools_Auto_Pivots.png)

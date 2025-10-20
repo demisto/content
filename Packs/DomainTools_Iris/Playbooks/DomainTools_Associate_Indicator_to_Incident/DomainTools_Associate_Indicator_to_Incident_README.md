@@ -31,3 +31,9 @@ This playbook does not have any inputs.
 ## Playbook Outputs
 
 This playbook does not have any outputs
+
+## Playbook Image
+
+---
+
+![DomainTools Associate Indicator to Incidents](../../doc_files/DomainTools_Associate_Indicator_to_Incident.png)

@@ -314,7 +314,7 @@ def test_create_domain_risk_results(mocker):
 
     assert "Analytics" in domaintools_risk
     assert domaintools_risk["Name"] == "domaintools.com"
-    assert domaintools_risk["LastEnriched"] == "2025-10-07"
+    assert domaintools_risk["LastEnriched"] == "2025-10-20"
 
 
 def test_format_tags(mocker):
