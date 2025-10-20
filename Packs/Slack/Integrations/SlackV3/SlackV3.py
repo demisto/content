@@ -2749,9 +2749,6 @@ def to_unix_seconds_str(s: str) -> str:
     Raises:
         ValueError: If the time string cannot be parsed.
     """
-    if not s or s == "0":
-        return "0"
-
     dt = dateparser.parse(
         s,
         settings={
@@ -2834,7 +2831,7 @@ def conversation_history():
     conversation_id = args.get("channel_id") or args.get("conversation_id")
     conversation_name = args.get("conversation_name")
     limit = arg_to_number(args.get("limit"))
-    from_time = args.get("from_time", "0")
+    from_time = args.get("from_time")
 
     if not conversation_id and not conversation_name:
         raise ValueError("Either conversation_id or conversation_name must be provided.")
@@ -2842,7 +2839,9 @@ def conversation_history():
     if not conversation_id:
         conversation_id = resolve_conversation_id_from_name(conversation_name)
 
-    body = {"channel": conversation_id, "limit": limit, "oldest": to_unix_seconds_str(from_time)}
+    body = {"channel": conversation_id, "limit": limit}
+    if from_time:
+        body["oldest"] = to_unix_seconds_str(from_time)
     readable_output = ""
     raw_response = send_slack_request_sync(CLIENT, "conversations.history", http_verb="GET", body=body)
     messages = raw_response.get("messages", "")
