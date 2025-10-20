@@ -4,7 +4,7 @@ commonfields:
 name: Google BigQuery
 display: Google BigQuery
 category: Database
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 description: Integration for Google BigQuery, a data warehouse for querying and analyzing large databases. In all commands, for any argument not specified, the BigQuery default value for that argument will be applied.
