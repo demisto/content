@@ -590,16 +590,17 @@ Use this operation to set allow lists to security rules or ACLs. To update an ex
 | --- | --- | --- |
 | site_id | Numeric identifier of the site to operate on. | Required |
 | rule_id | The id of the rule (either a security or an acl rule), e.g api.acl.blacklisted_ips. See other examples below. | Required |
-| whitelist_id | The id (an integer) of the allow list to be set. This field is optional - in case no id is supplied, a new allow list will be created. | Optional |
-| delete_whitelist | An optional boolean parameter, in case it is set to "true" and a allow list id is sent, then the allow list will be deleted. | Optional |
+| allowlist_id | The id (an integer) of the allowlist to be set. This field is optional - in case no id is supplied, a new allowlist will be created. | Optional |
+| delete_allowlist | An optional boolean parameter. If it is set to "true" and a allowlist id is sent, the allowlist will be deleted. | Optional |
 | urls | A comma separated list of resource paths. For example, /home and /admin/index.html are resource paths, however http://www.example.com/home is not. Each URL should be encoded separately using percent encoding as specified by RFC 3986 (http://tools.ietf.org/html/rfc3986#section-2.1). An empty URL list will remove all URLs. | Optional |
-| countries | A comma separated list of country codes. | Optional |
-| continents | A comma separated list of continent codes. | Optional |
+| countries | A comma separated list of country codes. Example : US. | Optional |
+| continents | A comma separated list of continent codes. Example : SA. | Optional |
 | ips | A comma separated list of IPs or IP ranges, e.g: 192.168.1.1, 192.168.1.1-192.168.1.100 or 192.168.1.1/24. | Optional |
-| client_app_types | A comma separated list of client application types. | Optional |
-| client_apps | A comma separated list of client application ids. | Optional |
-| parameters | A comma separated list of encoded user agents. | Optional |
-| user_agents | A comma separated list of encoded user agents. | Optional |
+| client_app_types | A comma separated list of client application types. Example : Browser. | Optional |
+| client_apps | A comma separated list of client application ids. Example : 3. | Optional |
+| parameters | A comma separated list of encoded parameters. | Optional |
+| user_agents | A comma separated list of encoded user agents. Example : Googlebot-2.1. | Optional |
+| exception_id_only | Return only the new/edited exception id. Example : true. | Optional |
 
 #### Context Output
 
