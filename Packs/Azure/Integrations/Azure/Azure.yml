@@ -105,11 +105,11 @@ script:
       name: source
     - description: The priority by which the rules will be processed. The lower the number, the higher the priority. We recommend leaving gaps between rules - 100, 200, 300, etc. - so that it is easier to add new rules without having to edit existing rules. Default is "4096".
       name: priority
-    - description: The source ports from which traffic will be allowed or denied by this rule. Provide a single port, such as 80; a port range, such as 1024-65535; or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535. Use an asterisk (*) to allow traffic on any port. Default is "*".
+    - description: The source ports from which traffic is allowed or denied by this rule. Provide a single port, such as 80; a port range, such as 1024-65535; or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535. Use an asterisk (*) to allow traffic on any port. Default is "*".
       name: source_ports
-    - description: The specific destination IP address range for outgoing traffic that will be allowed or denied by this rule. The destination filter can be "Any", an IP address range, an application security group, or a default tag.
+    - description: The destination IP address range for outgoing traffic that is allowed or denied by this rule. The destination filter can be "Any", an IP address range, an application security group, or a default tag.
       name: destination
-    - description: The destination ports for which traffic will be allowed or denied by this rule. Provide a single port, such as 80; a port range, such as 1024-65535; or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535. Use an asterisk (*) to allow traffic on any port.
+    - description: The destination ports from which traffic is allowed or denied by this rule. Provide a single port, such as 80; a port range, such as 1024-65535; or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535. Use an asterisk (*) to allow traffic on any port.
       name: destination_ports
     - description: A description to add to the rule.
       name: description
@@ -138,19 +138,19 @@ script:
       description: The rule's provisioning state.
       type: String
     - contextPath: Azure.NSGRule.protocol
-      description: The protocol. Can be "TCP", "UDP", "ICMP", "*".
+      description: The protocol, which can be "TCP", "UDP", "ICMP", or "*".
       type: String
     - contextPath: Azure.NSGRule.sourcePortRange
-      description: For a single port, the source port or a range of ports. Note that for multiple ports, `sourcePortRanges` will appear instead.
+      description: For a single port, the source port or a range of ports.
       type: String
     - contextPath: Azure.NSGRule.sourcePortRanges
-      description: For multiple ports, a list of these ports. Note that for single ports, `sourcePortRange` will appear instead.
+      description: For multiple ports, a list of these ports.
       type: String
     - contextPath: Azure.NSGRule.destinationPortRange
-      description: For a single port, the destination port or range of ports. Note that for multiple ports, `destinationPortRanges` will appear instead.
+      description: For a single port, the destination port or range of ports.
       type: String
     - contextPath: Azure.NSGRule.destinationPortRanges
-      description: For multiple ports, a list of destination ports. Note that for single ports, `destinationPortRange` will appear instead.
+      description: For multiple ports, a list of destination ports.
       type: String
     - contextPath: Azure.NSGRule.sourceAddressPrefix
       description: The source address.
@@ -450,6 +450,92 @@ script:
     - contextPath: Azure.StorageAccountBlobServiceProperties.sku.tier
       description: The SKU tier.
       type: String
+  - description: Run this command to get the blob service properties of a specific account storage.
+    name: azure-storage-blob-service-properties-get
+    outputs:
+      - contextPath: Azure.StorageBlobServiceProperties.id
+        description: Fully qualified resource ID for the resource.
+        type: String
+      - contextPath: Azure.StorageBlobServiceProperties.name
+        description: The name of the resource.
+        type: String
+      - contextPath: Azure.StorageBlobServiceProperties.type
+        description: The resource type.
+        type: String
+      - contextPath: Azure.StorageBlobServiceProperties.properties.lastAccessTimeTrackingPolicy.enable
+        description: When set to true, last access time–based tracking is enabled.
+        type: Boolean
+      - contextPath: Azure.StorageBlobServiceProperties.properties.lastAccessTimeTrackingPolicy.name
+        description: Name of the policy. The valid value is AccessTimeTracking.
+        type: String
+      - contextPath: Azure.StorageBlobServiceProperties.properties.lastAccessTimeTrackingPolicy.trackingGranularityInDays
+        description: Specifies the blob object tracking granularity in days, indicating how often the blob should be tracked.
+        type: Number
+      - contextPath: Azure.StorageBlobServiceProperties.properties.lastAccessTimeTrackingPolicy.blobType
+        description: An array of predefined, supported blob types. The only supported value is BlockBlob.
+        type: String
+    arguments:
+      - description: The subscription ID.
+        name: subscription_id
+        required: true
+      - description: The resource group name.
+        name: resource_group_name
+        required: true
+      - description: The storage account name.
+        name: account_name
+        required: true
+  - description: Run this command to update a specific blob container.
+    name: azure-storage-blob-containers-update
+    outputs:
+      - contextPath: Azure.StorageBlobContainer.id
+        description: Fully qualified resource ID for the resource.
+        type: String
+      - contextPath: Azure.StorageBlobContainer.name
+        description: The name of the resource.
+        type: String
+      - contextPath: Azure.StorageBlobContainer.type
+        description: The resource type.
+        type: String
+      - contextPath: Azure.StorageBlobContainer.properties.metadata.metadata
+        description: A metadata entry for the container, in name–value format.
+        type: String
+      - contextPath: Azure.StorageBlobContainer.properties.publicAccess
+        description: Specifies whether data in the container may be accessed publicly and the access level.
+        type: String
+      - contextPath: Azure.StorageBlobContainer.properties.hasImmutabilityPolicy
+        description: The hasImmutabilityPolicy property is set to true by SRP if an ImmutabilityPolicy exists for this container, and false if it does not.
+        type: Boolean
+      - contextPath: Azure.StorageBlobContainer.properties.hasLegalHold
+        description: The hasLegalHold property is set to true by SRP if at least one legal hold tag exists, and false if all tags are cleared.
+        type: Boolean
+    arguments:
+      - description: "The subscription ID."
+        name: subscription_id
+        required: true
+      - description: "The resource group name."
+        name: resource_group_name
+        required: true
+      - description: The storage account name.
+        name: account_name
+        required: true
+      - description: The container name.
+        name: container_name
+        required: true
+      - description: Uses the specified encryption scope by default for all writes to the container.
+        name: default_encryption_scope
+      - auto: PREDEFINED
+        description: "Blocks overriding the container’s default encryption scope. Possible values: true, false."
+        name: deny_encryption_scope_override
+        predefined:
+          - 'true'
+          - 'false'
+      - auto: PREDEFINED
+        description: "Specifies the access level. Possible values: Blob, Container, None."
+        name: public_access
+        predefined:
+          - Blob
+          - Container
+          - None
   - arguments:
     - name: name
       required: true
@@ -1738,12 +1824,440 @@ script:
     - contextPath: Azure.CosmosDB.properties.writeLocations
       description: An array that contains the write locations enabled for the Cosmos DB account.
       type: List
+  - name: azure-nsg-security-groups-list
+    description: List all network security groups.
+    outputs:
+      - contextPath: Azure.NSGSecurityGroup.name
+        description: The security group's name.
+        type: String
+      - contextPath: Azure.NSGSecurityGroup.id
+        description: The security group's ID.
+        type: String
+      - contextPath: Azure.NSGSecurityGroup.type
+        description: The security group's type.
+        type: String
+      - contextPath: Azure.NSGSecurityGroup.location
+        description: The security group's location.
+        type: String
+      - contextPath: Azure.NSGSecurityGroup.etag
+        description: The security group's ETag.
+        type: String
+      - contextPath: Azure.NSGSecurityGroup.tags
+        description: The security group's tags.
+        type: String
+      - contextPath: Azure.NSGSecurityGroup.properties.defaultSecurityRules
+        description: The default security rules.
+        type: List
+      - contextPath: Azure.NSGSecurityGroup.properties.networkInterfaces
+        description: The network interfaces.
+        type: List
+      - contextPath: Azure.NSGSecurityGroup.properties.provisioningState
+        description: The provisioning state.
+        type: String
+      - contextPath: Azure.NSGSecurityGroup.properties.resourceGuid
+        description: The resource GUID.
+        type: String
+      - contextPath: Azure.NSGSecurityGroup.properties.SecurityRules
+        description: The security rules.
+        type: List
+    arguments:
+      - name: subscription_id
+        description: The subscription ID.
+        type: String
+        required: true
+      - name: resource_group_name
+        description: "The resource group name."
+        type: String
+        required: true
+  - name: azure-nsg-security-rule-get
+    description: Get a specific rule.
+    outputs:
+      - contextPath: Azure.NSGRule.name
+        description: The rule's name.
+        type: String
+      - contextPath: Azure.NSGRule.id
+        description: The rule's ID.
+        type: String
+      - contextPath: Azure.NSGRule.location
+        description: The rule's location.
+        type: String
+      - contextPath: Azure.NSGRule.etag
+        description: The rule's ETag.
+        type: String
+      - contextPath: Azure.NSGRule.type
+        description: The rule's type.
+        type: String
+      - contextPath: Azure.NSGRule.properties.provisioningState
+        description: The rule's provisioning state.
+        type: String
+      - contextPath: Azure.NSGRule.properties.protocol
+        description: The protocol, which can be "TCP", "UDP", "ICMP", or "*".
+        type: String
+      - contextPath: Azure.NSGRule.properties.sourcePortRange
+        description: For a single port, the source port or a range of ports. For multiple ports, `sourcePortRanges` is used instead.
+        type: String
+      - contextPath: Azure.NSGRule.properties.sourcePortRanges
+        description: For multiple ports, a list of ports. For a single port, `sourcePortRange` is used instead.
+        type: String
+      - contextPath: Azure.NSGRule.properties.destinationPortRange
+        description: For a single port, the destination port or range of ports. For multiple ports, `destinationPortRanges` is used instead.
+        type: String
+      - contextPath: Azure.NSGRule.properties.destinationPortRanges
+        description: For multiple ports, a list of destination ports. For a single port, `destinationPortRange` is used instead.
+        type: String
+      - contextPath: Azure.NSGRule.properties.sourceAddressPrefix
+        description: The source address.
+        type: String
+      - contextPath: Azure.NSGRule.properties.destinationAddressPrefix
+        description: The destination address.
+        type: String
+      - contextPath: Azure.NSGRule.properties.access
+        description: The rule's access. Can be "Allow" or "Deny".
+        type: String
+      - contextPath: Azure.NSGRule.properties.priority
+        description: The rule’s priority, ranging from 100 to 4096.
+        type: Number
+      - contextPath: Azure.NSGRule.properties.direction
+        description: The rule's direction, which can be "Inbound" or "Outbound".
+        type: String
+    arguments:
+      - description: The subscription ID.
+        name: subscription_id
+        type: String
+        required: true
+      - description: Resource group name.
+        name: resource_group_name
+        type: String
+        required: true
+      - description: The name of the security group.
+        name: security_group_name
+        type: String
+        required: true
+      - description: The name of the rule to get.
+        name: security_rule_name
+        required: true
+  - name: azure-nsg-security-rule-create
+    description: Create a security rule.
+    outputs:
+      - contextPath: Azure.NSGRule.name
+        description: The rule's name.
+        type: String
+      - contextPath: Azure.NSGRule.id
+        description: The rule's ID.
+        type: String
+      - contextPath: Azure.NSGRule.etag
+        description: The rule's ETag.
+        type: String
+      - contextPath: Azure.NSGRule.type
+        description: The rule's type.
+        type: String
+      - contextPath: Azure.NSGRule.properties.provisioningState
+        description: The rule's provisioning state.
+        type: String
+      - contextPath: Azure.NSGRule.properties.protocol
+        description: The protocol, which can be "TCP", "UDP", "ICMP", or "*".
+        type: String
+      - contextPath: Azure.NSGRule.properties.sourcePortRange
+        description: For a single port, the source port or a range of ports. For multiple ports, `sourcePortRanges` is used instead.
+        type: String
+      - contextPath: Azure.NSGRule.properties.sourcePortRanges
+        description: For multiple ports, a list of ports. For a single port, `sourcePortRange` is used instead.
+        type: String
+      - contextPath: Azure.NSGRule.properties.destinationPortRange
+        description: For a single port, the destination port or range of ports. For multiple ports, `destinationPortRanges` is used instead.
+        type: String
+      - contextPath: Azure.NSGRule.properties.destinationPortRanges
+        description: For multiple ports, a list of destination ports. For a single port, `destinationPortRange` is used instead.
+        type: String
+      - contextPath: Azure.NSGRule.properties.sourceAddressPrefix
+        description: The source address.
+        type: String
+      - contextPath: Azure.NSGRule.properties.destinationAddressPrefix
+        description: The destination address.
+        type: String
+      - contextPath: Azure.NSGRule.properties.access
+        description: The rule's access. Can be "Allow" or "Deny".
+        type: String
+      - contextPath: Azure.NSGRule.properties.priority
+        description: The rule’s priority, ranging from 100 to 4096.
+        type: Number
+      - contextPath: Azure.NSGRule.properties.direction
+        description: The rule's direction, which can be "Inbound" or "Outbound".
+        type: String
+    arguments:
+      - description: The subscription ID.
+        name: subscription_id
+        type: String
+        required: true
+      - description: Resource group name.
+        name: resource_group_name
+        type: String
+        required: true
+      - description: The name of the security group.
+        name: security_group_name
+        required: true
+        type: String
+      - description: The name of the rule to create.
+        name: security_rule_name
+        required: true
+        type: String
+      - auto: PREDEFINED
+        description: 'The direction of the rule. Possible values are: "Inbound" and "Outbound".'
+        name: direction
+        predefined:
+          - Inbound
+          - Outbound
+        required: true
+      - description: 'Whether to allow the traffic. Possible values are: "Allow" and "Deny".'
+        name: action
+        auto: PREDEFINED
+        predefined:
+          - Allow
+          - Deny
+        defaultValue: Allow
+        type: String
+      - description: 'The protocol on which to apply the rule. Possible values are: "Any", "TCP", "UDP" and "ICMP".'
+        name: protocol
+        auto: PREDEFINED
+        predefined:
+          - Any
+          - TCP
+          - UDP
+          - ICMP
+        defaultValue: Any
+        type: String
+      - description: The source IP address range from which incoming traffic is allowed or denied by this rule. Possible values are "Any", an IP address range, an application security group, or a default tag. Default is "Any".
+        name: source
+        defaultValue: Any
+        type: String
+      - description: The priority of the rule, with a value between 100 and 4096. Each rule in the collection must have a unique priority number. Lower numbers indicate higher priority.
+        name: priority
+        required: true
+        type: Number
+      - description: The source ports from which traffic is allowed or denied by this rule. Provide a single port, such as 80; a port range, such as 1024-65535; or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535. Use an asterisk (*) to allow traffic on any port. Default is "*".
+        name: source_ports
+        defaultValue: '*'
+        type: String
+      - description: The destination IP address range for outgoing traffic that is allowed or denied by this rule. The destination filter can be "Any", an IP address range, an application security group, or a default tag.
+        name: destination
+        defaultValue: Any
+        type: String
+      - description: The destination ports from which traffic is allowed or denied by this rule. Provide a single port, such as 80; a port range, such as 1024-65535; or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535. Use an asterisk (*) to allow traffic on any port.
+        name: destination_ports
+        defaultValue: '*'
+        type: String
+      - description: A description to add to the rule.
+        name: description
+  - description: Delete a security rule.
+    name: azure-nsg-security-rule-delete
+    arguments:
+      - description: The subscription ID.
+        name: subscription_id
+        type: String
+        required: true
+      - description: Resource group name.
+        name: resource_group_name
+        type: String
+        required: true
+      - description: The name of the security group.
+        name: security_group_name
+        required: true
+      - description: The name of the rule to delete.
+        name: security_rule_name
+        required: true
+  - description: Gets all resource groups for a subscription.
+    name: azure-nsg-resource-group-list
+    arguments:
+      - description: The subscription ID.
+        name: subscription_id
+        type: String
+        required: true
+      - name: limit
+        description: Limit on the number of resource groups to return.
+        defaultValue: 50
+        type: Number
+      - default: false
+        name: tag
+        description: A single tag in the form of `{"Tag Name":"Tag Value"}` to filter the list by.
+    outputs:
+      - contextPath: Azure.NSGResourceGroup.id
+        description: 'The unique identifier of the Azure Network Security Groups resource group.'
+        type: String
+      - contextPath: Azure.NSGResourceGroup.name
+        description: 'The name of the Azure Network Security Groups resource group.'
+        type: String
+      - contextPath: Azure.NSGResourceGroup.type
+        description: 'The type of the Azure Network Security Groups resource group.'
+        type: String
+      - contextPath: Azure.NSGResourceGroup.location
+        description: 'The location of the Azure Network Security Groups resource group.'
+        type: String
+      - contextPath: Azure.NSGResourceGroup.properties.provisioningState
+        description: 'The provisioning state of the Azure Network Security Groups resource group.'
+        type: String
+      - contextPath: Azure.NSGResourceGroup.tags.Owner
+        description: 'The owner tag of the Azure Network Security Groups resource group.'
+        type: String
+      - contextPath: Azure.NSGResourceGroup.tags
+        description: 'The tags associated with the Azure Network Security Groups resource group.'
+        type: Unknown
+      - contextPath: Azure.NSGResourceGroup.tags.Name
+        description: 'The name tag of the Azure Network Security Groups resource group.'
+        type: String
+      - contextPath: Azure.NSGResourceGroup.managedBy
+        description: 'The entity that manages the Azure Network Security Groups resource group.'
+        type: String
+      - contextPath: Azure.NSGResourceGroup.tags.aNSG-managed-cluster-name
+        description: 'The ANSG managed cluster name tag associated with the Azure Network Security Groups resource group.'
+        type: String
+      - contextPath: Azure.NSGResourceGroup.tags.aNSG-managed-cluster-rg
+        description: 'The ANSG managed cluster resource group tag associated with the Azure Network Security Groups resource group.'
+        type: String
+      - contextPath: Azure.NSGResourceGroup.tags.type
+        description: 'The type tag associated with the Azure Network Security Groups resource group.'
+        type: String
+  - description: Gets network interfaces in a resource group.
+    name: azure-nsg-network-interfaces-list
+    outputs:
+      - contextPath: Azure.NSGNetworkInterfaces.name
+        description: The network interface's name.
+        type: String
+      - contextPath: Azure.NSGNetworkInterfaces.id
+        description: The network interface's ID.
+        type: String
+      - contextPath: Azure.NSGNetworkInterfaces.kind
+        description: The kind of the network interface.
+        type: String
+      - contextPath: Azure.NSGNetworkInterfaces.etag
+        description: The ETag of the network interface.
+        type: String
+      - contextPath: Azure.NSGNetworkInterfaces.location
+        description: The location of the network interface.
+        type: String
+      - contextPath: Azure.NSGNetworkInterfaces.managedBy
+        description: The entity that manages the network interface.
+        type: String
+      - contextPath: Azure.NSGNetworkInterfaces.tags
+        description: The tags associated with the network interface.
+        type: String
+      - contextPath: Azure.NSGNetworkInterfaces.properties.provisioningState
+        description: The network interface's provisioning state.
+        type: String
+      - contextPath: Azure.NSGNetworkInterfaces.properties.ipConfigurations.name
+        description: The name of the IP configuration resource that is unique within a resource group.
+        type: List
+      - contextPath: Azure.NSGNetworkInterfaces.properties.ipConfigurations.id
+        description: The IP configuration resource ID.
+        type: List
+      - contextPath: Azure.NSGNetworkInterfaces.properties.ipConfigurations.etag
+        description: The ETag of the IP configuration.
+        type: List
+      - contextPath: Azure.NSGNetworkInterfaces.properties.ipConfigurations.type
+        description: The type of the IP configuration resource.
+        type: List
+      - contextPath: Azure.NSGNetworkInterfaces.properties.tapConfigurations
+        description: List of tap configurations.
+        type: List
+      - contextPath: Azure.NSGNetworkInterfaces.properties.allowPort25Out
+        description: Whether port 25 outbound traffic is allowed.
+        type: Boolean
+      - contextPath: Azure.NSGNetworkInterfaces.properties.nicType
+        description: The network interface card type (Standard/Basic).
+        type: String
+    arguments:
+      - description: "The resource group name."
+        name: resource_group_name
+        type: String
+        required: true
+      - description: The subscription ID.
+        name: subscription_id
+        type: String
+        required: true
+      - name: limit
+        description: The maximum number of records to return.
+        defaultValue: 50
+        type: Number
+      - name: all_results
+        description: Whether to retrieve all results by overriding the default limit.
+        default: false
+        auto: PREDEFINED
+        predefined:
+          - "false"
+          - "true"
+  - description: Gets public IP addresses in a resource group.
+    name: azure-nsg-public-ip-addresses-list
+    outputs:
+      - contextPath: Azure.NSGPublicIPAddress.name
+        description: The public IP address's name.
+        type: String
+      - contextPath: Azure.NSGPublicIPAddress.id
+        description: The public IP address's ID.
+        type: String
+      - contextPath: Azure.NSGPublicIPAddress.location
+        description: The location of the public IP address.
+        type: String
+      - contextPath: Azure.NSGPublicIPAddress.sku
+        description: The public IP address's SKU.
+        type: String
+      - contextPath: Azure.NSGPublicIPAddress.type
+        description: The type of the public IP address.
+        type: String
+      - contextPath: Azure.NSGPublicIPAddress.etag
+        description: The public IP address's ETag.
+        type: String
+      - contextPath: Azure.NSGPublicIPAddress.properties.provisioningState
+        description: The public IP address's provisioning state.
+        type: String
+      - contextPath: Azure.NSGPublicIPAddress.properties.publicIPAddressVersion
+        description: The public IP address's version.
+        type: String
+      - contextPath: Azure.NSGPublicIPAddress.properties.ipAddress
+        description: The public IP address's IP address.
+        type: String
+      - contextPath: Azure.NSGPublicIPAddress.properties.domainNameLabel
+        description: The public IP address's domain name label.
+        type: String
+      - contextPath: Azure.NSGPublicIPAddress.properties.publicIPAllocationMethod
+        description: The public IP address's allocation method.
+        type: String
+      - contextPath: Azure.NSGPublicIPAddress.properties.fqdn
+        description: The public IP address's fully qualified domain name (FQDN).
+        type: String
+      - contextPath: Azure.NSGPublicIPAddress.properties.resourceGuid
+        description: The public IP address's resource GUID.
+        type: String
+      - contextPath: Azure.NSGPublicIPAddress.sku.name
+        description: The public IP address's SKU name.
+        type: String
+      - contextPath: Azure.NSGPublicIPAddress.sku.tier
+        description: The public IP address's SKU tier.
+        type: String
+    arguments:
+      - description: "The resource group name."
+        name: resource_group_name
+        type: String
+        required: true
+      - description: The subscription ID.
+        name: subscription_id
+        type: String
+        required: true
+      - name: limit
+        description: The maximum number of records to return.
+        defaultValue: 50
+        type: Number
+      - name: all_results
+        description: Whether to retrieve all results by overriding the default limit.
+        default: false
+        auto: PREDEFINED
+        predefined:
+          - "false"
+          - "true"
   isfetch: false
   runonce: false
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/crypto:1.0.0.3539024
+  dockerimage: demisto/crypto:1.0.0.4834757
 fromversion: 8.11.0
 isCloudProviderIntegration: true
 tests:
