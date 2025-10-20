@@ -36,5 +36,12 @@
     "caseInsensitive": true,
     "sla": 0,
     "threshold": 72,
-    "fromVersion": "6.2.0"
+    "fromVersion": "6.2.0",
+    "Aliases": [
+        {
+            "cliName": "bmcitsmrequestid",
+            "type": "shortText",
+            "name": "Bmc Request ID"
+        }
+    ]
 }
