@@ -1473,7 +1473,7 @@ Upload file to S3 bucket.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| account_id | AWS account identifier for cross-account access and audit purposes. | Required |
+| account_id | The AWS account ID. | Required |
 | entryID | Entry ID of the file to upload. | Required |
 | bucket | Name of the S3 bucket containing the file. Must follow S3 naming conventions. | Required |
 | key | Key (path) where the file will be stored in the S3 bucket. | Required |

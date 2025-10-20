@@ -3750,7 +3750,7 @@ script:
       description: Whether a bucket policy exists.
       type: boolean
   - arguments:
-    - description: AWS account identifier for cross-account access and audit purposes.
+    - description: The AWS account ID.
       name: account_id
       required: true
     - description: Entry ID of the file to upload.
