@@ -3806,7 +3806,7 @@ script:
     - description: The AWS account ID.
       name: account_id
       required: true
-    - description: Name of the target S3 bucket. Must follow S3 naming conventions
+    - description: Name of the target S3 bucket. Must follow S3 naming conventions.
       name: bucket
       required: true
     - description: Key (path) of the file to download from the S3 bucket.

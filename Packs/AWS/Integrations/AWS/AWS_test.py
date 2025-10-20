@@ -2574,7 +2574,8 @@ def test_s3_delete_bucket_policy_command_verify_api_call_parameters(mocker):
 
     S3.delete_bucket_policy_command(mock_client, args)
     mock_client.delete_bucket_policy.assert_called_once_with(Bucket="my-test-bucket")
-    
+
+
 def test_s3_file_download_command_success(mocker):
     """
     Given: A mocked S3 client returning object bytes.
@@ -2589,8 +2590,10 @@ def test_s3_file_download_command_success(mocker):
         def __init__(self, data: bytes):
             self._data = data
             self.closed = False
+
         def read(self):
             return self._data
+
         def close(self):
             self.closed = True
 
@@ -2676,13 +2679,14 @@ def test_s3_file_upload_command_success(mocker):
     finally:
         os.unlink(tmp_path)
 
+
 def test_s3_file_upload_command_client_error_calls_handler(mocker, tmp_path):
     """
     Given: upload_fileobj raises ClientError.
     When: file_upload_command is called.
     Then: AWSErrorHandler.handle_client_error is called.
     """
-    from AWS import S3, AWSErrorHandler
+    from AWS import S3
     from botocore.errorfactory import ClientError
 
     # Make a temp file
@@ -2708,6 +2712,7 @@ def test_s3_file_upload_command_client_error_calls_handler(mocker, tmp_path):
     S3.file_upload_command(mock_client, args)
 
     handler_spy.assert_called_once_with(err)
+
 
 def test_s3_delete_bucket_policy_command_debug_logging(mocker):
     """
