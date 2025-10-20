@@ -99,9 +99,17 @@ def test_separate_client_id_and_refresh_token():
 ])
 def test_valid_private_key_formatting(label):
     """
-    GIVEN a private key with extra whitespace and inconsistent newlines
-    WHEN _validate_and_format_private_key is called
-    THEN it returns a cleaned and properly formatted PEM key
+    Given:
+    - A private key string with correct BEGIN/END labels and valid base64 content
+    - The key has inconsistent newlines or extra whitespace
+
+    When:
+    - Calling ServiceNowClient._validate_and_format_private_key
+
+    Then:
+    - The key is cleaned and formatted to PEM standard
+    - Base64 content is wrapped at 64 characters
+    - BEGIN/END labels are preserved
     """
     key_data = "MIIBVgIBADANBgkqhkiG9w0BAQEFAASCAT8wggE7AgEAAkEAlS3dJdfO8Xf\nj57s\n=="
     raw_key = f"""-----BEGIN {label}-----
@@ -112,7 +120,6 @@ def test_valid_private_key_formatting(label):
     """
     result = ServiceNowClient._validate_and_format_private_key(raw_key)
 
-    # Expect clean formatting
     expected_lines = key_data.replace("\n", "").replace(" ", "")
     expected_lines = [expected_lines[i:i + 64] for i in range(0, len(expected_lines), 64)]
     expected_key = f"-----BEGIN {label}-----\n" + "\n".join(expected_lines) + f"\n-----END {label}-----"
@@ -122,9 +129,14 @@ def test_valid_private_key_formatting(label):
 
 def test_invalid_private_key_raises():
     """
-    GIVEN a malformed private key without proper BEGIN/END markers
-    WHEN _validate_and_format_private_key is called
-    THEN it raises a ValueError
+    Given:
+    - A string that is not a valid private key (missing proper PEM headers)
+
+    When:
+    - Calling ServiceNowClient._validate_and_format_private_key
+
+    Then:
+    - A ValueError is raised indicating invalid format
     """
     invalid_key = "this is not a private key"
 
@@ -134,9 +146,16 @@ def test_invalid_private_key_raises():
 
 def test_private_key_with_extra_characters_is_cleaned():
     """
-    GIVEN a private key that contains tabs, extra spaces, and line breaks
-    WHEN _validate_and_format_private_key is called
-    THEN it returns a cleaned PEM with 64-character lines and no invalid characters
+    Given:
+    - A private key string with tabs, spaces, and newline characters in the base64 content
+
+    When:
+    - Calling ServiceNowClient._validate_and_format_private_key
+
+    Then:
+    - All non-base64 characters are removed
+    - The cleaned content is returned in 64-character lines
+    - PEM format is preserved
     """
     label = "RSA PRIVATE KEY"
     key_data = "MIIB\tVgI BADA\nNBgkqhkiG9w0BAQ EFAASCAT8wggE7AgEAAkEA\nlS3dJd=="
@@ -156,9 +175,16 @@ def test_private_key_with_extra_characters_is_cleaned():
 
 def test_private_key_preserves_label():
     """
-    GIVEN a valid EC PRIVATE KEY with base64 content
-    WHEN _validate_and_format_private_key is called
-    THEN the returned PEM retains the original label in both BEGIN and END lines
+    Given:
+    - A valid EC PRIVATE KEY with properly labeled BEGIN/END headers
+    - Base64 content longer than 64 characters
+
+    When:
+    - Calling ServiceNowClient._validate_and_format_private_key
+
+    Then:
+    - The returned PEM keeps the original label in both headers
+    - Base64 content is correctly wrapped at 64-character lines
     """
     label = "EC PRIVATE KEY"
     content = "A" * 70  # arbitrary base64 content
@@ -170,6 +196,7 @@ def test_private_key_preserves_label():
     expected_key = f"-----BEGIN {label}-----\n" + "\n".join(expected_lines) + f"\n-----END {label}-----"
 
     assert result == expected_key
+
 
 def test_servicenow_client_jwt_init(mocker):
     """
