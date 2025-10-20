@@ -3,7 +3,6 @@ This integration was integrated and tested with version 3.0.0 of the GuardiCore 
 
 ## Configure GuardiCore v2 in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Server URL |  | True |
@@ -21,7 +20,6 @@ This integration was integrated and tested with version 3.0.0 of the GuardiCore 
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
 | Incident type |  | False |
-
 
 ## Commands
 
