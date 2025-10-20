@@ -2688,7 +2688,7 @@ def get_service_client(
     return client, session
 
 
-def execute_aws_command(command: str, args: dict, params: dict) -> CommandResults:
+def execute_aws_command(command: str, args: dict, params: dict) -> CommandResults | None:
     """
     Execute an AWS command by retrieving credentials, creating a service client,
     and routing to the appropriate service handler.
