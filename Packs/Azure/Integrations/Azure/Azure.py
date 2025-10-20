@@ -39,10 +39,8 @@ PERMISSIONS_TO_COMMANDS = {
         "azure-nsg-security-rule-create",
     ],
     "Microsoft.Network/networkSecurityGroups/securityRules/delete": ["azure-nsg-security-rule-delete"],
-    "Microsoft.Network/networkInterfaces/read": ["azure-nsg-network-interfaces-list",
-                                                 "azure-vm-get-nic-details"],
-    "Microsoft.Network/publicIPAddresses/read": ["azure-nsg-public-ip-addresses-list",
-                                                 "azure-vm-get-public-ip-details"],
+    "Microsoft.Network/networkInterfaces/read": ["azure-nsg-network-interfaces-list", "azure-vm-get-nic-details"],
+    "Microsoft.Network/publicIPAddresses/read": ["azure-nsg-public-ip-addresses-list", "azure-vm-get-public-ip-details"],
     "Microsoft.Storage/storageAccounts/read": ["azure-storage-account-update"],
     "Microsoft.Storage/storageAccounts/write": ["azure-storage-account-update"],
     "Microsoft.Storage/storageAccounts/blobServices/containers/write": ["azure-storage-blob-containers-update"],
@@ -132,7 +130,7 @@ API_FUNCTION_TO_PERMISSIONS = {
     "get_vm_request": ["Microsoft.Compute/virtualMachines/read"],
     "get_network_interface_request": ["Microsoft.Network/networkInterfaces/read"],
     "get_public_ip_details_request": ["Microsoft.Network/publicIPAddresses/read"],
-    "get_all_public_ip_details_request": ["Microsoft.Network/publicIPAddresses/read"]
+    "get_all_public_ip_details_request": ["Microsoft.Network/publicIPAddresses/read"],
 }
 
 REQUIRED_ROLE_PERMISSIONS = [
@@ -178,7 +176,6 @@ REQUIRED_ROLE_PERMISSIONS = [
     "Microsoft.Sql/servers/databases/transparentDataEncryption/write",
     "Microsoft.Resources/subscriptions/read",
     "Microsoft.Resources/subscriptions/resourceGroups/read",
-
 ]
 REQUIRED_API_PERMISSIONS = ["GroupMember.ReadWrite.All", "RoleManagement.ReadWrite.Directory"]
 
@@ -1530,7 +1527,9 @@ class AzureClient:
             f"virtualMachines/{vm_name}/start"
         )
         try:
-            response = self.http_request(method="POST", full_url=full_url, params={"api-version": VM_API_VERSION}, resp_type="response")
+            response = self.http_request(
+                method="POST", full_url=full_url, params={"api-version": VM_API_VERSION}, resp_type="response"
+            )
             if response.status_code in (200, 202, 204):  # type: ignore[union-attr]
                 return response
             else:
@@ -1601,9 +1600,14 @@ class AzureClient:
         Docs:
             https://learn.microsoft.com/en-us/rest/api/compute/virtual-machines/get?view=rest-azure-2024-04-01
         """
-        result = self.http_request(method="GET", full_url=f"https://management.azure.com/subscriptions/{subscription_id}/"
-                                                          f"resourceGroups/{resource_group_name}/providers/Microsoft.Compute/"
-                                                          f"virtualMachines", resp_type="json", params={"api-version":"2025-04-01"})
+        result = self.http_request(
+            method="GET",
+            full_url=f"https://management.azure.com/subscriptions/{subscription_id}/"
+            f"resourceGroups/{resource_group_name}/providers/Microsoft.Compute/"
+            f"virtualMachines",
+            resp_type="json",
+            params={"api-version": "2025-04-01"},
+        )
         demisto.debug(result)
         full_url = (
             f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Compute/"
@@ -1655,9 +1659,7 @@ class AzureClient:
             "deleting": deleting_err,
             "failed": failed_err,
         }
-        response = self.get_vm_request(subscription_id=subscription_id,
-                                       resource_group_name=resource_group,
-                                       vm_name=vm_name)
+        response = self.get_vm_request(subscription_id=subscription_id, resource_group_name=resource_group, vm_name=vm_name)
 
         properties = response.get("properties")
         provisioning_state = properties.get("provisioningState")
@@ -3106,11 +3108,7 @@ def start_vm_command(client: AzureClient, params: dict[str, Any], args: dict[str
     human_readable = tableToMarkdown(title, vm, removeNull=True)
 
     return CommandResults(
-        outputs_prefix="Azure.Compute",
-        outputs_key_field="name",
-        outputs=vm,
-        readable_output=human_readable,
-        raw_response=vm
+        outputs_prefix="Azure.Compute", outputs_key_field="name", outputs=vm, readable_output=human_readable, raw_response=vm
     )
 
 
@@ -3145,11 +3143,7 @@ def poweroff_vm_command(client: AzureClient, params: dict[str, Any], args: dict[
     human_readable = tableToMarkdown(name=title, t=vm, removeNull=True)
 
     return CommandResults(
-        outputs_prefix="Azure.Compute",
-        outputs_key_field="name",
-        outputs=vm,
-        readable_output=human_readable,
-        raw_response=vm
+        outputs_prefix="Azure.Compute", outputs_key_field="name", outputs=vm, readable_output=human_readable, raw_response=vm
     )
 
 
@@ -3501,7 +3495,7 @@ def main():
             "azure-vm-start-instance": start_vm_command,
             "azure-vm-poweroff-instance": poweroff_vm_command,
             "azure-vm-get-instance-details": get_vm_command,
-            "azure-vm-get-nic-details": get_network_interface_command,  # TODO maybe should be called azure-vm-get-network-interface-details?
+            "azure-vm-get-nic-details": get_network_interface_command,
             "azure-vm-get-public-ip-details": get_public_ip_details_command,
         }
         if command == "test-module" and connector_id:
