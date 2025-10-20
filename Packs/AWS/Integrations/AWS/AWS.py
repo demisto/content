@@ -188,6 +188,7 @@ def parse_tag_field(tags_string: str | None):
 
     return tags
 
+
 def convert_datetimes_to_iso_safe(data):
     """
     Converts datetime objects in a data structure to ISO 8601 strings
@@ -748,9 +749,9 @@ class S3:
             raise DemistoException(f"Failed to set Bucket Ownership Controls for {args.get('bucket')}.")
         except Exception as e:
             raise DemistoException(f"Error: {str(e)}")
-        
+
     @staticmethod
-    def download_file_command(client: BotoClient, args: Dict[str, Any]):
+    def file_download_command(client: BotoClient, args: Dict[str, Any]):
         """
         Download a file from an S3 bucket.
 
@@ -763,15 +764,22 @@ class S3:
         Returns:
             CommandResults: A CommandResults object with the downloaded file.
         """
+        bucket = (args.get("bucket") or "").lower()
+        key = args.get("key", "")
         try:
-            data = io.BytesIO()
-            client.download_fileobj(args.get("bucket", "").lower(), args.get("key"), data)
-            return fileResult(args.get("key"), data.getvalue())
+            resp = client.get_object(Bucket=bucket, Key=key)
+            body_stream = resp["Body"]
+            try:
+                data = body_stream.read()
+            finally:
+                body_stream.close()
+            filename = key.rsplit("/", 1)[-1]
+            return fileResult(filename, data)
         except Exception as e:
             raise DemistoException(f"Error: {str(e)}")
-        
+
     @staticmethod
-    def upload_file_command(client: BotoClient, args: Dict[str, Any]):
+    def file_upload_command(client: BotoClient, args: Dict[str, Any]):
         """
         Upload a file to an S3 bucket.
 
@@ -785,26 +793,15 @@ class S3:
         Returns:
             CommandResults: A CommandResults object with a success message on status 200/204.
         """
+        bucket = args.get("bucket")
+        key = args.get("key")
         path = get_file_path(args.get("entryID"))
         try:
             with open(path["path"], "rb") as data:
-                client.upload_fileobj(data, args.get("bucket"), args.get("key"))
-                return CommandResults(readable_output=f"File {args.get('key')} was uploaded successfully to {args.get('bucket')}")
+                client.upload_fileobj(data, bucket, key)
+                return CommandResults(readable_output=f"File {key} was uploaded successfully to {bucket}")
         except Exception as e:
             raise DemistoException(f"Error: {str(e)}")
-    
-    @staticmethod
-    def list_buckets_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
-        data = []
-        response = client.list_buckets()
-        for bucket in response["Buckets"]:
-            data.append(
-                {"BucketName": bucket["Name"], "CreationDate": datetime.strftime(bucket["CreationDate"], "%Y-%m-%dT%H:%M:%S")}
-            )
-        human_readable = tableToMarkdown("AWS S3 Buckets", data)
-        return CommandResults(
-            readable_output=human_readable, outputs_prefix="AWS.S3.Buckets", outputs_key_field="BucketName", outputs=data
-        )
 
 
 class IAM:
@@ -2417,6 +2414,7 @@ class ECS:
                 f"{json.dumps(response)}"
             )
 
+
 def get_file_path(file_id):
     filepath_result = demisto.getFilePath(file_id)
     return filepath_result
@@ -2430,9 +2428,8 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-s3-bucket-policy-put": S3.put_bucket_policy_command,
     "aws-s3-bucket-website-delete": S3.delete_bucket_website_command,
     "aws-s3-bucket-ownership-controls-put": S3.put_bucket_ownership_controls_command,
-    "aws-s3-upload-file": S3.upload_file_command,
-    "aws-s3-download-file": S3.download_file_command,
-    "aws-s3-list-buckets": S3.list_buckets_command,
+    "aws-s3-file-upload": S3.file_upload_command,
+    "aws-s3-file-download": S3.file_download_command,
     "aws-iam-account-password-policy-get": IAM.get_account_password_policy_command,
     "aws-iam-account-password-policy-update": IAM.update_account_password_policy_command,
     "aws-iam-role-policy-put": IAM.put_role_policy_command,
