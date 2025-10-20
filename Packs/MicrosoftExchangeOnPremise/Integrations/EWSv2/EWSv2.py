@@ -701,8 +701,10 @@ def cast_mime_item_to_message(item):
     mime_content = item.mime_content
     email_policy = SMTP if mime_content.isascii() else SMTPUTF8
     if isinstance(mime_content, bytes):
+        demisto.debug("Returning message as bytes")
         return email.message_from_bytes(mime_content, policy=email_policy)  # type: ignore[arg-type]
     else:
+        demisto.debug("Returning message as string")
         return email.message_from_string(mime_content, policy=email_policy)  # type: ignore[arg-type]
 
 
@@ -942,12 +944,15 @@ def parse_incident_from_item(item, is_fetch, mark_as_read):  # pragma: no cover
 
 def get_formatted_message(attached_email) -> str | bytes:
     try:
+        demisto.debug("Formatting attached mail as string")
         return attached_email.as_string()
-    except UnicodeEncodeError:
-        return attached_email.as_bytes()
     except Exception as e:
-        demisto.info(f"Could not parse attached mail as message, {e}")
-        return " Could not format message"
+        demisto.info(f"Could not parse attached mail as string, trying as bytes.\n{e}")
+        try:
+            return attached_email.as_bytes()
+        except Exception as e:
+            demisto.error(f"Could not parse attached mail as bytes, {e}")
+            raise Exception(f"Could not format message, {e}")
 
 
 def fetch_emails_as_incidents(

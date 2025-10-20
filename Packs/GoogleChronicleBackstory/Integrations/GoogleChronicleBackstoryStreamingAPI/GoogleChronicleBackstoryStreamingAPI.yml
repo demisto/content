@@ -1,5 +1,5 @@
 category: Analytics & SIEM
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -12,7 +12,26 @@ configuration:
   required: true
   type: 9
   section: Connect
-- additionalinfo: Select the region based on the location of the chronicle backstory instance. If the region is not listed in the dropdown, choose the "Other" option and specify the region in the "Other Region" text field.
+- section: Connect
+  display: Use V1 Alpha API
+  name: use_v1_alpha
+  defaultvalue: "false"
+  type: 8
+  required: false
+  additionalinfo: |-
+    Select this option to use the V1 Alpha API.
+
+    Note: If this option is selected, Update the Region and provide the v1 Alpha API supported Service Account JSON and Project Instance ID.
+- section: Connect
+  display: Google SecOps Project Instance ID
+  name: project_instance_id
+  type: 0
+  required: false
+  additionalinfo: |-
+    Provide the Project Instance ID of the Google SecOps. Only applicable if the "Use V1 Alpha API" parameter is selected.
+
+    Note: User can retrieve the Customer ID(Project Instance ID) in the Profile section of the Google SecOps page.
+- additionalinfo: Select the region based on the location of the Google SecOps instance. If the region is not listed in the dropdown, choose the "Other" option and specify the region in the "Other Region" text field.
   defaultvalue: General
   display: Region
   name: region
@@ -21,10 +40,27 @@ configuration:
   - Europe
   - Asia
   - Europe-west2
+  - Africa-south1
+  - Asia-northeast1
+  - Asia-south1
+  - Asia-southeast1
+  - Asia-southeast2
+  - Australia-southeast1
+  - EU
+  - Europe-west3
+  - Europe-west6
+  - Europe-west9
+  - Europe-west12
+  - ME-central1
+  - ME-central2
+  - ME-west1
+  - Northamerica-northeast2
+  - Southamerica-east1
+  - US
   - Other
   type: 15
   section: Connect
-- additionalinfo: Specify the region based on the location of the chronicle backstory instance. Only applicable if the "Other" option is selected in the Region dropdown.
+- additionalinfo: Specify the region based on the location of the Google SecOps instance. Only applicable if the "Other" option is selected in the Region dropdown.
   display: Other Region
   hidden: false
   name: other_region
@@ -57,8 +93,8 @@ configuration:
   type: 8
   section: Connect
   required: false
-- additionalinfo: Select Chronicle Alert types to be considered for Fetch Incidents. Available options are Curated Rule Detection Alerts and Rule Detection Alerts (If not selected, fetches all detections).
-  display: Chronicle Alert Type
+- additionalinfo: Select Google SecOps Alert types to be considered for Fetch Incidents. Available options are Curated Rule Detection Alerts and Rule Detection Alerts (If not selected, fetches all detections).
+  display: Google SecOps Alert Type
   name: alert_type
   options:
   - Curated Rule Detection Alerts
@@ -118,11 +154,11 @@ configuration:
   section: Connect
   advanced: true
   required: false
-description: Use the Google Chronicle Backstory Streaming API integration to ingest detections created by both user-created rules and Chronicle Rules as XSOAR incidents.
-display: Chronicle Streaming API
+description: Use the Google SecOps Streaming API integration to ingest detections created by both user-created rules and Google SecOps Rules as XSOAR incidents.
+display: Google SecOps Streaming API
 name: Google Chronicle Backstory Streaming API
 script:
-  dockerimage: demisto/googleapi-python3:1.0.0.117483
+  dockerimage: demisto/googleapi-python3:1.0.0.4892936
   longRunning: true
   isFetchSamples: true
   runonce: false

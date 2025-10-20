@@ -1,6 +1,9 @@
 [file:FireEyeETP.yml]
 ignore=IN126
 
+[file:playbook-FireEye_ETP_-_Indicators_Hunting.yml]
+ignore=BA101
+
 [file:README.md]
 ignore=RM102
 
