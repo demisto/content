@@ -2842,7 +2842,7 @@ def conversation_history():
     body = {"channel": conversation_id, "limit": limit}
     if from_time:
         body["oldest"] = to_unix_seconds_str(from_time)
-        
+
     readable_output = ""
     raw_response = send_slack_request_sync(CLIENT, "conversations.history", http_verb="GET", body=body)
     messages = raw_response.get("messages", "")
