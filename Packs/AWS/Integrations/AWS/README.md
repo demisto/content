@@ -1456,3 +1456,48 @@ Modifies an existing RDS event notification subscription.
 | AWS.RDS.EventSubscription.SourceType | string | The source type for the RDS event notification subscription. | 
 | AWS.RDS.EventSubscription.Status | string | The status of the RDS event notification subscription. | 
 | AWS.RDS.EventSubscription.SubscriptionCreationTime | string | The time the RDS event notification subscription was created. | 
+
+### aws-s3-file-upload
+
+***
+Upload file to S3 bucket.
+
+#### Base Command
+
+`aws-s3-file-upload`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | AWS account identifier for cross-account access and audit purposes. | Required | 
+| entryID | Entry ID of the file to upload. | Required | 
+| bucket | Name of the S3 bucket containing the file. Must follow S3 naming conventions. | Required | 
+| key | Key (path) where the file will be stored in the S3 bucket. | Required | 
+| region | AWS region where the S3 bucket is located. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+
+### aws-s3-file-download
+
+***
+Download a file from S3 bucket to war room.
+
+#### Base Command
+
+`aws-s3-file-download`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required | 
+| bucket | Name of the target S3 bucket. Must follow S3 naming conventions. | Required | 
+| key | Key (path) of the file to download from the S3 bucket. | Required | 
+| region | AWS region where the S3 bucket is located. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required | 
+
+#### Context Output
+
+There is no context output for this command.

@@ -764,7 +764,7 @@ class S3:
         Returns:
             CommandResults: A CommandResults object with the downloaded file.
         """
-        bucket = (args.get("bucket") or "").lower()
+        bucket = args.get("bucket")
         key = args.get("key", "")
         try:
             resp = client.get_object(Bucket=bucket, Key=key)
@@ -775,6 +775,8 @@ class S3:
                 body_stream.close()
             filename = key.rsplit("/", 1)[-1]
             return fileResult(filename, data)
+        except ClientError as err:
+            AWSErrorHandler.handle_client_error(err)
         except Exception as e:
             raise DemistoException(f"Error: {str(e)}")
 
@@ -800,8 +802,11 @@ class S3:
             with open(path["path"], "rb") as data:
                 client.upload_fileobj(data, bucket, key)
                 return CommandResults(readable_output=f"File {key} was uploaded successfully to {bucket}")
+        except ClientError as err:
+            AWSErrorHandler.handle_client_error(err)
         except Exception as e:
             raise DemistoException(f"Error: {str(e)}")
+        return CommandResults(readable_output="Failed to upload file")
 
 
 class IAM:
