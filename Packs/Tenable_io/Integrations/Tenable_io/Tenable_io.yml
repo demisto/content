@@ -347,7 +347,7 @@ script:
     - contextPath: TenableIO.Vulnerabilities.Family
       description: The vulnerability family.
       type: string
-    - contextPath: TenableIO.Vulnerabilities.VulnerabilityOccurrences
+    - contextPath: TenableIO.Vulnerabilities.VulnerabilityOccurences
       description: The number of times the vulnerability was found.
       type: number
     - contextPath: TenableIO.Vulnerabilities.VulnerabilityState
