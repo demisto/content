@@ -10,11 +10,13 @@ configuration:
   name: url
   required: true
   type: 0
+  section: Connect
 - additionalinfo: Check this box to use OAuth 2.0 authentication. See (?) for more information.
   display: Use OAuth Login
   name: use_oauth
   type: 8
   required: false
+  section: Connect
 - additionalinfo: Select this checkbox to use JWT authentication. See (?) for more information.
   display: Use JWT Authentication
   name: use_jwt
@@ -53,10 +55,12 @@ configuration:
   name: insecure
   type: 8
   required: false
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
 description: ServiceNow CMDB is a service‑centric foundation that proactively analyzes service‑impacting changes, identifies issues, and eliminates outages.
 display: ServiceNow CMDB
 name: ServiceNow CMDB
