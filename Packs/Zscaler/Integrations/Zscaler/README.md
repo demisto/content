@@ -1235,7 +1235,7 @@ Deletes the IP destination group associated with the specified group ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ip_group_ids | A comma-separated list of unique identifiers for the IP destination groups. | Optional | 
+| ip_group_ids | A comma-separated list of unique identifiers for the IP destination groups. | Optional |
 
 #### Context Output
 
