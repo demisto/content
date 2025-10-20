@@ -1914,7 +1914,7 @@ def get_entries_for_notes(notes: list[dict], params) -> list[dict]:
                     "Type": note.get("type", 1),
                     "Category": note.get("category"),
                     "Contents": f"Type: {note.get('element')}\nCreated By: {note.get('sys_created_by')}\n"
-                                f"Created On: {note.get('sys_created_on')}\n{note.get('value')}",
+                    f"Created On: {note.get('sys_created_on')}\n{note.get('value')}",
                     "ContentsFormat": note.get("format"),
                     "Tags": tags,
                     "Note": True,
