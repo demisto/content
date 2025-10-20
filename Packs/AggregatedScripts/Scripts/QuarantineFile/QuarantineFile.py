@@ -16,10 +16,20 @@ class Brands(StrEnum):
 
     CORTEX_XDR_IR = "Cortex XDR - IR"
     CORTEX_CORE_IR = "Cortex Core - IR"
+    MDE = "Microsoft Defender Advanced Threat Protection"
 
     @classmethod
     def values(cls):
         return [b.value for b in cls]
+
+    @classmethod
+    def normalize(cls, value: str):
+        _ALIASES = {
+            "Microsoft Defender ATP": "Microsoft Defender Advanced Threat Protection",
+        }
+        """Normalize a brand string (alias → canonical enum)."""
+        canonical = _ALIASES.get(value, value)
+        return canonical
 
 
 """ DATA STRUCTURES """
@@ -52,7 +62,7 @@ class QuarantineResult:
         SUCCESS = "File successfully quarantined."
         ENDPOINT_OFFLINE = "Failed to quarantine file. The endpoint is offline or unreachable, please try again later."
         ENDPOINT_STATUS_UNKNOWN = "Failed to quarantine file. Endpoint status is '{status}'."
-        ENDPOINT_NOT_FOUND = "Endpoint not found by any active integration."
+        ENDPOINT_NOT_FOUND = "Endpoint not found by any active integration, or the hash type does not match the integration."
         FAILED_WITH_REASON = "Failed to quarantine file. {reason}"
 
     @staticmethod
@@ -142,7 +152,6 @@ class Command:
         """
         demisto.debug(f"[Command] Executing: '{self.name}' with args: {self.args} for brand: {self.brand}")
         raw_response = demisto.executeCommand(self.name, self.args)
-        demisto.debug(f"[Command] Received response for '{self.name}'. Raw response: {raw_response}")
 
         verbose_results = []
         for result in raw_response:
@@ -201,7 +210,7 @@ class Command:
 
         entry_contexts = Command.get_entry_contexts(raw_response)
         demisto.debug(
-            f"[Command] Getting entry context object containing key '{key}'. Found {len(entry_contexts)} entry contexts."
+            f"[Command] Getting entry context object containing key '{key}'. From {len(entry_contexts)} entry contexts."
         )
 
         for entry_context in entry_contexts:
@@ -256,6 +265,16 @@ class EndpointBrandMapper:
         endpoint_data = self._fetch_endpoint_data()
         if not endpoint_data:
             demisto.debug("[EndpointBrandMapper] No endpoint data found, will not quarantine.")
+            for endpoint_id in self.endpoint_ids_to_map:
+                self.initial_results.append(
+                    QuarantineResult.create(
+                        endpoint_id=endpoint_id,
+                        status=QuarantineResult.Statuses.FAILED,
+                        message=QuarantineResult.Messages.ENDPOINT_NOT_FOUND,
+                        brand="Unknown",
+                        script_args=self.script_args,
+                    )
+                )
             raise QuarantineException("Could not retrieve endpoint data.")
 
         online_endpoints = self._filter_endpoint_data(endpoint_data)
@@ -312,13 +331,9 @@ class EndpointBrandMapper:
         Returns:
             dict: A dictionary mapping online endpoint IDs to their brand.
         """
-        demisto.debug(f"[EndpointBrandMapper] Processing raw endpoint data for {len(endpoint_data)} entries.")
         online_endpoints = {}
         all_found_ids = set()
-
-        if not endpoint_data:
-            demisto.debug("[EndpointBrandMapper] No endpoint data found. Skipping.")
-            return {}
+        demisto.debug(f"[EndpointBrandMapper] Filtering data: {endpoint_data}")
 
         # First pass: find all successful, online endpoints. These take precedence.
         for result in endpoint_data:
@@ -326,8 +341,7 @@ class EndpointBrandMapper:
                 continue
 
             if result.get("Message") == "Command successful" and result.get("Status") == "Online":
-                demisto.debug(f"[EndpointBrandMapper] Found 'Online' status for endpoint {endpoint_id}.")
-                online_endpoints[endpoint_id] = result.get("Brand")
+                online_endpoints[endpoint_id] = Brands.normalize(result.get("Brand"))
 
         # Second pass: Create failure results for any endpoint that was not found or offline.
         for result in endpoint_data:
@@ -346,13 +360,12 @@ class EndpointBrandMapper:
                 get_endpoint_status_message = result.get("Message", QuarantineResult.Messages.ENDPOINT_OFFLINE)
                 message = QuarantineResult.Messages.FAILED_WITH_REASON.format(reason=get_endpoint_status_message)
 
-            demisto.debug(f"[EndpointBrandMapper] Creating failure result for endpoint {endpoint_id}. Reason: {message}")
             self.initial_results.append(
                 QuarantineResult.create(
                     endpoint_id=endpoint_id,
                     status=QuarantineResult.Statuses.FAILED,
                     message=message,
-                    brand=result.get("Brand", "Unknown"),
+                    brand=Brands.normalize(result.get("Brand", "Unknown")),
                     script_args=self.script_args,
                 )
             )
@@ -408,7 +421,7 @@ class BrandHandler(ABC):
         """
 
     @abstractmethod
-    def finalize(self, job: dict, last_poll_response: list) -> list[QuarantineResult]:
+    def finalize(self, last_poll_response: list) -> list[QuarantineResult]:
         """
         Processes the final results of a completed polling job for the brand.
         """
@@ -487,7 +500,7 @@ class XDRHandler(BrandHandler):
 
         return list(status_context[0].values())[0]
 
-    def _process_final_endpoint_status(self, endpoint_result: dict, job_data: dict) -> QuarantineResult:
+    def _process_final_endpoint_status(self, endpoint_result: dict) -> QuarantineResult:
         """
         Processes the final result for a single endpoint from a completed polling job.
 
@@ -497,27 +510,6 @@ class XDRHandler(BrandHandler):
         Args:
             endpoint_result (dict): The result object for a single endpoint from the polling command.
                                     Example: {'action_id': 123, 'endpoint_id': 'EP_ID', 'status': 'COMPLETED_SUCCESSFULLY'}
-            job_data (dict): The original job object containing metadata and finalize_args.
-                             Example:
-                                 {
-                                 'brand': 'Cortex Core - IR',
-                                 'poll_command': 'core-quarantine-files',
-                                 'poll_args': {
-                                            'action_id': [6],
-                                            'endpoint_id': 'EP_ID',
-                                            'endpoint_id_list': ['EP_ID'],
-                                            'file_hash': 'sha256sha256sha256sha256sha256sha256sha256sha256sha256sha256',
-                                            'file_path': 'path/to/file.txt',
-                                            'integration_context_brand': 'Core',
-                                            'integration_name': 'Cortex Core - IR',
-                                            'interval_in_seconds': 60,
-                                            'timeout_in_seconds': '300'
-                                            },
-                                'finalize_args': {
-                                            'file_hash': 'sha256sha256sha256sha256sha256sha256sha256sha256sha256sha256',
-                                            'file_path': 'path/to/file.txt'
-                                            }
-                                }
 
         Returns:
             QuarantineResult: A structured result object for the endpoint.
@@ -614,10 +606,9 @@ class XDRHandler(BrandHandler):
                 "file_path": args.get(QuarantineOrchestrator.FILE_PATH_ARG),
             },
         }
-        demisto.debug(f"[{self.brand} Handler] Created new job object: {job}")
         return job
 
-    def finalize(self, job: dict, last_poll_response: list) -> list[QuarantineResult]:
+    def finalize(self, last_poll_response: list) -> list[QuarantineResult]:
         """
         Finalizes a completed quarantine job for the XDR brand.
 
@@ -626,13 +617,11 @@ class XDRHandler(BrandHandler):
         definitive outcome.
 
         Args:
-            job (dict): The job object that has just completed polling.
             last_poll_response (list): The raw response from the final polling command.
 
         Returns:
             list[QuarantineResult]: A list of final QuarantineResult objects.
         """
-        demisto.debug(f"[{self.brand} Handler] Finalizing job.")
         final_results = []
 
         quarantine_endpoints_final_results: list = Command.get_entry_context_object_containing_key(
@@ -642,7 +631,7 @@ class XDRHandler(BrandHandler):
         demisto.debug(f"[{self.brand} Handler] Finalizing endpoint results from job.")
         for quarantine_endpoint_result in quarantine_endpoints_final_results:
             try:
-                final_results.append(self._process_final_endpoint_status(quarantine_endpoint_result, job))
+                final_results.append(self._process_final_endpoint_status(quarantine_endpoint_result))
             except Exception as e:
                 demisto.error(
                     f"[{self.brand} Handler] Failed to get status of quarantine for endpoint:"
@@ -657,6 +646,159 @@ class XDRHandler(BrandHandler):
                         script_args=self.orchestrator.args,
                     )
                 )
+        return final_results
+
+
+class MDEHandler(BrandHandler):
+    """Handler for Microsoft Defender Advanced Threat Protection quarantine operation"""
+
+    QUARANTINE_STATUS_SUCCESS = "Succeeded"
+    QUARANTINE_COMMAND = "microsoft-atp-stop-and-quarantine-file"
+
+    def __init__(self, orchestrator):
+        """
+        Initializes the MDEHandler.
+
+        Args:
+            orchestrator (QuarantineOrchestrator): The main orchestrator instance.
+        """
+        super().__init__(Brands.MDE, orchestrator)
+
+    def validate_args(self, args: dict) -> None:
+        return
+
+    def initiate_quarantine(self, args: dict):
+        """
+        Initiates the quarantine action for a list of MDE endpoints.
+
+        This method calls the appropriate MDE quarantine command (microsoft-atp-stop-and-quarantine-file)
+        and constructs a job object for polling.
+
+        Args:
+            args (dict): The script arguments, including the list of endpoint IDs to action.
+
+        Returns:
+            dict: A job object containing metadata required for polling.
+                  The poll_command and poll_args fields are populated based on the Metadata returned from the PollResult response.
+                  Example:
+                      {
+                          "poll_command": "microsoft-atp-stop-and-quarantine-file",
+                          "poll_args": {
+                              "action_ids": ["111111"],
+                              "machine_id": ["22222", "33333"],
+                              "file_hash": "sha1sha1",
+                              "timeout_in_seconds" : "300"
+                          },
+                      }
+
+        Raises:
+            QuarantineException: If the initial quarantine command fails.
+        """
+        demisto.debug(f"[{self.brand} Handler] Initiating quarantine action.")
+
+        quarantine_args = {
+            "machine_id": args.get(QuarantineOrchestrator.ENDPOINT_IDS_ARG),
+            "file_hash": args.get(QuarantineOrchestrator.FILE_HASH_ARG),
+            "comment": f"Quarantine file hash: {args.get(QuarantineOrchestrator.FILE_HASH_ARG)}",
+            "timeout_in_seconds": args.get("timeout", DEFAULT_TIMEOUT),
+            "polling": True,
+        }
+
+        cmd = Command(name=MDEHandler.QUARANTINE_COMMAND, args=quarantine_args, brand=self.brand)
+        raw_response, verbose_res = cmd.execute()
+
+        if self.orchestrator.verbose:
+            self.orchestrator.verbose_results.extend(verbose_res)
+
+        quarantine_kick_off_results: list = Command.get_entry_context_object_containing_key(raw_response, "MachineAction")
+
+        demisto.debug(f"[MDE Handler] Quarantine Kick Off Results: {quarantine_kick_off_results}")
+
+        if not quarantine_kick_off_results:
+            raise QuarantineException("Failed to initiate quarantine.")
+
+        pending_jobs = False
+        # Iterate over kick-off response to check if any/all jobs have completed.
+        for quarantine_endpoint_result in quarantine_kick_off_results:
+            status = quarantine_endpoint_result.get("Status", "Unknown")
+            message = QuarantineResult.Messages.SUCCESS if status == "Succeeded" else QuarantineResult.Messages.GENERAL_FAILURE
+            if status in ["Succeeded", "Failed", "Cancelled", "TimeOut"]:
+                self.orchestrator.completed_results.append(
+                    QuarantineResult.create(
+                        endpoint_id=quarantine_endpoint_result.get("MachineID", "Unknown"),
+                        status=quarantine_endpoint_result.get("Status", "Unknown"),
+                        message=message,
+                        brand=self.brand,
+                        script_args=self.orchestrator.args,
+                    )
+                )
+            else:
+                pending_jobs = True
+
+        if not pending_jobs:
+            return None
+
+        metadata = raw_response[0].get("Metadata", {})
+        demisto.debug(f"[MDEHandler] Returned Metadata from MDE Quarantine Kickoff: {metadata}")
+
+        job = {
+            "brand": self.brand,
+            "poll_command": metadata.get("pollingCommand", MDEHandler.QUARANTINE_COMMAND),
+            "poll_args": metadata.get("pollingArgs", {}),
+        }
+
+        if not job.get("poll_command") or not job.get("poll_args"):
+            raise QuarantineException("Failed to initiate quarantine.")
+
+        demisto.debug(f"[{self.brand} Handler] Created new polling job object: {job}")
+        return job
+
+    def finalize(self, last_poll_response: list):
+        """
+        Finalizes a completed quarantine job for the MDE brand.
+
+        It parses the results from the last polling response and calls
+
+        Args:
+            last_poll_response (list):
+                The raw response from the final polling command.
+                Example:
+                   [{ 'EntryContext': {
+                   'MicrosoftATP.MachineAction(val.ID && val.ID == obj.ID)':
+                      [
+                       {
+                       'Commands': None, 'ComputerDNSName': 'win10',
+                       'CreationDateTimeUtc': '2025-09-04T15:54:42.3940602Z',
+                       'ID': '867a0014-12c1-4445-b3b5-c001eea7db4d',
+                       'LastUpdateTimeUtc': '2025-09-04T15:55:08.1123822Z',
+                       'MachineID': '123',
+                       'RelatedFileInfo':
+                           {'FileIdentifier': 'sha1sha1',
+                            'FileIdentifierType': 'Sha1'},
+                        'Requestor': 'Cortex XSOAR - Microsoft Defender ATP',
+                        'RequestorComment': 'Quarantine file hash: sha1sha1',
+                        'Scope': None, 'Status': 'Succeeded', 'Type': 'StopAndQuarantineFile'
+                        }]}}]
+
+        Returns:
+            list[QuarantineResult]: A list of final QuarantineResult objects.
+        """
+        final_results = []
+        quarantine_endpoints_final_results: list = Command.get_entry_context_object_containing_key(
+            last_poll_response, "MachineAction"
+        )
+
+        demisto.debug(f"[{self.brand} Handler] Finalizing endpoint results from job.")
+        for quarantine_endpoint_result in quarantine_endpoints_final_results:
+            final_results.append(
+                QuarantineResult.create(
+                    endpoint_id=quarantine_endpoint_result.get("MachineID", "Unknown"),
+                    status=quarantine_endpoint_result.get("Status", "Unknown"),
+                    message=QuarantineResult.Messages.SUCCESS,
+                    brand=self.brand,
+                    script_args=self.orchestrator.args,
+                )
+            )
         return final_results
 
 
@@ -679,9 +821,11 @@ def handler_factory(brand: str, orchestrator) -> BrandHandler:
     """
     demisto.debug(f"[Factory] Creating handler for brand: '{brand}'")
     if brand in [Brands.CORTEX_CORE_IR, Brands.CORTEX_XDR_IR]:
-        demisto.debug("[Factory] Selected XDRHandler.")
         return XDRHandler(brand, orchestrator)
-    raise ValueError(f"No handler available for brand: {brand}")
+    elif brand == Brands.MDE:
+        return MDEHandler(orchestrator)
+    else:
+        raise QuarantineException(f"No handler available for brand: {brand}")
 
 
 """ SCRIPT ORCHESTRATOR """
@@ -690,21 +834,19 @@ def handler_factory(brand: str, orchestrator) -> BrandHandler:
 class QuarantineOrchestrator:
     """Manages the entire quarantine lifecycle from start to finish."""
 
-    CONTEXT_PENDING_JOBS = "quarantine_pending_jobs"
-    CONTEXT_COMPLETED_RESULTS = "quarantine_completed_results"
     ENDPOINT_IDS_ARG = "endpoint_id"
     FILE_HASH_ARG = "file_hash"
     FILE_PATH_ARG = "file_path"
     BRANDS_ARG = "brands"
 
-    HASH_TYPE_TO_BRANDS = {"sha256": [Brands.CORTEX_CORE_IR, Brands.CORTEX_XDR_IR]}
+    HASH_TYPE_TO_BRANDS = {"sha256": [Brands.CORTEX_CORE_IR, Brands.CORTEX_XDR_IR], "sha1": [Brands.MDE]}
 
     def __init__(self, args: dict):
         """
         Initializes the QuarantineOrchestrator.
 
         This involves loading the current state (pending jobs and completed results)
-        from the incident context to support polling.
+        from the given args to support polling.
 
         Args:
             args (dict): The arguments passed to the script.
@@ -713,11 +855,12 @@ class QuarantineOrchestrator:
         self.args = args
         self.verbose = argToBoolean(args.get("verbose", False))
         self.verbose_results: list[CommandResults] = []
-        demisto_context = demisto.context()
-        self.pending_jobs = list(demisto.get(demisto_context, self.CONTEXT_PENDING_JOBS, []))
-        # Load results from context, ensuring they are dictionaries
+
+        # load pending jobs if they exist from kick-off
+        self.pending_jobs = argToList(args.get("pending_jobs", []))
+        # Load completed jobs if they exist from kick-off
         self.completed_results: list[QuarantineResult] = [
-            QuarantineResult(**res) for res in (demisto.get(demisto_context, self.CONTEXT_COMPLETED_RESULTS) or [])
+            QuarantineResult(**res) for res in (argToList(args.get("completed_results", [])))
         ]
         demisto.debug(
             f"[Orchestrator] Loaded state. Pending jobs: {len(self.pending_jobs)}, "
@@ -767,7 +910,7 @@ class QuarantineOrchestrator:
                 raise QuarantineException(f"Invalid brand: {brand}. Valid brands are: {Brands.values()}")
 
         enabled_brands = {module.get("brand") for module in demisto.getModules().values() if module.get("state") == "active"}
-
+        demisto.debug(f"Enabled brands are: {enabled_brands}")
         brands_to_consider = set(user_given_brands) if user_given_brands else set(Brands.values())
 
         # The final list of brands to run on is the intersection of the brands we
@@ -790,6 +933,9 @@ class QuarantineOrchestrator:
         Args:
             brands_to_run (list): The list of active brands that will be used.
 
+        Returns:
+            list: The list of brands to run actions on, after removing brands that do not support the file hash type.
+
         Raises:
             QuarantineException: If the hash argument is missing, the hash type is unsupported,
                               or no enabled integration supports the given hash type.
@@ -799,6 +945,7 @@ class QuarantineOrchestrator:
 
         hash_type = get_hash_type(self.args.get(self.FILE_HASH_ARG)).lower()
         supported_brands_for_hash = self.HASH_TYPE_TO_BRANDS.get(hash_type)
+        demisto.debug(f"brands to run are: {brands_to_run}")
 
         if not supported_brands_for_hash:
             raise QuarantineException(
@@ -811,6 +958,10 @@ class QuarantineOrchestrator:
                 f"For hash_type {hash_type.upper()} please use one of the following brands: "
                 f"{', '.join(supported_brands_for_hash)}"
             )
+
+        # Return only the list of brands that both support the given hash type
+        # and are included in the specified set of brands to run.
+        return list(set(brands_to_run).intersection(supported_brands_for_hash))
 
     def _sanitize_and_validate_args(self):
         """
@@ -830,7 +981,8 @@ class QuarantineOrchestrator:
         brands_to_run = self._verify_and_get_valid_brands()
         self.args[QuarantineOrchestrator.BRANDS_ARG] = brands_to_run
 
-        self._verify_file_hash(brands_to_run)
+        brands_to_run = self._verify_file_hash(brands_to_run)
+        self.args[QuarantineOrchestrator.BRANDS_ARG] = brands_to_run
 
         demisto.debug("[Orchestrator] Finished sanitizing and validating script arguments.")
 
@@ -839,9 +991,10 @@ class QuarantineOrchestrator:
         Determines if this is the first execution of the script for this task.
 
         Returns:
-            bool: True if there are no pending jobs in the context, False otherwise.
+            bool: True if there are no pending jobs in the args, False otherwise.
         """
-        return not self.pending_jobs
+
+        return not argToList(self.args.get("pending_jobs", []))
 
     def _job_is_still_polling(self, metadata: dict) -> bool:
         """
@@ -875,7 +1028,7 @@ class QuarantineOrchestrator:
                 self._sanitize_and_validate_args()
             except Exception as e:
                 self.completed_results = []
-
+                demisto.debug("[Orchestrator] Failed to sanitize and validate script arguments. Failing the script")
                 for endpoint_id in argToList(self.args.get(self.ENDPOINT_IDS_ARG)):
                     self.completed_results.append(
                         QuarantineResult.create(
@@ -890,7 +1043,7 @@ class QuarantineOrchestrator:
                         )
                     )
 
-                return self._get_final_results()
+                return self._get_final_results(fatal_error_msg=str(e))
             self._initiate_jobs()
         else:
             demisto.debug("[Orchestrator] Detected polling run.")
@@ -899,11 +1052,38 @@ class QuarantineOrchestrator:
         # After work is done, decide whether to continue polling or finish.
         if self.pending_jobs:
             demisto.debug(f"[Orchestrator] {len(self.pending_jobs)} jobs still pending. Saving state and scheduling next poll.")
-            demisto.setContext(self.CONTEXT_PENDING_JOBS, self.pending_jobs)
-            demisto.setContext(self.CONTEXT_COMPLETED_RESULTS, QuarantineResult.to_context_entry(self.completed_results))
+
+            if self._is_first_run() and self.completed_results:
+                demisto.debug("Returning the failed quarantine operations from the kick-off stage to war room")
+                demisto.debug(f"The failed results being returned are: {self.completed_results}")
+                hr = tableToMarkdown(
+                    name=f"Unable to Quarantine the file hash: {self.args.get(self.FILE_HASH_ARG)} "
+                    f"for the following endpoints:",
+                    headers=["EndpointID", "Status", "Message", "Brand"],
+                    t=QuarantineResult.to_context_entry(self.completed_results),
+                    removeNull=True,
+                )
+                interim_results = CommandResults(
+                    outputs_prefix="QuarantineFile",
+                    outputs_key_field=["EndpointID", "FilePath", "FileHash"],
+                    readable_output=hr,
+                    outputs=QuarantineResult.to_context_entry(self.completed_results),
+                )
+                return_results(interim_results)
+
             interim_results = CommandResults(readable_output="Quarantine operations are still in progress...")
+            args_for_next_run = {
+                "pending_jobs": self.pending_jobs,
+                "completed_results": QuarantineResult.to_context_entry(self.completed_results),
+                **self.args,
+            }
+            demisto.debug(f"[Orchestrator] Initiating polling with args: {args_for_next_run}")
+
             return PollResult(
-                response=interim_results, continue_to_poll=True, args_for_next_run=self.args, partial_result=interim_results
+                response=interim_results,
+                continue_to_poll=True,
+                args_for_next_run=args_for_next_run,
+                partial_result=interim_results,
             )
         else:
             demisto.debug("[Orchestrator] No pending jobs remain. Finishing.")
@@ -917,12 +1097,14 @@ class QuarantineOrchestrator:
         `_execute_quarantine_for_brand` for each discovered brand.
         """
         demisto.debug("[Orchestrator] Initiating jobs.")
+        mapper = EndpointBrandMapper(self.args, self)
+
         try:
-            mapper = EndpointBrandMapper(self.args, self)
             grouped_endpoints_by_brand = mapper.group_by_brand()
             self.completed_results.extend(mapper.initial_results)
         except Exception as e:
             demisto.error(f"[Orchestrator] Critical error during endpoint mapping, skipping quarantine operations {e}")
+            self.completed_results.extend(mapper.initial_results)
             return
 
         demisto.debug(f"[Orchestrator] Executing quarantine for endpoints: {grouped_endpoints_by_brand.keys()}")
@@ -952,7 +1134,8 @@ class QuarantineOrchestrator:
                 initiate_args = self.args.copy()
                 initiate_args[self.ENDPOINT_IDS_ARG] = endpoint_ids
                 new_job = handler.initiate_quarantine(initiate_args)
-                self.pending_jobs.append(new_job)
+                if new_job:
+                    self.pending_jobs.append(new_job)
             return
         except QuarantineException as e:
             demisto.error(f"Failed to process endpoints for brand '{brand}': {e}")
@@ -983,8 +1166,9 @@ class QuarantineOrchestrator:
         demisto.debug(f"[Orchestrator] Checking status of {len(self.pending_jobs)} pending jobs.")
         remaining_jobs = []
         for job in self.pending_jobs:
-            demisto.debug(f"[Orchestrator] Polling job for brand '{job['brand']}'.")
             demisto.debug(f"[Orchestrator] The Job: {job}")
+            demisto.debug(f"[Orchestrator] Polling job for brand '{job['brand']}'.")
+
             # Get the command for this job to poll for status. i.e.: GetActionStatus
             poll_cmd = Command(name=job["poll_command"], args=job["poll_args"], brand=job["brand"])
             raw_response, verbose_res = poll_cmd.execute()
@@ -992,6 +1176,7 @@ class QuarantineOrchestrator:
                 self.verbose_results.extend(verbose_res)
 
             metadata = raw_response[0].get("Metadata", {}) if raw_response else {}
+            demisto.debug(f"The raw response from executing: {raw_response}")
 
             if self._job_is_still_polling(metadata):
                 demisto.debug(f"[Orchestrator] Job for brand '{job['brand']}' is still pending. Re-scheduling.")
@@ -1000,34 +1185,40 @@ class QuarantineOrchestrator:
             else:
                 demisto.debug(f"[Orchestrator] Polling complete for job brand '{job['brand']}'. Finalizing.")
                 handler = handler_factory(job["brand"], self)
-                final_results = handler.finalize(job, raw_response)
+                final_results = handler.finalize(raw_response)
                 self.completed_results.extend(final_results)
 
         self.pending_jobs = remaining_jobs
 
-    def _get_final_results(self) -> PollResult:
+    def _all_jobs_have_failed(self) -> bool:
         """
+        Checks if all jobs in the completed results have failed.
+
+        Returns:
+            bool: True if all jobs have failed, False otherwise.
+        """
+        return all(result.Status == QuarantineResult.Statuses.FAILED for result in self.completed_results)
+
+    def _get_final_results(self, fatal_error_msg=None) -> PollResult:
+        """
+        Args:
+            fatal_error_msg: An error message in case of fatal error.
+                             If given, the command will continue to error path.
+
         Formats and returns the final report after all jobs are complete.
 
-        This method cleans up the working data from the incident context, builds
-        a markdown table for the war room, and constructs the final CommandResults object.
+        This method builds a Markdown table for the war room, and constructs the final CommandResults object.
+        It will also return error_path if given a fatal_error_msg or none of the endpoints were successfully quarantined.
 
         Returns:
             PollResult: A PollResult object with `continue_to_poll=False` and the final results.
         """
         demisto.debug("[Orchestrator] Formatting final results.")
-        # Clean up the context keys before returning the final result
-        demisto.debug("[Orchestrator] Deleting context keys.")
-        demisto.executeCommand(
-            "DeleteContext",
-            {"key": f"{QuarantineOrchestrator.CONTEXT_PENDING_JOBS},{QuarantineOrchestrator.CONTEXT_COMPLETED_RESULTS}"},
-        )
-        demisto.debug("[Orchestrator] Successfully deleted context keys.")
 
         results_list = QuarantineResult.to_context_entry(self.completed_results)
         # Build final report
         final_readable_output = tableToMarkdown(
-            name=f"Quarantine File Results for: {self.args.get(self.FILE_PATH_ARG)}",
+            name=f"Quarantine Results for Hash: {self.args.get(self.FILE_HASH_ARG)}",
             headers=["EndpointID", "Status", "Message", "Brand"],
             t=results_list,
             removeNull=True,
@@ -1040,6 +1231,16 @@ class QuarantineOrchestrator:
             outputs=results_list,
         )
 
+        if fatal_error_msg or self._all_jobs_have_failed():
+            # If there is a fatal error message or all jobs have failed, we want to be on error path.
+            demisto.results(
+                {
+                    "Type": entryTypes["error"],
+                    "ContentsFormat": formats["text"],
+                    "Contents": fatal_error_msg or "Could not quarantine file on all endpoints.",
+                    "EntryContext": {},
+                }
+            )
         # Prepend verbose results if the flag is set
         if self.verbose:
             self.verbose_results.append(final_command_results)
@@ -1088,12 +1289,7 @@ def main():
     except Exception as e:
         demisto.error(f"--- Unhandled Exception in quarantine-file script: {traceback.format_exc()} ---")
         return_error(f"Failed to execute quarantine-file script. Error: {str(e)}")
-        demisto.debug("[Orchestrator] Deleting context keys.")
-        demisto.executeCommand(
-            "DeleteContext",
-            {"key": f"{QuarantineOrchestrator.CONTEXT_PENDING_JOBS},{QuarantineOrchestrator.CONTEXT_COMPLETED_RESULTS}"},
-        )
-        demisto.debug("[Orchestrator] Successfully deleted context keys.")
+
     demisto.debug("--- quarantine-file script execution complete. ---")
 
 
