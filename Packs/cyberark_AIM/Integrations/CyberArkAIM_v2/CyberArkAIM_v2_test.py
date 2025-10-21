@@ -88,7 +88,8 @@ def test_cyberark_fetch_credentials(creds_name_to_fetch, expected_res, mocker):
     - Running fetch-credentials process
     Then
     - Ensure that the credentials returned to demisto are: [(username1,password1,name1)]
-    - Ensure that all credentials were returned to demisto: [(username1,password1,name1),(username2,password2,name2),(username3,password3,name3)]
+    - Ensure that all credentials were returned to demisto:
+        [(username1,password1,name1),(username2,password2,name2),(username3,password3,name3)]
     """
     client = Client(
         server_url="https://api.cyberark.com/",
