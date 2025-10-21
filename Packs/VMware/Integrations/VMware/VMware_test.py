@@ -993,13 +993,13 @@ def test_change_nic_state(monkeypatch):
     assert "Virtual Machine's NIC was connected successfully" in res.get("HumanReadable")
 
 
-def test_vsphare_client_login(mocker):
+def test_vsphere_client_login(mocker):
     """
     Given:
         - A parameters dictionary for the vSphere client.
 
     When:
-        - Running the vsphare_client_login function.
+        - Running the vsphere_client_login function.
 
     Then:
         - Ensure the create_vsphere_client is called with the correct arguments, including proxy and verification settings.
@@ -1019,7 +1019,7 @@ def test_vsphare_client_login(mocker):
     mocker.patch("requests.session", return_value=mock_session)
     mock_create_vsphere_client = mocker.patch.object(VMware, "create_vsphere_client")
 
-    VMware.vsphare_client_login(params)
+    VMware.vsphere_client_login(params)
 
     assert mock_session.verify is not insecure
     assert mock_session.proxies == proxies
