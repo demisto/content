@@ -845,7 +845,7 @@ def vsphare_client_login(params):
 
     urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-    # Connect to Vsphere automation sdk using username and password
+    # Connect to the Vsphere automation sdk using a username and password
     demisto.debug(f"Connecting to Vsphere client with {full_url=}, {verify=}, {proxies=}.")
     return create_vsphere_client(server=full_url, username=user_name, password=password, session=session)
 
