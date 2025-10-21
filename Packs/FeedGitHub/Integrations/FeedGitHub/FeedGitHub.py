@@ -364,7 +364,7 @@ def identify_json_structure(json_data) -> Any:
 
 def filtering_stix_files(file_names: list, file_contents: list) -> list:
     """
-    Filters a list of content files to include only those in STIX format.
+    Filters a list of content files, returning only those in STIX format.
 
     Args:
         content_files (list): A list of JSON files or dictionaries representing STIX content.
