@@ -469,6 +469,8 @@ def fetch_indicators(
         iterator = iterator[:limit]
 
     for item in iterator:
+        if not item.get("fields"):
+            item["fields"] = {}
         if feed_tags:
             item["fields"]["tags"] = feed_tags
         if tlp_color:
