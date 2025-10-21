@@ -2,7 +2,7 @@ category: Messaging and Conferencing
 commonfields:
   id: McAfee DXL
   version: -1
-sectionOrder:
+sectionorder:
   - Connect
   - Collect
 configuration:
