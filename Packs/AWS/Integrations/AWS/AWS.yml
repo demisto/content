@@ -2485,8 +2485,9 @@ script:
       name: ipam_resource_discovery_ids
     - description: One or more filters separated by ';'. See AWS documentation for details & filter options (https://docs.aws.amazon.com/cli/latest/userguide/cli-usage-filter.html).
       name: filters
-    - description: The maximum number of results to return in a single call. Specify a value between 5 and 1000.
-      name: max_results
+    - description: The maximum number of results to return in a single call. Specify a value between 5 and 1000. Default value is 50.
+      name: limit
+      defaultValue: 50
     - description: The token for the next set of results.
       name: next_token
     - description: The Amazon Web Services region for the IP address.
@@ -2552,8 +2553,9 @@ script:
       name: ipam_resource_discovery_association_ids
     - description: One or more filters separated by ';'. See AWS documentation for details & filter options (https://docs.aws.amazon.com/cli/latest/userguide/cli-usage-filter.html).
       name: filters
-    - description: The maximum number of results to return in a single call. Specify a value between 5 and 1000.
-      name: max_results
+    - description: The maximum number of results to return in a single call. Specify a value between 5 and 1000. Default value is 50.
+      name: limit
+      defaultValue: 50
     - description: The token for the next set of results.
       name: next_token
     - description: The Amazon Web Services region for the IP address.

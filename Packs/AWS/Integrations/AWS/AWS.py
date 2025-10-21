@@ -1816,7 +1816,12 @@ class EC2:
             outputs=raw,
             outputs_prefix="AWS.EC2.Vpcs",
             outputs_key_field="VpcId",
-            readable_output=tableToMarkdown("AWS EC2 Vpcs", data, removeNull=True),
+            readable_output=tableToMarkdown(
+                "AWS EC2 Vpcs",
+                data,
+                headers=["VpcId", "IsDefault", "CidrBlock", "DhcpOptionsId", "State", "InstanceTenancy", "Region"],
+                removeNull=True,
+            ),
             raw_response=response,
         )
 
@@ -1870,7 +1875,21 @@ class EC2:
             outputs=raw,
             outputs_prefix="AWS.EC2.Subnets",
             outputs_key_field="SubnetId",
-            readable_output=tableToMarkdown("AWS EC2 Subnets", data, removeNull=True),
+            readable_output=tableToMarkdown(
+                "AWS EC2 Subnets",
+                data,
+                headers=[
+                    "SubnetId",
+                    "AvailabilityZone",
+                    "AvailableIpAddressCount",  # noqa: E501
+                    "CidrBlock",
+                    "DefaultForAz",
+                    "State",
+                    "VpcId",
+                    "Region",
+                ],
+                removeNull=True,
+            ),
             raw_response=response,
         )
 
@@ -1884,15 +1903,14 @@ class EC2:
         Returns:
             CommandResults: Results of the operation with IPAM resource discovery information
         """
-        kwargs = {}
-        if args.get("filters"):
-            kwargs.update({"Filters": parse_filter_field(args.get("filters"))})
-        if args.get("max_results"):
-            kwargs.update({"MaxResults": int(args.get("max_results"))})
-        if args.get("next_token"):
-            kwargs.update({"NextToken": args.get("next_token")})
-        if args.get("ipam_resource_discovery_ids"):
-            kwargs.update({"IpamResourceDiscoveryIds": argToList(args.get("ipam_resource_discovery_ids"))})
+        kwargs = {
+            "Filters": parse_filter_field(args.get("filters")),
+            "MaxResults": int(args.get("limit", DEFAULT_LIMIT_VALUE)),
+            "NextToken": args.get("next_token"),
+            "IpamResourceDiscoveryIds": argToList(args.get("ipam_resource_discovery_ids")),
+        }
+
+        remove_nulls_from_dictionary(kwargs)
 
         response = client.describe_ipam_resource_discoveries(**kwargs)
 
@@ -1919,15 +1937,13 @@ class EC2:
         Returns:
             CommandResults: Results of the operation with IPAM resource discovery association information
         """
-        kwargs = {}
-        if args.get("filters"):
-            kwargs.update({"Filters": parse_filter_field(args.get("filters"))})
-        if args.get("max_results"):
-            kwargs.update({"MaxResults": int(args.get("max_results"))})
-        if args.get("next_token"):
-            kwargs.update({"NextToken": args.get("next_token")})
-        if args.get("ipam_resource_discovery_association_ids"):
-            kwargs.update({"IpamResourceDiscoveryAssociationIds": argToList(args.get("ipam_resource_discovery_association_ids"))})
+        kwargs = {
+            "Filters": parse_filter_field(args.get("filters")),
+            "MaxResults": int(args.get("limit", DEFAULT_LIMIT_VALUE)),
+            "NextToken": args.get("next_token"),
+            "IpamResourceDiscoveryAssociationIds": argToList(args.get("ipam_resource_discovery_association_ids")),
+        }
+        remove_nulls_from_dictionary(kwargs)
 
         response = client.describe_ipam_resource_discovery_associations(**kwargs)
 
