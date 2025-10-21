@@ -649,6 +649,15 @@ script:
     - description: The name of the blob.
       name: blob_name
       required: true
+    - description: "The subscription ID."
+      name: subscription_id
+      required: true
+    - description: "The resource group name."
+      name: resource_group_name
+      required: true
+    - description: The storage account name.
+      name: account_name
+      required: true
     description: Retrieve the tags of the specified Blob.
     name: azure-storage-container-blob-tag-get
     outputs:
@@ -664,6 +673,28 @@ script:
     - contextPath: AzureStorageContainer.Container.name
       description: Container name.
       type: String
+
+  - arguments:
+    - description: The name of the Blob Container.
+      name: container_name
+      required: true
+    - description: The name of the blob.
+      name: blob_name
+      required: true
+    - description: 'Tags fields in JSON format: {"tag-name-1": "tag-value-1", "tag-name-2": "tag-value-2"}. The tags fields may contain at most 10 tags.'
+      name: tags
+      required: true
+    - description: "The subscription ID."
+      name: subscription_id
+      required: true
+    - description: "The resource group name."
+      name: resource_group_name
+      required: true
+    - description: The storage account name.
+      name: account_name
+      required: true
+    description: Sets the tags for the specified Blob. The command replace the entire tags of the Blob and can be used to remove tags.
+    name: azure-storage-container-blob-tag-set
 
   - arguments:
     - name: name

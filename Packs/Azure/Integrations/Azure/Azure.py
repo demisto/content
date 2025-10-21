@@ -684,6 +684,27 @@ class AzureClient:
         )
         return self.http_request(method="GET", full_url=full_url)
 
+    def set_blob_tags_request(
+        self, container_name: str, blob_name: str, xml_data: str, subscription_id: str, resource_group_name: str, account_name: str  # noqa: E501
+    ):
+        """
+        Set the tags for a blob in a storage container.
+        Args:
+            container_name (str): Name of the container.
+            blob_name (str): Name of the blob.
+            xml_data (str): XML data containing the tags to set.
+            subscription_id (str): ID of the subscription.
+            resource_group_name (str): Name of the resource group.
+            account_name (str): Name of the storage account.
+        Returns:
+            dict: The JSON response from the Azure API.
+        """
+        full_url = (
+            f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}/providers/"
+            f"Microsoft.Storage/storageAccounts/{account_name}/blobServices/default/containers/{container_name}/blobs/{blob_name}/tags"
+        )
+        return self.http_request(method="PUT", full_url=full_url, data=xml_data, return_empty_response=True)
+
     def create_policy_assignment(
         self, name: str, policy_definition_id: str, display_name: str, parameters: str, description: str, scope: str
     ):
@@ -2101,6 +2122,86 @@ def storage_container_blob_tag_get_command(client: AzureClient, params: dict, ar
         ),
     )
 
+def create_set_tags_request_body(tags: dict) -> str:
+    """
+    Create XML request body for set blob tags.
+    Args:
+        tags (dict): Tags data. Key represents tag name , and value represents tag Value.
+
+    Returns:
+        str: Set tags request body.
+
+    """
+    top = ET.Element("Tags")
+
+    tag_set = ET.SubElement(top, "TagSet")
+
+    for key, value in tags.items():
+        tag = ET.SubElement(tag_set, "Tag")
+        tag_key = ET.SubElement(tag, "Key")
+        tag_key.text = key
+
+        tag_value = ET.SubElement(tag, "Value")
+        tag_value.text = value
+
+    return ET.tostring(top, encoding="unicode")
+
+def storage_container_blob_tag_set_command(client: AzureClient, params: dict, args: dict):
+    """
+    Sets the tags for the specified Blob.
+
+    Args:
+        client (Client): Azure Blob Storage API client.
+        args (dict): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+
+    """
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+    account_name = args.get("account_name", "")
+    container_name = args["container_name"]
+    blob_name = args["blob_name"]
+    tags = args["tags"]
+
+    try:
+        tags = json.loads(tags)
+    except ValueError:
+        raise ValueError("Failed to parse tags argument. Please provide valid JSON format tags data.")
+
+    xml_data = create_set_tags_request_body(tags)
+
+    client.set_blob_tags_request(container_name, blob_name, xml_data)
+
+    command_results = CommandResults(
+        readable_output=f"{blob_name} Tags successfully updated.",
+    )
+
+    return command_results
+
+def storage_container_blob_delete_command(client: AzureClient, params: dict, args: dict):
+    """
+    Deletes the specified Blob.
+
+    Args:
+        client (Client): Azure Blob Storage API client.
+        args (dict): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    container_name = args["container_name"]
+    blob_name = args["blob_name"]
+
+    client.delete_blob_request(container_name, blob_name)
+
+    command_results = CommandResults(
+        readable_output=f"{blob_name} successfully deleted.",
+    )
+
+    return command_results
+
 def create_policy_assignment_command(client: AzureClient, params: dict, args: dict):
     """
         Creates a policy assignment.
@@ -3123,6 +3224,8 @@ def main():
             "azure-storage-container-delete": storage_container_delete_command,
             "azure-storage-container-blob-get": storage_container_blob_get_command,
             "azure-storage-container-blob-tag-get": storage_container_blob_tag_get_command,
+            "azure-storage-container-blob-tag-set": storage_container_blob_tag_set_command,
+            "azure-storage-container-blob-delete": storage_container_blob_delete_command,
             "azure-policy-assignment-create": create_policy_assignment_command,
             "azure-postgres-config-set": set_postgres_config_command,
             "azure-postgres-server-update": postgres_server_update_command,
