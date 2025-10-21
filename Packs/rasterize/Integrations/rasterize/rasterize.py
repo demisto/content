@@ -1308,7 +1308,7 @@ def perform_rasterize(
                             )
                         )
                 except Exception as ex:
-                    error_msg = f"Warning: Failed to perform rasterize to the path {path}, exception: {str(ex)}"
+                    error_msg = f"Failed to perform rasterize to the path {path}, exception: {str(ex)}"
                     demisto.debug(error_msg)
                     return_err_or_warn(error_msg)
             return rasterization_results
