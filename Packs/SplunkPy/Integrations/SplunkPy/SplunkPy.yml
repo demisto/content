@@ -701,6 +701,16 @@ script:
     - contextPath: Splunk.UserMapping.SplunkUser
       description: Splunk user mapping.
       type: String
+  - arguments:
+    - description: Comma-separated list of job IDs to share.
+      isArray: true
+      name: sid
+      required: true
+    - defaultValue: '1800'
+      description: Time in seconds for the job's expiry time.
+      name: ttl
+    description: Change job settings to share its results to all Splunk users, and change its TTL.
+    name: splunk-job-share
   dockerimage: demisto/splunksdk-py3:1.0.0.4887903
   isfetch: true
   ismappable: true
@@ -709,6 +719,7 @@ script:
   script: ''
   subtype: python3
   type: python
+  runonce: false
 tests:
 - SplunkPySearch_Test_default_handler
 - SplunkPy-Test-V2_default_handler

@@ -1,5 +1,5 @@
 category: Endpoint
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -12,6 +12,7 @@ configuration:
   type: 8
   section: Connect
   advanced: true
+  hidden: true
   additionalinfo: "Use the legacy version of the API, which refers to versions prior to the 'Next Generation Raptor release.'"
 - display: Server URL (e.g., https://api.crowdstrike.com)
   name: url
@@ -231,8 +232,8 @@ configuration:
   advanced: true
   required: false
   additionalinfo: |-
-    Choose what to fetch -  You can choose any combination. Notes: 1. The 'On-Demand Scans Detection' option is not available in the legacy version.
-    2. Records from the detection endpoint of the CrowdStrike Falcon UI could be of types: 'Endpoint Detection' and 'OFP Detection'.
+    Choose what to fetch -  You can choose any combination. Note:
+    Records from the detection endpoint of the CrowdStrike Falcon UI could be of types: 'Endpoint Detection' and 'OFP Detection'.
   options:
   - IDP Detection
   - Endpoint Incident
@@ -254,8 +255,7 @@ configuration:
   section: Collect
   required: false
   additionalinfo: |-
-    Choose what to fetch -  You can choose any combination. Notes: 1. The 'On-Demand Scans Detection' option is not available in the legacy version.
-    2. Records from the detection endpoint of the CrowdStrike Falcon UI could be of types: 'Endpoint Detection' and 'OFP Detection'.
+    Choose what to fetch -  You can choose any combination. Note: Records from the detection endpoint of the CrowdStrike Falcon UI could be of types: 'Endpoint Detection' and 'OFP Detection'.
   options:
   - IDP Detection
   - Endpoint Incident
@@ -548,16 +548,13 @@ script:
       name: ids
       required: true
     - auto: PREDEFINED
-      description: "The status to transition a detection to. Note: The following statuses—true_positive, false_positive, and ignored—are only available in the legacy version of the API."
+      description: "The status to transition a detection to."
       name: status
       predefined:
       - new
       - in_progress
-      - true_positive
-      - false_positive
       - closed
       - reopened
-      - ignored
     - description: 'A user ID, for example: 1234567891234567891. username and assigned_to_uuid are mutually exclusive.'
       name: assigned_to_uuid
     - description: Optional comment to add to the detection. Comments are displayed with the detection in CrowdStrike Falcon and provide context or notes for other Falcon users.
@@ -683,10 +680,13 @@ script:
     description: Uploads a file to the CrowdStrike cloud. (Can be used for the RTR 'put' command).
     name: cs-falcon-upload-file
   - arguments:
-    - description: The ID of the file to delete. The ID of the file can be retrieved by running the 'cs-falcon-list-files' command.
+    - description: The ID of the file to delete.
+                   Either this argument or file_name is required. When both are specified, file_id takes precedence.
       name: file_id
-      required: true
-    description: Deletes a file based on the provided ID. Can delete only one file at a time.
+    - description: The name of the file to delete.
+                   Either this argument or file_id is required. When both are specified, file_id takes precedence.
+      name: file_name
+    description: Deletes a file based on the provided ID or name. Can delete only one file at a time.
     name: cs-falcon-delete-file
   - arguments:
     - description: A comma-separated list of file IDs to get. The list of file IDs can be retrieved by running the 'cs-falcon-list-files' command.
@@ -1993,9 +1993,6 @@ script:
     - contextPath: CrowdStrike.Detections.behaviors.timestamp
       description: 'The datetime the behavior detection occurred in ISO time format. For example: 2019-10-17T13:41:48.487520845Z.'
       type: Date
-    - contextPath: CrowdStrike.Detections.behaviors.behavior_id
-      description: 'The ID of the behavior. Note: This output exists only in the legacy version.'
-      type: String
     - contextPath: CrowdStrike.Detections.behaviors.filename
       description: The filename of the triggering process.
       type: String
@@ -2028,12 +2025,6 @@ script:
       type: String
     - contextPath: CrowdStrike.Detections.behaviors.ioc_value
       description: The IOC value.
-      type: String
-    - contextPath: CrowdStrike.Detections.behaviors.ioc_source
-      description: 'The source that triggered an IOC detection. Possible values are: "library_load", "primary_module", "file_read", and "file_write". Note: This output exist only in the legacy version.'
-      type: String
-    - contextPath: CrowdStrike.Detections.behaviors.ioc_description
-      description: "The IOC description. Note: This output exists only in the legacy version."
       type: String
     - contextPath: CrowdStrike.Detections.behaviors.user_name
       description: The user name.
@@ -2113,32 +2104,11 @@ script:
     - contextPath: CrowdStrike.Detections.email_sent
       description: Whether an email is sent about this detection.
       type: Boolean
-    - contextPath: CrowdStrike.Detections.first_behavior
-      description: 'The datetime of the first behavior. Note: This output exists only in the legacy version.'
-      type: Date
-    - contextPath: CrowdStrike.Detections.last_behavior
-      description: 'The datetime of the last behavior. Note: This output exists only in the legacy version.'
-      type: Date
-    - contextPath: CrowdStrike.Detections.max_confidence
-      description: 'The highest confidence value of all behaviors. The value can be any integer between 1-100. Note: This output exists only in the legacy version.'
-      type: Number
-    - contextPath: CrowdStrike.Detections.max_severity
-      description: 'The highest severity value of all behaviors. Value can be any integer between 1-100. Note: This output exists only in the legacy version.'
-      type: Number
-    - contextPath: CrowdStrike.Detections.max_severity_displayname
-      description: 'The name used in the UI to determine the severity of the detection. Possible values are: "Critical", "High", "Medium", and "Low". Note: This output exists only in the legacy version.'
-      type: String
     - contextPath: CrowdStrike.Detections.show_in_ui
       description: Whether the detection displays in the UI.
       type: Boolean
     - contextPath: CrowdStrike.Detections.status
       description: The status of the detection.
-      type: String
-    - contextPath: CrowdStrike.Detections.assigned_to_uid
-      description: "The UID of the user for whom the detection is assigned. Note: This output exists only in the legacy version."
-      type: String
-    - contextPath: CrowdStrike.Detections.assigned_to_name
-      description: "The human-readable name of the user to whom the detection is currently assigned. Note: This output exists only in the legacy version."
       type: String
     - contextPath: CrowdStrike.Detections.hostinfo.domain
       description: The domain of the Active Directory.
