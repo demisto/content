@@ -769,6 +769,7 @@ script:
       name: tagCategory
     - description: When specified, the results returned in the list are limited to assets with the specified tag value.
       name: tagValue
+      isArray: true
     - auto: PREDEFINED
       description: 'An operator that determines the limitation on Vulnerability Priority Rating (VPR), scores value specified at vprScoreValue argument. Supported values are: equal, not equal, lt-lesser, lte-lesser than or equal , gt-greater than , gte-greater than or equal.'
       name: vprScoreOperator

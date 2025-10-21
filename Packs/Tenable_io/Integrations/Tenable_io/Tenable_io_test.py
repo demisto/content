@@ -915,6 +915,11 @@ def test_handle_assets_chunks(requests_mock, api_response, expected_assets, expe
             {"tagCategory": "Environment", "tagValue": "Production", "severity": "critical"},
             {"tag.Environment": ["Production"], "severity": ["critical"]},
         ),
+        # Test case 3: tagValue is an array
+        (
+            {"tagCategory": "Environment", "tagValue": ["Production"], "severity": "critical"},
+            {"tag.Environment": ["Production"], "severity": ["critical"]},
+        ),
     ],
 )
 def test_request_uuid_export_vulnerabilities_with_tags(mocker, args, expected_tag_filter):
