@@ -3399,3 +3399,24 @@ List all available appliances for all organizations/tenants, with a limit of max
 >|Name|Uuid|Ip Address|App Type|Branch Id|
 >|---|---|---|---|---|
 >| EXAMPLE_BRANCH | UUID | EXAMPLE_URL | branch | ID |
+
+### vd-get-events
+
+***
+Get audit logs from Versa Director. This command is supported in Cortex XSIAM only and is intended for development and debugging purposes, as it may produce duplicate events.
+
+#### Base Command
+
+`vd-get-events`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| from_date | The start date for the audit logs as a relative time expression (e.g., '3 days ago') or an absolute time in ISO 8601 format (e.g., '2025-09-01T00:00:00Z'). Default is 1 hour ago. | Optional |
+| limit | The maximum number of audit logs to retrieve. Default is 10. | Optional |
+| should_push_events | If true, the command will push the events to the Cortex XSIAM dataset; otherwise, it will only display them. Default is false. | Optional |
+
+#### Context Output
+
+There is no context output for this command.

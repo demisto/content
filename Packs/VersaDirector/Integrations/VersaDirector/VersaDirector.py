@@ -1,7 +1,11 @@
 from typing import Any
 
 import demistomock as demisto
+import asyncio
+from datetime import datetime, timedelta, UTC
+from collections.abc import Callable
 import urllib3
+import aiohttp
 from CommonServerPython import *  # noqa #! pylint: disable=unused-wildcard-import
 
 # Disable insecure warnings
@@ -46,10 +50,23 @@ AUTH_PARAMETERS_MISSING = (
 ALREADY_EXISTS_MSG = "Object already exists."
 
 
+VENDOR = "Versa"
+PRODUCT = "Director"
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
+
+DEFAULT_GET_EVENTS_LIMIT = 10
+DEFAULT_FETCH_EVENTS_LIMIT = 25000
+
+DEFAULT_AUDIT_LOGS_PAGE_SIZE = 2500
+DEFAULT_AUDIT_LOGS_FROM_DATE = datetime.now(tz=UTC) - timedelta(hours=1)
+
+
 """ CLIENT CLASS """
 
 
 class Client(BaseClient):
+    """A synchronous client for interacting with the Versa Director API; used for most commands"""
+
     def __init__(
         self,
         server_url,
@@ -1517,6 +1534,56 @@ class Client(BaseClient):
             ok_codes=(200, 201, 204),
         )
         return response
+
+
+class AsyncClient:
+    """An asynchronous client for interacting with the Versa Director API; used for SIEM event collection"""
+
+    def __init__(self, server_url, verify, proxy, headers, auth):
+        self.base_url = server_url
+        self._headers = headers
+        self._auth = auth
+        self._verify = verify
+        self._proxy_url = handle_proxy().get("http") if proxy else None
+
+    async def __aenter__(self):
+        self._session = aiohttp.ClientSession(
+            headers=self._headers,
+            auth=self._auth,
+            connector=aiohttp.TCPConnector(ssl=self._verify),
+        )
+        return self
+
+    async def __aexit__(self, exc_type, exc_val, exc_tb):
+        if exc_type is not None:
+            exception_traceback = "".join(traceback.format_exception(exc_type, exc_val, exc_tb))
+            demisto.error(f"AsyncClient context exited with an exception: {exception_traceback}.")
+        else:
+            demisto.debug("AsyncClient context exited normally.")
+
+        # Always ensure HTTP client session is closed
+        await self._session.close()
+
+    async def get_audit_logs(self, time_filter: str, offset: int = 0, limit: int = 2500) -> dict[str, Any]:
+        """
+        Retrieves audit logs from Versa Director.
+
+        Args:
+            time_filter (str): The start date for the audit logs in 'time>=YYYY-MM-DD HH:MM:SS UTC' format.
+            offset (int): The offset for pagination.
+            limit (int): The number of items per page. Max is 2500.
+
+        Returns:
+            dict[str, Any]: A dictionary containing the audit logs raw API response.
+        """
+        params = {"searchKey": time_filter, "offset": str(offset), "limit": str(limit)}
+        url = urljoin(self.base_url, "/vnms/audit/logs")
+
+        demisto.debug(f"Starting request for audit logs using {params=}.")
+        async with self._session.get(url=url, params=params, proxy=self._proxy_url) as response:
+            response.raise_for_status()
+            demisto.debug(f"Received successful response for audit logs using {params=}.")
+            return await response.json()
 
 
 #  """ HELPER FUNCTIONS """
@@ -3536,10 +3603,79 @@ def test_module(
     return message
 
 
+async def get_audit_logs(
+    client: AsyncClient,
+    from_date: str,
+    limit: int,
+    last_fetched_ids: list[str] | None = None,
+) -> list[dict[str, Any]]:
+    """
+    Retrieves audit logs from the Versa Director API, handling pagination concurrently.
+
+    Args:
+        client (AsyncClient): An instance of the AsyncClient.
+        from_date (str): The start date for the audit logs.
+        limit (int): The total number of events to retrieve.
+        last_fetched_ids (list[str]): A list of IDs of the last fetched events.
+
+    Returns:
+        list[dict[str, Any]]: A list of audit log events.
+    """
+    last_fetched_ids = last_fetched_ids or []
+    all_fetched_ids = set(last_fetched_ids)
+    all_events = []
+
+    audit_log_tasks = [
+        client.get_audit_logs(
+            time_filter=from_date,
+            offset=offset,
+            limit=min(DEFAULT_AUDIT_LOGS_PAGE_SIZE, limit - offset),
+        )
+        for offset in range(0, limit, DEFAULT_AUDIT_LOGS_PAGE_SIZE)
+    ]
+
+    demisto.debug(f"Created {len(audit_log_tasks)} tasks to fetch up to {limit} audit logs.")
+    responses = await asyncio.gather(*audit_log_tasks)
+
+    for response in responses:
+        appliances = response.get("appliances", [])
+        if not appliances:
+            demisto.debug("Received a response with no audit logs.")
+            break
+
+        for appliance in appliances:
+            event_id = appliance["applianceuuid"]
+            if event_id in all_fetched_ids:
+                continue
+            all_fetched_ids.add(event_id)
+            all_events.append(appliance)
+
+    return all_events[:limit]
+
+
+async def get_events_command(client: AsyncClient, args: dict[str, Any]) -> tuple[list[dict[str, Any]], CommandResults]:
+    """
+    Implements the `vd-get-events` command. Gets audit logs using the AsyncClient.
+
+    Args:
+        client (AsyncClient): An instance of the AsyncClient.
+        args (dict[str, Any]): The command arguments.
+
+    Returns:
+        tuple[list[dict[str, Any]], CommandResults]: A tuple of the events list and the CommandResults with human-readable output.
+    """
+    from_date = (arg_to_datetime(args.get("from_date")) or DEFAULT_AUDIT_LOGS_FROM_DATE).strftime(DATE_FORMAT)
+    limit = arg_to_number(args.get("limit")) or DEFAULT_GET_EVENTS_LIMIT
+
+    events = await get_audit_logs(client, from_date, limit)
+
+    return events, CommandResults(readable_output=tableToMarkdown(name="Versa Director Audit Logs", t=events))
+
+
 #  """ MAIN FUNCTION """
 
 
-def main() -> None:
+async def main() -> None:
     params: dict[str, Any] = demisto.params()
     args: dict[str, Any] = demisto.args()
     verify_certificate: bool = not params.get("insecure", False)
@@ -3560,6 +3696,62 @@ def main() -> None:
     access_token = params.get("access_token") or context.get("access_token")
     command = demisto.command()
     demisto.debug(f"Command being called is {command}")
+
+    sync_commands: dict[str, Callable] = {
+        "vd-auth-start": handle_auth_token_command,
+        "vd-auth-test": auth_test_command,
+        "vd-appliance-list": appliance_list_command,
+        "vd-organization-list": organization_list_command,
+        "vd-organization-appliance-list": appliances_list_by_organization_command,
+        "vd-appliance-group-list": appliances_group_list_by_organization_command,
+        "vd-appliance-group-template-appliance-list": appliances_list_by_device_group_command,
+        "vd-template-list": template_list_by_organization_command,
+        "vd-datastore-template-list": template_list_by_datastore_command,
+        "vd-application-service-template-list": application_service_template_list_command,
+        "vd-template-custom-url-category-list": template_custom_url_category_list_command,
+        "vd-template-custom-url-category-create": template_custom_url_category_create_command,
+        "vd-template-custom-url-category-edit": template_custom_url_category_edit_command,
+        "vd-template-custom-url-category-delete": template_custom_url_category_delete_command,
+        "vd-appliance-custom-url-category-list": appliance_custom_url_category_list_command,
+        "vd-appliance-custom-url-category-create": appliance_custom_url_category_create_command,
+        "vd-appliance-custom-url-category-edit": appliance_custom_url_category_edit_command,
+        "vd-appliance-custom-url-category-delete": appliance_custom_url_category_delete_command,
+        "vd-template-access-policy-list": template_access_policy_list_command,
+        "vd-template-access-policy-rule-list": template_access_policy_rule_list_command,
+        "vd-template-access-policy-rule-create": template_access_policy_rule_create_command,
+        "vd-template-access-policy-rule-edit": template_access_policy_rule_edit_command,
+        "vd-template-access-policy-rule-delete": template_access_policy_rule_delete_command,
+        "vd-appliance-access-policy-list": appliance_access_policy_list_command,
+        "vd-appliance-access-policy-rule-list": appliance_access_policy_rule_list_command,
+        "vd-appliance-access-policy-rule-create": appliance_access_policy_rule_create_command,
+        "vd-appliance-access-policy-rule-edit": appliance_access_policy_rule_edit_command,
+        "vd-appliance-access-policy-rule-delete": appliance_access_policy_rule_delete_command,
+        "vd-template-sdwan-policy-list": template_sdwan_policy_list_command,
+        "vd-template-sdwan-policy-rule-list": template_sdwan_policy_rule_list_command,
+        "vd-template-sdwan-policy-rule-create": template_sdwan_policy_rule_create_command,
+        "vd-template-sdwan-policy-rule-edit": template_sdwan_policy_rule_edit_command,
+        "vd-template-sdwan-policy-rule-delete": template_sdwan_policy_rule_delete_command,
+        "vd-appliance-sdwan-policy-list": appliance_sdwan_policy_list_command,
+        "vd-appliance-sdwan-policy-rule-list": appliance_sdwan_policy_rule_list_command,
+        "vd-appliance-sdwan-policy-rule-create": appliance_sdwan_policy_rule_create_command,
+        "vd-appliance-sdwan-policy-rule-edit": appliance_sdwan_policy_rule_edit_command,
+        "vd-appliance-sdwan-policy-rule-delete": appliance_sdwan_policy_rule_delete_command,
+        "vd-template-address-object-list": template_address_object_list_command,
+        "vd-template-address-object-create": template_address_object_create_command,
+        "vd-template-address-object-edit": template_address_object_edit_command,
+        "vd-template-address-object-delete": template_address_object_delete_command,
+        "vd-appliance-address-object-list": appliance_address_object_list_command,
+        "vd-appliance-address-object-create": appliance_address_object_create_command,
+        "vd-appliance-address-object-edit": appliance_address_object_edit_command,
+        "vd-appliance-address-object-delete": appliance_address_object_delete_command,
+        "vd-template-user-defined-application-list": template_user_defined_application_list_command,
+        "vd-appliance-user-defined-application-list": appliance_user_defined_application_list_command,
+        "vd-template-user-modified-application-list": template_user_modified_application_list_command,
+        "vd-appliance-user-modified-application-list": appliance_user_modified_application_list_command,
+        "vd-predefined-application-list": predefined_application_list_command,
+    }
+
+    async_commands: tuple[str, str] = ("vd-get-events", "fetch-events")
 
     try:
         # test_module functionality is disabled for Auth Token authentication
@@ -3597,65 +3789,23 @@ def main() -> None:
         if not use_basic_auth and (new_token := check_and_update_token(client, client_id, client_secret, context)):
             client._headers["Authorization"] = f"Bearer {new_token}"
 
-        commands = {
-            "vd-auth-start": handle_auth_token_command,
-            "vd-auth-test": auth_test_command,
-            "vd-appliance-list": appliance_list_command,
-            "vd-organization-list": organization_list_command,
-            "vd-organization-appliance-list": appliances_list_by_organization_command,
-            "vd-appliance-group-list": appliances_group_list_by_organization_command,
-            "vd-appliance-group-template-appliance-list": appliances_list_by_device_group_command,
-            "vd-template-list": template_list_by_organization_command,
-            "vd-datastore-template-list": template_list_by_datastore_command,
-            "vd-application-service-template-list": application_service_template_list_command,
-            "vd-template-custom-url-category-list": template_custom_url_category_list_command,
-            "vd-template-custom-url-category-create": template_custom_url_category_create_command,
-            "vd-template-custom-url-category-edit": template_custom_url_category_edit_command,
-            "vd-template-custom-url-category-delete": template_custom_url_category_delete_command,
-            "vd-appliance-custom-url-category-list": appliance_custom_url_category_list_command,
-            "vd-appliance-custom-url-category-create": appliance_custom_url_category_create_command,
-            "vd-appliance-custom-url-category-edit": appliance_custom_url_category_edit_command,
-            "vd-appliance-custom-url-category-delete": appliance_custom_url_category_delete_command,
-            "vd-template-access-policy-list": template_access_policy_list_command,
-            "vd-template-access-policy-rule-list": template_access_policy_rule_list_command,
-            "vd-template-access-policy-rule-create": template_access_policy_rule_create_command,
-            "vd-template-access-policy-rule-edit": template_access_policy_rule_edit_command,
-            "vd-template-access-policy-rule-delete": template_access_policy_rule_delete_command,
-            "vd-appliance-access-policy-list": appliance_access_policy_list_command,
-            "vd-appliance-access-policy-rule-list": appliance_access_policy_rule_list_command,
-            "vd-appliance-access-policy-rule-create": appliance_access_policy_rule_create_command,
-            "vd-appliance-access-policy-rule-edit": appliance_access_policy_rule_edit_command,
-            "vd-appliance-access-policy-rule-delete": appliance_access_policy_rule_delete_command,
-            "vd-template-sdwan-policy-list": template_sdwan_policy_list_command,
-            "vd-template-sdwan-policy-rule-list": template_sdwan_policy_rule_list_command,
-            "vd-template-sdwan-policy-rule-create": template_sdwan_policy_rule_create_command,
-            "vd-template-sdwan-policy-rule-edit": template_sdwan_policy_rule_edit_command,
-            "vd-template-sdwan-policy-rule-delete": template_sdwan_policy_rule_delete_command,
-            "vd-appliance-sdwan-policy-list": appliance_sdwan_policy_list_command,
-            "vd-appliance-sdwan-policy-rule-list": appliance_sdwan_policy_rule_list_command,
-            "vd-appliance-sdwan-policy-rule-create": appliance_sdwan_policy_rule_create_command,
-            "vd-appliance-sdwan-policy-rule-edit": appliance_sdwan_policy_rule_edit_command,
-            "vd-appliance-sdwan-policy-rule-delete": appliance_sdwan_policy_rule_delete_command,
-            "vd-template-address-object-list": template_address_object_list_command,
-            "vd-template-address-object-create": template_address_object_create_command,
-            "vd-template-address-object-edit": template_address_object_edit_command,
-            "vd-template-address-object-delete": template_address_object_delete_command,
-            "vd-appliance-address-object-list": appliance_address_object_list_command,
-            "vd-appliance-address-object-create": appliance_address_object_create_command,
-            "vd-appliance-address-object-edit": appliance_address_object_edit_command,
-            "vd-appliance-address-object-delete": appliance_address_object_delete_command,
-            "vd-template-user-defined-application-list": template_user_defined_application_list_command,
-            "vd-appliance-user-defined-application-list": appliance_user_defined_application_list_command,
-            "vd-template-user-modified-application-list": template_user_modified_application_list_command,
-            "vd-appliance-user-modified-application-list": appliance_user_modified_application_list_command,
-            "vd-predefined-application-list": predefined_application_list_command,
-        }
         if command == "test-module":
             return_results(test_module(client, use_basic_auth, client_id, client_secret, access_token, username, password))
         elif command == "vd-template-change-commit":
             return_results(template_change_commit_command(args, client))
-        elif command in commands:
-            return_results(commands[command](client, args))
+        elif command in sync_commands:
+            return_results(sync_commands[command](client, args))
+        elif command in async_commands:
+            async with AsyncClient(url, verify=verify_certificate, headers=headers, proxy=proxy, auth=auth) as async_client:
+                if not use_basic_auth and new_token:
+                    async_client._headers["Authorization"] = f"Bearer {new_token}"
+
+                if command == "vd-get-events":
+                    should_push_events = argToBoolean(args.pop("should_push_events", False))
+                    events, command_results = await get_events_command(async_client, args)
+                    return_results(command_results)
+                    if should_push_events:
+                        send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
         else:
             raise NotImplementedError(f"{command} command is not implemented.")
     except DemistoException as e:
@@ -3668,4 +3818,4 @@ def main() -> None:
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
-    main()
+    asyncio.run(main())
