@@ -1,6 +1,6 @@
 {
     "name": "VMware",
-    "description": "VMware vCenter Server is a centralized management platform for managing virtual machines and ESXi hosts."
+    "description": "VMware vCenter Server is a centralized management platform for managing virtual machines and ESXi hosts.",
     "support": "xsoar",
     "currentVersion": "1.2.17",
     "author": "Cortex XSOAR",
