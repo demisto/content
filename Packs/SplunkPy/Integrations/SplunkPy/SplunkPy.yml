@@ -2,7 +2,7 @@ category: Analytics & SIEM
 commonfields:
   id: SplunkPy
   version: -1
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 configuration:
@@ -181,6 +181,7 @@ configuration:
   displaypassword: HEC Token (HTTP Event Collector)
   hiddenusername: true
   required: false
+  display: ''
 - display: 'HEC Token (HTTP Event Collector)'
   name: hec_token
   type: 4
@@ -257,6 +258,7 @@ configuration:
       The default is "creation time".
   section: Collect
   advanced: true
+  required: false
 - defaultvalue: '15'
   display: 'Advanced: Fetch backwards window for the events occurrence time (minutes)'
   name: occurrence_look_behind
@@ -476,7 +478,6 @@ script:
         Event payload key-value pair.
         String example: "event": "Access log test message".
       name: event
-      required: false
     - description: Fields for indexing that do not occur in the event payload itself. Accepts multiple, comma-separated, fields.
       name: fields
     - description: The index name.
