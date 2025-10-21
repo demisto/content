@@ -68,6 +68,36 @@ def replace_keys_recursively_multi(obj, replacements: dict):
     else:
         return obj
 
+def replace_fields(args: dict, replacements: dict) -> dict:
+    """
+    Replaces field names in certain args according to a replacements mapping.
+    Handles both comma-separated strings and lists.
+
+    :param args: dictionary of arguments
+    :param replacements: dictionary of replacements, e.g. {"status": "status.progress", "domain": "alert_domain"}
+    :return: updated args dict
+    """
+    fields_to_check = ["similarTextField", "fieldExactMatch", "similarCategoricalField"]
+
+    for key in fields_to_check:
+        value = args.get(key)
+        if not value:
+            continue
+
+        # Handle both list and string values
+        if isinstance(value, str):
+            fields = [f.strip() for f in value.split(",")]
+        elif isinstance(value, list):
+            fields = [str(f).strip() for f in value]
+        else:
+            continue
+
+        updated_fields = [replacements.get(f, f) for f in fields]
+        args[key] = ",".join(updated_fields)
+
+    return args
+
+
 def handle_results(results) -> tuple[str, dict]:
     combined_human_readable = ""
     final_outputs = {}
@@ -104,7 +134,13 @@ def main():
     try:
         args = demisto.args()
         new_args = update_args(args)
-        required_fields = ["similarTextField", "similarCategoricalField", "similarJsonField", "useAllFields"]
+        replacements = {
+            "status": "status.progress",
+            "domain": "alert_domain",
+            "category": "categoryname"
+        }
+        new_args = replace_fields(new_args, replacements)
+        required_fields = ["similarTextField", "similarJsonField", "similarCategoricalField", "useAllFields"]
         if not any(args.get(field) for field in required_fields):
             return_error(f"At least one of the following arguments muse be provided: {', '.join(required_fields)}.")
         
@@ -112,6 +148,7 @@ def main():
         results = execute_command("DBotFindSimilarIncidents", new_args, extract_contents=False)
         demisto.debug(f"Got the following results of DBotFindSimilarIncidents: {results}")
         final_readable, final_outputs = handle_results(results)
+        print(results)
         return_results(CommandResults(outputs=final_outputs, readable_output=final_readable))
         
     except Exception as ex:
