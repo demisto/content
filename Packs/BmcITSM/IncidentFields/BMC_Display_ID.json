@@ -41,7 +41,7 @@
         {
             "cliName": "bmcitsmdisplayid",
             "type": "shortText",
-            "name": "BmcITSM Display ID"
+            "name": "Bmc Display ID"
         }
     ]
 }
