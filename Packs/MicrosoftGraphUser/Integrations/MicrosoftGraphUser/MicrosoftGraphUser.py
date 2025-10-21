@@ -491,7 +491,7 @@ def change_password_user_on_premise_command(client: MsGraphClient, args: dict[st
     changes password for on-premise accounts. See change_password_user_saas_command for the SAAS equivalent.
     """
     user = str(args.get("user", ""))
-    password = validate_input_password(args) or ""  # either the password or nonsensitive_password argument can be used
+    password = validate_input_password(args)
 
     password_method_id = client.fetch_password_method_id(user)
     demisto.debug("Got password method id")
