@@ -8,7 +8,7 @@ configuration:
     type: 0
     required: true
     section: Connect
-    additionalinfo: Base URL of the CAPE Sandbox
+    additionalinfo: Base URL of the CAPE Sandbox.
   # - name: auth_method
   # display: Authentication Method
   # type: 15
@@ -20,9 +20,10 @@ configuration:
   # section: Connect
   - name: api_token
     display: API token
-    type: 4
+    type: 9
     required: false
     section: Connect
+    hiddenusername: true
     additionalinfo: Token value as generated in CAPE. If provided, Username/Password is not required.
   - name: credentials
     display: Username
@@ -57,161 +58,161 @@ script:
           description: The War Room entry ID of the file to submit.
           required: true
         - name: package
-          description: Analysis package (e.g., ps1)
+          description: Analysis package (e.g., ps1).
         - name: timeout
-          description: Analysis timeout in seconds
+          description: Analysis timeout in seconds.
         - name: priority
-          description: Priority to assign to the task (1-3)
+          description: Priority to assign to the task (1-3).
         - name: options
-          description: Options string (e.g., options:function=DllMain)
+          description: Options string (e.g., options:function=DllMain).
         - name: machine
-          description: ID of the analysis machine to use
+          description: ID of the analysis machine to use.
         - name: platform
-          description: Platform name to select the analysis machine from (e.g., windows)
+          description: Platform name to select the analysis machine from (e.g., windows).
         - name: tags
-          description: Comma-separated tags
+          description: Comma-separated tags.
         - name: custom
-          description: Custom string to pass over the analysis
+          description: Custom string to pass over the analysis.
         - name: memory
-          description: Enable full memory dump (true/false)
+          description: Enable full memory dump (true/false).
         - name: enforce_timeout
-          description: Enforce timeout (true/false)
+          description: Enforce timeout (true/false).
         - name: clock
-          description: VM clock (format %m-%d-%Y %H:%M:%S)
+          description: VM clock (format %m-%d-%Y %H:%M:%S).
       outputs:
         - contextPath: Cape.Task
-          description: Task data returned from CAPE when analysis is ready
+          description: Task data returned from CAPE when analysis is ready.
           type: Unknown
     - name: cape-file-view
       description: View file information by Task ID, MD5, or SHA256.
       arguments:
         - name: task_id
-          description: Task ID
+          description: Task ID.
         - name: md5
-          description: MD5 hash
+          description: MD5 hash.
         - name: sha256
-          description: SHA256 hash
+          description: SHA256 hash.
       outputs:
         - contextPath: Cape.File.id
-          description: File/task ID
+          description: File/task ID.
           type: String
         - contextPath: Cape.File.file_type
-          description: File type
+          description: File type.
           type: String
         - contextPath: Cape.File.md5
-          description: MD5
+          description: MD5.
           type: String
         - contextPath: Cape.File.crc32
-          description: CRC32
+          description: CRC32.
           type: String
         - contextPath: Cape.File.sha256
-          description: SHA256
+          description: SHA256.
           type: String
         - contextPath: Cape.File.sha512
-          description: SHA512
+          description: SHA512.
           type: String
         - contextPath: Cape.File.parent
-          description: Parent
+          description: Parent.
           type: String
         - contextPath: Cape.File.source_url
-          description: Source URL
+          description: Source URL.
           type: String
     - name: cape-sample-download
       description: Download a sample from a Task by Task ID, MD5, SHA1 or SHA256.
       arguments:
         - name: task_id
-          description: Task ID
+          description: Task ID.
         - name: md5
-          description: MD5 hash
+          description: MD5 hash.
         - name: sha1
-          description: SHA1 hash
+          description: SHA1 hash.
         - name: sha256
-          description: SHA256 hash
+          description: SHA256 hash.
       outputs: []
     - name: cape-url-submit
       description: Submit a URL for analysis. Polls until the task is reported and then returns the task view.
       arguments:
         - name: url
-          description: The URL to analyze
+          description: The URL to analyze.
           required: true
         - name: package
-          description: Analysis package
+          description: Analysis package.
         - name: timeout
-          description: Analysis timeout in seconds
+          description: Analysis timeout in seconds.
         - name: priority
-          description: Priority to assign to the task (1-3)
+          description: Priority to assign to the task (1-3).
         - name: options
-          description: Options string (e.g., options:function=DllMain)
+          description: Options string (e.g., options:function=DllMain).
         - name: machine
-          description: ID of the analysis machine to use
+          description: ID of the analysis machine to use.
         - name: platform
-          description: Platform name to select the analysis machine from (e.g., windows)
+          description: Platform name to select the analysis machine from (e.g., windows).
         - name: tags
-          description: Comma-separated tags
+          description: Comma-separated tags.
         - name: custom
-          description: Custom string to pass over the analysis
+          description: Custom string to pass over the analysis.
         - name: memory
-          description: Enable full memory dump (true/false)
+          description: Enable full memory dump (true/false).
         - name: enforce_timeout
-          description: Enforce timeout (true/false)
+          description: Enforce timeout (true/false).
         - name: clock
-          description: VM clock (format %m-%d-%Y %H:%M:%S)
+          description: VM clock (format %m-%d-%Y %H:%M:%S).
       outputs:
         - contextPath: Cape.Task
-          description: Task data returned from CAPE when analysis is ready
+          description: Task data returned from CAPE when analysis is ready.
           type: Unknown
     - name: cape-task-delete
       description: Delete CAPE task by ID.
       arguments:
         - name: task_id
-          description: Task ID to delete
+          description: Task ID to delete.
           required: true
       outputs: []
     - name: cape-tasks-list
       description: Returns list of tasks. If task_id is provided, returns the task details.
       arguments:
         - name: task_id
-          description: Task ID to retrieve (optional)
+          description: Task ID to retrieve (optional).
         - name: page
-          description: Page number (starts at 1)
+          description: Page number (starts at 1).
         - name: page_size
-          description: Page size (API max is 50)
+          description: Page size (API max is 50).
           defaultValue: 50
         # REMOVED: The 'limit' argument is removed as it was redundant with page_size.
       outputs:
         - contextPath: Cape.Task
-          description: Task data
+          description: Task data.
           type: Unknown
           isArray: true
     - name: cape-task-report-get
       description: Returns the report associated with the specified task ID. If zip=true, a ZIP file is returned for download.
       arguments:
         - name: task_id
-          description: Task ID
+          description: Task ID.
           required: true
         - name: format
-          description: Report format
+          description: Report format.
           predefined: [json, maec, maec5, metadata, lite, all, dist, dropped]
         - name: zip
-          description: Download report as ZIP file
+          description: Download report as ZIP file.
           type: 8
           defaultValue: "false"
       outputs:
         - contextPath: Cape.Task.Report
-          description: Details from the CAPE analysis report info object
+          description: Details from the CAPE analysis report info object.
           type: Unknown
     - name: cape-pcap-file-download
       description: Download the PCAP network dump file associated with the task ID.
       arguments:
         - name: task_id
-          description: Task ID
+          description: Task ID.
           required: true
       outputs: []
     - name: cape-task-screenshot-download
       description: Download screenshots for a task. If 'screenshot' is provided, downloads that single screenshot.
       arguments:
         - name: task_id
-          description: Task ID
+          description: Task ID.
           required: true
         - name: screenshot
           description: Specific screenshot number to download (optional). If not provided, all are downloaded.
@@ -220,17 +221,17 @@ script:
       description: Returns a list of analysis machines. If machine_name is provided, returns details for that machine.
       arguments:
         - name: machine_name
-          description: Machine name to fetch (optional)
+          description: Machine name to fetch (optional).
         - name: all_results
-          description: Return all machines, ignoring the limit (true/false)
+          description: Return all machines, ignoring the limit (true/false).
           type: 8
           defaultValue: "false"
         - name: limit
-          description: Maximum number of machines to return when listing
+          description: Maximum number of machines to return when listing.
           defaultValue: 50
       outputs:
         - contextPath: Cape.Machine
-          description: Machine data
+          description: Machine data.
           type: Unknown
     - name: cape-cuckoo-status-get
       description: Returns overall CAPE/Cuckoo status. Human-readable only.
@@ -241,7 +242,7 @@ script:
   script: ""
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.12.5490952
 fromversion: 6.1.0
 marketplaces:
   - xsoar
