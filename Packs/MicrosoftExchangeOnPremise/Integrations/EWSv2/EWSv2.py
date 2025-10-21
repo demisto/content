@@ -1712,6 +1712,7 @@ def sub_main():  # pragma: no cover
             incidents = fetch_emails_as_incidents(client, skip_unparsable_emails, fetch_all_history, fetch_time)
             demisto.debug(f"Setting incidents: {incidents}")
             demisto.incidents(incidents)
+            demisto.debug("incidents were set successfully")
         elif demisto.command() == "ews-get-attachment":
             return_results(fetch_attachments_for_message(client, **args))
         elif demisto.command() == "ews-delete-attachment":
@@ -1860,6 +1861,7 @@ def sub_main():  # pragma: no cover
             try:
                 logging.getLogger().removeHandler(log_handler)  # type: ignore
                 log_stream.close()
+                demisto.debug("Program finished successfully")
             except Exception as ex:
                 demisto.error(f"EWS: unexpected exception when trying to remove log handler: {ex}")
 
