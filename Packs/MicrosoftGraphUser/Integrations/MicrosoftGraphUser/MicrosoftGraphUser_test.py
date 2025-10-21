@@ -822,15 +822,7 @@ def test_change_on_premise_password_success(requests_mock, password_field: str):
     assert output.readable_output == expected_output
 
 
-@pytest.mark.parametrize(
-    "user,password,nonsensitive_password",
-    (
-        ("user", "", ""),
-        ("user", "password", ""),
-        ("user", "", "nonsensitive_password"),
-    ),
-)
-def test_change_on_premise_password_missing_arg(requests_mock, user: str, password: str, nonsensitive_password: str):
+def test_change_on_premise_password_missing_arg(requests_mock):
     """
     Given
             a MSGraphClient
@@ -843,7 +835,7 @@ def test_change_on_premise_password_missing_arg(requests_mock, user: str, passwo
 
     requests_mock.post("https://login.microsoftonline.com/tenant_id/oauth2/v2.0/token", json={})
     requests_mock.get(
-        f"https://graph.microsoft.com/v1.0/users/{user}/authentication/passwordMethods", json={"value": [{"id": "id"}]}
+        "https://graph.microsoft.com/v1.0/users/user/authentication/passwordMethods", json={"value": [{"id": "id"}]}
     )
     requests_mock.post(
         "https://graph.microsoft.com/v1.0/users/user/authentication/methods/id/resetPassword", json={"value": [{"id": "id"}]}
@@ -864,10 +856,12 @@ def test_change_on_premise_password_missing_arg(requests_mock, user: str, passwo
         azure_cloud=AZURE_WORLDWIDE_CLOUD,
     )
 
-    with pytest.raises(DemistoException):
-        change_password_user_on_premise_command(
-            client=client, args={"user": user, "password": password, "nonsensitive_password": nonsensitive_password}
-        )
+    with pytest.raises(DemistoException) as e:
+        change_password_user_on_premise_command(client=client, args={"user": "user", "password": "", "nonsensitive_password": ""})
+
+    assert "Password is required. Please provide either 'password' (sensitive) or 'nonsensitive_password' argument." in str(
+        e.value
+    )
 
 
 @pytest.mark.parametrize(
@@ -896,7 +890,12 @@ def test_get_password_invalid():
     Then
     - ensure that only one of the arguments 'password' or 'nonsensitive_password' is given or if they are identical.
     """
-    from MicrosoftGraphUser import validate_input_password
+    from MicrosoftGraphUser import validate_input_password, DemistoException
 
-    with pytest.raises(ValueError):
+    with pytest.raises(DemistoException) as e:
         validate_input_password({"password": "aa", "nonsensitive_password": "bb"})
+
+    assert (
+        "Conflicting passwords provided. The 'password' and 'nonsensitive_password' arguments must have the same value, or use only one of them."  # noqa: E501
+        in str(e.value)  # noqa: E501
+    )

@@ -454,20 +454,35 @@ def change_password_user_saas_command(client: MsGraphClient, args: dict):
     return CommandResults(readable_output=human_readable)
 
 
-def validate_input_password(args: dict[str, Any]):
+def validate_input_password(args: dict[str, Any]) -> str:
     """
     Get the user's password argument inserted by the user. The password can be inserted either in the sensitive
-    argument (named 'password') or nonsensitive argument (named 'nonsensitive_password). This function asserts these
-    arguments are used properly and raises an error if both are inserted and have a different value.
+    argument (named 'password') or nonsensitive argument (named 'nonsensitive_password'). This function validates
+    that these arguments are used properly and raises an error if both are provided with different values.
+
     Args:
         args: script's arguments
+
     Returns:
-        the password given for the user.
+        str: the password provided by the user
+
+    Raises:
+        ValueError: if no password is provided or if both passwords are provided with different values
     """
-    sensitive_password = args.get("password")
-    nonsensitive_password = args.get("nonsensitive_password")
+    sensitive_password = args.get("password", "")
+    nonsensitive_password = args.get("nonsensitive_password", "")
+
+    if not sensitive_password and not nonsensitive_password:
+        raise DemistoException(
+            "Password is required. Please provide either 'password' (sensitive) or 'nonsensitive_password' argument."
+        )
+
     if sensitive_password and nonsensitive_password and sensitive_password != nonsensitive_password:
-        raise ValueError("Please use either the password argument or the non_sensitive_password argument, " "but not both.")
+        raise DemistoException(
+            "Conflicting passwords provided. The 'password' and 'nonsensitive_password' arguments must have the same value, "
+            "or use only one of them."
+        )
+
     return sensitive_password or nonsensitive_password
 
 
