@@ -1252,23 +1252,25 @@ def perform_rasterize(
                     current_path = f"{protocol}://{current_path}"
 
                 # Start a new thread in group of max_tabs
-                rasterization_threads.append((
-                    executor.submit(
-                        rasterize_thread,
-                        browser=browser,
-                        chrome_port=chrome_port,
-                        path=current_path,
-                        rasterize_type=rasterize_type,
-                        wait_time=wait_time,
-                        offline_mode=offline_mode,
-                        navigation_timeout=navigation_timeout,
-                        include_url=include_url,
-                        full_screen=full_screen,
-                        width=width,
-                        height=height,
-                    ),
-                    current_path
-                ))
+                rasterization_threads.append(
+                    (
+                        executor.submit(
+                            rasterize_thread,
+                            browser=browser,
+                            chrome_port=chrome_port,
+                            path=current_path,
+                            rasterize_type=rasterize_type,
+                            wait_time=wait_time,
+                            offline_mode=offline_mode,
+                            navigation_timeout=navigation_timeout,
+                            include_url=include_url,
+                            full_screen=full_screen,
+                            width=width,
+                            height=height,
+                        ),
+                        current_path,
+                    )
+                )
             # Wait for all tasks to complete
             executor.shutdown(wait=True)
             demisto.info(
@@ -1296,7 +1298,6 @@ def perform_rasterize(
 
             # Get the results
             for current_thread, path in rasterization_threads:
-
                 try:
                     ret_value, response_body = current_thread.result()
                     if ret_value:
@@ -1304,7 +1305,8 @@ def perform_rasterize(
                     else:
                         return_results(
                             CommandResults(
-                                readable_output=str(response_body), entry_type=(EntryType.ERROR if WITH_ERRORS else EntryType.WARNING)
+                                readable_output=str(response_body),
+                                entry_type=(EntryType.ERROR if WITH_ERRORS else EntryType.WARNING),
                             )
                         )
                 except Exception as ex:
