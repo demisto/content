@@ -35,8 +35,13 @@ def test_no_incidents_found(mocker):
     """
 
     from ExportIncidentsToCSV import main, NO_INCIDENTS_FOUND
-    export_to_csv_result = [{'Contents': ' - Script failed to run: Core REST APIs - '
-                                         '"Status":"400 Bad Request "title": "Incidents search returned no results" '}]
+
+    export_to_csv_result = [
+        {
+            "Contents": " - Script failed to run: Core REST APIs - "
+            '"Status":"400 Bad Request "title": "Incidents search returned no results" '
+        }
+    ]
     mocker.patch.object(demisto, "args", return_value={"query": "html", "fetchdays": "6"})
     mocker.patch.object(demisto, "executeCommand", return_value=export_to_csv_result)
     mocker.patch("ExportIncidentsToCSV.is_error", return_value=True)
@@ -55,8 +60,10 @@ def test_incidents_amount_limit_exceeded(mocker):
     """
 
     from ExportIncidentsToCSV import main, LIMIT_EXCEEDED
-    export_to_csv_result = [{'Contents': ' - Script failed to run: Core REST APIs - '
-                                         '"StatusCode":413, title\":\"Limit Exceeded\" '}]
+
+    export_to_csv_result = [
+        {"Contents": " - Script failed to run: Core REST APIs - " '"StatusCode":413, title":"Limit Exceeded" '}
+    ]
     mocker.patch.object(demisto, "args", return_value={"query": "html", "fetchdays": "6"})
     mocker.patch.object(demisto, "executeCommand", return_value=export_to_csv_result)
     mocker.patch("ExportIncidentsToCSV.is_error", return_value=True)
@@ -75,7 +82,8 @@ def test_general_error_occurred(mocker):
     """
 
     from ExportIncidentsToCSV import main
-    export_to_csv_result = [{'Contents': ' - Script failed to run: Core REST APIs - '}]
+
+    export_to_csv_result = [{"Contents": " - Script failed to run: Core REST APIs - "}]
     mocker.patch.object(demisto, "args", return_value={"query": "html", "fetchdays": "6"})
     mocker.patch.object(demisto, "executeCommand", return_value=export_to_csv_result)
     mocker.patch("ExportIncidentsToCSV.is_error", return_value=True)
@@ -92,6 +100,7 @@ def test_execute_command_empty_response(mocker):
     """
 
     from ExportIncidentsToCSV import main
+
     mocker.patch.object(demisto, "args", return_value={"query": "html", "fetchdays": "6"})
     mocker.patch.object(demisto, "executeCommand", return_value=[])
     with pytest.raises(ValueError) as ve:
