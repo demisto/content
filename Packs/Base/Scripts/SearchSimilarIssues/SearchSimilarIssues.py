@@ -13,11 +13,22 @@ def update_args(args):
         dict: new dictionary with renamed keys.
     """
     name_mapping = {
-        "issueId": "incidentId",
-        "aggreagateIssuesDifferentDate": "aggreagateIncidentsDifferentDate",
-        "minimumIssueSimilarity": "minimunIncidentSimilarity",
-        "maxIssuesToDisplay": "maxIncidentsToDisplay",
-        "maxIssuesInIndicatorsForWhiteList": "maxIncidentsInIndicatorsForWhiteList",
+        "issue_id": "incidentId",
+        "min_similarity": "minimunIncidentSimilarity",
+        "max_issues_to_display": "maxIncidentsToDisplay",
+        "max_issues_in_indicators_for_white_list": "maxIncidentsInIndicatorsForWhiteList",
+        "filter_equal_fields": "fieldExactMatch",
+        "text_similarity_fields": "similarTextField",
+        "json_similarity_fields": "similarJsonField",
+        "discrete_match_fields": "similarCategoricalField",
+        "fields_to_display": "fieldsToDisplay",
+        "use_all_fields": "useAllFields",
+        "from_date": "fromDate",
+        "to_date": "toDate",
+        "aggregate_issues_different_date": "aggreagateIncidentsDifferentDate",
+        "include_indicators_similarity": "includeIndicatorsSimilarity",
+        "min_number_of_indicators": "minNumberOfIndicators",
+        "indicators_types": "indicatorsTypes",
     }
 
     # Rename keys if found in mapping, otherwise keep them as-is
@@ -75,7 +86,7 @@ def replace_fields(args: dict, replacements: dict) -> dict:
     :param replacements: dictionary of replacements, e.g. {"status": "status.progress", "domain": "alert_domain"}
     :return: updated args dict
     """
-    fields_to_check = ["similarTextField", "fieldExactMatch", "similarCategoricalField"]
+    fields_to_check = ["text_similarity_fields", "filter_equal_fields", "discrete_match_fields"]
 
     for key in fields_to_check:
         value = args.get(key)
@@ -127,10 +138,10 @@ def handle_results(results) -> tuple[str, dict]:
 def main():
     try:
         args = demisto.args()
-        new_args = update_args(args)
-        replacements = {"status": "status.progress", "domain": "alert_domain", "category": "categoryname"}
-        new_args = replace_fields(new_args, replacements)
-        required_fields = ["similarTextField", "similarJsonField", "similarCategoricalField", "useAllFields"]
+        replacements = {"status": "status.progress", "domain": "alert_domain", "category": "categoryname", "url": "alerturl"}
+        new_args = replace_fields(args, replacements)
+        new_args = update_args(new_args)
+        required_fields = ["text_similarity_fields", "json_similarity_fields", "discrete_match_fields", "use_all_fields"]
         if not any(args.get(field) for field in required_fields):
             return_error(f"At least one of the following arguments muse be provided: {', '.join(required_fields)}.")
 

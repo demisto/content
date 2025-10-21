@@ -1,66 +1,66 @@
 args:
 - description: Issue ID to get the prediction of. If empty, predicts the the current issue ID.
-  name: issueId
+  name: issue_id
 - auto: PREDEFINED
-  description: 'Comma-separated list of issue text fields to take into account when computing similarity. For example: commandline, URL. Note: In order to calculate similarity, fields must consist of a minimum of 2 letters.'
-  name: similarTextField
+  description: 'Comma-separated free-text fields compared using semantic similarity scoring. Suitable for longer descriptive fields where partial matches are meaningful. For example: name, details, commandline.'
+  name: text_similarity_fields
 - auto: PREDEFINED
-  description: 'Comma-separated list of issue categorical fields to take into account whe computing similarity. For example: IP, URL. Note: In order to calculate similarity, fields must consist of a minimum of 2 letters.'
-  name: similarCategoricalField
+  description: 'Comma-separated fields representing discrete identifiers. Each field contributes 1 if values are equal, or 0 if not. The average of all selected fields affects the overall similarity score. For example: sha256, domain, url.'
+  name: discrete_match_fields
 - auto: PREDEFINED
-  description: 'Comma-separated list of issue JSON fields to take into account whe computing similarity. For example: CustomFields. Note: In order to calculate similarity, fields must consist of a minimum of 2 letters.'
-  name: similarJsonField
+  description: 'Comma-separated fields containing structured data. Each is compared using element-level similarity. For example: CustomFields.'
+  name: json_similarity_fields
 - auto: PREDEFINED
   description: Comma-separated list of additional issue fields to display, but which will not be taken into account when computing similarity.
-  name: fieldsToDisplay
+  name: fields_to_display
 - auto: PREDEFINED
-  description: Comma-separated list of issue fields that have to be equal to the current issue fields. This helps reduce the query size. These fields are not part of the similarity calculation.
-  name: fieldExactMatch
+  description: Comma-separated incident fields that must exactly match the current incident before any similarity scoring is applied. Acts as a strict pre-filter.
+  name: filter_equal_fields
 - auto: PREDEFINED
   defaultValue: 'False'
-  description: Whether to use a predefined set of fields and custom fields to compute similarity. If "True", it will ignore values in similarTextField, similarCategoricalField, similarJsonField.
-  name: useAllFields
+  description: Whether to use a predefined set of fields and custom fields to compute similarity. If "True", it will ignore values in text_similarity_fields, json_similarity_fields, discrete_match_fields.
+  name: use_all_fields
   predefined:
   - 'True'
   - 'False'
 - defaultValue: 1 months ago
   description: The start date by which to filter issues. Date format will be the same as in the issues query page, for example, "3 days ago", ""2019-01-01T00:00:00 +0200").
-  name: fromDate
+  name: from_date
 - description: The end date by which to filter issues. Date format will be the same as in the issues query page, for example, "3 days ago", ""2019-01-01T00:00:00 +0200").
-  name: toDate
+  name: to_date
 - defaultValue: '1500'
   description: The maximum number of issues to query.
   name: limit
 - auto: PREDEFINED
   defaultValue: 'False'
   description: Whether to aggregate duplicate issues within diffrerent dates.
-  name: aggreagateIssuesDifferentDate
+  name: aggregate_issues_different_date
   predefined:
   - 'True'
   - 'False'
 - defaultValue: '0.2'
-  description: Retain issues with similarity score that's higher than the minimumIssueSimilarity.
-  name: minimumIssueSimilarity
+  description: Minimum overall similarity score (0-1) required for an incident to be considered similar. Higher thresholds return fewer, more precise matches.
+  name: min_similarity
 - defaultValue: '100'
   description: The maximum number of issues to display.
-  name: maxIssuesToDisplay
+  name: max_issues_to_display
 - auto: PREDEFINED
   defaultValue: 'False'
   description: Whether to include similarity of indicators from DBotFindSimilarIssuesByIndicators in the final score.
-  name: includeIndicatorsSimilarity
+  name: include_indicators_similarity
   predefined:
   - 'True'
   - 'False'
 - description: The minimum number of indicators required related to the issue before running the model. Relevant if includeIndicatorsSimilarity is "True".
-  name: minNumberOfIndicators
+  name: min_number_of_indicators
 - auto: PREDEFINED
   description: Comma-separated list of indicator types to take into account. If empty, uses all indicators types. Relevant if includeIndicatorsSimilarity is "True".
-  name: indicatorsTypes
+  name: indicators_types
 - description: Help to filter out indicators that appear in many issues. Relevant if includeIndicatorsSimilarity is "True".
-  name: maxIssuesInIndicatorsForWhiteList
+  name: max_issues_in_indicators_for_white_list
 comment: |-
   Searches past similar issues based on issue fields' similarity. Includes an option to also display indicators similarity.
-  Note: For the similarity calculation, at least one field must be provided in one of the "similarTextField", "similarCategoricalField", or "similarJsonField" arguments.
+  Note: For the similarity calculation, at least one field must be provided in one of the "text_similarity_fields", "json_similarity_fields", "discrete_match_fields" or "use_all_fields" arguments.
 commonfields:
   id: SearchSimilarIssues
   version: -1
