@@ -7,7 +7,6 @@ from CapeSandbox import (
     cape_file_submit_command,
     cape_file_view_command,
     cape_machines_list_command,
-    cape_status_get_command,
     cape_task_delete_command,
     cape_task_report_get_command,
     cape_task_screenshot_download_command,
@@ -15,8 +14,6 @@ from CapeSandbox import (
     cape_url_submit_command,
     test_module,
 )
-
-from CommonServerPython import DemistoException
 
 
 def load_json_test_data(name: str) -> dict:

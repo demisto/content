@@ -4,8 +4,9 @@ from enum import Enum
 from pathlib import Path
 from typing import Any, Literal
 
-import demistomock as demisto  # noqa: F401
 import urllib3
+
+import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401, F403
 
 urllib3.disable_warnings()  # Disable insecure warnings
@@ -37,17 +38,10 @@ def parse_integration_params(params: dict[str, Any]) -> dict[str, Any]:
     verify_certificate = not argToBoolean(params.get("insecure", False))
     proxy = argToBoolean(params.get("proxy", False))
 
-    credentials = params.get("credentials")
-    username = (
-        credentials.get("identifier")
-        if isinstance(credentials, dict)
-        else params.get("username")
-    )
-    password = (
-        credentials.get("password")
-        if isinstance(credentials, dict)
-        else params.get("password")
-    )
+    credentials = params.get("credentials", {})
+    username = credentials.get("identifier") or params.get("username")
+    password = credentials.get("password") or params.get("password")
+    api_token = params.get("api_token")
     api_token = params.get("api_token")
 
     if not base_url:
@@ -139,16 +133,14 @@ def get_entry_path(entry_id: str) -> tuple[str, str]:
 
 
 def build_file_name(
-    file_identifier: str,
-    file_type: Literal["file", "report", "screenshot"] | None = None,
+    file_identifier: str | int,
+    file_type: Literal["file", "report", "screenshot", "network_dump"] | None = None,
     screenshot_number: int | None = None,
-    file_format: Literal["pdf", "html", "csv"] | str | None = None,
+    file_format: Literal["pdf", "html", "csv", "zip", "pcap"] | str | None = None,
 ) -> str:
     """
     Constructs a standardized filename based on the task identifier and file metadata.
     """
-
-    # Define mapping for extensions and middle parts based on file_type
     TYPE_MAP = {
         "screenshot": {"ext": "png", "part": "screenshot"},
         "report": {
@@ -156,14 +148,16 @@ def build_file_name(
             "part": "report",
         },
         "file": {"ext": str(file_format) if file_format else "json", "part": "file"},
+        "network_dump": {
+            "ext": "pcap",
+            "part": "network_dump",
+        },
     }
 
-    # Default values
     extension = str(file_format) if file_format else "dat"
     middle_part_base = None
 
     if file_type in TYPE_MAP:
-        # Use the lookup map if the file_type is known
         info = TYPE_MAP[file_type]
         extension = info["ext"]
         middle_part_base = info["part"]
@@ -176,56 +170,6 @@ def build_file_name(
     middle_part_str = f"_{middle_part_base}" if middle_part_base else ""
 
     return f"cape_task_{file_identifier}{middle_part_str}.{extension}"
-
-
-def build_file_name2(
-    file_identifier: str,
-    file_type: Literal["file", "report", "screenshot"] | None = None,
-    screenshot_number: int | None = None,
-    file_format: Literal["pdf", "html", "csv"] | str | None = None,
-) -> str:
-    extension: str
-    middle_part_base: str | None = None
-
-    if file_type == "screenshot":
-        extension = "png"
-        if screenshot_number is not None:
-            middle_part_base = f"screenshot_{screenshot_number}"
-        else:
-            middle_part_base = "screenshot"
-
-    elif file_type in ["file", "report"]:
-        extension = str(file_format) if file_format else "json"
-        middle_part_base = file_type
-
-    elif file_type is None:
-        extension = str(file_format) if file_format else "dat"
-        middle_part_base = None
-
-    else:
-        extension = "dat"
-
-    middle_part_str = f"_{middle_part_base}" if middle_part_base else ""
-
-    return f"cape_task_{file_identifier}{middle_part_str}.{extension}"
-
-
-# def get_file_path2(file_id: str) -> dict:
-#     try:
-#         filepath_result = demisto.getFilePath(file_id)
-#         if "path" not in filepath_result:
-#             demisto.results(f"Error: entry {file_id} is not a file.")
-#             raise DemistoException(f"Error: entry {file_id} is not a file.")
-#     except ValueError as e:
-#         demisto.debug(str(e))
-#         raise DemistoException(f"Could not find file: {file_id!r}")
-
-
-# def get_entry_path2(entry_id: str) -> tuple[str, str]:
-#     file_path = get_file_path(entry_id)
-#     path = file_path["path"]
-#     name = file_path.get("name") or os.path.basename(path)
-#     return path, name
 
 
 def status_is_reported(status_response: dict[str, Any]) -> bool:
@@ -317,10 +261,12 @@ TASK_VIEW = f"{TASKS_BASE}/{Action.VIEW.value}" + "/{task_id}/"
 TASK_LIST = f"{TASKS_BASE}/list" + "/{limit}/{offset}/"
 TASK_DELETE = f"{TASKS_BASE}/{Action.DELETE.value}" + "/{task_id}/"
 TASK_GET_REPORT_BASE = f"{TASKS_BASE}/{Action.GET.value}/report" + "/{task_id}/"
-TASK_GET_PCAP = f"{TASKS_BASE}/get/{Action.PCAP.value}" + "/{task_id}/"
-STATUS_URL = "cuckoo/status/"
-TASK_SCREENSHOTS_LIST = f"{TASKS_BASE}/screenshots" + "/{task_id}/"
-TASK_SCREENSHOT_GET = f"{TASKS_BASE}/screenshots" + "/{task_id}/{number}/"
+TASK_GET_PCAP = f"{TASKS_BASE}/{Action.GET.value}/{Action.PCAP.value}" + "/{task_id}/"
+CUCKOO_STATUS_URL = f"{BASE_PREFIX}/cuckoo/{Action.STATUS.value}/"
+TASK_SCREENSHOTS_LIST = f"{TASKS_BASE}/{Action.GET.value}/screenshot" + "/{task_id}/"
+TASK_SCREENSHOT_GET = (
+    f"{TASKS_BASE}/{Action.GET.value}/screenshot" + "/{task_id}/{number}/"
+)
 
 # -- Files --
 FILE_VIEW_BY_TASK = (
@@ -371,6 +317,7 @@ class CapeSandboxClient(BaseClient):  # noqa: F405
                 "Either API token or Username + Password must be provided."
             )
 
+    # ---------- Auth & Token ----------
     def _auth_headers(self) -> dict[str, str]:
         token = self.ensure_token()
         return {"Authorization": f"Token {token}"}
@@ -455,36 +402,6 @@ class CapeSandboxClient(BaseClient):  # noqa: F405
 
         return response
 
-    def http_request2(
-        self,
-        method: str,
-        headers: dict[str, str] | None = None,
-        url_suffix: str = "",
-        full_url: str = "",
-        params: dict[str, Any] | None = None,
-        data: dict[str, Any] | None = None,
-        json_data: dict[str, Any] | None = None,
-        files: dict[str, Any] | None = None,
-        resp_type: str = ResponseTypes.JSON.value,
-        ok_codes: tuple[int, ...] | None = None,
-    ) -> Any:
-        merged_headers = self._auth_headers()
-        if headers:
-            merged_headers.update(headers)
-
-        return self._http_request(
-            method=method,
-            headers=merged_headers,
-            url_suffix=url_suffix,
-            full_url=full_url,
-            params=params,
-            data=data,
-            json_data=json_data,
-            files=files,
-            resp_type=resp_type,
-            ok_codes=ok_codes,
-        )
-
     # ---------- Submit ----------
     def submit_file(
         self, form: dict[str, Any], file_path: str, is_pcap: bool
@@ -529,15 +446,15 @@ class CapeSandboxClient(BaseClient):  # noqa: F405
         )
 
     def get_task_report(
-        self, task_id: int | str, fmt: str | None = None, zip_download: bool = False
+        self, task_id: int | str, format: str | None = None, zip_download: bool = False
     ) -> Any:
         """Return task report. If zip_download is True, returns bytes content of a zip; otherwise JSON.
 
         Supported formats include: json (default), maec, maec5, metadata, lite, all, dist, dropped.
         """
         suffix = TASK_GET_REPORT_BASE.format(task_id=task_id)
-        if fmt:
-            suffix += f"{fmt}/"
+        if format:
+            suffix += f"{format}/"
         if zip_download:
             suffix += "zip/"
             return self.http_request(
@@ -546,19 +463,15 @@ class CapeSandboxClient(BaseClient):  # noqa: F405
         return self.http_request("GET", url_suffix=suffix)
 
     def get_task_pcap(
-        self, task_id: int | str, fmt: str | None = None, zip_download: bool = False
+        self, task_id: int | str, format: str | None = None, zip_download: bool = False
     ) -> Any:
         """Download the PCAP dump of a Task by ID. Return object will be application/vnd.tcpdump.pcap. (.pcap)"""
         return self.http_request(
-            "GET", url_suffix=TASK_GET_PCAP.format(task_id=task_id)
+            "GET",
+            url_suffix=TASK_GET_PCAP.format(task_id=task_id),
+            resp_type=ResponseTypes.CONTENT.value,
         )
 
-    # ---------- Status ----------
-    def get_status(self) -> dict[str, Any]:
-        """Return overall CAPE status."""
-        return self.http_request("GET", url_suffix=STATUS_URL)
-
-    # ---------- Screenshots ----------
     def list_task_screenshots(self, task_id: int | str) -> Any:
         """Return list/metadata of screenshots for a task (JSON)."""
         return self.http_request(
@@ -573,7 +486,7 @@ class CapeSandboxClient(BaseClient):  # noqa: F405
             resp_type=ResponseTypes.CONTENT.value,
         )
 
-    # ---------- File ----------
+    # ---------- File View & Download ----------
     def files_view_by_task(self, task_id: int | str) -> dict[str, Any]:
         return self.http_request(
             "GET", url_suffix=FILE_VIEW_BY_TASK.format(task_id=task_id)
@@ -644,6 +557,11 @@ class CapeSandboxClient(BaseClient):  # noqa: F405
         if not name:
             raise DemistoException("machine_name is required")
         return self.http_request("GET", url_suffix=MACHINE_VIEW.format(name=name))
+
+    # ---------- Status ----------
+    def get_cuckoo_status(self) -> dict[str, Any]:
+        """Return overall CAPE status."""
+        return self.http_request("GET", url_suffix=CUCKOO_STATUS_URL)
 
 
 # endregion
@@ -960,7 +878,13 @@ def cape_pcap_file_download_command(
 
     dump_pcap = client.get_task_pcap(task_id)
 
-    return fileResult(task_id, dump_pcap)
+    filename = build_file_name(
+        file_identifier=task_id,
+        file_type="network_dump",
+        file_format="pcap",
+    )
+
+    return fileResult(filename, dump_pcap)
 
 
 def cape_sample_file_download_command(
@@ -1197,104 +1121,55 @@ def cape_tasks_list_command22(
     )
 
 
-def cape_tasks_list_command2(
-    client: CapeSandboxClient, args: dict[str, Any]
-) -> CommandResults:
-    """List tasks with pagination or fetch a single task by `task_id`."""
-    task_id = args.get("task_id")
-
-    if task_id:
-        task = client.get_task_view(task_id)
-        data = task.get("data") or task
-        readable = tableToMarkdown(
-            f"{INTEGRATION_NAME} Task {task_id}",
-            data if isinstance(data, dict) else [data],
-            headers=[
-                "id",
-                "target",
-                "category",
-                "priority",
-                "machine",
-                "package",
-                "platform",
-                "started_on",
-                "completed_on",
-                "status",
-            ],
-            headerTransform=pascalToSpace,
-        )
-        return CommandResults(
-            readable_output=readable,
-            outputs_prefix="Cape.Task",
-            outputs_key_field="id",
-            outputs=data,
-        )
-
-    page_size = (
-        arg_to_number(args.get("page_size"))
-        or arg_to_number(args.get("limit"))
-        or LIST_DEFAULT_LIMIT
-    )
-    page_size = int(min(max(1, page_size), LIST_DEFAULT_LIMIT))
-    page = int(arg_to_number(args.get("page")) or 1)
-    if page < 1:
-        page = 1
-    offset = (page - 1) * page_size
-
-    resp = client.list_tasks(limit=page_size, offset=offset)
-    data = resp.get("data") or resp
-    items = data if isinstance(data, list) else [data]
-
-    readable = tableToMarkdown(
-        f"{INTEGRATION_NAME} Tasks (page={page}, page_size={page_size})",
-        items,
-        headers=[
-            "id",
-            "target",
-            "category",
-            "priority",
-            "machine",
-            "package",
-            "platform",
-            "started_on",
-            "completed_on",
-            "status",
-        ],
-        headerTransform=pascalToSpace,
-    )
-
-    return CommandResults(
-        readable_output=readable,
-        outputs_prefix="Cape.Task",
-        outputs_key_field="id",
-        outputs=items,
-    )
-
-
 def cape_task_report_get_command(
     client: CapeSandboxClient, args: dict[str, Any]
 ) -> Any:
-    """Get a task report.
-
-    When `zip=true`, returns a ZIP file. Otherwise returns the JSON `info` object.
+    """
+    Get a task report. When 'zip=true', returns a ZIP file. Otherwise returns the JSON 'info' object.
     """
     task_id = args.get("task_id")
     if not task_id:
         raise DemistoException("Task ID is missing for get report.")
 
-    fmt = (args.get("format") or "").strip().lower() or None
-    zip_flag = argToBoolean(args.get("zip"))
+    file_format = (args.get("format") or "json").strip().lower()
+    zip_flag = argToBoolean(args.get("zip", False))
 
     if zip_flag:
-        content = client.get_task_report(task_id=task_id, fmt=fmt, zip_download=True)
-        file_format = fmt or "json"
-        filename = build_file_name(task_id, "report", file_format=file_format)
+        content = client.get_task_report(
+            task_id=task_id, format=file_format, zip_download=True
+        )
+        filename = build_file_name(
+            file_identifier=task_id, file_type="report", file_format="zip"
+        )
         return fileResult(filename, content)
 
-    resp = client.get_task_report(task_id=task_id, fmt=fmt, zip_download=False)
+    resp = client.get_task_report(
+        task_id=task_id, format=file_format, zip_download=False
+    )
+
     info = (resp or {}).get("info") or {}
+
     if not info:
+        if resp and isinstance(resp, dict) and resp.get("message"):
+            raise DemistoException(
+                f"Failed to retrieve report for task {task_id}: {resp['message']}"
+            )
+
         raise DemistoException(f"No info object found in report for task {task_id}")
+
+    target_file = (resp or {}).get("target", {}).get("file", {})
+
+    hr_data = info.copy()
+
+    if target_file:
+        hr_data["file_name"] = target_file.get("name")
+        hr_data["file_path"] = target_file.get("path")
+        hr_data["file_size"] = target_file.get("size")
+        hr_data["crc32"] = target_file.get("crc32")
+        hr_data["sha1"] = target_file.get("sha1")
+        hr_data["sha256"] = target_file.get("sha256")
+        hr_data["ssdeep"] = target_file.get("ssdeep")
+        hr_data["file_type"] = target_file.get("type")
 
     headers = [
         "id",
@@ -1308,15 +1183,23 @@ def cape_task_report_get_command(
         "source_url",
         "route",
         "user_id",
+        "file_name",
+        "file_path",
+        "file_size",
+        "crc32",
+        "sha1",
+        "sha256",
+        "ssdeep",
+        "file_type",
     ]
+
     readable = tableToMarkdown(
-        f"{INTEGRATION_NAME} Task Report {task_id}",
-        info,
+        f"{INTEGRATION_NAME} Task Report {task_id} ({file_format.upper()})",
+        hr_data,
         headers=headers,
         headerTransform=pascalToSpace,
     )
 
-    # return fileResult("filename", "result.content")
     return CommandResults(
         readable_output=readable,
         outputs_prefix="Cape.Task.Report",
@@ -1407,19 +1290,16 @@ def cape_cuckoo_status_get_command(
     client: CapeSandboxClient, args: dict[str, Any]
 ) -> CommandResults:
     """Return overall CAPE/Cuckoo status as human-readable only."""
-    resp = client.get_status() or {}
-    tasks = resp.get("tasks") or {}
-    server = resp.get("server") or {}
-    machines = resp.get("machines") or {}
 
-    # compute server usage in a readable way
-    stagage = server.get("stagage")
-    storage = server.get("storage")
-    server_usage = None
-    if isinstance(stagage, dict):
-        server_usage = stagage.get("used_by")
-    elif isinstance(storage, dict):
-        server_usage = storage.get("used_by")
+    resp = client.get_cuckoo_status() or {}
+    data = resp.get("data") or resp
+
+    tasks = data.get("tasks") or {}
+    server = data.get("server") or {}
+    machines = data.get("machines") or {}
+
+    # Compute server usage from the expected path (server.storage.used_by in design)
+    server_usage = server.get("storage", {}).get("used_by")
 
     row = {
         "Tasks reported": tasks.get("reported"),
@@ -1436,66 +1316,82 @@ def cape_cuckoo_status_get_command(
     readable = tableToMarkdown(
         f"{INTEGRATION_NAME} Status", row, headerTransform=pascalToSpace
     )
+
     return CommandResults(readable_output=readable)
 
 
 def cape_task_screenshot_download_command(
     client: CapeSandboxClient, args: dict[str, Any]
-) -> Any:
-    """Download screenshots for a task.
-
-    If 'screenshot' is provided, downloads that single screenshot.
-    Otherwise, attempts to list and download all screenshots for the task.
-    Returns file entries (list of fileResult dicts or a single one).
-    """
+) -> CommandResults:
+    """Download screenshots for a task."""
     task_id = args.get("task_id")
     if not task_id:
         raise DemistoException("Task ID is missing for download screenshot.")
 
-    number = args.get("screenshot")
+    single_number = arg_to_number(args.get("screenshot"))
 
-    if number:
-        content = client.get_task_screenshot(task_id=task_id, number=number)
-        filename = build_file_name(task_id, "screenshot", number)
-        return fileResult(filename, content)
-
-    # Download all screenshots
-    meta = client.list_task_screenshots(task_id)
-    # Try to find a list of indices
-    candidates = []
-    if isinstance(meta, dict):
-        candidates = meta.get("screenshots") or meta.get("data") or []
-    elif isinstance(meta, list):
-        candidates = meta
+    if single_number:
+        candidates_raw = [single_number]
+    else:
+        meta = client.list_task_screenshots(task_id)
+        candidates_raw = meta.get("screenshots") or meta.get("data") or meta
+        if not isinstance(candidates_raw, list):
+            candidates_raw = []
 
     file_entries = []
-    for idx in candidates:
+    candidate_numbers = []
+
+    for idx in candidates_raw:
         number = idx.get("number") if isinstance(idx, dict) else idx
-        if number is None:
+        if number:
+            candidate_numbers.append(int(number))
+
+    if not candidate_numbers and not single_number:
+        candidate_numbers.extend(range(1, 6))
+
+    processed_numbers = set()
+
+    for number in candidate_numbers:
+        if number in processed_numbers:
             continue
+
         try:
             content = client.get_task_screenshot(task_id=task_id, number=number)
             filename = build_file_name(task_id, "screenshot", number)
-            file_entries.append(fileResult(filename, content))
-        except Exception as ex:
+
+            file_meta = fileResult(filename, content)
+
+            file_meta["TaskID"] = task_id
+            file_meta["ScreenshotNumber"] = number
+            file_entries.append(file_meta)
+
+            processed_numbers.add(number)
+
+        except DemistoException as ex:
             demisto.debug(
                 f"Failed to fetch screenshot {number} for task {task_id}: {ex}"
             )
-
-    # Fallback: if no candidates found, try first few indices
-    if not file_entries:
-        for number in range(1, 6):
-            try:
-                content = client.get_task_screenshot(task_id, number)
-                filename = build_file_name(task_id, "screenshot", number)
-                file_entries.append(fileResult(filename, content))
-            except Exception:
-                break
+        except Exception as ex:
+            demisto.debug(
+                f"Unexpected error while processing screenshot {number}: {ex}"
+            )
 
     if not file_entries:
         raise DemistoException(f"No screenshots found for task {task_id}")
 
-    return file_entries
+    readable = tableToMarkdown(
+        f"{INTEGRATION_NAME} Screenshots for Task {task_id}",
+        file_entries,
+        headers=["TaskID", "ScreenshotNumber", "Name", "Size", "SHA1", "MD5"],
+        headerTransform=pascalToSpace,
+    )
+
+    return CommandResults(
+        readable_output=readable,
+        outputs_prefix="Cape.Screenshot",
+        outputs_key_field="ScreenshotNumber",
+        outputs=file_entries,
+    )
 
 
 # endregion
@@ -1550,19 +1446,15 @@ def main() -> None:
             "cape-task-delete": lambda: cape_task_delete_command(client, args),
             "cape-task-screenshot-download": lambda: cape_task_screenshot_download_command(
                 client, args
-            ),  # TODO Need to test: yaml, sub-types, limitations, using: token, username & password
-            "cape-task-report-get": lambda: cape_task_report_get_command(
-                client, args
-            ),  # TODO Need to test: yaml, sub-types, limitations, using: token, username & password
+            ),  # TODO Need to test: yaml, sub-types, limitations
+            "cape-task-report-get": lambda: cape_task_report_get_command(client, args),
             "cape-pcap-file-download": lambda: cape_pcap_file_download_command(
                 client, args
-            ),  # TODO Need to test: yaml, sub-types, limitations, using: token, username & password
-            "cape-machines-list": lambda: cape_machines_list_command(
-                client, args
-            ),  # TODO Need to test: yaml, sub-types, limitations - does machine requierd
+            ),
+            "cape-machines-list": lambda: cape_machines_list_command(client, args),
             "cape-cuckoo-status-get": lambda: cape_cuckoo_status_get_command(
                 client, args
-            ),  # TODO Need to test: yaml, sub-types, limitations, using: token, username & password
+            ),
         }
 
         if command not in command_map:
