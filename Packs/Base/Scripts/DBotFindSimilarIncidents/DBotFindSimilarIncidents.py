@@ -535,7 +535,13 @@ class Model:
         Compute final score based on average of similarity score for each field transformed
         :return:
         """
-        col = self.incidents_df.loc[:, [f"similarity {field}" for field in self.field_for_command_line + self.field_for_json + self.field_for_potential_exact_match]]
+        col = self.incidents_df.loc[
+            :,
+            [
+                f"similarity {field}"
+                for field in self.field_for_command_line + self.field_for_json + self.field_for_potential_exact_match
+            ],
+        ]
         self.incidents_df[SIMILARITY_COLUNM_NAME] = np.round(col.mean(axis=1), 2)
 
     def prepare_for_display(self):
