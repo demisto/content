@@ -1,3 +1,5 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import hashlib
 import io
 import json
@@ -7,10 +9,10 @@ from datetime import datetime, timedelta
 
 import dateparser
 from collections import defaultdict
-import demistomock as demisto  # noqa: F401
+
 import pytz
 import requests
-from CommonServerPython import *  # noqa: F401
+
 from packaging.version import Version  # noqa: F401
 from splunklib import client, results
 from splunklib.binding import AuthenticationError, HTTPError, namespace
@@ -1727,10 +1729,10 @@ def get_last_update_in_splunk_time(last_update):
 def format_splunk_note_for_xsoar(note: dict) -> str:
     """Formats a Splunk note."""
 
-    raw_title = note.get("title", "")
+    raw_title = note.get("title") or ""
     decoded_title = urllib.parse.unquote(raw_title)
 
-    raw_content = note.get("content", "")
+    raw_content = note.get("content") or ""
     decoded_content = urllib.parse.unquote(raw_content)
 
     # Add a blank line after the title only if there's content
@@ -3589,6 +3591,60 @@ def splunk_job_status(service: client.Service, args: dict) -> list[CommandResult
     return job_results
 
 
+def splunk_job_share(service: client.Service, args: dict) -> list[CommandResults]:  # pragma: no cover
+    sids = argToList(args.get("sid"))
+    try:
+        ttl = int(args.get("ttl", 1800))
+    except ValueError:
+        return_error(f"Input error: Invalid TTL provided, '{args.get('ttl')}'. Must be a valid integer.")
+
+    job_results = []
+    for sid in sids:
+        try:
+            job = service.job(sid)
+        except HTTPError as error:
+            if str(error) == "HTTP 404 Not Found -- Unknown sid.":
+                job_results.append(CommandResults(readable_output=f"Not found job for SID: {sid}"))
+            else:
+                job_results.append(
+                    CommandResults(readable_output=f"Querying splunk for SID: {sid} resulted in the following error {str(error)}")
+                )
+        else:
+            try:
+                ttl_results = True
+                job.set_ttl(ttl)  # extend time-to-live for results
+            except HTTPError as error:
+                job_results.append(
+                    CommandResults(
+                        readable_output=f"Error increasing TTL for SID: {sid} resulted in the following error {str(error)}"
+                    )
+                )
+                ttl_results = False
+            try:
+                share_results = True
+                endpoint = f"search/jobs/{sid}/acl"
+                service.post(endpoint, **{"sharing": "global", "perms.read": "*"})
+            except HTTPError as error:
+                job_results.append(
+                    CommandResults(
+                        readable_output=f"Error changing permissions for SID: {sid} resulted in the following error {str(error)}"
+                    )
+                )
+                share_results = False
+
+            entry_context = {"SID": sid, "TTL updated": str(ttl_results), "Sharing updated": str(share_results)}
+            human_readable = tableToMarkdown("Splunk Job Updates", entry_context)
+            job_results.append(
+                CommandResults(
+                    outputs=entry_context,
+                    readable_output=human_readable,
+                    outputs_prefix="Splunk.JobUpdates",
+                    outputs_key_field="SID",
+                )
+            )
+    return job_results
+
+
 def splunk_parse_raw_command(args: dict):
     raw = args.get("raw", "")
     rawDict = rawToDict(raw)
@@ -3990,6 +4046,8 @@ def main():  # pragma: no cover
         splunk_submit_event_hec_command(params, service, args)
     elif command == "splunk-job-status":
         return_results(splunk_job_status(service, args))
+    elif command == "splunk-job-share":
+        return_results(splunk_job_share(service, args))
     elif command.startswith("splunk-kv-") and service is not None:
         app = args.get("app_name", "search")
         service.namespace = namespace(app=app, owner="nobody", sharing="app")

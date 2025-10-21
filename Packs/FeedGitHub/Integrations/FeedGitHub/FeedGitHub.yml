@@ -209,6 +209,6 @@ marketplaces:
 - platform
 tests:
 - No tests (auto formatted)
-sectionOrder:
+sectionorder:
 - Connect
 - Collect

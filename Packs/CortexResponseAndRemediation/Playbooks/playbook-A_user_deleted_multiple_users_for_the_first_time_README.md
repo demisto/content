@@ -44,19 +44,19 @@ This playbook does not use any integrations.
 ### Scripts
 
 * BetweenHours
+* IncreaseAlertSeverity
 * SearchAlertsV2
 * SetAndHandleEmpty
+* disable-user
+* get-endpoint-data
+* get-user-data
+* isolate-endpoint
 
 ### Commands
 
-* ad-disable-account
-* ad-get-user
 * closeInvestigation
+* core-execute-command
 * core-get-cloud-original-alerts
-* core-get-endpoints
-* core-isolate-endpoint
-* core-list-risky-hosts
-* core-list-risky-users
 
 ## Playbook Inputs
 
