@@ -1,7 +1,7 @@
 commonfields:
   id: CrowdStrike Falcon Sandbox V2
   version: -1
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 name: CrowdStrike Falcon Sandbox V2

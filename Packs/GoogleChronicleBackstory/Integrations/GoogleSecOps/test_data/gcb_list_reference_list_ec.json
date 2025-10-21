@@ -1,0 +1,22 @@
+{
+    "GoogleChronicleBackstory.ReferenceLists(val.name == obj.name)": [
+        {
+            "name": "A",
+            "description": "monitoring domain",
+            "createTime": "2025-07-14T07:50:45.350943Z",
+            "contentType": "PLAIN_TEXT",
+            "lines": [
+                "lines2"
+            ]
+        },
+        {
+            "name": "AAAAAA",
+            "description": "Description",
+            "createTime": "2025-07-22T07:22:19.247551Z",
+            "contentType": "CIDR",
+            "lines": [
+                "0.0.0.1/24"
+            ]
+        }
+    ]
+}

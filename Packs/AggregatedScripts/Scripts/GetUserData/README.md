@@ -33,6 +33,7 @@ This script is used in the following playbooks and scripts.
 | brands | Which integrations brands to run the command for. If not provided, the command will run for all available integrations.<br/>For multi-select provide a comma-separated list. For example: "SailPointIdentityNow,Active Directory Query v2,PingOne". |
 | verbose | Whether to fetch a human-readable entry for each command or just the final result. If set to true, all commands will have human-readable entries. If set to false, only the final result will be human-readable. |
 | additional_fields | Whether to return unmapped fields to the context output under the "AdditionalFields" path. |
+| list_non_risky_users | Whether to return only risky users from Core/XDR brands or all given users. If set to true, the execution might take some time. |
 
 ## Outputs
 
