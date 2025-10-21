@@ -912,13 +912,13 @@ def test_handle_assets_chunks(requests_mock, api_response, expected_assets, expe
         ),
         # Test case 2: Tags with other filters
         (
-            {"tagCategory": "Environment", "tagValue": "Production", "severity": "critical"},
-            {"tag.Environment": ["Production"], "severity": ["critical"]},
+            {"tagCategory": "Environment", "tagValue": "Production, Development", "severity": "critical"},
+            {"tag.Environment": ["Production", "Development"], "severity": ["critical"]},
         ),
         # Test case 3: tagValue is an array
         (
-            {"tagCategory": "Environment", "tagValue": ["Production"], "severity": "critical"},
-            {"tag.Environment": ["Production"], "severity": ["critical"]},
+            {"tagCategory": "Environment", "tagValue": ["Production", "Development"], "severity": "critical"},
+            {"tag.Environment": ["Production", "Development"], "severity": ["critical"]},
         ),
     ],
 )
