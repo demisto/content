@@ -1539,17 +1539,15 @@ class Client(BaseClient):
 class AsyncClient:
     """An asynchronous client for interacting with the Versa Director API; used for SIEM event collection"""
 
-    def __init__(self, server_url, verify, proxy, headers, auth):
+    def __init__(self, server_url: str, verify: bool, proxy: bool, headers: dict):
         self.base_url = server_url
         self._headers = headers
-        self._auth = auth
         self._verify = verify
         self._proxy_url = handle_proxy().get("http") if proxy else None
 
     async def __aenter__(self):
         self._session = aiohttp.ClientSession(
             headers=self._headers,
-            auth=self._auth,
             connector=aiohttp.TCPConnector(ssl=self._verify),
         )
         return self
@@ -1576,7 +1574,7 @@ class AsyncClient:
         Returns:
             dict[str, Any]: A dictionary containing the audit logs raw API response.
         """
-        params = {"searchKey": time_filter, "offset": str(offset), "limit": str(limit)}
+        params = {"searchKey": f"time>={time_filter}", "offset": str(offset), "limit": str(limit)}
         url = urljoin(self.base_url, "/vnms/audit/logs")
 
         demisto.debug(f"Starting request for audit logs using {params=}.")
@@ -3791,12 +3789,15 @@ async def main() -> None:
 
         if command == "test-module":
             return_results(test_module(client, use_basic_auth, client_id, client_secret, access_token, username, password))
+
         elif command == "vd-template-change-commit":
             return_results(template_change_commit_command(args, client))
+
         elif command in sync_commands:
             return_results(sync_commands[command](client, args))
+
         elif command in async_commands:
-            async with AsyncClient(url, verify=verify_certificate, headers=headers, proxy=proxy, auth=auth) as async_client:
+            async with AsyncClient(url, verify=verify_certificate, headers=headers, proxy=proxy) as async_client:
                 if not use_basic_auth and new_token:
                     async_client._headers["Authorization"] = f"Bearer {new_token}"
 
