@@ -1048,6 +1048,7 @@
     "system": false,
     "version": -1,
     "fromVersion": "6.0.0",
+    "toversion": "7.99.99",
     "description": "",
     "marketplaces": ["xsoar"]
 }
