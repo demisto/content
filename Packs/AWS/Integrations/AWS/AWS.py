@@ -766,6 +766,7 @@ class S3:
         """
         bucket = args.get("bucket")
         key = args.get("key", "")
+        print_debug_logs(client, f"downloading bucket={bucket}, key={key}")
         try:
             resp = client.get_object(Bucket=bucket, Key=key)
             body = resp["Body"]
@@ -800,7 +801,9 @@ class S3:
         """
         bucket = args.get("bucket")
         key = args.get("key")
-        path = get_file_path(args.get("entryID"))
+        entry_id = args.get("entryID")
+        path = get_file_path(entry_id)
+        print_debug_logs(client, f"uploading entryID={entry_id} to bucket={bucket}, key={key}")
         try:
             with open(path["path"], "rb") as data:
                 client.upload_fileobj(data, bucket, key)
