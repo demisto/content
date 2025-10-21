@@ -42,7 +42,6 @@ def parse_integration_params(params: dict[str, Any]) -> dict[str, Any]:
     username = credentials.get("identifier") or params.get("username")
     password = credentials.get("password") or params.get("password")
     api_token = params.get("api_token")
-    api_token = params.get("api_token")
 
     if not base_url:
         raise DemistoException("Server URL (url) is required.")
@@ -572,6 +571,7 @@ class CapeSandboxClient(BaseClient):  # noqa: F405
 def test_module(client: CapeSandboxClient) -> str:
     """Test connectivity and credentials by ensuring a valid token exists."""
     client.ensure_token()
+
     return "ok"
 
 
@@ -664,7 +664,8 @@ def cape_file_poll_report(
     Polls the CAPE service for the task status until the report is ready.
     This function is called repeatedly by XSOAR's scheduling mechanism.
     """
-    task_id = args.get("task_id")
+    task_id = arg_to_number(args.get("task_id"))
+
     if not task_id:
         raise DemistoException(
             "Task ID is missing for polling sequence."
@@ -726,28 +727,31 @@ def cape_file_submit_command(
     """
     Submits a file (or PCAP) to CAPE, retrieves the task_id, and initiates the polling sequence.
     """
-
     entry_id = args.get("entry_id")
+
     if not entry_id:
         raise DemistoException("entry_id is required for cape-file-submit.")
 
     try:
         file_path, filename = get_entry_path(entry_id)
+
     except Exception as ex:
         raise DemistoException(
             f"Failed to resolve entry_id '{entry_id}' to a local file path: {ex}"
         )
+
     is_pcap = filename.lower().endswith(".pcap")
 
     # Execute the submission API call
     form = build_submit_form(args)
     submit_resp = client.submit_file(form=form, file_path=file_path, is_pcap=is_pcap)
-
     task_ids = ((submit_resp or {}).get("data") or {}).get("task_ids") or []
+
     if not task_ids:
         raise DemistoException(
             f"No task id returned from CAPE. Response: {submit_resp}"
         )
+
     task_id = task_ids[0]
 
     # Initiate the polling sequence by calling the polling function
@@ -762,9 +766,12 @@ def cape_url_submit_command(
 
     First call requires `url`. Subsequent polls pass back `task_id`.
     """
-    task_id = args.get("task_id")
+    task_id = arg_to_number(args.get("task_id"))
+    url = args.get("url")
+
     if task_id:
         status = client.get_task_status(task_id)
+
         if status_is_reported(status):
             task = client.get_task_view(task_id)
             readable = tableToMarkdown(
@@ -784,12 +791,14 @@ def cape_url_submit_command(
                 ],
                 headerTransform=pascalToSpace,
             )
+
             return CommandResults(
                 readable_output=readable,
                 outputs_prefix="Cape.Task",
                 outputs_key_field="id",
                 outputs=task.get("data") or task,
             )
+
         return CommandResults(
             readable_output=f"URL Task {task_id} is not ready yet. Scheduling next poll in {POLLING_INTERVAL_SECONDS}s.",
             scheduled_command=ScheduledCommand(
@@ -799,20 +808,22 @@ def cape_url_submit_command(
             ),
         )
 
-    url = args.get("url")
     if not url:
         raise DemistoException("url is required for cape-url-submit.")
 
     form = build_submit_form(args, url_mode=True)
     submit_resp = client.submit_url(form=form)
     task_ids = ((submit_resp or {}).get("data") or {}).get("task_ids") or []
+
     if not task_ids:
         raise DemistoException(
             f"No task id returned from CAPE. Response: {submit_resp}"
         )
+
     task_id = task_ids[0]
 
     md = f"Submitted URL {url}. Task ID {task_id}. Polling will continue every {POLLING_INTERVAL_SECONDS}s until ready."
+
     return CommandResults(
         readable_output=md,
         scheduled_command=ScheduledCommand(
@@ -828,19 +839,22 @@ def cape_file_view_command(
     client: CapeSandboxClient, args: dict[str, Any]
 ) -> CommandResults:
     """View file information by one of: `task_id`, `md5`, or `sha256`."""
-    task_id = args.get("task_id")
+    task_id = arg_to_number(args.get("task_id"))
     md5 = args.get("md5")
     sha256 = args.get("sha256")
 
     if not any([task_id, md5, sha256]):
         raise DemistoException("Provide one of: task_id, md5, sha256")
+
     if sum(bool(x) for x in [task_id, md5, sha256]) > 1:
         raise DemistoException("Provide only one of task_id, md5, sha256")
 
     if task_id:
         resp = client.files_view_by_task(task_id)
+
     elif md5:
         resp = client.files_view_by_md5(md5)
+
     else:
         resp = client.files_view_by_sha256(sha256)  # type: ignore[arg-type]
 
@@ -860,6 +874,7 @@ def cape_file_view_command(
         ],
         headerTransform=pascalToSpace,
     )
+
     return CommandResults(
         outputs_prefix="Cape.File",
         outputs=data,
@@ -872,7 +887,7 @@ def cape_pcap_file_download_command(
     client: CapeSandboxClient, args: dict[str, Any]
 ) -> Any:
     """Download the PCAP dump of a Task by ID. Return object will be application/vnd.tcpdump.pcap. (.pcap)."""
-    task_id = args.get("task_id")
+    task_id = arg_to_number(args.get("task_id"))
     if not task_id:
         raise DemistoException("Task ID is missing for download pcap file.")
 
@@ -891,13 +906,14 @@ def cape_sample_file_download_command(
     client: CapeSandboxClient, args: dict[str, Any]
 ) -> Any:
     """Download a sample from a Task by one of: `task_id`, `md5`, `sha1` or `sha256`."""
-    task_id = args.get("task_id")
+    task_id = arg_to_number(args.get("task_id"))
     md5 = args.get("md5")
     sha1 = args.get("sha1")
     sha256 = args.get("sha256")
 
     if not any([task_id, md5, sha1, sha256]):
         raise DemistoException("Provide one of: task_id, md5, sha1, sha256")
+
     if sum(bool(x) for x in [task_id, md5, sha1, sha256]) > 1:
         raise DemistoException("Provide only one of task_id, md5, sha1 ,sha256")
 
@@ -908,6 +924,7 @@ def cape_sample_file_download_command(
     elif md5:
         resp = client.files_get_by_md5(md5)
         filename_base = "md5"
+
     elif sha1:
         resp = client.files_get_by_sha1(sha1)
         filename_base = "sha1"
@@ -929,13 +946,14 @@ def cape_task_delete_command(
     client: CapeSandboxClient, args: dict[str, Any]
 ) -> CommandResults:
     """Delete task by id."""
-    task_id = args.get("task_id")
+    task_id = arg_to_number(args.get("task_id"))
     if not task_id:
         raise DemistoException("Task ID is missing for delete task.")
 
     resp = client.delete_task(task_id)
 
     readable = f"Task id={task_id} was deleted successfully"
+
     return CommandResults(readable_output=readable)
 
 
@@ -945,7 +963,7 @@ def cape_tasks_list_command(
     client: CapeSandboxClient, args: dict[str, Any]
 ) -> CommandResults:
     """List tasks with pagination or fetch a single task by `task_id`."""
-    task_id = args.get("task_id")
+    task_id = arg_to_number(args.get("task_id"))
 
     # --- Pagination Logic ---
 
@@ -1127,12 +1145,12 @@ def cape_task_report_get_command(
     """
     Get a task report. When 'zip=true', returns a ZIP file. Otherwise returns the JSON 'info' object.
     """
-    task_id = args.get("task_id")
+    task_id = arg_to_number(args.get("task_id"))
+    file_format = args.get("format", "json").strip().lower()
+    zip_flag = argToBoolean(args.get("zip", False))
+
     if not task_id:
         raise DemistoException("Task ID is missing for get report.")
-
-    file_format = (args.get("format") or "json").strip().lower()
-    zip_flag = argToBoolean(args.get("zip", False))
 
     if zip_flag:
         content = client.get_task_report(
@@ -1141,6 +1159,7 @@ def cape_task_report_get_command(
         filename = build_file_name(
             file_identifier=task_id, file_type="report", file_format="zip"
         )
+
         return fileResult(filename, content)
 
     resp = client.get_task_report(
@@ -1213,8 +1232,8 @@ def cape_machines_list_command(
 ) -> CommandResults:
     """List machines or view a single machine by `machine_name`."""
     machine_name = args.get("machine_name")
-    all_results = args.get("all_results")
-    limit = max(args.get("limit") or LIST_DEFAULT_LIMIT, 1)
+    all_results = arg_to_bool_or_none(args.get("all_results"))
+    limit = max(arg_to_number(args.get("limit")) or LIST_DEFAULT_LIMIT, 1)
 
     if machine_name:
         resp = client.view_machine(machine_name)
@@ -1250,8 +1269,10 @@ def cape_machines_list_command(
 
     resp = client.list_machines()
     machines = resp.get("machines") or resp.get("data") or resp
+
     if isinstance(machines, dict):
         machines = [machines]
+
     if not all_results:
         machines = machines[:limit]
 
@@ -1324,17 +1345,19 @@ def cape_task_screenshot_download_command(
     client: CapeSandboxClient, args: dict[str, Any]
 ) -> CommandResults:
     """Download screenshots for a task."""
-    task_id = args.get("task_id")
+    task_id = arg_to_number(args.get("task_id"))
+    single_number = arg_to_number(args.get("screenshot"))
+
     if not task_id:
         raise DemistoException("Task ID is missing for download screenshot.")
 
-    single_number = arg_to_number(args.get("screenshot"))
-
     if single_number:
         candidates_raw = [single_number]
+
     else:
         meta = client.list_task_screenshots(task_id)
         candidates_raw = meta.get("screenshots") or meta.get("data") or meta
+
         if not isinstance(candidates_raw, list):
             candidates_raw = []
 
@@ -1371,6 +1394,7 @@ def cape_task_screenshot_download_command(
             demisto.debug(
                 f"Failed to fetch screenshot {number} for task {task_id}: {ex}"
             )
+
         except Exception as ex:
             demisto.debug(
                 f"Unexpected error while processing screenshot {number}: {ex}"

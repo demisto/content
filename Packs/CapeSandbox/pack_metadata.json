@@ -6,9 +6,14 @@
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
-    "categories": ["Forensics & Malware Analysis"],
+    "categories": [
+        "Forensics & Malware Analysis"
+    ],
     "tags": [],
     "useCases": [],
     "keywords": [],
-    "marketplaces": ["xsoar"]
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }
