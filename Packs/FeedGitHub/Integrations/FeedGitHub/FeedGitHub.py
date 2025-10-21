@@ -406,7 +406,7 @@ def create_stix_generator(content_files: list[dict]):
         content_files (list): A list of JSON files.
 
     Returns:
-        Generator: A generator that yields each STIX file from the filtered list one at a time.
+        Generator: A generator that yields each STIX file from the filtered list, one at a time.
     """
     file_names = [list(content_file.keys())[0] for content_file in content_files]
     file_contents = [list(content_file.values())[0] for content_file in content_files]
