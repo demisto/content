@@ -48,6 +48,8 @@ def test_is_email():
 
     # invalid - wrong type
     assert not is_email({"type": "invalid type", "info": "SMTP mail, UTF-8 Unicode text"}, "test.txt")
+    assert not is_email({"type": "message/rfc822", "info": "vCalendar calendar file"}, "Workshop.eml")
+    assert not is_email({"type": "eml", "info": "vCalendar calendar file"}, "Workshop.eml")
 
     # invalid - wrong info
     assert not is_email({"type": "eml", "info": "invalid info"}, "test.txt")
@@ -57,7 +59,7 @@ def test_is_email():
     assert is_email({"info": "data"}, "test.eml")
     assert is_email({"info": "UTF-8 Unicode text, with very long lines, with CRLF line terminators"}, "test.eml")
 
-    # invalid - file name is not .msg or .eml
+    # invalid - file is not .msg or .eml
     assert not is_email({"info": "data"}, "test.bin")
     assert not is_email({"info": "composite document file v2 document"}, "cv.doc")
 
