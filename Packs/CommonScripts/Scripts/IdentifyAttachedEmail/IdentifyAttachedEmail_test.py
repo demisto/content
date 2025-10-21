@@ -38,13 +38,22 @@ def test_is_email():
         "test.bin",
     )
 
-    # invalid - info is missing
-    assert not is_email({"type": "eml}"}, "test.txt")
-    assert not is_email({"type": "eml"}, "test.txt")
-    assert not is_email({"type": "message/rfc822"}, "test.txt")
+    # invalid - info is missing with wrong type
+    assert not is_email({"type": "invalid type"}, "test.txt")
 
-    # invalid - type is missing
-    assert not is_email({"info": "SMTP mail, UTF-8 Unicode text"}, "test.txt")
+    # valid - info is missing with valid type
+    assert is_email({"type": "eml"}, "test.txt")
+    assert is_email({"type": "eml}"}, "test.eml")
+    assert is_email({"type": "message/rfc822"}, "test.msg")
+
+    # invalid - info is missing with invalid type
+    assert not is_email({"type": "invalid type"}, "test.txt")
+
+    # valid - type is missing with valid info
+    assert is_email({"info": "SMTP mail, UTF-8 Unicode text"}, "test.eml")
+
+    # invalid - type is missing with invalid info
+    assert not is_email({"info": "invalid info"}, "test.eml")
 
     # invalid - wrong type
     assert not is_email({"type": "invalid type", "info": "SMTP mail, UTF-8 Unicode text"}, "test.txt")
