@@ -10,7 +10,7 @@
                 {
                     "SEARCH_FIELD": "alert_source",
                     "SEARCH_TYPE": "EQ",
-                    "SEARCH_VALUE": "ASM"
+                    "SEARCH_VALUE": "XPANSE"
                 }
             ]
         }
