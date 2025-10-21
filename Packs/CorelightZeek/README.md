@@ -66,6 +66,6 @@ Follow these steps to configure the Broker VM to ingest Corelight Zeek logs.
 | `Vendor`     | Enter **corelight**.                                                                                                           |
 | `Product`    | Enter **zeek**.                                                                                                                |
 
-For more information, use the unformation described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Ingest-logs-from-Corelight-Zeek)
+For more information, see [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Ingest-logs-from-Corelight-Zeek)
 
 </~XSIAM>
