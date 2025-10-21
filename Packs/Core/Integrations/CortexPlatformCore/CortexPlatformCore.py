@@ -10,6 +10,15 @@ INTEGRATION_CONTEXT_BRAND = "Core"
 INTEGRATION_NAME = "Cortex Platform Core"
 MAX_GET_INCIDENTS_LIMIT = 100
 
+ASSET_FIELDS = {
+    "asset_name": "xdm.asset.name",
+    "asset_type": "xdm.asset.type.name",
+    "asset_tags": "xdm.asset.tags",
+    "asset_id": "xdm.asset.id",
+    "asset_provider": "xdm.asset.provider",
+    "asset_realm": "xdm.asset.realm",
+    "asset_group": "xdm.asset.group_ids",
+}
 
 def replace_substring(data: dict | str, original: str, new: str) -> str | dict:
     """
@@ -118,29 +127,16 @@ class Client(CoreClient):
 
         return reply
 
-    def search_assets(self, filter, limit, on_demand_fields):
-        if not filter:
-            filter = {
-                        "AND": [{
-                            "SEARCH_FIELD": "xdm.asset.type.class",
-                            "SEARCH_TYPE": "NEQ",
-                            "SEARCH_VALUE": "Other"
-                        }]
-                    }
-        on_demand_fields = on_demand_fields or [
-            "xdm.business_application.ids",
-            "xdm.business_application.names",
-            "xdm.asset.tags"
-        ]
+    def search_assets(self, filter, start, limit, on_demand_fields):
         reply = self._http_request(
             method="POST",
             headers=self._headers,
             json_data={
                 "request_data": {
                     "filters": filter,
-                    "search_from": 0,
-                    "search_to": limit,
-                    "onDemandFields": on_demand_fields,
+                    "search_from": start,
+                    "search_to": start + limit,
+                    "on_demand_fields": on_demand_fields,
                 },
             },
             url_suffix="/assets",
@@ -148,43 +144,34 @@ class Client(CoreClient):
 
         return reply
 
-    def search_assets_fe(self, filter, limit, on_demand_fields):
-        filter = filter or {
-                "AND": [{
-                    "SEARCH_FIELD": "xdm__asset__type__class",
-                    "SEARCH_TYPE": "NEQ",
-                    "SEARCH_VALUE": "Other"
-                    }]
-                }
-        on_demand_fields = on_demand_fields or [
-            "xdm__business_application__ids",
-            "xdm__business_application__names",
-            "xdm__asset__tags"
-        ]
+    def get_asset_group_ids_from_names(self, names: list[str]) -> list[str]:
+        if not names:
+            return []
+        
+        filter = {
+            "OR": [
+                {"SEARCH_FIELD": "XDM.ASSET_GROUP.NAME", "SEARCH_TYPE": "CONTAINS", "SEARCH_VALUE": group_name}
+                for group_name in names
+            ]
+        }
         reply = self._http_request(
             method="POST",
             headers=self._headers,
             json_data={
-                "type": "grid",
-                "table_name": "UNIFIED_ASSET_MANAGEMENT_AGGREGATED_ASSETS",
-                "filter_data": {
-                    "filter": filter,
-                    "paging": {
-                        "from": 0,
-                        "to": limit,
-                    },
-                    # "sort": [{
-                    #     "FIELD": "xdm__asset__name",
-                    #     "ORDER": "DESC"
-                    # }],
+                "request_data": {
+                    "filters": filter,
                 },
-                # "extraData": {"AGGREGATED_ONLY": True},
-                "onDemandFields": on_demand_fields
             },
-            url_suffix="/get_data",
+            url_suffix="/asset-groups",
         )
 
-        return reply
+        group_ids = [group.get("XDM.ASSET_GROUP.ID") for group in reply.get("reply", {}).get("data", [])]
+        group_ids = [id for id in group_ids if id]
+
+        if len(group_ids) != len(names):
+            raise DemistoException(f"Failed to fetch asset group IDs for {names}. Ensure the asset group names are valid.")
+
+        return group_ids
 
 
 def get_asset_details_command(client: Client, args: dict) -> CommandResults:
@@ -265,21 +252,48 @@ def search_assets_command(client: Client, args):
     """
     Search for assets in XDR based on some filters.
     """
-    filter = args.get("filter")
-    api_type = args.get("api_type", "public")
+    asset_group_ids = client.get_asset_group_ids_from_names(argToList(args.get("asset_group", "")))
+    fields_to_filter = {
+        ASSET_FIELDS["asset_name"]: argToList(args.get("asset_name", "")),
+        ASSET_FIELDS["asset_type"]: argToList(args.get("asset_type", "")),
+        ASSET_FIELDS["asset_tags"]: argToList(args.get("asset_tags", "")),
+        ASSET_FIELDS["asset_id"]: argToList(args.get("asset_id", "")),
+        ASSET_FIELDS["asset_provider"]: argToList(args.get("asset_provider", "")),
+        ASSET_FIELDS["asset_realm"]: argToList(args.get("asset_realm", "")),
+        ASSET_FIELDS["asset_group"]: asset_group_ids,
+    }
+
+    filter = create_asset_filter_from_dict(fields_to_filter)
+    print(filter)
     limit = arg_to_number(args.get("limit", 100))
+    start = arg_to_number(args.get("start", 0))
     on_demand_fields = argToList(args.get("on_demand_fields", []))
-    if api_type == "fe":
-        client._base_url = "/api/webapp"
-        response = client.search_assets_fe(filter, limit, on_demand_fields).get("reply", {}).get("DATA", [])
-    else:
-        response = client.search_assets(filter, limit, on_demand_fields).get("reply", {}).get("data", [])
+    response = client.search_assets(filter, start, limit, on_demand_fields).get("reply", {}).get("data", [])
     return CommandResults(
         readable_output=tableToMarkdown("Assets", response, headerTransform=string_to_table_header),
-        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.CoreAssets.{api_type}",
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.CoreAssets",
         outputs=response,
         raw_response=response,
     )
+
+def create_asset_filter_from_dict(fields_to_filter):
+    filter: dict[str, list] = {"AND": []}
+
+    for field, value in fields_to_filter.items():
+        if not value:
+            continue
+        
+        search_obj: dict[str, list] = {"OR": []}
+        for val in value:
+            search_obj["OR"].append({
+                "SEARCH_FIELD": field,
+                "SEARCH_TYPE": "EQ" if isinstance(val, str) else "ARRAY_CONTAINS",
+                "SEARCH_VALUE": val,
+            })
+
+        filter["AND"].append(search_obj)
+
+    return filter
 
 
 def main():  # pragma: no cover
