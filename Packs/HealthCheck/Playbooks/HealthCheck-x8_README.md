@@ -54,4 +54,4 @@ There are no outputs for this playbook.
 ## Playbook Image
 
 ---
-![HealthCheck](./../doc_files/HealthCheck.png)
+![HealthCheck](./../doc_files/HealthCheck-x8.png)
