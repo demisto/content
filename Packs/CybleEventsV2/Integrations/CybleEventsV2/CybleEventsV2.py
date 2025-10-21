@@ -3,13 +3,14 @@ from typing import Any
 
 """ IMPORTS """
 import requests
-from datetime import datetime, timedelta
 import pytz
 import urllib3
 import dateparser
 import json
 from collections.abc import Sequence
-
+from datetime import datetime, timedelta, timezone
+import concurrent.futures
+from typing import Any, List, Tuple
 from dateutil.parser import parse as parse_date
 
 import concurrent.futures
@@ -63,6 +64,7 @@ COMMAND = {
     "get-modified-remote-data": "alerts",
     "get-remote-data": "alerts",
 }
+
 
 
 def get_headers(alerts_api_key: str) -> dict:
@@ -338,10 +340,14 @@ class Client(BaseClient):
         """
         try:
             url = url + "/services"
+            demisto.debug(f"[get_all_services] url: {url}")
             response = self.make_request(url, api_key)
+            demisto.debug(f"[get_all_services] status code: {response.status_code}")
             if response.status_code != 200:
                 raise Exception(f"Wrong status code: {response.status_code}")
             response = response.json()
+            demisto.debug(f"[get_all_services] response: {response}")
+
 
             if "data" in response and isinstance(response["data"], Sequence):
                 demisto.debug(f"Received services: {json.dumps(response['data'], indent=2)}")
@@ -698,23 +704,36 @@ def fetch_subscribed_services_alert(client, method, base_url, token):
         return_error(f"Failed to fetch subscribed services: {str(e)}")
 
 
-def test_response(client, method, base_url, token):
+def test_response(client, method, url, token):
     """
     Test the integration state
     """
     try:
-        # The test mocks this specific endpoint
-        url_suffix = "/y/tpi/cortex/alerts"
-        headers = {"Authorization": f"Bearer {token}"}
+        headers = {
+            "Authorization": f"Bearer {token}",
+            "Accept": "application/json"
+        }
 
-        response = client._http_request(method=method, url_suffix=url_suffix, headers=headers)
+        demisto.debug(f"[test_response] Calling: {url} with method {method}")
 
+        # Make direct GET request to the service endpoint
+        response = client._http_request(
+            method=method,
+            full_url=url,
+            headers=headers
+        )
+
+        demisto.debug(f"[test_response] Raw response: {json.dumps(response, indent=2)}")
+
+        # If we got any valid JSON back, assume the connection is successful
         if response:
             return "ok"
         else:
+            demisto.debug("[test_response] Empty or invalid response received.")
             raise Exception("failed to connect")
+
     except Exception as e:
-        demisto.error(f"Failed to connect: {e}")
+        demisto.error(f"[test_response] Failed to connect: {str(e)}")
         raise Exception("failed to connect")
 
 
@@ -1406,7 +1425,7 @@ def main():
 
         if demisto.command() == "test-module":
             url = base_url + str(ROUTES[COMMAND[demisto.command()]])
-            return_results(test_response(client, "POST", url, token))
+            return_results(test_response(client, "GET", url, token))
 
         elif demisto.command() == "fetch-incidents":
             last_run = demisto.getLastRun()
