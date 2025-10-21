@@ -5,7 +5,7 @@ name: GoogleThreatIntelligence
 display: Google Threat Intelligence
 fromversion: 6.10.0
 category: Data Enrichment & Threat Intelligence
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 description: Analyzes suspicious hashes, URLs, domains, and IP addresses.
