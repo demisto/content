@@ -1213,9 +1213,11 @@ This command returns a maximum of 1,000,000 results, and will timeout on very la
 You can use this command to search message data for the last 90 days. If you run this command without any arguments, only data from the last 48 hours is returned.
 You can only return 10 days worth of data per query.
 This command returns a maximum of 5,000 results. If your data exceeds the result size, consider splitting it up using shorter *start_date* and *end_date* intervals.
+For information on how to use pagination, see the [Pagination](#pagination) section below.
 
 **Pagination Information:**
 Pagination isn't supported in this command due to API limitations. To query subsequent data, use the *starting_recipient_address* and *end_date* parameters with the values from the Recipient address and Received Time properties respectively of the previous result in the next query.
+For more information, Click for the [Microsoft API Documentation](https://learn.microsoft.com/en-us/exchange/monitoring/trace-an-email-message/new-message-trace#using-powershell-cmdlet-get-messagetracev2)
 
 **Best Practices:**
 
