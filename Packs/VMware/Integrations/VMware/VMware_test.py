@@ -991,3 +991,43 @@ def test_change_nic_state(monkeypatch):
     assert list(res.get("Contents").values())[0].get("UUID") == "1234"
     assert list(res.get("Contents").values())[0].get("NICState") == "connected"
     assert "Virtual Machine's NIC was connected successfully" in res.get("HumanReadable")
+
+
+def test_vsphare_client_login(mocker):
+    """
+    Given:
+        - A parameters dictionary for the vSphere client.
+
+    When:
+        - Running the vsphare_client_login function.
+
+    Then:
+        - Ensure the create_vsphere_client is called with the correct arguments, including proxy and verification settings.
+    """
+    user_name = "user"
+    password = "pass"
+    proxies = {"https": "proxy.test:8080"}
+    full_url = "https://example.test"
+    url = "example.test"
+    port = 443
+    insecure = True
+    params = {"insecure": insecure}
+
+    mocker.patch.object(VMware, "parse_params", return_value=(full_url, url, port, user_name, password))
+    mocker.patch.object(VMware, "handle_proxy", return_value=proxies)
+    mock_session = mocker.MagicMock()
+    mocker.patch("requests.session", return_value=mock_session)
+    mock_create_vsphere_client = mocker.patch.object(VMware, "create_vsphere_client")
+
+    VMware.vsphare_client_login(params)
+
+    assert mock_session.verify is not insecure
+    assert mock_session.proxies == proxies
+
+    assert mock_create_vsphere_client.call_count == 1
+
+    create_vsphere_client_kwargs = mock_create_vsphere_client.call_args.kwargs
+    assert create_vsphere_client_kwargs["server"] == full_url
+    assert create_vsphere_client_kwargs["username"] == user_name
+    assert create_vsphere_client_kwargs["password"] == password
+    assert create_vsphere_client_kwargs["session"] == mock_session
