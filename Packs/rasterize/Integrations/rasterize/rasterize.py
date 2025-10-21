@@ -1252,7 +1252,7 @@ def perform_rasterize(
                     current_path = f"{protocol}://{current_path}"
 
                 # Start a new thread in group of max_tabs
-                rasterization_threads.append(
+                rasterization_threads.append((
                     executor.submit(
                         rasterize_thread,
                         browser=browser,
@@ -1266,8 +1266,9 @@ def perform_rasterize(
                         full_screen=full_screen,
                         width=width,
                         height=height,
-                    )
-                )
+                    ),
+                    current_path
+                ))
             # Wait for all tasks to complete
             executor.shutdown(wait=True)
             demisto.info(
@@ -1294,14 +1295,24 @@ def perform_rasterize(
                 increase_counter_chrome_instances_file(chrome_port=chrome_port)
 
             # Get the results
-            for current_thread in rasterization_threads:
-                ret_value, response_body = current_thread.result()
-                if ret_value:
-                    rasterization_results.append((ret_value, response_body))
-                else:
+            for current_thread, path in rasterization_threads:
+
+                try:
+                    ret_value, response_body = current_thread.result()
+                    if ret_value:
+                        rasterization_results.append((ret_value, response_body))
+                    else:
+                        return_results(
+                            CommandResults(
+                                readable_output=str(response_body), entry_type=(EntryType.ERROR if WITH_ERRORS else EntryType.WARNING)
+                            )
+                        )
+                except Exception as ex:
+                    error_msg = f"Failed to perform rasterize to the path {path}, exception: {str(ex)}"
+                    demisto.debug(error_msg)
                     return_results(
                         CommandResults(
-                            readable_output=str(response_body), entry_type=(EntryType.ERROR if WITH_ERRORS else EntryType.WARNING)
+                            readable_output=error_msg, entry_type=(EntryType.ERROR if WITH_ERRORS else EntryType.WARNING)
                         )
                     )
             return rasterization_results
