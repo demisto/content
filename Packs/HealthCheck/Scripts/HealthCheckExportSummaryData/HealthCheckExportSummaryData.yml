@@ -1,24 +1,12 @@
-args:
-- default: false
-  description: '[Enter a description of the argument, including any important information users need to know, for example, default values.]'
-  isArray: false
-  name: dummy
-  required: true
-  secret: false
-comment: '[Enter a description of the script, including what function it performs and any important information users need to know, for example required permissions.]'
+comment: Export all Incident, Context and Widget data into Json format output.
 commonfields:
   id: HealthCheckExportSummaryData
   version: -1
 enabled: false
 name: HealthCheckExportSummaryData
-outputs:
-- contextPath: BaseScript.Output
-  description: '[Enter a description of the data returned in this output.]'
-  type: String
-script: '-'
+script: ''
 system: false
-tags:
-- basescript
+tags: []
 timeout: '0'
 type: python
 subtype: python3
@@ -27,3 +15,5 @@ fromversion: 8.0.0
 marketplaces:
 - xsoar
 - marketplacev2
+tests:
+- No tests (auto formatted)

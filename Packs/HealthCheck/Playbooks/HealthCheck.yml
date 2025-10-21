@@ -1,12 +1,6 @@
 description: New version for HealthCheck main playbook.
 id: HealthCheck
-inputs:
-- description: ""
-  key: ChangeThresholdsRequired
-  playbookInputQuery:
-  required: false
-  value:
-    simple: "false"
+inputs: []
 name: HealthCheck
 outputs: []
 starttaskid: "0"
@@ -19,6 +13,7 @@ tasks:
       id: de2d5100-330b-480d-8c3c-d2ba326ae21e
       version: -1
       name: ""
+      description: start
       iscommand: false
       brand: ""
     nexttasks:
@@ -144,6 +139,7 @@ tasks:
       id: c2c984fd-3847-4c70-85fe-d0eed5d0edab
       version: -1
       name: Collect Information
+      description: Collect Information
       type: title
       iscommand: false
       brand: ""
@@ -319,6 +315,7 @@ tasks:
       id: 0ad58a24-1f65-4e05-87c6-d39ed77ae9aa
       version: -1
       name: System Details
+      description: System Details section
       type: title
       iscommand: false
       brand: ""
@@ -349,6 +346,7 @@ tasks:
       id: e12cd0ae-cda7-4cfc-8f95-877d6874712e
       version: -1
       name: Packs and Integrations
+      description: Packs and Integrations section
       type: title
       iscommand: false
       brand: ""
@@ -382,6 +380,7 @@ tasks:
       id: 9f90bcde-0948-41bc-8c4c-d1d594ea804e
       version: -1
       name: System Resources
+      description: System Resources section
       type: title
       iscommand: false
       brand: ""
@@ -515,6 +514,7 @@ tasks:
       id: 34f6c1eb-8e9a-426c-8744-01f0692c0407
       version: -1
       name: Playbook Analysis
+      description: Playbook Analysis section
       type: title
       iscommand: false
       brand: ""
@@ -580,6 +580,7 @@ tasks:
       id: 54191f45-09dd-4cfe-8bd7-d91bfd092a52
       version: -1
       name: Incidents
+      description: Incidents section
       type: title
       iscommand: false
       brand: ""
@@ -647,6 +648,7 @@ tasks:
       id: df2811a4-f0c2-4bed-8ba5-fabb58df68a5
       version: -1
       name: Indicators
+      description: Indicators section
       type: title
       iscommand: false
       brand: ""
@@ -712,6 +714,7 @@ tasks:
       id: 4effe8ff-81ed-4de0-8c61-3f8879c06257
       version: -1
       name: Conclusions
+      description: Conclusions section
       type: title
       iscommand: false
       brand: ""
@@ -787,6 +790,7 @@ tasks:
       id: 95f6960a-0fde-4462-8234-69334764de93
       version: -1
       name: Done
+      description: Done
       type: title
       iscommand: false
       brand: ""
@@ -1011,6 +1015,7 @@ tasks:
       id: b3042565-6465-44a2-8e52-624f4bca63be
       version: -1
       name: DB Stats Conclusions
+      description: DB Stats Conclusions section
       type: title
       iscommand: false
       brand: ""
@@ -1181,6 +1186,7 @@ tasks:
       id: 0662f4a9-0ea0-4a3a-84ab-6314d8a93e7b
       version: -1
       name: Database Diagnostics
+      description: Database Diagnostics section
       type: title
       iscommand: false
       brand: ""
@@ -1245,6 +1251,7 @@ tasks:
       id: f109a77c-1302-4ede-87e4-068015e5cabf
       version: -1
       name: Server Configuration
+      description: Server Configuration section
       type: title
       iscommand: false
       brand: ""
