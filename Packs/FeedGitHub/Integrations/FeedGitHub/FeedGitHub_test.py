@@ -166,7 +166,7 @@ def test_parse_and_map_yara_content_invalid_rule(mocker):
     When:
      - Parsing and mapping the YARA content using the parse_and_map_yara_content function.
     Then:
-     - Ensure an empty list is returned and an error is logged.
+     - Ensure that an empty list is returned and an error is logged.
     """
     from FeedGitHub import parse_and_map_yara_content
 
