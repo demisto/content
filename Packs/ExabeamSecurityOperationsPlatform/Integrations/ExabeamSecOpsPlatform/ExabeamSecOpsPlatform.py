@@ -1,6 +1,5 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-
 """ CONSTANTS """
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
@@ -1057,8 +1056,10 @@ def get_events_command(client: Client, args: dict[str, Any]) -> tuple[list[dict]
     """
     demisto.debug(f"Starting to get events with {args=}.")
     # `arg_to_datetime` does not return `None` here due to default. Added `type: ignore` to silence type checkers and linters
-    start_time = arg_to_datetime(args.get("start_time", GET_EVENTS_DEFAULT_FROM_DATE)).strftime(DATE_FORMAT)  # type: ignore [union-attr]
-    end_time = arg_to_datetime(args.get("end_time", GET_EVENTS_DEFAULT_TO_DATE)).strftime(DATE_FORMAT)  # type: ignore [union-attr]
+    start_time = arg_to_datetime(args.get("start_time", GET_EVENTS_DEFAULT_FROM_DATE)
+                                 ).strftime(DATE_FORMAT)  # type: ignore [union-attr]
+    end_time = arg_to_datetime(args.get("end_time", GET_EVENTS_DEFAULT_TO_DATE)
+                               ).strftime(DATE_FORMAT)  # type: ignore [union-attr]
     limit = arg_to_number(args.get("limit")) or GET_EVENTS_DEFAULT_LIMIT
 
     demisto.debug(f"Starting to get cases in batches with {start_time=}, {end_time=}, {limit=}.")
@@ -1092,6 +1093,53 @@ def test_module(client: Client, params: dict[str, Any]) -> str:  # pragma: no co
         return "ok"
     else:
         raise DemistoException("Access Token Generation Failure.")
+
+
+def get_threat_summary(client: Client, args: dict) -> CommandResults:
+    """
+    Implements `exabeam-get-threat-summary`; gets Exabeam Threat Summary for a given ID
+
+    Args:
+        client (Client): API client instance.
+        args (dict[str, Any]): The command arguments.
+
+    Returns:
+        CommandResults: Command results containing a human-readable threat summary.
+    """
+    data = json.dumps({"alertId": args.get("alertId")})
+    full_url = f"{client._base_url}/threat-center/v1/alerts/threat-explainer/prompt"
+    response = client.request(method="POST", full_url=full_url, data=data, timeout=60)
+
+    data_response = response.get("message")
+    return CommandResults(
+        outputs_prefix="ExabeamPlatform.Alert.Summary",
+        outputs_key_field="",
+        outputs=data_response,
+        readable_output=data_response
+    )
+
+
+def update_case_details(client: Client, args: dict) -> CommandResults:
+    """
+    Implements `exabeam-update-case-details`; Update details for a specific case, as identified by case ID.
+
+    Args:
+        client (Client): API client instance.
+        args (dict[str, Any]): The command arguments.
+
+    Returns:
+        CommandResults: Command results containing human-readable case details.
+    """
+    caseId = args.pop('caseId')
+    request_data = json.dumps(args)
+    full_url = f"{client._base_url}/threat-center/v2/cases/{caseId}"
+    response = client.request(method="POST", full_url=full_url, data=request_data)
+
+    return CommandResults(
+        outputs_prefix="ExabeamPlatform.Event",
+        outputs=response,
+        readable_output=tableToMarkdown(name="Case ID: " + caseId, t=response)
+    )
 
 
 """ MAIN FUNCTION """
@@ -1152,6 +1200,10 @@ def main() -> None:  # pragma: no cover
             return_results(table_record_list_command(client, args))
         elif command == "exabeam-platform-table-record-create":
             return_results(table_record_create_command(args, client))
+        elif command == "exabeam-get-threat-summary":
+            return_results(get_threat_summary(client, args))
+        elif command == "exabeam-update-case-details":
+            return_results(update_case_details(client, args))
         else:
             raise NotImplementedError(f"Command {command} is not supported")
 
