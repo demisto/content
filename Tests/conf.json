@@ -6296,10 +6296,12 @@
         "FiltersAndTransformers"
     ],
     "nightly_packs": [
-        "MicrosoftGraphUser"
+        "MicrosoftGraphUser",
+        "Office365AndAzureAuditLog"
     ],
     "selected_nightly_tpb": [
-        "Microsoft Graph User - Test"
+        "Microsoft Graph User - Test",
+        "Audit Log - Test"
     ],
     "parallel_integrations": [
         "AWS - ACM",
