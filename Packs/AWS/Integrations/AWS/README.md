@@ -1486,7 +1486,7 @@ There is no context output for this command.
 ### aws-s3-file-download
 
 ***
-Download a file from S3 bucket to war room.
+Download a file from S3 bucket to the War Room.
 
 #### Base Command
 
