@@ -2129,11 +2129,8 @@ def get_processes_ran_on(ioc_type, value, device_id):
     """
     Get processes ids that ran on the given device_id that encountered the ioc
     """
-    # payload = assign_params(type=ioc_type, value=value, device_id=device_id)
-    # original_res = http_request("GET", "/indicators/queries/processes/v1", payload)
-    new_res = http_request("GET", "/iocs/queries/indicators/processes/v1", payload)
-    demisto.debug(f"Those are responses {new_res=}")
-    return new_res
+    payload = assign_params(type=ioc_type, value=value, device_id=device_id)
+    return http_request("GET", "/iocs/queries/indicators/processes/v1", payload)
 
 
 def search_device(filter_operator="AND"):
@@ -5508,10 +5505,7 @@ def validate_response(raw_res):
 
 
 def run_indicator_device_id_request(params):
-    original_res = http_request("GET", "/indicators/queries/devices/v1", params=params, status_code=404)
-    new_res = http_request("GET", "/iocs/queries/indicators/devices/v1", params=params, status_code=404)
-    demisto.debug(f"Those are the responses: {original_res=} {new_res=}")
-    return new_res
+    return http_request("GET", "/iocs/queries/indicators/devices/v1", params=params, status_code=404)
 
 
 def get_indicator_device_id():
