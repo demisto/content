@@ -2369,7 +2369,7 @@ class KMS:
     service = AWSServices.KMS
 
     @staticmethod
-    def enable_key_rotation_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def enable_key_rotation_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Enables automatic rotation for a symmetric customer-managed KMS key.
         Uses a custom rotation period (days) from args; valid range is 90–2560.
@@ -2389,10 +2389,10 @@ class KMS:
             if status in (HTTPStatus.OK, HTTPStatus.NO_CONTENT):
                 hr = f"Enabled automatic rotation for KMS key '{key_id}' (rotation period: {rot_period} days)."
                 return CommandResults(readable_output=hr, raw_response=resp)
-            AWSErrorHandler.handle_response_error(resp)
+            return AWSErrorHandler.handle_response_error(resp)
 
         except ClientError as e:
-            AWSErrorHandler.handle_client_error(e)
+            return AWSErrorHandler.handle_client_error(e)
 
         except Exception as e:
             raise DemistoException(f"Error enabling key rotation for '{key_id}': {str(e)}")
@@ -2402,7 +2402,7 @@ class ACM:
     service = AWSServices.ACM
 
     @staticmethod
-    def update_certificate_options_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def update_certificate_options_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Updates Certificate Transparency (CT) logging preference for an ACM certificate.
         """
@@ -2418,10 +2418,10 @@ class ACM:
             if status in (HTTPStatus.OK, HTTPStatus.NO_CONTENT):
                 hr = f"Updated Certificate Transparency (CT) logging to '{pref}' for certificate '{arn}'."
                 return CommandResults(readable_output=hr, raw_response=resp)
-            AWSErrorHandler.handle_response_error(resp)
+            return AWSErrorHandler.handle_response_error(resp)
 
         except ClientError as e:
-            AWSErrorHandler.handle_client_error(e)
+            return AWSErrorHandler.handle_client_error(e)
 
         except Exception as e:
             raise DemistoException(f"Error updating certificate options for '{arn}': {str(e)}")
@@ -2431,7 +2431,7 @@ class ELB:
     service = AWSServices.ELB
 
     @staticmethod
-    def modify_load_balancer_attributes_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def modify_load_balancer_attributes_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Modifies Classic ELB attributes:
         Cross-Zone Load Balancing, Access Logs, Connection Draining, Connection Settings, AdditionalAttributes.
@@ -2511,10 +2511,10 @@ class ELB:
                     raw_response=resp,
                 )
 
-            AWSErrorHandler.handle_response_error(resp)
+            return AWSErrorHandler.handle_response_error(resp)
 
         except ClientError as e:
-            AWSErrorHandler.handle_client_error(e)
+            return AWSErrorHandler.handle_client_error(e)
 
         except Exception as e:
             raise DemistoException(f"Error modifying load balancer '{lb_name}': {str(e)}")
@@ -2782,7 +2782,7 @@ def get_service_client(
     return client, session
 
 
-def execute_aws_command(command: str, args: dict, params: dict) -> CommandResults:
+def execute_aws_command(command: str, args: dict, params: dict) -> CommandResults | None:
     """
     Execute an AWS command by retrieving credentials, creating a service client,
     and routing to the appropriate service handler.

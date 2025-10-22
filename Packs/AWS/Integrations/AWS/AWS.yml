@@ -3904,7 +3904,7 @@ script:
       description: The name of the Load Balancer.
       required: true
     - name: access_log_enabled
-      description: Whether to enable access logs. (if enabled make sure to provide access_log_s3_bucket_name)
+      description: Whether to enable access logs. (if enabled make sure to provide access_log_s3_bucket_name).
       required: false
       auto: PREDEFINED
       predefined:
@@ -3932,7 +3932,7 @@ script:
       - 'true'
       - 'false'
     - name: connection_draining_timeout
-      description: 'The maximum time, in seconds, to keep the existing connections open before de-registering the instance.  (Min: 1, Max: 3600)'
+      description: 'The maximum time, in seconds, to keep the existing connections open before de-registering the instance.  (Min: 1, Max: 3600).'
       required: false
       type: number
     - name: connection_settings_idle_timeout
