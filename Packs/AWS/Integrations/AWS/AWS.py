@@ -749,6 +749,18 @@ class S3:
         except Exception as e:
             raise DemistoException(f"Error: {str(e)}")
 
+    @staticmethod
+    def get_bucket_website_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        kwargs = {"Bucket": args.get("bucket")}
+        try:
+            response = client.get_bucket_website(**kwargs)
+            demisto.info(f"{response=}")
+            if response["ResponseMetadata"]["HTTPStatusCode"] in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
+                return CommandResults(readable_output=f"Bucket Ownership Controls successfully updated for {args.get('bucket')}")
+            raise DemistoException(f"Failed to set Bucket Ownership Controls for {args.get('bucket')}.")
+        except Exception as e:
+            raise DemistoException(f"Error: {str(e)}")
+
 
 class IAM:
     service = AWSServices.IAM
@@ -2528,6 +2540,7 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-s3-bucket-policy-put": S3.put_bucket_policy_command,
     "aws-s3-bucket-website-delete": S3.delete_bucket_website_command,
     "aws-s3-bucket-ownership-controls-put": S3.put_bucket_ownership_controls_command,
+    "aws-s3-bucket-website-get": S3.get_bucket_website_command,
     "aws-iam-account-password-policy-get": IAM.get_account_password_policy_command,
     "aws-iam-account-password-policy-update": IAM.update_account_password_policy_command,
     "aws-iam-role-policy-put": IAM.put_role_policy_command,
