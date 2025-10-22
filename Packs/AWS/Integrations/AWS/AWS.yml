@@ -3749,6 +3749,237 @@ script:
     - contextPath: AWS.S3-Buckets.PolicyExists
       description: Whether a bucket policy exists.
       type: boolean
+
+  - name: aws-kms-enable-key-rotation
+    description: Enables automatic rotation for a KMS key. Not supported for asymmetric/HMAC keys, keys with imported material, or custom key stores.
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+    - name: key_id
+      description: The KMS key ID or ARN to enable rotation for.
+      required: true
+    - name: rotation_period
+      description: Custom rotation period (days). Valid range is 90–2560. Defaults to 365 if omitted.
+      required: false
+      defaultValue: "365"
+      type: number
+    outputs: []
+  
+  - name: aws-acm-update-certificate-options
+    description: Updates ACM certificate options (Certificate Transparency logging preference).
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+    - name: certificate_arn
+      description: 'The ARN of the ACM certificate to update. This must be of the form: ”arn:aws:acm:us-east-1:account:certificate/12345678-1234-1234-12345678912”.'
+      required: true
+    - name: transparency_logging_preference
+      description: Whether the certificate is recorded in public CT logs.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - ENABLED
+      - DISABLED
+    outputs: []
+  
+  - name: aws-elb-modify-load-balancer-attributes
+    description: Modifies attributes for a Classic Elastic Load Balancer.
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+    - name: load_balancer_name
+      description: The name of the Load Balancer.
+      required: true
+    - name: access_log_enable
+      description: Whether to enable access logs.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: access_log_s3_bucket_name
+      description: S3 bucket name for access logs (required if access_log_enable=true).
+      required: false
+    - name: access_log_emit_interval
+      description: Access log publish interval in minutes (5 or 60).
+      required: false
+      type: number
+    - name: access_log_s3_bucket_prefix
+      description: S3 key prefix for access logs.
+      required: false
+    - name: additional_attributes
+      description: Additional attributes as a JSON list of name/value objects (e.g., [{"Key":"routing.http2.enabled","Value":"true"}]).
+      required: false
+      type: unknown
+    - name: cross_zone_load_balancing_enable
+      description: Whether to enable cross-zone load balancing.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: connection_draining_enable
+      description: Whether to enable connection draining.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: connection_draining_timeout
+      description: Connection draining timeout in seconds (valid when connection_draining_enable=true).
+      required: false
+      type: number
+    - name: connection_settings_idle_timeout
+      description: Idle connection timeout in seconds.
+      required: false
+      type: number
+
+    outputs:
+    - contextPath: AWS.ELB.LoadBalancer.LoadBalancerName
+      description: The name of the Classic Load Balancer.
+      type: string
+    - contextPath: AWS.ELB.LoadBalancer.LoadBalancerAttributes.CrossZoneLoadBalancing.Enabled
+      description: Whether cross-zone load balancing is enabled.
+      type: boolean
+    - contextPath: AWS.ELB.LoadBalancer.LoadBalancerAttributes.ConnectionDraining.Enabled
+      description: Whether connection draining is enabled.
+      type: boolean
+    - contextPath: AWS.ELB.LoadBalancer.LoadBalancerAttributes.ConnectionDraining.Timeout
+      description: Connection draining timeout in seconds.
+      type: number
+    - contextPath: AWS.ELB.LoadBalancer.LoadBalancerAttributes.ConnectionSettings.IdleTimeout
+      description: Idle connection timeout in seconds.
+      type: number
+    - contextPath: AWS.ELB.LoadBalancer.LoadBalancerAttributes.AccessLog.Enabled
+      description: Whether access logs are enabled.
+      type: boolean
+    - contextPath: AWS.ELB.LoadBalancer.LoadBalancerAttributes.AccessLog.S3BucketName
+      description: The S3 bucket name for access logs.
+      type: string
+    - contextPath: AWS.ELB.LoadBalancer.LoadBalancerAttributes.AccessLog.EmitInterval
+      description: Access log publish interval in minutes.
+      type: number
+    - contextPath: AWS.ELB.LoadBalancer.LoadBalancerAttributes.AccessLog.S3BucketPrefix
+      description: The S3 key prefix for access logs.
+      type: string
+    - contextPath: AWS.ELB.LoadBalancer.LoadBalancerAttributes.AdditionalAttributes
+      description: Additional attributes returned by the API.
+      type: unknown
+
   isfetch: false
   runonce: false
   script: '-'
