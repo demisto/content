@@ -3858,7 +3858,7 @@ script:
     outputs: []
   
   - name: aws-elb-load-balancer-attributes-modify
-    description: Modifies attributes for a Elastic Load Balancer.
+    description: Modifies attributes for a Classic Elastic Load Balancer.
     arguments:
     - name: account_id
       description: The AWS account ID.
