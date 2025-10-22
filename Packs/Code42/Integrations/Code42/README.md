@@ -317,7 +317,6 @@ Downloads a file from Code42.
 | File.MD5 | String | The MD5 hash of the file. |
 | File.Extension | String | The file extension. |
 
-
 ### code42-download-file-by-xfc-id
 
 ***
