@@ -1792,7 +1792,7 @@ class EC2:
 
         Returns:
             CommandResults: An object containing the raw image details as outputs,
-                            and a markdown table with a concise summary of the latest AMI.
+                            and a md table with a concise summary of the latest AMI.
         """
         kwargs = {
             "ExecutableBy": parse_resource_ids(args.get("executable_by")),
@@ -1845,12 +1845,26 @@ class EC2:
 
     @staticmethod
     def create_network_acl_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Creates a Network Access Control List (Network ACL) for the specified VPC.
+        The function calls the AWS EC2 'create_network_acl' API. It requires the ID
+        of the VPC where the Network ACL will be created.
+
+        Args:
+           client (BotoClient): The initialized Boto3 EC2 client.
+            args: A dictionary containing arguments for creating the Network ACL.
+                  Expected keys include 'vpc_id' (required), 'client_token', and
+                  'tag_specification'.
+
+        Returns:
+            CommandResults: An object containing the raw Network ACL details as outputs,
+                            and a md table with a summary of the created Network ACL
+                            and its default entries.
+        """
         kwargs = {
-            "DryRun": arg_to_bool_or_none(args.get("DryRun")),
-            "VpcId": args.get("VpcId"),
-            "RoleArn": args.get("roleArn"),
-            "RoleSessionName": args.get("roleSessionName"),
-            "RoleSessionDuration": args.get("roleSessionDuration"),
+            "VpcId": args.get("vpc_id"),
+            "ClientToken": args.get("client_token"),
+            "TagSpecification": args.get("tag_specification"),
         }
 
         remove_nulls_from_dictionary(kwargs)
@@ -1875,9 +1889,13 @@ class EC2:
                         + tableToMarkdown("AWS EC2 Instance ACL", readable_data, removeNull=True)
                     ),
                 )
-            raise DemistoException("xxxxxxx")
+            raise DemistoException(
+                f"AWS EC2 API call to create_network_acl failed or returned an unexpected status code. "
+                f"Received HTTP Status Code: {response['ResponseMetadata']['HTTPStatusCode']}"
+            )
         except Exception as e:
             raise DemistoException(f"Error: {str(e)}")
+
 
     @staticmethod
     def get_ipam_discovered_public_addresses_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
@@ -2562,7 +2580,7 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-ec2-modify-snapshot-permission": EC2.modify_snapshot_permission_command,
     "aws-ec2-subnet-attribute-modify": EC2.modify_subnet_attribute_command,
     "aws-ec2-latest-ami-get": EC2.get_latest_ami_command,
-    "aws-ec2-create-network-acl": EC2.create_network_acl_command,
+    "aws-ec2-network-acl-create": EC2.create_network_acl_command,
     "aws-ec2-get-ipam-discovered-public-addresses": EC2.get_ipam_discovered_public_addresses_command,
     "aws-eks-cluster-config-update": EKS.update_cluster_config_command,
     "aws-eks-describe-cluster": EKS.describe_cluster_command,
