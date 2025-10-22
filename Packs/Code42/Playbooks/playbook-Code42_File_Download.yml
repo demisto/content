@@ -12,6 +12,7 @@ tasks:
       id: f45944a7-0362-48e3-8adb-7022ef46ef0e
       version: -1
       name: ""
+      description: Begins the playbook.
       iscommand: false
       brand: ""
     nexttasks:
