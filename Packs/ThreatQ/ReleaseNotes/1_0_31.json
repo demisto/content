@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "Manually selected scores now take precedence over changes introduced by updates to the scoring algorithm in reputation commands."
+}

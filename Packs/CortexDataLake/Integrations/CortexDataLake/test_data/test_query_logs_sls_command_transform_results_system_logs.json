@@ -1,0 +1,12 @@
+[
+    {
+        "event_name": "event_name",
+        "event_description": "event_description",
+        "severity": "severity",
+        "log_source_name": "ngfw1",
+        "log_time": 2000000,
+        "log_type": {
+            "value": "log_type"
+        }
+    }
+]
