@@ -1,7 +1,7 @@
 import pytest
 from datetime import datetime
 from CommonServerPython import DemistoException
-from SearchCases import prepare_start_end_time, main
+from SearchCases import prepare_start_end_time, main, extract_ids
 
 
 def test_prepare_start_end_time_normal(monkeypatch):
@@ -143,3 +143,66 @@ def test_main_error(mocker):
     mocker.patch("SearchCases.get_error", return_value="fail")
     main()
     mocked_return_error.assert_called()
+
+
+
+
+# add a test for extract id
+
+
+def test_extract_ids():
+    """
+    Given:
+        - json containing id
+    When:
+        - extract id from json
+    Then:
+        - check if id is extracted correctly
+    """
+    case_extra_data_issue = {
+    "data": [
+        {
+            "action": "NOT_AVAILABLE",
+            "action_country": "UNKNOWN",
+            "action_pretty": "N/A",
+            "action_process_signature_status": "N/A",
+            "actor_process_signature_status": "N/A",
+            "agent_device_domain": "IT",
+            "agent_install_type": "NA",
+            "agent_os_type": "NO_HOST",
+            "attempt_counter": 0,
+            "case_id": 518794,
+            "category": "OTHER",
+            "causality_actor_process_signature_status": "N/A",
+            "contains_featured_host": "NO",
+            "contains_featured_ip": "NO",
+            "contains_featured_user": "NO",
+            "description": "test",
+            "detection_timestamp": 1760265267251,
+            "events_length": 1,
+            "external_id": "750b5192-d154-4c18-ac9a-844746c040a9",
+            "fw_is_phishing": "N/A",
+            "is_pcap": False,
+            "is_whitelisted": False,
+            "issue_domain": "DOMAIN_SECURITY",
+            "issue_id": "519114",
+            "issue_type": "Unclassified",
+            "last_modified_ts": 1760265311873,
+            "local_insert_ts": 1760265276541,
+            "matching_status": "UNMATCHABLE",
+            "name": "test",
+            "original_tags": "DOM:Security,DS:PANW/XSIAM Manual",
+            "os_actor_process_signature_status": "N/A",
+            "resolution_comment": "",
+            "resolution_status": "STATUS_010_NEW",
+            "severity": "medium",
+            "source": "Custom Issue",
+            "starred": False,
+            "tags": "DS:PANW/XSIAM Manual,DOM:Security",
+        }
+    ],
+    "total_count": 1,
+}
+    id = extract_ids(case_extra_data_issue)
+    assert id == 1
+
