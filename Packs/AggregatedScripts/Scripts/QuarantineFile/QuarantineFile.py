@@ -788,7 +788,7 @@ class MDEHandler(BrandHandler):
             last_poll_response, "MachineAction"
         )
 
-        demisto.debug(f"[{self.brand} Handler] Finalizing endpoint results from job.")
+        demisto.debug(f"[{self.brand} Handler] Finalizing endpoint results.")
         for quarantine_endpoint_result in quarantine_endpoints_final_results:
             final_results.append(
                 QuarantineResult.create(
