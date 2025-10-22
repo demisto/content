@@ -1780,6 +1780,20 @@ class EC2:
 
     @staticmethod
     def get_latest_ami_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Retrieves information about the latest Amazon Machine Image (AMI) based on provided filters.
+        The function calls the AWS EC2 'describe_images' API, sorts the results by
+        'CreationDate' in descending order, and returns the first image in the list.
+        Args:
+            client (BotoClient): The initialized Boto3 EC2 client.
+            args (Dict[str, Any]): Command arguments, typically containing:
+                  Expected keys include 'executable_by', 'filters', 'owners', 'image_id',
+                  'include_deprecated', 'include_disabled', 'max_results', and 'next_token'.
+
+        Returns:
+            CommandResults: An object containing the raw image details as outputs,
+                            and a markdown table with a concise summary of the latest AMI.
+        """
         kwargs = {
             "ExecutableBy": parse_resource_ids(args.get("executable_by")),
             "Filter": parse_filter_field(args.get("filters")),
@@ -1795,52 +1809,39 @@ class EC2:
         try:
             response = client.describe_images(**kwargs)
             demisto.info(f"{response=}")
+            # return
             if response["ResponseMetadata"]["HTTPStatusCode"] in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
-                # demisto.debug(f"RequestId={response.get('ResponseMetadata').get('RequestId')}")
-                return CommandResults(readable_output="xxxxxxx")
-            raise DemistoException("xxxxxxx")
+                amis = sorted(response["Images"], key=lambda x: x["CreationDate"], reverse=True)
+                image = amis[0]
+                data = {
+                    "CreationDate": image.get("CreationDate"),
+                    "ImageId": image.get("ImageId"),
+                    "Public": image.get("Public"),
+                    "Name": image.get("Name"),
+                    "State": image.get("State"),
+                    "Region": args.get("region"),
+                    "Description": image.get("Description"),
+                }
+
+                data.update({tag["Key"]: tag["Value"] for tag in image["Tags"]}) if "Tags" in image else None
+                remove_nulls_from_dictionary(data)
+
+                try:
+                    raw = json.loads(json.dumps(image, cls=DatetimeEncoder))
+                    raw.update({"Region": args.get("region")})
+                except ValueError as err_msg:
+                    raise DemistoException(f"Could not decode/encode the raw response - {err_msg}")
+                return CommandResults(
+                    outputs=image,
+                    outputs_prefix="AWS.EC2.Images",
+                    readable_output=tableToMarkdown("AWS EC2 Images", data)
+                )
+            raise DemistoException(
+                f"AWS EC2 API call to describe_images failed or returned an unexpected status code. "
+                f"Received HTTP Status Code: {response['ResponseMetadata']['HTTPStatusCode']}"
+            )
         except Exception as e:
             raise DemistoException(f"Error: {str(e)}")
-
-    # def get_latest_ami_command(args: dict) -> CommandResults:
-    #     client = build_client(args)
-    #     obj = vars(client._client_config)
-    #     kwargs = {}
-    #     data = {}  # type: dict
-    #
-    #     if args.get("filters") is not None:
-    #         kwargs.update({"Filters": parse_filter_field(args.get("filters"))})
-    #     if args.get("imageIds") is not None:
-    #         kwargs.update({"ImageIds": parse_resource_ids(args.get("imageIds"))})
-    #     if args.get("owners") is not None:
-    #         kwargs.update({"Owners": parse_resource_ids(args.get("owners"))})
-    #     if args.get("executableUsers") is not None:
-    #         kwargs.update({"ExecutableUsers": parse_resource_ids(args.get("executableUsers"))})
-    #     response = client.describe_images(**kwargs)
-    #     amis = sorted(response["Images"], key=lambda x: x["CreationDate"], reverse=True)
-    #     image = amis[0]
-    #     data = {
-    #         "CreationDate": image["CreationDate"],
-    #         "ImageId": image["ImageId"],
-    #         "Public": image["Public"],
-    #         "Name": image["Name"],
-    #         "State": image["State"],
-    #         "Region": obj["_user_provided_options"]["region_name"],
-    #     }
-    #     if "Description" in image:
-    #         data.update({"Description": image["Description"]})
-    #     if "Tags" in image:
-    #         for tag in image["Tags"]:
-    #             data.update({tag["Key"]: tag["Value"]})
-    #
-    #     try:
-    #         raw = json.loads(json.dumps(image, cls=DatetimeEncoder))
-    #         raw.update({"Region": obj["_user_provided_options"]["region_name"]})
-    #     except ValueError as err_msg:
-    #         raise DemistoException(f"Could not decode/encode the raw response - {err_msg}")
-    #     return CommandResults(outputs=image, outputs_prefix="AWS.EC2.Images",
-    #                           readable_output=tableToMarkdown("AWS EC2 Images", data))
-
 
     @staticmethod
     def create_network_acl_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
