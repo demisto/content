@@ -3742,7 +3742,7 @@ script:
         description: The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided.
         type: string
 
-  - name: aws-ec2-get-ipam-discovered-public-addresses
+  - name: aws-ec2-ipam-discovered-public-addresses-get
     description: Gets the public IP addresses that have been discovered by IPAM.
     arguments:
       - name: account_id
@@ -3785,17 +3785,17 @@ script:
           - me-south-1
           - me-central-1
           - sa-east-1
-      - name: IpamResourceDiscoveryId
+      - name: ipam_resource_discovery_id
         description: An IPAM resource discovery ID.
         required: true
-      - name: AddressRegion
+      - name: address_region
         description: The Amazon Web Services region for the IP address.
         required: true
-      - name: Filters
+      - name: filters
         description: One or more filters separated by ';'. See AWS documentation for details & filter options (https://docs.aws.amazon.com/cli/latest/userguide/cli-usage-filter.html).
-      - name: MaxResults
+      - name: max_results
         description: The maximum number of results to return in a single call. Specify a value between 5 and 1000.
-      - name: NextToken
+      - name: next_token
         description: The token for the next set of results.
     outputs:
       - contextPath: AWS.EC2.IpamDiscoveredPublicAddresses.Address

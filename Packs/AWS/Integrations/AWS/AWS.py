@@ -1910,11 +1910,11 @@ class EC2:
             that have been discovered by IPAM.
         """
         kwargs = {
-            "IpamResourceDiscoveryId": args.get("IpamResourceDiscoveryId"),
-            "AddressRegion": args.get("AddressRegion"),
-            "MaxResults": args.get("MaxResults"),
-            "Filters": args.get("Filters"),
-            "NextToken": args.get("NextToken")
+            "IpamResourceDiscoveryId": args.get("ipam_resource_discovery_id"),
+            "AddressRegion": args.get("address_region"),
+            "MaxResults": args.get("max_results"),
+            "Filters": parse_filter_field(args.get("filters")),
+            "NextToken": args.get("next_token")
         }
 
         remove_nulls_from_dictionary(kwargs)
@@ -1934,10 +1934,12 @@ class EC2:
                     raw_response=output,
                     readable_output=human_readable,
                 )
-            raise DemistoException("xxxxxxx")
+            raise DemistoException(
+                f"AWS EC2 API call to get_ipam_discovered_public_addresses failed or returned an unexpected status code. "
+                f"Received HTTP Status Code: {response['ResponseMetadata']['HTTPStatusCode']}"
+            )
         except Exception as e:
             raise DemistoException(f"Error: {str(e)}")
-
 
     @staticmethod
     def create_tags_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
@@ -2581,7 +2583,7 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-ec2-subnet-attribute-modify": EC2.modify_subnet_attribute_command,
     "aws-ec2-latest-ami-get": EC2.get_latest_ami_command,
     "aws-ec2-network-acl-create": EC2.create_network_acl_command,
-    "aws-ec2-get-ipam-discovered-public-addresses": EC2.get_ipam_discovered_public_addresses_command,
+    "aws-ec2-ipam-discovered-public-addresses-get": EC2.get_ipam_discovered_public_addresses_command,
     "aws-eks-cluster-config-update": EKS.update_cluster_config_command,
     "aws-eks-describe-cluster": EKS.describe_cluster_command,
     "aws-eks-associate-access-policy": EKS.associate_access_policy_command,
