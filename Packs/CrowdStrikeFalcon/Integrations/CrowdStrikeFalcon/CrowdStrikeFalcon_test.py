@@ -3352,7 +3352,7 @@ def test_get_process_details_command_exists(requests_mock):
     assert resources == result["EntryContext"]["CrowdStrike.Process(val.process_id === obj.process_id)"][0]
 
 
-def test_get_proccesses_ran_on_command_exists(requests_mock):
+def test_get_processes_ran_on_command_exists(requests_mock):
     """
     Test cs-falcon-processes-ran-on with a successful query
 
@@ -3364,7 +3364,7 @@ def test_get_proccesses_ran_on_command_exists(requests_mock):
      - Return a human readable result with appropriate message
      - Do populate the entry context with the right value
     """
-    from CrowdStrikeFalcon import get_proccesses_ran_on_command
+    from CrowdStrikeFalcon import get_processes_ran_on_command
 
     response = {"resources": ["pid:fake:process"]}
     requests_mock.get(
@@ -3372,7 +3372,7 @@ def test_get_proccesses_ran_on_command_exists(requests_mock):
         json=response,
         status_code=200,
     )
-    result = get_proccesses_ran_on_command(ioc_type="test", value="mock", device_id="123")
+    result = get_processes_ran_on_command(ioc_type="test", value="mock", device_id="123")
     assert "### Processes with custom IOC test:mock on device 123." in result["HumanReadable"]
     assert "| pid:fake:process |" in result["HumanReadable"]
 
@@ -3381,7 +3381,7 @@ def test_get_proccesses_ran_on_command_exists(requests_mock):
     assert expected_proc_result == actual_proc_result
 
 
-def test_get_proccesses_ran_on_command_not_exists(requests_mock):
+def test_get_processes_ran_on_command_not_exists(requests_mock):
     """
     Test cs-falcon-processes-ran-on with an unsuccessful query
 
@@ -3392,7 +3392,7 @@ def test_get_proccesses_ran_on_command_not_exists(requests_mock):
     Then
      - Raise an error
     """
-    from CrowdStrikeFalcon import get_proccesses_ran_on_command
+    from CrowdStrikeFalcon import get_processes_ran_on_command
 
     expected_error = [{"code": 404, "message": "pid:fake:process - Resource Not Found"}]
     response = {"resources": [], "errors": expected_error}
@@ -3402,7 +3402,7 @@ def test_get_proccesses_ran_on_command_not_exists(requests_mock):
         status_code=200,
     )
     with pytest.raises(DemistoException) as excinfo:
-        get_proccesses_ran_on_command(ioc_type="test", value="mock", device_id="123")
+        get_processes_ran_on_command(ioc_type="test", value="mock", device_id="123")
     assert expected_error == excinfo.value.args[0]
 
 

@@ -2125,12 +2125,15 @@ def get_process_details(ids):
     return http_request("GET", "/processes/entities/processes/v1", payload)
 
 
-def get_proccesses_ran_on(ioc_type, value, device_id):
+def get_processes_ran_on(ioc_type, value, device_id):
     """
     Get processes ids that ran on the given device_id that encountered the ioc
     """
-    payload = assign_params(type=ioc_type, value=value, device_id=device_id)
-    return http_request("GET", "/indicators/queries/processes/v1", payload)
+    # payload = assign_params(type=ioc_type, value=value, device_id=device_id)
+    # original_res = http_request("GET", "/indicators/queries/processes/v1", payload)
+    new_res = http_request("GET", "/iocs/queries/indicators/processes/v1", payload)
+    demisto.debug(f"Those are responses {new_res=}")
+    return new_res
 
 
 def search_device(filter_operator="AND"):
@@ -4549,7 +4552,7 @@ def get_ioc_device_count_command(ioc_type: str, value: str):
 
 def get_process_details_command(ids: str):
     """
-    :param ids: proccess ids
+    :param ids: process ids
     """
     ids = argToList(ids)
     raw_res = get_process_details(ids)
@@ -4564,13 +4567,13 @@ def get_process_details_command(ids: str):
     )
 
 
-def get_proccesses_ran_on_command(ioc_type, value, device_id):
+def get_processes_ran_on_command(ioc_type, value, device_id):
     """
     :param device_id: Device id the IOC ran on
     :param ioc_type: The type of the indicator
     :param value: The IOC value
     """
-    raw_res = get_proccesses_ran_on(ioc_type, value, device_id)
+    raw_res = get_processes_ran_on(ioc_type, value, device_id)
     handle_response_errors(raw_res)
     proc_ids = raw_res.get("resources")
     ioc_id = f"{ioc_type}:{value}"
@@ -5505,7 +5508,10 @@ def validate_response(raw_res):
 
 
 def run_indicator_device_id_request(params):
-    return http_request("GET", "/indicators/queries/devices/v1", params=params, status_code=404)
+    original_res = http_request("GET", "/indicators/queries/devices/v1", params=params, status_code=404)
+    new_res = http_request("GET", "/iocs/queries/indicators/devices/v1", params=params, status_code=404)
+    demisto.debug(f"Those are the responses: {original_res=} {new_res=}")
+    return new_res
 
 
 def get_indicator_device_id():
@@ -7859,7 +7865,7 @@ def main():  # pragma: no cover
             return_results(get_process_details_command(**args))
         elif command == "cs-falcon-processes-ran-on":
             return_results(
-                get_proccesses_ran_on_command(ioc_type=args.get("type"), value=args.get("value"), device_id=args.get("device_id"))
+                get_processes_ran_on_command(ioc_type=args.get("type"), value=args.get("value"), device_id=args.get("device_id"))
             )
         elif command == "endpoint":
             return_results(get_endpoint_command())
