@@ -2580,7 +2580,7 @@ def test_s3_file_download_command_success(mocker):
     """
     Given: A mocked S3 client returning object bytes.
     When: file_download_command is called.
-    Then: It should return the dict returned by fileResult with correct filename and content.
+    Then: It should return the dictionary from fileResult with the correct filename and content.
     """
     from AWS import S3
 
