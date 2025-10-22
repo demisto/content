@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "In the 'Cortex Platform - Core' integration, the command 'core-get-asset-details' output has been updated to match the command context."
+}
