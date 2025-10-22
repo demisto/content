@@ -3546,9 +3546,9 @@ def jira_test_authorization(client: JiraBaseClient, args: Dict[str, Any]) -> Com
 
 
 def jira_test_module(client: JiraBaseClient, params: Dict[str, Any]) -> str:
-    """This method will return an error since in order for the user to test the connectivity of the instance,
-    they have to run a separate command, therefore, pressing the `test` button on the configuration screen will
-    show them the steps in order to test the instance.
+    """
+    Tests for basic configuration issues in the instance.
+    Tests the connectivity for basic authentication methods, otherwise provides users with further authentication instructions.
     """
     url = params.get("server_url", "").rstrip("/")
     cloudid = params.get("cloud_id")
@@ -4779,15 +4779,15 @@ def is_jira_cloud_url(url: str) -> bool:
 
 def add_config_error_messages(err: str, cloud_id: str, server_url: str) -> str:
     """
-Provide additional information for error messages that result from incorrect configurations.
+    Provide additional information for error messages that result from incorrect configurations.
 
-    Args:
-        err (str): The original error message.
-        cloud_id (str): The cloud ID.
-        server_url (str): The server URL.
+        Args:
+            err (str): The original error message.
+            cloud_id (str): The cloud ID.
+            server_url (str): The server URL.
 
-    Returns:
-        str: The error message with additional information if applicable.
+        Returns:
+            str: The error message with additional information if applicable.
     """
 
     if "404" in err and cloud_id and server_url.rstrip("/") != "https://api.atlassian.com/ex/jira":
