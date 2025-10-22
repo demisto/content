@@ -1600,15 +1600,6 @@ class AzureClient:
         Docs:
             https://learn.microsoft.com/en-us/rest/api/compute/virtual-machines/get?view=rest-azure-2024-04-01
         """
-        result = self.http_request(
-            method="GET",
-            full_url=f"https://management.azure.com/subscriptions/{subscription_id}/"
-            f"resourceGroups/{resource_group_name}/providers/Microsoft.Compute/"
-            f"virtualMachines",
-            resp_type="json",
-            params={"api-version": "2025-04-01"},
-        )
-        demisto.debug(result)
         full_url = (
             f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Compute/"
             f"virtualMachines/{vm_name}"
