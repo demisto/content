@@ -1887,7 +1887,7 @@ class EC2:
         remove_nulls_from_dictionary(kwargs)
         try:
             response = client.get_ipam_discovered_public_addresses(**kwargs)
-            demisto.info(f"{response=}")
+            # demisto.info(f"{response=}")
             if response["ResponseMetadata"]["HTTPStatusCode"] in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
                 if not response.get("IpamDiscoveredPublicAddresses"):
                     return CommandResults(readable_output="No Ipam Discovered Public Addresses were found.")
@@ -1905,36 +1905,26 @@ class EC2:
         except Exception as e:
             raise DemistoException(f"Error: {str(e)}")
 
-    # client = build_client(args)
-    #
-    # if (args.get("IpamResourceDiscoveryId") is None) or (args.get("AddressRegion") is None):
-    #     return_error("IpamResourceDiscoveryId and AddressRegion need to be defined")
-    #
-    # kwargs = {}
-    # kwargs.update({"IpamResourceDiscoveryId": args.get("IpamResourceDiscoveryId"), "AddressRegion": args.get("AddressRegion")})
-    # if (filters := args.get("Filters")) is not None:
-    #     kwargs.update({"Filters": parse_filter_field(filters)})
-    # if (max_results := args.get("MaxResults")) is not None:
-    #     kwargs.update({"MaxResults": int(max_results)})
-    # if (next_token := args.get("NextToken")) is not None:
-    #     kwargs.update({"NextToken": next_token})
-    #
-    # response = client.get_ipam_discovered_public_addresses(**kwargs)
-    #
-    # if len(response["IpamDiscoveredPublicAddresses"]) == 0:
-    #     return CommandResults(readable_output="No Ipam Discovered Public Addresses were found.")
-    #
-    # output = json.loads(json.dumps(response, cls=DatetimeEncoder))
-    #
-    # human_readable = tableToMarkdown("Ipam Discovered Public Addresses", output["IpamDiscoveredPublicAddresses"])
-    # command_results = CommandResults(
-    #     outputs_prefix="AWS.EC2.IpamDiscoveredPublicAddresses",
-    #     outputs_key_field="Address",
-    #     outputs=output["IpamDiscoveredPublicAddresses"],
-    #     raw_response=output,
-    #     readable_output=human_readable,
-    # )
-    # return command_results
+
+    @staticmethod
+    def create_tags_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        kwargs = {
+            "resources": args.get("resources"),
+            "tags": args.get("tags"),
+            "roleArn": args.get("roleArn"),
+            "roleSessionName": args.get("roleSessionName"),
+            "roleSessionDuration": args.get("roleSessionDuration")
+        }
+
+        remove_nulls_from_dictionary(kwargs)
+        try:
+            response = client.create_tags(**kwargs)
+            # demisto.info(f"{response=}")
+            if response["ResponseMetadata"]["HTTPStatusCode"] in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
+                return CommandResults(readable_output="The resources where tagged successfully")
+            raise DemistoException(f"Unexpected response from AWS - EC2:\n{response}")
+        except Exception as e:
+            raise DemistoException(f"Error: {str(e)}")
 
 class EKS:
     service = AWSServices.EKS
