@@ -3621,15 +3621,10 @@ async def get_audit_logs(
     """
     last_fetched_ids = last_fetched_ids or []
     all_fetched_ids = set(last_fetched_ids)
-    all_events = []
+    all_events: list[dict] = []
 
     audit_log_tasks = [
-        client.get_audit_logs(
-            time_filter=from_date,
-            offset=offset,
-            limit=min(DEFAULT_AUDIT_LOGS_PAGE_SIZE, limit - offset),
-        )
-        for offset in range(0, limit, DEFAULT_AUDIT_LOGS_PAGE_SIZE)
+        client.get_audit_logs(time_filter=from_date, offset=offset) for offset in range(0, limit, DEFAULT_AUDIT_LOGS_PAGE_SIZE)
     ]
 
     demisto.debug(f"Created {len(audit_log_tasks)} tasks to fetch up to {limit} audit logs.")
@@ -3642,13 +3637,18 @@ async def get_audit_logs(
             break
 
         for appliance in appliances:
+            if len(all_events) == limit:
+                break
             event_id = appliance["applianceuuid"]
             if event_id in all_fetched_ids:
                 continue
+
             all_fetched_ids.add(event_id)
+            appliance["_time"] = appliance["startTime"]
             all_events.append(appliance)
 
-    return all_events[:limit]
+    all_events.sort(key=lambda event: event["startTime"])  # sort in ascending order by startTime
+    return all_events
 
 
 async def get_events_command(client: AsyncClient, args: dict[str, Any]) -> tuple[list[dict[str, Any]], CommandResults]:
@@ -3668,6 +3668,48 @@ async def get_events_command(client: AsyncClient, args: dict[str, Any]) -> tuple
     events = await get_audit_logs(client, from_date, limit)
 
     return events, CommandResults(readable_output=tableToMarkdown(name="Versa Director Audit Logs", t=events))
+
+
+async def fetch_events_command(
+    client: AsyncClient,
+    last_run: dict[str, Any],
+    max_fetch: int,
+) -> tuple[dict[str, Any], list[dict[str, Any]]]:
+    """
+    Implements the `fetch-events` command. Fetches audit logs using the AsyncClient.
+
+    Args:
+        client (AsyncClient): An instance of the AsyncClient.
+        last_run (dict[str, Any]): The last run of the previous fetch, if any.
+        max_fetch (int): The maximum number of events to fetch.
+
+    Returns:
+        tuple[dict[str, Any], list[dict[str, Any]]]: A tuple of the next run and the list of events.
+    """
+    demisto.debug(f"Starting fetching events with {last_run=}.")
+    from_date = last_run.get("from_date") or DEFAULT_AUDIT_LOGS_FROM_DATE.strftime(DATE_FORMAT)
+    last_fetched_ids = last_run.get("last_fetched_ids", [])
+
+    events = await get_audit_logs(
+        client=client,
+        from_date=from_date,
+        limit=max_fetch,
+        last_fetched_ids=last_fetched_ids,
+    )
+
+    if not events:
+        demisto.debug(f"No new events found since {last_run=}.")
+        return last_run, []
+
+    newest_event_start_time = events[-1]["startTime"]
+    demisto.debug(f"Got {len(events)} deduplicated events with {newest_event_start_time=}.")
+
+    new_last_fetched_ids = [event["applianceuuid"] for event in events if event["startTime"] == newest_event_start_time]
+
+    next_run = {"from_date": newest_event_start_time, "last_fetched_ids": new_last_fetched_ids}
+    demisto.debug(f"Updating {next_run=} after fetching {len(events)} events.")
+
+    return next_run, events
 
 
 #  """ MAIN FUNCTION """
@@ -3692,6 +3734,7 @@ async def main() -> None:
         params.get("credentials_client", {}).get("password") or params.get("client_secret") or context.get("client_secret")
     )
     access_token = params.get("access_token") or context.get("access_token")
+    max_fetch = params.get("max_fetch") or DEFAULT_FETCH_EVENTS_LIMIT
     command = demisto.command()
     demisto.debug(f"Command being called is {command}")
 
@@ -3807,8 +3850,16 @@ async def main() -> None:
                     return_results(command_results)
                     if should_push_events:
                         send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+
+                elif command == "fetch-events":
+                    last_run = demisto.getLastRun()
+                    next_run, events = await fetch_events_command(async_client, last_run=last_run, max_fetch=max_fetch)
+                    send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+                    demisto.setLastRun(next_run)
+
         else:
             raise NotImplementedError(f"{command} command is not implemented.")
+
     except DemistoException as e:
         if e.res and e.res.status_code == 204:
             return_results(f"Empty response has returned from {command} command.\nMessage:\n{e!s}")

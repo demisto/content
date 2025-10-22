@@ -15,6 +15,7 @@ This integration was integrated and tested with version 1.0.0 of VersaDirector
 | Auth Token | The Auth Token parameter is used for Auth authentication.<br/>An Auth Token passed as a parameter take priority over an Auth Token saved in the integration context by default.<br/>If a Refresh Token is available, a new Auth Token is generated when an existing Auth Token expires, and it is then updated in the integration context. | False |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
+| Maximum Number of Audit Logs Per Fetch | Default is 25000. | False |
 
 ## Commands
 
