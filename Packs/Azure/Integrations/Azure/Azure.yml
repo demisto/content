@@ -2392,7 +2392,7 @@ script:
       name: resource_group_name
       required: true
     - description: The name of the network interface you want to view the details of.
-      name: nic_name
+      name: network_interface_name
       required: true
     outputs:
     - contextPath: Azure.Network.Interfaces.properties.ipConfigurations

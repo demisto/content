@@ -1022,7 +1022,7 @@ Gets the properties of a given network interface.
 | --- | --- | --- |
 | subscription_id | The subscription ID. | Required |
 | resource_group_name | The resource group to which the network interface belongs.<br/>To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command. If none are present, navigate to the Azure Web Portal to create resource groups.<br/>. | Required |
-| nic_name | The name of the network interface you want to view the details of. | Required |
+| network_interface_name | The name of the network interface you want to view the details of. | Required |
 
 #### Context Output
 

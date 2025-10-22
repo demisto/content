@@ -39,7 +39,7 @@ PERMISSIONS_TO_COMMANDS = {
         "azure-nsg-security-rule-create",
     ],
     "Microsoft.Network/networkSecurityGroups/securityRules/delete": ["azure-nsg-security-rule-delete"],
-    "Microsoft.Network/networkInterfaces/read": ["azure-nsg-network-interfaces-list", "azure-vm-get-nic-details"],
+    "Microsoft.Network/networkInterfaces/read": ["azure-nsg-network-interfaces-list", "azure-vm-get-network-interface-details"],
     "Microsoft.Network/publicIPAddresses/read": ["azure-nsg-public-ip-addresses-list", "azure-vm-get-public-ip-details"],
     "Microsoft.Storage/storageAccounts/read": ["azure-storage-account-update"],
     "Microsoft.Storage/storageAccounts/write": ["azure-storage-account-update"],
@@ -3221,7 +3221,7 @@ def get_network_interface_command(client: AzureClient, params: dict[str, Any], a
     """
     subscription_id = get_from_args_or_params(args=args, params=params, key="subscription_id")
     resource_group_name = get_from_args_or_params(args=args, params=params, key="resource_group_name")
-    interface_name = args.get("nic_name", "")
+    interface_name = args.get("network_interface_name", "")
     response = client.get_network_interface_request(subscription_id, resource_group_name, interface_name)
     properties = response.get("properties")
 
@@ -3262,6 +3262,7 @@ def get_network_interface_command(client: AzureClient, params: dict[str, Any], a
     ]
     human_readable = tableToMarkdown(name=title, t=human_readable_network_config, headers=table_headers, removeNull=True)
 
+    response["etag"] = response.get("etag", "")[3:-1]
     for ip_configuration in response.get("properties", {}).get("ipConfigurations", []):
         ip_configuration["etag"] = ip_configuration.get("etag", "")[3:-1]
 
