@@ -2500,7 +2500,7 @@ test_data2 = get_fetch_data2()
 def test_get_indicator_device_id(mocker, requests_mock):
     from CrowdStrikeFalcon import get_indicator_device_id
 
-    requests_mock.get("https://4.4.4.4/indicators/queries/devices/v1", json=test_data["response_for_get_indicator_device_id"])
+    requests_mock.get("https://4.4.4.4/iocs/queries/indicators/devices/v1", json=test_data["response_for_get_indicator_device_id"])
     mocker.patch.object(demisto, "args", return_value={"type": "sha256", "value": "example_sha"})
     res = get_indicator_device_id()
 
@@ -3278,7 +3278,7 @@ def test_get_ioc_device_count_command_rate_limit_exceeded(requests_mock):
         status_code=200,
     )
     requests_mock.get(
-        f"{SERVER_URL}/indicators/queries/devices/v1",
+        f"{SERVER_URL}/iocs/queries/indicators/devices/v1",
         json=indicators_queries_res_with_offset,
         status_code=200,
     )
@@ -3368,7 +3368,7 @@ def test_get_processes_ran_on_command_exists(requests_mock):
 
     response = {"resources": ["pid:fake:process"]}
     requests_mock.get(
-        f"{SERVER_URL}/indicators/queries/processes/v1",
+        f"{SERVER_URL}/iocs/queries/indicators/processes/v1",
         json=response,
         status_code=200,
     )
@@ -3397,7 +3397,7 @@ def test_get_processes_ran_on_command_not_exists(requests_mock):
     expected_error = [{"code": 404, "message": "pid:fake:process - Resource Not Found"}]
     response = {"resources": [], "errors": expected_error}
     requests_mock.get(
-        f"{SERVER_URL}/indicators/queries/processes/v1",
+        f"{SERVER_URL}/iocs/queries/indicators/processes/v1",
         json=response,
         status_code=200,
     )
