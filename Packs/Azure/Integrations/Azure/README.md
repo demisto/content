@@ -832,7 +832,7 @@ Gets the properties of a given virtual machine.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | subscription_id | The subscription ID. | Required |
-| resource_group_name | The resource group to which the virtual machine belongs.<br/>To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command. If none are present, navigate to the Azure Web Portal to create resource groups.<br/>. | Required |
+| resource_group_name | The resource group to which the virtual machine belongs.<br/>To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command<br/>. | Required |
 | virtual_machine_name | The name of the virtual machine you want to view the details of. To see all the virtual machines with their associated names for a specific resource group, run the `azure-vm-list-instances` command. | Required |
 | expand | The expand expression to apply on the operation. 'instanceView' retrieves a snapshot of the runtime properties of the virtual machine that is managed by the platform and can change outside of control plane operations. 'userData' retrieves the UserData property as part of the VM model view that was provided by the user during the VM Create/Update operation. Default value is False. Possible values are: instanceView, userData. Default is instanceView. | Optional |
 
@@ -958,7 +958,7 @@ Powers on a given virtual machine.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | subscription_id | The subscription ID. | Required |
-| resource_group_name | Resource Group to which the virtual machine belongs.<br/>To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command. If none are present, navigate to the Azure Web Portal to create resource groups.<br/>. | Required |
+| resource_group_name | Resource Group to which the virtual machine belongs.<br/>To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command<br/>. | Required |
 | virtual_machine_name | Name of the virtual machine to power on. To see all virtual machines and their associated names for a specific resource group, run the `azure-vm-list-instances` command. | Required |
 
 #### Context Output
@@ -1021,7 +1021,7 @@ Gets the properties of a given network interface.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | subscription_id | The subscription ID. | Required |
-| resource_group_name | The resource group to which the network interface belongs.<br/>To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command. If none are present, navigate to the Azure Web Portal to create resource groups.<br/>. | Required |
+| resource_group_name | The resource group to which the network interface belongs.<br/>To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command<br/>. | Required |
 | network_interface_name | The name of the network interface you want to view the details of. | Required |
 
 #### Context Output
@@ -1163,7 +1163,7 @@ Gets the properties of a given public IP address.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | subscription_id | The subscription ID. | Required |
-| resource_group_name | The resource group to which the IP address belongs.<br/>To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command. If none are present, navigate to the Azure Web Portal to create resource groups.<br/>. | Required |
+| resource_group_name | The resource group to which the IP address belongs.<br/>To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command<br/>. | Required |
 | address_name | The IP address name. | Required |
 
 #### Context Output
@@ -1278,9 +1278,9 @@ Powers off a given virtual machine.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | subscription_id | The subscription ID. | Required |
-| resource_group_name | The resource group to which the virtual machine belongs.<br/>To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command. If none are present, navigate to the Azure Web Portal to create resource groups.<br/>. | Required |
+| resource_group_name | The resource group to which the virtual machine belongs.<br/>To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command<br/>. | Required |
 | virtual_machine_name | The name of the virtual machine to power off. To see all virtual machines with their associated names for a specific resource group, run the `azure-vm-list-instances` command. | Required |
-| skip_shutdown | Set to True to request non-graceful VM shutdown. Default value is False. Possible values are: true, false. Default is false. | Optional |
+| skip_shutdown | Set to True to request non-graceful VM shutdown. Possible values are: true, false. Default is false. | Optional |
 
 #### Context Output
 
