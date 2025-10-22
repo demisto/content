@@ -3454,7 +3454,6 @@ script:
 
   - name: aws-ec2-latest-ami-get
     description: Get The latest AMI.
-    execution: true
     arguments:
       - name: account_id
         description: The AWS account ID.
@@ -3496,18 +3495,31 @@ script:
           - me-south-1
           - me-central-1
           - sa-east-1
+      - name: executable_by
+        description: Scopes the images by users with explicit launch permissions.
       - name: filters
-        description: One or more filters Separated by ';'. See AWS documentation for details & filter options.
+        description: One or more filters separated by ','. See AWS documentation for details & filter options.
       - name: owners
         description: Filters the images by the owner. Specify an AWS account ID, self (owner is the sender of the request), or an AWS owner alias (valid values are amazon | aws-marketplace | microsoft ). Omitting this option returns all images for which you have launch permissions, regardless of ownership.
-      - name: executableUsers
-        description: Scopes the images by users with explicit launch permissions. Specify an AWS account ID, self (the sender of the request), or all (public AMIs).
-      - name: roleArn
-        description: The Amazon Resource Name (ARN) of the role to assume.
-      - name: roleSessionName
-        description: An identifier for the assumed role session.
-      - name: roleSessionDuration
-        description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      - name: image_id
+        description: The image IDs separated by ','.
+      - name: include_deprecated
+        description: Specifies whether to include deprecated AMIs.
+        auto: PREDEFINED
+        predefined:
+          - 'true'
+          - 'false'
+      - name: include_disabled
+        description: Specifies whether to include disabled AMIs.
+        auto: PREDEFINED
+        predefined:
+          - 'true'
+          - 'false'
+      - name: max_results
+        description: The maximum number of items to return for this request. To get the next page of items, make another request with the token returned in the output.
+      - name: next_token
+        description: The token returned from a previous paginated request. Pagination continues from the end of the items returned by the previous request.
+
     outputs:
       - contextPath: AWS.EC2.Images.Architecture
         description: The architecture of the image.
@@ -3623,7 +3635,6 @@ script:
 
   - name: aws-ec2-create-network-acl
     description: Creates a network ACL in a VPC. Network ACLs provide an optional layer of security (in addition to security groups) for the instances in your VPC.
-    execution: true
     arguments:
       - name: account_id
         description: The AWS account ID.
@@ -3741,7 +3752,6 @@ script:
 
   - name: aws-ec2-get-ipam-discovered-public-addresses
     description: Gets the public IP addresses that have been discovered by IPAM.
-    execution: true
     arguments:
       - name: account_id
         description: The AWS account ID.
@@ -3820,7 +3830,6 @@ script:
 
   - name: aws-ec2-create-tags
     description: Adds or overwrites one or more tags for the specified Amazon EC2 resource or resources.
-    execution: true
     arguments:
       - name: account_id
         description: The AWS account ID.
@@ -4143,7 +4152,6 @@ script:
 
   - name: aws-s3-bucket-policy-get
     description: Retrieves the bucket policy for an Amazon S3 bucket. Returns the policy document in JSON format if one exists.
-    execution: true
     arguments:
     - description: The AWS account ID.
       name: account_id

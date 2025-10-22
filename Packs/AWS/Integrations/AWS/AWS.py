@@ -1781,12 +1781,14 @@ class EC2:
     @staticmethod
     def get_latest_ami_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
         kwargs = {
-            "Filters": parse_filter_field(args.get("filters")),
-            "Owners": parse_resource_ids(args.get("owners")),
-            "ExecutableUsers": parse_resource_ids(args.get("executableUsers")),
-            "RoleArn": args.get("roleArn"),
-            "RoleSessionName": args.get("roleSessionName"),
-            "RoleSessionDuration": args.get("roleSessionDuration"),
+            "ExecutableBy": parse_resource_ids(args.get("executable_by")),
+            "Filter": parse_filter_field(args.get("filters")),
+            "Owner": parse_resource_ids(args.get("owners")),
+            "ImageId": parse_resource_ids(args.get("image_id")),
+            "IncludeDeprecated": args.get("include_deprecated"),
+            "IncludeDisabled": args.get("include_disabled"),
+            "MaxResults": args.get("max_results"),
+            "NextToken": args.get("next_token"),
         }
 
         remove_nulls_from_dictionary(kwargs)
