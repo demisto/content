@@ -3968,6 +3968,7 @@ script:
       required: true
     name: core-get-asset-details
     deprecated: true
+    hidden: true
     description: Get asset information.
     outputs:
     - contextPath: Core.CoreAsset
