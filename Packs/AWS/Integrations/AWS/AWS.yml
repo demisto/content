@@ -3746,9 +3746,375 @@ script:
     - contextPath: AWS.S3-Buckets.Policy.Statement.Condition
       description: Conditions for when the statement applies.
       type: string
-    - contextPath: AWS.S3-Buckets.PolicyExists
-      description: Whether a bucket policy exists.
-      type: boolean
+
+  - name: aws-lambda-function-configuration-get
+    arguments:
+    - name: account_id
+      required: true
+      description: The AWS account ID.
+    - name: region
+      required: true
+      description: The AWS region.
+    - name: function_name
+      required: true
+      description: Name, ARN, or qualified name of the Lambda function.
+    - name: qualifier
+      description: Version number or alias name.
+    description: Retrieves configuration information about a Lambda function.
+    outputs:
+    - contextPath: AWS.Lambda.FunctionConfig.FunctionName
+      description: The name of the function.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.FunctionArn
+      description: The function’s Amazon Resource Name (ARN).
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.Runtime
+      description: The function’s execution role.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.Role
+      description: The function’s execution role.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.Handler
+      description: The function that Lambda calls to begin running your function.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.CodeSize
+      description: The size of the function’s deployment package, in bytes.
+      type: Number
+    - contextPath: AWS.Lambda.FunctionConfig.Description
+      description: The function’s description.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.Timeout
+      description: The amount of time in seconds that Lambda allows a function to run before stopping it.
+      type: Number
+    - contextPath: AWS.Lambda.FunctionConfig.MemorySize
+      description: The amount of memory available to the function at runtime.
+      type: Number
+    - contextPath: AWS.Lambda.FunctionConfig.LastModified
+      description: The date and time that the function was last updated.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.CodeSha256
+      description: The SHA256 hash of the function’s deployment package.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.Version
+      description: The version of the Lambda function.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.VpcConfig.SubnetIds
+      description: A list of VPC subnet IDs.
+    - contextPath: AWS.Lambda.FunctionConfig.VpcConfig.SecurityGroupIds
+      description: A list of VPC security group IDs.
+    - contextPath: AWS.Lambda.FunctionConfig.VpcConfig.VpcId
+      description: The ID of the VPC.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.VpcConfig.Ipv6AllowedForDualStack
+      description: Allows outbound IPv6 traffic on VPC functions that are connected to dual-stack subnets.
+      type: Boolean
+    - contextPath: AWS.Lambda.FunctionConfig.DeadLetterConfig.TargetArn
+      description: The Amazon Resource Name (ARN) of an Amazon SQS queue or Amazon SNS topic.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.Environment.Variables
+      description: Environment variable key-value pairs. Omitted from CloudTrail logs.
+    - contextPath: AWS.Lambda.FunctionConfig.Environment.Error.ErrorCode
+      description: The error code.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.Environment.Error.Message
+      description: The error message.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.KMSKeyArn
+      description: The ARN of the Key Management Service (KMS).
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.TracingConfig.Mode
+      description: The tracing mode.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.MasterArn
+      description: For Lambda@Edge functions, the ARN of the main function.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.RevisionId
+      description: The latest updated revision of the function or alias.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.Layers.Arn
+      description: The Amazon Resource Name (ARN) of the function layer.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.Layers.CodeSize
+      description: The size of the layer archive in bytes.
+      type: Number
+    - contextPath: AWS.Lambda.FunctionConfig.Layers.SigningProfileVersionArn
+      description: The Amazon Resource Name (ARN) for a signing profile version.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.Layers.SigningJobArn
+      description: The Amazon Resource Name (ARN) of a signing job.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.State
+      description: The current state of the function.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.StateReason
+      description: The reason for the function’s current state.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.StateReasonCode
+      description: The reason code for the function’s current state. 
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.LastUpdateStatus
+      description: The status of the last update that was performed on the function.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.LastUpdateStatusReason
+      description: The reason for the last update that was performed on the function.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.LastUpdateStatusReasonCode
+      description: The reason code for the last update that was performed on the function.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.FileSystemConfigs.Arn
+      description: The Amazon Resource Name (ARN) of the Amazon EFS access point that provides access to the file system.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.FileSystemConfigs.LocalMountPath
+      description: The path where the function can access the file system, starting with /mnt/.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.PackageType
+      description: The type of deployment package.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.ImageConfigResponse.ImageConfig.EntryPoint
+      description: Specifies the entry point to their application, which is typically the location of the runtime executable.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.ImageConfigResponse.ImageConfig.Command
+      description: Specifies parameters that you want to pass in with ENTRYPOINT.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.ImageConfigResponse.ImageConfig.WorkingDirectory
+      description: Specifies the working directory.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.ImageConfigResponse.Error.ErrorCode
+      description: Error code.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.ImageConfigResponse.Error.Message
+      description: Error message.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.SigningProfileVersionArn
+      description: The ARN of the signing profile version.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.SigningJobArn
+      description: The ARN of the signing job.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.Architectures
+      description: The size of the function’s /tmp directory in MB.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.EphemeralStorage.Size
+      description: The size of the function’s /tmp directory.
+      type: Number
+    - contextPath: AWS.Lambda.FunctionConfig.SnapStart.ApplyOn
+      description: When set to PublishedVersions, Lambda creates a snapshot of the execution environment when you publish a function version.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.SnapStart.OptimizationStatus
+      description: When you provide a qualified Amazon Resource Name (ARN), this response element indicates whether SnapStart is activated for the specified function version.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.RuntimeVersionConfig.RuntimeVersionArn
+      description: The ARN of the runtime version you want the function to use.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.RuntimeVersionConfig.Error.ErrorCode
+      description: The error code.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.RuntimeVersionConfig.Error.Message
+      description: The error message.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.LoggingConfig.LogFormat
+      description: The format in which Lambda sends your function’s application and system logs to CloudWatch.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.LoggingConfig.ApplicationLogLevel
+      description: Set this property to filter the application logs for your function that Lambda sends to CloudWatch.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.LoggingConfig.SystemLogLevel
+      description: Set this property to filter the system logs for your function that Lambda sends to CloudWatch.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.LoggingConfig.LogGroup
+      description: The name of the Amazon CloudWatch log group the function sends logs to.
+      type: String
+
+  - name: aws-lambda-function-url-config-get
+    arguments:
+    - name: account_id
+      required: true
+      description: The AWS account ID.
+    - name: region
+      required: true
+      description: The AWS region.
+    - name: function_name
+      required: true
+      description: Name of the Lambda function.
+    - name: qualifier
+      description: The alias name or version number.
+    description: Returns the configuration for a Lambda function URL.
+    outputs:
+    - contextPath: AWS.Lambda.FunctionURLConfig.FunctionUrl
+      description: The HTTP URL endpoint for your function.
+      type: String
+    - contextPath: AWS.Lambda.FunctionURLConfig.FunctionArn
+      description: The Amazon Resource Name (ARN) of your function.
+      type: String
+    - contextPath: AWS.Lambda.FunctionURLConfig.AuthType
+      description: The type of authentication that your function URL uses.
+      type: String
+    - contextPath: AWS.Lambda.FunctionURLConfig.Cors.AllowCredentials
+      description: Whether to allow cookies or other credentials in requests to your function URL.
+      type: Boolean
+    - contextPath: AWS.Lambda.FunctionURLConfig.Cors.AllowHeaders
+      description: The HTTP headers that origins can include in requests to your function URL.
+      type: String
+    - contextPath: AWS.Lambda.FunctionURLConfig.Cors.AllowMethods
+      description: The HTTP methods that are allowed when calling your function URL.
+      type: String
+    - contextPath: AWS.Lambda.FunctionURLConfig.Cors.AllowOrigins
+      description: The origins that can access your function URL.
+      type: String
+    - contextPath: AWS.Lambda.FunctionURLConfig.Cors.ExposeHeaders
+      description: The HTTP headers in your function response that you want to expose to origins that call your function URL.
+      type: String
+    - contextPath: AWS.Lambda.FunctionURLConfig.Cors.MaxAge
+      description: The maximum amount of time, in seconds, that web browsers can cache results of a preflight request.
+      type: Number
+    - contextPath: AWS.Lambda.FunctionURLConfig.CreationTime
+      description: When the function URL was created.
+      type: String
+    - contextPath: AWS.Lambda.FunctionURLConfig.LastModifiedTime
+      description: When the function URL configuration was last updated.
+      type: String
+    - contextPath: AWS.Lambda.FunctionURLConfig.InvokeMode
+      description: BUFFERED or RESPONSE_STREAM.
+      type: String
+
+  - name: aws-lambda-policy-get
+    arguments:
+    - name: account_id
+      required: true
+      description: The AWS account ID.
+    - name: region
+      required: true
+      description: The AWS region.
+    - name: function_name
+      required: true
+      description: Name of the Lambda function, version, or alias.
+    - name: qualifier
+      description: Version or alias to get the policy for.
+    description: Returns the resource-based IAM policy for a Lambda function.
+    outputs:
+      - contextPath: AWS.Lambda.Policy.Version
+        description: The policy version. 
+        type: Date
+      - contextPath: AWS.Lambda.Policy.Id
+        description: The identifier of the policy.
+        type: String
+      - contextPath: AWS.Lambda.Policy.Statement.Sid
+        description: Identifier of the policy statement.
+        type: String
+      - contextPath: AWS.Lambda.Policy.Statement.Effect
+        description: Specifies whether the statement results in an allow or an explicit deny.
+        type: String
+      - contextPath: AWS.Lambda.Policy.Statement.Principal
+        description: Specify the principal that is allowed or denied access to a resource.
+      - contextPath: AWS.Lambda.Policy.Statement.Action
+        description: ''
+        type: String
+      - contextPath: AWS.Lambda.Policy.Statement.Resource
+        description: ''
+        type: String
+      - contextPath: AWS.Lambda.Policy.Statement.Condition
+        description: ''
+        type: String
+      - contextPath: AWS.Lambda.RevisionId
+        description: A unique identifier for the current revision of the policy.
+        type: String
+  - name: aws-lambda-invoke
+    arguments:
+    - name: account_id
+      required: true
+      description: The AWS account ID.
+    - name: region
+      required: true
+      description: The AWS region.
+    - name: function_name
+      required: true
+      description: Name of the Lambda function to invoke.
+    - name: invocation_type
+      description: RequestResponse (sync), Event (async), or DryRun. Default is RequestResponse.
+      defaultValue: RequestResponse
+      auto: PREDEFINED
+      predefined:
+      - RequestResponse
+      - Event
+      - DryRun
+    - name: log_type
+      auto: PREDEFINED
+      predefined:
+      - None
+      - Tail
+      description: Set to Tail to include execution log in response.
+    - name: client_context
+      description: Base64-encoded client context data.
+    - name: payload
+      description: JSON input to provide to the Lambda function.
+    - name: qualifier
+      description: Version or alias to invoke.
+    - description: The maximum retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. If not specified, will use the instances configured default timeout.
+      name: retries
+    - description: The time in seconds till a timeout exception is reached. You can specify just the read timeout (for example 60) or also the connect timeout followed after a comma (for example 60,10). If not specified, will use the instances configured default timeout.
+      name: timeout
+    description: Invokes a Lambda function. Specify just a function name to invoke the latest version of the function. To invoke a published version, use the Qualifier parameter to specify a version or alias. If you use the RequestResponse (synchronous) invocation option, note that the function may be invoked multiple times if a timeout is reached. For functions with a long timeout, your client may be disconnected during synchronous invocation while it waits for a response. Use the "timeout" and "retries" arguments to control this behavior. If you use the Event (asynchronous) invocation option, the function will be invoked at least once in response to an event and the function must be idempotent to handle this.
+    execution: true
+    outputs:
+    - contextPath: AWS.Lambda.InvokedFunction.StatusCode
+      description: The HTTP status code is in the 200 range for a successful request.
+      type: Number
+    - contextPath: AWS.Lambda.InvokedFunction.FunctionError
+      description: If present, indicates that an error occurred during function execution.
+      type: String
+    - contextPath: AWS.Lambda.InvokedFunction.LogResult
+      description: The last 4 KB of the execution log, which is base64-encoded.
+      type: String
+    - contextPath: AWS.Lambda.InvokedFunction.Payload
+      description: The response from the function, or an error object.
+      type: Unknown
+    - contextPath: AWS.Lambda.InvokedFunction.ExecutedVersion
+      description: The version of the function that executed.
+      type: String
+
+  - name: aws-lambda-function-url-config-update
+    arguments:
+    - name: account_id
+      required: true
+      description: The AWS account ID.
+    - name: region
+      required: true
+      description: The AWS region.
+    - name: function_name
+      required: true
+      description: Name of the Lambda function.
+    - name: qualifier
+      description: The alias name or version number.
+    - name: auth_type
+      description: AWS_IAM or NONE for authentication type.
+    - name: cors_allow_credentials
+      description: Allow credentials in CORS requests.
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+    - name: cors_allow_headers
+      description: Comma-separated list of allowed headers.
+      isArray: true
+    - name: cors_allow_methods
+      description: Comma-separated list of allowed HTTP methods.
+      isArray: true
+    - name: cors_allow_origins
+      description: Comma-separated list of allowed origins.
+      isArray: true
+    - name: cors_expose_headers
+      description: Comma-separated list of headers to expose.
+      isArray: true
+    - name: cors_max_age
+      description: Maximum age for CORS preflight cache.
+    - name: invoke_mode
+      auto: PREDEFINED
+      predefined:
+      - "BUFFERED"
+      - "RESPONSE_STREAM"
+      description: BUFFERED or RESPONSE_STREAM.
+    description: Updates the configuration for a Lambda function URL.
+
   isfetch: false
   runonce: false
   script: '-'

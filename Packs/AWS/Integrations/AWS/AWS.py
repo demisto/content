@@ -674,7 +674,7 @@ class S3:
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") == HTTPStatus.OK:
             json_response = json.loads(response.get("Policy", "{}"))
-            json_stetment = json_response.get("Statement", [])
+            json_statement = json_response.get("Statement", [])
             return CommandResults(
                 outputs_prefix="AWS.S3-Buckets",
                 outputs_key_field="BucketName",
@@ -684,7 +684,7 @@ class S3:
                 },
                 readable_output=tableToMarkdown(
                     f"Bucket Policy ID: {json_response.get('Id','N/A')} Version: {json_response.get('Version','N/A')}",
-                    t=json_stetment,
+                    t=json_statement,
                     removeNull=True,
                     headerTransform=pascalToSpace,
                 ),
@@ -2362,6 +2362,36 @@ class ECS:
             )
 
 
+class Lambda:
+    service = AWSServices.LAMBDA
+
+    @staticmethod
+    def get_function_configuration_command(client: BotoClient, args: Dict[str, Any]):
+        return CommandResults(
+            outputs_prefix="AWS.Lambda.FunctionConfig",
+            outputs_key_field="FunctionName",
+        )
+
+    @staticmethod
+    def get_function_url_configuration_command(client: BotoClient, args: Dict[str, Any]):
+        return CommandResults(
+            outputs_prefix="AWS.Lambda.FunctionURLConfig",
+            outputs_key_field="FunctionArn",
+        )
+
+    @staticmethod
+    def update_function_url_configuration_command(client: BotoClient, args: Dict[str, Any]):
+        return CommandResults()
+
+    @staticmethod
+    def get_policy_command(client: BotoClient, args: Dict[str, Any]):
+        return CommandResults(outputs_prefix="AWS.Lambda", outputs_key_field="Sid")
+
+    @staticmethod
+    def invoke_command(client: BotoClient, args: Dict[str, Any]):
+        return CommandResults()
+
+
 COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResults | None]] = {
     "aws-s3-public-access-block-update": S3.put_public_access_block_command,
     "aws-s3-bucket-versioning-put": S3.put_bucket_versioning_command,
@@ -2408,6 +2438,11 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-s3-bucket-policy-get": S3.get_bucket_policy_command,
     "aws-cloudtrail-trails-describe": CloudTrail.describe_trails_command,
     "aws-ecs-update-cluster-settings": ECS.update_cluster_settings_command,
+    "aws-lambda-function-configuration-get": Lambda.get_function_configuration_command,
+    "aws-lambda-function-url-config-get": Lambda.get_function_url_configuration_command,
+    "aws-lambda-policy-get": Lambda.get_policy_command,
+    "aws-lambda-invoke": Lambda.invoke_command,
+    "aws-lambda-function-url-config-update": Lambda.update_function_url_configuration_command,
 }
 
 REQUIRED_ACTIONS: list[str] = [
@@ -2465,6 +2500,11 @@ REQUIRED_ACTIONS: list[str] = [
     "s3:GetEncryptionConfiguration",
     "s3:DeleteBucketPolicy",
     "cloudtrail:DescribeTrails",
+    "lambda:GetFunctionConfiguration",
+    "lambda:GetFunctionUrlConfig",
+    "lambda:GetPolicy",
+    "lambda:InvokeFunction",
+    "lambda:UpdateFunctionUrlConfig",
 ]
 
 
