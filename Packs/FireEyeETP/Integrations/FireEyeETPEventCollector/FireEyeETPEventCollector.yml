@@ -12,13 +12,19 @@ configuration:
   required: true
   type: 0
   section: Connect
+- display: Client ID
+  name: oauth_credentials
+  displaypassword: Client Secret
+  type: 9
+  section: Connect
 - displaypassword: API Key
   additionalinfo: The API Key allows you to integrate with the Trellix Email Security - Cloud.
   name: credentials
-  required: true
+  required: false
   hiddenusername: true
   type: 9
   section: Connect
+  hidden: true
 - defaultvalue: "1000"
   display: Maximum number of Alerts to fetch.
   name: alerts_max_fetch
@@ -87,6 +93,14 @@ script:
   script: ""
   subtype: python3
   type: python
+triggers:
+  - conditions:
+      - name: credentials
+        operator: not_exists
+    effects:
+      - name: oauth_credentials
+        action:
+          required: true
 fromversion: 8.2.0
 marketplaces:
 - marketplacev2

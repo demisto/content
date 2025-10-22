@@ -12,6 +12,10 @@ configuration:
   type: 0
   required: true
   additionalinfo: "Valid values: https://etp.us.fireeye.com, https://etp.eu.fireeye.com, https://etp.us.fireeyegov.com"
+- display: Client ID
+  name: credentials
+  displaypassword: Client Secret
+  type: 9
 - display: API key
   name: api_key
   defaultvalue: ""
@@ -23,6 +27,7 @@ configuration:
   hiddenusername: true
   type: 9
   required: false
+  hidden: true
 - display: Trust any certificate (not secure)
   name: unsecure
   type: 8
@@ -367,6 +372,16 @@ script:
   isfetch: true
   subtype: python3
   dockerimage: demisto/python3:3.12.11.4508456
+triggers:
+  - conditions:
+      - name: api_key
+        operator: not_exists
+      - name: credentials_api_key
+        operator: not_exists
+    effects:
+      - name: credentials
+        action:
+          required: true
 tests:
 - No Test
 
