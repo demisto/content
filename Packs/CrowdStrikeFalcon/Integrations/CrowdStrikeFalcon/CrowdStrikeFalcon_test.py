@@ -2500,7 +2500,9 @@ test_data2 = get_fetch_data2()
 def test_get_indicator_device_id(mocker, requests_mock):
     from CrowdStrikeFalcon import get_indicator_device_id
 
-    requests_mock.get("https://4.4.4.4/iocs/queries/indicators/devices/v1", json=test_data["response_for_get_indicator_device_id"])
+    requests_mock.get(
+        "https://4.4.4.4/iocs/queries/indicators/devices/v1", json=test_data["response_for_get_indicator_device_id"]
+    )
     mocker.patch.object(demisto, "args", return_value={"type": "sha256", "value": "example_sha"})
     res = get_indicator_device_id()
 
