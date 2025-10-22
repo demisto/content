@@ -248,6 +248,7 @@ tasks:
       version: -1
       name: Complete
       type: title
+      description: The playbook is complete.
       iscommand: false
       brand: ""
     separatecontext: false
