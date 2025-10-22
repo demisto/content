@@ -5,6 +5,7 @@ from threading import Lock, Thread
 import demistomock as demisto
 from CommonServerPython import *
 from dateutil import tz
+from http import HTTPStatus
 from websockets import exceptions
 from websockets.sync.client import connect
 from websockets.sync.connection import Connection
@@ -18,6 +19,9 @@ URL = "{host}/v1/stream?cid={cluster_id}&type={type}"
 FETCH_INTERVAL_IN_SECONDS = 60
 FETCH_SLEEP = 5
 SERVER_IDLE_TIMEOUT = 300
+MAX_RECONNECT_ATTEMPTS = 5
+MAX_BACKOFF_SECONDS = 60
+BASE_BACKOFF_SECONDS = 2
 
 
 EVENT_TYPES = ["message", "maillog", "audit"]
@@ -51,15 +55,36 @@ class EventConnection:
 
     def reconnect(self):
         """
-        Reconnect logic for the WebSocket connection.
+        Reconnect logic for the WebSocket connection using an exponential backoff strategy.
+        This handles the HTTP 409 error by delaying the retry to allow the Proofpoint server to clear the session.
         """
-        demisto.info(f"In {self.event_type} reconnect, going to reconnect.")
-        try:
-            self.connection = self.connect()
-            demisto.info(f"[{self.event_type}] Successfully reconnected to WebSocket")
-        except Exception as e:
-            demisto.error(f"[{self.event_type}] Reconnection failed: {e!s} {traceback.format_exc()}")
-            raise
+        attempt = 0
+        while attempt < MAX_RECONNECT_ATTEMPTS:
+            attempt += 1
+            demisto.info(f"In {self.event_type} reconnect, going to attempt reconnection #{attempt} / {MAX_RECONNECT_ATTEMPTS}.")
+            try:
+                self.connection = self.connect()
+                demisto.info(f"[{self.event_type}] Successfully reconnected to WebSocket after {attempt} attempt(s).")
+                return
+
+            except exceptions.InvalidStatus as e:
+                # Need to wait if HTTP 409 (Conflict) error was raised because the failed session
+                # has not been fully terminated or released by the Proofpoint server
+                if e.response.status_code == HTTPStatus.CONFLICT:
+                    delay = min(MAX_BACKOFF_SECONDS, BASE_BACKOFF_SECONDS * (2 ** (attempt - 1)))
+                    demisto.error(
+                        f"[{self.event_type}] Reconnection failed due to session conflict. "
+                        f"Waiting {delay} seconds before retrying (Attempt {attempt})."
+                    )
+                    time.sleep(delay)
+
+                else:
+                    demisto.error(f"[{self.event_type}] Fatal connection status error: {e!s}.")
+                    raise
+
+            except Exception as e:
+                demisto.error(f"[{self.event_type}] General reconnection failure: {e!s}.")
+                raise
 
     def heartbeat(self):
         """
