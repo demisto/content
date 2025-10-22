@@ -1903,6 +1903,7 @@ class EC2:
         aws-ec2-get-ipam-discovered-public-addresses: Gets the public IP addresses that have been discovered by IPAM.
 
         Args:
+            client (BotoClient): The initialized Boto3 EC2 client.
             args (dict): all command arguments, usually passed from ``demisto.args()``.
 
         Returns:
@@ -1943,21 +1944,36 @@ class EC2:
 
     @staticmethod
     def create_tags_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Adds or overwrites one or more tags for the specified AWS resources.
+
+        The function calls the AWS EC2 'create_tags' API. It requires a list of resource IDs
+        to tag and a list of key-value pairs representing the tags to apply.
+
+        Args:
+            client (BotoClient): The initialized Boto3 EC2 client.
+            args: A dictionary containing arguments for creating the tags.
+                  Expected keys are 'resources' (list of resource IDs) and 'tags'
+                  (list of key-value tag dictionaries).
+
+        Returns:
+            CommandResults: An object confirming the successful tagging operation via a
+                            readable output message. The command has no explicit outputs.
+        """
         kwargs = {
-            "resources": args.get("resources"),
-            "tags": args.get("tags"),
-            "roleArn": args.get("roleArn"),
-            "roleSessionName": args.get("roleSessionName"),
-            "roleSessionDuration": args.get("roleSessionDuration")
+            "resources": parse_resource_ids(args.get("resources")),
+            "tags": parse_tag_field(args.get("tags")),
         }
 
-        remove_nulls_from_dictionary(kwargs)
         try:
             response = client.create_tags(**kwargs)
             # demisto.info(f"{response=}")
             if response["ResponseMetadata"]["HTTPStatusCode"] in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
                 return CommandResults(readable_output="The resources where tagged successfully")
-            raise DemistoException(f"Unexpected response from AWS - EC2:\n{response}")
+            raise DemistoException(
+                f"AWS EC2 API call to create_tags failed or returned an unexpected status code. "
+                f"Received HTTP Status Code: {response['ResponseMetadata']['HTTPStatusCode']}"
+            )
         except Exception as e:
             raise DemistoException(f"Error: {str(e)}")
 
