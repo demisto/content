@@ -1099,28 +1099,23 @@ script:
           description: The type of the file artifact.
           type: String
     - arguments:
-      - name: filter
-        description: A custom filter. When using this argument, other filter arguments are not relevant.
-        type: String
       - name: limit
         description: The maximum number of assets to return.
       - name: start
         description: The starting index for the assets to return.
-      - name: on_demand_fields
-        description: Extra fields to return for each asset.
-      - name: asset_name
+      - name: asset_names
         description: Comma-separated list of asset names to search for.
-      - name: asset_type
+      - name: asset_types
         description: Comma-separated list of asset types to search for.
       - name: asset_tags
         description: Comma-separated list of asset tags to search for.
-      - name: asset_id
+      - name: asset_ids
         description: Comma-separated list of asset IDs to search for.
-      - name: asset_provider
+      - name: asset_providers
         description: Comma-separated list of asset providers to search for.
-      - name: asset_realm
+      - name: asset_realms
         description: Comma-separated list of asset realms to search for.
-      - name: asset_group
+      - name: asset_groups
         description: Comma-separated list of asset groups to search for.
       name: core-search-assets
       description: Search for assets in XDR based on some filters.
