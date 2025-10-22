@@ -23,6 +23,7 @@ from Code42 import (
     add_user_to_watchlist_command,
     remove_user_from_watchlist_command,
     download_file_command,
+    download_file_by_xfc_id_command,
     fetch_incidents,
     Code42AlertNotFoundError,
     Code42UserNotFoundError,
@@ -750,6 +751,15 @@ def test_download_file_when_given_other_hash_raises_unsupported_hash(incydr_sdk_
     client = _create_incydr_client(incydr_sdk_mock)
     with pytest.raises(Code42UnsupportedHashError):
         _ = download_file_command(client, {"hash": _hash})
+
+
+def test_download_file_by_xfc_id(incydr_file_events_mock, mocker):
+    fr = mocker.patch("Code42.fileResult")
+    incydr_file_events_mock.files.v1.stream_file_by_xfc_content_id.return_value = create_mock_requests_response(mocker, "")
+    client = _create_incydr_client(incydr_file_events_mock)
+    _ = download_file_by_xfc_id_command(client, {"xfc_id": "b6312dbe4aa4212da94523ccb28c5c16"})
+    incydr_file_events_mock.files.v1.stream_file_by_xfc_content_id.assert_called_once_with("b6312dbe4aa4212da94523ccb28c5c16")
+    assert fr.call_count == 1
 
 
 def test_list_watchlists_command(incydr_watchlists_mock):
