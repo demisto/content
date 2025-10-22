@@ -2654,7 +2654,7 @@ def test_s3_file_upload_command_success(mocker):
 
     mock_client = mocker.Mock()
 
-    # Create a temp file to simulate War Room file
+    # Create a temp file to simulate a War Room file
     with tempfile.NamedTemporaryFile(delete=False) as tf:
         tf.write(b"upload-bytes")
         tmp_path = tf.name
