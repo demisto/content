@@ -4779,7 +4779,7 @@ def is_jira_cloud_url(url: str) -> bool:
 
 def add_config_error_messages(err: str, cloud_id: str, server_url: str) -> str:
     """
-    Provide additional information for error messages stemming from bad configurations.
+Provide additional information for error messages that result from incorrect configurations.
 
     Args:
         err (str): The original error message.
@@ -4793,7 +4793,7 @@ def add_config_error_messages(err: str, cloud_id: str, server_url: str) -> str:
     if "404" in err and cloud_id and server_url.rstrip("/") != "https://api.atlassian.com/ex/jira":
         err = f"""
 (Error 404) Jira Cloud instances must use the default Server URL: `https://api.atlassian.com/ex/jira`.
-Please update the Server URL in the instance configuration and try again.
+Update the Server URL in the instance configuration and try again.
 
 
 Original error: {err}

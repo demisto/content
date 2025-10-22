@@ -21,7 +21,7 @@ There are 2 authentication methods:
 
 Leave the *Client ID* and *Client Secret* fields empty and fill in the following fields:
 - *User name* - Enter your user email.
-- *API key* - Enter the API token. To generate API token, see [here](https://support.atlassian.com/atlassian-account/docs/manage-api-tokens-for-your-atlassian-account/)
+- *API key* - Enter the API token. To generate an API token, see [here](https://support.atlassian.com/atlassian-account/docs/manage-api-tokens-for-your-atlassian-account/)
 
 ##### Basic Authentication permissions
 
@@ -37,7 +37,7 @@ Locate permissions for the tasks listed below:
 * Link issues
 ### OAuth 2.0
 
-For both instances (Cloud ID & OnPrem), it is advised to use the `https://oproxy.demisto.ninja/authcode` **Callback URL**. The OProxy URL is a client side only web page that provides an easy interface to copy the obtained auth code from the authorization response to the integration configuration in the authorization flow steps. Optionally, if you don't want to use the OProxy URL, you can use a localhost URL on a port which is not used locally on your machine. For example: <http://localhost:9004>. You will then need to copy the code from the URL address bar in the response.
+For both instances (Cloud ID & OnPrem), use the `https://oproxy.demisto.ninja/authcode` **Callback URL**. The OProxy URL is a client side web page that provides an easy interface to copy the authorization code from the response to the integration configuration during the authorization flow. Optionally, if you don't want to use the OProxy URL, you can use a localhost URL on an unused local port, for example: <http://localhost:9004>. You will then need to copy the code from the URL address bar in the response.
 
 #### Cloud authentication
 
