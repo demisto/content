@@ -3796,10 +3796,9 @@ script:
     - name: key_id
       description: The KMS key ID or ARN to enable rotation for.
       required: true
-    - name: rotation_period
-      description: Custom rotation period (days). Valid range is 90–2560. Defaults to 365.
+    - name: rotation_period_in_days
+      description: 'Key rotation period in days. Valid range: 90–2560. If omitted when enabling rotation for the first time, the default is 365 days. If rotation is already enabled and this field is not specified, the existing period remains unchanged.'
       required: false
-      defaultValue: "365"
       type: number
     outputs: []
   
@@ -3811,7 +3810,7 @@ script:
       required: true
     - name: region
       description: The AWS region.
-      required: false
+      required: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -3847,7 +3846,7 @@ script:
       - me-central-1
       - sa-east-1
     - name: certificate_arn
-      description: 'The ARN of the ACM certificate to update. This must be of the form: ”arn:aws:acm:us-east-1:account:certificate/12345678-1234-1234-12345678912”.'
+      description: 'The ARN of the ACM certificate to update. This must be of the form: ”arn:aws:acm:{region}:{account}:certificate/{certificate_id}”.'
       required: true
     - name: transparency_logging_preference
       description: Whether the certificate is recorded in public CT logs.
@@ -3859,14 +3858,14 @@ script:
     outputs: []
   
   - name: aws-elb-load-balancer-attributes-modify
-    description: Modifies attributes for a Classic Elastic Load Balancer.
+    description: Modifies attributes for a Elastic Load Balancer.
     arguments:
     - name: account_id
       description: The AWS account ID.
       required: true
     - name: region
       description: The AWS region.
-      required: false
+      required: true
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -3904,49 +3903,56 @@ script:
     - name: load_balancer_name
       description: The name of the Load Balancer.
       required: true
-    - name: access_log_enable
-      description: Whether to enable access logs.
+    - name: access_log_enabled
+      description: Whether to enable access logs. (if enabled make sure to provide access_log_s3_bucket_name)
       required: false
       auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
     - name: access_log_s3_bucket_name
-      description: S3 bucket name for access logs (required if access_log_enable=true).
+      description: S3 bucket name for access logs (required if access_log_enabled=true).
       required: false
-    - name: access_log_emit_interval
-      description: Access log publish interval in minutes (5 or 60).
+    - name: access_log_interval
+      description: The interval for publishing the access logs. You can specify an interval of either 5 minutes or 60 minutes. If omitted when enabling logging for the first time, the default is 60 minutes. If logging is already enabled and this field is not specified, the existing period remains unchanged.'
       required: false
       type: number
-    - name: access_log_s3_bucket_prefix
-      description: S3 key prefix for access logs.
-      required: false
-    - name: additional_attributes
-      description: Additional attributes as a JSON list of name/value objects (e.g., [{"Key":"routing.http2.enabled","Value":"true"}]).
-      required: false
-      type: unknown
-    - name: cross_zone_load_balancing_enable
-      description: Whether to enable cross-zone load balancing.
-      required: false
       auto: PREDEFINED
       predefined:
-      - 'true'
-      - 'false'
-    - name: connection_draining_enable
-      description: Whether to enable connection draining.
+      - 5
+      - 60
+    - name: access_log_s3_bucket_prefix
+      description: S3 key prefix (Path) for access logs.  If the prefix is not provided, the log folder is placed at the root level of the bucket.
+      required: false
+    - name: connection_draining_enabled
+      description: Whether connection draining is enabled for the load balancer.
       required: false
       auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
     - name: connection_draining_timeout
-      description: Connection draining timeout in seconds (valid when connection_draining_enable=true).
+      description: 'The maximum time, in seconds, to keep the existing connections open before de-registering the instance.  (Min: 1, Max: 3600)'
       required: false
       type: number
     - name: connection_settings_idle_timeout
-      description: Idle connection timeout in seconds.
+      description: 'The load balancer allows the connections to remain idle (no data is sent over the connection) for this specific duration in seconds. Valid Range: 1 - 4000.'
       required: false
       type: number
+    - name: cross_zone_load_balancing_enabled
+      description: Whether to enable cross-zone load balancing.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: additional_attributes
+      description: >
+        A comma-separated list of additional load balancer attributes to modify. Provide pairs as key1,value1,key2,value2,...
+        For example: "elb.http.desyncmitigationmode,defensive".
+        Maximum of 10 pairs of attributes.
+      required: false
+      type: unknown
 
     outputs:
     - contextPath: AWS.ELB.LoadBalancer.LoadBalancerName

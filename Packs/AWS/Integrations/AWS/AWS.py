@@ -362,6 +362,9 @@ class AWSServices(str, Enum):
     LAMBDA = "lambda"
     CloudTrail = "cloudtrail"
     ECS = "ecs"
+    KMS = "kms"
+    ELB = "elb"
+    ACM = "acm"
 
 
 class DatetimeEncoder(json.JSONEncoder):
@@ -2362,6 +2365,161 @@ class ECS:
             )
 
 
+class KMS:
+    service = AWSServices.KMS
+
+    @staticmethod
+    def enable_key_rotation_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Enables automatic rotation for a symmetric customer-managed KMS key.
+        Uses a custom rotation period (days) from args; valid range is 90–2560.
+        """
+        key_id = args.get("key_id", "")
+        rot_period = arg_to_number(args.get("rotation_period_in_days"))
+        if rot_period and not (90 <= int(rot_period) <= 2560):
+            raise DemistoException("rotation_period_in_days must be between 90 and 2560 days")
+
+        kwargs = {"KeyId": key_id, "RotationPeriodInDays": rot_period}
+        remove_nulls_from_dictionary(kwargs)
+        print_debug_logs(client, f"EnableKeyRotation params: {kwargs}")
+
+        try:
+            resp = client.enable_key_rotation(**kwargs)
+            status = resp.get("ResponseMetadata", {}).get("HTTPStatusCode")
+            if status in (HTTPStatus.OK, HTTPStatus.NO_CONTENT):
+                hr = f"Enabled automatic rotation for KMS key '{key_id}' (rotation period: {rot_period} days)."
+                return CommandResults(readable_output=hr, raw_response=resp)
+            AWSErrorHandler.handle_response_error(resp)
+
+        except ClientError as e:
+            AWSErrorHandler.handle_client_error(e)
+
+        except Exception as e:
+            raise DemistoException(f"Error enabling key rotation for '{key_id}': {str(e)}")
+
+
+class ACM:
+    service = AWSServices.ACM
+
+    @staticmethod
+    def update_certificate_options_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Updates Certificate Transparency (CT) logging preference for an ACM certificate.
+        """
+        arn = args.get("certificate_arn", "")
+        pref = args.get("transparency_logging_preference", "")
+        kwargs = {"CertificateArn": arn, "Options": {"CertificateTransparencyLoggingPreference": pref}}
+        remove_nulls_from_dictionary(kwargs)
+        print_debug_logs(client, f"UpdateCertificateOptions params: {kwargs}")
+
+        try:
+            resp = client.update_certificate_options(**kwargs)
+            status = resp.get("ResponseMetadata", {}).get("HTTPStatusCode")
+            if status in (HTTPStatus.OK, HTTPStatus.NO_CONTENT):
+                hr = f"Updated Certificate Transparency (CT) logging to '{pref}' for certificate '{arn}'."
+                return CommandResults(readable_output=hr, raw_response=resp)
+            AWSErrorHandler.handle_response_error(resp)
+
+        except ClientError as e:
+            AWSErrorHandler.handle_client_error(e)
+
+        except Exception as e:
+            raise DemistoException(f"Error updating certificate options for '{arn}': {str(e)}")
+
+
+class ELB:
+    service = AWSServices.ELB
+
+    @staticmethod
+    def modify_load_balancer_attributes_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Modifies Classic ELB attributes:
+        Cross-Zone Load Balancing, Access Logs, Connection Draining, Connection Settings, AdditionalAttributes.
+        Sends only sub-blocks provided by the user.
+        """
+        lb_name = args.get("load_balancer_name", "")
+        attrs: Dict[str, Any] = {}
+
+        # Cross-zone
+        if "cross_zone_load_balancing_enabled" in args:
+            attrs["CrossZoneLoadBalancing"] = {"Enabled": argToBoolean(args.get("cross_zone_load_balancing_enabled"))}
+
+        # Access logs
+        if (
+            "access_log_enabled" in args
+            or "access_log_s3_bucket_name" in args
+            or "access_log_interval" in args
+            or "access_log_s3_bucket_prefix" in args
+        ):
+            enabled = argToBoolean(args.get("access_log_enabled")) if "access_log_enabled" in args else None
+            bucket = args.get("access_log_s3_bucket_name")
+            interval = arg_to_number(args.get("access_log_interval"))
+            prefix = args.get("access_log_s3_bucket_prefix")
+
+            access_log_block = {"Enabled": enabled, "S3BucketName": bucket, "S3BucketPrefix": prefix, "EmitInterval": interval}
+            remove_nulls_from_dictionary(access_log_block)
+            if access_log_block:  # only include if any field present
+                attrs["AccessLog"] = access_log_block
+
+        # Connection draining
+        if "connection_draining_enabled" in args or "connection_draining_timeout" in args:
+            draining_enabled = (
+                argToBoolean(args.get("connection_draining_enabled")) if "connection_draining_enabled" in args else None
+            )
+            draining_timeout = arg_to_number(args.get("connection_draining_timeout"))
+            conn_draining_block = {"Enabled": draining_enabled, "Timeout": draining_timeout}
+            remove_nulls_from_dictionary(conn_draining_block)
+            if conn_draining_block:
+                attrs["ConnectionDraining"] = conn_draining_block
+
+        # Connection settings (idle timeout)
+        if "connection_settings_idle_timeout" in args:
+            idle = arg_to_number(args.get("connection_settings_idle_timeout"))
+            attrs["ConnectionSettings"] = {"IdleTimeout": idle}
+
+        # Additional attributes (JSON list of {Key,Value})
+        addl_arg = argToList(args.get("additional_attributes"))
+        if addl_arg:
+            if len(addl_arg) % 2 != 0:
+                raise DemistoException("Invalid 'additional_attributes' format. Must contain pairs: key1,value1,key2,value2,...")
+            if len(addl_arg) > 20:
+                raise DemistoException("Too many 'additional_attributes'. Maximum allowed is 10 pairs.")
+            addl_parsed = [{"Key": addl_arg[i], "Value": addl_arg[i + 1]} for i in range(0, len(addl_arg), 2)]
+            attrs["AdditionalAttributes"] = addl_parsed
+
+        kwargs = {"LoadBalancerName": lb_name, "LoadBalancerAttributes": attrs}
+        remove_nulls_from_dictionary(kwargs)
+        print_debug_logs(client, f"ModifyLoadBalancerAttributes params: {kwargs}")
+
+        try:
+            resp = client.modify_load_balancer_attributes(**kwargs)
+            status = resp.get("ResponseMetadata", {}).get("HTTPStatusCode")
+            if status == HTTPStatus.OK:
+                lb_attrs = resp.get("LoadBalancerAttributes", {})
+                out = {"LoadBalancerName": lb_name, "LoadBalancerAttributes": lb_attrs}
+                hr = f"Modified attributes for Classic ELB '{lb_name}'.\n\n" + tableToMarkdown(
+                    "Updated Attributes",
+                    lb_attrs,
+                    removeNull=True,
+                    headerTransform=pascalToSpace,
+                )
+                return CommandResults(
+                    readable_output=hr,
+                    outputs_prefix="AWS.ELB.LoadBalancer",
+                    outputs_key_field="LoadBalancerName",
+                    outputs=out,
+                    raw_response=resp,
+                )
+
+            AWSErrorHandler.handle_response_error(resp)
+
+        except ClientError as e:
+            AWSErrorHandler.handle_client_error(e)
+
+        except Exception as e:
+            raise DemistoException(f"Error modifying load balancer '{lb_name}': {str(e)}")
+
+
 COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResults | None]] = {
     "aws-s3-public-access-block-update": S3.put_public_access_block_command,
     "aws-s3-bucket-versioning-put": S3.put_bucket_versioning_command,
@@ -2408,6 +2566,9 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-s3-bucket-policy-get": S3.get_bucket_policy_command,
     "aws-cloudtrail-trails-describe": CloudTrail.describe_trails_command,
     "aws-ecs-update-cluster-settings": ECS.update_cluster_settings_command,
+    "aws-kms-key-enable-rotation": KMS.enable_key_rotation_command,
+    "aws-acm-certificate-options-update": ACM.update_certificate_options_command,
+    "aws-elb-load-balancer-attributes-modify": ELB.modify_load_balancer_attributes_command,
 }
 
 REQUIRED_ACTIONS: list[str] = [
@@ -2415,6 +2576,7 @@ REQUIRED_ACTIONS: list[str] = [
     "kms:Decrypt",
     "kms:DescribeKey",
     "kms:GenerateDataKey",
+    "kms:EnableKeyRotation",
     "secretsmanager:CreateSecret",
     "secretsmanager:RotateSecret",
     "secretsmanager:TagResource",
@@ -2464,7 +2626,9 @@ REQUIRED_ACTIONS: list[str] = [
     "s3:GetBucketPublicAccessBlock",
     "s3:GetEncryptionConfiguration",
     "s3:DeleteBucketPolicy",
+    "acm:UpdateCertificateOptions",
     "cloudtrail:DescribeTrails",
+    "elasticloadbalancing:ModifyLoadBalancerAttributes",
 ]
 
 
