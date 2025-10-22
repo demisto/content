@@ -252,5 +252,9 @@
             }
         }
     ],
-    "isPredefined": true
+    "isPredefined": true,
+    "marketplaces": [
+        "xsoar_on_prem",
+        "xpanse"
+    ]
 }
