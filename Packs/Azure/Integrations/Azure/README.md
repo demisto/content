@@ -1007,14 +1007,14 @@ Gets network interfaces in a resource group.
 | Azure.NSGNetworkInterfaces.properties.allowPort25Out | Boolean | Whether port 25 outbound traffic is allowed. |
 | Azure.NSGNetworkInterfaces.properties.nicType | String | The network interface card type \(Standard/Basic\). |
 
-### azure-vm-get-nic-details
+### azure-vm-get-network-interface-details
 
 ***
 Gets the properties of a given network interface.
 
 #### Base Command
 
-`azure-vm-get-nic-details`
+`azure-vm-get-network-interface-details`
 
 #### Input
 

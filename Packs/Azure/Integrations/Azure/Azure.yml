@@ -2261,7 +2261,7 @@ script:
       required: true
     - description: |
         Resource Group to which the virtual machine belongs.
-        To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command. If none are present, navigate to the Azure Web Portal to create resource groups.
+        To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command.
       name: resource_group_name
       required: true
     - description: Name of the virtual machine to power on. To see all virtual machines and their associated names for a specific resource group, run the `azure-vm-list-instances` command.
@@ -2286,7 +2286,7 @@ script:
       required: true
     - description: |
         The resource group to which the virtual machine belongs.
-        To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command. If none are present, navigate to the Azure Web Portal to create resource groups.
+        To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command.
       name: resource_group_name
       required: true
     - description: The name of the virtual machine to power off. To see all virtual machines with their associated names for a specific resource group, run the `azure-vm-list-instances` command.
@@ -2317,7 +2317,7 @@ script:
       required: true
     - description: |
         The resource group to which the virtual machine belongs.
-        To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command. If none are present, navigate to the Azure Web Portal to create resource groups.
+        To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command.
       name: resource_group_name
       required: true
     - description: The name of the virtual machine you want to view the details of. To see all the virtual machines with their associated names for a specific resource group, run the `azure-vm-list-instances` command.
@@ -2325,11 +2325,12 @@ script:
       required: true
     - auto: PREDEFINED
       defaultValue: instanceView
-      description: The expand expression to apply on the operation. 'instanceView' retrieves a snapshot of the runtime properties of the virtual machine that is managed by the platform and can change outside of control plane operations. 'userData' retrieves the UserData property as part of the VM model view that was provided by the user during the VM Create/Update operation. Default value is False.
+      description: The expand expression to apply on the operation. 'InstanceView' retrieves a snapshot of the runtime properties of the virtual machine that is managed by the platform and can change outside of control plane operations. 'UserData' retrieves the UserData property as part of the VM model view that was provided by the user during the VM Create/Update operation.
       name: expand
       predefined:
-        - instanceView
+        - 'instanceView'
         - 'userData'
+        - 'resiliencyView'
     outputs:
     - contextPath: Azure.Compute.name
       description: The name of the virtual machine you want to get details of.
@@ -2379,7 +2380,7 @@ script:
     - contextPath: Azure.Compute.properties.diagnosticsProfile
       description: The configuration for boot diagnostics and monitoring of the virtual machine.
       type: string
-  - name: azure-vm-get-nic-details
+  - name: azure-vm-get-network-interface-details
     description: Gets the properties of a given network interface.
     arguments:
     - description: The subscription ID.
@@ -2387,7 +2388,7 @@ script:
       required: true
     - description: |
         The resource group to which the network interface belongs.
-        To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command. If none are present, navigate to the Azure Web Portal to create resource groups.
+        To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command.
       name: resource_group_name
       required: true
     - description: The name of the network interface you want to view the details of.
@@ -2444,7 +2445,7 @@ script:
       required: true
     - description: |
         The resource group to which the IP address belongs.
-        To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command. If none are present, navigate to the Azure Web Portal to create resource groups.
+        To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command.
       name: resource_group_name
       required: true
     - description: The IP address name.

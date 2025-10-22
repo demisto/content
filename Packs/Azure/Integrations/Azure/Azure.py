@@ -3495,7 +3495,7 @@ def main():
             "azure-vm-start-instance": start_vm_command,
             "azure-vm-poweroff-instance": poweroff_vm_command,
             "azure-vm-get-instance-details": get_vm_command,
-            "azure-vm-get-nic-details": get_network_interface_command,
+            "azure-vm-get-network-interface-details": get_network_interface_command,
             "azure-vm-get-public-ip-details": get_public_ip_details_command,
         }
         if command == "test-module" and connector_id:
