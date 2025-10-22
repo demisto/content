@@ -1,0 +1,21 @@
+{
+    "name": "NCFTA Theat Intel",
+    "description": "It takes the MISP data into XSOAR and analyses it to provide readable format to attributes and events. From MISP API only attributes and events are getting called in the API. ",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Ashwin Rajendra",
+    "url": "",
+    "email": "",
+    "created": "2025-10-22T18:04:57Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "ashwinrajendra"
+    ]
+}
