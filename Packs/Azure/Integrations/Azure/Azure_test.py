@@ -2887,7 +2887,7 @@ def test_get_network_interface_command(mocker):
 
     mock_client = mocker.Mock()
     mock_params = {"subscription_id": "sub-id", "resource_group_name": "rg1"}
-    args = {"subscription_id": "sub-id", "resource_group_name": "rg1", "nic_name": "nic1"}
+    args = {"subscription_id": "sub-id", "resource_group_name": "rg1", "network_interface_name": "nic1"}
 
     mock_response = {
         "id": "/subscriptions/sub-id/resourceGroups/rg1/providers/Microsoft.Network/networkInterfaces/nic1",
