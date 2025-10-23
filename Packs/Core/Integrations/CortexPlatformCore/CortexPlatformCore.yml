@@ -1098,6 +1098,24 @@ script:
         - contextPath: Core.CaseExtraData.file_artifacts.data.type
           description: The type of the file artifact.
           type: String
+    - arguments:
+        - description: JSON list of asset groups to search for. (e.g. `["group1", "group2"]`).
+          name: name
+        - description: Filter asset groups by type.
+          name: type
+        - description: Filter asset groups by description.
+          name: description
+        - description: Filter operator to apply.
+          name: operator
+          predefined:
+            - EQ
+            - CONTAINS
+      name: core-search-asset-groups
+      description: Retrieve asset groups from the Cortex platform with optional filtering.
+      outputs:
+        - contextPath: Core.AssetGroups
+          description: The list of asset groups retrieved from the Cortex platform
+          isArray: true
   runonce: false
   script: "-"
   subtype: python3

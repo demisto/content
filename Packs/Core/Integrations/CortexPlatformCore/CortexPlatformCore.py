@@ -10,6 +10,44 @@ INTEGRATION_CONTEXT_BRAND = "Core"
 INTEGRATION_NAME = "Cortex Platform Core"
 MAX_GET_INCIDENTS_LIMIT = 100
 
+ASSET_GROUP_FIELDS = {
+    "asset_group_name": "XDM.ASSET_GROUP.NAME",
+    "asset_group_type": "XDM.ASSET_GROUP.TYPE",
+    "asset_group_description": "XDM.ASSET_GROUP.DESCRIPTION",
+}
+
+
+def create_asset_filter_from_dict(fields_to_filter, operator):
+    """
+        Create an asset filter dictionary from field-value pairs.
+        
+        Args:
+            fields_to_filter (dict): Dictionary where keys are field names and values are lists of values to filter by.
+            operator (str): The search operator to use for filtering ("EQ" or "CONTAINS").
+        
+        Returns:
+            dict: A filter dictionary with AND/OR structure for asset filtering operations.
+    """
+    filter: dict[str, list] = {"AND": []}
+
+    for field, value in fields_to_filter.items():
+        if not value:
+            continue
+
+        search_obj: dict[str, list] = {"OR": []}
+        for val in value:
+            search_obj["OR"].append(
+                {
+                    "SEARCH_FIELD": field,
+                    "SEARCH_TYPE": operator,
+                    "SEARCH_VALUE": val,
+                }
+            )
+
+        filter["AND"].append(search_obj)
+
+    return filter
+
 
 def replace_substring(data: dict | str, original: str, new: str) -> str | dict:
     """
@@ -117,6 +155,87 @@ class Client(CoreClient):
         )
 
         return reply
+
+    def search_asset_groups(self, filter):
+        """
+        Searches for asset groups based on provided filters.
+
+        Args:
+            filter: Filter criteria to apply when searching for asset groups.
+
+        Returns:
+            dict: Response containing the search results for asset groups.
+        """
+        reply = self._http_request(
+            method="POST",
+            json_data={"request_data": {"filters": filter}},
+            headers=self._headers,
+            url_suffix="/asset-groups",
+        )
+
+        return reply
+
+
+def search_asset_groups_command(client: Client, args: dict) -> CommandResults:
+    """
+    Retrieves asset groups from the Cortex platform based on provided filters.
+
+    Args:
+        client (Client): The client instance used to send the request.
+        args (dict): Dictionary containing the arguments for the command.
+                     Expected to include:
+                         - name (str, optional): Filter by asset group names
+                         - type (str, optional): Filter by asset group type
+                         - operator (str, optional): Filter operator to apply
+                         - description (str, optional): Filter by description
+
+    Returns:
+        CommandResults: Object containing the formatted asset groups,
+                        raw response, and outputs for integration context.
+    """
+    operator = args.get("operator", "EQ")
+    fields_to_filter = {
+        ASSET_GROUP_FIELDS["asset_group_name"]: argToList(args.get("name", "")),
+        ASSET_GROUP_FIELDS["asset_group_type"]: argToList(args.get("type", "")),
+        ASSET_GROUP_FIELDS["asset_group_description"]: args.get("description", ""),
+    }
+
+    filter = create_asset_filter_from_dict(fields_to_filter, operator)
+
+    response = client.search_asset_groups(filter)
+    if not response:
+        raise DemistoException("Failed to fetch asset groups. Please check your filters and try again.")
+
+    reply = response.get("reply", [])
+
+    if reply.get("metadata").get("filter_count") == 0:
+        return CommandResults(
+            readable_output="No asset groups match the specified criteria.",
+        )
+
+    groups_data = reply.get("data")
+
+    context_output = [
+        {
+            "Modified_by": group.get("XDM.ASSET_GROUP.MODIFIED_BY"),
+            "Filter": group.get("XDM.ASSET_GROUP.FILTER"),
+            "Predict": group.get("XDM.ASSET_GROUP.MEMBERSHIP_PREDICATE"),
+            "Type": group.get("XDM.ASSET_GROUP.TYPE"),
+            "ID": group.get("XDM.ASSET_GROUP.ID"),
+            "Description": group.get("XDM.ASSET_GROUP.DESCRIPTION"),
+            "Name": group.get("XDM.ASSET_GROUP.NAME"),
+            "Created_by": group.get("XDM.ASSET_GROUP.CREATED_BY"),
+            "Created_by_pretty": group.get("XDM.ASSET_GROUP.CREATED_BY_PRETTY"),
+        }
+        for group in groups_data
+    ]
+
+    return CommandResults(
+        readable_output=tableToMarkdown("Asset Groups", reply, headerTransform=string_to_table_header),
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.AssetGroups",
+        outputs=context_output,
+        raw_response=reply,
+    )
 
 
 def get_asset_details_command(client: Client, args: dict) -> CommandResults:
@@ -229,6 +348,9 @@ def main():  # pragma: no cover
         elif command == "core-get-asset-details":
             client._base_url = "/api/webapp/data-platform"
             return_results(get_asset_details_command(client, args))
+
+        elif command == "core-search-asset-groups":
+            return_results(search_asset_groups_command(client, args))
 
         elif command == "core-get-issues":
             # replace all dict keys that contain issue with alert
