@@ -1,5 +1,5 @@
 category: Analytics & SIEM
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -628,6 +628,24 @@ script:
     name: msgraph-user-change-password
     compliantpolicies:
     - User Soft Remediation
+  - name: msgraph-user-change-password-on-premise
+    description: |-
+      Changes the password of an on-premise user. See documentation for full permissions and roles to execute this command. 
+      Providing a password is required (password auto-generation is not supported).
+    execution: true
+    arguments:
+    - description: User ID or userPrincipalName to update password for.
+      name: user
+      required: true
+      secret: false
+    - description: The new password.
+      name: password
+      required: false
+      secret: true
+    - description: "The new password. This argument can be used in playbooks. Note: the value will NOT be hidden in logs."
+      name: nonsensitive_password
+      required: false
+      secret: false
   - description: Tests connectivity to Microsoft Graph User.
     name: msgraph-user-test
   - arguments:
@@ -743,7 +761,7 @@ script:
   - description: Run this command if for some reason you need to rerun the authentication process.
     name: msgraph-user-auth-reset
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.3539024
+  dockerimage: demisto/crypto:1.0.0.4578119
   runonce: false
   script: '-'
   subtype: python3
