@@ -19,6 +19,10 @@
         "C1",
         "C3",
         "X5",
-        "cloud_posture"
+        "cloud_posture",
+        "cloud",
+        "cloud_runtime_security",
+        "agentix",
+        "xsiam"
     ]
 }
