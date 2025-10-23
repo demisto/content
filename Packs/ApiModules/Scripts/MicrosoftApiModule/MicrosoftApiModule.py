@@ -1485,6 +1485,7 @@ def set_retry_mechanism_arguments(context: dict, next_request_time: float = 0.0,
     """
     context = context or {}
     next_counter = delay_request_counter + 1
+    demisto.debug("Dummy log")
 
     context["next_request_time"] = next_request_time
     context["delay_request_counter"] = next_counter
