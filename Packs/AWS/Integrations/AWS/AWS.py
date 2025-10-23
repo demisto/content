@@ -2376,9 +2376,6 @@ class KMS:
         """
         key_id = args.get("key_id", "")
         rot_period = arg_to_number(args.get("rotation_period_in_days"))
-        if rot_period and not (90 <= int(rot_period) <= 2560):
-            raise DemistoException("rotation_period_in_days must be between 90 and 2560 days")
-
         kwargs = {"KeyId": key_id, "RotationPeriodInDays": rot_period}
         remove_nulls_from_dictionary(kwargs)
         print_debug_logs(client, f"EnableKeyRotation params: {kwargs}")
