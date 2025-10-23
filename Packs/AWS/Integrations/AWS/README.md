@@ -1553,7 +1553,7 @@ Describes IPAM resource discoveries. A resource discovery is an IPAM component t
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | ipam_resource_discovery_ids | A comma-separated list of the IPAM resource discovery IDs. | Optional |
-| filters | One or more filters separated by ';'. See AWS documentation for details &amp; filter options (https://docs.aws.amazon.com/cli/latest/userguide/cli-usage-filter.html). | Optional |
+| filters | One or more filters separated by ';' (for example, name=<name>;values=<values>). See AWS documentation for details &amp; filter options (https://docs.aws.amazon.com/cli/latest/userguide/cli-usage-filter.html). | Optional |
 | limit | The maximum number of results to return in a single call. Specify a value between 5 and 1000. Default value is 50. | Optional |
 | next_token | The token for the next set of results. | Optional |
 | address_region | The Amazon Web Services region for the IP address. | Optional |
@@ -1583,7 +1583,7 @@ Describes resource discovery association with an Amazon VPC IPAM. An associated 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | ipam_resource_discovery_association_ids | A comma-separated list of the resource discovery association IDs. | Optional |
-| filters | One or more filters separated by ';'. See AWS documentation for details &amp; filter options (https://docs.aws.amazon.com/cli/latest/userguide/cli-usage-filter.html). | Optional |
+| filters | One or more filters separated by ';' (for example, name=<name>;values=<values>). See AWS documentation for details &amp; filter options (https://docs.aws.amazon.com/cli/latest/userguide/cli-usage-filter.html). | Optional |
 | limit | The maximum number of results to return in a single call. Specify a value between 5 and 1000. Default value is 50. | Optional |
 | next_token | The token for the next set of results. | Optional |
 | address_region | The Amazon Web Services region for the IP address. | Optional |

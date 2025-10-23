@@ -74,7 +74,7 @@ def process_instance_data(instance: Dict[str, Any]) -> Dict[str, Any]:
     return instance_data
 
 
-def build_pagination_kwargs(args: Dict[str, Any]) -> Dict[str, Any]:
+def build_pagination_kwargs(args: Dict[str, Any], minimum_limit: int = 0) -> Dict[str, Any]:
     """
     Build pagination parameters for AWS API calls with proper validation and limits.
 
@@ -101,8 +101,8 @@ def build_pagination_kwargs(args: Dict[str, Any]) -> Dict[str, Any]:
         raise ValueError(f"Invalid limit parameter: {limit_arg}. Must be a valid number.") from e
 
     # Validate limit constraints
-    if limit is not None and limit <= 0:
-        raise ValueError("Limit must be greater than 0")
+    if limit is not None and limit <= minimum_limit:
+        raise ValueError(f"Limit must be greater than {minimum_limit}")
 
     # AWS API constraints - most services have a max of 1000 items per request
     if limit is not None and limit > MAX_LIMIT_VALUE:
@@ -1905,10 +1905,11 @@ class EC2:
         """
         kwargs = {
             "Filters": parse_filter_field(args.get("filters")),
-            "MaxResults": int(args.get("limit", DEFAULT_LIMIT_VALUE)),
-            "NextToken": args.get("next_token"),
             "IpamResourceDiscoveryIds": argToList(args.get("ipam_resource_discovery_ids")),
         }
+        if not args.get("ipam_resource_discovery_ids"):
+            pagination_kwargs = build_pagination_kwargs(args, minimum_limit=5)
+            kwargs.update(pagination_kwargs)
 
         remove_nulls_from_dictionary(kwargs)
 
@@ -1942,7 +1943,7 @@ class EC2:
             "IpamResourceDiscoveryAssociationIds": argToList(args.get("ipam_resource_discovery_association_ids")),
         }
         if not args.get("ipam_resource_discovery_association_ids"):
-            pagination_kwargs = build_pagination_kwargs(args)
+            pagination_kwargs = build_pagination_kwargs(args, minimum_limit=5)
             kwargs.update(pagination_kwargs)
 
         remove_nulls_from_dictionary(kwargs)

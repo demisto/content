@@ -4097,6 +4097,20 @@ def test_build_pagination_kwargs_no_pagination_arguments():
     assert "NextToken" not in result
 
 
+def test_build_pagination_kwargs_with_limit_less_than_minimum():
+    """
+    Given: A limit argument less than the minimum allowed value.
+    When: build_pagination_kwargs is called with limit less than minimum.
+    Then: It should raise ValueError indicating limit must be greater than minimum.
+    """
+    from AWS import build_pagination_kwargs
+
+    args = {"limit": "2"}
+
+    with pytest.raises(ValueError, match="Limit must be greater than 5"):
+        build_pagination_kwargs(args, minimum_limit=5)
+
+
 def test_aws_error_handler_handle_client_error_missing_error_code(mocker):
     """
     Given: A ClientError with missing error code in response.
@@ -4426,7 +4440,7 @@ def test_ec2_describe_subnets_command_no_results(mocker):
     mock_client = mocker.Mock()
     mock_client.describe_subnets.return_value = {"Subnets": []}
 
-    args = {"account_id": "123456789", "region": "us-east-1"}
+    args = {"account_id": "123456789", "region": "us-east-1", "limit": "10"}
 
     result = EC2.describe_subnets_command(mock_client, args)
 
@@ -4458,7 +4472,7 @@ def test_ec2_describe_vpcs_command_success(mocker):
         ]
     }
 
-    args = {"account_id": "123456789", "region": "us-east-1"}
+    args = {"account_id": "123456789", "region": "us-east-1", "limit": "5"}
 
     result = EC2.describe_vpcs_command(mock_client, args)
 
@@ -4497,6 +4511,7 @@ def test_ec2_describe_vpcs_command_with_filters(mocker):
         "region": "us-east-1",
         "vpc_ids": "vpc-12345678,vpc-87654321",
         "filters": "name=state,values=available",
+        "next_token": "next_token",
     }
 
     EC2.describe_vpcs_command(mock_client, args)
@@ -4518,7 +4533,7 @@ def test_ec2_describe_vpcs_command_no_results(mocker):
     mock_client = mocker.Mock()
     mock_client.describe_vpcs.return_value = {"Vpcs": []}
 
-    args = {"account_id": "123456789", "region": "us-east-1"}
+    args = {"account_id": "123456789", "region": "us-east-1", "limit": "10"}
 
     result = EC2.describe_vpcs_command(mock_client, args)
 
