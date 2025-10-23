@@ -694,8 +694,26 @@ script:
     description: Delete a specific account in the vault.
     name: cyberark-pas-account-delete
     outputs:
+    - contextPath: CyberArkPAS.Accounts.id
+      description: The unique ID of the account.
+      type: String
+    - contextPath: CyberArkPAS.Accounts.secretManagement
+      description: Whether the account secret is automatically managed by the CPM.
+      type: String
+    - contextPath: CyberArkPAS.Accounts.address
+      description: The name or address of the machine where the account will be used.
+      type: String
+    - contextPath: CyberArkPAS.Accounts.secretType
+      description: The type of password.
+      type: String
+    - contextPath: CyberArkPAS.Accounts.safeName
+      description: The safe where the account was created.
+      type: String
+    - contextPath: CyberArkPAS.Accounts.userName
+      description: The user name of the account.
+      type: String
     - contextPath: CyberArkPAS.Accounts.Deleted
-      description: Whether the safe was deleted.
+      description: Whether the account was deleted.
       type: Boolean
   - arguments:
     - description: The unique ID of the account to update.

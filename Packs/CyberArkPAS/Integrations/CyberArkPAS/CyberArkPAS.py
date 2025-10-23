@@ -1085,13 +1085,20 @@ def delete_account_command(
     :param account_id: The unique id of the account to delete.
     :return: CommandResults
     """
-    # the response should be an empty string, if an error raised it would be caught in the main block
+    # Get account details before deletion to return complete information
+    account_details = client.get_account_details(account_id)
+    
+    # Delete the account
     client.delete_account(account_id)
+    
+    # Add the deleted flag to the account details
+    account_details["Deleted"] = True
+    
     return CommandResults(
         readable_output=f"Account {account_id} was deleted",
         outputs_prefix="CyberArkPAS.Accounts",
         outputs_key_field="id",
-        outputs={"id": account_id, "Deleted": True},
+        outputs=account_details,
     )
 
 
