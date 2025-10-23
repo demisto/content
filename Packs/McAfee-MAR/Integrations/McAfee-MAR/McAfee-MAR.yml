@@ -1,6 +1,9 @@
 commonfields:
   id: McAfee Active Response
   version: -1
+sectionorder:
+- Connect
+- Collect
 name: McAfee Active Response
 display: McAfee Active Response
 category: Endpoint
@@ -11,21 +14,25 @@ configuration:
   defaultvalue: ""
   type: 12
   required: true
+  section: Connect
 - display: Client certificates content (see `client.crt` in instructions)
   name: cert_file
   defaultvalue: ""
   type: 12
   required: true
+  section: Connect
 - display: Client private key content (see `client.key` in instructions)
   name: private_key
   defaultvalue: ""
   type: 14
   required: true
+  section: Connect
 - display: Brokers urls (comma separated list in the form of - [ssl://]<hostname>[:port]) - get hostname & port from `brokerlist.properties` file in instructions. Note that the broker should be reachable from demisto server
   name: broker_urls
   defaultvalue: ""
   type: 0
   required: true
+  section: Connect
 script:
   script: ''
   type: python

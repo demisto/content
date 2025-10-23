@@ -2,27 +2,34 @@ category: Data Enrichment & Threat Intelligence
 commonfields:
   id: McAfee Threat Intelligence Exchange V2
   version: -1
+sectionorder:
+- Connect
+- Collect
 configuration:
 - display: Broker CA certificates
   name: broker_ca_bundle
   required: true
   type: 12
   additionalinfo: From `brokercerts.crt` file.
+  section: Connect
 - display: Client certificates
   name: cert_file
   required: true
   type: 12
   additionalinfo: From `client.crt` file.
+  section: Connect
 - display: Client private key
   name: private_key
   required: true
   type: 14
   additionalinfo: From `client.key` file. Make sure that the type of the field is not `encrypted` when filling it out.
+  section: Connect
 - display: Broker URLs
   name: broker_urls
   required: true
   type: 0
   additionalinfo: "The format should be: [ssl://]<hostname>[:port]. Get the hostname and port from the `brokerlist.properties` file. The broker should be reachable from the Cortex XSOAR server."
+  section: Connect
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: C - Fairly reliable
   display: Source Reliability
@@ -37,6 +44,7 @@ configuration:
   - F - Reliability cannot be judged
   type: 15
   required: false
+  section: Collect
 - defaultvalue: indicatorType
   name: feedExpirationPolicy
   display: ""
@@ -47,11 +55,13 @@ configuration:
   - suddenDeath
   type: 17
   required: false
+  section: Collect
 - defaultvalue: "20160"
   name: feedExpirationInterval
   display: ""
   type: 1
   required: false
+  section: Collect
 description: Connect to McAfee TIE using the McAfee DXL client.
 display: McAfee Threat Intelligence Exchange v2
 name: McAfee Threat Intelligence Exchange V2
