@@ -6296,14 +6296,14 @@
         "FiltersAndTransformers"
     ],
     "nightly_packs": [
-        "MailListener",
-        "FeedOffice365",
-        "Jira"
+        "QRadar",
+        "AlienVault_OTX",
+        "MailSenderNew"
     ],
     "selected_nightly_tpb": [
-        "JiraV3 Test",
-        "Office365_Feed_Test",
-        "Mail-Listener Test Playbook"
+        "QRadar_v3-test",
+        "Alienvault_OTX_v2 - Test",
+        "Mail Sender (New) Test"
     ],
     "parallel_integrations": [
         "AWS - ACM",
