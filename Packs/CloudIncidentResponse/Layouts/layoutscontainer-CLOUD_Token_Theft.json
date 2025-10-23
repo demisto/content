@@ -465,22 +465,9 @@
             }
         ]
     },
-    "edit": null,
-    "fromServerVersion": "",
     "group": "incident",
-    "id": "CLOUD Token Theft - no XDR Fields",
-    "indicatorsDetails": null,
-    "indicatorsQuickView": null,
-    "isOverridable": false,
-    "itemVersion": "",
-    "locked": false,
-    "mobile": null,
-    "name": "CLOUD Token Theft - no XDR Fields",
-    "packID": "",
-    "packName": "",
-    "propagationLabels": [
-        "all"
-    ],
+    "id": "CLOUD Token Theft",
+    "name": "CLOUD Token Theft",
     "quickView": {
         "sections": [
             {
