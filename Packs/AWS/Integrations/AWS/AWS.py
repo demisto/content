@@ -751,6 +751,21 @@ class S3:
 
     @staticmethod
     def get_bucket_website_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Retrieves the website configuration for a specified Amazon S3 bucket.
+        The function calls the AWS S3 'get_bucket_website' API to check if the bucket
+        is configured for static website hosting and, if so, what its configuration is.
+
+        Args:
+            client (BotoClient): The initialized Boto3 S3 client.
+            args: A dictionary containing arguments, expected to include 'bucket'
+                  (the name of the S3 bucket).
+
+        Returns:
+            CommandResults: An object containing the raw website configuration as outputs,
+                            and a md table summarizing the configuration details
+                            (IndexDocument, ErrorDocument, RedirectAllRequestsTo, RoutingRules).
+        """
         kwargs = {"Bucket": args.get("bucket")}
         try:
             response = client.get_bucket_website(**kwargs)
@@ -772,16 +787,34 @@ class S3:
                                       outputs_prefix="AWS.S3-Buckets.BucketWebsite",
                                       outputs=response.get("WebsiteConfiguration", {}),
                                       raw_response=response.get("WebsiteConfiguration", {}))
-            raise DemistoException(f"xxxxx.")
+            raise DemistoException(
+                f"AWS S3 API call to get_bucket_website failed or returned an unexpected status code. "
+                f"Received HTTP Status Code: {response['ResponseMetadata']['HTTPStatusCode']}"
+            )
         except Exception as e:
             raise DemistoException(f"Error: {str(e)}")
 
     @staticmethod
     def get_bucket_acl_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Retrieves the Access Control List (ACL) of a specified Amazon S3 bucket.
+
+        The function calls the AWS S3 'get_bucket_acl' API to determine the permissions
+        granted to specific users or groups on the bucket.
+
+        Args:
+            client (BotoClient): The initialized Boto3 S3 client.
+            args: A dictionary containing arguments, expected to include 'bucket'
+                  (the name of the S3 bucket).
+
+        Returns:
+            CommandResults: An object containing the raw Access Control Policy details as
+                            outputs, and a md table summarizing the ACL configuration
+                            (Grants and Owner).
+        """
         kwargs = {"Bucket": args.get("bucket")}
         try:
             response = client.get_bucket_acl(**kwargs)
-            demisto.info(f"{response=}")
             if response["ResponseMetadata"]["HTTPStatusCode"] in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
                 response["AccessControlPolicy"] = {
                     "Grants": response.get("Grants"),
@@ -798,7 +831,10 @@ class S3:
                                       outputs_prefix="AWS.S3-Buckets.BucketAcl",
                                       outputs=response.get("AccessControlPolicy", {}),
                                       raw_response=response.get("AccessControlPolicy", {}))
-            raise DemistoException(f"xxxxx.")
+            raise DemistoException(
+                f"AWS S3 API call to get_bucket_acl failed or returned an unexpected status code. "
+                f"Received HTTP Status Code: {response['ResponseMetadata']['HTTPStatusCode']}"
+            )
         except Exception as e:
             raise DemistoException(f"Error: {str(e)}")
 
