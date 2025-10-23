@@ -3849,7 +3849,7 @@ script:
       - me-south-1
       - me-central-1
       - sa-east-1
-    description: Download a file from S3 bucket to war room.
+    description: Download a file from S3 bucket to the War Room.
     name: aws-s3-file-download
     outputs:
     - contextPath: File.Size

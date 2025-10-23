@@ -2580,7 +2580,7 @@ def test_s3_file_download_command_success(mocker):
     """
     Given: A mocked S3 client returning object bytes.
     When: file_download_command is called.
-    Then: It should return the dict returned by fileResult with correct filename and content.
+    Then: It should return the dictionary from fileResult with the correct filename and content.
     """
     from AWS import S3
 
@@ -2654,7 +2654,7 @@ def test_s3_file_upload_command_success(mocker):
 
     mock_client = mocker.Mock()
 
-    # Create a temp file to simulate War Room file
+    # Create a temp file to simulate a War Room file
     with tempfile.NamedTemporaryFile(delete=False) as tf:
         tf.write(b"upload-bytes")
         tmp_path = tf.name
