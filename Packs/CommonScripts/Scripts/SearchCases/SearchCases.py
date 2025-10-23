@@ -129,8 +129,7 @@ def main():  # pragma: nocover
                     outputs=case_extra_data,
                     raw_response=case_extra_data,
                 ))
-                
-
+  
         return_results(results)
 
     except DemistoException as error:

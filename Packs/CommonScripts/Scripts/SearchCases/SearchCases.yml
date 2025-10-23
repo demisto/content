@@ -161,6 +161,7 @@ outputs:
   - contextPath: Core.Case.custom_fields
     description: Custom fields for the case with standardized lowercase, whitespace-free names.
     type: Unknown
+  - contextPath: Core.Case.CaseExtraData.issues
 subtype: python3
 dockerimage: demisto/python3:3.12.11.4508456
 fromversion: 6.6.0
