@@ -421,6 +421,245 @@ script:
       description: The path to the custom 404 page for the bucket website.
       type: String
 
+  - name: gcp-storage-bucket-list
+    description: Retrieves the list of buckets in the project associated with the client.
+    arguments:
+    - name: project_id
+      required: true
+      description: GCP project ID.
+    - name: max_results
+      required: false
+      description: Maximum number of buckets to return.
+    - name: prefix
+      required: false
+      description: Filter results to buckets whose names begin with this prefix.
+    - name: page_token
+      required: false
+      description: Token for pagination.
+    outputs:
+    - contextPath: GCP.Storage.Bucket.Name
+      description: Bucket name.
+      type: String
+    - contextPath: GCP.Storage.Bucket.TimeCreated
+      description: The time the bucket was created.
+      type: Date
+    - contextPath: GCP.Storage.Bucket.TimeUpdated
+      description: The time the bucket was last updated.
+      type: Date
+    - contextPath: GCP.Storage.Bucket.OwnerID
+      description: The owner entity ID of the bucket.
+      type: String
+    - contextPath: GCP.Storage.Bucket.Location
+      description: The location of the bucket.
+      type: String
+    - contextPath: GCP.Storage.Bucket.StorageClass
+      description: The storage class of the bucket.
+      type: String
+
+  - name: gcp-storage-bucket-get
+    description: Retrieves information about a specific bucket.
+    arguments:
+    - name: project_id
+      required: true
+      description: GCP project ID.
+    - name: bucket_name
+      required: true
+      description: Name of the bucket to retrieve.
+    outputs:
+    - contextPath: GCP.Storage.Bucket.Name
+      description: Bucket name.
+      type: String
+    - contextPath: GCP.Storage.Bucket.TimeCreated
+      description: The time the bucket was created.
+      type: Date
+    - contextPath: GCP.Storage.Bucket.TimeUpdated
+      description: The time the bucket was last updated.
+      type: Date
+    - contextPath: GCP.Storage.Bucket.OwnerID
+      description: The owner entity ID of the bucket.
+      type: String
+    - contextPath: GCP.Storage.Bucket.Location
+      description: The location of the bucket.
+      type: String
+    - contextPath: GCP.Storage.Bucket.StorageClass
+      description: The storage class of the bucket.
+      type: String
+
+  - name: gcp-storage-bucket-objects-list
+    description: Retrieves the list of objects in a bucket.
+    arguments:
+    - name: project_id
+      required: true
+      description: GCP project ID.
+    - name: bucket_name
+      required: true
+      description: Name of the bucket to list objects from.
+    - name: prefix
+      required: false
+      description: Filter results to objects whose names begin with this prefix.
+    - name: delimiter
+      required: false
+      description: Delimiter to use for grouping objects.
+    - name: max_results
+      required: false
+      description: Maximum number of objects to return.
+    - name: page_token
+      required: false
+      description: Token for pagination.
+    outputs:
+    - contextPath: GCP.Storage.BucketObject.Name
+      description: Object name.
+      type: String
+    - contextPath: GCP.Storage.BucketObject.Bucket
+      description: Bucket containing the object.
+      type: String
+    - contextPath: GCP.Storage.BucketObject.ContentType
+      description: MIME type of the object.
+      type: String
+    - contextPath: GCP.Storage.BucketObject.Size
+      description: Size of the object in bytes.
+      type: Number
+    - contextPath: GCP.Storage.BucketObject.TimeCreated
+      description: The time the object was created.
+      type: Date
+    - contextPath: GCP.Storage.BucketObject.TimeUpdated
+      description: The time the object was last updated.
+      type: Date
+    - contextPath: GCP.Storage.BucketObject.MD5Hash
+      description: MD5 hash of the object.
+      type: String
+    - contextPath: GCP.Storage.BucketObject.CRC32c
+      description: CRC32C checksum of the object.
+      type: String
+    - contextPath: GCP.Storage.BucketObject.TimeDeleted
+      description: The time the object was deleted (if applicable).
+      type: Date
+    - contextPath: GCP.Storage.BucketObject.MD5
+      description: MD5 hash of the object (legacy field name for compatibility).
+      type: String
+    - contextPath: GCP.Storage.BucketObject.OwnerID
+      description: The owner entity ID of the object.
+      type: String
+    - contextPath: GCP.Storage.BucketObject.EncryptionAlgorithm
+      description: The encryption algorithm used for the object.
+      type: String
+    - contextPath: GCP.Storage.BucketObject.EncryptionKeySHA256
+      description: SHA256 hash of the customer-supplied encryption key.
+      type: String
+
+  - name: gcp-storage-bucket-policy-list
+    description: Retrieves the IAM policy for a bucket.
+    arguments:
+    - name: project_id
+      required: true
+      description: GCP project ID.
+    - name: bucket_name
+      required: true
+      description: Name of the bucket to retrieve IAM policy from.
+    - name: requested_policy_version
+      required: false
+      description: The IAM policy version to be returned. If the optionsRequestedPolicyVersion is for an older version that doesn't support part of the requested IAM policy, the request fails. Required to be 3 or greater for buckets with IAM Conditions.
+      type: Number
+    outputs:
+    - contextPath: GCP.Storage.BucketPolicy.version
+      description: IAM policy version.
+      type: Number
+    - contextPath: GCP.Storage.BucketPolicy.etag
+      description: ETag of the IAM policy.
+      type: String
+    - contextPath: GCP.Storage.BucketPolicy.bindings
+      description: List of role bindings for the bucket.
+      type: Unknown
+
+  - name: gcp-storage-bucket-policy-set
+    description: Sets the IAM policy for a bucket.
+    arguments:
+    - name: project_id
+      required: true
+      description: GCP project ID.
+    - name: bucket_name
+      required: true
+      description: Name of the bucket to set IAM policy on.
+    - name: policy
+      required: true
+      description: JSON string representing the IAM policy to set.
+    - name: add
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: |
+        When true, merges the provided policy bindings into the current bucket policy (per role, deduplicating members) by first calling getIamPolicy and then setIamPolicy with the merged result. When false, replaces the entire policy with the provided JSON via setIamPolicy.
+    outputs:
+    - contextPath: GCP.Storage.BucketPolicy.version
+      description: IAM policy version after update.
+      type: Number
+    - contextPath: GCP.Storage.BucketPolicy.etag
+      description: ETag of the updated IAM policy.
+      type: String
+    - contextPath: GCP.Storage.BucketPolicy.bindings
+      description: List of role bindings for the bucket.
+      type: List
+    - contextPath: GCP.Storage.BucketPolicy.resourceId
+      description: Resource ID of the updated IAM policy. e.g. projects/_/buckets/BUCKET_NAME.
+      type: String
+
+  - name: gcp-storage-bucket-object-policy-list
+    description: Retrieves the IAM policy for a specific object in a bucket.
+    arguments:
+    - name: project_id
+      required: true
+      description: GCP project ID.
+    - name: bucket_name
+      required: true
+      description: Name of the bucket containing the object.
+    - name: object_name
+      required: true
+      description: Name of the object to retrieve IAM policy from.
+    - name: generation
+      required: false
+      description: Generation of the object.
+    outputs:
+    - contextPath: GCP.Storage.BucketObjectPolicy.bucketName
+      description: Name of the bucket containing the object.
+      type: String
+    - contextPath: GCP.Storage.BucketObjectPolicy.objectName
+      description: Name of the object.
+      type: String
+    - contextPath: GCP.Storage.BucketObjectPolicy.bindings
+      description: List of role bindings for the object.
+      type: List
+
+  - name: gcp-storage-bucket-object-policy-set
+    description: Sets the IAM policy for a specific object in a bucket.
+    arguments:
+    - name: project_id
+      required: true
+      description: GCP project ID.
+    - name: bucket_name
+      required: true
+      description: Name of the bucket containing the object.
+    - name: object_name
+      required: true
+      description: Name of the object to set IAM policy on.
+    - name: policy
+      required: true
+      description: JSON string representing the IAM policy to set.
+    - name: generation
+      required: false
+      description: Generation of the object.
+    outputs:
+    - contextPath: GCP.Storage.BucketObjectPolicy.version
+      description: IAM policy version after update.
+      type: Number
+    - contextPath: GCP.Storage.BucketObjectPolicy.etag
+      description: ETag of the updated IAM policy.
+      type: String
+    - contextPath: GCP.Storage.BucketObjectPolicy.bindings
+      description: List of role bindings for the object.
+      type: Unknown
+
   - name: gcp-iam-project-policy-binding-remove
     description: Removes a specified IAM role binding from a GCP project.
     arguments:

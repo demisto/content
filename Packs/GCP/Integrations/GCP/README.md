@@ -622,3 +622,258 @@ Returns the specified Instance resource. To get a list of available instances, m
 | GCP.Compute.Instances.deletionProtection | boolean | Whether the resource should be protected against deletion. |
 | GCP.Compute.Instances.hostname | string | Hostname. |
 | GCP.Compute.Instances.kind | string | Type of the resource. Always compute\#instance for instances. |
+
+### gcp-storage-bucket-list
+
+***
+Retrieves the list of buckets in the project associated with the client.
+
+#### Base Command
+
+`gcp-storage-bucket-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | GCP project ID. | Required |
+| max_results | Maximum number of buckets to return. | Optional |
+| prefix | Filter results to buckets whose names begin with this prefix. | Optional |
+| page_token | Token for pagination. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Storage.Bucket.Name | String | Bucket name. |
+| GCP.Storage.Bucket.TimeCreated | Date | The time the bucket was created. |
+| GCP.Storage.Bucket.TimeUpdated | Date | The time the bucket was last updated. |
+| GCP.Storage.Bucket.OwnerID | String | The owner entity ID of the bucket. |
+| GCP.Storage.Bucket.Location | String | The location of the bucket. |
+| GCP.Storage.Bucket.StorageClass | String | The storage class of the bucket. |
+
+#### Example
+
+``` !gcp-storage-bucket-list project_id="my-project" max_results="10" prefix="logs-" ```
+
+### gcp-storage-bucket-get
+
+***
+Retrieves information about a specific bucket.
+
+#### Base Command
+
+`gcp-storage-bucket-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | GCP project ID. | Required |
+| bucket_name | Name of the bucket to retrieve. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Storage.Bucket.Name | String | Bucket name. |
+| GCP.Storage.Bucket.TimeCreated | Date | The time the bucket was created. |
+| GCP.Storage.Bucket.TimeUpdated | Date | The time the bucket was last updated. |
+| GCP.Storage.Bucket.OwnerID | String | The owner entity ID of the bucket. |
+| GCP.Storage.Bucket.Location | String | The location of the bucket. |
+| GCP.Storage.Bucket.StorageClass | String | The storage class of the bucket. |
+
+### gcp-storage-bucket-objects-list
+
+***
+Retrieves the list of objects in a bucket.
+
+#### Base Command
+
+`gcp-storage-bucket-objects-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | GCP project ID. | Required |
+| bucket_name | Name of the bucket to list objects from. | Required |
+| prefix | Filter results to objects whose names begin with this prefix. | Optional |
+| delimiter | Delimiter to use for grouping objects. | Optional |
+| max_results | Maximum number of objects to return. | Optional |
+| page_token | Token for pagination. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Storage.BucketObject.Name | String | Object name. |
+| GCP.Storage.BucketObject.Bucket | String | Bucket containing the object. |
+| GCP.Storage.BucketObject.ContentType | String | MIME type of the object. |
+| GCP.Storage.BucketObject.Size | Number | Size of the object in bytes. |
+| GCP.Storage.BucketObject.TimeCreated | Date | The time the object was created. |
+| GCP.Storage.BucketObject.TimeUpdated | Date | The time the object was last updated. |
+| GCP.Storage.BucketObject.MD5Hash | String | MD5 hash of the object. |
+| GCP.Storage.BucketObject.CRC32c | String | CRC32C checksum of the object. |
+| GCP.Storage.BucketObject.TimeDeleted | Date | The time the object was deleted \(if applicable\). |
+| GCP.Storage.BucketObject.MD5 | String | MD5 hash of the object \(legacy field name for compatibility\). |
+| GCP.Storage.BucketObject.OwnerID | String | The owner entity ID of the object. |
+| GCP.Storage.BucketObject.EncryptionAlgorithm | String | The encryption algorithm used for the object. |
+| GCP.Storage.BucketObject.EncryptionKeySHA256 | String | SHA256 hash of the customer-supplied encryption key. |
+
+#### Example
+
+``` !gcp-storage-bucket-objects-list project_id="my-project" bucket_name="my-bucket" prefix="reports/" delimiter="/" max_results="50" ```
+
+### gcp-storage-bucket-policy-list
+
+***
+Retrieves the IAM policy for a bucket.
+
+#### Base Command
+
+`gcp-storage-bucket-policy-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | GCP project ID. | Required |
+| bucket_name | Name of the bucket to retrieve IAM policy from. | Required |
+| requested_policy_version | The IAM policy version to be returned. If the optionsRequestedPolicyVersion is for an older version that doesn't support part of the requested IAM policy, the request fails. Required to be 3 or greater for buckets with IAM Conditions. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Storage.BucketPolicy.version | Number | IAM policy version. |
+| GCP.Storage.BucketPolicy.etag | String | ETag of the IAM policy. |
+| GCP.Storage.BucketPolicy.bindings | List | List of role bindings for the bucket. |
+| GCP.Storage.BucketPolicy.resourceId | String | Resource ID of the updated IAM policy. e.g. projects/_/buckets/BUCKET_NAME. |
+
+#### Example
+
+``` !gcp-storage-bucket-policy-list project_id="my-project" bucket_name="my-bucket" requested_policy_version="3" ```
+
+### gcp-storage-bucket-policy-set
+
+***
+Sets the IAM policy for a bucket.
+
+#### Base Command
+
+`gcp-storage-bucket-policy-set`
+
+#### Usage
+
+- **add=false**: Replaces the entire bucket IAM policy with the JSON provided in `policy`.
+- **add=true**: Reads the current bucket policy (getIamPolicy), merges the provided `bindings` per role (deduplicates members), and updates the bucket policy (setIamPolicy) while preserving other top-level fields.
+
+> Warning: Use this command with extreme caution. Running it without explicitly merging (i.e., with `add=false`) will overwrite the bucket's existing IAM policy with the provided `policy`. If you intend to keep current bindings and add new ones, use `add=true`.
+
+#### Policy structure
+
+- **bindings**: Array of binding objects. Each binding:
+  - **role**: String. For example, `roles/storage.objectViewer`, `roles/storage.admin`.
+  - **members**: Array of strings. Allowed formats:
+    - `user:<email>` (e.g., `user:alice@example.com`)
+    - `group:<email>`
+    - `serviceAccount:<email>`
+    - `domain:<domain>` (e.g., `domain:example.com`)
+    - `allUsers` | `allAuthenticatedUsers`
+- **version**: Number. Required to be `3` or greater if any binding includes `condition`.
+- **etag**: String. Recommended for replace flow (`add=false`) to avoid overwriting concurrent updates.
+- Optional fields like `kind`, `resourceId` may appear in responses but are not required in requests.
+
+Notes:
+
+- For `add=true` (merge), only a valid `bindings` array is required; other top-level fields are taken from the existing policy.
+- For `add=false` (replace), the provided object becomes the entire policy on the bucket.
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | GCP project ID. | Required |
+| bucket_name | Name of the bucket to set IAM policy on. | Required |
+| policy | JSON string representing the IAM policy to set. | Required |
+| add | When true, merges the provided policy bindings into the current bucket policy (per role, deduplicating members) by first calling getIamPolicy and then setIamPolicy with the merged result. When false, replaces the entire policy with the provided JSON via setIamPolicy.<br/>. Possible values are: true, false. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Storage.BucketPolicy.version | Number | IAM policy version after update. |
+| GCP.Storage.BucketPolicy.etag | String | ETag of the updated IAM policy. |
+| GCP.Storage.BucketPolicy.bindings | List | List of role bindings for the bucket. |
+
+#### Examples
+
+- Replace entire policy (`add=false`):
+
+``` !gcp-storage-bucket-policy-set project_id="my-project" bucket_name="my-bucket-name" add="false" policy=`{"kind": "storage#policy", "resourceId": "projects/_/buckets/my-bucket-name", "version": 1, "etag": "CAY=", "bindings":[{"role":"roles/storage.objectViewer","members":["allUsers"]}]}` ```
+
+- Merge bindings into existing policy (`add=true`):
+
+``` !gcp-storage-bucket-policy-set project_id="my-project" bucket_name="my-bucket-name" add="true" policy=`{"bindings":[{"role":"roles/storage.objectViewer","members":["user:alice@example.com"]}]}` ```
+
+### gcp-storage-bucket-object-policy-list
+
+***
+Retrieves the IAM policy for a specific object in a bucket.
+
+#### Base Command
+
+`gcp-storage-bucket-object-policy-list`
+
+> Note: If Uniform Bucket-Level Access (UBLA) is enabled on the bucket, object-level ACLs are not available. In that case, this command returns the bucket-level IAM policy under `GCP.Storage.BucketObjectPolicy`.
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | GCP project ID. | Required |
+| bucket_name | Name of the bucket containing the object. | Required |
+| object_name | Name of the object to retrieve IAM policy from. | Required |
+| generation | Generation of the object. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Storage.BucketObjectPolicy.bucketName | String | Name of the bucket containing the object. |
+| GCP.Storage.BucketObjectPolicy.objectName | String | Name of the object. |
+| GCP.Storage.BucketObjectPolicy.bindings | List | List of role bindings for the object. |
+
+#### Example
+
+``` !gcp-storage-bucket-object-policy-list project_id="my-project" bucket_name="my-bucket" object_name="path/to/object.txt" ```
+
+### gcp-storage-bucket-object-policy-set
+
+***
+Sets the IAM policy for a specific object in a bucket.
+
+#### Base Command
+
+`gcp-storage-bucket-object-policy-set`
+
+> Note: If UBLA is enabled on the bucket, the command does not modify object ACLs and instead returns guidance to manage permissions via the bucket IAM policy.
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | GCP project ID. | Required |
+| bucket_name | Name of the bucket containing the object. | Required |
+| object_name | Name of the object to set IAM policy on. | Required |
+| policy | JSON string representing the IAM policy to set. | Required |
+| generation | Generation of the object. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Storage.BucketObjectPolicy.version | Number | IAM policy version after update. |
+| GCP.Storage.BucketObjectPolicy.etag | String | ETag of the updated IAM policy. |
+| GCP.Storage.BucketObjectPolicy.bindings | Unknown | List of role bindings for the object. |
