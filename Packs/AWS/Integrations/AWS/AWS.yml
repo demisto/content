@@ -3932,7 +3932,7 @@ script:
       - 'true'
       - 'false'
     - name: connection_draining_timeout
-      description: 'The maximum time, in seconds, to keep the existing connections open before de-registering the instance.  (Min: 1, Max: 3600).'
+      description: 'The maximum time, in seconds, to keep the existing connections open before de-registering the instance.  Valid Range: 1 - 3600.'
       required: false
       type: number
     - name: connection_settings_idle_timeout
