@@ -1,0 +1,149 @@
+id: Kibana_Cases_Test_Playbook
+version: -1
+name: Kibana Cases Test Playbook
+description: >
+  Test playbook for the Kibana Cases API commands added to the Elasticsearch V2 integration.
+  Lists all cases, then retrieves details for the first case returned, with assertions to validate outputs.
+fromversion: "6.0.0"
+tags:
+  - kibana
+  - elasticsearch
+  - test
+tasks:
+  "0":
+    id: "0"
+    task:
+      id: 0
+      version: -1
+      name: Start
+      description: Playbook start
+      type: start
+    nextTasks:
+      "1":
+        - "1"
+    separatecontext: false
+    view:
+      position:
+        x: 250
+        y: 50
+  "1":
+    id: "1"
+    task:
+      id: 1
+      version: -1
+      name: List Kibana Cases
+      description: Calls the kibana-list-cases command to retrieve all cases.
+      script: Elasticsearch_v2|||kibana-list-cases
+      type: regular
+      iscommand: true
+      brand: Elasticsearch_v2
+      nextTasks:
+        "assert_cases_exist":
+          - "assert_cases_exist"
+      scriptarguments:
+        status:
+          simple: open
+    separatecontext: false
+    view:
+      position:
+        x: 250
+        y: 200
+  "assert_cases_exist":
+    id: "assert_cases_exist"
+    task:
+      id: 2
+      version: -1
+      name: Assert Cases Exist
+      description: Fail if no cases are returned.
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      scriptarguments:
+        path:
+          simple: Kibana.CaseList.id
+        expectedValue:
+          simple: "*"
+        operator:
+          simple: exists
+      nextTasks:
+        "2":
+          - "2"
+    separatecontext: false
+    view:
+      position:
+        x: 250
+        y: 300
+  "2":
+    id: "2"
+    task:
+      id: 3
+      version: -1
+      name: Get Kibana Case Details
+      description: Calls the kibana-get-case command using the first case ID from the list.
+      script: Elasticsearch_v2|||kibana-get-case
+      type: regular
+      iscommand: true
+      brand: Elasticsearch_v2
+      scriptarguments:
+        case_id:
+          simple: ${Kibana.CaseList.id}
+      nextTasks:
+        "assert_case_fields":
+          - "assert_case_fields"
+    separatecontext: false
+    view:
+      position:
+        x: 250
+        y: 400
+  "assert_case_fields":
+    id: "assert_case_fields"
+    task:
+      id: 4
+      version: -1
+      name: Assert Case Fields
+      description: Fail if case details are missing required fields.
+      type: condition
+      conditions:
+        - label: "All Required Fields Present"
+          condition:
+            - - operator: exists
+                left:
+                  value:
+                    simple: Kibana.Case.id
+                  iscontext: true
+            - - operator: exists
+                left:
+                  value:
+                    simple: Kibana.Case.title
+                  iscontext: true
+            - - operator: exists
+                left:
+                  value:
+                    simple: Kibana.Case.status
+                  iscontext: true
+      nextTasks:
+        "3":
+          - "3"
+    separatecontext: false
+    view:
+      position:
+        x: 250
+        y: 500
+  "3":
+    id: "3"
+    task:
+      id: 5
+      version: -1
+      name: Done
+      description: Playbook end
+      type: title
+    separatecontext: false
+    view:
+      position:
+        x: 250
+        y: 600
+view:
+  paper:
+    dimensions:
+      height: 700
+      width: 600
