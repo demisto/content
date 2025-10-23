@@ -303,7 +303,7 @@ def test_test_module_basic_auth(mocker):
 
     client = jira_base_client_mock("dummy_username", "dummy_api_key")
     mocker.patch.object(client, "jira_test_instance_connection")
-    assert jira_test_module(client) == "ok"
+    assert jira_test_module(client, params={}) == "ok"
 
 
 def test_test_module_pat(mocker):
@@ -319,7 +319,7 @@ def test_test_module_pat(mocker):
 
     client = jira_base_client_mock(pat="dummy_pat")
     mocker.patch.object(client, "jira_test_instance_connection")
-    assert jira_test_module(client) == "ok"
+    assert jira_test_module(client, params={}) == "ok"
 
 
 def test_module_oauth2(mocker):
@@ -336,7 +336,7 @@ def test_module_oauth2(mocker):
     client = jira_base_client_mock()
     mocker.patch.object(client, "jira_test_instance_connection")
     with pytest.raises(DemistoException, match="In order to authorize the instance, first run the command `!jira-oauth-start`."):
-        jira_test_module(client)
+        jira_test_module(client, params={})
 
 
 @pytest.mark.parametrize(
@@ -3579,3 +3579,28 @@ def test_get_remote_data_preview_command():
 
     # Validate interactions
     mock_client.get_issue.assert_called_once_with(issue_id_or_key="JIRA-123")
+
+
+@pytest.mark.parametrize(
+    "url, expected_is_cloud",
+    [
+        ("https://yourcompany.atlassian.net", True),
+        ("https://api.atlassian.com/ex/jira/", True),
+        ("https://www.callback.com", False),
+        ("https://test.atlassian.net.evil.com", False),
+        ("https://dummy_url", False),
+    ],
+)
+def test_is_jira_cloud_url(url, expected_is_cloud):
+    """
+    Given:
+        - Various URL strings including Jira Cloud URLs, on-premises URLs, and invalid URLs
+    When:
+        - Calling is_jira_cloud_url function
+    Then:
+        - Validate that True is returned for Jira Cloud URLs and False for others
+    """
+    from JiraV3 import is_jira_cloud_url
+
+    result = is_jira_cloud_url(url)
+    assert result == expected_is_cloud
