@@ -1363,23 +1363,24 @@ Modifies a subnet attribute.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| account_id | The AWS account ID. | Required | 
-| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required | 
-| subnet_id | The ID of the subnet. | Required | 
-| assign_ipv6_address_on_creation | Specify true to indicate that network interfaces created in the specified subnet should be assigned an IPv6 address. | Optional | 
-| customer_owned_ipv4_pool | The customer-owned IPv4 address pool associated with the subnet. | Optional | 
-| disable_lni_at_device_index | Specify true to indicate that local network interfaces at the current position should be disabled. | Optional | 
-| enable_dns64 | Indicates whether DNS queries made to the Amazon-provided DNS Resolver in this subnet should return synthetic IPv6 addresses for IPv4-only destinations. | Optional | 
-| enable_lni_at_device_index | Indicates the device position for local network interfaces in this subnet. | Optional | 
-| enable_resource_name_dns_aaaa_record_on_launch | Indicates whether to respond to DNS queries for instance hostnames with DNS AAAA records. | Optional | 
-| enable_resource_name_dns_a_record_on_launch | Indicates whether to respond to DNS queries for instance hostnames with DNS A records. | Optional | 
-| map_customer_owned_ip_on_launch | Specify true to indicate that network interfaces attached to instances created in the specified subnet should be assigned a customer-owned IPv4 address. | Optional | 
-| map_public_ip_on_launch | Specify true to indicate that network interfaces attached to instances created in the specified subnet should be assigned a public IPv4 address. | Optional | 
-| private_dns_hostname_type_on_launch | The type of hostname to assign to instances in the subnet at launch. | Optional | 
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
+| subnet_id | The ID of the subnet. | Required |
+| assign_ipv6_address_on_creation | Specify true to indicate that network interfaces created in the specified subnet should be assigned an IPv6 address. | Optional |
+| customer_owned_ipv4_pool | The customer-owned IPv4 address pool associated with the subnet. | Optional |
+| disable_lni_at_device_index | Specify true to indicate that local network interfaces at the current position should be disabled. | Optional |
+| enable_dns64 | Indicates whether DNS queries made to the Amazon-provided DNS Resolver in this subnet should return synthetic IPv6 addresses for IPv4-only destinations. | Optional |
+| enable_lni_at_device_index | Indicates the device position for local network interfaces in this subnet. | Optional |
+| enable_resource_name_dns_aaaa_record_on_launch | Indicates whether to respond to DNS queries for instance hostnames with DNS AAAA records. | Optional |
+| enable_resource_name_dns_a_record_on_launch | Indicates whether to respond to DNS queries for instance hostnames with DNS A records. | Optional |
+| map_customer_owned_ip_on_launch | Specify true to indicate that network interfaces attached to instances created in the specified subnet should be assigned a customer-owned IPv4 address. | Optional |
+| map_public_ip_on_launch | Specify true to indicate that network interfaces attached to instances created in the specified subnet should be assigned a public IPv4 address. | Optional |
+| private_dns_hostname_type_on_launch | The type of hostname to assign to instances in the subnet at launch. | Optional |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### aws-s3-bucket-website-delete
 
 ***
@@ -1393,13 +1394,14 @@ Removes the website configuration for a bucket.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| account_id | The AWS account ID. | Required | 
-| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required | 
-| bucket | The bucket name for which you want to remove the website configuration. | Required | 
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
+| bucket | The bucket name for which you want to remove the website configuration. | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### aws-s3-bucket-ownership-controls-put
 
 ***
@@ -1413,14 +1415,15 @@ Creates or modifies OwnershipControls for an Amazon S3 bucket.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| account_id | The AWS account ID. | Required | 
-| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required | 
-| bucket | The name of the Amazon S3 bucket whose OwnershipControls you want to set. | Required | 
-| ownership_controls_rule | Ownership for a bucket's ownership controls. Possible values are: BucketOwnerPreferred, ObjectWriter, BucketOwnerEnforced. | Required | 
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
+| bucket | The name of the Amazon S3 bucket whose OwnershipControls you want to set. | Required |
+| ownership_controls_rule | Ownership for a bucket's ownership controls. Possible values are: BucketOwnerPreferred, ObjectWriter, BucketOwnerEnforced. | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### aws-rds-event-subscription-modify
 
 ***
@@ -1434,25 +1437,110 @@ Modifies an existing RDS event notification subscription.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| account_id | The AWS account ID. | Required | 
-| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required | 
-| subscription_name | The name of the RDS event notification subscription. | Required | 
-| enabled | Specifies whether to activate the subscription. | Optional | 
-| event_categories | A list of event categories for a source type (SourceType) that you want to subscribe to. | Optional | 
-| sns_topic_arn | The Amazon Resource Name (ARN) of the SNS topic created for event notification. | Optional | 
-| source_type | The type of source that is generating the events. | Optional | 
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
+| subscription_name | The name of the RDS event notification subscription. | Required |
+| enabled | Specifies whether to activate the subscription. | Optional |
+| event_categories | A list of event categories for a source type (SourceType) that you want to subscribe to. | Optional |
+| sns_topic_arn | The Amazon Resource Name (ARN) of the SNS topic created for event notification. | Optional |
+| source_type | The type of source that is generating the events. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.RDS.EventSubscription.CustomerAwsId | string | The AWS customer account associated with the RDS event notification subscription. | 
-| AWS.RDS.EventSubscription.CustSubscriptionId | string | The RDS event notification subscription Id. | 
-| AWS.RDS.EventSubscription.Enabled | boolean | Specifies whether the subscription is enabled. True indicates the subscription is enabled. | 
-| AWS.RDS.EventSubscription.EventCategoriesList | array | A list of event categories for the RDS event notification subscription. | 
-| AWS.RDS.EventSubscription.EventSubscriptionArn | string | The Amazon Resource Name \(ARN\) for the event subscription. | 
-| AWS.RDS.EventSubscription.SnsTopicArn | string | The topic ARN of the RDS event notification subscription. | 
-| AWS.RDS.EventSubscription.SourceIdsList | array | A list of source IDs for the RDS event notification subscription. | 
-| AWS.RDS.EventSubscription.SourceType | string | The source type for the RDS event notification subscription. | 
-| AWS.RDS.EventSubscription.Status | string | The status of the RDS event notification subscription. | 
-| AWS.RDS.EventSubscription.SubscriptionCreationTime | string | The time the RDS event notification subscription was created. | 
+| AWS.RDS.EventSubscription.CustomerAwsId | string | The AWS customer account associated with the RDS event notification subscription. |
+| AWS.RDS.EventSubscription.CustSubscriptionId | string | The RDS event notification subscription Id. |
+| AWS.RDS.EventSubscription.Enabled | boolean | Specifies whether the subscription is enabled. True indicates the subscription is enabled. |
+| AWS.RDS.EventSubscription.EventCategoriesList | array | A list of event categories for the RDS event notification subscription. |
+| AWS.RDS.EventSubscription.EventSubscriptionArn | string | The Amazon Resource Name \(ARN\) for the event subscription. |
+| AWS.RDS.EventSubscription.SnsTopicArn | string | The topic ARN of the RDS event notification subscription. |
+| AWS.RDS.EventSubscription.SourceIdsList | array | A list of source IDs for the RDS event notification subscription. |
+| AWS.RDS.EventSubscription.SourceType | string | The source type for the RDS event notification subscription. |
+| AWS.RDS.EventSubscription.Status | string | The status of the RDS event notification subscription. |
+| AWS.RDS.EventSubscription.SubscriptionCreationTime | string | The time the RDS event notification subscription was created. |
+
+### aws-kms-key-enable-rotation
+
+***
+Enables automatic rotation for a symmetric customer-managed KMS key. Not supported for asymmetric/HMAC keys, keys with imported material, or custom key stores.
+
+#### Base Command
+
+`aws-kms-key-enable-rotation`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
+| key_id | The KMS key ID or ARN to enable rotation for. | Required |
+| rotation_period_in_days | Key rotation period in days. Valid range: 90–2560. If omitted when enabling rotation for the first time, the default is 365 days. If rotation is already enabled and this field is not specified, the existing period remains unchanged. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+### aws-acm-certificate-options-update
+
+***
+Updates Certificate Transparency (CT) logging for an AWS Certificate Manager (ACM) certificate (ENABLED or DISABLED).
+
+#### Base Command
+
+`aws-acm-certificate-options-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
+| certificate_arn | The ARN of the ACM certificate to update. This must be of the form: ”arn:aws:acm:{region}:{account}:certificate/{certificate_id}”. | Required |
+| transparency_logging_preference | Whether the certificate is recorded in public CT logs. Possible values are: ENABLED, DISABLED. | Required |
+
+#### Context Output
+
+There is no context outputs for this command.
+
+### aws-elb-load-balancer-attributes-modify
+
+***
+Modifies attributes for a Classic Elastic Load Balancer.
+
+#### Base Command
+
+`aws-elb-load-balancer-attributes-modify`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
+| load_balancer_name | The name of the Load Balancer. | Required |
+| access_log_enabled | Whether to enable access logs. (if enabled make sure to provide access_log_s3_bucket_name) Possible values are: true, false. | Optional |
+| access_log_s3_bucket_name | S3 bucket name for access logs (required if access_log_enabled=true). | Optional |
+| access_log_interval | The interval for publishing the access logs. You can specify an interval of either 5 minutes or 60 minutes. If omitted when enabling logging for the first time, the default is 60 minutes. If logging is already enabled and this field is not specified, the existing period remains unchanged. Possible values are: 5, 60. | Optional |
+| access_log_s3_bucket_prefix | S3 key prefix (Path) for access logs.  If the prefix is not provided, the log folder is placed at the root level of the bucket. | Optional |
+| connection_draining_enabled | Whether connection draining is enabled for the load balancer. Possible values are: true, false. | Optional |
+| connection_draining_timeout | The maximum time, in seconds, to keep the existing connections open before de-registering the instance.  Valid Range: 1 - 3600. | Optional |
+| connection_settings_idle_timeout | The load balancer allows the connections to remain idle (no data is sent over the connection) for this specific duration in seconds. Valid Range: 1 - 4000. | Optional |
+| cross_zone_load_balancing_enabled | Whether to enable cross-zone load balancing. Possible values are: true, false. | Optional |
+| additional_attributes | A comma-separated list of additional load balancer attributes to modify. Provide pairs as key1,value1,key2,value2,... For example: "elb.http.desyncmitigationmode,defensive". Maximum of 10 pairs of attributes. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.ELB.LoadBalancer.LoadBalancerName | string | The name of the Classic Load Balancer. |
+| AWS.ELB.LoadBalancer.LoadBalancerAttributes.CrossZoneLoadBalancing.Enabled | boolean | Whether cross-zone load balancing is enabled. |
+| AWS.ELB.LoadBalancer.LoadBalancerAttributes.ConnectionDraining.Enabled | boolean | Whether connection draining is enabled. |
+| AWS.ELB.LoadBalancer.LoadBalancerAttributes.ConnectionDraining.Timeout | number | Connection draining timeout in seconds. |
+| AWS.ELB.LoadBalancer.LoadBalancerAttributes.ConnectionSettings.IdleTimeout | number | Idle connection timeout in seconds. |
+| AWS.ELB.LoadBalancer.LoadBalancerAttributes.AccessLog.Enabled | boolean | Whether access logs are enabled. |
+| AWS.ELB.LoadBalancer.LoadBalancerAttributes.AccessLog.S3BucketName | string | The S3 bucket name for access logs. |
+| AWS.ELB.LoadBalancer.LoadBalancerAttributes.AccessLog.EmitInterval | number | Access log publish interval in minutes. |
+| AWS.ELB.LoadBalancer.LoadBalancerAttributes.AccessLog.S3BucketPrefix | string | The S3 key prefix for access logs. |
+| AWS.ELB.LoadBalancer.LoadBalancerAttributes.AdditionalAttributes | unknown | Additional attributes returned by the API. |
