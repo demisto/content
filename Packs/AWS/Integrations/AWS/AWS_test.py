@@ -4339,59 +4339,6 @@ def test_modify_subnet_attribute_command_failure(mocker):
         EC2.modify_subnet_attribute_command(mock_client, args)
 
 
-def test_get_policy_command_removes_response_metadata(mocker):
-    """
-    Given: A response with ResponseMetadata
-    When: get_policy_command is called
-    Then: Should remove ResponseMetadata from the response
-    """
-    from AWS import Lambda
-
-    # Arrange
-    mock_client = mocker.Mock()
-    policy_json = '{"Version": "2012-10-17"}'
-
-    mock_response = {
-        "Policy": policy_json,
-        "RevisionId": "RevisionId",
-        "ResponseMetadata": {"RequestId": "RequestId", "HTTPStatusCode": 200, "HTTPHeaders": {}},
-    }
-    mock_client.get_policy.return_value = mock_response
-
-    args = {"function_name": "test-function"}
-
-    # Act
-    Lambda.get_policy_command(mock_client, args)
-
-    # Assert
-    assert "ResponseMetadata" not in mock_response
-
-
-def test_get_policy_command_with_empty_policy(mocker):
-    """
-    Given: A response with empty policy JSON
-    When: get_policy_command is called
-    Then: Should handle empty policy gracefully
-    """
-    from AWS import Lambda
-
-    # Arrange
-    mock_client = mocker.Mock()
-    empty_policy = "{}"
-
-    mock_response = {"Policy": empty_policy, "RevisionId": "empty-revision"}
-    mock_client.get_policy.return_value = mock_response
-
-    args = {"function_name": "empty-policy-function"}
-
-    # Act
-    result = Lambda.get_policy_command(mock_client, args)
-
-    # Assert
-    assert isinstance(result, CommandResults)
-    assert mock_response["Policy"] == {}
-
-
 def test_invoke_command_with_minimal_parameters(mocker):
     """
     Given: Minimal required parameters (function_name only)
@@ -4715,7 +4662,7 @@ def test_update_function_url_configuration_with_all_parameters(mocker):
         "cors_allow_origins": "https://example.com",
         "cors_expose_headers": "x-custom-header",
         "cors_max_age": "86400",
-        "max_age": "BUFFERED_STREAM",
+        "invoke_mode": "BUFFERED_STREAM",
     }
 
     # Act
@@ -4912,3 +4859,145 @@ def test_get_function_url_configuration_with_all_parameters(mocker):
     assert "Cors" in result.outputs
     assert "ResponseMetadata" not in result.outputs
     assert "prod-function" in result.readable_output
+
+
+def test_get_policy_with_minimal_parameters(mocker):
+    """
+    Given: Only function_name parameter provided
+    When: get_policy_command is called
+    Then: Should call get_policy with function name only and return formatted results
+    """
+    from AWS import Lambda
+
+    # Arrange
+    mock_client = mocker.Mock()
+    mock_policy_response = {
+        "Policy": json.dumps(
+            {
+                "Version": "2012-10-17",
+                "Id": "default",
+                "Statement": [
+                    {
+                        "Sid": "Sid1",
+                        "Effect": "Allow",
+                        "Principal": {"Service": "Service1"},
+                        "Action": "Action",
+                        "Resource": "Resource",
+                    }
+                ],
+            }
+        ),
+        "RevisionId": "RevisionId",
+        "ResponseMetadata": {"HTTPStatusCode": 200, "RequestId": "test-request-id"},
+    }
+    mock_config_response = {"FunctionArn": "FunctionArn"}
+
+    mock_client.get_policy.return_value = mock_policy_response
+    mock_client.get_function_configuration.return_value = mock_config_response
+
+    args = {"function_name": "test-function"}
+
+    # Act
+    result = Lambda.get_policy_command(mock_client, args)
+
+    # Assert
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "AWS.Lambda.Policy"
+    assert result.outputs_key_field == ["FunctionArn", "FunctionName"]
+    assert result.outputs["FunctionArn"] == "FunctionArn"
+    assert result.outputs["RevisionId"] == "RevisionId"
+    mock_client.get_policy.assert_called_once_with(FunctionName="test-function")
+    mock_client.get_function_configuration.assert_called_once_with(FunctionName="test-function")
+
+
+def test_get_policy_with_all_parameters(mocker):
+    """
+    Given: Function name and qualifier parameters provided
+    When: get_policy_command is called
+    Then: Should include qualifier in API call and return complete policy configuration
+    """
+    from AWS import Lambda
+
+    # Arrange
+    mock_client = mocker.Mock()
+    mock_policy_response = {
+        "Policy": json.dumps(
+            {
+                "Version": "2012-10-17",
+                "Id": "production-policy",
+                "Statement": [
+                    {
+                        "Sid": "Sid1",
+                        "Effect": "Allow",
+                        "Principal": {"Service": "Service1"},
+                        "Action": "lambda:InvokeFunction",
+                        "Resource": "Resource",
+                    },
+                    {
+                        "Sid": "Sid2",
+                        "Effect": "Allow",
+                        "Principal": {"Service": "Service2"},
+                        "Action": "lambda:InvokeFunction",
+                        "Resource": "Resource",
+                    },
+                ],
+            }
+        ),
+        "RevisionId": "RevisionId",
+        "ResponseMetadata": {"HTTPStatusCode": 200, "RequestId": "prod-request-id"},
+    }
+    mock_config_response = {"FunctionArn": "FunctionArn"}
+
+    mock_client.get_policy.return_value = mock_policy_response
+    mock_client.get_function_configuration.return_value = mock_config_response
+
+    args = {"function_name": "function_name", "qualifier": "LIVE"}
+
+    # Act
+    result = Lambda.get_policy_command(mock_client, args)
+
+    # Assert
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "AWS.Lambda.Policy"
+    mock_client.get_policy.assert_called_once_with(FunctionName="function_name", Qualifier="LIVE")
+    mock_client.get_function_configuration.assert_called_once_with(FunctionName="function_name", Qualifier="LIVE")
+    assert result.outputs["FunctionArn"] == "FunctionArn"
+    assert result.outputs["RevisionId"] == "RevisionId"
+
+
+def test_get_policy_command_result_outputs_prefix(mocker):
+    """
+    Given: Any valid function policy request
+    When: get_policy_command is called
+    Then: Should return CommandResults with correct outputs_prefix set to AWS.Lambda.Policy
+    """
+    from AWS import Lambda
+
+    # Arrange
+    mock_client = mocker.Mock()
+    mock_policy_response = {
+        "Policy": json.dumps(
+            {
+                "Version": "2012-10-17",
+                "Statement": [
+                    {"Sid": "Sid", "Effect": "Allow", "Principal": {"Service": "Service"}, "Action": "lambda:InvokeFunction"}
+                ],
+            }
+        ),
+        "RevisionId": "RevisionId",
+        "ResponseMetadata": {"HTTPStatusCode": 200},
+    }
+    mock_config_response = {"FunctionArn": "FunctionArn"}
+
+    mock_client.get_policy.return_value = mock_policy_response
+    mock_client.get_function_configuration.return_value = mock_config_response
+
+    args = {"function_name": "prefix-test-function"}
+
+    # Act
+    result = Lambda.get_policy_command(mock_client, args)
+
+    # Assert
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "AWS.Lambda.Policy"
+    assert result.outputs_key_field == ["FunctionArn", "FunctionName"]

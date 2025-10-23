@@ -4010,7 +4010,7 @@ script:
       - contextPath: AWS.Lambda.Policy.Statement.Condition
         description: Specify conditions for when a policy is in effect.
         type: String
-      - contextPath: AWS.Lambda.RevisionId
+      - contextPath: AWS.Lambda.Policy.RevisionId
         description: A unique identifier for the current revision of the policy.
         type: String
   - name: aws-lambda-invoke

@@ -1565,7 +1565,7 @@ Returns the resource-based IAM policy for a Lambda function.
 | AWS.Lambda.Policy.Statement.Action | unknown | Describes the specific action or actions that will be allowed or denied. |
 | AWS.Lambda.Policy.Statement.Resource | unknown | Defines the object or objects that the statement applies to. |
 | AWS.Lambda.Policy.Statement.Condition | String | Specify conditions for when a policy is in effect. |
-| AWS.Lambda.RevisionId | String | A unique identifier for the current revision of the policy. |
+| AWS.Lambda.Policy.RevisionId | String | A unique identifier for the current revision of the policy. |
 
 ### aws-lambda-function-url-config-get
 

@@ -2471,16 +2471,20 @@ class Lambda:
             "FunctionName": args.get("function_name"),
             "Qualifier": args.get("qualifier"),
             "AuthType": args.get("auth_type"),
-            "Cors": {
-                "AllowCredentials": arg_to_bool_or_none(args.get("cors_allow_credentials", False)),
-                "AllowHeaders": argToList(args.get("cors_allow_headers", [])),
-                "AllowMethods": argToList(args.get("cors_allow_methods", [])),
-                "AllowOrigins": argToList(args.get("cors_allow_origins", [])),
-                "ExposeHeaders": argToList(args.get("cors_expose_headers", [])),
-                "MaxAge": arg_to_number(args.get("cors_max_age")),
-            },
-            "InvokeMode": args.get("max_age"),
+            "InvokeMode": args.get("invoke_mode"),
         }
+        cors = {
+            "AllowCredentials": arg_to_bool_or_none(args.get("cors_allow_credentials")),
+            "AllowHeaders": argToList(args.get("cors_allow_headers", [])),
+            "AllowMethods": argToList(args.get("cors_allow_methods", [])),
+            "AllowOrigins": argToList(args.get("cors_allow_origins", [])),
+            "ExposeHeaders": argToList(args.get("cors_expose_headers", [])),
+            "MaxAge": arg_to_number(args.get("cors_max_age")),
+        }
+        fixed_cors = remove_empty_elements(cors)
+        is_cors_empty = not any(fixed_cors.values())
+        if not is_cors_empty:
+            params.update({"Cors": fixed_cors})
         fixed_params = remove_empty_elements(params)
         response = client.update_function_url_config(**fixed_params)
         # Create human readable output
@@ -2500,6 +2504,58 @@ class Lambda:
         )
 
     @staticmethod
+    def _parse_policy_response(data: dict[str, Any]) -> tuple[dict, list | None]:
+        """
+        Parses the response data representing a policy into a structured format.
+
+        Args:
+            data (dict): The response data containing the policy information.
+
+        Returns:
+            tuple[dict[str, Any], list[dict[str, str | None]]]: A tuple containing the parsed policy information.
+                The first element of the tuple is a dictionary representing the policy metadata with the following keys:
+                    - "Id" (str): The ID of the policy.
+                    - "Version" (str): The version of the policy.
+                    - "RevisionId" (str): The revision ID of the policy.
+                The second element of the tuple is a list of dictionaries representing the policy statements.
+                Each dictionary in the list represents a statement with the following keys:
+                    - "Sid" (str): The ID of the statement.
+                    - "Effect" (str): The effect of the statement (e.g., "Allow" or "Deny").
+                    - "Action" (str): The action associated with the statement.
+                    - "Resource" (str): The resource associated with the statement.
+                    - "Principal" (str | None): The principal associated with the statement, if applicable.
+        """
+        policy: dict[str, Any] = data.get("Policy", {})
+        statements: list[dict[str, str | None]] = policy.get("Statement", [])
+
+        if len(statements) == 1:
+            return {
+                "Sid": statements[0].get("Sid"),
+                "Effect": statements[0].get("Effect"),
+                "Action": statements[0].get("Action"),
+                "Resource": statements[0].get("Resource"),
+                "Principal": statements[0].get("Principal"),
+            }, None
+
+        else:
+            policy_table = {
+                "Id": policy.get("Id"),
+                "Version": policy.get("Version"),
+                "RevisionId": data.get("RevisionId"),
+            }
+            statements_table = [
+                {
+                    "Sid": statement.get("Sid"),
+                    "Effect": statement.get("Effect"),
+                    "Action": statement.get("Action"),
+                    "Resource": statement.get("Resource"),
+                    "Principal": statement.get("Principal"),
+                }
+                for statement in statements
+            ]
+            return policy_table, statements_table
+
+    @staticmethod
     def get_policy_command(client: BotoClient, args: Dict[str, Any]):
         """
         Retrieves the policy for a Lambda function from AWS and parses it into a dictionary.
@@ -2514,14 +2570,38 @@ class Lambda:
         """
         kwargs = {"FunctionName": args["function_name"]}
         if qualifier := args.get("qualifier"):
-            kwargs["qualifier"] = qualifier
+            kwargs["Qualifier"] = qualifier
 
         response = client.get_policy(**kwargs)
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
+        response_config = {}
+        fixed_response = {}
+        try:
+            response_config = client.get_function_configuration(**kwargs)
+            fixed_response["FunctionArn"] = response_config.get("FunctionArn")
+        except ClientError:
+            fixed_response["FunctionName"] = args["function_name"]
         response["Policy"] = json.loads(response["Policy"])
-        response.pop("ResponseMetadata", None)
+        fixed_response.update(response["Policy"])
+        fixed_response.update({"RevisionId": response.get("RevisionId")})
 
-        return CommandResults(outputs_prefix="AWS.Lambda", outputs_key_field="RevisionId")
+        parsed_policy, parsed_statement = Lambda._parse_policy_response(response)
+
+        policy_table = tableToMarkdown(name="Policy Statements", t=parsed_policy)
+
+        if parsed_statement:  # if policy contains a multiple statements, then print the statements in another table
+            statements_table = tableToMarkdown("Statements", t=parsed_statement)
+            policy_table = policy_table + statements_table
+
+        return CommandResults(
+            outputs=fixed_response,
+            readable_output=policy_table,
+            outputs_prefix="AWS.Lambda.Policy",
+            outputs_key_field=["FunctionArn", "FunctionName"],
+            raw_response=response,
+        )
 
     @staticmethod
     def invoke_command(client: BotoClient, args: Dict[str, Any]):
