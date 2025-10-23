@@ -591,9 +591,7 @@ class CapeSandboxClient(BaseClient):  # noqa: F405
         if headers:
             merged_headers.update(headers)
 
-        demisto.debug(
-            f"Executing API request: {method} {url_suffix} (Headers merged: {AuthParams.TOKEN_KEY.value} present)."
-        )
+        demisto.debug(f"Executing API request: {method} {url_suffix}.")
 
         response = self._http_request(
             method=method,
@@ -790,7 +788,10 @@ class CapeSandboxClient(BaseClient):  # noqa: F405
 # =================================
 def test_module(client: CapeSandboxClient) -> str:
     """Test connectivity and credentials by ensuring a valid token exists."""
+    command = "Test Module"
+    demisto.debug(f"Starting execution of command: {command}")
     client.ensure_token()
+    demisto.debug(f"Command '{command}' execution finished successfully.")
 
     return "ok"
 
@@ -947,6 +948,9 @@ def cape_file_submit_command(
     """
     Submits a file (or PCAP) to CAPE, retrieves the task_id, and initiates the polling sequence.
     """
+    command = "Submit File"
+    demisto.debug(f"Starting execution of command: {command}")
+
     entry_id = args.get("entry_id")
 
     if not entry_id:
@@ -974,6 +978,9 @@ def cape_file_submit_command(
 
     task_id = task_ids[0]
 
+    demisto.debug(
+        f"Command '{command}' execution finished successfully (Initiating Polling for Task ID: {task_id})."
+    )
     # Initiate the polling sequence by calling the polling function
     return cape_file_poll_report({"task_id": task_id, **args}, client)
 
@@ -982,10 +989,10 @@ def cape_file_submit_command(
 def cape_url_submit_command(
     client: CapeSandboxClient, args: dict[str, Any]
 ) -> CommandResults:
-    """Submit a URL to CAPE and poll until the task is reported.
+    """Submit a URL to CAPE and poll until the task is reported."""
+    command = "Submit URL"
+    demisto.debug(f"Starting execution of command: {command}")
 
-    First call requires `url`. Subsequent polls pass back `task_id`.
-    """
     task_id = arg_to_number(args.get("task_id"))
     url = args.get("url")
 
@@ -1012,6 +1019,9 @@ def cape_url_submit_command(
                 headerTransform=pascalToSpace,
             )
 
+            demisto.debug(
+                f"Command '{command}' execution finished successfully (Returning Polling Results)."
+            )
             return CommandResults(
                 readable_output=readable,
                 outputs_prefix="Cape.Task",
@@ -1044,6 +1054,9 @@ def cape_url_submit_command(
 
     md = f"Submitted URL {url}. Task ID {task_id}. Polling will continue every {POLLING_INTERVAL_SECONDS}s until ready."
 
+    demisto.debug(
+        f"Command '{command}' execution finished successfully (Scheduling Poll for Task ID: {task_id})."
+    )
     return CommandResults(
         readable_output=md,
         scheduled_command=ScheduledCommand(
@@ -1059,6 +1072,9 @@ def cape_file_view_command(
     client: CapeSandboxClient, args: dict[str, Any]
 ) -> CommandResults:
     """View file information by one of: `task_id`, `md5`, or `sha256`."""
+    command = "Get File View"
+    demisto.debug(f"Starting execution of command: {command}")
+
     task_id = arg_to_number(args.get("task_id"))
     md5 = args.get("md5")
     sha256 = args.get("sha256")
@@ -1103,6 +1119,7 @@ def cape_file_view_command(
         headerTransform=pascalToSpace,
     )
 
+    demisto.debug(f"Command '{command}' execution finished successfully.")
     return CommandResults(
         outputs_prefix="Cape.File",
         outputs=data,
@@ -1115,6 +1132,9 @@ def cape_pcap_file_download_command(
     client: CapeSandboxClient, args: dict[str, Any]
 ) -> Any:
     """Download the PCAP dump of a Task by ID. Return object will be application/vnd.tcpdump.pcap. (.pcap)."""
+    command = "Download PCAP File"
+    demisto.debug(f"Starting execution of command: {command}")
+
     task_id = arg_to_number(args.get("task_id"))
     if not task_id:
         raise DemistoException("Task ID is missing for download pcap file.")
@@ -1127,6 +1147,9 @@ def cape_pcap_file_download_command(
         file_format="pcap",
     )
 
+    demisto.debug(
+        f"Command '{command}' execution finished successfully (Returning file: {filename})."
+    )
     return fileResult(filename, dump_pcap)
 
 
@@ -1134,6 +1157,9 @@ def cape_sample_file_download_command(
     client: CapeSandboxClient, args: dict[str, Any]
 ) -> Any:
     """Download a sample from a Task by one of: `task_id`, `md5`, `sha1` or `sha256`."""
+    command = "Download Sample File"
+    demisto.debug(f"Starting execution of command: {command}")
+
     task_id = arg_to_number(args.get("task_id"))
     md5 = args.get("md5")
     sha1 = args.get("sha1")
@@ -1167,6 +1193,9 @@ def cape_sample_file_download_command(
         file_format=None,
     )
 
+    demisto.debug(
+        f"Command '{command}' execution finished successfully (Returning file: {filename})."
+    )
     return fileResult(filename, resp)
 
 
@@ -1174,6 +1203,9 @@ def cape_task_delete_command(
     client: CapeSandboxClient, args: dict[str, Any]
 ) -> CommandResults:
     """Delete task by id."""
+    command = "Delete Task"
+    demisto.debug(f"Starting execution of command: {command}")
+
     task_id = arg_to_number(args.get("task_id"))
     demisto.debug(f"Starting task delete command for Task ID: {task_id}.")
     if not task_id:
@@ -1185,6 +1217,7 @@ def cape_task_delete_command(
 
     readable = f"Task id={task_id} was deleted successfully"
 
+    demisto.debug(f"Command '{command}' execution finished successfully.")
     return CommandResults(readable_output=readable)
 
 
@@ -1194,6 +1227,9 @@ def cape_tasks_list_command(
     client: CapeSandboxClient, args: dict[str, Any]
 ) -> CommandResults:
     """List tasks with pagination or fetch a single task by `task_id`."""
+    command = "List Tasks"
+    demisto.debug(f"Starting execution of command: {command}")
+
     task_id = arg_to_number(args.get("task_id"))
 
     # --- Pagination Logic ---
@@ -1239,6 +1275,10 @@ def cape_tasks_list_command(
             ],
             headerTransform=pascalToSpace,
         )
+
+        demisto.debug(
+            f"Command '{command}' execution finished successfully (Single Task View)."
+        )
         return CommandResults(
             readable_output=readable,
             outputs_prefix="Cape.Task",
@@ -1271,6 +1311,7 @@ def cape_tasks_list_command(
         headerTransform=pascalToSpace,
     )
 
+    demisto.debug(f"Command '{command}' execution finished successfully (List View).")
     return CommandResults(
         readable_output=readable,
         outputs_prefix="Cape.Task",
@@ -1376,6 +1417,9 @@ def cape_task_report_get_command(
     """
     Get a task report. When 'zip=true', returns a ZIP file. Otherwise returns the JSON 'info' object.
     """
+    command = "Get Task Report"
+    demisto.debug(f"Starting execution of command: {command}")
+
     task_id = arg_to_number(args.get("task_id"))
     file_format = args.get("format", "json").strip().lower()
     zip_flag = argToBoolean(args.get("zip", False))
@@ -1391,6 +1435,9 @@ def cape_task_report_get_command(
             file_identifier=task_id, file_type="report", file_format="zip"
         )
 
+        demisto.debug(
+            f"Command '{command}' execution finished successfully (Returning ZIP file)."
+        )
         return fileResult(filename, content)
 
     resp = client.get_task_report(
@@ -1450,6 +1497,9 @@ def cape_task_report_get_command(
         headerTransform=pascalToSpace,
     )
 
+    demisto.debug(
+        f"Command '{command}' execution finished successfully (Returning JSON report)."
+    )
     return CommandResults(
         readable_output=readable,
         outputs_prefix="Cape.Task.Report",
@@ -1462,6 +1512,9 @@ def cape_machines_list_command(
     client: CapeSandboxClient, args: dict[str, Any]
 ) -> CommandResults:
     """List machines or view a single machine by `machine_name`."""
+    command = "List Machines"
+    demisto.debug(f"Starting execution of command: {command}")
+
     machine_name = args.get("machine_name")
     all_results = arg_to_bool_or_none(args.get("all_results"))
     limit = max(arg_to_number(args.get("limit")) or LIST_DEFAULT_LIMIT, 1)
@@ -1473,6 +1526,7 @@ def cape_machines_list_command(
         demisto.debug(f"Fetching view for specific machine: {machine_name}.")
         resp = client.view_machine(machine_name)
         machine = resp.get("machine") or resp.get("data") or resp
+
         readable = tableToMarkdown(
             f"{INTEGRATION_NAME} Machine {machine.get('name', machine_name)}",
             machine,
@@ -1495,8 +1549,10 @@ def cape_machines_list_command(
             ],
             headerTransform=pascalToSpace,
         )
-        demisto.debug(f"Machine view retrieved for {machine_name}. Returning results.")
 
+        demisto.debug(
+            f"Command '{command}' execution finished successfully (Single Machine View)."
+        )
         return CommandResults(
             readable_output=readable,
             outputs_prefix="Cape.Machine",
@@ -1538,9 +1594,8 @@ def cape_machines_list_command(
     )
 
     demisto.debug(
-        f"Machine list retrieved. Found {len(machines)} total machines. Returning results."
+        f"Command '{command}' execution finished successfully (List View). Found {len(machines)} total machines."
     )
-
     return CommandResults(
         readable_output=readable,
         outputs_prefix="Cape.Machine",
@@ -1553,15 +1608,26 @@ def cape_cuckoo_status_get_command(
     client: CapeSandboxClient, args: dict[str, Any]
 ) -> CommandResults:
     """Return overall CAPE/Cuckoo status as human-readable only."""
+    command = "Get Cuckoo Status"
+    demisto.debug(f"Starting execution of command: {command}")
 
+    demisto.debug("Sending request to get Cuckoo/CAPE server status.")
     resp = client.get_cuckoo_status() or {}
     data = resp.get("data") or resp
+
+    if not isinstance(data, dict) or not data.get("tasks"):
+        demisto.debug(
+            f"Status response incomplete or unexpected. Keys received: {list(data.keys())}"
+        )
+
+    demisto.debug(
+        f"Status retrieved. Hostname: {data.get('hostname', 'N/A')}. Processing results."
+    )
 
     tasks = data.get("tasks") or {}
     server = data.get("server") or {}
     machines = data.get("machines") or {}
 
-    # Compute server usage from the expected path (server.storage.used_by in design)
     server_usage = server.get("storage", {}).get("used_by")
 
     row = {
@@ -1580,6 +1646,7 @@ def cape_cuckoo_status_get_command(
         f"{INTEGRATION_NAME} Status", row, headerTransform=pascalToSpace
     )
 
+    demisto.debug(f"Command '{command}' execution finished successfully.")
     return CommandResults(readable_output=readable)
 
 
@@ -1587,6 +1654,9 @@ def cape_task_screenshot_download_command(
     client: CapeSandboxClient, args: dict[str, Any]
 ) -> CommandResults:
     """Download screenshots for a task."""
+    command = "List Task Screenshots"
+    demisto.debug(f"Starting execution of command: {command}")
+
     task_id = arg_to_number(args.get("task_id"))
     single_number = arg_to_number(args.get("screenshot"))
 
@@ -1652,6 +1722,7 @@ def cape_task_screenshot_download_command(
         headerTransform=pascalToSpace,
     )
 
+    demisto.debug(f"Command '{command}' execution finished successfully.")
     return CommandResults(
         readable_output=readable,
         outputs_prefix="Cape.Screenshot",
