@@ -5888,6 +5888,7 @@
         },
         {
             "playbookID": "QuarantineFile-Test",
+            "integrations": "Cortex XDR - IR",
             "timeout": 300,
             "fromversion": "6.10.0"
         },
