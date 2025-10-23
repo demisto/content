@@ -2991,3 +2991,57 @@ def test_get_public_ip_details_command_with_resource_group(mocker):
     assert result.outputs["properties"]["publicIPAllocationMethod"] == "Static"
     assert result.outputs["etag"] == "12345"
     assert "ip1" in result.readable_output
+
+
+def test_get_public_ip_details_command_without_resource_group(mocker):
+    """
+    Given: A subscription and public IP name, but no resource group.
+    When: get_public_ip_details_command is called.
+    Then: It should call get_all_public_ip_details_request, find the matching IP, and return details.
+    """
+    from Azure import get_public_ip_details_command
+
+    mock_client = mocker.Mock()
+    mock_params = {"subscription_id": "sub-id"}
+    args = {"subscription_id": "sub-id", "address_name": "ip1"}
+
+    mock_all_ips = {
+        "value": [
+            {
+                "id": "/subscriptions/sub-id/resourceGroups/rg1/providers/Microsoft.Network/publicIPAddresses/ip1",
+                "name": "ip1",
+                "location": "eastus",
+                "etag": 'W/"999"',
+                "properties": {
+                    "ipAddress": "5.6.7.8",
+                    "publicIPAddressVersion": "IPv4",
+                    "publicIPAllocationMethod": "Dynamic",
+                },
+            },
+            {
+                "id": "/subscriptions/sub-id/resourceGroups/rg2/providers/Microsoft.Network/publicIPAddresses/ip2",
+                "name": "ip2",
+                "location": "westus",
+                "etag": 'W/"888"',
+                "properties": {
+                    "ipAddress": "9.9.9.9",
+                    "publicIPAddressVersion": "IPv6",
+                    "publicIPAllocationMethod": "Static",
+                },
+            },
+        ]
+    }
+
+    # Mock the client and helper functions
+    mocker.patch.object(mock_client, "get_all_public_ip_details_request", return_value=mock_all_ips)
+    mocker.patch("Azure.get_single_ip_details_from_list_of_ip_details", return_value=mock_all_ips["value"][0])
+
+    result = get_public_ip_details_command(mock_client, mock_params, args)
+
+    mock_client.get_all_public_ip_details_request.assert_called_once_with("sub-id")
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs["properties"]["ipAddress"] == "5.6.7.8"
+    assert result.outputs["etag"] == "999"
+    assert "ip1" in result.readable_output
+    assert "rg1" in result.readable_output

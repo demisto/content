@@ -2252,7 +2252,7 @@ script:
         predefined:
           - "false"
           - "true"
-  - name: azure-vm-start-instance
+  - name: azure-vm-instance-start
     description: Powers on a given virtual machine.
     execution: true
     arguments:
