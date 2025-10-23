@@ -74,12 +74,153 @@ class Client(BaseClient):
         return token
 
     def get_events_api_call(self, fetch_from: str, limit: int, next_anchor: str = None):
-        params = {"serverTimestampStart": fetch_from, "limit": limit, "order": "asc"}
+        params = {"persistenceTimestampStart": fetch_from, "limit": limit, "order": "asc"}
         if next_anchor:
             params["anchor"] = next_anchor
         return self._http_request(
             method="GET",
             url_suffix="security-events/v1/security-events",
+            headers={"Authorization": f"Bearer {self.get_access_token()}"},
+            params=params,
+        )
+
+    def get_incidents(self, incident_id: str = None, status: str = None, risk_level: str = None,
+                      limit: int = 20, source: str = None, next_anchor: str = None):
+        """Get EDR incidents (Broad Context Detections)."""
+        params = {"limit": limit, "archived": "false"}
+        if incident_id:
+            params["incidentId"] = incident_id
+        if status:
+            params["status"] = status
+        if risk_level:
+            params["riskLevel"] = risk_level
+        if source:
+            params["source"] = source
+        if next_anchor:
+            params["anchor"] = next_anchor
+        return self._http_request(
+            method="GET",
+            url_suffix="incidents/v1/incidents",
+            headers={"Authorization": f"Bearer {self.get_access_token()}"},
+            params=params,
+        )
+
+    def update_incident_status(self, incident_id: str, status: str, resolution: str = None):
+        """Update incident status."""
+        data = {"targets": [incident_id], "status": status}
+        if resolution:
+            data["resolution"] = resolution
+        return self._http_request(
+            method="PATCH",
+            url_suffix="incidents/v1/incidents",
+            headers={
+                "Authorization": f"Bearer {self.get_access_token()}",
+                "Content-Type": "application/json",
+            },
+            json_data=data,
+        )
+
+    def add_incident_comment(self, incident_ids: list[str], comment: str):
+        """Add comment to incidents."""
+        data = {"targets": incident_ids, "comment": comment}
+        return self._http_request(
+            method="POST",
+            url_suffix="incidents/v1/comments",
+            headers={
+                "Authorization": f"Bearer {self.get_access_token()}",
+                "Content-Type": "application/json",
+            },
+            json_data=data,
+        )
+
+    def get_incident_detections(self, incident_id: str, limit: int = 100, next_anchor: str = None):
+        """Get detections for a specific incident."""
+        params = {"incidentId": incident_id, "limit": limit}
+        if next_anchor:
+            params["anchor"] = next_anchor
+        return self._http_request(
+            method="GET",
+            url_suffix="incidents/v1/detections",
+            headers={"Authorization": f"Bearer {self.get_access_token()}"},
+            params=params,
+        )
+
+    def get_devices(self, device_id: str = None, name: str = None, device_type: str = None,
+                    state: str = None, online: str = None, protection_status: str = None,
+                    limit: int = 50, next_anchor: str = None):
+        """Get devices from WithSecure."""
+        params = {"limit": limit}
+        if device_id:
+            params["deviceId"] = device_id
+        if name:
+            params["name"] = name
+        if device_type:
+            params["type"] = device_type
+        if state:
+            params["state"] = state
+        if online:
+            params["online"] = online.lower()
+        if protection_status:
+            params["protectionStatusOverview"] = protection_status
+        if next_anchor:
+            params["anchor"] = next_anchor
+        return self._http_request(
+            method="GET",
+            url_suffix="devices/v1/devices",
+            headers={
+                "Authorization": f"Bearer {self.get_access_token()}",
+                "Accept": "application/json",
+            },
+            params=params,
+        )
+
+    def isolate_endpoint(self, device_ids: list[str], message: str = None):
+        """Isolate endpoints from network."""
+        data = {"operation": "isolateFromNetwork", "targets": device_ids}
+        if message:
+            data["parameters"] = {"message": message}
+        return self._http_request(
+            method="POST",
+            url_suffix="devices/v1/operations",
+            headers={
+                "Authorization": f"Bearer {self.get_access_token()}",
+                "Content-Type": "application/json",
+            },
+            json_data=data,
+        )
+
+    def release_endpoint(self, device_ids: list[str]):
+        """Release endpoints from network isolation."""
+        data = {"operation": "releaseFromNetworkIsolation", "targets": device_ids}
+        return self._http_request(
+            method="POST",
+            url_suffix="devices/v1/operations",
+            headers={
+                "Authorization": f"Bearer {self.get_access_token()}",
+                "Content-Type": "application/json",
+            },
+            json_data=data,
+        )
+
+    def scan_endpoint(self, device_ids: list[str]):
+        """Trigger malware scan on endpoints."""
+        data = {"operation": "scanForMalware", "targets": device_ids}
+        return self._http_request(
+            method="POST",
+            url_suffix="devices/v1/operations",
+            headers={
+                "Authorization": f"Bearer {self.get_access_token()}",
+                "Content-Type": "application/json",
+            },
+            json_data=data,
+        )
+
+    def get_device_operations(self, device_id: str):
+        """Get operations for a specific device."""
+        params = {"deviceId": device_id}
+        return self._http_request(
+            method="GET",
+            url_suffix="devices/v1/operations",
             headers={"Authorization": f"Bearer {self.get_access_token()}"},
             params=params,
         )
@@ -223,6 +364,214 @@ def fetch_events_command(client: Client, first_fetch: str, limit: int) -> tuple[
     return parsed_events, next_run
 
 
+def get_incidents_command(client: Client, args: dict) -> CommandResults:
+    """Get EDR incidents (Broad Context Detections)."""
+    incident_id = args.get("incident_id")
+    status = args.get("status")
+    risk_level = args.get("risk_level")
+    limit = arg_to_number(args.get("limit", 20))
+    source = args.get("source")
+
+    result = client.get_incidents(incident_id, status, risk_level, limit, source)
+    incidents = result.get("items", [])
+
+    return CommandResults(
+        outputs_prefix="WithSecure.Incident",
+        outputs_key_field="incidentId",
+        outputs=incidents,
+        readable_output=tableToMarkdown("WithSecure EDR Incidents", incidents, headers=[
+            "incidentId", "incidentPublicId", "name", "status", "severity", "riskLevel",
+            "riskScore", "categories", "sources", "createdTimestamp"
+        ])
+    )
+
+
+def update_incident_status_command(client: Client, args: dict) -> CommandResults:
+    """Update incident status."""
+    incident_id = args.get("incident_id")
+    status = args.get("status")
+    resolution = args.get("resolution")
+
+    if status == "closed" and not resolution:
+        raise DemistoException("Resolution is required when closing an incident.")
+
+    result = client.update_incident_status(incident_id, status, resolution)
+    multistatus = result.get("multistatus", [])
+
+    return CommandResults(
+        outputs_prefix="WithSecure.IncidentUpdate",
+        outputs_key_field="incidentId",
+        outputs=[{"incidentId": incident_id, "status": multistatus[0].get("status") if multistatus else None}],
+        readable_output=f"Successfully updated incident {incident_id} to status: {status}"
+    )
+
+
+def add_incident_comment_command(client: Client, args: dict) -> CommandResults:
+    """Add comment to incidents."""
+    incident_ids = argToList(args.get("incident_ids"))
+    comment = args.get("comment")
+
+    if len(incident_ids) > 10:
+        raise DemistoException("Maximum 10 incidents can be commented at once.")
+
+    result = client.add_incident_comment(incident_ids, comment)
+    items = result.get("items", [])
+
+    return CommandResults(
+        readable_output=f"Successfully added comment to {len(items)} incident(s).",
+        outputs_prefix="WithSecure.IncidentComment",
+        outputs=items
+    )
+
+
+def get_incident_detections_command(client: Client, args: dict) -> CommandResults:
+    """Get detections for a specific incident."""
+    incident_id = args.get("incident_id")
+    limit = arg_to_number(args.get("limit", 100))
+
+    result = client.get_incident_detections(incident_id, limit)
+    detections = result.get("items", [])
+
+    return CommandResults(
+        outputs_prefix="WithSecure.Detection",
+        outputs_key_field="detectionId",
+        outputs=detections,
+        readable_output=tableToMarkdown(f"Detections for Incident {incident_id}", detections, headers=[
+            "detectionId", "deviceId", "name", "detectionClass", "severity", "riskLevel",
+            "exePath", "cmdl", "username", "createdTimestamp"
+        ])
+    )
+
+
+def get_devices_command(client: Client, args: dict) -> CommandResults:
+    """Get devices from WithSecure."""
+    device_id = args.get("device_id")
+    name = args.get("name")
+    device_type = args.get("type")
+    state = args.get("state")
+    online = args.get("online")
+    protection_status = args.get("protection_status")
+    limit = arg_to_number(args.get("limit", 50))
+
+    result = client.get_devices(device_id, name, device_type, state, online, protection_status, limit)
+    devices = result.get("items", [])
+
+    return CommandResults(
+        outputs_prefix="WithSecure.Device",
+        outputs_key_field="id",
+        outputs=devices,
+        readable_output=tableToMarkdown("WithSecure Devices", devices, headers=[
+            "id", "name", "type", "state", "online", "protectionStatusOverview",
+            "clientVersion", "os", "lastUser"
+        ])
+    )
+
+
+def isolate_endpoint_command(client: Client, args: dict) -> CommandResults:
+    """Isolate endpoints from network."""
+    device_ids = argToList(args.get("device_ids"))
+    message = args.get("message")
+
+    if len(device_ids) > 5:
+        raise DemistoException("Maximum 5 devices can be isolated at once.")
+
+    result = client.isolate_endpoint(device_ids, message)
+    multistatus = result.get("multistatus", [])
+
+    outputs = []
+    for item in multistatus:
+        outputs.append({
+            "deviceId": item.get("target"),
+            "status": item.get("status"),
+            "operationId": item.get("operationId"),
+            "details": item.get("details")
+        })
+
+    return CommandResults(
+        outputs_prefix="WithSecure.IsolationAction",
+        outputs_key_field="deviceId",
+        outputs=outputs,
+        readable_output=tableToMarkdown("Endpoint Isolation Results", outputs, headers=[
+            "deviceId", "status", "operationId", "details"
+        ])
+    )
+
+
+def release_endpoint_command(client: Client, args: dict) -> CommandResults:
+    """Release endpoints from network isolation."""
+    device_ids = argToList(args.get("device_ids"))
+
+    if len(device_ids) > 5:
+        raise DemistoException("Maximum 5 devices can be released at once.")
+
+    result = client.release_endpoint(device_ids)
+    multistatus = result.get("multistatus", [])
+
+    outputs = []
+    for item in multistatus:
+        outputs.append({
+            "deviceId": item.get("target"),
+            "status": item.get("status"),
+            "operationId": item.get("operationId"),
+            "details": item.get("details")
+        })
+
+    return CommandResults(
+        outputs_prefix="WithSecure.IsolationAction",
+        outputs_key_field="deviceId",
+        outputs=outputs,
+        readable_output=tableToMarkdown("Endpoint Release Results", outputs, headers=[
+            "deviceId", "status", "operationId", "details"
+        ])
+    )
+
+
+def scan_endpoint_command(client: Client, args: dict) -> CommandResults:
+    """Trigger malware scan on endpoints."""
+    device_ids = argToList(args.get("device_ids"))
+
+    if len(device_ids) > 5:
+        raise DemistoException("Maximum 5 devices can be scanned at once.")
+
+    result = client.scan_endpoint(device_ids)
+    multistatus = result.get("multistatus", [])
+
+    outputs = []
+    for item in multistatus:
+        outputs.append({
+            "deviceId": item.get("target"),
+            "status": item.get("status"),
+            "operationId": item.get("operationId"),
+            "details": item.get("details")
+        })
+
+    return CommandResults(
+        outputs_prefix="WithSecure.ScanAction",
+        outputs_key_field="deviceId",
+        outputs=outputs,
+        readable_output=tableToMarkdown("Endpoint Scan Results", outputs, headers=[
+            "deviceId", "status", "operationId", "details"
+        ])
+    )
+
+
+def get_device_operations_command(client: Client, args: dict) -> CommandResults:
+    """Get operations for a specific device."""
+    device_id = args.get("device_id")
+
+    result = client.get_device_operations(device_id)
+    operations = result.get("items", [])
+
+    return CommandResults(
+        outputs_prefix="WithSecure.DeviceOperation",
+        outputs_key_field="id",
+        outputs=operations,
+        readable_output=tableToMarkdown(f"Operations for Device {device_id}", operations, headers=[
+            "id", "operationName", "status", "startedTimestamp", "lastUpdatedTimestamp", "expirationTimestamp"
+        ])
+    )
+
+
 """ MAIN FUNCTION """
 
 
@@ -260,6 +609,33 @@ def main() -> None:
             events, next_run = fetch_events_command(client, first_fetch, limit)  # type: ignore
             send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
             demisto.setLastRun(next_run)
+
+        elif command == "with-secure-get-incidents":
+            return_results(get_incidents_command(client, args))
+
+        elif command == "with-secure-update-incident-status":
+            return_results(update_incident_status_command(client, args))
+
+        elif command == "with-secure-add-incident-comment":
+            return_results(add_incident_comment_command(client, args))
+
+        elif command == "with-secure-get-incident-detections":
+            return_results(get_incident_detections_command(client, args))
+
+        elif command == "with-secure-get-devices":
+            return_results(get_devices_command(client, args))
+
+        elif command == "with-secure-isolate-endpoint":
+            return_results(isolate_endpoint_command(client, args))
+
+        elif command == "with-secure-release-endpoint":
+            return_results(release_endpoint_command(client, args))
+
+        elif command == "with-secure-scan-endpoint":
+            return_results(scan_endpoint_command(client, args))
+
+        elif command == "with-secure-get-device-operations":
+            return_results(get_device_operations_command(client, args))
 
     except Exception as e:
         return_error(f"Failed to execute {demisto.command()} command.\nError:\n{str(e)}")
