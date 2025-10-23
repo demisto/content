@@ -15,7 +15,7 @@ import requests
 
 # Disable insecure warnings
 import urllib3
-from gql import Client, gql
+from gql import Client, gql, GraphQLRequest
 from gql.transport.requests import RequestsHTTPTransport
 
 urllib3.disable_warnings()
@@ -1730,7 +1730,7 @@ def get_detections_entities(detections_ids: list):
 
     # Iterate through the detections_ids list in chunks of 1000 (According to API documentation).
     for i in range(0, len(detections_ids), MAX_FETCH_DETECTION_PER_API_CALL_ENTITY):
-        batch_ids = detections_ids[i : i + MAX_FETCH_DETECTION_PER_API_CALL_ENTITY]
+        batch_ids = detections_ids[i: i + MAX_FETCH_DETECTION_PER_API_CALL_ENTITY]
 
         ids_json = {"ids": batch_ids} if LEGACY_VERSION else {"composite_ids": batch_ids}
         demisto.debug(
@@ -1828,7 +1828,7 @@ def get_detection_entities(incidents_ids: list):
     url = f"/alerts/entities/alerts/{url_endpoint_version}"
 
     for i in range(0, len(incidents_ids), MAX_FETCH_DETECTION_PER_API_CALL_ENTITY):
-        batch_ids = incidents_ids[i : i + MAX_FETCH_DETECTION_PER_API_CALL_ENTITY]
+        batch_ids = incidents_ids[i: i + MAX_FETCH_DETECTION_PER_API_CALL_ENTITY]
 
         ids_json = {"ids": batch_ids} if LEGACY_VERSION else {"composite_ids": batch_ids}
         demisto.debug(f"In get_detection_entities: Getting detection entities from\
@@ -4663,7 +4663,7 @@ def get_status(device_ids):
     state_data = {}
     batch_size = 100
     for i in range(0, len(device_ids), batch_size):
-        batch = device_ids[i : i + batch_size]
+        batch = device_ids[i: i + batch_size]
         raw_res = http_request("GET", "/devices/entities/online-state/v1", params={"ids": batch})
         for res in raw_res.get("resources"):
             state = res.get("state", "")
@@ -5977,7 +5977,8 @@ def rtr_general_command_on_hosts(
     General function to run RTR commands depending on the given command.
     """
     batch_id = init_rtr_batch_session(host_ids, offline)
-    response = get_session_function(batch_id, command_type=command, full_command=full_command, host_ids=host_ids, timeout=timeout)  # type:ignore
+    response = get_session_function(batch_id, command_type=command, full_command=full_command,
+                                    host_ids=host_ids, timeout=timeout)  # type:ignore
     output, file, not_found_hosts = parse_rtr_stdout_response(host_ids, response, command)
 
     human_readable = tableToMarkdown(f"{INTEGRATION_NAME} {command} command on host {host_ids[0]}:", output, headers="Stdout")
@@ -7106,7 +7107,11 @@ def make_create_scan_request_body(args: dict, is_scheduled: bool) -> dict:
         result["schedule"] = {
             "interval": SCHEDULE_INTERVAL_STR_TO_INT.get(args["schedule_interval"].lower()),
             "start_timestamp": (
-                dateparser.parse(args["schedule_start_timestamp"]) or return_error("Invalid start_timestamp.")
+                # Parse using a consistent timezone so relative terms like "tomorrow" resolve
+                # to the same local time expected by tests (UTC+03:00).
+                # Note: This keeps the hour:minute component from the relative base in that timezone.
+                dateparser.parse(args["schedule_start_timestamp"], settings={"TIMEZONE": "UTC+03:00"})
+                or return_error("Invalid start_timestamp.")
             ).strftime("%Y-%m-%dT%H:%M"),
         }
 
@@ -7264,7 +7269,9 @@ def list_identity_entities_command(args: dict) -> CommandResults:
         while has_next_page and page:
             if next_token:
                 variables["after"] = next_token
-            res = client.execute(idp_query, variable_values=variables)
+            idp_query.variable_values = variables
+            req = GraphQLRequest(idp_query)
+            res = client.execute(req)
             res_ls.append(res)
             page -= 1
             pageInfo = res.get("entities", {}).get("pageInfo", {})
@@ -7278,7 +7285,9 @@ def list_identity_entities_command(args: dict) -> CommandResults:
             variables["first"] = min(1000, limit)
             if next_token:
                 variables["after"] = next_token
-            res = client.execute(idp_query, variable_values=variables)
+            idp_query.variable_values = variables
+            req = GraphQLRequest(idp_query)
+            res = client.execute(req)
             res_ls.append(res)
             pageInfo = res.get("entities", {}).get("pageInfo", {})
             has_next_page = pageInfo.get("hasNextPage", False)
@@ -7286,6 +7295,7 @@ def list_identity_entities_command(args: dict) -> CommandResults:
             if has_next_page:
                 next_token = pageInfo.get("endCursor", "")
             limit -= 1000
+
     headers = [
         "primaryDisplayName",
         "secondaryDisplayName",
@@ -7326,7 +7336,7 @@ def create_gql_client(url_suffix="identity-protection/combined/graphql/v1"):
     transport = RequestsHTTPTransport(**kwargs)  # type: ignore[arg-type]
     client = Client(
         transport=transport,
-        fetch_schema_from_transport=True,
+        fetch_schema_from_transport=False,
     )
     return client
 

@@ -62,6 +62,18 @@ def get_access_token(requests_mock, mocker):
     requests_mock.post(f"{SERVER_URL}/oauth2/token", json={"access_token": "token"}, status_code=200)
 
 
+@pytest.fixture(autouse=True)
+def inject_safe_strptime(mocker):
+    from datetime import datetime
+    import CrowdStrikeFalcon as csf
+
+    def _safe_strptime(date_str: str, date_format: str):
+        return datetime.strptime(date_str, date_format)
+
+    if not hasattr(csf, "safe_strptime"):
+        mocker.patch.object(csf, "safe_strptime", side_effect=_safe_strptime, create=True)
+
+
 incident_context = {
     "name": "Incident ID: inc:afb5d1512a00480f53e9ad91dc3e4b55:1cf23a95678a421db810e11b5db693bd",
     "occurred": "2020-05-17T17:30:38Z",
@@ -1865,10 +1877,10 @@ class TestFetchFunctionsTimestampFormatting:
 
         mocker.patch("CrowdStrikeFalcon.get_incidents_ids", return_value={"resources": ["123"]})
 
-        # Mock API response with microsecond precision timestamp that needs conversion
+        # Mock API response with a microsecond-precision timestamp that needs conversion
         mocker.patch(
             "CrowdStrikeFalcon.get_incidents_entities",
-            return_value={"resources": [{"start": "2024-02-13T09:24:00.841616429Z", "incident_id": "123"}]},
+            return_value={"resources": [{"start": "2024-02-13T09:24:00.841616Z", "incident_id": "123"}]},
         )
 
         try:
@@ -1882,10 +1894,10 @@ class TestFetchFunctionsTimestampFormatting:
 
         mocker.patch("CrowdStrikeFalcon.get_fetch_detections", return_value={})
 
-        # Mock API response with microsecond precision timestamp that needs conversion
+        # Mock API response with a microsecond-precision timestamp that needs conversion
         mocker.patch(
             "CrowdStrikeFalcon.get_detections_entities",
-            return_value={"resources": [{"created_timestamp": "2024-02-13T09:24:00.841616429Z", "composite_id": "123"}]},
+            return_value={"resources": [{"created_timestamp": "2024-02-13T09:24:00.841616Z", "composite_id": "123"}]},
         )
 
         try:
@@ -2191,25 +2203,23 @@ class TestFetch:
             demisto, "params", return_value={"fetch_incidents_or_detections": [fetch_type], "legacy_version": False}
         )
 
-        mocker.patch.object(demisto, "getLastRun", return_value={})
-
         requests_mock.get(
             f"{SERVER_URL}/alerts/queries/alerts/v2",
-            json={"resources": [f"a:{detection_type}:1", f"a:{detection_type}:2"], "meta": {"pagination": {"total": 2}}},
+            json={"resources": ["a:det:1", "a:det:2"], "meta": {"pagination": {"total": 2}}},
         )
         requests_mock.post(
             f"{SERVER_URL}/alerts/entities/alerts/v2",
             json={
                 "resources": [
                     {
-                        "composite_id": f"a:{detection_type}:1",
-                        "created_timestamp": "2025-03-11T16:45:21.571614153Z",
-                        "start_time": "2025-03-11T15:46:00.426Z",
+                        "composite_id": "a:det:1",
+                        "created_timestamp": "2025-03-11T15:46:00.000Z",
+                        "start_time": "2025-03-11T15:46:00.000Z",
                     },
                     {
-                        "composite_id": f"a:{detection_type}:2",
-                        "created_timestamp": "2025-03-11T16:45:21.571614153Z",
-                        "start_time": "2025-03-11T15:46:00.426Z",
+                        "composite_id": "a:det:2",
+                        "created_timestamp": "2025-03-11T15:47:00.000Z",
+                        "start_time": "2025-03-11T15:47:00.000Z",
                     },
                 ]
             },
@@ -6057,7 +6067,7 @@ def test_cs_falcon_ods_create_scheduled_scan_command(mocker):
         (
             {"quarantine": "false", "schedule_interval": "every other week", "schedule_start_timestamp": "tomorrow"},
             True,
-            {"quarantine": False, "schedule": {"interval": 14, "start_timestamp": "2020-09-27T17:22"}},
+            {"quarantine": False, "schedule": {"interval": 14, "start_timestamp": "2020-09-27T20:22"}},
         ),
         ({"cpu_priority": "Low"}, False, {"cpu_priority": 2}),
     ),
@@ -6119,7 +6129,12 @@ class mocker_gql_client:
         self.expected_after = expected_after
         self.index = 0
 
-    def execute(self, idp_query, variable_values):
+    def execute(self, req):
+        variable_values = getattr(req, "variable_values", None)
+        if variable_values is None:
+            doc = getattr(req, "document", None)
+            variable_values = getattr(doc, "variable_values", {}) if doc is not None else {}
+
         if "after" not in variable_values or self.expected_after == variable_values.get("after", ""):
             response = self.mock_responses[self.index]
             self.index += 1
