@@ -7110,9 +7110,8 @@ def make_create_scan_request_body(args: dict, is_scheduled: bool) -> dict:
                 # Parse using a consistent timezone so relative terms like "tomorrow" resolve
                 # to the same local time expected by tests (UTC+03:00).
                 # Note: This keeps the hour:minute component from the relative base in that timezone.
-                dateparser.parse(
-                    args["schedule_start_timestamp"], settings={"TIMEZONE": "UTC+03:00"}
-                ) or return_error("Invalid start_timestamp.")
+                dateparser.parse(args["schedule_start_timestamp"], settings={"TIMEZONE": "UTC+03:00"})
+                or return_error("Invalid start_timestamp.")
             ).strftime("%Y-%m-%dT%H:%M"),
         }
 
