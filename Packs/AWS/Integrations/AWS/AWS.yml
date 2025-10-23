@@ -245,51 +245,23 @@ script:
     quickaction: true
     arguments:
       - name: account_id
-        prettyname: Account ID
         description: The AWS account ID.
+        prettyname: Account ID
         required: true
+        prettypredefined:
+          Account ID: ${asset.xdm.asset.realm}
       - name: region
-        prettyname: Region
         description: The AWS region.
+        prettyname: Region
         required: true
-        auto: PREDEFINED
-        predefined:
-          - us-east-1
-          - us-east-2
-          - us-west-1
-          - us-west-2
-          - af-south-1
-          - ap-east-1
-          - ap-south-2
-          - ap-southeast-3
-          - ap-southeast-5
-          - ap-southeast-4
-          - ap-south-1
-          - ap-northeast-3
-          - ap-northeast-2
-          - ap-southeast-1
-          - ap-southeast-2
-          - ap-southeast-7
-          - ap-northeast-1
-          - ca-central-1
-          - ca-west-1
-          - eu-central-1
-          - eu-west-1
-          - eu-west-2
-          - eu-south-1
-          - eu-west-3
-          - eu-south-2
-          - eu-north-1
-          - eu-central-2
-          - il-central-1
-          - mx-central-1
-          - me-south-1
-          - me-central-1
-          - sa-east-1
+        prettypredefined:
+          Region: ${asset.xdm.asset.cloud.region}
       - name: bucket
         prettyname: Bucket Name
         description: 'The bucket to which to apply the ACL.'
         required: true
+        prettypredefined:
+          Bucket Name: ${asset.xdm.asset.name}
       - name: acl
         description: 'The canned ACL to apply to the bucket.'
         defaultValue: 'private'
@@ -356,58 +328,30 @@ script:
     quickaction: true
     arguments:
       - name: account_id
-        prettyname: Account ID
         description: The AWS account ID.
+        prettyname: Account ID
         required: true
+        prettypredefined:
+          Account ID: ${asset.xdm.asset.realm}
       - name: region
-        prettyname: Region
         description: The AWS region.
+        prettyname: Region
         required: true
-        auto: PREDEFINED
-        predefined:
-          - us-east-1
-          - us-east-2
-          - us-west-1
-          - us-west-2
-          - af-south-1
-          - ap-east-1
-          - ap-south-2
-          - ap-southeast-3
-          - ap-southeast-5
-          - ap-southeast-4
-          - ap-south-1
-          - ap-northeast-3
-          - ap-northeast-2
-          - ap-southeast-1
-          - ap-southeast-2
-          - ap-southeast-7
-          - ap-northeast-1
-          - ca-central-1
-          - ca-west-1
-          - eu-central-1
-          - eu-west-1
-          - eu-west-2
-          - eu-south-1
-          - eu-west-3
-          - eu-south-2
-          - eu-north-1
-          - eu-central-2
-          - il-central-1
-          - mx-central-1
-          - me-south-1
-          - me-central-1
-          - sa-east-1
+        prettypredefined:
+          Region: ${asset.xdm.asset.cloud.region}
       - name: bucket
         prettyname: Bucket Name
         description: The name of the bucket for which to set the logging parameters.
         required: true
+        prettypredefined:
+          Bucket Name: ${asset.xdm.asset.name}
       - name: target_bucket
         description: 'The name of the bucket where server access logs should be delivered. If this is NOT provided, logging will be disabled.'
-        defaultValue: ${target-bucket}
+        defaultValue: ${target-bucket}  # TODO: couldnt find the matching asset
         hidden: true
       - name: target_prefix
         description: 'The prefix to be used for log object keys (e.g., "logs/"). Objects will be stored as: targetBucket/targetPrefix/sourceBucket/YYYY-MM-DD-HH-MM-SS-UniqueString.'
-        defaultValue: ${target-prefix}
+        defaultValue: ${target-prefix }  # TODO: # TODO: couldnt find the matching asset
         hidden: true
 
   - name: aws-s3-bucket-versioning-put
@@ -474,51 +418,23 @@ script:
     quickaction: true
     arguments:
       - name: account_id
-        prettyname: Account ID
         description: The AWS account ID.
+        prettyname: Account ID
         required: true
+        prettypredefined:
+          Account ID: ${asset.xdm.asset.realm}
       - name: region
-        prettyname: Region
         description: The AWS region.
+        prettyname: Region
         required: true
-        auto: PREDEFINED
-        predefined:
-          - us-east-1
-          - us-east-2
-          - us-west-1
-          - us-west-2
-          - af-south-1
-          - ap-east-1
-          - ap-south-2
-          - ap-southeast-3
-          - ap-southeast-5
-          - ap-southeast-4
-          - ap-south-1
-          - ap-northeast-3
-          - ap-northeast-2
-          - ap-southeast-1
-          - ap-southeast-2
-          - ap-southeast-7
-          - ap-northeast-1
-          - ca-central-1
-          - ca-west-1
-          - eu-central-1
-          - eu-west-1
-          - eu-west-2
-          - eu-south-1
-          - eu-west-3
-          - eu-south-2
-          - eu-north-1
-          - eu-central-2
-          - il-central-1
-          - mx-central-1
-          - me-south-1
-          - me-central-1
-          - sa-east-1
+        prettypredefined:
+          Region: ${asset.xdm.asset.cloud.region}
       - name: bucket
         prettyname: Bucket Name
         description: The name of the bucket for which to set the logging parameters.
         required: true
+        prettypredefined:
+          Bucket Name: ${asset.xdm.asset.name}
       - name: status
         description: The versioning state of the bucket.
         defaultValue: 'Enabled'
@@ -628,47 +544,17 @@ script:
     quickaction: true
     arguments:
       - name: account_id
-        prettyname: Account ID
         description: The AWS account ID.
+        prettyname: Account ID
         required: true
+        prettypredefined:
+          Account ID: ${asset.xdm.asset.realm}
       - name: region
-        prettyname: Region
         description: The AWS region.
+        prettyname: Region
         required: true
-        auto: PREDEFINED
-        predefined:
-          - us-east-1
-          - us-east-2
-          - us-west-1
-          - us-west-2
-          - af-south-1
-          - ap-east-1
-          - ap-south-2
-          - ap-southeast-3
-          - ap-southeast-5
-          - ap-southeast-4
-          - ap-south-1
-          - ap-northeast-3
-          - ap-northeast-2
-          - ap-southeast-1
-          - ap-southeast-2
-          - ap-southeast-7
-          - ap-northeast-1
-          - ca-central-1
-          - ca-west-1
-          - eu-central-1
-          - eu-west-1
-          - eu-west-2
-          - eu-south-1
-          - eu-west-3
-          - eu-south-2
-          - eu-north-1
-          - eu-central-2
-          - il-central-1
-          - mx-central-1
-          - me-south-1
-          - me-central-1
-          - sa-east-1
+        prettypredefined:
+          Region: ${asset.xdm.asset.cloud.region}
       - name: bucket
         prettyname: Bucket Name
         description: The name of the S3 bucket from which the website configuration will be removed.
@@ -3040,51 +2926,23 @@ script:
     quickaction: true
     arguments:
       - name: account_id
-        prettyname: Account ID
         description: The AWS account ID.
+        prettyname: Account ID
         required: true
+        prettypredefined:
+          Account ID: ${asset.xdm.asset.realm}
       - name: region
-        prettyname: Region
         description: The AWS region.
+        prettyname: Region
         required: true
-        auto: PREDEFINED
-        predefined:
-          - us-east-1
-          - us-east-2
-          - us-west-1
-          - us-west-2
-          - af-south-1
-          - ap-east-1
-          - ap-south-2
-          - ap-southeast-3
-          - ap-southeast-5
-          - ap-southeast-4
-          - ap-south-1
-          - ap-northeast-3
-          - ap-northeast-2
-          - ap-southeast-1
-          - ap-southeast-2
-          - ap-southeast-7
-          - ap-northeast-1
-          - ca-central-1
-          - ca-west-1
-          - eu-central-1
-          - eu-west-1
-          - eu-west-2
-          - eu-south-1
-          - eu-west-3
-          - eu-south-2
-          - eu-north-1
-          - eu-central-2
-          - il-central-1
-          - mx-central-1
-          - me-south-1
-          - me-central-1
-          - sa-east-1
+        prettypredefined:
+          Region: ${asset.xdm.asset.cloud.region}
       - name: instance_id
         prettyname: EC2 Instance ID
         description: 'The ID of the instance.'
         required: true
+        prettypredefined:
+          EC2 Instance ID: ${asset.xdm.asset.name}
       - name: http_tokens
         description: Whether IMDSv2 is required.
         defaultValue: 'required'
@@ -4930,58 +4788,30 @@ script:
       description: Whether Amazon S3 restricts public bucket policies for this bucket.
       type: boolean
 
-  - name: aws-s3-public-access-block-get-quick-action # TODO: rename: need to be like aws-s3-put-public-access-block
+  - name: aws-s3-public-access-block-get-quick-action
     description: Blocks all public access to the S3 bucket by running the aws s3api put-public-access-block command in your environment. It applies a comprehensive set of rules that prevent public ACLs, policies, and overrides from granting public access. Successful execution requires the s3:PutPublicAccessBlock permission.
     prettyname: Block S3 Public Access
     hidden: true
     quickaction: true
     arguments:
       - name: account_id
-        prettyname: Account ID
         description: The AWS account ID.
+        prettyname: Account ID
         required: true
+        prettypredefined:
+          Account ID: ${asset.xdm.asset.realm}
       - name: region
-        prettyname: Region
         description: The AWS region.
+        prettyname: Region
         required: true
-        auto: PREDEFINED
-        predefined:
-          - us-east-1
-          - us-east-2
-          - us-west-1
-          - us-west-2
-          - af-south-1
-          - ap-east-1
-          - ap-south-2
-          - ap-southeast-3
-          - ap-southeast-5
-          - ap-southeast-4
-          - ap-south-1
-          - ap-northeast-3
-          - ap-northeast-2
-          - ap-southeast-1
-          - ap-southeast-2
-          - ap-southeast-7
-          - ap-northeast-1
-          - ca-central-1
-          - ca-west-1
-          - eu-central-1
-          - eu-west-1
-          - eu-west-2
-          - eu-south-1
-          - eu-west-3
-          - eu-south-2
-          - eu-north-1
-          - eu-central-2
-          - il-central-1
-          - mx-central-1
-          - me-south-1
-          - me-central-1
-          - sa-east-1
+        prettypredefined:
+          Region: ${asset.xdm.asset.cloud.region}
       - name: bucket
         prettyname: Bucket Name
         description: The name of the Amazon S3 bucket to retrieve public access block configuration from.
         required: true
+        prettypredefined:
+          Bucket Name: ${asset.xdm.asset.name}
       - name: publicly_accessible
         description: 'Weather the DB instance is publicly accessible.'
         defaultValue: 'true'
