@@ -1528,7 +1528,11 @@ def purge_ediscovery_data_command(client: MsGraphClient, args):
 
 def create_ediscovery_search_command(client: MsGraphClient, args):
     resp = client.create_ediscovery_search(
-        args.get("case_id"), args.get("display_name"), args.get("description"), args.get("content_query"), args.get("data_source_scopes")
+        args.get("case_id"),
+        args.get("display_name"),
+        args.get("description"),
+        args.get("content_query"),
+        args.get("data_source_scopes"),
     )
 
     return to_ediscovery_search_command_results(resp)
