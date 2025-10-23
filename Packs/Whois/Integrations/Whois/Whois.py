@@ -15,6 +15,7 @@ import dateparser.search
 RATE_LIMIT_RETRY_COUNT_DEFAULT: int = 0
 RATE_LIMIT_WAIT_SECONDS_DEFAULT: int = 120
 RATE_LIMIT_ERRORS_SUPPRESSEDL_DEFAULT: bool = False
+RATE_LIMIT_PATTERN = r"query quota for .+ has been exceeded"
 
 # flake8: noqa
 
@@ -3487,8 +3488,7 @@ def test_command():
             return "ok"
         # Check for rate limit pattern in whois result
         whois_result_str = str(whois_result)
-        rate_limit_pattern = r"query quota for .+ has been exceeded"
-        if re.search(rate_limit_pattern, whois_result_str):
+        if re.search(RATE_LIMIT_PATTERN, whois_result_str):
             raise WhoisRateLimit(
                 "Test completed but encountered rate limiting. Consider using an engine to avoid IP-based rate limits. For more info see: https://xsoar.pan.dev/docs/reference/integrations/whois#rate-limiting-or-ip-blocking-issues",
                 response=whois_result,
