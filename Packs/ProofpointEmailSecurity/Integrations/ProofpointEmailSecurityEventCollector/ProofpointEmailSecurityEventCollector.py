@@ -143,7 +143,7 @@ def websocket_connections(
     fetch_interval: int = FETCH_INTERVAL_IN_SECONDS,
     event_types: list[str] = EVENT_TYPES,
     write_to_integration_context: bool = True,
-    check_heartbeat: bool = False,
+    check_heartbeat: bool = True,
 ):
     """
     Create a connection for every type of event.
@@ -156,6 +156,8 @@ def websocket_connections(
         to_time (str): End time for fetch, leave empty for real-time streaming.
         fetch_interval (int): Time between fetch iterations, used for estimating message receive times for idle heartbeat.
         event_types: (list[str]): The list of event types to collect.
+        write_to_integration_context (bool): Whether to write events to the integration context.
+        check_heartbeat (bool): Whether to check for heartbeat messages.
 
     Yields:
         list[EventConnection]: List containing an eventConnection for every event type
@@ -193,13 +195,16 @@ def websocket_connections(
     except Exception as e:
         if write_to_integration_context:
             set_the_integration_context(
-            "last_run_results", f"{e!s} \n This error happened at {datetime.now().astimezone(tz.tzutc())}"
-        )
+                "last_run_results", f"{e!s} \n This error happened at {datetime.now().astimezone(tz.tzutc())}"
+            )
         raise DemistoException(f"{e!s}\n")
 
 
 def fetch_events(
-    connection: EventConnection, fetch_interval: int, integration_context: dict, should_skip_sleeping: List[bool],
+    connection: EventConnection,
+    fetch_interval: int,
+    integration_context: dict,
+    should_skip_sleeping: List[bool],
     write_to_integration_context: bool = True,
 ) -> list[dict]:
     """
@@ -374,23 +379,35 @@ def long_running_execution_command(host: str, cluster_id: str, api_key: str, fet
 def get_events_command(host: str, cluster_id: str, api_key: str, args: dict[str, str]):
     event_types = argToList(args.get("event_types")) or EVENT_TYPES
 
-    timezone_offset = arg_to_number(args.get("timezone_offset")) or 0
-    event_timezone = timezone(timedelta(hours=timezone_offset))
+    tz_offset = arg_to_number(args.get("timezone_offset")) or 0
+    event_tz = timezone(timedelta(hours=tz_offset))
 
-    since_time = arg_to_datetime(args.get("since_time"))
-    since_time = since_time.replace(tzinfo=event_timezone).strftime("%Y-%m-%dT%H:%M:%S%z") if since_time else None
-
-    to_time = arg_to_datetime(args.get("to_time"))
-    to_time = to_time.replace(tzinfo=event_timezone).strftime("%Y-%m-%dT%H:%M:%S%z") if to_time else None
+    since_time = (
+        arg_to_datetime(args.get("since_time"), required=True).replace(tzinfo=event_tz).strftime("%Y-%m-%dT%H:%M:%S%z")  # type: ignore[union-attr]
+    )
+    to_time = (
+        arg_to_datetime(args.get("to_time"), required=True).replace(tzinfo=event_tz).strftime("%Y-%m-%dT%H:%M:%S%z")  # type: ignore[union-attr]
+    )
 
     time_interval = 1 * 60
 
     all_events = []
     demisto.debug(f"Starting to fetch {event_types=}, {since_time=}, {to_time=}")
     try:
-        with websocket_connections(host, cluster_id, api_key, event_types=event_types, since_time=since_time, to_time=to_time, write_to_integration_context=False) as connections:
+        with websocket_connections(
+            host,
+            cluster_id,
+            api_key,
+            event_types=event_types,
+            since_time=since_time,
+            to_time=to_time,
+            write_to_integration_context=False,
+            check_heartbeat=False,
+        ) as connections:
             for connection in connections:
-                events = fetch_events(connection, time_interval, integration_context={}, should_skip_sleeping=[], write_to_integration_context=False)
+                events = fetch_events(
+                    connection, time_interval, integration_context={}, should_skip_sleeping=[], write_to_integration_context=False
+                )
                 demisto.debug(f"Got {len(events)} {connection.event_type} Events")
             all_events.extend(events)
     except exceptions.ConnectionClosedOK:

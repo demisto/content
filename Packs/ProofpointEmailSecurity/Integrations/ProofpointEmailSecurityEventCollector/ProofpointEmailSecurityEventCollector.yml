@@ -92,6 +92,7 @@ script:
       description: "A comma-separated list of event types to fetch. If not provided, all types will be retrieved."
       required: false
       isArray: true
+      auto: PREDEFINED
       options:
       - message
       - maillog
