@@ -9,18 +9,9 @@ configuration:
     required: true
     section: Connect
     additionalinfo: Base URL of the CAPE Sandbox.
-  # - name: auth_method
-  # display: Authentication Method
-  # type: 15
-  # required: true
-  # defaultvalue: API Token
-  # options:
-  #   - API Token
-  #   - Username and Password
-  # section: Connect
   - name: api_token
     display: API token
-    type: 9
+    type: 4
     required: false
     section: Connect
     hiddenusername: true
@@ -233,6 +224,12 @@ script:
         - contextPath: Cape.Machine
           description: Machine data.
           type: Unknown
+    - name: cape-ping
+      description: ping
+      outputs:
+        - contextPath: Cape.
+          description: Ping data.
+          type: Unknown
     - name: cape-cuckoo-status-get
       description: Returns overall CAPE/Cuckoo status. Human-readable only.
       arguments: []
@@ -242,7 +239,7 @@ script:
   script: ""
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.12.12.5490952
+  dockerimage: demisto/python3:3.12.11.4508456
 fromversion: 6.1.0
 marketplaces:
   - xsoar

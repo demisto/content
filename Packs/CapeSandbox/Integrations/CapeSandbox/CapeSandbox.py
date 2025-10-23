@@ -241,6 +241,13 @@ class ResponseTypes(Enum):
     CONTENT = "content"
 
 
+class AuthParams(Enum):
+    TOKEN_KEY = "token"
+    VALID_UNTIL_KEY = "valid_until"
+    CACHE_KEY = "auth_info"
+    TOKEN_TTL_SECONDS = 60 * 60 * 24 * 1
+
+
 # ---------- API Path Templates ----------
 BASE_PREFIX = ApiPrefix.V2.value
 
@@ -311,15 +318,73 @@ class CapeSandboxClient(BaseClient):  # noqa: F405
         self.username = (username or "").strip() or None
         self.password = (password or "").strip() or None
 
-        if not self.api_token and not (self.username and self.password):
+        demisto.debug(
+            f"Client initialized. Base URL: {base_url}, Verify SSL: {verify}, Proxy: {proxy}"
+        )
+
+        if self.api_token:
+            auth_type = "API Token"
+
+        elif self.username and self.password:
+            auth_type = "Username/Password"
+
+        else:
             raise DemistoException(
                 "Either API token or Username + Password must be provided."
             )
+
+        demisto.debug(
+            f"Client initialization ended successfully. Authentication type: {auth_type}"
+        )
 
     # ---------- Auth & Token ----------
     def _auth_headers(self) -> dict[str, str]:
         token = self.ensure_token()
         return {"Authorization": f"Token {token}"}
+
+    def _get_valid_cached_token(self) -> str | None:
+        """
+        Attempts to retrieve a non-expired token from the integration cache.
+
+        Returns:
+            str | None: The valid token string if found and not expired, otherwise None.
+        """
+        time_now = int(time.time())
+        integration_context = get_integration_context() or {}
+        cached_auth_info = integration_context.get(AuthParams.CACHE_KEY.value)
+
+        if not cached_auth_info or not isinstance(cached_auth_info, dict):
+            demisto.debug("Auth cache is empty or corrupt.")
+            return None
+
+        cached_token = cached_auth_info.get(AuthParams.TOKEN_KEY.value)
+        valid_until_str = cached_auth_info.get(AuthParams.VALID_UNTIL_KEY.value)
+
+        if not cached_token or not valid_until_str:
+            demisto.debug("Cached auth info is missing token or expiry time.")
+            return None
+
+        try:
+            valid_until = int(valid_until_str)
+
+            if time_now < valid_until:
+                time_remaining = valid_until - time_now
+                demisto.debug(
+                    f"Using cached token, valid for {time_remaining} more seconds."
+                )
+                return cached_token
+
+            demisto.debug(
+                f"Cached token expired at {time.ctime(valid_until)}. Renewing."
+            )
+
+            return None
+
+        except ValueError:
+            demisto.debug(
+                "Invalid 'valid_until' value found in cache. Forcing renewal."
+            )
+            return None
 
     def _check_for_api_error(self, response: dict[str, Any], url_suffix: str) -> None:
         """
@@ -337,11 +402,13 @@ class CapeSandboxClient(BaseClient):  # noqa: F405
                 f"CAPE API error for {url_suffix}: {fail_message}. Response: {response}"
             )
 
-            demisto.debug(f"CAPE API call failed: {full_error_message}")
+            demisto.debug(
+                f"CAPE API call failed with explicit error flag: {full_error_message}"
+            )
 
             raise DemistoException(f"CapeSandbox Error: {fail_message}")
 
-    def ensure_token(self) -> str:
+    def ensure_token3(self) -> str:
         """Returns a valid token. If api_token param provided, use it. Otherwise, retrieve and cache via username/password."""
 
         if self.api_token:
@@ -366,6 +433,147 @@ class CapeSandboxClient(BaseClient):  # noqa: F405
 
         return token
 
+    def ensure_token2(self) -> str:
+        """Returns a valid token. If api_token param provided, use it. Otherwise, retrieve and cache via username/password."""
+
+        time_now = int(time.time())
+
+        if self.api_token:
+            return self.api_token
+
+        if not (self.username and self.password):
+            raise DemistoException(
+                "Either API token or Username + Password must be provided."
+            )
+
+        # 2. Check Cache for the stored authentication object.
+        integration_context = get_integration_context() or {}
+        cached_auth_info = integration_context.get(AuthParams.CACHE_KEY.value)
+
+        if cached_auth_info and isinstance(cached_auth_info, dict):
+            cached_token = cached_auth_info.get("token")
+            valid_until_str = cached_auth_info.get("valid_until")
+
+            if cached_token and valid_until_str:
+                try:
+                    valid_until = int(valid_until_str)
+
+                    # 2.1 TTL Check: If the cached token has not expired, use it.
+                    if time_now < valid_until:
+                        demisto.debug(
+                            f"Using cached token, valid for {valid_until - time_now} more seconds."
+                        )
+                        return cached_token
+
+                    # Token has expired, log and proceed to generate a new one.
+                    demisto.debug(
+                        "Cached token has **expired**. Proceeding to generate a new token."
+                    )
+
+                except ValueError:
+                    # Handle corrupted cache data (e.g., valid_until is not an integer)
+                    demisto.debug(
+                        "Invalid 'valid_until' value found in cache. Re-generating token."
+                    )
+            else:
+                demisto.debug(
+                    "Cached authentication object is incomplete. Re-generating token."
+                )
+        else:
+            demisto.debug(
+                "No authentication information found in cache. Generating a new token."
+            )
+
+        # If we reached here, the token is missing, expired, or invalid: Generate new token.
+        data = {"username": self.username, "password": self.password}
+
+        # Request a new token from the API
+        resp = self._http_request(method="POST", url_suffix=API_AUTH, data=data)
+        token = resp.get("token") or resp.get("key") or ""
+
+        if not token:
+            raise DemistoException("Failed to obtain API token from CAPE response.")
+
+        # Cache the newly generated token along with its new expiration time.
+        new_valid_until = time_now + AuthParams.TOKEN_TTL_SECONDS.value
+
+        new_auth_info = {
+            "token": token,
+            "valid_until": str(
+                new_valid_until
+            ),  # Store integers as strings for compatibility
+        }
+
+        # Update the integration context with the new token object
+        integration_context[AuthParams.CACHE_KEY.value] = new_auth_info
+        set_integration_context(integration_context)
+
+        demisto.debug(
+            f"Successfully **regenerated and cached** a new token. It is valid until {time.ctime(new_valid_until)}."
+        )
+
+        return token
+
+    def ensure_token(self) -> str:
+        """
+        Returns a valid token. If api_token is provided, uses it.
+        Otherwise, it checks the cache (TTL), and generates and caches a new token if needed, using username/password.
+        """
+        time_now = int(time.time())
+        demisto.debug("Starting token retrieval process.")
+
+        if self.api_token:
+            demisto.debug("Using API token provided in integration parameters.")
+            return self.api_token
+
+        if not (self.username and self.password):
+            demisto.debug(
+                "No token or username/password provided. Raising configuration error."
+            )
+            raise DemistoException(
+                "Either API token or Username + Password must be provided."
+            )
+
+        cached_token = self._get_valid_cached_token()
+        if cached_token:
+            return cached_token
+
+        demisto.debug(
+            "No valid cached token found. Attempting to generate a new token via API."
+        )
+
+        data = {"username": self.username, "password": self.password}
+
+        resp = self._http_request(method="POST", url_suffix=API_AUTH, data=data)
+        token = resp.get("token") or resp.get("key") or ""
+
+        if not token:
+            demisto.debug(
+                f"Token generation failed. Response keys missing token/key. Response: {resp}"
+            )
+            raise DemistoException("Failed to obtain API token from CAPE response.")
+
+        demisto.debug("Successfully received new API token.")
+
+        new_valid_until = time_now + AuthParams.TOKEN_TTL_SECONDS.value
+
+        new_auth_info = {
+            AuthParams.TOKEN_KEY.value: token,
+            AuthParams.VALID_UNTIL_KEY.value: str(new_valid_until),
+        }
+
+        integration_context = (
+            get_integration_context() or {}
+        )  # Re-fetch context to avoid race condition or stale data
+        integration_context[AuthParams.CACHE_KEY.value] = new_auth_info
+        set_integration_context(integration_context)
+
+        demisto.debug(
+            f"Successfully **regenerated and cached** a new token. It is valid until {time.ctime(new_valid_until)}."
+        )
+
+        return token
+
     def http_request(
         self,
         method: str,
@@ -383,6 +591,10 @@ class CapeSandboxClient(BaseClient):  # noqa: F405
         if headers:
             merged_headers.update(headers)
 
+        demisto.debug(
+            f"Executing API request: {method} {url_suffix} (Headers merged: {AuthParams.TOKEN_KEY.value} present)."
+        )
+
         response = self._http_request(
             method=method,
             headers=merged_headers,
@@ -394,6 +606,10 @@ class CapeSandboxClient(BaseClient):  # noqa: F405
             files=files,
             resp_type=resp_type,
             ok_codes=ok_codes,
+        )
+
+        demisto.debug(
+            f"API request to {url_suffix} completed. Response type: {resp_type}."
         )
 
         if resp_type == ResponseTypes.JSON.value:
@@ -437,9 +653,12 @@ class CapeSandboxClient(BaseClient):  # noqa: F405
     def list_tasks(self, limit: int, offset: int) -> dict[str, Any]:
         """Return list of tasks with pagination."""
         if limit <= 0:
+            demisto.debug(f"Error: list_tasks called with invalid limit: {limit}")
             raise DemistoException("limit must be > 0")
         if offset < 0:
+            demisto.debug(f"Error: list_tasks called with invalid offset: {offset}")
             raise DemistoException("offset must be >= 0")
+
         return self.http_request(
             "GET", url_suffix=TASK_LIST.format(limit=limit, offset=offset)
         )
@@ -459,6 +678,7 @@ class CapeSandboxClient(BaseClient):  # noqa: F405
             return self.http_request(
                 "GET", url_suffix=suffix, resp_type=ResponseTypes.CONTENT.value
             )
+
         return self.http_request("GET", url_suffix=suffix)
 
     def get_task_pcap(
@@ -843,20 +1063,28 @@ def cape_file_view_command(
     md5 = args.get("md5")
     sha256 = args.get("sha256")
 
-    if not any([task_id, md5, sha256]):
+    lookup_id = task_id or md5 or sha256
+    demisto.debug(f"Starting file view command for ID: {lookup_id}.")
+
+    if not lookup_id:
         raise DemistoException("Provide one of: task_id, md5, sha256")
 
     if sum(bool(x) for x in [task_id, md5, sha256]) > 1:
         raise DemistoException("Provide only one of task_id, md5, sha256")
 
     if task_id:
+        demisto.debug(f"Calling files_view_by_task for task ID: {task_id}.")
         resp = client.files_view_by_task(task_id)
 
     elif md5:
+        demisto.debug(f"Calling files_view_by_md5 for MD5: {md5}.")
         resp = client.files_view_by_md5(md5)
 
-    else:
-        resp = client.files_view_by_sha256(sha256)  # type: ignore[arg-type]
+    elif sha256:
+        demisto.debug(f"Calling files_view_by_sha256 for SHA256: {sha256}.")
+        resp = client.files_view_by_sha256(sha256)
+
+    demisto.debug(f"File view retrieved for {lookup_id}. Formatting results.")
 
     data = resp.get("data") or resp
     readable = tableToMarkdown(
@@ -947,10 +1175,13 @@ def cape_task_delete_command(
 ) -> CommandResults:
     """Delete task by id."""
     task_id = arg_to_number(args.get("task_id"))
+    demisto.debug(f"Starting task delete command for Task ID: {task_id}.")
     if not task_id:
         raise DemistoException("Task ID is missing for delete task.")
 
-    resp = client.delete_task(task_id)
+    demisto.debug(f"Sending delete request to API for Task ID: {task_id}.")
+    client.delete_task(task_id)
+    demisto.debug(f"API confirmed deletion of Task ID: {task_id}.")
 
     readable = f"Task id={task_id} was deleted successfully"
 
@@ -1234,8 +1465,12 @@ def cape_machines_list_command(
     machine_name = args.get("machine_name")
     all_results = arg_to_bool_or_none(args.get("all_results"))
     limit = max(arg_to_number(args.get("limit")) or LIST_DEFAULT_LIMIT, 1)
+    demisto.debug(
+        f"Starting machines list command. Target machine: {machine_name or 'All'}"
+    )
 
     if machine_name:
+        demisto.debug(f"Fetching view for specific machine: {machine_name}.")
         resp = client.view_machine(machine_name)
         machine = resp.get("machine") or resp.get("data") or resp
         readable = tableToMarkdown(
@@ -1260,6 +1495,8 @@ def cape_machines_list_command(
             ],
             headerTransform=pascalToSpace,
         )
+        demisto.debug(f"Machine view retrieved for {machine_name}. Returning results.")
+
         return CommandResults(
             readable_output=readable,
             outputs_prefix="Cape.Machine",
@@ -1267,6 +1504,7 @@ def cape_machines_list_command(
             outputs=machine,
         )
 
+    demisto.debug("Fetching list of all available machines.")
     resp = client.list_machines()
     machines = resp.get("machines") or resp.get("data") or resp
 
@@ -1297,6 +1535,10 @@ def cape_machines_list_command(
             "tags",
         ],
         headerTransform=pascalToSpace,
+    )
+
+    demisto.debug(
+        f"Machine list retrieved. Found {len(machines)} total machines. Returning results."
     )
 
     return CommandResults(
@@ -1424,22 +1666,23 @@ def cape_task_screenshot_download_command(
 # Main router
 # =================================
 def main() -> None:
+    demisto.debug("--- CapeSandbox Integration START ---")
+
     params: dict[str, Any] = demisto.params()
     args = demisto.args()
 
-    config = parse_integration_params(params)
-
-    base_url = config["base_url"]
-    verify_certificate = config["verify_certificate"]
-    proxy = config["proxy"]
-    api_token = config["api_token"]
-    username = config["username"]
-    password = config["password"]
-
     command = demisto.command()
-    demisto.debug(f"Command being called is {command}")
+    demisto.debug(f"Received command: {command}")
 
     try:
+        config = parse_integration_params(params)
+
+        base_url = config["base_url"]
+        verify_certificate = config["verify_certificate"]
+        proxy = config["proxy"]
+        api_token = config["api_token"]
+        username = config["username"]
+        password = config["password"]
         client = CapeSandboxClient(
             base_url=base_url,
             verify=verify_certificate,
@@ -1448,6 +1691,8 @@ def main() -> None:
             username=username,
             password=password,
         )
+
+        demisto.debug(f"Starting execution of command: {command}...")
 
         command_map = {
             # TODO for all: using username & password
@@ -1487,12 +1732,17 @@ def main() -> None:
         result = command_map[command]()
         return_results(result)
 
+        demisto.debug(f"Command '{command}' execution finished successfully.")
+
     except Exception as error:
         demisto.error(
             f"Failed to execute {command} command. Error: {str(error)}.\n",
             traceback.format_exc(),
         )
         return_error(f"Failed to execute {command} command. Error: {str(error)}")
+
+    finally:
+        demisto.debug("--- CapeSandbox Integration END ---")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
