@@ -1,3 +1,5 @@
+Note: Support for this Pack will be moved to Partner starting October 15, 2025.
+
 # Infoblox NIOS
 
 <~XSIAM>
