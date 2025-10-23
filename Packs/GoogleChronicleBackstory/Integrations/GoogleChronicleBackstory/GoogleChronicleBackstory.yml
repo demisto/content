@@ -5518,7 +5518,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: "Lists the events for the specified UDM Search query.\nNote: The underlying API has the rate limit of 120 queries per hour."
+    description: "Lists the events for the specified UDM Search query.\nNote: The underlying API has the rate limit of 360 queries per hour."
     execution: false
     name: gcb-udm-search
     outputs:
