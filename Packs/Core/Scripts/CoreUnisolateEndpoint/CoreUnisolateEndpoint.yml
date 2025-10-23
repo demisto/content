@@ -22,8 +22,8 @@ args:
   - 'true'
   - 'false'
 outputs:
-- contextPath: Core.Isolation.endpoint_id
-  description: The endpoint ID.
+- contextPath: Core.UnIsolation.endpoint_id
+  description: The ID of the endpoint that was unisolated.
   type: String
 scripttarget: 0
 subtype: python3
