@@ -9,6 +9,7 @@ from http import HTTPStatus
 from websockets import exceptions
 from websockets.sync.client import connect
 from websockets.sync.connection import Connection
+from datetime import datetime, timezone, timedelta
 
 VENDOR = "proofpoint"
 PRODUCT = "email_security"
@@ -35,6 +36,7 @@ class EventConnection:
         headers: dict,
         fetch_interval: int = FETCH_INTERVAL_IN_SECONDS,
         idle_timeout: int = SERVER_IDLE_TIMEOUT - 20,
+        check_heartbeat: bool = True,
     ):
         demisto.info(f"Starting EventConnection of type {event_type}")
         self.event_type = event_type
@@ -44,8 +46,9 @@ class EventConnection:
         self.idle_timeout = idle_timeout
         self.fetch_interval = fetch_interval
         self.connection = self.connect()
-        self.heartbeat_thread = Thread(target=self.heartbeat, daemon=True)
-        self.heartbeat_thread.start()
+        if check_heartbeat:
+            self.heartbeat_thread = Thread(target=self.heartbeat, daemon=True)
+            self.heartbeat_thread.start()
 
     def connect(self) -> Connection:
         """
@@ -139,6 +142,8 @@ def websocket_connections(
     to_time: str | None = None,
     fetch_interval: int = FETCH_INTERVAL_IN_SECONDS,
     event_types: list[str] = EVENT_TYPES,
+    write_to_integration_context: bool = True,
+    check_heartbeat: bool = False,
 ):
     """
     Create a connection for every type of event.
@@ -174,24 +179,28 @@ def websocket_connections(
                     url=url(type=event_type),
                     headers=extra_headers,
                     fetch_interval=fetch_interval,
+                    check_heartbeat=check_heartbeat,
                 )
                 for event_type in event_types
             ]
 
-            set_the_integration_context(
-                "last_run_results", f"Opened a connection successfully at {datetime.now().astimezone(tz.tzutc())}"
-            )
+            if write_to_integration_context:
+                set_the_integration_context(
+                    "last_run_results", f"Opened a connection successfully at {datetime.now().astimezone(tz.tzutc())}"
+                )
 
             yield connections
     except Exception as e:
-        set_the_integration_context(
+        if write_to_integration_context:
+            set_the_integration_context(
             "last_run_results", f"{e!s} \n This error happened at {datetime.now().astimezone(tz.tzutc())}"
         )
         raise DemistoException(f"{e!s}\n")
 
 
 def fetch_events(
-    connection: EventConnection, fetch_interval: int, integration_context: dict, should_skip_sleeping: List[bool]
+    connection: EventConnection, fetch_interval: int, integration_context: dict, should_skip_sleeping: List[bool],
+    write_to_integration_context: bool = True,
 ) -> list[dict]:
     """
     This function fetches events from the given connection, for the given fetch interval
@@ -239,12 +248,16 @@ def fetch_events(
                 demisto.error("Connection closed, attempting to reconnect...")
                 connection.reconnect()
                 continue
+            except exceptions.ConnectionClosedOK:
+                demisto.error(f"[{connection.event_type}] Connection closed with OK status.")
+                break
             except Exception as e:
                 demisto.error(f"Got general error in fetch_events {e}")
                 events.extend(integration_context.get(connection.event_type, []))
                 integration_context[connection.event_type] = events  # update events in context in case of fail
                 integration_context["last_run_results"] = f"{e!s} \nThe error happened at {datetime.now().astimezone(tz.tzutc())}"
-                set_integration_context(integration_context)
+                if write_to_integration_context:
+                    set_integration_context(integration_context)
                 raise DemistoException(str(e))
     demisto.info(f"in {event_type=}, released the lock and finished recv.")
     num_events = len(events)
@@ -253,11 +266,12 @@ def fetch_events(
         last_event_time = events[-1].get("_time")
     demisto.debug(f"Fetched {num_events} events of type {event_type} with {last_event_time=}")
     demisto.debug("The fetched events ids are: " + ", ".join([str(event_id) for event_id in event_ids]))
-    set_the_integration_context(
-        "last_run_results",
-        f"Got from connection {num_events} events starting\
-                                    at {fetch_start_time!s} until {datetime.now().astimezone(tz.tzutc())}",
-    )
+    if write_to_integration_context:
+        set_the_integration_context(
+            "last_run_results",
+            f"Got from connection {num_events} events starting\
+                                        at {fetch_start_time!s} until {datetime.now().astimezone(tz.tzutc())}",
+        )
     should_skip_sleeping.append(True)
     return events
 
@@ -357,9 +371,38 @@ def long_running_execution_command(host: str, cluster_id: str, api_key: str, fet
             demisto.error(err)
 
 
+def get_events_command(host: str, cluster_id: str, api_key: str, args: dict[str, str]):
+    event_types = argToList(args.get("event_types")) or EVENT_TYPES
+
+    timezone_offset = arg_to_number(args.get("timezone_offset")) or 0
+    event_timezone = timezone(timedelta(hours=timezone_offset))
+
+    since_time = arg_to_datetime(args.get("since_time"))
+    since_time = since_time.replace(tzinfo=event_timezone).strftime("%Y-%m-%dT%H:%M:%S%z") if since_time else None
+
+    to_time = arg_to_datetime(args.get("to_time"))
+    to_time = to_time.replace(tzinfo=event_timezone).strftime("%Y-%m-%dT%H:%M:%S%z") if to_time else None
+
+    time_interval = 1 * 60
+
+    all_events = []
+    demisto.debug(f"Starting to fetch {event_types=}, {since_time=}, {to_time=}")
+    try:
+        with websocket_connections(host, cluster_id, api_key, event_types=event_types, since_time=since_time, to_time=to_time, write_to_integration_context=False) as connections:
+            for connection in connections:
+                events = fetch_events(connection, time_interval, integration_context={}, should_skip_sleeping=[], write_to_integration_context=False)
+                demisto.debug(f"Got {len(events)} {connection.event_type} Events")
+            all_events.extend(events)
+    except exceptions.ConnectionClosedOK:
+        demisto.error("Connection closed with OK status.")
+
+    return all_events, CommandResults(readable_output=tableToMarkdown(f"Events since {since_time} to {to_time}", all_events))
+
+
 def main():  # pragma: no cover
     command = demisto.command()
     params = demisto.params()
+    args = demisto.args()
     host = params.get("host", "")
     cluster_id = params.get("cluster_id", "")
     api_key = params.get("api_key", {}).get("password", "")
@@ -367,11 +410,23 @@ def main():  # pragma: no cover
     event_types = params.get("event_types", EVENT_TYPES)
     try:
         if command == "long-running-execution":
-            return_results(long_running_execution_command(host, cluster_id, api_key, fetch_interval, event_types))
+            if params.get("isFetchEvents", False):
+                demisto.debug("Fetching events is enabled for this instance")
+                return_results(long_running_execution_command(host, cluster_id, api_key, fetch_interval, event_types))
+            else:
+                demisto.debug("Fetching events is disabled for this instance")
+                time.sleep(fetch_interval)
         elif command == "test-module":
             return_results(test_module(host, cluster_id, api_key))
         elif command == "proofpoint-es-get-last-run-results":
             return_results(get_last_run_results_command())
+
+        elif command == "proofpoint-es-get-events":
+            should_push_events = argToBoolean(args.get("should_push_events", False))
+            events, command_results = get_events_command(host, cluster_id, api_key, args)
+            if should_push_events:
+                send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+            return_results(command_results)
         else:
             raise NotImplementedError(f"Command {command} is not implemented.")
     except Exception:
