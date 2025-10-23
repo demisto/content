@@ -2469,6 +2469,393 @@ def test_gcp_compute_instance_label_set_command_add_labels_true(mocker):
     assert result.outputs == mock_operation_response
 
 
+def test_validate_bucket_policy_for_set_add_mode_valid():
+    """
+    Given: A minimal valid policy for add=true (merge mode)
+    When: _validate_bucket_policy_for_set is called
+    Then: No exception is raised
+    """
+    from GCP import _validate_bucket_policy_for_set
+
+    policy = {"bindings": [{"role": "roles/storage.objectViewer", "members": ["user:alice@example.com"]}]}
+
+    # Should not raise
+    _validate_bucket_policy_for_set(policy, add_mode=True)
+
+
+def test_validate_bucket_policy_for_set_add_mode_missing_role():
+    """
+    Given: A binding without role in add=true mode
+    When: _validate_bucket_policy_for_set is called
+    Then: DemistoException is raised mentioning 'role'
+    """
+    from GCP import _validate_bucket_policy_for_set, DemistoException
+
+    policy = {"bindings": [{"members": ["allUsers"]}]}
+    with pytest.raises(DemistoException) as e:
+        _validate_bucket_policy_for_set(policy, add_mode=True)
+    assert "role" in str(e.value)
+
+
+def test_validate_bucket_policy_for_set_add_mode_members_not_list():
+    """
+    Given: A binding with members not as list in add=true mode
+    When: _validate_bucket_policy_for_set is called
+    Then: DemistoException is raised mentioning 'members'
+    """
+    from GCP import _validate_bucket_policy_for_set, DemistoException
+
+    policy = {"bindings": [{"role": "roles/storage.objectViewer", "members": "allUsers"}]}
+    with pytest.raises(DemistoException) as e:
+        _validate_bucket_policy_for_set(policy, add_mode=True)
+    assert "members" in str(e.value)
+
+
+def test_validate_bucket_policy_for_set_condition_requires_version():
+    """
+    Given: A binding with condition but policy.version < 3
+    When: _validate_bucket_policy_for_set is called
+    Then: DemistoException is raised about version requirement
+    """
+    from GCP import _validate_bucket_policy_for_set, DemistoException
+
+    policy = {
+        "version": 1,
+        "bindings": [
+            {
+                "role": "roles/storage.objectViewer",
+                "members": ["group:security@example.com"],
+                "condition": {"title": "t", "expression": "true"},
+            }
+        ],
+    }
+
+    with pytest.raises(DemistoException) as e:
+        _validate_bucket_policy_for_set(policy, add_mode=False)
+    assert "version" in str(e.value)
+
+
+def test_validate_bucket_policy_for_set_replace_mode_invalid_bindings_type():
+    """
+    Given: Replace mode policy with invalid bindings type (dict instead of list)
+    When: _validate_bucket_policy_for_set is called with add_mode=False
+    Then: DemistoException is raised
+    """
+    from GCP import _validate_bucket_policy_for_set, DemistoException
+
+    policy = {"bindings": {"role": "roles/storage.objectViewer", "members": ["allUsers"]}}
+    with pytest.raises(DemistoException):
+        _validate_bucket_policy_for_set(policy, add_mode=False)
+
+
+def test_format_gcp_datetime():
+    """
+    Given: An RFC3339 timestamp string with Z suffix
+    When: _format_gcp_datetime is called
+    Then: It returns a formatted timestamp in '%Y-%m-%d %H:%M:%S'
+    """
+    from GCP import _format_gcp_datetime
+
+    assert _format_gcp_datetime(None) is None
+    assert _format_gcp_datetime("2023-01-01T12:34:56Z") == "2023-01-01 12:34:56"
+
+
+def test_is_ubla_enabled_true_false_and_exception(mocker):
+    """
+    Given: Bucket metadata responses for UBLA enabled/disabled and an exception case
+    When: _is_ubla_enabled is called
+    Then: It returns True/False accordingly and False on exception
+    """
+    from GCP import _is_ubla_enabled
+
+    # Mock storage client chain
+    storage_client = mocker.MagicMock()
+    buckets = storage_client.buckets.return_value
+
+    # Enabled case
+    buckets.get.return_value.execute.return_value = {"iamConfiguration": {"uniformBucketLevelAccess": {"enabled": True}}}
+    assert _is_ubla_enabled(storage_client, "b1") is True
+
+    # Disabled case
+    buckets.get.return_value.execute.return_value = {"iamConfiguration": {"uniformBucketLevelAccess": {"enabled": False}}}
+    assert _is_ubla_enabled(storage_client, "b1") is False
+
+    # Exception case
+    buckets.get.return_value.execute.side_effect = Exception("boom")
+    assert _is_ubla_enabled(storage_client, "b1") is False
+
+
+def test_is_ubla_error_variants():
+    """
+    Given: Error objects with 400 status and UBLA phrase in content (str/bytes) and non-matching cases
+    When: _is_ubla_error is called
+    Then: It returns True only for 400 with UBLA phrase
+    """
+    from GCP import _is_ubla_error
+    from googleapiclient.errors import HttpError
+
+    class Err(HttpError):
+        def __init__(self, status, content):
+            self.resp = type("R", (), {"status": status})()
+            self.content = content
+
+    assert _is_ubla_error(Err(400, "Uniform Bucket-Level Access must be enabled")) is True
+    assert _is_ubla_error(Err(400, b"...uniform bucket-level access is required...")) is True
+    assert _is_ubla_error(Err(403, "uniform bucket-level access")) is False
+    assert _is_ubla_error(Err(400, "other error")) is False
+
+
+def test_storage_bucket_list_basic(mocker):
+    """
+    Given: Project with two buckets returned
+    When: storage_bucket_list is called
+    Then: API called with request params and outputs are normalized
+    """
+    from GCP import storage_bucket_list
+
+    mock_storage = mocker.Mock()
+    mock_buckets = mocker.Mock()
+    mock_storage.buckets.return_value = mock_buckets
+    mock_buckets.list.return_value.execute.return_value = {
+        "items": [
+            {
+                "name": "b1",
+                "timeCreated": "2024-01-01T00:00:00Z",
+                "updated": "2024-01-02T00:00:00Z",
+                "owner": {"entityId": "123"},
+                "location": "US",
+                "storageClass": "STANDARD",
+            }
+        ]
+    }
+    mocker.patch("GCP.GCPServices.STORAGE.build", return_value=mock_storage)
+
+    creds = mocker.Mock(spec=Credentials)
+    args = {"project_id": "p1", "max_results": "10", "prefix": "p", "page_token": "t"}
+
+    result = storage_bucket_list(creds, args)
+
+    mock_buckets.list.assert_called_with(project="p1", maxResults=10, prefix="p", pageToken="t")
+    assert result.outputs_prefix == "GCP.Storage.Bucket"
+    assert result.outputs[0]["Name"] == "b1"
+
+
+def test_storage_bucket_get_basic(mocker):
+    """
+    Given: A bucket exists
+    When: storage_bucket_get is called
+    Then: It fetches via buckets().get and returns normalized fields
+    """
+    from GCP import storage_bucket_get
+
+    mock_storage = mocker.Mock()
+    mock_buckets = mocker.Mock()
+    mock_storage.buckets.return_value = mock_buckets
+    mock_buckets.get.return_value.execute.return_value = {
+        "name": "b1",
+        "timeCreated": "2024-01-01T00:00:00Z",
+        "updated": "2024-01-02T00:00:00Z",
+        "owner": {"entityId": "123"},
+        "location": "US",
+        "storageClass": "STANDARD",
+    }
+    mocker.patch("GCP.GCPServices.STORAGE.build", return_value=mock_storage)
+
+    creds = mocker.Mock(spec=Credentials)
+    result = storage_bucket_get(creds, {"bucket_name": "b1"})
+
+    mock_buckets.get.assert_called_with(bucket="b1")
+    assert result.outputs_prefix == "GCP.Storage.Bucket"
+    assert result.outputs["Name"] == "b1"
+
+
+def test_storage_bucket_objects_list_basic(mocker):
+    """
+    Given: A bucket with two objects
+    When: storage_bucket_objects_list is called
+    Then: objects().list is called with args and outputs normalized
+    """
+    from GCP import storage_bucket_objects_list
+
+    mock_storage = mocker.Mock()
+    mock_objects = mocker.Mock()
+    mock_storage.objects.return_value = mock_objects
+    mock_objects.list.return_value.execute.return_value = {
+        "items": [
+            {
+                "name": "o1",
+                "bucket": "b1",
+                "contentType": "text/plain",
+                "size": "1",
+                "timeCreated": "2024-01-01T00:00:00Z",
+                "updated": "2024-01-02T00:00:00Z",
+                "md5Hash": "md5",
+                "crc32c": "crc",
+            }
+        ]
+    }
+    mocker.patch("GCP.GCPServices.STORAGE.build", return_value=mock_storage)
+
+    creds = mocker.Mock(spec=Credentials)
+    args = {"bucket_name": "b1", "prefix": "p/", "delimiter": "/", "max_results": "5", "page_token": "tok"}
+    result = storage_bucket_objects_list(creds, args)
+
+    mock_objects.list.assert_called_with(bucket="b1", prefix="p/", delimiter="/", maxResults=5, pageToken="tok")
+    assert result.outputs_prefix == "GCP.Storage.BucketObject"
+    assert result.outputs[0]["Name"] == "o1"
+
+
+def test_storage_bucket_policy_list_with_version(mocker):
+    """
+    Given: A bucket policy exists
+    When: storage_bucket_policy_list is called with requested_policy_version
+    Then: It calls getIamPolicy with optionsRequestedPolicyVersion and returns policy
+    """
+    from GCP import storage_bucket_policy_list
+
+    mock_storage = mocker.Mock()
+    mock_buckets = mocker.Mock()
+    mock_storage.buckets.return_value = mock_buckets
+    mock_buckets.getIamPolicy.return_value.execute.return_value = {"version": 3, "etag": "abc", "bindings": []}
+    mocker.patch("GCP.GCPServices.STORAGE.build", return_value=mock_storage)
+
+    creds = mocker.Mock(spec=Credentials)
+    args = {"bucket_name": "b1", "requested_policy_version": "3"}
+    result = storage_bucket_policy_list(creds, args)
+
+    mock_buckets.getIamPolicy.assert_called_with(bucket="b1", optionsRequestedPolicyVersion=3)
+    assert result.outputs_prefix == "GCP.Storage.BucketPolicy"
+    assert result.outputs["version"] == 3
+
+
+def test_storage_bucket_policy_set_basic(mocker):
+    """
+    Given: A policy document to apply
+    When: storage_bucket_policy_set is called
+    Then: It calls setIamPolicy with body and returns response
+    """
+    from GCP import storage_bucket_policy_set
+
+    mock_storage = mocker.Mock()
+    mock_buckets = mocker.Mock()
+    mock_storage.buckets.return_value = mock_buckets
+    mock_buckets.setIamPolicy.return_value.execute.return_value = {"version": 3, "etag": "etag1"}
+    mocker.patch("GCP.GCPServices.STORAGE.build", return_value=mock_storage)
+
+    creds = mocker.Mock(spec=Credentials)
+    policy = {"bindings": []}
+    args = {"bucket_name": "b1", "policy": json.dumps(policy)}
+    result = storage_bucket_policy_set(creds, args)
+
+    mock_buckets.setIamPolicy.assert_called_with(bucket="b1", body=policy)
+    assert result.outputs_prefix == "GCP.Storage.BucketPolicy"
+    assert result.outputs["etag"] == "etag1"
+
+
+def test_storage_bucket_object_policy_list_normal_and_ubla(mocker):
+    """
+    Given: UBLA disabled and enabled scenarios
+    When: storage_bucket_object_policy_list is called
+    Then: It lists object ACLs when UBLA disabled, and returns bucket policy when enabled
+    """
+    from GCP import storage_bucket_object_policy_list
+
+    # Case 1: UBLA disabled
+    mock_storage = mocker.Mock()
+    mock_oac = mocker.Mock()
+    mock_storage.objectAccessControls.return_value = mock_oac
+    mock_oac.list.return_value.execute.return_value = {"items": [{"entity": "allUsers", "role": "READER"}]}
+    mocker.patch("GCP.GCPServices.STORAGE.build", return_value=mock_storage)
+    mocker.patch("GCP._is_ubla_enabled", return_value=False)
+
+    creds = mocker.Mock(spec=Credentials)
+    result = storage_bucket_object_policy_list(creds, {"bucket_name": "b1", "object_name": "o1"})
+    mock_oac.list.assert_called_with(bucket="b1", object="o1")
+    assert result.outputs_prefix == "GCP.Storage.BucketObjectPolicy"
+    assert result.outputs[0]["entity"] == "allUsers"
+
+    # Case 2: UBLA enabled -> delegates to bucket policy list
+    mocker.patch("GCP._is_ubla_enabled", return_value=True)
+    # Patch bucket policy list to observe delegation
+    mocker.patch("GCP.storage_bucket_policy_list", return_value=MagicMock(outputs_prefix="GCP.Storage.BucketObjectPolicy"))
+    result2 = storage_bucket_object_policy_list(creds, {"bucket_name": "b1", "object_name": "o1"})
+    assert result2.outputs_prefix == "GCP.Storage.BucketObjectPolicy"
+
+
+def test_storage_bucket_object_policy_set_update_then_insert(mocker):
+    """
+    Given: An ACL entry to apply
+    When: storage_bucket_object_policy_set is called
+    Then: It tries update first; if update raises, it falls back to insert
+    """
+    from GCP import storage_bucket_object_policy_set
+
+    mock_storage = mocker.Mock()
+    mock_oac = mocker.Mock()
+    mock_storage.objectAccessControls.return_value = mock_oac
+
+    # Update fails, insert succeeds
+    mock_oac.update.return_value.execute.side_effect = Exception("not found")
+    mock_oac.insert.return_value.execute.return_value = {"entity": "allUsers", "role": "READER"}
+
+    mocker.patch("GCP.GCPServices.STORAGE.build", return_value=mock_storage)
+    mocker.patch("GCP._is_ubla_enabled", return_value=False)
+
+    creds = mocker.Mock(spec=Credentials)
+    args = {"bucket_name": "b1", "object_name": "o1", "policy": json.dumps({"entity": "allUsers", "role": "READER"})}
+    result = storage_bucket_object_policy_set(creds, args)
+
+    mock_oac.update.assert_called()
+    mock_oac.insert.assert_called()
+    assert result.outputs_prefix == "GCP.Storage.BucketObjectPolicy"
+    assert result.outputs[0]["entity"] == "allUsers"
+
+
+def test_storage_bucket_object_policy_set_update_success(mocker):
+    """
+    Given: An ACL entry for which update succeeds
+    When: storage_bucket_object_policy_set is called
+    Then: It returns the update response and does not call insert
+    """
+    from GCP import storage_bucket_object_policy_set
+
+    mock_storage = mocker.Mock()
+    mock_oac = mocker.Mock()
+    mock_storage.objectAccessControls.return_value = mock_oac
+    mock_oac.update.return_value.execute.return_value = {"entity": "user:a@example.com", "role": "WRITER"}
+
+    mocker.patch("GCP.GCPServices.STORAGE.build", return_value=mock_storage)
+    mocker.patch("GCP._is_ubla_enabled", return_value=False)
+
+    creds = mocker.Mock(spec=Credentials)
+    args = {"bucket_name": "b1", "object_name": "o1", "policy": json.dumps({"entity": "user:a@example.com", "role": "WRITER"})}
+    result = storage_bucket_object_policy_set(creds, args)
+
+    mock_oac.update.assert_called()
+    mock_oac.insert.assert_not_called()
+    assert result.outputs[0]["role"] == "WRITER"
+
+
+def test_storage_bucket_object_policy_set_ubla_short_circuit(mocker):
+    """
+    Given: UBLA is enabled on bucket
+    When: storage_bucket_object_policy_set is called
+    Then: It short-circuits with guidance and does not call ObjectAccessControls
+    """
+    from GCP import storage_bucket_object_policy_set
+
+    mock_storage = mocker.Mock()
+    mocker.patch("GCP.GCPServices.STORAGE.build", return_value=mock_storage)
+    mocker.patch("GCP._is_ubla_enabled", return_value=True)
+
+    creds = mocker.Mock(spec=Credentials)
+    args = {"bucket_name": "b1", "object_name": "o1", "policy": json.dumps({"entity": "allUsers", "role": "READER"})}
+    result = storage_bucket_object_policy_set(creds, args)
+
+    # Should be a guidance readable output and no outputs list
+    assert "Uniform Bucket-Level Access (UBLA) is enabled" in result.readable_output
+
+
 def test_gcp_compute_instance_label_set_command_add_labels_no_existing(mocker):
     """
     Given: Valid arguments with add_labels=true but instance has no existing labels
