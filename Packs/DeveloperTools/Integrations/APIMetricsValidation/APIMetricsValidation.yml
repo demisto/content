@@ -1,7 +1,7 @@
 commonfields:
   id: APIMetricsValidation
   version: -1
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 name: APIMetricsValidation
