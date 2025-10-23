@@ -1,0 +1,32 @@
+{
+    "name": "IBM Directory Server for IBM (LDAP)",
+    "description": "IBM Directory Server for IBM (LDAP)",
+    "support": "xsoar",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "categories": [
+        "Analytics & SIEM",
+        "IT Services"
+    ],
+    "tags": [
+        "IT"
+    ],
+    "useCases": [],
+    "keywords": [
+        "LDAP"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS",
+        "agentix"
+    ]
+}
