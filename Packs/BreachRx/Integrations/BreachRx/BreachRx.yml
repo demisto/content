@@ -17,7 +17,7 @@ configuration:
   section: Connect
 - display: API Key
   displaypassword: Secret Key
-  additionalinfo: The API credentials to use for connection
+  additionalinfo: The API credentials used to establish the connection.
   name: credentials
   required: true
   type: 9
@@ -32,7 +32,7 @@ configuration:
   type: 8
   required: false
   section: Connect
-description: 'Automate your privacy Incident Response workflow through the BreachRx platform.'
+description: 'Automates your privacy incident response workflow through the BreachRx platform.'
 display: BreachRx
 name: BreachRx
 script:
