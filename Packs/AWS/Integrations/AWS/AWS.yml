@@ -3729,22 +3729,19 @@ script:
       description: The id of the policy.
       type: string
     - contextPath: AWS.S3-Buckets.Policy.Statement.Sid
-      description: Statement identifier.
+      description: Identifier of the policy statement.
       type: string
     - contextPath: AWS.S3-Buckets.Policy.Statement.Effect
-      description: Allow or Deny.
+      description: Specifies whether the statement results in an allow or an explicit deny.
       type: string
     - contextPath: AWS.S3-Buckets.Policy.Statement.Principal
-      description: Principal to whom the statement applies.
-      type: string
+      description: Specify the principal that is allowed or denied access to a resource.
     - contextPath: AWS.S3-Buckets.Policy.Statement.Action
-      description: List of actions the statement applies to.
-      type: Array
+      description: Describes the specific action or actions that will be allowed or denied.
     - contextPath: AWS.S3-Buckets.Policy.Statement.Resource
-      description: List of actions the statement applies to.
-      type: Array
+      description: Defines the object or objects that the statement applies to.
     - contextPath: AWS.S3-Buckets.Policy.Statement.Condition
-      description: Conditions for when the statement applies.
+      description: Specify conditions for when a policy is in effect.
       type: string
 
   - name: aws-lambda-function-configuration-get
@@ -4007,13 +4004,11 @@ script:
       - contextPath: AWS.Lambda.Policy.Statement.Principal
         description: Specify the principal that is allowed or denied access to a resource.
       - contextPath: AWS.Lambda.Policy.Statement.Action
-        description: ''
-        type: String
+        description: Describes the specific action or actions that will be allowed or denied.
       - contextPath: AWS.Lambda.Policy.Statement.Resource
-        description: ''
-        type: String
+        description: Defines the object or objects that the statement applies to.
       - contextPath: AWS.Lambda.Policy.Statement.Condition
-        description: ''
+        description: Specify conditions for when a policy is in effect.
         type: String
       - contextPath: AWS.Lambda.RevisionId
         description: A unique identifier for the current revision of the policy.
@@ -4049,11 +4044,7 @@ script:
       description: JSON input to provide to the Lambda function.
     - name: qualifier
       description: Version or alias to invoke.
-    - description: The maximum retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. If not specified, will use the instances configured default timeout.
-      name: retries
-    - description: The time in seconds till a timeout exception is reached. You can specify just the read timeout (for example 60) or also the connect timeout followed after a comma (for example 60,10). If not specified, will use the instances configured default timeout.
-      name: timeout
-    description: Invokes a Lambda function. Specify just a function name to invoke the latest version of the function. To invoke a published version, use the Qualifier parameter to specify a version or alias. If you use the RequestResponse (synchronous) invocation option, note that the function may be invoked multiple times if a timeout is reached. For functions with a long timeout, your client may be disconnected during synchronous invocation while it waits for a response. Use the "timeout" and "retries" arguments to control this behavior. If you use the Event (asynchronous) invocation option, the function will be invoked at least once in response to an event and the function must be idempotent to handle this.
+    description: Invokes a Lambda function. Specify just a function name to invoke the latest version of the function. To invoke a published version, use the Qualifier parameter to specify a version or alias. If you use the RequestResponse (synchronous) invocation option, note that the function may be invoked multiple times if a timeout is reached. For functions with a long timeout, your client may be disconnected during synchronous invocation while it waits for a response. If you use the Event (asynchronous) invocation option, the function will be invoked at least once in response to an event and the function must be idempotent to handle this.
     execution: true
     outputs:
     - contextPath: AWS.Lambda.InvokedFunction.StatusCode
@@ -4071,7 +4062,9 @@ script:
     - contextPath: AWS.Lambda.InvokedFunction.ExecutedVersion
       description: The version of the function that executed.
       type: String
-
+    - contextPath: AWS.Lambda.InvokedFunction.FunctionName
+      description: The name of the Lambda function.
+      type: string
   - name: aws-lambda-function-url-config-update
     arguments:
     - name: account_id
@@ -4087,6 +4080,10 @@ script:
       description: The alias name or version number.
     - name: auth_type
       description: AWS_IAM or NONE for authentication type.
+      auto: PREDEFINED
+      predefined:
+      - "AWS_IAM"
+      - "NONE"
     - name: cors_allow_credentials
       description: Allow credentials in CORS requests.
       auto: PREDEFINED
@@ -4114,7 +4111,43 @@ script:
       - "RESPONSE_STREAM"
       description: BUFFERED or RESPONSE_STREAM.
     description: Updates the configuration for a Lambda function URL.
-
+    outputs:
+    - contextPath: AWS.Lambda.FunctionURLConfig.FunctionUrl
+      description: The HTTP URL endpoint for your function.
+      type: String
+    - contextPath: AWS.Lambda.FunctionURLConfig.FunctionArn
+      description: The Amazon Resource Name (ARN) of your function.
+      type: String
+    - contextPath: AWS.Lambda.FunctionURLConfig.AuthType
+      description: The type of authentication that your function URL uses.
+      type: String
+    - contextPath: AWS.Lambda.FunctionURLConfig.Cors.AllowCredentials
+      description: Whether to allow cookies or other credentials in requests to your function URL.
+      type: Boolean
+    - contextPath: AWS.Lambda.FunctionURLConfig.Cors.AllowHeaders
+      description: The HTTP headers that origins can include in requests to your function URL.
+      type: String
+    - contextPath: AWS.Lambda.FunctionURLConfig.Cors.AllowMethods
+      description: The HTTP methods that are allowed when calling your function URL.
+      type: String
+    - contextPath: AWS.Lambda.FunctionURLConfig.Cors.AllowOrigins
+      description: The origins that can access your function URL.
+      type: String
+    - contextPath: AWS.Lambda.FunctionURLConfig.Cors.ExposeHeaders
+      description: The HTTP headers in your function response that you want to expose to origins that call your function URL.
+      type: String
+    - contextPath: AWS.Lambda.FunctionURLConfig.Cors.MaxAge
+      description: The maximum amount of time, in seconds, that web browsers can cache results of a preflight request.
+      type: Number
+    - contextPath: AWS.Lambda.FunctionURLConfig.CreationTime
+      description: When the function URL was created.
+      type: String
+    - contextPath: AWS.Lambda.FunctionURLConfig.LastModifiedTime
+      description: When the function URL configuration was last updated.
+      type: String
+    - contextPath: AWS.Lambda.FunctionURLConfig.InvokeMode
+      description: BUFFERED or RESPONSE_STREAM.
+      type: String
   isfetch: false
   runonce: false
   script: '-'

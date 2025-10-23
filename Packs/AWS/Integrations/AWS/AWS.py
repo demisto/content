@@ -2367,29 +2367,211 @@ class Lambda:
 
     @staticmethod
     def get_function_configuration_command(client: BotoClient, args: Dict[str, Any]):
+        """
+        Retrieves the configuration information for a Lambda function.
+
+        Args:
+            client (BotoClient): The boto3 client for Lambda service
+            args (Dict[str, Any]): Command arguments including function name and optional qualifier
+
+        Returns:
+            CommandResults: Results of the operation with function configuration details
+        """
+        # Prepare parameters
+        function_name = args.get("function_name")
+        params = {"FunctionName": function_name}
+        if qualifier := args.get("qualifier"):
+            params["Qualifier"] = qualifier
+
+        # Get function configuration
+        response = client.get_function_configuration(**params)
+
+        # Remove ResponseMetadata for cleaner output
+        if "ResponseMetadata" in response:
+            del response["ResponseMetadata"]
+
+        # Create human readable output
+        human_readable = tableToMarkdown(
+            f"Lambda Function Configuration: {function_name}",
+            response,
+            headers=[
+                "FunctionName",
+                "FunctionArn",
+                "Runtime",
+                "CodeSha256",
+                "State",
+                "Description",
+                "RevisionId",
+                "LastModified",
+            ],
+            headerTransform=pascalToSpace,
+            removeNull=True,
+        )
+
         return CommandResults(
             outputs_prefix="AWS.Lambda.FunctionConfig",
-            outputs_key_field="FunctionName",
+            outputs_key_field="FunctionArn",
+            outputs=response,
+            readable_output=human_readable,
+            raw_response=response,
         )
 
     @staticmethod
     def get_function_url_configuration_command(client: BotoClient, args: Dict[str, Any]):
+        """
+        Returns the configuration for a Lambda function URL
+        """
+        function_name = args.get("function_name")
+        qualifier = args.get("qualifier")
+
+        # Prepare parameters
+        params = {"FunctionName": function_name}
+        if qualifier:
+            params["Qualifier"] = qualifier
+
+        # Get function URL configuration
+        response = client.get_function_url_config(**params)
+
+        # Remove ResponseMetadata for cleaner output
+        if "ResponseMetadata" in response:
+            del response["ResponseMetadata"]
+
+        # Create human readable output
+        human_readable = tableToMarkdown(
+            f"Lambda Function URL Configuration: {function_name}",
+            response,
+            headers=["FunctionUrl", "FunctionArn", "AuthType", "CreationTime", "LastModifiedTime", "InvokeMode"],
+            headerTransform=pascalToSpace,
+        )
+
         return CommandResults(
             outputs_prefix="AWS.Lambda.FunctionURLConfig",
             outputs_key_field="FunctionArn",
+            outputs=response,
+            readable_output=human_readable,
+            raw_response=response,
         )
 
     @staticmethod
     def update_function_url_configuration_command(client: BotoClient, args: Dict[str, Any]):
-        return CommandResults()
+        """
+        Updates the configuration for a Lambda function URL.
+
+        Args:
+            client (BotoClient): The AWS Lambda client used to update the function URL configuration.
+            args (Dict[str, Any]): A dictionary containing the function URL configuration parameters including
+                                   function_name, qualifier, auth_type, CORS settings (allow_credentials,
+                                   allow_headers, allow_methods, allow_origins, expose_headers, max_age),
+                                   and invoke_mode.
+
+        Returns:
+            CommandResults: An object containing a success message and raw response for updating the function URL configuration.
+        """
+        params = {
+            "FunctionName": args.get("function_name"),
+            "Qualifier": args.get("qualifier"),
+            "AuthType": args.get("auth_type"),
+            "Cors": {
+                "AllowCredentials": arg_to_bool_or_none(args.get("cors_allow_credentials", False)),
+                "AllowHeaders": argToList(args.get("cors_allow_headers", [])),
+                "AllowMethods": argToList(args.get("cors_allow_methods", [])),
+                "AllowOrigins": argToList(args.get("cors_allow_origins", [])),
+                "ExposeHeaders": argToList(args.get("cors_expose_headers", [])),
+                "MaxAge": arg_to_number(args.get("cors_max_age")),
+            },
+            "InvokeMode": args.get("max_age"),
+        }
+        fixed_params = remove_empty_elements(params)
+        response = client.update_function_url_config(**fixed_params)
+        # Create human readable output
+        human_readable = tableToMarkdown(
+            f"Updated Lambda Function URL Configuration: {response.get('FunctionArn',args.get('function_name'))}",
+            response,
+            headers=["FunctionUrl", "FunctionArn", "AuthType", "CreationTime", "LastModifiedTime", "InvokeMode"],
+            headerTransform=pascalToSpace,
+        )
+
+        return CommandResults(
+            outputs_prefix="AWS.Lambda.FunctionURLConfig",
+            outputs_key_field="FunctionArn",
+            outputs=response,
+            readable_output=human_readable,
+            raw_response=response,
+        )
 
     @staticmethod
     def get_policy_command(client: BotoClient, args: Dict[str, Any]):
-        return CommandResults(outputs_prefix="AWS.Lambda", outputs_key_field="Sid")
+        """
+        Retrieves the policy for a Lambda function from AWS and parses it into a dictionary.
+
+        Args:
+            args (dict): A dictionary containing the function name and optional qualifier.
+            aws_client: The AWS client(boto3 client) used to retrieve the policy.
+
+        Returns:
+            CommandResults: An object containing the parsed policy as outputs, a readable output in Markdown format,
+                            and relevant metadata.
+        """
+        kwargs = {"FunctionName": args["function_name"]}
+        if qualifier := args.get("qualifier"):
+            kwargs["qualifier"] = qualifier
+
+        response = client.get_policy(**kwargs)
+
+        response["Policy"] = json.loads(response["Policy"])
+        response.pop("ResponseMetadata", None)
+
+        return CommandResults(outputs_prefix="AWS.Lambda", outputs_key_field="RevisionId")
 
     @staticmethod
     def invoke_command(client: BotoClient, args: Dict[str, Any]):
-        return CommandResults()
+        """
+        Invokes a Lambda function with the specified parameters and returns the response.
+
+        Args:
+            client (BotoClient): The AWS Lambda client used to invoke the function.
+            args (Dict[str, Any]): A dictionary containing the function invocation parameters including
+                                   functionName, invocationType, logType, clientContext, payload, and qualifier.
+
+        Returns:
+            CommandResults: An object containing the invocation response data including function name,
+                            region, request payload, log results, response payload, executed version,
+                            and any function errors, formatted as readable output.
+        """
+        payload = args.get("payload")
+        kwargs: dict[str, Any] = {
+            "FunctionName": args.get("function_name"),
+            "InvocationType": args.get("invocation_type"),
+            "LogType": args.get("log_type"),
+            "ClientContext": args.get("client_context"),
+            "Payload": json.dumps(payload)
+            if (not isinstance(payload, str)) or (not payload.startswith("{") and not payload.startswith("["))
+            else payload,
+            "Qualifier": args.get("qualifier"),
+        }
+        fixed_kwargs = remove_empty_elements(kwargs)
+        response = client.invoke(**fixed_kwargs)
+        data = {
+            "FunctionName": args.get("function_name"),
+            "Region": args.get("region"),
+            "RequestPayload": args.get("payload"),
+        }
+        if "LogResult" in response:
+            data.update({"LogResult": base64.b64decode(response["LogResult"]).decode("utf-8")})  # type:ignore
+        if "Payload" in response:
+            data.update({"Payload": response["Payload"].read().decode("utf-8")})  # type:ignore
+        if "ExecutedVersion" in response:
+            data.update({"ExecutedVersion": response["ExecutedVersion"]})  # type:ignore
+        if "FunctionError" in response:
+            data.update({"FunctionError": response["FunctionError"]})
+
+        human_readable = tableToMarkdown("AWS Lambda Invoked Functions", data)
+        return CommandResults(
+            outputs=data,
+            readable_output=human_readable,
+            outputs_prefix="AWS.Lambda.InvokedFunction",
+            outputs_key_field=["FunctionName", "RequestPayload"],
+        )
 
 
 COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResults | None]] = {
@@ -2658,7 +2840,7 @@ def get_service_client(
     return client, session
 
 
-def execute_aws_command(command: str, args: dict, params: dict) -> CommandResults:
+def execute_aws_command(command: str, args: dict, params: dict) -> CommandResults | None:
     """
     Execute an AWS command by retrieving credentials, creating a service client,
     and routing to the appropriate service handler.
