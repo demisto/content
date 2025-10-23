@@ -3,8 +3,8 @@ commonfields:
   id: McAfee DXL
   version: -1
 sectionorder:
-  - Connect
-  - Collect
+- Connect
+- Collect
 configuration:
 - display: Broker CA certificates content (see `brokercerts.crt` in the instructions).
   name: broker_ca_bundle
