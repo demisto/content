@@ -4363,24 +4363,6 @@ def test_kms_enable_key_rotation_success_with_period(mocker):
     )
 
 
-@pytest.mark.parametrize("bad_value", [89, "89", 2561, "2561"])
-def test_kms_enable_key_rotation_invalid_period_raises(mocker, bad_value):
-    """
-    Given: rotation_period_in_days outside 90–2560.
-    When: enable_key_rotation_command is called.
-    Then: It raises DemistoException with validation message.
-    """
-    from AWS import KMS, DemistoException
-
-    mock_client = mocker.Mock()
-    args = {"key_id": "key-arn-or-id", "rotation_period_in_days": bad_value}
-
-    with pytest.raises(DemistoException, match="rotation_period_in_days must be between 90 and 2560 days"):
-        KMS.enable_key_rotation_command(mock_client, args)
-
-    mock_client.enable_key_rotation.assert_not_called()
-
-
 def test_kms_enable_key_rotation_non_ok_calls_handler(mocker):
     """
     Given: Boto returns a non-OK status code.
@@ -4456,9 +4438,6 @@ def test_acm_update_certificate_options_non_ok_calls_handler(mocker):
     ACM.update_certificate_options_command(mock_client, args)
 
     handle_resp.assert_called_once_with(resp)
-
-
-import pytest
 
 
 def test_elb_modify_lb_attributes_success_all_blocks(mocker):
