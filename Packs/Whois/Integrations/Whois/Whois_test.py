@@ -59,21 +59,21 @@ def test_test_command_rate_limit_exception(mocker: MockerFixture):
     # Mock whois result with rate limit message
     mock_whois_result = {
         "raw": ["Error for 'google.co.uk'. the WHOIS query quota for 35.225.156.101 has been exceeded"],
-        "nameservers": []
+        "nameservers": [],
     }
-    
+
     mocker.patch("Whois.get_whois", return_value=mock_whois_result)
     mocker.patch.object(demisto, "debug")
-    
+
     # Test that WhoisRateLimit exception is raised
     with pytest.raises(WhoisRateLimit) as exc_info:
         test_command()
-    
+
     # Verify the exception message contains the expected content
     assert "Test completed but encountered rate limiting" in str(exc_info.value)
     assert "Consider using an engine to avoid IP-based rate limits" in str(exc_info.value)
     assert "https://xsoar.pan.dev/docs/reference/integrations/whois#rate-limiting-or-ip-blocking-issues" in str(exc_info.value)
-    
+
     # Verify the exception has the response data
     assert exc_info.value.response == mock_whois_result
 
