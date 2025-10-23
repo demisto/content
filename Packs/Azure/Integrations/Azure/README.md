@@ -1129,3 +1129,179 @@ Run this command to get the blob service properties of a specific account storag
 | Azure.StorageBlobServiceProperties.properties.lastAccessTimeTrackingPolicy.name | String | Name of the policy. The valid value is AccessTimeTracking. |
 | Azure.StorageBlobServiceProperties.properties.lastAccessTimeTrackingPolicy.trackingGranularityInDays | Number | Specifies the blob object tracking granularity in days, indicating how often the blob should be tracked. |
 | Azure.StorageBlobServiceProperties.properties.lastAccessTimeTrackingPolicy.blobType | String | An array of predefined, supported blob types. The only supported value is BlockBlob. |
+
+### azure-billing-usage-list
+
+***
+Returns actual usage and cost details for a given time period, optionally filtered by service name.
+
+#### Base Command
+
+`azure-billing-usage-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID on which to run the command. It will be sent as a scope parameter - /subscriptions/{subscriptionId}/. | Required |
+| expand_result | Whether to expand the result. Default - false. | Optional |
+| filter | Optional filter for the API. API argument - $filter. | Optional |
+| metric | The metric to retrieve. API values [actualcost, amortizedcost, usage]. Possible values are: Actual Cost, Amortized Cost, Usage. | Optional |
+| max_results | Maximum results to return. Default - 50, Max - 1000. | Optional |
+| next_page_token | Next page token for pagination. Use value from Azure.Billing.UsageNextToken. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.Billing.Usage | unknown | List of usage details from Azure Consumption API. |
+| Azure.Billing.Usage.id | String | Fully qualified resource ID for the usage detail. |
+| Azure.Billing.Usage.name | String | Name of the usage detail resource. |
+| Azure.Billing.Usage.type | String | Resource type \(Microsoft.Consumption/usageDetails\). |
+| Azure.Billing.Usage.kind | String | Kind of usage detail \(legacy, modern\). |
+| Azure.Billing.Usage.properties.billingAccountId | String | Billing account identifier. |
+| Azure.Billing.Usage.properties.billingAccountName | String | Billing account name. |
+| Azure.Billing.Usage.properties.billingPeriodStartDate | Date | Billing period start date. |
+| Azure.Billing.Usage.properties.billingPeriodEndDate | Date | Billing period end date. |
+| Azure.Billing.Usage.properties.billingProfileId | String | Billing profile identifier. |
+| Azure.Billing.Usage.properties.billingProfileName | String | Billing profile name. |
+| Azure.Billing.Usage.properties.accountOwnerId | String | Account owner identifier. |
+| Azure.Billing.Usage.properties.accountName | String | Account name. |
+| Azure.Billing.Usage.properties.subscriptionId | String | Subscription identifier. |
+| Azure.Billing.Usage.properties.subscriptionName | String | Subscription name. |
+| Azure.Billing.Usage.properties.date | Date | Usage date. |
+| Azure.Billing.Usage.properties.product | String | Product name. |
+| Azure.Billing.Usage.properties.partNumber | String | Part number for the product. |
+| Azure.Billing.Usage.properties.meterId | String | Meter identifier. |
+| Azure.Billing.Usage.properties.meterDetails | unknown | Meter details object. |
+| Azure.Billing.Usage.properties.meterDetails.meterName | String | Meter name. |
+| Azure.Billing.Usage.properties.meterDetails.meterCategory | String | Meter category. |
+| Azure.Billing.Usage.properties.meterDetails.meterSubCategory | String | Meter subcategory. |
+| Azure.Billing.Usage.properties.meterDetails.unit | String | Unit of measure. |
+| Azure.Billing.Usage.properties.meterDetails.meterLocation | String | Meter location. |
+| Azure.Billing.Usage.properties.meterDetails.totalIncludedQuantity | Number | Total included quantity. |
+| Azure.Billing.Usage.properties.meterDetails.pretaxStandardRate | Number | Pretax standard rate. |
+| Azure.Billing.Usage.properties.quantity | Number | Usage quantity. |
+| Azure.Billing.Usage.properties.effectivePrice | Number | Effective price for the usage. |
+| Azure.Billing.Usage.properties.cost | Number | Cost amount. |
+| Azure.Billing.Usage.properties.unitPrice | Number | Unit price. |
+| Azure.Billing.Usage.properties.billingCurrency | String | Billing currency. |
+| Azure.Billing.Usage.properties.resourceLocation | String | Resource location. |
+| Azure.Billing.Usage.properties.consumedService | String | Consumed service name. |
+| Azure.Billing.Usage.properties.resourceId | String | Resource identifier. |
+| Azure.Billing.Usage.properties.resourceName | String | Resource name. |
+| Azure.Billing.Usage.properties.serviceInfo1 | String | Service info 1. |
+| Azure.Billing.Usage.properties.serviceInfo2 | String | Service info 2. |
+| Azure.Billing.Usage.properties.additionalInfo | String | Additional information. |
+| Azure.Billing.Usage.properties.invoiceSection | String | Invoice section. |
+| Azure.Billing.Usage.properties.costCenter | String | Cost center. |
+| Azure.Billing.Usage.properties.resourceGroup | String | Resource group name. |
+| Azure.Billing.Usage.properties.reservationId | String | Reservation identifier. |
+| Azure.Billing.Usage.properties.reservationName | String | Reservation name. |
+| Azure.Billing.Usage.properties.productOrderId | String | Product order identifier. |
+| Azure.Billing.Usage.properties.productOrderName | String | Product order name. |
+| Azure.Billing.Usage.properties.offerId | String | Offer identifier. |
+| Azure.Billing.Usage.properties.isAzureCreditEligible | Boolean | Whether usage is Azure credit eligible. |
+| Azure.Billing.Usage.properties.term | String | Term. |
+| Azure.Billing.Usage.properties.publisherName | String | Publisher name. |
+| Azure.Billing.Usage.properties.publisherType | String | Publisher type. |
+| Azure.Billing.Usage.properties.planName | String | Plan name. |
+| Azure.Billing.Usage.properties.chargeType | String | Charge type. |
+| Azure.Billing.Usage.properties.frequency | String | Frequency. |
+| Azure.Billing.Usage.properties.payGPrice | Number | Pay-as-you-go price. |
+| Azure.Billing.Usage.properties.pricingModel | String | Pricing model. |
+| Azure.Billing.UsageNextToken | String | Next page token for pagination. |
+
+### azure-billing-forecast-list
+
+***
+Returns cost forecast for a subscription over a given time range.
+
+#### Base Command
+
+`azure-billing-forecast-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | Azure subscription ID (required). | Required |
+| type | Forecast type (required). Possible values are: Usage, ActualCost, AmortizedCost. | Required |
+| aggregation_function_name | The name of the column to aggregate (required). Possible values are: PreTaxCostUSD, Cost, CostUSD, PreTaxCost. | Required |
+| aggregation_function_type | The name of the aggregation function to use. Default is Sum. | Optional |
+| granularity | The granularity of the forecast. Default is Daily. | Optional |
+| start_date | Start date for the forecast. Default value current time. | Optional |
+| end_date | End date for the forecast. Default value 7 days from current time. | Optional |
+| filter | A URL parameter to filter forecasts by properties/usageDate (Utc time), properties/chargeType or properties/grain. The filter supports 'eq', 'lt', 'gt', 'le', 'ge', and 'and'. It does not currently support 'ne', 'or', or 'not'. | Optional |
+| include_actual_cost | Include actual cost data. | Optional |
+| include_fresh_partial_cost | Include fresh partial cost data. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.Billing.Forecast | unknown | Complete Azure Cost Management API response with forecast data. |
+| Azure.Billing.Forecast.id | String | Fully qualified resource ID for the forecast. |
+| Azure.Billing.Forecast.name | String | Name of the forecast resource. |
+| Azure.Billing.Forecast.type | String | Resource type \(Microsoft.CostManagement/query\). |
+| Azure.Billing.Forecast.location | String | Location of the forecast resource. |
+| Azure.Billing.Forecast.eTag | String | ETag for the forecast resource. |
+| Azure.Billing.Forecast.properties | unknown | Properties object containing forecast data. |
+| Azure.Billing.Forecast.properties.nextLink | String | Next link for pagination. |
+| Azure.Billing.Forecast.properties.forecasts | unknown | Array of forecast data entries. |
+| Azure.Billing.Forecast.properties.forecasts.PreTaxCostUSD | Number | Pre-tax cost in USD. |
+| Azure.Billing.Forecast.properties.forecasts.Cost | Number | Cost amount. |
+| Azure.Billing.Forecast.properties.forecasts.CostUSD | Number | Cost in USD. |
+| Azure.Billing.Forecast.properties.forecasts.PreTaxCost | Number | Pre-tax cost amount. |
+| Azure.Billing.Forecast.properties.forecasts.UsageDate | String | Usage date for the forecast \(YYYY-MM-DD format\). |
+| Azure.Billing.Forecast.properties.forecasts.CostStatus | String | Cost status \(Forecast, Actual\). |
+| Azure.Billing.Forecast.properties.forecasts.Currency | String | Currency code for the forecast. |
+
+### azure-billing-budgets-list
+
+***
+Lists configured budgets at the subscription or resource group scope.
+
+#### Base Command
+
+`azure-billing-budgets-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID on which to run the command. Will be sent as a scope parameter - /subscriptions/{subscriptionId}/. | Required |
+| budget_name | Name of the budget. Optional; if provided, returns a specific budget. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.Billing.Budget | unknown | List of budget details from Azure Consumption API. |
+| Azure.Billing.Budget.id | String | Fully qualified resource ID for the budget. |
+| Azure.Billing.Budget.name | String | Name of the budget resource. |
+| Azure.Billing.Budget.type | String | Resource type \(Microsoft.Consumption/budgets\). |
+| Azure.Billing.Budget.eTag | String | ETag for the budget resource. |
+| Azure.Billing.Budget.properties.category | String | Budget category \(Cost, Usage\). |
+| Azure.Billing.Budget.properties.amount | Number | Budget amount limit. |
+| Azure.Billing.Budget.properties.timeGrain | String | Time grain for the budget \(Monthly, Quarterly, Annually\). |
+| Azure.Billing.Budget.properties.timePeriod | unknown | Time period object for the budget. |
+| Azure.Billing.Budget.properties.timePeriod.startDate | Date | Start date of the budget period. |
+| Azure.Billing.Budget.properties.timePeriod.endDate | Date | End date of the budget period. |
+| Azure.Billing.Budget.properties.currentSpend | unknown | Current spend object. |
+| Azure.Billing.Budget.properties.currentSpend.amount | Number | Current spend amount. |
+| Azure.Billing.Budget.properties.currentSpend.unit | String | Currency unit for current spend. |
+| Azure.Billing.Budget.properties.notifications | unknown | Budget notifications configuration. |
+| Azure.Billing.Budget.properties.filter | unknown | Budget filter configuration. |
+| Azure.Billing.Budget.properties.filter.and | unknown | AND filter conditions. |
+| Azure.Billing.Budget.properties.filter.dimensions | unknown | Dimension filters. |
+| Azure.Billing.Budget.properties.filter.dimensions.name | String | Dimension name \(ResourceGroup, ResourceType, etc.\). |
+| Azure.Billing.Budget.properties.filter.dimensions.operator | String | Filter operator \(In, Equal\). |
+| Azure.Billing.Budget.properties.filter.dimensions.values | unknown | Filter values array. |
+| Azure.Billing.Budget.properties.filter.tags | unknown | Tag filters. |
+| Azure.Billing.Budget.properties.filter.tags.name | String | Tag name. |
+| Azure.Billing.Budget.properties.filter.tags.operator | String | Tag filter operator. |
+| Azure.Billing.Budget.properties.filter.tags.values | unknown | Tag filter values. |
+| Azure.Billing.Budget.properties.forecastSpend | unknown | Forecasted spend object. |
+| Azure.Billing.Budget.properties.forecastSpend.amount | Number | Forecasted spend amount. |
+| Azure.Billing.Budget.properties.forecastSpend.unit | String | Currency unit for forecasted spend. |
