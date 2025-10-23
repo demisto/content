@@ -1877,7 +1877,7 @@ class TestFetchFunctionsTimestampFormatting:
 
         mocker.patch("CrowdStrikeFalcon.get_incidents_ids", return_value={"resources": ["123"]})
 
-        # Mock API response with microsecond precision timestamp that needs conversion
+        # Mock API response with a microsecond-precision timestamp that needs conversion
         mocker.patch(
             "CrowdStrikeFalcon.get_incidents_entities",
             return_value={"resources": [{"start": "2024-02-13T09:24:00.841616Z", "incident_id": "123"}]},
