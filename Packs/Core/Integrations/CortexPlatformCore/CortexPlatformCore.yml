@@ -1122,7 +1122,6 @@ script:
       outputs:
       - contextPath: Core.CoreAsset
         description: The asset details.
-        isArray: true
   runonce: false
   script: "-"
   subtype: python3

@@ -320,11 +320,12 @@ def get_asset_group_ids_from_names(client: Client, group_names: list[str]) -> li
 
     groups = client.search_asset_groups(filter).get("reply", {}).get("data", [])
 
-    group_ids = [group.get("XDM.ASSET_GROUP.ID") for group in groups]
-    group_ids = [id for id in group_ids if id]
+    group_ids = [group.get("XDM.ASSET_GROUP.ID") for group in groups if group.get("XDM.ASSET_GROUP.ID")]
 
     if len(group_ids) != len(group_names):
-        raise DemistoException(f"Failed to fetch asset group IDs for {group_names}. Ensure the asset group names are valid.")
+        found_groups = [group.get("XDM.ASSET_GROUP.NAME") for group in groups if group.get("XDM.ASSET_GROUP.ID")]
+        missing_groups = [name for name in group_names if name not in found_groups]
+        raise DemistoException(f"Failed to fetch asset group IDs for {missing_groups}. Ensure the asset group names are valid.")
 
     return group_ids
 
