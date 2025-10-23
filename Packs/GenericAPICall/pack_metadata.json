@@ -22,5 +22,10 @@
     ],
     "githubUser": [
         "TerminalFIN"
+    ],
+    "supportedModules": [
+        "agentix",
+        "xsiam",
+        "cloud_posture"
     ]
 }

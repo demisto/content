@@ -43,5 +43,9 @@
     "defaultRows": null,
     "sla": 0,
     "threshold": 72,
-    "breachScript": ""
+    "breachScript": "",
+    "supportedModules": [
+        "xsiam",
+        "agentix"
+    ]
 }

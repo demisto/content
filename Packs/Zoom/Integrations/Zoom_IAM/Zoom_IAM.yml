@@ -190,3 +190,6 @@ script:
 tests:
 - No tests
 fromversion: 6.0.0
+supportedModules:
+- xsiam
+- agentix

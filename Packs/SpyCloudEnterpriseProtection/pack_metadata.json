@@ -1,6 +1,6 @@
 {
     "name": "SpyCloud Enterprise Protection",
-    "description": "Create breach and malware incidents in Cortex® XSOAR™ using the SpyCloud Enterprise Protection API. Provide enrichment for domains, IPs, emails, usernames, and passwords.",
+    "description": "Create breach and malware incidents in Cortex\u00ae XSOAR\u2122 using the SpyCloud Enterprise Protection API. Provide enrichment for domains, IPs, emails, usernames, and passwords.",
     "support": "partner",
     "currentVersion": "1.0.6",
     "author": "SpyCloud",
@@ -30,6 +30,7 @@
         "X3",
         "X5",
         "ENT_PLUS",
-        "agentix"
+        "agentix",
+        "xsiam"
     ]
 }

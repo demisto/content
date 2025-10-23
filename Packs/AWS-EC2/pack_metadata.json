@@ -26,6 +26,8 @@
         "ENT_PLUS",
         "asm",
         "exposure_management",
-        "agentix"
+        "agentix",
+        "cloud_runtime_security",
+        "xsiam"
     ]
 }

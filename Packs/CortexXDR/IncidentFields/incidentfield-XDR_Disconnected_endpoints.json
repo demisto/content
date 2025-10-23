@@ -70,15 +70,9 @@
     ],
     "content": true,
     "defaultRows": [
-        {
-
-        },
-        {
-
-        },
-        {
-
-        }
+        {},
+        {},
+        {}
     ],
     "editForm": true,
     "group": 0,
@@ -98,5 +92,9 @@
     "unsearchable": false,
     "useAsKpi": false,
     "version": -1,
-    "fromVersion": "5.0.0"
+    "fromVersion": "5.0.0",
+    "supportedModules": [
+        "xsiam",
+        "agentix"
+    ]
 }

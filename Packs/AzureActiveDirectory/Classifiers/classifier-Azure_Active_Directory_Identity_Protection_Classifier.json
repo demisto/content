@@ -18,7 +18,7 @@
         "investigationsThreatIntelligenceSigninLinked": "Azure Active Directory Identity and Access",
         "maliciousIPAddressValidCredentialsBlockedIP": "Azure Active Directory Identity and Access",
         "unknownFutureValue": "Azure Active Directory Identity and Access"
-            },
+    },
     "name": "Azure Active Directory Identity and Access Classifier",
     "propagationLabels": [
         "all"
@@ -29,5 +29,9 @@
     },
     "type": "classification",
     "version": -1,
-    "fromVersion": "6.0.0"
+    "fromVersion": "6.0.0",
+    "supportedModules": [
+        "xsiam",
+        "agentix"
+    ]
 }

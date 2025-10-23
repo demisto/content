@@ -38,5 +38,9 @@
     "breachScript": "",
     "isExtractingSpecificIndicatorTypes": false,
     "extractIndicatorTypesIDs": [],
-    "fromVersion": "5.0.0"
+    "fromVersion": "5.0.0",
+    "supportedModules": [
+        "xsiam",
+        "agentix"
+    ]
 }

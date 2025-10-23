@@ -17,7 +17,7 @@ inputs:
 - description: |
     The serial number of a specific firewall to target (Required when connected to Panorama) [Optional].
   key: targetDevice
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
 - description: |-
@@ -28,7 +28,7 @@ inputs:
     wildfire
     gp
   key: itemsToUpdate
-  playbookInputQuery: null
+  playbookInputQuery:
   required: true
   value:
     simple: all
@@ -1362,5 +1362,6 @@ view: |-
 fromversion: 6.10.0
 supportedModules:
 - agentix
+- xsiam
 marketplaces:
 - platform

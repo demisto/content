@@ -4,3 +4,6 @@ name: Oracle OAM Parsing Rule
 rules: ''
 samples: ''
 tags: []
+supportedModules:
+- xsiam
+- agentix
