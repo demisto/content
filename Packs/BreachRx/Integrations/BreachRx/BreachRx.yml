@@ -17,7 +17,7 @@ configuration:
   section: Connect
 - display: API Key
   displaypassword: Secret Key
-  additionalinfo: The API credentials to use for connection
+  additionalinfo: The API credentials used to establish the connection.
   name: credentials
   required: true
   type: 9
