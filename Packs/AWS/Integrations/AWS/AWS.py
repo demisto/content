@@ -25,6 +25,15 @@ def parse_resource_ids(resource_id: str | None) -> list[str]:
     return resource_ids
 
 
+def convert_datetimes_to_iso_safe(data):
+    """
+    Converts datetime objects in a data structure to ISO 8601 strings
+    by serializing to and then deserializing from JSON using a custom encoder.
+    """
+    json_string = json.dumps(data, cls=ISOEncoder)
+    return json.loads(json_string)
+
+
 class AWSErrorHandler:
     """
     Centralized error handling for AWS boto3 client errors.
@@ -1047,6 +1056,7 @@ class RDS:
                 db_cluster = response.get("DBCluster", {})
                 readable_output = f"Successfully modified DB cluster {args.get('db-cluster-identifier')}"
                 if db_cluster:
+                    db_cluster = convert_datetimes_to_iso_safe(db_cluster)
                     readable_output += "\n\nUpdated DB Cluster details:"
                     readable_output += tableToMarkdown("", db_cluster)
 
@@ -1145,16 +1155,18 @@ class RDS:
                 "BackupRetentionPeriod": arg_to_bool_or_none(args.get("backup_retention_period")),
             }
             remove_nulls_from_dictionary(kwargs)
-            demisto.debug(f"modify_db_instance {kwargs=}")
+            demisto.info(f"modify_db_instance {kwargs=}")
             response = client.modify_db_instance(**kwargs)
 
             if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK:
                 db_instance = response.get("DBInstance", {})
-                readable_output = f"Successfully modified DB instance {args.get('db-instance-identifier')}"
-
+                readable_output = (
+                    f"Successfully modified DB instance {args.get('db_instance_identifier')}"
+                    f"\n\nUpdated DB Instance details:\n\n"
+                )
                 if db_instance:
-                    readable_output += "\n\nUpdated DB Instance details:"
-                    readable_output += tableToMarkdown("", db_instance)
+                    db_instance = convert_datetimes_to_iso_safe(db_instance)
+                    readable_output += tableToMarkdown("", t=db_instance, removeNull=True)
 
                 return CommandResults(
                     readable_output=readable_output,

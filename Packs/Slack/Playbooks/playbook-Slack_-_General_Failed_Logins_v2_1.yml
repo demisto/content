@@ -1,10 +1,7 @@
 id: Slack - General Failed Logins v2.1
 version: -1
 name: Slack - General Failed Logins v2.1
-description: Investigates a failed login event. The playbook interacts with the user
-  via the Slack integration, checks whether the logins were a result of the user's
-  attempts or an attack, raises the severity, and expires the user's password according
-  to the user's replies.
+description: Investigates a failed login event. The playbook interacts with the user via the Slack integration, checks whether the logins were a result of the user's attempts or an attack, raises the severity, and expires the user's password according to the user's replies.
 starttaskid: "0"
 tasks:
   "0":
@@ -41,8 +38,7 @@ tasks:
       id: eb7426d1-f210-4afd-8444-742ccdff9429
       version: -1
       name: Ask user to confirm failed login attempts
-      description: Sends a message to the user on Slack, asking them to confirm the
-        failed login attempts.
+      description: Sends a message to the user on Slack, asking them to confirm the failed login attempts.
       clonedfrom: 7a39f05d-23c9-412d-8e36-3dd1ba0dd2f2
       type: condition
       iscommand: false
@@ -78,8 +74,7 @@ tasks:
           root: inputs.UsernameOrEmail
       subject:
       body:
-        simple: There were several failed login attempts with your user ID. Please
-          confirm that you attempted these logins.
+        simple: There were several failed login attempts with your user ID. Please confirm that you attempted these logins.
       methods:
       - SlackV2
       format: ""
@@ -417,8 +412,7 @@ tasks:
       id: 76e305e6-94cb-43ed-87c5-0b68dbc946e5
       version: -1
       name: Should we reset the password?
-      description: Determines whether to reset the password, according to the user's
-        reply.
+      description: Determines whether to reset the password, according to the user's reply.
       type: condition
       iscommand: false
       brand: ""
@@ -466,8 +460,7 @@ tasks:
       id: f631ded5-6337-4bb8-8680-1b906db2d70d
       version: -1
       name: Expire Password
-      description: Expires the password of the user who failed to login in Active
-        Directory.
+      description: Expires the password of the user who failed to login in Active Directory.
       script: '|||ad-expire-password'
       clonedfrom: b061d5be-194d-4413-804b-ea47a7f05317
       type: regular
@@ -501,8 +494,7 @@ tasks:
       id: 547bc58c-9bbd-4ed9-87b0-e2efa438d319
       version: -1
       name: Notify User on Slack
-      description: Sends a direct message to the user on Slack, telling them that
-        their password was reset.
+      description: Sends a direct message to the user on Slack, telling them that their password was reset.
       script: '|||send-notification'
       clonedfrom: 5e3d77e5-2172-4f74-87b6-c54e0f70fa62
       type: regular
@@ -557,8 +549,7 @@ tasks:
       assetid: {}
       closeNotes: {}
       closeReason:
-        simple: The user ${inputs.UsernameOrEmail} approved that the failed logins
-          were attempted by him.
+        simple: The user ${inputs.UsernameOrEmail} approved that the failed logins were attempted by him.
       code42alerttype: {}
       emailclassification: {}
       id: {}
@@ -763,3 +754,4 @@ supportedModules:
 - X5
 - ENT_PLUS
 - agentix
+- xsiam

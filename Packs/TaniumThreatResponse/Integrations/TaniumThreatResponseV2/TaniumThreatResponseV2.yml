@@ -2,7 +2,7 @@ category: Endpoint
 commonfields:
   id: Tanium Threat Response v2
   version: -1
-sectionOrder:
+sectionorder:
   - Connect
   - Collect
 configuration:

@@ -158,6 +158,6 @@ script:
   subtype: python3
 tests:
 - FeedZoom_Test
-sectionOrder:
+sectionorder:
 - Connect
 - Collect

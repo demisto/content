@@ -2,7 +2,7 @@
     "name": "Filters And Transformers",
     "description": "Frequently used filters and transformers pack.",
     "support": "xsoar",
-    "currentVersion": "1.4.0",
+    "currentVersion": "1.4.1",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -30,6 +30,11 @@
         "ENT_PLUS",
         "asm",
         "exposure_management",
-        "agentix"
+        "agentix",
+        "cloud",
+        "cloud_runtime_security",
+        "cloud_posture",
+        "xsiam",
+        "edr"
     ]
 }

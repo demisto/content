@@ -1087,7 +1087,7 @@ Get internet exposure asset details according to the asset ID.
 ### asm-list-remediation-rule
 
 ***
-Returns list of remediation path rules.
+Returns the list of remediation path rules. This command applies only to Expander v2.
 
 #### Base Command
 

@@ -159,6 +159,29 @@ def test_parse_and_map_yara_content(mocker):
     assert list_parsed_rules == util_load_json("test_data/list-parsed-rules-res.json")
 
 
+def test_parse_and_map_yara_content_invalid_rule(mocker):
+    """
+    Given:
+     - An invalid YARA rule file as input.
+    When:
+     - Parsing and mapping the YARA content using the parse_and_map_yara_content function.
+    Then:
+     - Ensure that an empty list is returned and an error is logged.
+    """
+    from FeedGitHub import parse_and_map_yara_content
+
+    demisto_error_mock = mocker.patch.object(demisto, "error")
+
+    yara_rule_file = {"invalid-yara-rule.yar": "invalid yara rule"}
+
+    parsed_rules = parse_and_map_yara_content(yara_rule_file)
+
+    assert parsed_rules == []
+    assert demisto_error_mock.call_args[0][0] == (
+        "File: 'invalid-yara-rule.yar' cannot be processed. Error Message: Unknown text invalid for token of type ID on line 1"
+    )
+
+
 @freeze_time("2024-05-12T15:30:49.330015")
 def test_extract_text_indicators():
     """
@@ -189,8 +212,9 @@ def test_get_stix_indicators():
     """
     from FeedGitHub import get_stix_indicators
 
-    stix_indicators_input = util_load_json("test_data/taxii_test.json")
-    res_indicators = get_stix_indicators(stix_indicators_input)
+    with open("test_data/taxii_test.json", encoding="utf-8") as f:
+        file_name_contents = [{"taxii_test.json": f.read()}]
+        res_indicators = get_stix_indicators(file_name_contents)
     assert res_indicators == util_load_json("test_data/taxii_test_res.json")
 
 
@@ -452,17 +476,18 @@ def test_filtering_stix_files():
     """
     from FeedGitHub import filtering_stix_files
 
-    content_files = [
-        [{"type": "indicator", "id": "indicator--12345678-1234-5678-1234-567812345678"}],  # STIX format
-        [{"bundle": {"type": "bundle", "id": "bundle--12345678-1234-5678-1234-567812345678"}}],  # STIX format
-        [{"type": "non-stix", "id": "non-stix--12345678-1234-5678-1234-567812345678"}],  # Non-STIX format
+    file_names = ["fileA.json", "fileB.json", "fileC.json"]
+    file_contents = [
+        '{"type": "indicator", "id": "indicator--12345678-1234-5678-1234-567812345678"}',  # STIX format
+        '{"bundle": {"type": "bundle", "id": "bundle--12345678-1234-5678-1234-567812345678"}}',  # STIX format
+        '{"type": "non-stix", "id": "non-stix--12345678-1234-5678-1234-567812345678"}',  # Non-STIX format
     ]
     expected_result = [
         {"type": "indicator", "id": "indicator--12345678-1234-5678-1234-567812345678"},
         {"bundle": {"type": "bundle", "id": "bundle--12345678-1234-5678-1234-567812345678"}},
         {"type": "non-stix", "id": "non-stix--12345678-1234-5678-1234-567812345678"},
     ]
-    assert filtering_stix_files(content_files) == expected_result
+    assert filtering_stix_files(file_names=file_names, file_contents=file_contents) == expected_result
 
 
 def test_fetch_indicators_command_with_tlp_color_red(mocker):

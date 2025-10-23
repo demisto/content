@@ -36,3 +36,5 @@ Fetch events from AWS Security Hub.
 | --- | --- | --- |
 | should_push_events | If true, the command will create events, otherwise it will only display them. Possible values are: true, false. Default is false. | Required |
 | limit | Maximum results to return. | Optional |
+| start_time | Start time for filtering events (e.g., 2023-01-01T00:00:00Z, '3 days ago', 'yesterday'). | Optional |
+| end_time | End time for filtering events (e.g., 2023-01-01T23:59:59Z, '1 hour ago', 'now'). | Optional |

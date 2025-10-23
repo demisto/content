@@ -1,0 +1,63 @@
+args:
+- description: The message content to send.
+  name: message
+  required: true
+- auto: PREDEFINED
+  description: |
+    Integration brand to send the message to. Valid options: Microsoft Teams, Slack, Mattermost, Zoom.
+  name: brand
+  required: true
+  predefined:
+  - Microsoft Teams
+  - Slack
+  - Mattermost
+  - Zoom
+- description: The user to send the message to. Can be a username, id or email.
+  name: to
+  required: false
+- description: The channel to send the message to.
+  name: channel
+  required: false
+- name: channel_id
+  description: |
+    (Supported only for Slack and Zoom)
+    The ID of the channel to send the message to.
+  type: string
+  required: false
+- name: team
+  description: |
+    (Supported only for Microsoft Teams)
+    The team in which the specified channel exists.
+    Leave blank to use the default team configured in the integration parameters.
+  type: string
+  required: false
+comment: |
+  Sends a notification message to a user, group, or channel. Supports sending messages to Slack, Microsoft Teams, Mattermost or Zoom.
+commonfields:
+  id: SendNotificationAgentix
+  version: -1
+name: SendNotificationAgentix
+enabled: true
+outputs:
+- contextPath: MicrosoftTeams.Message.ID
+  description: ID of the message sent.
+  type: String
+- contextPath: Slack.Thread.ID
+  description: The Slack thread ID.
+  type: String
+script: ''
+scripttarget: 0
+subtype: python3
+isInternal: true
+tags:
+- Utility
+type: python
+dockerimage: demisto/python3:3.12.11.4417419
+dependson:
+  must:
+  - send-notification
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
+marketplaces:
+- platform

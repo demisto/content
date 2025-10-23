@@ -5,7 +5,7 @@ name: AnythingLLM
 display: AnythingLLM
 category: Utilities
 description: "Retrieval Augmented Generation (RAG) with LLM and Vector DB that can be local for full data privacy or cloud-based for greater functionality. Prompts and responses can be scanned for security issues using Prisma Airs.\n\nAPIs are documented at:  <Anything LLM URL> /api/docs \n\nProduct documentation:   https://docs.useanything.com/"
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 configuration:

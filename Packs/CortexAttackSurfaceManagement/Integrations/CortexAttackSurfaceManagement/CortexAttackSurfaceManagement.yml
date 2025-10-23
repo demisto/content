@@ -3,7 +3,7 @@ commonfields:
   id: Cortex Attack Surface Management
   version: -1
 sectionorder:
-  - Connect
+- Connect
 configuration:
 - additionalinfo: The web UI with `api-` appended to front (e.g., https://api-xsiam.paloaltonetworks.com). For more information please see https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-REST-API/Get-Started-with-Cortex-XDR-APIs.
   display: Server URL
@@ -369,7 +369,7 @@ script:
       predefined:
       - asc
       - desc
-    description: Returns list of remediation path rules.
+    description: Returns the list of remediation path rules.  This command applies only to Expander v2.
     name: asm-list-remediation-rule
     outputs:
     - contextPath: ASM.RemediationRule.rule_id

@@ -1,7 +1,7 @@
 commonfields:
   id: Awake Security
   version: -1
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 name: Awake Security

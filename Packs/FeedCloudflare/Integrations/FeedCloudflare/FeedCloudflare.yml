@@ -151,6 +151,6 @@ script:
 fromversion: 5.5.0
 tests:
 - No tests (auto formatted)
-sectionOrder:
+sectionorder:
 - Connect
 - Collect

@@ -2,7 +2,7 @@
     "name": "HelloWorld",
     "description": "This is the Hello World integration for getting started.",
     "support": "community",
-    "currentVersion": "3.0.22",
+    "currentVersion": "3.0.23",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -37,6 +37,7 @@
         "X3",
         "X5",
         "ENT_PLUS",
-        "agentix"
+        "agentix",
+        "xsiam"
     ]
 }

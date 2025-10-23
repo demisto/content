@@ -2,7 +2,7 @@ category: Analytics & SIEM
 commonfields:
   id: ServiceNow Event Collector
   version: -1
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 configuration:
@@ -138,30 +138,30 @@ script:
   - name: service-now-get-case-logs
     description: Returns cases extracted from ServiceNow. This command is used for developing/debugging and is to be used with caution, as it can create events, leading to event duplication and exceeding the API request limitation.
     arguments:
-      - auto: PREDEFINED
-        defaultValue: "False"
-        description: Set this argument to True in order to create events, otherwise the command will only display them.
-        name: should_push_events
-        predefined:
-          - "True"
-          - "False"
-        required: true
-      - description: Maximum case events to fetch. Default is 1000.
-        name: limit
-      - name: from_date
-        description: 'The date and time of the earliest event. The time format is "{yyyy}-{mm}-{dd} {hh}:{mm}:{ss}". Example: "2021-05-18 13:45:14" indicates May 18, 2021, 1:45PM.'
-        required: false
-        isArray: false
-        defaultValue: ""
-      - name: offset
-        description: Starting record index from which to begin retrieving records.
-        required: false
-        isArray: false
-        defaultValue: ""
+    - auto: PREDEFINED
+      defaultValue: "False"
+      description: Set this argument to True in order to create events, otherwise the command will only display them.
+      name: should_push_events
+      predefined:
+      - "True"
+      - "False"
+      required: true
+    - description: Maximum case events to fetch. Default is 1000.
+      name: limit
+    - name: from_date
+      description: 'The date and time of the earliest event. The time format is "{yyyy}-{mm}-{dd} {hh}:{mm}:{ss}". Example: "2021-05-18 13:45:14" indicates May 18, 2021, 1:45PM.'
+      required: false
+      isArray: false
+      defaultValue: ""
+    - name: offset
+      description: Starting record index from which to begin retrieving records.
+      required: false
+      isArray: false
+      defaultValue: ""
   - name: service-now-oauth-login
     description: Generate a refresh token using your existing credentials. Use this command if you encounter access_denied or other errors related to your access token when using OAuth 2.0.
     outputs: []
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/auth-utils:1.0.0.5427065
   isfetchevents: true
   runonce: false
   script: ''
@@ -171,11 +171,8 @@ fromversion: 8.4.0
 marketplaces:
 - marketplacev2
 - platform
-supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
-- agentix
 tests:
 - No tests
+supportedModules:
+- xsiam
+- agentix

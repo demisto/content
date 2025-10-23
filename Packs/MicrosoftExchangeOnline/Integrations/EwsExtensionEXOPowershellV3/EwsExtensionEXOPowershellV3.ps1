@@ -54,22 +54,32 @@ function ParseMessageTraceToEntryContext([PSObject]$raw_response) {
     if ($raw_response) {
         $entry_context = @{
             $script:MESSAGE_TRACE_ENTRY_CONTEXT = $raw_response | ForEach-Object {
-                @{
+                $entry = @{
                     "MessageId"        = $_.MessageId
                     "MessageTraceId"   = $_.MessageTraceId
-                    "Organization"     = $_.Organization
                     "Received"         = $_.Received
                     "RecipientAddress" = $_.RecipientAddress
                     "SenderAddress"    = $_.SenderAddress
                     "Size"             = $_.Size
-                    "StartDate"        = $_.StartDate
-                    "EndDate"          = $_.EndDate
                     "Status"           = $_.Status
                     "Subject"          = $_.Subject
                     "ToIP"             = $_.ToIP
                     "FromIP"           = $_.FromIP
-                    "Index"            = $_.Index
                 }
+
+                if ($_.EndDate -ne $null) {
+                    $entry["EndDate"] = $_.EndDate
+                }
+                if ($_.StartDate -ne $null) {
+                    $entry["StartDate"] = $_.StartDate
+                }
+                if ($_.Organization -ne $null) {
+                    $entry["Organization"] = $_.Organization
+                }
+                if ($_.Index -ne $null) {
+                    $entry["Index"] = $_.Index
+                }
+                return $entry
             }
         }
     }
@@ -223,7 +233,7 @@ class ExchangeOnlinePowershellV3Client
             "Organization" = $this.organization
             "Certificate" = $this.certificate
         }
-        Connect-ExchangeOnline @cmd_params -ShowBanner:$false -CommandName New-TenantAllowBlockListItems,Get-TenantAllowBlockListItems,Remove-TenantAllowBlockListItems,Get-RemoteDomain,Get-MailboxAuditBypassAssociation,Get-User,Get-FederatedOrganizationIdentifier,Get-FederationTrust,Get-MessageTrace,Set-MailboxJunkEmailConfiguration,Get-Mailbox,Get-MailboxJunkEmailConfiguration,Get-InboxRule,Remove-InboxRule,Export-QuarantineMessage,Get-QuarantineMessage,Release-QuarantineMessage,Disable-InboxRule,Enable-InboxRule,Get-TransportRule,Remove-TransportRule,Disable-TransportRule,Enable-TransportRule,Set-Mailbox -WarningAction:SilentlyContinue | Out-Null
+        Connect-ExchangeOnline @cmd_params -ShowBanner:$false -CommandName New-TenantAllowBlockListItems,Get-TenantAllowBlockListItems,Remove-TenantAllowBlockListItems,Get-RemoteDomain,Get-MailboxAuditBypassAssociation,Get-User,Get-FederatedOrganizationIdentifier,Get-FederationTrust,Get-MessageTrace,Get-MessageTraceV2,Set-MailboxJunkEmailConfiguration,Get-Mailbox,Get-MailboxJunkEmailConfiguration,Get-InboxRule,Remove-InboxRule,Export-QuarantineMessage,Get-QuarantineMessage,Release-QuarantineMessage,Disable-InboxRule,Enable-InboxRule,Get-TransportRule,Remove-TransportRule,Disable-TransportRule,Enable-TransportRule,Set-Mailbox -WarningAction:SilentlyContinue | Out-Null
     }
     DisconnectSession()
     {
@@ -1105,6 +1115,145 @@ class ExchangeOnlinePowershellV3Client
 
             .LINK
             https://docs.microsoft.com/en-us/powershell/module/exchange/get-messagetrace?view=exchange-ps
+        #>
+    }
+
+    [PSObject]GetMessageTraceList([string[]]$sender_address, [string[]]$recipient_address, [string]$from_ip, [string]$to_ip, [string[]]$message_id,
+        [string]$message_trace_id, [string]$start_date, [string]$end_date, [string[]]$status, [string]$subject, [string]$subject_filter_type,
+        [string]$starting_recipient_address, [int32]$limit) {
+        $response = ""
+        try {
+            # Create Exchange Online session
+            $this.CreateSession()
+            $cmd_params = @{}
+            # Import and Execute a command
+            if ($sender_address) {
+                $cmd_params.SenderAddress = $sender_address
+            }
+            if ($recipient_address) {
+                $cmd_params.RecipientAddress = $recipient_address
+            }
+            if ($status) {
+                $cmd_params.Status = $status
+            }
+            if ($start_date) {
+                $cmd_params.StartDate = $start_date
+                if ($end_date) {
+                    $cmd_params.EndDate = $end_date
+                }
+                else {
+                    $cmd_params.EndDate = Get-Date -UFormat "%D %I:%M %p"
+                }
+            }
+            if ($from_ip) {
+                $cmd_params.FromIP = $from_ip
+            }
+            if ($to_ip) {
+                $cmd_params.ToIP = $to_ip
+            }
+            if ($message_id) {
+                $cmd_params.MessageId = $message_id
+            }
+            if ($message_trace_id) {
+                $cmd_params.MessageTraceId = $message_trace_id
+            }
+            if ($subject) {
+                $cmd_params.Subject = $subject
+            }
+            if ($subject_filter_type) {
+                $cmd_params.SubjectFilterType = $subject_filter_type
+            }
+            if ($starting_recipient_address) {
+                $cmd_params.StartingRecipientAddress = $starting_recipient_address
+            }
+            if ($limit) {
+                $cmd_params.ResultSize = $limit
+            }
+
+            $response = Get-MessageTraceV2 @cmd_params
+        }
+        finally {
+            # Disconnect Exchange Online session
+            $this.DisconnectSession()
+        }
+        return $response
+        <#
+            .DESCRIPTION
+            Search message data from the last 90 days.
+
+            .PARAMETER sender_address
+            The sender_address parameter filters the results by the sender's email address.
+
+            .PARAMETER recipient_address
+            The recipient_address parameter filters the results by the recipient's email address. You can specify multiple values separated by commas.
+
+            .PARAMETER from_ip
+            The from_ip parameter filters the results by the source IP address.
+            For incoming messages, the value of from_ip is the public IP address of the SMTP email server that sent the message.
+            For outgoing messages from Exchange Online, the value is blank.
+
+            .PARAMETER to_ip
+            The to_ip parameter filters the results by the destination IP address.
+            For outgoing messages, the value of to_ip is the public IP address in the resolved MX record for the destination domain.
+            For incoming messages to Exchange Online, the value is blank.
+
+            .PARAMETER message_id
+            The message_id parameter filters the results by the Message-ID header field of the message.
+            This value is also known as the Client ID. The format of the Message-ID depends on the messaging server that sent the message.
+            The value should be unique for each message. However, not all messaging servers create values for the Message-ID in the same way.
+            Besure to include the full Message ID string (which may include angle brackets) and enclose the value in quotation marks (for example,"d9683b4c-127b-413a-ae2e-fa7dfb32c69d@DM3NAM06BG401.Eop-nam06.prod.protection.outlook.com").
+
+            .PARAMETER message_trace_id
+            The message_trace_id parameter can be used with the recipient address to uniquely identify a message trace and obtain more details.
+            A message trace ID is generated for every message that's processed by the system.
+
+            .PARAMETER start_date
+            The start_date parameter specifies the start date of the date range.
+            Use the short date format defined in the computer's Regional Options settings. For example, if the computer is configured to use the short date format mm/dd/yyyy, enter 09/01/2018 to specify September 1, 2018.
+            You can enter the date only, or you can enter the date and time of day.
+            If you enter the date and time of day, enclose the value in quotation marks ("), for example, "09/01/2018 5:00 PM".
+            Valid input is from 10 days ago up to the current time. The default is 48 hours ago.
+
+            .PARAMETER end_date
+            The end_date parameter specifies the end date of the date range.
+            Use the short date format in the computer's Regional Options settings.
+            For example, if the computer is configured to use the short date format mm/dd/yyyy, enter 09/01/2018 to specify September 1, 2018.
+            You can enter the date only, or you can enter the date and time of day.
+            If you enter the date and time of day, enclose the value in quotation marks ("), for example, "09/01/2018 5:00 PM".
+            Valid input is from start_date up to the current time. The default is the current time.
+
+            .PARAMETER status
+            * GettingStatus: The message is pending a status update.
+            * Failed: The message delivery was attempted but failed, or the message was filtered as spam, malware, or by transport rules.
+            * Pending: Message delivery is in progress or was deferred and is being retried
+            * Delivered: The message was successfully delivered to its destination.
+            * Expanded: No message was delivered because the message was sent to a distribution group; the group's membership was expanded instead.
+            * Quarantined: The message was quarantined.
+            * FilteredAsSpam: The message was marked as spam.
+
+            .PARAMETER subject
+            Filters results by the subject of the message. If the value contains spaces, enclose it in quotation marks (")
+
+            .PARAMETER subject_filter_type
+            The subject_filter_type parameter specifies how the value of the subject parameter is evaluated. Valid values are:
+            * Contains
+            * EndsWith
+            * StartsWith
+            It is recommend to use StartsWith or EndsWith instead of Contains whenever possible.
+
+            .PARAMETER starting_recipient_address
+            The starting_recipient_address parameter is used with the end_date parameter to query subsequent data while avoiding duplicates.
+            For subsequent queries, use the Recipient address and Received Time from the last record of the previous results as the values for starting_recipient_address and end_date, respectively.
+
+            .PARAMETER limit
+            The limit parameter specifies the maximum number of results to return.
+            Valid values are 1 to 5000. The default is 1000.
+
+            .OUTPUTS
+            [PSObject] – Returns the raw response.
+
+            .LINK
+            https://docs.microsoft.com/en-us/powershell/module/exchange/get-messagetracev2?view=exchange-ps
         #>
     }
 
@@ -2226,6 +2375,28 @@ function GetMessageTraceCommand([ExchangeOnlinePowershellV3Client]$client, [hash
     return $human_readable, $entry_context, $raw_response
 }
 
+function GetMessageTraceListCommand([ExchangeOnlinePowershellV3Client]$client, [hashtable]$kwargs) {
+    # Parse arguments
+    $sender_address = ArgToList $kwargs.sender_address
+    $recipient_address = ArgToList $kwargs.recipient_address
+    $message_id = ArgToList $kwargs.message_id
+    $status = ArgToList $kwargs.status
+
+    $raw_response = $client.GetMessageTraceList($sender_address, $recipient_address, $kwargs.from_ip, $kwargs.to_ip, $message_id,
+        $kwargs.message_trace_id, $kwargs.start_date, $kwargs.end_date, $status, $kwargs.subject, $kwargs.subject_filter_type,
+        $kwargs.starting_recipient_address, $kwargs.limit)
+
+    $entry_context = ParseMessageTraceToEntryContext $raw_response
+    if ($entry_context.($script:MESSAGE_TRACE_ENTRY_CONTEXT)) {
+        $human_readable = TableToMarkdown $entry_context.($script:MESSAGE_TRACE_ENTRY_CONTEXT)  "$script:INTEGRATION_NAME - Messages trace"
+    }
+    else {
+        $human_readable = "**No messages trace found**"
+    }
+
+    return $human_readable, $entry_context, $raw_response
+}
+
 function GetFederationTrustCommand([ExchangeOnlinePowershellV3Client]$client, [hashtable]$kwargs) {
     [CmdletBinding()]
     # parse arguments
@@ -2566,6 +2737,9 @@ function Main
             }
             "$script:COMMAND_PREFIX-message-trace-get" {
                 ($human_readable, $entry_context, $raw_response) = GetMessageTraceCommand $exo_client $command_arguments
+            }
+            "$script:COMMAND_PREFIX-message-trace-list" {
+                ($human_readable, $entry_context, $raw_response) = GetMessageTraceListCommand $exo_client $command_arguments
             }
             "$script:COMMAND_PREFIX-federation-trust-get" {
                 ($human_readable, $entry_context, $raw_response) = GetFederationTrustCommand $exo_client $command_arguments

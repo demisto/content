@@ -2,7 +2,7 @@ category: Data Enrichment & Threat Intelligence
 commonfields:
   id: MicrosoftPolicyAndComplianceAuditLog
   version: -1
-sectionOrder:
+sectionorder:
 - Connect
 configuration:
 - displaypassword: Certificate Password

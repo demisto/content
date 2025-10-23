@@ -4,7 +4,7 @@ commonfields:
 name: CiscoESA
 display: Cisco ESA
 category: Network Security
-sectionOrder:
+sectionorder:
   - Connect
   - Collect
 description: The Cisco Email Security Appliance is an email security gateway product. It is designed to detect and block a wide variety of email-born threats, such as malware, spam and phishing attempts.

@@ -11,9 +11,7 @@ from CommonServerPython import *  # noqa: F401
 
 urllib3.disable_warnings()
 
-import jwt
-from datetime import datetime, timedelta, UTC
-import uuid
+from datetime import datetime
 
 DEFAULT_FETCH_TIME = "10 minutes"
 MAX_RETRY = 9
@@ -687,73 +685,11 @@ class Client(BaseClient):
                 verify=oauth_params.get("verify", False),
                 proxy=oauth_params.get("proxy", False),
                 headers=oauth_params.get("headers", ""),
+                jwt_params=jwt_params,
             )
-            if jwt_params:
-                self.jwt_params = jwt_params
-                self.snow_client.set_jwt(self.create_jwt())
+
         else:
             self._auth = (self._username, self._password)
-
-    def check_private_key(self, private_key) -> str:
-        """_summary_
-
-        Args:
-            private_key (Dict): The user Private key, inside of a dictionary
-            since the private key type is 9.
-        Raises:
-            ValueError: : If the private key format (PEM) is incorrect, a ValueError will be raised.
-        Returns:
-            str: key without whitespaces and invalid characters
-        """
-        # Define the start and end markers
-        start_marker = "-----BEGIN PRIVATE KEY-----"
-        end_marker = "-----END PRIVATE KEY-----"
-        if isinstance(private_key, dict):
-            private_key = private_key.get("password")
-
-        if not private_key.startswith(start_marker) or not private_key.endswith(end_marker):
-            raise ValueError("Invalid private key format")
-        # Remove the markers and replace whitespaces with '\n'
-        key_content = (
-            private_key.replace(start_marker, "").replace(end_marker, "").replace(" ", "\n").replace("\n\n", "\n").strip()
-        )
-        # Reattach the markers
-        processed_key = f"{start_marker}\n{key_content}\n{end_marker}"
-        return processed_key
-
-    def create_jwt(self):
-        """
-        This function generate the JWT from the use credential
-
-        Returns:
-            JWT token
-        """
-        # Private key (PEM format)
-        private_key = self.check_private_key(self.jwt_params["private_key"])
-
-        # Header
-        header = {
-            "alg": "RS256",  # Signing algorithm
-            "typ": "JWT",  # Token type
-            "kid": self.jwt_params.get("kid"),  # From ServiceNow (see Jwt Verifier Maps )
-        }
-        self.exp_time = datetime.now(UTC) + timedelta(hours=1)  # Expiry time 1 hour
-        # Payload
-        payload = {
-            "sub": self.jwt_params.get("sub"),  # Subject (e.g., user ID)
-            "aud": self.snow_client.client_id,  # serviceNow client_id
-            "iss": self.snow_client.client_id,  # can be serviceNow client_id
-            "iat": datetime.now(UTC),  # Issued at
-            "exp": self.exp_time,
-            "jti": str(uuid.uuid4()),  # Unique JWT ID
-        }
-        try:
-            # Generate the JWT
-            jwt_token = jwt.encode(payload, private_key, algorithm="RS256", headers=header)
-        except Exception:
-            # Generate again if failed
-            jwt_token = jwt.encode(payload, private_key, algorithm="RS256", headers=header)
-        return jwt_token
 
     def generic_request(
         self,
@@ -3834,13 +3770,12 @@ def main():
     use_oauth = params.get("use_oauth", False)
     use_jwt = params.get("use_jwt", False)
     oauth_params = {}
-
     # use jwt only with OAuth
     if use_jwt and use_oauth:
         raise ValueError("Please choose only one authentication method (OAuth or JWT)")
     elif use_jwt:
         use_oauth = True
-    jwt_params = {}
+    jwt_params: dict = {}
     if use_oauth:  # if the `Use OAuth` checkbox was checked, client id & secret should be in the credentials fields
         username = ""
         password = ""
@@ -3858,11 +3793,13 @@ def main():
         }
         if use_jwt:
             if not params.get("private_key") or not params.get("kid") or not params.get("sub"):
-                raise Exception("When using JWT, fill private key, kid and sub fields")
+                raise Exception("When using JWT, fill private key, kid and sub fields.")
             jwt_params = {
-                "private_key": params.get("private_key"),
+                "private_key": params.get("private_key", {}).get("password"),
                 "kid": params.get("kid"),
                 "sub": params.get("sub"),
+                "iss": params.get("iss", client_id),
+                "aud": client_id,
             }
 
     else:  # use basic authentication

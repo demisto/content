@@ -704,15 +704,13 @@ script:
     - description: A comma-separated list of recipient email addresses by which to filter the results.
       isArray: true
       name: recipient_address
-    - description: The source IP address by which to filter the results. For incoming messages, the value of from_ip is the public IP address of the SMTP email server that sent the message. For outgoing messages from Exchange Online, the value is blank.
-      isArray: true
+    - description: The source IP address used to filter results. For incoming messages, from_ip is the public IP of the SMTP server that sent the message. For outgoing messages from Exchange Online, the value is blank.
       name: from_ip
-    - description: The destination IP address by which to filter the results. For outgoing messages, the value of to_ip is the public IP address in the resolved MX record for the destination domain. For incoming messages to Exchange Online, the value is blank.
-      isArray: true
+    - description: The destination IP address used to filter results. For outgoing messages, the to_ip value is the public IP address in the resolved MX record for the destination domain. For incoming messages to Exchange Online, this value is blank.
       name: to_ip
     - description: The Message-ID header field of the message by which to filter the results. This value is also known as the Client ID. The format of the Message-ID depends on the messaging server that sent the message. The value should be unique for each message. However, not all messaging servers create values for the Message-ID in the same way. Be sure to include the full Message ID string (which may include angle brackets) and enclose the value in quotation marks (for example,"d9683b4c-127b-413a-ae2e-fa7dfb32c69d@DM3NAM06BG401.Eop-nam06.prod.protection.outlook.com").
       name: message_id
-    - description: The message trace ID to be used with the recipient address to uniquely identify a message trace and obtain more details. A message trace ID is generated for every message that''s processed by the system.
+    - description: The message trace ID to be used with the recipient address to uniquely identify a message trace and obtain more details. A message trace ID is generated for every message that's processed by the system.
       name: message_trace_id
     - defaultValue: '1'
       description: The page number of the results you want to view. Can be an integer between 1 and 1000.
@@ -735,12 +733,13 @@ script:
       - Expanded
       - Quarantined
       - FilteredAsSpam
-    description: 'Searches message data for the last 10 days. If you run this command without any arguments, only data from the last 48 hours is returned.
+    description: '(Deprecated) Searches message data for the last 10 days. If you run this command without any arguments, only data from the last 48 hours is returned.
 
       If you enter a start date that is older than 10 days, you will receive an error and the command will return no results.
 
       This command returns a maximum of 1,000,000 results, and will timeout on very large queries. If your query returns too many results, consider splitting it up using shorter start_date and end_date intervals.'
     name: ews-message-trace-get
+    deprecated: true
     outputs:
     - contextPath: EWS.MessageTrace.FromIP
       description: The public IP address of the SMTP email server that sent the message.
@@ -784,6 +783,83 @@ script:
     - contextPath: EWS.MessageTrace.Subject
       description: Message subject.
       type: String
+  - arguments:
+      - description: A comma-separated list of sender email addresses used to filter results.
+        isArray: true
+        name: sender_address
+      - description: A comma-separated list of recipient email addresses used to filter results.
+        isArray: true
+        name: recipient_address
+      - description: The source IP address used to filter results. For incoming messages, from_ip is the public IP of the SMTP server that sent the message. For outgoing messages from Exchange Online, the value is blank.
+        name: from_ip
+      - description: The destination IP address used to filter results. For outgoing messages, the to_ip value is the public IP address in the resolved MX record for the destination domain. For incoming messages to Exchange Online, this value is blank.
+        name: to_ip
+      - description: The Message-ID header field used to filter results, also known as the Client ID, should be unique for each message. The format depends on the sending server, and not all servers generate it the same way. Include the full Message-ID string (may include angle brackets) and enclose it in quotes, e.g., "d9683b4c-127b-413a-ae2e-fa7dfb32c69d@DM3NAM06BG401.Eop-nam06.prod.protection.outlook.com".
+        isArray: true
+        name: message_id
+      - description: The message trace ID to be used with the recipient address to uniquely identify a message trace and obtain more details. A message trace ID is generated for every message that's processed by the system.
+        name: message_trace_id
+      - description: "The start date of the date range. Use the short date format defined in the Regional Options settings on the computer where you run the command. For example, if the format is mm/dd/yyyy, enter 09/01/2018 to specify September 1, 2018. You can enter the date only, or the date and time. If entering both date and time, enclose the value in quotation marks (\") — for example, \"09/01/2018 5:00 PM. Valid input is from 10 days ago until now. The default is 48 hours ago."
+        name: start_date
+      - description: "The end date of the date range. Use the short date format defined in the Regional Options settings on the computer where you run the command. For example, enter 09/01/2018 to specify September 1, 2018. You can enter the date only, or the date and time (enclose the value in quotation marks, e.g., \"09/01/2018 5:00 PM\"). Valid input is from the start_date until now. The default is now."
+        name: end_date
+      - auto: PREDEFINED
+        description: "The status of the message. Can be one of the following:\n  * GettingStatus: The message is pending a status update.\n  * Failed: The message delivery was attempted but failed, or the message was filtered as spam, malware, or by transport rules.\n  * Pending: Message delivery is in progress or was deferred and is being retried.\n  * Delivered: The message was successfully delivered to its destination.\n  * Expanded: No message was delivered because the message was sent to a distribution group; the group's membership was expanded instead.\n  * Quarantined: The message was quarantined.\n  * FilteredAsSpam: The message was marked as spam.\n"
+        isArray: true
+        name: status
+        predefined:
+          - GettingStatus
+          - Failed
+          - Pending
+          - Delivered
+          - Expanded
+          - Quarantined
+          - FilteredAsSpam
+      - description: Filters results by the subject of the message. If the value contains spaces, enclose it in quotation marks (").
+        name: subject
+      - description: "The subject_filter_type parameter specifies how the value of the subject parameter is evaluated. Valid values are:\n  * Contains\n  * EndsWith\n  * StartsWith\n It is recommend to use StartsWith or EndsWith instead of Contains whenever possible."
+        name: subject_filter_type
+      - description: The starting_recipient_address parameter is used with the end_date parameter to query subsequent data while avoiding duplicates. For subsequent queries, use the Recipient address and Received Time from the last record of the previous results as the values for starting_recipient_address and end_date, respectively.
+        name: starting_recipient_address
+      - description: The limit parameter specifies the maximum number of results to return. A valid value is from 1 to 5000. The default value is 1000.
+        name: limit
+    description: 'Searches message data from the last 90 days. If you run this command without any arguments, only data from the last 48 hours is returned.
+
+        If you enter a start date that is older than 90 days, you will receive an error and the command will return no results.
+
+        This command returns a maximum of 1,000,000 results, and will timeout on very large queries. If your query returns too many results, consider splitting it up using shorter start_date and end_date intervals.'
+    name: ews-message-trace-list
+    outputs:
+      - contextPath: EWS.MessageTrace.FromIP
+        description: The public IP address of the SMTP email server that sent the message.
+        type: String
+      - contextPath: EWS.MessageTrace.ToIP
+        description: The public IP address in the resolved MX record for the destination domain. For incoming messages to Exchange Online, the value is blank.
+        type: String
+      - contextPath: EWS.MessageTrace.MessageId
+        description: Message-ID header field of the message.
+        type: String
+      - contextPath: EWS.MessageTrace.MessageTraceId
+        description: Message trace ID of the message.
+        type: String
+      - contextPath: EWS.MessageTrace.Received
+        description: Message receive time.
+        type: Date
+      - contextPath: EWS.MessageTrace.RecipientAddress
+        description: Message recipient address.
+        type: String
+      - contextPath: EWS.MessageTrace.SenderAddress
+        description: Message sender address.
+        type: String
+      - contextPath: EWS.MessageTrace.Size
+        description: Message size in bytes.
+        type: Number
+      - contextPath: EWS.MessageTrace.Status
+        description: Message status.
+        type: String
+      - contextPath: EWS.MessageTrace.Subject
+        description: Message subject.
+        type: String
   - arguments:
     - description: The domain controller identified by its fully qualified domain name (FQDN). For example, dc01.contoso.com. This argument is available only in on-premises Exchange.
       name: domain_controller

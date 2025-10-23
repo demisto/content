@@ -3,8 +3,8 @@ commonfields:
   id: Cortex Core - IOC
   version: -1
 sectionorder:
-  - Connect
-  - Collect
+- Connect
+- Collect
 configuration:
 - display: Server URL (e.g. https://example.net)
   name: url
@@ -111,3 +111,9 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- xsiam
+- agentix
+- cloud
+- cloud_posture
+- cloud_runtime_security
+- edr

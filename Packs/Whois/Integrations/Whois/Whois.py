@@ -3790,21 +3790,21 @@ def main():  # pragma: no cover
         raise Exception("Please provide a valid value for the Source Reliability parameter.")
 
     old_version = argToBoolean(params.get("old-version", "true"))
-    if old_version == False and command != "ip":
-        demisto.debug("Run by new context data layout")
-        if command == "domain" or command == "whois":
-            return_results(whois_and_domain_command(command, reliability))
-        if command == "test-module":
-            return_results(new_test_command())
-    else:
-        try:
-            results: List[CommandResults] = []
-            if command == "ip":
-                results = ip_command(reliability=reliability, should_error=should_error)
+    try:
+        results: List[CommandResults] = []
+        if command == "ip":
+            results = ip_command(reliability=reliability, should_error=should_error)
 
+        else:
+            org_socket = socket.socket
+            setup_proxy()
+            if not old_version:
+                demisto.debug("Run by new context data layout")
+                if command == "test-module":
+                    results = new_test_command()
+                elif command == "domain" or command == "whois":
+                    results = whois_and_domain_command(command, reliability)
             else:
-                org_socket = socket.socket
-                setup_proxy()
                 if command == "test-module":
                     results = test_command()
 
@@ -3817,16 +3817,16 @@ def main():  # pragma: no cover
                 else:
                     raise NotImplementedError()
 
-            demisto.debug(f"Returning results for command {demisto.command()}")
-            return_results(results)
-        except Exception as e:
-            msg = f"Exception thrown calling command '{demisto.command()}' {e.__class__.__name__}: {e}"
-            demisto.error(msg)
-            return_error(message=msg, error=e)
-        finally:
-            if command != "ip":
-                socks.set_default_proxy()  # clear proxy settings
-                socket.socket = org_socket  # type: ignore
+        demisto.debug(f"Returning results for command {demisto.command()}")
+        return_results(results)
+    except Exception as e:
+        msg = f"Exception thrown calling command '{demisto.command()}' {e.__class__.__name__}: {e}"
+        demisto.error(msg)
+        return_error(message=msg, error=e)
+    finally:
+        if command != "ip":
+            socks.set_default_proxy()  # clear proxy settings
+            socket.socket = org_socket  # type: ignore
 
 
 # python2 uses __builtin__ python3 uses builtins

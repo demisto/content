@@ -2,7 +2,7 @@ category: Vulnerability Management
 commonfields:
   id: HackerOne
   version: -1
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 configuration:

@@ -2093,6 +2093,9 @@ Machine.StopAndQuarantine
 | machine_id | The ID of the machine. When providing multiple values, each value is checked for the same hash.                                           | Required |
 | file_hash | The file SHA1 hash to stop and quarantine on the machine. When providing multiple values, each value is checked for the same machine_id.  | Required |
 | comment | The comment to associate with the action.                                                                                                | Required |
+| polling | Whether to poll for the action status.                                                                                                  | Optional |
+| timeout_in_seconds | The timeout in seconds for the polling.                                                                                                  | Optional |
+| interval_in_seconds | The interval in seconds between polling.                                                                                                  | Optional |
 
 ##### Context Output
 
@@ -7441,3 +7444,100 @@ There are no input arguments for this command.
 #### Context Output
 
 There is no context output for this command.
+
+### file
+
+***
+Checks the file reputation of the specified hash.
+
+#### Base Command
+
+`file`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| file | Hash of the file to query. Supports MD5, SHA1, and SHA256. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftATP.File.Sha1 | String | The SHA1 hash of the file. |
+| MicrosoftATP.File.MD5 | String | The MD5 hash of the file. |
+| MicrosoftATP.File.Sha256 | String | The SHA256 hash of the file. |
+| MicrosoftATP.File.GlobalPrevalence | Number | The file prevalence across the organization. |
+| MicrosoftATP.File.GlobalFirstObserved | Date | The first time the file was observed. |
+| MicrosoftATP.File.GlobalLastObserved | Date | The last time the file was observed. |
+| MicrosoftATP.File.Size | Number | The size of the file. |
+| MicrosoftATP.File.FileType | String | The type of the file. |
+| MicrosoftATP.File.IsPeFile | Boolean | True if the file is portable executable, False otherwise. |
+| MicrosoftATP.File.FilePublisher | String | The file's publisher. |
+| MicrosoftATP.File.FileProductName | String | The file product name. |
+| MicrosoftATP.File.Signer | String | The file signer. |
+| MicrosoftATP.File.Issuer | String | The file issuer. |
+| MicrosoftATP.File.SignerHash | String | The hash of the signing certificate. |
+| MicrosoftATP.File.IsValidCertificate | Boolean | Was signing certificate successfully verified by Microsoft Defender ATP agent. |
+| MicrosoftATP.File.DeterminationValue | String | The file determination value. |
+| MicrosoftATP.File.DeterminationType | String | The file determination type. |
+| File.SHA1 | String | The SHA1 hash of the file. |
+| File.SHA256 | String | The SHA256 hash of the file. |
+| File.Type | String | The file type. |
+| File.Size | Number | The file size. |
+| DBotScore.Indicator | String | The indicator that was tested. |
+| DBotScore.Type | String | The indicator type. |
+| DBotScore.Vendor | String | The vendor used to calculate the score. |
+| DBotScore.Score | Number | The actual score. |
+
+#### Command example
+
+```!file file="1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"```
+
+#### Context Example
+
+```json
+{
+    "MicrosoftATP": {
+        "File": {
+            "Sha1": "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+            "MD5": "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+            "Sha256": "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+            "GlobalPrevalence": 1,
+            "GlobalFirstObserved": "2022-01-01T00:00:00Z",
+            "GlobalLastObserved": "2022-01-01T00:00:00Z",
+            "Size": 123456,
+            "FileType": "PE",
+            "IsPeFile": true,
+            "FilePublisher": "Microsoft Corporation",
+            "FileProductName": "Microsoft Windows",
+            "Signer": "Microsoft Corporation",
+            "Issuer": "Microsoft Corporation",
+            "SignerHash": "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+            "IsValidCertificate": true,
+            "DeterminationValue": "Malicious",
+            "DeterminationType": "MachineLearning",
+        }
+    },
+    "File": {
+        "SHA1": "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+        "SHA256": "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+        "Type": "PE",
+        "Size": 123456,
+    },
+    "DBotScore": {
+        "Indicator": "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+        "Type": "hash",
+        "Vendor": "Microsoft Defender ATP",
+        "Score": 3
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Microsoft Defender ATP File
+>
+>| SHA1 | MD5 | SHA256 | GlobalPrevalence | GlobalFirstObserved | GlobalLastObserved | Size | FileType | IsPeFile | FilePublisher | FileProductName | Signer | Issuer | SignerHash | IsValidCertificate | DeterminationValue | DeterminationType |
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| 1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef | 1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef | 1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef | 1 | 2022-01-01T00:00:00Z | 2022-01-01T00:00:00Z | 123456 | PE | true | Microsoft Corporation | Microsoft Windows | Microsoft Corporation | Microsoft Corporation | 1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef | true | Malicious | MachineLearning |

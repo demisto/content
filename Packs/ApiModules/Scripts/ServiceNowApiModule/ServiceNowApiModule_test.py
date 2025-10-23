@@ -1,9 +1,12 @@
+import pytest
+
 import demistomock as demisto
+from Packs.ServiceNow.Integrations.ServiceNowv2.test_data.response_constants import JWT_PARAMS
 from ServiceNowApiModule import *
 
 PARAMS = {
     "insecure": False,
-    "credentials": {"identifier": "user1", "password:": "12345"},
+    "credentials": {"identifier": "user1", "password": "12345"},
     "proxy": False,
     "client_id": "client_id",
     "client_secret": "client_secret",
@@ -86,3 +89,154 @@ def test_separate_client_id_and_refresh_token():
         headers=PARAMS.get("headers", ""),
     )
     assert client.client_id == "client_id"
+
+
+@pytest.mark.parametrize("label", ["PRIVATE KEY", "RSA PRIVATE KEY", "EC PRIVATE KEY", "ENCRYPTED PRIVATE KEY"])
+def test_valid_private_key_formatting(label):
+    """
+    Given:
+    - A private key string with correct BEGIN/END labels and valid base64 content
+    - The key has inconsistent newlines or extra whitespace
+
+    When:
+    - Calling ServiceNowClient._validate_and_format_private_key
+
+    Then:
+    - The key is cleaned and formatted to PEM standard
+    - Base64 content is wrapped at 64 characters
+    - BEGIN/END labels are preserved
+    """
+    key_data = "MIIBVgIBADANBgkqhkiG9w0BAQEFAASCAT8wggE7AgEAAkEAlS3dJdfO8Xf\nj57s\n=="
+    raw_key = f"""-----BEGIN {label}-----
+
+    {key_data}
+
+    -----END {label}-----
+    """
+    result = ServiceNowClient._validate_and_format_private_key(raw_key)
+
+    expected_lines = key_data.replace("\n", "").replace(" ", "")
+    expected_lines = [expected_lines[i : i + 64] for i in range(0, len(expected_lines), 64)]
+    expected_key = f"-----BEGIN {label}-----\n" + "\n".join(expected_lines) + f"\n-----END {label}-----"
+
+    assert result == expected_key
+
+
+def test_invalid_private_key_raises():
+    """
+    Given:
+    - A string that is not a valid private key (missing proper PEM headers)
+
+    When:
+    - Calling ServiceNowClient._validate_and_format_private_key
+
+    Then:
+    - A ValueError is raised indicating invalid format
+    """
+    invalid_key = "this is not a private key"
+
+    with pytest.raises(ValueError, match="Invalid private key format."):
+        ServiceNowClient._validate_and_format_private_key(invalid_key)
+
+
+def test_private_key_with_extra_characters_is_cleaned():
+    """
+    Given:
+    - A private key string with tabs, spaces, and newline characters in the base64 content
+
+    When:
+    - Calling ServiceNowClient._validate_and_format_private_key
+
+    Then:
+    - All non-base64 characters are removed
+    - The cleaned content is returned in 64-character lines
+    - PEM format is preserved
+    """
+    label = "RSA PRIVATE KEY"
+    key_data = "MIIB\tVgI BADA\nNBgkqhkiG9w0BAQ EFAASCAT8wggE7AgEAAkEA\nlS3dJd=="
+
+    raw_key = f"""-----BEGIN {label}-----
+    {key_data}
+    -----END {label}-----"""
+
+    result = ServiceNowClient._validate_and_format_private_key(raw_key)
+
+    clean_base64 = re.sub(r"[^A-Za-z0-9+/=]", "", key_data)
+    expected_lines = [clean_base64[i : i + 64] for i in range(0, len(clean_base64), 64)]
+    expected_key = f"-----BEGIN {label}-----\n" + "\n".join(expected_lines) + f"\n-----END {label}-----"
+
+    assert result == expected_key
+
+
+def test_private_key_preserves_label():
+    """
+    Given:
+    - A valid EC PRIVATE KEY with properly labeled BEGIN/END headers
+    - Base64 content longer than 64 characters
+
+    When:
+    - Calling ServiceNowClient._validate_and_format_private_key
+
+    Then:
+    - The returned PEM keeps the original label in both headers
+    - Base64 content is correctly wrapped at 64-character lines
+    """
+    label = "EC PRIVATE KEY"
+    content = "A" * 70  # arbitrary base64 content
+    raw_key = f"-----BEGIN {label}-----\n{content}\n-----END {label}-----"
+
+    result = ServiceNowClient._validate_and_format_private_key(raw_key)
+
+    expected_lines = [content[i : i + 64] for i in range(0, len(content), 64)]
+    expected_key = f"-----BEGIN {label}-----\n" + "\n".join(expected_lines) + f"\n-----END {label}-----"
+
+    assert result == expected_key
+
+
+def test_servicenow_client_jwt_init(mocker):
+    """
+    Given:
+    - JWT credentials (jwt_params)
+    When:
+    - Initializing ServiceNowClient with jwt_params
+    Then:
+    - JWT is created and assigned to self.jwt
+    - No exceptions are raised
+    """
+    mocker.patch("jwt.encode", return_value="jwt_token_stub")
+    client = ServiceNowClient(
+        credentials=PARAMS["credentials"],
+        use_oauth=True,
+        client_id=PARAMS["client_id"],
+        client_secret=PARAMS["client_secret"],
+        url="https://example.com",
+        verify=PARAMS["insecure"],
+        proxy=PARAMS["proxy"],
+        headers=None,
+        jwt_params=JWT_PARAMS,
+    )
+    assert hasattr(client, "jwt")
+    assert client.jwt == "jwt_token_stub"
+
+
+def test_servicenow_client_jwt_none():
+    """
+    Given:
+    - No jwt_params provided
+    When:
+    - Initializing ServiceNowClient
+    Then:
+    - The client should not have a 'jwt' attribute
+    """
+    client = ServiceNowClient(
+        credentials=PARAMS["credentials"],
+        use_oauth=True,
+        client_id=PARAMS["client_id"],
+        client_secret=PARAMS["client_secret"],
+        url="https://example.com",
+        verify=PARAMS["insecure"],
+        proxy=PARAMS["proxy"],
+        headers=None,
+        jwt_params=None,
+    )
+    assert not hasattr(client, "jwt") or client.jwt is None
