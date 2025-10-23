@@ -1604,7 +1604,7 @@ class AzureClient:
             f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Compute/"
             f"virtualMachines/{vm_name}"
         )
-        parameters = {"$expand": expand} | {"api-version": VM_API_VERSION}
+        parameters = {"$expand": expand, "api-version": VM_API_VERSION}
         try:
             return self.http_request(method="GET", full_url=full_url, params=parameters)
         except Exception as e:
