@@ -754,10 +754,51 @@ class S3:
         kwargs = {"Bucket": args.get("bucket")}
         try:
             response = client.get_bucket_website(**kwargs)
+            if response["ResponseMetadata"]["HTTPStatusCode"] in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
+                response["WebsiteConfiguration"] = {
+                    "ErrorDocument": response.get("ErrorDocument"),
+                    "IndexDocument": response.get("IndexDocument"),
+                    "RedirectAllRequestsTo": response.get("RedirectAllRequestsTo"),
+                    "RoutingRules": response.get("RoutingRules")
+                }
+                readable_output = tableToMarkdown(
+                    name="Bucket Website Configuration",
+                    t=response.get("WebsiteConfiguration", {}),
+                    removeNull=True,
+                    headers=["ErrorDocument", "IndexDocument", "RedirectAllRequestsTo", "RoutingRules"],
+                    headerTransform=pascalToSpace,
+                )
+                return CommandResults(readable_output=readable_output,
+                                      outputs_prefix="AWS.S3-Buckets.BucketWebsite",
+                                      outputs=response.get("WebsiteConfiguration", {}),
+                                      raw_response=response.get("WebsiteConfiguration", {}))
+            raise DemistoException(f"xxxxx.")
+        except Exception as e:
+            raise DemistoException(f"Error: {str(e)}")
+
+    @staticmethod
+    def get_bucket_acl_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        kwargs = {"Bucket": args.get("bucket")}
+        try:
+            response = client.get_bucket_acl(**kwargs)
             demisto.info(f"{response=}")
             if response["ResponseMetadata"]["HTTPStatusCode"] in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
-                return CommandResults(readable_output=f"Bucket Ownership Controls successfully updated for {args.get('bucket')}")
-            raise DemistoException(f"Failed to set Bucket Ownership Controls for {args.get('bucket')}.")
+                response["AccessControlPolicy"] = {
+                    "Grants": response.get("Grants"),
+                    "Owner": response.get("Owner"),
+                }
+                readable_output = tableToMarkdown(
+                    name="Bucket Acl",
+                    t=response.get("AccessControlPolicy", {}),
+                    removeNull=True,
+                    headers=["Grants", "Owner"],
+                    headerTransform=pascalToSpace,
+                )
+                return CommandResults(readable_output=readable_output,
+                                      outputs_prefix="AWS.S3-Buckets.BucketAcl",
+                                      outputs=response.get("AccessControlPolicy", {}),
+                                      raw_response=response.get("AccessControlPolicy", {}))
+            raise DemistoException(f"xxxxx.")
         except Exception as e:
             raise DemistoException(f"Error: {str(e)}")
 
@@ -2580,6 +2621,7 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-s3-bucket-website-delete": S3.delete_bucket_website_command,
     "aws-s3-bucket-ownership-controls-put": S3.put_bucket_ownership_controls_command,
     "aws-s3-bucket-website-get": S3.get_bucket_website_command,
+    "aws-s3-bucket-acl-get": S3.get_bucket_acl_command,
     "aws-iam-account-password-policy-get": IAM.get_account_password_policy_command,
     "aws-iam-account-password-policy-update": IAM.update_account_password_policy_command,
     "aws-iam-role-policy-put": IAM.put_role_policy_command,
@@ -2615,6 +2657,7 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-ec2-instances-stop": EC2.stop_instances_command,
     "aws-ec2-instances-terminate": EC2.terminate_instances_command,
     "aws-ec2-instances-run": EC2.run_instances_command,
+    "aws-ec2-tags-create": EC2.create_tags_command,
     "aws-s3-bucket-policy-delete": S3.delete_bucket_policy_command,
     "aws-s3-public-access-block-get": S3.get_public_access_block_command,
     "aws-s3-bucket-encryption-get": S3.get_bucket_encryption_command,

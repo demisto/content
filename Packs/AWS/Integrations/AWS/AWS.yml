@@ -544,6 +544,73 @@ script:
       - name: bucket
         description: The bucket name for which to get the website configuration.
         required: true
+    outputs:
+      - contextPath: AWS.S3-Buckets.BucketWebsite.ErrorDocument
+        description: The object key name of the website error document to use for 4XX class errors.
+        type: Object
+      - contextPath: AWS.S3-Buckets.BucketWebsite.IndexDocument
+        description: The name of the index document for the website (for example index.html).
+        type: Object
+      - contextPath: AWS.S3-Buckets.BucketWebsite.RedirectAllRequestsTo
+        description: Specifies the redirect behavior of all requests to a website endpoint of an Amazon S3 bucket.
+        type: Object
+      - contextPath: AWS.S3-Buckets.BucketWebsite.RoutingRules
+        description: Rules that define when a redirect is applied and the redirect behavior.
+        type: Array
+
+  - name: aws-s3-bucket-acl-get
+    description: Return the access control list (ACL) of a bucket.
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        required: true
+      - name: region
+        description: The AWS region.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+      - name: bucket
+        description: Specifies the S3 bucket whose ACL is being requested.
+        required: true
+    outputs:
+      - contextPath: AWS.S3-Buckets.BucketAcl.Grants
+        description: A list of grants.
+        type: Array
+      - contextPath: AWS.S3-Buckets.BucketAcl.Owner
+        description: Container for the bucket owner's display name and ID.
+        type: Object
 
   - name: aws-iam-account-password-policy-get
     description: Gets the AWS account password policy.
