@@ -537,9 +537,3 @@ tests:
 - Calculate Severity - Standard - Test
 contentitemexportablefields:
   contentitemfields: {}
-supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
-- agentix
