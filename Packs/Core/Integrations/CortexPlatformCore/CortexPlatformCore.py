@@ -152,33 +152,15 @@ class Client(CoreClient):
 
         return reply
 
-    def get_asset_group_ids_from_names(self, names: list[str]) -> list[str]:
-        if not names:
-            return []
-
-        filter = {
-            "OR": [
-                {"SEARCH_FIELD": "XDM.ASSET_GROUP.NAME", "SEARCH_TYPE": "EQ", "SEARCH_VALUE": group_name} for group_name in names
-            ]
-        }
+    def search_asset_groups(self, filter):
         reply = self._http_request(
             method="POST",
             headers=self._headers,
-            json_data={
-                "request_data": {
-                    "filters": filter,
-                },
-            },
+            json_data={"request_data": {"filters": filter}},
             url_suffix="/asset-groups",
         )
 
-        group_ids = [group.get("XDM.ASSET_GROUP.ID") for group in reply.get("reply", {}).get("data", [])]
-        group_ids = [id for id in group_ids if id]
-
-        if len(group_ids) != len(names):
-            raise DemistoException(f"Failed to fetch asset group IDs for {names}. Ensure the asset group names are valid.")
-
-        return group_ids
+        return reply
 
 
 def get_asset_details_command(client: Client, args: dict) -> CommandResults:
@@ -259,7 +241,7 @@ def search_assets_command(client: Client, args):
     """
     Search for assets in XDR based on some filters.
     """
-    asset_group_ids = client.get_asset_group_ids_from_names(argToList(args.get("asset_groups", "")))
+    asset_group_ids = get_asset_group_ids_from_names(client, argToList(args.get("asset_groups", "")))
     fields_to_filter = [
         FilterField(ASSET_FIELDS["asset_names"], "EQ", argToList(args.get("asset_names", ""))),
         FilterField(ASSET_FIELDS["asset_types"], "EQ", argToList(args.get("asset_types", ""))),
@@ -285,6 +267,16 @@ def search_assets_command(client: Client, args):
 
 
 def create_filter_from_fields(fields_to_filter: list[FilterField]):
+    """
+    Creates a filter from a list of FilterField objects.
+    The filter will require each field to be one of the values provided.
+
+    Args:
+        fields_to_filter (list[FilterField]): List of FilterField objects to create a filter from.
+
+    Returns:
+        dict[str, list]: Filter object.
+    """
     filter: dict[str, list] = {"AND": []}
 
     for field in fields_to_filter:
@@ -311,6 +303,33 @@ def create_filter_from_fields(fields_to_filter: list[FilterField]):
         filter["AND"].append(search_obj)
 
     return filter
+
+
+def get_asset_group_ids_from_names(client: Client, group_names: list[str]) -> list[str]:
+    """
+    Retrieves the IDs of asset groups based on their names.
+
+    Args:
+        client (Client): The client instance used to send the request.
+        group_names (list[str]): List of asset group names to retrieve IDs for.
+
+    Returns:
+        list[str]: List of asset group IDs.
+    """
+    if not group_names:
+        return []
+
+    filter = create_filter_from_fields([FilterField("XDM.ASSET_GROUP.NAME", "EQ", group_names)])
+
+    groups = client.search_asset_groups(filter).get("reply", {}).get("data", [])
+
+    group_ids = [group.get("XDM.ASSET_GROUP.ID") for group in groups]
+    group_ids = [id for id in group_ids if id]
+
+    if len(group_ids) != len(group_names):
+        raise DemistoException(f"Failed to fetch asset group IDs for {group_names}. Ensure the asset group names are valid.")
+
+    return group_ids
 
 
 def main():  # pragma: no cover
