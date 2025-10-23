@@ -161,7 +161,15 @@ outputs:
   - contextPath: Core.Case.custom_fields
     description: Custom fields for the case with standardized lowercase, whitespace-free names.
     type: Unknown
-  - contextPath: Core.Case.CaseExtraData.issues
+  - contextPath: Core.Case.CaseExtraData.issue_ids
+    description: List of issue IDs associated with the case.
+    type: Array
+  - contextPath: Core.Case.CaseExtraData.file_artifacts
+    description: File artifacts associated with the case.
+    type: Array
+  - contextPath: Core.Case.CaseExtraData.network_artifacts
+    description: Network artifacts associated with the case.
+    type: Array
 subtype: python3
 dockerimage: demisto/python3:3.12.11.4508456
 fromversion: 6.6.0
