@@ -1130,4 +1130,4 @@ def test_start_xql_query_timeout(mocker):
 
     CoreXQLApiModule.start_xql_query(CLIENT, args)
 
-    assert mock_call.call_args.args[0]["request_data"]["query"] == "config max_runtime_minutes = 10\n| MOCK_QUERY \n| limit 100"
+    assert mock_call.call_args.args[0]["request_data"]["query"] == "config max_runtime_minutes = 10.0\n| MOCK_QUERY \n| limit 100"
