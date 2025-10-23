@@ -50,40 +50,6 @@ Get asset information.
 | Core.CoreAsset.xdm__asset__normalized_fields | unknown | The normalized fields associated with the asset. |
 | Core.CoreAsset.all_sources | unknown | A list of all sources providing information about the asset. |
 
-##### Command Example
-
-```!core-get-asset-details asset_id=123```
-
-##### Context Example
-
-```
-{
-    "Core.CoreAsset": [
-        {
-            "asset_hierarchy": ["123"],
-            "xdm__asset__type__category": "Policy",
-            "xdm__cloud__region": "Global",
-            "xdm__asset__module_unstructured_fields": {},
-            "xdm__asset__source": "XSIAM",
-            "xdm__asset__id": "123",
-            "xdm__asset__type__class": "Identity",
-            "xdm__asset__normalized_fields": {},
-            "xdm__asset__first_observed": 100000000,
-            "xdm__asset__last_observed": 100000000,
-            "xdm__asset__name": "Fake Name",
-            "xdm__asset__type__name": "IAM",
-            "xdm__asset__strong_id": "FAKE ID"
-        }
-    ]
-}
-```
-
-##### Human Readable Output
-
->| asset_hierarchy | xdm__asset__type__category | xdm__cloud__region | xdm__asset__module_unstructured_fields | xdm__asset__source | xdm__asset__id | xdm__asset__type__class | xdm__asset__normalized_fields | xdm__asset__first_observed | xdm__asset__last_observed | xdm__asset__name | xdm__asset__type__name | xdm__asset__strong_id |
->|---|---|---|---|---|---|---|---|---|---|---|---|---|
->|123|Policy|Global||XSIAM|123|Identity||100000000|100000000|Fake Name|IAM|FAKE ID|
-
 ### core-get-issues
 
 ***
@@ -439,3 +405,27 @@ Get cases information based on the specified filters.
 | Core.Case.tags | Array | Current tags assigned to the case. |
 | Core.Case.case_domain | String | Domain associated with the case. |
 | Core.Case.custom_fields | Unknown | Custom fields for the case with standardized lowercase, whitespace-free names. |
+
+### core-search-asset-groups
+
+***
+Retrieve asset groups from the Cortex platform with optional filtering.
+
+#### Base Command
+
+`core-search-asset-groups`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | JSON list of asset groups to search for. (e.g. `["group1", "group2"]`). | Optional |
+| type | Filter asset groups by type. | Optional |
+| description | Filter asset groups by description. | Optional |
+| operator | Filter operator to apply. Possible values are: EQ, CONTAINS. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Core.AssetGroups | Array | The list of asset groups retrieved from the Cortex platform. |

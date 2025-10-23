@@ -19,14 +19,14 @@ ASSET_GROUP_FIELDS = {
 
 def create_asset_filter_from_dict(fields_to_filter, operator):
     """
-        Create an asset filter dictionary from field-value pairs.
-        
-        Args:
-            fields_to_filter (dict): Dictionary where keys are field names and values are lists of values to filter by.
-            operator (str): The search operator to use for filtering ("EQ" or "CONTAINS").
-        
-        Returns:
-            dict: A filter dictionary with AND/OR structure for asset filtering operations.
+    Create an asset filter dictionary from field-value pairs.
+
+    Args:
+        fields_to_filter (dict): Dictionary where keys are field names and values are lists of values to filter by.
+        operator (str): The search operator to use for filtering ("EQ" or "CONTAINS").
+
+    Returns:
+        dict: A filter dictionary with AND/OR structure for asset filtering operations.
     """
     filter: dict[str, list] = {"AND": []}
 

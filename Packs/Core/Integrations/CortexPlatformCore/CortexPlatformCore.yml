@@ -1114,13 +1114,13 @@ script:
       description: Retrieve asset groups from the Cortex platform with optional filtering.
       outputs:
         - contextPath: Core.AssetGroups
-          description: The list of asset groups retrieved from the Cortex platform
-          isArray: true
+          description: The list of asset groups retrieved from the Cortex platform.
+          type: Array
   runonce: false
   script: "-"
   subtype: python3
   type: python
-  dockerimage: demisto/google-cloud-storage:1.0.0.4088897
+  dockerimage: demisto/google-cloud-storage:1.0.0.4885491
 tests:
   - No tests
 fromversion: 6.2.0
