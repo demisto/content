@@ -25,5 +25,14 @@
         "marketplacev2",
         "xpanse",
         "platform"
+    ],
+    "supportedModules": [
+        "exposure_management",
+        "cloud",
+        "cloud_runtime_security",
+        "agentix",
+        "cloud_posture",
+        "xsiam",
+        "edr"
     ]
 }
