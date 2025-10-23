@@ -673,6 +673,8 @@ script:
         prettyname: Bucket Name
         description: The name of the S3 bucket from which the website configuration will be removed.
         required: true
+        prettypredefined:
+          Bucket Name: ${asset.xdm.asset.name}
 
   - name: aws-s3-bucket-ownership-controls-put
     description: Creates or modifies OwnershipControls for an Amazon S3 bucket.
@@ -1593,51 +1595,23 @@ script:
     quickaction: true
     arguments:
       - name: account_id
-        prettyname: Account ID
         description: The AWS account ID.
+        prettyname: Account ID
         required: true
+        prettypredefined:
+          Account ID: ${asset.xdm.asset.realm}
       - name: region
-        prettyname: Region
         description: The AWS region.
+        prettyname: Region
         required: true
-        auto: PREDEFINED
-        predefined:
-          - us-east-1
-          - us-east-2
-          - us-west-1
-          - us-west-2
-          - af-south-1
-          - ap-east-1
-          - ap-south-2
-          - ap-southeast-3
-          - ap-southeast-5
-          - ap-southeast-4
-          - ap-south-1
-          - ap-northeast-3
-          - ap-northeast-2
-          - ap-southeast-1
-          - ap-southeast-2
-          - ap-southeast-7
-          - ap-northeast-1
-          - ca-central-1
-          - ca-west-1
-          - eu-central-1
-          - eu-west-1
-          - eu-west-2
-          - eu-south-1
-          - eu-west-3
-          - eu-south-2
-          - eu-north-1
-          - eu-central-2
-          - il-central-1
-          - mx-central-1
-          - me-south-1
-          - me-central-1
-          - sa-east-1
+        prettypredefined:
+          Region: ${asset.xdm.asset.cloud.region}
       - name: db_cluster_identifier
         prettyname: RDS Cluster ID
         description: 'The DB cluster identifier for the modified cluster. This parameter is not case sensitive and is valid for Aurora DB and Multi-AZ DB cluster types. It must match the identifier of an existing DB cluster.'
         required: true
+        prettypredefined:
+          RDS Cluster ID: ${asset.xdm.asset.name}
       - name: enable_iam_database_authentication
         description: 'Weather to enable mapping of Amazon Web Services Identity and Access Management (IAM) accounts to database accounts. By default, mapping isn’t enabled.'
         defaultValue: 'true'
@@ -1767,51 +1741,23 @@ script:
     quickaction: true
     arguments:
       - name: account_id
-        prettyname: Account ID
         description: The AWS account ID.
+        prettyname: Account ID
         required: true
+        prettypredefined:
+          Account ID: ${asset.xdm.asset.realm}
       - name: region
-        prettyname: Region
         description: The AWS region.
+        prettyname: Region
         required: true
-        auto: PREDEFINED
-        predefined:
-          - us-east-1
-          - us-east-2
-          - us-west-1
-          - us-west-2
-          - af-south-1
-          - ap-east-1
-          - ap-south-2
-          - ap-southeast-3
-          - ap-southeast-5
-          - ap-southeast-4
-          - ap-south-1
-          - ap-northeast-3
-          - ap-northeast-2
-          - ap-southeast-1
-          - ap-southeast-2
-          - ap-southeast-7
-          - ap-northeast-1
-          - ca-central-1
-          - ca-west-1
-          - eu-central-1
-          - eu-west-1
-          - eu-west-2
-          - eu-south-1
-          - eu-west-3
-          - eu-south-2
-          - eu-north-1
-          - eu-central-2
-          - il-central-1
-          - mx-central-1
-          - me-south-1
-          - me-central-1
-          - sa-east-1
+        prettypredefined:
+          Region: ${asset.xdm.asset.cloud.region}
       - name: db_cluster_identifier
         prettyname: RDS Cluster ID
         description: 'The DB cluster identifier for the modified cluster. This parameter is not case sensitive and is valid for Aurora DB and Multi-AZ DB cluster types. It must match the identifier of an existing DB cluster.'
         required: true
+        prettypredefined:
+          RDS Cluster ID: ${asset.xdm.asset.name}
       - name: deletion_protection
         description: 'Weather the DB cluster has deletion protection enabled. The database can’t be deleted when deletion protection is enabled. By default, deletion protection isn’t enabled.'
         defaultValue: 'true'
@@ -1863,7 +1809,7 @@ script:
       - sa-east-1
 
     - name: db_instance_identifier
-      description: 'The identifier of DB instance to modify. This value is stored as a lowercase string.'
+      description: 'The identifier of DB instance to modify.'
       required: true
     - name: publicly_accessible
       description: 'Weather the DB instance is publicly accessible.'
@@ -1926,51 +1872,23 @@ script:
     quickaction: true
     arguments:
       - name: account_id
-        prettyname: Account ID
         description: The AWS account ID.
+        prettyname: Account ID
         required: true
+        prettypredefined:
+          Account ID: ${asset.xdm.asset.realm}
       - name: region
-        prettyname: Region
         description: The AWS region.
+        prettyname: Region
         required: true
-        auto: PREDEFINED
-        predefined:
-          - us-east-1
-          - us-east-2
-          - us-west-1
-          - us-west-2
-          - af-south-1
-          - ap-east-1
-          - ap-south-2
-          - ap-southeast-3
-          - ap-southeast-5
-          - ap-southeast-4
-          - ap-south-1
-          - ap-northeast-3
-          - ap-northeast-2
-          - ap-southeast-1
-          - ap-southeast-2
-          - ap-southeast-7
-          - ap-northeast-1
-          - ca-central-1
-          - ca-west-1
-          - eu-central-1
-          - eu-west-1
-          - eu-west-2
-          - eu-south-1
-          - eu-west-3
-          - eu-south-2
-          - eu-north-1
-          - eu-central-2
-          - il-central-1
-          - mx-central-1
-          - me-south-1
-          - me-central-1
-          - sa-east-1
+        prettypredefined:
+          Region: ${asset.xdm.asset.cloud.region}
       - name: db_instance_identifier
         prettyname: RDS Instance ID
-        description: 'The identifier of DB instance to modify. This value is stored as a lowercase string.'
+        description: 'The identifier of DB instance to modify.'
         required: true
+        prettypredefined:
+          RDS Instance ID: ${asset.xdm.asset.name}
       - name: publicly_accessible
         description: 'Weather the DB instance is publicly accessible.'
         defaultValue: 'true'
@@ -1987,51 +1905,23 @@ script:
     quickaction: true
     arguments:
       - name: account_id
-        prettyname: Account ID
         description: The AWS account ID.
+        prettyname: Account ID
         required: true
+        prettypredefined:
+          Account ID: ${asset.xdm.asset.realm}
       - name: region
-        prettyname: Region
         description: The AWS region.
+        prettyname: Region
         required: true
-        auto: PREDEFINED
-        predefined:
-          - us-east-1
-          - us-east-2
-          - us-west-1
-          - us-west-2
-          - af-south-1
-          - ap-east-1
-          - ap-south-2
-          - ap-southeast-3
-          - ap-southeast-5
-          - ap-southeast-4
-          - ap-south-1
-          - ap-northeast-3
-          - ap-northeast-2
-          - ap-southeast-1
-          - ap-southeast-2
-          - ap-southeast-7
-          - ap-northeast-1
-          - ca-central-1
-          - ca-west-1
-          - eu-central-1
-          - eu-west-1
-          - eu-west-2
-          - eu-south-1
-          - eu-west-3
-          - eu-south-2
-          - eu-north-1
-          - eu-central-2
-          - il-central-1
-          - mx-central-1
-          - me-south-1
-          - me-central-1
-          - sa-east-1
+        prettypredefined:
+          Region: ${asset.xdm.asset.cloud.region}
       - name: db_instance_identifier
         prettyname: RDS Instance ID
-        description: 'The identifier of DB instance to modify. This value is stored as a lowercase string.'
+        description: 'The identifier of DB instance to modify.'
         required: true
+        prettypredefined:
+          RDS Instance ID: ${asset.xdm.asset.name}
       - name: copy_tags_to_snapshot
         description: 'Weather to copy all tags from the DB instance to snapshots of the DB instance. By default, tags aren’t copied.'
         defaultValue: 'true'
@@ -2048,51 +1938,23 @@ script:
     quickaction: true
     arguments:
       - name: account_id
-        prettyname: Account ID
         description: The AWS account ID.
+        prettyname: Account ID
         required: true
+        prettypredefined:
+          Account ID: ${asset.xdm.asset.realm}
       - name: region
-        prettyname: Region
         description: The AWS region.
+        prettyname: Region
         required: true
-        auto: PREDEFINED
-        predefined:
-          - us-east-1
-          - us-east-2
-          - us-west-1
-          - us-west-2
-          - af-south-1
-          - ap-east-1
-          - ap-south-2
-          - ap-southeast-3
-          - ap-southeast-5
-          - ap-southeast-4
-          - ap-south-1
-          - ap-northeast-3
-          - ap-northeast-2
-          - ap-southeast-1
-          - ap-southeast-2
-          - ap-southeast-7
-          - ap-northeast-1
-          - ca-central-1
-          - ca-west-1
-          - eu-central-1
-          - eu-west-1
-          - eu-west-2
-          - eu-south-1
-          - eu-west-3
-          - eu-south-2
-          - eu-north-1
-          - eu-central-2
-          - il-central-1
-          - mx-central-1
-          - me-south-1
-          - me-central-1
-          - sa-east-1
+        prettypredefined:
+          Region: ${asset.xdm.asset.cloud.region}
       - name: db_instance_identifier
         prettyname: RDS Instance ID
-        description: 'The identifier of DB instance to modify. This value is stored as a lowercase string.'
+        description: 'The identifier of DB instance to modify.'
         required: true
+        prettypredefined:
+          RDS Instance ID: ${asset.xdm.asset.name}
       - name: backup_retention_period
         description: 'The number of days to retain automated backups. Setting this parameter to a positive number enables backups. Setting this parameter to 0 disables automated backups.'
         defaultValue: 30
@@ -2109,51 +1971,23 @@ script:
     quickaction: true
     arguments:
       - name: account_id
-        prettyname: Account ID
         description: The AWS account ID.
+        prettyname: Account ID
         required: true
+        prettypredefined:
+          Account ID: ${asset.xdm.asset.realm}
       - name: region
-        prettyname: Region
         description: The AWS region.
+        prettyname: Region
         required: true
-        auto: PREDEFINED
-        predefined:
-          - us-east-1
-          - us-east-2
-          - us-west-1
-          - us-west-2
-          - af-south-1
-          - ap-east-1
-          - ap-south-2
-          - ap-southeast-3
-          - ap-southeast-5
-          - ap-southeast-4
-          - ap-south-1
-          - ap-northeast-3
-          - ap-northeast-2
-          - ap-southeast-1
-          - ap-southeast-2
-          - ap-southeast-7
-          - ap-northeast-1
-          - ca-central-1
-          - ca-west-1
-          - eu-central-1
-          - eu-west-1
-          - eu-west-2
-          - eu-south-1
-          - eu-west-3
-          - eu-south-2
-          - eu-north-1
-          - eu-central-2
-          - il-central-1
-          - mx-central-1
-          - me-south-1
-          - me-central-1
-          - sa-east-1
+        prettypredefined:
+          Region: ${asset.xdm.asset.cloud.region}
       - name: db_instance_identifier
         prettyname: RDS Instance ID
-        description: 'The identifier of DB instance to modify. This value is stored as a lowercase string.'
+        description: 'The identifier of DB instance to modify.'
         required: true
+        prettypredefined:
+          RDS Instance ID: ${asset.xdm.asset.name}
       - name: enable_iam_database_authentication
         description: 'Weather to enable mapping of Amazon Web Services Identity and Access Management (IAM) accounts to database accounts. By default, mapping isn’t enabled.'
         defaultValue: 'true'
@@ -2166,51 +2000,23 @@ script:
     quickaction: true
     arguments:
       - name: account_id
-        prettyname: Account ID
         description: The AWS account ID.
+        prettyname: Account ID
         required: true
+        prettypredefined:
+          Account ID: ${asset.xdm.asset.realm}
       - name: region
-        prettyname: Region
         description: The AWS region.
+        prettyname: Region
         required: true
-        auto: PREDEFINED
-        predefined:
-          - us-east-1
-          - us-east-2
-          - us-west-1
-          - us-west-2
-          - af-south-1
-          - ap-east-1
-          - ap-south-2
-          - ap-southeast-3
-          - ap-southeast-5
-          - ap-southeast-4
-          - ap-south-1
-          - ap-northeast-3
-          - ap-northeast-2
-          - ap-southeast-1
-          - ap-southeast-2
-          - ap-southeast-7
-          - ap-northeast-1
-          - ca-central-1
-          - ca-west-1
-          - eu-central-1
-          - eu-west-1
-          - eu-west-2
-          - eu-south-1
-          - eu-west-3
-          - eu-south-2
-          - eu-north-1
-          - eu-central-2
-          - il-central-1
-          - mx-central-1
-          - me-south-1
-          - me-central-1
-          - sa-east-1
+        prettypredefined:
+          Region: ${asset.xdm.asset.cloud.region}
       - name: db_instance_identifier
         prettyname: RDS Instance ID
-        description: 'The identifier of DB instance to modify. This value is stored as a lowercase string.'
+        description: 'The identifier of DB instance to modify.'
         required: true
+        prettypredefined:
+          RDS Instance ID: ${asset.xdm.asset.name}
       - name: deletion_protection
         description: 'Weather the DB instance has deletion protection enabled. The database can’t be deleted when deletion protection is enabled. By default, deletion protection isn’t enabled. For more information, see Deleting a DB Instance.'
         defaultValue: 'true'
@@ -2223,51 +2029,23 @@ script:
     quickaction: true
     arguments:
       - name: account_id
-        prettyname: Account ID
         description: The AWS account ID.
+        prettyname: Account ID
         required: true
+        prettypredefined:
+          Account ID: ${asset.xdm.asset.realm}
       - name: region
-        prettyname: Region
         description: The AWS region.
+        prettyname: Region
         required: true
-        auto: PREDEFINED
-        predefined:
-          - us-east-1
-          - us-east-2
-          - us-west-1
-          - us-west-2
-          - af-south-1
-          - ap-east-1
-          - ap-south-2
-          - ap-southeast-3
-          - ap-southeast-5
-          - ap-southeast-4
-          - ap-south-1
-          - ap-northeast-3
-          - ap-northeast-2
-          - ap-southeast-1
-          - ap-southeast-2
-          - ap-southeast-7
-          - ap-northeast-1
-          - ca-central-1
-          - ca-west-1
-          - eu-central-1
-          - eu-west-1
-          - eu-west-2
-          - eu-south-1
-          - eu-west-3
-          - eu-south-2
-          - eu-north-1
-          - eu-central-2
-          - il-central-1
-          - mx-central-1
-          - me-south-1
-          - me-central-1
-          - sa-east-1
+        prettypredefined:
+          Region: ${asset.xdm.asset.cloud.region}
       - name: db_instance_identifier
         prettyname: RDS Instance ID
-        description: 'The identifier of DB instance to modify. This value is stored as a lowercase string.'
+        description: 'The identifier of DB instance to modify.'
         required: true
+        prettypredefined:
+          RDS Instance ID: ${asset.xdm.asset.name}
       - name: auto_minor_version_upgrade
         description: 'Weather minor version upgrades are applied automatically to the DB instance during the maintenance window. An outage occurs when all the following conditions are met: The automatic upgrade is enabled for the maintenance window. A newer minor version is available. RDS has enabled automatic patching for the engine version. If any of the preceding conditions isn’t met, Amazon RDS applies the change as soon as possible and doesn’t cause an outage. For an RDS Custom DB instance, don’t enable this setting. Otherwise, the operation returns an error.'
         defaultValue: 'true'
@@ -2284,51 +2062,23 @@ script:
     quickaction: true
     arguments:
       - name: account_id
-        prettyname: Account ID
         description: The AWS account ID.
+        prettyname: Account ID
         required: true
+        prettypredefined:
+          Account ID: ${asset.xdm.asset.realm}
       - name: region
-        prettyname: Region
         description: The AWS region.
+        prettyname: Region
         required: true
-        auto: PREDEFINED
-        predefined:
-          - us-east-1
-          - us-east-2
-          - us-west-1
-          - us-west-2
-          - af-south-1
-          - ap-east-1
-          - ap-south-2
-          - ap-southeast-3
-          - ap-southeast-5
-          - ap-southeast-4
-          - ap-south-1
-          - ap-northeast-3
-          - ap-northeast-2
-          - ap-southeast-1
-          - ap-southeast-2
-          - ap-southeast-7
-          - ap-northeast-1
-          - ca-central-1
-          - ca-west-1
-          - eu-central-1
-          - eu-west-1
-          - eu-west-2
-          - eu-south-1
-          - eu-west-3
-          - eu-south-2
-          - eu-north-1
-          - eu-central-2
-          - il-central-1
-          - mx-central-1
-          - me-south-1
-          - me-central-1
-          - sa-east-1
+        prettypredefined:
+          Region: ${asset.xdm.asset.cloud.region}
       - name: db_instance_identifier
         prettyname: RDS Instance ID
-        description: 'The identifier of DB instance to modify. This value is stored as a lowercase string.'
+        description: 'The identifier of DB instance to modify.'
         required: true
+        prettypredefined:
+          RDS Instance ID: ${asset.xdm.asset.name}
       - name: multi_az
         description: 'Weather the DB instance is a Multi-AZ deployment. Changing this parameter doesn’t result in an outage. The change is applied during the next maintenance window unless the ApplyImmediately parameter is enabled for this request. This setting doesn’t apply to RDS Custom DB instances.'
         defaultValue: 'true'
@@ -3071,51 +2821,23 @@ script:
     hidden: true
     quickaction: true
     arguments:
-      - description: The AWS account ID.
-        name: account_id
+      - name: account_id
+        description: The AWS account ID.
         prettyname: Account ID
         required: true
-      - description: The AWS region.
-        name: region
+        prettypredefined:
+          Account ID: ${asset.xdm.asset.realm}
+      - name: region
+        description: The AWS region.
         prettyname: Region
         required: true
-        auto: PREDEFINED
-        predefined:
-          - us-east-1
-          - us-east-2
-          - us-west-1
-          - us-west-2
-          - af-south-1
-          - ap-east-1
-          - ap-south-2
-          - ap-southeast-3
-          - ap-southeast-5
-          - ap-southeast-4
-          - ap-south-1
-          - ap-northeast-3
-          - ap-northeast-2
-          - ap-southeast-1
-          - ap-southeast-2
-          - ap-southeast-7
-          - ap-northeast-1
-          - ca-central-1
-          - ca-west-1
-          - eu-central-1
-          - eu-west-1
-          - eu-west-2
-          - eu-south-1
-          - eu-west-3
-          - eu-south-2
-          - eu-north-1
-          - eu-central-2
-          - il-central-1
-          - mx-central-1
-          - me-south-1
-          - me-central-1
-          - sa-east-1
-      - description: The ID of the instance.
-        name: instance_id
-        prettyname: EC2 Instace ID
+        prettypredefined:
+          Region: ${asset.xdm.asset.cloud.region}
+      - name: instance_id
+        description: The ID of the instance.
+        prettyname: EC2 Instance ID
+        prettypredefined:
+          EC2 Instance ID: ${asset.xdm.asset.strong_id}
         required: true
 
   - name: aws-ec2-image-attribute-modify
