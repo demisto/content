@@ -23,5 +23,9 @@
     "version": -1,
     "weeks": 0,
     "weeksR": 0,
-    "fromVersion": "6.2.0"
+    "fromVersion": "6.2.0",
+    "supportedModules": [
+        "xsiam",
+        "agentix"
+    ]
 }

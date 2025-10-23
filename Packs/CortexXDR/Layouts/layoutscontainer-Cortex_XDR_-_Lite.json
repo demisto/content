@@ -1562,5 +1562,9 @@
     "system": false,
     "version": -1,
     "fromVersion": "6.9.0",
-    "description": ""
+    "description": "",
+    "supportedModules": [
+        "xsiam",
+        "agentix"
+    ]
 }

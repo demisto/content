@@ -55,6 +55,7 @@
     ],
     "supportedModules": [
         "asm",
-        "exposure_management"
+        "exposure_management",
+        "xsiam"
     ]
 }
