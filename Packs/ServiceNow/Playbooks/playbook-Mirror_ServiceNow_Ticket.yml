@@ -506,8 +506,7 @@ inputs:
   value:
     simple: Both
   required: false
-  description: "Set the mirror direction, should be one of the following: \n1. In\n2. Out\n3.
-    Both"
+  description: "Set the mirror direction, should be one of the following: \n1. In\n2. Out\n3. Both"
   playbookInputQuery:
 - key: MirrorCommentTags
   value:
@@ -547,3 +546,4 @@ supportedModules:
 - X5
 - ENT_PLUS
 - agentix
+- xsiam
