@@ -63,4 +63,3 @@ supportedModules:
 - X5
 - ENT_PLUS
 - agentix
-dockerimage: demisto/python3:3.12.8.3296088
