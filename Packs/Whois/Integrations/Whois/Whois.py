@@ -1849,6 +1849,20 @@ class WhoisEmptyResponse(Exception):
     pass
 
 
+class WhoisRateLimit(Exception):
+    """Exception raised when WHOIS rate limit is exceeded."""
+
+    def __init__(self, message, response=None):
+        super().__init__(message)
+        self.message = message
+        self.response = response
+
+    def __str__(self):
+        if self.response:
+            demisto.debug(f"Whois Rate Limit Response: {self.response}")
+        return f"Exception Message: {self.message}"
+
+
 class WhoisException(Exception):
     pass
 
@@ -3468,8 +3482,17 @@ def test_command():
     whois_result = get_whois(test_domain)
 
     try:
-        if whois_result["nameservers"][0] == "ns1.google.com":
+        nameservers = whois_result.get("nameservers", [])
+        if nameservers and nameservers[0] == "ns1.google.com":
             return "ok"
+        # Check for rate limit pattern in whois result
+        whois_result_str = str(whois_result)
+        rate_limit_pattern = r"query quota for .+ has been exceeded"
+        if re.search(rate_limit_pattern, whois_result_str):
+            raise WhoisRateLimit(
+                "Test completed but encountered rate limiting. Consider using an engine to avoid IP-based rate limits. For more info see: https://xsoar.pan.dev/docs/reference/integrations/whois#rate-limiting-or-ip-blocking-issues",
+                response=whois_result,
+            )
     except Exception as e:
         raise WhoisException(f"Failed testing module using domain '{test_domain}': {e.__class__.__name__} {e}")
 
