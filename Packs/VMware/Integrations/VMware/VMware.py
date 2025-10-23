@@ -833,14 +833,20 @@ def test_module(si):
     return "ok"
 
 
-def vsphare_client_login(params):
+def vsphere_client_login(params):
     full_url, url, port, user_name, password = parse_params(params)
 
+    verify: bool = not params.get("insecure", False)
+    proxies: dict = handle_proxy()
+
     session = requests.session()
-    session.verify = not params.get("insecure", False)
+    session.verify = verify
+    session.proxies = proxies
+
     urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-    # Connect to Vsphere automation sdk using username and password
+    # Connect to the Vsphere automation sdk using a username and password
+    demisto.debug(f"Connecting to Vsphere client with {full_url=}, {verify=}, {proxies=}.")
     return create_vsphere_client(server=full_url, username=user_name, password=password, session=session)
 
 
@@ -875,7 +881,7 @@ def main():  # pragma: no cover
         if demisto.command() == "vmware-change-nic-state":
             result = change_nic_state(si, demisto.args())
         if demisto.command() == "vmware-list-vms-by-tag":
-            vsphere_client = vsphare_client_login(demisto.params())
+            vsphere_client = vsphere_client_login(demisto.params())
             result = list_vms_by_tag(vsphere_client, demisto.args())
         if demisto.command() == "vmware-create-vm":
             result = create_vm(si, demisto.args())
