@@ -1939,10 +1939,12 @@ class EC2:
         """
         kwargs = {
             "Filters": parse_filter_field(args.get("filters")),
-            "MaxResults": int(args.get("limit", DEFAULT_LIMIT_VALUE)),
-            "NextToken": args.get("next_token"),
             "IpamResourceDiscoveryAssociationIds": argToList(args.get("ipam_resource_discovery_association_ids")),
         }
+        if not args.get("ipam_resource_discovery_association_ids"):
+            pagination_kwargs = build_pagination_kwargs(args)
+            kwargs.update(pagination_kwargs)
+
         remove_nulls_from_dictionary(kwargs)
 
         response = client.describe_ipam_resource_discovery_associations(**kwargs)
