@@ -3749,6 +3749,139 @@ script:
     - contextPath: AWS.S3-Buckets.PolicyExists
       description: Whether a bucket policy exists.
       type: boolean
+  - arguments:
+    - description: The AWS account ID.
+      name: account_id
+      required: true
+    - description: Entry ID of the file to upload.
+      name: entryID
+      required: true
+    - description: Name of the S3 bucket containing the file. Must follow S3 naming conventions.
+      name: bucket
+      required: true
+    - description: Key (path) where the file will be stored in the S3 bucket.
+      name: key
+      required: true
+    - description: AWS region where the S3 bucket is located.
+      name: region
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+    description: Upload file to S3 bucket.
+    name: aws-s3-file-upload
+    outputs: []
+  - arguments:
+    - description: The AWS account ID.
+      name: account_id
+      required: true
+    - description: Name of the target S3 bucket. Must follow S3 naming conventions.
+      name: bucket
+      required: true
+    - description: Key (path) of the file to download from the S3 bucket.
+      name: key
+      required: true
+    - description: AWS region where the S3 bucket is located.
+      name: region
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+    description: Download a file from S3 bucket to the War Room.
+    name: aws-s3-file-download
+    outputs:
+    - contextPath: File.Size
+      description: The size of the file.
+      type: Number
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.Name
+      description: The name of the file.
+      type: String
+    - contextPath: File.SSDeep
+      description: The SSDeep hash of the file.
+      type: String
+    - contextPath: File.EntryID
+      description: The entry ID of the file.
+      type: String
+    - contextPath: File.Info
+      description: File information.
+      type: String
+    - contextPath: File.Type
+      description: The file type.
+      type: String
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.Extension
+      description: The file extension.
+      type: String
   isfetch: false
   runonce: false
   script: '-'
