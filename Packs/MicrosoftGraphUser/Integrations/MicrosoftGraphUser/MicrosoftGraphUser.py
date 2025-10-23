@@ -161,7 +161,7 @@ class MsGraphClient:
 
     #  If successful, this method returns 204 No Content response code.
     #  Using resp_type=text to avoid parsing error.
-    def password_change_user(
+    def password_change_user_saas(
         self, user: str, password: str, force_change_password_next_sign_in: bool, force_change_password_with_mfa: bool
     ):
         body = {
@@ -172,6 +172,34 @@ class MsGraphClient:
             }
         }
         self.ms_client.http_request(method="PATCH", url_suffix=f"users/{quote(user)}", json_data=body, resp_type="text")
+
+    def fetch_password_method_id(self, user: str) -> str:
+        """
+        fetches the password method ID, to be used later. See API docs for reference:
+         https://learn.microsoft.com/en-us/graph/api/authentication-list-passwordmethods?view=graph-rest-1.0&tabs=http
+        """
+        password_method_id_response = None
+        try:
+            password_method_id_response = self.ms_client.http_request(
+                method="GET", url_suffix=f"users/{quote(user)}/authentication/passwordMethods"
+            )
+            password_method_id = password_method_id_response.get("value", [])[0]["id"]  # There is only one password method object
+        except (IndexError, KeyError) as e:
+            raise DemistoException("Failed getting passwordMethod id", exception=e, res=password_method_id_response)
+        return password_method_id
+
+    def password_change_user_on_premise(self, user: str, password: str, password_method_id: str) -> None:
+        """
+        changes the password of a user on premise.
+        """
+        self.ms_client.http_request(
+            method="POST",
+            url_suffix=f"users/{quote(user)}/authentication/methods/{password_method_id}/resetPassword",
+            ok_codes=(202,),
+            empty_valid_codes=(202,),
+            json_data={"newPassword": password},
+            return_empty_response=True,
+        )
 
     def get_delta(self, properties):
         users = self.ms_client.http_request(method="GET", url_suffix="users/delta", params={"$select": properties})
@@ -411,16 +439,66 @@ def update_user_command(client: MsGraphClient, args: dict):
 
 
 @suppress_errors_with_404_code
-def change_password_user_command(client: MsGraphClient, args: dict):
+def change_password_user_saas_command(client: MsGraphClient, args: dict):
+    """
+    changes password for SaaS accounts. See change_password_user_on_prem_command for the on-premise equivalent.
+    """
     user = str(args.get("user"))
     password = str(args.get("password"))
     force_change_password_next_sign_in = args.get("force_change_password_next_sign_in", "true") == "true"
     force_change_password_with_mfa = args.get("force_change_password_with_mfa", False) == "true"
 
-    client.password_change_user(user, password, force_change_password_next_sign_in, force_change_password_with_mfa)
+    client.password_change_user_saas(user, password, force_change_password_next_sign_in, force_change_password_with_mfa)
     human_readable = f"User {user} password was changed successfully."
 
     return CommandResults(readable_output=human_readable)
+
+
+def validate_input_password(args: dict[str, Any]) -> str:
+    """
+    Get the user's password argument inserted by the user. The password can be inserted either in the sensitive
+    argument (named 'password') or nonsensitive argument (named 'nonsensitive_password'). This function validates
+    that these arguments are used properly and raises an error if both are provided with different values.
+
+    Args:
+        args: script's arguments
+
+    Returns:
+        str: the password provided by the user
+
+    Raises:
+        ValueError: if no password is provided or if both passwords are provided with different values
+    """
+    sensitive_password = args.get("password", "")
+    nonsensitive_password = args.get("nonsensitive_password", "")
+
+    if not sensitive_password and not nonsensitive_password:
+        raise DemistoException(
+            "Password is required. Please provide either 'password' (sensitive) or 'nonsensitive_password' argument."
+        )
+
+    if sensitive_password and nonsensitive_password and sensitive_password != nonsensitive_password:
+        raise DemistoException(
+            "Conflicting passwords provided. The 'password' and 'nonsensitive_password' arguments must have the same value, "
+            "or use only one of them."
+        )
+
+    return sensitive_password or nonsensitive_password
+
+
+def change_password_user_on_premise_command(client: MsGraphClient, args: dict[str, Any]):
+    """
+    changes password for on-premise accounts. See change_password_user_saas_command for the SAAS equivalent.
+    """
+    user = str(args.get("user", ""))
+    password = validate_input_password(args)
+
+    password_method_id = client.fetch_password_method_id(user)
+    demisto.debug("Got password method id")
+
+    client.password_change_user_on_premise(user, password, password_method_id)
+
+    return CommandResults(readable_output=f"The password of user {user} has been changed successfully.")
 
 
 def get_delta_command(client: MsGraphClient, args: dict):
@@ -741,7 +819,8 @@ def main():
         "msgraph-user-terminate-session": disable_user_account_command,
         "msgraph-user-account-disable": disable_user_account_command,
         "msgraph-user-update": update_user_command,
-        "msgraph-user-change-password": change_password_user_command,
+        "msgraph-user-change-password": change_password_user_saas_command,
+        "msgraph-user-change-password-on-premise": change_password_user_on_premise_command,
         "msgraph-user-delete": delete_user_command,
         "msgraph-user-create": create_user_command,
         "msgraph-user-get-delta": get_delta_command,
