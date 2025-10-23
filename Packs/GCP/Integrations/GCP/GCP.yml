@@ -569,7 +569,10 @@ script:
       type: String
     - contextPath: GCP.Storage.BucketPolicy.bindings
       description: List of role bindings for the bucket.
-      type: Unknown
+      type: List
+    - contextPath: GCP.Storage.BucketPolicy.resourceId
+      description: Resource ID of the updated IAM policy. e.g. projects/_/buckets/BUCKET_NAME.
+      type: String
 
   - name: gcp-storage-bucket-policy-set
     description: Sets the IAM policy for a bucket.
@@ -601,9 +604,6 @@ script:
     - contextPath: GCP.Storage.BucketPolicy.bindings
       description: List of role bindings for the bucket.
       type: List
-    - contextPath: GCP.Storage.BucketPolicy.resourceId
-      description: Resource ID of the updated IAM policy. e.g. projects/_/buckets/BUCKET_NAME.
-      type: String
 
   - name: gcp-storage-bucket-object-policy-list
     description: Retrieves the IAM policy for a specific object in a bucket.
