@@ -2277,7 +2277,7 @@ script:
     - contextPath: Azure.Compute.powerState
       description: Whether the VM instance is powered on or off.
       type: string
-  - name: azure-vm-poweroff-instance
+  - name: azure-vm-instance-poweroff
     description: Powers off a given virtual machine.
     execution: true
     arguments:
@@ -2309,7 +2309,7 @@ script:
     - contextPath: Azure.Compute.powerState
       description: Whether the virtual machine instance is powered on or off.
       type: string
-  - name: azure-vm-get-instance-details
+  - name: azure-vm-instance-details-get
     description: Gets the properties of a given virtual machine.
     arguments:
     - description: The subscription ID.
@@ -2380,7 +2380,7 @@ script:
     - contextPath: Azure.Compute.properties.diagnosticsProfile
       description: The configuration for boot diagnostics and monitoring of the virtual machine.
       type: string
-  - name: azure-vm-get-network-interface-details
+  - name: azure-vm-network-interface-details-get
     description: Gets the properties of a given network interface.
     arguments:
     - description: The subscription ID.
@@ -2437,7 +2437,7 @@ script:
     - contextPath: Azure.Network.Interfaces.properties.enableIPForwarding
       description: Indicates whether IP forwarding is enabled for the network interface.
       type: String
-  - name: azure-vm-get-public-ip-details
+  - name: azure-vm-public-ip-details-get
     description: Gets the properties of a given public IP address.
     arguments:
     - description: The subscription ID.

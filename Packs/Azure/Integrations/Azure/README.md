@@ -818,14 +818,14 @@ Updates the properties of an existing Azure Cosmos DB database account.
 | Azure.CosmosDB.properties.virtualNetworkRules | List | List of Virtual Network ACL rules. |
 | Azure.CosmosDB.properties.writeLocations | List | An array that contains the write locations enabled for the Cosmos DB account. |
 
-### azure-vm-get-instance-details
+### azure-vm-instance-details-get
 
 ***
 Gets the properties of a given virtual machine.
 
 #### Base Command
 
-`azure-vm-get-instance-details`
+`azure-vm-instance-details-get`
 
 #### Input
 
@@ -833,7 +833,7 @@ Gets the properties of a given virtual machine.
 | --- | --- | --- |
 | subscription_id | The subscription ID. | Required |
 | resource_group_name | The resource group to which the virtual machine belongs.<br/>To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command<br/>. | Required |
-| virtual_machine_name | The name of the virtual machine you want to view the details of. To see all the virtual machines with their associated names for a specific resource group, run the `azure-vm-list-instances` command. | Required |
+| virtual_machine_name | The name of the virtual machine you want to view the details of.| Required |
 | expand | The expand expression to apply on the operation. 'instanceView' retrieves a snapshot of the runtime properties of the virtual machine that is managed by the platform and can change outside of control plane operations. 'userData' retrieves the UserData property as part of the VM model view that was provided by the user during the VM Create/Update operation. Default value is False. Possible values are: instanceView, userData. Default is instanceView. | Optional |
 
 #### Context Output
@@ -944,14 +944,14 @@ Run this command to update a specific blob container.
 | Azure.StorageBlobContainer.properties.hasImmutabilityPolicy | Boolean | The hasImmutabilityPolicy property is set to true by SRP if an ImmutabilityPolicy exists for this container, and false if it does not. |
 | Azure.StorageBlobContainer.properties.hasLegalHold | Boolean | The hasLegalHold property is set to true by SRP if at least one legal hold tag exists, and false if all tags are cleared. |
 
-### azure-vm-start-instance
+### azure-vm-instance-start
 
 ***
 Powers on a given virtual machine.
 
 #### Base Command
 
-`azure-vm-start-instance`
+`azure-vm-instance-start`
 
 #### Input
 
@@ -959,7 +959,7 @@ Powers on a given virtual machine.
 | --- | --- | --- |
 | subscription_id | The subscription ID. | Required |
 | resource_group_name | Resource Group to which the virtual machine belongs.<br/>To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command<br/>. | Required |
-| virtual_machine_name | Name of the virtual machine to power on. To see all virtual machines and their associated names for a specific resource group, run the `azure-vm-list-instances` command. | Required |
+| virtual_machine_name | Name of the virtual machine to power on.| Required |
 
 #### Context Output
 
@@ -1007,14 +1007,14 @@ Gets network interfaces in a resource group.
 | Azure.NSGNetworkInterfaces.properties.allowPort25Out | Boolean | Whether port 25 outbound traffic is allowed. |
 | Azure.NSGNetworkInterfaces.properties.nicType | String | The network interface card type \(Standard/Basic\). |
 
-### azure-vm-get-network-interface-details
+### azure-vm-network-interface-details-get
 
 ***
 Gets the properties of a given network interface.
 
 #### Base Command
 
-`azure-vm-get-network-interface-details`
+`azure-vm-network-interface-details-get`
 
 #### Input
 
@@ -1149,14 +1149,14 @@ Run this command to get the blob service properties of a specific account storag
 | Azure.StorageBlobServiceProperties.properties.lastAccessTimeTrackingPolicy.trackingGranularityInDays | Number | Specifies the blob object tracking granularity in days, indicating how often the blob should be tracked. |
 | Azure.StorageBlobServiceProperties.properties.lastAccessTimeTrackingPolicy.blobType | String | An array of predefined, supported blob types. The only supported value is BlockBlob. |
 
-### azure-vm-get-public-ip-details
+### azure-vm-public-ip-details-get
 
 ***
 Gets the properties of a given public IP address.
 
 #### Base Command
 
-`azure-vm-get-public-ip-details`
+`azure-vm-public-ip-details-get`
 
 #### Input
 
@@ -1264,14 +1264,14 @@ Gets all resource groups for a subscription.
 | Azure.NSGResourceGroup.tags.aNSG-managed-cluster-rg | String | The ANSG managed cluster resource group tag associated with the Azure Network Security Groups resource group. |
 | Azure.NSGResourceGroup.tags.type | String | The type tag associated with the Azure Network Security Groups resource group. |
 
-### azure-vm-poweroff-instance
+### azure-vm-instance-poweroff
 
 ***
 Powers off a given virtual machine.
 
 #### Base Command
 
-`azure-vm-poweroff-instance`
+`azure-vm-instance-poweroff`
 
 #### Input
 
@@ -1279,7 +1279,7 @@ Powers off a given virtual machine.
 | --- | --- | --- |
 | subscription_id | The subscription ID. | Required |
 | resource_group_name | The resource group to which the virtual machine belongs.<br/>To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command<br/>. | Required |
-| virtual_machine_name | The name of the virtual machine to power off. To see all virtual machines with their associated names for a specific resource group, run the `azure-vm-list-instances` command. | Required |
+| virtual_machine_name | The name of the virtual machine to power off.| Required |
 | skip_shutdown | Set to True to request non-graceful VM shutdown. Possible values are: true, false. Default is false. | Optional |
 
 #### Context Output

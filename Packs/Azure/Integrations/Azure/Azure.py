@@ -3484,11 +3484,11 @@ def main():
             "azure-nsg-resource-group-list": nsg_resource_group_list_command,
             "azure-nsg-network-interfaces-list": nsg_network_interfaces_list_command,
             "azure-nsg-public-ip-addresses-list": nsg_public_ip_addresses_list_command,
-            "azure-vm-start-instance": start_vm_command,
-            "azure-vm-poweroff-instance": poweroff_vm_command,
-            "azure-vm-get-instance-details": get_vm_command,
-            "azure-vm-get-network-interface-details": get_network_interface_command,
-            "azure-vm-get-public-ip-details": get_public_ip_details_command,
+            "azure-vm-instance-start": start_vm_command,
+            "azure-vm-instance-poweroff": poweroff_vm_command,
+            "azure-vm-instance-details-get": get_vm_command,
+            "azure-vm-network-interface-details-get": get_network_interface_command,
+            "azure-vm-public-ip-details-get": get_public_ip_details_command,
         }
         if command == "test-module" and connector_id:
             demisto.debug(f"Running health check for connector ID: {connector_id}")
