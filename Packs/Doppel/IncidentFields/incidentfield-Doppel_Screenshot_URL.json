@@ -22,7 +22,7 @@
     "fieldCalcScript": "",
     "group": 0,
     "hidden": false,
-    "id": "incident_screenshot_url",
+    "id": "incident_doppelscreenshoturl",
     "isReadOnly": false,
     "itemVersion": "",
     "locked": false,
