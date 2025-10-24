@@ -4097,6 +4097,20 @@ def test_build_pagination_kwargs_no_pagination_arguments():
     assert "NextToken" not in result
 
 
+def test_build_pagination_kwargs_with_limit_less_than_minimum():
+    """
+    Given: A limit argument less than the minimum allowed value.
+    When: build_pagination_kwargs is called with limit less than minimum.
+    Then: It should raise ValueError indicating limit must be greater than minimum.
+    """
+    from AWS import build_pagination_kwargs
+
+    args = {"limit": "2"}
+
+    with pytest.raises(ValueError, match="Limit must be greater than 5"):
+        build_pagination_kwargs(args, minimum_limit=5)
+
+
 def test_aws_error_handler_handle_client_error_missing_error_code(mocker):
     """
     Given: A ClientError with missing error code in response.
@@ -4108,7 +4122,10 @@ def test_aws_error_handler_handle_client_error_missing_error_code(mocker):
 
     mocker.patch("AWS.demisto.debug")
 
-    error_response = {"Error": {"Message": "Some error message"}, "ResponseMetadata": {"HTTPStatusCode": 400}}
+    error_response = {
+        "Error": {"Message": "Some error message"},
+        "ResponseMetadata": {"HTTPStatusCode": 400},
+    }
     client_error = ClientError(error_response, "test-operation")
 
     with pytest.raises(SystemExit):
@@ -4337,3 +4354,188 @@ def test_modify_subnet_attribute_command_failure(mocker):
 
     with pytest.raises(DemistoException, match="Modification could not be performed."):
         EC2.modify_subnet_attribute_command(mock_client, args)
+
+
+def test_ec2_describe_subnets_command_success(mocker):
+    """
+    Given: A mocked boto3 EC2 client with valid subnet response.
+    When: describe_subnets_command is called successfully.
+    Then: It should return CommandResults with subnet information and outputs.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.describe_subnets.return_value = {
+        "Subnets": [
+            {
+                "AvailabilityZone": "us-east-1a",
+                "AvailableIpAddressCount": 251,
+                "CidrBlock": "0.0.0.0/24",
+                "DefaultForAz": False,
+                "State": "available",
+                "SubnetId": "subnet-12345678",
+                "VpcId": "vpc-87654321",
+                "Tags": [{"Key": "Name", "Value": "test-subnet"}, {"Key": "Environment", "Value": "dev"}],
+            }
+        ]
+    }
+
+    args = {"account_id": "123456789", "region": "us-east-1"}
+
+    result = EC2.describe_subnets_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "AWS.EC2.Subnets"
+    assert result.outputs_key_field == "SubnetId"
+    assert "AWS EC2 Subnets" in result.readable_output
+    mock_client.describe_subnets.assert_called_once_with()
+
+
+def test_ec2_describe_subnets_command_with_filters(mocker):
+    """
+    Given: A mocked boto3 EC2 client and subnet IDs/filters arguments.
+    When: describe_subnets_command is called with filters and subnet IDs.
+    Then: It should pass the correct parameters to the boto3 client.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.describe_subnets.return_value = {
+        "Subnets": [
+            {
+                "AvailabilityZone": "us-east-1a",
+                "AvailableIpAddressCount": 251,
+                "CidrBlock": "0.0.0.0/24",
+                "DefaultForAz": False,
+                "State": "available",
+                "SubnetId": "subnet-12345678",
+                "VpcId": "vpc-87654321",
+            }
+        ]
+    }
+
+    args = {
+        "account_id": "123456789",
+        "region": "us-east-1",
+        "subnet_ids": "subnet-12345678,subnet-87654321",
+        "filters": "name=state,values=available",
+    }
+
+    EC2.describe_subnets_command(mock_client, args)
+
+    call_args = mock_client.describe_subnets.call_args[1]
+    assert "SubnetIds" in call_args
+    assert "Filters" in call_args
+    assert call_args["SubnetIds"] == ["subnet-12345678", "subnet-87654321"]
+
+
+def test_ec2_describe_subnets_command_no_results(mocker):
+    """
+    Given: A mocked boto3 EC2 client returning no subnets.
+    When: describe_subnets_command is called with no matching subnets.
+    Then: It should return CommandResults with appropriate message.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.describe_subnets.return_value = {"Subnets": []}
+
+    args = {"account_id": "123456789", "region": "us-east-1", "limit": "10"}
+
+    result = EC2.describe_subnets_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.readable_output == "No subnets were found."
+
+
+def test_ec2_describe_vpcs_command_success(mocker):
+    """
+    Given: A mocked boto3 EC2 client with valid VPC response.
+    When: describe_vpcs_command is called successfully.
+    Then: It should return CommandResults with VPC information and outputs.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.describe_vpcs.return_value = {
+        "Vpcs": [
+            {
+                "CidrBlock": "10.0.0.0/16",
+                "DhcpOptionsId": "dopt-12345678",
+                "State": "available",
+                "VpcId": "vpc-12345678",
+                "OwnerId": "123456789012",
+                "InstanceTenancy": "default",
+                "IsDefault": False,
+                "Tags": [{"Key": "Name", "Value": "test-vpc"}, {"Key": "Environment", "Value": "prod"}],
+            }
+        ]
+    }
+
+    args = {"account_id": "123456789", "region": "us-east-1", "limit": "5"}
+
+    result = EC2.describe_vpcs_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "AWS.EC2.Vpcs"
+    assert result.outputs_key_field == "VpcId"
+    assert "AWS EC2 Vpcs" in result.readable_output
+    mock_client.describe_vpcs.assert_called_once_with()
+
+
+def test_ec2_describe_vpcs_command_with_filters(mocker):
+    """
+    Given: A mocked boto3 EC2 client and VPC IDs/filters arguments.
+    When: describe_vpcs_command is called with filters and VPC IDs.
+    Then: It should pass the correct parameters to the boto3 client.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.describe_vpcs.return_value = {
+        "Vpcs": [
+            {
+                "CidrBlock": "0.0.0.0/16",
+                "DhcpOptionsId": "dopt-12345678",
+                "State": "available",
+                "VpcId": "vpc-12345678",
+                "OwnerId": "123456789012",
+                "InstanceTenancy": "default",
+                "IsDefault": False,
+            }
+        ]
+    }
+
+    args = {
+        "account_id": "123456789",
+        "region": "us-east-1",
+        "vpc_ids": "vpc-12345678,vpc-87654321",
+        "filters": "name=state,values=available",
+        "next_token": "next_token",
+    }
+
+    EC2.describe_vpcs_command(mock_client, args)
+
+    call_args = mock_client.describe_vpcs.call_args[1]
+    assert "VpcIds" in call_args
+    assert "Filters" in call_args
+    assert call_args["VpcIds"] == ["vpc-12345678", "vpc-87654321"]
+
+
+def test_ec2_describe_vpcs_command_no_results(mocker):
+    """
+    Given: A mocked boto3 EC2 client returning no VPCs.
+    When: describe_vpcs_command is called with no matching VPCs.
+    Then: It should return CommandResults with appropriate message.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.describe_vpcs.return_value = {"Vpcs": []}
+
+    args = {"account_id": "123456789", "region": "us-east-1", "limit": "10"}
+
+    result = EC2.describe_vpcs_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.readable_output == "No VPCs were found."

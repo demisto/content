@@ -1363,23 +1363,24 @@ Modifies a subnet attribute.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| account_id | The AWS account ID. | Required | 
-| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required | 
-| subnet_id | The ID of the subnet. | Required | 
-| assign_ipv6_address_on_creation | Specify true to indicate that network interfaces created in the specified subnet should be assigned an IPv6 address. | Optional | 
-| customer_owned_ipv4_pool | The customer-owned IPv4 address pool associated with the subnet. | Optional | 
-| disable_lni_at_device_index | Specify true to indicate that local network interfaces at the current position should be disabled. | Optional | 
-| enable_dns64 | Indicates whether DNS queries made to the Amazon-provided DNS Resolver in this subnet should return synthetic IPv6 addresses for IPv4-only destinations. | Optional | 
-| enable_lni_at_device_index | Indicates the device position for local network interfaces in this subnet. | Optional | 
-| enable_resource_name_dns_aaaa_record_on_launch | Indicates whether to respond to DNS queries for instance hostnames with DNS AAAA records. | Optional | 
-| enable_resource_name_dns_a_record_on_launch | Indicates whether to respond to DNS queries for instance hostnames with DNS A records. | Optional | 
-| map_customer_owned_ip_on_launch | Specify true to indicate that network interfaces attached to instances created in the specified subnet should be assigned a customer-owned IPv4 address. | Optional | 
-| map_public_ip_on_launch | Specify true to indicate that network interfaces attached to instances created in the specified subnet should be assigned a public IPv4 address. | Optional | 
-| private_dns_hostname_type_on_launch | The type of hostname to assign to instances in the subnet at launch. | Optional | 
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
+| subnet_id | The ID of the subnet. | Required |
+| assign_ipv6_address_on_creation | Specify true to indicate that network interfaces created in the specified subnet should be assigned an IPv6 address. | Optional |
+| customer_owned_ipv4_pool | The customer-owned IPv4 address pool associated with the subnet. | Optional |
+| disable_lni_at_device_index | Specify true to indicate that local network interfaces at the current position should be disabled. | Optional |
+| enable_dns64 | Indicates whether DNS queries made to the Amazon-provided DNS Resolver in this subnet should return synthetic IPv6 addresses for IPv4-only destinations. | Optional |
+| enable_lni_at_device_index | Indicates the device position for local network interfaces in this subnet. | Optional |
+| enable_resource_name_dns_aaaa_record_on_launch | Indicates whether to respond to DNS queries for instance hostnames with DNS AAAA records. | Optional |
+| enable_resource_name_dns_a_record_on_launch | Indicates whether to respond to DNS queries for instance hostnames with DNS A records. | Optional |
+| map_customer_owned_ip_on_launch | Specify true to indicate that network interfaces attached to instances created in the specified subnet should be assigned a customer-owned IPv4 address. | Optional |
+| map_public_ip_on_launch | Specify true to indicate that network interfaces attached to instances created in the specified subnet should be assigned a public IPv4 address. | Optional |
+| private_dns_hostname_type_on_launch | The type of hostname to assign to instances in the subnet at launch. | Optional |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### aws-s3-bucket-website-delete
 
 ***
@@ -1393,13 +1394,14 @@ Removes the website configuration for a bucket.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| account_id | The AWS account ID. | Required | 
-| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required | 
-| bucket | The bucket name for which you want to remove the website configuration. | Required | 
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
+| bucket | The bucket name for which you want to remove the website configuration. | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### aws-s3-bucket-ownership-controls-put
 
 ***
@@ -1413,14 +1415,15 @@ Creates or modifies OwnershipControls for an Amazon S3 bucket.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| account_id | The AWS account ID. | Required | 
-| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required | 
-| bucket | The name of the Amazon S3 bucket whose OwnershipControls you want to set. | Required | 
-| ownership_controls_rule | Ownership for a bucket's ownership controls. Possible values are: BucketOwnerPreferred, ObjectWriter, BucketOwnerEnforced. | Required | 
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
+| bucket | The name of the Amazon S3 bucket whose OwnershipControls you want to set. | Required |
+| ownership_controls_rule | Ownership for a bucket's ownership controls. Possible values are: BucketOwnerPreferred, ObjectWriter, BucketOwnerEnforced. | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### aws-rds-event-subscription-modify
 
 ***
@@ -1434,25 +1437,164 @@ Modifies an existing RDS event notification subscription.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| account_id | The AWS account ID. | Required | 
-| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required | 
-| subscription_name | The name of the RDS event notification subscription. | Required | 
-| enabled | Specifies whether to activate the subscription. | Optional | 
-| event_categories | A list of event categories for a source type (SourceType) that you want to subscribe to. | Optional | 
-| sns_topic_arn | The Amazon Resource Name (ARN) of the SNS topic created for event notification. | Optional | 
-| source_type | The type of source that is generating the events. | Optional | 
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
+| subscription_name | The name of the RDS event notification subscription. | Required |
+| enabled | Specifies whether to activate the subscription. | Optional |
+| event_categories | A list of event categories for a source type (SourceType) that you want to subscribe to. | Optional |
+| sns_topic_arn | The Amazon Resource Name (ARN) of the SNS topic created for event notification. | Optional |
+| source_type | The type of source that is generating the events. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.RDS.EventSubscription.CustomerAwsId | string | The AWS customer account associated with the RDS event notification subscription. | 
-| AWS.RDS.EventSubscription.CustSubscriptionId | string | The RDS event notification subscription Id. | 
-| AWS.RDS.EventSubscription.Enabled | boolean | Specifies whether the subscription is enabled. True indicates the subscription is enabled. | 
-| AWS.RDS.EventSubscription.EventCategoriesList | array | A list of event categories for the RDS event notification subscription. | 
-| AWS.RDS.EventSubscription.EventSubscriptionArn | string | The Amazon Resource Name \(ARN\) for the event subscription. | 
-| AWS.RDS.EventSubscription.SnsTopicArn | string | The topic ARN of the RDS event notification subscription. | 
-| AWS.RDS.EventSubscription.SourceIdsList | array | A list of source IDs for the RDS event notification subscription. | 
-| AWS.RDS.EventSubscription.SourceType | string | The source type for the RDS event notification subscription. | 
-| AWS.RDS.EventSubscription.Status | string | The status of the RDS event notification subscription. | 
-| AWS.RDS.EventSubscription.SubscriptionCreationTime | string | The time the RDS event notification subscription was created. | 
+| AWS.RDS.EventSubscription.CustomerAwsId | string | The AWS customer account associated with the RDS event notification subscription. |
+| AWS.RDS.EventSubscription.CustSubscriptionId | string | The RDS event notification subscription Id. |
+| AWS.RDS.EventSubscription.Enabled | boolean | Specifies whether the subscription is enabled. True indicates the subscription is enabled. |
+| AWS.RDS.EventSubscription.EventCategoriesList | array | A list of event categories for the RDS event notification subscription. |
+| AWS.RDS.EventSubscription.EventSubscriptionArn | string | The Amazon Resource Name \(ARN\) for the event subscription. |
+| AWS.RDS.EventSubscription.SnsTopicArn | string | The topic ARN of the RDS event notification subscription. |
+| AWS.RDS.EventSubscription.SourceIdsList | array | A list of source IDs for the RDS event notification subscription. |
+| AWS.RDS.EventSubscription.SourceType | string | The source type for the RDS event notification subscription. |
+| AWS.RDS.EventSubscription.Status | string | The status of the RDS event notification subscription. |
+| AWS.RDS.EventSubscription.SubscriptionCreationTime | string | The time the RDS event notification subscription was created. |
+
+### aws-ec2-describe-vpcs
+
+***
+Describes one or more of your VPCs.
+
+#### Base Command
+
+`aws-ec2-describe-vpcs`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| filters | One or more filters Separated by ';'. See AWS documentation for details &amp; filter options. | Optional |
+| vpc_ids | A comma-separated list of VPC IDs. | Optional |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.EC2.Vpcs.CidrBlock | string | The primary IPv4 CIDR block for the VPC. |
+| AWS.EC2.Vpcs.DhcpOptionsId | string | The ID of the set of DHCP options you have associated with the VPC. |
+| AWS.EC2.Vpcs.State | string | The current state of the VPC. |
+| AWS.EC2.Vpcs.VpcId | string | The ID of the VPC. |
+| AWS.EC2.Vpcs.InstanceTenancy | string | The allowed tenancy of instances launched into the VPC. |
+| AWS.EC2.Vpcs.IsDefault | string | Indicates whether the VPC is the default VPC. |
+| AWS.EC2.Vpcs.Tags.Key | string | The key of the tag. |
+| AWS.EC2.Vpcs.Tags.Value | string | The value of the tag. |
+| AWS.EC2.Vpcs.Tags.Ipv6CidrBlockAssociationSet.AssociationId | string | The association ID for the IPv6 CIDR block. |
+| AWS.EC2.Vpcs.Tags.Ipv6CidrBlockAssociationSet.Ipv6CidrBlock | string | The IPv6 CIDR block. |
+| AWS.EC2.Vpcs.Tags.Ipv6CidrBlockAssociationSet.Ipv6CidrBlockState.State | string | The state of the CIDR block. |
+| AWS.EC2.Vpcs.Tags.Ipv6CidrBlockAssociationSet.Ipv6CidrBlockState.StatusMessage | string | A message about the status of the CIDR block, if applicable. |
+| AWS.EC2.Vpcs.Tags.CidrBlockAssociationSet.AssociationId | string | The association ID for the IPv4 CIDR block. |
+| AWS.EC2.Vpcs.Tags.CidrBlockAssociationSet.CidrBlock | string | The IPv4 CIDR block. |
+| AWS.EC2.Vpcs.Tags.CidrBlockAssociationSet.CidrBlockState.State | string | The state of the CIDR block. |
+| AWS.EC2.Vpcs.Tags.CidrBlockAssociationSet.CidrBlockState.StatusMessage | string | A message about the status of the CIDR block, if applicable. |
+| AWS.EC2.Vpcs.AccountId | string | The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided. |
+
+### aws-ec2-describe-subnets
+
+***
+Describes one or more of your subnets.
+
+#### Base Command
+
+`aws-ec2-describe-subnets`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| filters | One or more filters Separated by ';'. See AWS documentation for details &amp; filter options. | Optional |
+| subnet_ids | A comma-separated list of subnet IDs. | Optional |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.EC2.Subnets.AvailabilityZone | string | The Availability Zone of the subnet. |
+| AWS.EC2.Subnets.AvailableIpAddressCount | number | The number of unused private IPv4 addresses in the subnet. Note that the IPv4 addresses for any stopped instances are considered unavailable. |
+| AWS.EC2.Subnets.CidrBlock | string | The IPv4 CIDR block assigned to the subnet. |
+| AWS.EC2.Subnets.DefaultForAz | boolean | Indicates whether this is the default subnet for the Availability Zone. |
+| AWS.EC2.Subnets.MapPublicIpOnLaunch | boolean | Indicates whether instances launched in this subnet receive a public IPv4 address. |
+| AWS.EC2.Subnets.State | string | The current state of the subnet. |
+| AWS.EC2.Subnets.SubnetId | string | The ID of the subnet. |
+| AWS.EC2.Subnets.VpcId | string | The ID of the VPC the subnet is in. |
+| AWS.EC2.Subnets.AssignIpv6AddressOnCreation | boolean | Indicates whether a network interface created in this subnet \(including a network interface created by RunInstances\) receives an IPv6 address. |
+| AWS.EC2.Subnets.Ipv6CidrBlockAssociationSet.AssociationId | string | The association ID for the CIDR block. |
+| AWS.EC2.Subnets.Ipv6CidrBlockAssociationSet.Ipv6CidrBlock | string | The IPv6 CIDR block. |
+| AWS.EC2.Subnets.Ipv6CidrBlockAssociationSet.Ipv6CidrBlockState.State | string | The state of a CIDR block. |
+| AWS.EC2.Subnets.Ipv6CidrBlockAssociationSet.Ipv6CidrBlockState.StatusMessage | string | A message about the status of the CIDR block, if applicable. |
+| AWS.EC2.Subnets.Tags.Key | string | The key of the tag. |
+| AWS.EC2.Subnets.Tags.Value | string | The value of the tag. |
+| AWS.EC2.Subnets.AccountId | string | The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided. |
+
+### aws-ec2-describe-ipam-resource-discoveries
+
+***
+Describes IPAM resource discoveries. A resource discovery is an IPAM component that enables IPAM to manage and monitor resources that belong to the owning account.
+
+#### Base Command
+
+`aws-ec2-describe-ipam-resource-discoveries`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ipam_resource_discovery_ids | A comma-separated list of the IPAM resource discovery IDs. | Optional |
+| filters | One or more filters separated by ';' (for example, name=<name>;values=<values>). See AWS documentation for details &amp; filter options (https://docs.aws.amazon.com/cli/latest/userguide/cli-usage-filter.html). | Optional |
+| limit | The maximum number of results to return in a single call. Specify a value between 5 and 1000. Default value is 50. | Optional |
+| next_token | The token for the next set of results. | Optional |
+| address_region | The Amazon Web Services region for the IP address. | Optional |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.EC2.IpamResourceDiscoveries.IpamResourceDiscoveryId | String | The resource discovery ID. |
+| AWS.EC2.IpamResourceDiscoveries.OwnerId | String | The ID of the owner. |
+| AWS.EC2.IpamResourceDiscoveries.IpamResourceDiscoveryRegion | String | The resource discovery region. |
+| AWS.EC2.IpamResourceDiscoveries.AccountId | string | The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided. |
+
+### aws-ec2-describe-ipam-resource-discovery-associations
+
+***
+Describes resource discovery association with an Amazon VPC IPAM. An associated resource discovery is a resource discovery that has been associated with an IPAM.
+
+#### Base Command
+
+`aws-ec2-describe-ipam-resource-discovery-associations`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ipam_resource_discovery_association_ids | A comma-separated list of the resource discovery association IDs. | Optional |
+| filters | One or more filters separated by ';' (for example, name=<name>;values=<values>). See AWS documentation for details &amp; filter options (https://docs.aws.amazon.com/cli/latest/userguide/cli-usage-filter.html). | Optional |
+| limit | The maximum number of results to return in a single call. Specify a value between 5 and 1000. Default value is 50. | Optional |
+| next_token | The token for the next set of results. | Optional |
+| address_region | The Amazon Web Services region for the IP address. | Optional |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.EC2.IpamResourceDiscoveryAssociations.IpamResourceDiscoveryAssociationId | String | The resource discovery association ID. |
+| AWS.EC2.IpamResourceDiscoveryAssociations.IpamResourceDiscoveryId | String | The resource discovery ID. |
+| AWS.EC2.IpamResourceDiscoveryAssociations.IpamRegion | String | The IPAM home region. |
+| AWS.EC2.IpamResourceDiscoveryAssociations.AccountId | string | The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided. |
