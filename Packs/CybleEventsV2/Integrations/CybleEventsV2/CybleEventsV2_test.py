@@ -1911,33 +1911,6 @@ class TestClientMethods(unittest.TestCase):
             assert result_ids == ["id1", "id2"]
 
 
-# Test for test_response function
-def test_test_response_success():
-    """Test successful connection test"""
-    client = Mock()
-    client._http_request.return_value = {"status": "ok"}
-
-    from CybleEventsV2 import test_response
-
-    result = test_response(client=client, method="GET", base_url="https://test.com", token="test_token")
-
-    assert result == "ok"
-    client._http_request.assert_called_once()
-
-
-def test_test_response_empty_response():
-    """Test when response is empty"""
-    client = Mock()
-    client._http_request.return_value = None
-
-    with patch("CybleEventsV2.demisto") as mock_demisto:
-        from CybleEventsV2 import test_response
-
-        with pytest.raises(Exception, match="failed to connect"):
-            test_response(client=client, method="GET", base_url="https://test.com", token="test_token")
-
-        mock_demisto.error.assert_called()
-
 
 class TestCybleEventsLogical(unittest.TestCase):
     """Logical unit tests for cyble_events function focusing on business logic"""

@@ -8,12 +8,10 @@ import urllib3
 import dateparser
 import json
 from collections.abc import Sequence
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta
 import concurrent.futures
-from typing import Any, List, Tuple
 from dateutil.parser import parse as parse_date
 
-import concurrent.futures
 
 UTC = pytz.UTC
 
@@ -957,11 +955,6 @@ def get_fetch_severities(incident_severity):
     else:
         fetch_severities = ["LOW", "MEDIUM", "HIGH"]
     return fetch_severities
-
-
-def get_gte_limit(curr_gte: str) -> str:
-    server_gte = datetime.utcnow() - timedelta(hours=3)
-    return max(curr_gte, server_gte.astimezone(pytz.UTC).isoformat())
 
 
 def get_gte_limit(curr_gte: str) -> str:
