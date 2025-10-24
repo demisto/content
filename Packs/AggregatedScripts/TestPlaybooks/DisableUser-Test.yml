@@ -177,10 +177,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 098959c2-cb84-41cc-98fa-c4f26729fadf
+    taskid: be4927ee-4189-42b8-bb70-62a6d5d7ecf6
     type: regular
     task:
-      id: 098959c2-cb84-41cc-98fa-c4f26729fadf
+      id: be4927ee-4189-42b8-bb70-62a6d5d7ecf6
       version: -1
       name: Disable User - by user name and brand
       description: This script disables users for multiple services.
@@ -260,10 +260,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 36fc9fc8-8c80-43a4-82d0-6300675445c6
+    taskid: 7c6fc2ea-df07-46d9-bc36-84ba9a1392c9
     type: regular
     task:
-      id: 36fc9fc8-8c80-43a4-82d0-6300675445c6
+      id: 7c6fc2ea-df07-46d9-bc36-84ba9a1392c9
       version: -1
       name: Disable User - by user name and brand
       description: This script disables users for multiple services.
@@ -1086,10 +1086,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: 6d57879e-2a56-4a74-b070-fa59c16e6cdc
+    taskid: a949d917-5d56-4890-8284-96b64afd531c
     type: regular
     task:
-      id: 6d57879e-2a56-4a74-b070-fa59c16e6cdc
+      id: a949d917-5d56-4890-8284-96b64afd531c
       version: -1
       name: Disable User - by name
       description: This script disables users for multiple services.
@@ -1482,10 +1482,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "40":
     id: "40"
-    taskid: d1777f21-5c05-49cc-8492-8915603323d6
+    taskid: 06c16431-31c6-4eeb-b9ec-75fd10a3e59b
     type: regular
     task:
-      id: d1777f21-5c05-49cc-8492-8915603323d6
+      id: 06c16431-31c6-4eeb-b9ec-75fd10a3e59b
       version: -1
       name: Disable User - by name one brand
       description: This script disables users for multiple services.
@@ -1945,10 +1945,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "50":
     id: "50"
-    taskid: 7be365e7-b65c-48d0-95ff-5c2ef527def5
+    taskid: b11845e9-3dda-44f5-b8a6-d057bb25b602
     type: regular
     task:
-      id: 7be365e7-b65c-48d0-95ff-5c2ef527def5
+      id: b11845e9-3dda-44f5-b8a6-d057bb25b602
       version: -1
       name: Disable User - by name/email/id all brands
       description: This script disables users for multiple services.
@@ -2166,7 +2166,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "57"
+      - "59"
     scriptarguments:
       all:
         simple: "yes"
@@ -2177,39 +2177,6 @@ tasks:
         "position": {
           "x": 480,
           "y": 8110
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "57":
-    id: "57"
-    taskid: baea3101-7fe6-40a2-803d-fba09b19b752
-    type: regular
-    task:
-      id: baea3101-7fe6-40a2-803d-fba09b19b752
-      version: -1
-      name: Get Timestamp
-      description: |
-        Retrieves the current date and time.
-      scriptName: GetTime
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "59"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 8280
         }
       }
     note: false
@@ -2361,10 +2328,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "59":
     id: "59"
-    taskid: 0e0bfd94-0bcb-4083-a0bb-7249cc547d9a
+    taskid: b6b7a37a-4e45-4261-9b76-1309e4b7d440
     type: regular
     task:
-      id: 0e0bfd94-0bcb-4083-a0bb-7249cc547d9a
+      id: b6b7a37a-4e45-4261-9b76-1309e4b7d440
       version: -1
       name: Disable Non Existent user
       description: This script disables users for multiple services.
@@ -2379,7 +2346,7 @@ tasks:
       - "68"
     scriptarguments:
       user_id:
-        simple: ${TimeNowUnix}
+        simple: test123123312334127y67
     separatecontext: false
     continueonerror: true
     continueonerrortype: errorPath
@@ -2387,7 +2354,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 8450
+          "y": 8270
         }
       }
     note: false
@@ -2418,7 +2385,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 8620
+          "y": 8530
         }
       }
     note: false
@@ -2443,7 +2410,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "62"
+      - "63"
     scriptarguments:
       all:
         simple: "yes"
@@ -2453,40 +2420,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 8780
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "62":
-    id: "62"
-    taskid: d7920d75-c158-4e4b-83a1-a335f3a0d35f
-    type: regular
-    task:
-      id: d7920d75-c158-4e4b-83a1-a335f3a0d35f
-      version: -1
-      name: Get Timestamp
-      description: |
-        Retrieves the current date and time.
-      scriptName: GetTime
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "63"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 8950
+          "y": 8680
         }
       }
     note: false
@@ -2521,7 +2455,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 9120
+          "y": 8900
         }
       }
     note: false
@@ -2552,7 +2486,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 9290
+          "y": 9130
         }
       }
     note: false
@@ -2595,12 +2529,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "66":
     id: "66"
-    taskid: a50638a7-5adb-4497-8a92-addb4724f95d
+    taskid: 3b87250a-81f8-476f-a0a0-cb8477708a38
     type: regular
     task:
-      id: a50638a7-5adb-4497-8a92-addb4724f95d
+      id: 3b87250a-81f8-476f-a0a0-cb8477708a38
       version: -1
-      name: Disable Non Existent user
+      name: Disable Non Existent brand
       description: This script disables users for multiple services.
       scriptName: disable-user
       type: regular
@@ -2612,10 +2546,8 @@ tasks:
       '#none#':
       - "68"
     scriptarguments:
-      brands:
-        simple: ${TimeNowUnix}
       user_id:
-        simple: ${TimeNowUnix}
+        simple: test123123453215
     separatecontext: false
     continueonerror: true
     continueonerrortype: errorPath
@@ -2623,7 +2555,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 9450
+          "y": 9280
         }
       }
     note: false
@@ -2651,7 +2583,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 9620
+          "y": 9500
         }
       }
     note: false
@@ -2713,6 +2645,5 @@ view: |-
   }
 inputs: []
 outputs: []
-quiet: true
 fromversion: 6.10.0
 description: This TestPlaybook validates the DisableUser command across multiple integrations, covering both happy and sad flows.

@@ -1,0 +1,20 @@
+{
+    "ibm_ldap_raw": {
+        "_raw_log": {
+            "type": "string",
+            "is_array": false
+        },
+        "client": {
+            "type": "string",
+            "is_array": false
+        },
+        "level": {
+            "type": "string",
+            "is_array": false
+        },
+        "hostname": {
+            "type": "string",
+            "is_array": false
+        }
+    }
+}

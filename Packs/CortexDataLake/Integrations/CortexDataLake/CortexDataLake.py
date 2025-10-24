@@ -22,13 +22,17 @@ from urllib.parse import urlparse
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 """ GLOBAL CONSTS """
+# Integration context fields
 ACCESS_TOKEN_CONST = "access_token"  # guardrails-disable-line
 EXPIRES_IN = "expires_in"
 INSTANCE_ID_CONST = "instance_id"
 API_URL_CONST = "api_url"
 FIRST_FAILURE_TIME_CONST = "first_failure_time"
 LAST_FAILURE_TIME_CONST = "last_failure_time"
+REFRESH_TOKEN_CONST = "refresh_token"
+IS_FEDRAMP_CONST = "is_fedramp"
 
+FEDRAMP_HOSTNAME_SUFFIX = "federal.paloaltonetworks.com"
 DEFAULT_API_URL = "https://api.us.cdl.paloaltonetworks.com"
 STANDARD_TOKEN_URL = "https://oproxy.demisto.ninja"  # guardrails-disable-line
 FEDRAMP_TOKEN_URL = (
@@ -61,7 +65,7 @@ class Client(BaseClient):
     Should only do requests and return data.
     """
 
-    def __init__(self, token_retrieval_url, registration_id, use_ssl, proxy, refresh_token, enc_key, is_fr):
+    def __init__(self, token_retrieval_url, registration_id, use_ssl, proxy, refresh_token, enc_key):
         headers = get_x_content_info_headers()
         headers["Authorization"] = registration_id
         headers["Accept"] = "application/json"
@@ -69,7 +73,7 @@ class Client(BaseClient):
         self.refresh_token = refresh_token
         self.enc_key = enc_key
         self.use_ssl = use_ssl
-        self.is_fr = is_fr
+        self.use_fr_token_headers = bool(FEDRAMP_HOSTNAME_SUFFIX in token_retrieval_url)
         self.registration_id = registration_id
         # Trust environment settings for proxy configuration
         self.trust_env = proxy
@@ -92,15 +96,17 @@ class Client(BaseClient):
             return
         demisto.debug(f"access token time: {valid_until} expired/none. Will call oproxy")
         access_token, api_url, instance_id, refresh_token, expires_in = self._oproxy_authorize()
-        updated_integration_context = {
-            ACCESS_TOKEN_CONST: access_token,
-            EXPIRES_IN: int(time.time()) + expires_in - SECONDS_30,
-            API_URL_CONST: api_url,
-            INSTANCE_ID_CONST: instance_id,
-        }
+        integration_context.update(
+            {
+                ACCESS_TOKEN_CONST: access_token,
+                EXPIRES_IN: int(time.time()) + expires_in - SECONDS_30,
+                API_URL_CONST: api_url,
+                INSTANCE_ID_CONST: instance_id,
+            }
+        )
         if refresh_token:
-            updated_integration_context.update({"refresh_token": refresh_token})
-        demisto.setIntegrationContext(updated_integration_context)
+            integration_context.update({REFRESH_TOKEN_CONST: refresh_token})
+        demisto.setIntegrationContext(integration_context)
         self.access_token = access_token
         self.api_url = api_url
         self.instance_id = instance_id
@@ -109,7 +115,7 @@ class Client(BaseClient):
         oproxy_response = self._get_access_token_with_backoff_strategy()
         access_token = oproxy_response.get(ACCESS_TOKEN_CONST)
         api_url = oproxy_response.get("url")
-        refresh_token = oproxy_response.get("refresh_token")
+        refresh_token = oproxy_response.get(REFRESH_TOKEN_CONST)
         instance_id = oproxy_response.get(INSTANCE_ID_CONST)
         # In case the response has EXPIRES_IN key with empty string as value, we need to make sure we don't try to cast
         # an empty string to an int.
@@ -185,9 +191,11 @@ class Client(BaseClient):
         demisto.debug("CDL - Fetching access token")
         try:
             token = get_encrypted(self.refresh_token, self.enc_key)
-            if self.is_fr:
+            if self.use_fr_token_headers:
+                demisto.debug("Using FedRAMP resource token request headers.")
                 data = {"encrypted_token": token, "registration_id": self.registration_id}
             else:
+                demisto.debug("Using standard resource token request headers.")
                 data = {"token": token}
             oproxy_response = self._http_request(
                 "POST",
@@ -241,8 +249,7 @@ class Client(BaseClient):
         self, query: str, page_number: Optional[str] = None, page_size: Optional[str] = None
     ) -> tuple[list[dict], list]:
         """
-        This function handles all the querying of Cortex Logging service
-
+        This function handles all the querying of Strata Logging Service
         Args:
             query: The sql string query.
             page_number: The page number to query.
@@ -252,7 +259,7 @@ class Client(BaseClient):
             A list of records according to the query
         """
         query_data = {"query": self.add_instance_id_to_query(query), "language": "csql"}
-        demisto.debug(f"Query being executed in CDL: {str(query_data)}")
+        demisto.debug(f"Query being executed in SLS: {str(query_data)}")
         query_service = self.initial_query_service()
         response = query_service.create_query(query_params=query_data, enforce_json=True)
         query_result = response.json()
@@ -267,7 +274,7 @@ class Client(BaseClient):
             except AttributeError:
                 error_message = query_result
 
-            raise DemistoException(f"Error in query to Cortex Data Lake XSOAR Connector [{status_code}] - {error_message}")
+            raise DemistoException(f"Error in query to Strata Logging Service XSOAR Connector [{status_code}] - {error_message}")
         raw_results = []
         try:
             for r in query_service.iter_job_results(
@@ -1033,27 +1040,24 @@ def convert_log_to_incident(log: dict, fetch_table: str) -> dict:
     return incident
 
 
-def extract_client_args(configured_registration_id_and_url: str) -> tuple[str, str, bool]:
+def is_fedramp_tenant() -> bool:
     """
-    Extracts the API Client arguments, including token retrieval URL, the registration ID, and FedRAMP status.
-
-    If the URL is provided in the "Registration ID" parameter, it extracts the registration ID and URL directly.
-    Otherwise, it retrieves the tenant URL from the license custom field to determine if it is a FedRAMP or standard tenant,
-    then sets the corresponding token retrieval URL.
-
-    Args:
-        configured_registration_id_and_url (str): The "Registration ID" parameter; may contain a URL joined with an "@" symbol.
+    Retrieves the tenant URL from the license custom field to determine if it is a FedRAMP or standard tenant.
 
     Returns:
-        tuple[str, str, bool]: A tuple containing the following:
-            - Token retrieval URL
-            - Registration ID
-            - Boolean flag indicating if FedRAMP (`True`) or standard tenant (`False`).
+        bool: True if FedRAMP tenant, False otherwise.
     """
-    # Get tenant URL
-    demisto.debug("Getting URL from license custom field.")
+    # Try to get from integration context
+    integration_context = demisto.getIntegrationContext()
+    is_fedramp = integration_context.get(IS_FEDRAMP_CONST)
+    if is_fedramp is not None:
+        demisto.debug(f"Found FedRAMP status {is_fedramp=} in integration context.")
+        return is_fedramp
+
+    # If not in integration context, get tenant URL
+    demisto.debug("FedRAMP status not in integration context. Getting tenant URL from license custom field.")
     url = str(demisto.getLicenseCustomField("Http_Connector.url"))
-    demisto.debug(f"Got {url=} from license custom field.")
+    demisto.debug(f"Got tenant {url=} from license custom field.")
 
     # Ensure 'https' scheme in tenant URL, otherwise URL may not be parsed correctly
     if not url.startswith("https"):
@@ -1061,30 +1065,55 @@ def extract_client_args(configured_registration_id_and_url: str) -> tuple[str, s
         url = f"https://{url}"
 
     # Extract hostname from tenant URL
-    demisto.debug("Extracting hostname from parsed URL.")
+    demisto.debug("Extracting hostname from parsed tenant URL.")
     parsed_url = urlparse(url)
     hostname = parsed_url.hostname
-    demisto.debug(f"Extracted {hostname=} from parsed URL.")
+    demisto.debug(f"Extracted {hostname=} from parsed tenant URL.")
 
-    is_fr = isinstance(hostname, str) and hostname.endswith(".federal.paloaltonetworks.com")  # Indicates if FedRAMP tenant
-    demisto.debug(f"Working on tenant with {is_fr=}.")
+    is_fedramp = isinstance(hostname, str) and hostname.endswith(FEDRAMP_HOSTNAME_SUFFIX)
 
+    # Set in integration context for use next time
+    integration_context[IS_FEDRAMP_CONST] = is_fedramp
+    demisto.debug(f"Setting tenant FedRAMP status {is_fedramp=} in integration context.")
+    demisto.setIntegrationContext(integration_context)
+    return is_fedramp
+
+
+def extract_client_args(configured_registration_id_and_url: str) -> tuple[str, str]:
+    """
+    Extracts the API Client arguments, including token retrieval URL and the registration ID.
+
+    If the URL is provided in the "Registration ID" parameter, it extracts the registration ID and URL directly.
+    Otherwise, it infers the token retrieval URL based on the tenant FedRAMP status.
+
+    Args:
+        configured_registration_id_and_url (str): The "Registration ID" parameter; may contain a URL joined with an "@" symbol.
+
+    Returns:
+        tuple[str, str]: The token retrieval URL, registration ID
+    """
     registration_id_and_url = configured_registration_id_and_url.split("@")
     registration_id = registration_id_and_url[0]
 
+    # If directly supplied, take configured token URL
     if len(registration_id_and_url) == 2:
         demisto.debug("Getting token retrieval URL from configured Registration ID.")
         token_retrieval_url = registration_id_and_url[1]
+        return token_retrieval_url, registration_id
 
-    elif is_fr:
-        demisto.debug("Getting token retrieval URL for FedRAMP tenant.")
+    # Else, infer token URL based on tenant FedRAMP status
+    is_fr = is_fedramp_tenant()
+    demisto.debug(f"Working on tenant with {is_fr=}.")
+
+    if is_fr:
+        demisto.debug("Getting inferred token retrieval URL for FedRAMP tenant.")
         token_retrieval_url = FEDRAMP_TOKEN_URL
 
     else:
-        demisto.debug("Getting token retrieval URL for standard tenant.")
+        demisto.debug("Getting inferred token retrieval URL for standard tenant.")
         token_retrieval_url = STANDARD_TOKEN_URL
 
-    return token_retrieval_url, registration_id, is_fr
+    return token_retrieval_url, registration_id
 
 
 """ COMMANDS FUNCTIONS """
@@ -1131,6 +1160,36 @@ def query_logs_command(args: dict, client: Client) -> tuple[str, dict[str, list[
     return human_readable, ec, raw_results
 
 
+def query_logs_sls_command(args: dict, client: Client) -> tuple[str, dict[str, list[dict]], list[dict[str, Any]]]:
+    """
+    Table name is stored in log_type attribute of the records
+    Args:
+        query: Query string, i.e SELECT * FROM firewall.threat LIMIT 1
+
+    Returns:
+        the result of querying the Logging service
+    """
+    query = args.get("query", "")
+    limit = args.get("limit", "")
+    transform_results = argToBoolean(args.get("transform_results", "true"))
+
+    if not args.get("page") and "limit" not in query.lower():
+        query += f" LIMIT {limit}"
+
+    records, raw_results = client.query_loggings(query, page_number=args.get("page"), page_size=args.get("page_size"))
+
+    table_name = get_table_name(query)
+    output_results = records
+    if transform_results:
+        output_results = [
+            system_log_context_transformer(record) if "log.system" in query else common_context_transformer(record)
+            for record in records
+        ]
+    human_readable = tableToMarkdown("Logs " + table_name + " table", output_results, removeNull=True)
+    ec = {"SLS.Logging": output_results}
+    return human_readable, ec, raw_results
+
+
 def get_table_name(query: str) -> str:
     """
     Table name is stored in log_type attribute of the records
@@ -1168,6 +1227,29 @@ def get_critical_logs_command(args: dict, client: Client) -> tuple[str, dict[str
     return human_readable, ec, raw_results
 
 
+def get_critical_logs_sls_command(args: dict, client: Client) -> tuple[str, dict[str, list[dict]], list[dict[str, Any]]]:
+    """
+    Queries Cortex Logging according to a pre-set query
+    Returns:
+        The query's threat log critical events
+    """
+    logs_amount = args.get("limit")
+    query_start_time, query_end_time = query_timestamp(args)
+    query = 'SELECT * FROM `firewall.threat` WHERE severity = "Critical" '  # guardrails-disable-line
+    query += f'AND time_generated BETWEEN TIMESTAMP("{query_start_time}") AND TIMESTAMP("{query_end_time}")'
+
+    if not args.get("page"):
+        query += f" LIMIT {logs_amount}"
+
+    records, raw_results = client.query_loggings(query, page_number=args.get("page"), page_size=args.get("page_size"))
+
+    transformed_results = [threat_context_transformer(record) for record in records]
+
+    human_readable = tableToMarkdown("Logs threat table", transformed_results, removeNull=True)
+    ec = {"SLS.Logging.Threat": transformed_results}
+    return human_readable, ec, raw_results
+
+
 def query_timestamp(args: dict) -> tuple[datetime, datetime]:
     start_time = args.get("start_time", "")
     end_time = args.get("end_time", "")
@@ -1201,6 +1283,30 @@ def get_social_applications_command(args: dict, client: Client) -> tuple[str, di
     return human_readable, ec, raw_results
 
 
+def get_social_applications_sls_command(args: dict, client: Client) -> tuple[str, dict[str, list[dict]], list[dict[str, Any]]]:
+    """
+    Queries Cortex Logging according to a pre-set query
+
+    Returns:
+        The traffic log app category social-networking events
+    """
+    logs_amount = args.get("limit")
+    query_start_time, query_end_time = query_timestamp(args)
+    query = 'SELECT * FROM `firewall.traffic` WHERE app_sub_category = "social-networking" '  # guardrails-disable-line
+    query += f' AND time_generated BETWEEN TIMESTAMP("{query_start_time}") AND TIMESTAMP("{query_end_time}")'
+
+    if not args.get("page"):
+        query += f" LIMIT {logs_amount}"
+
+    records, raw_results = client.query_loggings(query, page_number=args.get("page"), page_size=args.get("page_size"))
+
+    transformed_results = [traffic_context_transformer(record) for record in records]
+
+    human_readable = tableToMarkdown("Logs traffic table", transformed_results, removeNull=True)
+    ec = {"SLS.Logging.Traffic": transformed_results}
+    return human_readable, ec, raw_results
+
+
 def search_by_file_hash_command(args: dict, client: Client) -> tuple[str, dict[str, list[dict]], list[dict[str, Any]]]:
     """
     Queries Cortex Logging according to a pre-set query
@@ -1224,6 +1330,31 @@ def search_by_file_hash_command(args: dict, client: Client) -> tuple[str, dict[s
     return human_readable, ec, raw_results
 
 
+def search_by_file_hash_sls_command(args: dict, client: Client) -> tuple[str, dict[str, list[dict]], list[dict[str, Any]]]:
+    """
+    Queries Cortex Logging according to a pre-set query
+    Returns:
+        threat logs where sha256 equals match
+    """
+    logs_amount = args.get("limit")
+    file_hash = args.get("SHA256")
+
+    query_start_time, query_end_time = query_timestamp(args)
+    query = f'SELECT * FROM `firewall.threat` WHERE file_sha_256 = "{file_hash}" '  # guardrails-disable-line  # noqa: S608
+    query += f'AND time_generated BETWEEN TIMESTAMP("{query_start_time}") AND TIMESTAMP("{query_end_time}")'
+
+    if not args.get("page"):
+        query += f" LIMIT {logs_amount}"
+
+    records, raw_results = client.query_loggings(query, page_number=args.get("page"), page_size=args.get("page_size"))
+
+    transformed_results = [threat_context_transformer(record) for record in records]
+
+    human_readable = tableToMarkdown("Logs threat table", transformed_results, removeNull=True)
+    ec = {"SLS.Logging.Threat": transformed_results}
+    return human_readable, ec, raw_results
+
+
 def query_traffic_logs_command(args: dict, client: Client) -> tuple[str, dict, list[dict[str, Any]]]:
     """
     The function of the command that queries firewall.traffic table
@@ -1233,6 +1364,18 @@ def query_traffic_logs_command(args: dict, client: Client) -> tuple[str, dict, l
     table_name: str = "traffic"
     context_transformer_function = traffic_context_transformer
     table_context_path: str = "CDL.Logging.Traffic"
+    return query_table_logs(args, client, table_name, context_transformer_function, table_context_path)
+
+
+def query_traffic_logs_sls_command(args: dict, client: Client) -> tuple[str, dict, list[dict[str, Any]]]:
+    """
+    The function of the command that queries firewall.traffic table
+
+        Returns: XSOAR entry with all the parsed data
+    """
+    table_name: str = "traffic"
+    context_transformer_function = traffic_context_transformer
+    table_context_path: str = "SLS.Logging.Traffic"
     return query_table_logs(args, client, table_name, context_transformer_function, table_context_path)
 
 
@@ -1248,6 +1391,18 @@ def query_threat_logs_command(args: dict, client: Client) -> tuple[str, dict, li
     return query_table_logs(args, client, query_table_name, context_transformer_function, table_context_path)
 
 
+def query_threat_logs_sls_command(args: dict, client: Client) -> tuple[str, dict, list[dict[str, Any]]]:
+    """
+    The function of the command that queries firewall.threat table
+
+        Returns: XSOAR entry with all the parsed data
+    """
+    query_table_name: str = "threat"
+    context_transformer_function = threat_context_transformer
+    table_context_path: str = "SLS.Logging.Threat"
+    return query_table_logs(args, client, query_table_name, context_transformer_function, table_context_path)
+
+
 def query_url_logs_command(args: dict, client: Client) -> tuple[str, dict, list[dict[str, Any]]]:
     """
     The function of the command that queries firewall.url table
@@ -1260,10 +1415,34 @@ def query_url_logs_command(args: dict, client: Client) -> tuple[str, dict, list[
     return query_table_logs(args, client, query_table_name, context_transformer_function, table_context_path)
 
 
+def query_url_logs_sls_command(args: dict, client: Client) -> tuple[str, dict, list[dict[str, Any]]]:
+    """
+    The function of the command that queries firewall.url table
+
+        Returns: XSOAR entry with all the parsed data
+    """
+    query_table_name: str = "url"
+    context_transformer_function = url_context_transformer
+    table_context_path: str = "SLS.Logging.URL"
+    return query_table_logs(args, client, query_table_name, context_transformer_function, table_context_path)
+
+
 def query_file_data_command(args: dict, client: Client) -> tuple[str, dict, list[dict[str, Any]]]:
     query_table_name: str = "file_data"
     context_transformer_function = files_context_transformer
     table_context_path: str = "CDL.Logging.File"
+    return query_table_logs(args, client, query_table_name, context_transformer_function, table_context_path)
+
+
+def query_file_data_sls_command(args: dict, client: Client) -> tuple[str, dict, list[dict[str, Any]]]:
+    """
+    The function of the command that queries firewall.file_data table
+
+        Returns: XSOAR entry with all the parsed data
+    """
+    query_table_name: str = "file_data"
+    context_transformer_function = files_context_transformer
+    table_context_path: str = "SLS.Logging.File"
     return query_table_logs(args, client, query_table_name, context_transformer_function, table_context_path)
 
 
@@ -1276,6 +1455,18 @@ def query_gp_logs_command(args: dict, client: Client):
     table_name: str = "globalprotect"
     context_transformer_function = gp_context_transformer
     table_context_path: str = "CDL.Logging.GlobalProtect"
+    return query_table_logs(args, client, table_name, context_transformer_function, table_context_path, True)
+
+
+def query_gp_logs_sls_command(args: dict, client: Client):
+    """
+    The function of the command that queries firewall.globalprotect table
+
+        Returns: XSOAR entry with all the parsed data
+    """
+    table_name: str = "globalprotect"
+    context_transformer_function = gp_context_transformer
+    table_context_path: str = "SLS.Logging.GlobalProtect"
     return query_table_logs(args, client, table_name, context_transformer_function, table_context_path, True)
 
 
@@ -1333,8 +1524,8 @@ def fetch_incidents(
     fetch_filter: str = "",
 ) -> tuple[dict[str, str], list]:
     last_fetched_event_timestamp = last_run.get("lastRun")
-    demisto.debug("CortexDataLake - Start fetching")
-    demisto.debug(f"CortexDataLake - Last run: {json.dumps(last_run)}")
+    demisto.debug("StrataLoggingService - Start fetching")
+    demisto.debug(f"StrataLoggingService - Last run: {json.dumps(last_run)}")
 
     if last_fetched_event_timestamp:
         last_fetched_event_timestamp = parser.parse(last_fetched_event_timestamp)
@@ -1344,7 +1535,7 @@ def fetch_incidents(
     query = prepare_fetch_incidents_query(
         last_fetched_event_timestamp, fetch_severity, fetch_table, fetch_subtype, fetch_fields, fetch_limit, fetch_filter
     )
-    demisto.debug(f"CortexDataLake - Query sent to the server: {query}")
+    demisto.debug(f"StrataLoggingService - Query sent to the server: {query}")
     records, _ = client.query_loggings(query)
     if not records:
         return {"lastRun": str(last_fetched_event_timestamp)}, []
@@ -1354,9 +1545,9 @@ def fetch_incidents(
     max_fetched_event_timestamp = max(records, key=lambda record: record.get(time_filter, 0)).get(time_filter, 0)
 
     next_run = {"lastRun": epoch_to_timestamp_and_add_milli(max_fetched_event_timestamp)}
-    demisto.debug(f"CortexDataLake - Next run after incidents fetching: {json.dumps(next_run)}")
-    demisto.debug(f"CortexDataLake- Number of incidents before filtering: {len(records)}")
-    demisto.debug(f"CortexDataLake - Number of incidents after filtering: {len(incidents)}")
+    demisto.debug(f"StrataLoggingService - Next run after incidents fetching: {json.dumps(next_run)}")
+    demisto.debug(f"StrataLoggingService- Number of incidents before filtering: {len(records)}")
+    demisto.debug(f"StrataLoggingService - Number of incidents after filtering: {len(incidents)}")
     return next_run, incidents
 
 
@@ -1386,8 +1577,8 @@ def main():
         return_outputs(readable_output="Caching mechanism failure time counters have been successfully reset.")
         return
 
-    token_retrieval_url, registration_id, is_fr = extract_client_args(registration_id_and_url)
-    client = Client(token_retrieval_url, registration_id, use_ssl, proxy, refresh_token, enc_key, is_fr)
+    token_retrieval_url, registration_id = extract_client_args(registration_id_and_url)
+    client = Client(token_retrieval_url, registration_id, use_ssl, proxy, refresh_token, enc_key)
 
     try:
         if command == "test-module":
@@ -1403,22 +1594,40 @@ def main():
             )
         elif command == "cdl-query-logs":
             return_outputs(*query_logs_command(args, client))
+        elif command == "sls-query-logs":
+            return_outputs(*query_logs_sls_command(args, client))
         elif command == "cdl-get-critical-threat-logs":
             return_outputs(*get_critical_logs_command(args, client))
+        elif command == "sls-get-critical-threat-logs":
+            return_outputs(*get_critical_logs_sls_command(args, client))
         elif command == "cdl-get-social-applications":
             return_outputs(*get_social_applications_command(args, client))
+        elif command == "sls-get-social-applications":
+            return_outputs(*get_social_applications_sls_command(args, client))
         elif command == "cdl-search-by-file-hash":
             return_outputs(*search_by_file_hash_command(args, client))
+        elif command == "sls-search-by-file-hash":
+            return_outputs(*search_by_file_hash_sls_command(args, client))
         elif command == "cdl-query-traffic-logs":
             return_outputs(*query_traffic_logs_command(args, client))
+        elif command == "sls-query-traffic-logs":
+            return_outputs(*query_traffic_logs_sls_command(args, client))
         elif command == "cdl-query-threat-logs":
             return_outputs(*query_threat_logs_command(args, client))
+        elif command == "sls-query-threat-logs":
+            return_outputs(*query_threat_logs_sls_command(args, client))
         elif command == "cdl-query-url-logs":
             return_outputs(*query_url_logs_command(args, client))
+        elif command == "sls-query-url-logs":
+            return_outputs(*query_url_logs_sls_command(args, client))
         elif command == "cdl-query-file-data":
             return_outputs(*query_file_data_command(args, client))
+        elif command == "sls-query-file-data":
+            return_outputs(*query_file_data_sls_command(args, client))
         elif command == "cdl-query-gp-logs":
             return_outputs(*query_gp_logs_command(args, client))
+        elif command == "sls-query-gp-logs":
+            return_outputs(*query_gp_logs_sls_command(args, client))
         elif command == "fetch-incidents":
             first_fetch_timestamp = params.get("first_fetch_timestamp", "24 hours").strip()
             fetch_severity = params.get("firewall_severity")

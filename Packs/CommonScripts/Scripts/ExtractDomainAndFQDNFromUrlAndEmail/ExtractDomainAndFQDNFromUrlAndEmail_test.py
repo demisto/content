@@ -52,6 +52,7 @@ from pytest_mock import MockFixture
         ("<br>kasai.qlmsourcing.com", "kasai.qlmsourcing.com"),  # disable-secrets-detection
         ("test.com@", ""),  # disable-secrets-detection
         ("%40subdomain.domain.com", "subdomain.domain.com"),  # disable-secrets-detection
+        ("detect.ps1", ""),  # TLD with digits should not be extracted as domains (file extensions)
     ],
 )  # noqa: E124
 def test_extract_fqdn_or_domain(input, fqdn):
