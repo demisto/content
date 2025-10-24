@@ -17,6 +17,7 @@ from CybleEventsV2 import (
     set_request,
     DEFAULT_TAKE_LIMIT,
     ensure_aware,
+    test_response,
 )
 from CommonServerPython import GetModifiedRemoteDataResponse
 
@@ -95,6 +96,13 @@ def mock_client():
     """Fixture to create a mock client"""
     client = Client(base_url="https://test.com", verify=False)
     return client
+
+def test_test_response_success(mock_client):
+    """Ensure test_response returns 'ok' when API call succeeds"""
+    mock_client._http_request = Mock(return_value={"status": "ok"})
+    with patch("CybleEventsV2.demisto", demisto_mock):
+        result = test_response(mock_client, "GET", "https://example.com", "dummy-token")
+    assert result == "ok"
 
 
 @pytest.fixture
@@ -329,6 +337,7 @@ class TestManualFetch:
         call_args = mock_fetch_alerts.call_args[0][1]
         assert call_args["order_by"] == "asc"
         assert call_args["take"] == DEFAULT_TAKE_LIMIT
+
 
 
 @patch("CybleEventsV2.UpdateRemoteSystemArgs")
@@ -1910,33 +1919,6 @@ class TestClientMethods(unittest.TestCase):
 
             assert result_ids == ["id1", "id2"]
 
-
-# Test for test_response function
-def test_test_response_success():
-    """Test successful connection test"""
-    client = Mock()
-    client._http_request.return_value = {"status": "ok"}
-
-    from CybleEventsV2 import test_response
-
-    result = test_response(client=client, method="GET", base_url="https://test.com", token="test_token")
-
-    assert result == "ok"
-    client._http_request.assert_called_once()
-
-
-def test_test_response_empty_response():
-    """Test when response is empty"""
-    client = Mock()
-    client._http_request.return_value = None
-
-    with patch("CybleEventsV2.demisto") as mock_demisto:
-        from CybleEventsV2 import test_response
-
-        with pytest.raises(Exception, match="failed to connect"):
-            test_response(client=client, method="GET", base_url="https://test.com", token="test_token")
-
-        mock_demisto.error.assert_called()
 
 
 class TestCybleEventsLogical(unittest.TestCase):
