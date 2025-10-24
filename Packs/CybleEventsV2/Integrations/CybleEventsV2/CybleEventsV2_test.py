@@ -17,6 +17,7 @@ from CybleEventsV2 import (
     set_request,
     DEFAULT_TAKE_LIMIT,
     ensure_aware,
+    test_response,
 )
 from CommonServerPython import GetModifiedRemoteDataResponse
 
@@ -95,6 +96,13 @@ def mock_client():
     """Fixture to create a mock client"""
     client = Client(base_url="https://test.com", verify=False)
     return client
+
+def test_test_response_success(mock_client):
+    """Ensure test_response returns 'ok' when API call succeeds"""
+    mock_client._http_request = Mock(return_value={"status": "ok"})
+    with patch("CybleEventsV2.demisto", demisto_mock):
+        result = test_response(mock_client, "GET", "https://example.com", "dummy-token")
+    assert result == "ok"
 
 
 @pytest.fixture
@@ -329,6 +337,7 @@ class TestManualFetch:
         call_args = mock_fetch_alerts.call_args[0][1]
         assert call_args["order_by"] == "asc"
         assert call_args["take"] == DEFAULT_TAKE_LIMIT
+
 
 
 @patch("CybleEventsV2.UpdateRemoteSystemArgs")
