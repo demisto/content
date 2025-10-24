@@ -506,8 +506,8 @@ def test_max_fetch():
 
 def test_update_reco_incident_timeline(requests_mock, reco_client: RecoClient) -> None:
     incident_id = uuid.uuid1()
-    requests_mock.put(
-        f"{DUMMY_RECO_API_DNS_NAME}/incident-timeline/{str(incident_id)}",
+    requests_mock.post(
+        f"{DUMMY_RECO_API_DNS_NAME}/share-service/share-comment",
         json={},
         status_code=200,
     )
@@ -517,8 +517,8 @@ def test_update_reco_incident_timeline(requests_mock, reco_client: RecoClient) -
 
 def test_update_reco_incident_timeline_error(capfd, requests_mock, reco_client: RecoClient) -> None:
     incident_id = uuid.uuid1()
-    requests_mock.put(
-        f"{DUMMY_RECO_API_DNS_NAME}/incident-timeline/{str(incident_id)}",
+    requests_mock.post(
+        f"{DUMMY_RECO_API_DNS_NAME}/share-service/share-comment",
         json={},
         status_code=404,
     )
