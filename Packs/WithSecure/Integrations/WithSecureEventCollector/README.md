@@ -1,21 +1,33 @@
 WithSecure event collector integration for Cortex XSIAM.
-This integration was integrated and tested with version 1.0 of WithSecure API
-
-## Authentication Process
-
-To create a Client ID and Client Secret, see this [documentation](https://connect.withsecure.com/getting-started/elements#:~:text=API%20deprecation%20policy.-,Getting%20client%20credentials,-To%20use%20Elements).
+This integration was integrated and tested with version 1.0 of WithSecure Elements API
 
 ## Configure WithSecure Event Collector in Cortex
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Server URL |  | True |
-| Client ID | Client ID and Client Secret. | True |
-| Client Secret |  | True |
-| First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days, 3 months, 1 year) |  | False |
-| Maximum number of events per fetch, Max 1000 |  | False |
-| Trust any certificate (not secure) |  | False |
-| Use system proxy settings |  | False |
+| Server URL | WithSecure API endpoint (e.g., https://api.connect.withsecure.com) | True |
+| Client ID | Client ID for OAuth2 authentication | True |
+| Client Secret | Client Secret for OAuth2 authentication | True |
+| First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days, 3 months, 1 year) | How far back to fetch events on first run | False |
+| Maximum number of events per fetch, Max 1000 | Maximum events to fetch per interval | False |
+| Trust any certificate (not secure) | Skip SSL certificate verification | False |
+| Use system proxy settings | Use system proxy for API calls | False |
+
+## Authentication Process
+
+To create API credentials (Client ID and Client Secret):
+
+1. Login to [Elements Security Center](https://elements.withsecure.com/) as EPP administrator
+2. Navigate to **Management > API Clients**
+3. Change scope to the target organization
+4. Click **Add new**
+5. Enter description and configure permissions:
+   - **Read-only**: For event collection and querying (recommended for most use cases)
+   - **Read-write**: For incident management and response actions (isolation, scan, etc.)
+6. **Important**: Save the Client Secret immediately (shown only once)
+7. Note the Client ID
+
+For detailed instructions, see [WithSecure API Documentation](https://connect.withsecure.com/getting-started/elements).
 
 ## Commands
 
@@ -25,7 +37,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### with-secure-get-events
 
 ***
-Manual command used to fetch events and display them.
+Manual command used to fetch security events and display them.
 
 #### Base Command
 
@@ -44,13 +56,400 @@ There is no context output for this command.
 
 #### Command example
 
-```!with-secure-get-events limit=2 fetch_from="90 days"```
+```!with-secure-get-events limit=10 fetch_from="7 days"```
 
-#### Human Readable Output
+---
 
-### With Secure Events
+### with-secure-get-incidents
 
-|action|clientTimestamp|details|device|engine|id|organization|persistenceTimestamp|serverTimestamp|severity|
-|---|---|---|---|---|---|---|---|---|---|
-| created | 2023-03-15T21:58:34Z | incidentPublicId: 4550314-13<br>fingerprint: 10e34c3d5a3b531505140351b515e5d0f563b761<br>initialDetectionTimestamp: 1678917621712<br>risk: MEDIUM<br>categories: LATERAL_MOVEMENT<br>incidentId: b7ffb469-44c2-4cc0-9adb-6a3663bba393<br>clientTimestamp: 1678917514000<br>resolution: UNCONFIRMED<br>userSam: NT AUTHORITY\SYSTEM | name: WIN10-TMPLT<br>id: 45581e9d-266c-4676-9f55-1ff36f7519f9 | edr | dae559cd-37fe-3fc8-8fb1-7098c8a4d368_0 | name: Palo Alto_comp<br>id: b856d1ab-29c1-4803-b9b5-91ec7b24f94c | 2023-03-15T22:00:22.985Z | 2023-03-15T22:00:22.574Z | critical |
-| created | 2023-03-15T14:01:29Z | incidentPublicId: 4550314-5<br>fingerprint: 3a653902d97ee6aa241b3e4ae18b0c01a32b97fe<br>initialDetectionTimestamp: 1678891152183<br>risk: HIGH<br>categories: SYSTEM_OR_TOOL_MISUSE<br>incidentId: 3b519e5d-addd-440f-b2b6-d8ab5bb0f4ff<br>clientTimestamp: 1678888889000<br>resolution: UNCONFIRMED<br>userSam: A-WIN81X64-TEMP\admin | name: A-WIN81X64-TEMP<br>id: fb939719-e4b5-4fb0-bfd9-3e7079833cec | edr | 1efd19d1-64db-3a56-b8fd-8da2cb87dc20_0 | name: Palo Alto_comp<br>id: b856d1ab-29c1-4803-b9b5-91ec7b24f94c | 2023-03-15T14:39:15.695Z | 2023-03-15T14:39:13.022Z | critical |
+***
+List EDR incidents (Broad Context Detections) from WithSecure.
+
+#### Base Command
+
+`with-secure-get-incidents`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| incident_id | Comma-separated list of incident IDs to retrieve. Leave empty to get all incidents. | Optional |
+| status | Filter by incident status. Possible values are: new, acknowledged, inProgress, monitoring, closed, waitingForCustomer. | Optional |
+| risk_level | Filter by risk level. Possible values are: info, low, medium, high, severe. | Optional |
+| limit | Maximum number of incidents to return. Default is 20, maximum is 50. | Optional |
+| source | Filter by incident source. Possible values are: endpoint, cloud, customer, endpointExpert, identityAzure, workloadAzure, workloadAws. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| WithSecure.Incident.incidentId | String | Unique identifier of the incident (BCD). |
+| WithSecure.Incident.incidentPublicId | String | Public ID visible in the portal. |
+| WithSecure.Incident.status | String | Status of the incident. |
+| WithSecure.Incident.severity | String | Severity level of the incident. |
+| WithSecure.Incident.riskLevel | String | Risk level of the incident. |
+| WithSecure.Incident.riskScore | Number | Risk score of the incident. |
+| WithSecure.Incident.categories | Unknown | List of incident categories. |
+| WithSecure.Incident.name | String | Name related to the incident. |
+
+#### Command example
+
+```!with-secure-get-incidents status=new risk_level=high limit=10```
+
+---
+
+### with-secure-update-incident-status
+
+***
+Update the status of a WithSecure EDR incident (BCD).
+
+#### Base Command
+
+`with-secure-update-incident-status`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| incident_id | The incident ID to update. | Required |
+| status | New status for the incident. Possible values are: new, acknowledged, inProgress, monitoring, closed, waitingForCustomer. | Required |
+| resolution | Resolution of the incident (required if status is closed). Possible values are: unconfirmed, confirmed, falsePositive, merged, securityTest, acceptedRisk, acceptedBehavior. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| WithSecure.IncidentUpdate.incidentId | String | ID of the updated incident. |
+| WithSecure.IncidentUpdate.status | Number | HTTP status of the update operation. |
+
+#### Command example
+
+```!with-secure-update-incident-status incident_id="2c902c73-e2a6-40fd-9532-257ee102e1c1" status=acknowledged```
+
+---
+
+### with-secure-add-incident-comment
+
+***
+Add a comment to one or more WithSecure EDR incidents.
+
+#### Base Command
+
+`with-secure-add-incident-comment`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| incident_ids | Comma-separated list of incident IDs to add comment to. | Required |
+| comment | Comment to add to the incidents. | Required |
+
+#### Command example
+
+```!with-secure-add-incident-comment incident_ids="2c902c73-e2a6-40fd-9532-257ee102e1c1" comment="Investigated and confirmed as malware"```
+
+---
+
+### with-secure-get-incident-detections
+
+***
+List detections for a given EDR incident (BCD).
+
+#### Base Command
+
+`with-secure-get-incident-detections`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| incident_id | The incident ID to get detections for. | Required |
+| limit | Maximum number of detections to return. Default is 100, maximum is 100. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| WithSecure.Detection.detectionId | String | Unique identifier of the detection. |
+| WithSecure.Detection.incidentId | String | ID of the incident to which the detection belongs. |
+| WithSecure.Detection.deviceId | String | ID of the device on which the incident was detected. |
+| WithSecure.Detection.name | String | Name related to the detection. |
+| WithSecure.Detection.severity | String | Severity level of the detection. |
+
+#### Command example
+
+```!with-secure-get-incident-detections incident_id="2c902c73-e2a6-40fd-9532-257ee102e1c1" limit=50```
+
+---
+
+### with-secure-get-devices
+
+***
+Query and list devices from WithSecure Elements.
+
+#### Base Command
+
+`with-secure-get-devices`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| device_id | Filter by device ID (UUID format). | Optional |
+| name | Filter by device name. | Optional |
+| type | Filter by device type. Possible values are: computer, connector, mobile. | Optional |
+| state | Filter by device state. Possible values are: active, blocked, inactive. | Optional |
+| online | Filter devices by online status. Possible values are: true, false. | Optional |
+| protection_status | Filter by protection status. Possible values are: isolated, inactive, critical, warning, allOk. | Optional |
+| limit | Maximum number of devices to return. Default is 50, maximum is 200. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| WithSecure.Device.id | String | Device ID. |
+| WithSecure.Device.name | String | Device name. |
+| WithSecure.Device.type | String | Device type (computer, connector, mobile). |
+| WithSecure.Device.state | String | Device state (active, blocked, inactive). |
+| WithSecure.Device.online | Boolean | Whether the device is online. |
+| WithSecure.Device.protectionStatusOverview | String | Protection status overview. |
+
+#### Command example
+
+```!with-secure-get-devices protection_status=isolated limit=20```
+
+---
+
+### with-secure-isolate-endpoint
+
+***
+Isolate one or more endpoints from the network to contain threats.
+
+**Note**: This operation requires devices to be Windows computers in active state with valid subscription.
+
+#### Base Command
+
+`with-secure-isolate-endpoint`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| device_ids | Comma-separated list of device IDs to isolate (max 5). | Required |
+| message | Message to display on isolated endpoint before isolation. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| WithSecure.IsolationAction.deviceId | String | ID of the device being isolated. |
+| WithSecure.IsolationAction.status | Number | HTTP status of the isolation operation. |
+| WithSecure.IsolationAction.operationId | String | ID of the isolation operation for tracking. |
+
+#### Command example
+
+```!with-secure-isolate-endpoint device_ids="ec8a0100-d313-4896-b3cb-02188e060bf3" message="Your computer is being isolated due to security threat"```
+
+---
+
+### with-secure-release-endpoint
+
+***
+Release one or more endpoints from network isolation.
+
+#### Base Command
+
+`with-secure-release-endpoint`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| device_ids | Comma-separated list of device IDs to release from isolation (max 5). | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| WithSecure.IsolationAction.deviceId | String | ID of the device being released. |
+| WithSecure.IsolationAction.status | Number | HTTP status of the release operation. |
+| WithSecure.IsolationAction.operationId | String | ID of the release operation for tracking. |
+
+#### Command example
+
+```!with-secure-release-endpoint device_ids="ec8a0100-d313-4896-b3cb-02188e060bf3"```
+
+---
+
+### with-secure-scan-endpoint
+
+***
+Trigger a malware scan on one or more endpoints.
+
+#### Base Command
+
+`with-secure-scan-endpoint`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| device_ids | Comma-separated list of device IDs to scan (max 5). | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| WithSecure.ScanAction.deviceId | String | ID of the device being scanned. |
+| WithSecure.ScanAction.status | Number | HTTP status of the scan operation. |
+| WithSecure.ScanAction.operationId | String | ID of the scan operation for tracking. |
+
+#### Command example
+
+```!with-secure-scan-endpoint device_ids="ec8a0100-d313-4896-b3cb-02188e060bf3,01898f1e-d32d-40fe-b3c5-9f039c1eac04"```
+
+---
+
+### with-secure-get-device-operations
+
+***
+List all operations triggered on a specific device.
+
+#### Base Command
+
+`with-secure-get-device-operations`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| device_id | Device ID to query operations for. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| WithSecure.DeviceOperation.id | String | Operation ID. |
+| WithSecure.DeviceOperation.status | String | Operation status (pending, finished, ongoing, failed). |
+| WithSecure.DeviceOperation.operationName | String | Operation name. |
+
+#### Command example
+
+```!with-secure-get-device-operations device_id="ec8a0100-d313-4896-b3cb-02188e060bf3"```
+
+---
+
+## Supported Event Types
+
+The integration collects security events from multiple engines:
+
+### Endpoint Protection (EPP)
+- Real-time and manual file scanning
+- DeepGuard behavioral analysis
+- Application Control
+- Device Control
+- DataGuard
+- Firewall
+- Browsing Protection
+- Web Traffic Scanning
+- Connection Control
+- Tamper Protection
+- Integrity Checker
+- AMSI (Antimalware Scan Interface)
+- System Events Log
+
+### Endpoint Detection and Response (EDR)
+- Broad Context Detections (BCDs)
+- Incident lifecycle (created, updated, closed, merged)
+- Lateral movement detection
+- Credential theft detection
+- Malware and PUP detection
+- Advanced threat behaviors
+
+### Collaboration Protection (ECP)
+- Email scanning (malware, phishing)
+- Microsoft Teams scanning
+- SharePoint scanning
+- OneDrive scanning
+- Inbox rule monitoring
+- Breached account detection
+
+### Exposure Management (XM)
+- Security recommendations
+- Vulnerability assessments
+- Risk scoring
+
+## Use Cases
+
+### 1. Automated Threat Response
+Use the isolation commands to automatically isolate compromised endpoints when critical EDR incidents are detected.
+
+**Example Workflow:**
+1. Fetch EDR incident events
+2. Check incident severity and risk level
+3. Get device details
+4. Isolate endpoint if risk is severe
+5. Add comment to incident
+6. Update incident status
+
+### 2. Incident Investigation
+Query incidents, get detailed detections, and track investigation progress.
+
+**Example Commands:**
+```
+!with-secure-get-incidents status=new risk_level=high
+!with-secure-get-incident-detections incident_id=<incident_id>
+!with-secure-add-incident-comment incident_ids=<incident_id> comment="Under investigation"
+!with-secure-update-incident-status incident_id=<incident_id> status=inProgress
+```
+
+### 3. Endpoint Management
+Monitor and manage endpoint protection status across your organization.
+
+**Example Commands:**
+```
+!with-secure-get-devices protection_status=isolated
+!with-secure-get-devices online=false limit=50
+!with-secure-release-endpoint device_ids=<device_id>
+```
+
+### 4. Malware Containment
+Trigger on-demand scans when suspicious activity is detected.
+
+**Example Command:**
+```
+!with-secure-scan-endpoint device_ids=<device_id1>,<device_id2>
+!with-secure-get-device-operations device_id=<device_id>
+```
+
+## Important Notes
+
+### API Limitations
+- Maximum 200 security events per API request
+- Maximum 50 incidents per request
+- Maximum 200 devices per request
+- Maximum 5 devices for isolation/scan operations at once
+- Maximum 10 incidents for bulk comment operations
+
+### OAuth2 Authentication
+- Tokens are automatically renewed before expiration
+- Token expiration time is managed by the integration
+- Requires `connect.api.read` scope for read operations
+- Requires `connect.api.write` scope for write operations (isolation, updates, etc.)
+
+### Response Actions
+- Isolation requires Windows computers in active state
+- Operations are asynchronous - use `with-secure-get-device-operations` to check status
+- Operation status: pending, finished, ongoing, failed, internalError, unknownError
+
+### Best Practices
+- Use `persistenceTimestamp` for event collection (more reliable than `serverTimestamp`)
+- Filter incidents by `archived=false` for better performance
+- Monitor isolated endpoints and release them after threat remediation
+- Close incidents with appropriate resolution after investigation
+
+## Additional Resources
+
+- [WithSecure Elements API Reference](https://connect.withsecure.com/api-reference/elements)
+- [WithSecure Security Events Documentation](https://connect.withsecure.com/api-reference/security-events)
+- [WithSecure API Cookbook](https://connect.withsecure.com/getting-started/elements-cookbook)

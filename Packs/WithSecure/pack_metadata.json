@@ -1,17 +1,35 @@
 {
     "name": "WithSecure",
-    "description": "connect to SIEM with WithSecure",
+    "description": "Collect and analyze security events from WithSecure Endpoint Protection and EDR. Provides real-time threat detection, incident management, and automated response capabilities for Cortex XSOAR.",
     "support": "xsoar",
-    "currentVersion": "1.0.8",
+    "currentVersion": "1.1.0",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": [],
-    "useCases": [],
-    "keywords": [],
+    "tags": [
+        "Endpoint Protection",
+        "EDR",
+        "Threat Detection",
+        "Event Collector",
+        "Incident Response"
+    ],
+    "useCases": [
+        "Malware",
+        "Threat Intelligence Management"
+    ],
+    "keywords": [
+        "withsecure",
+        "endpoint",
+        "edr",
+        "security events",
+        "threat detection",
+        "incident response",
+        "isolation",
+        "malware protection"
+    ],
     "marketplaces": [
         "marketplacev2",
         "platform"
