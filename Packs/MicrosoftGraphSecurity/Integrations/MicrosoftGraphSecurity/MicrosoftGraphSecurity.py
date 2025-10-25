@@ -2086,6 +2086,7 @@ def main():
     }
     command = demisto.command()
     LOG(f"Command being called is {command}")
+    demisto.debug("Another dummy log")
     try:
         auth_code = params.get("auth_code", {}).get("password")
         redirect_uri = params.get("redirect_uri")
