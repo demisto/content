@@ -9,12 +9,12 @@
             },
             {
                 "id": "assets_and_artifacts",
-                "name": "Key Assets \u0026 Artifacts",
+                "name": "Key Assets & Artifacts",
                 "type": "assets_and_artifacts"
             },
             {
                 "id": "alerts_and_insights",
-                "name": "Alerts \u0026 Insights",
+                "name": "Alerts & Insights",
                 "type": "alerts_and_insights"
             },
             {
@@ -48,6 +48,8 @@
         "X1",
         "X3",
         "X5",
-        "ENT_PLUS"
+        "ENT_PLUS",
+        "xsiam",
+        "agentix"
     ]
 }
