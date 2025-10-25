@@ -1885,40 +1885,40 @@ class EC2:
         remove_nulls_from_dictionary(kwargs)
         try:
             response = client.describe_images(**kwargs)
+            amis = response.get("Images", [])
+            while response.get("nextToken"):
+                kwargs["NextToken"] = response.get("nextToken")
+                response = client.describe_images(**kwargs)
+                amis.extend(response.get("Images", []))
+
             demisto.info(f"{response=}")
-            # return
-            if response["ResponseMetadata"]["HTTPStatusCode"] in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
-                amis = sorted(response["Images"], key=lambda x: x["CreationDate"], reverse=True)
-                image = amis[0]
-                data = {
-                    "CreationDate": image.get("CreationDate"),
-                    "ImageId": image.get("ImageId"),
-                    "Public": image.get("Public"),
-                    "Name": image.get("Name"),
-                    "State": image.get("State"),
-                    "Region": args.get("region"),
-                    "Description": image.get("Description"),
-                }
+            sorted_amis = sorted(amis["Images"], key=lambda x: x["CreationDate"], reverse=True)
+            image = sorted_amis[0]
+            data = {
+                "CreationDate": image.get("CreationDate"),
+                "ImageId": image.get("ImageId"),
+                "Public": image.get("Public"),
+                "Name": image.get("Name"),
+                "State": image.get("State"),
+                "Region": args.get("region"),
+                "Description": image.get("Description"),
+            }
 
-                data.update({tag["Key"]: tag["Value"] for tag in image["Tags"]}) if "Tags" in image else None
-                remove_nulls_from_dictionary(data)
+            data.update({tag["Key"]: tag["Value"] for tag in image["Tags"]}) if "Tags" in image else None
+            remove_nulls_from_dictionary(data)
 
-                try:
-                    raw = json.loads(json.dumps(image, cls=DatetimeEncoder))
-                    raw.update({"Region": args.get("region")})
-                except ValueError as err_msg:
-                    raise DemistoException(f"Could not decode/encode the raw response - {err_msg}")
-                return CommandResults(
-                    outputs=image,
-                    outputs_prefix="AWS.EC2.Images",
-                    readable_output=tableToMarkdown("AWS EC2 Images", data)
-                )
-            raise DemistoException(
-                f"AWS EC2 API call to describe_images failed or returned an unexpected status code. "
-                f"Received HTTP Status Code: {response['ResponseMetadata']['HTTPStatusCode']}"
+            try:
+                raw = json.loads(json.dumps(image, cls=DatetimeEncoder))
+                raw.update({"Region": args.get("region")})
+            except ValueError as err_msg:
+                raise DemistoException(f"Could not decode/encode the raw response - {err_msg}")
+            return CommandResults(
+                outputs=image,
+                outputs_prefix="AWS.EC2.Images",
+                readable_output=tableToMarkdown("AWS EC2 Images", data)
             )
         except Exception as e:
-            raise DemistoException(f"Error: {str(e)}")
+            raise DemistoException(f"AWS EC2 API call to describe_images failed. {str(e)}")
 
     @staticmethod
     def create_network_acl_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
