@@ -1,0 +1,116 @@
+{
+    "raw_response": {
+        "data": {
+            "threatHunts": {
+                "edges": [
+                    {
+                        "node": {
+                            "huntId": "dummy-hunt-id-0001",
+                            "name": "Dummy Threat Hunt",
+                            "createdBy": {
+                                "id": "client|dummy-user-id",
+                                "username": "dummyuser",
+                                "email": "dummyuser@example.com",
+                                "__typename": "User"
+                            },
+                            "huntType": "THREAT_HUNT_V2",
+                            "startTime": "2025-07-01T00:00:00.000Z",
+                            "status": "SUCCEEDED",
+                            "stats": {
+                                "totalProcessedSnapshots": 10,
+                                "totalAffectedObjects": 2,
+                                "totalAffectedSnapshots": 1,
+                                "totalUniqueMatchedPaths": 3,
+                                "totalSucceededScans": 10,
+                                "totalSnapshotsScanned": 12,
+                                "totalUniqueQuarantinedPaths": 1,
+                                "totalObjectsScanned": 20,
+                                "totalIocs": 5,
+                                "__typename": "ThreatHuntStats"
+                            },
+                            "huntDetails": {
+                                "startTime": "2025-07-01T00:00:00.000Z",
+                                "endTime": "2025-07-01T01:00:00.000Z",
+                                "cluster": {
+                                    "id": "dummy-cluster-id",
+                                    "name": "Dummy Cluster",
+                                    "__typename": "Cluster"
+                                },
+                                "config": {
+                                    "name": "Dummy Hunt Config",
+                                    "indicatorsOfCompromise": [],
+                                    "__typename": "ThreatHuntConfig"
+                                },
+                                "__typename": "ThreatHuntDetails"
+                            },
+                            "__typename": "ThreatHunt"
+                        },
+                        "__typename": "ThreatHuntEdge"
+                    }
+                ],
+                "count": 2,
+                "pageInfo": {
+                    "endCursor": "dummy-end-cursor",
+                    "hasNextPage": true,
+                    "hasPreviousPage": false,
+                    "startCursor": "dummy-start-cursor",
+                    "__typename": "PageInfo"
+                },
+                "__typename": "ThreatHuntConnection"
+            }
+        }
+    },
+    "outputs": {
+        "RubrikPolaris.IOCScan(val.huntId == obj.huntId)": [
+            {
+                "huntId": "dummy-hunt-id-0001",
+                "name": "Dummy Threat Hunt",
+                "createdBy": {
+                    "id": "client|dummy-user-id",
+                    "username": "dummyuser",
+                    "email": "dummyuser@example.com",
+                    "__typename": "User"
+                },
+                "huntType": "THREAT_HUNT_V2",
+                "startTime": "2025-07-01T00:00:00.000Z",
+                "status": "SUCCEEDED",
+                "stats": {
+                    "totalProcessedSnapshots": 10,
+                    "totalAffectedObjects": 2,
+                    "totalAffectedSnapshots": 1,
+                    "totalUniqueMatchedPaths": 3,
+                    "totalSucceededScans": 10,
+                    "totalSnapshotsScanned": 12,
+                    "totalUniqueQuarantinedPaths": 1,
+                    "totalObjectsScanned": 20,
+                    "totalIocs": 5,
+                    "__typename": "ThreatHuntStats"
+                },
+                "huntDetails": {
+                    "startTime": "2025-07-01T00:00:00.000Z",
+                    "endTime": "2025-07-01T01:00:00.000Z",
+                    "cluster": {
+                        "id": "dummy-cluster-id",
+                        "name": "Dummy Cluster",
+                        "__typename": "Cluster"
+                    },
+                    "config": {
+                        "name": "Dummy Hunt Config",
+                        "indicatorsOfCompromise": [],
+                        "__typename": "ThreatHuntConfig"
+                    },
+                    "__typename": "ThreatHuntDetails"
+                },
+                "__typename": "ThreatHunt"
+            }
+        ],
+        "RubrikPolaris.PageToken.IOCScan(val.name == obj.name)": {
+            "endCursor": "dummy-end-cursor",
+            "hasNextPage": true,
+            "hasPreviousPage": false,
+            "startCursor": "dummy-start-cursor",
+            "name": "rubrik-ioc-scan-list-v2",
+            "total_matched_count": 2
+        }
+    }
+}

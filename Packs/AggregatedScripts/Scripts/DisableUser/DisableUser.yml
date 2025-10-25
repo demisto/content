@@ -67,9 +67,7 @@ dockerimage: demisto/python3:3.12.11.4508456
 fromversion: 6.10.0
 tests:
 - DisableUser - Test
-dependson:
-  must:
-  - get-user-data
 marketplaces:
 - xsoar
 - marketplacev2
+- platform

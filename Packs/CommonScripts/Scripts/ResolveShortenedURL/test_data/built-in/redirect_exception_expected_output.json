@@ -1,0 +1,11 @@
+{
+  "OriginalURL": "https://short.url/redirect-exception",
+  "ResolvedURL": "https://intermediate.url/step1",
+  "ServiceName": "Built-In",
+  "RedirectCount": 1,
+  "RedirectHistory": [
+    "https://short.url/redirect-exception",
+    "https://intermediate.url/step1"
+  ],
+  "EncounteredError": true
+}

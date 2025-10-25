@@ -1,0 +1,15 @@
+{
+    "list": [
+        {
+            "id": "test_1",
+            "timestamp": "2025-01-15T10:30:00Z",
+            "details": {}
+        }
+    ],
+    "related_objects": {
+        "srv_123": {
+            "type": "server",
+            "object": {"name": "test"}
+        }
+    }
+}

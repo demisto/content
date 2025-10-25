@@ -1,17 +1,27 @@
 {
     "name": "Bitsight",
-    "description": "Bitsight Integration will allow you visibility into Bitsight findings for remediation in your security program.",
+    "description": "The BitSight integration provides visibility into BitSight findings, enabling remediation within your security program",
     "support": "partner",
-    "currentVersion": "1.2.0",
+    "currentVersion": "1.2.1",
     "author": "Bitsight",
     "url": "https://service.bitsighttech.com/",
     "email": "support@bitsight.com",
     "categories": [
         "IT Services"
     ],
-    "tags": [],
-    "useCases": [],
-    "keywords": [],
+    "tags": [
+        "Alerts",
+        "Security",
+        "Threat Intelligence Management"
+    ],
+    "useCases": [
+        "Compliance",
+        "Vulnerability Management",
+        "Threat Intelligence Management"
+    ],
+    "keywords": [
+        "bitsight"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2",
