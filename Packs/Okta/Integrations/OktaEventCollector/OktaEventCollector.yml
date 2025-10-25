@@ -1,7 +1,7 @@
 commonfields:
   id: Okta Event Collector
   version: -1
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 name: Okta Event Collector
