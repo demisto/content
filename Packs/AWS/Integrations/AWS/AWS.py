@@ -1885,13 +1885,13 @@ class EC2:
         remove_nulls_from_dictionary(kwargs)
         try:
             response = client.describe_images(**kwargs)
+            demisto.info(f"{response=}")
             amis = response.get("Images", [])
             while response.get("nextToken"):
                 kwargs["NextToken"] = response.get("nextToken")
                 response = client.describe_images(**kwargs)
                 amis.extend(response.get("Images", []))
 
-            demisto.info(f"{response=}")
             sorted_amis = sorted(amis["Images"], key=lambda x: x["CreationDate"], reverse=True)
             image = sorted_amis[0]
             data = {
