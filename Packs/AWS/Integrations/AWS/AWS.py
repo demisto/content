@@ -1947,7 +1947,7 @@ class EC2:
         remove_nulls_from_dictionary(kwargs)
         try:
             response = client.create_network_acl(**kwargs)
-            # demisto.info(f"{response=}")
+            demisto.info(f"{response=}")
             if response["ResponseMetadata"]["HTTPStatusCode"] in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
                 network_acl = response.get("NetworkAcl")
                 readable_data = {
@@ -1998,26 +1998,27 @@ class EC2:
         remove_nulls_from_dictionary(kwargs)
         try:
             response = client.get_ipam_discovered_public_addresses(**kwargs)
-            # demisto.info(f"{response=}")
-            if response["ResponseMetadata"]["HTTPStatusCode"] in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
-                if not response.get("IpamDiscoveredPublicAddresses"):
-                    return CommandResults(readable_output="No Ipam Discovered Public Addresses were found.")
+            demisto.info(f"{response=}")
+            ipam_discovered_public_addresses = response.get("IpamDiscoveredPublicAddresses", [])
+            while response.get("nextToken"):
+                kwargs["NextToken"] = response.get("nextToken")
+                response = client.get_ipam_discovered_public_addresses(**kwargs)
+                ipam_discovered_public_addresses.extend(response.get("IpamDiscoveredPublicAddresses", []))
 
-                output = json.loads(json.dumps(response, cls=DatetimeEncoder))
-                human_readable = tableToMarkdown("Ipam Discovered Public Addresses", output.get("IpamDiscoveredPublicAddresses"))
-                return CommandResults(
-                    outputs_prefix="AWS.EC2.IpamDiscoveredPublicAddresses",
-                    outputs_key_field="Address",
-                    outputs=output.get("IpamDiscoveredPublicAddresses"),
-                    raw_response=output,
-                    readable_output=human_readable,
-                )
-            raise DemistoException(
-                f"AWS EC2 API call to get_ipam_discovered_public_addresses failed or returned an unexpected status code. "
-                f"Received HTTP Status Code: {response['ResponseMetadata']['HTTPStatusCode']}"
+            if not response.get("IpamDiscoveredPublicAddresses"):
+                return CommandResults(readable_output="No Ipam Discovered Public Addresses were found.")
+
+            output = json.loads(json.dumps(response, cls=DatetimeEncoder))
+            human_readable = tableToMarkdown("Ipam Discovered Public Addresses", output.get("IpamDiscoveredPublicAddresses"))
+            return CommandResults(
+                outputs_prefix="AWS.EC2.IpamDiscoveredPublicAddresses",
+                outputs_key_field="Address",
+                outputs=output.get("IpamDiscoveredPublicAddresses"),
+                raw_response=output,
+                readable_output=human_readable,
             )
         except Exception as e:
-            raise DemistoException(f"Error: {str(e)}")
+            raise DemistoException(f"AWS EC2 API call to get_ipam_discovered_public_addresses failed. {str(e)}")
 
     @staticmethod
     def create_tags_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:

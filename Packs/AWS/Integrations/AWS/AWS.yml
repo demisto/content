@@ -3743,7 +3743,7 @@ script:
           - me-south-1
           - me-central-1
           - sa-east-1
-      - name: VpcId
+      - name: vpc_id
         description: The ID of the VPC.
         required: true
       - name: client_token
