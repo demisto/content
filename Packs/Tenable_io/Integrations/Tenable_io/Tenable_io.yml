@@ -1323,24 +1323,24 @@ script:
     - contextPath: InfoFile.Extension
       description: The file extension of the file.
   - arguments:
-      - auto: PREDEFINED
-        defaultValue: 'false'
-        description: Set this argument to True in order to create events, otherwise the command will only display the events.
-        name: should_push_events
-        predefined:
-          - 'true'
-          - 'false'
-        required: true
-      - description: The maximum number of alerts to return (maximum value - 5000).
-        name: limit
-      - description: Return events that occurred after the specified date.
-        name: from_date
-      - description: Return events that occurred before the specified date.
-        name: to_date
-      - description: Return events that contain the specified actor UUID.
-        name: actor_id
-      - description: Return events matching the specified target UUID.
-        name: target_id
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Set this argument to True in order to create events, otherwise the command will only display the events.
+      name: should_push_events
+      predefined:
+      - 'true'
+      - 'false'
+      required: true
+    - description: The maximum number of alerts to return (maximum value - 5000).
+      name: limit
+    - description: Return events that occurred after the specified date.
+      name: from_date
+    - description: Return events that occurred before the specified date.
+      name: to_date
+    - description: Return events that contain the specified actor UUID.
+      name: actor_id
+    - description: Return events matching the specified target UUID.
+      name: target_id
     description: Returns audit logs extracted from Tenable io.
     name: tenable-io-get-audit-logs
   runonce: false
