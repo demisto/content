@@ -118,6 +118,16 @@ class Client(CoreClient):
 
         return reply
 
+    def update_issue(self, filter_data):
+        reply = demisto._apiCall( 
+            method="POST",
+            data=json.dumps(filter_data),
+            headers=self._headers,
+            path="/api/webapp/alerts/update_alerts"
+        )
+        
+        return reply
+
 
 def get_asset_details_command(client: Client, args: dict) -> CommandResults:
     """
@@ -164,6 +174,52 @@ def get_cases_command(client, args):
         outputs=mapped_raw_cases,
         raw_response=mapped_raw_cases,
     )
+    
+def get_issue_id(args) -> str:
+    issue_id = args.get("issue_id", "")
+    if not issue_id:
+        issue = demisto.callingContext.get('context', {}).get("Incidents")[0]
+        issue_id = issue["id"]
+        
+    return issue_id
+
+def create_filter_data(issue_id, update_args) -> dict:
+    filter_data = {
+        "filter_data": {
+            "filter": {
+                "OR": [
+                    {
+                        "SEARCH_FIELD": "internal_id",
+                        "SEARCH_TYPE": "EQ",
+                        "SEARCH_VALUE": issue_id
+                    }
+                ]
+            }
+        },
+        "filter_type": "static"
+    }
+    update_data = {}
+    for arg_to_update in update_args.items():
+        key, value = arg_to_update
+        if value:
+            update_data[key] = value
+   
+    filter_data["update_data"] = update_data
+    return filter_data
+    
+    
+def update_issue_command(client, args):
+    issue_id = get_issue_id(args)
+    assigned_user_mail = args.get("assigned_user_mail")
+    if not issue_id:
+        return_error("Issue ID is required for updating an issue.")
+    
+    update_args = {"assigned_user": assigned_user_mail}
+    filter_data = create_filter_data(issue_id, update_args)
+    client.update_issue(filter_data)
+    
+    return CommandResults(readable_output=f"The assignee of issue {issue_id} was updated successfully.")
+    
 
 
 def get_extra_data_for_case_id_command(client, args):
@@ -251,6 +307,9 @@ def main():  # pragma: no cover
 
         elif command == "core-get-case-extra-data":
             return_results(get_extra_data_for_case_id_command(client, args))
+        
+        elif command  == "set-issue-assignee":
+            return_results(update_issue_command(client, args))
 
     except Exception as err:
         demisto.error(traceback.format_exc())
