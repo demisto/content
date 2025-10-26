@@ -2,6 +2,9 @@ category: Data Enrichment & Threat Intelligence
 commonfields:
   id: ACTI Indicator Query
   version: -1
+sectionorder:
+- Connect
+- Collect
 configuration:
 - display: URL
   name: url
@@ -405,7 +408,7 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score.
       type: String
-  dockerimage: demisto/python3:3.12.11.4819260
+  dockerimage: demisto/python3:3.12.12.5490952
   runonce: false
   script: '-'
   subtype: python3
@@ -413,6 +416,3 @@ script:
 fromversion: 5.5.0
 tests:
 - ACTI Indicator Query Test
-sectionorder:
-- Connect
-- Collect
