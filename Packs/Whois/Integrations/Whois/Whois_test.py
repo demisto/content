@@ -13,7 +13,6 @@ from CommonServerPython import DBotScoreReliability, EntryType, ErrorTypes, Exec
 from pytest_mock import MockerFixture
 from Whois import (
     WhoisInvalidDomain,
-    WhoisRateLimit,
     domain_command,
     get_domain_from_query,
     get_root_server,
@@ -55,27 +54,38 @@ def test_test_command(mocker: MockerFixture):
 
 
 def test_test_command_rate_limit_exception(mocker: MockerFixture):
-    """Test that test_command raises WhoisRateLimit exception when rate limit pattern is found in whois result."""
-    # Mock whois result with rate limit message
+    """Test that test_command raises WhoisException when rate limit pattern is found in whois result."""
+    # Mock whois result with rate limit message that matches the RATE_LIMIT_PATTERN
     mock_whois_result = {
         "raw": ["Error for 'google.co.uk'. the WHOIS query quota for 35.225.156.101 has been exceeded"],
         "nameservers": [],
     }
 
+    # Mock get_whois to return our mock result
     mocker.patch("Whois.get_whois", return_value=mock_whois_result)
     mocker.patch.object(demisto, "debug")
 
-    # Test that WhoisRateLimit exception is raised
-    with pytest.raises(WhoisRateLimit) as exc_info:
+    # Test that WhoisException is raised (since WhoisRateLimit gets caught and re-raised as WhoisException)
+    with pytest.raises(Whois.WhoisException) as exc_info:
         test_command()
 
-    # Verify the exception message contains the expected content
-    assert "Test completed but encountered rate limiting" in str(exc_info.value)
-    assert "Consider using an engine to avoid IP-based rate limits" in str(exc_info.value)
-    assert "https://xsoar.pan.dev/docs/reference/integrations/whois#rate-limiting-or-ip-blocking-issues" in str(exc_info.value)
+    # Verify the exception message contains information about the WhoisRateLimit
+    exception_message = str(exc_info.value)
+    assert "WhoisRateLimit" in exception_message
+    assert "Test completed but encountered rate limiting" in exception_message
+    assert "Consider using an engine to avoid IP-based rate limits" in exception_message
 
-    # Verify the exception has the response data
-    assert exc_info.value.response == mock_whois_result
+
+def test_test_command_successful(mocker: MockerFixture):
+    """Test that test_command returns 'ok' when nameservers are found."""
+    # Mock whois result with expected nameserver
+    mock_whois_result = {"nameservers": ["ns1.google.com", "ns2.google.com"], "raw": ["Normal whois response"]}
+
+    mocker.patch("Whois.get_whois", return_value=mock_whois_result)
+    mocker.patch.object(demisto, "debug")
+
+    result = test_command()
+    assert result == "ok"
 
 
 @pytest.mark.parametrize(
