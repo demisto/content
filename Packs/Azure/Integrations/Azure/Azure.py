@@ -2971,16 +2971,12 @@ def main():
             "azure-nsg-resource-group-list": nsg_resource_group_list_command,
             "azure-nsg-network-interfaces-list": nsg_network_interfaces_list_command,
             "azure-nsg-public-ip-addresses-list": nsg_public_ip_addresses_list_command,
-            "azure-postgres-enable-checkpoint-logging-quick-action": set_postgres_config_command,
             "azure-webapp-set-min-tls-version-quick-action": set_webapp_config_command,
             "azure-function-app-set-min-tls-version-quick-action": set_webapp_config_command,
             "azure-mysql-set-secure-transport-quick-action": mysql_flexible_server_param_set_command,
-            "azure-postgres-enable-disconnection-logging-quick-action": set_postgres_config_command,
-            "azure-postgres-enable-session-connection-logging-quick-action": set_postgres_config_command,
             "azure-network-disable-storage-account-access-quick-action": storage_account_update_command,
             "azure-monitor-log-retention-period-quick-action": monitor_log_profile_update_command,
             "azure-set-storage-account-https-only-quick-action": storage_account_update_command,
-            "azure-postgres-enable-ssl-quick-action": postgres_server_update_command,
         }
         if command == "test-module" and connector_id:
             demisto.debug(f"Running health check for connector ID: {connector_id}")
