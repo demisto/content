@@ -1365,7 +1365,7 @@ Modifies a subnet attribute.
 | account_id | The AWS account ID. | Required |
 | region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
 | subnet_id | The ID of the subnet. | Required |
-| assign_ipv6_address_on_creation | Specify true to indicate that network interfaces created in the specified subnet should be assigned an IPv6 address. | Optional |
+| assign_ipv6_address_on_creation | Specify true to assign IPv6 addresses to network interfaces created in the specified subnet. | Optional |
 | customer_owned_ipv4_pool | The customer-owned IPv4 address pool associated with the subnet. | Optional |
 | disable_lni_at_device_index | Specify true to indicate that local network interfaces at the current position should be disabled. | Optional |
 | enable_dns64 | Indicates whether DNS queries made to the Amazon-provided DNS Resolver in this subnet should return synthetic IPv6 addresses for IPv4-only destinations. | Optional |
@@ -1374,7 +1374,7 @@ Modifies a subnet attribute.
 | enable_resource_name_dns_a_record_on_launch | Indicates whether to respond to DNS queries for instance hostnames with DNS A records. | Optional |
 | map_customer_owned_ip_on_launch | Specify true to indicate that network interfaces attached to instances created in the specified subnet should be assigned a customer-owned IPv4 address. | Optional |
 | map_public_ip_on_launch | Specify true to indicate that network interfaces attached to instances created in the specified subnet should be assigned a public IPv4 address. | Optional |
-| private_dns_hostname_type_on_launch | The type of hostname to assign to instances in the subnet at launch. | Optional |
+| private_dns_hostname_type_on_launch | The type of hostname to assign to instances in the subnet when they are launched. | Optional |
 
 #### Context Output
 
@@ -1459,223 +1459,58 @@ Modifies an existing RDS event notification subscription.
 | AWS.RDS.EventSubscription.Status | string | The status of the RDS event notification subscription. |
 | AWS.RDS.EventSubscription.SubscriptionCreationTime | string | The time the RDS event notification subscription was created. |
 
-### aws-lambda-function-url-config-update
+### aws-s3-file-upload
 
 ***
-Updates the configuration for a Lambda function URL.
+Upload file to S3 bucket.
 
 #### Base Command
 
-`aws-lambda-function-url-config-update`
+`aws-s3-file-upload`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | account_id | The AWS account ID. | Required |
-| region | The AWS region. | Required |
-| function_name | Name of the Lambda function. | Required |
-| qualifier | The alias name or version number. | Optional |
-| auth_type | AWS_IAM or NONE for authentication type. Possible values are: AWS_IAM, NONE. | Optional |
-| cors_allow_credentials | Allow credentials in CORS requests. Possible values are: true, false. | Optional |
-| cors_allow_headers | Comma-separated list of allowed headers. | Optional |
-| cors_allow_methods | Comma-separated list of allowed HTTP methods. | Optional |
-| cors_allow_origins | Comma-separated list of allowed origins. | Optional |
-| cors_expose_headers | Comma-separated list of headers to expose. | Optional |
-| cors_max_age | Maximum age for CORS preflight cache. | Optional |
-| invoke_mode | BUFFERED or RESPONSE_STREAM. Possible values are: BUFFERED, RESPONSE_STREAM. | Optional |
+| entryID | Entry ID of the file to upload. | Required |
+| bucket | Name of the S3 bucket containing the file. Must follow S3 naming conventions. | Required |
+| key | Key (path) where the file will be stored in the S3 bucket. | Required |
+| region | AWS region where the S3 bucket is located. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| AWS.Lambda.FunctionURLConfig.FunctionUrl | String | The HTTP URL endpoint for your function. |
-| AWS.Lambda.FunctionURLConfig.FunctionArn | String | The Amazon Resource Name \(ARN\) of your function. |
-| AWS.Lambda.FunctionURLConfig.AuthType | String | The type of authentication that your function URL uses. |
-| AWS.Lambda.FunctionURLConfig.Cors.AllowCredentials | Boolean | Whether to allow cookies or other credentials in requests to your function URL. |
-| AWS.Lambda.FunctionURLConfig.Cors.AllowHeaders | String | The HTTP headers that origins can include in requests to your function URL. |
-| AWS.Lambda.FunctionURLConfig.Cors.AllowMethods | String | The HTTP methods that are allowed when calling your function URL. |
-| AWS.Lambda.FunctionURLConfig.Cors.AllowOrigins | String | The origins that can access your function URL. |
-| AWS.Lambda.FunctionURLConfig.Cors.ExposeHeaders | String | The HTTP headers in your function response that you want to expose to origins that call your function URL. |
-| AWS.Lambda.FunctionURLConfig.Cors.MaxAge | Number | The maximum amount of time, in seconds, that web browsers can cache results of a preflight request. |
-| AWS.Lambda.FunctionURLConfig.CreationTime | String | When the function URL was created. |
-| AWS.Lambda.FunctionURLConfig.LastModifiedTime | String | When the function URL configuration was last updated. |
-| AWS.Lambda.FunctionURLConfig.InvokeMode | String | BUFFERED or RESPONSE_STREAM. |
+There is no context output for this command.
 
-### aws-lambda-invoke
+### aws-s3-file-download
 
 ***
-Invokes a Lambda function. Specify just a function name to invoke the latest version of the function. To invoke a published version, use the Qualifier parameter to specify a version or alias. If you use the RequestResponse (synchronous) invocation option, note that the function may be invoked multiple times if a timeout is reached. For functions with a long timeout, your client may be disconnected during synchronous invocation while it waits for a response. If you use the Event (asynchronous) invocation option, the function will be invoked at least once in response to an event and the function must be idempotent to handle this.
+Download a file from S3 bucket to the War Room.
 
 #### Base Command
 
-`aws-lambda-invoke`
+`aws-s3-file-download`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | account_id | The AWS account ID. | Required |
-| region | The AWS region. | Required |
-| function_name | Name of the Lambda function to invoke. | Required |
-| invocation_type | RequestResponse (sync), Event (async), or DryRun. Default is RequestResponse. Possible values are: RequestResponse, Event, DryRun. Default is RequestResponse. | Optional |
-| log_type | Set to Tail to include execution log in response. Possible values are: None, Tail. | Optional |
-| client_context | Base64-encoded client context data. | Optional |
-| payload | JSON input to provide to the Lambda function. | Optional |
-| qualifier | Version or alias to invoke. | Optional |
+| bucket | Name of the target S3 bucket. Must follow S3 naming conventions. | Required |
+| key | Key (path) of the file to download from the S3 bucket. | Required |
+| region | AWS region where the S3 bucket is located. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.Lambda.InvokedFunction.StatusCode | Number | The HTTP status code is in the 200 range for a successful request. |
-| AWS.Lambda.InvokedFunction.FunctionError | String | If present, indicates that an error occurred during function execution. |
-| AWS.Lambda.InvokedFunction.LogResult | String | The last 4 KB of the execution log, which is base64-encoded. |
-| AWS.Lambda.InvokedFunction.Payload | Unknown | The response from the function, or an error object. |
-| AWS.Lambda.InvokedFunction.ExecutedVersion | String | The version of the function that executed. |
-| AWS.Lambda.InvokedFunction.FunctionName | string | The name of the Lambda function. |
-
-### aws-lambda-policy-get
-
-***
-Returns the resource-based IAM policy for a Lambda function.
-
-#### Base Command
-
-`aws-lambda-policy-get`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| account_id | The AWS account ID. | Required |
-| region | The AWS region. | Required |
-| function_name | Name of the Lambda function, version, or alias. | Required |
-| qualifier | Version or alias to get the policy for. | Optional |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| AWS.Lambda.Policy.Version | Date | The policy version. |
-| AWS.Lambda.Policy.Id | String | The identifier of the policy. |
-| AWS.Lambda.Policy.Statement.Sid | String | Identifier of the policy statement. |
-| AWS.Lambda.Policy.Statement.Effect | String | Specifies whether the statement results in an allow or an explicit deny. |
-| AWS.Lambda.Policy.Statement.Principal | unknown | Specify the principal that is allowed or denied access to a resource. |
-| AWS.Lambda.Policy.Statement.Action | unknown | Describes the specific action or actions that will be allowed or denied. |
-| AWS.Lambda.Policy.Statement.Resource | unknown | Defines the object or objects that the statement applies to. |
-| AWS.Lambda.Policy.Statement.Condition | String | Specify conditions for when a policy is in effect. |
-| AWS.Lambda.Policy.RevisionId | String | A unique identifier for the current revision of the policy. |
-
-### aws-lambda-function-url-config-get
-
-***
-Returns the configuration for a Lambda function URL.
-
-#### Base Command
-
-`aws-lambda-function-url-config-get`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| account_id | The AWS account ID. | Required |
-| region | The AWS region. | Required |
-| function_name | Name of the Lambda function. | Required |
-| qualifier | The alias name or version number. | Optional |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| AWS.Lambda.FunctionURLConfig.FunctionUrl | String | The HTTP URL endpoint for your function. |
-| AWS.Lambda.FunctionURLConfig.FunctionArn | String | The Amazon Resource Name \(ARN\) of your function. |
-| AWS.Lambda.FunctionURLConfig.AuthType | String | The type of authentication that your function URL uses. |
-| AWS.Lambda.FunctionURLConfig.Cors.AllowCredentials | Boolean | Whether to allow cookies or other credentials in requests to your function URL. |
-| AWS.Lambda.FunctionURLConfig.Cors.AllowHeaders | String | The HTTP headers that origins can include in requests to your function URL. |
-| AWS.Lambda.FunctionURLConfig.Cors.AllowMethods | String | The HTTP methods that are allowed when calling your function URL. |
-| AWS.Lambda.FunctionURLConfig.Cors.AllowOrigins | String | The origins that can access your function URL. |
-| AWS.Lambda.FunctionURLConfig.Cors.ExposeHeaders | String | The HTTP headers in your function response that you want to expose to origins that call your function URL. |
-| AWS.Lambda.FunctionURLConfig.Cors.MaxAge | Number | The maximum amount of time, in seconds, that web browsers can cache results of a preflight request. |
-| AWS.Lambda.FunctionURLConfig.CreationTime | String | When the function URL was created. |
-| AWS.Lambda.FunctionURLConfig.LastModifiedTime | String | When the function URL configuration was last updated. |
-| AWS.Lambda.FunctionURLConfig.InvokeMode | String | BUFFERED or RESPONSE_STREAM. |
-
-### aws-lambda-function-configuration-get
-
-***
-Retrieves configuration information about a Lambda function.
-
-#### Base Command
-
-`aws-lambda-function-configuration-get`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| account_id | The AWS account ID. | Required |
-| region | The AWS region. | Required |
-| function_name | Name, ARN, or qualified name of the Lambda function. | Required |
-| qualifier | Version number or alias name. | Optional |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| AWS.Lambda.FunctionConfig.FunctionName | String | The name of the function. |
-| AWS.Lambda.FunctionConfig.FunctionArn | String | The function’s Amazon Resource Name \(ARN\). |
-| AWS.Lambda.FunctionConfig.Runtime | String | The function’s execution role. |
-| AWS.Lambda.FunctionConfig.Role | String | The function’s execution role. |
-| AWS.Lambda.FunctionConfig.Handler | String | The function that Lambda calls to begin running your function. |
-| AWS.Lambda.FunctionConfig.CodeSize | Number | The size of the function’s deployment package, in bytes. |
-| AWS.Lambda.FunctionConfig.Description | String | The function’s description. |
-| AWS.Lambda.FunctionConfig.Timeout | Number | The amount of time in seconds that Lambda allows a function to run before stopping it. |
-| AWS.Lambda.FunctionConfig.MemorySize | Number | The amount of memory available to the function at runtime. |
-| AWS.Lambda.FunctionConfig.LastModified | String | The date and time that the function was last updated. |
-| AWS.Lambda.FunctionConfig.CodeSha256 | String | The SHA256 hash of the function’s deployment package. |
-| AWS.Lambda.FunctionConfig.Version | String | The version of the Lambda function. |
-| AWS.Lambda.FunctionConfig.VpcConfig.SubnetIds | unknown | A list of VPC subnet IDs. |
-| AWS.Lambda.FunctionConfig.VpcConfig.SecurityGroupIds | unknown | A list of VPC security group IDs. |
-| AWS.Lambda.FunctionConfig.VpcConfig.VpcId | String | The ID of the VPC. |
-| AWS.Lambda.FunctionConfig.VpcConfig.Ipv6AllowedForDualStack | Boolean | Allows outbound IPv6 traffic on VPC functions that are connected to dual-stack subnets. |
-| AWS.Lambda.FunctionConfig.DeadLetterConfig.TargetArn | String | The Amazon Resource Name \(ARN\) of an Amazon SQS queue or Amazon SNS topic. |
-| AWS.Lambda.FunctionConfig.Environment.Variables | unknown | Environment variable key-value pairs. Omitted from CloudTrail logs. |
-| AWS.Lambda.FunctionConfig.Environment.Error.ErrorCode | String | The error code. |
-| AWS.Lambda.FunctionConfig.Environment.Error.Message | String | The error message. |
-| AWS.Lambda.FunctionConfig.KMSKeyArn | String | The ARN of the Key Management Service \(KMS\). |
-| AWS.Lambda.FunctionConfig.TracingConfig.Mode | String | The tracing mode. |
-| AWS.Lambda.FunctionConfig.MasterArn | String | For Lambda@Edge functions, the ARN of the main function. |
-| AWS.Lambda.FunctionConfig.RevisionId | String | The latest updated revision of the function or alias. |
-| AWS.Lambda.FunctionConfig.Layers.Arn | String | The Amazon Resource Name \(ARN\) of the function layer. |
-| AWS.Lambda.FunctionConfig.Layers.CodeSize | Number | The size of the layer archive in bytes. |
-| AWS.Lambda.FunctionConfig.Layers.SigningProfileVersionArn | String | The Amazon Resource Name \(ARN\) for a signing profile version. |
-| AWS.Lambda.FunctionConfig.Layers.SigningJobArn | String | The Amazon Resource Name \(ARN\) of a signing job. |
-| AWS.Lambda.FunctionConfig.State | String | The current state of the function. |
-| AWS.Lambda.FunctionConfig.StateReason | String | The reason for the function’s current state. |
-| AWS.Lambda.FunctionConfig.StateReasonCode | String | The reason code for the function’s current state. |
-| AWS.Lambda.FunctionConfig.LastUpdateStatus | String | The status of the last update that was performed on the function. |
-| AWS.Lambda.FunctionConfig.LastUpdateStatusReason | String | The reason for the last update that was performed on the function. |
-| AWS.Lambda.FunctionConfig.LastUpdateStatusReasonCode | String | The reason code for the last update that was performed on the function. |
-| AWS.Lambda.FunctionConfig.FileSystemConfigs.Arn | String | The Amazon Resource Name \(ARN\) of the Amazon EFS access point that provides access to the file system. |
-| AWS.Lambda.FunctionConfig.FileSystemConfigs.LocalMountPath | String | The path where the function can access the file system, starting with /mnt/. |
-| AWS.Lambda.FunctionConfig.PackageType | String | The type of deployment package. |
-| AWS.Lambda.FunctionConfig.ImageConfigResponse.ImageConfig.EntryPoint | String | Specifies the entry point to their application, which is typically the location of the runtime executable. |
-| AWS.Lambda.FunctionConfig.ImageConfigResponse.ImageConfig.Command | String | Specifies parameters that you want to pass in with ENTRYPOINT. |
-| AWS.Lambda.FunctionConfig.ImageConfigResponse.ImageConfig.WorkingDirectory | String | Specifies the working directory. |
-| AWS.Lambda.FunctionConfig.ImageConfigResponse.Error.ErrorCode | String | Error code. |
-| AWS.Lambda.FunctionConfig.ImageConfigResponse.Error.Message | String | Error message. |
-| AWS.Lambda.FunctionConfig.SigningProfileVersionArn | String | The ARN of the signing profile version. |
-| AWS.Lambda.FunctionConfig.SigningJobArn | String | The ARN of the signing job. |
-| AWS.Lambda.FunctionConfig.Architectures | String | The size of the function’s /tmp directory in MB. |
-| AWS.Lambda.FunctionConfig.EphemeralStorage.Size | Number | The size of the function’s /tmp directory. |
-| AWS.Lambda.FunctionConfig.SnapStart.ApplyOn | String | When set to PublishedVersions, Lambda creates a snapshot of the execution environment when you publish a function version. |
-| AWS.Lambda.FunctionConfig.SnapStart.OptimizationStatus | String | When you provide a qualified Amazon Resource Name \(ARN\), this response element indicates whether SnapStart is activated for the specified function version. |
-| AWS.Lambda.FunctionConfig.RuntimeVersionConfig.RuntimeVersionArn | String | The ARN of the runtime version you want the function to use. |
-| AWS.Lambda.FunctionConfig.RuntimeVersionConfig.Error.ErrorCode | String | The error code. |
-| AWS.Lambda.FunctionConfig.RuntimeVersionConfig.Error.Message | String | The error message. |
-| AWS.Lambda.FunctionConfig.LoggingConfig.LogFormat | String | The format in which Lambda sends your function’s application and system logs to CloudWatch. |
-| AWS.Lambda.FunctionConfig.LoggingConfig.ApplicationLogLevel | String | Set this property to filter the application logs for your function that Lambda sends to CloudWatch. |
-| AWS.Lambda.FunctionConfig.LoggingConfig.SystemLogLevel | String | Set this property to filter the system logs for your function that Lambda sends to CloudWatch. |
-| AWS.Lambda.FunctionConfig.LoggingConfig.LogGroup | String | The name of the Amazon CloudWatch log group the function sends logs to. |
+| File.Size | Number | The size of the file. |
+| File.SHA1 | String | The SHA1 hash of the file. |
+| File.SHA256 | String | The SHA256 hash of the file. |
+| File.Name | String | The name of the file. |
+| File.SSDeep | String | The SSDeep hash of the file. |
+| File.EntryID | String | The entry ID of the file. |
+| File.Info | String | File information. |
+| File.Type | String | The file type. |
+| File.MD5 | String | The MD5 hash of the file. |
+| File.Extension | String | The file extension. |
