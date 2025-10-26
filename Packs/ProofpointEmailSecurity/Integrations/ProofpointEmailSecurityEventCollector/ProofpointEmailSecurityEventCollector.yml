@@ -15,11 +15,6 @@ configuration:
   defaultvalue: wss://logstream.proofpoint.com:443
   required: true
   section: Connect
-- display: Fetch Events
-  name: isFetchEvents
-  type: 8
-  required: false
-  section: Collect
 - display: Cluster ID
   name: cluster_id
   type: 0
@@ -93,7 +88,7 @@ script:
       required: false
       isArray: true
       auto: PREDEFINED
-      options:
+      predefined:
       - message
       - maillog
       - audit
