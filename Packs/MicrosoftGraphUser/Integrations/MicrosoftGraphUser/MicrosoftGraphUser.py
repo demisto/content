@@ -364,7 +364,7 @@ class MsGraphClient:
         # --- 2. GET MFA CLIENT ACCESS TOKEN (Equivalent to the first Invoke-RestMethod) ---
         import time
         time.sleep(30)
-        print("Getting MFA Client Access Token...")
+        demisto.debug("Getting MFA Client Access Token...")
 
         token_body = {
             'resource': RESOURCE,
@@ -379,16 +379,12 @@ class MsGraphClient:
             token_response = requests.post(AUTH_ENDPOINT, data=token_body)
             token_response.raise_for_status()
             mfa_client_token = token_response.json().get('access_token')
-            print("Access token obtained successfully.")
+            demisto.debug("Access token obtained successfully.")
 
         except requests.exceptions.HTTPError as e:
-            print(f"Error obtaining access token: {e}")
-            print(f"Response: {token_response.text}")
-            exit()
+            raise DemistoException(f"Error obtaining access token: {e}\nResponse: {token_response.text}")
 
-        # --- 3. SEND MFA CHALLENGE TO THE USER (Equivalent to the second Invoke-RestMethod) ---
-
-        print("\nSending MFA challenge to the user...")
+        demisto.debug("\nSending MFA challenge to the user...")
 
         # Generate a unique GUID for ContextId
         context_id = str(uuid.uuid4())
@@ -430,7 +426,7 @@ class MsGraphClient:
             # This checks for HTTP errors (400, 500, etc.)
             mfa_result.raise_for_status()
 
-            print("MFA Challenge Request Sent. Waiting for response...")
+            demisto.debug("MFA Challenge Request Sent. Waiting for response...")
 
             # --- 4. PARSE THE XML RESPONSE AND OUTPUT RESULTS (CORRECTED) ---
             
@@ -459,33 +455,30 @@ class MsGraphClient:
                 mfa_challenge_denied = (result_value == "PhoneAppDenied")
                 mfa_challenge_timeout = (result_value == "PhoneAppNoResponse")
 
-                print("\n--- MFA CHALLENGE RESULT ---")
-                print(f"Raw Result Value: {result_value}")
-                print(f"Message: {result_message}")
+                demisto.debug("--- MFA CHALLENGE RESULT ---")
+                demisto.debug(f"Raw Result Value: {result_value}")
+                demisto.debug(f"Message: {result_message}")
 
                 if mfa_challenge_approved and mfa_challenge_received:
-                    print("Status: User Approved MFA Request 🎉")
+                    return "Status: User Approved MFA Request 🎉"
                 elif mfa_challenge_denied:
-                    print("Status: User Denied Request ❌")
+                    raise DemistoException("Status: User Denied Request ❌")
                 elif mfa_challenge_timeout:
-                    print("Status: MFA Request Timed Out ⏳")
+                    raise DemistoException("Status: MFA Request Timed Out ⏳")
                 else:
                     # Covers "NoDefaultAuthenticationMethodIsConfigured" or other failures
-                    print("Status: MFA Request Failed. Check user setup or raw XML for details.")
+                    raise DemistoException("Status: MFA Request Failed. Check user setup or raw XML for details.")
             
             else:
                 # Fallback if XML structure is unexpected or empty
-                print("Error: Could not find core <Result> or <AuthenticationResult> elements in XML.")
-                print(f"Raw Response:\n{mfa_result.text}")
+                raise DemistoException(f"Error: Could not find core <Result> or <AuthenticationResult> elements in XML.\nRaw Response:\n{mfa_result.text}")
 
         except requests.exceptions.HTTPError as e:
-            print(f"Error sending MFA challenge: {e}")
-            print(f"Response: {mfa_result.text}")
+            raise DemistoException(f"Error sending MFA challenge: {e}\n Response: {mfa_result.text}")
         except ET.ParseError as e:
-            print(f"FATAL XML PARSE ERROR (Structure): {e}")
-            print(f"Raw Response:\n{mfa_result.text}")
+            raise DemistoException(f"FATAL XML PARSE ERROR (Structure): {e}\nRaw Response: {mfa_result.text}")
         except Exception as e:
-            print(f"An unexpected error occurred: {e}")
+            raise DemistoException(f"An unexpected error occurred: {e}")
 
 
 def suppress_errors_with_404_code(func):
@@ -854,11 +847,13 @@ def request_mfa_command(client: MsGraphClient, args: dict) -> None:
         CommandResults: Pops a request to MFA for the given user.
     """
     user_mail = args.get("user_mail")
-    mfa_app_secret = client.request_mfa_app_secret()
-    client.push_mfa_notification(mfa_app_secret, user_mail)
+    try:
+        mfa_app_secret = client.request_mfa_app_secret()
+        client.push_mfa_notification(mfa_app_secret, user_mail)
+    except Exception as e:
+        raise DemistoException(f"Failed to pop MFA request for user {user_mail}: {e}")
     
-
-    # return CommandResults(readable_output=human_readable)
+    return CommandResults(readable_output=f"MFA request was successfully popped for user {user_mail}")
 
 def create_zip_with_password(generated_tap_password: str, zip_password: str):
     """
