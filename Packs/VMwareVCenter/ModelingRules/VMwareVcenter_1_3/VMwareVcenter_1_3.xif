@@ -94,8 +94,8 @@ alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\
     session_id = coalesce(arrayindex(regextract(event_payload, "session[\:\s\[\<]*([a-fA-F\d\-]{8,})"), 0), arrayindex(regextract(event_payload, "--\s+([a-fA-F\d-]{8,})"), 0))
 // User field manipulations
 | alter
-    user_name = if(user contains """\\""", arrayindex(regextract(arrayindex(split(user, """\\"""), 1), "([^@]+)@?"), 0), user contains "@", arrayindex(split(user, "@"), 0), user),
-    user_domain = if(user contains """\\""", arrayindex(split(user, """\\"""), 0), user contains "@", arrayindex(split(user, "@"), 1), null)
+    user_name = if(user contains """\\""", arrayindex(regextract(arrayindex(split(user, """\\"""), -1), "([^@]+)@?"), 0), user contains "@", arrayindex(split(user, "@"), 0), user),
+    user_domain = if(user contains """\\""", arrayindex(split(user, """\\"""), 0), user contains "@", arrayindex(split(user, "@"), -1), null)
 | alter
     xdm.alert.severity = severity,
     xdm.event.type = event_type,
@@ -332,8 +332,8 @@ alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\
     severity = if(msg_severity = null, to_string(subtract(syslog_priority, multiply(floor(divide(syslog_priority, 8)), 8))), msg_severity ~= "DEBUG|VERBOSE", "7", msg_severity ~= "INFO", "6", msg_severity ~= "NOTICE", "5", msg_severity ~= "WARN", "4", msg_severity ~= "ERROR", "3", msg_severity ~= "CRITICAL", "2", msg_severity ~= "ALERT", "1", msg_severity ~= "EMERGENCY", "0", msg_severity)
 // User field manipulations
 | alter
-    user_name = if(user contains """\\""", arrayindex(regextract(arrayindex(split(user, """\\"""), 1), "([^@]+)@?"), 0), user contains "@", arrayindex(split(user, "@"), 0), user),
-    user_domain = if(user contains """\\""", arrayindex(split(user, """\\"""), 0), user contains "@", arrayindex(split(user, "@"), 1), null)
+    user_name = if(user contains """\\""", arrayindex(regextract(arrayindex(split(user, """\\"""), -1), "([^@]+)@?"), 0), user contains "@", arrayindex(split(user, "@"), 0), user),
+    user_domain = if(user contains """\\""", arrayindex(split(user, """\\"""), 0), user contains "@", arrayindex(split(user, "@"), -1), null)
 | alter
     xdm.alert.severity = severity, 
     xdm.event.type = event_type,
@@ -453,8 +453,8 @@ alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\
     severity = if(msg_severity = null, to_string(subtract(syslog_priority, multiply(floor(divide(syslog_priority, 8)), 8))), msg_severity ~= "DEBUG|VERBOSE", "7", msg_severity ~= "INFO", "6", msg_severity ~= "NOTICE", "5", msg_severity ~= "WARN", "4", msg_severity ~= "ERROR", "3", msg_severity ~= "CRITICAL", "2", msg_severity ~= "ALERT", "1", msg_severity ~= "EMERGENCY", "0", msg_severity)
 // User field manipulations
 | alter
-    user_name = if(user contains """\\""", arrayindex(regextract(arrayindex(split(user, """\\"""), 1), "([^@]+)@?"), 0), user contains "@", arrayindex(split(user, "@"), 0), user),
-    user_domain_from_user = if(user contains """\\""", arrayindex(split(user, """\\"""), 0), user contains "@", arrayindex(split(user, "@"), 1), null)
+    user_name = if(user contains """\\""", arrayindex(regextract(arrayindex(split(user, """\\"""), -1), "([^@]+)@?"), 0), user contains "@", arrayindex(split(user, "@"), 0), user),
+    user_domain_from_user = if(user contains """\\""", arrayindex(split(user, """\\"""), 0), user contains "@", arrayindex(split(user, "@"), -1), null)
 | alter
     xdm.alert.severity = severity, 
     xdm.event.type = event_type,
@@ -661,8 +661,8 @@ alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\
     op = arrayindex(regextract(event_payload, "service\s+batch\s+op\s+(\w+)"), 0)
 // User field manipulations
 | alter
-    user_name = if(user contains """\\""", arrayindex(regextract(arrayindex(split(user, """\\"""), 1), "([^@]+)@?"), 0), user contains "@", arrayindex(split(user, "@"), 0), user),
-    user_domain = if(user contains """\\""", arrayindex(split(user, """\\"""), 0), user contains "@", arrayindex(split(user, "@"), 1), null)
+    user_name = if(user contains """\\""", arrayindex(regextract(arrayindex(split(user, """\\"""), -1), "([^@]+)@?"), 0), user contains "@", arrayindex(split(user, "@"), 0), user),
+    user_domain = if(user contains """\\""", arrayindex(split(user, """\\"""), 0), user contains "@", arrayindex(split(user, "@"), -1), null)
 | alter
     xdm.alert.severity = severity,
     xdm.event.type = event_type,
@@ -719,8 +719,8 @@ alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\
     severity = to_string(subtract(syslog_priority, multiply(floor(divide(syslog_priority, 8)), 8)))
 // User field manipulations
 | alter
-    user_name = if(user contains """\\""", arrayindex(regextract(arrayindex(split(user, """\\"""), 1), "([^@]+)@?"), 0), user contains "@", arrayindex(split(user, "@"), 0), user),
-    user_domain = if(user contains """\\""", arrayindex(split(user, """\\"""), 0), user contains "@", arrayindex(split(user, "@"), 1), null)
+    user_name = if(user contains """\\""", arrayindex(regextract(arrayindex(split(user, """\\"""), -1), "([^@]+)@?"), 0), user contains "@", arrayindex(split(user, "@"), 0), user),
+    user_domain = if(user contains """\\""", arrayindex(split(user, """\\"""), 0), user contains "@", arrayindex(split(user, "@"), -1), null)
 | alter
     xdm.alert.severity = severity,
     xdm.event.type = event_type,
@@ -754,8 +754,8 @@ alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\
     severity = if(msg_severity = null, to_string(subtract(syslog_priority, multiply(floor(divide(syslog_priority, 8)), 8))), msg_severity ~= "DEBUG|VERBOSE", "7", msg_severity ~= "INFO", "6", msg_severity ~= "NOTICE", "5", msg_severity ~= "WARN", "4", msg_severity ~= "ERROR", "3", msg_severity ~= "CRITICAL", "2", msg_severity ~= "ALERT", "1", msg_severity ~= "EMERGENCY", "0", msg_severity)
 // User field manipulations
 | alter
-    user_name = if(user contains """\\""", arrayindex(regextract(arrayindex(split(user, """\\"""), 1), "([^@]+)@?"), 0), user contains "@", arrayindex(split(user, "@"), 0), user),
-    user_domain = if(user contains """\\""", arrayindex(split(user, """\\"""), 0), user contains "@", arrayindex(split(user, "@"), 1), null)
+    user_name = if(user contains """\\""", arrayindex(regextract(arrayindex(split(user, """\\"""), -1), "([^@]+)@?"), 0), user contains "@", arrayindex(split(user, "@"), 0), user),
+    user_domain = if(user contains """\\""", arrayindex(split(user, """\\"""), 0), user contains "@", arrayindex(split(user, "@"), -1), null)
 | alter
     xdm.alert.severity = severity, 
     xdm.event.type = event_type,
@@ -788,8 +788,8 @@ alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\
     severity = if(msg_severity = null, to_string(subtract(syslog_priority, multiply(floor(divide(syslog_priority, 8)), 8))), msg_severity ~= "DEBUG|VERBOSE", "7", msg_severity ~= "INFO", "6", msg_severity ~= "NOTICE", "5", msg_severity ~= "WARN", "4", msg_severity ~= "ERROR", "3", msg_severity ~= "CRITICAL", "2", msg_severity ~= "ALERT", "1", msg_severity ~= "EMERGENCY", "0", msg_severity)
 // User field manipulations
 | alter
-    user_name = if(user contains """\\""", arrayindex(regextract(arrayindex(split(user, """\\"""), 1), "([^@]+)@?"), 0), user contains "@", arrayindex(split(user, "@"), 0), user),
-    user_domain = if(user contains """\\""", arrayindex(split(user, """\\"""), 0), user contains "@", arrayindex(split(user, "@"), 1), null)
+    user_name = if(user contains """\\""", arrayindex(regextract(arrayindex(split(user, """\\"""), -1), "([^@]+)@?"), 0), user contains "@", arrayindex(split(user, "@"), 0), user),
+    user_domain = if(user contains """\\""", arrayindex(split(user, """\\"""), 0), user contains "@", arrayindex(split(user, "@"), -1), null)
 | alter
     xdm.alert.severity = severity, 
     xdm.event.type = event_type,
@@ -897,8 +897,8 @@ alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\
     severity = if(msg_severity = null, to_string(subtract(syslog_priority, multiply(floor(divide(syslog_priority, 8)), 8))), msg_severity ~= "DEBUG|VERBOSE", "7", msg_severity ~= "INFO", "6", msg_severity ~= "NOTICE", "5", msg_severity ~= "WARN", "4", msg_severity ~= "ERROR", "3", msg_severity ~= "CRITICAL", "2", msg_severity ~= "ALERT", "1", msg_severity ~= "EMERGENCY", "0", msg_severity)
 // User field manipulations
 | alter
-    user_name = if(user contains """\\""", arrayindex(regextract(arrayindex(split(user, """\\"""), 1), "([^@]+)@?"), 0), user contains "@", arrayindex(split(user, "@"), 0), user),
-    user_domain = if(user contains """\\""", arrayindex(split(user, """\\"""), 0), user contains "@", arrayindex(split(user, "@"), 1), null)
+    user_name = if(user contains """\\""", arrayindex(regextract(arrayindex(split(user, """\\"""), -1), "([^@]+)@?"), 0), user contains "@", arrayindex(split(user, "@"), 0), user),
+    user_domain = if(user contains """\\""", arrayindex(split(user, """\\"""), 0), user contains "@", arrayindex(split(user, "@"), -1), null)
 | alter
     xdm.alert.severity = severity, 
     xdm.event.type = event_type,
@@ -958,8 +958,8 @@ alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\
     severity = if(msg_severity = null, to_string(subtract(syslog_priority, multiply(floor(divide(syslog_priority, 8)), 8))), msg_severity ~= "DEBUG|VERBOSE", "7", msg_severity ~= "INFO", "6", msg_severity ~= "NOTICE", "5", msg_severity ~= "WARN", "4", msg_severity ~= "ERROR", "3", msg_severity ~= "CRITICAL", "2", msg_severity ~= "ALERT", "1", msg_severity ~= "EMERGENCY", "0", msg_severity)
 // User field manipulations
 | alter
-    user_name = if(user contains """\\""", arrayindex(regextract(arrayindex(split(user, """\\"""), 1), "([^@]+)@?"), 0), user contains "@", arrayindex(split(user, "@"), 0), user),
-    user_domain = if(user contains """\\""", arrayindex(split(user, """\\"""), 0), user contains "@", arrayindex(split(user, "@"), 1), null)
+    user_name = if(user contains """\\""", arrayindex(regextract(arrayindex(split(user, """\\"""), -1), "([^@]+)@?"), 0), user contains "@", arrayindex(split(user, "@"), 0), user),
+    user_domain = if(user contains """\\""", arrayindex(split(user, """\\"""), 0), user contains "@", arrayindex(split(user, "@"), -1), null)
 | alter
     xdm.alert.severity = severity, 
     xdm.auth.auth_method = auth_method,
@@ -1029,8 +1029,8 @@ alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\
     command = arrayindex(regextract(syslog_msg, "CMD\s+\(\s*([^\)]+)"), 0)
 // User field manipulations
 | alter
-    user_name = if(user contains """\\""", arrayindex(regextract(arrayindex(split(user, """\\"""), 1), "([^@]+)@?"), 0), user contains "@", arrayindex(split(user, "@"), 0), user),
-    user_domain = if(user contains """\\""", arrayindex(split(user, """\\"""), 0), user contains "@", arrayindex(split(user, "@"), 1), null)
+    user_name = if(user contains """\\""", arrayindex(regextract(arrayindex(split(user, """\\"""), -1), "([^@]+)@?"), 0), user contains "@", arrayindex(split(user, "@"), 0), user),
+    user_domain = if(user contains """\\""", arrayindex(split(user, """\\"""), 0), user contains "@", arrayindex(split(user, "@"), -1), null)
 | alter 
     xdm.alert.severity = severity,
     xdm.event.type = event_type,
@@ -1065,8 +1065,8 @@ alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\
     outcome = arrayindex(regextract(syslog_msg, "(?:\[[^\]]*\]\s){8}\[([^\]]*)"), 0)
 // User field manipulations
 | alter
-    user_name = if(user contains """\\""", arrayindex(regextract(arrayindex(split(user, """\\"""), 1), "([^@]+)@?"), 0), user contains "@", arrayindex(split(user, "@"), 0), user),
-    user_domain = if(user contains """\\""", arrayindex(split(user, """\\"""), 0), user contains "@", arrayindex(split(user, "@"), 1), null)
+    user_name = if(user contains """\\""", arrayindex(regextract(arrayindex(split(user, """\\"""), -1), "([^@]+)@?"), 0), user contains "@", arrayindex(split(user, "@"), 0), user),
+    user_domain = if(user contains """\\""", arrayindex(split(user, """\\"""), 0), user contains "@", arrayindex(split(user, "@"), -1), null)
 | alter
     xdm.alert.severity = severity,
     xdm.event.type = event_type,
@@ -1100,8 +1100,8 @@ alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\
     user_domain = arrayindex(regextract(syslog_msg, "for\suser[\s:]+\{Name:\s*[^,]+,\sDomain:\s*([^\}]+)"), 0)
 // User field manipulations
 | alter
-    user_name = if(username contains """\\""", arrayindex(regextract(arrayindex(split(username, """\\"""), 1), "([^@]+)@?"), 0), username contains "@", arrayindex(split(username, "@"), 0), username),
-    user_domain_from_username = if(username contains """\\""", arrayindex(split(username, """\\"""), 0), username contains "@", arrayindex(split(username, "@"), 1), null)
+    user_name = if(username contains """\\""", arrayindex(regextract(arrayindex(split(username, """\\"""), -1), "([^@]+)@?"), 0), username contains "@", arrayindex(split(username, "@"), 0), username),
+    user_domain_from_username = if(username contains """\\""", arrayindex(split(username, """\\"""), 0), username contains "@", arrayindex(split(username, "@"), -1), null)
 | alter
     xdm.event.type = event_type,
     xdm.event.description = syslog_msg,
