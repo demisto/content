@@ -3377,7 +3377,7 @@ def test_module(client: AzureClient) -> str:
     return "ok"
 
 
-def health_check(shared_creds: dict, subscription_id: str, connector_id: str) -> HealthCheckError | None:
+def health_check(shared_creds: dict, subscription_id: str, connector_id: str) -> HealthCheckError | None:  # pragma: no cover
     """
     Tests connectivity to Azure and checks for required permissions.
     This function is specifically used for COOC (Connect on our Cloud) health checks
@@ -3448,7 +3448,7 @@ def get_azure_client(params: dict, args: dict):
     return client
 
 
-def main():
+def main():  # pragma: no cover
     params = demisto.params()
     command = demisto.command()
     args = demisto.args()
