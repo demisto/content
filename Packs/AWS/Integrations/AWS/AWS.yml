@@ -1759,7 +1759,7 @@ script:
 fromversion: 5.5.0
 tests:
 - No test - No playbook part of this release.
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 isCloudProviderIntegration: true
