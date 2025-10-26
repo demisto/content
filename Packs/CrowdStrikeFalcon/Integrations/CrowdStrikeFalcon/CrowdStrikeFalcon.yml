@@ -1,5 +1,5 @@
 category: Endpoint
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -2021,7 +2021,7 @@ script:
       description: The severity rating for the behavior. The value can be any integer between 1-100.
       type: Number
     - contextPath: CrowdStrike.Detections.behaviors.confidence
-      description: The true positive confidence rating for the behavior. The value can be any integer between 1-100.
+      description: 'The true positive confidence rating for the behavior. The value can be any integer between 1-100.'
       type: Number
     - contextPath: CrowdStrike.Detections.behaviors.ioc_type
       description: 'The type of the triggering IOC. Possible values are: "hash_sha256", "hash_md5", "domain", "filename", "registry_key", "command_line", and "behavior".'
@@ -5178,10 +5178,9 @@ script:
     - contextPath: CrowdStrike.IOARules.version_ids
       description: The IOA rule's version ID.
       type: String
-  dockerimage: demisto/py3-tools:1.0.0.4257568
+  dockerimage: demisto/py3-tools:1.0.0.5475267
   isfetch: true
   isfetch:marketplacev2: false
-  isfetch:platform: false
   isfetchevents: true
   ismappable: true
   isremotesyncin: true
