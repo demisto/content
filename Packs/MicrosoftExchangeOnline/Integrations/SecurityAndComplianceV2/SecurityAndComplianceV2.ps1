@@ -591,11 +591,13 @@ class SecurityAndComplianceClient {
     [string]$access_token
     [string]$upn
     [string]$tenant_id
+    [string]$app_secret
     [string]$connection_uri
     [string]$azure_ad_authorization_endpoint_uri_base
     [string]$azure_ad_authorization_endpoint_uri
 
-    SecurityAndComplianceClient([string]$access_token, [string]$upn, [string]$tenant_id, [string]$connection_uri, [string]$azure_ad_authorization_endpoint_uri_base) {
+
+    SecurityAndComplianceClient([string]$access_token, [string]$upn, [string]$tenant_id, [string]$app_secret ,[string]$connection_uri, [string]$azure_ad_authorization_endpoint_uri_base) {
 
         $this.access_token = $access_token
 
@@ -605,6 +607,12 @@ class SecurityAndComplianceClient {
             $this.tenant_id = $tenant_id
         } else {
             $this.tenant_id = $null
+        }
+
+        if ($app_secret) {
+            $this.app_secret = $app_secret
+        } else {
+            $this.app_secret = $null
         }
 
         if ($connection_uri) {
@@ -632,7 +640,14 @@ class SecurityAndComplianceClient {
             "ConnectionUri" = $this.connection_uri
             "AzureADAuthorizationEndpointUri" = $this.azure_ad_authorization_endpoint_uri
         }
-        Connect-ExchangeOnline @cmd_params -CommandName $CommandName -WarningAction:SilentlyContinue -ShowBanner:$false | Out-Null
+        Connect-IPPSSession @cmd_params -CommandName $CommandName -EnableSearchOnlySession -WarningAction:SilentlyContinue -ShowBanner:$false | Out-Null
+    }
+
+    CreateDelegatedSessionCred([string]$CommandName){
+        $securePassword = ConvertTo-SecureString $this.app_secret -AsPlainText -Force
+        $UserCredential = New-Object System.Management.Automation.PSCredential ($this.upn, $securePassword)
+
+        Connect-IPPSSession -Credential $UserCredential -CommandName $CommandName -EnableSearchOnlySession
     }
 
     DisconnectSession(){
@@ -919,7 +934,7 @@ class SecurityAndComplianceClient {
                               [bool]$include_sharepoint_document_versions, [string]$notify_email,
                               [string]$notify_email_cc, [string]$scenario, [string]$scope) {
         # Establish session to remote
-        $this.CreateDelegatedSession("New-ComplianceSearchAction")
+        $this.CreateDelegatedSessionCred("New-ComplianceSearchAction")
         # Execute command
         $cmd_params = @{
             "SearchName" = $search_name
@@ -2143,6 +2158,7 @@ function Main {
             $oauth2_client.access_token,
             $integration_params.delegated_auth.identifier,
             $tenant_id,
+            $app_secret,
             $integration_params.connection_uri,
             $integration_params.azure_ad_authorized_endpoint_uri_base
         )
