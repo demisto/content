@@ -2,7 +2,7 @@
     "name": "CyberArk Certificate Manager Self-Hosted",
     "description": "Retrieves information about certificates stored in Venafi.",
     "support": "xsoar",
-    "currentVersion": "2.0.9",
+    "currentVersion": "2.0.10",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
