@@ -17,37 +17,47 @@ ASSET_GROUP_FIELDS = {
 }
 
 
-def create_asset_filter_from_dict(fields_to_filter, operator):
+class FilterField:
+    def __init__(self, field_name: str, operator: str, values: list):
+        self.field_name = field_name
+        self.operator = operator
+        self.values = values
+
+def create_filter_from_fields(fields_to_filter: list[FilterField]):
     """
-    Create an asset filter dictionary from field-value pairs.
-
+    Creates a filter from a list of FilterField objects.
+    The filter will require each field to be one of the values provided.
     Args:
-        fields_to_filter (dict): Dictionary where keys are field names and values are lists of values to filter by.
-        operator (str): The search operator to use for filtering ("EQ" or "CONTAINS").
-
+        fields_to_filter (list[FilterField]): List of FilterField objects to create a filter from.
     Returns:
-        dict: A filter dictionary with AND/OR structure for asset filtering operations.
+        dict[str, list]: Filter object.
     """
     filter: dict[str, list] = {"AND": []}
 
-    for field, value in fields_to_filter.items():
-        if not value:
+    for field in fields_to_filter:
+        if not field.values:
             continue
 
-        search_obj: dict[str, list] = {"OR": []}
-        for val in value:
-            search_obj["OR"].append(
-                {
-                    "SEARCH_FIELD": field,
-                    "SEARCH_TYPE": operator,
-                    "SEARCH_VALUE": val,
-                }
-            )
+        if len(field.values) == 1:
+            search_obj = {
+                "SEARCH_FIELD": field.field_name,
+                "SEARCH_TYPE": field.operator,
+                "SEARCH_VALUE": field.values[0],
+            }
+        else:
+            search_obj = {"OR": []}
+            for value in field.values:
+                search_obj["OR"].append(
+                    {
+                        "SEARCH_FIELD": field.field_name,
+                        "SEARCH_TYPE": field.operator,
+                        "SEARCH_VALUE": value,
+                    }
+                )
 
         filter["AND"].append(search_obj)
 
     return filter
-
 
 def replace_substring(data: dict | str, original: str, new: str) -> str | dict:
     """
@@ -194,13 +204,13 @@ def search_asset_groups_command(client: Client, args: dict) -> CommandResults:
                         raw response, and outputs for integration context.
     """
     operator = args.get("operator", "EQ")
-    fields_to_filter = {
-        ASSET_GROUP_FIELDS["asset_group_name"]: argToList(args.get("name", "")),
-        ASSET_GROUP_FIELDS["asset_group_type"]: argToList(args.get("type", "")),
-        ASSET_GROUP_FIELDS["asset_group_description"]: args.get("description", ""),
-    }
+    fields_to_filter = [
+        FilterField(ASSET_GROUP_FIELDS["asset_group_name"], operator, argToList(args.get("name", ""))),
+        FilterField(ASSET_GROUP_FIELDS["asset_group_type"], "EQ", argToList(args.get("type", ""))),
+        FilterField(ASSET_GROUP_FIELDS["asset_group_description"], operator, argToList(args.get("description", ""))),
+    ]
 
-    filter = create_asset_filter_from_dict(fields_to_filter, operator)
+    filter = create_filter_from_fields(fields_to_filter)
 
     response = client.search_asset_groups(filter)
     if not response:
