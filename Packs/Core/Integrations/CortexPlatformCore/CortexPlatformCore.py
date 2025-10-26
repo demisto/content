@@ -217,9 +217,12 @@ def update_issue_command(client, args):
     update_args = {"assigned_user": assigned_user_mail}
     filter_data = create_filter_data(issue_id, update_args)
     client.update_issue(filter_data)
+    id_arg = {"alert_id": issue_id}
+    issues_command_results: CommandResults = get_alerts_by_filter_command(client, id_arg)
+    if issues_command_results and issues_command_results.outputs and issues_command_results.outputs[0].get("assigned_to") == assigned_user_mail:
+        return CommandResults(readable_output=f"The assignee of issue {issue_id} was updated successfully.")
     
-    return CommandResults(readable_output=f"The assignee of issue {issue_id} was updated successfully.")
-    
+    return_error(f"Failed to assign {assigned_user_mail} to the issue {issue_id}.")
 
 
 def get_extra_data_for_case_id_command(client, args):
