@@ -4405,3 +4405,15 @@ def test_get_bucket_acl_command_failure(mocker):
                        match=f"AWS S3 API call to get_bucket_acl failed or returned an unexpected status code."
                              f" Received HTTP Status Code: {HTTPStatus.BAD_REQUEST}"):
         S3.get_bucket_website_command(mock_client, args)
+
+
+def test_get_latest_ami_command_success(mocker):
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.modify_subnet_attribute.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
+    args = {"executable_by": "mock_executable_by"}
+
+    result = EC2.get_latest_ami_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert "Bucket Acl" in result.readable_output
