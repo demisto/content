@@ -2258,6 +2258,8 @@ script:
       type: String
       required: true
       prettyname: Subscription ID
+      prettypredefined:
+        Subscription ID: ${asset.xdm.asset.realm}
     - name: name
       description: Policy assignment name.
       defaultValue: SecurityCenterBuiltIn
@@ -2337,24 +2339,31 @@ script:
       type: String
       required: true
       prettyname: Subscription ID
+      prettypredefined:
+        Subscription ID: ${asset.xdm.asset.realm}
     - description: The name of the resource group.
       name: resource_group_name
       type: String
       required: true
       prettyname: Resource Group
+      prettypredefined:
+        Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroup}
     - description: The name of the security group.
       name: security_group_name
       required: true
       prettyname: Logic App Name
+      prettypredefined:
+        Logic App Name: ${asset.xdm.asset.raw_fields.Platform Discovery.name}
     - description: Name of the NSG rule to update.
       name: security_rule_name
       required: true
       prettyname: NSG Rule
+      prettypredefined:
+        NSG Rule: ${asset.xdm.asset.raw_fields.Platform Discovery.properties.securityRules.name}
     - auto: PREDEFINED
       description: Whether to allow or deny network traffic.
       name: access
       predefined:
-      - Allow
       - Deny
       defaultValue: Deny
     description: "Revokes an NSG rule's access setting to Deny, effectively blocking traffic defined by that rule's properties. Requires 'Microsoft.Network/networkSecurityGroups/securityRules/*' permission."
@@ -2413,20 +2422,28 @@ script:
       name: subscription_id
       type: String
       required: true
+      prettypredefined:
+        Subscription ID: ${asset.xdm.asset.realm}
       prettyname: Subscription ID
     - description: The name of the resource group.
       name: resource_group_name
       type: String
       required: true
+      prettypredefined:
+        Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroup}
       prettyname: Resource Group Name
     - description: The name of the security group.
       name: security_group_name
       required: true
       prettyname: Logic App Name
+      prettypredefined:
+        Logic App Name: ${asset.xdm.asset.raw_fields.Platform Discovery.name}
     - description: The name of the rule to be updated.
       name: security_rule_name
       required: true
       prettyname: NSG Rule
+      prettypredefined:
+        NSG Rule: ${asset.xdm.asset.raw_fields.Platform Discovery.properties.securityRules.name}
     description: "Deletes a network security group (NSG) rule. Requires 'Microsoft.Network/networkSecurityGroups/securityRules/*' permission."
     name: azure-nsg-security-rule-delete-quick-action
     prettyname: Delete NSG Rule
@@ -2484,6 +2501,8 @@ script:
       type: String
       required: true
       prettyname: Subscription ID
+      prettypredefined:
+        Subscription ID: ${asset.xdm.asset.realm}
     - name: resource_group_name
       type: String
       required: true
@@ -2494,6 +2513,14 @@ script:
       required: true
       description: Name of the Web App.
       prettyname: AZ Web App
+      prettypredefined:
+        AZ Web App: ${asset.xdm.asset.name}
+    - name: identity_type
+      type: String
+      required: false
+      defaultValue: SystemAssigned
+      description: Managed service identity type.
+      hidden: true
     description: "Assigns a system-assigned managed identity to the web app, enabling secure access to other Azure services without managing credentials. Requires 'Microsoft.Web/sites/{app_name}/config/*' permission."
     name: azure-webapp-assign-managed-identity-quick-action
     prettyname: Assign Managed Identity to Web App
@@ -2706,24 +2733,25 @@ script:
       name: subscription_id
       type: String
       required: true
+      prettypredefined:
+        Subscription ID: ${asset.xdm.asset.realm}
       prettyname: Subscription ID
     - description: The resource group name.
       name: resource_group_name
       required: true
       prettyname: Resource Group
+      prettypredefined:
+        Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroup}
     - description: The name of the storage account.
       name: account_name
       required: true
       prettyname: Storage Account
+      prettypredefined:
+        Storage Account: ${asset.xdm.asset.name}
     - description: Specifies whether traffic is bypassed for Logging/Metrics/AzureServices.
       name: network_ruleset_bypass
       auto: PREDEFINED
       isArray: true
-      predefined:
-      - AzureServices
-      - Logging
-      - Metrics
-      - None
       defaultValue: AzureServices
     description: "Configures the storage account's network rules to allow traffic from trusted Azure services. Requires 'Microsoft.Storage/storageAccounts/*' permission."
     name: azure-storage-allow-access-quick-action
@@ -2808,6 +2836,8 @@ script:
       description: The subscription ID.
       required: true
       prettyname: Subscription ID
+      prettypredefined:
+        Subscription ID: ${asset.xdm.asset.realm}
     - name: resource_group_name
       type: string
       description: The resource group name.
@@ -2838,6 +2868,8 @@ script:
       description: The subscription ID.
       required: true
       prettyname: Subscription ID
+      prettypredefined:
+        Subscription ID: ${asset.xdm.asset.realm}
     - name: resource_group_name
       type: string
       required: true
@@ -2848,16 +2880,18 @@ script:
       required: true
       description: Name of the Web App.
       prettyname: AZ Webapp
+      prettypredefined:
+        AZ Web App: ${asset.xdm.asset.name}
     - auto: PREDEFINED
       name: http20_enabled
       type: bool
-      description: CEnable clients to connect over HTTP/2.
+      description: Enable clients to connect over HTTP/2.
       predefined:
       - 'true'
       - 'false'
       defaultValue: 'true'
     description: "Enables HTTP 2.0 for the web app. Requires 'Microsoft.Web/sites/{app_name}/config/*' permission."
-    name: azure-webapp-set-http-version2.0-quick-action
+    name: azure-webapp-set-http2-quick-action
     prettyname: Set Webapp HTTP Version to 2.0
     quickaction: true
     hidden: true
@@ -2955,6 +2989,8 @@ script:
       description: The subscription ID.
       required: true
       prettyname: Subscription ID
+      prettypredefined:
+        Subscription ID: ${asset.xdm.asset.realm}
     - name: resource_group_name
       type: string
       required: true
@@ -2965,14 +3001,13 @@ script:
       required: true
       description: Name of the Web App.
       prettyname: AZ Web App
+      prettypredefined:
+        AZ Web App: ${asset.xdm.asset.name}
     - auto: PREDEFINED
       name: enabled
       type: bool
       required: false
       description: Whether App Service Authentication/Authorization is enabled.
-      predefined:
-      - 'true'
-      - 'false'
       defaultValue: 'true'
     description: "Enables App Service Authentication for the web app. Requires 'Microsoft.Web/sites/{app_name}/config/authsettings/*' permission."
     name: azure-webapp-auth-update-quick-action
@@ -3082,23 +3117,26 @@ script:
       description: The subscription ID.
       required: true
       prettyname: Subscription ID
+      prettypredefined:
+        Subscription ID: ${asset.xdm.asset.realm}
     - description: The resource group name.
       name: resource_group_name
       required: true
       prettyname: Resource Group
+      prettypredefined:
+        Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroup}
     - description: Name of the storage account.
       name: account_name
       required: true
       prettyname: Storage Account
+      prettypredefined:
+        Storage Account: ${asset.xdm.asset.name}
     - auto: PREDEFINED
       description: Whether to allow AD cross-tenant object replication.
       name: allow_cross_tenant_replication
-      predefined:
-      - 'true'
-      - 'false'
       defaultValue: 'false'
     description: "Disables cross-tenant object replication for the storage account, preventing data from being copied to other Azure AD tenants. Requires 'Microsoft.Storage/storageAccounts/*' permission."
-    name: azure-disable-storage-account-cross-tenant-replication-quick-action
+    name: azure-storage-disable-cross-tenant-replication-quick-action
     prettyname: Disable Storage Account Cross Tenant Replication
     quickaction: true
     hidden: true
@@ -3180,6 +3218,8 @@ script:
       description: The subscription ID.
       required: true
       prettyname: Subscription ID
+      prettypredefined:
+        Subscription ID: ${asset.xdm.asset.realm}
     - name: resource_group_name
       type: string
       required: true
@@ -3190,6 +3230,8 @@ script:
       required: true
       description: Name of the Function App.
       prettyname: AZ Function Name
+      prettypredefined:
+        AZ Function Name: ${asset.xdm.asset.name}
     - auto: PREDEFINED
       name: http20_enabled
       type: bool
@@ -3298,20 +3340,23 @@ script:
       description: The subscription ID.
       required: true
       prettyname: Subscription ID
+      prettypredefined:
+        Subscription ID: ${asset.xdm.asset.realm}
     - description: The resource group name.
       name: resource_group_name
       required: true
       prettyname: Resource Group
+      prettypredefined:
+        Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroup}
     - description: Name of the storage account.
       name: account_name
       required: true
       prettyname: Storage Account
+      prettypredefined:
+        Storage Account: ${asset.xdm.asset.name}
     - auto: PREDEFINED
       description: If set to 'true', allows public access to all blobs or containers in the storage account.
       name: allow_blob_public_access
-      predefined:
-      - 'true'
-      - 'false'
       defaultValue: 'false'
     name: azure-storage-disable-public-access-quick-action
     description: "Disables public access to blobs for the storage account, blocking anonymous/public read access to containers and blobs. Requires 'Microsoft.Storage/storageAccounts/write' permission."
@@ -3396,6 +3441,8 @@ script:
       description: The subscription ID.
       required: true
       prettyname: Subscription ID
+      prettypredefined:
+        Subscription ID: ${asset.xdm.asset.realm}
     - name: resource_group_name
       type: string
       required: true
@@ -3406,14 +3453,13 @@ script:
       required: true
       description: Name of the Web App.
       prettyname: AZ Webapp
+      prettypredefined:
+        AZ Webapp: ${asset.xdm.asset.name}
     - auto: PREDEFINED
       name: remote_debugging_enabled
       type: bool
       required: false
       description: Whether remote debugging is enabled.
-      predefined:
-      - 'true'
-      - 'false'
       defaultValue: 'false'
     description: "Disables remote debugging for the web app to reduce the risk of unauthorized code access. Requires 'Microsoft.Web/sites/config/Write' permission."
     name: azure-webapp-disable-remote-debugging-quick-action
