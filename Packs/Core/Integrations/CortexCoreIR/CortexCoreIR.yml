@@ -3967,8 +3967,8 @@ script:
       name: asset_id
       required: true
     name: core-get-asset-details
-    deprecated:marketplacev2: false
     deprecated: true
+    hidden: true
     description: Get asset information.
     outputs:
     - contextPath: Core.CoreAsset
@@ -4310,7 +4310,7 @@ script:
   script: '-'
   subtype: python3
   type: python
-  dockerimage: demisto/google-cloud-storage:1.0.0.4088897
+  dockerimage: demisto/google-cloud-storage:1.0.0.4885491
 tests:
 - No tests
 supportsquickactions: true
