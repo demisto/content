@@ -2258,6 +2258,8 @@ script:
       description: The subscription ID.
       required: true
       prettyname: Subscription ID
+      prettypredefined:
+        Subscription ID: ${asset.xdm.asset.realm}
     - name: resource_group_name
       type: string
       description: The resource group name.
