@@ -65,8 +65,6 @@ To configure Microsoft Azure WAF to send logs to Cortex XSIAM, follow the below 
 
 ### Stream Logs Flow
 
-### Stream Logs Flow
-
 1. Sign in to the **Azure Portal**.
 2. Navigate to Your WAF Resource:
    - To stream **Front Door (Global WAF)** logs, select the relevant **Front Door** profile.
