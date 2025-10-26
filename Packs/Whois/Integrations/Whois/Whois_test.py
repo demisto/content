@@ -48,7 +48,13 @@ def assert_results_ok():
 def test_test_command(mocker: MockerFixture):
     mocker.patch.object(demisto, "results")
     mocker.patch.object(demisto, "command", return_value="test-module")
-    mocker.patch("Whois.get_whois_raw", return_value=load_test_data("./test_data/whois_raw_response.json")["result"])
+    # Mock get_whois to return a result with the expected nameserver
+    mock_whois_result = {
+        "nameservers": ["ns1.google.com", "ns2.google.com"],
+        "raw": ["Normal whois response"]
+    }
+    mocker.patch("Whois.get_whois", return_value=mock_whois_result)
+    mocker.patch.object(demisto, "debug")
     Whois.main()
     assert_results_ok()
 
