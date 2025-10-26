@@ -8,29 +8,69 @@ def execute_command(command, args):
         if args["id"] == "23@2":
             return [{"Type": entryTypes["note"], "FileMetadata": {"info": "koko"}, "ID": "23@2"}]
         elif args["id"] == "24@2":
-            return [{"Type": entryTypes["file"], "FileMetadata": {"info": "news or mail text, ASCII text"}, "ID": "24@2"}]
+            return [
+                {
+                    "Type": entryTypes["file"],
+                    "FileMetadata": {"info": "news or mail text, ASCII text", "type": "eml"},
+                    "ID": "24@2",
+                }
+            ]
     if command == "getEntries":
         return {}
     return None
 
 
 def test_is_email():
-    assert is_email({"type": "eml}"}, "test.txt")
+    # valid - type and info are present and valid
+    assert is_email({"type": "eml}", "info": "SMTP mail, UTF-8 Unicode text"}, "test.txt")
+    assert is_email({"type": "eml", "info": "SMTP mail, UTF-8 Unicode text"}, "test.txt")
+    assert is_email({"type": "message/rfc822", "info": "SMTP mail, UTF-8 Unicode text"}, "test.txt")
+    assert is_email({"info": "CDFV2 Microsoft Outlook Message", "type": "eml"}, "msg.test")
+    assert is_email(
+        {"info": "RFC 822 mail text, ISO-8859 text, with very long lines, with CRLF line terminator", "type": "eml"}, "test.bin"
+    )
+    assert is_email({"info": "CDFV2 Microsoft Outlook Message", "type": "eml"}, "test.bin")
+    assert is_email(
+        {
+            "info": 'multipart/signed; protocol="application/pkcs7-signature";, ASCII text, with CRLF line terminators',
+            "type": "eml",
+        },
+        "test.bin",
+    )
+
+    # invalid - info is missing with wrong type
+    assert not is_email({"type": "invalid type"}, "test.txt")
+
+    # valid - info is missing with valid type
     assert is_email({"type": "eml"}, "test.txt")
-    assert is_email({"type": "message/rfc822"}, "test.txt")
-    assert not is_email({"type": "other"}, "test.txt")
-    assert is_email({"info": "news or mail text, ASCII text"}, "test.txt")
-    assert is_email({"info": "CDFV2 Microsoft Outlook Message"}, "msg.test")
+    assert is_email({"type": "eml}"}, "test.eml")
+    assert is_email({"type": "message/rfc822"}, "test.msg")
+
+    # invalid - info is missing with invalid type
+    assert not is_email({"type": "invalid type"}, "test.txt")
+
+    # valid - type is missing with valid info
+    assert is_email({"info": "SMTP mail, UTF-8 Unicode text"}, "test.eml")
+
+    # invalid - type is missing with invalid info
+    assert not is_email({"info": "invalid info"}, "test.eml")
+
+    # invalid - wrong type
+    assert not is_email({"type": "invalid type", "info": "SMTP mail, UTF-8 Unicode text"}, "test.txt")
+    assert not is_email({"type": "message/rfc822", "info": "vCalendar calendar file"}, "Workshop.eml")
+    assert not is_email({"type": "eml", "info": "vCalendar calendar file"}, "Workshop.eml")
+
+    # invalid - wrong info
+    assert not is_email({"type": "eml", "info": "invalid info"}, "test.txt")
+
+    # valid - .eml file with "text" or "data"  in the info
     assert is_email({"info": "ASCII text, with CRLF line terminators"}, "msg.eml")
     assert is_email({"info": "data"}, "test.eml")
+    assert is_email({"info": "UTF-8 Unicode text, with very long lines, with CRLF line terminators"}, "test.eml")
+
+    # invalid - file is not .msg or .eml
     assert not is_email({"info": "data"}, "test.bin")
     assert not is_email({"info": "composite document file v2 document"}, "cv.doc")
-    assert is_email({"info": "RFC 822 mail text, ISO-8859 text, with very long lines, with CRLF line terminator"}, "test.bin")
-    assert is_email({"info": "CDFV2 Microsoft Outlook Message"}, "test.bin")
-    assert is_email(
-        {"info": 'multipart/signed; protocol="application/pkcs7-signature";, ASCII text, with CRLF line terminators'}, "test.bin"
-    )
-    assert is_email({"info": "UTF-8 Unicode text, with very long lines, with CRLF line terminators"}, "test.eml")
 
 
 def test_get_email_entry_id(mocker):
