@@ -647,7 +647,7 @@ class SecurityAndComplianceClient {
         $securePassword = ConvertTo-SecureString $this.app_secret -AsPlainText -Force
         $UserCredential = New-Object System.Management.Automation.PSCredential ($this.upn, $securePassword)
 
-        Connect-IPPSSession -Credential $UserCredential -CommandName $CommandName -EnableSearchOnlySession
+        Connect-IPPSSession -Credential $UserCredential -CommandName $CommandName -EnableSearchOnlySession -WarningAction:SilentlyContinue -ShowBanner:$false | Out-Null
     }
 
     DisconnectSession(){
