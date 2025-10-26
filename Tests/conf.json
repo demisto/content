@@ -5462,10 +5462,6 @@
             "fromversion": "6.2.0"
         },
         {
-            "playbookID": "test_AssignToNextShiftOOO",
-            "fromversion": "5.5.0"
-        },
-        {
             "playbookID": "JsonToTable - Test Playbook",
             "fromversion": "5.5.0"
         },
@@ -5912,13 +5908,48 @@
             "instance_names": [
                 "virus_total_v3"
             ]
+        },
+        {
+            "playbookID": "DomainEnrichment-Test",
+            "integrations": ["VirusTotal (API v3)","AlienVault OTX v2"],
+            "instance_names": [
+                "virus_total_v3"
+            ],
+            "fromversion": "6.10.0"
+        },
+        {
+            "playbookID": "URLEnrichment-Test",
+            "integrations": [
+                "VirusTotal (API v3)",
+                "AlienVault OTX v2"
+            ],
+            "instance_names": [
+                "virus_total_v3"
+            ]
+        },
+        {
+            "playbookID": "IPEnrichment-Test",
+            "integrations": [
+                "VirusTotal (API v3)",
+                "AlienVault OTX v2",
+                "CrowdstrikeFalcon"
+            ],
+            "instance_names": [
+                "virus_total_v3"
+            ],
+            "fromversion": "6.10.0"
+        },
+        {
+            "integrations": "Unit 42 Intelligence",
+            "playbookID": "Unit 42 Intelligence Test"
         }
     ],
     "skipped_tests": {
         "Tanium Threat Response V2 Test": "The creds were expired, opened a ticket CRTX-155635",
         "ExabeamDataLake-test": "The credentials were expired, can't restore CRTX-149225",
-        "Okta IAM - Test Playbook": "Credentials issue CRTX-116483",
         "ThreatCrowd - Test": "The pack is deprecated",
+        "Autofocus Query Samples, Sessions and Tags Test Playbook": "The pack is deprecated",
+        "unit42_atoms": "The pack is deprecated",
         "Retrieve File from Endpoint - Generic V2 Test": "The playbook is deprecated",
         "test-threatConnectv3": "No instance - Instance issues",
         "generic-sql-mssql-encrypted-connection": "Instance issues",
@@ -5935,7 +5966,7 @@
         "PAN-OS - Block IP and URL - External Dynamic List v2 Test": "uses deprecated integration, un-skip when playbook is updated",
         "MISP V2 Test": "The integration is deprecated as we released MISP V3",
         "Github IAM - Test Playbook": "Issue 32383",
-        "O365-SecurityAndCompliance-ContextResults-Test": "Issue 38900",
+        "O365-SecurityAndCompliance-ContextResults-Test": "Deprecated. There is another implementation for V2",
         "Workday - Test": "No credentials Issue 29595",
         "McAfee-MAR_Test": "Issue CIAC-4521",
         "G Suite Security Alert Center-Test": "Issue CIAC-5682",
@@ -6040,7 +6071,6 @@
         "LogRhythm-Test-Playbook": "Issue 27164",
         "Microsoft_365_Defender-Test": "Issue 39390",
         "Tanium Threat Response - Request File Download v2 - Test": "Issue 46326",
-        "test_AssignToNextShiftOOO": "Issue 44198",
         "EWS_O365_send_mail_test": "Issue 44200",
         "Cisco Umbrella Test": "Issue 24338",
         "Unit42 Intel Objects Feed - Test": "Issue 44100",
@@ -6104,7 +6134,6 @@
         "test-ProofpointThreatProtectionIntegration-Playbook": "No instance",
         "Generic Webhook - Test": "CIAC-11234",
         "Netskope_V2_Test": "No instance - developed by Qmasters",
-        "IAMInitOktaUser - Test": "CIAC-12093",
         "TAXII2 Server Performance Test": "CIAC-9768",
         "BoxV2_TestPlaybook": "CRTX-145174",
         "HPEArubaClearPass_TestPlaybook": "The creds were expired CIAC-13175",
@@ -6314,6 +6343,7 @@
         "PaloAltoNetworks_IoT",
         "PaloAltoNetworksAIOps",
         "Jira",
+        "AggregatedScripts",
         "Campaign"
     ],
     "selected_nightly_tpb": [
@@ -6367,7 +6397,6 @@
         "Test CommonServer",
         "PowerShellCommon-Test",
         "SplunkPy-Test-V2_requests_handler",
-        "Autofocus Query Samples, Sessions and Tags Test Playbook",
         "Endpoint Enrichment - Generic v2.1 - Test",
         "servicenow_test_v2",
         "Rasterize Test",

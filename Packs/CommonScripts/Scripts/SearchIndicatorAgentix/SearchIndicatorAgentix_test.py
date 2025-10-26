@@ -858,7 +858,7 @@ def test_search_indicators_single_query_single_result(mocker):
 
     assert len(filtered_indicators) == 1
     assert filtered_indicators[0]["id"] == "123"
-    assert filtered_indicators[0]["verdict"] == "Bad"
+    assert filtered_indicators[0]["verdict"] == "Malicious"
     assert "example" in markdown
 
 
@@ -1025,9 +1025,9 @@ def test_search_indicators_score_to_reputation_conversion(mocker):
     markdown, filtered_indicators = search_indicators(args)
 
     assert len(filtered_indicators) == 3
-    assert filtered_indicators[0]["verdict"] == "Good"
+    assert filtered_indicators[0]["verdict"] == "Benign"
     assert filtered_indicators[1]["verdict"] == "Suspicious"
-    assert filtered_indicators[2]["verdict"] == "Bad"
+    assert filtered_indicators[2]["verdict"] == "Malicious"
 
 
 def test_search_indicators_mixed_field_sources(mocker):

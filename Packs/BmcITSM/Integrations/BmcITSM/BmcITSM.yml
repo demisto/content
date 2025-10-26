@@ -1,6 +1,9 @@
 commonfields:
   id: BmcITSM
   version: -1
+sectionorder:
+- Connect
+- Collect
 name: BmcITSM
 display: BMC Helix ITSM
 category: Utilities
@@ -12,11 +15,13 @@ configuration:
   defaultvalue: https://localhost:8008
   type: 0
   additionalinfo: "For Example: https://localhost:8008"
+  section: Connect
 - name: credentials
   display: User Name
   required: true
   defaultvalue:
   type: 9
+  section: Connect
   additionalinfo: ""
   displaypassword: Password
 - name: max_fetch
@@ -25,12 +30,14 @@ configuration:
   type: 0
   additionalinfo: Default is 50. Maximum is 200.
   required: false
+  section: Collect
 - name: first_fetch
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days).
   defaultvalue: 7 days
   type: 0
   additionalinfo: ""
   required: false
+  section: Collect
 - name: ticket_type
   display: Ticket Type
   defaultvalue: All
@@ -46,6 +53,7 @@ configuration:
   - work order
   - All
   required: false
+  section: Collect
 - name: ticket_status
   display: Ticket Status
   defaultvalue: All
@@ -86,6 +94,7 @@ configuration:
   - Corrected
   - All
   required: false
+  section: Collect
 - name: ticket_impact
   display: Ticket Impact
   defaultvalue: All
@@ -98,6 +107,7 @@ configuration:
   - 4-Minor/Localized
   - All
   required: false
+  section: Collect
 - name: ticket_urgency
   display: Ticket Urgency
   defaultvalue: All
@@ -110,12 +120,14 @@ configuration:
   - 4-Low
   - All
   required: false
+  section: Collect
 - name: query
   display: Fetch by Query
   defaultvalue:
   type: 0
-  additionalinfo: 'Search query to fetch tickets. For example: Status = "Draft" AND Impact = "1-Extensive/Widespread". The query is used in addition to the existing parameters. See the BMC documentation for [building search qualifications](https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html).'
+  additionalinfo: 'Search query used to fetch tickets. For example: Status = "Draft" AND Impact = "1-Extensive/Widespread". The query is applied in addition to the existing parameters. See the BMC documentation on [building search qualifications](https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html).'
   required: false
+  section: Collect
 - additionalinfo: "Choose the direction to mirror the incident: Incoming (from BMC Helix ITSM to Cortex XSOAR), Outgoing (from Cortex XSOAR to BMC Helix ITSM), or Incoming and Outgoing (from/to Cortex XSOAR and BMC Helix ITSM)."
   defaultvalue: None
   display: Incident Mirroring Direction
@@ -130,6 +142,7 @@ configuration:
   - marketplacev2
   - platform
   required: false
+  section: Collect
 - additionalinfo: When selected, closing the BMC Helix ITSM ticket is mirrored in Cortex XSOAR.
   defaultvalue: "false"
   display: Close Mirrored XSOAR Incident
@@ -139,6 +152,7 @@ configuration:
   - marketplacev2
   - platform
   required: false
+  section: Collect
 - additionalinfo: When selected, closing the Cortex XSOAR incident is mirrored in BMC Helix ITSM.
   defaultvalue: "false"
   display: Close Mirrored BMC Helix ITSM Ticket
@@ -148,34 +162,39 @@ configuration:
   - marketplacev2
   - platform
   required: false
+  section: Collect
 - name: proxy
   display: Use system proxy settings
   defaultvalue: "false"
   type: 8
   additionalinfo:
   required: false
+  section: Connect
 - name: insecure
   display: Trust any certificate (not secure)
   defaultvalue: "false"
   type: 8
   additionalinfo:
   required: false
+  section: Connect
 - display: Incident type
   name: incidentType
   type: 13
   required: false
+  section: Collect
 - display: Fetch incidents
   name: isFetch
   type: 8
   required: false
+  section: Collect
 script:
   script: ""
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.11.4819260
   commands:
   - name: bmc-itsm-user-list
-    description: Retrieves a list of user profiles from BMC Helix ITSM. The records are retrieved by the query argument or by the filtering arguments. When using filtering arguments, each one defines a 'LIKE' operation and an 'AND' operator is used between them. To see the entire JSON then you can use the raw_response=true at the end of the command.
+    description: Retrieves a list of user profiles from BMC Helix ITSM. The records are retrieved by the query argument or by the filtering arguments. When using filtering arguments, each one performs a `LIKE` operation, and multiple filters are combined using the `AND` operator. To view the full JSON response, add raw_response=true to the end of the command.
     outputs:
     - contextPath: BmcITSM.User.Id
       description: The user ID.
