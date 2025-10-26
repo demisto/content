@@ -2039,13 +2039,12 @@ class EC2:
                             readable output message. The command has no explicit outputs.
         """
         kwargs = {
-            "resources": parse_resource_ids(args.get("resources")),
-            "tags": parse_tag_field(args.get("tags")),
+            "Resources": parse_resource_ids(args.get("resources")),
+            "Tags": parse_tag_field(args.get("tags")),
         }
 
         try:
             response = client.create_tags(**kwargs)
-            # demisto.info(f"{response=}")
             if response["ResponseMetadata"]["HTTPStatusCode"] in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
                 return CommandResults(readable_output="The resources where tagged successfully")
             raise DemistoException(
