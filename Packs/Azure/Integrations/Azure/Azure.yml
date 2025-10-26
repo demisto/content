@@ -2263,40 +2263,6 @@ script:
         Subscription ID: ${asset.xdm.asset.realm}
     - name: resource_group_name
       type: string
-      description: The resource group name.
-      required: true
-      prettyname: Resource Group
-    - name: server_name
-      type: string
-      required: true
-      description: Name of the PostgreSQL server.
-      prettyname: Postgres Server Name
-      prettypredefined:
-        Postgres Server Name: ${asset.xdm.asset.name}
-    - name: configuration_name
-      type: string
-      description: The configuration setting name.
-      defaultValue: 'log_checkpoints'
-    - name: value
-      type: string
-      description: Configuration value.
-      defaultValue: 'on'
-    description: "Enables checkpoint logging on the PostgreSQL server. Requires 'Microsoft.DBforPostgreSQL/servers/configuration/*' permission."
-    name: azure-postgres-enable-checkpoint-logging-quick-action
-    prettyname: Enable PostgreSQL Checkpoint Logging
-    hidden: true
-    quickaction: true
-    outputs: [] # have no outputs for these command by response
-  - arguments:
-    - name: subscription_id
-      type: string
-      description: The subscription ID.
-      required: true
-      prettyname: Subscription ID
-      prettypredefined:
-        Subscription ID: ${asset.xdm.asset.realm}
-    - name: resource_group_name
-      type: string
       required: true
       description: The resource group name.
       prettyname: Resource Group
@@ -2539,16 +2505,22 @@ script:
       description: The subscription ID.
       required: true
       prettyname: Subscription ID
+      prettypredefined:
+        Subscription ID: ${asset.xdm.asset.realm}
     - name: resource_group_name
       type: string
       required: true
       description: The resource group name.
       prettyname: Resource Group
+      prettypredefined:
+        Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroup}
     - name: server_name
       type: string
       required: true
       description: Name of the MySQL flexible server.
       prettyname: MySQL Server
+      prettypredefined:
+        MySQL Server: ${asset.xdm.asset.name}
     - name: configuration_name
       type: string
       description: Server configuration name.
@@ -2569,80 +2541,23 @@ script:
       description: The subscription ID.
       required: true
       prettyname: Subscription ID
-    - name: resource_group_name
-      type: string
-      description: The resource group name.
-      required: true
-      prettyname: Resource Group
-    - name: server_name
-      type: string
-      required: true
-      description: Name of the PostgreSQL server.
-      prettyname: Postgres Server Name
-    - name: configuration_name
-      type: string
-      defaultValue: log_disconnections
-      description: Configuration setting name.
-    - name: value
-      type: string
-      description: Configuration value.
-      defaultValue: 'on'
-    description: "Enables logging of client disconnections on the PostgreSQL server. Requires 'Microsoft.DBforPostgreSQL/servers/configuration/*' permission."
-    name: azure-postgres-enable-disconnection-logging-quick-action
-    prettyname: Enable Disconnection Logging on PostgreSQL
-    hidden: true
-    quickaction: true
-    outputs: [] # have no outputs for these command by response
-  - arguments:
-    - name: subscription_id
-      type: string
-      description: The subscription ID.
-      required: true
-      prettyname: Subscription ID
-    - name: resource_group_name
-      type: string
-      description: The resource group name.
-      required: true
-      prettyname: Resource Group
-    - name: server_name
-      type: string
-      required: true
-      description: Name of the PostgreSQL server.
-      prettyname: Postgres Server Name
-    - name: configuration_name
-      type: string
-      description: Configuration setting name.
-      defaultValue: log_connections
-    - name: value
-      type: string
-      description: Configuration value.
-      defaultValue: 'on'
-    description: "Enables logging of client connections on the PostgreSQL server. Requires 'Microsoft.DBforPostgreSQL/servers/configuration/*' permission."
-    name: azure-postgres-enable-session-connection-logging-quick-action
-    prettyname: Enable Session Connection Logging on PostgreSQL
-    hidden: true
-    quickaction: true
-    outputs: [] # have no outputs for these command by response
-  - arguments:
-    - name: subscription_id
-      type: string
-      description: The subscription ID.
-      required: true
-      prettyname: Subscription ID
+      prettypredefined:
+        Subscription ID: ${asset.xdm.asset.realm}
     - description: The resource group name.
       name: resource_group_name
       required: true
       prettyname: Resource Group
+      prettypredefined:
+        Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroup}
     - description: Name of the storage account.
       name: account_name
       required: true
       prettyname: Storage Account
+      prettypredefined:
+        Storage Account: ${asset.xdm.asset.name}
     - auto: PREDEFINED
       description: Default action when no other network rule matches.
       name: network_ruleset_default_action
-      predefined:
-      - Allow
-      - Deny
       defaultValue: Deny
     description: "Sets the storage account’s default network action to Deny. Only explicitly allowed IPs, subnets, or trusted Azure services will have access. Requires 'Microsoft.Storage/storageAccounts/*' permission."
     name: azure-network-disable-storage-account-access-quick-action
@@ -2727,11 +2642,15 @@ script:
       description: The subscription ID.
       required: true
       prettyname: Subscription ID
+      prettypredefined:
+        Subscription ID: ${asset.xdm.asset.realm}
     - name: log_profile_name
       description: Name of the log profile to update.
       required: true
       type: String
       prettyname: Resource
+      prettypredefined:
+        Resource: ${asset.xdm.asset.name}
     - name: location
       description: Resource location.
       defaultValue: global
@@ -2743,9 +2662,6 @@ script:
       name: retention_policy_enabled
       description: Whether to enable the retention policy.
       type: bool
-      predefined:
-      - 'true'
-      - 'false'
       defaultValue: 'true'
     description: "Sets the log profile’s retention policy to 365 days and enables it for all supported locations. Requires 'Microsoft.Insights/logProfiles/*' permission."
     name: azure-monitor-log-retention-period-quick-action
@@ -2792,21 +2708,24 @@ script:
       description: The subscription ID.
       required: true
       prettyname: Subscription ID
+      prettypredefined:
+        Subscription ID: ${asset.xdm.asset.realm}
     - name: resource_group_name
       type: string
       description: The resource group name.
       required: true
       prettyname: Resource Group
+      prettypredefined:
+        Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroup}
     - description: Name of the storage account.
       name: account_name
       required: true 
       prettyname: Storage Account
+      prettypredefined:
+        Storage Account: ${asset.xdm.asset.name}
     - auto: PREDEFINED
       description: Whether to allow only HTTPS traffic to the storage account.
       name: supports_https_traffic_only
-      predefined:
-      - 'true'
-      - 'false'
       defaultValue: 'true'
     description: "Enforces HTTPS-only traffic for the storage account, rejecting any requests made over HTTP. Requires 'Microsoft.Storage/storageAccounts/*' permission."
     name: azure-set-storage-account-https-only-quick-action
@@ -2885,35 +2804,6 @@ script:
     - contextPath: Azure.StorageAccount.type
       description: The storage account type.
       type: String 
-  - arguments:
-    - name: subscription_id
-      type: string
-      description: The subscription ID.
-      required: true
-      prettyname: Subscription ID
-    - name: resource_group_name
-      type: String
-      required: true
-      description: The resource group name.
-      prettyname: Resource Group
-    - name: server_name
-      type: String
-      required: true
-      description: Name of the PostgreSQL server.
-      prettyname: Postgres Server Name
-    - name: ssl_enforcement
-      type: String
-      description: Whether to enable SSL authentication when connecting to the server.
-      predefined:
-      - Disabled
-      - Enabled
-      defaultValue: Enabled
-    description: "Enforces SSL/TLS connections for the PostgreSQL server, rejecting unencrypted traffic. Requires 'Microsoft.DBforPostgreSQL/servers/configuration/*' permission."
-    name: azure-postgres-enable-ssl-quick-action
-    prettyname: Enable SSL on Postgres Server
-    hidden: true
-    quickaction: true
-    outputs: [] # No outputs are returned in the response.
   isfetch: false
   runonce: false
   script: '-'
