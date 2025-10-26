@@ -280,12 +280,11 @@ class OAuth2DeviceCodeClient {
     [int]$access_token_creation_time
     [bool]$insecure
     [bool]$proxy
-    [string]$app_secret
     [string]$tenant_id
 
     OAuth2DeviceCodeClient([string]$device_code, [string]$device_code_expires_in, [string]$device_code_creation_time, [string]$access_token,
                             [string]$refresh_token,[string]$access_token_expires_in, [string]$access_token_creation_time,
-                           [bool]$insecure, [bool]$proxy, [string]$application_id, [string]$app_secret, [string]$tenant_id) {
+                           [bool]$insecure, [bool]$proxy, [string]$application_id, [string]$tenant_id) {
         $this.device_code = $device_code
         $this.device_code_expires_in = $device_code_expires_in
         $this.device_code_creation_time = $device_code_creation_time
@@ -296,7 +295,6 @@ class OAuth2DeviceCodeClient {
         $this.insecure = $insecure
         $this.proxy = $proxy
         $this.application_id = $application_id
-        $this.app_secret = $app_secret
         $this.tenant_id = $tenant_id
         <#
             .DESCRIPTION
@@ -346,10 +344,10 @@ class OAuth2DeviceCodeClient {
         #>
     }
 
-    static [OAuth2DeviceCodeClient]CreateClientFromIntegrationContext([bool]$insecure, [bool]$proxy, [string]$application_id, [string]$app_secret, [string]$tenant_id) {
+    static [OAuth2DeviceCodeClient]CreateClientFromIntegrationContext([bool]$insecure, [bool]$proxy, [string]$application_id, [string]$tenant_id) {
         $ic = GetIntegrationContext
         $client = [OAuth2DeviceCodeClient]::new($ic.DeviceCode, $ic.DeviceCodeExpiresIn, $ic.DeviceCodeCreationTime, $ic.AccessToken, $ic.RefreshToken,
-                                                $ic.AccessTokenExpiresIn, $ic.AccessTokenCreationTime, $insecure, $proxy, $application_id, $app_secret, $tenant_id)
+                                                $ic.AccessTokenExpiresIn, $ic.AccessTokenCreationTime, $insecure, $proxy, $application_id, $tenant_id)
 
         return $client
         <#
@@ -591,13 +589,13 @@ class SecurityAndComplianceClient {
     [string]$access_token
     [string]$upn
     [string]$tenant_id
-    [string]$app_secret
+    [string]$upn_password
     [string]$connection_uri
     [string]$azure_ad_authorization_endpoint_uri_base
     [string]$azure_ad_authorization_endpoint_uri
 
 
-    SecurityAndComplianceClient([string]$access_token, [string]$upn, [string]$tenant_id, [string]$app_secret ,[string]$connection_uri, [string]$azure_ad_authorization_endpoint_uri_base) {
+    SecurityAndComplianceClient([string]$access_token, [string]$upn, [string]$tenant_id, [string]$upn_password ,[string]$connection_uri, [string]$azure_ad_authorization_endpoint_uri_base) {
 
         $this.access_token = $access_token
 
@@ -609,10 +607,10 @@ class SecurityAndComplianceClient {
             $this.tenant_id = $null
         }
 
-        if ($app_secret) {
-            $this.app_secret = $app_secret
+        if ($upn_password) {
+            $this.upn_password = $upn_password
         } else {
-            $this.app_secret = $null
+            $this.upn_password = $null
         }
 
         if ($connection_uri) {
@@ -644,7 +642,7 @@ class SecurityAndComplianceClient {
     }
 
     CreateDelegatedSessionCred([string]$CommandName){
-        $securePassword = ConvertTo-SecureString $this.app_secret -AsPlainText -Force
+        $securePassword = ConvertTo-SecureString $this.upn_password -AsPlainText -Force
         $UserCredential = New-Object System.Management.Automation.PSCredential ($this.upn, $securePassword)
 
         Connect-IPPSSession -Credential $UserCredential -CommandName $CommandName -EnableSearchOnlySession -WarningAction:SilentlyContinue -ShowBanner:$false | Out-Null
@@ -2123,7 +2121,7 @@ function Main {
     $command = $Demisto.GetCommand()
     $command_arguments = $Demisto.Args()
     $integration_params = $Demisto.Params()
-    $app_secret = if ($integration_params.credentials_app_secret.password) {$integration_params.credentials_app_secret.password} else {$integration_params.app_secret}
+    $upn_password = if ($integration_params.credentials_app_secret.password) {$integration_params.credentials_app_secret.password} else {$integration_params.app_secret}
     $tenant_id = if ($integration_params.credentials_tenant_id.identifier) {$integration_params.credentials_tenant_id.identifier} else {$integration_params.tenant_id}
     $app_id = if ($integration_params.credentials_app_id.identifier) {$integration_params.credentials_app_id.identifier} else {$integration_params.app_id}
     if ($integration_params.insecure -eq $true) {
@@ -2136,7 +2134,7 @@ function Main {
 
         # Creating Compliance and search client
         $oauth2_client = [OAuth2DeviceCodeClient]::CreateClientFromIntegrationContext($insecure, $false,
-            $app_id, $app_secret, $tenant_id)
+            $app_id, $tenant_id)
 
         # Executing oauth2 commands
         switch ($command) {
@@ -2158,7 +2156,7 @@ function Main {
             $oauth2_client.access_token,
             $integration_params.delegated_auth.identifier,
             $tenant_id,
-            $app_secret,
+            $upn_password,
             $integration_params.connection_uri,
             $integration_params.azure_ad_authorized_endpoint_uri_base
         )

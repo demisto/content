@@ -50,6 +50,14 @@ configuration:
   section: Connect
   displaypassword: Password
   hiddenpassword: true
+- display: UPN Password
+  additionalinfo: UPN password - required for interactive delegated authentication.
+  name: credentials_app_secret
+  required: false
+  type: 9
+  displaypassword: UPN Password
+  hiddenusername: true
+  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
   defaultvalue: "false"
@@ -64,14 +72,6 @@ configuration:
   advanced: true
   required: false
   hidden: true
-- display: App Secret
-  name: credentials_app_secret
-  required: false
-  type: 9
-  displaypassword: App Secret
-  hiddenusername: true
-  section: Connect
-  advanced: true
 - display: Tenant ID
   name: tenant_id
   type: 0
