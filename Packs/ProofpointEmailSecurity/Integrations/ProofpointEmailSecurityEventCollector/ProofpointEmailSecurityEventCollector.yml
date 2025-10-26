@@ -61,10 +61,7 @@ configuration:
   type: 8
   section: Collect
   required: false
-  hidden:
-  - marketplacev2
-  - platform
-  defaultvalue: "false"
+  defaultvalue: "true"
 script:
   script: ""
   type: python

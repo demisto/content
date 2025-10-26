@@ -440,13 +440,15 @@ def main():  # pragma: no cover
     try:
         if command == "long-running-execution":
             if params.get("isFetchEvents", False):
-                demisto.debug("Fetching events is enabled for this instance")
+                demisto.debug("Fetching events is enabled for this instance. Starting long running execution.")
                 return_results(long_running_execution_command(host, cluster_id, api_key, fetch_interval, event_types))
             else:
-                demisto.debug("Fetching events is disabled for this instance")
+                demisto.debug(f"Fetching events is disabled for this instance. Sleeping for {fetch_interval} seconds.")
                 time.sleep(fetch_interval)
+
         elif command == "test-module":
             return_results(test_module(host, cluster_id, api_key))
+
         elif command == "proofpoint-es-get-last-run-results":
             return_results(get_last_run_results_command())
 
@@ -456,6 +458,11 @@ def main():  # pragma: no cover
             if should_push_events:
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
             return_results(command_results)
+
+        elif command == "fetch-events":
+            # Return informative error message to prevent errors from appearing in tenant UI§
+            demisto.info("Fetching events is done via long running execution.")
+
         else:
             raise NotImplementedError(f"Command {command} is not implemented.")
     except Exception:
