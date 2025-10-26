@@ -2252,6 +2252,7 @@ script:
         predefined:
           - "false"
           - "true"
+          
   - arguments:
     - name: subscription_id
       type: string
@@ -2270,6 +2271,8 @@ script:
       required: true
       description: Name of the PostgreSQL server.
       prettyname: Postgres Server Name
+      prettypredefined:
+        Postgres Server Name: ${asset.xdm.asset.name}
     - name: configuration_name
       type: string
       description: The configuration setting name.
@@ -2290,6 +2293,8 @@ script:
       description: The subscription ID.
       required: true
       prettyname: Subscription ID
+      prettypredefined:
+        Subscription ID: ${asset.xdm.asset.realm}
     - name: resource_group_name
       type: string
       required: true
@@ -2300,6 +2305,8 @@ script:
       required: true
       description: Name of the Web App.
       prettyname: AZ Webapp
+      prettypredefined:
+        AZ Webapp: ${asset.xdm.asset.name}
     - name: min_tls_version
       type: str
       auto: PREDEFINED
@@ -2409,6 +2416,8 @@ script:
       description: The subscription ID.
       required: true
       prettyname: Subscription ID
+      prettypredefined:
+        Subscription ID: ${asset.xdm.asset.realm}
     - name: resource_group_name
       type: string
       required: true
@@ -2418,7 +2427,9 @@ script:
       type: string
       required: true
       description: Name of the Web App.
-      prettyname: AZ Webapp
+      prettyname: AZ Function Name
+      prettypredefined:
+        AZ Function Name: ${asset.xdm.asset.name}
     - name: min_tls_version
       type: str
       auto: PREDEFINED
