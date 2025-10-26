@@ -4664,6 +4664,7 @@ def clone_papi_property_command(
     """
     title = ""
     human_readable_ec: list = []
+    entry_context: list = []
     isExistingOneFound = False
     if check_existence_before_create.lower() == "yes":
         raw_response: dict = client.list_papi_property_bygroup(contract_id=contract_id, group_id=group_id)
@@ -4829,6 +4830,7 @@ def new_papi_edgehostname_command(
     """
     title = ""
     human_readable_ec: list = []
+    entry_context: list = []
     isExistingOneFound = False
     if check_existence_before_create.lower() == "yes":
         raw_response: dict = client.list_papi_edgehostname_bygroup(
@@ -4926,6 +4928,7 @@ def new_papi_cpcode_command(
     """
     title = ""
     human_readable_ec: list = []
+    entry_context: list = []
     isExistingOneFound = False
     if check_existence_before_create.lower() == "yes":
         raw_response: dict = client.list_papi_cpcodeid_bygroup(contract_id=contract_id, group_id=group_id)
