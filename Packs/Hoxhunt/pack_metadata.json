@@ -2,13 +2,13 @@
     "name": "Hoxhunt",
     "description": "Integration with Hoxhunt to manage Hoxhunt incidents",
     "support": "partner",
-    "currentVersion": "2.0.5",
+    "currentVersion": "2.0.6",
     "author": "Hoxhunt",
     "url": "https://hoxhunt.com",
     "email": "support@hoxhunt.com",
     "categories": [
         "Email"
-    ],
+    ],  
     "tags": [
         "Incident Response",
         "Incident Handling",
