@@ -2653,6 +2653,7 @@ class Lambda:
         try:
             response_config = client.get_function_configuration(**kwargs)
             fixed_response["FunctionArn"] = response_config.get("FunctionArn")
+            fixed_response["FunctionName"] = args["function_name"]
         except ClientError:
             fixed_response["FunctionName"] = args["function_name"]
         response["Policy"] = json.loads(response["Policy"])
