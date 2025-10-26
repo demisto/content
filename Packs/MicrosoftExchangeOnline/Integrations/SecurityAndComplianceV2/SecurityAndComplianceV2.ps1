@@ -641,7 +641,11 @@ class SecurityAndComplianceClient {
         Connect-IPPSSession @cmd_params -CommandName $CommandName -EnableSearchOnlySession -WarningAction:SilentlyContinue -ShowBanner:$false | Out-Null
     }
 
-    CreateDelegatedSessionCred([string]$CommandName){
+    CreateDelegatedSessionCredentials([string]$CommandName){
+        if ($null -eq $this.upn_password ) {
+            throw "Using this command requires for interactive delegated authentication. Please make sure UPN password to be set in the integration parameters."
+        }
+
         $securePassword = ConvertTo-SecureString $this.upn_password -AsPlainText -Force
         $UserCredential = New-Object System.Management.Automation.PSCredential ($this.upn, $securePassword)
 
@@ -932,7 +936,7 @@ class SecurityAndComplianceClient {
                               [bool]$include_sharepoint_document_versions, [string]$notify_email,
                               [string]$notify_email_cc, [string]$scenario, [string]$scope) {
         # Establish session to remote
-        $this.CreateDelegatedSessionCred("New-ComplianceSearchAction")
+        $this.CreateDelegatedSessionCredentials("New-ComplianceSearchAction")
         # Execute command
         $cmd_params = @{
             "SearchName" = $search_name
@@ -1218,7 +1222,7 @@ class SecurityAndComplianceClient {
     [psobject]CaseHoldPolicyCreate([string]$policy_name, [string]$case, [string]$comment, [string]$exchange_location,
                                    [string]$public_folder_location, [string]$share_point_location, [bool]$enabled) {
         # Establish session to remote
-        $this.CreateDelegatedSession("New-CaseHoldPolicy")
+        $this.CreateDelegatedSessionCredentials("New-CaseHoldPolicy")
         $cmd_params = @{
             "Name" = $policy_name
             "Case" = $case
@@ -1330,7 +1334,7 @@ class SecurityAndComplianceClient {
 
     [psobject]CaseHoldPolicyDelete([string]$identity, [bool]$force_delete){
         # Establish session to remote
-        $this.CreateDelegatedSession("Remove-CaseHoldPolicy")
+        $this.CreateDelegatedSessionCredentials("Remove-CaseHoldPolicy")
         # Execute command
         if($force_delete) {
             $response = Remove-CaseHoldPolicy -Identity $identity -ForceDeletion -Confirm:$false
@@ -1364,7 +1368,7 @@ class SecurityAndComplianceClient {
 
     CaseHoldPolicySet([string]$identity, [bool]$enabled, [string[]]$add_exchange_locations, [string[]] $add_sharepoint_locations, [string[]]$add_public_locations,
         [string[]]$remove_exchange_locations, [string[]]$remove_sharepoint_locations, [string[]]$remove_public_locations, [string]$comment){
-        $this.CreateDelegatedSession("Set-CaseHoldPolicy")
+        $this.CreateDelegatedSessionCredentials("Set-CaseHoldPolicy")
       $cmd_params = @{}
   
       if ($identity) { $cmd_params.Identity = $identity }
@@ -1384,7 +1388,7 @@ class SecurityAndComplianceClient {
 
     [psobject]CaseHoldRuleCreate([string]$rule_name, [string]$policy_name, [string]$query, [string]$comment, [bool]$is_disabled){
         # Establish session to remote
-        $this.CreateDelegatedSession("New-CaseHoldRule")
+        $this.CreateDelegatedSessionCredentials("New-CaseHoldRule")
         $cmd_params = @{
             "Name" = $rule_name
             "Policy" = $policy_name
@@ -1469,7 +1473,7 @@ class SecurityAndComplianceClient {
 
     [psobject]CaseHoldRuleDelete([string]$identity, [bool]$force_delete){
         # Establish session to remote
-        $this.CreateDelegatedSession("Remove-CaseHoldRule")
+        $this.CreateDelegatedSessionCredentials("Remove-CaseHoldRule")
         # Execute command
         if ($force_delete) {
             $response = Remove-CaseHoldRule -Identity $identity -ForceDeletion -Confirm:$false
