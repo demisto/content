@@ -6343,7 +6343,7 @@
         "PaloAltoNetworks_IoT",
         "PaloAltoNetworksAIOps",
         "Jira",
-        "Aggregated Scripts",
+        "AggregatedScripts",
         "Campaign"
     ],
     "selected_nightly_tpb": [
