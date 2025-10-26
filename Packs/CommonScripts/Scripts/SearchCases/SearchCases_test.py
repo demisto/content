@@ -1,7 +1,7 @@
 import pytest
 from datetime import datetime
 from CommonServerPython import DemistoException
-from SearchCases import prepare_start_end_time, main, extract_ids
+from SearchCases import prepare_start_end_time, main, extract_ids, add_cases_extra_data, get_case_extra_data
 
 
 def test_prepare_start_end_time_normal(monkeypatch):
@@ -151,7 +151,6 @@ def test_add_cases_extra_data_single_case(mocker):
     WHEN add_cases_extra_data is called
     THEN it adds CaseExtraData to the case by calling get_case_extra_data
     """
-    from SearchCases import add_cases_extra_data
 
     mock_get_case_extra_data = mocker.patch("SearchCases.get_case_extra_data")
     mock_extra_data = {"issues": {"total_count": 5}, "alerts": {"total_count": 3}}
@@ -173,7 +172,6 @@ def test_add_cases_extra_data_multiple_cases(mocker):
     WHEN add_cases_extra_data is called
     THEN it adds CaseExtraData to each case by calling get_case_extra_data for each
     """
-    from SearchCases import add_cases_extra_data
 
     mock_get_case_extra_data = mocker.patch("SearchCases.get_case_extra_data")
     mock_extra_data_1 = {"issues": {"total_count": 5}}
@@ -197,7 +195,6 @@ def test_add_cases_extra_data_empty_list(mocker):
     WHEN add_cases_extra_data is called
     THEN it returns empty list without calling get_case_extra_data
     """
-    from SearchCases import add_cases_extra_data
 
     mock_get_case_extra_data = mocker.patch("SearchCases.get_case_extra_data")
 
@@ -215,7 +212,6 @@ def test_get_case_extra_data_normal(mocker):
     WHEN get_case_extra_data is called
     THEN it returns properly formatted extra data with issue_ids, network_artifacts, and file_artifacts
     """
-    from SearchCases import get_case_extra_data
 
     mock_case_extra_data = {
         "issues": {"data": [{"issue_id": "101"}, {"issue_id": "102"}]},
@@ -242,7 +238,6 @@ def test_get_case_extra_data_no_artifacts(mocker):
     WHEN get_case_extra_data is called
     THEN it returns None for missing artifact types
     """
-    from SearchCases import get_case_extra_data
 
     mock_case_extra_data = {"issues": {"data": [{"issue_id": "101"}]}}
 
@@ -264,7 +259,6 @@ def test_get_case_extra_data_empty_issues(mocker):
     WHEN get_case_extra_data is called
     THEN it returns empty issue_ids list
     """
-    from SearchCases import get_case_extra_data
 
     mock_case_extra_data = {"issues": {"data": []}, "network_artifacts": [], "file_artifacts": []}
 
@@ -303,6 +297,11 @@ def test_extract_ids_mixed_valid_invalid_items():
 
 
 def test_extract_ids_no_issues():
+    """
+    GIVEN case_extra_data with no issues key
+    WHEN extract_ids is called
+    THEN it returns empty list
+    """
     case_extra_data = {
         "case": {
             "aggregated_score": None,
@@ -311,6 +310,46 @@ def test_extract_ids_no_issues():
             "case_domain": "DOMAIN_POSTURE",
             "case_id": "62",
         }
+    }
+    result = extract_ids(case_extra_data)
+    assert result == []
+
+
+def test_extract_ids_no_issues_data():
+    """
+    GIVEN case_extra_data with issues key but no data key
+    WHEN extract_ids is called
+    THEN it returns empty list
+    """
+    case_extra_data = {
+        "case": {
+            "aggregated_score": None,
+            "assigned_user_mail": None,
+            "assigned_user_pretty_name": None,
+            "case_domain": "DOMAIN_POSTURE",
+            "case_id": "62",
+        },
+        "issues": {},
+    }
+    result = extract_ids(case_extra_data)
+    assert result == []
+
+
+def test_extract_ids_no_valid_issues_data():
+    """
+    GIVEN case_extra_data with issues.data that is not a list
+    WHEN extract_ids is called
+    THEN it returns empty list
+    """
+    case_extra_data = {
+        "case": {
+            "aggregated_score": None,
+            "assigned_user_mail": None,
+            "assigned_user_pretty_name": None,
+            "case_domain": "DOMAIN_POSTURE",
+            "case_id": "62",
+        },
+        "issues": {"data": {"id": "1"}},
     }
     result = extract_ids(case_extra_data)
     assert result == []
