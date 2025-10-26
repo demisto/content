@@ -147,7 +147,9 @@ def test_main_error(mocker):
 
 def test_get_case_extra_data_command_error(mocker):
     """
-    Test scenario where execute_command raises an exception
+    GIVEN execute_command that raises an exception
+    WHEN get_case_extra_data is called
+    THEN it raises the exception
     """
     mocker.patch("SearchCases.execute_command", side_effect=Exception("Command failed"))
 
@@ -308,7 +310,9 @@ def test_extract_ids_mixed_valid_invalid_items():
 
 def test_extract_ids_non_list_data(mocker):
     """
-    Test extraction of IDs when issues.data is not a list
+    GIVEN case_extra_data where issues.data is not a list
+    WHEN extract_ids is called
+    THEN it returns empty list
     """
     case_extra_data = {"issues": {"data": {"not_a_list": True}}}
 
