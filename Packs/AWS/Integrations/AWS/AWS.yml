@@ -3946,13 +3946,18 @@ script:
       predefined:
       - 'true'
       - 'false'
-    - name: additional_attributes
+    - name: desync_mitigation_mode
       description: >
-        A comma-separated list of additional load balancer attributes to modify. Provide pairs as key1,value1,key2,value2,...
-        For example: "elb.http.desyncmitigationmode,defensive".
-        Maximum of 10 pairs of attributes.
+        Determines how the Classic Load Balancer handles HTTP requests that might pose
+        a security risk to your application. This sets the
+        'elb.http.desyncmitigationmode' load balancer attribute.
+      auto: PREDEFINED
+      predefined:
+      - monitor
+      - defensive
+      - strictest
       required: false
-      type: unknown
+      type: string
 
     outputs:
     - contextPath: AWS.ELB.LoadBalancer.LoadBalancerName

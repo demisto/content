@@ -198,6 +198,26 @@ def convert_datetimes_to_iso_safe(data):
     return json.loads(json_string)
 
 
+def format_elb_modify_attributes_hr(lb_name: str, resp: dict) -> str:
+    """
+    Minimal formatter:
+    - prints "Updated attributes for <lb>"
+    - then one table per attribute block under LoadBalancerAttributes
+    """
+    lb_attrs = resp.get("LoadBalancerAttributes", {})
+    sections: list[str] = [f"### Updated attributes for Classic ELB {lb_name}"]
+
+    for attr_name, attr_value in lb_attrs.items():
+        title = attr_name
+        if isinstance(attr_value, dict):
+            sections.append(tableToMarkdown(title, [attr_value], removeNull=True))
+        elif isinstance(attr_value, list) and attr_value and isinstance(attr_value[0], dict):
+            sections.append(tableToMarkdown(title, attr_value, removeNull=True))
+        else:
+            sections.append(tableToMarkdown(title, [{"Value": attr_value}], removeNull=True))
+    return "\n\n".join(sections)
+
+
 class AWSErrorHandler:
     """
     Centralized error handling for AWS boto3 client errors.
@@ -2475,14 +2495,10 @@ class ELB:
             attrs["ConnectionSettings"] = {"IdleTimeout": idle}
 
         # Additional attributes (JSON list of {Key,Value})
-        addl_arg = argToList(args.get("additional_attributes"))
-        if addl_arg:
-            if len(addl_arg) % 2 != 0:
-                raise DemistoException("Invalid 'additional_attributes' format. Must contain pairs: key1,value1,key2,value2,...")
-            if len(addl_arg) > 20:
-                raise DemistoException("Too many 'additional_attributes'. Maximum allowed is 10 pairs.")
-            addl_parsed = [{"Key": addl_arg[i], "Value": addl_arg[i + 1]} for i in range(0, len(addl_arg), 2)]
-            attrs["AdditionalAttributes"] = addl_parsed
+        # Only one additional attribute is supported on classic ELB, Therefore we directly set the key and value
+        desync_mitigation_mode = args.get("desync_mitigation_mode")
+        if desync_mitigation_mode:
+            attrs["AdditionalAttributes"] = [{"Key": "elb.http.desyncmitigationmode", "Value": desync_mitigation_mode}]
 
         kwargs = {"LoadBalancerName": lb_name, "LoadBalancerAttributes": attrs}
         remove_nulls_from_dictionary(kwargs)
@@ -2494,12 +2510,7 @@ class ELB:
             if status == HTTPStatus.OK:
                 lb_attrs = resp.get("LoadBalancerAttributes", {})
                 out = {"LoadBalancerName": lb_name, "LoadBalancerAttributes": lb_attrs}
-                hr = f"Modified attributes for Classic ELB '{lb_name}'.\n\n" + tableToMarkdown(
-                    "Updated Attributes",
-                    lb_attrs,
-                    removeNull=True,
-                    headerTransform=pascalToSpace,
-                )
+                hr = format_elb_modify_attributes_hr(lb_name, resp)
                 return CommandResults(
                     readable_output=hr,
                     outputs_prefix="AWS.ELB.LoadBalancer",
