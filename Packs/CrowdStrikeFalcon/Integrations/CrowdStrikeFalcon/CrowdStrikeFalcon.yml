@@ -585,6 +585,8 @@ script:
       isArray: true
       name: ids
       required: true
+    compliantpolicies:
+      - Endpoint Isolation
     description: Lifts containment on the host, which returns its network communications to normal.
     name: cs-falcon-lift-host-containment
     compliantpolicies:
@@ -623,6 +625,8 @@ script:
       - single
     - description: A batch ID to execute the command on.
       name: batch_id
+    compliantpolicies:
+      - Remote Endpoint Operations
     description: Sends commands to hosts.
     name: cs-falcon-run-command
     outputs:
@@ -892,6 +896,8 @@ script:
     - description: Whether the command will run against an offline-queued session and be queued for execution when the host comes online.
       name: queue_offline
       defaultValue: false
+    compliantpolicies:
+      - Remote Endpoint Operations
     description: Runs a script on the agent host.
     name: cs-falcon-run-script
     outputs:
@@ -928,6 +934,8 @@ script:
       name: timeout
     - description: 'The amount of time to wait for the request before it times out. In duration syntax. For example, 10s. Valid units are: ns, us, ms, s, m, h. Maximum value is 10 minutes.'
       name: timeout_duration
+    compliantpolicies:
+      - Remote Endpoint Operations
     description: Batch executes 'get' command across hosts to retrieve files.
     name: cs-falcon-run-get-command
     outputs:
@@ -1735,6 +1743,8 @@ script:
     - description: The ID of the IOC to delete. The ID of the IOC can be retrieved by running the 'cs-falcon-search-custom-iocs' command.
       name: ioc_id
       required: true
+    compliantpolicies:
+      - File Block
     description: Deletes a monitored indicator.
     name: cs-falcon-delete-custom-ioc
   - arguments:
@@ -2455,6 +2465,8 @@ script:
       name: host_ids
       required: true
     description: Add host group members.
+    compliantpolicies:
+      - Attribute Modification
     name: cs-falcon-add-host-group-members
     outputs:
     - contextPath: CrowdStrike.HostGroup.id
@@ -2489,6 +2501,8 @@ script:
       isArray: true
       name: host_ids
       required: true
+    compliantpolicies:
+      - Attribute Modification
     description: Remove host group members.
     name: cs-falcon-remove-host-group-members
     outputs:
@@ -2550,6 +2564,8 @@ script:
       description: The amount of time (in seconds) that a request will wait for a client to establish a connection to a remote machine before a timeout occurs.
       defaultValue: "180"
       type: unknown
+    compliantpolicies:
+      - File Block
     description: Uploads a batch of indicators.
     name: cs-falcon-batch-upload-custom-ioc
     outputs:
@@ -2608,6 +2624,8 @@ script:
       defaultValue: false
     - name: timeout
       description: The amount of time (in seconds) that a request will wait for a client to establish a connection to a remote machine before a timeout occurs.
+    compliantpolicies:
+      - Remote Endpoint Operations
     description: Execute an active responder kill command on a single host.
     name: cs-falcon-rtr-kill-process
     outputs:
@@ -2641,6 +2659,8 @@ script:
       defaultValue: false
     - name: timeout
       description: The amount of time (in seconds) that a request will wait for a client to establish a connection to a remote machine before a timeout occurs.
+    compliantpolicies:
+      - Remote Endpoint Operations
     description: Batch executes an RTR active-responder remove file across the hosts mapped to the given batch ID.
     name: cs-falcon-rtr-remove-file
     outputs:
@@ -4200,6 +4220,8 @@ script:
     - description: The timeout in seconds until polling ends.
       name: timeout_in_seconds
       defaultValue: '600'
+    compliantpolicies:
+      - Endpoint Scanning
     description: Create an ODS scan and wait for the results.
     name: cs-falcon-ods-create-scan
     polling: true
