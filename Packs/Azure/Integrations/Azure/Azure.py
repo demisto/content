@@ -39,8 +39,8 @@ PERMISSIONS_TO_COMMANDS = {
         "azure-nsg-security-rule-create",
     ],
     "Microsoft.Network/networkSecurityGroups/securityRules/delete": ["azure-nsg-security-rule-delete"],
-    "Microsoft.Network/networkInterfaces/read": ["azure-nsg-network-interfaces-list", "azure-vm-get-network-interface-details"],
-    "Microsoft.Network/publicIPAddresses/read": ["azure-nsg-public-ip-addresses-list", "azure-vm-get-public-ip-details"],
+    "Microsoft.Network/networkInterfaces/read": ["azure-nsg-network-interfaces-list", "azure-vm-network-interface-details-get"],
+    "Microsoft.Network/publicIPAddresses/read": ["azure-nsg-public-ip-addresses-list", "azure-vm-public-ip-details-get"],
     "Microsoft.Storage/storageAccounts/read": ["azure-storage-account-update"],
     "Microsoft.Storage/storageAccounts/write": ["azure-storage-account-update"],
     "Microsoft.Storage/storageAccounts/blobServices/containers/write": ["azure-storage-blob-containers-update"],
@@ -65,9 +65,9 @@ PERMISSIONS_TO_COMMANDS = {
     "Microsoft.Insights/logprofiles/write": ["azure-monitor-log-profile-update"],
     "Microsoft.Compute/disks/read": ["azure-disk-update"],
     "Microsoft.Compute/disks/write": ["azure-disk-update"],
-    "Microsoft.Compute/virtualMachines/read": ["azure-vm-get-instance-details"],
-    "Microsoft.Compute/virtualMachines/start/action": ["azure-vm-start-instance"],
-    "Microsoft.Compute/virtualMachines/poweroff/action": ["azure-vm-power-off-instance"],
+    "Microsoft.Compute/virtualMachines/read": ["aazure-vm-instance-details-get"],
+    "Microsoft.Compute/virtualMachines/start/action": ["azure-vm-instance-start"],
+    "Microsoft.Compute/virtualMachines/poweroff/action": ["azure-vm-instance-power-off"],
     "Microsoft.ContainerRegistry/registries/read": ["azure-acr-update"],
     "Microsoft.ContainerRegistry/registries/write": ["azure-acr-update"],
     "Microsoft.KeyVault/vaults/read": ["azure-key-vault-update"],
@@ -1625,7 +1625,7 @@ class AzureClient:
         exception with an informative error message.
 
         parameter: (dict) args
-            The command arguments passed to either the `azure-vm-start-instance` or
+            The command arguments passed to either the `azure-vm-instance-start` or
             `azure-vm-poweroff-instance` commands
 
         returns:
@@ -1635,7 +1635,7 @@ class AzureClient:
             "Please wait for the VM to finish being"
             " {} before executing this command. To retrieve the "
             "last known state of the VM, execute the "
-            "`azure-vm-get-instance-details` command. "
+            "`azure-vm-instance-details-get` command. "
         )
         deleting_err = "You cannot execute this command because the VM is being deleted."
         failed_err = (
