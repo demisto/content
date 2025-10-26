@@ -802,7 +802,7 @@ When inserting invalid arguments, an error message could be returned.
 | sources | A comma-separated list of sources. Possible values are: AWS, NESSUS_AGENT, PVS,NESSUS_SCAN, WAS. When specified, the results returned in the list are limited to assets that have the specified source. | Optional |
 | hasPluginResults | If true, returns all assets that have a plugin results associated with it. Possible values are: true, false. | Optional |
 | tagCategory | When specified, the results returned in the list are limited to assets with the specified tag category. | Optional |
-| tagValue | When specified, the results returned in the list are limited to assets with the specified tag value. | Optional |
+| tagValue | When specified, the results returned in the list are limited to assets with the specified tag value. Can be comma-delimited for multiple items. | Optional |
 | exportUuid | The export uuid. | Optional |
 
 #### Context Output
@@ -1067,7 +1067,7 @@ When inserting invalid arguments, an error message could be returned.
 | since | The start date for the range of data you want to export. Date format will be epoch date format or relational expressions like “7 days ago”. Note: This filter cannot be used in conjunction with the firstFound, lastFound, or lastFixed. | Optional |
 | state | A comma-separated list of states of the vulnerabilities you want the export to include. Supported, case-insensitive values are: open, reopened, fixed. This parameter is required if your request includes firstFound, lastFound, or lastFixed parameters. If your request omits this parameter, the export includes default states open and reopened only. | Optional |
 | tagCategory | When specified, the results returned in the list are limited to assets with the specified tag category. | Optional |
-| tagValue | When specified, the results returned in the list are limited to assets with the specified tag value. | Optional |
+| tagValue | When specified, the results returned in the list are limited to assets with the specified tag value. Can be comma-delimited for multiple items.| Optional |
 | vprScoreOperator | An operator that determines the limitation on Vulnerability Priority Rating (VPR), scores value specified at vprScoreValue argument. Supported values are: equal, not equal, lt-lesser, lte-lesser than or equal , gt-greater than , gte-greater than or equal. Possible values are: gte, gt, lte, lt, equal, not equal. | Optional |
 | vprScoreValue | When specified, the results returned in the list are limited to vulnerabilities with the specified Vulnerability Priority Rating (VPR), score or scores according to the score operator (vprScoreOperator) argument. | Optional |
 | vprScoreRange | When specified, the results returned in the list are limited to vulnerabilities with the specified Vulnerability Priority Rating (VPR) score range. Example value: 2.5-3.5. | Optional |
