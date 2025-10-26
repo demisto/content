@@ -145,7 +145,172 @@ def test_main_error(mocker):
     mocked_return_error.assert_called()
 
 
-# add a test for extract id
+def test_add_cases_extra_data_single_case(mocker):
+    """
+    GIVEN a list with one case containing case_id
+    WHEN add_cases_extra_data is called
+    THEN it adds CaseExtraData to the case by calling get_case_extra_data
+    """
+    from SearchCases import add_cases_extra_data
+
+    mock_get_case_extra_data = mocker.patch("SearchCases.get_case_extra_data")
+    mock_extra_data = {"issues": {"total_count": 5}, "alerts": {"total_count": 3}}
+    mock_get_case_extra_data.return_value = mock_extra_data
+
+    case_data = [{"case_id": "123", "case_name": "Test Case"}]
+
+    result = add_cases_extra_data(case_data)
+
+    mock_get_case_extra_data.assert_called_once_with({"case_id": "123", "limit": 1000})
+    assert result[0]["CaseExtraData"] == mock_extra_data
+    assert result[0]["case_id"] == "123"
+    assert result[0]["case_name"] == "Test Case"
+
+
+def test_add_cases_extra_data_multiple_cases(mocker):
+    """
+    GIVEN a list with multiple cases containing case_ids
+    WHEN add_cases_extra_data is called
+    THEN it adds CaseExtraData to each case by calling get_case_extra_data for each
+    """
+    from SearchCases import add_cases_extra_data
+
+    mock_get_case_extra_data = mocker.patch("SearchCases.get_case_extra_data")
+    mock_extra_data_1 = {"issues": {"total_count": 5}}
+    mock_extra_data_2 = {"issues": {"total_count": 10}}
+    mock_get_case_extra_data.side_effect = [mock_extra_data_1, mock_extra_data_2]
+
+    case_data = [{"case_id": "123", "case_name": "Test Case 1"}, {"case_id": "456", "case_name": "Test Case 2"}]
+
+    result = add_cases_extra_data(case_data)
+
+    assert mock_get_case_extra_data.call_count == 2
+    mock_get_case_extra_data.assert_any_call({"case_id": "123", "limit": 1000})
+    mock_get_case_extra_data.assert_any_call({"case_id": "456", "limit": 1000})
+    assert result[0]["CaseExtraData"] == mock_extra_data_1
+    assert result[1]["CaseExtraData"] == mock_extra_data_2
+
+
+def test_add_cases_extra_data_empty_list(mocker):
+    """
+    GIVEN an empty list of cases
+    WHEN add_cases_extra_data is called
+    THEN it returns empty list without calling get_case_extra_data
+    """
+    from SearchCases import add_cases_extra_data
+
+    mock_get_case_extra_data = mocker.patch("SearchCases.get_case_extra_data")
+
+    case_data = []
+
+    result = add_cases_extra_data(case_data)
+
+    mock_get_case_extra_data.assert_not_called()
+    assert result == []
+
+
+def test_get_case_extra_data_normal(mocker):
+    """
+    GIVEN valid args for get_case_extra_data
+    WHEN get_case_extra_data is called
+    THEN it returns properly formatted extra data with issue_ids, network_artifacts, and file_artifacts
+    """
+    from SearchCases import get_case_extra_data
+
+    mock_case_extra_data = {
+        "issues": {"data": [{"issue_id": "101"}, {"issue_id": "102"}]},
+        "network_artifacts": [{"ip": "1.2.3.4"}],
+        "file_artifacts": [{"filename": "test.exe"}],
+    }
+
+    mocker.patch("SearchCases.execute_command", return_value=mock_case_extra_data)
+    mocker.patch("SearchCases.extract_ids", return_value=["101", "102"])
+    mock_debug = mocker.patch("demistomock.debug")
+
+    args = {"case_id": "123"}
+    result = get_case_extra_data(args)
+
+    assert result["issue_ids"] == ["101", "102"]
+    assert result["network_artifacts"] == [{"ip": "1.2.3.4"}]
+    assert result["file_artifacts"] == [{"filename": "test.exe"}]
+    assert mock_debug.call_count == 2
+
+
+def test_get_case_extra_data_no_artifacts(mocker):
+    """
+    GIVEN case extra data with no network or file artifacts
+    WHEN get_case_extra_data is called
+    THEN it returns None for missing artifact types
+    """
+    from SearchCases import get_case_extra_data
+
+    mock_case_extra_data = {"issues": {"data": [{"issue_id": "101"}]}}
+
+    mocker.patch("SearchCases.execute_command", return_value=mock_case_extra_data)
+    mocker.patch("SearchCases.extract_ids", return_value=["101"])
+    mocker.patch("demistomock.debug")
+
+    args = {"case_id": "123"}
+    result = get_case_extra_data(args)
+
+    assert result["issue_ids"] == ["101"]
+    assert result["network_artifacts"] is None
+    assert result["file_artifacts"] is None
+
+
+def test_get_case_extra_data_empty_issues(mocker):
+    """
+    GIVEN case extra data with empty issues
+    WHEN get_case_extra_data is called
+    THEN it returns empty issue_ids list
+    """
+    from SearchCases import get_case_extra_data
+
+    mock_case_extra_data = {"issues": {"data": []}, "network_artifacts": [], "file_artifacts": []}
+
+    mocker.patch("SearchCases.execute_command", return_value=mock_case_extra_data)
+    mocker.patch("SearchCases.extract_ids", return_value=[])
+    mocker.patch("demistomock.debug")
+
+    args = {"case_id": "123"}
+    result = get_case_extra_data(args)
+
+    assert result["issue_ids"] == []
+    assert result["network_artifacts"] == []
+    assert result["file_artifacts"] == []
+
+
+def test_extract_ids_mixed_valid_invalid_items():
+    """
+    GIVEN case_extra_data with mix of valid items, items missing issue_id, and non-dict items
+    WHEN extract_ids is called
+    THEN it returns only valid issue_ids
+    """
+    case_extra_data = {
+        "issues": {
+            "data": [
+                {"issue_id": "100", "name": "Issue 1"},
+                {"name": "Issue 2"},
+                "not_a_dict",
+                {"issue_id": "101", "severity": "high"},
+                None,
+                {"issue_id": "102"},
+            ]
+        }
+    }
+    result = extract_ids(case_extra_data)
+    assert result == ["100", "101", "102"]
+
+
+def test_extract_ids_single_valid_item():
+    """
+    GIVEN case_extra_data with single valid issue
+    WHEN extract_ids is called
+    THEN it returns list with single issue_id
+    """
+    case_extra_data = {"issues": {"data": [{"issue_id": "999", "description": "Single issue"}]}}
+    result = extract_ids(case_extra_data)
+    assert result == ["999"]
 
 
 def test_extract_ids():
@@ -285,138 +450,3 @@ def test_extract_ids():
     }
     id = extract_ids(case_extra_data_issue)
     assert id == ["282", "283"]
-
-
-def test_add_cases_extra_data_single_case(mocker):
-    """
-    GIVEN a list with one case containing case_id
-    WHEN add_cases_extra_data is called
-    THEN it adds CaseExtraData to the case by calling get_case_extra_data
-    """
-    from SearchCases import add_cases_extra_data
-
-    mock_get_case_extra_data = mocker.patch("SearchCases.get_case_extra_data")
-    mock_extra_data = {"issues": {"total_count": 5}, "alerts": {"total_count": 3}}
-    mock_get_case_extra_data.return_value = mock_extra_data
-
-    case_data = [{"case_id": "123", "case_name": "Test Case"}]
-
-    result = add_cases_extra_data(case_data)
-
-    mock_get_case_extra_data.assert_called_once_with({"case_id": "123", "limit": 1000})
-    assert result[0]["CaseExtraData"] == mock_extra_data
-    assert result[0]["case_id"] == "123"
-    assert result[0]["case_name"] == "Test Case"
-
-
-def test_add_cases_extra_data_multiple_cases(mocker):
-    """
-    GIVEN a list with multiple cases containing case_ids
-    WHEN add_cases_extra_data is called
-    THEN it adds CaseExtraData to each case by calling get_case_extra_data for each
-    """
-    from SearchCases import add_cases_extra_data
-
-    mock_get_case_extra_data = mocker.patch("SearchCases.get_case_extra_data")
-    mock_extra_data_1 = {"issues": {"total_count": 5}}
-    mock_extra_data_2 = {"issues": {"total_count": 10}}
-    mock_get_case_extra_data.side_effect = [mock_extra_data_1, mock_extra_data_2]
-
-    case_data = [{"case_id": "123", "case_name": "Test Case 1"}, {"case_id": "456", "case_name": "Test Case 2"}]
-
-    result = add_cases_extra_data(case_data)
-
-    assert mock_get_case_extra_data.call_count == 2
-    mock_get_case_extra_data.assert_any_call({"case_id": "123", "limit": 1000})
-    mock_get_case_extra_data.assert_any_call({"case_id": "456", "limit": 1000})
-    assert result[0]["CaseExtraData"] == mock_extra_data_1
-    assert result[1]["CaseExtraData"] == mock_extra_data_2
-
-
-def test_add_cases_extra_data_empty_list(mocker):
-    """
-    GIVEN an empty list of cases
-    WHEN add_cases_extra_data is called
-    THEN it returns empty list without calling get_case_extra_data
-    """
-    from SearchCases import add_cases_extra_data
-
-    mock_get_case_extra_data = mocker.patch("SearchCases.get_case_extra_data")
-
-    case_data = []
-
-    result = add_cases_extra_data(case_data)
-
-    mock_get_case_extra_data.assert_not_called()
-    assert result == []
-
-
-def test_get_case_extra_data_normal(mocker):
-    """
-    GIVEN valid args for get_case_extra_data
-    WHEN get_case_extra_data is called
-    THEN it returns properly formatted extra data with issue_ids, network_artifacts, and file_artifacts
-    """
-    from SearchCases import get_case_extra_data
-
-    mock_case_extra_data = {
-        "issues": {"data": [{"issue_id": "101"}, {"issue_id": "102"}]},
-        "network_artifacts": [{"ip": "1.2.3.4"}],
-        "file_artifacts": [{"filename": "test.exe"}],
-    }
-
-    mocker.patch("SearchCases.execute_command", return_value=mock_case_extra_data)
-    mocker.patch("SearchCases.extract_ids", return_value=["101", "102"])
-    mock_debug = mocker.patch("demistomock.debug")
-
-    args = {"case_id": "123"}
-    result = get_case_extra_data(args)
-
-    assert result["issue_ids"] == ["101", "102"]
-    assert result["network_artifacts"] == [{"ip": "1.2.3.4"}]
-    assert result["file_artifacts"] == [{"filename": "test.exe"}]
-    assert mock_debug.call_count == 2
-
-
-def test_get_case_extra_data_no_artifacts(mocker):
-    """
-    GIVEN case extra data with no network or file artifacts
-    WHEN get_case_extra_data is called
-    THEN it returns None for missing artifact types
-    """
-    from SearchCases import get_case_extra_data
-
-    mock_case_extra_data = {"issues": {"data": [{"issue_id": "101"}]}}
-
-    mocker.patch("SearchCases.execute_command", return_value=mock_case_extra_data)
-    mocker.patch("SearchCases.extract_ids", return_value=["101"])
-    mocker.patch("demistomock.debug")
-
-    args = {"case_id": "123"}
-    result = get_case_extra_data(args)
-
-    assert result["issue_ids"] == ["101"]
-    assert result["network_artifacts"] is None
-    assert result["file_artifacts"] is None
-
-
-def test_get_case_extra_data_empty_issues(mocker):
-    """
-    GIVEN case extra data with empty issues
-    WHEN get_case_extra_data is called
-    THEN it returns empty issue_ids list
-    """
-    from SearchCases import get_case_extra_data
-
-    mock_case_extra_data = {"issues": {"data": []}, "network_artifacts": [], "file_artifacts": []}
-
-    mocker.patch("SearchCases.execute_command", return_value=mock_case_extra_data)
-    mocker.patch("SearchCases.extract_ids", return_value=[])
-    mocker.patch("demistomock.debug")
-
-    args = {"case_id": "123"}
-    result = get_case_extra_data(args)
-
-    assert result["issue_ids"] == []
-    assert result["network_artifacts"] == []
-    assert result["file_artifacts"] == []
