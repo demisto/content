@@ -67,7 +67,7 @@ PERMISSIONS_TO_COMMANDS = {
     "Microsoft.Compute/disks/write": ["azure-disk-update"],
     "Microsoft.Compute/virtualMachines/read": ["azure-vm-get-instance-details"],
     "Microsoft.Compute/virtualMachines/start/action": ["azure-vm-start-instance"],
-    "Microsoft.Compute/virtualMachines/poweroff/action": ["azure-vm-poweroff-instance"],
+    "Microsoft.Compute/virtualMachines/poweroff/action": ["azure-vm-power-off-instance"],
     "Microsoft.ContainerRegistry/registries/read": ["azure-acr-update"],
     "Microsoft.ContainerRegistry/registries/write": ["azure-acr-update"],
     "Microsoft.KeyVault/vaults/read": ["azure-key-vault-update"],
@@ -3251,8 +3251,9 @@ def get_network_interface_command(client: AzureClient, params: dict[str, Any], a
         "NICType",
         "AttachedVirtualMachine",
     ]
-    human_readable = tableToMarkdown(name=title, t=human_readable_network_config, headers=table_headers, removeNull=True,
-                                     headerTransform=pascalToSpace)
+    human_readable = tableToMarkdown(
+        name=title, t=human_readable_network_config, headers=table_headers, removeNull=True, headerTransform=pascalToSpace
+    )
 
     response["etag"] = response.get("etag", "")[3:-1]
     for ip_configuration in response.get("properties", {}).get("ipConfigurations", []):
@@ -3346,8 +3347,9 @@ def get_public_ip_details_command(client: AzureClient, params: dict[str, Any], a
         "PublicIPAddressAllocationMethod",
         "ResourceGroup",
     ]
-    human_readable = tableToMarkdown(name=title, t=human_readable_ip_config, headers=table_headers, removeNull=True,
-                                     headerTransform=pascalToSpace)
+    human_readable = tableToMarkdown(
+        name=title, t=human_readable_ip_config, headers=table_headers, removeNull=True, headerTransform=pascalToSpace
+    )
 
     return CommandResults(
         outputs_prefix="Azure.Network.IPConfigurations",
@@ -3487,7 +3489,7 @@ def main():  # pragma: no cover
             "azure-nsg-network-interfaces-list": nsg_network_interfaces_list_command,
             "azure-nsg-public-ip-addresses-list": nsg_public_ip_addresses_list_command,
             "azure-vm-instance-start": start_vm_command,
-            "azure-vm-instance-poweroff": poweroff_vm_command,
+            "azure-vm-instance-power-off": poweroff_vm_command,
             "azure-vm-instance-details-get": get_vm_command,
             "azure-vm-network-interface-details-get": get_network_interface_command,
             "azure-vm-public-ip-details-get": get_public_ip_details_command,

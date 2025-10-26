@@ -28,5 +28,5 @@
 !azure-vm-get-nic-details subscription_id="my-subscription-id" resource_group_name="my_resource_group_name" nic_name="network_interface"
 !azure-vm-get-instance-details subscription_id="my-subscription-id" resource_group_name="my_resource_group_name" virtual_machine_name="my_vm"
 !azure-vm-start-instance subscription_id="my-subscription-id" resource_group_name="my_resource_group_name" virtual_machine_name="my_vm"
-!azure-vm-poweroff-instance subscription_id="my-subscription-id" resource_group_name="my_resource_group_name" virtual_machine_name="my_vm"
+!azure-vm-power-off-instance subscription_id="my-subscription-id" resource_group_name="my_resource_group_name" virtual_machine_name="my_vm"
 

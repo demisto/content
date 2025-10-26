@@ -1264,14 +1264,14 @@ Gets all resource groups for a subscription.
 | Azure.NSGResourceGroup.tags.aNSG-managed-cluster-rg | String | The ANSG managed cluster resource group tag associated with the Azure Network Security Groups resource group. |
 | Azure.NSGResourceGroup.tags.type | String | The type tag associated with the Azure Network Security Groups resource group. |
 
-### azure-vm-instance-poweroff
+### azure-vm-instance-power-off
 
 ***
 Powers off a given virtual machine.
 
 #### Base Command
 
-`azure-vm-instance-poweroff`
+`azure-vm-instance-power-off`
 
 #### Input
 

@@ -2277,7 +2277,7 @@ script:
     - contextPath: Azure.Compute.powerState
       description: Whether the VM instance is powered on or off.
       type: string
-  - name: azure-vm-instance-poweroff
+  - name: azure-vm-instance-power-off
     description: Powers off a given virtual machine.
     execution: true
     arguments:
