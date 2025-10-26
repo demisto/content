@@ -26,6 +26,8 @@ BASE_BACKOFF_SECONDS = 2
 
 
 EVENT_TYPES = ["message", "maillog", "audit"]
+DEFAULT_GET_EVENTS_LIMIT = 10
+DATE_FILTER_FORMAT = "%Y-%m-%dT%H:%M:%S%z"
 
 
 class EventConnection:
@@ -216,6 +218,7 @@ def fetch_events(
         integration_context (dict) The integration context dict.
         should_skip_sleeping (List[bool]): a list to update all execution results -
         False if timeout occurred, otherwise will append True.
+        write_to_integration_context (bool): Whether to write to integration context.
 
     Returns:
         list[dict]: A list of events
@@ -376,42 +379,51 @@ def long_running_execution_command(host: str, cluster_id: str, api_key: str, fet
             demisto.error(err)
 
 
-def get_events_command(host: str, cluster_id: str, api_key: str, args: dict[str, str]):
+def get_events_command(host: str, cluster_id: str, api_key: str, args: dict[str, str]) -> tuple[list, CommandResults]:
+    """Implements the `!proofpoint-est-get-events` command.
+
+    Args:
+        host (str): The host URL for the websocket connection.
+        cluster_id (str): The Proofpoint cluster ID to connect to.
+        api_key (str): The Proofpoint API key.
+        args (dict[str, str]): The command arguments.
+
+    Returns:
+        tuple[list, CommandResults]: The list of events and the command results containing human-readable output.
+    """
     event_types = argToList(args.get("event_types")) or EVENT_TYPES
+    limit = arg_to_number(args.get("limit")) or DEFAULT_GET_EVENTS_LIMIT
 
     tz_offset = arg_to_number(args.get("timezone_offset")) or 0
     event_tz = timezone(timedelta(hours=tz_offset))
 
-    since_time = (
-        arg_to_datetime(args.get("since_time"), required=True).replace(tzinfo=event_tz).strftime("%Y-%m-%dT%H:%M:%S%z")  # type: ignore[union-attr]
-    )
-    to_time = (
-        arg_to_datetime(args.get("to_time"), required=True).replace(tzinfo=event_tz).strftime("%Y-%m-%dT%H:%M:%S%z")  # type: ignore[union-attr]
-    )
-
-    time_interval = 1 * 60
+    # `arg_to_datetime` does not return `None` since args are required. Added `type: ignore` to silence type checkers and linters
+    since_time = arg_to_datetime(args.get("since_time"), required=True).replace(tzinfo=event_tz).strftime(DATE_FILTER_FORMAT)  # type: ignore[union-attr]
+    to_time = arg_to_datetime(args.get("to_time"), required=True).replace(tzinfo=event_tz).strftime(DATE_FILTER_FORMAT)  # type: ignore[union-attr]
 
     all_events = []
+    time_interval = 1 * 60
     demisto.debug(f"Starting to fetch {event_types=}, {since_time=}, {to_time=}")
-    try:
-        with websocket_connections(
-            host,
-            cluster_id,
-            api_key,
-            event_types=event_types,
-            since_time=since_time,
-            to_time=to_time,
-            write_to_integration_context=False,
-            check_heartbeat=False,
-        ) as connections:
-            for connection in connections:
-                events = fetch_events(
-                    connection, time_interval, integration_context={}, should_skip_sleeping=[], write_to_integration_context=False
-                )
-                demisto.debug(f"Got {len(events)} {connection.event_type} Events")
-            all_events.extend(events)
-    except exceptions.ConnectionClosedOK:
-        demisto.error("Connection closed with OK status.")
+    with websocket_connections(
+        host,
+        cluster_id,
+        api_key,
+        event_types=event_types,
+        since_time=since_time,
+        to_time=to_time,
+        write_to_integration_context=False,
+        check_heartbeat=False,
+    ) as connections:
+        for connection in connections:
+            events = fetch_events(
+                connection,
+                time_interval,
+                integration_context={},
+                should_skip_sleeping=[],
+                write_to_integration_context=False,
+            )
+            demisto.debug(f"Got {len(events)} {connection.event_type} Events. Appending up to {limit} events.")
+            all_events.extend(events[:limit])
 
     return all_events, CommandResults(readable_output=tableToMarkdown(f"Events since {since_time} to {to_time}", all_events))
 
