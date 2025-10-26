@@ -45,12 +45,12 @@ PERMISSIONS_TO_COMMANDS = {
         "azure-storage-account-update",
         "azure-network-disable-storage-account-access-quick-action",
         "azure-set-storage-account-https-only-quick-action",
-        ],
+    ],
     "Microsoft.Storage/storageAccounts/write": [
         "azure-storage-account-update",
         "azure-network-disable-storage-account-access-quick-action",
         "azure-set-storage-account-https-only-quick-action",
-        ],
+    ],
     "Microsoft.Storage/storageAccounts/blobServices/containers/write": ["azure-storage-blob-containers-update"],
     "Microsoft.Storage/storageAccounts/blobServices/read": [
         "azure-storage-blob-service-properties-set",
@@ -59,55 +59,50 @@ PERMISSIONS_TO_COMMANDS = {
     "Microsoft.Storage/storageAccounts/blobServices/write": ["azure-storage-blob-service-properties-set"],
     "Microsoft.Authorization/policyAssignments/read": ["azure-policy-assignment-create"],
     "Microsoft.Authorization/policyAssignments/write": ["azure-policy-assignment-create"],
-    "Microsoft.DBforPostgreSQL/servers/read": [
-        "azure-postgres-server-update",
-        "azure-postgres-enable-ssl-quick-action"
-        ],
-    "Microsoft.DBforPostgreSQL/servers/write": [
-        "azure-postgres-server-update",
-        "azure-postgres-enable-ssl-quick-action"
-        ],
+    "Microsoft.DBforPostgreSQL/servers/read": ["azure-postgres-server-update", "azure-postgres-enable-ssl-quick-action"],
+    "Microsoft.DBforPostgreSQL/servers/write": ["azure-postgres-server-update", "azure-postgres-enable-ssl-quick-action"],
     "Microsoft.DBforPostgreSQL/servers/configurations/read": [
         "azure-postgres-config-set",
         "azure-postgres-enable-checkpoint-logging-quick-action",
         "azure-postgres-enable-disconnection-logging-quick-action",
         "azure-postgres-enable-session-connection-logging-quick-action",
-        ],
+    ],
     "Microsoft.DBforPostgreSQL/servers/configurations/write": [
         "azure-postgres-config-set",
         "azure-postgres-enable-checkpoint-logging-quick-action",
         "azure-postgres-enable-disconnection-logging-quick-action",
         "azure-postgres-enable-session-connection-logging-quick-action",
-        ],
+    ],
     "Microsoft.Web/sites/config/read": [
         "azure-webapp-config-set",
         "azure-webapp-auth-update",
         "azure-webapp-set-min-tls-version-quick-action",
         "azure-function-app-set-min-tls-version-quick-action",
-        ],
+    ],
     "Microsoft.Web/sites/config/write": [
         "azure-webapp-config-set",
         "azure-webapp-auth-update",
-        "azure-webapp-set-min-tls-version-quick-action","azure-function-app-set-min-tls-version-quick-action",
-        ],
+        "azure-webapp-set-min-tls-version-quick-action",
+        "azure-function-app-set-min-tls-version-quick-action",
+    ],
     "Microsoft.Web/sites/read": ["azure-webapp-update"],
     "Microsoft.Web/sites/write": ["azure-webapp-update"],
     "Microsoft.DBforMySQL/flexibleServers/configurations/read": [
         "azure-mysql-flexible-server-param-set",
         "azure-mysql-set-secure-transport-quick-action",
-        ],
+    ],
     "Microsoft.DBforMySQL/flexibleServers/configurations/write": [
         "azure-mysql-flexible-server-param-set",
         "azure-mysql-set-secure-transport-quick-action",
-        ],
+    ],
     "Microsoft.Insights/logprofiles/read": [
         "azure-monitor-log-profile-update",
         "azure-monitor-log-retention-period-quick-action",
-        ],
+    ],
     "Microsoft.Insights/logprofiles/write": [
         "azure-monitor-log-profile-update",
         "azure-monitor-log-retention-period-quick-action",
-        ],
+    ],
     "Microsoft.Compute/disks/read": ["azure-disk-update"],
     "Microsoft.Compute/disks/write": ["azure-disk-update"],
     "Microsoft.ContainerRegistry/registries/read": ["azure-acr-update"],
