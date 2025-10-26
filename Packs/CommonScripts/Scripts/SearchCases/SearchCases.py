@@ -49,7 +49,7 @@ def add_cases_extra_data(case_data):
         case_id = case.get("case_id")
         extra_data = get_case_extra_data({"case_id": case_id, "limit": 1000})
         case.update({"CaseExtraData": extra_data})
-        
+
     return case_data
 
 
@@ -122,14 +122,16 @@ def main():  # pragma: nocover
 
             if len(raw_response_search_cases) < 10:
                 case_extra_data = add_cases_extra_data(raw_response_search_cases)
-                return_results(CommandResults(
-                    readable_output=tableToMarkdown("Cases", case_extra_data, headerTransform=string_to_table_header),
-                    outputs_prefix="Core.Case",
-                    outputs_key_field="case_id",
-                    outputs=case_extra_data,
-                    raw_response=case_extra_data,
-                ))
-  
+                return_results(
+                    CommandResults(
+                        readable_output=tableToMarkdown("Cases", case_extra_data, headerTransform=string_to_table_header),
+                        outputs_prefix="Core.Case",
+                        outputs_key_field="case_id",
+                        outputs=case_extra_data,
+                        raw_response=case_extra_data,
+                    )
+                )
+
         return_results(results)
 
     except DemistoException as error:
