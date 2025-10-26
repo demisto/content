@@ -743,6 +743,12 @@ script:
   - description: Run this command if for some reason you need to rerun the authentication process.
     name: msgraph-user-auth-reset
     arguments: []
+  - arguments:
+    - description: The user mail to pop the MFA to.
+      name: user_mail
+      required: true
+    description: pops a request to MFA for the given user.
+    name: msgraph-user-request-mfa
   dockerimage: demisto/crypto:1.0.0.3539024
   runonce: false
   script: '-'
