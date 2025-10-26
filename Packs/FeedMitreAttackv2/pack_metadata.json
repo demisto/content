@@ -2,7 +2,7 @@
     "name": "MITRE ATT&CK",
     "description": "Fetches indicators from MITRE ATT&CK.",
     "support": "xsoar",
-    "currentVersion": "1.2.8",
+    "currentVersion": "1.2.9",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -30,6 +30,7 @@
         "X3",
         "X5",
         "ENT_PLUS",
-        "agentix"
+        "agentix",
+        "xsiam"
     ]
 }

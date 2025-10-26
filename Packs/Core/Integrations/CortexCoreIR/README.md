@@ -2904,7 +2904,10 @@ Terminate a process tree by its causality ID. Available only for XSIAM 2.4 and a
         }
        
     ]
-### core-script-run
+}
+```
+
+### core-execute-command
 
 ***
 Initiates a new endpoint script execution using a script from the script library and returns the results.```
