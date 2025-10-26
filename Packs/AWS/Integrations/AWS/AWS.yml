@@ -1693,7 +1693,7 @@ script:
           RDS Instance ID: ${asset.xdm.asset.name}
       - name: publicly_accessible
         description: 'Weather the DB instance is publicly accessible.'
-        defaultValue: 'true'
+        defaultValue: 'false'
         hidden: true
       - name: apply_immediately
         description: 'Weather the modifications in this request and any pending modifications are asynchronously applied as soon as possible, regardless of the PreferredMaintenanceWindow setting for the DB instance. By default, this parameter is disabled. If this parameter is disabled, changes to the DB instance are applied during the next maintenance window. Some parameter changes can cause an outage and are applied on the next call to RebootDBInstance , or the next failure reboot.'
@@ -1701,7 +1701,7 @@ script:
         hidden: true
 
   - name: aws-rds-db-instance-modify-copy-tags-on-rds-snapshot-quick-action
-    description: This actction enables 'copy tags to snapshots' for the RDS instance by running the aws rds modify-db-instance command in your environment. It requires 'rds:ModifyDBInstance' permission.
+    description: This action enables 'copy tags to snapshots' for the RDS instance by running the aws rds modify-db-instance command in your environment. It requires 'rds:ModifyDBInstance' permission.
     prettyname: Enable Copy Tags on RDS Snapshot
     hidden: true
     quickaction: true
@@ -1759,7 +1759,7 @@ script:
           RDS Instance ID: ${asset.xdm.asset.name}
       - name: backup_retention_period
         description: 'The number of days to retain automated backups. Setting this parameter to a positive number enables backups. Setting this parameter to 0 disables automated backups.'
-        defaultValue: 30
+        defaultValue: '30'
         hidden: true
       - name: apply_immediately
         description: 'Weather the modifications in this request and any pending modifications are asynchronously applied as soon as possible, regardless of the PreferredMaintenanceWindow setting for the DB instance. By default, this parameter is disabled. If this parameter is disabled, changes to the DB instance are applied during the next maintenance window. Some parameter changes can cause an outage and are applied on the next call to RebootDBInstance , or the next failure reboot.'
@@ -2498,51 +2498,23 @@ script:
     quickaction: true
     arguments:
       - name: account_id
-        prettyname: Account ID
         description: The AWS account ID.
+        prettyname: Account ID
         required: true
+        prettypredefined:
+          Account ID: ${asset.xdm.asset.realm}
       - name: region
-        prettyname: Region
         description: The AWS region.
+        prettyname: Region
         required: true
-        auto: PREDEFINED
-        predefined:
-          - us-east-1
-          - us-east-2
-          - us-west-1
-          - us-west-2
-          - af-south-1
-          - ap-east-1
-          - ap-south-2
-          - ap-southeast-3
-          - ap-southeast-5
-          - ap-southeast-4
-          - ap-south-1
-          - ap-northeast-3
-          - ap-northeast-2
-          - ap-southeast-1
-          - ap-southeast-2
-          - ap-southeast-7
-          - ap-northeast-1
-          - ca-central-1
-          - ca-west-1
-          - eu-central-1
-          - eu-west-1
-          - eu-west-2
-          - eu-south-1
-          - eu-west-3
-          - eu-south-2
-          - eu-north-1
-          - eu-central-2
-          - il-central-1
-          - mx-central-1
-          - me-south-1
-          - me-central-1
-          - sa-east-1
+        prettypredefined:
+          Region: ${asset.xdm.asset.cloud.region}
       - name: image_id
         prettyname: AMI ID
         description: 'The ID of the AMI.'
         required: true
+        prettypredefined:
+          AMI ID: ${asset.xdm.asset.strong_id}
       - name: attribute
         description: 'The AMI attribute to modify.'
         defaultValue: 'launchPermission'
@@ -3120,7 +3092,7 @@ script:
         description: The name of the trail or trail ARN.
         required: true
         prettypredefined:
-          Name: ${asset.xdm.asset.name}
+          Name: ${asset.xdm.asset.strong_id}
       - name: enable_log_file_validation
         description: Weather log file validation is enabled. The default is false.
         defaultValue: 'true'
@@ -3245,7 +3217,7 @@ script:
         description: 'The name or the CloudTrail ARN of the trail for which CloudTrail logs Amazon Web Services API calls. e.g. arn:aws:cloudtrail:us-east-2:123456789012:trail/MyTrail.'
         required: true
         prettypredefined:
-          Name: ${asset.xdm.asset.name}
+          Name: ${asset.xdm.asset.strong_id}
 
   - name: aws-ec2-instances-describe
     description: "Describes specified instances or all instances."

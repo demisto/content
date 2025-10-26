@@ -2072,7 +2072,7 @@ class RDS:
                 "EnableIAMDatabaseAuthentication": arg_to_bool_or_none(args.get("enable_iam_database_authentication")),
                 "PubliclyAccessible": arg_to_bool_or_none(args.get("publicly_accessible")),
                 "CopyTagsToSnapshot": arg_to_bool_or_none(args.get("copy_tags_to_snapshot")),
-                "BackupRetentionPeriod": arg_to_bool_or_none(args.get("backup_retention_period")),
+                "BackupRetentionPeriod": int(args.get("backup_retention_period")) if args.get("backup_retention_period") else None
             }
             remove_nulls_from_dictionary(kwargs)
             demisto.info(f"modify_db_instance {kwargs=}")
@@ -2364,6 +2364,7 @@ class ECS:
 
 COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResults | None]] = {
     "aws-s3-public-access-block-update": S3.put_public_access_block_command,
+    "aws-s3-public-access-block-get-quick-action": S3.put_public_access_block_command,
     "aws-s3-bucket-versioning-put": S3.put_bucket_versioning_command,
     "aws-s3-bucket-versioning-enable-quick-action": S3.put_bucket_versioning_command,
     "aws-s3-bucket-logging-put": S3.put_bucket_logging_command,
