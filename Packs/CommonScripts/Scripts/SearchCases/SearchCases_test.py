@@ -145,6 +145,16 @@ def test_main_error(mocker):
     mocked_return_error.assert_called()
 
 
+def test_get_case_extra_data_command_error(mocker):
+    """
+    Test scenario where execute_command raises an exception
+    """
+    mocker.patch("SearchCases.execute_command", side_effect=Exception("Command failed"))
+
+    with pytest.raises(Exception):
+        get_case_extra_data({"case_id": "123"})
+
+
 def test_add_cases_extra_data_single_case(mocker):
     """
     GIVEN a list with one case containing case_id
@@ -294,6 +304,16 @@ def test_extract_ids_mixed_valid_invalid_items():
     }
     result = extract_ids(case_extra_data)
     assert result == ["100", "101", "102"]
+
+
+def test_extract_ids_non_list_data(mocker):
+    """
+    Test extraction of IDs when issues.data is not a list
+    """
+    case_extra_data = {"issues": {"data": {"not_a_list": True}}}
+
+    result = extract_ids(case_extra_data)
+    assert result == []
 
 
 def test_extract_ids_no_issues():
