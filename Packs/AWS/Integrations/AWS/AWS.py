@@ -2715,6 +2715,7 @@ class Lambda:
             readable_output=human_readable,
             outputs_prefix="AWS.Lambda.InvokedFunction",
             outputs_key_field=["FunctionName", "RequestPayload"],
+            raw_response=response,
         )
 
 
