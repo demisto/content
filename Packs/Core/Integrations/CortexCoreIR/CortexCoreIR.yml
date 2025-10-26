@@ -993,7 +993,7 @@ script:
       - ENT_PLUS
     outputs:
     - contextPath: Core.blocklist.added_hashes
-      description: Adds a file hash to the block list.
+      description: Added file hash to the block list.
       type: Number
     - contextPath: Core.blocklist.excluded_hashes
       description: Added fileHash to blocklist.
@@ -1024,7 +1024,7 @@ script:
       - ENT_PLUS
     outputs:
     - contextPath: Core.allowlist.added_hashes
-      description: Adds a file hash to the allow list.
+      description: Added a file hash to the allow list.
       type: Number
     - contextPath: Core.allowlist.excluded_hashes
       description: Added fileHash to allowlist.
@@ -1786,7 +1786,6 @@ script:
     - description: Polling timeout in seconds.
       name: timeout_in_seconds
     description: Retrieves files from selected endpoints. You can retrieve up to 20 files from no more than 10 endpoints. At least one endpoint ID and one file path are required to run the command. After running the command, use the core-action-status-get command with the returned action_id to check the action status.
-
     name: core-retrieve-files
     supportedModules:
       - C3
@@ -3804,7 +3803,7 @@ script:
       hidden: true
       description: Is the command being called from a core pack.
       defaultValue: true
-    description: Initiates a new endpoint script execution using a script from the script library and returns the results.```
+    description: Initiates a new endpoint script execution using a script from the script library and returns the results.
     name: core-script-run
     supportedModules:
       - C3
