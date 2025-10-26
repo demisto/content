@@ -302,6 +302,20 @@ def test_extract_ids_mixed_valid_invalid_items():
     assert result == ["100", "101", "102"]
 
 
+def test_extract_ids_no_issues():
+    case_extra_data = {
+        "case": {
+            "aggregated_score": None,
+            "assigned_user_mail": None,
+            "assigned_user_pretty_name": None,
+            "case_domain": "DOMAIN_POSTURE",
+            "case_id": "62",
+        }
+    }
+    result = extract_ids(case_extra_data)
+    assert result == []
+
+
 def test_extract_ids_single_valid_item():
     """
     GIVEN case_extra_data with single valid issue

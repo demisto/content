@@ -14,7 +14,8 @@ def extract_ids(case_extra_data):
         A list of the IDs extracted from the command result.
     """
     field_name = "issue_id"
-    issues_data = case_extra_data.get("issues", {}).get("data")
+    issues = case_extra_data.get("issues")
+    issues_data = issues.get("data", {}) if issues else {}
     issue_ids = [c.get(field_name) for c in issues_data if isinstance(c, dict) and field_name in c]
     demisto.debug(f"Extracted issue ids: {issue_ids}")
     return issue_ids
