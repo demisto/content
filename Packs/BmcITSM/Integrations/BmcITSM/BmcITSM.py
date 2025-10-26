@@ -666,7 +666,7 @@ class Client(BaseClient):
                 "First_Name": first_name,
                 "Last_Name": last_name,
                 "Description": summary,
-                "Detailed_Decription": details,
+                "Detailed Decription": details,
                 "Company": company,
                 "Urgency": urgency,
                 "Impact": impact,
