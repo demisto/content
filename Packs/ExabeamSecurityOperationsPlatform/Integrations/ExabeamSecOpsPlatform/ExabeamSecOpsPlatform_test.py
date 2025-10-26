@@ -704,13 +704,7 @@ def test_last_case_time_and_ids():
             CommandResults(
                 outputs_prefix="ExabeamPlatform.Case",
                 readable_output="",
-                outputs=[
-                    {
-                        "caseId": "cc33",
-                        "alertName": "alert3",
-                        "caseCreationTimestamp": 1723213855501000
-                    }
-                ],
+                outputs=[{"caseId": "cc33", "alertName": "alert3", "caseCreationTimestamp": 1723213855501000}],
             ),
             {"fetch_query": "priority:LOW", "max_fetch": "2", "first_fetch": "3 days"},
             {"time": "2024-08-09T14:15:55Z", "last_ids": ["aa11", "bb22"]},
