@@ -585,8 +585,6 @@ script:
       isArray: true
       name: ids
       required: true
-    compliantpolicies:
-      - Endpoint Isolation
     description: Lifts containment on the host, which returns its network communications to normal.
     name: cs-falcon-lift-host-containment
     compliantpolicies:
@@ -1609,6 +1607,10 @@ script:
     - description: Name of the file for file indicators. Applies to hashes only. A common filename, or a filename in your environment. Filenames can be helpful for identifying hashes or filtering IOCs.
       name: file_name
     description: Uploads an indicator for CrowdStrike to monitor.
+    compliantpolicies:
+      - File Block
+      - IP Blockage
+      - Domain Blockage
     name: cs-falcon-upload-custom-ioc
     outputs:
     - contextPath: CrowdStrike.IOC.Type
@@ -1656,9 +1658,6 @@ script:
     - contextPath: CrowdStrike.IOC.Filename
       description: Name of the file for file indicators. Applies to hashes only. A common filename, or a filename in your environment. Filenames can be helpful for identifying hashes or filtering IOCs.
       type: string
-    compliantpolicies:
-    - Domain Blockage
-    - IP Blockage
   - arguments:
     - description: The ID of the IOC to update. The ID of the IOC can be retrieved by running the 'cs-falcon-search-custom-iocs' command.
       name: ioc_id
@@ -1696,6 +1695,10 @@ script:
       name: description
     - description: Name of the file for file indicators. Applies to hashes only. A common filename, or a filename in your environment. Filenames can be helpful for identifying hashes or filtering IOCs.
       name: file_name
+    compliantpolicies:
+      - File Block
+      - IP Blockage
+      - Domain Blockage
     description: Updates an indicator for CrowdStrike to monitor.
     name: cs-falcon-update-custom-ioc
     outputs:
@@ -1738,7 +1741,6 @@ script:
     - contextPath: CrowdStrike.IOC.Filename
       description: Name of the file for file indicators. Applies to hashes only. A common filename, or a filename in your environment. Filenames can be helpful for identifying hashes or filtering IOCs.
       type: string
-
   - arguments:
     - description: The ID of the IOC to delete. The ID of the IOC can be retrieved by running the 'cs-falcon-search-custom-iocs' command.
       name: ioc_id
