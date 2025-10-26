@@ -4337,3 +4337,71 @@ def test_modify_subnet_attribute_command_failure(mocker):
 
     with pytest.raises(DemistoException, match="Modification could not be performed."):
         EC2.modify_subnet_attribute_command(mock_client, args)
+
+
+def test_get_bucket_website_command_success(mocker):
+    """
+    Given: A mocked boto3 S3 client and a valid bucket name.
+    When: get_bucket_website_command is called.
+    Then: It should return `CommandResults` with a readable output containing the Bucket Website Configuration.
+    """
+    from AWS import S3
+
+    mock_client = mocker.Mock()
+    mock_client.modify_subnet_attribute.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
+    args = {"bucket": "mock_bucket_name"}
+    result = S3.get_bucket_website_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert "Bucket Website Configuration" in result.readable_output
+
+
+def test_get_bucket_website_command_failure(mocker):
+    """
+    Given: A mocked boto3 S3 client that returns an HTTP error response.
+    When: get_bucket_website_command is called.
+    Then: It should raise `DemistoException` indicating the failure to retrieve the bucket website configuration.
+    """
+    from AWS import S3
+
+    mock_client = mocker.Mock()
+    mock_client.modify_subnet_attribute.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
+    args = {"bucket": "mock_bucket_name"}
+
+    with pytest.raises(DemistoException,
+                       match=f"AWS S3 API call to get_bucket_website failed or returned an unexpected status code."
+                             f" Received HTTP Status Code: {HTTPStatus.BAD_REQUEST}"):
+        S3.get_bucket_website_command(mock_client, args)
+
+
+def test_get_bucket_acl_command_success(mocker):
+    """
+    Given: A mocked boto3 S3 client and a valid bucket name.
+    When: get_bucket_acl_command is called.
+    Then: It should return `CommandResults` with a readable output containing the Bucket Acl information.
+    """
+    from AWS import S3
+
+    mock_client = mocker.Mock()
+    mock_client.modify_subnet_attribute.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
+    args = {"bucket": "mock_bucket_name"}
+    result = S3.get_bucket_website_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert "Bucket Acl" in result.readable_output
+
+
+def test_get_bucket_acl_command_failure(mocker):
+    """
+    Given: A mocked boto3 S3 client that returns an HTTP error response.
+    When: get_bucket_acl_command is called.
+    Then: It should raise `DemistoException` indicating the failure to retrieve the bucket ACL.
+    """
+    from AWS import S3
+
+    mock_client = mocker.Mock()
+    mock_client.modify_subnet_attribute.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
+    args = {"bucket": "mock_bucket_name"}
+
+    with pytest.raises(DemistoException,
+                       match=f"AWS S3 API call to get_bucket_acl failed or returned an unexpected status code."
+                             f" Received HTTP Status Code: {HTTPStatus.BAD_REQUEST}"):
+        S3.get_bucket_website_command(mock_client, args)
