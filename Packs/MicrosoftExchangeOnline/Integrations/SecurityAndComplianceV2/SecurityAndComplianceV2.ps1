@@ -642,8 +642,8 @@ class SecurityAndComplianceClient {
     }
 
     CreateDelegatedSessionCredentials([string]$CommandName){
-        if ($null -eq $this.upn_password ) {
-            throw "Using this command requires for interactive delegated authentication. Please make sure UPN password to be set in the integration parameters."
+        if ([string]::IsNullOrWhiteSpace($this.upn_password)) {
+            throw "Using this command requires interactive delegated authentication. Please make sure the UPN password is set in the integration parameters."
         }
 
         $securePassword = ConvertTo-SecureString $this.upn_password -AsPlainText -Force
