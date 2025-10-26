@@ -1249,13 +1249,13 @@ Returns cost forecast for a subscription over a given time range.
 | Azure.Billing.Forecast.properties | unknown | Properties object containing forecast data. |
 | Azure.Billing.Forecast.properties.nextLink | String | Next link for pagination. |
 | Azure.Billing.Forecast.properties.forecasts | unknown | Array of forecast data entries. |
-| Azure.Billing.Forecast.properties.forecasts.PreTaxCostUSD | Number | Pre-tax cost in USD. |
-| Azure.Billing.Forecast.properties.forecasts.Cost | Number | Cost amount. |
-| Azure.Billing.Forecast.properties.forecasts.CostUSD | Number | Cost in USD. |
-| Azure.Billing.Forecast.properties.forecasts.PreTaxCost | Number | Pre-tax cost amount. |
-| Azure.Billing.Forecast.properties.forecasts.UsageDate | String | Usage date for the forecast \(YYYY-MM-DD format\). |
-| Azure.Billing.Forecast.properties.forecasts.CostStatus | String | Cost status \(Forecast, Actual\). |
-| Azure.Billing.Forecast.properties.forecasts.Currency | String | Currency code for the forecast. |
+| Azure.Billing.Forecast.properties.PreTaxCostUSD | Number | Pre-tax cost in USD. |
+| Azure.Billing.Forecast.properties.Cost | Number | Cost amount. |
+| Azure.Billing.Forecast.properties.CostUSD | Number | Cost in USD. |
+| Azure.Billing.Forecast.properties.PreTaxCost | Number | Pre-tax cost amount. |
+| Azure.Billing.Forecast.properties.UsageDate | String | Usage date for the forecast \(YYYY-MM-DD format\). |
+| Azure.Billing.Forecast.properties.CostStatus | String | Cost status \(Forecast, Actual\). |
+| Azure.Billing.Forecast.properties.Currency | String | Currency code for the forecast. |
 
 ### azure-billing-budgets-list
 

@@ -2,7 +2,7 @@ import demistomock as demisto  # noqa: F401
 from COOCApiModule import *  # noqa: E402
 from CommonServerPython import *  # noqa: F401
 from http import HTTPStatus
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, timedelta, UTC
 from collections.abc import Callable
 from botocore.client import BaseClient as BotoClient
 from botocore.config import Config
@@ -2230,16 +2230,33 @@ class CostExplorer:
         Raises:
             DemistoException: If AWS API call fails or invalid parameters provided
         """
-        today = datetime.now().date()
+        today_utc = datetime.now(UTC)
         metrics = argToList(args.get("metrics", "UsageQuantity"))
-        start_date = args.get("start_date") or (today - timedelta(days=7)).isoformat()
-        end_date = args.get("end_date") or today.isoformat()
+        allowed_metrics = {
+            "AmortizedCost",
+            "BlendedCost",
+            "NetAmortizedCost",
+            "NetUnblendedCost",
+            "NormalizedUsageAmount",
+            "UnblendedCost",
+            "UsageQuantity",
+        }
+        invalid_metrics = [m for m in metrics if m not in allowed_metrics]
+        if invalid_metrics:
+            raise DemistoException(
+                f"Invalid metrics: {', '.join(invalid_metrics)}. Allowed metrics: {', '.join(sorted(allowed_metrics))}"
+            )
+        start_date = arg_to_datetime(args.get("start_date")) or (today_utc - timedelta(days=7))
+        end_date = arg_to_datetime(args.get("end_date")) or today_utc
         granularity = args.get("granularity", "Daily").upper()
         aws_services = argToList(args.get("aws_services"))
         token = args.get("next_page_token")
 
         request = {
-            "TimePeriod": {"Start": start_date, "End": end_date},
+            "TimePeriod": {
+                "Start": start_date.date().isoformat(),
+                "End": end_date.date().isoformat(),
+            },
             "Granularity": granularity,
             "Metrics": metrics,
         }
@@ -2276,8 +2293,7 @@ class CostExplorer:
                     }
                 )
         outputs = {"AWS.Billing.Usage": results}
-        if next_token:
-            outputs["AWS.Billing.UsageNextToken"] = next_token
+        outputs["AWS.Billing.UsageNextToken"] = next_token
         readable_tables = []
         for metric in metrics:
             metric_results = results_by_metric[metric]
@@ -2287,6 +2303,7 @@ class CostExplorer:
                     metric_results,
                     headers=["Service", "StartDate", "EndDate", "Amount", "Unit"],
                     removeNull=True,
+                    headerTransform=pascalToSpace,
                 )
                 readable_tables.append(table)
         readable = "\n".join(readable_tables) if readable_tables else "No billing usage data found."
@@ -2324,16 +2341,19 @@ class CostExplorer:
         Raises:
             DemistoException: If AWS API call fails or invalid parameters provided
         """
-        today = datetime.now().date()
+        today_utc = datetime.now(UTC)
         metric = args.get("metric", "AMORTIZED_COST")
-        start_date = args.get("start_date") or today.isoformat()
-        end_date = args.get("end_date") or (today + timedelta(days=7)).isoformat()
+        start_date = arg_to_datetime(args.get("start_date")) or today_utc
+        end_date = arg_to_datetime(args.get("end_date")) or (today_utc + timedelta(days=7))
         granularity = args.get("granularity", "Daily").upper()
         aws_services = argToList(args.get("aws_services"))
         token = args.get("next_page_token")
 
         request = {
-            "TimePeriod": {"Start": start_date, "End": end_date},
+            "TimePeriod": {
+                "Start": start_date.date().isoformat(),
+                "End": end_date.date().isoformat(),
+            },
             "Granularity": granularity,
             "Metric": metric,
         }
@@ -2376,6 +2396,7 @@ class CostExplorer:
             metric_results,
             headers=["Service", "StartDate", "EndDate", "TotalAmount", "TotalUnit"],
             removeNull=True,
+            headerTransform=pascalToSpace,
         )
         if next_token:
             readable += f"\nNext Page Token: {next_token}"

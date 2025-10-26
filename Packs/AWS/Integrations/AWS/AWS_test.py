@@ -4471,7 +4471,7 @@ def test_cost_explorer_billing_cost_usage_list_command_no_next_token(mocker):
     result = CostExplorer.billing_cost_usage_list_command(mock_client, args)
 
     assert isinstance(result, CommandResults)
-    assert "AWS.Billing.UsageNextToken" not in result.outputs
+    assert result.outputs["AWS.Billing.UsageNextToken"] == ""
     assert "Next Page Token" not in result.readable_output
 
 
@@ -4509,3 +4509,76 @@ def test_budgets_billing_budgets_list_command_with_next_token(mocker):
 
     assert isinstance(result, CommandResults)
     assert result.outputs["AWS.Billing.Budget"][0]["BudgetName"] == "budget-page-2"
+
+
+def test_budgets_billing_budget_notification_list_command_success(mocker):
+    """
+    Given: A mocked boto3 Budgets client and valid arguments to list budget notifications.
+    When: billing_budget_notification_list_command is called successfully.
+    Then: It should return CommandResults with notifications and next token in outputs.
+    """
+    from AWS import Budgets
+
+    mock_client = mocker.Mock()
+    mock_response = {
+        "Notifications": [
+            {
+                "NotificationType": "ACTUAL",
+                "ComparisonOperator": "GREATER_THAN",
+                "Threshold": 80.0,
+                "ThresholdType": "PERCENTAGE",
+                "Subscribers": [
+                    {"SubscriptionType": "EMAIL", "Address": "owner@example.com"},
+                ],
+            }
+        ],
+        "NextToken": "notif-token-001",
+    }
+    mock_client.describe_notifications_for_budget.return_value = mock_response
+
+    args = {
+        "account_id": "123456789012",
+        "budget_name": "my-budget",
+        "max_result": "25",
+    }
+
+    result = Budgets.billing_budget_notification_list_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert "AWS.Billing.Notification" in result.outputs
+    assert len(result.outputs["AWS.Billing.Notification"]) == 1
+    assert result.outputs["AWS.Billing.NotificationNextToken"] == "notif-token-001"
+    assert "Notifications for Budget: my-budget" in result.readable_output
+
+
+def test_budgets_billing_budget_notification_list_command_with_pagination_and_params(mocker):
+    """
+    Given: Arguments with next_page_token and max_result provided.
+    When: billing_budget_notification_list_command is executed.
+    Then: It should forward MaxResults and NextToken to describe_notifications_for_budget and return raw_response.
+    """
+    from AWS import Budgets
+
+    mock_client = mocker.Mock()
+    mock_response = {"Notifications": [], "NextToken": "next-2"}
+    mock_client.describe_notifications_for_budget.return_value = mock_response
+
+    args = {
+        "account_id": "123456789012",
+        "budget_name": "budget-x",
+        "max_result": "100",
+        "next_page_token": "prev-token",
+    }
+
+    result = Budgets.billing_budget_notification_list_command(mock_client, args)
+
+    # Verify params forwarded correctly
+    mock_client.describe_notifications_for_budget.assert_called_once()
+    call_kwargs = mock_client.describe_notifications_for_budget.call_args[1]
+    assert call_kwargs["AccountId"] == "123456789012"
+    assert call_kwargs["BudgetName"] == "budget-x"
+    assert call_kwargs["MaxResults"] == 100
+    assert call_kwargs["NextToken"] == "prev-token"
+
+    assert isinstance(result, CommandResults)
+    assert result.raw_response == mock_response

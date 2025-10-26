@@ -1477,7 +1477,7 @@ Retrieves actual cost and usage data for a given time range and optional service
 | start_date | Start date for the report (YYYY-MM-DD). Default - 7 days ago. | Optional |
 | end_date | End date for the report (YYYY-MM-DD). Default - current day. | Optional |
 | granularity | Granularity of the data. Default - Daily. Valid values [Daily, Monthly, Hourly]. Possible values are: Daily, Monthly, Hourly. | Optional |
-| aws_services | Optional filter for retrieving data for specific AWS services. Can be provided multiple times. | Optional |
+| aws_services | Optional filter for retrieving data for specific AWS services. | Optional |
 | next_page_token | Next page token for pagination. Use value from AWS.Billing.UsageNextToken. | Optional |
 
 #### Context Output
@@ -1535,7 +1535,7 @@ Forecasts AWS spending over a given future time period using historical trends.
 | start_date | Start date for the forecast (YYYY-MM-DD). Default - current day. | Optional |
 | end_date | End date for the forecast (YYYY-MM-DD). Default - in 7 days. | Optional |
 | granularity | Granularity of the forecast. Default - Daily. Valid values [ Daily, Monthly, Hourly]. Possible values are: Daily, Monthly, Hourly. | Optional |
-| aws_services | Optional filter for retrieving data for specific AWS services. Can be provided multiple times. | Optional |
+| aws_services | Optional filter for retrieving data for specific AWS services. | Optional |
 | next_page_token | Next page token for pagination. Use value from AWS.Billing.ForecastNextToken. | Optional |
 
 #### Context Output

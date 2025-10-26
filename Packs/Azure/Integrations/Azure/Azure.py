@@ -1,3 +1,4 @@
+from requests import Response
 import demistomock as demisto
 import urllib3
 from CommonServerPython import *
@@ -7,6 +8,7 @@ from COOCApiModule import *
 from requests.exceptions import ConnectionError, Timeout
 from urllib.parse import parse_qs, urlparse, urlencode, urlunparse
 import copy
+from datetime import UTC
 
 
 # Disable insecure warnings
@@ -1510,7 +1512,7 @@ class AzureClient:
         metric: str = "",
         max_results: int = 50,
         next_page_token: str = "",
-    ):
+    ) -> Response | dict[str, Any] | None:
         """
         Retrieves actual usage and cost details from Azure Consumption API.
         Args:
@@ -1527,7 +1529,7 @@ class AzureClient:
         """
         scope = f"/{subscription_id}"
         url = f"{scope}/providers/Microsoft.Consumption/usageDetails"
-        api_version = "2021-10-01"
+        api_version = "2024-08-01"
         params_ = {
             "$expand": expand,
             "$filter": filter_,
@@ -1566,7 +1568,7 @@ class AzureClient:
         filter_param: str = "",
         include_actual_cost: bool = False,
         include_fresh_partial_cost: bool = False,
-    ):
+    ) -> Response | dict[str, Any] | None:
         """
         Returns cost forecast for a subscription over a given time range.
         Args:
@@ -1585,8 +1587,8 @@ class AzureClient:
         Raises:
             DemistoException: If Azure API call fails, subscription not found, or invalid parameters provided
         """
-        start_date = start_date or datetime.now().strftime("%Y-%m-%dT00:00:00Z")
-        end_date = end_date or (datetime.now() + timedelta(days=7)).strftime("%Y-%m-%dT23:59:59Z")
+        start_date = (arg_to_datetime(start_date) or datetime.now(UTC)).strftime("%Y-%m-%dT00:00:00Z")
+        end_date = (arg_to_datetime(end_date) or (datetime.now(UTC) + timedelta(days=7))).strftime("%Y-%m-%dT23:59:59Z")
 
         url = f"{subscription_id}/providers/Microsoft.CostManagement/forecast"
         api_version = "2025-03-01"
@@ -1624,7 +1626,7 @@ class AzureClient:
         self,
         subscription_id: str,
         budget_name: str = "",
-    ):
+    ) -> Response | dict[str, Any] | None:
         """
         Retrieves budget information from Azure Consumption API.
         Args:
@@ -1641,7 +1643,7 @@ class AzureClient:
         else:
             url = f"{scope}/providers/Microsoft.Consumption/budgets"
 
-        api_version = "2021-10-01"
+        api_version = "2024-08-01"
         params_ = {"api-version": api_version}
 
         demisto.debug(f"Azure billing budgets request: {url}, params: {params_}")
@@ -1753,6 +1755,17 @@ def extract_azure_resource_info(resource_id: str) -> tuple[str | None, str | Non
 
 
 def remove_query_param_from_url(url: str, param: str) -> str:
+    """
+    Remove a specific query parameter from a given URL and return the updated URL.
+
+    Args:
+        url (str): The full URL that may contain a query string.
+        param (str): The name of the query parameter to remove.
+
+    Returns:
+        str: The URL with the specified query parameter removed. If the parameter
+             is not present, the original URL is returned unchanged.
+    """
     parsed = urlparse(url)
     qs = parse_qs(parsed.query)
     qs.pop(param, None)
@@ -3011,9 +3024,8 @@ def azure_billing_usage_list_command(client: AzureClient, params: dict, args: di
         next_page_token=next_page_token,
     )
 
-    response_data = res.json() if hasattr(res, "json") else res
-    items = response_data.get("value", [])
-    next_token = response_data.get("nextLink", "")
+    items = res.get("value", [])
+    next_token = res.get("nextLink", "")
     demisto.debug(f"Azure billing usage response - results count: {len(items)},\n nextLink: {bool(next_token)}")
     results = []
     for item in items:
@@ -3034,9 +3046,10 @@ def azure_billing_usage_list_command(client: AzureClient, params: dict, args: di
         "Azure Billing Usage",
         results,
         headers=["Name", "Product", "PayGCostUSD", "UsageQuantity", "PeriodStartDate", "PeriodEndDate"],
+        headerTransform=pascalToSpace
     )
+    outputs["Azure.Billing.UsageNextToken"] = next_token
     if next_token:
-        outputs["Azure.Billing.UsageNextToken"] = next_token
         readable += f"\nNext Page Token: {next_token}"
     return CommandResults(
         readable_output=readable,

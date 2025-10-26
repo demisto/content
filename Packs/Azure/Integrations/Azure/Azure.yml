@@ -2260,6 +2260,11 @@ script:
         required: true
       - name: expand_result
         description: Whether to expand the result. Default - false.
+        default: false
+        auto: PREDEFINED
+        predefined:
+          - "false"
+          - "true"
         required: false
         type: Boolean
       - name: filter
@@ -2274,6 +2279,7 @@ script:
           - Amortized Cost
           - Usage
       - name: max_results
+        defaultValue: 50
         description: Maximum results to return. Default - 50, Max - 1000.
         required: false
         type: Number
@@ -2487,11 +2493,11 @@ script:
         type: String
         defaultValue: Daily
       - name: start_date
-        description: Start date for the forecast. Default value current time.
+        description: Start date for the forecast. Default value current time (UTC). e.g. 2022-01-01T00:00:00Z.
         required: false
         type: String
       - name: end_date
-        description: End date for the forecast. Default value 7 days from current time.
+        description: End date for the forecast. Default value 7 days from current time(UTC). e.g. 2022-01-01T00:00:00Z.
         required: false
         type: String
       - name: filter
@@ -2500,11 +2506,19 @@ script:
         type: String
       - name: include_actual_cost
         description: Include actual cost data.
+        defaultValue: false
+        auto: PREDEFINED
+        predefined:
+        - true
+        - false
         required: false
         type: Boolean
-        defaultValue: false
       - name: include_fresh_partial_cost
         description: Include fresh partial cost data.
+        auto: PREDEFINED
+        predefined:
+        - true
+        - false
         required: false
         type: Boolean
         defaultValue: false
@@ -2533,25 +2547,25 @@ script:
         type: String
       - contextPath: Azure.Billing.Forecast.properties.forecasts
         description: Array of forecast data entries.
-      - contextPath: Azure.Billing.Forecast.properties.forecasts.PreTaxCostUSD
+      - contextPath: Azure.Billing.Forecast.properties.PreTaxCostUSD
         description: Pre-tax cost in USD.
         type: Number
-      - contextPath: Azure.Billing.Forecast.properties.forecasts.Cost
+      - contextPath: Azure.Billing.Forecast.properties.Cost
         description: Cost amount.
         type: Number
-      - contextPath: Azure.Billing.Forecast.properties.forecasts.CostUSD
+      - contextPath: Azure.Billing.Forecast.properties.CostUSD
         description: Cost in USD.
         type: Number
-      - contextPath: Azure.Billing.Forecast.properties.forecasts.PreTaxCost
+      - contextPath: Azure.Billing.Forecast.properties.PreTaxCost
         description: Pre-tax cost amount.
         type: Number
-      - contextPath: Azure.Billing.Forecast.properties.forecasts.UsageDate
+      - contextPath: Azure.Billing.Forecast.properties.UsageDate
         description: Usage date for the forecast (YYYY-MM-DD format).
         type: String
-      - contextPath: Azure.Billing.Forecast.properties.forecasts.CostStatus
+      - contextPath: Azure.Billing.Forecast.properties.CostStatus
         description: Cost status (Forecast, Actual).
         type: String
-      - contextPath: Azure.Billing.Forecast.properties.forecasts.Currency
+      - contextPath: Azure.Billing.Forecast.properties.Currency
         description: Currency code for the forecast.
         type: String
   - name: azure-billing-budgets-list

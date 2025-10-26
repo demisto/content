@@ -3811,7 +3811,7 @@ script:
       - Monthly
       - Hourly
     - name: aws_services
-      description: Optional filter for retrieving data for specific AWS services. Can be provided multiple times.
+      description: Optional filter for retrieving data for specific AWS services. e.g. "AWSLambda"
       isArray: true
       required: false
     - name: next_page_token
@@ -3968,7 +3968,7 @@ script:
       - Monthly
       - Hourly
     - name: aws_services
-      description: Optional filter for retrieving data for specific AWS services. Can be provided multiple times.
+      description: Optional filter for retrieving data for specific AWS services.
       isArray: true
       required: false
     - name: next_page_token
@@ -4070,6 +4070,11 @@ script:
       description: Maximum results to return. Default - 50, Max - 1000.
       required: false
     - name: show_filter_expression
+      defaultValue: false
+      auto: PREDEFINED
+      predefined:
+      - true
+      - false
       description: Whether to show filter expression. Default - False.
       required: false
     - name: next_page_token

@@ -2986,7 +2986,7 @@ def test_azure_billing_usage_list_command_no_next_token(mocker, client, mock_par
     result = azure_billing_usage_list_command(client, params, args)
 
     assert isinstance(result, CommandResults)
-    assert "Azure.Billing.UsageNextToken" not in result.outputs
+    assert result.outputs["Azure.Billing.UsageNextToken"] == ""
     assert "Next Page Token" not in result.readable_output
     assert result.outputs["Azure.Billing.Usage"][0]["properties"]["product"] == "Storage"
 
@@ -3027,3 +3027,120 @@ def test_azure_billing_usage_list_command_with_pagination_token(mocker, client, 
 
     assert isinstance(result, CommandResults)
     assert result.outputs["Azure.Billing.Usage"][0]["properties"]["product"] == "Networking"
+
+
+def test_parse_forecast_table_to_dict_success():
+    """
+    Given: A table-like Azure Cost Management response with columns and rows.
+    When: parse_forecast_table_to_dict is invoked.
+    Then: It should return a list of dict rows mapping column names to values.
+    """
+    from Azure import parse_forecast_table_to_dict
+
+    response = {
+        "properties": {
+            "columns": [
+                {"name": "UsageDate"},
+                {"name": "CostUSD"},
+                {"name": "CostStatus"},
+            ],
+            "rows": [
+                ["2025-10-01", 12.34, "Forecast"],
+                ["2025-10-02", 56.78, "Actual"],
+            ],
+        }
+    }
+
+    parsed = parse_forecast_table_to_dict(response)
+    assert isinstance(parsed, list)
+    assert parsed[0]["UsageDate"] == "2025-10-01"
+    assert parsed[0]["CostUSD"] == 12.34
+    assert parsed[0]["CostStatus"] == "Forecast"
+    assert parsed[1]["UsageDate"] == "2025-10-02"
+
+
+def test_parse_forecast_table_to_dict_mismatch_row_length(mocker):
+    """
+    Given: Response where one row length doesn't match columns length.
+    When: parse_forecast_table_to_dict runs.
+    Then: It should skip the mismatched row and parse the valid one.
+    """
+    from Azure import parse_forecast_table_to_dict
+
+    mocker.patch.object(demisto, "debug")
+
+    response = {
+        "properties": {
+            "columns": [{"name": "A"}, {"name": "B"}],
+            "rows": [
+                [1],  # mismatched (len 1 vs 2 columns) -> should be skipped
+                [2, 3],  # valid
+            ],
+        }
+    }
+
+    parsed = parse_forecast_table_to_dict(response)
+    assert parsed == [{"A": 2, "B": 3}]
+
+
+def test_parse_forecast_table_to_dict_malformed_raises():
+    """
+    Given: Malformed response (columns missing 'name').
+    When: parse_forecast_table_to_dict runs.
+    Then: It should raise DemistoException.
+    """
+    from Azure import parse_forecast_table_to_dict, DemistoException
+
+    bad_response = {
+        "properties": {
+            "columns": [{"wrong": "UsageDate"}],  # will cause KeyError in parsing
+            "rows": [["2025-10-01"]],
+        }
+    }
+
+    with pytest.raises(DemistoException):
+        parse_forecast_table_to_dict(bad_response)
+
+
+def test_remove_query_param_from_url_basic():
+    """
+    Given: A URL with multiple query parameters including duplicates for a key.
+    When: remove_query_param_from_url is used to remove that key.
+    Then: The resulting URL should not contain the removed parameter and others remain.
+    """
+    from Azure import remove_query_param_from_url
+    from urllib.parse import urlparse, parse_qs
+
+    url = "https://example.com/path?a=1&b=2&b=3&c=x"
+    out = remove_query_param_from_url(url, "b")
+    parsed = urlparse(out)
+    qs = parse_qs(parsed.query)
+    assert "b" not in qs
+    assert qs == {"a": ["1"], "c": ["x"]}
+
+
+def test_remove_query_param_from_url_param_absent():
+    """
+    Given: A URL without the specified parameter.
+    When: remove_query_param_from_url is called.
+    Then: The URL query mapping remains logically the same.
+    """
+    from Azure import remove_query_param_from_url
+    from urllib.parse import urlparse, parse_qs
+
+    url = "https://example.com/path?a=1&c=x"
+    out = remove_query_param_from_url(url, "b")
+    assert parse_qs(urlparse(out).query) == {"a": ["1"], "c": ["x"]}
+
+
+def test_remove_query_param_from_url_no_query():
+    """
+    Given: A URL without any query string.
+    When: remove_query_param_from_url is called.
+    Then: The URL remains unchanged.
+    """
+    from Azure import remove_query_param_from_url
+
+    url = "https://example.com/path"
+    out = remove_query_param_from_url(url, "b")
+    assert out == url
