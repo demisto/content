@@ -2483,7 +2483,16 @@ class Lambda:
     @staticmethod
     def get_function_url_configuration_command(client: BotoClient, args: Dict[str, Any]):
         """
-        Returns the configuration for a Lambda function URL
+        Retrieves the configuration for a Lambda function URL.
+
+        Args:
+            client (BotoClient): The AWS Lambda client used to retrieve the function URL configuration.
+            args (Dict[str, Any]): A dictionary containing the function URL configuration parameters including
+                                   function_name and optional qualifier.
+
+        Returns:
+            CommandResults: An object containing the function URL configuration details including FunctionUrl,
+                           FunctionArn, AuthType, CreationTime, LastModifiedTime, and InvokeMode.
         """
         function_name = args.get("function_name")
         qualifier = args.get("qualifier")
@@ -2546,14 +2555,13 @@ class Lambda:
             "MaxAge": arg_to_number(args.get("cors_max_age")),
         }
         fixed_cors = remove_empty_elements(cors)
-        is_cors_empty = not any(fixed_cors.values())
-        if not is_cors_empty:
+        if any(fixed_cors.values()):
             params.update({"Cors": fixed_cors})
         fixed_params = remove_empty_elements(params)
         response = client.update_function_url_config(**fixed_params)
         # Create human readable output
         human_readable = tableToMarkdown(
-            f"Updated Lambda Function URL Configuration: {response.get('FunctionArn',args.get('function_name'))}",
+            f"The Updated Lambda Function URL Configuration: {response.get('FunctionArn',args.get('function_name'))}",
             response,
             headers=["FunctionUrl", "FunctionArn", "AuthType", "CreationTime", "LastModifiedTime", "InvokeMode"],
             headerTransform=pascalToSpace,
