@@ -107,7 +107,9 @@
                         "hideName": false,
                         "i": "zmjvpqxkcs-1vduzkpmlh-61263cc0-98b1-11e9-97d7-ed26ef9e46c8",
                         "isVisible": true,
-                        "items": [],
+                        "items": [
+
+                        ],
                         "maxH": null,
                         "maxW": 1,
                         "minH": 1,
@@ -165,7 +167,9 @@
                         "hideName": false,
                         "i": "zmjvpqxkcs-1vduzkpmlh-770ec200-98b1-11e9-97d7-ed26ef9e46c8",
                         "isVisible": true,
-                        "items": [],
+                        "items": [
+
+                        ],
                         "maxH": null,
                         "maxW": 1,
                         "minH": 1,
@@ -185,7 +189,9 @@
                         "hideName": false,
                         "i": "zmjvpqxkcs-1vduzkpmlh-842632c0-98b1-11e9-97d7-ed26ef9e46c8",
                         "isVisible": true,
-                        "items": [],
+                        "items": [
+
+                        ],
                         "maxH": null,
                         "maxW": 1,
                         "minH": 1,
@@ -203,7 +209,9 @@
                         "h": 2,
                         "hideName": false,
                         "i": "zmjvpqxkcs-1vduzkpmlh-5cc7f260-ad4f-11e9-a2d3-c520aeb407da",
-                        "items": [],
+                        "items": [
+
+                        ],
                         "maxH": null,
                         "maxW": 1,
                         "minH": 1,
@@ -222,7 +230,9 @@
                         "h": 2,
                         "hideName": false,
                         "i": "zmjvpqxkcs-1vduzkpmlh-11cd1fd0-ad52-11e9-a2d3-c520aeb407da",
-                        "items": [],
+                        "items": [
+
+                        ],
                         "maxH": null,
                         "maxW": 1,
                         "minH": 1,
@@ -299,9 +309,5 @@
     "system": false,
     "version": -1,
     "fromVersion": "6.0.0",
-    "description": "",
-    "supportedModules": [
-        "xsiam",
-        "agentix"
-    ]
+    "description": ""
 }

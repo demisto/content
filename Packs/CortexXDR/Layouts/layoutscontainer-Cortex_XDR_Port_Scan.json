@@ -594,7 +594,7 @@
             {
                 "hidden": false,
                 "id": "swtuqptgvs",
-                "name": "Alert & Artifacts",
+                "name": "Alert \u0026 Artifacts",
                 "sections": [
                     {
                         "displayType": "ROW",
@@ -750,9 +750,5 @@
                 "type": "canvas"
             }
         ]
-    },
-    "supportedModules": [
-        "xsiam",
-        "agentix"
-    ]
+    }
 }

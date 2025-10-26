@@ -160,9 +160,5 @@
     "unsearchable": true,
     "useAsKpi": false,
     "version": -1,
-    "fromVersion": "6.5.0",
-    "supportedModules": [
-        "xsiam",
-        "agentix"
-    ]
+    "fromVersion": "6.5.0"
 }
