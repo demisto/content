@@ -2713,6 +2713,7 @@ class Lambda:
             data.update({"LogResult": base64.b64decode(response["LogResult"]).decode("utf-8")})  # type:ignore
         if "Payload" in response:
             data.update({"Payload": response["Payload"].read().decode("utf-8")})  # type:ignore
+            response["Payload"] =  data["Payload"]
         if "ExecutedVersion" in response:
             data.update({"ExecutedVersion": response["ExecutedVersion"]})  # type:ignore
         if "FunctionError" in response:
