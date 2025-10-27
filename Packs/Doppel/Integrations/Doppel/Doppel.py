@@ -48,8 +48,18 @@ class Client(BaseClient):
     For this  implementation, no special attributes defined
     """
 
-    def __init__(self, base_url, api_key, user_api_key=None, organization_code=None, verify=None, proxy=None, retry_total=DEFAULT_RETRY_TOTAL, retry_backoff_factor=DEFAULT_RETRY_BACKOFF_FACTOR, retry_status_list=DEFAULT_RETRY_STATUS_LIST):
-
+    def __init__(
+        self,
+        base_url,
+        api_key,
+        user_api_key=None,
+        organization_code=None,
+        verify=None,
+        proxy=None,
+        retry_total=DEFAULT_RETRY_TOTAL,
+        retry_backoff_factor=DEFAULT_RETRY_BACKOFF_FACTOR,
+        retry_status_list=DEFAULT_RETRY_STATUS_LIST,
+    ):
         super().__init__(base_url, verify=verify, proxy=proxy)
 
         self._headers = {"accept": "application/json", "x-api-key": api_key}
@@ -748,7 +758,14 @@ def main() -> None:
     demisto.info(f"Command being called is {current_command}")
 
     try:
-        client = Client(base_url=base_url, api_key=api_key, user_api_key=user_api_key, organization_code=organization_code, verify=verify, proxy=proxy)
+        client = Client(
+            base_url=base_url,
+            api_key=api_key,
+            user_api_key=user_api_key,
+            organization_code=organization_code,
+            verify=verify,
+            proxy=proxy,
+        )
 
         if current_command in supported_commands_test_module:
             # Calls test_module(client) without args
