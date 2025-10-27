@@ -69,9 +69,5 @@
     "name": "Azure Active Directory Identity and Access Incoming Mapper",
     "type": "mapping-incoming",
     "version": -1,
-    "fromVersion": "6.0.0",
-    "supportedModules": [
-        "xsiam",
-        "agentix"
-    ]
+    "fromVersion": "6.0.0"
 }
