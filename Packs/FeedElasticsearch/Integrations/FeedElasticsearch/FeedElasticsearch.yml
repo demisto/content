@@ -185,7 +185,7 @@ configuration:
   - Timestamp-Milliseconds
   section: Collect
   advanced: true
-- additionalinfo: Used for sorting and limiting data. If empty, results are not sorted. Relevant for generic feed type only.
+- additionalinfo: 'The time field used for incremental fetching (e.g., @timestamp). When configured, only new indicators since the last fetch will be retrieved. Common values: @timestamp (Logstash/Beats), timestamp, date. Relevant for generic feed type only.'
   display: Index Time Field
   name: time_field
   type: 0
