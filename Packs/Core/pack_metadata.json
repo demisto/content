@@ -2,7 +2,7 @@
     "name": "Core",
     "description": "Automates incident response",
     "support": "xsoar",
-    "currentVersion": "3.4.23",
+    "currentVersion": "3.4.29",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -25,14 +25,5 @@
         "marketplacev2",
         "xpanse",
         "platform"
-    ],
-    "supportedModules": [
-        "exposure_management",
-        "cloud",
-        "cloud_runtime_security",
-        "agentix",
-        "cloud_posture",
-        "xsiam",
-        "edr"
     ]
 }
