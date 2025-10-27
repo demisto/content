@@ -6,12 +6,26 @@ commonfields:
   id: Microsoft Graph
   version: -1
 configuration:
-- defaultvalue: https://graph.microsoft.com
-  display: Host URL
+- defaultvalue: Worldwide
+  display: Microsoft Graph National Cloud Endpoint
+  name: cloud_service
+  required: false
+  type: 15
+  options:
+  - Worldwide
+  - US GCC-High
+  - DoD
+  - China
+  - Custom
+  additionalinfo: When selecting the Custom option, the Microsoft Graph Host URL parameter must be filled. More information about National clouds can be found here - https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#using-national-cloud
+  section: Connect
+  advanced: true
+- display: Microsoft Graph Host URL
   name: host
-  required: true
+  required: false
   type: 0
   section: Connect
+  advanced: true
 - defaultvalue: Alerts v2
   display: MS graph security alert API Version
   name: api_version
@@ -1562,7 +1576,7 @@ script:
       type: String
     - contextPath: MsGraph.eDiscoverySearch.SearchId
       description: The ID for the eDiscovery search.
-      type: String
+      type: String 
     - contextPath: MsGraph.eDiscoverySearch.LastModifiedDateTime
       description: The last date and time the eDiscovery search was modified.
       type: String

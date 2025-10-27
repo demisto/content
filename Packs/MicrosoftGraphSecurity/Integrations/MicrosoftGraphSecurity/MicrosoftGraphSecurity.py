@@ -276,7 +276,7 @@ class MsGraphClient:
             "recipientEmail": recipient_email,
             "expectedAssessment": expected_assessment,
             "category": category,
-            "messageUri": f"https://graph.microsoft.com/v1.0/users/{user_id}/messages/{message_id}",
+            "messageUri": f"{self.ms_client.ms_url}/v1.0/users/{user_id}/messages/{message_id}",
         }
         return self.ms_client.http_request(method="POST", url_suffix=THREAT_ASSESSMENT_URL_PREFIX, json_data=body)
 
@@ -2026,7 +2026,6 @@ def list_threat_assessment_requests_command(client: MsGraphClient, args) -> list
 def main():
     params: dict = demisto.params()
     args: dict = demisto.args()
-    url = params.get("host", "").rstrip("/") + "/v1.0/"
     tenant = params.get("creds_tenant_id", {}).get("password") or params.get("tenant_id")
     auth_and_token_url = params.get("creds_auth_id", {}).get("password") or params.get("auth_id", "")
     enc_key = params.get("creds_enc_key", {}).get("password") or params.get("enc_key")
@@ -2037,6 +2036,9 @@ def main():
     managed_identities_client_id = get_azure_managed_identities_client_id(params)
     self_deployed: bool = params.get("self_deployed", False) or managed_identities_client_id is not None
     api_version: str = params.get("api_version", API_V2)
+    
+    cloud_service = params.get("cloud_service", "Custom") # TODO: check if this works for BC
+    url = (params.get("host", "").rstrip("/") if cloud_service == "Custom" else MICROSOFT_GRAPH_ENDPOINTS[cloud_service]) + "/v1.0/"
 
     if not managed_identities_client_id:
         if not self_deployed and not enc_key:
