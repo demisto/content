@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: ElasticsearchFeed
+  id: ElasticsearchFeedCustom
   version: -1
 configuration:
 - display: Server URL
@@ -185,7 +185,7 @@ configuration:
   - Timestamp-Milliseconds
   section: Collect
   advanced: true
-- additionalinfo: 'The time field used for incremental fetching (e.g., @timestamp). When configured, only new indicators since the last fetch will be retrieved. Common values: @timestamp (Logstash/Beats), timestamp, date. Relevant for generic feed type only.'
+- additionalinfo: 'The time field used for incremental fetching (for example, @timestamp). When configured, only new indicators since the last fetch are retrieved. Relevant for the generic feed type.'
   display: Index Time Field
   name: time_field
   type: 0
@@ -219,8 +219,8 @@ configuration:
   - xsoar_on_prem
   section: Collect
 description: Fetches indicators stored in an Elasticsearch database.
-display: Elasticsearch Feed
-name: ElasticsearchFeed
+display: Elasticsearch Feed (Custom)
+name: ElasticsearchFeedCustom
 script:
   commands:
   - arguments:
