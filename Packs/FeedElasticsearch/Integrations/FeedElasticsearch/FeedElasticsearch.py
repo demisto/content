@@ -203,7 +203,7 @@ def test_command(
         elif not default_type:
             err_msg += 'Please provide a "Indicator Type"\n'
         if not time_field:
-            err_msg += 'Please provide a "Time Field"\n'
+            err_msg += 'Please provide a "Time Field" e.g. @timestamp\n'
         if not time_method:
             err_msg += 'Please provide a "Time Method"\n'
         if time_field and not fetch_time:
@@ -445,114 +445,65 @@ def fetch_indicators(client, last_fetch_timestamp, feed_type, fetch_limit, src_v
     """fetching indicators from the elasticsearch server.
     This function is used for client versions Elasticsearch_v8 and OpenSearch only.
     """
-    demisto.debug("FeedElasticSearch: Starting fetch_indicators function")
     indicators_list = []
     indicators_enrch_list = []
 
     if FEED_TYPE_GENERIC not in feed_type:  # Demisto Feed types
-        demisto.debug("FeedElasticSearch: Processing Demisto Feed types (insight format)")
         # Insight is the name of the indicator object as it's saved into the database
         search = get_scan_insight_format(client, last_fetch_timestamp, feed_type, fetch_limit)
-        demisto.debug("FeedElasticSearch: Created search object for insight format")
-        hit_count = 0
         for hit in search:
-            hit_count += 1
             hit_list, hit_enrch_list = extract_indicators_from_insight_hit(
                 hit, tags=client.tags, tlp_color=client.tlp_color, enrichment_excluded=client.enrichment_excluded
             )
             indicators_list.extend(hit_list)
             indicators_enrch_list.extend(hit_enrch_list)
-        demisto.debug(f"FeedElasticSearch: Processed {hit_count} hits from insight format")
 
     else:  # Generic Feed type
-        demisto.debug("FeedElasticSearch: Processing Generic Feed type")
         search = get_scan_generic_format(client, last_fetch_timestamp, fetch_limit)
-        demisto.debug(f"FeedElasticSearch: Created search object for generic format, time_field: {client.time_field}")
-        hit_count = 0
         for hit in search if client.time_field else search.scan():  # if time field isn't set we have to scan all (in every cycle)
-            hit_count += 1
             indicators_list.extend(
                 extract_indicators_from_generic_hit(
                     hit, src_val, src_type, default_type, client.tags, client.tlp_color, client.enrichment_excluded
                 )
             )
-        demisto.debug(f"FeedElasticSearch: Processed {hit_count} hits from generic format")
 
-    demisto.debug(
-        f"FeedElasticSearch: fetch_indicators returning {len(indicators_list)} indicators "
-        f"and {len(indicators_enrch_list)} enrichment items"
-    )
     return indicators_list, indicators_enrch_list
 
 
 def fetch_indicators_command(client, feed_type, src_val, src_type, default_type, last_fetch, fetch_limit):
     """Implements fetch-indicators command"""
-    demisto.debug("FeedElasticSearch: Starting fetch_indicators_command")
     last_fetch_timestamp = get_last_fetch_timestamp(last_fetch, client.time_method, client.fetch_time)
     demisto.debug(f"FeedElasticSearch: last_fetch_timestamp is: {last_fetch_timestamp}")
     prev_iocs_ids = demisto.getLastRun().get("ids", [])
-    demisto.debug(f"FeedElasticSearch: prev_iocs_ids count: {len(prev_iocs_ids)}")
     ioc_lst: list = []
     ioc_enrch_lst: list = []
 
-    demisto.debug(f"FeedElasticSearch: Starting fetch indicators - Elasticsearch client type is: {ELASTIC_SEARCH_CLIENT}")
-    demisto.debug(f"FeedElasticSearch: Feed type: {feed_type}, fetch_limit: {fetch_limit}")
+    demisto.debug(f"Starting fetch indicators - Elasticsearch client type is: {ELASTIC_SEARCH_CLIENT}")
 
     if ELASTIC_SEARCH_CLIENT in [ELASTICSEARCH_V8, OPEN_SEARCH]:
-        demisto.debug(f"FeedElasticSearch: Using fetch_indicators for client type: {ELASTIC_SEARCH_CLIENT}")
         ioc_lst, ioc_enrch_lst = fetch_indicators(
             client, last_fetch_timestamp, feed_type, fetch_limit, src_val, src_type, default_type
         )
     else:  # Elasticsearch v7 and below (backwards compatibility)
-        demisto.debug(f"FeedElasticSearch: Using fetch_indicators_elastic_v7 for client type: {ELASTIC_SEARCH_CLIENT}")
         ioc_lst, ioc_enrch_lst = fetch_indicators_elastic_v7(
             client, last_fetch_timestamp, feed_type, fetch_limit, src_val, src_type, default_type
         )
 
-    demisto.debug(f"FeedElasticSearch: Raw indicators fetched - ioc_lst: {len(ioc_lst)}, ioc_enrch_lst: {len(ioc_enrch_lst)}")
-
     ioc_lst = list(filter(lambda ioc: ioc.get("id") not in prev_iocs_ids, ioc_lst))
 
-    demisto.debug(f"FeedElasticSearch: After filtering, indicators count: {len(ioc_lst)}")
-    demisto.debug(f"FeedElasticSearch: Enrichment indicators count: {len(ioc_enrch_lst)}")
-
-    indicators_created = False
-
     if ioc_lst:
-        demisto.debug(f"FeedElasticSearch: Creating {len(ioc_lst)} main indicators")
-        for i, b in enumerate(batch(ioc_lst, batch_size=2000)):
-            demisto.debug(f"FeedElasticSearch: Creating batch {i+1} with {len(b)} indicators")
+        for b in batch(ioc_lst, batch_size=2000):
             demisto.createIndicators(b)
-        indicators_created = True
-
     last_calculated_timestamp, last_ids = update_last_fetch(client, ioc_lst)
     if str(last_calculated_timestamp) == last_fetch:
         last_ids.extend(prev_iocs_ids)
-
     if ioc_enrch_lst:
-        demisto.debug("FeedElasticSearch: Processing enrichment indicators")
         ioc_enrch_batches = create_enrichment_batches(ioc_enrch_lst)
-        demisto.debug(f"FeedElasticSearch: Created {len(ioc_enrch_batches)} enrichment batches")
-        if not ioc_enrch_batches:
-            demisto.debug("FeedElasticSearch: No enrichment batches created")
-        else:
-            for batch_idx, enrch_batch in enumerate(ioc_enrch_batches):
-                demisto.debug(f"FeedElasticSearch: Processing enrichment batch {batch_idx+1} with {len(enrch_batch)} items")
-                # ensure batch sizes don't exceed 2000
-                for sub_batch_idx, b in enumerate(batch(enrch_batch, batch_size=2000)):
-                    demisto.debug(f"FeedElasticSearch: Creating enrichment sub-batch {sub_batch_idx+1} with {len(b)} indicators")
-                    demisto.createIndicators(b)
-            indicators_created = True
-
-    # CRITICAL: If no indicators were created at all, we must create an empty list
-    # to satisfy XSOAR's requirement for fetch-indicators command
-    if not indicators_created:
-        demisto.debug("FeedElasticSearch: No indicators to create, sending empty list to satisfy XSOAR requirement")
-        demisto.createIndicators([])
-
-    demisto.debug(f"FeedElasticSearch: Setting last run - timestamp: {last_calculated_timestamp}, ids count: {len(last_ids)}")
+        for enrch_batch in ioc_enrch_batches:
+            # ensure batch sizes don't exceed 2000
+            for b in batch(enrch_batch, batch_size=2000):
+                demisto.createIndicators(b)
     demisto.setLastRun({"time": str(last_calculated_timestamp), "ids": last_ids})
-    demisto.debug("FeedElasticSearch: fetch_indicators_command completed successfully")
 
 
 def get_last_fetch_timestamp(last_fetch, time_method, fetch_time):
@@ -769,10 +720,8 @@ def main():
                 api_key,
                 api_id,
             )
-        elif demisto.command() == "fetch-indicators" or demisto.command() == "fetch-incidents":
-            demisto.debug("FeedElasticSearch: Executing fetch-indicators command")
+        elif demisto.command() == "fetch-indicators":
             fetch_indicators_command(client, feed_type, src_val, src_type, default_type, last_fetch, fetch_limit)
-            demisto.debug("FeedElasticSearch: fetch-indicators command completed")
         elif demisto.command() == "es-get-indicators":
             get_indicators_command(client, feed_type, src_val, src_type, default_type)
     except Exception as e:
