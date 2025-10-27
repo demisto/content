@@ -7,8 +7,7 @@ This integration was integrated and tested with January 2023 release of Tenable.
 
 - Cortex XSIAM: Go to **Settings** > **Configurations** > **Automation & Feed Integrations**.
 - Cortex XSOAR 8:  Go to **Settings & Info** > **Instances**.
--  Cortex XSOAR 6: Go to **Settings** > **Integrations** > **Servers & Services**.
-
+- Cortex XSOAR 6: Go to **Settings** > **Integrations** > **Servers & Services**.
 
 2. Search for Tenable Vulnerability Management.
  Click **Add instance** to create and configure a new integration instance.

@@ -1752,7 +1752,7 @@ def fetch_events_command(client: Client, first_fetch: datetime, last_run: dict, 
     demisto.debug(f"got {len(audit_logs_from_api)} events from api")
 
     if last_index_fetched < len(audit_logs_from_api):
-        audit_logs.extend(audit_logs_from_api[last_index_fetched : last_index_fetched + limit])
+        audit_logs.extend(audit_logs_from_api[last_index_fetched: last_index_fetched + limit])
 
     for audit_log in audit_logs:
         audit_log["_time"] = audit_log.get("received") or audit_log.get("indexed")
