@@ -69,32 +69,33 @@ def create_filter_from_fields(fields_to_filter: list[FilterField]):
     Returns:
         dict[str, list]: Filter object.
     """
-    filter: dict[str, list] = {"AND": []}
+    filter_structure: dict[str, list] = {"AND": []}
 
     for field in fields_to_filter:
-        if not field.values:
-            continue
+        if not isinstance(field.values, list):
+            field.values = [field.values]
 
-        if len(field.values) == 1:
-            search_obj = {
-                "SEARCH_FIELD": field.field_name,
-                "SEARCH_TYPE": field.operator,
-                "SEARCH_VALUE": field.values[0],
-            }
-        else:
-            search_obj = {"OR": []}
-            for value in field.values:
-                search_obj["OR"].append(
-                    {
-                        "SEARCH_FIELD": field.field_name,
-                        "SEARCH_TYPE": field.operator,
-                        "SEARCH_VALUE": value,
-                    }
-                )
+        search_values = []
+        for value in field.values:
+            if value is None:
+                continue
 
-        filter["AND"].append(search_obj)
+            search_values.append(
+                {
+                    "SEARCH_FIELD": field.field_name,
+                    "SEARCH_TYPE": field.operator,
+                    "SEARCH_VALUE": value,
+                }
+            )
 
-    return filter
+        if search_values:
+            search_obj = {"OR": search_values} if len(search_values) > 1 else search_values[0]
+            filter_structure["AND"].append(search_obj)
+
+    if not filter_structure["AND"]:
+        filter_structure = {}
+
+    return filter_structure
 
 
 def replace_substring(data: dict | str, original: str, new: str) -> str | dict:
@@ -204,12 +205,14 @@ class Client(CoreClient):
 
         return reply
 
-    def get_webapp_data(self, request_data: dict):
-        return self._http_request(
+    def search_assets_groups(self, request_data: dict) -> dict:
+        reply = self._http_request(
             method="POST",
             url_suffix="/get_data",
             json_data=request_data,
         )
+        
+        return reply
 
 
 def search_asset_groups_command(client: Client, args: dict) -> CommandResults:
@@ -244,15 +247,16 @@ def search_asset_groups_command(client: Client, args: dict) -> CommandResults:
         sort_field="XDM__ASSET_GROUP__LAST_UPDATE_TIME",
     )
 
-    response = client.get_webapp_data(request_data)
-    reply = response.get("reply", {})
-    data = reply.get("DATA", [])
+    response = client.search_assets_groups(request_data).get("reply", {}).get("DATA", [])
 
+    response = [
+        {(k.replace("XDM__ASSET_GROUP__", "") if k.startswith("XDM__ASSET_GROUP__") else k).lower(): v for k, v in item.items()} for item in response
+    ]
     return CommandResults(
-        readable_output=tableToMarkdown("AssetGroups", data, headerTransform=string_to_table_header),
+        readable_output=tableToMarkdown("AssetGroups", response, headerTransform=string_to_table_header),
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.AssetGroups",
-        outputs_key_field="XDM__ASSET_GROUP__ID",
-        outputs=data,
+        outputs_key_field="ID",
+        outputs=response,
         raw_response=response,
     )
 
