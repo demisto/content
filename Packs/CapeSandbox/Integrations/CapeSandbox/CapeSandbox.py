@@ -177,6 +177,43 @@ def status_is_reported(status_response: str) -> bool:
     return status_response == "reported"
 
 
+def initiate_polling(
+    command: str, args: dict, task_id: int | str, api_target: str, outputs_prefix: str
+) -> CommandResults:
+    """
+    Calculates polling parameters, logs them, and returns CommandResults
+    to initiate the polling sequence.
+    """
+
+    polling_interval = (
+        arg_to_number(args.get("pollingInterval")) or POLLING_INTERVAL_SECONDS
+    )
+    polling_timeout = (
+        arg_to_number(args.get("pollingTimeout")) or POLLING_TIMEOUT_SECONDS
+    )
+
+    demisto.debug(
+        f"Command '{command}' execution finished successfully. Initiating Polling for Task ID: {task_id}. "
+        f"Interval: {polling_interval}s, Timeout: {polling_timeout}s."
+    )
+
+    next_args = {**args, "task_id": str(task_id), "outputs_prefix": outputs_prefix}
+
+    readable = f"Submitted {api_target}. Task ID {task_id}. Polling initiated, checking every {polling_interval}s."
+
+    return CommandResults(
+        readable_output=readable,
+        outputs_prefix=outputs_prefix,
+        outputs={"id": task_id, "target": api_target, "status": "pending"},
+        scheduled_command=ScheduledCommand(
+            command="cape-task-poll",
+            next_run_in_seconds=polling_interval,
+            args=next_args,
+            timeout_in_seconds=polling_timeout,
+        ),
+    )
+
+
 # Hash validators (regex-based)
 _MD5_RE = re.compile(r"^[A-Fa-f0-9]{32}$")
 _SHA1_RE = re.compile(r"^[A-Fa-f0-9]{40}$")
@@ -877,8 +914,8 @@ def test_module(client: CapeSandboxClient) -> str:
 
 @polling_function(
     name="cape-task-poll",
-    interval=arg_to_number(demisto.args().get("interval", POLLING_INTERVAL_SECONDS)),  # type: ignore
-    timeout=arg_to_number(demisto.args().get("timeout", POLLING_TIMEOUT_SECONDS)),  # type: ignore
+    interval=POLLING_INTERVAL_SECONDS,
+    timeout=POLLING_TIMEOUT_SECONDS,
 )
 def cape_task_poll_report(
     args: dict[str, Any], client: CapeSandboxClient
@@ -905,12 +942,36 @@ def cape_task_poll_report(
     if not task_id:
         raise DemistoException("Task ID is missing for polling sequence.")
 
+    polling_interval = arg_to_number(
+        args.get("pollingInterval", POLLING_INTERVAL_SECONDS)
+    )
+
     # --- Status Check ---
     demisto.debug(f"Polling status for Task ID {task_id}.")
-    resp = client.get_task_status(task_id)
 
-    status = resp.get("data", "")
-    demisto.debug(f"The status for Task ID {task_id} is '{status}'.")
+    try:
+        resp = client.get_task_status(task_id)
+
+        status = resp.get("data", "")
+        demisto.debug(f"The status for Task ID {task_id} is '{status}'.")
+
+    except DemistoException as error:
+        # Check if the error is the specific 429 Too Many Requests error
+        error_message = str(error)
+        if "429" in error_message or "Too Many Requests" in error_message:
+            demisto.debug(
+                f"Task ID {task_id}: Received throttling error (429). Ignoring failure and scheduling next poll."
+            )
+            readable = f"Task ID {task_id} received a **Too Many Requests (429)** error. Continuing to poll in {polling_interval} seconds."
+
+            return PollResult(
+                response=None,
+                args_for_next_run={**args},
+                continue_to_poll=True,
+                partial_result=CommandResults(readable_output=readable),
+            )
+
+        raise error
 
     if status_is_reported(status):
         demisto.debug(
@@ -933,40 +994,66 @@ def cape_task_poll_report(
                 "started_on",
                 "completed_on",
                 "status",
+                "running_processes",
+                "domains",
             ],
             headerTransform=pascalToSpace,
         )
-
+        final_output_prefix = args.get("outputs_prefix", "Cape.Task")
         final_results = CommandResults(
             readable_output=readable,
-            outputs_prefix="Cape.Task",
+            outputs_prefix=final_output_prefix,
             outputs_key_field="id",
             outputs=task_view.get("data") or task_view,
         )
 
         # Fetch the JSON report file content
-        report_file = client.get_task_report(task_id=task_id)
-        filename = build_file_name(task_id, "report")
-        file_result = fileResult(filename, report_file)
+        report_file_content = client.get_task_report(
+            task_id=task_id, format="json", zip_download=True
+        )
+        filename = build_file_name(
+            file_identifier=task_id, file_type="report", file_format="zip"
+        )
+        file_result = fileResult(filename, report_file_content)
 
         # --- Result Compilation ---
-        readable = f"Polling finished successfully for Task {task_id}."
-        demisto.debug(readable)
+        final_readable = (
+            f"Polling finished successfully for Task {task_id}. Results returned."
+        )
+        demisto.debug(final_readable)
+        # readable = f"Polling finished successfully for Task {task_id}."
+        # demisto.debug(readable)
 
         return PollResult(
-            response=[file_result, final_results],
-            continue_to_poll=False,
-            partial_result=readable,
+            response=[
+                file_result,
+                final_results,
+            ],  # Pass all results (file and HR) here
+            continue_to_poll=False,  # STOP POLLING
+            partial_result=CommandResults(readable_output=final_readable),
         )
+
+        # result = CommandResults(
+        #     readable_output=readable,
+        #     outputs_prefix="Cape.Task.URL",
+        #     outputs_key_field="id",
+        #     outputs=info,
+        # )
+        # return PollResult(
+        #     response=[file_result, final_results],
+        #     continue_to_poll=False,
+        #     partial_result=readable,
+        # )
 
     # --- Polling Continuation ---
     else:
-        readable = f"Task ID {task_id} status is '{status}'. Scheduling next check in {POLLING_INTERVAL_SECONDS} seconds."
+        continuation_output_prefix = args.get("outputs_prefix", "Cape.Task")
+        readable = f"Task ID {task_id} status is '{status}'. Scheduling next check in {polling_interval} seconds."
         demisto.debug(readable)
 
         status_update = CommandResults(
             readable_output=readable,
-            outputs_prefix="Cape.Task",
+            outputs_prefix=continuation_output_prefix,
             outputs={"id": task_id, "status": status},
         )
 
@@ -980,7 +1067,7 @@ def cape_task_poll_report(
 
 def cape_file_submit_command(
     client: CapeSandboxClient, args: dict[str, Any]
-) -> PollResult:
+) -> CommandResults:
     """
     Submits a file (or PCAP) to CAPE, retrieves the task_id, and initiates the polling sequence.
     """
@@ -994,9 +1081,9 @@ def cape_file_submit_command(
 
     try:
         file_path, filename = get_entry_path(entry_id)
-    except Exception as ex:
+    except Exception as error:
         raise DemistoException(
-            f"Failed to resolve entry_id '{entry_id}' to a local file path: {ex}"
+            f"Failed to resolve entry_id '{entry_id}' to a local file path: {error}"
         )
 
     is_pcap = filename.lower().endswith(".pcap")
@@ -1011,18 +1098,18 @@ def cape_file_submit_command(
             f"No task id returned from CAPE. Response: {submit_resp}"
         )
 
-    task_id = task_ids[0]
-
-    demisto.debug(
-        f"Command '{command}' execution finished successfully. Initiating Polling for Task ID: {task_id}."
+    return initiate_polling(
+        command=command,
+        args=args,
+        task_id=task_ids[0],
+        api_target=filename,
+        outputs_prefix="Cape.Task.File",
     )
-    # Initiate the polling sequence
-    return cape_task_poll_report({"task_id": task_id, **args}, client)
 
 
 def cape_url_submit_command(
     client: CapeSandboxClient, args: dict[str, Any]
-) -> PollResult:
+) -> CommandResults:
     """
     Submits a URL to CAPE, retrieves the task_id, and initiates the polling sequence.
     """
@@ -1043,14 +1130,38 @@ def cape_url_submit_command(
             f"No task id returned from CAPE. Response: {submit_resp}"
         )
 
-    task_id = task_ids[0]
-
-    demisto.debug(
-        f"Command '{command}' execution finished successfully. Initiating Polling for Task ID: {task_id}."
+    return initiate_polling(
+        command=command,
+        args=args,
+        task_id=task_ids[0],
+        api_target=url,
+        outputs_prefix="Cape.Task.Url",
     )
+    # polling_interval = (
+    #     arg_to_number(args.get("pollingInterval")) or POLLING_INTERVAL_SECONDS
+    # )
+    # polling_timeout = (
+    #     arg_to_number(args.get("pollingTimeout")) or POLLING_TIMEOUT_SECONDS
+    # )
+    # demisto.debug(
+    #     f"Command '{command}' execution finished successfully. Initiating Polling for Task ID: {task_id}. "
+    #     f"Interval: {polling_interval}s, Timeout: {polling_timeout}s."
+    # )
+    # next_args = {**args, "task_id": str(task_id)}
 
-    # Initiate the polling sequence
-    return cape_task_poll_report({"task_id": task_id, **args}, client)
+    # readable = f"Submitted URL {url}. Task ID {task_id}. Polling initiated, checking every {polling_interval}s."
+
+    # return CommandResults(
+    #     readable_output=readable,
+    #     outputs_prefix="Cape.Task.URL",
+    #     outputs={"id": task_id, "target": url},
+    #     scheduled_command=ScheduledCommand(
+    #         command="cape-task-poll",
+    #         next_run_in_seconds=polling_interval,
+    #         args=next_args,
+    #         timeout_in_seconds=polling_timeout,
+    #     ),
+    # )
 
 
 # need to check
