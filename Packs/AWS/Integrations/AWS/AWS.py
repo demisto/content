@@ -1117,7 +1117,6 @@ class EC2:
         }
         remove_nulls_from_dictionary(kwargs)
         response = client.modify_instance_attribute(**kwargs)
-        demisto.info("response")
         if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK:
             return CommandResults(
                 readable_output=f"Successfully modified EC2 instance `{args.get('instance_id')}` attribute `{kwargs.popitem()}"
@@ -2740,7 +2739,6 @@ def main():  # pragma: no cover
     command = demisto.command()
     args = demisto.args()
 
-    demisto.debug(f"Params: {params}")
     demisto.debug(f"Command: {command}")
     demisto.debug(f"Args: {args}")
     handle_proxy()
