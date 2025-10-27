@@ -19,9 +19,9 @@ from Whois import (
     increment_metric,
     ip_command,
     ipwhois_exception_mapping,
-    test_command,
     whois_command,
     whois_exception_mapping,
+    WhoisException,
 )
 
 INTEGRATION_NAME = "Whois"
@@ -46,16 +46,18 @@ def assert_results_ok():
 
 
 def test_test_command(mocker: MockerFixture):
-    mocker.patch.object(demisto, "results")
-    mocker.patch.object(demisto, "command", return_value="test-module")
-    # Mock get_whois to return a result with the expected nameserver
-    mock_whois_result = {
-        "nameservers": ["ns1.google.com", "ns2.google.com"],
-        "raw": ["Normal whois response"]
-    }
+    # Mock whois result with expected nameserver
+    mock_whois_result = {"nameservers": ["ns1.google.com", "ns2.google.com"], "raw": ["Normal whois response"]}
+
     mocker.patch("Whois.get_whois", return_value=mock_whois_result)
     mocker.patch.object(demisto, "debug")
-    Whois.main()
+    mocker.patch.object(demisto, "results")
+    mocker.patch.object(demisto, "command", return_value="test-module")
+
+    # Import the function after patching to ensure the mock is in place
+    from Whois import test_command
+
+    test_command()
     assert_results_ok()
 
 
@@ -70,9 +72,14 @@ def test_test_command_rate_limit_exception(mocker: MockerFixture):
     # Mock get_whois to return our mock result
     mocker.patch("Whois.get_whois", return_value=mock_whois_result)
     mocker.patch.object(demisto, "debug")
+    mocker.patch.object(demisto, "results")
+    mocker.patch.object(demisto, "command", return_value="test-module")
+
+    # Import the function after patching to ensure the mock is in place
+    from Whois import test_command
 
     # Test that WhoisException is raised (since WhoisRateLimit gets caught and re-raised as WhoisException)
-    with pytest.raises(Whois.WhoisException) as exc_info:
+    with pytest.raises(WhoisException) as exc_info:
         test_command()
 
     # Verify the exception message contains information about the WhoisRateLimit
@@ -89,6 +96,9 @@ def test_test_command_successful(mocker: MockerFixture):
 
     mocker.patch("Whois.get_whois", return_value=mock_whois_result)
     mocker.patch.object(demisto, "debug")
+
+    # Import the function after patching to ensure the mock is in place
+    from Whois import test_command
 
     result = test_command()
     assert result == "ok"
