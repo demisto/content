@@ -185,7 +185,6 @@ class Client(CoreClient):
 
         return reply
 
-
 def search_asset_groups_command(client: Client, args: dict) -> CommandResults:
     """
     Retrieves asset groups from the Cortex platform based on provided filters.
@@ -203,11 +202,10 @@ def search_asset_groups_command(client: Client, args: dict) -> CommandResults:
         CommandResults: Object containing the formatted asset groups,
                         raw response, and outputs for integration context.
     """
-    operator = args.get("operator", "EQ")
     fields_to_filter = [
-        FilterField(ASSET_GROUP_FIELDS["asset_group_name"], operator, argToList(args.get("name", ""))),
-        FilterField(ASSET_GROUP_FIELDS["asset_group_type"], "EQ", argToList(args.get("type", ""))),
-        FilterField(ASSET_GROUP_FIELDS["asset_group_description"], operator, argToList(args.get("description", ""))),
+        FilterField(ASSET_GROUP_FIELDS["asset_group_name"], "CONTAINS", argToList(args.get("name", ""))),
+        FilterField(ASSET_GROUP_FIELDS["asset_group_type"], "EQ", args.get("type", "")),
+        FilterField(ASSET_GROUP_FIELDS["asset_group_description"], "CONTAINS", argToList(args.get("description", ""))),
     ]
 
     filter = create_filter_from_fields(fields_to_filter)
@@ -360,6 +358,7 @@ def main():  # pragma: no cover
             return_results(get_asset_details_command(client, args))
 
         elif command == "core-search-asset-groups":
+            client._base_url = "/api/webapp"
             return_results(search_asset_groups_command(client, args))
 
         elif command == "core-get-issues":

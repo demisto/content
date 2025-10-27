@@ -1099,17 +1099,15 @@ script:
           description: The type of the file artifact.
           type: String
     - arguments:
-        - description: JSON list of asset groups to search for. (e.g. `["group1", "group2"]`).
+        - description: JSON list of groups to search for. (e.g. `["group1", "group2"]`).
           name: name
         - description: Filter asset groups by type.
           name: type
-        - description: Filter asset groups by description.
-          name: description
-        - description: Filter operator to apply.
-          name: operator
           predefined:
-            - EQ
-            - CONTAINS
+          - static
+          - dynamic
+        - description: JSON list of descriptions to search for. (e.g. `["description1", "description2"]`).
+          name: description
       name: core-search-asset-groups
       description: Retrieve asset groups from the Cortex platform with optional filtering.
       outputs:
