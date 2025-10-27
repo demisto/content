@@ -4348,7 +4348,7 @@ def test_get_bucket_website_command_success(mocker):
     from AWS import S3
 
     mock_client = mocker.Mock()
-    mock_client.modify_subnet_attribute.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
+    mock_client.get_bucket_website_command.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
     args = {"bucket": "mock_bucket_name"}
     result = S3.get_bucket_website_command(mock_client, args)
     assert isinstance(result, CommandResults)
@@ -4364,7 +4364,7 @@ def test_get_bucket_website_command_failure(mocker):
     from AWS import S3
 
     mock_client = mocker.Mock()
-    mock_client.modify_subnet_attribute.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
+    mock_client.get_bucket_website_command.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
     args = {"bucket": "mock_bucket_name"}
 
     with pytest.raises(DemistoException,
@@ -4382,9 +4382,9 @@ def test_get_bucket_acl_command_success(mocker):
     from AWS import S3
 
     mock_client = mocker.Mock()
-    mock_client.modify_subnet_attribute.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
+    mock_client.get_bucket_acl_command.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
     args = {"bucket": "mock_bucket_name"}
-    result = S3.get_bucket_website_command(mock_client, args)
+    result = S3.get_bucket_acl_command(mock_client, args)
     assert isinstance(result, CommandResults)
     assert "Bucket Acl" in result.readable_output
 
@@ -4398,13 +4398,13 @@ def test_get_bucket_acl_command_failure(mocker):
     from AWS import S3
 
     mock_client = mocker.Mock()
-    mock_client.modify_subnet_attribute.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
+    mock_client.get_bucket_acl_command.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
     args = {"bucket": "mock_bucket_name"}
 
     with pytest.raises(DemistoException,
                        match=f"AWS S3 API call to get_bucket_acl failed or returned an unexpected status code."
                              f" Received HTTP Status Code: {HTTPStatus.BAD_REQUEST}"):
-        S3.get_bucket_website_command(mock_client, args)
+        S3.get_bucket_acl_command(mock_client, args)
 
 
 def test_create_network_acl_command_success(mocker):
@@ -4416,7 +4416,7 @@ def test_create_network_acl_command_success(mocker):
     from AWS import EC2
 
     mock_client = mocker.Mock()
-    mock_client.modify_subnet_attribute.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
+    mock_client.create_network_acl_command.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
     args = {"vpc_id": "mock_vpc_id"}
     result = EC2.create_network_acl_command(mock_client, args)
     assert isinstance(result, CommandResults)
@@ -4432,7 +4432,7 @@ def test_create_network_acl_command_failure(mocker):
     from AWS import EC2
 
     mock_client = mocker.Mock()
-    mock_client.modify_subnet_attribute.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
+    mock_client.create_network_acl_command.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
     args = {"vpc_id": "mock_vpc_id"}
 
     with pytest.raises(DemistoException,
@@ -4450,7 +4450,7 @@ def test_create_tags_command_success(mocker):
     from AWS import EC2
 
     mock_client = mocker.Mock()
-    mock_client.modify_subnet_attribute.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
+    mock_client.create_tags_command.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
     args = {"resources": "mock_resources", "tags": "key:mock_key value:mock_value"}
     result = EC2.create_tags_command(mock_client, args)
     assert isinstance(result, CommandResults)
@@ -4466,7 +4466,7 @@ def test_create_tags_command_failure(mocker):
     from AWS import EC2
 
     mock_client = mocker.Mock()
-    mock_client.modify_subnet_attribute.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
+    mock_client.create_tags_command.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
     args = {"resources": "mock_resources", "tags": "key:mock_key value:mock_value"}
 
     with pytest.raises(DemistoException,
@@ -4478,11 +4478,36 @@ def test_create_tags_command_failure(mocker):
 def test_get_latest_ami_command_success(mocker):
     from AWS import EC2
 
+    first_response = {
+        "Images": [
+            {"CreationDate": "2024-01-01T10:00:00.000Z", "ImageId": "ami-old-1", "Tags": []},
+            {"CreationDate": "2023-12-31T10:00:00.000Z", "ImageId": "ami-old-2", "Tags": []}
+        ],
+        "NextToken": "next-page-token"
+    }
+
+    second_response = {
+        "Images": [
+            {"CreationDate": "2024-01-02T10:00:00.000Z", "ImageId": "ami-latest", "Name": "mock_name", "State": "mock_state",
+             "Public": False, "Tags": [{"Key": "mock_key", "Value": "mock_value"}]}
+        ],
+    }
+
     mock_client = mocker.Mock()
-    mock_client.modify_subnet_attribute.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
-    args = {"executable_by": "mock_executable_by"}
+    mock_client.describe_images.side_effect = [first_response, second_response]
+    mock_client.get_latest_ami_command.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
+    args = {
+        "owners": "self",
+        "region": "us-east-1"
+    }
 
     result = EC2.get_latest_ami_command(mock_client, args)
+    assert mock_client.describe_images.call_count == 2
+    mock_client.describe_images.call_args_list[0].assert_called_with(Owner=['self'])
+    mock_client.describe_images.call_args_list[1].assert_called_with(Owner=['self'], NextToken='next-page-token')
+    expected_image_id = "ami-latest"
+
+    assert result.outputs["ImageId"] == expected_image_id
+    assert result.outputs["CreationDate"] == "2024-01-02T10:00:00.000Z"
+    assert expected_image_id in result.readable_output
     assert isinstance(result, CommandResults)
-    assert "Bucket Acl" in result.readable_output
-    # TODO: finish here + failure test
