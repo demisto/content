@@ -656,17 +656,6 @@ class SecurityAndComplianceClient {
         }
     }
 
-#    CreateDelegatedSessionCredentials([string]$CommandName){
-#        if ([string]::IsNullOrWhiteSpace($this.upn_password)) {
-#            throw "Using this command requires interactive delegated authentication. Please make sure the UPN password is set in the integration parameters."
-#        }
-#
-#        $securePassword = ConvertTo-SecureString $this.upn_password -AsPlainText -Force
-#        $UserCredential = New-Object System.Management.Automation.PSCredential ($this.upn, $securePassword)
-#
-#        Connect-IPPSSession -Credential $UserCredential -CommandName $CommandName -EnableSearchOnlySession -WarningAction:SilentlyContinue -ShowBanner:$false | Out-Null
-#    }
-
     DisconnectSession(){
         Disconnect-ExchangeOnline -Confirm:$false -WarningAction:SilentlyContinue 6>$null | Out-Null
     }
