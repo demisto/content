@@ -1553,7 +1553,7 @@ script:
       - sa-east-1
 
     - name: db_instance_identifier
-      description: 'The identifier of DB instance to modify.'
+      description: 'The identifier of DB instance to modify. This value is stored as a lowercase string.'
       required: true
     - name: publicly_accessible
       description: 'Weather the DB instance is publicly accessible.'
