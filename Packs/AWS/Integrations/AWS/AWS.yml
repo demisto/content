@@ -4369,7 +4369,7 @@ script:
       description: Whether Amazon S3 restricts public bucket policies for this bucket.
       type: boolean
 
-  - name: aws-s3-public-access-block-get-quick-action
+  - name: aws-s3-public-access-block-quick-action
     description: Blocks all public access to the S3 bucket by running the aws s3api put-public-access-block command in your environment. It applies a comprehensive set of rules that prevent public ACLs, policies, and overrides from granting public access. Successful execution requires the s3:PutPublicAccessBlock permission.
     prettyname: Block S3 Public Access
     hidden: true
@@ -4393,9 +4393,21 @@ script:
         required: true
         prettypredefined:
           Bucket Name: ${asset.xdm.asset.name}
-      - name: publicly_accessible
-        description: 'Weather the DB instance is publicly accessible.'
-        defaultValue: 'true'
+      - name: block_public_acls
+        description: 'Specifies whether Amazon S3 should block public access control lists (ACLs) for this bucket and objects in this bucket.'
+        defaultValue: "true"
+        hidden: true
+      - name: ignore_public_acls
+        description: 'Specifies whether Amazon S3 should ignore public ACLs for this bucket and objects in this bucket. Setting this element to TRUE causes Amazon S3 to ignore all public ACLs on this bucket and objects in this bucket.'
+        defaultValue: "true"
+        hidden: true
+      - name: block_public_policy
+        description: 'Specifies whether Amazon S3 should block public bucket policies for this bucket. Setting this element to TRUE causes Amazon S3 to reject calls to PUT Bucket policy if the specified bucket policy allows public access.'
+        defaultValue: "true"
+        hidden: true
+      - name: restrict_public_buckets
+        description: 'Specifies whether Amazon S3 should restrict public bucket policies for this bucket. Setting this element to TRUE restricts access to this bucket to only AWS service principals and authorized users within this account if the bucket has a public policy.'
+        defaultValue: "true"
         hidden: true
     outputs:
       - contextPath: AWS.S3-Buckets.BucketName
