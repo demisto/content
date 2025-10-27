@@ -1122,43 +1122,43 @@ script:
       name: core-search-assets
       description: Search for assets in XDR based on some filters.
       outputs:
-      - contextPath: Core.CoreAsset.xdm.asset.external_provider_id
+      - contextPath: Core.Asset.external_provider_id
         description: The external provider ID of the asset.
-      - contextPath: Core.CoreAsset.xdm.asset.first_observed
+      - contextPath: Core.Asset.first_observed
         description: The first time the asset was observed.
-      - contextPath: Core.CoreAsset.xdm.asset.tags
+      - contextPath: Core.Asset.tags
         description: The tags of the asset.
-      - contextPath: Core.CoreAsset.xdm.asset.realm
+      - contextPath: Core.Asset.realm
         description: The realm of the asset.
-      - contextPath: Core.CoreAsset.xdm.asset.type.id
+      - contextPath: Core.Asset.type.id
         description: The ID of the asset type.
-      - contextPath: Core.CoreAsset.xdm.asset.related_issues.critical_issues
+      - contextPath: Core.Asset.related_issues.critical_issues
         description: Critical issues related to the asset.
-      - contextPath: Core.CoreAsset.xdm.asset.id
+      - contextPath: Core.Asset.id
         description: The ID of the asset.
-      - contextPath: Core.CoreAsset.xdm.asset.last_observed
+      - contextPath: Core.Asset.last_observed
         description: The last time the asset was observed.
-      - contextPath: Core.CoreAsset.xdm.asset.type.category
+      - contextPath: Core.Asset.type.category
         description: The category of the asset type.
-      - contextPath: Core.CoreAsset.xdm.asset.related_cases.critical_cases
+      - contextPath: Core.Asset.related_cases.critical_cases
         description: Critical cases related to the asset.
-      - contextPath: Core.CoreAsset.xdm.asset.group_ids
+      - contextPath: Core.Asset.group_ids
         description: The group IDs of the asset.
-      - contextPath: Core.CoreAsset.xdm.asset.type.class
+      - contextPath: Core.Asset.type.class
         description: The class of the asset type.
-      - contextPath: Core.CoreAsset.xdm.asset.related_issues.issues_breakdown
+      - contextPath: Core.Asset.related_issues.issues_breakdown
         description: The related issues breakdown of the asset.
-      - contextPath: Core.CoreAsset.xdm.asset.type.name
+      - contextPath: Core.Asset.type.name
         description: The type of the asset.
-      - contextPath: Core.CoreAsset.xdm.asset.name
+      - contextPath: Core.Asset.name
         description: The name of the asset.
-      - contextPath: Core.CoreAsset.xdm.asset.strong_id
+      - contextPath: Core.Asset.strong_id
         description: The strong ID of the asset.
-      - contextPath: Core.CoreAsset.xdm.asset.cloud.region
+      - contextPath: Core.Asset.cloud.region
         description: The cloud region of the asset.
-      - contextPath: Core.CoreAsset.xdm.asset.related_cases.cases_breakdown
+      - contextPath: Core.Asset.related_cases.cases_breakdown
         description: The related cases breakdown of the asset.
-      - contextPath: Core.CoreAsset.xdm.asset.provider
+      - contextPath: Core.Asset.provider
         description: The asset provider.
   runonce: false
   script: "-"

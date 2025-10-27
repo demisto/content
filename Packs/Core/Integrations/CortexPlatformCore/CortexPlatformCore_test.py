@@ -762,6 +762,10 @@ def test_search_assets_command_success(mocker):
             {"xdm.asset.id": "asset-2", "xdm.asset.name": "Server-2", "xdm.asset.type.name": "server"},
         ]
     }
+    expected_reply = [
+        {"id": "asset-1", "name": "Server-1", "type.name": "server"},
+        {"id": "asset-2", "name": "Server-2", "type.name": "server"},
+    ]
     mock_search_assets = mocker.patch.object(
         mock_client,
         "search_assets",
@@ -772,15 +776,15 @@ def test_search_assets_command_success(mocker):
         "asset_names": "Server-1,Server-2",
         "asset_types": "server",
         "asset_groups": "Production Servers,Development Workstations",
-        "asset_tags": "production,critical",
-        "limit": "50",
-        "start": "0",
+        "asset_tags": json.dumps([{"tag1": "value1"}, {"tag2": "value2"}]),
+        "page_size": "50",
+        "page_number": "0",
     }
 
     result = search_assets_command(mock_client, args)
 
     assert len(result.outputs) == 2
-    assert result.outputs == mock_reply["data"]
+    assert result.outputs == expected_reply
     mock_search_assets.assert_called_once()
     mock_get_asset_group_ids.assert_called_once_with(mock_client, ["Production Servers", "Development Workstations"])
 
@@ -791,12 +795,12 @@ def test_search_assets_command_success(mocker):
                 "OR": [
                     {
                         "SEARCH_FIELD": "xdm.asset.name",
-                        "SEARCH_TYPE": "EQ",
+                        "SEARCH_TYPE": "CONTAINS",
                         "SEARCH_VALUE": "Server-1",
                     },
                     {
                         "SEARCH_FIELD": "xdm.asset.name",
-                        "SEARCH_TYPE": "EQ",
+                        "SEARCH_TYPE": "CONTAINS",
                         "SEARCH_VALUE": "Server-2",
                     },
                 ]
@@ -810,13 +814,13 @@ def test_search_assets_command_success(mocker):
                 "OR": [
                     {
                         "SEARCH_FIELD": "xdm.asset.tags",
-                        "SEARCH_TYPE": "EQ",
-                        "SEARCH_VALUE": "production",
+                        "SEARCH_TYPE": "JSON_WILDCARD",
+                        "SEARCH_VALUE": {"tag1": "value1"},
                     },
                     {
                         "SEARCH_FIELD": "xdm.asset.tags",
-                        "SEARCH_TYPE": "EQ",
-                        "SEARCH_VALUE": "critical",
+                        "SEARCH_TYPE": "JSON_WILDCARD",
+                        "SEARCH_VALUE": {"tag2": "value2"},
                     },
                 ]
             },
@@ -840,5 +844,5 @@ def test_search_assets_command_success(mocker):
     assert filter_arg == expected_filter
 
     # Check other parameters
-    assert mock_search_assets.call_args[0][1] == 0  # start
-    assert mock_search_assets.call_args[0][2] == 50  # limit
+    assert mock_search_assets.call_args[0][1] == 0  # page_number
+    assert mock_search_assets.call_args[0][2] == 50  # page_size

@@ -256,9 +256,13 @@ def search_assets_command(client: Client, args):
     page_number = arg_to_number(args.get("page_number", 0))
     on_demand_fields = ["xdm.asset.tags"]
     response = client.search_assets(filter, page_number, page_size, on_demand_fields).get("reply", {}).get("data", [])
+    # Remove "xdm.asset." suffix from all keys in the response
+    response = [
+        {k.replace("xdm.asset.", "") if k.startswith("xdm.asset.") else k: v for k, v in item.items()} for item in response
+    ]
     return CommandResults(
         readable_output=tableToMarkdown("Assets", response, headerTransform=string_to_table_header),
-        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.CoreAssets",
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Asset",
         outputs=response,
         raw_response=response,
     )
