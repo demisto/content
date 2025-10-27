@@ -2038,10 +2038,8 @@ def main():
     self_deployed: bool = params.get("self_deployed", False) or managed_identities_client_id is not None
     api_version: str = params.get("api_version", API_V2)
     
-    cloud_service = params.get("cloud_service") or "Custom"
-    demisto.debug(f'cloud_service: {params.get("cloud_service")}')
+    cloud_service = params.get("cloud_service") or "Custom"  # "Custom" is the default here to support backward compatibility
     url = (params.get("host", "").rstrip("/") if cloud_service == "Custom" else MICROSOFT_GRAPH_ENDPOINTS[cloud_service]) + "/v1.0/"
-    demisto.debug(f"url: {url}")
 
     if not managed_identities_client_id:
         if not self_deployed and not enc_key:
