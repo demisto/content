@@ -69,15 +69,9 @@
         }
     ],
     "defaultRows": [
-  {
-
-  },
-  {
-
-  },
-  {
-
-  }
+        {},
+        {},
+        {}
     ],
     "sla": 0,
     "threshold": 72,
@@ -88,6 +82,7 @@
         "X3",
         "X5",
         "ENT_PLUS",
-        "agentix"
+        "agentix",
+        "xsiam"
     ]
 }

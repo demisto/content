@@ -1,5 +1,5 @@
 category: Analytics & SIEM
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -60,7 +60,7 @@ script:
       defaultValue: 300
     description: Gets events from Zoom.
     name: zoom-get-events
-  dockerimage: demisto/auth-utils:1.0.0.3562326
+  dockerimage: demisto/auth-utils:1.0.0.5476008
   isfetchevents: true
   script: '-'
   subtype: python3

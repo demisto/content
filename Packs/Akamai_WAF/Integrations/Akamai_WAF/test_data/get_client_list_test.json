@@ -1,0 +1,49 @@
+{
+    "raw_response": {
+        "items": [
+            {
+                "productionStatus": "INACTIVE",
+                "stagingStatus": "INACTIVE",
+                "tags": [],
+                "type": "IP",
+                "value": "9.9.9.9"
+            }
+        ],
+        "itemsCount": 1,
+        "listId": "DEMO_LIST_ID",
+        "listType": "CL",
+        "name": "DEMO_LIST_NAME",
+        "notes": "Note after update",
+        "productionActivationStatus": "INACTIVE",
+        "stagingActivationStatus": "MODIFIED",
+        "type": "IP",
+        "tags": [
+            "test"
+        ]
+    },
+    "human_readable": "### Akamai WAF Client List\n|List ID|Name|Notes|Production Activation Status|Staging Activation Status|Tags|Type|\n|---|---|---|---|---|---|---|\n| DEMO_LIST_ID | DEMO_LIST_NAME | Note after update | INACTIVE | MODIFIED | test | IP |\n",
+    "context_entry": {
+        "Akamai.ClientList": {
+            "items": [
+                {
+                    "productionStatus": "INACTIVE",
+                    "stagingStatus": "INACTIVE",
+                    "tags": [],
+                    "type": "IP",
+                    "value": "9.9.9.9"
+                }
+            ],
+            "itemsCount": 1,
+            "listId": "DEMO_LIST_ID",
+            "listType": "CL",
+            "name": "DEMO_LIST_NAME",
+            "notes": "Note after update",
+            "productionActivationStatus": "INACTIVE",
+            "stagingActivationStatus": "MODIFIED",
+            "type": "IP",
+            "tags": [
+                "test"
+            ]
+        }
+    }
+}
