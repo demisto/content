@@ -326,8 +326,6 @@ category = namedtuple("category", ["name", "id"])
 tag = namedtuple("tag", ["name", "id"])
 obj = namedtuple("obj", ["name", "id", "type"])
 
-PARAMS_GET_TAG = [({"category": "test1", "tag": "tag-test"}, "1"), ({"category": "test1", "tag": "tag"}, None)]
-
 PARAMS_GET_VM_FILTERS = [
     (
         {"ip": "1111", "vm_name": "test_vm", "uuid": "12345", "hostname": "test_host"},
@@ -544,27 +542,6 @@ def test_apply_get_vms_filters(args, params, res):
     assert VMware.apply_get_vms_filters(args, summary) == res
 
 
-@pytest.mark.parametrize("args, res", PARAMS_GET_TAG)
-def test_get_tag(monkeypatch, args, res):
-    """
-    Given:
-        - Tag and Category name.
-
-    When:
-        - Running a tag related command.
-
-    Then:
-        - Make sure a correct tag is returned, or None if tag does not exist.
-    """
-    client = VsphereClient()
-    monkeypatch.setattr(client.tagging.Category, "list", lambda: ["test1"])
-    monkeypatch.setattr(client.tagging.Category, "get", lambda cat: category("test1", "1"))
-    monkeypatch.setattr(client.tagging.Tag, "list_tags_for_category", lambda cat: ["tag-test"])
-    monkeypatch.setattr(client.tagging.Tag, "get", lambda tag_name: tag("tag-test", "1"))
-
-    assert VMware.get_tag(client, args) == res
-
-
 def test_create_vm_config_creator(monkeypatch):
     """
     Given:
@@ -590,30 +567,6 @@ def test_create_vm_config_creator(monkeypatch):
     assert res.memoryMB == int(args.get("virtual-memory"))
     assert res.files.vmPathName == "[test1]test1"
     assert res.guestId == args.get("guest-id")
-
-
-def test_list_vms_by_tag(monkeypatch):
-    """
-    Given:
-        - Tag name and Category.
-
-    When:
-        - Running a list vms by tag.
-
-    Then:
-        - Make sure a correct vm list is returned.
-    """
-    client = VsphereClient()
-    objs = [obj("vm1", "1", "VirtualMachine"), obj("vm2", "2", "VirtualMachine"), obj("not_vm", "3", "not_vm")]
-    monkeypatch.setattr(VMware, "get_tag", value=lambda v_client, tag_id: "1")
-    monkeypatch.setattr(client.tagging.TagAssociation, "list_attached_objects", lambda tag_name: objs)
-    monkeypatch.setattr(client.vcenter.VM, "FilterSpec", lambda vms: vms)
-    monkeypatch.setattr(client.vcenter.VM, "list", lambda vms: [obj("vm" + vm_id, vm_id, "VirtualMachine") for vm_id in vms])
-
-    res = VMware.list_vms_by_tag(client, {"tag": "test_tag", "category": "test_category"})
-
-    assert len(res.get("Contents")) == 2
-    assert "Virtual Machines with Tag test_tag" in res.get("HumanReadable")
 
 
 def test_create_vm(monkeypatch):
@@ -991,43 +944,3 @@ def test_change_nic_state(monkeypatch):
     assert list(res.get("Contents").values())[0].get("UUID") == "1234"
     assert list(res.get("Contents").values())[0].get("NICState") == "connected"
     assert "Virtual Machine's NIC was connected successfully" in res.get("HumanReadable")
-
-
-def test_vsphere_client_login(mocker):
-    """
-    Given:
-        - A parameters dictionary for the vSphere client.
-
-    When:
-        - Running the vsphere_client_login function.
-
-    Then:
-        - Ensure the create_vsphere_client is called with the correct arguments, including proxy and verification settings.
-    """
-    user_name = "user"
-    password = "pass"
-    proxies = {"https": "proxy.test:8080"}
-    full_url = "https://example.test"
-    url = "example.test"
-    port = 443
-    insecure = True
-    params = {"insecure": insecure}
-
-    mocker.patch.object(VMware, "parse_params", return_value=(full_url, url, port, user_name, password))
-    mocker.patch.object(VMware, "handle_proxy", return_value=proxies)
-    mock_session = mocker.MagicMock()
-    mocker.patch("requests.session", return_value=mock_session)
-    mock_create_vsphere_client = mocker.patch.object(VMware, "create_vsphere_client")
-
-    VMware.vsphere_client_login(params)
-
-    assert mock_session.verify is not insecure
-    assert mock_session.proxies == proxies
-
-    assert mock_create_vsphere_client.call_count == 1
-
-    create_vsphere_client_kwargs = mock_create_vsphere_client.call_args.kwargs
-    assert create_vsphere_client_kwargs["server"] == full_url
-    assert create_vsphere_client_kwargs["username"] == user_name
-    assert create_vsphere_client_kwargs["password"] == password
-    assert create_vsphere_client_kwargs["session"] == mock_session
