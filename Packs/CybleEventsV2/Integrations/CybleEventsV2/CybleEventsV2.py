@@ -703,7 +703,7 @@ def fetch_subscribed_services_alert(client, method, base_url, token):
 
 
 
-def _test_response(client, method, url, token):
+def check_response(client, method, url, token):
     """
     Test the integration state
     """
@@ -1419,7 +1419,7 @@ def main():
 
         if demisto.command() == "test-module":
             url = base_url + str(ROUTES[COMMAND[demisto.command()]])
-            return_results(_test_response(client, "GET", url, token))
+            return_results(check_response(client, "GET", url, token))
 
         elif demisto.command() == "fetch-incidents":
             last_run = demisto.getLastRun()
