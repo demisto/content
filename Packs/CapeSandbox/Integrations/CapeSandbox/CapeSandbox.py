@@ -28,7 +28,7 @@ Sections:
 # =================================
 INTEGRATION_NAME = "CapeSandbox"
 POLLING_INTERVAL_SECONDS = 60
-POLLING_TIMEOUT_SECONDS = 60 * 60 * 5
+POLLING_TIMEOUT_SECONDS = 60 * 15
 LIST_DEFAULT_LIMIT = 50
 
 
@@ -72,8 +72,10 @@ def build_submit_form(args: dict[str, Any], url_mode: bool = False) -> dict[str,
         platform=args.get("platform"),
         tags=args.get("tags"),
         custom=args.get("custom"),
-        memory="1" if argToBoolean(args.get("memory")) else None,
-        enforce_timeout="1" if argToBoolean(args.get("enforce_timeout")) else None,
+        memory="1" if argToBoolean(args.get("memory", False)) else None,
+        enforce_timeout=(
+            "1" if argToBoolean(args.get("enforce_timeout", False)) else None
+        ),
         clock=args.get("clock"),
     )
     if url_mode:
@@ -171,8 +173,8 @@ def build_file_name(
     return f"cape_task_{file_identifier}{middle_part_str}.{extension}"
 
 
-def status_is_reported(status_response: dict[str, Any]) -> bool:
-    return (status_response or {}).get("data") == "reported"
+def status_is_reported(status_response: str) -> bool:
+    return status_response == "reported"
 
 
 # Hash validators (regex-based)
@@ -603,7 +605,7 @@ class CapeSandboxClient(BaseClient):  # noqa: F405
             json_data=json_data,
             files=files,
             resp_type=resp_type,
-            ok_codes=ok_codes,
+            ok_codes=(200, 201, 202, 204),
         )
 
         demisto.debug(
@@ -874,31 +876,49 @@ def test_module(client: CapeSandboxClient) -> str:
 
 
 @polling_function(
-    name="cape-file-submit",
-    interval=POLLING_INTERVAL_SECONDS,
-    timeout=POLLING_TIMEOUT_SECONDS,
+    name="cape-task-poll",
+    interval=arg_to_number(demisto.args().get("interval", POLLING_INTERVAL_SECONDS)),  # type: ignore
+    timeout=arg_to_number(demisto.args().get("timeout", POLLING_TIMEOUT_SECONDS)),  # type: ignore
 )
-def cape_file_poll_report(
+def cape_task_poll_report(
     args: dict[str, Any], client: CapeSandboxClient
 ) -> PollResult:
     """
     Polls the CAPE service for the task status until the report is ready.
-    This function is called repeatedly by XSOAR's scheduling mechanism.
+
+    Polling Flow:
+    1. Status Check: Queries the task status (running or reported).
+    2. Polling Continuation: If 'running', schedules the next poll (continue_to_poll=True).
+    3. Final Report: If 'reported', fetches the detailed task view and the raw report file.
+    4. Result Compilation: Returns final CommandResults (task metadata) and a fileResult (the report).
+
+    Args:
+        args: Dictionary containing 'task_id'.
+        client: The configured CapeSandboxClient instance.
+
+    Returns:
+        PollResult: Contains polling status and final results if complete.
     """
     task_id = arg_to_number(args.get("task_id"))
+    demisto.debug(f"Starting polling for Task ID: {task_id}.")
 
     if not task_id:
-        raise DemistoException(
-            "Task ID is missing for polling sequence."
-        )  # TODO error message
+        raise DemistoException("Task ID is missing for polling sequence.")
 
-    status = client.get_task_status(task_id)
+    # --- Status Check ---
+    demisto.debug(f"Polling status for Task ID {task_id}.")
+    resp = client.get_task_status(task_id)
 
-    # Check if the final status has been reached
+    status = resp.get("data", "")
+    demisto.debug(f"The status for Task ID {task_id} is '{status}'.")
+
     if status_is_reported(status):
-        task_view = client.get_task_view(task_id)
+        demisto.debug(
+            f"Task ID {task_id} status is 'reported'. Fetching final results."
+        )
 
-        # Build the final CommandResults object
+        # --- Final Report Fetch ---
+        task_view = client.get_task_view(task_id)
         readable = tableToMarkdown(
             f"{INTEGRATION_NAME} Task {task_id}",
             task_view.get("data") or task_view,
@@ -916,6 +936,7 @@ def cape_file_poll_report(
             ],
             headerTransform=pascalToSpace,
         )
+
         final_results = CommandResults(
             readable_output=readable,
             outputs_prefix="Cape.Task",
@@ -923,22 +944,37 @@ def cape_file_poll_report(
             outputs=task_view.get("data") or task_view,
         )
 
+        # Fetch the JSON report file content
         report_file = client.get_task_report(task_id=task_id)
         filename = build_file_name(task_id, "report")
         file_result = fileResult(filename, report_file)
 
-        return PollResult(response=[file_result, final_results])
+        # --- Result Compilation ---
+        readable = f"Polling finished successfully for Task {task_id}."
+        demisto.debug(readable)
 
-    # If not ready, continue polling
+        return PollResult(
+            response=[file_result, final_results],
+            continue_to_poll=False,
+            partial_result=readable,
+        )
+
+    # --- Polling Continuation ---
     else:
-        # Return PollResult with continue_to_poll=True to schedule the next run
-        readable = f"Task {task_id} is not ready yet. Scheduling next poll in {POLLING_INTERVAL_SECONDS}s."
+        readable = f"Task ID {task_id} status is '{status}'. Scheduling next check in {POLLING_INTERVAL_SECONDS} seconds."
+        demisto.debug(readable)
 
-        # Optionally, you can return a partial_result to update the War Room
+        status_update = CommandResults(
+            readable_output=readable,
+            outputs_prefix="Cape.Task",
+            outputs={"id": task_id, "status": status},
+        )
+
         return PollResult(
             response=None,
+            args_for_next_run={**args},
             continue_to_poll=True,
-            partial_result=CommandResults(readable_output=readable),
+            partial_result=status_update,
         )
 
 
@@ -958,7 +994,6 @@ def cape_file_submit_command(
 
     try:
         file_path, filename = get_entry_path(entry_id)
-
     except Exception as ex:
         raise DemistoException(
             f"Failed to resolve entry_id '{entry_id}' to a local file path: {ex}"
@@ -979,14 +1014,47 @@ def cape_file_submit_command(
     task_id = task_ids[0]
 
     demisto.debug(
-        f"Command '{command}' execution finished successfully (Initiating Polling for Task ID: {task_id})."
+        f"Command '{command}' execution finished successfully. Initiating Polling for Task ID: {task_id}."
     )
-    # Initiate the polling sequence by calling the polling function
-    return cape_file_poll_report({"task_id": task_id, **args}, client)
+    # Initiate the polling sequence
+    return cape_task_poll_report({"task_id": task_id, **args}, client)
+
+
+def cape_url_submit_command(
+    client: CapeSandboxClient, args: dict[str, Any]
+) -> PollResult:
+    """
+    Submits a URL to CAPE, retrieves the task_id, and initiates the polling sequence.
+    """
+    command = "Submit URL"
+    demisto.debug(f"Starting execution of command: {command}")
+
+    url = args.get("url")
+
+    if not url:
+        raise DemistoException("URL is required for cape-url-submit.")
+
+    form = build_submit_form(args, url_mode=True)
+    submit_resp = client.submit_url(form=form)
+    task_ids = ((submit_resp or {}).get("data") or {}).get("task_ids") or []
+
+    if not task_ids:
+        raise DemistoException(
+            f"No task id returned from CAPE. Response: {submit_resp}"
+        )
+
+    task_id = task_ids[0]
+
+    demisto.debug(
+        f"Command '{command}' execution finished successfully. Initiating Polling for Task ID: {task_id}."
+    )
+
+    # Initiate the polling sequence
+    return cape_task_poll_report({"task_id": task_id, **args}, client)
 
 
 # need to check
-def cape_url_submit_command(
+def cape_url_submit_command2(
     client: CapeSandboxClient, args: dict[str, Any]
 ) -> CommandResults:
     """Submit a URL to CAPE and poll until the task is reported."""
@@ -997,7 +1065,9 @@ def cape_url_submit_command(
     url = args.get("url")
 
     if task_id:
-        status = client.get_task_status(task_id)
+        resp = client.get_task_status(task_id)
+        status = resp.get("data", "")
+        demisto.debug(f"The status for Task ID {task_id} is '{status}'.")
 
         if status_is_reported(status):
             task = client.get_task_view(task_id)
@@ -1767,9 +1837,7 @@ def main() -> None:
 
         command_map = {
             # TODO for all: using username & password
-            "test-module": lambda: test_module(
-                client
-            ),  # TODO Need to test: yaml, sub-types, limitations, using: token, username & password
+            "test-module": lambda: test_module(client),
             "cape-file-submit": lambda: cape_file_submit_command(
                 client, args
             ),  # TODO Need to test: yaml, sub-types, limitations, using: token, username & password
@@ -1795,6 +1863,7 @@ def main() -> None:
             "cape-cuckoo-status-get": lambda: cape_cuckoo_status_get_command(
                 client, args
             ),
+            "cape-task-poll": lambda: cape_task_poll_report(args, client),
         }
 
         if command not in command_map:

@@ -42,8 +42,8 @@ sectionOrder:
 script:
   commands:
     - name: cape-file-submit
-      polling: true
       description: Submit a file for analysis. Supports PCAP with automatic pcap=1. Polls until the task is reported and then returns the task view.
+      polling: true
       arguments:
         - name: entry_id
           description: The War Room entry ID of the file to submit.
@@ -122,6 +122,7 @@ script:
       outputs: []
     - name: cape-url-submit
       description: Submit a URL for analysis. Polls until the task is reported and then returns the task view.
+      polling: true
       arguments:
         - name: url
           description: The URL to analyze.
@@ -148,6 +149,23 @@ script:
           description: Enforce timeout (true/false).
         - name: clock
           description: VM clock (format %m-%d-%Y %H:%M:%S).
+        - name: polling
+          deprecated: false
+          defaultValue: "true"
+          description: "Cape generic polling"
+          required: false
+          isArray: false
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+        - name: pollingInterval
+          description: The polling interval **in seconds**. We strongly recommend an interval of 60 seconds or more to prevent API throttling by the CAPE server.
+          required: false
+        - name: pollingTimeout
+          description: Total time allowed **in seconds** for the XSOAR polling sequence to complete.
+          required: false
+
       outputs:
         - contextPath: Cape.Task
           description: Task data returned from CAPE when analysis is ready.
@@ -224,15 +242,35 @@ script:
         - contextPath: Cape.Machine
           description: Machine data.
           type: Unknown
-    - name: cape-ping
-      description: ping
-      outputs:
-        - contextPath: Cape.
-          description: Ping data.
-          type: Unknown
     - name: cape-cuckoo-status-get
       description: Returns overall CAPE/Cuckoo status. Human-readable only.
       arguments: []
+      outputs: []
+    - name: cape-task-poll
+      description: Internal command used by cape-file-submit and cape-url-submit for polling status.
+      polling: true
+      internal: true
+      arguments:
+        - name: task_id
+          description: The ID of the task to poll.
+          required: true
+        - name: polling
+          deprecated: false
+          defaultValue: "true"
+          description: "Cape generic polling"
+          required: false
+          isArray: false
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+        - name: pollingInterval
+          description: The polling interval **in seconds**. We strongly recommend an interval of 60 seconds or more to prevent API throttling by the CAPE server.
+          required: false
+        - name: pollingTimeout
+          description: Total time allowed **in seconds** for the XSOAR polling sequence to complete.
+          required: false
+
       outputs: []
   isfetch: false
   runonce: false
