@@ -2648,9 +2648,9 @@ script:
       description: Name of the log profile to update.
       required: true
       type: String
-      prettyname: Resource
+      prettyname: Log Profile
       prettypredefined:
-        Resource: ${asset.xdm.asset.name}
+        Log Profile: ${asset.xdm.asset.name}
     - name: location
       description: Resource location.
       defaultValue: global
