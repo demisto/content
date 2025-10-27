@@ -59,13 +59,9 @@ PERMISSIONS_TO_COMMANDS = {
     "Microsoft.DBforPostgreSQL/servers/write": ["azure-postgres-server-update"],
     "Microsoft.DBforPostgreSQL/servers/configurations/read": [
         "azure-postgres-config-set",
-        "azure-postgres-config-set-log-retention-quick-action",
-        "azure-postgres-enable-statement-logging-quick-action",
     ],
     "Microsoft.DBforPostgreSQL/servers/configurations/write": [
         "azure-postgres-config-set",
-        "azure-postgres-config-set-log-retention-quick-action",
-        "azure-postgres-enable-statement-logging-quick-action",
     ],
     "Microsoft.Web/sites/config/read": [
         "azure-webapp-config-set",
@@ -2973,10 +2969,8 @@ def main():
             "azure-nsg-resource-group-list": nsg_resource_group_list_command,
             "azure-nsg-network-interfaces-list": nsg_network_interfaces_list_command,
             "azure-nsg-public-ip-addresses-list": nsg_public_ip_addresses_list_command,
-            "azure-postgres-config-set-log-retention-quick-action": set_postgres_config_command,
             "azure-webapp-update-assign-managed-identity-quick-action": webapp_update_command,
             "azure-storage-blob-enable-soft-delete-quick-action": storage_blob_service_properties_set_command,
-            "azure-postgres-enable-statement-logging-quick-action": set_postgres_config_command,
             "azure-disable-public-private-access-vm-disk-quick-action": disk_update_command,
             "azure-disk-set-data-access-aad-quick-action": disk_update_command,
             "azure-acr-disable-public-private-access-quick-action": acr_update_command,
