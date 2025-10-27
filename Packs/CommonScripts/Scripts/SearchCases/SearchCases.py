@@ -62,10 +62,7 @@ def main():  # pragma: nocover
             demisto.debug("error: " + error)
             raise DemistoException(f"Failed to execute the core-get-cases command {error}")
 
-        context = results.get("EntryContext", {}).get("Core.Case")
-        human_readable: str = results.get("HumanReadable", "")
-
-        return_results(CommandResults(outputs=context, outputs_prefix="Core.Case", readable_output=human_readable))
+        return_results(results)
 
     except DemistoException as error:
         return_error(f"Failed to execute SearchCases. Error:\n{error}", error)

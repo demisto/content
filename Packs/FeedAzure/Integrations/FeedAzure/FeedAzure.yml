@@ -264,6 +264,6 @@ script:
 tests:
 - AzureFeed - Test
 fromversion: 5.5.0
-sectionOrder:
+sectionorder:
 - Connect
 - Collect

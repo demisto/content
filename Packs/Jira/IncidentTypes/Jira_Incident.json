@@ -23,9 +23,7 @@
     "detached": false,
     "extractSettings": {
         "mode": "All",
-  "fieldCliNameToExtractSettings": {
-
-  }
+        "fieldCliNameToExtractSettings": {}
     },
     "fromVersion": "6.0.0",
     "supportedModules": [
@@ -33,6 +31,7 @@
         "X3",
         "X5",
         "ENT_PLUS",
-        "agentix"
+        "agentix",
+        "xsiam"
     ]
 }

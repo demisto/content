@@ -1,7 +1,7 @@
 commonfields:
   id: Core Lock
   version: -1
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 name: Core Lock

@@ -2576,6 +2576,144 @@ def test_s3_delete_bucket_policy_command_verify_api_call_parameters(mocker):
     mock_client.delete_bucket_policy.assert_called_once_with(Bucket="my-test-bucket")
 
 
+def test_s3_file_download_command_success(mocker):
+    """
+    Given: A mocked S3 client returning object bytes.
+    When: file_download_command is called.
+    Then: It should return the dictionary from fileResult with the correct filename and content.
+    """
+    from AWS import S3
+
+    mock_client = mocker.Mock()
+
+    class FakeBody:
+        def __init__(self, data: bytes):
+            self._data = data
+            self.closed = False
+
+        def read(self):
+            return self._data
+
+        def close(self):
+            self.closed = True
+
+    data_bytes = b"hello world"
+    mock_client.get_object.return_value = {"Body": FakeBody(data_bytes)}
+
+    # Patch fileResult to a deterministic return
+    fr = {"File": "file.pdf", "Contents": data_bytes}
+    mock_file_result = mocker.patch("AWS.fileResult", return_value=fr)
+
+    args = {"bucket": "my-bucket", "key": "docs/file.pdf"}
+    res = S3.file_download_command(mock_client, args)
+
+    # fileResult should be called with derived filename and bytes
+    mock_file_result.assert_called_once()
+    assert res == fr
+    assert mock_file_result.call_args[0][0] == "file.pdf"
+    assert mock_file_result.call_args[0][1] == data_bytes
+
+
+def test_s3_file_download_command_client_error_calls_handler(mocker):
+    """
+    Given: get_object raises ClientError.
+    When: file_download_command is called.
+    Then: AWSErrorHandler.handle_client_error is called.
+    """
+    from AWS import S3, AWSErrorHandler
+    from botocore.errorfactory import ClientError
+
+    mock_client = mocker.Mock()
+    err = ClientError(
+        error_response={
+            "Error": {"Code": "NoSuchKey", "Message": "Not found"},
+            "ResponseMetadata": {"HTTPStatusCode": 404, "RequestId": "req-1"},
+        },
+        operation_name="GetObject",
+    )
+    mock_client.get_object.side_effect = err
+
+    handler_spy = mocker.patch.object(AWSErrorHandler, "handle_client_error")
+
+    args = {"bucket": "my-bucket", "key": "missing.txt"}
+    # Function swallows ClientError by delegating to handler; no exception expected
+    S3.file_download_command(mock_client, args)
+
+    handler_spy.assert_called_once_with(err)
+
+
+def test_s3_file_upload_command_success(mocker):
+    """
+    Given: A real file on disk and mocked S3 client.
+    When: file_upload_command is called.
+    Then: upload_fileobj is invoked and CommandResults returned.
+    """
+    from AWS import S3
+    import tempfile
+    import os
+
+    mock_client = mocker.Mock()
+
+    # Create a temp file to simulate a War Room file
+    with tempfile.NamedTemporaryFile(delete=False) as tf:
+        tf.write(b"upload-bytes")
+        tmp_path = tf.name
+
+    try:
+        # Patch demisto.getFilePath to return our temp file
+        mocker.patch("AWS.demisto.getFilePath", return_value={"path": tmp_path})
+
+        args = {"bucket": "my-bucket", "key": "dst/file.bin", "entryID": "123@abc"}
+        res = S3.file_upload_command(mock_client, args)
+
+        # S3 called
+        assert mock_client.upload_fileobj.call_count == 1
+        call_args = mock_client.upload_fileobj.call_args[0]
+        assert call_args[1] == "my-bucket"
+        assert call_args[2] == "dst/file.bin"
+
+        # Return type
+        assert isinstance(res, CommandResults)
+        assert "was uploaded successfully" in res.readable_output
+
+    finally:
+        os.unlink(tmp_path)
+
+
+def test_s3_file_upload_command_client_error_calls_handler(mocker, tmp_path):
+    """
+    Given: upload_fileobj raises ClientError.
+    When: file_upload_command is called.
+    Then: AWSErrorHandler.handle_client_error is called.
+    """
+    from AWS import S3
+    from botocore.errorfactory import ClientError
+
+    # Make a temp file
+    p = tmp_path / "in.bin"
+    p.write_bytes(b"x")
+
+    mock_client = mocker.Mock()
+    mocker.patch("AWS.demisto.getFilePath", return_value={"path": str(p)})
+
+    err = ClientError(
+        error_response={
+            "Error": {"Code": "AccessDenied", "Message": "Denied"},
+            "ResponseMetadata": {"HTTPStatusCode": 403, "RequestId": "req-2"},
+        },
+        operation_name="PutObject",
+    )
+    mock_client.upload_fileobj.side_effect = err
+
+    handler_spy = mocker.patch("AWS.AWSErrorHandler.handle_client_error")
+
+    args = {"bucket": "b", "key": "k", "entryID": "1"}
+    # Function delegates to handler; no exception expected here
+    S3.file_upload_command(mock_client, args)
+
+    handler_spy.assert_called_once_with(err)
+
+
 def test_s3_delete_bucket_policy_command_debug_logging(mocker):
     """
     Given: A mocked boto3 S3 client and valid bucket name.
@@ -4209,3 +4347,131 @@ def test_aws_error_handler_handle_client_error_unhandled_exception_debug_logging
         AWSErrorHandler.handle_client_error(client_error, "accountID")
 
     mock_debug.assert_any_call("[AWSErrorHandler] Unhandled error: Unexpected error")
+
+
+def test_delete_bucket_website_command_success(mocker):
+    """
+    Given: A mocked boto3 S3 client and valid bucket name argument.
+    When: delete_bucket_website_command is called.
+    Then: It should return `CommandResults` with a success message confirming the bucket website deletion.
+    """
+    from AWS import S3
+
+    mock_client = mocker.Mock()
+    mock_client.delete_bucket_website.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
+    args = {"bucket": "mock_bucket_name"}
+    result = S3.delete_bucket_website_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert "Successfully removed the static website configuration from mock_bucket_name bucket." in result.readable_output
+
+
+def test_delete_bucket_website_command_failure(mocker):
+    """
+    Given: A mocked boto3 S3 client and valid bucket name argument.
+    When: delete_bucket_website_command is called.
+    Then: It should return CommandResults with error entry type and error message.
+    """
+    from AWS import S3
+
+    mock_client = mocker.Mock()
+    mock_client.delete_bucket_website.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
+    args = {"bucket": "mock_bucket_name"}
+
+    with pytest.raises(DemistoException, match="Failed to delete bucket website for mock_bucket_name."):
+        S3.delete_bucket_website_command(mock_client, args)
+
+
+def test_modify_event_subscription_command_success(mocker):
+    """
+    Given: A mocked boto3 RDS client and valid bucket subscription and event categories arguments.
+    When: modify_event_subscription_command is called.
+    Then: It should return `CommandResults` with a success message confirming event subscription modification.
+    """
+    from AWS import RDS
+
+    mock_client = mocker.Mock()
+    mock_client.modify_event_subscription.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
+    args = {"subscription_name": "mock_subscription_name", "event_categories": "maintenance, recovery"}
+    result = RDS.modify_event_subscription_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert "Event subscription mock_subscription_name successfully modified." in result.readable_output
+
+
+def test_modify_event_subscription_command_failure(mocker):
+    """
+    Given: A mocked boto3 RDS client and valid bucket subscription and event categories arguments.
+    When: modify_event_subscription_command is called.
+    Then: It should return CommandResults with error entry type and error message.
+    """
+    from AWS import RDS
+
+    mock_client = mocker.Mock()
+    mock_client.modify_event_subscription.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
+    args = {"subscription_name": "mock_subscription_name", "event_categories": "maintenance, recovery"}
+
+    with pytest.raises(DemistoException, match="Failed to modify event subscription mock_subscription_name."):
+        RDS.modify_event_subscription_command(mock_client, args)
+
+
+def test_put_bucket_ownership_controls_command_success(mocker):
+    """
+    Given: A mocked boto3 S3 client and valid bucket name and ownership controls rule arguments.
+    When: put_bucket_ownership_controls_command is called.
+    Then: It should return `CommandResults` with a success message confirming bucket ownership controls modification.
+    """
+    from AWS import S3
+
+    mock_client = mocker.Mock()
+    mock_client.put_bucket_ownership_controls.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
+    args = {"bucket": "mock_bucket_name", "ownership_controls_rule": "maintenance, recovery"}
+    result = S3.put_bucket_ownership_controls_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert "Bucket Ownership Controls successfully updated for mock_bucket_name" in result.readable_output
+
+
+def test_put_bucket_ownership_controls_command_failure(mocker):
+    """
+    Given: A mocked boto3 S3 client and valid bucket name and ownership controls rule arguments.
+    When: put_bucket_ownership_controls_command is called.
+    Then: It should return CommandResults with error entry type and error message.
+    """
+    from AWS import S3
+
+    mock_client = mocker.Mock()
+    mock_client.put_bucket_ownership_controls.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
+    args = {"bucket": "mock_bucket_name", "ownership_controls_rule": "maintenance, recovery"}
+
+    with pytest.raises(DemistoException, match="Failed to set Bucket Ownership Controls for mock_bucket_name."):
+        S3.put_bucket_ownership_controls_command(mock_client, args)
+
+
+def test_modify_subnet_attribute_command_success(mocker):
+    """
+    Given: A mocked boto3 RC2 client and valid subnet ID and additional argument to modify.
+    When: modify_subnet_attribute_command is called.
+    Then: It should return `CommandResults` with a success message confirming subnet configuration modification.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.modify_subnet_attribute.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
+    args = {"subnet_id": "mock_subnet_id", "enable_dns64": "true"}
+    result = EC2.modify_subnet_attribute_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert "Subnet configuration successfully updated." in result.readable_output
+
+
+def test_modify_subnet_attribute_command_failure(mocker):
+    """
+    Given: A mocked boto3 RC2 client and valid subnet ID and additional argument to modify.
+    When: modify_subnet_attribute_command is called.
+    Then: It should return CommandResults with error entry type and error message.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.modify_subnet_attribute.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
+    args = {"subnet_id": "mock_subnet_id", "enable_dns64": "true"}
+
+    with pytest.raises(DemistoException, match="Modification could not be performed."):
+        EC2.modify_subnet_attribute_command(mock_client, args)
