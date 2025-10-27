@@ -1105,8 +1105,12 @@ script:
       name: core-get-playbook-suggestion-by-issue
       description: Get playbook suggestions for a specific issue.
       outputs:
-        - contextPath: Core.Issue.PlaybookSuggestion
-          description: Playbook suggestions for the issue.
+        - contextPath: Core.Issue.PlaybookSuggestion.playbook_id
+          description: The suggested playbook ID for the issue.
+          type: String
+        - contextPath: Core.Issue.PlaybookSuggestion.suggestion_rule_id
+          description: The ID of the suggestion rule that generated this recommendation.
+          type: String
   runonce: false
   script: "-"
   subtype: python3

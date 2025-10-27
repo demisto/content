@@ -129,10 +129,9 @@ class Client(CoreClient):
             dict: The response containing playbook suggestions.
         """
         # Convert issue_id to alert_id for the API call
-        filter_data = {"request_data": {"alert_id": issue_id}}
         reply = demisto._apiCall(
             method="POST",
-            data=json.dumps(filter_data),
+            data=json.dumps({"alert_internal_id": issue_id}),
             headers=self._headers,
             path="/api/webapp/incident/get_playbook_suggestion_by_alert/"
         )
