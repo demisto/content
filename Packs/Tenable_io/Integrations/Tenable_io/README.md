@@ -3,7 +3,13 @@ This integration was integrated and tested with January 2023 release of Tenable.
 
 ## Configure Tenable Vulnerability Management on Cortex XSOAR/XSIAM
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+1. After installing the Tenable Vulnerability Management (formerly Tenable.io) content pack, do one of the following:
+
+- Cortex XSIAM: Go to **Settings** > **Configurations > **Automation & Feed Integrations**.
+- Cortex XSOAR 8:  Go to **Settings & Info** > **Instances**.
+-  Cortex XSOAR 6: Go to **Settings** > **Integrations** > **Servers & Services**.
+
+
 2. Search for Tenable Vulnerability Management.
  Click **Add instance** to create and configure a new integration instance.
 
