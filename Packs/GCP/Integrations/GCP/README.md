@@ -622,3 +622,211 @@ Returns the specified Instance resource. To get a list of available instances, m
 | GCP.Compute.Instances.deletionProtection | boolean | Whether the resource should be protected against deletion. |
 | GCP.Compute.Instances.hostname | string | Hostname. |
 | GCP.Compute.Instances.kind | string | Type of the resource. Always compute\#instance for instances. |
+
+### gcp-compute-firewall-insert
+
+***
+Creates a new firewall rule in the specified project.
+
+#### Base Command
+
+`gcp-compute-firewall-insert`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | GCP project ID. | Required |
+| resource_name | Name of the firewall rule to create. | Required |
+| description | An optional description for the firewall rule. | Optional |
+| network | URL of the network, e.g., global/networks/default. | Optional |
+| priority | Priority 0-65535. Default 1000. | Optional |
+| direction | INGRESS or EGRESS. | Optional |
+| allowed | ALLOW rules in tuples, e.g., ipprotocol=tcp,ports=443;ipprotocol=tcp,ports=80. | Optional |
+| denied | DENY rules in tuples, e.g., ipprotocol=tcp,ports=22,443. | Optional |
+| sourceRanges | Comma-separated CIDRs for INGRESS. | Optional |
+| destinationRanges | Comma-separated CIDRs for EGRESS. | Optional |
+| sourceTags | Comma-separated instance tags to match as source. | Optional |
+| targetTags | Comma-separated tags to apply this rule to. | Optional |
+| sourceServiceAccounts | Comma-separated service accounts for source. | Optional |
+| targetServiceAccounts | Comma-separated service accounts to target. | Optional |
+| logConfigEnable | Enable firewall logging. Possible values are: true, false. | Optional |
+| disabled | Whether this firewall rule is disabled. Possible values are: true, false. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Compute.Operations.id | string | The unique identifier for the resource. This identifier is defined by the server. |
+| GCP.Compute.Operations.name | string | Name of the resource. |
+| GCP.Compute.Operations.operationType | string | The type of operation, such as insert, update, or delete, and so on. |
+| GCP.Compute.Operations.status | string | The status of the operation. |
+| GCP.Compute.Operations.targetLink | string | The URL of the resource that the operation modifies. |
+
+### gcp-compute-firewall-list
+
+***
+Lists firewall rules in the specified project.
+
+#### Base Command
+
+`gcp-compute-firewall-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | GCP project ID. | Required |
+| max_results | Maximum number of results to return. | Optional |
+| page_token | Token for pagination. | Optional |
+| filter | API filter expression. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Compute.Firewall.name | string | Firewall rule name. |
+| GCP.Compute.Firewall.network | string | Network URL for the firewall rule. |
+| GCP.Compute.Firewall.direction | string | Direction of traffic \(INGRESS/EGRESS\). |
+| GCP.Compute.Firewall.priority | number | Priority of the rule. |
+| GCP.Compute.Firewall.allowed | Unknown | Allowed tuples. |
+| GCP.Compute.Firewall.denied | Unknown | Denied tuples. |
+| GCP.Compute.Firewall.targetTags | Unknown | Target instance tags. |
+| GCP.Compute.FirewallNextToken | string | Next page token for pagination. |
+
+### gcp-compute-firewall-get
+
+***
+Retrieves a specific firewall rule by name.
+
+#### Base Command
+
+`gcp-compute-firewall-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | GCP project ID. | Required |
+| resource_name | Firewall rule name. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Compute.Firewall.name | string | Firewall rule name. |
+| GCP.Compute.Firewall.network | string | Network URL for the firewall rule. |
+| GCP.Compute.Firewall.direction | string | Direction of traffic \(INGRESS/EGRESS\). |
+| GCP.Compute.Firewall.priority | number | Priority of the rule. |
+| GCP.Compute.Firewall.allowed | Unknown | Allowed tuples. |
+| GCP.Compute.Firewall.denied | Unknown | Denied tuples. |
+| GCP.Compute.Firewall.targetTags | Unknown | Target instance tags. |
+
+### gcp-compute-snapshots-list
+
+***
+Lists snapshots in the specified project.
+
+#### Base Command
+
+`gcp-compute-snapshots-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | GCP project ID. | Required |
+| max_results | Maximum number of results to return. | Optional |
+| page_token | Token for pagination. | Optional |
+| filter | API filter expression. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Compute.Snapshot.name | string | Snapshot name. |
+| GCP.Compute.Snapshot.id | string | Snapshot ID. |
+| GCP.Compute.Snapshot.status | string | Snapshot status. |
+| GCP.Compute.Snapshot.sourceDisk | string | Source disk URL. |
+| GCP.Compute.Snapshot.creationTimestamp | string | Creation timestamp \(RFC3339\). |
+| GCP.Compute.Snapshot.storageBytes | number | Storage size in bytes. |
+| GCP.Compute.SnapshotNextToken | string | Next page token for pagination. |
+
+### gcp-compute-snapshot-get
+
+***
+Retrieves details for a specific snapshot.
+
+#### Base Command
+
+`gcp-compute-snapshot-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | GCP project ID. | Required |
+| resource_name | Snapshot name. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Compute.Snapshot.name | string | Snapshot name. |
+| GCP.Compute.Snapshot.id | string | Snapshot ID. |
+| GCP.Compute.Snapshot.status | string | Snapshot status. |
+| GCP.Compute.Snapshot.sourceDisk | string | Source disk URL. |
+| GCP.Compute.Snapshot.creationTimestamp | string | Creation timestamp \(RFC3339\). |
+| GCP.Compute.Snapshot.storageBytes | number | Storage size in bytes. |
+
+### gcp-compute-instances-aggregated-list-by-ip
+
+***
+Aggregated list of instances across all zones and filter by internal/external IP.
+
+#### Base Command
+
+`gcp-compute-instances-aggregated-list-by-ip`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | GCP project ID. | Required |
+| ip_address | The IP address to search for. | Required |
+| match_external | If true, match against external NAT IPs; otherwise internal NIC IPs. Possible values are: true, false. | Optional |
+| max_results | Maximum number of results to return. | Optional |
+| page_token | Token for pagination. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Compute.Instance.name | string | Instance name. |
+| GCP.Compute.Instance.id | string | Instance ID. |
+| GCP.Compute.Instance.zone | string | Instance zone URL. |
+| GCP.Compute.Instance.status | string | Instance status. |
+| GCP.Compute.Instance.networkInterfaces | Unknown | Network interfaces of the instance. |
+
+### gcp-compute-network-tag-set
+
+***
+Adds a network tag to a VM instance (merges with existing tags).
+
+#### Base Command
+
+`gcp-compute-network-tag-set`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | GCP project ID. | Required |
+| zone | Zone of the VM (e.g., us-central1-a). | Required |
+| resource_name | Instance name. | Required |
+| tag | Tag to add. | Required |
+| add_tag | If true, add the tag to the existing tags; otherwise override the existing tags. (the default is true). Possible values are: true, false. Default is true. | Optional |
+
+#### Context Output
+
+There is no context output for this command.

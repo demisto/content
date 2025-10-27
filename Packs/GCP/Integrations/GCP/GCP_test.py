@@ -135,6 +135,334 @@ def test_compute_firewall_patch_edge_cases(mocker):
     assert result.outputs_prefix == "GCP.Compute.Operations"
 
 
+def test_compute_firewall_insert_basic(mocker):
+    """
+    Given: Minimal args for creating a firewall rule
+    When: compute_firewall_insert is called
+    Then: The request body contains the name and optional fields are omitted
+    """
+    from GCP import compute_firewall_insert
+
+    args = {"project_id": "p1", "resource_name": "fw-1"}
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_compute = mocker.Mock()
+    mock_firewalls = mocker.Mock()
+    mock_compute.firewalls.return_value = mock_firewalls
+    mock_firewalls.insert.return_value.execute.return_value = {"id": "op-1", "status": "PENDING"}
+
+    mocker.patch("GCP.build", return_value=mock_compute)
+    mocker.patch("GCP.tableToMarkdown", return_value="md")
+
+    res = compute_firewall_insert(mock_creds, args)
+
+    called_body = mock_firewalls.insert.call_args[1]["body"]
+    assert called_body == {"name": "fw-1"}
+    assert res.outputs_prefix == "GCP.Compute.Operations"
+
+
+def test_compute_firewall_insert_full_body(mocker):
+    """
+    Given: All supported args for creating a firewall rule
+    When: compute_firewall_insert is called
+    Then: The request body reflects all conversions and parsing
+    """
+    from GCP import compute_firewall_insert
+
+    args = {
+        "project_id": "p1",
+        "resource_name": "fw-1",
+        "description": "desc",
+        "network": "net-1",
+        "priority": "123",
+        "sourceRanges": "1.1.1.1/32,2.2.2.0/24",
+        "destinationRanges": "10.0.0.0/8",
+        "sourceTags": "tag-a",
+        "targetTags": "tag-b,tag-c",
+        "sourceServiceAccounts": "sa:one",
+        "targetServiceAccounts": "sa:two",
+        "allowed": "ipprotocol=tcp,ports=80,443",
+        "denied": "ipprotocol=udp,ports=53",
+        "direction": "INGRESS",
+        "logConfigEnable": "true",
+        "disabled": "false",
+    }
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_compute = mocker.Mock()
+    mock_firewalls = mocker.Mock()
+    mock_compute.firewalls.return_value = mock_firewalls
+    mock_firewalls.insert.return_value.execute.return_value = {"id": "op-1", "status": "PENDING"}
+
+    mocker.patch("GCP.build", return_value=mock_compute)
+    mocker.patch("GCP.tableToMarkdown", return_value="md")
+
+    compute_firewall_insert(mock_creds, args)
+
+    body = mock_firewalls.insert.call_args[1]["body"]
+    assert body["name"] == "fw-1"
+    assert body["priority"] == 123
+    assert body["sourceRanges"] == ["1.1.1.1/32", "2.2.2.0/24"]
+    assert body["destinationRanges"] == ["10.0.0.0/8"]
+    assert body["sourceTags"] == ["tag-a"]
+    assert body["targetTags"] == ["tag-b", "tag-c"]
+    assert body["logConfig"]["enable"] is True
+    assert body["disabled"] is False
+    assert body["allowed"] == [{"IPProtocol": "tcp", "ports": ["80", "443"]}]
+    assert body["denied"] == [{"IPProtocol": "udp", "ports": ["53"]}]
+
+
+def test_compute_firewall_list_with_pagination_and_filter(mocker):
+    """
+    Given: Pagination and filter arguments
+    When: compute_firewall_list is called
+    Then: next token is returned in outputs and metadata is set
+    """
+    from GCP import compute_firewall_list
+
+    args = {"project_id": "p1", "max_results": "2", "page_token": "t0", "filter": "name eq fw-*"}
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_compute = mocker.Mock()
+    mock_firewalls = mocker.Mock()
+    mock_compute.firewalls.return_value = mock_firewalls
+    mock_firewalls.list.return_value.execute.return_value = {
+        "items": [{"name": "fw-1", "id": "1"}],
+        "nextPageToken": "t1",
+    }
+
+    mocker.patch("GCP.build", return_value=mock_compute)
+    mocker.patch("GCP.tableToMarkdown", return_value="md")
+
+    res = compute_firewall_list(mock_creds, args)
+
+    called_kwargs = mock_firewalls.list.call_args[1]
+    assert called_kwargs["project"] == "p1"
+    assert called_kwargs["maxResults"] == 2
+    assert called_kwargs["pageToken"] == "t0"
+    assert called_kwargs["filter"] == "name eq fw-*"
+
+    assert res.outputs["GCP.Compute(true)"]["FirewallNextToken"] == "t1"
+
+
+def test_compute_firewall_get_found_and_not_found(mocker):
+    """
+    Given: A firewall name
+    When: compute_firewall_get is called
+    Then: Returns details if found and a readable message if 404 not found
+    """
+    from GCP import compute_firewall_get
+    from googleapiclient.errors import HttpError
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_compute = mocker.Mock()
+    mock_firewalls = mocker.Mock()
+    mock_compute.firewalls.return_value = mock_firewalls
+
+    # Found case
+    mock_firewalls.get.return_value.execute.return_value = {"name": "fw-1", "id": "1"}
+    mocker.patch("GCP.build", return_value=mock_compute)
+    mocker.patch("GCP.tableToMarkdown", return_value="md")
+    res = compute_firewall_get(mock_creds, {"project_id": "p1", "resource_name": "fw-1"})
+    assert res.outputs_prefix == "GCP.Compute.Firewall"
+
+    # Not found case
+    resp = mocker.MagicMock()
+    resp.status = 404
+    error = HttpError(resp, b'{"error": {"message": "The resource fw-2 was not found"}}')
+    mock_firewalls.get.return_value.execute.side_effect = error
+    res2 = compute_firewall_get(mock_creds, {"project_id": "p1", "resource_name": "fw-2"})
+    assert "not found" in res2.readable_output
+
+
+def test_compute_snapshots_list_with_pagination(mocker):
+    """
+    Given: Pagination args
+    When: compute_snapshots_list is called
+    Then: next token is returned in outputs
+    """
+    from GCP import compute_snapshots_list
+
+    args = {"project_id": "p1", "max_results": "5", "page_token": "a", "filter": "status = READY"}
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_compute = mocker.Mock()
+    mock_snapshots = mocker.Mock()
+    mock_compute.snapshots.return_value = mock_snapshots
+    mock_snapshots.list.return_value.execute.return_value = {
+        "items": [{"name": "snap-1", "id": "10"}],
+        "nextPageToken": "b",
+    }
+
+    mocker.patch("GCP.build", return_value=mock_compute)
+    mocker.patch("GCP.tableToMarkdown", return_value="md")
+
+    res = compute_snapshots_list(mock_creds, args)
+    assert res.outputs["GCP.Compute(true)"]["SnapshotNextToken"] == "b"
+
+
+def test_compute_snapshot_get_found_and_not_found(mocker):
+    """
+    Given: A snapshot name
+    When: compute_snapshot_get is called
+    Then: Returns details if found and a readable message if 404 not found
+    """
+    from GCP import compute_snapshot_get
+    from googleapiclient.errors import HttpError
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_compute = mocker.Mock()
+    mock_snapshots = mocker.Mock()
+    mock_compute.snapshots.return_value = mock_snapshots
+
+    # Found
+    mock_snapshots.get.return_value.execute.return_value = {"name": "snap-1", "id": "1"}
+    mocker.patch("GCP.build", return_value=mock_compute)
+    mocker.patch("GCP.tableToMarkdown", return_value="md")
+    res = compute_snapshot_get(mock_creds, {"project_id": "p1", "resource_name": "snap-1"})
+    assert res.outputs_prefix == "GCP.Compute.Snapshot"
+
+    # Not found
+    resp = mocker.MagicMock()
+    resp.status = 404
+    error = HttpError(resp, b'{"error": {"message": "The resource snap-2 was not found"}}')
+    mock_snapshots.get.return_value.execute.side_effect = error
+    res2 = compute_snapshot_get(mock_creds, {"project_id": "p1", "resource_name": "snap-2"})
+    assert "not found" in res2.readable_output
+
+
+def test_compute_instances_aggregated_list_by_ip_internal(mocker):
+    """
+    Given: An internal IP to match
+    When: compute_instances_aggregated_list_by_ip is called without match_external
+    Then: Only instances with matching networkIP are returned
+    """
+    from GCP import compute_instances_aggregated_list_by_ip
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_compute = mocker.Mock()
+    mock_instances = mocker.Mock()
+    mock_compute.instances.return_value = mock_instances
+
+    response = {
+        "items": {
+            "zones/us": {
+                "instances": [
+                    {"name": "i-1", "id": "1", "status": "RUNNING", "zone": "us", "networkInterfaces": [{"networkIP": "10.0.0.5"}]},
+                    {"name": "i-2", "id": "2", "status": "RUNNING", "zone": "us", "networkInterfaces": [{"networkIP": "10.0.0.6"}]},
+                ]
+            }
+        }
+    }
+    mock_instances.aggregatedList.return_value.execute.return_value = response
+
+    mocker.patch("GCP.build", return_value=mock_compute)
+    mocker.patch("GCP.tableToMarkdown", return_value="md")
+
+    res = compute_instances_aggregated_list_by_ip(
+        mock_creds, {"project_id": "p1", "ip_address": "10.0.0.6"}
+    )
+
+    # Expect only i-2
+    assert len(res.outputs) == 1
+    assert res.outputs[0]["name"] == "i-2"
+
+
+def test_compute_instances_aggregated_list_by_ip_external(mocker):
+    """
+    Given: An external IP to match
+    When: compute_instances_aggregated_list_by_ip is called with match_external=true
+    Then: Only instances with matching accessConfigs.natIP are returned
+    """
+    from GCP import compute_instances_aggregated_list_by_ip
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_compute = mocker.Mock()
+    mock_instances = mocker.Mock()
+    mock_compute.instances.return_value = mock_instances
+
+    response = {
+        "items": {
+            "zones/us": {
+                "instances": [
+                    {
+                        "name": "i-1",
+                        "id": "1",
+                        "status": "RUNNING",
+                        "zone": "us",
+                        "networkInterfaces": [
+                            {"networkIP": "10.0.0.5", "accessConfigs": [{"natIP": "34.1.1.1"}]}
+                        ],
+                    },
+                    {
+                        "name": "i-2",
+                        "id": "2",
+                        "status": "RUNNING",
+                        "zone": "us",
+                        "networkInterfaces": [
+                            {"networkIP": "10.0.0.6", "accessConfigs": [{"natIP": "34.1.1.2"}]}
+                        ],
+                    },
+                ]
+            }
+        }
+    }
+    mock_instances.aggregatedList.return_value.execute.return_value = response
+
+    mocker.patch("GCP.build", return_value=mock_compute)
+    mocker.patch("GCP.tableToMarkdown", return_value="md")
+
+    res = compute_instances_aggregated_list_by_ip(
+        mock_creds, {"project_id": "p1", "ip_address": "34.1.1.2", "match_external": "true"}
+    )
+
+    # Expect only i-2
+    assert len(res.outputs) == 1
+    assert res.outputs[0]["name"] == "i-2"
+
+
+def test_compute_network_tag_set_add_and_error(mocker):
+    """
+    Given: A VM with existing tags and a new tag to add
+    When: compute_network_tag_set is called
+    Then: It merges tags and calls setTags with fingerprint. Also, on HttpError it returns readable failure
+    """
+    from GCP import compute_network_tag_set
+    from googleapiclient.errors import HttpError
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_compute = mocker.Mock()
+    mock_instances = mocker.Mock()
+    mock_compute.instances.return_value = mock_instances
+
+    # Instance has tags
+    mock_instances.get.return_value.execute.return_value = {
+        "tags": {"fingerprint": "fp", "items": ["old"]}
+    }
+    # Successful setTags
+    mock_instances.setTags.return_value.execute.return_value = {"id": "op"}
+
+    mocker.patch("GCP.build", return_value=mock_compute)
+
+    # Success path
+    res = compute_network_tag_set(
+        mock_creds,
+        {"project_id": "p1", "zone": "us-central1-a", "resource_name": "i-1", "tag": "new", "add_tag": "true"},
+    )
+    # Body should include both tags merged
+    called_body = mock_instances.setTags.call_args[1]["body"]
+    assert called_body == {"items": ["new", "old"], "fingerprint": "fp"}
+    assert "Added 'new' tag" in res.readable_output
+
+    # Error path
+    resp = mocker.MagicMock(); resp.status = 400
+    mock_instances.setTags.return_value.execute.side_effect = HttpError(resp, b"bad request")
+    res2 = compute_network_tag_set(
+        mock_creds,
+        {"project_id": "p1", "zone": "us-central1-a", "resource_name": "i-1", "tag": "x"},
+    )
+    assert "status code: 400" in res2.readable_output
+
 def test_storage_bucket_policy_delete_multiple_entities(mocker):
     """
     Given: A bucket with IAM policy containing multiple entities to be removed

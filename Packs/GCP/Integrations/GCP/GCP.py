@@ -136,6 +136,48 @@ COMMAND_REQUIREMENTS: dict[str, tuple[GCPServices, list[str]]] = {
             "compute.networks.list",
         ],
     ),
+    "gcp-compute-firewall-insert": (
+        GCPServices.COMPUTE,
+        [
+            "compute.firewalls.create",
+        ],
+    ),
+    "gcp-compute-firewall-list": (
+        GCPServices.COMPUTE,
+        [
+            "compute.firewalls.list",
+        ],
+    ),
+    "gcp-compute-firewall-get": (
+        GCPServices.COMPUTE,
+        [
+            "compute.firewalls.get",
+        ],
+    ),
+    "gcp-compute-snapshots-list": (
+        GCPServices.COMPUTE,
+        [
+            "compute.snapshots.list",
+        ],
+    ),
+    "gcp-compute-snapshot-get": (
+        GCPServices.COMPUTE,
+        [
+            "compute.snapshots.get",
+        ],
+    ),
+    "gcp-compute-instances-aggregated-list-by-ip": (
+        GCPServices.COMPUTE,
+        [
+            "cloudasset.assets.searchAllResources",
+        ],
+    ),
+    "gcp-compute-network-tag-set": (
+        GCPServices.COMPUTE,
+        [
+            "compute.instances.setTags",
+        ],
+    ),
     "gcp-compute-subnet-update": (
         GCPServices.COMPUTE,
         [
@@ -377,6 +419,294 @@ def compute_firewall_patch(creds: Credentials, args: dict[str, Any]) -> CommandR
         removeNull=True,
     )
     return CommandResults(readable_output=hr, outputs_prefix="GCP.Compute.Operations", outputs=response)
+
+
+def compute_firewall_insert(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Creates a new firewall rule in a GCP project.
+
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): Must include 'project_id' and 'resource_name'.
+
+    Returns:
+        CommandResults: Result of the firewall insert operation.
+    """
+    project_id = args.get("project_id")
+    resource_name = args.get("resource_name")
+    body: dict[str, Any] = {"name": resource_name}
+
+    if description := args.get("description"):
+        body["description"] = description
+    if network := args.get("network"):
+        body["network"] = network
+    if priority := args.get("priority"):
+        body["priority"] = arg_to_number(priority)
+    if sourceRanges := args.get("sourceRanges"):
+        body["sourceRanges"] = argToList(sourceRanges)
+    if destinationRanges := args.get("destinationRanges"):
+        body["destinationRanges"] = argToList(destinationRanges)
+    if sourceTags := args.get("sourceTags"):
+        body["sourceTags"] = argToList(sourceTags)
+    if targetTags := args.get("targetTags"):
+        body["targetTags"] = argToList(targetTags)
+    if sourceServiceAccounts := args.get("sourceServiceAccounts"):
+        body["sourceServiceAccounts"] = argToList(sourceServiceAccounts)
+    if targetServiceAccounts := args.get("targetServiceAccounts"):
+        body["targetServiceAccounts"] = argToList(targetServiceAccounts)
+    if allowed := args.get("allowed"):
+        body["allowed"] = parse_firewall_rule(allowed)
+    if denied := args.get("denied"):
+        body["denied"] = parse_firewall_rule(denied)
+    if direction := args.get("direction"):
+        body["direction"] = direction
+    if logConfigEnable := args.get("logConfigEnable"):
+        body["logConfig"] = {"enable": argToBoolean(logConfigEnable)}
+    if disabled := args.get("disabled"):
+        body["disabled"] = argToBoolean(disabled)
+
+    compute = GCPServices.COMPUTE.build(creds)
+    demisto.debug(f"Firewall insert body for {resource_name} in project {project_id}: {body}")
+    response = (
+        compute.firewalls()  # pylint: disable=E1101
+        .insert(project=project_id, body=body)
+        .execute()
+    )
+
+    hr = tableToMarkdown(
+        "Google Cloud Compute Firewall Rule Insert Operation Started Successfully",
+        t=response,
+        headers=OPERATION_TABLE,
+        removeNull=True,
+    )
+    return CommandResults(readable_output=hr, outputs_prefix="GCP.Compute.Operations", outputs=response)
+
+
+def compute_firewall_list(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Lists firewall rules in the specified project.
+    """
+    project_id = args.get("project_id")
+    max_results = arg_to_number(args.get("max_results"))
+    page_token = args.get("page_token")
+    flt = args.get("filter")
+
+    params: dict[str, Any] = {
+        "project": project_id,
+        "maxResults": max_results,
+        "pageToken": page_token,
+        "filter": flt,
+    }
+    remove_nulls_from_dictionary(params)
+
+    compute = GCPServices.COMPUTE.build(creds)
+    response = compute.firewalls().list(**params).execute()  # pylint: disable=E1101
+    items = response.get("items", [])
+    next_token = response.get("nextPageToken", "")
+    headers = ["name", "id", "direction", "priority", "sourceRanges", "targetTags", "creationTimestamp", "network", "disabled"]
+    metadata = (
+        "Run the following command to retrieve the next batch of billings:\n"
+        f"!gcp-compute-firewall-list project_id={project_id} page_token={next_token}"
+        if next_token
+        else None
+    )
+    readable_output = tableToMarkdown(
+        "GCP Compute Firewalls",
+        items,
+        headers=headers,
+        headerTransform=pascalToSpace,
+        metadata=metadata,
+    )
+
+    outputs = {
+        "GCP.Compute.Firewall(val.id && val.id == obj.id)": items,
+        "GCP.Compute(true)": {"FirewallNextToken": next_token},
+    }
+    return CommandResults(
+        readable_output=readable_output,
+        outputs=outputs,
+        raw_response=items,
+    )
+
+
+def compute_firewall_get(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Retrieves a firewall rule.
+    """
+    project_id = args.get("project_id")
+    resource_name = args.get("resource_name")
+    compute = GCPServices.COMPUTE.build(creds)
+    try:
+        response = compute.firewalls().get(project=project_id, firewall=resource_name).execute()  # pylint: disable=E1101
+    except HttpError as e:
+        reason = e._get_reason()
+        if e.resp.status == 404 and ("The resource" and "was not found" in reason):
+            return CommandResults(readable_output=f"Firewall '{resource_name}' not found in project '{project_id}'")
+        raise
+    demisto.debug(f"Firewall get response for {project_id}: \n{response}")
+    hr = tableToMarkdown(f"GCP Compute Firewall: {resource_name}", response, removeNull=True)
+    return CommandResults(readable_output=hr, outputs_prefix="GCP.Compute.Firewall", outputs=response)
+
+
+def compute_snapshots_list(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Lists snapshots in the specified project.
+    """
+    project_id = args.get("project_id")
+    max_results = arg_to_number(args.get("max_results"))
+    page_token = args.get("page_token")
+    flt = args.get("filter")
+
+    params: dict[str, Any] = {"project": project_id}
+    if max_results:
+        params["maxResults"] = max_results
+    if page_token:
+        params["pageToken"] = page_token
+    if flt:
+        params["filter"] = flt
+
+    compute = GCPServices.COMPUTE.build(creds)
+    response = compute.snapshots().list(**params).execute()  # pylint: disable=E1101
+    demisto.debug(f"GCP Compute Snapshots \nresponse: \n{response}")
+    items = response.get("items", [])
+    next_token = response.get("nextPageToken", "")
+    metadata = (
+        "Run the following command to retrieve the next batch of billings:\n"
+        f"!gcp-compute-snapshots-list project_id={project_id} page_token={next_token}"
+        if next_token
+        else None
+    )
+    headers = ["name", "status", "creationTimestamp"]
+    hr = tableToMarkdown(
+        "GCP Compute Snapshots", items, headers=headers, removeNull=True, metadata=metadata, headerTransform=pascalToSpace
+    )
+    outputs = {
+        "GCP.Compute.Snapshot(val.id && val.id == obj.id)": items,
+        "GCP.Compute(true)": {"SnapshotNextToken": next_token},
+    }
+    return CommandResults(readable_output=hr, outputs=outputs)
+
+
+def compute_snapshot_get(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Retrieves a snapshot by name.
+    """
+    project_id = args.get("project_id")
+    resource_name = args.get("resource_name")
+    compute = GCPServices.COMPUTE.build(creds)
+    try:
+        response = compute.snapshots().get(project=project_id, snapshot=resource_name).execute()  # pylint: disable=E1101
+    except HttpError as e:
+        reason = e._get_reason()
+        if e.resp.status == 404 and ("The resource" and "was not found" in reason):
+            return CommandResults(readable_output=f"Snapshot '{resource_name}' not found in project '{project_id}'")
+        raise
+    demisto.debug(f"Snapshot get response for {project_id}: \n{response}")
+
+    hr = tableToMarkdown(f"GCP Compute Snapshot: {resource_name}", response, removeNull=True)
+    return CommandResults(readable_output=hr, outputs_prefix="GCP.Compute.Snapshot", outputs=response, outputs_key_field="id")
+
+
+def compute_instances_aggregated_list_by_ip(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Aggregated list of instances across all zones, filtered by IP address (internal by default, external if match_external=true).
+    """
+    project_id = args.get("project_id")
+    ip_address = args.get("ip_address")
+    match_external = argToBoolean(args.get("match_external", "false"))
+    max_results = arg_to_number(args.get("max_results"))
+    page_token = args.get("page_token")
+
+    params: dict[str, Any] = {"project": project_id}
+    if max_results:
+        params["maxResults"] = max_results
+    if page_token:
+        params["pageToken"] = page_token
+
+    compute = GCPServices.COMPUTE.build(creds)
+    response = compute.instances().aggregatedList(**params).execute()  # pylint: disable=E1101
+    demisto.debug(f"Instances aggregated list response for {project_id}: \n{response}")
+
+    matched: list[dict[str, Any]] = []
+    hr_items: list[dict[str, str]] = []
+    for scope in response.get("items", {}).values():
+        for inst in scope.get("instances", []) or []:
+            nics = inst.get("networkInterfaces", [])
+            found = False
+            for nic in nics:
+                # Internal IP match
+                if not match_external and nic.get("networkIP") == ip_address:
+                    found = True
+                    break
+                # External IP match
+                if match_external:
+                    for ac in nic.get("accessConfigs", []) or []:
+                        if ac.get("natIP") == ip_address:
+                            found = True
+                            break
+                if found:
+                    break
+            if found:
+                matched.append(inst)
+                hr_items.append(
+                    {
+                        "name": inst.get("name"),
+                        "id": inst.get("id"),
+                        "status": inst.get("status"),
+                        "zone": inst.get("zone"),
+                        "networkIP": ", ".join([net_inc.get("networkIP") for net_inc in inst.get("networkInterfaces", [])]),
+                        "accessConfigs.natIP": ", ".join(
+                            [
+                                ac.get("natIP")
+                                for net_inc in inst.get("networkInterfaces", [])
+                                for ac in net_inc.get("accessConfigs", [])
+                            ]
+                        ),
+                    }
+                )
+
+    hr_headers = ["name", "id", "status", "zone", "networkIP", "accessConfigs.natIP"]
+    hr = tableToMarkdown("GCP Compute Instances (filtered by IP)", hr_items, headers=hr_headers, removeNull=True)
+    return CommandResults(readable_output=hr, outputs_prefix="GCP.Compute.Instance", outputs=matched)
+
+
+def compute_network_tag_set(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Adds a network tag to a VM instance (merges with existing tags).
+    """
+    project_id = args.get("project_id")
+    zone = extract_zone_name(args.get("zone"))
+    resource_name = args.get("resource_name")
+    tags = argToList(args.get("tag"))
+    add_tag = argToBoolean(args.get("add_tag", "true"))
+
+    compute = GCPServices.COMPUTE.build(creds)
+    instance = compute.instances().get(project=project_id, zone=zone, instance=resource_name).execute()  # pylint: disable=E1101
+    demisto.debug(f"Instance get response for {project_id}: \n{instance}")
+    tags_obj = instance.get("tags", {})
+    fingerprint = tags_obj.get("fingerprint")
+    items = tags_obj.get("items", []) or []
+    if add_tag and tags not in items:
+        tags.extend(items)
+
+    body = {"items": tags, "fingerprint": fingerprint}
+    try:
+        response = (
+            compute.instances()  # pylint: disable=E1101
+            .setTags(project=project_id, zone=zone, instance=resource_name, body=body)
+            .execute()
+        )
+    except HttpError as e:
+        reason = e._get_reason()
+        return CommandResults(readable_output=f"The command failed with status code: {e.resp.status}\n{reason}")
+
+    demisto.debug(f"Add network tag response for {project_id}: \n{response}")
+    new_tag = args.get("tag")
+    readable_output = (
+        f"Added '{new_tag}' tag to instance {resource_name} successfully\n" f"The full network tag list is: {tags}"
+    )
+
+    return CommandResults(readable_output=readable_output)
 
 
 def storage_bucket_policy_delete(creds: Credentials, args: dict[str, Any]) -> CommandResults:
@@ -1487,6 +1817,13 @@ def main():  # pragma: no cover
             "test-module": test_module,
             # Compute Engine commands
             "gcp-compute-firewall-patch": compute_firewall_patch,
+            "gcp-compute-firewall-insert": compute_firewall_insert,
+            "gcp-compute-firewall-list": compute_firewall_list,
+            "gcp-compute-firewall-get": compute_firewall_get,
+            "gcp-compute-snapshots-list": compute_snapshots_list,
+            "gcp-compute-snapshot-get": compute_snapshot_get,
+            "gcp-compute-instances-aggregated-list-by-ip": compute_instances_aggregated_list_by_ip,
+            "gcp-compute-network-tag-set": compute_network_tag_set,
             "gcp-compute-subnet-update": compute_subnet_update,
             "gcp-compute-instance-service-account-set": compute_instance_service_account_set,
             "gcp-compute-instance-service-account-remove": compute_instance_service_account_remove,

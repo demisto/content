@@ -141,7 +141,256 @@ script:
     - contextPath: GCP.Compute.Operations.kind
       description: Type of the resource. Always compute#operation for Operation resources.
       type: string
-
+  - name: gcp-compute-firewall-insert
+    description: Creates a new firewall rule in the specified project.
+    arguments:
+    - name: project_id
+      required: true
+      description: GCP project ID.
+    - name: resource_name
+      required: true
+      description: Name of the firewall rule to create.
+    - name: description
+      description: An optional description for the firewall rule.
+    - name: network
+      description: URL of the network, e.g., global/networks/default.
+    - name: priority
+      description: Priority 0-65535. Default 1000.
+    - name: direction
+      description: INGRESS or EGRESS.
+    - name: allowed
+      description: 'ALLOW rules in tuples, e.g., ipprotocol=tcp,ports=443;ipprotocol=tcp,ports=80.'
+    - name: denied
+      description: 'DENY rules in tuples, e.g., ipprotocol=tcp,ports=22,443.'
+    - name: sourceRanges
+      description: Comma-separated CIDRs for INGRESS.
+    - name: destinationRanges
+      description: Comma-separated CIDRs for EGRESS.
+    - name: sourceTags
+      description: Comma-separated instance tags to match as source.
+    - name: targetTags
+      description: Comma-separated tags to apply this rule to.
+    - name: sourceServiceAccounts
+      description: Comma-separated service accounts for source.
+    - name: targetServiceAccounts
+      description: Comma-separated service accounts to target.
+    - name: logConfigEnable
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Enable firewall logging.
+    - name: disabled
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Whether this firewall rule is disabled.
+    outputs:
+    - contextPath: GCP.Compute.Operations.id
+      description: The unique identifier for the resource. This identifier is defined by the server.
+      type: string
+    - contextPath: GCP.Compute.Operations.name
+      description: Name of the resource.
+      type: string
+    - contextPath: GCP.Compute.Operations.operationType
+      description: The type of operation, such as insert, update, or delete, and so on.
+      type: string
+    - contextPath: GCP.Compute.Operations.status
+      description: The status of the operation.
+      type: string
+    - contextPath: GCP.Compute.Operations.targetLink
+      description: The URL of the resource that the operation modifies.
+      type: string
+  - name: gcp-compute-firewall-list
+    description: Lists firewall rules in the specified project.
+    arguments:
+    - name: project_id
+      required: true
+      description: GCP project ID.
+    - name: max_results
+      description: Maximum number of results to return.
+    - name: page_token
+      description: Token for pagination.
+      required: false
+    - name: filter
+      description: API filter expression.
+    outputs:
+    - contextPath: GCP.Compute.Firewall.name
+      description: Firewall rule name.
+      type: string
+    - contextPath: GCP.Compute.Firewall.network
+      description: Network URL for the firewall rule.
+      type: string
+    - contextPath: GCP.Compute.Firewall.direction
+      description: Direction of traffic (INGRESS/EGRESS).
+      type: string
+    - contextPath: GCP.Compute.Firewall.priority
+      description: Priority of the rule.
+      type: number
+    - contextPath: GCP.Compute.Firewall.allowed
+      description: Allowed tuples.
+      type: Unknown
+    - contextPath: GCP.Compute.Firewall.denied
+      description: Denied tuples.
+      type: Unknown
+    - contextPath: GCP.Compute.Firewall.targetTags
+      description: Target instance tags.
+      type: Unknown
+    - contextPath: GCP.Compute.FirewallNextToken
+      description: Next page token for pagination.
+      type: string
+  - name: gcp-compute-firewall-get
+    description: Retrieves a specific firewall rule by name.
+    arguments:
+    - name: project_id
+      required: true
+      description: GCP project ID.
+    - name: resource_name
+      required: true
+      description: Firewall rule name.
+    outputs:
+    - contextPath: GCP.Compute.Firewall.name
+      description: Firewall rule name.
+      type: string
+    - contextPath: GCP.Compute.Firewall.network
+      description: Network URL for the firewall rule.
+      type: string
+    - contextPath: GCP.Compute.Firewall.direction
+      description: Direction of traffic (INGRESS/EGRESS).
+      type: string
+    - contextPath: GCP.Compute.Firewall.priority
+      description: Priority of the rule.
+      type: number
+    - contextPath: GCP.Compute.Firewall.allowed
+      description: Allowed tuples.
+      type: Unknown
+    - contextPath: GCP.Compute.Firewall.denied
+      description: Denied tuples.
+      type: Unknown
+    - contextPath: GCP.Compute.Firewall.targetTags
+      description: Target instance tags.
+      type: Unknown
+  - name: gcp-compute-snapshots-list
+    description: Lists snapshots in the specified project.
+    arguments:
+    - name: project_id
+      required: true
+      description: GCP project ID.
+    - name: max_results
+      description: Maximum number of results to return.
+    - name: page_token
+      description: Token for pagination.
+    - name: filter
+      description: API filter expression.
+    outputs:
+    - contextPath: GCP.Compute.Snapshot.name
+      description: Snapshot name.
+      type: string
+    - contextPath: GCP.Compute.Snapshot.id
+      description: Snapshot ID.
+      type: string
+    - contextPath: GCP.Compute.Snapshot.status
+      description: Snapshot status.
+      type: string
+    - contextPath: GCP.Compute.Snapshot.sourceDisk
+      description: Source disk URL.
+      type: string
+    - contextPath: GCP.Compute.Snapshot.creationTimestamp
+      description: Creation timestamp (RFC3339).
+      type: string
+    - contextPath: GCP.Compute.Snapshot.storageBytes
+      description: Storage size in bytes.
+      type: number
+    - contextPath: GCP.Compute.SnapshotNextToken
+      description: Next page token for pagination.
+      type: string
+  - name: gcp-compute-snapshot-get
+    description: Retrieves details for a specific snapshot.
+    arguments:
+    - name: project_id
+      required: true
+      description: GCP project ID.
+    - name: resource_name
+      required: true
+      description: Snapshot name.
+    outputs:
+    - contextPath: GCP.Compute.Snapshot.name
+      description: Snapshot name.
+      type: string
+    - contextPath: GCP.Compute.Snapshot.id
+      description: Snapshot ID.
+      type: string
+    - contextPath: GCP.Compute.Snapshot.status
+      description: Snapshot status.
+      type: string
+    - contextPath: GCP.Compute.Snapshot.sourceDisk
+      description: Source disk URL.
+      type: string
+    - contextPath: GCP.Compute.Snapshot.creationTimestamp
+      description: Creation timestamp (RFC3339).
+      type: string
+    - contextPath: GCP.Compute.Snapshot.storageBytes
+      description: Storage size in bytes.
+      type: number
+  - name: gcp-compute-instances-aggregated-list-by-ip
+    description: Aggregated list of instances across all zones and filter by internal/external IP.
+    arguments:
+    - name: project_id
+      required: true
+      description: GCP project ID.
+    - name: ip_address
+      required: true
+      description: The IP address to search for.
+    - name: match_external
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: If true, match against external NAT IPs; otherwise internal NIC IPs.
+    - name: max_results
+      description: Maximum number of results to return.
+    - name: page_token
+      description: Token for pagination.
+    outputs:
+    - contextPath: GCP.Compute.Instance.name
+      description: Instance name.
+      type: string
+    - contextPath: GCP.Compute.Instance.id
+      description: Instance ID.
+      type: string
+    - contextPath: GCP.Compute.Instance.zone
+      description: Instance zone URL.
+      type: string
+    - contextPath: GCP.Compute.Instance.status
+      description: Instance status.
+      type: string
+    - contextPath: GCP.Compute.Instance.networkInterfaces
+      description: Network interfaces of the instance.
+      type: Unknown
+  - name: gcp-compute-network-tag-set
+    description: Adds a network tag to a VM instance (merges with existing tags).
+    arguments:
+    - name: project_id
+      required: true
+      description: GCP project ID.
+    - name: zone
+      required: true
+      description: Zone of the VM (e.g., us-central1-a).
+    - name: resource_name
+      required: true
+      description: Instance name.
+    - name: tag
+      required: true
+      description: Tag to add.
+    - name: add_tag
+      defaultValue: "true"
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: If true, add the tag to the existing tags; otherwise override the existing tags. (the default is true)
+    outputs: []
   - name: gcp-storage-bucket-policy-delete
     description: Removes an entity from a bucket's Access Control List.
     arguments:
