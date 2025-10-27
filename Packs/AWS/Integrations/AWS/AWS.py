@@ -2292,8 +2292,8 @@ class CostExplorer:
                         "Unit": total.get(metric, {}).get("Unit", ""),
                     }
                 )
-        outputs = {"AWS.Billing.Usage": results}
-        outputs["AWS.Billing.UsageNextToken"] = next_token
+        outputs = {"AWS.Billing.Usage": results,
+                   "AWS.Billing.UsageNextToken(true)":next_token}
         readable_tables = []
         for metric in metrics:
             metric_results = results_by_metric[metric]
@@ -2308,7 +2308,7 @@ class CostExplorer:
                 readable_tables.append(table)
         readable = "\n".join(readable_tables) if readable_tables else "No billing usage data found."
         if next_token:
-            readable += f"\n\nNext Page Token: {next_token}"
+            readable = f"Next Page Token: {next_token}\n\n" + readable
         return CommandResults(
             readable_output=readable,
             outputs=outputs,
@@ -2387,9 +2387,10 @@ class CostExplorer:
                 }
             )
 
-        outputs = {"AWS.Billing.Forecast": results}
-        if next_token:
-            outputs["AWS.Billing.ForecastNextToken"] = next_token
+        outputs = {
+            "AWS.Billing.Forecast": results,
+            "AWS.Billing.ForecastNextToken(true)": next_token,
+        }
 
         readable = tableToMarkdown(
             f"AWS Billing Forecast - {metric}",
@@ -2399,7 +2400,7 @@ class CostExplorer:
             headerTransform=pascalToSpace,
         )
         if next_token:
-            readable += f"\nNext Page Token: {next_token}"
+            readable = f"Next Page Token: {next_token}\n\n" + readable
 
         return CommandResults(
             readable_output=readable,
@@ -2437,7 +2438,8 @@ class Budgets:
         """
         max_results = int(args.get("max_result", 50))
         token = args.get("next_page_token")
-        request = {"AccountId": args["account_id"], "MaxResults": max_results}
+        account_id = args.get("account_id")
+        request = {"AccountId": account_id, "MaxResults": max_results}
         if token:
             request["NextToken"] = token
         demisto.debug(f"AWS Budgets request: {request}")
@@ -2464,9 +2466,10 @@ class Budgets:
                     "TimePeriod": f"{start} - {end}",
                 }
             )
-        outputs = {"AWS.Billing.Budget": results}
-        if next_token:
-            outputs["AWS.Billing.BudgetNextToken"] = next_token
+        outputs = {
+            "AWS.Billing.Budget": results,
+            "AWS.Billing.BudgetNextToken(true)": next_token,
+        }
         readable = tableToMarkdown(
             "AWS Budgets",
             results,
@@ -2482,7 +2485,7 @@ class Budgets:
             removeNull=True,
         )
         if next_token:
-            readable += f"\nNext Page Token: {next_token}"
+            readable = f"Next Page Token: {next_token}\n\n" + readable
         return CommandResults(
             readable_output=readable,
             outputs=outputs,
@@ -2526,12 +2529,13 @@ class Budgets:
         notifications = response.get("Notifications", [])
         next_token = response.get("NextToken", "")
         demisto.debug(f"AWS Budget Notifications response - Notifications count: {len(notifications)},\n NextToken: {next_token}")
-        outputs = {"AWS.Billing.Notification": notifications}
-        if next_token:
-            outputs["AWS.Billing.NotificationNextToken"] = next_token
+        outputs = {
+            "AWS.Billing.Notification": notifications,
+            "AWS.Billing.NotificationNextToken(true)": next_token,
+        }
         readable = tableToMarkdown(f"Notifications for Budget: {budget_name}", notifications)
         if next_token:
-            readable += f"\nNext Page Token: {next_token}"
+            readable = f"Next Page Token: {next_token}\n\n" + readable
         return CommandResults(
             readable_output=readable,
             outputs=outputs,

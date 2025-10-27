@@ -3811,7 +3811,7 @@ script:
       - Monthly
       - Hourly
     - name: aws_services
-      description: Optional filter for retrieving data for specific AWS services. e.g. "AWSLambda"
+      description: Optional filter for retrieving data for specific AWS services. e.g. "AWSLambda".
       isArray: true
       required: false
     - name: next_page_token
@@ -3960,7 +3960,7 @@ script:
       description: End date for the forecast (YYYY-MM-DD). Default - in 7 days.
       required: false
     - name: granularity
-      description: Granularity of the forecast. Default - Daily. Valid values [ Daily, Monthly, Hourly].
+      description: Granularity of the forecast. Default - Daily. Valid values [Daily, Monthly, Hourly].
       required: false
       auto: PREDEFINED
       predefined:

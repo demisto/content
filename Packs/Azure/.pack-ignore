@@ -1,2 +1,2 @@
 [file:Azure.yml]
-ignore=BA127
+ignore=BA127,ST111

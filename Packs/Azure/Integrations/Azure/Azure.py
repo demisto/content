@@ -3041,18 +3041,26 @@ def azure_billing_usage_list_command(client: AzureClient, params: dict, args: di
                 "PeriodEndDate": datetime.strptime(end_date, "%Y-%m-%dT%H:%M:%S.%f0Z").strftime("%Y-%m-%d"),
             }
         )
-    outputs = {"Azure.Billing.Usage": items}
-    readable = tableToMarkdown(
+    metadata = (
+        "Run the following command to retrieve the next batch of billings:\n"
+        f"!azure-billing-usage-list subscription_id={subscription_id} next_page_token={next_token}"
+        if next_token
+        else None
+    )
+    readable_output = tableToMarkdown(
         "Azure Billing Usage",
         results,
         headers=["Name", "Product", "PayGCostUSD", "UsageQuantity", "PeriodStartDate", "PeriodEndDate"],
-        headerTransform=pascalToSpace
+        headerTransform=pascalToSpace,
+        metadata=metadata
     )
-    outputs["Azure.Billing.UsageNextToken"] = next_token
-    if next_token:
-        readable += f"\nNext Page Token: {next_token}"
+
+    outputs = {
+        "Azure.Billing.Usage(val.name && val.name == obj.name)": items,
+        "Azure.BillingUsageNextToken(true)": next_token,
+    }
     return CommandResults(
-        readable_output=readable,
+        readable_output=readable_output,
         outputs=outputs,
         raw_response=res,
     )
@@ -3108,7 +3116,6 @@ def azure_billing_forecast_list_command(client: AzureClient, params: dict, args:
         include_actual_cost=include_actual_cost,
         include_fresh_partial_cost=include_fresh_partial_cost,
     )
-    demisto.debug(f"Azure response:\n {response}\n")
 
     parsed_data = parse_forecast_table_to_dict(response)
     demisto.debug(f"Parsed data:\n {parsed_data}\n")
