@@ -9,6 +9,7 @@ TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 INTEGRATION_CONTEXT_BRAND = "Core"
 INTEGRATION_NAME = "Cortex Platform Core"
 MAX_GET_INCIDENTS_LIMIT = 100
+SEARCH_ASSETS_DEFAULT_LIMIT = 100
 
 ASSET_FIELDS = {
     "asset_names": "xdm.asset.name",
@@ -242,7 +243,7 @@ def search_assets_command(client: Client, args):
     fields_to_filter = [
         FilterField(ASSET_FIELDS["asset_names"], "EQ", argToList(args.get("asset_names", ""))),
         FilterField(ASSET_FIELDS["asset_types"], "EQ", argToList(args.get("asset_types", ""))),
-        FilterField(ASSET_FIELDS["asset_tags"], "EQ", argToList(args.get("asset_tags", ""))),
+        FilterField(ASSET_FIELDS["asset_tags"], "JSON_WILDCARD", safe_load_json(args.get("asset_tags", []))),
         FilterField(ASSET_FIELDS["asset_ids"], "EQ", argToList(args.get("asset_ids", ""))),
         FilterField(ASSET_FIELDS["asset_providers"], "EQ", argToList(args.get("asset_providers", ""))),
         FilterField(ASSET_FIELDS["asset_realms"], "EQ", argToList(args.get("asset_realms", ""))),
@@ -251,7 +252,7 @@ def search_assets_command(client: Client, args):
 
     filter = create_filter_from_fields(fields_to_filter)
     demisto.debug(f"Search Assets Filter: {filter}")
-    limit = arg_to_number(args.get("limit", 100))
+    limit = arg_to_number(args.get("limit", SEARCH_ASSETS_DEFAULT_LIMIT))
     start = arg_to_number(args.get("start", 0))
     on_demand_fields = ["xdm.asset.tags"]
     response = client.search_assets(filter, start, limit, on_demand_fields).get("reply", {}).get("data", [])
