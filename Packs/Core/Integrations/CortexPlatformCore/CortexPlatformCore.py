@@ -118,6 +118,27 @@ class Client(CoreClient):
 
         return reply
 
+    def get_playbook_suggestion_by_issue(self, issue_id):
+        """
+        Get playbook suggestions for a specific issue.
+
+        Args:
+            issue_id (str): The ID of the issue to get playbook suggestions for.
+
+        Returns:
+            dict: The response containing playbook suggestions.
+        """
+        # Convert issue_id to alert_id for the API call
+        filter_data = {"request_data": {"alert_id": issue_id}}
+        reply = demisto._apiCall(
+            method="POST",
+            data=json.dumps(filter_data),
+            headers=self._headers,
+            path="/api/webapp/incident/get_playbook_suggestion_by_alert/"
+        )
+
+        return reply
+
 
 def get_asset_details_command(client: Client, args: dict) -> CommandResults:
     """
@@ -190,6 +211,35 @@ def get_extra_data_for_case_id_command(client, args):
     )
 
 
+def get_playbook_suggestion_by_issue_command(client: Client, args: dict) -> CommandResults:
+    """
+    Get playbook suggestions for a specific issue.
+
+    Args:
+        client (Client): The client instance used to send the request.
+        args (dict): Dictionary containing the arguments for the command.
+                     Expected to include:
+                         - issue_id (str): The ID of the issue to get playbook suggestions for.
+
+    Returns:
+        CommandResults: Object containing the playbook suggestions,
+                        raw response, and outputs for integration context.
+    """
+    issue_id = args.get("issue_id")
+    if not issue_id:
+        raise DemistoException("issue_id is required.")
+    
+    response = client.get_playbook_suggestion_by_issue(issue_id)
+    reply = response.get("reply", {})
+    
+    return CommandResults(
+        readable_output=tableToMarkdown("Playbook Suggestions", reply, headerTransform=string_to_table_header),
+        outputs_prefix="Core.Issue.PlaybookSuggestion",
+        outputs=reply,
+        raw_response=reply,
+    )
+
+
 def main():  # pragma: no cover
     """
     Executes an integration command
@@ -248,6 +298,9 @@ def main():  # pragma: no cover
 
         elif command == "core-get-case-extra-data":
             return_results(get_extra_data_for_case_id_command(client, args))
+
+        elif command == "core-get-playbook-suggestion-by-issue":
+            return_results(get_playbook_suggestion_by_issue_command(client, args))
 
     except Exception as err:
         demisto.error(traceback.format_exc())

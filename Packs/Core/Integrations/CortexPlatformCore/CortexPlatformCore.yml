@@ -1098,6 +1098,15 @@ script:
         - contextPath: Core.CaseExtraData.file_artifacts.data.type
           description: The type of the file artifact.
           type: String
+    - arguments:
+        - description: The ID of the issue to get playbook suggestions for.
+          name: issue_id
+          required: true
+      name: core-get-playbook-suggestion-by-issue
+      description: Get playbook suggestions for a specific issue.
+      outputs:
+        - contextPath: Core.Issue.PlaybookSuggestion
+          description: Playbook suggestions for the issue.
   runonce: false
   script: "-"
   subtype: python3
