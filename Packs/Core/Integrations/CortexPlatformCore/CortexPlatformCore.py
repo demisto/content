@@ -119,13 +119,10 @@ class Client(CoreClient):
         return reply
 
     def update_issue(self, filter_data):
-        reply = demisto._apiCall( 
-            method="POST",
-            data=json.dumps(filter_data),
-            headers=self._headers,
-            path="/api/webapp/alerts/update_alerts"
+        reply = demisto._apiCall(
+            method="POST", data=json.dumps(filter_data), headers=self._headers, path="/api/webapp/alerts/update_alerts"
         )
-        
+
         return reply
 
 
@@ -174,55 +171,76 @@ def get_cases_command(client, args):
         outputs=mapped_raw_cases,
         raw_response=mapped_raw_cases,
     )
-    
+
+
 def get_issue_id(args) -> str:
+    """Retrieve the issue ID from either provided arguments or calling context.
+
+    Args:
+        args (dict): Arguments passed in the command, containing optional issue_id
+
+    Returns:
+        str: The extracted issue ID
+    """
     issue_id = args.get("issue_id", "")
     if not issue_id:
-        issue = demisto.callingContext.get('context', {}).get("Incidents")[0]
+        issue = demisto.callingContext.get("context", {}).get("Incidents")[0]
         issue_id = issue["id"]
-        
+
     return issue_id
 
-def create_filter_data(issue_id, update_args) -> dict:
+
+def create_filter_data(issue_id: str, update_args: dict) -> dict:
+    """Creates filter data for updating an issue with specified parameters.
+
+    Args:
+        issue_id (bool): Issue ID from args or context
+        update_args (dict): Dictionary of fields to update
+
+    Returns:
+        dict: Object representing updated issue details
+    """
     filter_data = {
-        "filter_data": {
-            "filter": {
-                "OR": [
-                    {
-                        "SEARCH_FIELD": "internal_id",
-                        "SEARCH_TYPE": "EQ",
-                        "SEARCH_VALUE": issue_id
-                    }
-                ]
-            }
-        },
-        "filter_type": "static"
+        "filter_data": {"filter": {"OR": [{"SEARCH_FIELD": "internal_id", "SEARCH_TYPE": "EQ", "SEARCH_VALUE": issue_id}]}},
+        "filter_type": "static",
     }
     update_data = {}
-    for arg_to_update in update_args.items():
-        key, value = arg_to_update
-        if value:
-            update_data[key] = value
-   
+    for key, value in update_args.items():
+        update_data[key] = value
+
     filter_data["update_data"] = update_data
     return filter_data
-    
-    
-def update_issue_command(client, args):
+
+
+def update_issue_command(client: Client, args: dict):
+    """Updates an issue with specified parameters.
+
+    Args:
+        client (Client): Client instance to execute the request
+        args (dict): Command arguments for updating an issue
+    """
     issue_id = get_issue_id(args)
-    assigned_user_mail = args.get("assigned_user_mail")
     if not issue_id:
         return_error("Issue ID is required for updating an issue.")
-    
-    update_args = {"assigned_user": assigned_user_mail}
-    filter_data = create_filter_data(issue_id, update_args)
+
+    severity_map = {"1": "SEV_020_LOW", "2": "SEV_030_MEDIUM", "3": "SEV_040_HIGH", "4": "SEV_050_CRITICAL"}
+    assigned_user_mail = args.get("assigned_user_mail")
+    update_args = {
+        "assigned_user": assigned_user_mail,
+        "severity": severity_map.get(args.get("severity")) if args.get("severity") in severity_map else None,
+        "name": args.get("name"),
+        "occurred": args.get("occurred"),
+        "type": args.get("type"),
+        "phase": args.get("phase"),
+    }
+
+    # Remove None values before sending to API
+    filtered_update_args = {k: v for k, v in update_args.items() if v is not None}
+
+    # Send update to API
+    filter_data = create_filter_data(issue_id, filtered_update_args)
+    demisto.debug(filter_data)
     client.update_issue(filter_data)
-    id_arg = {"alert_id": issue_id}
-    issues_command_results: CommandResults = get_alerts_by_filter_command(client, id_arg)
-    if issues_command_results and issues_command_results.outputs and issues_command_results.outputs[0].get("assigned_to") == assigned_user_mail:
-        return CommandResults(readable_output=f"The assignee of issue {issue_id} was updated successfully.")
-    
-    return_error(f"Failed to assign {assigned_user_mail} to the issue {issue_id}.")
 
 
 def get_extra_data_for_case_id_command(client, args):
@@ -310,8 +328,8 @@ def main():  # pragma: no cover
 
         elif command == "core-get-case-extra-data":
             return_results(get_extra_data_for_case_id_command(client, args))
-        
-        elif command  == "set-issue-assignee":
+
+        elif command == "update-issue":
             return_results(update_issue_command(client, args))
 
     except Exception as err:
