@@ -3092,7 +3092,7 @@ script:
         description: The name of the trail or trail ARN.
         required: true
         prettypredefined:
-          Name: ${asset.xdm.asset.strong_id}
+          Name: ${asset.xdm.asset.name}
       - name: enable_log_file_validation
         description: Weather log file validation is enabled. The default is false.
         defaultValue: 'true'
@@ -3217,7 +3217,7 @@ script:
         description: 'The name or the CloudTrail ARN of the trail for which CloudTrail logs Amazon Web Services API calls. e.g. arn:aws:cloudtrail:us-east-2:123456789012:trail/MyTrail.'
         required: true
         prettypredefined:
-          Name: ${asset.xdm.asset.strong_id}
+          Name: ${asset.xdm.asset.name}
 
   - name: aws-ec2-instances-describe
     description: "Describes specified instances or all instances."
