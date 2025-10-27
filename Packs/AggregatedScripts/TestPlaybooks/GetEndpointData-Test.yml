@@ -1813,8 +1813,7 @@ tasks:
       id: de82b6b4-cb00-4c4e-8bd9-0df0896c5012
       version: -1
       name: 'Get Endpoint Data Non existent '
-      description: This script gathers endpoint data from multiple integrations and
-      creates a single endpoint entity with consolidated information in the context.
+      description: This script gathers endpoint data from multiple integrations and creates a single endpoint entity with consolidated information in the context.
       scriptName: get-endpoint-data
       type: regular
       iscommand: false
@@ -2211,8 +2210,7 @@ tasks:
       id: 9de63531-6bb7-4253-9553-b91ad717084b
       version: -1
       name: Get Endpoint ID from Core
-      description: This script gathers endpoint data from multiple integrations and
-     creates a single endpoint entity with consolidated information in the context.
+      description: This script gathers endpoint data from multiple integrations and creates a single endpoint entity with consolidated information in the context.
       scriptName: get-endpoint-data
       type: regular
       iscommand: false
