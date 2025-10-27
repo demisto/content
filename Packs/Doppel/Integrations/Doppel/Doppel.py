@@ -59,9 +59,9 @@ class Client(BaseClient):
             self._headers["x-organization-code"] = organization_code
 
         # Store retry configuration on the client and leverage BaseClient._http_request parameters
-        self._retry_total = retry_total
-        self._retry_backoff_factor = retry_backoff_factor
-        self._retry_status_list = retry_status_list
+        self._retries = retry_total
+        self._backoff_factor = retry_backoff_factor
+        self._status_list_to_retry = retry_status_list
 
         demisto.debug(
             f"Initialized HTTP client using BaseClient._http_request retry params: total={retry_total}, "
@@ -91,9 +91,9 @@ class Client(BaseClient):
             method="GET",
             url_suffix="alert",
             params=params,
-            retry_total=self._retry_total,
-            retry_backoff_factor=self._retry_backoff_factor,
-            status_list_to_retry=self._retry_status_list,
+            retries=self._retries,
+            backoff_factor=self._backoff_factor,
+            status_list_to_retry=self._status_list_to_retry,
         )
         return response_content
 
@@ -134,9 +134,9 @@ class Client(BaseClient):
             full_url=api_url,
             params=params,
             json_data=payload,
-            retry_total=self._retry_total,
-            retry_backoff_factor=self._retry_backoff_factor,
-            status_list_to_retry=self._retry_status_list,
+            retries=self._retries,
+            backoff_factor=self._backoff_factor,
+            status_list_to_retry=self._status_list_to_retry,
         )
         return response_content
 
@@ -158,9 +158,9 @@ class Client(BaseClient):
             method="GET",
             full_url=api_url,
             params=filtered_params,
-            retry_total=self._retry_total,
-            retry_backoff_factor=self._retry_backoff_factor,
-            status_list_to_retry=self._retry_status_list,
+            retries=self._retries,
+            backoff_factor=self._backoff_factor,
+            status_list_to_retry=self._status_list_to_retry,
         )
         return response_content
 
@@ -171,9 +171,9 @@ class Client(BaseClient):
             method="POST",
             full_url=api_url,
             json_data={"entity": entity},
-            retry_total=self._retry_total,
-            retry_backoff_factor=self._retry_backoff_factor,
-            status_list_to_retry=self._retry_status_list,
+            retries=self._retries,
+            backoff_factor=self._backoff_factor,
+            status_list_to_retry=self._status_list_to_retry,
         )
         return response_content
 
@@ -184,9 +184,9 @@ class Client(BaseClient):
             method="POST",
             full_url=api_url,
             json_data={"entity": entity},
-            retry_total=self._retry_total,
-            retry_backoff_factor=self._retry_backoff_factor,
-            status_list_to_retry=self._retry_status_list,
+            retries=self._retries,
+            backoff_factor=self._backoff_factor,
+            status_list_to_retry=self._status_list_to_retry,
         )
         return response_content
 
