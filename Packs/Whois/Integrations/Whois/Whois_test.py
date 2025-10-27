@@ -45,20 +45,19 @@ def assert_results_ok():
     assert results[0] == "ok"
 
 
-def test_test_command(mocker: MockerFixture):
+def test_test_command_successful(mocker: MockerFixture):
+    """Test that test_command returns 'ok' when nameservers are found."""
     # Mock whois result with expected nameserver
     mock_whois_result = {"nameservers": ["ns1.google.com", "ns2.google.com"], "raw": ["Normal whois response"]}
 
     mocker.patch("Whois.get_whois", return_value=mock_whois_result)
     mocker.patch.object(demisto, "debug")
-    mocker.patch.object(demisto, "results")
-    mocker.patch.object(demisto, "command", return_value="test-module")
 
     # Import the function after patching to ensure the mock is in place
     from Whois import test_command
 
-    test_command()
-    assert_results_ok()
+    result = test_command()
+    assert result == "ok"
 
 
 def test_test_command_rate_limit_exception(mocker: MockerFixture):
@@ -87,21 +86,6 @@ def test_test_command_rate_limit_exception(mocker: MockerFixture):
     assert "WhoisRateLimit" in exception_message
     assert "Test completed but encountered rate limiting" in exception_message
     assert "Consider using an engine to avoid IP-based rate limits" in exception_message
-
-
-def test_test_command_successful(mocker: MockerFixture):
-    """Test that test_command returns 'ok' when nameservers are found."""
-    # Mock whois result with expected nameserver
-    mock_whois_result = {"nameservers": ["ns1.google.com", "ns2.google.com"], "raw": ["Normal whois response"]}
-
-    mocker.patch("Whois.get_whois", return_value=mock_whois_result)
-    mocker.patch.object(demisto, "debug")
-
-    # Import the function after patching to ensure the mock is in place
-    from Whois import test_command
-
-    result = test_command()
-    assert result == "ok"
 
 
 @pytest.mark.parametrize(
