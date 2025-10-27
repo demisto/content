@@ -687,7 +687,7 @@ script:
         - name: limit
           description: "The maximum number of vulnerabilities to return."
           defaultValue: "50"
-        - defaultValue: PLATFORM_SEVERITY
+        - defaultValue: LAST_OBSERVED
           description: The field by which to sort the results.
           name: sort_field
         - auto: PREDEFINED
@@ -733,6 +733,20 @@ script:
           predefined:
             - "true"
             - "false"
+        - description: Supports epoch timestamp and simplified extended ISO format (YYYY-MM-DDThh:mm:ss).
+          name: start_time
+        - description: Supports epoch timestamp and simplified extended ISO format (YYYY-MM-DDThh:mm:ss). If start time is provided without end_time it will be from start_time until now.
+          name: end_time
+        - auto: PREDEFINED
+          description: The severity of the vulnerability issue.
+          isArray: true
+          name: severity
+          predefined:
+            - info
+            - low
+            - medium
+            - high
+            - critical
       outputs:
         - contextPath: Core.Vulnerability.ISSUE_ID
           description: The unique identifier for the vulnerability issue.

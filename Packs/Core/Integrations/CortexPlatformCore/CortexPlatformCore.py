@@ -1,6 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from CoreIRApiModule import *
+import dateparser
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -9,6 +10,14 @@ TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 INTEGRATION_CONTEXT_BRAND = "Core"
 INTEGRATION_NAME = "Cortex Platform Core"
 MAX_GET_INCIDENTS_LIMIT = 100
+
+SEVERITY_MAPPING = {
+    "info": "SEV_030_INFO",
+    "low": "SEV_040_LOW",
+    "medium": "SEV_050_MEDIUM",
+    "high": "SEV_060_HIGH",
+    "critical": "SEV_070_CRITICAL",
+}
 
 WEBAPP_COMMANDS = ["core-get-vulnerabilities"]
 DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
@@ -200,13 +209,47 @@ def build_webapp_request_data(
     return {"type": "grid", "table_name": table_name, "filter_data": filter_data, "jsons": [], "onDemandFields": on_demand_fields}
 
 
+def prepare_start_end_time(args: dict) -> tuple[int | None, int | None]:
+    """Prepare start and end time from args, parsing relative time strings."""
+    start_time_str = args.get("start_time")
+    end_time_str = args.get("end_time")
+
+    if end_time_str and not start_time_str:
+        raise DemistoException("When 'end_time' is provided, 'start_time' must be provided as well.")
+
+    start_time, end_time = None, None
+
+    if start_time_str:
+        if start_dt := dateparser.parse(str(start_time_str)):
+            start_time = int(start_dt.timestamp() * 1000)
+        else:
+            raise ValueError(f"Could not parse start_time: {start_time_str}")
+
+    if end_time_str:
+        if end_dt := dateparser.parse(str(end_time_str)):
+            end_time = int(end_dt.timestamp() * 1000)
+        else:
+            raise ValueError(f"Could not parse end_time: {end_time_str}")
+
+    if start_time and not end_time:
+        # Set end_time to the current time if only start_time is provided
+        end_time = int(datetime.now().timestamp() * 1000)
+
+    return start_time, end_time
+
+
 def get_vulnerabilities_command(client: Client, args: dict) -> CommandResults:
     """
     Retrieves vulnerabilities using the generic /api/webapp/get_data endpoint.
     """
     limit = arg_to_number(args.get("limit")) or 50
-    sort_field = args.get("sort_field", "PLATFORM_SEVERITY")
+    sort_field = args.get("sort_field", "LAST_OBSERVED")
     sort_order = args.get("sort_order", "DESC")
+
+    start_time, end_time = prepare_start_end_time(args)
+
+    severities = argToList(args.get("severity"))
+    api_severities = [SEVERITY_MAPPING[sev] for sev in severities if sev in SEVERITY_MAPPING]
 
     filter_fields = [
         FilterField("CVE_ID", "CONTAINS", argToList(args.get("cve_id"))),
@@ -216,7 +259,12 @@ def get_vulnerabilities_command(client: Client, args: dict) -> CommandResults:
         FilterField("EXPLOITABLE", "EQ", arg_to_bool_or_none(args.get("exploitable"))),
         FilterField("HAS_KEV", "EQ", arg_to_bool_or_none(args.get("has_kev"))),
         FilterField("AFFECTED_SOFTWARE", "CONTAINS", argToList(args.get("affected_software"))),
+        FilterField("PLATFORM_SEVERITY", "EQ", api_severities),
     ]
+
+    if start_time and end_time:
+        filter_fields.append(FilterField("LAST_OBSERVED", "RANGE", {"from": start_time, "to": end_time}))
+
     not_assigned = arg_to_bool_or_none(args.get("not_assigned"))
     if not_assigned is not None:
         not_assigned_operator = "IS_EMPTY" if not_assigned else "NIS_EMPTY"
