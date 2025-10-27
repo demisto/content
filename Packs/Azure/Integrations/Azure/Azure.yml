@@ -2706,7 +2706,7 @@ script:
       description: The resource group name.
       prettyname: Resource Group
       prettypredefined:
-        Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.properties.resourceGroupName}
+        Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroup}
     - name: disk_name
       prettyname: VM Disk
       type: string
