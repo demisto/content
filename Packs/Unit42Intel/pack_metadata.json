@@ -2,7 +2,7 @@
     "name": "Unit 42 Intel (Deprecated)",
     "description": "Deprecated. Use the Unit 42 Threat Intelligence by Palo Alto Networks instead.",
     "support": "xsoar",
-    "currentVersion": "1.1.0",
+    "currentVersion": "1.1.2",
     "author": "Cortex XSOAR",
     "serverMinVersion": "6.5.0",
     "url": "https://www.paloaltonetworks.com/cortex",
@@ -23,6 +23,7 @@
         "X3",
         "X5",
         "ENT_PLUS",
-        "agentix"
+        "agentix",
+        "xsiam"
     ]
 }
