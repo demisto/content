@@ -2013,7 +2013,6 @@ def list_threat_assessment_requests_command(client: MsGraphClient, args) -> list
             next_token: str = next_token_value[1]
 
             command_results.append(
-                
                 CommandResults(
                     readable_output=f"Next token is: {next_token}\n" if next_token else None,
                     outputs={"next_token": next_token},

@@ -1576,7 +1576,7 @@ script:
       type: String
     - contextPath: MsGraph.eDiscoverySearch.SearchId
       description: The ID for the eDiscovery search.
-      type: String 
+      type: String
     - contextPath: MsGraph.eDiscoverySearch.LastModifiedDateTime
       description: The last date and time the eDiscovery search was modified.
       type: String
