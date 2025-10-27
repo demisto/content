@@ -25,7 +25,7 @@ configuration:
   - Custom
   advanced: true
 - display: Server URL (e.g., https://api.security.microsoft.com)
-  name: url
+  name: base_url
   type: 0
   section: Connect
   advanced: true

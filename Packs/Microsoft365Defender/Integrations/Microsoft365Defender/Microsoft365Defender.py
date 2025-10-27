@@ -89,7 +89,7 @@ class Client:
             auth_id=app_id,
             grant_type=CLIENT_CREDENTIALS if client_credentials else DEVICE_CODE,
             # used for device code flow
-            resource="https://api.security.microsoft.com" if not client_credentials else None,
+            resource=base_url if not client_credentials else None,
             token_retrieval_url="https://login.windows.net/organizations/oauth2/v2.0/token" if not client_credentials else None,
             # used for client credentials flow
             tenant_id=tenant_id,
@@ -1126,7 +1126,12 @@ def main() -> None:
     # out of the box by it, just pass ``proxy`` to the Client constructor
     proxy = params.get("proxy", False)
     app_id = params.get("creds_client_id", {}).get("password", "") or params.get("app_id") or params.get("_app_id")
-    base_url = params.get("base_url")
+    
+    endpoint_type = MICROSOFT_DEFENDER_FOR_ENDPOINT_TYPE[params.get("endpoint_type", "Custom")]  # TODO: check if this is BC
+    if endpoint_type == "Custom":
+        base_url = params.get("base_url")
+    else:
+        base_url = MICROSOFT_DEFENDER_XDR_API[endpoint_type]
 
     tenant_id = params.get("creds_tenant_id", {}).get("password", "") or params.get("tenant_id") or params.get("_tenant_id")
     client_credentials = params.get("client_credentials", False)
