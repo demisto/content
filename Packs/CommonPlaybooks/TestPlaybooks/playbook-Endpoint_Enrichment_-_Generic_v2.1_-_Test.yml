@@ -6,7 +6,6 @@ description: |-
   We use specific hostnames that are known on the current integrations. The following list defines the integrations and the hostnames that should be enriched using them:
   Active Directory - moshe
   ePO - WIN-AQ0LQQOG4Q7
-
   These should work but are not currently tested:
   Carbon Black Enterprise Response - WIN-B73RGE9AAIF
   CrowdStrike Falcon Host - AUTOMATIONPC
