@@ -1099,10 +1099,10 @@ script:
           description: The type of the file artifact.
           type: String
     - arguments:
-      - name: limit
-        description: The maximum number of assets to return. Default is 100.
-      - name: page
-        description: The page number for the assets to return for pagination.
+      - name: page_size
+        description: The number of assets to return per page. Default is 100.
+      - name: page_number
+        description: The page number for the assets to return for pagination. Default is 0.
       - name: asset_names
         description: Comma-separated list of asset names to search for.
       - name: asset_types
