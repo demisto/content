@@ -1160,6 +1160,37 @@ script:
         description: The related cases breakdown of the asset.
       - contextPath: Core.Asset.provider
         description: The asset provider.
+    - arguments:
+      - description: Issue ID to update. If empty, updates the current issue ID.
+        name: issue_id
+        type: string
+      - description: Email address of the user to assign the issue to.
+        name: assigned_user_mail
+        type: string
+      - name: severity
+        auto: PREDEFINED
+        description: Change the severity of an issue. Low (1), Medium (2), High (3), Critical (4). Must be a number.
+        type: string
+        predefined:
+        - 1
+        - 2
+        - 3
+        - 4
+      - name: name
+        description: Change the issue name.
+        type: string
+      - name: occurred
+        description: >
+          Change the occurred time of an issue. Supports different time formats, for example: 2017-09-27T10:00:00+03:00
+        type: string
+      - name: type
+        description: Change the type of an issue.
+        type: string
+      - name: phase
+        description: Change the phase of an issue.
+        type: string
+      name: update-issue
+      description: Updates the properties of an issue. This command does not provide an explicit indication of success.
   runonce: false
   script: "-"
   subtype: python3
