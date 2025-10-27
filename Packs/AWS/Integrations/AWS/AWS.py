@@ -1872,27 +1872,21 @@ class EC2:
                             and a md table with a concise summary of the latest AMI.
         """
         kwargs = {
-            "ExecutableBy": parse_resource_ids(args.get("executable_by")),
-            "Filter": parse_filter_field(args.get("filters")),
-            "Owner": parse_resource_ids(args.get("owners")),
-            "ImageId": parse_resource_ids(args.get("image_id")),
-            "IncludeDeprecated": args.get("include_deprecated"),
-            "IncludeDisabled": args.get("include_disabled"),
-            "MaxResults": args.get("max_results"),
-            "NextToken": args.get("next_token"),
+            # "ExecutableBy": parse_resource_ids(args.get("executable_by")),
+            # "Filter": parse_filter_field(args.get("filters")),
+            # "Owner": parse_resource_ids(args.get("owners")),
+            # "ImageId": parse_resource_ids(args.get("image_id")),
+            # "IncludeDeprecated": args.get("include_deprecated"),
+            # "IncludeDisabled": args.get("include_disabled"),
+            # "MaxResults": args.get("max_results"),
+            # "NextToken": args.get("next_token"),
         }
 
-        remove_nulls_from_dictionary(kwargs)
-        has_limiting_param = any(args.get(k) for k in ["executable_by", "owners", "image_id", "filters"])
-        if not has_limiting_param:
-            raise DemistoException(
-                "The AWS EC2 describe-images API requires a limiting parameter "
-                "to prevent an overly broad request. Please specify one or more of the "
-                "following arguments: 'executable_by', 'filters', 'image_id', or 'owners'."
-            )
+        # remove_nulls_from_dictionary(kwargs)
         try:
             response = client.describe_images(**kwargs)
             demisto.info(f"{response=}")
+            return CommandResults(readable_output=response)
             amis = response.get("Images", [])
             while response.get("nextToken"):
                 kwargs["NextToken"] = response.get("nextToken")
