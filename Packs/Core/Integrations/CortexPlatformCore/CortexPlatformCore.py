@@ -1,6 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from CoreIRApiModule import *
+import dateparser
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -21,15 +22,13 @@ ASSET_FIELDS = {
     "asset_group_ids": "xdm.asset.group_ids",
 }
 
-
-class FilterField:
-    def __init__(self, field_name: str, operator: str, values: Any):
-        self.field_name = field_name
-        self.operator = operator
-        self.values = values
-
-WEBAPP_COMMANDS = ["core-get-vulnerabilities", "core-search-asset-groups"]
-DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
+SEVERITY_MAPPING = {
+    "info": "SEV_030_INFO",
+    "low": "SEV_040_LOW",
+    "medium": "SEV_050_MEDIUM",
+    "high": "SEV_060_HIGH",
+    "critical": "SEV_070_CRITICAL",
+}
 
 ASSET_GROUP_FIELDS = {
     "asset_group_name": "XDM__ASSET_GROUP__NAME",
@@ -38,9 +37,12 @@ ASSET_GROUP_FIELDS = {
     "asset_group_id": "XDM__ASSET_GROUP__ID",
 }
 
+WEBAPP_COMMANDS = ["core-get-vulnerabilities", "core-search-asset-groups"]
+DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
+
 
 class FilterField:
-    def __init__(self, field_name: str, operator: str, values: list):
+    def __init__(self, field_name: str, operator: str, values: Any):
         self.field_name = field_name
         self.operator = operator
         self.values = values
@@ -275,6 +277,140 @@ def search_asset_groups_command(client: Client, args: dict) -> CommandResults:
     )
 
 
+def create_filter_from_fields(fields_to_filter: list[FilterField]):
+    """
+    Creates a filter from a list of FilterField objects.
+    The filter will require each field to be one of the values provided.
+    Args:
+        fields_to_filter (list[FilterField]): List of FilterField objects to create a filter from.
+    Returns:
+        dict[str, list]: Filter object.
+    """
+    filter_structure: dict[str, list] = {"AND": []}
+
+    for field in fields_to_filter:
+        if not isinstance(field.values, list):
+            field.values = [field.values]
+
+        search_values = []
+        for value in field.values:
+            if value is None:
+                continue
+
+            search_values.append(
+                {
+                    "SEARCH_FIELD": field.field_name,
+                    "SEARCH_TYPE": field.operator,
+                    "SEARCH_VALUE": value,
+                }
+            )
+
+        if search_values:
+            search_obj = {"OR": search_values} if len(search_values) > 1 else search_values[0]
+            filter_structure["AND"].append(search_obj)
+
+    if not filter_structure["AND"]:
+        filter_structure = {}
+
+    return filter_structure
+
+
+def prepare_start_end_time(args: dict) -> tuple[int | None, int | None]:
+    """Prepare start and end time from args, parsing relative time strings."""
+    start_time_str = args.get("start_time")
+    end_time_str = args.get("end_time")
+
+    if end_time_str and not start_time_str:
+        raise DemistoException("When 'end_time' is provided, 'start_time' must be provided as well.")
+
+    start_time, end_time = None, None
+
+    if start_time_str:
+        if start_dt := dateparser.parse(str(start_time_str)):
+            start_time = int(start_dt.timestamp() * 1000)
+        else:
+            raise ValueError(f"Could not parse start_time: {start_time_str}")
+
+    if end_time_str:
+        if end_dt := dateparser.parse(str(end_time_str)):
+            end_time = int(end_dt.timestamp() * 1000)
+        else:
+            raise ValueError(f"Could not parse end_time: {end_time_str}")
+
+    if start_time and not end_time:
+        # Set end_time to the current time if only start_time is provided
+        end_time = int(datetime.now().timestamp() * 1000)
+
+    return start_time, end_time
+
+
+def get_vulnerabilities_command(client: Client, args: dict) -> CommandResults:
+    """
+    Retrieves vulnerabilities using the generic /api/webapp/get_data endpoint.
+    """
+    limit = arg_to_number(args.get("limit")) or 50
+    sort_field = args.get("sort_field", "LAST_OBSERVED")
+    sort_order = args.get("sort_order", "DESC")
+
+    start_time, end_time = prepare_start_end_time(args)
+
+    severities = argToList(args.get("severity"))
+    api_severities = [SEVERITY_MAPPING[sev] for sev in severities if sev in SEVERITY_MAPPING]
+
+    filter_fields = [
+        FilterField("CVE_ID", "CONTAINS", argToList(args.get("cve_id"))),
+        FilterField("CVSS_SCORE", "GTE", arg_to_number(args.get("cvss_score_gte"))),
+        FilterField("EPSS_SCORE", "GTE", arg_to_number(args.get("epss_score_gte"))),
+        FilterField("INTERNET_EXPOSED", "EQ", arg_to_bool_or_none(args.get("internet_exposed"))),
+        FilterField("EXPLOITABLE", "EQ", arg_to_bool_or_none(args.get("exploitable"))),
+        FilterField("HAS_KEV", "EQ", arg_to_bool_or_none(args.get("has_kev"))),
+        FilterField("AFFECTED_SOFTWARE", "CONTAINS", argToList(args.get("affected_software"))),
+        FilterField("PLATFORM_SEVERITY", "EQ", api_severities),
+    ]
+
+    if start_time and end_time:
+        filter_fields.append(FilterField("LAST_OBSERVED", "RANGE", {"from": start_time, "to": end_time}))
+
+    not_assigned = arg_to_bool_or_none(args.get("not_assigned"))
+    if not_assigned is not None:
+        not_assigned_operator = "IS_EMPTY" if not_assigned else "NIS_EMPTY"
+        filter_fields.append(FilterField("ASSIGNED_TO", not_assigned_operator, ""))
+
+    request_data = build_webapp_request_data(
+        table_name="VULNERABLE_ISSUES_TABLE",
+        filter_fields=filter_fields,
+        limit=limit,
+        sort_field=sort_field,
+        sort_order=sort_order,
+        on_demand_fields=argToList(args.get("on_demand_fields")),
+    )
+    response = client.get_webapp_data(request_data)
+    reply = response.get("reply", {})
+    data = reply.get("DATA", [])
+
+    headers = [
+        "ISSUE_ID",
+        "ISSUE_NAME",
+        "CVE_ID",
+        "PLATFORM_SEVERITY",
+        "CVSS_SEVERITY",
+        "EPSS_SCORE",
+        "CVSS_SCORE",
+        "FIX_AVAILABLE",
+        "ASSET_ID",
+        "ASSIGNED_TO_PRETTY",
+        "ASSIGNED_TO",
+        "CVE_DESCRIPTION",
+    ]
+    return CommandResults(
+        readable_output=tableToMarkdown("Vulnerabilities", data, headerTransform=string_to_table_header, headers=headers),
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Vulnerability",
+        outputs_key_field="ISSUE_ID",
+        outputs=data,
+        raw_response=response,
+    )
+
+
 def get_asset_details_command(client: Client, args: dict) -> CommandResults:
     """
     Retrieves details of a specific asset by its ID and formats the response.
@@ -449,44 +585,6 @@ def search_assets_command(client: Client, args):
     )
 
 
-def create_filter_from_fields(fields_to_filter: list[FilterField]):
-    """
-    Creates a filter from a list of FilterField objects.
-    The filter will require each field to be one of the values provided.
-    Args:
-        fields_to_filter (list[FilterField]): List of FilterField objects to create a filter from.
-    Returns:
-        dict[str, list]: Filter object.
-    """
-    filter_structure: dict[str, list] = {"AND": []}
-
-    for field in fields_to_filter:
-        if not isinstance(field.values, list):
-            field.values = [field.values]
-
-        search_values = []
-        for value in field.values:
-            if value is None:
-                continue
-
-            search_values.append(
-                {
-                    "SEARCH_FIELD": field.field_name,
-                    "SEARCH_TYPE": field.operator,
-                    "SEARCH_VALUE": value,
-                }
-            )
-
-        if search_values:
-            search_obj = {"OR": search_values} if len(search_values) > 1 else search_values[0]
-            filter_structure["AND"].append(search_obj)
-
-    if not filter_structure["AND"]:
-        filter_structure = {}
-
-    return filter_structure
-
-
 def get_asset_group_ids_from_names(client: Client, group_names: list[str]) -> list[str]:
     """
     Retrieves the IDs of asset groups based on their names.
@@ -525,9 +623,11 @@ def main():  # pragma: no cover
     args["integration_context_brand"] = INTEGRATION_CONTEXT_BRAND
     args["integration_name"] = INTEGRATION_NAME
     headers: dict = {}
+
     public_api_url = "/api/webapp/public_api/v1"
     webapp_api_url = "/api/webapp"
     data_platform_api_url = f"{webapp_api_url}/data-platform"
+
     proxy = demisto.params().get("proxy", False)
     verify_cert = not demisto.params().get("insecure", False)
 
@@ -588,6 +688,9 @@ def main():  # pragma: no cover
 
         elif command == "update-issue":
             return_results(update_issue_command(client, args))
+
+        elif command == "core-get-vulnerabilities":
+            return_results(get_vulnerabilities_command(client, args))
 
     except Exception as err:
         demisto.error(traceback.format_exc())

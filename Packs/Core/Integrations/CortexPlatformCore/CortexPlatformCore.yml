@@ -1098,6 +1098,220 @@ script:
         - contextPath: Core.CaseExtraData.file_artifacts.data.type
           description: The type of the file artifact.
           type: String
+    - name: core-get-vulnerabilities
+      description: "Retrieves vulnerabilities based on specified filters."
+      arguments:
+        - name: limit
+          description: "The maximum number of vulnerabilities to return."
+          defaultValue: "50"
+        - defaultValue: LAST_OBSERVED
+          description: The field by which to sort the results.
+          name: sort_field
+        - auto: PREDEFINED
+          description: The order in which to sort the results.
+          name: sort_order
+          predefined:
+            - DESC
+            - ASC
+        - name: cve_id
+          description: "The CVE ID. Accepts a comma-separated list."
+          isArray: true
+        - name: cvss_score_gte
+          description: "The minimum CVSS score."
+        - name: epss_score_gte
+          description: "The minimum EPSS score."
+        - name: internet_exposed
+          description: "Filter by internet exposed assets."
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+        - name: exploitable
+          description: "Filter by exploitable vulnerabilities."
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+        - name: has_kev
+          description: "Filter by vulnerabilities that have a Known Exploited Vulnerability (KEV)."
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+        - name: affected_software
+          description: "Filter by affected software. Accepts a comma-separated list."
+          isArray: true
+        - name: on_demand_fields
+          description: "A comma-separated list of additional fields to retrieve."
+          isArray: true
+        - name: not_assigned
+          description: "Filter by vulnerabilities not assigned to a user."
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+        - description: Supports epoch timestamp and simplified extended ISO format (YYYY-MM-DDThh:mm:ss).
+          name: start_time
+        - description: Supports epoch timestamp and simplified extended ISO format (YYYY-MM-DDThh:mm:ss). If start time is provided without end_time it will be from start_time until now.
+          name: end_time
+        - auto: PREDEFINED
+          description: The severity of the vulnerability issue.
+          isArray: true
+          name: severity
+          predefined:
+            - info
+            - low
+            - medium
+            - high
+            - critical
+      outputs:
+        - contextPath: Core.Vulnerability.ISSUE_ID
+          description: The unique identifier for the vulnerability issue.
+          type: String
+        - contextPath: Core.Vulnerability.ISSUE_NAME
+          description: The name of the vulnerability issue.
+          type: String
+        - contextPath: Core.Vulnerability.CVE_ID
+          description: The CVE identifier for the vulnerability.
+          type: String
+        - contextPath: Core.Vulnerability.CVE_DESCRIPTION
+          description: The description of the CVE.
+          type: String
+        - contextPath: Core.Vulnerability.ASSET_NAME
+          description: The name of the affected asset.
+          type: String
+        - contextPath: Core.Vulnerability.PLATFORM_SEVERITY
+          description: The severity of the vulnerability as determined by the platform.
+          type: String
+        - contextPath: Core.Vulnerability.EPSS_SCORE
+          description: The Exploit Prediction Scoring System (EPSS) score.
+          type: Number
+        - contextPath: Core.Vulnerability.CVSS_SCORE
+          description: The Common Vulnerability Scoring System (CVSS) score.
+          type: Number
+        - contextPath: Core.Vulnerability.CVSS_SEVERITY
+          description: The severity level based on the CVSS score.
+          type: String
+        - contextPath: Core.Vulnerability.PROGRESS_STATUS
+          description: The current progress status of the vulnerability.
+          type: String
+        - contextPath: Core.Vulnerability.ASSIGNED_TO
+          description: The email of the user assigned to the vulnerability.
+          type: String
+        - contextPath: Core.Vulnerability.ASSIGNED_TO_PRETTY
+          description: The full name of the user assigned to the vulnerability.
+          type: String
+        - contextPath: Core.Vulnerability.AFFECTED_SOFTWARE
+          description: The software affected by the vulnerability.
+          type: Unknown
+        - contextPath: Core.Vulnerability.FIX_AVAILABLE
+          description: Indicates if a fix is available for the vulnerability.
+          type: Boolean
+        - contextPath: Core.Vulnerability.ASSET_TYPE
+          description: The type of the affected asset.
+          type: String
+        - contextPath: Core.Vulnerability.ASSET_CATEGORY
+          description: The category of the affected asset.
+          type: String
+        - contextPath: Core.Vulnerability.PATH
+          description: The path related to the vulnerability finding.
+          type: Unknown
+        - contextPath: Core.Vulnerability.LOCATION
+          description: The location of the affected asset.
+          type: Unknown
+        - contextPath: Core.Vulnerability.INTERNET_EXPOSED
+          description: Indicates if the asset is exposed to the internet.
+          type: Boolean
+        - contextPath: Core.Vulnerability.PROVIDER
+          description: The provider or source of the asset information.
+          type: String
+        - contextPath: Core.Vulnerability.HAS_KEV
+          description: Indicates if the vulnerability is a Known Exploited Vulnerability (KEV).
+          type: Boolean
+        - contextPath: Core.Vulnerability.EXPLOITABLE
+          description: Indicates if the vulnerability is exploitable.
+          type: Boolean
+        - contextPath: Core.Vulnerability.EXPLOIT_LEVEL
+          description: The level of exploit available for the vulnerability.
+          type: String
+        - contextPath: Core.Vulnerability.CVE_RISK_FACTORS
+          description: A list of risk factors associated with the CVE.
+          type: Unknown
+        - contextPath: Core.Vulnerability.FINDING_SOURCES
+          description: The sources that reported the vulnerability finding.
+          type: Unknown
+        - contextPath: Core.Vulnerability.FIRST_OBSERVED
+          description: The timestamp when the vulnerability was first observed.
+          type: Date
+        - contextPath: Core.Vulnerability.LAST_OBSERVED
+          description: The timestamp when the vulnerability was last observed.
+          type: Date
+        - contextPath: Core.Vulnerability.OPERATING_SYSTEM
+          description: The operating system of the affected asset.
+          type: Unknown
+        - contextPath: Core.Vulnerability.OS_FAMILY
+          description: The family of the operating system.
+          type: Unknown
+        - contextPath: Core.Vulnerability.IPV4_ADDRESSES
+          description: A list of IPv4 addresses associated with the asset.
+          type: Unknown
+        - contextPath: Core.Vulnerability.IPV6_ADDRESSES
+          description: A list of IPv6 addresses associated with the asset.
+          type: Unknown
+        - contextPath: Core.Vulnerability.IMAGE
+          description: The image related to the asset.
+          type: Unknown
+        - contextPath: Core.Vulnerability.FIX_VERSIONS
+          description: A list of versions that include a fix for the vulnerability.
+          type: Unknown
+        - contextPath: Core.Vulnerability.SYMBOLS
+          description: Symbols related to the vulnerability.
+          type: Unknown
+        - contextPath: Core.Vulnerability.PACKAGE_IN_USE
+          description: Indicates if the package is in use.
+          type: Unknown
+        - contextPath: Core.Vulnerability.ORIGIN_PACKAGE_NAME
+          description: The original name of the package.
+          type: Unknown
+        - contextPath: Core.Vulnerability.PACKAGE_FILE_CREATION_TIME
+          description: The creation time of the package file.
+          type: Unknown
+        - contextPath: Core.Vulnerability.PACKAGE_LICENSES
+          description: The licenses associated with the package.
+          type: Unknown
+        - contextPath: Core.Vulnerability.PACKAGE_VERSION
+          description: The version of the package.
+          type: Unknown
+        - contextPath: Core.Vulnerability.PACKAGE_PURL
+          description: The Package URL (PURL) for the package.
+          type: Unknown
+        - contextPath: Core.Vulnerability.PACKAGE_TYPE
+          description: The type of the package.
+          type: Unknown
+        - contextPath: Core.Vulnerability.AUTHOR
+          description: The author of the package or code.
+          type: Unknown
+        - contextPath: Core.Vulnerability.ASSET_ID
+          description: The unique identifier for the asset.
+          type: String
+        - contextPath: Core.Vulnerability.PLATFORM_ID
+          description: The unique identifier from the platform.
+          type: String
+        - contextPath: Core.Vulnerability.APPLICATION_VERSION
+          description: The version of the application.
+          type: Unknown
+        - contextPath: Core.Vulnerability.DERIVED_FROM_BASE_IMAGE
+          description: Indicates if the asset is derived from a base image.
+          type: Unknown
+        - contextPath: Core.Vulnerability.ASSET_GROUP_IDS
+          description: A list of asset group IDs.
+          type: Unknown
+        - contextPath: Core.Vulnerability.COMPENSATING_CONTROLS_DETECTED_COVERAGE
+          description: Coverage of detected compensating controls.
+          type: Unknown
+        - contextPath: Core.Vulnerability.COMPENSATING_CONTROLS_DETECTED_CONTROLS
+          description: Detected compensating controls.
+          type: Unknown
     - arguments:
       - name: page_size
         description: The number of assets to return per page. Default is 100.
