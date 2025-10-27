@@ -23,7 +23,7 @@ ASSET_FIELDS = {
 
 
 class FilterField:
-    def __init__(self, field_name: str, operator: str, values: list):
+    def __init__(self, field_name: str, operator: str, values: Any):
         self.field_name = field_name
         self.operator = operator
         self.values = values
@@ -268,39 +268,38 @@ def create_filter_from_fields(fields_to_filter: list[FilterField]):
     """
     Creates a filter from a list of FilterField objects.
     The filter will require each field to be one of the values provided.
-
     Args:
         fields_to_filter (list[FilterField]): List of FilterField objects to create a filter from.
-
     Returns:
         dict[str, list]: Filter object.
     """
-    filter: dict[str, list] = {"AND": []}
+    filter_structure: dict[str, list] = {"AND": []}
 
     for field in fields_to_filter:
-        if not field.values:
-            continue
+        if not isinstance(field.values, list):
+            field.values = [field.values]
 
-        if len(field.values) == 1:
-            search_obj = {
-                "SEARCH_FIELD": field.field_name,
-                "SEARCH_TYPE": field.operator,
-                "SEARCH_VALUE": field.values[0],
-            }
-        else:
-            search_obj = {"OR": []}
-            for value in field.values:
-                search_obj["OR"].append(
-                    {
-                        "SEARCH_FIELD": field.field_name,
-                        "SEARCH_TYPE": field.operator,
-                        "SEARCH_VALUE": value,
-                    }
-                )
+        search_values = []
+        for value in field.values:
+            if value is None:
+                continue
 
-        filter["AND"].append(search_obj)
+            search_values.append(
+                {
+                    "SEARCH_FIELD": field.field_name,
+                    "SEARCH_TYPE": field.operator,
+                    "SEARCH_VALUE": value,
+                }
+            )
 
-    return filter
+        if search_values:
+            search_obj = {"OR": search_values} if len(search_values) > 1 else search_values[0]
+            filter_structure["AND"].append(search_obj)
+
+    if not filter_structure["AND"]:
+        filter_structure = {}
+
+    return filter_structure
 
 
 def get_asset_group_ids_from_names(client: Client, group_names: list[str]) -> list[str]:
