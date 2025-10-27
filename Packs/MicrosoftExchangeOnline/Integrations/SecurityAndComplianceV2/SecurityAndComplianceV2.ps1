@@ -2181,7 +2181,8 @@ function Main {
     try {
         $Demisto.Debug("Command being called is $Command")
 
-        $using_delegated = -not [string]::IsNullOrWhiteSpace($this.upn_password)
+        $using_delegated = -not [string]::IsNullOrWhiteSpace($upn_password)
+
 
         # Creating Compliance and search client
         $oauth2_client = [OAuth2DeviceCodeClient]::CreateClientFromIntegrationContext($insecure, $false,
