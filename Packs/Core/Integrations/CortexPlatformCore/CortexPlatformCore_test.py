@@ -723,7 +723,6 @@ def test_update_issue_command_success(mocker):
     client = Client(base_url="", headers={})
     mock_update_issue = mocker.patch.object(client, "update_issue")
     mock_debug = mocker.patch.object(demisto, "debug")
-    mock_arg_to_number = mocker.patch("CortexPlatformCore.arg_to_number", return_value=3)
 
     args = {
         "issue_id": "12345",
@@ -736,9 +735,6 @@ def test_update_issue_command_success(mocker):
     }
 
     update_issue_command(client, args)
-
-    # Verify arg_to_number was called with severity
-    mock_arg_to_number.assert_called_once_with("3")
 
     # Verify debug was called
     mock_debug.assert_called_once()
@@ -791,8 +787,7 @@ def test_update_issue_command_filters_none_values(mocker):
     client = Client(base_url="", headers={})
     mock_update_issue = mocker.patch.object(client, "update_issue")
     mocker.patch.object(demisto, "debug")
-    mocker.patch("CortexPlatformCore.arg_to_number", return_value=None)
-
+    
     args = {
         "issue_id": "12345",
         "assigned_user_mail": "user@example.com",
@@ -830,8 +825,6 @@ def test_update_issue_command_severity_mapping(mocker):
     severity_tests = [(1, "SEV_020_LOW"), (2, "SEV_030_MEDIUM"), (3, "SEV_040_HIGH"), (4, "SEV_050_CRITICAL")]
 
     for severity_num, expected_severity in severity_tests:
-        mocker.patch("CortexPlatformCore.arg_to_number", return_value=severity_num)
-
         args = {"issue_id": "12345", "severity": str(severity_num)}
 
         update_issue_command(client, args)
@@ -857,7 +850,6 @@ def test_update_issue_command_from_context(mocker):
     client = Client(base_url="", headers={})
     mock_update_issue = mocker.patch.object(client, "update_issue")
     mocker.patch.object(demisto, "debug")
-    mocker.patch("CortexPlatformCore.arg_to_number", return_value=2)
 
     mock_calling_context = {"context": {"Incidents": [{"id": "context_issue_id"}]}}
     mocker.patch.object(demisto, "callingContext", mock_calling_context)
@@ -888,8 +880,7 @@ def test_update_issue_command_empty_args(mocker):
     client = Client(base_url="", headers={})
     mock_update_issue = mocker.patch.object(client, "update_issue")
     mocker.patch.object(demisto, "debug")
-    mocker.patch("CortexPlatformCore.arg_to_number", return_value=None)
-
+    
     args = {"issue_id": "12345"}
 
     update_issue_command(client, args)
@@ -916,7 +907,6 @@ def test_update_issue_command_invalid_severity_mapping(mocker):
     client = Client(base_url="", headers={})
     mock_update_issue = mocker.patch.object(client, "update_issue")
     mocker.patch.object(demisto, "debug")
-    mocker.patch("CortexPlatformCore.arg_to_number", return_value=99)  # Invalid severity
 
     args = {"issue_id": "12345", "severity": "99", "name": "Test Issue"}
 
