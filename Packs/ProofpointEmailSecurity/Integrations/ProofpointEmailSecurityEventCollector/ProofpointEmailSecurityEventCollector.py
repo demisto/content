@@ -260,7 +260,7 @@ def fetch_events(
                 demisto.debug(f"Timeout while waiting for the event on {connection.event_type}, breaking.")
                 break
             except exceptions.ConnectionClosedError:
-                demisto.error("Connection closed, attempting to reconnect...")
+                demisto.error(f"[{connection.event_type}] Connection closed with error. Attempting to reconnect...")
                 connection.reconnect()
                 continue
             except exceptions.ConnectionClosedOK:
@@ -272,7 +272,7 @@ def fetch_events(
                 connection.reconnect()
                 continue
             except Exception as e:
-                demisto.error(f"Got general error in fetch_events {e}")
+                demisto.error(f"[{connection.event_type}] Got general error in fetch_events {e}")
                 events.extend(integration_context.get(connection.event_type, []))
                 integration_context[connection.event_type] = events  # update events in context in case of fail
                 integration_context["last_run_results"] = f"{e!s} \nThe error happened at {datetime.now().astimezone(tz.tzutc())}"
