@@ -56,7 +56,6 @@ def build_webapp_request_data(
         "table_name": table_name,
         "filter_data": filter_data,
         "jsons": [],
-        "data_id": "",
         "onDemandFields": on_demand_fields,
     }
 
@@ -230,6 +229,7 @@ def search_asset_groups_command(client: Client, args: dict) -> CommandResults:
         CommandResults: Object containing the formatted asset groups,
                         raw response, and outputs for integration context.
     """
+    limit = arg_to_number(args.get("limit")) or 50
     filter_fields = [
         FilterField(ASSET_GROUP_FIELDS["asset_group_name"], "CONTAINS", argToList(args.get("name", ""))),
         FilterField(ASSET_GROUP_FIELDS["asset_group_type"], "EQ", argToList(args.get("type", ""))),
@@ -240,7 +240,7 @@ def search_asset_groups_command(client: Client, args: dict) -> CommandResults:
     request_data = build_webapp_request_data(
         table_name="UNIFIED_ASSET_MANAGEMENT_ASSET_GROUPS",
         filter_fields=filter_fields,
-        limit=100,
+        limit=limit,
         sort_field="XDM__ASSET_GROUP__LAST_UPDATE_TIME",
     )
 

@@ -1099,6 +1099,9 @@ script:
           description: The type of the file artifact.
           type: String
     - arguments:
+        - description: The maximum number of groups to return.
+          defaultValue: "50"
+          name: limit
         - description: JSON list of groups to search for. (e.g. `["group1", "group2"]`).
           name: name
         - description: Comma separated list of ids to search for.
