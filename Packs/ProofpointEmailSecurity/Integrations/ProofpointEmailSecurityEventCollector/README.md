@@ -29,7 +29,7 @@ Retrieves the results of a connection attempt to Proofpoint, indicating whether 
 ### proofpoint-es-get-events
 
 ***
-Retrieves events from Proofpoint Email Security PoD archive for a specified time range to backfill gaps in fetched events. This command is intended for debugging purposes and may result in duplicate events in the Cortex XSIAM dataset. Consult with engineering before using. HTTP 409 (Conflict) errors may be raised if long running execution is active. HTTP 400 (Bad Request) errors may be raised if the time range is within the last 24 hours.
+Retrieves events from Proofpoint Email Security PoD archive for a specified time range to backfill gaps in fetched events. This command is intended for debugging purposes and may result in duplicate events in the Cortex XSIAM dataset. Consult with engineering before using. HTTP 409 (Conflict) errors may be raised if long running execution is active. HTTP 400 (Bad Request) errors may be raised if the time range falls within the last 24 hours or is older than 30 days.
 
 #### Base Command
 

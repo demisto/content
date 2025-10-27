@@ -58,6 +58,13 @@ class EventConnection:
         """
         return connect(self.url, additional_headers=self.headers)
 
+    @property
+    def is_to_archive(self) -> bool:
+        """
+        Check if the connection is to an archive.
+        """
+        return bool("sinceTime" in self.url and "toTime" in self.url)
+
     def reconnect(self):
         """
         Reconnect logic for the WebSocket connection using an exponential backoff strategy.
@@ -227,7 +234,7 @@ def fetch_events(
     demisto.debug(f"Starting to fetch events of type {event_type}")
     events: list[dict] = []
     event_ids = set()
-    fetch_start_time = datetime.utcnow()
+    fetch_start_time = datetime.now().astimezone(tz.tzutc())
     demisto.info(f"in {event_type=}, preparing to acquire lock & recv.")
     with connection.lock:
         while not is_interval_passed(fetch_start_time, fetch_interval):
@@ -257,8 +264,13 @@ def fetch_events(
                 connection.reconnect()
                 continue
             except exceptions.ConnectionClosedOK:
-                demisto.error(f"[{connection.event_type}] Connection closed with OK status.")
-                break
+                # `ConnectionClosedOK` exception from archive websocket means event fetching completed successfully
+                if connection.is_to_archive:
+                    demisto.info(f"[{connection.event_type}] Connection closed with OK status. All archived events were fetched.")
+                    break
+                demisto.error(f"[{connection.event_type}] Connection closed with OK status. Attempting to reconnect...")
+                connection.reconnect()
+                continue
             except Exception as e:
                 demisto.error(f"Got general error in fetch_events {e}")
                 events.extend(integration_context.get(connection.event_type, []))
@@ -275,10 +287,10 @@ def fetch_events(
     demisto.debug(f"Fetched {num_events} events of type {event_type} with {last_event_time=}")
     demisto.debug("The fetched events ids are: " + ", ".join([str(event_id) for event_id in event_ids]))
     if write_to_integration_context:
+        fetch_end_time = datetime.now().astimezone(tz.tzutc())
         set_the_integration_context(
             "last_run_results",
-            f"Got from connection {num_events} events starting\
-                                        at {fetch_start_time!s} until {datetime.now().astimezone(tz.tzutc())}",
+            f"Got from connection {num_events} events starting at {fetch_start_time!s} until {fetch_end_time!s}",
         )
     should_skip_sleeping.append(True)
     return events
