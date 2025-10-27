@@ -956,6 +956,7 @@ class MsGraphMailBaseClient(MicrosoftClient):
         """
         # there are situations where the 'body' key won't be returned from the api response, hence taking the uniqueBody
         # in those cases for both html/text formats.
+        demisto.debug("dummy log to run pipeline.")
 
         def body_extractor(email, parsed_email):
             email_content_as_html, email_content_as_text = self.get_email_content_as_text_and_html(email)
