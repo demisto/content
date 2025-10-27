@@ -2813,14 +2813,17 @@ def test_azure_billing_usage_list_command_success(mocker, client, mock_params):
 
     assert isinstance(result, CommandResults)
     assert "Azure Billing Usage" in result.readable_output
-    assert "Azure.Billing.Usage" in result.outputs
-    assert "Azure.Billing.UsageNextToken" in result.outputs
+    assert "Azure.Billing.Usage(val.name && val.name == obj.name)" in result.outputs
+    assert "Azure.Billing.UsageNextToken(true)" in result.outputs
     assert (
-        result.outputs["Azure.Billing.UsageNextToken"]
-        == "https://management.azure.com/subscriptions/test/providers/Microsoft.Consumption/usageDetails?$skiptoken=abc123"
+        "https://management.azure.com/subscriptions/test/providers/Microsoft.Consumption/usageDetails?$skiptoken=abc123"
+        in result.outputs["Azure.Billing.UsageNextToken(true)"]
     )
-    assert len(result.outputs["Azure.Billing.Usage"]) == 1
-    assert result.outputs["Azure.Billing.Usage"][0]["properties"]["product"] == "Virtual Machines"
+    assert (
+        len(result.outputs["Azure.Billing.Usage(val.name && val.name == obj.name)"])
+        == 1
+    )
+    assert result.outputs["Azure.Billing.Usage(val.name && val.name == obj.name)"][0]["properties"]["product"] == "Virtual Machines"
     assert result.raw_response == mock_response
 
 
@@ -2986,9 +2989,9 @@ def test_azure_billing_usage_list_command_no_next_token(mocker, client, mock_par
     result = azure_billing_usage_list_command(client, params, args)
 
     assert isinstance(result, CommandResults)
-    assert result.outputs["Azure.Billing.UsageNextToken"] == ""
+    assert result.outputs["Azure.Billing.UsageNextToken(true)"] == ""
     assert "Next Page Token" not in result.readable_output
-    assert result.outputs["Azure.Billing.Usage"][0]["properties"]["product"] == "Storage"
+    assert result.outputs["Azure.Billing.Usage(val.name && val.name == obj.name)"][0]["properties"]["product"] == "Storage"
 
 
 def test_azure_billing_usage_list_command_with_pagination_token(mocker, client, mock_params):
@@ -3026,7 +3029,7 @@ def test_azure_billing_usage_list_command_with_pagination_token(mocker, client, 
     assert call_args["params"].keys() == {"api-version"}
 
     assert isinstance(result, CommandResults)
-    assert result.outputs["Azure.Billing.Usage"][0]["properties"]["product"] == "Networking"
+    assert result.outputs["Azure.Billing.Usage(val.name && val.name == obj.name)"][0]["properties"]["product"] == "Networking"
 
 
 def test_parse_forecast_table_to_dict_success():

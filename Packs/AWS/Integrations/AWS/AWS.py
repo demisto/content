@@ -2292,8 +2292,7 @@ class CostExplorer:
                         "Unit": total.get(metric, {}).get("Unit", ""),
                     }
                 )
-        outputs = {"AWS.Billing.Usage": results,
-                   "AWS.Billing.UsageNextToken(true)":next_token}
+        outputs = {"AWS.Billing.Usage": results, "AWS.Billing.UsageNextToken(true)": next_token}
         readable_tables = []
         for metric in metrics:
             metric_results = results_by_metric[metric]

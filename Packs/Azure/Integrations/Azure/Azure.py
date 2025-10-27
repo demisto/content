@@ -1553,7 +1553,7 @@ class AzureClient:
                 resource_name=subscription_id,
                 resource_type="Usage Details",
                 subscription_id=subscription_id,
-                api_function_name="billing_usage_list"
+                api_function_name="billing_usage_list",
             )
 
     def billing_forecast_list(
@@ -1619,7 +1619,7 @@ class AzureClient:
                 resource_name=subscription_id,
                 resource_type="Cost Forecast",
                 subscription_id=subscription_id,
-                api_function_name="billing_forecast_list"
+                api_function_name="billing_forecast_list",
             )
 
     def billing_budgets_list(
@@ -1655,7 +1655,7 @@ class AzureClient:
                 resource_name=budget_name or subscription_id,
                 resource_type="Budget",
                 subscription_id=subscription_id,
-                api_function_name="billing_budgets_list"
+                api_function_name="billing_budgets_list",
             )
 
 
@@ -3052,12 +3052,12 @@ def azure_billing_usage_list_command(client: AzureClient, params: dict, args: di
         results,
         headers=["Name", "Product", "PayGCostUSD", "UsageQuantity", "PeriodStartDate", "PeriodEndDate"],
         headerTransform=pascalToSpace,
-        metadata=metadata
+        metadata=metadata,
     )
 
     outputs = {
         "Azure.Billing.Usage(val.name && val.name == obj.name)": items,
-        "Azure.BillingUsageNextToken(true)": next_token,
+        "Azure.Billing.UsageNextToken(true)": next_token,
     }
     return CommandResults(
         readable_output=readable_output,
