@@ -1101,8 +1101,8 @@ script:
     - arguments:
       - name: limit
         description: The maximum number of assets to return. Default is 100.
-      - name: start
-        description: The starting index for the assets to return.
+      - name: page
+        description: The page number for the assets to return for pagination.
       - name: asset_names
         description: Comma-separated list of asset names to search for.
       - name: asset_types

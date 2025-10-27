@@ -136,15 +136,15 @@ class Client(CoreClient):
 
         return reply
 
-    def search_assets(self, filter, start, limit, on_demand_fields):
+    def search_assets(self, filter, page, limit, on_demand_fields):
         reply = self._http_request(
             method="POST",
             headers=self._headers,
             json_data={
                 "request_data": {
                     "filters": filter,
-                    "search_from": start,
-                    "search_to": start + limit,
+                    "search_from": page * limit,
+                    "search_to": (page + 1) * limit,
                     "on_demand_fields": on_demand_fields,
                 },
             },
@@ -253,9 +253,9 @@ def search_assets_command(client: Client, args):
     filter = create_filter_from_fields(fields_to_filter)
     demisto.debug(f"Search Assets Filter: {filter}")
     limit = arg_to_number(args.get("limit", SEARCH_ASSETS_DEFAULT_LIMIT))
-    start = arg_to_number(args.get("start", 0))
+    page = arg_to_number(args.get("page", 0))
     on_demand_fields = ["xdm.asset.tags"]
-    response = client.search_assets(filter, start, limit, on_demand_fields).get("reply", {}).get("data", [])
+    response = client.search_assets(filter, page, limit, on_demand_fields).get("reply", {}).get("data", [])
     return CommandResults(
         readable_output=tableToMarkdown("Assets", response, headerTransform=string_to_table_header),
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.CoreAssets",
