@@ -2840,38 +2840,6 @@ script:
         Subscription ID: ${asset.xdm.asset.realm}
     - name: resource_group_name
       type: string
-      description: The resource group name.
-      required: true
-      prettyname: Resource Group
-    - name: server_name
-      type: string
-      required: true
-      description: Name of the PostgreSQL server.
-      prettyname: Postgres Server Name
-    - name: configuration_name
-      type: string
-      description: Configuration setting name.
-      defaultValue: connection_throttling
-    - name: value
-      type: string
-      description: Configuration value.
-      defaultValue: 'on'
-    description: "Enable connection throttling on the PostgreSQL server. This enables the PostgreSQL database to set the verbosity of logged messages allowing generation of query and error logs with respect to concurrent connections. 'Microsoft.DBforPostgreSQL servers/configuration/*' permission is required."
-    name: azure-postgres-config-set-quick-action
-    prettyname: Enable Connection Throttling on PostgreSQL
-    quickaction: true
-    hidden: true
-    outputs: [] # have no outputs for these command by response
-  - arguments:
-    - name: subscription_id
-      type: string
-      description: The subscription ID.
-      required: true
-      prettyname: Subscription ID
-      prettypredefined:
-        Subscription ID: ${asset.xdm.asset.realm}
-    - name: resource_group_name
-      type: string
       required: true
       description: The resource group name.
       prettyname: Resource Group
@@ -3000,7 +2968,7 @@ script:
       type: string
       required: true
       description: Name of the Web App.
-      prettyname: AZ Web App
+      prettyname: AZ Webapp
       prettypredefined:
         AZ Web App: ${asset.xdm.asset.name}
     - auto: PREDEFINED
