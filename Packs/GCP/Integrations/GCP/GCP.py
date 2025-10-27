@@ -387,11 +387,9 @@ def _validate_bucket_policy_for_set(policy: dict[str, Any], add_mode: bool) -> N
 
     bindings = policy.get("bindings")
     if add_mode:
-        # In add-mode, bindings are required and must be well-formed
         if not isinstance(bindings, list) or any(not isinstance(b, dict) for b in bindings):
             raise DemistoException("Policy must include 'bindings' as an array of objects when add=true.")
     else:
-        # In replace-mode, bindings may be validated if present
         if bindings is not None and (not isinstance(bindings, list) or any(not isinstance(b, dict) for b in bindings)):
             raise DemistoException("'bindings' must be an array of objects if provided.")
 
@@ -403,7 +401,6 @@ def _validate_bucket_policy_for_set(policy: dict[str, Any], add_mode: bool) -> N
             members = b.get("members", [])
             if not isinstance(members, list) or any(not isinstance(m, str) for m in members):
                 raise DemistoException(f"Binding at index {idx} must include 'members' as an array of strings.")
-            # Optional condition requires policy version >= 3
             if "condition" in b:
                 version = policy.get("version", 1)
                 if not isinstance(version, int) or version < 3:
@@ -675,7 +672,6 @@ def storage_bucket_policy_list(
     demisto.debug(f"[GCP: storage_bucket_policy_list] Request params: {request_params}")
     response = storage.buckets().getIamPolicy(**request_params).execute()  # pylint: disable=E1101
 
-    # Build human readable output: summary + bindings table
     policy_summary = {
         "Bucket": bucket_name,
         "Version": response.get("version"),
@@ -688,11 +684,10 @@ def storage_bucket_policy_list(
         members = binding.get("members", [])
         bindings_rows.append({"Role": role, "Members": "\n".join(members) if members else ""})
 
-    # Build outputs for bucket policy
     summary_object_type = f"bucket: {bucket_name}"
     outputs = response
     primary_key: str | list[str] = "resourceId"
-    # Build outputs for object policy
+    # Build outputs for object policy command
     if object_name:
         summary_object_type = f"object: {object_name}"
         outputs = {"bucketName": bucket_name, "objectName": object_name, "bindings": response.get("bindings", [])}
@@ -738,11 +733,8 @@ def storage_bucket_policy_set(creds: Credentials, args: dict[str, Any]) -> Comma
     storage = GCPServices.STORAGE.build(creds)
 
     demisto.debug(f"[GCP: storage_bucket_policy_set] Bucket: {bucket_name}; Policy keys: {list(policy.keys())}")
-
-    # If add flag is true, merge provided policy bindings into existing policy
     add_flag = argToBoolean(args.get("add")) if args.get("add") is not None else False
 
-    # Validate structure of the provided policy according to the operation mode
     _validate_bucket_policy_for_set(policy=policy, add_mode=add_flag)
     if add_flag:
         current = storage.buckets().getIamPolicy(bucket=bucket_name).execute()  # pylint: disable=E1101

@@ -141,7 +141,6 @@ script:
     - contextPath: GCP.Compute.Operations.kind
       description: Type of the resource. Always compute#operation for Operation resources.
       type: string
-
   - name: gcp-storage-bucket-policy-delete
     description: Removes an entity from a bucket's Access Control List.
     arguments:
@@ -157,7 +156,6 @@ script:
       required: false
       isArray: true
       description: "Entity to remove from the Access Control List.\nCommon entity formats are:\n* user:<userId or email>\n* group:<groupId or email>\n* allUsers\n* allAuthenticatedUsers\nFor more options and details, see: https://cloud.google.com/storage/docs/json_api/v1/bucketAccessControls#resource "
-
   - name: gcp-compute-subnet-update
     description: Enables flow logs or Private Google Access on a subnet.
     arguments:
@@ -218,7 +216,6 @@ script:
     - contextPath: GCP.Compute.Operations.description
       description: The description of the subnet.
       type: String
-
   - name: gcp-container-cluster-security-update
     description: Configures security settings for GKE clusters, including access controls and visibility.
     arguments:
@@ -323,7 +320,6 @@ script:
     - contextPath: GCP.Container.Operations.masterVersion
       description: The current version of the Kubernetes master in the GKE cluster.
       type: String
-
   - name: gcp-storage-bucket-metadata-update
     description: Updates the metadata of a Google Cloud Storage (GCS) bucket, including settings such as versioning and Uniform Bucket-Level Access (UBLA).
     arguments:
@@ -420,7 +416,6 @@ script:
     - contextPath: GCP.StorageBucket.Metadata.website.notFoundPage
       description: The path to the custom 404 page for the bucket website.
       type: String
-
   - name: gcp-storage-bucket-list
     description: Retrieves the list of buckets in the project associated with the client.
     arguments:
@@ -455,7 +450,6 @@ script:
     - contextPath: GCP.Storage.Bucket.StorageClass
       description: The storage class of the bucket.
       type: String
-
   - name: gcp-storage-bucket-get
     description: Retrieves information about a specific bucket.
     arguments:
@@ -484,7 +478,6 @@ script:
     - contextPath: GCP.Storage.Bucket.StorageClass
       description: The storage class of the bucket.
       type: String
-
   - name: gcp-storage-bucket-objects-list
     description: Retrieves the list of objects in a bucket.
     arguments:
@@ -546,7 +539,6 @@ script:
     - contextPath: GCP.Storage.BucketObject.EncryptionKeySHA256
       description: SHA256 hash of the customer-supplied encryption key.
       type: String
-
   - name: gcp-storage-bucket-policy-list
     description: Retrieves the IAM policy for a bucket.
     arguments:
@@ -573,7 +565,6 @@ script:
     - contextPath: GCP.Storage.BucketPolicy.resourceId
       description: Resource ID of the updated IAM policy. e.g. projects/_/buckets/BUCKET_NAME.
       type: String
-
   - name: gcp-storage-bucket-policy-set
     description: Sets the IAM policy for a bucket.
     arguments:
@@ -604,7 +595,6 @@ script:
     - contextPath: GCP.Storage.BucketPolicy.bindings
       description: List of role bindings for the bucket.
       type: List
-
   - name: gcp-storage-bucket-object-policy-list
     description: Retrieves the IAM policy for a specific object in a bucket.
     arguments:
@@ -630,7 +620,6 @@ script:
     - contextPath: GCP.Storage.BucketObjectPolicy.bindings
       description: List of role bindings for the object.
       type: List
-
   - name: gcp-storage-bucket-object-policy-set
     description: Sets the IAM policy for a specific object in a bucket.
     arguments:
@@ -659,7 +648,6 @@ script:
     - contextPath: GCP.Storage.BucketObjectPolicy.bindings
       description: List of role bindings for the object.
       type: Unknown
-
   - name: gcp-iam-project-policy-binding-remove
     description: Removes a specified IAM role binding from a GCP project.
     arguments:
