@@ -108,6 +108,28 @@ MICROSOFT_DEFENDER_XDR_API = {
     "geo-us": "https://api-us.security.microsoft.com",
 }
 
+# https://learn.microsoft.com/en-us/defender-xdr/usgov
+MICROSOFT_DEFENDER_XDR_API_SERVICE_ENDPOINTS = {
+    "com": "https://security.microsoft.com",
+    "gcc": "https://security.microsoft.com",
+    "gcc-high": "https://security.microsoft.us",
+    "dod": "https://security.apps.mil",
+    "geo-eu": "https://security.microsoft.com",
+    "geo-uk": "https://security.microsoft.com",
+    "geo-us": "https://security.microsoft.com",
+}
+
+# https://learn.microsoft.com/en-us/defender-xdr/usgov
+MICROSOFT_DEFENDER_XDR_API_LOGIN = {
+    "com": "https://login.windows.net",
+    "gcc": "https://login.microsoftonline.com",
+    "gcc-high": "https://login.microsoftonline.us",
+    "dod": "https://login.microsoftonline.us",
+    "geo-eu": "https://login.windows.net",
+    "geo-uk": "https://login.windows.net",
+    "geo-us": "https://login.windows.net",
+}
+
 # https://learn.microsoft.com/en-us/graph/deployments#app-registration-and-token-service-root-endpoints
 MICROSOFT_DEFENDER_FOR_ENDPOINT_TOKEN_RETRIVAL_ENDPOINTS = {
     "com": "https://login.microsoftonline.com",
