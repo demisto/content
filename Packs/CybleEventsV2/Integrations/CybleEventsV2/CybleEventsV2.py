@@ -702,6 +702,7 @@ def fetch_subscribed_services_alert(client, method, base_url, token):
         return_error(f"Failed to fetch subscribed services: {str(e)}")
 
 
+
 def _test_response(client, method, url, token):
     """
     Test the integration state
