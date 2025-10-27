@@ -4407,6 +4407,74 @@ def test_get_bucket_acl_command_failure(mocker):
         S3.get_bucket_website_command(mock_client, args)
 
 
+def test_create_network_acl_command_success(mocker):
+    """
+    Given: A mocked boto3 EC2 client and a valid VPC ID.
+    When: create_network_acl_command is called.
+    Then: It should return `CommandResults` with a readable output containing the details of the newly created Network ACL.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.modify_subnet_attribute.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
+    args = {"vpc_id": "mock_vpc_id"}
+    result = EC2.create_network_acl_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert "AWS EC2 ACL Entries" in result.readable_output
+
+
+def test_create_network_acl_command_failure(mocker):
+    """
+    Given: A mocked boto3 EC2 client that returns an HTTP error response.
+    When: create_network_acl_command is called with a VPC ID.
+    Then: It should raise `DemistoException` indicating the failure to create the Network ACL.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.modify_subnet_attribute.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
+    args = {"vpc_id": "mock_vpc_id"}
+
+    with pytest.raises(DemistoException,
+                       match="AWS EC2 API call to create_network_acl failed or returned an unexpected status code."
+                             f" Received HTTP Status Code: {HTTPStatus.BAD_REQUEST}"):
+        EC2.create_network_acl_command(mock_client, args)
+
+
+def test_create_tags_command_success(mocker):
+    """
+    Given: A mocked boto3 EC2 client and valid resource IDs and tags.
+    When: create_tags_command is called to apply tags to specified resources.
+    Then: It should return `CommandResults` with a success message confirming that the resources were tagged successfully.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.modify_subnet_attribute.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
+    args = {"resources": "mock_resources", "tags": "key:mock_key value:mock_value"}
+    result = EC2.create_tags_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert "The resources where tagged successfully" in result.readable_output
+
+
+def test_create_tags_command_failure(mocker):
+    """
+    Given: A mocked boto3 EC2 client that returns an HTTP error response.
+    When: create_tags_command is called with resource IDs and tags.
+    Then: It should raise `DemistoException` indicating the failure to create the tags on the resources.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.modify_subnet_attribute.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
+    args = {"resources": "mock_resources", "tags": "key:mock_key value:mock_value"}
+
+    with pytest.raises(DemistoException,
+                       match=f"AWS EC2 API call to create_tags failed or returned an unexpected status code."
+                             f" Received HTTP Status Code: {HTTPStatus.BAD_REQUEST}"):
+        EC2.create_tags_command(mock_client, args)
+
+
 def test_get_latest_ami_command_success(mocker):
     from AWS import EC2
 
@@ -4417,3 +4485,4 @@ def test_get_latest_ami_command_success(mocker):
     result = EC2.get_latest_ami_command(mock_client, args)
     assert isinstance(result, CommandResults)
     assert "Bucket Acl" in result.readable_output
+    # TODO: finish here + failure test

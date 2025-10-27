@@ -1883,6 +1883,13 @@ class EC2:
         }
 
         remove_nulls_from_dictionary(kwargs)
+        has_limiting_param = any(args.get(k) for k in ["executable_by", "owners", "image_id", "filters"])
+        if not has_limiting_param:
+            raise DemistoException(
+                "The AWS EC2 describe-images API requires a limiting parameter "
+                "to prevent an overly broad request. Please specify one or more of the "
+                "following arguments: 'executable_by', 'filters', 'image_id', or 'owners'."
+            )
         try:
             response = client.describe_images(**kwargs)
             demisto.info(f"{response=}")
