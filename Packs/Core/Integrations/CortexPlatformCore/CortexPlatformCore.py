@@ -358,7 +358,6 @@ def main():  # pragma: no cover
             return_results(get_asset_details_command(client, args))
 
         elif command == "core-search-asset-groups":
-            client._base_url = "/api/webapp"
             return_results(search_asset_groups_command(client, args))
 
         elif command == "core-get-issues":
