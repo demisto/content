@@ -6,14 +6,13 @@
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
-    "categories": [
-        "Forensics & Malware Analysis"
+    "categories": ["Forensics & Malware Analysis"],
+    "tags": ["sandbox", "malware analysis", "forensics", "CAPE"],
+    "useCases": [
+        "Malware Analysis",
+        "Threat Intelligence",
+        "Incident Response"
     ],
-    "tags": [],
-    "useCases": [],
-    "keywords": [],
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2"
-    ]
+    "keywords": ["CAPE", "sandbox", "malware", "analysis", "forensics"],
+    "marketplaces": ["xsoar", "marketplacev2"]
 }

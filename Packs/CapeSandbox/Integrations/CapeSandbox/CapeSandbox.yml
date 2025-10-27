@@ -251,6 +251,8 @@ script:
       polling: true
       internal: true
       arguments:
+        - name: hide_polling_output
+          hidden: true
         - name: task_id
           description: The ID of the task to poll.
           required: true
