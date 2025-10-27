@@ -50,7 +50,6 @@ TOKEN_RETRIEVAL_ENDPOINTS = {
     "cn": "https://login.chinacloudapi.cn",
 }
 
-# Deprecated, prefer using AZURE_CLOUDS
 GRAPH_ENDPOINTS = {
     "com": "https://graph.microsoft.com",
     "gcc": "https://graph.microsoft.us",
