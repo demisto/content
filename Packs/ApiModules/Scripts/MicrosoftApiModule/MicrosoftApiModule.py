@@ -50,6 +50,7 @@ TOKEN_RETRIEVAL_ENDPOINTS = {
     "cn": "https://login.chinacloudapi.cn",
 }
 
+# Deprecated, prefer using AZURE_CLOUDS
 GRAPH_ENDPOINTS = {
     "com": "https://graph.microsoft.com",
     "gcc": "https://graph.microsoft.us",
@@ -94,46 +95,12 @@ MICROSOFT_GRAPH_ENDPOINTS = {
 # https://learn.microsoft.com/en-us/microsoft-365/security/defender-endpoint/gov?view=o365-worldwide#api
 MICROSOFT_DEFENDER_FOR_ENDPOINT_API = {
     "com": "https://api.securitycenter.microsoft.com",
-    "gcc": "https://api-gcc.securitycenter.microsoft.us",
-    "gcc-high": "https://api-gov.securitycenter.microsoft.us",
-    "dod": "https://api-gov.securitycenter.microsoft.us",
     "geo-us": "https://api.securitycenter.microsoft.com",
     "geo-eu": "https://api-eu.securitycenter.microsoft.com",
     "geo-uk": "https://api-uk.securitycenter.microsoft.com",
-}
-
-# https://learn.microsoft.com/en-us/defender-xdr/usgov
-# https://learn.microsoft.com/en-us/defender-xdr/api-supported?view=o365-worldwide#endpoint-uris
-MICROSOFT_DEFENDER_XDR_API = {
-    "com": "https://api.security.microsoft.com",
-    "gcc": "https://api-gcc.security.microsoft.us",
-    "gcc-high": "https://api-gov.security.microsoft.us",
-    "dod": "https://api-gov.security.microsoft.us",
-    "geo-eu": "https://api-eu.security.microsoft.com",
-    "geo-uk": "https://api-uk.security.microsoft.com",
-    "geo-us": "https://api-us.security.microsoft.com",
-}
-
-# https://learn.microsoft.com/en-us/defender-xdr/usgov
-MICROSOFT_DEFENDER_XDR_API_SERVICE_ENDPOINTS = {
-    "com": "https://security.microsoft.com",
-    "gcc": "https://security.microsoft.com",
-    "gcc-high": "https://security.microsoft.us",
-    "dod": "https://security.apps.mil",
-    "geo-eu": "https://security.microsoft.com",
-    "geo-uk": "https://security.microsoft.com",
-    "geo-us": "https://security.microsoft.com",
-}
-
-# https://learn.microsoft.com/en-us/defender-xdr/usgov
-MICROSOFT_DEFENDER_XDR_API_LOGIN = {
-    "com": "https://login.windows.net",
-    "gcc": "https://login.microsoftonline.com",
-    "gcc-high": "https://login.microsoftonline.us",
-    "dod": "https://login.microsoftonline.us",
-    "geo-eu": "https://login.windows.net",
-    "geo-uk": "https://login.windows.net",
-    "geo-us": "https://login.windows.net",
+    "gcc": "https://api-gcc.securitycenter.microsoft.us",
+    "gcc-high": "https://api-gov.securitycenter.microsoft.us",
+    "dod": "https://api-gov.securitycenter.microsoft.us",
 }
 
 # https://learn.microsoft.com/en-us/graph/deployments#app-registration-and-token-service-root-endpoints
