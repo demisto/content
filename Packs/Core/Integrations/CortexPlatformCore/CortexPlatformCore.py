@@ -241,7 +241,7 @@ def search_assets_command(client: Client, args):
     """
     asset_group_ids = get_asset_group_ids_from_names(client, argToList(args.get("asset_groups", "")))
     fields_to_filter = [
-        FilterField(ASSET_FIELDS["asset_names"], "EQ", argToList(args.get("asset_names", ""))),
+        FilterField(ASSET_FIELDS["asset_names"], "CONTAINS", argToList(args.get("asset_names", ""))),
         FilterField(ASSET_FIELDS["asset_types"], "EQ", argToList(args.get("asset_types", ""))),
         FilterField(ASSET_FIELDS["asset_tags"], "JSON_WILDCARD", safe_load_json(args.get("asset_tags", []))),
         FilterField(ASSET_FIELDS["asset_ids"], "EQ", argToList(args.get("asset_ids", ""))),
