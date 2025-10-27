@@ -168,6 +168,20 @@ script:
     compliantpolicies:
     - User Hard Remediation
   - arguments:
+      - description: User ID or userPrincipalName.
+        name: user
+        required: true
+    description: |-
+      Disables a user from all Office 365 applications, and prevents sign in. Note: This command disables user,
+      but does not terminate an existing session. Supported only in a self deployed app flow with the
+      Permission: Directory.AccessAsUser.All(Delegated).
+    name: msgraph-user-account-disable-quick-action
+    prettyname: Disable User Account
+    quickaction: true
+    hidden: true
+    compliantpolicies:
+      - User Hard Remediation
+  - arguments:
     - description: User ID or userPrincipalName.
       name: user
       required: true
@@ -189,6 +203,57 @@ script:
       Updates the properties of a user object.
       Permissions: - User.ReadWrite (Delegated & Application).
     name: msgraph-user-update
+    outputs:
+    - contextPath: MSGraphUser.ID
+      description: User's ID.
+      type: String
+    - contextPath: MSGraphUser.DisplayName
+      description: User's display name.
+      type: String
+    - contextPath: MSGraphUser.GivenName
+      description: User's given name.
+      type: String
+    - contextPath: MSGraphUser.BusinessPhones
+      description: User's business phone numbers.
+      type: String
+    - contextPath: MSGraphUser.JobTitle
+      description: User's job title.
+      type: String
+    - contextPath: MSGraphUser.Mail
+      description: User's mail address.
+      type: String
+    - contextPath: MSGraphUser.MobilePhone
+      description: User's mobile phone number.
+      type: String
+    - contextPath: MSGraphUser.OfficeLocation
+      description: User's office location.
+      type: String
+    - contextPath: MSGraphUser.PreferredLanguage
+      description: User's preferred language.
+      type: String
+    - contextPath: MSGraphUser.Surname
+      description: User's surname.
+      type: String
+    - contextPath: MSGraphUser.UserPrincipalName
+      description: User's principal name.
+      type: String
+  - arguments:
+    - description: User ID or userPrincipalName to update properties for.
+      name: user
+      required: true
+    - description: "User fields to update (in a key=value format. Example: displayName=John."
+      name: updated_fields
+      required: true
+    - description: "Delimiter to use for passing multiple fields to the 'updated_fields' argument. Example using ',' as a delimiter: displayName=John,givenName=John,surname=Doe."
+      defaultValue: ','
+      name: updated_fields_delimiter
+    description: |-
+      Updates the properties of a user object.
+      Permissions: - User.ReadWrite (Delegated & Application).
+    name: msgraph-user-update-quick-action
+    prettyname: Update User
+    quickaction: true
+    hidden: true
     outputs:
     - contextPath: MSGraphUser.ID
       description: User's ID.
@@ -628,6 +693,24 @@ script:
     name: msgraph-user-change-password
     compliantpolicies:
     - User Soft Remediation
+  - name: msgraph-user-change-password-on-premise
+    description: |-
+      Changes the password of an on-premise user. See documentation for full permissions and roles to execute this command. 
+      Providing a password is required (password auto-generation is not supported).
+    execution: true
+    arguments:
+    - description: User ID or userPrincipalName to update password for.
+      name: user
+      required: true
+      secret: false
+    - description: The new password.
+      name: password
+      required: false
+      secret: true
+    - description: "The new password. This argument can be used in playbooks. Note: the value will NOT be hidden in logs."
+      name: nonsensitive_password
+      required: false
+      secret: false
   - description: Tests connectivity to Microsoft Graph User.
     name: msgraph-user-test
   - arguments:
@@ -639,6 +722,20 @@ script:
       This command requires an administrator role.
       Permission required: Directory.AccessAsUser.All (Delegated).
     name: msgraph-user-session-revoke
+    compliantpolicies:
+    - User Soft Remediation
+  - arguments:
+    - description: User ID or userPrincipalName.
+      name: user
+      required: true
+    description: |-
+      Revoke a user session by invalidating all refresh tokens issued to applications for a user.
+      This command requires an administrator role.
+      Permission required: Directory.AccessAsUser.All (Delegated).
+    name: msgraph-user-session-revoke-quick-action
+    prettyname: Revoke User Session
+    quickaction: true
+    hidden: true
     compliantpolicies:
     - User Soft Remediation
   - arguments:
@@ -743,7 +840,7 @@ script:
   - description: Run this command if for some reason you need to rerun the authentication process.
     name: msgraph-user-auth-reset
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.3539024
+  dockerimage: demisto/crypto:1.0.0.4578119
   runonce: false
   script: '-'
   subtype: python3
@@ -751,3 +848,4 @@ script:
 tests:
 - Microsoft Graph User - Test
 fromversion: 5.0.0
+supportsquickactions: true
