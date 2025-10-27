@@ -2715,9 +2715,11 @@ script:
         prettypredefined:
           EC2 Snapshot: ${asset.xdm.asset.name}
       - name: operation_type
+        description: The operation type, add or remove.
         defaultValue: 'remove'
         hidden: true
       - name: group_names
+        description: CSV of security group names. This parameter can be used only when UserIds not provided.
         defaultValue: 'all'
         hidden: true
 
