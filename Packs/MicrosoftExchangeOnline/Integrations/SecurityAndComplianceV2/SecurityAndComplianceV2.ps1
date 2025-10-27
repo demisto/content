@@ -593,9 +593,10 @@ class SecurityAndComplianceClient {
     [string]$connection_uri
     [string]$azure_ad_authorization_endpoint_uri_base
     [string]$azure_ad_authorization_endpoint_uri
+    [bool]$using_delegated
 
 
-    SecurityAndComplianceClient([string]$access_token, [string]$upn, [string]$tenant_id, [string]$upn_password ,[string]$connection_uri, [string]$azure_ad_authorization_endpoint_uri_base) {
+    SecurityAndComplianceClient([string]$access_token, [string]$upn, [string]$tenant_id, [string]$upn_password, [bool]$using_delegated ,[string]$connection_uri, [string]$azure_ad_authorization_endpoint_uri_base) {
 
         $this.access_token = $access_token
 
@@ -612,6 +613,8 @@ class SecurityAndComplianceClient {
         } else {
             $this.upn_password = $null
         }
+
+        $this.using_delegated = $using_delegated
 
         if ($connection_uri) {
             $this.connection_uri = $connection_uri
@@ -630,27 +633,39 @@ class SecurityAndComplianceClient {
         }
     }
 
-    CreateDelegatedSession([string]$CommandName){
-        $cmd_params = @{
-            "UserPrincipalName" = $this.upn
-            "Organization" = $this.organization
-            "AccessToken" = $this.access_token
-            "ConnectionUri" = $this.connection_uri
-            "AzureADAuthorizationEndpointUri" = $this.azure_ad_authorization_endpoint_uri
+    CreateDelegatedSession([string]$CommandName)
+    {
+        if ($this.using_delegated -eq $true)
+        {
+            # Use UPN and password (interactive delegated auth)
+            $securePassword = ConvertTo-SecureString $this.upn_password -AsPlainText -Force
+            $UserCredential = New-Object System.Management.Automation.PSCredential ($this.upn, $securePassword)
+
+            Connect-IPPSSession -Credential $UserCredential -CommandName $CommandName -EnableSearchOnlySession -WarningAction:SilentlyContinue -ShowBanner:$false | Out-Null
         }
-        Connect-IPPSSession @cmd_params -CommandName $CommandName -EnableSearchOnlySession -WarningAction:SilentlyContinue -ShowBanner:$false | Out-Null
+        else {
+            # Use access token (app-only / token-based auth)
+            $cmd_params = @{
+                "UserPrincipalName" = $this.upn
+                "Organization" = $this.organization
+                "AccessToken" = $this.access_token
+                "ConnectionUri" = $this.connection_uri
+                "AzureADAuthorizationEndpointUri" = $this.azure_ad_authorization_endpoint_uri
+            }
+            Connect-IPPSSession @cmd_params -CommandName $CommandName -EnableSearchOnlySession -WarningAction:SilentlyContinue -ShowBanner:$false | Out-Null
+        }
     }
 
-    CreateDelegatedSessionCredentials([string]$CommandName){
-        if ([string]::IsNullOrWhiteSpace($this.upn_password)) {
-            throw "Using this command requires interactive delegated authentication. Please make sure the UPN password is set in the integration parameters."
-        }
-
-        $securePassword = ConvertTo-SecureString $this.upn_password -AsPlainText -Force
-        $UserCredential = New-Object System.Management.Automation.PSCredential ($this.upn, $securePassword)
-
-        Connect-IPPSSession -Credential $UserCredential -CommandName $CommandName -EnableSearchOnlySession -WarningAction:SilentlyContinue -ShowBanner:$false | Out-Null
-    }
+#    CreateDelegatedSessionCredentials([string]$CommandName){
+#        if ([string]::IsNullOrWhiteSpace($this.upn_password)) {
+#            throw "Using this command requires interactive delegated authentication. Please make sure the UPN password is set in the integration parameters."
+#        }
+#
+#        $securePassword = ConvertTo-SecureString $this.upn_password -AsPlainText -Force
+#        $UserCredential = New-Object System.Management.Automation.PSCredential ($this.upn, $securePassword)
+#
+#        Connect-IPPSSession -Credential $UserCredential -CommandName $CommandName -EnableSearchOnlySession -WarningAction:SilentlyContinue -ShowBanner:$false | Out-Null
+#    }
 
     DisconnectSession(){
         Disconnect-ExchangeOnline -Confirm:$false -WarningAction:SilentlyContinue 6>$null | Out-Null
@@ -936,7 +951,11 @@ class SecurityAndComplianceClient {
                               [bool]$include_sharepoint_document_versions, [string]$notify_email,
                               [string]$notify_email_cc, [string]$scenario, [string]$scope) {
         # Establish session to remote
-        $this.CreateDelegatedSessionCredentials("New-ComplianceSearchAction")
+        if ($this.using_delegated -eq $false) {
+            throw "Using this command requires interactive delegated authentication. Please make sure the UPN password is set in the integration parameters."
+        }
+
+        $this.CreateDelegatedSession("New-ComplianceSearchAction")
         # Execute command
         $cmd_params = @{
             "SearchName" = $search_name
@@ -1221,8 +1240,12 @@ class SecurityAndComplianceClient {
 
     [psobject]CaseHoldPolicyCreate([string]$policy_name, [string]$case, [string]$comment, [string]$exchange_location,
                                    [string]$public_folder_location, [string]$share_point_location, [bool]$enabled) {
+        if ($this.using_delegated -eq $false) {
+            throw "Using this command requires interactive delegated authentication. Please make sure the UPN password is set in the integration parameters."
+        }
+
         # Establish session to remote
-        $this.CreateDelegatedSessionCredentials("New-CaseHoldPolicy")
+        $this.CreateDelegatedSession("New-CaseHoldPolicy")
         $cmd_params = @{
             "Name" = $policy_name
             "Case" = $case
@@ -1333,8 +1356,12 @@ class SecurityAndComplianceClient {
     }
 
     [psobject]CaseHoldPolicyDelete([string]$identity, [bool]$force_delete){
+        if ($this.using_delegated -eq $false) {
+            throw "Using this command requires interactive delegated authentication. Please make sure the UPN password is set in the integration parameters."
+        }
+
         # Establish session to remote
-        $this.CreateDelegatedSessionCredentials("Remove-CaseHoldPolicy")
+        $this.CreateDelegatedSession("Remove-CaseHoldPolicy")
         # Execute command
         if($force_delete) {
             $response = Remove-CaseHoldPolicy -Identity $identity -ForceDeletion -Confirm:$false
@@ -1368,7 +1395,11 @@ class SecurityAndComplianceClient {
 
     CaseHoldPolicySet([string]$identity, [bool]$enabled, [string[]]$add_exchange_locations, [string[]] $add_sharepoint_locations, [string[]]$add_public_locations,
         [string[]]$remove_exchange_locations, [string[]]$remove_sharepoint_locations, [string[]]$remove_public_locations, [string]$comment){
-        $this.CreateDelegatedSessionCredentials("Set-CaseHoldPolicy")
+        if ($this.using_delegated -eq $false) {
+            throw "Using this command requires interactive delegated authentication. Please make sure the UPN password is set in the integration parameters."
+        }
+
+        $this.CreateDelegatedSession("Set-CaseHoldPolicy")
       $cmd_params = @{}
   
       if ($identity) { $cmd_params.Identity = $identity }
@@ -1387,8 +1418,12 @@ class SecurityAndComplianceClient {
 
 
     [psobject]CaseHoldRuleCreate([string]$rule_name, [string]$policy_name, [string]$query, [string]$comment, [bool]$is_disabled){
+        if ($this.using_delegated -eq $false) {
+            throw "Using this command requires interactive delegated authentication. Please make sure the UPN password is set in the integration parameters."
+        }
+
         # Establish session to remote
-        $this.CreateDelegatedSessionCredentials("New-CaseHoldRule")
+        $this.CreateDelegatedSession("New-CaseHoldRule")
         $cmd_params = @{
             "Name" = $rule_name
             "Policy" = $policy_name
@@ -1472,8 +1507,12 @@ class SecurityAndComplianceClient {
     }
 
     [psobject]CaseHoldRuleDelete([string]$identity, [bool]$force_delete){
+        if ($this.using_delegated -eq $false) {
+            throw "Using this command requires interactive delegated authentication. Please make sure the UPN password is set in the integration parameters."
+        }
+
         # Establish session to remote
-        $this.CreateDelegatedSessionCredentials("Remove-CaseHoldRule")
+        $this.CreateDelegatedSession("Remove-CaseHoldRule")
         # Execute command
         if ($force_delete) {
             $response = Remove-CaseHoldRule -Identity $identity -ForceDeletion -Confirm:$false
@@ -1539,7 +1578,13 @@ function CompleteAuthCommand ([OAuth2DeviceCodeClient]$client) {
 }
 
 function TestAuthCommand ([OAuth2DeviceCodeClient]$oclient, [SecurityAndComplianceClient]$cs_client) {
-    $raw_response = $oclient.RefreshTokenRequest()
+
+    if ($this.using_delegated -eq $false){
+        $raw_response = $oclient.RefreshTokenRequest()
+    } else {
+        $raw_response = $null
+    }
+
     $human_readable = "**Test ok!**"
     $entry_context = @{}
     try {
@@ -2136,31 +2181,37 @@ function Main {
     try {
         $Demisto.Debug("Command being called is $Command")
 
+        $using_delegated = -not [string]::IsNullOrWhiteSpace($this.upn_password)
+
         # Creating Compliance and search client
         $oauth2_client = [OAuth2DeviceCodeClient]::CreateClientFromIntegrationContext($insecure, $false,
             $app_id, $tenant_id)
 
-        # Executing oauth2 commands
-        switch ($command) {
-            "$script:COMMAND_PREFIX-auth-start" {
-                ($human_readable, $entry_context, $raw_response) = StartAuthCommand $oauth2_client
+        if (-not $using_delegated){
+            # Executing oauth2 commands
+            switch ($command) {
+                "$script:COMMAND_PREFIX-auth-start" {
+                    ($human_readable, $entry_context, $raw_response) = StartAuthCommand $oauth2_client
+                }
+                "$script:COMMAND_PREFIX-auth-complete" {
+                    ($human_readable, $entry_context, $raw_response) = CompleteAuthCommand $oauth2_client
+                }
             }
-            "$script:COMMAND_PREFIX-auth-complete" {
-                ($human_readable, $entry_context, $raw_response) = CompleteAuthCommand $oauth2_client
+
+            # Refreshing tokens if expired
+            if ($command -ne "$script:COMMAND_PREFIX-auth-start")
+            {
+                $oauth2_client.RefreshTokenIfExpired()
             }
         }
 
-        # Refreshing tokens if expired
-        if ($command -ne "$script:COMMAND_PREFIX-auth-start")
-        {
-            $oauth2_client.RefreshTokenIfExpired()
-        }
 
         $cs_client = [SecurityAndComplianceClient]::new(
             $oauth2_client.access_token,
             $integration_params.delegated_auth.identifier,
             $tenant_id,
             $upn_password,
+            $using_delegated,
             $integration_params.connection_uri,
             $integration_params.azure_ad_authorized_endpoint_uri_base
         )
