@@ -10,6 +10,9 @@ INTEGRATION_CONTEXT_BRAND = "Core"
 INTEGRATION_NAME = "Cortex Platform Core"
 MAX_GET_INCIDENTS_LIMIT = 100
 
+WEBAPP_COMMANDS = ["core-get-vulnerabilities"]
+DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
+
 
 def replace_substring(data: dict | str, original: str, new: str) -> str | dict:
     """
@@ -118,6 +121,127 @@ class Client(CoreClient):
 
         return reply
 
+    def get_webapp_data(self, request_data: dict) -> dict:
+        return self._http_request(
+            method="POST",
+            url_suffix="/get_data",
+            json_data=request_data,
+        )
+
+
+class FilterField:
+    def __init__(self, field_name: str, operator: str, values: list):
+        self.field_name = field_name
+        self.operator = operator
+        self.values = values
+
+
+def create_filter_from_fields(fields_to_filter: list[FilterField]):
+    """
+    Creates a filter from a list of FilterField objects.
+    The filter will require each field to be one of the values provided.
+    Args:
+        fields_to_filter (list[FilterField]): List of FilterField objects to create a filter from.
+    Returns:
+        dict[str, list]: Filter object.
+    """
+    filter_structure: dict[str, list] = {"AND": []}
+
+    for field in fields_to_filter:
+        if field.values == [] or field.values == [None]:
+            continue
+
+        if len(field.values) == 1:
+            search_obj = {
+                "SEARCH_FIELD": field.field_name,
+                "SEARCH_TYPE": field.operator,
+                "SEARCH_VALUE": field.values[0],
+            }
+        else:
+            search_obj = {"OR": []}
+            for value in field.values:
+                search_obj["OR"].append(
+                    {
+                        "SEARCH_FIELD": field.field_name,
+                        "SEARCH_TYPE": field.operator,
+                        "SEARCH_VALUE": value,
+                    }
+                )
+
+        filter_structure["AND"].append(search_obj)
+
+    if not filter_structure["AND"]:
+        filter_structure = {}
+
+    return filter_structure
+
+
+def build_webapp_request_data(
+    table_name: str,
+    filter_fields: list[FilterField],
+    limit: int,
+    sort_field: str,
+    on_demand_fields: list | None = None,
+    sort_order: str = "DESC",
+) -> dict:
+    """
+    Builds the request data for the generic /api/webapp/get_data endpoint.
+    """
+    dynamic_filter = create_filter_from_fields(filter_fields)
+
+    filter_data = {
+        "sort": [{"FIELD": sort_field, "ORDER": sort_order}],
+        "paging": {"from": 0, "to": limit},
+        "filter": dynamic_filter,
+    }
+    demisto.debug(f"{filter_data=}")
+
+    if on_demand_fields is None:
+        on_demand_fields = []
+
+    return {"type": "grid", "table_name": table_name, "filter_data": filter_data, "jsons": [], "onDemandFields": on_demand_fields}
+
+
+def get_vulnerabilities_command(client: Client, args: dict) -> CommandResults:
+    """
+    Retrieves vulnerabilities using the generic /api/webapp/get_data endpoint.
+    """
+    limit = arg_to_number(args.get("limit")) or 50
+    sort_field = args.get("sort_field", "PLATFORM_SEVERITY")
+    sort_order = args.get("sort_order", "DESC")
+
+    filter_fields = [
+        FilterField("CVE_ID", "CONTAINS", argToList(args.get("cve_id"))),
+        FilterField("CVSS_SCORE", "GTE", [arg_to_number(args.get("cvss_score_gte"))]),
+        FilterField("EPSS_SCORE", "GTE", [arg_to_number(args.get("epss_score_gte"))]),
+        FilterField("INTERNET_EXPOSED", "EQ", [arg_to_bool_or_none(args.get("internet_exposed"))]),
+        FilterField("EXPLOITABLE", "EQ", [arg_to_bool_or_none(args.get("exploitable"))]),
+        FilterField("HAS_KEV", "EQ", [arg_to_bool_or_none(args.get("has_kev"))]),
+        FilterField("AFFECTED_SOFTWARE", "CONTAINS", argToList(args.get("affected_software"))),
+    ]
+    if arg_to_bool_or_none(args.get("not_assigned")):
+        filter_fields.append(FilterField("ASSIGNED_TO", "IS_EMPTY", [""]))
+
+    request_data = build_webapp_request_data(
+        table_name="VULNERABLE_ISSUES_TABLE",
+        filter_fields=filter_fields,
+        limit=limit,
+        sort_field=sort_field,
+        sort_order=sort_order,
+        on_demand_fields=argToList(args.get("on_demand_fields")),
+    )
+    response = client.get_webapp_data(request_data)
+    reply = response.get("reply", {})
+    data = reply.get("DATA", [])
+
+    return CommandResults(
+        readable_output=tableToMarkdown("Vulnerabilities", data, headerTransform=string_to_table_header),
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Vulnerability",
+        outputs_key_field="issue_id",
+        outputs=data,
+        raw_response=response,
+    )
+
 
 def get_asset_details_command(client: Client, args: dict) -> CommandResults:
     """
@@ -200,7 +324,11 @@ def main():  # pragma: no cover
     args["integration_context_brand"] = INTEGRATION_CONTEXT_BRAND
     args["integration_name"] = INTEGRATION_NAME
     headers: dict = {}
-    base_url = "/api/webapp/public_api/v1"
+
+    public_api_url = "/api/webapp/public_api/v1"
+    webapp_api_url = "/api/webapp"
+    data_platform_api_url = f"{webapp_api_url}/data-platform"
+
     proxy = demisto.params().get("proxy", False)
     verify_cert = not demisto.params().get("insecure", False)
 
@@ -210,8 +338,14 @@ def main():  # pragma: no cover
         demisto.debug(f"Failed casting timeout parameter to int, falling back to 120 - {e}")
         timeout = 120
 
+    client_url = public_api_url
+    if command in WEBAPP_COMMANDS:
+        client_url = webapp_api_url
+    elif command in DATA_PLATFORM_COMMANDS:
+        client_url = data_platform_api_url
+
     client = Client(
-        base_url=base_url,
+        base_url=client_url,
         proxy=proxy,
         verify=verify_cert,
         headers=headers,
@@ -224,7 +358,6 @@ def main():  # pragma: no cover
             demisto.results("ok")
 
         elif command == "core-get-asset-details":
-            client._base_url = "/api/webapp/data-platform"
             return_results(get_asset_details_command(client, args))
 
         elif command == "core-get-issues":
@@ -248,6 +381,9 @@ def main():  # pragma: no cover
 
         elif command == "core-get-case-extra-data":
             return_results(get_extra_data_for_case_id_command(client, args))
+
+        elif command == "core-get-vulnerabilities":
+            return_results(get_vulnerabilities_command(client, args))
 
     except Exception as err:
         demisto.error(traceback.format_exc())
