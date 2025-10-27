@@ -4,6 +4,7 @@ from collections import defaultdict
 from collections.abc import Callable
 from copy import deepcopy
 from mimetypes import guess_type
+from urllib.parse import urlparse
 
 
 import demistomock as demisto  # noqa: F401
@@ -1570,7 +1571,7 @@ def create_files_to_upload(file_mime_type: str, file_name: str, file_bytes: byte
         tuple([Dict[tuple(str, bytes, str)]], str): The dift is The file object of new attachment (file name, content in
         bytes, mime type), and the str is the mime type to upload with the file.
     """
-    # guess_type can return a None mime type if the type can’t be guessed (missing or unknown suffix). In this case, we should use
+    # guess_type can return a None mime type if the type can't be guessed (missing or unknown suffix). In this case, we should use
     # a default mime type
     mime_type_to_upload = file_mime_type if file_mime_type else guess_type(file_name)[0] or "application-type"
     demisto.debug(f"In create_files_to_upload {mime_type_to_upload=}")
@@ -3544,11 +3545,24 @@ def jira_test_authorization(client: JiraBaseClient, args: Dict[str, Any]) -> Com
     return CommandResults(readable_output="Successful connection.")
 
 
-def jira_test_module(client: JiraBaseClient) -> str:
-    """This method will return an error since in order for the user to test the connectivity of the instance,
-    they have to run a separate command, therefore, pressing the `test` button on the configuration screen will
-    show them the steps in order to test the instance.
+def jira_test_module(client: JiraBaseClient, params: Dict[str, Any]) -> str:
     """
+    Tests for basic configuration issues in the instance.
+    Tests the connectivity for basic authentication methods, otherwise provides users with further authentication instructions.
+    """
+    url = params.get("server_url", "").rstrip("/")
+    cloudid = params.get("cloud_id")
+
+    if is_jira_cloud_url(url) and not cloudid:
+        raise DemistoException(
+            "Cloud ID is required for Jira Cloud instances. Refer to the integration help section for more information."
+        )
+    if cloudid and url != "https://api.atlassian.com/ex/jira":
+        raise DemistoException(
+            "Jira Cloud instances must use the default Server URL: `https://api.atlassian.com/ex/jira`."
+            " Please update the Server URL in the instance configuration."
+        )
+
     if client.is_basic_auth or client.is_pat_auth:
         client.jira_test_instance_connection()  # raises on failure
         return "ok"
@@ -4745,6 +4759,59 @@ def validate_auth_params(username: str, api_key: str, client_id: str, client_sec
         raise DemistoException("To use OAuth 2.0, the 'Client ID' and 'Client Secret' parameters are mandatory.")
 
 
+def is_jira_cloud_url(url: str) -> bool:
+    """
+    Check if the given URL is a Jira Cloud Server URL.
+
+    Args:
+        url (str): The URL to parse.
+
+    Returns:
+        bool: True if the URL is a Jira Cloud URL, False otherwise.
+    """
+    try:
+        hostname = urlparse(url).hostname or ""
+        return hostname.endswith((".atlassian.net", ".atlassian.com"))
+
+    except (ValueError, AttributeError):
+        return False
+
+
+def add_config_error_messages(err: str, cloud_id: str, server_url: str) -> str:
+    """
+    Provide additional information for error messages that result from incorrect configurations.
+
+        Args:
+            err (str): The original error message.
+            cloud_id (str): The cloud ID.
+            server_url (str): The server URL.
+
+        Returns:
+            str: The error message with additional information if applicable.
+    """
+
+    if "404" in err and cloud_id and server_url.rstrip("/") != "https://api.atlassian.com/ex/jira":
+        err = f"""
+(Error 404) Jira Cloud instances must use the default Server URL: `https://api.atlassian.com/ex/jira`.
+Update the Server URL in the instance configuration and try again.
+
+
+Original error: {err}
+            """
+
+    elif "410" in err and not cloud_id and is_jira_cloud_url(server_url):
+        err = f"""
+(Error 410) The requested endpoint has been removed from Jira On-Prem.
+This appears to be a Jira Cloud instance. Please update the Cloud ID in the instance configuration and try again.
+Refer to the integration help section for more information.
+
+
+Original error: {err}
+            """
+
+    return err
+
+
 def main():  # pragma: no cover
     params: Dict[str, Any] = demisto.params()
     args = map_v2_args_to_v3(demisto.args())
@@ -4865,7 +4932,7 @@ def main():  # pragma: no cover
         demisto.debug(f"The configured Jira client is: {type(client)}")
 
         if command == "test-module":
-            return_results(jira_test_module(client=client))
+            return_results(jira_test_module(client=client, params=params))
         elif command in commands:
             return_results(commands[command](client, args))
         elif command == "fetch-incidents":
@@ -4920,7 +4987,9 @@ def main():  # pragma: no cover
             raise NotImplementedError(f"{command} command is not implemented.")
 
     except Exception as e:
-        return_error(str(e))
+        err = add_config_error_messages(str(e), cloud_id, server_url)
+
+        return_error(err)
 
 
 if __name__ in ["__main__", "builtin", "builtins"]:
