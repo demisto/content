@@ -2,7 +2,7 @@
     "name": "Recorded Future",
     "description": "New Recorded Future content. Currently contains only alert functionality - for enrichment etc, refer to the 'Recorded Future Intelligence' pack.",
     "support": "partner",
-    "currentVersion": "1.0.0",
+    "currentVersion": "1.0.1",
     "created": "2025-05-21T13:09:02Z",
     "updated": "2025-05-21T13:09:02Z",
     "author": "Recorded Future",
@@ -16,7 +16,10 @@
         "Recorded Future",
         "RF"
     ],
-    "tags": ["Alerts", "Threat Intelligence"],
+    "tags": [
+        "Alerts",
+        "Threat Intelligence"
+    ],
     "useCases": [
         "Threat Intelligence Management",
         "Incident Response"
