@@ -1071,7 +1071,7 @@ tasks:
       version: -1
       name: Get Endpoint Data by IP Address
       description: This script gathers endpoint data from multiple integrations and
-        returns an endpoint entity with consolidated information to the context.
+       creates a single endpoint entity with consolidated information in the context.
       scriptName: get-endpoint-data
       type: regular
       iscommand: false
