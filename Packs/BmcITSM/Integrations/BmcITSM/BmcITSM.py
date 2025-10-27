@@ -577,7 +577,7 @@ class Client(BaseClient):
                 "Last_Name": last_name,
                 "TemplateID": template_instance_id,
                 "Description": summary,
-                "Detailed Decription": details,
+                "Detailed_Decription": details,
                 "Company": company,
                 "Urgency": urgency,
                 "Impact": impact,
