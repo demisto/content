@@ -19,7 +19,7 @@ args:
 - name: right
   required: true
   default: true
-  description: An array for which to check if an element is in the left list.
+  description: An array in which to check if an element is in the left list.
   isArray: true
 scripttarget: 0
 runas: DBotWeakRole
