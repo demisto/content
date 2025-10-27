@@ -21,6 +21,7 @@ from CybleEventsV2 import (
 from CommonServerPython import GetModifiedRemoteDataResponse
 from CybleEventsV2 import check_response as test_response
 
+
 def test_test_response_success(mock_client):
     mock_client._http_request = Mock(return_value={"status": "ok"})
     with patch("CybleEventsV2.demisto", demisto_mock):
@@ -103,8 +104,6 @@ def mock_client():
     """Fixture to create a mock client"""
     client = Client(base_url="https://test.com", verify=False)
     return client
-
-
 
 
 @pytest.fixture
@@ -339,7 +338,6 @@ class TestManualFetch:
         call_args = mock_fetch_alerts.call_args[0][1]
         assert call_args["order_by"] == "asc"
         assert call_args["take"] == DEFAULT_TAKE_LIMIT
-
 
 
 @patch("CybleEventsV2.UpdateRemoteSystemArgs")
@@ -1920,7 +1918,6 @@ class TestClientMethods(unittest.TestCase):
             result_ids = self.client.get_ids_with_retry(service, input_params)
 
             assert result_ids == ["id1", "id2"]
-
 
 
 class TestCybleEventsLogical(unittest.TestCase):

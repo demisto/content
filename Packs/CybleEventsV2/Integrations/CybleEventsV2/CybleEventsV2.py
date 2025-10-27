@@ -64,7 +64,6 @@ COMMAND = {
 }
 
 
-
 def get_headers(alerts_api_key: str) -> dict:
     return {"Content-Type": "application/json", "Authorization": f"Bearer {alerts_api_key}"}
 
@@ -345,7 +344,6 @@ class Client(BaseClient):
                 raise Exception(f"Wrong status code: {response.status_code}")
             response = response.json()
             demisto.debug(f"[get_all_services] response: {response}")
-
 
             if "data" in response and isinstance(response["data"], Sequence):
                 demisto.debug(f"Received services: {json.dumps(response['data'], indent=2)}")
@@ -702,37 +700,29 @@ def fetch_subscribed_services_alert(client, method, base_url, token):
         return_error(f"Failed to fetch subscribed services: {str(e)}")
 
 
-
 def check_response(client, method, url, token):
     """
     Test the integration state
     """
     try:
-        headers = {
-            "Authorization": f"Bearer {token}",
-            "Accept": "application/json"
-        }
+        headers = {"Authorization": f"Bearer {token}", "Accept": "application/json"}
 
-        demisto.debug(f"[test_response] Calling: {url} with method {method}")
+        demisto.debug(f"[check_response] Calling: {url} with method {method}")
 
         # Make direct GET request to the service endpoint
-        response = client._http_request(
-            method=method,
-            full_url=url,
-            headers=headers
-        )
+        response = client._http_request(method=method, full_url=url, headers=headers)
 
-        demisto.debug(f"[test_response] Raw response: {json.dumps(response, indent=2)}")
+        demisto.debug(f"[check_response] Raw response: {json.dumps(response, indent=2)}")
 
         # If we got any valid JSON back, assume the connection is successful
         if response:
             return "ok"
         else:
-            demisto.debug("[test_response] Empty or invalid response received.")
+            demisto.debug("[check_response] Empty or invalid response received.")
             raise Exception("failed to connect")
 
     except Exception as e:
-        demisto.error(f"[test_response] Failed to connect: {str(e)}")
+        demisto.error(f"[check_response] Failed to connect: {str(e)}")
         raise Exception("failed to connect")
 
 
