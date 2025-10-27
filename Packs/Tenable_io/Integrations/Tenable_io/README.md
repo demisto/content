@@ -1,7 +1,7 @@
 A comprehensive asset-centric solution to accurately track resources while accommodating dynamic assets such as cloud, mobile devices, containers, and web applications.
 This integration was integrated and tested with January 2023 release of Tenable.io.
 
-## Configure Tenable Vulnerability Management on Cortex XSOAR
+## Configure Tenable Vulnerability Management in Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for Tenable Vulnerability Management.

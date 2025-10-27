@@ -767,7 +767,7 @@ script:
       isArray: true
     - description: When specified, the results returned in the list are limited to assets with the specified tag category.
       name: tagCategory
-    - description: When specified, the results returned in the list are limited to assets with the specified tag value.
+    - description: When specified, the results returned in the list are limited to assets with the specified tag value. Can be comma-delimited for multiple items.
       name: tagValue
       isArray: true
     - auto: PREDEFINED
