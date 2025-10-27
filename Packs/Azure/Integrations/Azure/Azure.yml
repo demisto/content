@@ -2258,36 +2258,8 @@ script:
       required: true
       description: The subscription ID.
       prettyname: Subscription ID
-    - name: resource_group_name
-      type: string
-      description: The resource group name.
-      required: true
-      prettyname: Resource Group
-    - name: server_name
-      type: string
-      required: true
-      description: Name of the PostgreSQL server.
-      prettyname: Postgres Server Name
-    - name: configuration_name
-      type: string
-      description: Configuration setting name.
-      defaultValue: log_retention_days
-    - name: value
-      type: string
-      description: Configuration value.
-      defaultValue: '4'
-    description: "Sets the log retention period for the PostgreSQL server to 4 days. Requires 'Microsoft.DBforPostgreSQL/servers/configuration/*' permission."
-    name: azure-postgres-config-set-log-retention-quick-action
-    prettyname: Set Postgres Log Retention
-    hidden: true
-    quickaction: true
-    outputs: [] # have no outputs for these command by response
-  - arguments:
-    - name: subscription_id
-      type: string
-      required: true
-      description: The subscription ID.
-      prettyname: Subscription ID
+      prettypredefined:
+        Subscription ID: ${asset.xdm.asset.realm}
     - name: resource_group_name
       type: String
       required: true
@@ -2298,6 +2270,14 @@ script:
       required: true
       description: Name of the Function App.
       prettyname: AZ Function Name
+      prettypredefined:
+        AZ Function Name: ${asset.xdm.asset.name}
+    - name: identity_type
+      type: String
+      description: The type of managed identity (SystemAssigned, UserAssigned, etc.).
+      prettyname: Identity Type
+      defaultValue: 'SystemAssigned'
+      hidden: true
     description: "Assigns a system-assigned managed identity to the Function App. This allows the app to securely access other Azure services while removing the need to manage sensitive credentials and the risk of exposing them. Requires 'Microsoft.Web/sites/Write' permission."
     name: azure-webapp-update-assign-managed-identity-quick-action
     prettyname: Assign Managed Identity to Function App
@@ -2511,26 +2491,33 @@ script:
       required: true
       description: The subscription ID.
       prettyname: Subscription ID
+      prettypredefined:
+        Subscription ID: ${asset.xdm.asset.realm}
     - description: The resource group name.
       name: resource_group_name
       required: true
       prettyname: Resource Group
+      type: String
+      prettypredefined:
+        Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroup}
     - description: Name of the storage account.
       name: account_name
       required: true
       prettyname: Storage Account
+      type: String
+      prettypredefined:
+        Storage Account: ${asset.xdm.asset.name}
     - auto: PREDEFINED
       description: Whether DeleteRetentionPolicy is enabled.
       name: delete_rentention_policy_enabled
-      predefined:
-      - 'true'
-      - 'false'
       type: bool
       defaultValue: 'true'
+      hidden: true
     - description: Number of days to retain deleted items.
       name: delete_rentention_policy_days
       defaultValue: '30'
       type: number
+      hidden: true
     description: "Enables blob soft delete for the storage account to retain deleted blobs for 30 days. Requires 'Microsoft.Storage/storageAccounts/blobServices/write' permission."
     name: azure-storage-blob-enable-soft-delete-quick-action
     prettyname: Enable Soft Delete on Blob
@@ -2571,63 +2558,32 @@ script:
       required: true
       description: The subscription ID.
       prettyname: Subscription ID
-    - name: resource_group_name
-      type: string
-      description: The resource group name.
-      required: true
-      prettyname: Resource Group
-    - name: server_name
-      type: string
-      required: true
-      prettyname: Postgres Server Name
-      description: Name of the PostgreSQL server.
-    - name: configuration_name
-      type: string
-      description: Configuration setting name.
-      defaultValue: log_duration
-    - name: value
-      type: string
-      description: Configuration value.
-      defaultValue: 'on'
-    description: "Enables logging of statement execution duration on the PostgreSQL server to help with performance analysis. Requires 'Microsoft.DBforPostgreSQL servers/configuration/*' permission."
-    name: azure-postgres-enable-statement-logging-quick-action
-    prettyname: Enable Postgres Statement Logging
-    hidden: true
-    quickaction: true
-    outputs: [] # have no outputs for these command by response
-  - arguments:
-    - name: subscription_id
-      type: string
-      required: true
-      description: The subscription ID.
-      prettyname: Subscription ID
+      prettypredefined:
+        Subscription ID: ${asset.xdm.asset.realm}
     - name: resource_group_name
       type: string
       required: true
       description: The resource group name.
       prettyname: Resource Group
+      prettypredefined:
+        Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroup}
     - name: disk_name
       prettyname: VM Disk
       type: string
       required: true
       description: Name of the managed disk. Supported characters for the name are a-z, A-Z, 0-9, _ and -. The maximum name length is 80 characters.
+      prettypredefined:
+        VM Disk: ${asset.xdm.asset.name}
     - name: public_network_access
       type: string
-      auto: PREDEFINED
-      predefined:
-      - Disabled
-      - Enabled
       description: Policy for controlling export on the disk.
       defaultValue: 'Disabled'
+      hidden: true
     - name: network_access_policy
       type: string
-      auto: PREDEFINED
-      predefined:
-      - AllowAll
-      - AllowPrivate
-      - DenyAll
       description: Policy for accessing the disk via network.
       defaultValue: 'DenyAll'
+      hidden: true
     description: "Disables all public and private network access for the managed disk. Requires 'Microsoft.Compute/disks/write' permission."
     name: azure-disable-public-private-access-vm-disk-quick-action
     prettyname: Disable Public & Private Access to VM Disk
@@ -2742,23 +2698,27 @@ script:
       required: true
       description: The subscription ID.
       prettyname: Subscription ID
+      prettypredefined:
+        Subscription ID: ${asset.xdm.asset.realm}
     - name: resource_group_name
       type: string
       required: true
       description: The resource group name.
       prettyname: Resource Group
+      prettypredefined:
+        Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.properties.resourceGroupName}
     - name: disk_name
       prettyname: VM Disk
       type: string
       required: true
       description: Name of the managed disk. Supported characters for the name are a-z, A-Z, 0-9, _ and -. The maximum name length is 80 characters.
+      prettypredefined:
+        VM Disk: ${asset.xdm.asset.name}
     - name: data_access_auth_mode
       type: string
-      auto: PREDEFINED
-      predefined:
-      - AzureActiveDirectory
       description: Additional authentication requirements when exporting or uploading to a disk or snapshot.
       defaultValue: AzureActiveDirectory
+      hidden: true
     description: "Sets the data access authentication mode for the managed disk to Azure Active Directory. Requires 'Microsoft.Compute/disks/write' permission."
     name: azure-disk-set-data-access-aad-quick-action
     prettyname: Set Disk Data Access to AAD
@@ -2873,31 +2833,31 @@ script:
       required: true
       description: The subscription ID.
       prettyname: Subscription ID
+      prettypredefined:
+        Subscription ID: ${asset.xdm.asset.realm}
     - name: resource_group_name
       type: String 
       required: true
       description: The resource group name.
       prettyname: Resource Group
+      prettypredefined:
+        Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroupName}
     - name: registry_name
       type: String
       required: true
       description: Name of the container registry.
       prettyname: Azure Container Registry
+      prettypredefined:
+        Azure Container Registry: ${asset.xdm.asset.name}
     - name: allow_exports
       description: Whether artifacts can be exported.
-      auto: PREDEFINED
-      predefined:
-      - disabled
-      - enabled
       defaultValue: disabled
+      hidden: true
     - name: public_network_access
       type: String
       description: Whether public network access is allowed for the container registry.
-      auto: PREDEFINED
-      predefined:
-      - disabled
-      - enabled
-      defaultValue: enabled
+      defaultValue: Disabled
+      hidden: true
     description: "Disables public network access and content exports for the Azure Container Registry (ACR) to enhance security. Requires 'Microsoft.ContainerRegistry/registries/write' permission."
     name: azure-acr-disable-public-private-access-quick-action
     prettyname: Disable Public Access and Exports on ACR
@@ -2979,23 +2939,26 @@ script:
       required: true
       description: The subscription ID.
       prettyname: Subscription ID
+      prettypredefined:
+        Subscription ID: ${asset.xdm.asset.realm}
     - name: resource_group_name
       type: String
       required: true
       description: The resource group name.
       prettyname: Resource Group
+      prettypredefined:
+        Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroupName}
     - name: registry_name
       type: String
       required: true
       description: The name of the container registry.
       prettyname: Azure Container Registry
+      prettypredefined:
+        Azure Container Registry: ${asset.xdm.asset.name}
     - name: authentication_as_arm_policy
-      auto: PREDEFINED
-      predefined:
-      - disabled
-      - enabled
       description: Whether the policy is enabled or not.
       defaultValue: disabled
+      hidden: true
     description: "Disables the legacy 'authentication as ARM' feature for the Azure Container Registry (ACR). Requires 'Microsoft.ContainerRegistry/registries/write' permission."
     name: azure-acr-disable-authentication-as-arm-quick-action
     prettyname: Disable ACR Authentication as ARM
@@ -3077,24 +3040,27 @@ script:
       required: true
       description: The subscription ID.
       prettyname: Subscription ID
+      prettypredefined:
+        Subscription ID: ${asset.xdm.asset.realm}      
     - name: resource_group_name
       type: String
       required: true
       description: The resource group name.
       prettyname: Resource Group
+      prettypredefined:
+        Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroupName}
     - name: registry_name
       type: String
       required: true
       description: The name of the container registry.
       prettyname: Azure Container Registry
+      prettypredefined:
+        Azure Container Registry: ${asset.xdm.asset.name}
     - name: anonymous_pull_enabled
       type: Boolean
       description: Whether to enable registry-wide pulls from unauthenticated clients.
-      auto: PREDEFINED
-      predefined:
-      - 'true'
-      - 'false'
       defaultValue: 'false'
+      hidden: true
     description: "Disables anonymous pull access for the Azure Container Registry (ACR), requiring clients to authenticate before pulling images. Requires 'Microsoft.ContainerRegistry/registries/write' permission."
     name: azure-acr-disable-anonymous-pull-quick-action
     prettyname: Disable ACR Anonymous Pull
