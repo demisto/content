@@ -633,6 +633,12 @@ class SecurityAndComplianceClient {
         }
     }
 
+    VerifyRequiredDelegatedSession(){
+        if ($this.using_delegated -eq $false) {
+            throw "Using this command requires interactive delegated authentication. Please make sure the UPN password is set in the integration parameters."
+        }
+    }
+
     CreateDelegatedSession([string]$CommandName)
     {
         if ($this.using_delegated -eq $true)
@@ -940,10 +946,6 @@ class SecurityAndComplianceClient {
                               [bool]$include_sharepoint_document_versions, [string]$notify_email,
                               [string]$notify_email_cc, [string]$scenario, [string]$scope) {
         # Establish session to remote
-        if ($this.using_delegated -eq $false) {
-            throw "Using this command requires interactive delegated authentication. Please make sure the UPN password is set in the integration parameters."
-        }
-
         $this.CreateDelegatedSession("New-ComplianceSearchAction")
         # Execute command
         $cmd_params = @{
@@ -1229,9 +1231,8 @@ class SecurityAndComplianceClient {
 
     [psobject]CaseHoldPolicyCreate([string]$policy_name, [string]$case, [string]$comment, [string]$exchange_location,
                                    [string]$public_folder_location, [string]$share_point_location, [bool]$enabled) {
-        if ($this.using_delegated -eq $false) {
-            throw "Using this command requires interactive delegated authentication. Please make sure the UPN password is set in the integration parameters."
-        }
+
+        $this.VerifyRequiredDelegatedSession()
 
         # Establish session to remote
         $this.CreateDelegatedSession("New-CaseHoldPolicy")
@@ -1345,9 +1346,7 @@ class SecurityAndComplianceClient {
     }
 
     [psobject]CaseHoldPolicyDelete([string]$identity, [bool]$force_delete){
-        if ($this.using_delegated -eq $false) {
-            throw "Using this command requires interactive delegated authentication. Please make sure the UPN password is set in the integration parameters."
-        }
+        $this.VerifyRequiredDelegatedSession()
 
         # Establish session to remote
         $this.CreateDelegatedSession("Remove-CaseHoldPolicy")
@@ -1384,9 +1383,7 @@ class SecurityAndComplianceClient {
 
     CaseHoldPolicySet([string]$identity, [bool]$enabled, [string[]]$add_exchange_locations, [string[]] $add_sharepoint_locations, [string[]]$add_public_locations,
         [string[]]$remove_exchange_locations, [string[]]$remove_sharepoint_locations, [string[]]$remove_public_locations, [string]$comment){
-        if ($this.using_delegated -eq $false) {
-            throw "Using this command requires interactive delegated authentication. Please make sure the UPN password is set in the integration parameters."
-        }
+        $this.VerifyRequiredDelegatedSession()
 
         $this.CreateDelegatedSession("Set-CaseHoldPolicy")
       $cmd_params = @{}
@@ -1407,9 +1404,7 @@ class SecurityAndComplianceClient {
 
 
     [psobject]CaseHoldRuleCreate([string]$rule_name, [string]$policy_name, [string]$query, [string]$comment, [bool]$is_disabled){
-        if ($this.using_delegated -eq $false) {
-            throw "Using this command requires interactive delegated authentication. Please make sure the UPN password is set in the integration parameters."
-        }
+        $this.VerifyRequiredDelegatedSession()
 
         # Establish session to remote
         $this.CreateDelegatedSession("New-CaseHoldRule")
@@ -1496,9 +1491,7 @@ class SecurityAndComplianceClient {
     }
 
     [psobject]CaseHoldRuleDelete([string]$identity, [bool]$force_delete){
-        if ($this.using_delegated -eq $false) {
-            throw "Using this command requires interactive delegated authentication. Please make sure the UPN password is set in the integration parameters."
-        }
+        $this.VerifyRequiredDelegatedSession()
 
         # Establish session to remote
         $this.CreateDelegatedSession("Remove-CaseHoldRule")
