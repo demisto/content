@@ -19,13 +19,13 @@ from CybleEventsV2 import (
     ensure_aware,
 )
 from CommonServerPython import GetModifiedRemoteDataResponse
-from CybleEventsV2 import check_response as test_response
+from CybleEventsV2 import check_response
 
 
 def test_test_response_success(mock_client):
     mock_client._http_request = Mock(return_value={"status": "ok"})
     with patch("CybleEventsV2.demisto", demisto_mock):
-        result = test_response(mock_client, "GET", "https://example.com", "dummy-token")
+        result = check_response(mock_client, "GET", "https://example.com", "dummy-token")
     assert result == "ok"
 
 

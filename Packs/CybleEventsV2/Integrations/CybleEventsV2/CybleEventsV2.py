@@ -702,7 +702,7 @@ def fetch_subscribed_services_alert(client, method, base_url, token):
 
 def check_response(client, method, url, token):
     """
-    Test the integration state
+    check the integration state
     """
     try:
         headers = {"Authorization": f"Bearer {token}", "Accept": "application/json"}
