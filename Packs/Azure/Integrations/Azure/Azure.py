@@ -67,8 +67,14 @@ PERMISSIONS_TO_COMMANDS = {
         "azure-postgres-config-set-log-retention-quick-action",
         "azure-postgres-enable-statement-logging-quick-action",
     ],
-    "Microsoft.Web/sites/config/read": ["azure-webapp-config-set, azure-webapp-auth-update"],
-    "Microsoft.Web/sites/config/write": ["azure-webapp-config-set, azure-webapp-auth-update"],
+    "Microsoft.Web/sites/config/read": [
+        "azure-webapp-config-set",
+        "azure-webapp-auth-update",
+    ],
+    "Microsoft.Web/sites/config/write": [
+        "azure-webapp-config-set",
+        "azure-webapp-auth-update",
+    ],
     "Microsoft.Web/sites/read": [
         "azure-webapp-update",
         "azure-webapp-update-assign-managed-identity-quick-action",
