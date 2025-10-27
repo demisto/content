@@ -130,7 +130,7 @@ class Client(CoreClient):
 
 
 class FilterField:
-    def __init__(self, field_name: str, operator: str, values: list):
+    def __init__(self, field_name: str, operator: str, values: Any):
         self.field_name = field_name
         self.operator = operator
         self.values = values
@@ -148,27 +148,25 @@ def create_filter_from_fields(fields_to_filter: list[FilterField]):
     filter_structure: dict[str, list] = {"AND": []}
 
     for field in fields_to_filter:
-        if field.values == [] or field.values == [None]:
-            continue
+        if not isinstance(field.values, list):
+            field.values = [field.values]
 
-        if len(field.values) == 1:
-            search_obj = {
-                "SEARCH_FIELD": field.field_name,
-                "SEARCH_TYPE": field.operator,
-                "SEARCH_VALUE": field.values[0],
-            }
-        else:
-            search_obj = {"OR": []}
-            for value in field.values:
-                search_obj["OR"].append(
-                    {
-                        "SEARCH_FIELD": field.field_name,
-                        "SEARCH_TYPE": field.operator,
-                        "SEARCH_VALUE": value,
-                    }
-                )
+        search_values = []
+        for value in field.values:
+            if value is None:
+                continue
 
-        filter_structure["AND"].append(search_obj)
+            search_values.append(
+                {
+                    "SEARCH_FIELD": field.field_name,
+                    "SEARCH_TYPE": field.operator,
+                    "SEARCH_VALUE": value,
+                }
+            )
+
+        if search_values:
+            search_obj = {"OR": search_values} if len(search_values) > 1 else search_values[0]
+            filter_structure["AND"].append(search_obj)
 
     if not filter_structure["AND"]:
         filter_structure = {}
@@ -212,15 +210,17 @@ def get_vulnerabilities_command(client: Client, args: dict) -> CommandResults:
 
     filter_fields = [
         FilterField("CVE_ID", "CONTAINS", argToList(args.get("cve_id"))),
-        FilterField("CVSS_SCORE", "GTE", [arg_to_number(args.get("cvss_score_gte"))]),
-        FilterField("EPSS_SCORE", "GTE", [arg_to_number(args.get("epss_score_gte"))]),
-        FilterField("INTERNET_EXPOSED", "EQ", [arg_to_bool_or_none(args.get("internet_exposed"))]),
-        FilterField("EXPLOITABLE", "EQ", [arg_to_bool_or_none(args.get("exploitable"))]),
-        FilterField("HAS_KEV", "EQ", [arg_to_bool_or_none(args.get("has_kev"))]),
+        FilterField("CVSS_SCORE", "GTE", arg_to_number(args.get("cvss_score_gte"))),
+        FilterField("EPSS_SCORE", "GTE", arg_to_number(args.get("epss_score_gte"))),
+        FilterField("INTERNET_EXPOSED", "EQ", arg_to_bool_or_none(args.get("internet_exposed"))),
+        FilterField("EXPLOITABLE", "EQ", arg_to_bool_or_none(args.get("exploitable"))),
+        FilterField("HAS_KEV", "EQ", arg_to_bool_or_none(args.get("has_kev"))),
         FilterField("AFFECTED_SOFTWARE", "CONTAINS", argToList(args.get("affected_software"))),
     ]
-    if arg_to_bool_or_none(args.get("not_assigned")):
-        filter_fields.append(FilterField("ASSIGNED_TO", "IS_EMPTY", [""]))
+    not_assigned = arg_to_bool_or_none(args.get("not_assigned"))
+    if not_assigned is not None:
+        not_assigned_operator = "IS_EMPTY" if not_assigned else "NIS_EMPTY"
+        filter_fields.append(FilterField("ASSIGNED_TO", not_assigned_operator, ""))
 
     request_data = build_webapp_request_data(
         table_name="VULNERABLE_ISSUES_TABLE",
@@ -234,10 +234,24 @@ def get_vulnerabilities_command(client: Client, args: dict) -> CommandResults:
     reply = response.get("reply", {})
     data = reply.get("DATA", [])
 
+    headers = [
+        "ISSUE_ID",
+        "ISSUE_NAME",
+        "CVE_ID",
+        "PLATFORM_SEVERITY",
+        "CVSS_SEVERITY",
+        "EPSS_SCORE",
+        "CVSS_SCORE",
+        "FIX_AVAILABLE",
+        "ASSET_ID",
+        "ASSIGNED_TO_PRETTY",
+        "ASSIGNED_TO",
+        "CVE_DESCRIPTION",
+    ]
     return CommandResults(
-        readable_output=tableToMarkdown("Vulnerabilities", data, headerTransform=string_to_table_header),
+        readable_output=tableToMarkdown("Vulnerabilities", data, headerTransform=string_to_table_header, headers=headers),
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Vulnerability",
-        outputs_key_field="issue_id",
+        outputs_key_field="ISSUE_ID",
         outputs=data,
         raw_response=response,
     )

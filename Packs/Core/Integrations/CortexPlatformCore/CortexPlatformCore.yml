@@ -734,26 +734,152 @@ script:
             - "true"
             - "false"
       outputs:
-        - contextPath: Core.Vulnerability.issue_id
-          description: "The unique ID of the vulnerability issue."
+        - contextPath: Core.Vulnerability.ISSUE_ID
+          description: The unique identifier for the vulnerability issue.
           type: String
-        - contextPath: Core.Vulnerability.cvss
-          description: "The CVSS score of the vulnerability."
+        - contextPath: Core.Vulnerability.ISSUE_NAME
+          description: The name of the vulnerability issue.
+          type: String
+        - contextPath: Core.Vulnerability.CVE_ID
+          description: The CVE identifier for the vulnerability.
+          type: String
+        - contextPath: Core.Vulnerability.CVE_DESCRIPTION
+          description: The description of the CVE.
+          type: String
+        - contextPath: Core.Vulnerability.ASSET_NAME
+          description: The name of the affected asset.
+          type: String
+        - contextPath: Core.Vulnerability.PLATFORM_SEVERITY
+          description: The severity of the vulnerability as determined by the platform.
+          type: String
+        - contextPath: Core.Vulnerability.EPSS_SCORE
+          description: The Exploit Prediction Scoring System (EPSS) score.
           type: Number
-        - contextPath: Core.Vulnerability.epss
-          description: "The EPSS score of the vulnerability."
+        - contextPath: Core.Vulnerability.CVSS_SCORE
+          description: The Common Vulnerability Scoring System (CVSS) score.
           type: Number
-        - contextPath: Core.Vulnerability.is_internet_exposed
-          description: "Indicates if the asset is exposed to the internet."
+        - contextPath: Core.Vulnerability.CVSS_SEVERITY
+          description: The severity level based on the CVSS score.
+          type: String
+        - contextPath: Core.Vulnerability.PROGRESS_STATUS
+          description: The current progress status of the vulnerability.
+          type: String
+        - contextPath: Core.Vulnerability.ASSIGNED_TO
+          description: The email of the user assigned to the vulnerability.
+          type: String
+        - contextPath: Core.Vulnerability.ASSIGNED_TO_PRETTY
+          description: The full name of the user assigned to the vulnerability.
+          type: String
+        - contextPath: Core.Vulnerability.AFFECTED_SOFTWARE
+          description: The software affected by the vulnerability.
+          type: Unknown
+        - contextPath: Core.Vulnerability.FIX_AVAILABLE
+          description: Indicates if a fix is available for the vulnerability.
           type: Boolean
-        - contextPath: Core.Vulnerability.is_exploitable
-          description: "Indicates if the vulnerability is exploitable."
+        - contextPath: Core.Vulnerability.ASSET_TYPE
+          description: The type of the affected asset.
+          type: String
+        - contextPath: Core.Vulnerability.ASSET_CATEGORY
+          description: The category of the affected asset.
+          type: String
+        - contextPath: Core.Vulnerability.PATH
+          description: The path related to the vulnerability finding.
+          type: Unknown
+        - contextPath: Core.Vulnerability.LOCATION
+          description: The location of the affected asset.
+          type: Unknown
+        - contextPath: Core.Vulnerability.INTERNET_EXPOSED
+          description: Indicates if the asset is exposed to the internet.
           type: Boolean
-        - contextPath: Core.Vulnerability.has_kev
-          description: "Indicates if the vulnerability has a Known Exploited Vulnerability (KEV)."
+        - contextPath: Core.Vulnerability.PROVIDER
+          description: The provider or source of the asset information.
+          type: String
+        - contextPath: Core.Vulnerability.HAS_KEV
+          description: Indicates if the vulnerability is a Known Exploited Vulnerability (KEV).
           type: Boolean
-        - contextPath: Core.Vulnerability
-          description: "The full vulnerability data."
+        - contextPath: Core.Vulnerability.EXPLOITABLE
+          description: Indicates if the vulnerability is exploitable.
+          type: Boolean
+        - contextPath: Core.Vulnerability.EXPLOIT_LEVEL
+          description: The level of exploit available for the vulnerability.
+          type: String
+        - contextPath: Core.Vulnerability.CVE_RISK_FACTORS
+          description: A list of risk factors associated with the CVE.
+          type: Unknown
+        - contextPath: Core.Vulnerability.FINDING_SOURCES
+          description: The sources that reported the vulnerability finding.
+          type: Unknown
+        - contextPath: Core.Vulnerability.FIRST_OBSERVED
+          description: The timestamp when the vulnerability was first observed.
+          type: Date
+        - contextPath: Core.Vulnerability.LAST_OBSERVED
+          description: The timestamp when the vulnerability was last observed.
+          type: Date
+        - contextPath: Core.Vulnerability.OPERATING_SYSTEM
+          description: The operating system of the affected asset.
+          type: Unknown
+        - contextPath: Core.Vulnerability.OS_FAMILY
+          description: The family of the operating system.
+          type: Unknown
+        - contextPath: Core.Vulnerability.IPV4_ADDRESSES
+          description: A list of IPv4 addresses associated with the asset.
+          type: Unknown
+        - contextPath: Core.Vulnerability.IPV6_ADDRESSES
+          description: A list of IPv6 addresses associated with the asset.
+          type: Unknown
+        - contextPath: Core.Vulnerability.IMAGE
+          description: The image related to the asset.
+          type: Unknown
+        - contextPath: Core.Vulnerability.FIX_VERSIONS
+          description: A list of versions that include a fix for the vulnerability.
+          type: Unknown
+        - contextPath: Core.Vulnerability.SYMBOLS
+          description: Symbols related to the vulnerability.
+          type: Unknown
+        - contextPath: Core.Vulnerability.PACKAGE_IN_USE
+          description: Indicates if the package is in use.
+          type: Unknown
+        - contextPath: Core.Vulnerability.ORIGIN_PACKAGE_NAME
+          description: The original name of the package.
+          type: Unknown
+        - contextPath: Core.Vulnerability.PACKAGE_FILE_CREATION_TIME
+          description: The creation time of the package file.
+          type: Unknown
+        - contextPath: Core.Vulnerability.PACKAGE_LICENSES
+          description: The licenses associated with the package.
+          type: Unknown
+        - contextPath: Core.Vulnerability.PACKAGE_VERSION
+          description: The version of the package.
+          type: Unknown
+        - contextPath: Core.Vulnerability.PACKAGE_PURL
+          description: The Package URL (PURL) for the package.
+          type: Unknown
+        - contextPath: Core.Vulnerability.PACKAGE_TYPE
+          description: The type of the package.
+          type: Unknown
+        - contextPath: Core.Vulnerability.AUTHOR
+          description: The author of the package or code.
+          type: Unknown
+        - contextPath: Core.Vulnerability.ASSET_ID
+          description: The unique identifier for the asset.
+          type: String
+        - contextPath: Core.Vulnerability.PLATFORM_ID
+          description: The unique identifier from the platform.
+          type: String
+        - contextPath: Core.Vulnerability.APPLICATION_VERSION
+          description: The version of the application.
+          type: Unknown
+        - contextPath: Core.Vulnerability.DERIVED_FROM_BASE_IMAGE
+          description: Indicates if the asset is derived from a base image.
+          type: Unknown
+        - contextPath: Core.Vulnerability.ASSET_GROUP_IDS
+          description: A list of asset group IDs.
+          type: Unknown
+        - contextPath: Core.Vulnerability.COMPENSATING_CONTROLS_DETECTED_COVERAGE
+          description: Coverage of detected compensating controls.
+          type: Unknown
+        - contextPath: Core.Vulnerability.COMPENSATING_CONTROLS_DETECTED_CONTROLS
+          description: Detected compensating controls.
           type: Unknown
         - contextPath: Core.CaseExtraData.issues.data.deduplicate_tokens
           description: Tokens used to identify and deduplicate similar issues.
