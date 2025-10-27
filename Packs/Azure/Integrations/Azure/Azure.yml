@@ -2357,7 +2357,7 @@ script:
       prettyname: Logic App Name
       prettypredefined:
         Logic App Name: ${asset.xdm.asset.raw_fields.Platform Discovery.name}
-    - description: The name of the rule to be updated.
+    - description: The name of the rule to be deleted.
       name: security_rule_name
       required: true
       prettyname: NSG Rule
