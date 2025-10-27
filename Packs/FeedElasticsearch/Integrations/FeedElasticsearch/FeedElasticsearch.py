@@ -208,6 +208,8 @@ def test_command(
             err_msg += 'Please provide a "First Fetch Time"\n'
         if not query:
             err_msg += 'Please provide a "Query"\n'
+        if not time_field:
+            err_msg += 'Please provide a "Time Field" when "Feed Type" is "Generic Feed (requires additional configurations)"\n'
         if err_msg:
             return_error(err_msg[:-1])
         get_scan_generic_format(client)
