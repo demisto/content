@@ -14,8 +14,6 @@ and the commands to perform different updates on the alerts
 
 import urllib3
 from typing import Any, Callable  # noqa: UP035
-from requests.adapters import HTTPAdapter
-from urllib3.util.retry import Retry
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -36,30 +34,6 @@ DEFAULT_RETRY_TOTAL = 3
 DEFAULT_RETRY_BACKOFF_FACTOR = 2
 DEFAULT_RETRY_STATUS_LIST = [429, 500, 502, 503, 504]
 
-class FixedRetry(Retry):
-    """Retry with logging + fixed 10s fallback delay."""
-
-    def get_backoff_time(self, response=None):
-        """Return wait time before retrying, respecting Retry-After or falling back to 10s."""
-        retry_after = None
-        if response is not None:
-            retry_after = self.get_retry_after(response)
-
-        if retry_after:
-            demisto.debug(f"[Doppel] ⚠️ Server requested retry after {retry_after}s")
-            return retry_after
-
-        # Otherwise, fixed fallback delay
-        demisto.debug("[Doppel] ⚠️ No Retry-After header present — using fixed 10s delay before next retry.")
-        return 10
-
-    def increment(self, *args, **kwargs):
-        """Log retry attempts with URLs."""
-        new_retry = super().increment(*args, **kwargs)
-        attempt = self.total - new_retry.total
-        url = kwargs.get("url", "")
-        demisto.debug(f"[Doppel] 🔁 Retry attempt #{attempt} for {url}")
-        return new_retry
 
 """ CLIENT CLASS """
 
@@ -84,22 +58,13 @@ class Client(BaseClient):
         if organization_code:
             self._headers["x-organization-code"] = organization_code
 
-
-        retry_strategy = FixedRetry(
-            total=retry_total,
-            backoff_factor=retry_backoff_factor,
-            status_forcelist=retry_status_list,
-            allowed_methods=["GET", "POST", "PUT", "PATCH", "DELETE"],
-            raise_on_status=False,
-            respect_retry_after_header=True,
-        )
-
-        adapter = HTTPAdapter(max_retries=retry_strategy)
-        self._session.mount("https://", adapter)
-        self._session.mount("http://", adapter)
+        # Store retry configuration on the client and leverage BaseClient._http_request parameters
+        self._retry_total = retry_total
+        self._retry_backoff_factor = retry_backoff_factor
+        self._retry_status_list = retry_status_list
 
         demisto.debug(
-            f"Initialized retry-enabled HTTP client: total={retry_total}, "
+            f"Initialized HTTP client using BaseClient._http_request retry params: total={retry_total}, "
             f"backoff_factor={retry_backoff_factor}, status_list={retry_status_list}"
         )
 
@@ -122,7 +87,14 @@ class Client(BaseClient):
         if entity:
             params["entity"] = entity
 
-        response_content = self._http_request(method="GET", url_suffix="alert", params=params)
+        response_content = self._http_request(
+            method="GET",
+            url_suffix="alert",
+            params=params,
+            retry_total=self._retry_total,
+            retry_backoff_factor=self._retry_backoff_factor,
+            status_list_to_retry=self._retry_status_list,
+        )
         return response_content
 
     def update_alert(
@@ -158,10 +130,13 @@ class Client(BaseClient):
         payload = {"queue_state": queue_state, "entity_state": entity_state, "comment": comment}
 
         response_content = self._http_request(
-            method="PUT",  # Changed to PUT as per reference
+            method="PUT",
             full_url=api_url,
             params=params,
             json_data=payload,
+            retry_total=self._retry_total,
+            retry_backoff_factor=self._retry_backoff_factor,
+            status_list_to_retry=self._retry_status_list,
         )
         return response_content
 
@@ -179,20 +154,40 @@ class Client(BaseClient):
 
         demisto.debug(f"API Request Params: {filtered_params}")
 
-        # Use params as query parameters, not json_data
-        response_content = self._http_request(method="GET", full_url=api_url, params=filtered_params)
+        response_content = self._http_request(
+            method="GET",
+            full_url=api_url,
+            params=filtered_params,
+            retry_total=self._retry_total,
+            retry_backoff_factor=self._retry_backoff_factor,
+            status_list_to_retry=self._retry_status_list,
+        )
         return response_content
 
     def create_alert(self, entity: str) -> dict[str, Any]:
         api_name = "alert"
         api_url = f"{self._base_url}/{api_name}"
-        response_content = self._http_request(method="POST", full_url=api_url, json_data={"entity": entity})
+        response_content = self._http_request(
+            method="POST",
+            full_url=api_url,
+            json_data={"entity": entity},
+            retry_total=self._retry_total,
+            retry_backoff_factor=self._retry_backoff_factor,
+            status_list_to_retry=self._retry_status_list,
+        )
         return response_content
 
     def create_abuse_alert(self, entity: str) -> dict[str, Any]:
         api_name = "alert/abuse"
         api_url = f"{self._base_url}/{api_name}"
-        response_content = self._http_request(method="POST", full_url=api_url, json_data={"entity": entity})
+        response_content = self._http_request(
+            method="POST",
+            full_url=api_url,
+            json_data={"entity": entity},
+            retry_total=self._retry_total,
+            retry_backoff_factor=self._retry_backoff_factor,
+            status_list_to_retry=self._retry_status_list,
+        )
         return response_content
 
 
