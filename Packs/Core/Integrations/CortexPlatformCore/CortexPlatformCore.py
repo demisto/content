@@ -28,6 +28,55 @@ class FilterField:
         self.operator = operator
         self.values = values
 
+WEBAPP_COMMANDS = ["core-get-vulnerabilities", "core-search-asset-groups"]
+DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
+
+ASSET_GROUP_FIELDS = {
+    "asset_group_name": "XDM__ASSET_GROUP__NAME",
+    "asset_group_type": "XDM__ASSET_GROUP__TYPE",
+    "asset_group_description": "XDM__ASSET_GROUP__DESCRIPTION",
+    "asset_group_id": "XDM__ASSET_GROUP__ID",
+}
+
+
+class FilterField:
+    def __init__(self, field_name: str, operator: str, values: list):
+        self.field_name = field_name
+        self.operator = operator
+        self.values = values
+
+
+def build_webapp_request_data(
+    table_name: str,
+    filter_fields: list[FilterField],
+    limit: int,
+    sort_field: str,
+    on_demand_fields: list | None = None,
+    sort_order: str = "DESC",
+) -> dict:
+    """
+    Builds the request data for the generic /api/webapp/get_data endpoint.
+    """
+    dynamic_filter = create_filter_from_fields(filter_fields)
+
+    filter_data = {
+        "sort": [{"FIELD": sort_field, "ORDER": sort_order}],
+        "paging": {"from": 0, "to": limit},
+        "filter": dynamic_filter,
+    }
+    demisto.debug(f"{filter_data=}")
+
+    if on_demand_fields is None:
+        on_demand_fields = []
+
+    return {
+        "type": "grid",
+        "table_name": table_name,
+        "filter_data": filter_data,
+        "jsons": [],
+        "onDemandFields": on_demand_fields,
+    }
+
 
 def replace_substring(data: dict | str, original: str, new: str) -> str | dict:
     """
@@ -169,6 +218,61 @@ class Client(CoreClient):
         )
 
         return reply
+    
+    def get_webapp_data(self, request_data: dict) -> dict:
+        reply = self._http_request(
+            method="POST",
+            url_suffix="/get_data",
+            json_data=request_data,
+        )
+        
+        return reply
+
+
+def search_asset_groups_command(client: Client, args: dict) -> CommandResults:
+    """
+    Retrieves asset groups from the Cortex platform based on provided filters.
+
+    Args:
+        client (Client): The client instance used to send the request.
+        args (dict): Dictionary containing the arguments for the command.
+                     Expected to include:
+                         - name (str, optional): Filter by asset group names
+                         - type (str, optional): Filter by asset group type
+                         - description (str, optional): Filter by description
+                         - id (str, optional): Filter by asset group ids
+
+    Returns:
+        CommandResults: Object containing the formatted asset groups,
+                        raw response, and outputs for integration context.
+    """
+    limit = arg_to_number(args.get("limit")) or 50
+    filter_fields = [
+        FilterField(ASSET_GROUP_FIELDS["asset_group_name"], "CONTAINS", argToList(args.get("name", ""))),
+        FilterField(ASSET_GROUP_FIELDS["asset_group_type"], "EQ", argToList(args.get("type", ""))),
+        FilterField(ASSET_GROUP_FIELDS["asset_group_id"], "EQ", argToList(args.get("id", ""))),
+        FilterField(ASSET_GROUP_FIELDS["asset_group_description"], "CONTAINS", argToList(args.get("description", ""))),
+    ]
+
+    request_data = build_webapp_request_data(
+        table_name="UNIFIED_ASSET_MANAGEMENT_ASSET_GROUPS",
+        filter_fields=filter_fields,
+        limit=limit,
+        sort_field="XDM__ASSET_GROUP__LAST_UPDATE_TIME",
+    )
+
+    response = client.get_webapp_data(request_data).get("reply", {}).get("DATA", [])
+
+    response = [
+        {(k.replace("XDM__ASSET_GROUP__", "") if k.startswith("XDM__ASSET_GROUP__") else k).lower(): v for k, v in item.items()} for item in response
+    ]
+    return CommandResults(
+        readable_output=tableToMarkdown("AssetGroups", response, headerTransform=string_to_table_header),
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.AssetGroups",
+        outputs_key_field="ID",
+        outputs=response,
+        raw_response=response,
+    )
 
 
 def get_asset_details_command(client: Client, args: dict) -> CommandResults:
@@ -421,7 +525,9 @@ def main():  # pragma: no cover
     args["integration_context_brand"] = INTEGRATION_CONTEXT_BRAND
     args["integration_name"] = INTEGRATION_NAME
     headers: dict = {}
-    base_url = "/api/webapp/public_api/v1"
+    public_api_url = "/api/webapp/public_api/v1"
+    webapp_api_url = "/api/webapp"
+    data_platform_api_url = f"{webapp_api_url}/data-platform"
     proxy = demisto.params().get("proxy", False)
     verify_cert = not demisto.params().get("insecure", False)
 
@@ -431,8 +537,14 @@ def main():  # pragma: no cover
         demisto.debug(f"Failed casting timeout parameter to int, falling back to 120 - {e}")
         timeout = 120
 
+    client_url = public_api_url
+    if command in WEBAPP_COMMANDS:
+        client_url = webapp_api_url
+    elif command in DATA_PLATFORM_COMMANDS:
+        client_url = data_platform_api_url
+
     client = Client(
-        base_url=base_url,
+        base_url=client_url,
         proxy=proxy,
         verify=verify_cert,
         headers=headers,
@@ -445,8 +557,10 @@ def main():  # pragma: no cover
             demisto.results("ok")
 
         elif command == "core-get-asset-details":
-            client._base_url = "/api/webapp/data-platform"
             return_results(get_asset_details_command(client, args))
+
+        elif command == "core-search-asset-groups":
+            return_results(search_asset_groups_command(client, args))
 
         elif command == "core-get-issues":
             # replace all dict keys that contain issue with alert

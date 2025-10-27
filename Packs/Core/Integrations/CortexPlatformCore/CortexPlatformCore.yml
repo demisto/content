@@ -1191,6 +1191,52 @@ script:
         type: string
       name: update-issue
       description: Updates the properties of an issue. This command does not provide an explicit indication of success.
+    - arguments:
+        - description: The maximum number of groups to return.
+          defaultValue: "50"
+          name: limit
+        - description: JSON list of groups to search for. (e.g. `["group1", "group2"]`).
+          name: name
+        - description: Comma separated list of ids to search for.
+          name: id
+        - auto: PREDEFINED
+          description: Filter asset groups by type.
+          name: type
+          predefined:
+            - STATIC
+            - DYNAMIC
+        - description: JSON list of descriptions to search for. (e.g. `["description1", "description2"]`).
+          name: description
+      name: core-search-asset-groups
+      description: Retrieve asset groups from the Cortex platform with optional filtering.
+      outputs:
+        - contextPath: Core.AssetGroups.name
+          description: The name of the asset group.
+          type: String
+        - contextPath: Core.AssetGroups.filter
+          description: The filter criteria for the asset group.
+          type: String
+        - contextPath: Core.AssetGroups.membership_predicate
+          description: The predicate used to create the asset group.
+          type: String
+        - contextPath: Core.AssetGroups.type
+          description: The type of the asset group.
+          type: String
+        - contextPath: Core.AssetGroups.description
+          description: The description of the asset group.
+          type: String
+        - contextPath: Core.AssetGroups.modified_by
+          description: The user who modified the asset group.
+          type: String
+        - contextPath: Core.AssetGroups.created_by
+          description: The user who created the asset group.
+          type: String
+        - contextPath: Core.AssetGroups.created_by_pretty
+          description: The formatted name of the user who created the asset group.
+          type: String
+        - contextPath: Core.AssetGroups.modified_by_pretty
+          description: The formatted name of the user who created the asset group.
+          type: String
   runonce: false
   script: "-"
   subtype: python3

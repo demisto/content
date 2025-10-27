@@ -4,6 +4,8 @@ import pytest
 
 import demistomock as demisto
 
+from CortexPlatformCore import Client, search_asset_groups_command
+
 MAX_GET_INCIDENTS_LIMIT = 100
 
 
