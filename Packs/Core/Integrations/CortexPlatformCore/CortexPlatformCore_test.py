@@ -787,7 +787,7 @@ def test_update_issue_command_filters_none_values(mocker):
     client = Client(base_url="", headers={})
     mock_update_issue = mocker.patch.object(client, "update_issue")
     mocker.patch.object(demisto, "debug")
-    
+
     args = {
         "issue_id": "12345",
         "assigned_user_mail": "user@example.com",
@@ -880,7 +880,7 @@ def test_update_issue_command_empty_args(mocker):
     client = Client(base_url="", headers={})
     mock_update_issue = mocker.patch.object(client, "update_issue")
     mocker.patch.object(demisto, "debug")
-    
+
     args = {"issue_id": "12345"}
 
     update_issue_command(client, args)
