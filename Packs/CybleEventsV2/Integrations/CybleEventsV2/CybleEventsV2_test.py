@@ -17,9 +17,16 @@ from CybleEventsV2 import (
     set_request,
     DEFAULT_TAKE_LIMIT,
     ensure_aware,
-    test_response,
 )
 from CommonServerPython import GetModifiedRemoteDataResponse
+from CybleEventsV2 import _test_response as test_response
+
+def test_test_response_success(mock_client):
+    mock_client._http_request = Mock(return_value={"status": "ok"})
+    with patch("CybleEventsV2.demisto", demisto_mock):
+        result = test_response(mock_client, "GET", "https://example.com", "dummy-token")
+    assert result == "ok"
+
 
 try:
     from CybleEventsV2 import (
@@ -96,13 +103,6 @@ def mock_client():
     """Fixture to create a mock client"""
     client = Client(base_url="https://test.com", verify=False)
     return client
-
-def test_test_response_success(mock_client):
-    """Ensure test_response returns 'ok' when API call succeeds"""
-    mock_client._http_request = Mock(return_value={"status": "ok"})
-    with patch("CybleEventsV2.demisto", demisto_mock):
-        result = test_response(mock_client, "GET", "https://example.com", "dummy-token")
-    assert result == "ok"
 
 
 @pytest.fixture
