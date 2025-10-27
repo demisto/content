@@ -201,7 +201,15 @@ script:
           required: true
         - name: format
           description: Report format.
-          predefined: [json, maec, maec5, metadata, lite, all, dist, dropped]
+          auto: PREDEFINED
+          defaultValue: "json"
+          predefined:
+            - "json"
+            - "maec"
+            - "maec5"
+            - "metadata"
+            - "lite"
+            - "all"
         - name: zip
           description: Download report as ZIP file.
           type: 8
@@ -233,8 +241,11 @@ script:
           description: Machine name to fetch (optional).
         - name: all_results
           description: Return all machines, ignoring the limit (true/false).
-          type: 8
           defaultValue: "false"
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
         - name: limit
           description: Maximum number of machines to return when listing.
           defaultValue: 50
