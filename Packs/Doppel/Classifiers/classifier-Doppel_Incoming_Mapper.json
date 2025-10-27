@@ -72,7 +72,7 @@
 				"dbotMirrorInstance": {
 					"simple": "mirror_instance"
 				},
-				"Screenshot URL": {
+				"Doppel Screenshot URL": {
 					"simple": "doppelscreenshoturl"
 				}
 			}
@@ -168,7 +168,7 @@
 				"dbotMirrorInstance": {
 					"simple": "mirror_instance"
 				}, 
-				"Screenshot URL": {
+				"Doppel Screenshot URL": {
 					"simple": "doppelscreenshoturl"
 				}
 			}
@@ -242,7 +242,7 @@
 				"dbotMirrorInstance": {
 					"simple": "mirror_instance"
 				},
-				"Screenshot URL": {
+				"Doppel Screenshot URL": {
 					"simple": "doppelscreenshoturl"
 				}
 			}
@@ -338,7 +338,7 @@
 				"dbotMirrorInstance": {
 					"simple": "mirror_instance"
 				},
-				"Screenshot URL": {
+				"Doppel Screenshot URL": {
 					"simple": "doppelscreenshoturl"
 				}
 			}
@@ -412,7 +412,7 @@
 				"dbotMirrorInstance": {
 					"simple": "mirror_instance"
 				},
-				"Screenshot URL": {
+				"Doppel Screenshot URL": {
 					"simple": "doppelscreenshoturl"
 				}
 			}
@@ -508,7 +508,7 @@
 				"dbotMirrorInstance": {
 					"simple": "mirror_instance"
 				},
-				"Screenshot URL": {
+				"Doppel Screenshot URL": {
 					"simple": "doppelscreenshoturl"
 				}
 			}
@@ -582,7 +582,7 @@
 				"dbotMirrorInstance": {
 					"simple": "mirror_instance"
 				},
-				"Screenshot URL": {
+				"Doppel Screenshot URL": {
 					"simple": "doppelscreenshoturl"
 				}
 			}
@@ -653,7 +653,7 @@
 				"severity": {
 					"simple": "severity"
 				},
-				"Screenshot URL": {
+				"Doppel Screenshot URL": {
 					"simple": "doppelscreenshoturl"
 				}
 			}
