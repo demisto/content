@@ -133,7 +133,7 @@ class Client(CoreClient):
             method="POST",
             data=json.dumps({"alert_internal_id": issue_id}),
             headers=self._headers,
-            path="/api/webapp/incident/get_playbook_suggestion_by_alert/"
+            path="/api/webapp/incident/get_playbook_suggestion_by_alert/",
         )
 
         return reply
@@ -227,10 +227,10 @@ def get_playbook_suggestion_by_issue_command(client: Client, args: dict) -> Comm
     issue_id = args.get("issue_id")
     if not issue_id:
         raise DemistoException("issue_id is required.")
-    
+
     response = client.get_playbook_suggestion_by_issue(issue_id)
     reply = response.get("reply", {})
-    
+
     return CommandResults(
         readable_output=tableToMarkdown("Playbook Suggestions", reply, headerTransform=string_to_table_header),
         outputs_prefix="Core.Issue.PlaybookSuggestion",

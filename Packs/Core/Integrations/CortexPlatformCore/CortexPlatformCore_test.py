@@ -557,3 +557,62 @@ def test_preprocess_get_cases_args_limit_enforced():
     args = {"limit": 50}
     out = preprocess_get_cases_args(args.copy())
     assert out["limit"] == 50
+
+
+def test_get_playbook_suggestion_by_issue_command_success(mocker):
+    """
+    GIVEN:
+        A mocked client and valid arguments with an issue ID.
+    WHEN:
+        The get_playbook_suggestion_by_issue_command function is called.
+    THEN:
+        The API is called with alert_internal_id, response is parsed, formatted, and returned correctly.
+    """
+    from CortexPlatformCore import Client, get_playbook_suggestion_by_issue_command
+
+    mock_client = Client(base_url="", headers={})
+    
+    # Mock the demisto._apiCall response
+    mock_api_response = {
+        "reply": {
+            "playbook_id": "Cortex EM - Exposure Issue",
+            "suggestion_rule_id": "714a581ffd144106a948bc9ad0cbd5ec"
+        }
+    }
+    mocker.patch.object(demisto, "_apiCall", return_value=mock_api_response)
+
+    args = {"issue_id": "7124"}
+
+    result = get_playbook_suggestion_by_issue_command(mock_client, args)
+
+    assert result.outputs == {
+        "playbook_id": "Cortex EM - Exposure Issue",
+        "suggestion_rule_id": "714a581ffd144106a948bc9ad0cbd5ec"
+    }
+    assert "Cortex EM - Exposure Issue" in result.readable_output
+    assert demisto._apiCall.call_count == 1
+    
+    # Verify the API was called with correct parameters
+    call_args = demisto._apiCall.call_args
+    assert call_args[1]["method"] == "POST"
+    assert call_args[1]["path"] == "/api/webapp/incident/get_playbook_suggestion_by_alert/"
+    assert '"alert_internal_id": "7124"' in call_args[1]["data"]
+
+
+def test_get_playbook_suggestion_by_issue_command_missing_issue_id(mocker):
+    """
+    GIVEN:
+        A mocked client and arguments without an issue ID.
+    WHEN:
+        The get_playbook_suggestion_by_issue_command function is called.
+    THEN:
+        A DemistoException is raised with appropriate error message.
+    """
+    from CortexPlatformCore import Client, get_playbook_suggestion_by_issue_command
+    from CommonServerPython import DemistoException
+
+    mock_client = Client(base_url="", headers={})
+    args = {}
+
+    with pytest.raises(DemistoException, match="issue_id is required"):
+        get_playbook_suggestion_by_issue_command(mock_client, args)
