@@ -188,7 +188,7 @@ def test_fetch_alert_type_using_next_page(mocker, fetch_limit, expected_alert_co
 def test_fetch_alert_type_while_more_alerts_created(mocker):
     """
     Given: A mock MongoDB Atlas client with an initial page of alert data, where more alerts are added after the initial fetch.
-    When: Running fetch_alert_type to fetch alerts in two stages – first fetching the initial set,
+    When: Running fetch_alert_type to fetch alerts in two stages - first fetching the initial set,
      and then fetching only the newly added alerts.
     Then: Ensure the correct number of alerts are returned in each fetch, that the last page link is set correctly,
      and that the IDs in last_page_alerts_ids match the expected values after both fetches.
