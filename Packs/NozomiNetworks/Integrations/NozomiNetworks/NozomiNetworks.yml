@@ -8,7 +8,7 @@ fromversion: 5.0.0
 tests:
 - No tests
 description: "The Nozomi Networks platform, available as a hardware, virtual appliance, or via the Vantage Cloud product, provides comprehensive monitoring for OT, IoT, and IT networks. It combines asset discovery, network visualization, vulnerability assessment, risk monitoring, and advanced threat detection in a unified solution. The integration is designed to gather alerts and asset information from Nozomi, whether deployed on-premises or in the cloud via Vantage, ensuring seamless visibility and security across environments."
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 configuration:

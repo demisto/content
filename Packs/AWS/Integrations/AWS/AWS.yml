@@ -396,6 +396,107 @@ script:
       description: 'The bucket policy to apply as a JSON string.'
       required: true
 
+  - name: aws-s3-bucket-website-delete
+    description: Removes the website configuration for a bucket.
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        required: true
+      - name: region
+        description: The AWS region.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+      - name: bucket
+        description: The name of the S3 bucket from which the website configuration will be removed.
+        required: true
+
+  - name: aws-s3-bucket-ownership-controls-put
+    description: Creates or modifies OwnershipControls for an Amazon S3 bucket.
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        required: true
+      - name: region
+        description: The AWS region.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+      - name: bucket
+        description: The name of the Amazon S3 bucket for which to configure Ownership Controls.
+        required: true
+      - name: ownership_controls_rule
+        description: Ownership for a bucket's ownership controls.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - BucketOwnerPreferred
+          - ObjectWriter
+          - BucketOwnerEnforced
 
   - name: aws-iam-account-password-policy-get
     description: Gets the AWS account password policy.
@@ -1354,6 +1455,94 @@ script:
       description: 'A list of DB snapshot attributes to remove from the attribute specified by AttributeName.'
       required: false
       isArray: true
+
+  - name: aws-rds-event-subscription-modify
+    description: Modifies an existing RDS event notification subscription.
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        required: true
+      - name: region
+        description: The AWS region.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+      - name: subscription_name
+        description: The name of the RDS event notification subscription.
+        required: true
+      - name: enabled
+        description: Specifies whether to activate the subscription.
+      - name: event_categories
+        description: A list of event categories for a source type (SourceType) that you want to subscribe to.
+        isArray: true
+      - name: sns_topic_arn
+        description: The Amazon Resource Name (ARN) of the SNS topic created for event notification.
+      - name: source_type
+        description: The type of source that is generating the events.
+    outputs:
+      - contextPath: AWS.RDS.EventSubscription.CustomerAwsId
+        description: The AWS customer account associated with the RDS event notification subscription.
+        type: string
+      - contextPath: AWS.RDS.EventSubscription.CustSubscriptionId
+        description: The RDS event notification subscription Id.
+        type: string
+      - contextPath: AWS.RDS.EventSubscription.Enabled
+        description: Specifies whether the subscription is enabled. True indicates the subscription is enabled.
+        type: boolean
+      - contextPath: AWS.RDS.EventSubscription.EventCategoriesList
+        description: A list of event categories for the RDS event notification subscription.
+        type: array
+      - contextPath: AWS.RDS.EventSubscription.EventSubscriptionArn
+        description: The Amazon Resource Name (ARN) for the event subscription.
+        type: string
+      - contextPath: AWS.RDS.EventSubscription.SnsTopicArn
+        description: The topic ARN of the RDS event notification subscription.
+        type: string
+      - contextPath: AWS.RDS.EventSubscription.SourceIdsList
+        description: A list of source IDs for the RDS event notification subscription.
+        type: array
+      - contextPath: AWS.RDS.EventSubscription.SourceType
+        description: The source type for the RDS event notification subscription.
+        type: string
+      - contextPath: AWS.RDS.EventSubscription.Status
+        description: The status of the RDS event notification subscription.
+        type: string
+      - contextPath: AWS.RDS.EventSubscription.SubscriptionCreationTime
+        description: The time the RDS event notification subscription was created.
+        type: string
+
   - name: aws-ec2-security-group-ingress-revoke
     description: 'Revokes one or more ingress rules in a security group.'
     arguments:
@@ -2027,6 +2216,73 @@ script:
       - sa-east-1
     description: Updates the containerInsights setting of an ECS cluster.
 
+  - name: aws-ec2-subnet-attribute-modify
+    description: Modifies a subnet attribute.
+    arguments:
+      - description: The AWS account ID.
+        name: account_id
+        required: true
+      - description: The AWS region.
+        name: region
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+      - description: The ID of the subnet.
+        name: subnet_id
+        required: true
+      - description: Set to true to assign an IPv6 address to network interfaces created in the specified subnet.
+        name: assign_ipv6_address_on_creation
+      - description: The customer-owned IPv4 address pool associated with the subnet.
+        name: customer_owned_ipv4_pool
+      - description: Set to true to disable local network interfaces at the current position.
+        name: disable_lni_at_device_index
+      - description: Indicates whether DNS queries made to the Amazon-provided DNS Resolver in this subnet should return synthetic IPv6 addresses for IPv4-only destinations.
+        name: enable_dns64
+      - description: Indicates the device position for local network interfaces in this subnet.
+        name: enable_lni_at_device_index
+      - description: Indicates whether to respond to DNS queries for instance hostnames with DNS AAAA records.
+        name: enable_resource_name_dns_aaaa_record_on_launch
+      - description: Indicates whether to respond to DNS queries for instance hostnames with DNS A records.
+        name: enable_resource_name_dns_a_record_on_launch
+      - description: Set to true to assign a customer-owned IPv4 address to network interfaces attached to instances created in the specified subnet.
+        name: map_customer_owned_ip_on_launch
+      - description: Set to true to assign a public IPv4 address to network interfaces attached to instances created in the specified subnet.
+        name: map_public_ip_on_launch
+      - description: The type of hostname to assign to instances in the subnet at launch.
+        name: private_dns_hostname_type_on_launch
+
   - name: aws-cloudtrail-trail-update
     description: 'Updates trail settings that control what events you are logging, and how to handle log files. Changes to a trail do not require stopping the CloudTrail service. Use this action to designate an existing bucket for log delivery. If the existing bucket has previously been a target for CloudTrail log files, an IAM policy exists for the bucket. UpdateTrail must be called from the Region in which the trail was created; otherwise, an InvalidHomeRegionException is thrown.'
     arguments:
@@ -2289,7 +2545,7 @@ script:
       description: Specifies whether enhanced networking with ENA is enabled.
       type: Boolean
     - contextPath: AWS.EC2.Instances.Hypervisor
-      description: The hypervisor type of the instance. 
+      description: The hypervisor type of the instance.
       type: String
     - contextPath: AWS.EC2.Instances.IamInstanceProfile.Arn
       description: The Amazon Resource Name (ARN) of the instance profile.
@@ -2454,7 +2710,7 @@ script:
       description: Specifies whether to attempt reboot migration during a user-initiated reboot of an instance that has a scheduled system-reboot event.
       type: String
     - contextPath: AWS.EC2.Instances.CurrentInstanceBootMode
-      description: The boot mode that is used to boot the instance at launch or start. 
+      description: The boot mode that is used to boot the instance at launch or start.
       type: String
     - contextPath: AWS.EC2.Instances.NetworkPerformanceOptions.BandwidthWeighting
       description: Contains settings for the network performance options for your instance.
@@ -2887,7 +3143,7 @@ script:
       description: Specifies whether enhanced networking with ENA is enabled.
       type: Boolean
     - contextPath: AWS.EC2.Instances.Hypervisor
-      description: The hypervisor type of the instance. 
+      description: The hypervisor type of the instance.
       type: String
     - contextPath: AWS.EC2.Instances.IamInstanceProfile.Arn
       description: The Amazon Resource Name (ARN) of the instance profile.
@@ -3052,7 +3308,7 @@ script:
       description: Specifies whether to attempt reboot migration during a user-initiated reboot of an instance that has a scheduled system-reboot event.
       type: String
     - contextPath: AWS.EC2.Instances.CurrentInstanceBootMode
-      description: The boot mode that is used to boot the instance at launch or start. 
+      description: The boot mode that is used to boot the instance at launch or start.
       type: String
     - contextPath: AWS.EC2.Instances.NetworkPerformanceOptions.BandwidthWeighting
       description: Contains settings for the network performance options for your instance.
@@ -3207,7 +3463,7 @@ script:
       description: The name of the Amazon S3 bucket where CloudTrail delivers trail files.
       type: string
     - contextPath: AWS.CloudTrail.Trails.S3KeyPrefix
-      description: The Amazon S3 key prefix appended to the bucket name designated for log file delivery. 
+      description: The Amazon S3 key prefix appended to the bucket name designated for log file delivery.
       type: string
     - contextPath: AWS.CloudTrail.Trails.SnsTopicARN
       description: The ARN of the Amazon SNS topic that CloudTrail uses to send notifications when log files are delivered.
@@ -3412,7 +3668,7 @@ script:
     - contextPath: AWS.S3-Buckets.ServerSideEncryptionConfiguration.Rules
       description: Container for information about a particular server-side encryption configuration rule.
       type: array
-  
+
   - name: aws-s3-bucket-policy-get
     description: Retrieves the bucket policy for an Amazon S3 bucket. Returns the policy document in JSON format if one exists.
     execution: true
@@ -3493,16 +3749,149 @@ script:
     - contextPath: AWS.S3-Buckets.PolicyExists
       description: Whether a bucket policy exists.
       type: boolean
+  - arguments:
+    - description: The AWS account ID.
+      name: account_id
+      required: true
+    - description: Entry ID of the file to upload.
+      name: entryID
+      required: true
+    - description: Name of the S3 bucket containing the file. Must follow S3 naming conventions.
+      name: bucket
+      required: true
+    - description: Key (path) where the file will be stored in the S3 bucket.
+      name: key
+      required: true
+    - description: AWS region where the S3 bucket is located.
+      name: region
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+    description: Upload file to S3 bucket.
+    name: aws-s3-file-upload
+    outputs: []
+  - arguments:
+    - description: The AWS account ID.
+      name: account_id
+      required: true
+    - description: Name of the target S3 bucket. Must follow S3 naming conventions.
+      name: bucket
+      required: true
+    - description: Key (path) of the file to download from the S3 bucket.
+      name: key
+      required: true
+    - description: AWS region where the S3 bucket is located.
+      name: region
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+    description: Download a file from S3 bucket to the War Room.
+    name: aws-s3-file-download
+    outputs:
+    - contextPath: File.Size
+      description: The size of the file.
+      type: Number
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.Name
+      description: The name of the file.
+      type: String
+    - contextPath: File.SSDeep
+      description: The SSDeep hash of the file.
+      type: String
+    - contextPath: File.EntryID
+      description: The entry ID of the file.
+      type: String
+    - contextPath: File.Info
+      description: File information.
+      type: String
+    - contextPath: File.Type
+      description: The file type.
+      type: String
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.Extension
+      description: The file extension.
+      type: String
   isfetch: false
   runonce: false
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/boto3py3:1.0.0.4688278
+  dockerimage: demisto/boto3py3:1.0.0.5295752
 fromversion: 5.5.0
 tests:
 - No test - No playbook part of this release.
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 isCloudProviderIntegration: true

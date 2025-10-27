@@ -189,6 +189,15 @@ def parse_tag_field(tags_string: str | None):
     return tags
 
 
+def convert_datetimes_to_iso_safe(data):
+    """
+    Converts datetime objects in a data structure to ISO 8601 strings
+    by serializing to and then deserializing from JSON using a custom encoder.
+    """
+    json_string = json.dumps(data, cls=ISOEncoder)
+    return json.loads(json_string)
+
+
 class AWSErrorHandler:
     """
     Centralized error handling for AWS boto3 client errors.
@@ -682,6 +691,128 @@ class S3:
             )
         else:
             return AWSErrorHandler.handle_response_error(response)
+
+    @staticmethod
+    def delete_bucket_website_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Deletes the static website configuration from the specified S3 bucket.
+        Executes the DeleteBucketWebsite API operation. If successful, the website configuration is removed,
+        but the bucket itself remains intact.
+
+        Args:
+            client (BotoClient): The initialized Boto3 S3 client.
+            args (Dict[str, Any]): Command arguments, typically containing:
+                - 'bucket' (str): The name of the S3 bucket. (Required)
+
+        Returns:
+            CommandResults: A CommandResults object with a success message on status 200/204.
+        """
+        kwargs = {"Bucket": args.get("bucket")}
+        remove_nulls_from_dictionary(kwargs)
+        try:
+            response = client.delete_bucket_website(**kwargs)
+            if response["ResponseMetadata"]["HTTPStatusCode"] in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
+                return CommandResults(
+                    readable_output=f"Successfully removed the static website configuration from {args.get('bucket')} bucket."
+                )
+            raise DemistoException(f"Failed to delete bucket website for {args.get('bucket')}.")
+        except Exception as e:
+            raise DemistoException(f"Error: {str(e)}")
+
+    @staticmethod
+    def put_bucket_ownership_controls_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Specifies the rule that determines ownership of newly uploaded objects and manages the use of
+        Access Control Lists (ACLs).
+        Requires a validated JSON structure for 'the ownership_controls' argument.
+        the role of Access Control Lists (ACLs). This operation requires a specific, validated JSON structure for
+        the 'ownership_controls' argument.
+
+        Args:
+            client (BotoClient): The initialized Boto3 S3 client.
+            args (Dict[str, Any]): Command arguments, typically containing:
+                - 'bucket' (str): The name of the S3 bucket. (Required)
+                - 'ownership_controls_rule' (str): A predefined rule specifying the desired ownership behavior.
+                 Must be one of the following: BucketOwnerPreferred, ObjectWriter, BucketOwnerEnforced
+
+        Returns:
+            CommandResults: A CommandResults object with a success message on status 200/204.
+        """
+        ownership_controls = {"Rules": [{"ObjectOwnership": args.get("ownership_controls_rule")}]}
+        kwargs = {"Bucket": args.get("bucket"), "OwnershipControls": ownership_controls}
+
+        remove_nulls_from_dictionary(kwargs)
+        try:
+            response = client.put_bucket_ownership_controls(**kwargs)
+            if response["ResponseMetadata"]["HTTPStatusCode"] in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
+                return CommandResults(readable_output=f"Bucket Ownership Controls successfully updated for {args.get('bucket')}")
+            raise DemistoException(f"Failed to set Bucket Ownership Controls for {args.get('bucket')}.")
+        except Exception as e:
+            raise DemistoException(f"Error: {str(e)}")
+
+    @staticmethod
+    def file_download_command(client: BotoClient, args: Dict[str, Any]):
+        """
+        Download a file from an S3 bucket.
+
+        Args:
+            client (BotoClient): The initialized Boto3 S3 client.
+            args (Dict[str, Any]): Command arguments, typically containing:
+                - 'bucket' (str): The name of the S3 bucket. (Required)
+                - 'key' (str): The key of the file to download. (Required)
+
+        Returns:
+            fileResult: fileResult object
+        """
+        bucket = args.get("bucket")
+        key = args.get("key", "")
+        print_debug_logs(client, f"downloading bucket={bucket}, key={key}")
+        try:
+            resp = client.get_object(Bucket=bucket, Key=key)
+            body = resp["Body"]
+            try:
+                data = body.read()
+            finally:
+                try:
+                    body.close()
+                except Exception:
+                    pass
+            filename = key.rsplit("/", 1)[-1]
+            return fileResult(filename, data)
+        except ClientError as err:
+            AWSErrorHandler.handle_client_error(err)
+        except Exception as e:
+            raise DemistoException(f"Error: {str(e)}")
+
+    @staticmethod
+    def file_upload_command(client: BotoClient, args: Dict[str, Any]):
+        """
+        Upload a file to an S3 bucket.
+
+        Args:
+            client (BotoClient): The initialized Boto3 S3 client.
+            args (Dict[str, Any]): Command arguments, typically containing:
+                - 'bucket' (str): The name of the S3 bucket. (Required)
+                - 'key' (str): The key of the file to upload. (Required)
+                - 'entryID' (str): The ID of the file to upload. (Required)
+
+        Returns:
+            CommandResults: A CommandResults object with a success/fail message.
+        """
+        bucket = args.get("bucket")
+        key = args.get("key")
+        entry_id = args.get("entryID")
+        path = get_file_path(entry_id)
+        print_debug_logs(client, f"uploading entryID={entry_id} to bucket={bucket}, key={key}")
+        try:
+            with open(path["path"], "rb") as data:
+                client.upload_fileobj(data, bucket, key)
+                return CommandResults(readable_output=f"File {key} was uploaded successfully to {bucket}")
+        except ClientError as err:
+            AWSErrorHandler.handle_client_error(err)
+        except Exception as e:
+            raise DemistoException(f"Error: {str(e)}")
+        return CommandResults(readable_output="Failed to upload file")
 
 
 class IAM:
@@ -1647,6 +1778,59 @@ class EC2:
         """
         return EC2._manage_instances_command(client, args, "start")
 
+    @staticmethod
+    def modify_subnet_attribute_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Modifies a single attribute on a specified Amazon EC2 subnet.
+        This command performs the 'ModifySubnetAttribute' API operation.
+
+        Args:
+            client (BotoClient): The initialized Boto3 EC2 client.
+            args (Dict[str, Any]): Command arguments, typically containing:
+                - 'subnet_id' (str): The ID of the subnet to modify. (Required)
+                - 'map_public_ip_on_launch' (str): Boolean value to control auto-assign public IPv4.
+                - 'assign_ipv6_address_on_creation' (str): Boolean value to control auto-assign IPv6 address.
+                - 'enable_dns64' (str): Boolean value to enable DNS64 resolution.
+                - 'enable_resource_name_dns_a_record_on_launch' (str): Boolean value to enable DNS A records based
+                 on instance resource name.
+                - 'enable_resource_name_dns_aaaa_record_on_launch' (str): Boolean value to enable DNS AAAA records based on
+                 instance resource name.
+                - 'private_dns_hostname_type_on_launch' (str): String value for private DNS hostname generation.
+                - 'customer_owned_ipv4_pool' (str): The ID of the Customer Owned IPv4 Pool (CoIP) to associate with the subnet.
+                - 'map_customer_owned_ip_on_launch' (str): Boolean value to auto-assign CoIPs to instances.
+                - 'enable_lni_at_device_index' (str): Integer (1-15) to set the device index for LNI assignment.
+                - 'disable_lni_at_device_index' (str): Boolean value to disable LNI assignment at a device index.
+
+
+        Returns:
+            CommandResults: A CommandResults object with a success message.
+        """
+        kwargs = {
+            "SubnetId": args.get("subnet_id"),
+            "AssignIpv6AddressOnCreation": arg_to_bool_or_none(args.get("assign_ipv6_address_on_creation")),
+            "CustomerOwnedIpv4Pool": args.get("customer_owned_ipv4_pool"),
+            "DisableLniAtDeviceIndex": arg_to_bool_or_none(args.get("disable_lni_at_device_index")),
+            "EnableDns64": arg_to_bool_or_none(args.get("enable_dns64")),
+            "EnableLniAtDeviceIndex": arg_to_number(args.get("enable_lni_at_device_index")),
+            "EnableResourceNameDnsAAAARecordOnLaunch": arg_to_bool_or_none(
+                args.get("enable_resource_name_dns_aaaa_record_on_launch")
+            ),
+            "EnableResourceNameDnsARecordOnLaunch": arg_to_bool_or_none(args.get("enable_resource_name_dns_a_record_on_launch")),
+            "MapCustomerOwnedIpOnLaunch": arg_to_bool_or_none(args.get("map_customer_owned_ip_on_launch")),
+            "MapPublicIpOnLaunch": arg_to_bool_or_none(args.get("map_public_ip_on_launch")),
+            "PrivateDnsHostnameTypeOnLaunch": args.get("private_dns_hostname_type_on_launch"),
+        }
+
+        remove_nulls_from_dictionary(kwargs)
+        try:
+            response = client.modify_subnet_attribute(**kwargs)
+            if response["ResponseMetadata"]["HTTPStatusCode"] in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
+                demisto.debug(f"RequestId={response.get('ResponseMetadata').get('RequestId')}")
+                return CommandResults(readable_output="Subnet configuration successfully updated.")
+            raise DemistoException("Modification could not be performed.")
+        except Exception as e:
+            raise DemistoException(f"Error: {str(e)}")
+
 
 class EKS:
     service = AWSServices.EKS
@@ -1856,6 +2040,7 @@ class RDS:
                 db_cluster = response.get("DBCluster", {})
                 readable_output = f"Successfully modified DB cluster {args.get('db-cluster-identifier')}"
                 if db_cluster:
+                    db_cluster = convert_datetimes_to_iso_safe(db_cluster)
                     readable_output += "\n\nUpdated DB Cluster details:"
                     readable_output += tableToMarkdown("", db_cluster)
 
@@ -1954,16 +2139,18 @@ class RDS:
                 "BackupRetentionPeriod": arg_to_bool_or_none(args.get("backup_retention_period")),
             }
             remove_nulls_from_dictionary(kwargs)
-            demisto.debug(f"modify_db_instance {kwargs=}")
+            demisto.info(f"modify_db_instance {kwargs=}")
             response = client.modify_db_instance(**kwargs)
 
             if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK:
                 db_instance = response.get("DBInstance", {})
-                readable_output = f"Successfully modified DB instance {args.get('db-instance-identifier')}"
-
+                readable_output = (
+                    f"Successfully modified DB instance {args.get('db_instance_identifier')}"
+                    f"\n\nUpdated DB Instance details:\n\n"
+                )
                 if db_instance:
-                    readable_output += "\n\nUpdated DB Instance details:"
-                    readable_output += tableToMarkdown("", db_instance)
+                    db_instance = convert_datetimes_to_iso_safe(db_instance)
+                    readable_output += tableToMarkdown("", t=db_instance, removeNull=True)
 
                 return CommandResults(
                     readable_output=readable_output,
@@ -2014,6 +2201,66 @@ class RDS:
 
         else:
             raise DemistoException(f"Couldn't modify DB snapshot attribute for {args.get('db_snapshot_identifier')}")
+
+    @staticmethod
+    def modify_event_subscription_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Modifies the configuration of an existing Amazon RDS event notification subscription.
+        This command performs the 'ModifyEventSubscription' API operation, allowing updates to the target SNS topic,
+        the list of event categories, the source type, and the enabled state of the subscription.
+
+        Args:
+            client (BotoClient): The initialized Boto3 client.
+            args (Dict[str, Any]): Command arguments, typically containing:
+                - 'subscription_name' (str): The unique name of the subscription to modify. (Required)
+                - 'enabled' (str): Boolean string ('true' or 'false') to activate/deactivate the subscription. (Optional)
+                - 'event_categories' (str | List[str]): A list of event categories to subscribe to. (Optional)
+                - 'sns_topic_arn' (str): The ARN of the new SNS topic to publish events to. (Optional)
+                - 'source_type' (str): The type of resource generating events. (Optional)
+
+        Returns:
+            CommandResults: A CommandResults object containing the modified EventSubscription details.
+        """
+        kwargs = {
+            "SubscriptionName": args.get("subscription_name"),
+            "Enabled": arg_to_bool_or_none(args.get("enabled")),
+            "EventCategories": argToList(args.get("event_categories", [])),
+            "SnsTopicArn": args.get("sns_topic_arn"),
+            "SourceType": args.get("source_type"),
+        }
+        remove_nulls_from_dictionary(kwargs)
+
+        try:
+            response = client.modify_event_subscription(**kwargs)
+
+            if response["ResponseMetadata"]["HTTPStatusCode"] in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
+                headers = [
+                    "CustomerAwsId",
+                    "CustSubscriptionId",
+                    "SnsTopicArn",
+                    "Status",
+                    "SubscriptionCreationTime",
+                    "SourceType",
+                    "EventCategoriesList",
+                    "Enabled",
+                    "EventSubscriptionArn",
+                    "SourceIdsList",
+                ]
+
+                return CommandResults(
+                    readable_output=tableToMarkdown(
+                        name=f"Event subscription {args.get('subscription_name')} successfully modified.",
+                        headers=headers,
+                        t=response.get("EventSubscription"),
+                        removeNull=True,
+                    ),
+                    outputs_prefix="AWS.RDS.EventSubscription",
+                    outputs=response.get("EventSubscription"),
+                    outputs_key_field="CustSubscriptionId",
+                )
+            raise DemistoException(f"Failed to modify event subscription {args.get('subscription_name')}.")
+        except Exception as e:
+            raise DemistoException(f"Error: {str(e)}")
 
 
 class CloudTrail:
@@ -2179,12 +2426,21 @@ class ECS:
             )
 
 
+def get_file_path(file_id):
+    filepath_result = demisto.getFilePath(file_id)
+    return filepath_result
+
+
 COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResults | None]] = {
     "aws-s3-public-access-block-update": S3.put_public_access_block_command,
     "aws-s3-bucket-versioning-put": S3.put_bucket_versioning_command,
     "aws-s3-bucket-logging-put": S3.put_bucket_logging_command,
     "aws-s3-bucket-acl-put": S3.put_bucket_acl_command,
     "aws-s3-bucket-policy-put": S3.put_bucket_policy_command,
+    "aws-s3-bucket-website-delete": S3.delete_bucket_website_command,
+    "aws-s3-bucket-ownership-controls-put": S3.put_bucket_ownership_controls_command,
+    "aws-s3-file-upload": S3.file_upload_command,
+    "aws-s3-file-download": S3.file_download_command,
     "aws-iam-account-password-policy-get": IAM.get_account_password_policy_command,
     "aws-iam-account-password-policy-update": IAM.update_account_password_policy_command,
     "aws-iam-role-policy-put": IAM.put_role_policy_command,
@@ -2201,6 +2457,7 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-ec2-security-group-egress-revoke": EC2.revoke_security_group_egress_command,
     "aws-ec2-create-snapshot": EC2.create_snapshot_command,
     "aws-ec2-modify-snapshot-permission": EC2.modify_snapshot_permission_command,
+    "aws-ec2-subnet-attribute-modify": EC2.modify_subnet_attribute_command,
     "aws-eks-cluster-config-update": EKS.update_cluster_config_command,
     "aws-eks-describe-cluster": EKS.describe_cluster_command,
     "aws-eks-associate-access-policy": EKS.associate_access_policy_command,
@@ -2208,6 +2465,7 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-rds-db-cluster-snapshot-attribute-modify": RDS.modify_db_cluster_snapshot_attribute_command,
     "aws-rds-db-instance-modify": RDS.modify_db_instance_command,
     "aws-rds-db-snapshot-attribute-modify": RDS.modify_db_snapshot_attribute_command,
+    "aws-rds-event-subscription-modify": RDS.modify_event_subscription_command,
     "aws-cloudtrail-logging-start": CloudTrail.start_logging_command,
     "aws-cloudtrail-trail-update": CloudTrail.update_trail_command,
     "aws-ec2-instances-describe": EC2.describe_instances_command,
@@ -2242,6 +2500,8 @@ REQUIRED_ACTIONS: list[str] = [
     "s3:PutBucketVersioning",
     "s3:PutBucketPolicy",
     "s3:PutBucketPublicAccessBlock",
+    "s3:PutObject",
+    "s3:GetObject",
     "ec2:RevokeSecurityGroupEgress",
     "ec2:ModifyImageAttribute",
     "ec2:ModifyInstanceAttribute",
