@@ -472,7 +472,7 @@ tasks:
       id: de5760da-26ee-4ea7-accb-c28f5e036c70
       version: -1
       name: Palo Alto Networks Threat Vault v2 Indicator Exists
-      description: Make sure the Virus Total indicator returned from tim
+      description: Verify that the VirusTotal indicator from TIM exists
       type: condition
       iscommand: false
       brand: ""
