@@ -2278,7 +2278,7 @@ script:
       prettyname: Identity Type
       defaultValue: 'SystemAssigned'
       hidden: true
-    description: "Assigns a system-assigned managed identity to the Function App. This allows the app to securely access other Azure services while removing the need to manage sensitive credentials and the risk of exposing them. Requires 'Microsoft.Web/sites/Write' permission."
+    description: Assigns a system-assigned managed identity to the Function App. This allows the app to securely access other Azure services while removing the need to manage sensitive credentials and the risk of exposing them.
     name: azure-webapp-update-assign-managed-identity-quick-action
     prettyname: Assign Managed Identity to Function App
     hidden: true
@@ -2518,7 +2518,7 @@ script:
       defaultValue: '30'
       type: number
       hidden: true
-    description: "Enables blob soft delete for the storage account to retain deleted blobs for 30 days. Requires 'Microsoft.Storage/storageAccounts/blobServices/write' permission."
+    description: Enables blob soft delete for the storage account to retain deleted blobs for 30 days.
     name: azure-storage-blob-enable-soft-delete-quick-action
     prettyname: Enable Soft Delete on Blob
     hidden: true
@@ -2537,7 +2537,7 @@ script:
       description: Specifies CORS rules for the Blob service.
       type: String
     - contextPath: Azure.StorageAccountBlobServiceProperties.properties.defaultServiceVersion
-      description: The default version for requests to the Blob service if an incoming request's version is not specified. Possible values include version 2008-10-27 and all more recent versions.
+      description: The default version for requests to the blob service if an incoming request's version is not specified. Possible values include version 2008-10-27 and and all later versions.  
       type: Date
     - contextPath: Azure.StorageAccountBlobServiceProperties.properties.deleteRetentionPolicy
       description: The service properties for soft delete.
@@ -2584,7 +2584,7 @@ script:
       description: Policy for accessing the disk via network.
       defaultValue: 'DenyAll'
       hidden: true
-    description: "Disables all public and private network access for the managed disk. Requires 'Microsoft.Compute/disks/write' permission."
+    description: Disables all public and private network access for the managed disk.
     name: azure-disable-public-private-access-vm-disk-quick-action
     prettyname: Disable Public & Private Access to VM Disk
     hidden: true
@@ -2608,7 +2608,7 @@ script:
       description: ARM ID of the resource that manages the disk.
       type: String
     - contextPath: Azure.Disk.sku
-      description: The disk SKU name.
+      description: The name of the disk SKU.
     - contextPath: Azure.Disk.zones
       description: A list of availability zones.
     - contextPath: Azure.Disk.properties.timeCreated
@@ -2719,7 +2719,7 @@ script:
       description: Additional authentication requirements when exporting or uploading to a disk or snapshot.
       defaultValue: AzureActiveDirectory
       hidden: true
-    description: "Sets the data access authentication mode for the managed disk to Azure Active Directory. Requires 'Microsoft.Compute/disks/write' permission."
+    description: Sets the data access authentication mode for the managed disk to Azure Active Directory.
     name: azure-disk-set-data-access-aad-quick-action
     prettyname: Set Disk Data Access to AAD
     hidden: true
@@ -2743,7 +2743,7 @@ script:
       description: ARM ID of the resource that manages the disk.
       type: String
     - contextPath: Azure.Disk.sku
-      description: The disk SKU name.
+      description: The name of the disk SKU.
     - contextPath: Azure.Disk.zones
       description: A list of availability zones.
     - contextPath: Azure.Disk.properties.timeCreated
@@ -2816,7 +2816,7 @@ script:
       description: Availability zone of the disk.
       type: String
     - contextPath: Azure.Disk.properties.dataAccessAuthMode
-      description: Additional authentication requirements when exporting or uploading to a disk.
+      description: Additional authentication requirements for exporting or uploading to the disk.
       type: String
     - contextPath: Azure.Disk.properties.osType
       description: The operating system type.
@@ -2858,7 +2858,7 @@ script:
       description: Whether public network access is allowed for the container registry.
       defaultValue: Disabled
       hidden: true
-    description: "Disables public network access and content exports for the Azure Container Registry (ACR) to enhance security. Requires 'Microsoft.ContainerRegistry/registries/write' permission."
+    description: Disables public network access and content exports for the Azure Container Registry (ACR) to enhance security.
     name: azure-acr-disable-public-private-access-quick-action
     prettyname: Disable Public Access and Exports on ACR
     hidden: true
@@ -2910,7 +2910,7 @@ script:
       description: List of private endpoint connections for a container registry.
       type: Unknown
     - contextPath: Azure.ACR.properties.provisioningState
-      description: The provisioning state of the container registry at the time the operation was called.
+      description: The provisioning state of the container registry when the operation was called.
       type: String
     - contextPath: Azure.ACR.properties.publicNetworkAccess
       description: Whether or not public network access is allowed for the container registry.
@@ -2959,7 +2959,7 @@ script:
       description: Whether the policy is enabled or not.
       defaultValue: disabled
       hidden: true
-    description: "Disables the legacy 'authentication as ARM' feature for the Azure Container Registry (ACR). Requires 'Microsoft.ContainerRegistry/registries/write' permission."
+    description: Disables the legacy 'authentication as ARM' feature for the Azure Container Registry (ACR).
     name: azure-acr-disable-authentication-as-arm-quick-action
     prettyname: Disable ACR Authentication as ARM
     hidden: true
@@ -3011,7 +3011,7 @@ script:
       description: List of private endpoint connections for a container registry.
       type: Unknown
     - contextPath: Azure.ACR.properties.provisioningState
-      description: The provisioning state of the container registry at the time the operation was called.
+      description: The provisioning state of the container registry when the operation was called.
       type: String
     - contextPath: Azure.ACR.properties.publicNetworkAccess
       description: Whether or not public network access is allowed for the container registry.
@@ -3061,7 +3061,7 @@ script:
       description: Whether to enable registry-wide pulls from unauthenticated clients.
       defaultValue: 'false'
       hidden: true
-    description: "Disables anonymous pull access for the Azure Container Registry (ACR), requiring clients to authenticate before pulling images. Requires 'Microsoft.ContainerRegistry/registries/write' permission."
+    description: Disables anonymous pull access for the Azure Container Registry (ACR), requiring clients to authenticate before pulling images.
     name: azure-acr-disable-anonymous-pull-quick-action
     prettyname: Disable ACR Anonymous Pull
     hidden: true
@@ -3113,13 +3113,13 @@ script:
       description: List of private endpoint connections for a container registry.
       type: Unknown
     - contextPath: Azure.ACR.properties.provisioningState
-      description: The provisioning state of the container registry at the time the operation was called.
+      description: The provisioning state of the container registry when the operation was called.
       type: String
     - contextPath: Azure.ACR.properties.publicNetworkAccess
       description: Whether or not public network access is allowed for the container registry.
       type: String
     - contextPath: Azure.ACR.properties.status
-      description: The status of the container registry at the time the operation was called.
+      description: The status of the container registry when the operation was called.
       type: Unknown
     - contextPath: Azure.ACR.properties.zoneRedundancy
       description: Whether or not zone redundancy is enabled for this container registry.
