@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "Update the **incap-modify-site-wl-config** command to use the new API endpoint. The *whitelist_id* argument in **incap-modify-site-wl-config** command change to *allowlist_id*. The *delete_whitelist* argument in **incap-modify-site-wl-config** command change to *delete_allowlist*."
+}

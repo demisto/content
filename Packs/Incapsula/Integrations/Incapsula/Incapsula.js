@@ -58,7 +58,7 @@ var urlDict = {
     'incap-modify-site-tls-support': '/api/prov/v1/sites/tls',
     'incap-modify-site-scurity-config':'/api/prov/v1/sites/configure/security',
     'incap-modify-site-acl-config':'/api/prov/v1/sites/configure/acl',
-    'incap-modify-site-wl-config':'/api/prov/v1/sites/configure/whitelists',
+    'incap-modify-site-wl-config':'/api/prov/v1/sites/configure/allowlist',
     'incap-delete-site':'/api/prov/v1/sites/delete',
     'incap-list-sites':'/api/prov/v1/sites/list',
     'incap-get-site-report':'/api/prov/v1/sites/report',
