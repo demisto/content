@@ -1,5 +1,5 @@
 category: Analytics & SIEM
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -190,7 +190,7 @@ script:
       - LOG_LOCAL7
     description: Sends a message to Syslog.
     name: syslog-send
-  dockerimage: demisto/syslog:1.0.0.3453405
+  dockerimage: demisto/syslog:1.0.0.4856330
   runonce: false
   script: '-'
   subtype: python3

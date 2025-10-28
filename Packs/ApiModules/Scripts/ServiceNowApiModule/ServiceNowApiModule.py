@@ -1,3 +1,8 @@
+import uuid
+from datetime import UTC
+
+import jwt
+
 from CommonServerPython import *
 
 from CommonServerUserPython import *
@@ -16,6 +21,7 @@ class ServiceNowClient(BaseClient):
         verify: bool = False,
         proxy: bool = False,
         headers: dict = None,
+        jwt_params: dict = None,
     ):
         """
         ServiceNow Client class. The class can use either basic authorization with username and password, or OAuth2.
@@ -29,10 +35,10 @@ class ServiceNowClient(BaseClient):
             - proxy: Whether to run the integration using the system proxy.
             - headers: The request headers, for example: {'Accept`: `application/json`}. Can be None.
             - use_oauth: a flag indicating whether the user wants to use OAuth 2.0 or basic authorization.
+            - jwt_params: a dict containing the JWT parameters
         """
         self.auth = None
         self.use_oauth = use_oauth
-        self.jwt: Optional[str] = None
         if self.use_oauth:  # if user selected the `Use OAuth` box use OAuth authorization, else use basic authorization
             self.client_id = client_id
             self.client_secret = client_secret
@@ -41,6 +47,8 @@ class ServiceNowClient(BaseClient):
             self.password = credentials.get("password")
             self.auth = (self.username, self.password)
 
+        self.jwt = self.create_jwt(jwt_params) if jwt_params else None
+
         if "@" in client_id:  # for use in OAuth test-playbook
             self.client_id, refresh_token = client_id.split("@")
             set_integration_context({"refresh_token": refresh_token})
@@ -48,9 +56,6 @@ class ServiceNowClient(BaseClient):
         self.base_url = url
         super().__init__(base_url=self.base_url, verify=verify, proxy=proxy, headers=headers, auth=self.auth)  # type
         # : ignore[misc]
-
-    def set_jwt(self, jwt: str):
-        self.jwt = jwt
 
     def http_request(
         self,
@@ -145,6 +150,79 @@ class ServiceNowClient(BaseClient):
             return_error(
                 f"Login failed. Please check the instance configuration and the given username and password.\n{e.args[0]}"
             )
+
+    @staticmethod
+    def _validate_and_format_private_key(private_key: str) -> str:
+        """
+        Validate the private key format and reformat it to a valid PEM format.
+
+        Supports these private key types:
+            - PRIVATE KEY
+            - RSA PRIVATE KEY
+            - EC PRIVATE KEY
+            - ENCRYPTED PRIVATE KEY
+
+        Args:
+            private_key (str): The user Private key.
+
+        Raises:
+            ValueError: If the private key format is incorrect.
+
+        Returns:
+            str: Key formatted in valid PEM with consistent newlines.
+        """
+        # Match and extract the first valid private key block
+        pem_pattern = re.compile(
+            r"-----BEGIN (?P<label>(ENCRYPTED )?(RSA |EC )?PRIVATE KEY)-----\s*" r"(?P<content>.*?)" r"\s*-----END \1-----",
+            re.DOTALL,
+        )
+
+        match = pem_pattern.search(private_key)
+        if not match:
+            raise ValueError("Invalid private key format.")
+
+        key_type = match.group("label")
+        key_content = match.group("content")
+
+        # Clean content: remove all non-base64 characters
+        key_content = re.sub(r"[^A-Za-z0-9+/=]", "", key_content)
+
+        # Format content into 64-character lines
+        key_lines = [key_content[i : i + 64] for i in range(0, len(key_content), 64)]
+
+        # Reattach markers
+        processed_key = f"-----BEGIN {key_type}-----\n" + "\n".join(key_lines) + f"\n-----END {key_type}-----"
+
+        return processed_key
+
+    def create_jwt(self, jwt_params: dict) -> str:
+        """
+        Create JWT token
+        Returns:
+            JWT token
+        """
+        private_key = self._validate_and_format_private_key(jwt_params.get("private_key", ""))
+
+        header = {
+            "alg": "RS256",  # Signing algorithm
+            "typ": "JWT",  # Token type
+            "kid": jwt_params.get("kid"),
+        }
+        now = datetime.now(UTC)
+        payload = {
+            "sub": jwt_params.get("sub"),
+            "aud": jwt_params.get("aud"),
+            "iss": jwt_params.get("iss"),
+            "iat": now,
+            "exp": now + timedelta(hours=1),
+            "jti": str(uuid.uuid4()),  # Unique JWT ID
+        }
+        try:
+            jwt_token = jwt.encode(payload, private_key, algorithm="RS256", headers=header)
+        except Exception:
+            # Regenerate if failed
+            jwt_token = jwt.encode(payload, private_key, algorithm="RS256", headers=header)
+        return jwt_token
 
     def get_access_token(self):
         """

@@ -4,7 +4,7 @@ commonfields:
 name: Sekoia XDR
 display: Sekoia XDR
 category: Analytics & SIEM
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 description: Fetch alerts and events from SEKOIA.IO XDR.\nTo use this integration, please create an API Key with the appropriate permissions.
@@ -1179,9 +1179,9 @@ script:
       type: keyValue
     - name: data
       description: Body of the request.
-      type: keyValue
+      type: string
     description: Command that performs a HTTP request to Sekoia using the integration authentication configured.
-  dockerimage: demisto/python3:3.12.11.4417419
+  dockerimage: demisto/python3:3.12.12.5490952
   isfetch: true
   runonce: false
   subtype: python3

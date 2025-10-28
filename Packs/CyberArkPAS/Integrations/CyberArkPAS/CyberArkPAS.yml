@@ -1,5 +1,5 @@
 category: Authentication & Identity Management
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -34,7 +34,7 @@ configuration:
   section: Collect
   required: false
 - defaultvalue: '0'
-  display: CyberArk PAS score (0.0-100.0)
+  display: CyberArk PAM score (0.0-100.0)
   name: score
   type: 0
   section: Collect
@@ -57,8 +57,8 @@ configuration:
   section: Connect
   advanced: true
   required: false
-description: Use the CyberArk Privileged Access Security (PAS) solution to manage users, safes, vaults, and accounts from Cortex XSOAR.
-display: CyberArk PAS
+description: Use the CyberArk Privileged Access Management (PAM) solution to manage users, safes, vaults, and accounts from Cortex XSOAR.
+display: CyberArk PAM
 name: CyberArkPAS
 script:
   commands:
@@ -68,7 +68,7 @@ script:
       required: true
     - description: The user type according to the license.
       name: user_type
-    - description: The CyberArkPAS interfaces that this user is not authorized to use, e.g., - "PSM", "PSMP".
+    - description: The CyberArkPAM interfaces that this user is not authorized to use, e.g., - "PSM", "PSMP".
       isArray: true
       name: non_authorized_interfaces
     - description: The location in the vault where the user will be created. Must begin with "\\".  If just "\\", the vault is in the root.
@@ -165,7 +165,7 @@ script:
       name: username
     - description: User type according to the license.
       name: user_type
-    - description: The CyberArkPAS interfaces that this user is not authorized to use, e.g., "PSM", "PSMP".
+    - description: The CyberArkPAM interfaces that this user is not authorized to use, e.g., "PSM", "PSMP".
       isArray: true
       name: non_authorized_interfaces
     - description: The location in the vault where the user will be created. Must begin with "\\". If just "\\", the vault is in the root.
@@ -934,7 +934,7 @@ script:
     - contextPath: CyberArkPAS.SecurityEvents.type
       description: The type of the security events.
       type: String
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.12.5490952
   isfetch: true
   runonce: false
   script: '-'
