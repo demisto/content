@@ -37,7 +37,7 @@ ASSET_GROUP_FIELDS = {
     "asset_group_id": "XDM__ASSET_GROUP__ID",
 }
 
-WEBAPP_COMMANDS = ["core-get-vulnerabilities", "core-search-asset-groups"]
+WEBAPP_COMMANDS = ["core-get-vulnerabilities", "core-search-asset-groups", "core-get-issue-recommendations"]
 DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
 
 
@@ -230,6 +230,26 @@ class Client(CoreClient):
         
         return reply
 
+    def get_playbook_suggestion_by_issue(self, issue_id):
+        """
+        Get playbook suggestions for a specific issue.
+
+        Args:
+            issue_id (str): The ID of the issue to get playbook suggestions for.
+
+        Returns:
+            dict: The response containing playbook suggestions.
+        """
+        # Convert issue_id to alert_id for the API call
+        reply = demisto._apiCall(
+            method="POST",
+            data=json.dumps({"alert_internal_id": issue_id}),
+            headers=self._headers,
+            path="/api/webapp/incident/get_playbook_suggestion_by_alert/",
+        )
+
+        return reply
+
 
 def search_asset_groups_command(client: Client, args: dict) -> CommandResults:
     """
@@ -408,6 +428,87 @@ def get_vulnerabilities_command(client: Client, args: dict) -> CommandResults:
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Vulnerability",
         outputs_key_field="ISSUE_ID",
         outputs=data,
+        raw_response=response,
+    )
+
+
+def get_issue_recommendations_command(client: Client, args: dict) -> CommandResults:
+    """
+    Get comprehensive recommendations for an issue, including remediation steps and playbook suggestions.
+    Retrieves issue data with remediation field using the generic /api/webapp/get_data endpoint.
+    """
+    issue_id = args.get("issue_id")
+    if not issue_id:
+        raise DemistoException("issue_id is required.")
+
+    # Build filter to get the specific issue
+    filter_fields = [
+        FilterField("alert_id", "EQ", issue_id),
+    ]
+
+    request_data = build_webapp_request_data(
+        table_name="alerts_view_table",
+        filter_fields=filter_fields,
+        limit=1,
+        sort_field="detection_timestamp",
+        sort_order="DESC",
+        on_demand_fields=[],
+    )
+
+    # Get issue data with remediation field
+    response = client.get_webapp_data(request_data)
+    reply = response.get("reply", {})
+    issue_data = reply.get("DATA", [])
+
+    # Get playbook suggestions for the issue
+    playbook_suggestions = {}
+    try:
+        playbook_response = client.get_playbook_suggestion_by_issue(issue_id)
+        playbook_suggestions = playbook_response.get("reply", {})
+    except Exception as e:
+        demisto.debug(f"Failed to get playbook suggestions: {e}")
+
+    # Combine the data
+    if not issue_data:
+        raise DemistoException(f"No issue found with ID {issue_id}")
+
+    issue = issue_data[0]
+    recommendation = {
+        "issue_id": issue.get("alert_id"),
+        "issue_name": issue.get("name"),
+        "severity": issue.get("severity"),
+        "description": issue.get("description"),
+        "remediation": issue.get("remediation"),
+        "playbook_suggestions": playbook_suggestions,
+    }
+
+    headers = [
+        "issue_id",
+        "issue_name",
+        "severity",
+        "description",
+        "remediation",
+    ]
+
+    readable_output = tableToMarkdown(
+        f"Issue Recommendations for {issue_id}",
+        [recommendation],
+        headerTransform=string_to_table_header,
+        headers=headers,
+    )
+
+    if playbook_suggestions:
+        readable_output += "\n" + tableToMarkdown(
+            "Playbook Suggestions",
+            playbook_suggestions,
+            headerTransform=string_to_table_header,
+        )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.IssueRecommendations",
+        outputs_key_field="issue_id",
+        outputs=recommendation,
         raw_response=response,
     )
 
@@ -691,6 +792,9 @@ def main():  # pragma: no cover
 
         elif command == "core-get-vulnerabilities":
             return_results(get_vulnerabilities_command(client, args))
+
+        elif command == "core-get-issue-recommendations":
+            return_results(get_issue_recommendations_command(client, args))
 
     except Exception as err:
         demisto.error(traceback.format_exc())
