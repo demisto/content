@@ -56,10 +56,10 @@ Update a security rule. If one does not exist, it will be created.
 | Azure.NSGRule.type | String | The rule's type. |
 | Azure.NSGRule.provisioningState | String | The rule's provisioning state. |
 | Azure.NSGRule.protocol | String | The protocol, which can be "TCP", "UDP", "ICMP", or "\*". |
-| Azure.NSGRule.sourcePortRange | String | For a single port, the source port or a range of ports. Note that for multiple ports, \`sourcePortRanges\` will appear instead. |
-| Azure.NSGRule.sourcePortRanges | String | For multiple ports, a list of these ports. Note that for single ports, \`sourcePortRange\` will appear instead. |
-| Azure.NSGRule.destinationPortRange | String | For a single port, the destination port or range of ports. Note that for multiple ports, \`destinationPortRanges\` will appear instead. |
-| Azure.NSGRule.destinationPortRanges | String | For multiple ports, a list of destination ports. Note that for single ports, \`destinationPortRange\` will appear instead. |
+| Azure.NSGRule.sourcePortRange | String | For a single port, the source port or a range of ports. |
+| Azure.NSGRule.sourcePortRanges | String | For multiple ports, a list of these ports. |
+| Azure.NSGRule.destinationPortRange | String | For a single port, the destination port or range of ports. |
+| Azure.NSGRule.destinationPortRanges | String | For multiple ports, a list of destination ports. |
 | Azure.NSGRule.sourceAddressPrefix | String | The source address. |
 | Azure.NSGRule.destinationAddressPrefix | String | The destination address. |
 | Azure.NSGRule.access | String | The rule's access. Can be "Allow" or "Deny". |
@@ -818,6 +818,371 @@ Updates the properties of an existing Azure Cosmos DB database account.
 | Azure.CosmosDB.properties.virtualNetworkRules | List | List of Virtual Network ACL rules. |
 | Azure.CosmosDB.properties.writeLocations | List | An array that contains the write locations enabled for the Cosmos DB account. |
 
+### azure-vm-instance-details-get
+
+***
+Gets the properties of a given virtual machine.
+
+#### Base Command
+
+`azure-vm-instance-details-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID. | Required |
+| resource_group_name | The resource group to which the virtual machine belongs.<br/>To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command<br/>. | Required |
+| virtual_machine_name | The name of the virtual machine you want to view the details of.| Required |
+| expand | The expand expression to apply on the operation. 'instanceView' retrieves a snapshot of the runtime properties of the virtual machine that is managed by the platform and can change outside of control plane operations. 'userData' retrieves the UserData property as part of the VM model view that was provided by the user during the VM Create/Update operation. Default value is False. Possible values are: instanceView, userData. Default is instanceView. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.Compute.name | string | The name of the virtual machine you want to get details of. |
+| Azure.Compute.id | string | The ID of the virtual machine. |
+| Azure.Compute.location | string | The region in which the virtual machine is hosted. |
+| Azure.Compute.Size | number | The size of the deployed virtual machine \(in gigabytes\). |
+| Azure.Compute.OS | string | The OS running on the given virtual machine. |
+| Azure.Compute.properties.provisioningState | string | The provisioning state of the deployed virtual machine. |
+| Azure.Compute.networkProfile.networkInterfaces | string | The list of network interfaces attached to this virtual machine. |
+| Azure.Compute.properties.hardwareProfile.vmSize | string | The size or SKU of the virtual machine, defining CPU, memory, and storage capacity. |
+| Azure.Compute.properties.provisioningState | string | The current provisioning state of the virtual machine \(e.g., Succeeded, Updating, Failed\). |
+| Azure.Compute.properties.osProfile | string | The operating system configuration of the virtual machine, including admin credentials and hostname. |
+| Azure.Compute.properties.storageProfile | string | The storage settings for the virtual machine, including OS and data disks. |
+| Azure.Compute.properties.vmId | string | The unique identifier assigned to the virtual machine instance. |
+| Azure.Compute.properties.instanceView | string | Detailed runtime status information about the virtual machine, such as power state and extensions. |
+| Azure.Compute.properties.timeCreated | string | The timestamp when the virtual machine was created. |
+| Azure.Compute.properties.networkProfile | string | The network configuration of the virtual machine, including associated network interfaces and settings. |
+| Azure.Compute.properties.diagnosticsProfile | string | The configuration for boot diagnostics and monitoring of the virtual machine. |
+
+### azure-nsg-security-groups-list
+
+***
+List all network security groups.
+
+#### Base Command
+
+`azure-nsg-security-groups-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID. | Required |
+| resource_group_name | The resource group name. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.NSGSecurityGroup.name | String | The security group's name. |
+| Azure.NSGSecurityGroup.id | String | The security group's ID. |
+| Azure.NSGSecurityGroup.type | String | The security group's type. |
+| Azure.NSGSecurityGroup.location | String | The security group's location. |
+| Azure.NSGSecurityGroup.etag | String | The security group's ETag. |
+| Azure.NSGSecurityGroup.tags | String | The security group's tags. |
+| Azure.NSGSecurityGroup.properties.defaultSecurityRules | List | The default security rules. |
+| Azure.NSGSecurityGroup.properties.networkInterfaces | List | The network interfaces. |
+| Azure.NSGSecurityGroup.properties.provisioningState | String | The provisioning state. |
+| Azure.NSGSecurityGroup.properties.resourceGuid | String | The resource GUID. |
+| Azure.NSGSecurityGroup.properties.SecurityRules | List | The security rules. |
+
+### azure-nsg-security-rule-delete
+
+***
+Delete a security rule.
+
+#### Base Command
+
+`azure-nsg-security-rule-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID. | Required |
+| resource_group_name | Resource group name. | Required |
+| security_group_name | The name of the security group. | Required |
+| security_rule_name | The name of the rule to delete. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### azure-storage-blob-containers-update
+
+***
+Run this command to update a specific blob container.
+
+#### Base Command
+
+`azure-storage-blob-containers-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID. | Required |
+| resource_group_name | The resource group name. | Required |
+| account_name | The storage account name. | Required |
+| container_name | The container name. | Required |
+| default_encryption_scope | Uses the specified encryption scope by default for all writes to the container. | Optional |
+| deny_encryption_scope_override | Blocks overriding the container’s default encryption scope. Possible values: true, false. Possible values are: true, false. | Optional |
+| public_access | Specifies the access level. Possible values: Blob, Container, None. Possible values are: Blob, Container, None. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.StorageBlobContainer.id | String | Fully qualified resource ID for the resource. |
+| Azure.StorageBlobContainer.name | String | The name of the resource. |
+| Azure.StorageBlobContainer.type | String | The resource type. |
+| Azure.StorageBlobContainer.properties.metadata.metadata | String | A metadata entry for the container, in name–value format. |
+| Azure.StorageBlobContainer.properties.publicAccess | String | Specifies whether data in the container may be accessed publicly and the access level. |
+| Azure.StorageBlobContainer.properties.hasImmutabilityPolicy | Boolean | The hasImmutabilityPolicy property is set to true by SRP if an ImmutabilityPolicy exists for this container, and false if it does not. |
+| Azure.StorageBlobContainer.properties.hasLegalHold | Boolean | The hasLegalHold property is set to true by SRP if at least one legal hold tag exists, and false if all tags are cleared. |
+
+### azure-vm-instance-start
+
+***
+Powers on a given virtual machine.
+
+#### Base Command
+
+`azure-vm-instance-start`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID. | Required |
+| resource_group_name | Resource Group to which the virtual machine belongs.<br/>To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command<br/>. | Required |
+| virtual_machine_name | Name of the virtual machine to power on.| Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.Compute.name | string | Name of the VM that was started. |
+| Azure.Compute.resourceGroup | string | Resource group the VM resides in. |
+| Azure.Compute.powerState | string | Whether the VM instance is powered on or off. |
+
+### azure-nsg-network-interfaces-list
+
+***
+Gets network interfaces in a resource group.
+
+#### Base Command
+
+`azure-nsg-network-interfaces-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| resource_group_name | The resource group name. | Required |
+| subscription_id | The subscription ID. | Required |
+| limit | The maximum number of records to return. Default is 50. | Optional |
+| all_results | Whether to retrieve all results by overriding the default limit. Possible values are: false, true. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.NSGNetworkInterfaces.name | String | The network interface's name. |
+| Azure.NSGNetworkInterfaces.id | String | The network interface's ID. |
+| Azure.NSGNetworkInterfaces.kind | String | The kind of the network interface. |
+| Azure.NSGNetworkInterfaces.etag | String | The ETag of the network interface. |
+| Azure.NSGNetworkInterfaces.location | String | The location of the network interface. |
+| Azure.NSGNetworkInterfaces.managedBy | String | The entity that manages the network interface. |
+| Azure.NSGNetworkInterfaces.tags | String | The tags associated with the network interface. |
+| Azure.NSGNetworkInterfaces.properties.provisioningState | String | The network interface's provisioning state. |
+| Azure.NSGNetworkInterfaces.properties.ipConfigurations.name | List | The name of the IP configuration resource that is unique within a resource group. |
+| Azure.NSGNetworkInterfaces.properties.ipConfigurations.id | List | The IP configuration resource ID. |
+| Azure.NSGNetworkInterfaces.properties.ipConfigurations.etag | List | The ETag of the IP configuration. |
+| Azure.NSGNetworkInterfaces.properties.ipConfigurations.type | List | The type of the IP configuration resource. |
+| Azure.NSGNetworkInterfaces.properties.tapConfigurations | List | List of tap configurations. |
+| Azure.NSGNetworkInterfaces.properties.allowPort25Out | Boolean | Whether port 25 outbound traffic is allowed. |
+| Azure.NSGNetworkInterfaces.properties.nicType | String | The network interface card type \(Standard/Basic\). |
+
+### azure-vm-network-interface-details-get
+
+***
+Gets the properties of a given network interface.
+
+#### Base Command
+
+`azure-vm-network-interface-details-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID. | Required |
+| resource_group_name | The resource group to which the network interface belongs.<br/>To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command<br/>. | Required |
+| network_interface_name | The name of the network interface you want to view the details of. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.Network.Interfaces.properties.ipConfigurations | Unknown | The interface public IP address ID. |
+| Azure.Network.Interfaces.properties.macAddress | String | The interface MAC address. |
+| Azure.Network.Interfaces.name | String | The interface name. |
+| Azure.Network.Interfaces.location | String | The interface location. |
+| Azure.Network.Interfaces.id | String | The interface ID. |
+| Azure.Network.Interfaces.location | String | The Azure region where the network interface is deployed. |
+| Azure.Network.Interfaces.etag | String | A unique read-only string that changes whenever the network interface resource is updated. |
+| Azure.Network.Interfaces.kind | String | The type of the network interface resource, used for Azure internal classification. |
+| Azure.Network.Interfaces.properties.tapConfigurations | String | The list of tap configurations attached to the network interface for traffic mirroring. |
+| Azure.Network.Interfaces.properties.allowPort25Out | String | Indicates whether outbound traffic on port 25 \(SMTP\) is allowed from this network interface. |
+| Azure.Network.Interfaces.properties.nicType | String | Specifies the type of network interface, such as Standard or Elastic. |
+| Azure.Network.Interfaces.properties.provisioningState | String | The current provisioning state of the network interface \(e.g., Succeeded, Updating, Failed\). |
+| Azure.Network.Interfaces.properties.dnsSettings | String | The DNS configuration of the network interface, including DNS servers and domain name. |
+| Azure.Network.Interfaces.properties.enableIPForwarding | String | Indicates whether IP forwarding is enabled for the network interface. |
+
+### azure-nsg-security-rule-get
+
+***
+Get a specific rule.
+
+#### Base Command
+
+`azure-nsg-security-rule-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID. | Required |
+| resource_group_name | Resource group name. | Required |
+| security_group_name | The name of the security group. | Required |
+| security_rule_name | The name of the rule to get. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.NSGRule.name | String | The rule's name. |
+| Azure.NSGRule.id | String | The rule's ID. |
+| Azure.NSGRule.location | String | The rule's location. |
+| Azure.NSGRule.etag | String | The rule's ETag. |
+| Azure.NSGRule.type | String | The rule's type. |
+| Azure.NSGRule.properties.provisioningState | String | The rule's provisioning state. |
+| Azure.NSGRule.properties.protocol | String | The protocol, which can be "TCP", "UDP", "ICMP", or "\*". |
+| Azure.NSGRule.properties.sourcePortRange | String | For a single port, the source port or a range of ports. For multiple ports, \`sourcePortRanges\` is used instead. |
+| Azure.NSGRule.properties.sourcePortRanges | String | For multiple ports, a list of ports. For a single port, \`sourcePortRange\` is used instead. |
+| Azure.NSGRule.properties.destinationPortRange | String | For a single port, the destination port or range of ports. For multiple ports, \`destinationPortRanges\` is used instead. |
+| Azure.NSGRule.properties.destinationPortRanges | String | For multiple ports, a list of destination ports. For a single port, \`destinationPortRange\` is used instead. |
+| Azure.NSGRule.properties.sourceAddressPrefix | String | The source address. |
+| Azure.NSGRule.properties.destinationAddressPrefix | String | The destination address. |
+| Azure.NSGRule.properties.access | String | The rule's access. Can be "Allow" or "Deny". |
+| Azure.NSGRule.properties.priority | Number | The rule’s priority, ranging from 100 to 4096. |
+| Azure.NSGRule.properties.direction | String | The rule's direction, which can be "Inbound" or "Outbound". |
+
+### azure-nsg-public-ip-addresses-list
+
+***
+Gets public IP addresses in a resource group.
+
+#### Base Command
+
+`azure-nsg-public-ip-addresses-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| resource_group_name | The resource group name. | Required |
+| subscription_id | The subscription ID. | Required |
+| limit | The maximum number of records to return. Default is 50. | Optional |
+| all_results | Whether to retrieve all results by overriding the default limit. Possible values are: false, true. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.NSGPublicIPAddress.name | String | The public IP address's name. |
+| Azure.NSGPublicIPAddress.id | String | The public IP address's ID. |
+| Azure.NSGPublicIPAddress.location | String | The location of the public IP address. |
+| Azure.NSGPublicIPAddress.sku | String | The public IP address's SKU. |
+| Azure.NSGPublicIPAddress.type | String | The type of the public IP address. |
+| Azure.NSGPublicIPAddress.etag | String | The public IP address's ETag. |
+| Azure.NSGPublicIPAddress.properties.provisioningState | String | The public IP address's provisioning state. |
+| Azure.NSGPublicIPAddress.properties.publicIPAddressVersion | String | The public IP address's version. |
+| Azure.NSGPublicIPAddress.properties.ipAddress | String | The public IP address's IP address. |
+| Azure.NSGPublicIPAddress.properties.domainNameLabel | String | The public IP address's domain name label. |
+| Azure.NSGPublicIPAddress.properties.publicIPAllocationMethod | String | The public IP address's allocation method. |
+| Azure.NSGPublicIPAddress.properties.fqdn | String | The public IP address's fully qualified domain name \(FQDN\). |
+| Azure.NSGPublicIPAddress.properties.resourceGuid | String | The public IP address's resource GUID. |
+| Azure.NSGPublicIPAddress.sku.name | String | The public IP address's SKU name. |
+| Azure.NSGPublicIPAddress.sku.tier | String | The public IP address's SKU tier. |
+
+### azure-storage-blob-service-properties-get
+
+***
+Run this command to get the blob service properties of a specific account storage.
+
+#### Base Command
+
+`azure-storage-blob-service-properties-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID. | Required |
+| resource_group_name | The resource group name. | Required |
+| account_name | The storage account name. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.StorageBlobServiceProperties.id | String | Fully qualified resource ID for the resource. |
+| Azure.StorageBlobServiceProperties.name | String | The name of the resource. |
+| Azure.StorageBlobServiceProperties.type | String | The resource type. |
+| Azure.StorageBlobServiceProperties.properties.lastAccessTimeTrackingPolicy.enable | Boolean | When set to true, last access time–based tracking is enabled. |
+| Azure.StorageBlobServiceProperties.properties.lastAccessTimeTrackingPolicy.name | String | Name of the policy. The valid value is AccessTimeTracking. |
+| Azure.StorageBlobServiceProperties.properties.lastAccessTimeTrackingPolicy.trackingGranularityInDays | Number | Specifies the blob object tracking granularity in days, indicating how often the blob should be tracked. |
+| Azure.StorageBlobServiceProperties.properties.lastAccessTimeTrackingPolicy.blobType | String | An array of predefined, supported blob types. The only supported value is BlockBlob. |
+
+### azure-vm-public-ip-details-get
+
+***
+Gets the properties of a given public IP address.
+
+#### Base Command
+
+`azure-vm-public-ip-details-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID. | Required |
+| resource_group_name | The resource group to which the IP address belongs.<br/>To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command<br/>. | Required |
+| address_name | The IP address name. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.Network.IPConfigurations.location | String | The Azure region where the IP configuration resource is located. |
+| Azure.Network.IPConfigurations.id | String | The unique resource ID of the IP configuration. |
+| Azure.Network.IPConfigurations.name | String | The name of the IP configuration. |
+| Azure.Network.IPConfigurations.etag | String | A unique read-only string that changes whenever the IP configuration resource is updated. |
+| Azure.Network.IPConfigurations.properties.idleTimeoutInMinutes | String | The idle timeout value in minutes for the associated public IP address. |
+| Azure.Network.IPConfigurations.properties.ipAddress | String | The private IP address assigned to the network interface or resource. |
+| Azure.Network.IPConfigurations.properties.provisioningState | String | The current provisioning state of the IP configuration \(e.g., Succeeded, Updating, Failed\). |
+| Azure.Network.IPConfigurations.properties.ipConfiguration | String | The reference to another IP configuration associated with this resource. |
+| Azure.Network.IPConfigurations.properties.publicIPAddressVersion | String | The version of the public IP address \(IPv4 or IPv6\). |
+| Azure.Network.IPConfigurations.properties.publicIPAllocationMethod | String | Defines how the public IP address is allocated — Static or Dynamic. |
+| Azure.Network.IPConfigurations.properties.resourceGuid | String | The unique Azure resource GUID for the IP configuration. |
+| Azure.Network.IPConfigurations.properties.sku | String | The SKU of the public IP address associated with the configuration, defining its performance tier. |
+
 ### azure-nsg-security-rule-create
 
 ***
@@ -865,137 +1230,6 @@ Create a security rule.
 | Azure.NSGRule.properties.priority | Number | The rule’s priority, ranging from 100 to 4096. |
 | Azure.NSGRule.properties.direction | String | The rule's direction, which can be "Inbound" or "Outbound". |
 
-### azure-nsg-network-interfaces-list
-
-***
-Gets network interfaces in a resource group.
-
-#### Base Command
-
-`azure-nsg-network-interfaces-list`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| resource_group_name | The resource group name. | Required |
-| subscription_id | The subscription ID. | Required |
-| limit | The maximum number of records to return. Default is 50. | Optional |
-| all_results | Whether to retrieve all results by overriding the default limit. Possible values are: false, true. | Optional |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Azure.NSGNetworkInterfaces.name | String | The network interface's name. |
-| Azure.NSGNetworkInterfaces.id | String | The network interface's ID. |
-| Azure.NSGNetworkInterfaces.kind | String | The kind of the network interface. |
-| Azure.NSGNetworkInterfaces.etag | String | The ETag of the network interface. |
-| Azure.NSGNetworkInterfaces.location | String | The location of the network interface. |
-| Azure.NSGNetworkInterfaces.managedBy | String | The entity that manages the network interface. |
-| Azure.NSGNetworkInterfaces.tags | String | The tags associated with the network interface. |
-| Azure.NSGNetworkInterfaces.properties.provisioningState | String | The network interface's provisioning state. |
-| Azure.NSGNetworkInterfaces.properties.ipConfigurations.name | List | The name of the IP configuration resource that is unique within a resource group. |
-| Azure.NSGNetworkInterfaces.properties.ipConfigurations.id | List | The IP configuration resource ID. |
-| Azure.NSGNetworkInterfaces.properties.ipConfigurations.etag | List | The ETag of the IP configuration. |
-| Azure.NSGNetworkInterfaces.properties.ipConfigurations.type | List | The type of the IP configuration resource. |
-| Azure.NSGNetworkInterfaces.properties.tapConfigurations | List | List of tap configurations. |
-| Azure.NSGNetworkInterfaces.properties.allowPort25Out | Boolean | Whether port 25 outbound traffic is allowed. |
-| Azure.NSGNetworkInterfaces.properties.nicType | String | The network interface card type \(Standard/Basic\). |
-
-### azure-nsg-security-rule-delete
-
-***
-Delete a security rule.
-
-#### Base Command
-
-`azure-nsg-security-rule-delete`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| subscription_id | The subscription ID. | Required |
-| resource_group_name | Resource group name. | Required |
-| security_group_name | The name of the security group. | Required |
-| security_rule_name | The name of the rule to delete. | Required |
-
-#### Context Output
-
-There is no context output for this command.
-
-### azure-nsg-security-rule-get
-
-***
-Get a specific rule.
-
-#### Base Command
-
-`azure-nsg-security-rule-get`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| subscription_id | The subscription ID. | Required |
-| resource_group_name | Resource group name. | Required |
-| security_group_name | The name of the security group. | Required |
-| security_rule_name | The name of the rule to get. | Required |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Azure.NSGRule.name | String | The rule's name. |
-| Azure.NSGRule.id | String | The rule's ID. |
-| Azure.NSGRule.location | String | The rule's location. |
-| Azure.NSGRule.etag | String | The rule's ETag. |
-| Azure.NSGRule.type | String | The rule's type. |
-| Azure.NSGRule.properties.provisioningState | String | The rule's provisioning state. |
-| Azure.NSGRule.properties.protocol | String | The protocol, which can be "TCP", "UDP", "ICMP", or "\*". |
-| Azure.NSGRule.properties.sourcePortRange | String | For a single port, the source port or a range of ports. For multiple ports, \`sourcePortRanges\` is used instead. |
-| Azure.NSGRule.properties.sourcePortRanges | String | For multiple ports, a list of ports. For a single port, \`sourcePortRange\` is used instead. |
-| Azure.NSGRule.properties.destinationPortRange | String | For a single port, the destination port or range of ports. For multiple ports, \`destinationPortRanges\` is used instead. |
-| Azure.NSGRule.properties.destinationPortRanges | String | For multiple ports, a list of destination ports. For a single port, \`destinationPortRange\` is used instead. |
-| Azure.NSGRule.properties.sourceAddressPrefix | String | The source address. |
-| Azure.NSGRule.properties.destinationAddressPrefix | String | The destination address. |
-| Azure.NSGRule.properties.access | String | The rule's access. Can be "Allow" or "Deny". |
-| Azure.NSGRule.properties.priority | Number | The rule’s priority, ranging from 100 to 4096. |
-| Azure.NSGRule.properties.direction | String | The rule's direction, which can be "Inbound" or "Outbound". |
-
-### azure-nsg-security-groups-list
-
-***
-List all network security groups.
-
-#### Base Command
-
-`azure-nsg-security-groups-list`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| subscription_id | The subscription ID. | Required |
-| resource_group_name | The resource group name. | Required |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Azure.NSGSecurityGroup.name | String | The security group's name. |
-| Azure.NSGSecurityGroup.id | String | The security group's ID. |
-| Azure.NSGSecurityGroup.type | String | The security group's type. |
-| Azure.NSGSecurityGroup.location | String | The security group's location. |
-| Azure.NSGSecurityGroup.etag | String | The security group's ETag. |
-| Azure.NSGSecurityGroup.tags | String | The security group's tags. |
-| Azure.NSGSecurityGroup.properties.defaultSecurityRules | List | The default security rules. |
-| Azure.NSGSecurityGroup.properties.networkInterfaces | List | The network interfaces. |
-| Azure.NSGSecurityGroup.properties.provisioningState | String | The provisioning state. |
-| Azure.NSGSecurityGroup.properties.resourceGuid | String | The resource GUID. |
-| Azure.NSGSecurityGroup.properties.SecurityRules | List | The security rules. |
-
 ### azure-nsg-resource-group-list
 
 ***
@@ -1030,52 +1264,40 @@ Gets all resource groups for a subscription.
 | Azure.NSGResourceGroup.tags.aNSG-managed-cluster-rg | String | The ANSG managed cluster resource group tag associated with the Azure Network Security Groups resource group. |
 | Azure.NSGResourceGroup.tags.type | String | The type tag associated with the Azure Network Security Groups resource group. |
 
-### azure-nsg-public-ip-addresses-list
+### azure-vm-instance-power-off
 
 ***
-Gets public IP addresses in a resource group.
+Powers off a given virtual machine.
 
 #### Base Command
 
-`azure-nsg-public-ip-addresses-list`
+`azure-vm-instance-power-off`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| resource_group_name | The resource group name. | Required |
 | subscription_id | The subscription ID. | Required |
-| limit | The maximum number of records to return. Default is 50. | Optional |
-| all_results | Whether to retrieve all results by overriding the default limit. Possible values are: false, true. | Optional |
+| resource_group_name | The resource group to which the virtual machine belongs.<br/>To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command<br/>. | Required |
+| virtual_machine_name | The name of the virtual machine to power off.| Required |
+| skip_shutdown | Set to True to request non-graceful VM shutdown. Possible values are: true, false. Default is false. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.NSGPublicIPAddress.name | String | The public IP address's name. |
-| Azure.NSGPublicIPAddress.id | String | The public IP address's ID. |
-| Azure.NSGPublicIPAddress.location | String | The location of the public IP address. |
-| Azure.NSGPublicIPAddress.sku | String | The public IP address's SKU. |
-| Azure.NSGPublicIPAddress.type | String | The type of the public IP address. |
-| Azure.NSGPublicIPAddress.etag | String | The public IP address's ETag. |
-| Azure.NSGPublicIPAddress.properties.provisioningState | String | The public IP address's provisioning state. |
-| Azure.NSGPublicIPAddress.properties.publicIPAddressVersion | String | The public IP address's version. |
-| Azure.NSGPublicIPAddress.properties.ipAddress | String | The public IP address's IP address. |
-| Azure.NSGPublicIPAddress.properties.domainNameLabel | String | The public IP address's domain name label. |
-| Azure.NSGPublicIPAddress.properties.publicIPAllocationMethod | String | The public IP address's allocation method. |
-| Azure.NSGPublicIPAddress.properties.fqdn | String | The public IP address's fully qualified domain name \(FQDN\). |
-| Azure.NSGPublicIPAddress.properties.resourceGuid | String | The public IP address's resource GUID. |
-| Azure.NSGPublicIPAddress.sku.name | String | The public IP address's SKU name. |
-| Azure.NSGPublicIPAddress.sku.tier | String | The public IP address's SKU tier. |
+| Azure.Compute.name | string | The name of the virtual machine that was powered off. |
+| Azure.Compute.resourceGroup | string | The resource group in which the virtual machine resides. |
+| Azure.Compute.powerState | string | Whether the virtual machine instance is powered on or off. |
 
-### azure-storage-blob-containers-update
+### azure-storage-disable-cross-tenant-replication-quick-action
 
 ***
-Run this command to update a specific blob container.
+Disables cross-tenant object replication for the storage account, preventing data from being copied to other Azure AD tenants.
 
 #### Base Command
 
-`azure-storage-blob-containers-update`
+`azure-storage-disable-cross-tenant-replication-quick-action`
 
 #### Input
 
@@ -1083,32 +1305,46 @@ Run this command to update a specific blob container.
 | --- | --- | --- |
 | subscription_id | The subscription ID. | Required |
 | resource_group_name | The resource group name. | Required |
-| account_name | The storage account name. | Required |
-| container_name | The container name. | Required |
-| default_encryption_scope | Default the container to use specified encryption scope for all writes. | Optional |
-| deny_encryption_scope_override | Block override of encryption scope from the container default. Possible values are: true, false. | Optional |
-| public_access | Specifies the level of access. Possible values are: Blob, Container, None. | Optional |
+| account_name | Name of the storage account. | Required |
+| allow_cross_tenant_replication | Whether to allow AD cross-tenant object replication. Default is false. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.StorageBlobContainer.id | String | Fully qualified resource ID for the resource. |
-| Azure.StorageBlobContainer.name | String | The resource name. |
-| Azure.StorageBlobContainer.type | String | The resource type. |
-| Azure.StorageBlobContainer.properties.metadata.metadata | String | A metadata entry for the container, in name–value format. |
-| Azure.StorageBlobContainer.properties.publicAccess | String | Specifies whether data in the container may be accessed publicly and the access level. |
-| Azure.StorageBlobContainer.properties.hasImmutabilityPolicy | Boolean | The hasImmutabilityPolicy property is set to true by SRP if an ImmutabilityPolicy exists for this container, and false if it does not. |
-| Azure.StorageBlobContainer.properties.hasLegalHold | Boolean | The hasLegalHold property is set to true by SRP if at least one legal hold tag exists, and false if all tags are cleared. |
+| Azure.StorageAccount.id | String | Fully qualified resource ID for the resource. |
+| Azure.StorageAccount.kind | String | The kind of storage account. |
+| Azure.StorageAccount.location | String | The geo-location where the resource lives. |
+| Azure.StorageAccount.name | String | The name of the resource. |
+| Azure.StorageAccount.properties.isHnsEnabled | Boolean | Account HierarchicalNamespace enabled if sets to true. |
+| Azure.StorageAccount.properties.allowBlobPublicAccess | Boolean | If set to true \(default\), allows public access to all blobs or containers in the storage account. |
+| Azure.StorageAccount.properties.minimumTlsVersion | String | Sets the minimum TLS version to be permitted on requests to storage. Default is TLS 1.0. |
+| Azure.StorageAccount.properties.allowSharedKeyAccess | Boolean | Whether the storage account permits requests to be authorized with the account access key via Shared ey. If false, then all requests \(including shared access signatures\) must be authorized with Azure Active Directory \(Azure AD\). |
+| Azure.StorageAccount.properties.creationTime | Date | The creation date and time of the storage account in UTC. |
+| Azure.StorageAccount.properties.primaryEndpoints | String | The URLs that are used to retrieve a public blob, queue, or table object. |
+| Azure.StorageAccount.properties.primaryLocation | String | The storage account primary data center location. |
+| Azure.StorageAccount.properties.provisioningState | String | The status of the storage account at the time the operation was called. |
+| Azure.StorageAccount.properties.routingPreference.routingChoice | String | The kind of network routing the user chose. |
+| Azure.StorageAccount.properties.routingPreference.publishMicrosoftEndpoints | Boolean | Whether Microsoft routing storage endpoints are to be published. |
+| Azure.StorageAccount.properties.routingPreference.publishInternetEndpoints | Boolean | Whether internet routing storage endpoints are to be published. |
+| Azure.StorageAccount.properties.encryption | String | Encryption settings to be used for server-side encryption for the storage account. |
+| Azure.StorageAccount.properties.secondaryLocation | String | The geo-replicated secondary location for the storage account. Only available if the accountType is Standard_GRS or Standard_RAGRS. |
+| Azure.StorageAccount.properties.statusOfPrimary | String | Whether the storage account primary location is available or unavailable. |
+| Azure.StorageAccount.properties.statusOfSecondary | String | Whether the storage account secondary location is available or unavailable. Only available if the SKU name is Standard_GRS or Standard_RAGRS. |
+| Azure.StorageAccount.properties.supportsHttpsTrafficOnly | Boolean | If set to true, allows https traffic only to storage service. |
+| Azure.StorageAccount.sku.name | String | The SKU name. Required for account creation; optional for update. |
+| Azure.StorageAccount.sku.tier | String | The SKU tier. This is based on the SKU name. |
+| Azure.StorageAccount.tags | unknown | Resource tags. |
+| Azure.StorageAccount.type | String | The storage account type. |
 
-### azure-storage-blob-service-properties-get
+### azure-webapp-auth-update-quick-action
 
 ***
-Run this command to get the blob service properties of a specific account storage.
+Enables App Service Authentication for the web app.
 
 #### Base Command
 
-`azure-storage-blob-service-properties-get`
+`azure-webapp-auth-update-quick-action`
 
 #### Input
 
@@ -1116,16 +1352,1104 @@ Run this command to get the blob service properties of a specific account storag
 | --- | --- | --- |
 | subscription_id | The subscription ID. | Required |
 | resource_group_name | The resource group name. | Required |
-| account_name | The storage account name. | Required |
+| name | Name of the Web App. | Required |
+| enabled | Whether App Service Authentication/Authorization is enabled. Default is true. | Optional
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.StorageBlobServiceProperties.id | String | Fully qualified resource ID for the resource. |
-| Azure.StorageBlobServiceProperties.name | String | The resource name. |
-| Azure.StorageBlobServiceProperties.type | String | The resource type. |
-| Azure.StorageBlobServiceProperties.properties.lastAccessTimeTrackingPolicy.enable | Boolean | When set to true, last access time based tracking is enabled. |
-| Azure.StorageBlobServiceProperties.properties.lastAccessTimeTrackingPolicy.name | String | Name of the policy. The valid value is AccessTimeTracking. |
-| Azure.StorageBlobServiceProperties.properties.lastAccessTimeTrackingPolicy.trackingGranularityInDays | Number | Specifies the blob object tracking granularity in days, indicating how often the blob should be tracked. |
-| Azure.StorageBlobServiceProperties.properties.lastAccessTimeTrackingPolicy.blobType | String | An array of predefined, supported blob types. The only supported value is BlockBlob. |
+| Azure.WebAppAuth.id | String | Resource ID. |
+| Azure.WebAppAuth.name | String | Resource Name. |
+| Azure.WebAppAuth.type | String | Resource type. |
+| Azure.WebAppAuth.properties.enabled | Boolean | Indicates whether Authentication/Authorization is enabled for the app. |
+| Azure.WebAppAuth.properties.runtimeVersion | String | The RuntimeVersion of the Authentication/Authorization feature. |
+| Azure.WebAppAuth.properties.unauthenticatedClientAction | String | The action to take when an unauthenticated client attempts to access the app. |
+| Azure.WebAppAuth.properties.tokenStoreEnabled | Boolean | Indicates whether the Azure App Service Authentication platform’s token store is enabled. |
+| Azure.WebAppAuth.properties.allowedExternalRedirectUrls | Unknown | External URLs that are allowed to be redirected to as part of logging in or logging out of the app. |
+| Azure.WebAppAuth.properties.defaultProvider | String | The default authentication provider to use when multiple providers are configured. |
+| Azure.WebAppAuth.properties.clientId | String | The Client ID of the app used for AAD login. |
+| Azure.WebAppAuth.properties.clientSecret | String | The client secret associated with the AAD app. |
+| Azure.WebAppAuth.properties.clientSecretSettingName | String | The app setting that contains the client secret. |
+| Azure.WebAppAuth.properties.issuer | String | The OpenID Connect Issuer URI that represents the entity that issues access tokens. |
+| Azure.WebAppAuth.properties.allowedAudiences | Unknown | The list of audiences that can receive the authentication tokens. |
+| Azure.WebAppAuth.properties.additionalLoginParams | Unknown | Additional parameters to send to the authentication provider. |
+| Azure.WebAppAuth.properties.isAadAutoProvisioned | Boolean | True if AAD is auto-provisioned; otherwise false. |
+| Azure.WebAppAuth.properties.googleClientId | String | The Client ID of the app used for Google login. |
+| Azure.WebAppAuth.properties.googleClientSecret | String | The client secret associated with the Google app. |
+| Azure.WebAppAuth.properties.googleClientSecretSettingName | String | The app setting that contains the client secret. |
+| Azure.WebAppAuth.properties.facebookAppId | String | The App ID of the Facebook app used for login. |
+| Azure.WebAppAuth.properties.facebookAppSecret | String | The app secret associated with the Facebook app. |
+| Azure.WebAppAuth.properties.facebookAppSecretSettingName | String | The app setting that contains the Facebook app secret. |
+| Azure.WebAppAuth.properties.twitterConsumerKey | String | The OAuth 1.0a consumer key of the Twitter application used for login. |
+| Azure.WebAppAuth.properties.twitterConsumerSecret | String | The consumer secret associated with the Twitter application. |
+| Azure.WebAppAuth.properties.twitterConsumerSecretSettingName | String | The app setting that contains the Twitter consumer secret. |
+| Azure.WebAppAuth.properties.microsoftAccountClientId | String | The OAuth 2.0 client ID for the Microsoft account provider. |
+| Azure.WebAppAuth.properties.microsoftAccountClientSecret | String | The client secret for the Microsoft account provider. |
+| Azure.WebAppAuth.properties.microsoftAccountClientSecretSettingName | String | The app setting that contains the Microsoft account client secret. |
+| Azure.WebAppAuth.properties.appleClientId | String | The client ID for the Apple provider. |
+| Azure.WebAppAuth.properties.appleClientSecret | String | The client secret for the Apple provider. |
+| Azure.WebAppAuth.properties.appleClientSecretSettingName | String | The app setting that contains the Apple provider client secret. |
+| Azure.WebAppAuth.properties.authFilePath | String | The path to the authentication configuration file. |
+
+### azure-webapp-set-http2-quick-action
+
+***
+Enables HTTP 2.0 for the web app.
+
+#### Base Command
+
+`azure-webapp-set-http2-quick-action`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID. | Required |
+| resource_group_name | The resource group name. | Required |
+| name | Name of the Web App. | Required |
+| http20_enabled | Enable clients to connect over HTTP/2. Possible values are: true, false. Default is true. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.WebAppConfig.id | String | Resource ID. |
+| Azure.WebAppConfig.name | String | Resource name. |
+| Azure.WebAppConfig.type | String | Resource type. |
+| Azure.WebAppConfig.location | String | Resource location. |
+| Azure.WebAppConfig.properties.numberOfWorkers | Number | Number of workers. |
+| Azure.WebAppConfig.properties.defaultDocuments | Unknown | List of default documents. |
+| Azure.WebAppConfig.properties.netFrameworkVersion | String | .NET Framework version. |
+| Azure.WebAppConfig.properties.phpVersion | String | PHP version. |
+| Azure.WebAppConfig.properties.pythonVersion | String | Python version. |
+| Azure.WebAppConfig.properties.nodeVersion | String | Node.js version. |
+| Azure.WebAppConfig.properties.powerShellVersion | String | PowerShell version. |
+| Azure.WebAppConfig.properties.linuxFxVersion | String | Linux app framework and version. |
+| Azure.WebAppConfig.properties.windowsFxVersion | String | Windows container image name. |
+| Azure.WebAppConfig.properties.requestTracingEnabled | Boolean | Indicates whether request tracing is enabled. |
+| Azure.WebAppConfig.properties.remoteDebuggingEnabled | Boolean | Indicates whether remote debugging is enabled. |
+| Azure.WebAppConfig.properties.remoteDebuggingVersion | String | Remote debugging version. |
+| Azure.WebAppConfig.properties.http20Enabled | Boolean | Indicates whether HTTP/2 is enabled. |
+| Azure.WebAppConfig.properties.minTlsVersion | String | Minimum TLS version required. |
+| Azure.WebAppConfig.properties.ftpsState | String | State of FTP/ FTPS service. |
+| Azure.WebAppConfig.properties.webSocketsEnabled | Boolean | Indicates whether WebSockets are enabled. |
+| Azure.WebAppConfig.properties.alwaysOn | Boolean | Indicates whether Always On is enabled. |
+| Azure.WebAppConfig.properties.managedPipelineMode | String | Managed pipeline mode. |
+| Azure.WebAppConfig.properties.loadBalancing | String | Site load balancing mode. |
+| Azure.WebAppConfig.properties.autoHealEnabled | Boolean | Indicates whether Auto Heal is enabled. |
+| Azure.WebAppConfig.properties.autoHealRules | Unknown | Auto Heal rules configuration. |
+| Azure.WebAppConfig.properties.cors.allowedOrigins | Unknown | CORS allowed origins. |
+| Azure.WebAppConfig.properties.cors.supportCredentials | Boolean | Indicates whether CORS supports credentials. |
+| Azure.WebAppConfig.properties.apiDefinition.url | String | URL of the API definition. |
+| Azure.WebAppConfig.properties.apiManagementConfig.id | String | Azure API management integration ID. |
+
+### azure-storage-disable-public-access-quick-action
+
+***
+Disables public access to blobs for the storage account, blocking anonymous/public read access to containers and blobs.
+
+#### Base Command
+
+`azure-storage-disable-public-access-quick-action`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID. | Required |
+| resource_group_name | The resource group name. | Required |
+| account_name | Name of the storage account. | Required |
+| allow_blob_public_access | If set to 'true', allows public access to all blobs or containers in the storage account. Default is false. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.StorageAccount.id | String | Fully qualified resource ID for the resource. |
+| Azure.StorageAccount.kind | String | The kind of storage account. |
+| Azure.StorageAccount.location | String | The geo-location where the resource lives. |
+| Azure.StorageAccount.name | String | The name of the resource. |
+| Azure.StorageAccount.properties.isHnsEnabled | Boolean | Account HierarchicalNamespace enabled if sets to true. |
+| Azure.StorageAccount.properties.allowBlobPublicAccess | Boolean | If set to true \(default\), allows public access to all blobs or containers in the storage account. |
+| Azure.StorageAccount.properties.minimumTlsVersion | String | Sets the minimum TLS version to be permitted on requests to storage. Default is TLS 1.0. |
+| Azure.StorageAccount.properties.allowSharedKeyAccess | Boolean | Whether the storage account permits requests to be authorized with the account access key via Shared Key. If false, then all requests \(including shared access signatures\) must be authorized with Azure Active Directory \(Azure AD\). |
+| Azure.StorageAccount.properties.creationTime | Date | The creation date and time of the storage account in UTC. |
+| Azure.StorageAccount.properties.primaryEndpoints | String | The URLs that are used to retrieve a public blob, queue, or table object. |
+| Azure.StorageAccount.properties.primaryLocation | String | The storage account primary data center location. |
+| Azure.StorageAccount.properties.provisioningState | String | The status of the storage account at the time the operation was called. |
+| Azure.StorageAccount.properties.routingPreference.routingChoice | String | The kind of network routing the user chose. |
+| Azure.StorageAccount.properties.routingPreference.publishMicrosoftEndpoints | Boolean | Whether Microsoft routing storage endpoints are to be published. |
+| Azure.StorageAccount.properties.routingPreference.publishInternetEndpoints | Boolean | Whether internet routing storage endpoints are to be published. |
+| Azure.StorageAccount.properties.encryption | String | Encryption settings to be used for server-side encryption for the storage account. |
+| Azure.StorageAccount.properties.secondaryLocation | String | The geo-replicated secondary location for the storage account. Only available if the accountType is Standard_GRS or Standard_RAGRS. |
+| Azure.StorageAccount.properties.statusOfPrimary | String | Whether the storage account primary location is available or unavailable. |
+| Azure.StorageAccount.properties.statusOfSecondary | String | Whether the storage account secondary location is available or unavailable. Only available if the SKU name is Standard_GRS or Standard_RAGRS. |
+| Azure.StorageAccount.properties.supportsHttpsTrafficOnly | Boolean | If set to true, allows https traffic only to storage service. |
+| Azure.StorageAccount.sku.name | String | The SKU name. Required for account creation; optional for update. |
+| Azure.StorageAccount.sku.tier | String | The SKU tier. This is based on the SKU name. |
+| Azure.StorageAccount.tags | unknown | Resource tags. |
+| Azure.StorageAccount.type | String | The storage account type. |
+
+### azure-storage-allow-access-quick-action
+
+***
+Configures the storage account's network rules to allow traffic from trusted Azure services.
+
+#### Base Command
+
+`azure-storage-allow-access-quick-action`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID. | Required |
+| resource_group_name | The resource group name. | Required |
+| account_name | The name of the storage account. | Required |
+| network_ruleset_bypass | Specifies whether traffic is bypassed for Logging/Metrics/AzureServices. Default is AzureServices. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.StorageAccount.id | String | Fully qualified resource ID for the resource. |
+| Azure.StorageAccount.kind | String | The kind of storage account. |
+| Azure.StorageAccount.location | String | The geo-location where the resource lives. |
+| Azure.StorageAccount.name | String | The name of the resource. |
+| Azure.StorageAccount.properties.isHnsEnabled | Boolean | Account HierarchicalNamespace enabled if sets to true. |
+| Azure.StorageAccount.properties.allowBlobPublicAccess | Boolean | If set to true \(default\), allows public access to all blobs or containers in the storage account. |
+| Azure.StorageAccount.properties.minimumTlsVersion | String | Sets the minimum TLS version allowed for requests to the storage account. The default is TLS 1.0. |
+| Azure.StorageAccount.properties.allowSharedKeyAccess | Boolean | Whether the storage account permits requests to be authorized with the account access key via Shared Key. If false, then all requests \(including shared access signatures\) must be authorized with Azure Active Directory \(Azure AD\). |
+| Azure.StorageAccount.properties.creationTime | Date | The creation date and time of the storage account in UTC. |
+| Azure.StorageAccount.properties.primaryEndpoints | String | The URLs that are used to retrieve a public blob, queue, or table object. |
+| Azure.StorageAccount.properties.primaryLocation | String | The storage account primary data center location. |
+| Azure.StorageAccount.properties.provisioningState | String | The status of the storage account at the time the operation was called. |
+| Azure.StorageAccount.properties.routingPreference.routingChoice | String | The kind of network routing the user chose. |
+| Azure.StorageAccount.properties.routingPreference.publishMicrosoftEndpoints | Boolean | Whether Microsoft routing storage endpoints are to be published. |
+| Azure.StorageAccount.properties.routingPreference.publishInternetEndpoints | Boolean | Whether internet routing storage endpoints are to be published. |
+| Azure.StorageAccount.properties.encryption | String | Encryption settings to be used for server-side encryption for the storage account. |
+| Azure.StorageAccount.properties.secondaryLocation | String | The geo-replicated secondary location for the storage account. Only available if the accountType is Standard_GRS or Standard_RAGRS. |
+| Azure.StorageAccount.properties.statusOfPrimary | String | Whether the storage account primary location is available or unavailable. |
+| Azure.StorageAccount.properties.statusOfSecondary | String | Whether the storage account secondary location is available or unavailable. Only available if the SKU name is Standard_GRS or Standard_RAGRS. |
+| Azure.StorageAccount.properties.supportsHttpsTrafficOnly | Boolean | If set to true, allows https traffic only to storage service. |
+| Azure.StorageAccount.sku.name | String | The SKU name. Required for account creation; optional for update. |
+| Azure.StorageAccount.sku.tier | String | The SKU tier. This is based on the SKU name. |
+| Azure.StorageAccount.tags | unknown | Resource tags. |
+| Azure.StorageAccount.type | String | The storage account type. |
+
+### azure-webapp-disable-remote-debugging-quick-action
+
+***
+Disables remote debugging for the web app to reduce the risk of unauthorized code access.
+
+#### Base Command
+
+`azure-webapp-disable-remote-debugging-quick-action`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID. | Required |
+| resource_group_name | The resource group name. | Required |
+| name | Name of the Web App. | Required |
+| remote_debugging_enabled | Whether remote debugging is enabled. Default is false. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.WebAppConfig.id | String | Resource ID. |
+| Azure.WebAppConfig.name | String | Resource name. |
+| Azure.WebAppConfig.type | String | Resource type. |
+| Azure.WebAppConfig.location | String | Resource location. |
+| Azure.WebAppConfig.properties.numberOfWorkers | Number | Number of workers. |
+| Azure.WebAppConfig.properties.defaultDocuments | Unknown | List of default documents. |
+| Azure.WebAppConfig.properties.netFrameworkVersion | String | .NET Framework version. |
+| Azure.WebAppConfig.properties.phpVersion | String | PHP version. |
+| Azure.WebAppConfig.properties.pythonVersion | String | Python version. |
+| Azure.WebAppConfig.properties.nodeVersion | String | Node.js version. |
+| Azure.WebAppConfig.properties.powerShellVersion | String | PowerShell version. |
+| Azure.WebAppConfig.properties.linuxFxVersion | String | Linux app framework and version. |
+| Azure.WebAppConfig.properties.windowsFxVersion | String | Windows container image name. |
+| Azure.WebAppConfig.properties.requestTracingEnabled | Boolean | Indicates whether request tracing is enabled. |
+| Azure.WebAppConfig.properties.remoteDebuggingEnabled | Boolean | Indicates whether remote debugging is enabled. |
+| Azure.WebAppConfig.properties.remoteDebuggingVersion | String | Remote debugging version. |
+| Azure.WebAppConfig.properties.http20Enabled | Boolean | Indicates whether HTTP/2 is enabled. |
+| Azure.WebAppConfig.properties.minTlsVersion | String | Minimum TLS version required. |
+| Azure.WebAppConfig.properties.ftpsState | String | State of FTP/ FTPS service. |
+| Azure.WebAppConfig.properties.webSocketsEnabled | Boolean | Indicates whether WebSockets are enabled. |
+| Azure.WebAppConfig.properties.alwaysOn | Boolean | Indicates whether Always On is enabled. |
+| Azure.WebAppConfig.properties.managedPipelineMode | String | Managed pipeline mode. |
+| Azure.WebAppConfig.properties.loadBalancing | String | Site load balancing mode. |
+| Azure.WebAppConfig.properties.autoHealEnabled | Boolean | Indicates whether Auto Heal is enabled. |
+| Azure.WebAppConfig.properties.autoHealRules | Unknown | Auto Heal rules configuration. |
+| Azure.WebAppConfig.properties.cors.allowedOrigins | Unknown | CORS allowed origins. |
+| Azure.WebAppConfig.properties.cors.supportCredentials | Boolean | Indicates whether CORS supports credentials. |
+| Azure.WebAppConfig.properties.apiDefinition.url | String | URL of the API definition. |
+| Azure.WebAppConfig.properties.apiManagementConfig.id | unknown | Azure API management integration ID. |
+
+### azure-webapp-assign-managed-identity-quick-action
+
+***
+Assigns a system-assigned managed identity to the web app, enabling secure access to other Azure services without managing credentials.
+
+#### Base Command
+
+`azure-webapp-assign-managed-identity-quick-action`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID. | Required |
+| resource_group_name | The resource group name. | Required |
+| name | Name of the Web App. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.WebApp.id | String | Fully qualified resource ID for the web app. |
+| Azure.WebApp.name | String | The name of the web app. |
+| Azure.WebApp.type | String | The resource type, e.g., Microsoft.Web/sites. |
+| Azure.WebApp.location | String | Geographic location of the web app. |
+| Azure.WebApp.kind | String | The kind of the app, e.g., app, functionapp, etc. |
+| Azure.WebApp.tags | unknown | Resource tags as key-value pairs. |
+| Azure.WebApp.identity.type | String | The type of managed identity \(SystemAssigned, UserAssigned, etc.\). |
+| Azure.WebApp.identity.principalId | String | The principal ID of the system-assigned identity. |
+| Azure.WebApp.identity.tenantId | String | The tenant ID of the system-assigned identity. |
+| Azure.WebApp.identity.userAssignedIdentities | unknown | The list of user-assigned identities associated with the web app. |
+| Azure.WebApp.properties.state | String | Current state of the web app \(Running, Stopped, etc.\). |
+| Azure.WebApp.properties.enabled | Boolean | Whether the web app is enabled. |
+| Azure.WebApp.properties.defaultHostName | String | Default host name of the web app. |
+| Azure.WebApp.properties.hostNames | unknown | List of host names associated with the web app. |
+| Azure.WebApp.properties.repositorySiteName | String | Name of the repository site. |
+| Azure.WebApp.properties.clientAffinityEnabled | Boolean | Whether client affinity is enabled. |
+| Azure.WebApp.properties.clientCertEnabled | Boolean | Whether client certificates are enabled. |
+| Azure.WebApp.properties.clientCertExclusionPaths | String | Paths to exclude from client certificate authentication. |
+| Azure.WebApp.properties.hostingEnvironment | String | App Service Environment to use for the web app. |
+| Azure.WebApp.properties.serverFarmId | String | Resource ID of the associated App Service plan. |
+| Azure.WebApp.properties.reserved | Boolean | Whether the web app is on a Linux plan. |
+| Azure.WebApp.properties.isXenon | Boolean | Whether the web app is hosted in Xenon. |
+| Azure.WebApp.properties.hyperV | Boolean | Whether Hyper-V is enabled for the web app. |
+| Azure.WebApp.properties.siteConfig.appSettings | unknown | List of app settings. |
+| Azure.WebApp.properties.siteConfig.metadata | unknown | List of metadata settings. |
+| Azure.WebApp.properties.siteConfig.connectionStrings | unknown | List of connection strings. |
+| Azure.WebApp.properties.siteConfig.localMySqlEnabled | Boolean | Whether local MySQL is enabled. |
+| Azure.WebApp.properties.siteConfig.alwaysOn | Boolean | Whether Always On is enabled. |
+| Azure.WebApp.properties.siteConfig.http20Enabled | Boolean | Whether HTTP/2 is enabled. |
+| Azure.WebApp.properties.siteConfig.minTlsVersion | String | Minimum TLS version required. |
+| Azure.WebApp.properties.siteConfig.ftpsState | String | FTPS state \(Disabled, AllAllowed, etc.\). |
+| Azure.WebApp.properties.siteConfig.linuxFxVersion | String | Runtime stack for Linux apps. |
+| Azure.WebApp.properties.siteConfig.windowsFxVersion | String | Runtime stack for Windows apps. |
+| Azure.WebApp.properties.siteConfig.numberOfWorkers | Number | Number of workers allocated. |
+| Azure.WebApp.properties.siteConfig.webSocketsEnabled | Boolean | Whether WebSockets are enabled. |
+| Azure.WebApp.properties.siteConfig.preWarmedInstanceCount | Number | Number of pre-warmed instances. |
+| Azure.WebApp.properties.siteConfig.acrUseManagedIdentityCreds | Boolean | Whether ACR uses managed identity credentials. |
+| Azure.WebApp.properties.siteConfig.acrUserManagedIdentityID | String | User-assigned identity ID for ACR. |
+| Azure.WebApp.properties.siteConfig.scmType | String | Source control management type. |
+| Azure.WebApp.properties.siteConfig.use32BitWorkerProcess | Boolean | Whether to use 32-bit worker process. |
+| Azure.WebApp.properties.siteConfig.autoHealEnabled | Boolean | Whether auto-heal is enabled. |
+| Azure.WebApp.properties.siteConfig.autoHealRules | unknown | Auto-heal rules configuration. |
+| Azure.WebApp.properties.siteConfig.tracingOptions | String | Tracing options. |
+| Azure.WebApp.properties.siteConfig.remoteDebuggingEnabled | Boolean | Whether remote debugging is enabled. |
+| Azure.WebApp.properties.siteConfig.remoteDebuggingVersion | String | Remote debugging version. |
+| Azure.WebApp.properties.siteConfig.detailedErrorLoggingEnabled | Boolean | Whether detailed error logging is enabled. |
+| Azure.WebApp.properties.siteConfig.httpLoggingEnabled | Boolean | Whether HTTP logging is enabled. |
+| Azure.WebApp.properties.siteConfig.requestTracingEnabled | Boolean | Whether request tracing is enabled. |
+| Azure.WebApp.properties.siteConfig.requestTracingExpirationTime | DateTime | Request tracing expiration time. |
+| Azure.WebApp.properties.siteConfig.remoteDebuggingEnabled | Boolean | Whether remote debugging is enabled. |
+| Azure.WebApp.properties.siteConfig.remoteDebuggingVersion | String | Remote debugging version. |
+| Azure.WebApp.properties.siteConfig.defaultDocuments | unknown | List of default documents. |
+| Azure.WebApp.properties.siteConfig.virtualApplications | unknown | List of virtual applications. |
+| Azure.WebApp.properties.siteConfig.loadBalancing | String | Load balancing settings. |
+| Azure.WebApp.properties.siteConfig.experiments | unknown | Experiments configuration. |
+| Azure.WebApp.properties.siteConfig.limits | unknown | Site limits configuration. |
+| Azure.WebApp.properties.siteConfig.autoSwapSlotName | String | Auto-swap slot name. |
+| Azure.WebApp.properties.siteConfig.localMySqlEnabled | Boolean | Whether local MySQL is enabled. |
+| Azure.WebApp.properties.siteConfig.ipSecurityRestrictions | unknown | IP security restrictions. |
+| Azure.WebApp.properties.siteConfig.scmIpSecurityRestrictions | unknown | SCM IP security restrictions. |
+| Azure.WebApp.properties.siteConfig.scmIpSecurityRestrictionsUseMain | Boolean | Whether SCM IP restrictions use main settings. |
+| Azure.WebApp.properties.siteConfig.cors | unknown | CORS settings. |
+| Azure.WebApp.properties.siteConfig.push | unknown | Push settings. |
+| Azure.WebApp.properties.siteConfig.apiDefinition | unknown | API definition settings. |
+| Azure.WebApp.properties.siteConfig.apiManagementConfig | unknown | API management configuration. |
+| Azure.WebApp.properties.siteConfig.autoHealEnabled | Boolean | Whether auto-heal is enabled. |
+| Azure.WebApp.properties.siteConfig.autoHealRules | unknown | Auto-heal rules configuration. |
+| Azure.WebApp.properties.siteConfig.tracingOptions | String | Tracing options. |
+| Azure.WebApp.properties.siteConfig.remoteDebuggingEnabled | Boolean | Whether remote debugging is enabled. |
+| Azure.WebApp.properties.siteConfig.remoteDebuggingVersion | String | Remote debugging version. |
+| Azure.WebApp.properties.siteConfig.detailedErrorLoggingEnabled | Boolean | Whether detailed error logging is enabled. |
+| Azure.WebApp.properties.siteConfig.httpLoggingEnabled | Boolean | Whether HTTP logging is enabled. |
+| Azure.WebApp.properties.siteConfig.requestTracingEnabled | Boolean | Whether request tracing is enabled. |
+
+### azure-nsg-security-rule-update-quick-action
+
+***
+Revokes an NSG rule's access setting it to Deny, effectively blocking traffic defined by that rule's properties.
+
+#### Base Command
+
+`azure-nsg-security-rule-update-quick-action`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID. | Required |
+| resource_group_name | The name of the resource group. | Required |
+| security_group_name | The name of the security group. | Required |
+| security_rule_name | Name of the NSG rule to update. | Required |
+| access | Whether to allow or deny network traffic. Possible values are: Deny. Default is Deny. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.NSGRule.name | String | The rule's name. |
+| Azure.NSGRule.id | String | The rule's ID. |
+| Azure.NSGRule.etag | String | The rule's ETag. |
+| Azure.NSGRule.type | String | The rule's type. |
+| Azure.NSGRule.provisioningState | String | The rule's provisioning state. |
+| Azure.NSGRule.protocol | String | The protocol. Can be "TCP", "UDP", "ICMP", "\*". |
+| Azure.NSGRule.sourcePortRange | String | For a single port, the source port or a range of ports. Note that for multiple ports, \`sourcePortRanges\` will appear instead. |
+| Azure.NSGRule.sourcePortRanges | String | For multiple ports, a list of these ports. Note that for single ports, \`sourcePortRange\` will appear instead. |
+| Azure.NSGRule.destinationPortRange | String | For a single port, the destination port or range of ports. Note that for multiple ports, \`destinationPortRanges\` will appear instead. |
+| Azure.NSGRule.destinationPortRanges | String | For multiple ports, a list of destination ports. Note that for single ports, \`destinationPortRange\` will appear instead. |
+| Azure.NSGRule.sourceAddressPrefix | String | The source address. |
+| Azure.NSGRule.destinationAddressPrefix | String | The destination address. |
+| Azure.NSGRule.access | String | The rule's access. Can be "Allow" or "Deny". |
+| Azure.NSGRule.priority | Number | The rule's priority, ranging from 100 to 4096. |
+| Azure.NSGRule.direction | String | The rule's direction. Can be "Inbound" or "Outbound". |
+
+### azure-set-function-app-http-version2-0-quick-action
+
+***
+Enables HTTP 2.0 for the Function App.
+
+#### Base Command
+
+`azure-set-function-app-http-version2-0-quick-action`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID. | Required |
+| resource_group_name | The resource group name. | Required |
+| name | Name of the Function App. | Required |
+| http20_enabled | Whether to allow clients to connect over HTTP/2. Possible values are: true, false. Default is true. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.WebAppConfig.id | String | Resource ID. |
+| Azure.WebAppConfig.name | String | Resource name. |
+| Azure.WebAppConfig.type | String | Resource type. |
+| Azure.WebAppConfig.location | String | Resource location. |
+| Azure.WebAppConfig.properties.numberOfWorkers | Number | Number of workers. |
+| Azure.WebAppConfig.properties.defaultDocuments | Unknown | List of default documents. |
+| Azure.WebAppConfig.properties.netFrameworkVersion | String | .NET Framework version. |
+| Azure.WebAppConfig.properties.phpVersion | String | PHP version. |
+| Azure.WebAppConfig.properties.pythonVersion | String | Python version. |
+| Azure.WebAppConfig.properties.nodeVersion | String | Node.js version. |
+| Azure.WebAppConfig.properties.powerShellVersion | String | PowerShell version. |
+| Azure.WebAppConfig.properties.linuxFxVersion | String | Linux app framework and version. |
+| Azure.WebAppConfig.properties.windowsFxVersion | String | Windows container image name. |
+| Azure.WebAppConfig.properties.requestTracingEnabled | Boolean | Indicates whether request tracing is enabled. |
+| Azure.WebAppConfig.properties.remoteDebuggingEnabled | Boolean | Indicates whether remote debugging is enabled. |
+| Azure.WebAppConfig.properties.remoteDebuggingVersion | String | Remote debugging version. |
+| Azure.WebAppConfig.properties.http20Enabled | Boolean | Indicates whether HTTP/2 is enabled. |
+| Azure.WebAppConfig.properties.minTlsVersion | String | Minimum TLS version required. |
+| Azure.WebAppConfig.properties.ftpsState | String | State of FTP/ FTPS service. |
+| Azure.WebAppConfig.properties.webSocketsEnabled | Boolean | Indicates whether WebSockets are enabled. |
+| Azure.WebAppConfig.properties.alwaysOn | Boolean | Indicates whether Always On is enabled. |
+| Azure.WebAppConfig.properties.managedPipelineMode | String | Managed pipeline mode. |
+| Azure.WebAppConfig.properties.loadBalancing | String | Site load balancing mode. |
+| Azure.WebAppConfig.properties.autoHealEnabled | Boolean | Indicates whether Auto Heal is enabled. |
+| Azure.WebAppConfig.properties.autoHealRules | Unknown | Auto Heal rules configuration. |
+| Azure.WebAppConfig.properties.cors.allowedOrigins | Unknown | CORS allowed origins. |
+| Azure.WebAppConfig.properties.cors.supportCredentials | Boolean | Indicates whether CORS supports credentials. |
+| Azure.WebAppConfig.properties.apiDefinition.url | String | URL of the API definition. |
+| Azure.WebAppConfig.properties.apiManagementConfig.id | String | Azure API management integration ID. |
+
+### azure-nsg-security-rule-delete-quick-action
+
+***
+Deletes a network security group (NSG) rule.
+
+#### Base Command
+
+`azure-nsg-security-rule-delete-quick-action`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID. | Required |
+| resource_group_name | The name of the resource group. | Required |
+| security_group_name | The name of the security group. | Required |
+| security_rule_name | The name of the rule to be deleted. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.NSGRule.name | String | The rule's name. |
+| Azure.NSGRule.id | String | The rule's ID. |
+| Azure.NSGRule.etag | String | The rule's ETag. |
+| Azure.NSGRule.type | String | The rule's type. |
+| Azure.NSGRule.provisioningState | String | The rule's provisioning state. |
+| Azure.NSGRule.protocol | String | The protocol, which can be "TCP", "UDP", "ICMP", or "\*". |
+| Azure.NSGRule.sourcePortRange | String | For a single port, the source port or a range of ports. |
+| Azure.NSGRule.sourcePortRanges | String | For multiple ports, a list of these ports. |
+| Azure.NSGRule.destinationPortRange | String | For a single port, the destination port or range of ports. |
+| Azure.NSGRule.destinationPortRanges | String | For multiple ports, a list of destination ports. |
+| Azure.NSGRule.sourceAddressPrefix | String | The source address. |
+| Azure.NSGRule.destinationAddressPrefix | String | The destination address. |
+| Azure.NSGRule.access | String | The rule's access. Can be "Allow" or "Deny". |
+| Azure.NSGRule.priority | Number | The rule's priority, ranging from 100 to 4096. |
+| Azure.NSGRule.direction | String | The rule's direction. Can be "Inbound" or "Outbound". |
+
+### azure-network-disable-storage-account-access-quick-action
+
+***
+Sets the storage account’s default network action to Deny. Only explicitly allowed IPs, subnets, or trusted Azure services will have access.
+
+#### Base Command
+
+`azure-network-disable-storage-account-access-quick-action`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID. | Required |
+| resource_group_name | The resource group name. | Required |
+| account_name | Name of the storage account. | Required |
+| network_ruleset_default_action | Default action when no other network rule matches. Default is Deny. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.StorageAccount.id | String | Fully qualified resource ID for the resource. |
+| Azure.StorageAccount.kind | String | The kind of storage account. |
+| Azure.StorageAccount.location | String | The geo-location where the resource lives. |
+| Azure.StorageAccount.name | String | The name of the resource. |
+| Azure.StorageAccount.properties.isHnsEnabled | Boolean | If set to true, the account's HierarchicalNamespace is enabled. |
+| Azure.StorageAccount.properties.allowBlobPublicAccess | Boolean | If set to true \(default\), allows public access to all blobs or containers in the storage account. |
+| Azure.StorageAccount.properties.minimumTlsVersion | String | Sets the minimum TLS version to be permitted on requests to storage. Default is TLS 1.0. |
+| Azure.StorageAccount.properties.allowSharedKeyAccess | Boolean | Whether the storage account permits requests to be authorized with the account access key via Shared Key. If false, then all requests \(including shared access signatures\) must be authorized with Azure Active Directory \(Azure AD\). |
+| Azure.StorageAccount.properties.creationTime | Date | The creation date and time of the storage account in UTC. |
+| Azure.StorageAccount.properties.primaryEndpoints | String | The URLs that are used to retrieve a public blob, queue, or table object. |
+| Azure.StorageAccount.properties.primaryLocation | String | The storage account primary data center location. |
+| Azure.StorageAccount.properties.provisioningState | String | The status of the storage account at the time the operation was called. |
+| Azure.StorageAccount.properties.routingPreference.routingChoice | String | The kind of network routing the user chose. |
+| Azure.StorageAccount.properties.routingPreference.publishMicrosoftEndpoints | Boolean | Whether Microsoft routing storage endpoints are to be published. |
+| Azure.StorageAccount.properties.routingPreference.publishInternetEndpoints | Boolean | Whether internet routing storage endpoints are to be published. |
+| Azure.StorageAccount.properties.encryption | String | Encryption settings to be used for server-side encryption for the storage account. |
+| Azure.StorageAccount.properties.secondaryLocation | String | The geo-replicated secondary location for the storage account. Only available if the accountType is Standard_GRS or Standard_RAGRS. |
+| Azure.StorageAccount.properties.statusOfPrimary | String | Whether the storage account primary location is available or unavailable. |
+| Azure.StorageAccount.properties.statusOfSecondary | String | Whether the storage account secondary location is available or unavailable. Only available if the SKU name is Standard_GRS or Standard_RAGRS. |
+| Azure.StorageAccount.properties.supportsHttpsTrafficOnly | Boolean | If set to true, allows only HTTPS traffic to the storage service. |
+| Azure.StorageAccount.sku.name | String | The SKU name. Required for account creation; optional for update. |
+| Azure.StorageAccount.sku.tier | String | The SKU tier. This is based on the SKU name. |
+| Azure.StorageAccount.tags | unknown | Resource tags. |
+| Azure.StorageAccount.type | String | The storage account type. |
+
+### azure-function-app-set-min-tls-version-quick-action
+
+***
+Sets the Function App's minimum accepted TLS version to 1.2 to enhance security.
+
+#### Base Command
+
+`azure-function-app-set-min-tls-version-quick-action`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID. | Required |
+| resource_group_name | The resource group name. | Required |
+| name | Name of the Web App. | Required |
+| min_tls_version | Minimum TLS version required for SSL requests. Possible values are: 1.0, 1.1, 1.2, 1.3. Default is 1.2. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.WebAppConfig.id | String | Resource ID. |
+| Azure.WebAppConfig.name | String | Resource name. |
+| Azure.WebAppConfig.type | String | Resource type. |
+| Azure.WebAppConfig.location | String | Resource location. |
+| Azure.WebAppConfig.properties.numberOfWorkers | Number | Number of workers. |
+| Azure.WebAppConfig.properties.defaultDocuments | Unknown | List of default documents. |
+| Azure.WebAppConfig.properties.netFrameworkVersion | String | .NET Framework version. |
+| Azure.WebAppConfig.properties.phpVersion | String | PHP version. |
+| Azure.WebAppConfig.properties.pythonVersion | String | Python version. |
+| Azure.WebAppConfig.properties.nodeVersion | String | Node.js version. |
+| Azure.WebAppConfig.properties.powerShellVersion | String | PowerShell version. |
+| Azure.WebAppConfig.properties.linuxFxVersion | String | Linux app framework and version. |
+| Azure.WebAppConfig.properties.windowsFxVersion | String | Windows container image name. |
+| Azure.WebAppConfig.properties.requestTracingEnabled | Boolean | Indicates whether request tracing is enabled. |
+| Azure.WebAppConfig.properties.remoteDebuggingEnabled | Boolean | Indicates whether remote debugging is enabled. |
+| Azure.WebAppConfig.properties.remoteDebuggingVersion | String | Remote debugging version. |
+| Azure.WebAppConfig.properties.http20Enabled | Boolean | Indicates whether HTTP/2 is enabled. |
+| Azure.WebAppConfig.properties.minTlsVersion | String | Minimum TLS version required. |
+| Azure.WebAppConfig.properties.ftpsState | String | State of FTP/ FTPS service. |
+| Azure.WebAppConfig.properties.webSocketsEnabled | Boolean | Indicates whether WebSockets are enabled. |
+| Azure.WebAppConfig.properties.alwaysOn | Boolean | Indicates whether Always On is enabled. |
+| Azure.WebAppConfig.properties.managedPipelineMode | String | Managed pipeline mode. |
+| Azure.WebAppConfig.properties.loadBalancing | String | Site load balancing mode. |
+| Azure.WebAppConfig.properties.autoHealEnabled | Boolean | Indicates whether Auto Heal is enabled. |
+| Azure.WebAppConfig.properties.autoHealRules | Unknown | Auto Heal rules configuration. |
+| Azure.WebAppConfig.properties.cors.allowedOrigins | Unknown | CORS allowed origins. |
+| Azure.WebAppConfig.properties.cors.supportCredentials | Boolean | Indicates whether CORS supports credentials. |
+| Azure.WebAppConfig.properties.apiDefinition.url | String | URL of the API definition. |
+| Azure.WebAppConfig.properties.apiManagementConfig.id | String | Azure API management integration ID. |
+
+### azure-webapp-set-min-tls-version-quick-action
+
+***
+Sets the web app's minimum accepted TLS version to 1.2 to enhance security.
+
+#### Base Command
+
+`azure-webapp-set-min-tls-version-quick-action`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID. | Required |
+| resource_group_name | The resource group name. | Required |
+| name | Name of the Web App. | Required |
+| min_tls_version | Minimum TLS version required for SSL requests. Possible values are: 1.0, 1.1, 1.2, 1.3. Default is 1.2. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.WebAppConfig.id | String | Resource ID. |
+| Azure.WebAppConfig.name | String | Resource name. |
+| Azure.WebAppConfig.type | String | Resource type. |
+| Azure.WebAppConfig.location | String | Resource location. |
+| Azure.WebAppConfig.properties.numberOfWorkers | Number | Number of workers. |
+| Azure.WebAppConfig.properties.defaultDocuments | Unknown | List of default documents. |
+| Azure.WebAppConfig.properties.netFrameworkVersion | String | .NET Framework version. |
+| Azure.WebAppConfig.properties.phpVersion | String | PHP version. |
+| Azure.WebAppConfig.properties.pythonVersion | String | Python version. |
+| Azure.WebAppConfig.properties.nodeVersion | String | Node.js version. |
+| Azure.WebAppConfig.properties.powerShellVersion | String | PowerShell version. |
+| Azure.WebAppConfig.properties.linuxFxVersion | String | Linux app framework and version. |
+| Azure.WebAppConfig.properties.windowsFxVersion | String | Windows container image name. |
+| Azure.WebAppConfig.properties.requestTracingEnabled | Boolean | Indicates whether request tracing is enabled. |
+| Azure.WebAppConfig.properties.remoteDebuggingEnabled | Boolean | Indicates whether remote debugging is enabled. |
+| Azure.WebAppConfig.properties.remoteDebuggingVersion | String | Remote debugging version. |
+| Azure.WebAppConfig.properties.http20Enabled | Boolean | Indicates whether HTTP/2 is enabled. |
+| Azure.WebAppConfig.properties.minTlsVersion | String | Minimum TLS version required. |
+| Azure.WebAppConfig.properties.ftpsState | String | State of FTP/ FTPS service. |
+| Azure.WebAppConfig.properties.webSocketsEnabled | Boolean | Indicates whether WebSockets are enabled. |
+| Azure.WebAppConfig.properties.alwaysOn | Boolean | Indicates whether Always On is enabled. |
+| Azure.WebAppConfig.properties.managedPipelineMode | String | Managed pipeline mode. |
+| Azure.WebAppConfig.properties.loadBalancing | String | Site load balancing mode. |
+| Azure.WebAppConfig.properties.autoHealEnabled | Boolean | Indicates whether Auto Heal is enabled. |
+| Azure.WebAppConfig.properties.autoHealRules | Unknown | Auto Heal rules configuration. |
+| Azure.WebAppConfig.properties.cors.allowedOrigins | Unknown | CORS allowed origins. |
+| Azure.WebAppConfig.properties.cors.supportCredentials | Boolean | Indicates whether CORS supports credentials. |
+| Azure.WebAppConfig.properties.apiDefinition.url | String | URL of the API definition. |
+| Azure.WebAppConfig.properties.apiManagementConfig.id | String | Azure API management integration ID. |
+
+### azure-set-storage-account-https-only-quick-action
+
+***
+Enforces HTTPS-only traffic for the storage account, rejecting any requests made over HTTP.
+
+#### Base Command
+
+`azure-set-storage-account-https-only-quick-action`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID. | Required |
+| resource_group_name | The resource group name. | Required |
+| account_name | Name of the storage account. | Required |
+| supports_https_traffic_only | Whether to allow only HTTPS traffic to the storage account. Default is true. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.StorageAccount.id | String | Fully qualified resource ID for the resource. |
+| Azure.StorageAccount.kind | String | The kind of storage account. |
+| Azure.StorageAccount.location | String | The geo-location where the resource lives. |
+| Azure.StorageAccount.name | String | The name of the resource. |
+| Azure.StorageAccount.properties.isHnsEnabled | Boolean | If set to true, the account's HierarchicalNamespace enabled. |
+| Azure.StorageAccount.properties.allowBlobPublicAccess | Boolean | If set to true \(default\), allows public access to all blobs or containers in the storage account. |
+| Azure.StorageAccount.properties.minimumTlsVersion | String | Sets the minimum TLS version to be permitted on requests to storage. Default is TLS 1.0. |
+| Azure.StorageAccount.properties.allowSharedKeyAccess | Boolean | Whether the storage account permits requests to be authorized with the account access key via Shared Key. If false, then all requests \(including shared access signatures\) must be authorized with Azure Active Directory \(Azure AD\). |
+| Azure.StorageAccount.properties.creationTime | Date | The creation date and time of the storage account in UTC. |
+| Azure.StorageAccount.properties.primaryEndpoints | String | The URLs that are used to retrieve a public blob, queue, or table object. |
+| Azure.StorageAccount.properties.primaryLocation | String | The storage account primary data center location. |
+| Azure.StorageAccount.properties.provisioningState | String | The status of the storage account at the time the operation was called. |
+| Azure.StorageAccount.properties.routingPreference.routingChoice | String | The kind of network routing the user chose. |
+| Azure.StorageAccount.properties.routingPreference.publishMicrosoftEndpoints | Boolean | Whether Microsoft routing storage endpoints are to be published. |
+| Azure.StorageAccount.properties.routingPreference.publishInternetEndpoints | Boolean | Whether internet routing storage endpoints are to be published. |
+| Azure.StorageAccount.properties.encryption | String | Encryption settings to be used for server-side encryption for the storage account. |
+| Azure.StorageAccount.properties.secondaryLocation | String | The geo-replicated secondary location for the storage account. Only available if the accountType is Standard_GRS or Standard_RAGRS. |
+| Azure.StorageAccount.properties.statusOfPrimary | String | Whether the storage account primary location is available or unavailable. |
+| Azure.StorageAccount.properties.statusOfSecondary | String | Whether the storage account secondary location is available or unavailable. Only available if the SKU name is Standard_GRS or Standard_RAGRS. |
+| Azure.StorageAccount.properties.supportsHttpsTrafficOnly | Boolean | If set to true, allows only HTTPS traffic to the storage service. |
+| Azure.StorageAccount.sku.name | String | The SKU name. Required for account creation; optional for update. |
+| Azure.StorageAccount.sku.tier | String | The SKU tier. This is based on the SKU name. |
+| Azure.StorageAccount.tags | unknown | Resource tags. |
+| Azure.StorageAccount.type | String | The storage account type. |
+
+### azure-mysql-set-secure-transport-quick-action
+
+***
+Enforces secure transport (SSL/TLS) for connections to the MySQL Flexible Server.
+
+#### Base Command
+
+`azure-mysql-set-secure-transport-quick-action`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID. | Required |
+| resource_group_name | The resource group name. | Required |
+| server_name | Name of the MySQL flexible server. | Required |
+| configuration_name | Server configuration name. Default is require_secure_transport. | Optional |
+| value | Configuration value. Default is on. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+### azure-monitor-log-retention-period-quick-action
+
+***
+Sets the log profile’s retention policy to 365 days and enables it across all supported locations.
+
+#### Base Command
+
+`azure-monitor-log-retention-period-quick-action`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID. | Required |
+| log_profile_name | Name of the log profile to update. | Required |
+| location | Resource location. Default is global. | Optional |
+| retention_policy_days | Number of days to retain logs. Default is 365. | Optional |
+| retention_policy_enabled | Whether to enable the retention policy. Default is true. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.LogProfile.id | String | The fully qualified Azure resource ID for the log profile. |
+| Azure.LogProfile.name | String | The name of the log profile. |
+| Azure.LogProfile.type | String | The type of the resource \(Microsoft.Insights/logProfiles\). |
+| Azure.LogProfile.location | String | The location of the log profile. |
+| Azure.LogProfile.tags | Object | Resource tags. |
+| Azure.LogProfile.properties.storageAccountId | String | The resource ID of the storage account to which diagnostic logs are delivered. |
+| Azure.LogProfile.properties.serviceBusRuleId | String | The service bus rule ID to which diagnostic logs are sent. |
+| Azure.LogProfile.properties.locations | Array | A list of regions for which events are collected. |
+| Azure.LogProfile.properties.categories | Array | A list of categories of logs that are collected. |
+| Azure.LogProfile.properties.retentionPolicy.enabled | Boolean | Specifies whether the retention policy is enabled. |
+| Azure.LogProfile.properties.retentionPolicy.days | Number | The number of days for the retention policy. |
+
+### azure-disk-set-data-access-aad-quick-action
+
+***
+Sets the data access authentication mode for the managed disk to Azure Active Directory.
+
+#### Base Command
+
+`azure-disk-set-data-access-aad-quick-action`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID. | Required |
+| resource_group_name | The resource group name. | Required |
+| disk_name | Name of the managed disk. Supported characters for the name are a-z, A-Z, 0-9, _ and -. The maximum name length is 80 characters. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.Disk.id | String | Resource ID of the disk. |
+| Azure.Disk.name | String | Name of the disk. |
+| Azure.Disk.type | String | Type of the resource. |
+| Azure.Disk.location | String | Location of the disk. |
+| Azure.Disk.tags | unknown | Resource tags. |
+| Azure.Disk.managedBy | String | ARM ID of the resource that manages the disk. |
+| Azure.Disk.sku | unknown | The name of the disk SKU. |
+| Azure.Disk.zones | unknown | A list of availability zones. |
+| Azure.Disk.properties.timeCreated | String | The time when the disk was created. |
+| Azure.Disk.properties.diskSizeGB | Number | Size of the disk in GB. |
+| Azure.Disk.properties.diskIopsReadWrite | Number | The number of IOPS allowed for this disk. |
+| Azure.Disk.properties.diskMBpsReadWrite | Number | The bandwidth allowed for this disk in MBps. |
+| Azure.Disk.properties.diskIOPSReadOnly | Number | The number of read-only IOPS for this disk. |
+| Azure.Disk.properties.diskMBpsReadOnly | Number | The read-only bandwidth for this disk in MBps. |
+| Azure.Disk.properties.diskSizeBytes | Number | The size of the disk in bytes. |
+| Azure.Disk.properties.networkAccessPolicy | String | Policy for accessing the disk via network. |
+| Azure.Disk.properties.publicNetworkAccess | String | Policy for export on the disk. |
+| Azure.Disk.properties.burstingEnabled | Boolean | Whether bursting is enabled on the disk. |
+| Azure.Disk.properties.optimization | String | The disk optimization setting. |
+| Azure.Disk.properties.diskState | String | The current state of the disk. |
+| Azure.Disk.properties.supportedCapabilities | unknown | Supported capabilities of the disk. |
+| Azure.Disk.properties.supportedPerformanceTiers | unknown | Supported performance tiers of the disk. |
+| Azure.Disk.properties.supportedDiskTypes | unknown | Supported disk types for the disk. |
+| Azure.Disk.properties.provisioningState | unknown | The provisioning state of the disk. |
+| Azure.Disk.properties.timeModified | unknown | The time when the disk was last modified. |
+| Azure.Disk.properties.diskAccessId | String | The ARM ID of the DiskAccess resource. |
+| Azure.Disk.properties.networkProfile | unknown | The network profile of the disk. |
+| Azure.Disk.properties.creationData | unknown | Disk creation data. |
+| Azure.Disk.properties.encryption | unknown | Encryption settings for the disk. |
+| Azure.Disk.properties.encryptionSettingsCollection | unknown | A collection of encryption settings. |
+| Azure.Disk.properties.encryptionType | String | The type of key used to encrypt the data on the disk. |
+| Azure.Disk.properties.securityProfile | unknown | Security profile for the disk. |
+| Azure.Disk.properties.tieringProfile | unknown | Tiering profile for the disk. |
+| Azure.Disk.properties.supportedTierList | unknown | List of supported tiers for the disk. |
+| Azure.Disk.properties.availabilityZone | String | Availability zone of the disk. |
+| Azure.Disk.properties.dataAccessAuthMode | String | Additional authentication requirements for exporting or uploading to the disk. |
+| Azure.Disk.properties.osType | String | The operating system type. |
+| Azure.Disk.properties.hyperVGeneration | String | The HyperVGenerationType of the virtual machine. |
+| Azure.Disk.properties.lastOwnershipUpdateTime | String | The last time ownership of the disk was updated. |
+
+### azure-webapp-update-assign-managed-identity-quick-action
+
+***
+Assigns a system-assigned managed identity to the Function App. This allows the app to securely access other Azure services while removing the need to manage sensitive credentials and the risk of exposing them.
+
+#### Base Command
+
+`azure-webapp-update-assign-managed-identity-quick-action`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID. | Required |
+| resource_group_name | The resource group name. | Required |
+| name | Name of the Function App. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.WebApp.id | String | Fully qualified resource ID for the web app. |
+| Azure.WebApp.name | String | The name of the web app. |
+| Azure.WebApp.type | String | The resource type, e.g., Microsoft.Web/sites. |
+| Azure.WebApp.location | String | Geographic location of the web app. |
+| Azure.WebApp.kind | String | The kind of the app, e.g., app, functionapp, etc. |
+| Azure.WebApp.tags | unknown | Resource tags as key-value pairs. |
+| Azure.WebApp.identity.type | String | The type of managed identity \(SystemAssigned, UserAssigned, etc.\). |
+| Azure.WebApp.identity.principalId | String | The principal ID of the system-assigned identity. |
+| Azure.WebApp.identity.tenantId | String | The tenant ID of the system-assigned identity. |
+| Azure.WebApp.identity.userAssignedIdentities | unknown | The list of user-assigned identities associated with the web app. |
+| Azure.WebApp.properties.state | String | Current state of the web app \(Running, Stopped, etc.\). |
+| Azure.WebApp.properties.enabled | Boolean | Whether the web app is enabled. |
+| Azure.WebApp.properties.defaultHostName | String | Default host name of the web app. |
+| Azure.WebApp.properties.hostNames | unknown | List of host names associated with the web app. |
+| Azure.WebApp.properties.repositorySiteName | String | Name of the repository site. |
+| Azure.WebApp.properties.clientAffinityEnabled | Boolean | Whether client affinity is enabled. |
+| Azure.WebApp.properties.clientCertEnabled | Boolean | Whether client certificates are enabled. |
+| Azure.WebApp.properties.clientCertExclusionPaths | String | Paths to exclude from client certificate authentication. |
+| Azure.WebApp.properties.hostingEnvironment | String | App Service Environment to use for the web app. |
+| Azure.WebApp.properties.serverFarmId | String | Resource ID of the associated App Service plan. |
+| Azure.WebApp.properties.reserved | Boolean | Whether the web app is on a Linux plan. |
+| Azure.WebApp.properties.isXenon | Boolean | Whether the web app is hosted in Xenon. |
+| Azure.WebApp.properties.hyperV | Boolean | Whether Hyper-V is enabled for the web app. |
+| Azure.WebApp.properties.siteConfig.appSettings | unknown | List of app settings. |
+| Azure.WebApp.properties.siteConfig.metadata | unknown | List of metadata settings. |
+| Azure.WebApp.properties.siteConfig.connectionStrings | unknown | List of connection strings. |
+| Azure.WebApp.properties.siteConfig.localMySqlEnabled | Boolean | Whether local MySQL is enabled. |
+| Azure.WebApp.properties.siteConfig.alwaysOn | Boolean | Whether Always On is enabled. |
+| Azure.WebApp.properties.siteConfig.http20Enabled | Boolean | Whether HTTP/2 is enabled. |
+| Azure.WebApp.properties.siteConfig.minTlsVersion | String | Minimum TLS version required. |
+| Azure.WebApp.properties.siteConfig.ftpsState | String | FTPS state \(Disabled, AllAllowed, etc.\). |
+| Azure.WebApp.properties.siteConfig.linuxFxVersion | String | Runtime stack for Linux apps. |
+| Azure.WebApp.properties.siteConfig.windowsFxVersion | String | Runtime stack for Windows apps. |
+| Azure.WebApp.properties.siteConfig.numberOfWorkers | Number | Number of workers allocated. |
+| Azure.WebApp.properties.siteConfig.webSocketsEnabled | Boolean | Whether WebSockets are enabled. |
+| Azure.WebApp.properties.siteConfig.preWarmedInstanceCount | Number | Number of pre-warmed instances. |
+| Azure.WebApp.properties.siteConfig.acrUseManagedIdentityCreds | Boolean | Whether ACR uses managed identity credentials. |
+| Azure.WebApp.properties.siteConfig.acrUserManagedIdentityID | String | User-assigned identity ID for ACR. |
+| Azure.WebApp.properties.siteConfig.scmType | String | Source control management type. |
+| Azure.WebApp.properties.siteConfig.use32BitWorkerProcess | Boolean | Whether to use 32-bit worker process. |
+| Azure.WebApp.properties.siteConfig.autoHealEnabled | Boolean | Whether auto-heal is enabled. |
+| Azure.WebApp.properties.siteConfig.autoHealRules | unknown | Auto-heal rules configuration. |
+| Azure.WebApp.properties.siteConfig.tracingOptions | String | Tracing options. |
+| Azure.WebApp.properties.siteConfig.remoteDebuggingEnabled | Boolean | Whether remote debugging is enabled. |
+| Azure.WebApp.properties.siteConfig.remoteDebuggingVersion | String | Remote debugging version. |
+| Azure.WebApp.properties.siteConfig.detailedErrorLoggingEnabled | Boolean | Whether detailed error logging is enabled. |
+| Azure.WebApp.properties.siteConfig.httpLoggingEnabled | Boolean | Whether HTTP logging is enabled. |
+| Azure.WebApp.properties.siteConfig.requestTracingEnabled | Boolean | Whether request tracing is enabled. |
+| Azure.WebApp.properties.siteConfig.requestTracingExpirationTime | DateTime | Request tracing expiration time. |
+| Azure.WebApp.properties.siteConfig.remoteDebuggingEnabled | Boolean | Whether remote debugging is enabled. |
+| Azure.WebApp.properties.siteConfig.remoteDebuggingVersion | String | Remote debugging version. |
+| Azure.WebApp.properties.siteConfig.defaultDocuments | unknown | List of default documents. |
+| Azure.WebApp.properties.siteConfig.virtualApplications | unknown | List of virtual applications. |
+| Azure.WebApp.properties.siteConfig.loadBalancing | String | Load balancing settings. |
+| Azure.WebApp.properties.siteConfig.experiments | unknown | Experiments configuration. |
+| Azure.WebApp.properties.siteConfig.limits | unknown | Site limits configuration. |
+| Azure.WebApp.properties.siteConfig.autoSwapSlotName | String | Auto-swap slot name. |
+| Azure.WebApp.properties.siteConfig.localMySqlEnabled | Boolean | Whether local MySQL is enabled. |
+| Azure.WebApp.properties.siteConfig.ipSecurityRestrictions | unknown | IP security restrictions. |
+| Azure.WebApp.properties.siteConfig.scmIpSecurityRestrictions | unknown | SCM IP security restrictions. |
+| Azure.WebApp.properties.siteConfig.scmIpSecurityRestrictionsUseMain | Boolean | Whether SCM IP restrictions use main settings. |
+| Azure.WebApp.properties.siteConfig.cors | unknown | CORS settings. |
+| Azure.WebApp.properties.siteConfig.push | unknown | Push settings. |
+| Azure.WebApp.properties.siteConfig.apiDefinition | unknown | API definition settings. |
+| Azure.WebApp.properties.siteConfig.apiManagementConfig | unknown | API management configuration. |
+| Azure.WebApp.properties.siteConfig.autoHealEnabled | Boolean | Whether auto-heal is enabled. |
+| Azure.WebApp.properties.siteConfig.autoHealRules | unknown | Auto-heal rules configuration. |
+| Azure.WebApp.properties.siteConfig.tracingOptions | String | Tracing options. |
+| Azure.WebApp.properties.siteConfig.remoteDebuggingEnabled | Boolean | Whether remote debugging is enabled. |
+| Azure.WebApp.properties.siteConfig.remoteDebuggingVersion | String | Remote debugging version. |
+| Azure.WebApp.properties.siteConfig.detailedErrorLoggingEnabled | Boolean | Whether detailed error logging is enabled. |
+| Azure.WebApp.properties.siteConfig.httpLoggingEnabled | Boolean | Whether HTTP logging is enabled. |
+| Azure.WebApp.properties.siteConfig.requestTracingEnabled | Boolean | Whether request tracing is enabled. |
+
+### azure-acr-disable-public-private-access-quick-action
+
+***
+Disables public network access and content exports for the Azure Container Registry (ACR) to enhance security.
+
+#### Base Command
+
+`azure-acr-disable-public-private-access-quick-action`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID. | Required |
+| resource_group_name | The resource group name. | Required |
+| registry_name | Name of the container registry. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.ACR.id | String | The resource ID. |
+| Azure.ACR.identity | Unknown | The identity of the container registry. |
+| Azure.ACR.location | String | The location of the resource. |
+| Azure.ACR.name | String | The name of the resource. |
+| Azure.ACR.properties.adminUserEnabled | Boolean | The value that indicates whether the admin user is enabled. |
+| Azure.ACR.properties.anonymousPullEnabled | Boolean | Enables registry-wide pull from unauthenticated clients. |
+| Azure.ACR.properties.creationDate | String | The creation date of the container registry in ISO8601 format. |
+| Azure.ACR.properties.dataEndpointEnabled | Boolean | Enable a single data endpoint per region for serving data. |
+| Azure.ACR.properties.dataEndpointHostNames | Unknown | List of host names that will serve data when dataEndpointEnabled is true. |
+| Azure.ACR.properties.encryption | Unknown | The encryption settings of container registry. |
+| Azure.ACR.properties.loginServer | String | The URL that can be used to log into the container registry. |
+| Azure.ACR.properties.networkRuleBypassOptions | String | Whether to allow trusted Azure services to access a network restricted registry. |
+| Azure.ACR.properties.networkRuleSet | Unknown | The network rule set for a container registry. |
+| Azure.ACR.properties.policies | Unknown | The policies for a container registry. |
+| Azure.ACR.properties.privateEndpointConnections | Unknown | List of private endpoint connections for a container registry. |
+| Azure.ACR.properties.provisioningState | String | The provisioning state of the container registry when the operation was called. |
+| Azure.ACR.properties.publicNetworkAccess | String | Whether or not public network access is allowed for the container registry. |
+| Azure.ACR.properties.status | Unknown | The status of the container registry at the time the operation was called. |
+| Azure.ACR.properties.zoneRedundancy | String | Whether or not zone redundancy is enabled for this container registry. |
+| Azure.ACR.sku | Unknown | The SKU of the container registry. |
+| Azure.ACR.systemData | Unknown | Metadata pertaining to creation and last modification of the resource. |
+| Azure.ACR.tags | Unknown | The tags of the resource. |
+| Azure.ACR.type | String | The type of the resource. |
+
+### azure-acr-disable-authentication-as-arm-quick-action
+
+***
+Disables the legacy 'authentication as ARM' feature for the Azure Container Registry (ACR).
+
+#### Base Command
+
+`azure-acr-disable-authentication-as-arm-quick-action`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID. | Required |
+| resource_group_name | The resource group name. | Required |
+| registry_name | The name of the container registry. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.ACR.id | String | The resource ID. |
+| Azure.ACR.identity | Unknown | The identity of the container registry. |
+| Azure.ACR.location | String | The location of the resource. |
+| Azure.ACR.name | String | The name of the resource. |
+| Azure.ACR.properties.adminUserEnabled | Boolean | The value that indicates whether the admin user is enabled. |
+| Azure.ACR.properties.anonymousPullEnabled | Boolean | Enables registry-wide pull from unauthenticated clients. |
+| Azure.ACR.properties.creationDate | String | The creation date of the container registry in ISO8601 format. |
+| Azure.ACR.properties.dataEndpointEnabled | Boolean | Enable a single data endpoint per region for serving data. |
+| Azure.ACR.properties.dataEndpointHostNames | Unknown | List of host names that will serve data when dataEndpointEnabled is true. |
+| Azure.ACR.properties.encryption | Unknown | The encryption settings of container registry. |
+| Azure.ACR.properties.loginServer | String | The URL that can be used to log into the container registry. |
+| Azure.ACR.properties.networkRuleBypassOptions | String | Whether to allow trusted Azure services to access a network restricted registry. |
+| Azure.ACR.properties.networkRuleSet | Unknown | The network rule set for a container registry. |
+| Azure.ACR.properties.policies | Unknown | The policies for a container registry. |
+| Azure.ACR.properties.privateEndpointConnections | Unknown | List of private endpoint connections for a container registry. |
+| Azure.ACR.properties.provisioningState | String | The provisioning state of the container registry when the operation was called. |
+| Azure.ACR.properties.publicNetworkAccess | String | Whether or not public network access is allowed for the container registry. |
+| Azure.ACR.properties.status | Unknown | The status of the container registry at the time the operation was called. |
+| Azure.ACR.properties.zoneRedundancy | String | Whether or not zone redundancy is enabled for this container registry. |
+| Azure.ACR.sku | Unknown | The SKU of the container registry. |
+| Azure.ACR.systemData | Unknown | Metadata pertaining to creation and last modification of the resource. |
+| Azure.ACR.tags | Unknown | The tags of the resource. |
+| Azure.ACR.type | String | The type of the resource. |
+
+### azure-acr-disable-anonymous-pull-quick-action
+
+***
+Disables anonymous pull access for the Azure Container Registry (ACR), requiring clients to authenticate before pulling images.
+
+#### Base Command
+
+`azure-acr-disable-anonymous-pull-quick-action`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID. | Required |
+| resource_group_name | The resource group name. | Required |
+| registry_name | The name of the container registry. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.ACR.id | String | The resource ID. |
+| Azure.ACR.identity | Unknown | The identity of the container registry. |
+| Azure.ACR.location | String | The location of the resource. |
+| Azure.ACR.name | String | The name of the resource. |
+| Azure.ACR.properties.adminUserEnabled | Boolean | The value that indicates whether the admin user is enabled. |
+| Azure.ACR.properties.anonymousPullEnabled | Boolean | Enables registry-wide pull from unauthenticated clients. |
+| Azure.ACR.properties.creationDate | String | The creation date of the container registry in ISO8601 format. |
+| Azure.ACR.properties.dataEndpointEnabled | Boolean | Enable a single data endpoint per region for serving data. |
+| Azure.ACR.properties.dataEndpointHostNames | Unknown | List of host names that will serve data when dataEndpointEnabled is true. |
+| Azure.ACR.properties.encryption | Unknown | The encryption settings of container registry. |
+| Azure.ACR.properties.loginServer | String | The URL that can be used to log into the container registry. |
+| Azure.ACR.properties.networkRuleBypassOptions | String | Whether to allow trusted Azure services to access a network restricted registry. |
+| Azure.ACR.properties.networkRuleSet | Unknown | The network rule set for a container registry. |
+| Azure.ACR.properties.policies | Unknown | The policies for a container registry. |
+| Azure.ACR.properties.privateEndpointConnections | Unknown | List of private endpoint connections for a container registry. |
+| Azure.ACR.properties.provisioningState | String | The provisioning state of the container registry when the operation was called. |
+| Azure.ACR.properties.publicNetworkAccess | String | Whether or not public network access is allowed for the container registry. |
+| Azure.ACR.properties.status | Unknown | The status of the container registry when the operation was called. |
+| Azure.ACR.properties.zoneRedundancy | String | Whether or not zone redundancy is enabled for this container registry. |
+| Azure.ACR.sku | Unknown | The SKU of the container registry. |
+| Azure.ACR.systemData | Unknown | Metadata pertaining to creation and last modification of the resource. |
+| Azure.ACR.tags | Unknown | The tags of the resource. |
+| Azure.ACR.type | String | The type of the resource. |
+
+### azure-storage-blob-enable-soft-delete-quick-action
+
+***
+Enables blob soft delete for the storage account to retain deleted blobs for 30 days.
+
+#### Base Command
+
+`azure-storage-blob-enable-soft-delete-quick-action`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID. | Required |
+| resource_group_name | The resource group name. | Required |
+| account_name | Name of the storage account. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.StorageAccountBlobServiceProperties.id | String | The resource ID. |
+| Azure.StorageAccountBlobServiceProperties.name | String | The name of the esource. |
+| Azure.StorageAccountBlobServiceProperties.type | String | The type of the resource. |
+| Azure.StorageAccountBlobServiceProperties.properties.cors | String | Specifies CORS rules for the Blob service. |
+| Azure.StorageAccountBlobServiceProperties.properties.defaultServiceVersion | Date | The default version for requests to the blob service if an incoming request's version is not specified. Possible values include version 2008-10-27 and and all later versions. |
+| Azure.StorageAccountBlobServiceProperties.properties.deleteRetentionPolicy | unknown | The service properties for soft delete. |
+| Azure.StorageAccountBlobServiceProperties.properties.isVersioningEnabled | Boolean | If set to true, enables versioning. |
+| Azure.StorageAccountBlobServiceProperties.properties.changeFeed | unknown | The blob service properties for change feed events. |
+| Azure.StorageAccountBlobServiceProperties.sku.name | String | The SKU name. |
+| Azure.StorageAccountBlobServiceProperties.sku.tier | String | The SKU tier. |
+
+### azure-disable-public-private-access-vm-disk-quick-action
+
+***
+Disables all public and private network access for the managed disk.
+
+#### Base Command
+
+`azure-disable-public-private-access-vm-disk-quick-action`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID. | Required |
+| resource_group_name | The resource group name. | Required |
+| disk_name | Name of the managed disk. Supported characters for the name are a-z, A-Z, 0-9, _ and -. The maximum name length is 80 characters. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.Disk.id | String | Resource ID of the disk. |
+| Azure.Disk.name | String | Name of the disk. |
+| Azure.Disk.type | String | Type of the resource. |
+| Azure.Disk.location | String | Location of the disk. |
+| Azure.Disk.tags | unknown | Resource tags. |
+| Azure.Disk.managedBy | String | ARM ID of the resource that manages the disk. |
+| Azure.Disk.sku | unknown | The name of the disk SKU. |
+| Azure.Disk.zones | unknown | A list of availability zones. |
+| Azure.Disk.properties.timeCreated | String | The time when the disk was created. |
+| Azure.Disk.properties.diskSizeGB | Number | Size of the disk in GB. |
+| Azure.Disk.properties.diskIopsReadWrite | Number | The number of IOPS allowed for this disk. |
+| Azure.Disk.properties.diskMBpsReadWrite | Number | The bandwidth allowed for this disk in MBps. |
+| Azure.Disk.properties.diskIOPSReadOnly | Number | The number of read-only IOPS for this disk. |
+| Azure.Disk.properties.diskMBpsReadOnly | Number | The read-only bandwidth for this disk in MBps. |
+| Azure.Disk.properties.diskSizeBytes | Number | The size of the disk in bytes. |
+| Azure.Disk.properties.networkAccessPolicy | String | Policy for accessing the disk via network. |
+| Azure.Disk.properties.publicNetworkAccess | String | Policy for export on the disk. |
+| Azure.Disk.properties.burstingEnabled | Boolean | Whether bursting is enabled on the disk. |
+| Azure.Disk.properties.optimization | String | The disk optimization setting. |
+| Azure.Disk.properties.diskState | String | The current state of the disk. |
+| Azure.Disk.properties.supportedCapabilities | unknown | Supported capabilities of the disk. |
+| Azure.Disk.properties.supportedPerformanceTiers | unknown | Supported performance tiers of the disk. |
+| Azure.Disk.properties.supportedDiskTypes | unknown | Supported disk types for the disk. |
+| Azure.Disk.properties.provisioningState | unknown | The provisioning state of the disk. |
+| Azure.Disk.properties.timeModified | unknown | The time when the disk was last modified. |
+| Azure.Disk.properties.diskAccessId | String | The ARM ID of the DiskAccess resource. |
+| Azure.Disk.properties.networkProfile | unknown | The network profile of the disk. |
+| Azure.Disk.properties.creationData | unknown | Disk creation data. |
+| Azure.Disk.properties.encryption | unknown | Encryption settings for the disk. |
+| Azure.Disk.properties.encryptionSettingsCollection | unknown | A collection of encryption settings. |
+| Azure.Disk.properties.encryptionType | String | The type of key used to encrypt the data on the disk. |
+| Azure.Disk.properties.securityProfile | unknown | Security profile for the disk. |
+| Azure.Disk.properties.tieringProfile | unknown | Tiering profile for the disk. |
+| Azure.Disk.properties.supportedTierList | unknown | List of supported tiers for the disk. |
+| Azure.Disk.properties.availabilityZone | String | Availability zone of the disk. |
+| Azure.Disk.properties.dataAccessAuthMode | String | Additional authentication requirements when exporting or uploading to a disk. |
+| Azure.Disk.properties.osType | String | The operating system type. |
+| Azure.Disk.properties.hyperVGeneration | String | The HyperVGenerationType of the virtual machine. |
+| Azure.Disk.properties.lastOwnershipUpdateTime | String | The last time ownership of the disk was updated. |
