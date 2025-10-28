@@ -5041,7 +5041,7 @@ def test_get_policy_with_minimal_parameters(mocker):
     # Assert
     assert isinstance(result, CommandResults)
     assert result.outputs_prefix == "AWS.Lambda.Policy"
-    assert result.outputs_key_field == ["FunctionArn", "FunctionName"]
+    assert result.outputs_key_field == ["FunctionArn", "FunctionName", "AccountId"]
     assert result.outputs["FunctionArn"] == "FunctionArn"
     assert result.outputs["RevisionId"] == "RevisionId"
     mock_client.get_policy.assert_called_once_with(FunctionName="test-function")
@@ -5138,4 +5138,4 @@ def test_get_policy_command_result_outputs_prefix(mocker):
     # Assert
     assert isinstance(result, CommandResults)
     assert result.outputs_prefix == "AWS.Lambda.Policy"
-    assert result.outputs_key_field == ["FunctionArn", "FunctionName"]
+    assert result.outputs_key_field == ["FunctionArn", "FunctionName", "AccountId"]
