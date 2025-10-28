@@ -2,7 +2,7 @@ args:
 - name: ip_address
   required: true
   description: The ip address of the network adapters to look for.
-comment: Use this script to resolve the owner and related configuration items by searching the ServiceNow CMDB network adapter table using a specified IP address.
+comment: This script resolves the owner and related configuration items of a network adapter by searching the ServiceNow CMDB network adapter table using a specified IP address.
 outputs:
 - contextPath: ServiceNowEnrichment.summary
   description: A brief summary of the results of enrichment.
