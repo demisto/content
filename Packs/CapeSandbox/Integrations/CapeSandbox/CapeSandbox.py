@@ -945,7 +945,7 @@ def cape_url_submit_command(
 
     if not task_ids:
         raise DemistoException(
-            f"No task id returned from CAPE. Response: {submit_resp}"
+            f"No task id returned from CAPE. Response: {submit_resp}."
         )
 
     return initiate_polling(

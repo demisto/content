@@ -11,7 +11,7 @@ configuration:
     additionalinfo: Base URL of the CAPE Sandbox.
   - name: api_token
     display: API token
-    type: 4
+    type: 9
     required: false
     section: Connect
     hiddenusername: true
