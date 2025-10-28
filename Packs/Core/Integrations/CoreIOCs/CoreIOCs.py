@@ -8,11 +8,9 @@ from CommonServerPython import *
 from CoreIRApiModule import *
 from dateparser import parse
 from google.cloud import storage  # type: ignore[attr-defined]
-from urllib3 import disable_warnings
 
 from CommonServerUserPython import *
 
-disable_warnings()
 DEMISTO_TIME_FORMAT: str = "%Y-%m-%dT%H:%M:%SZ"
 
 core_types_to_demisto: dict = {"DOMAIN_NAME": "Domain", "HASH": "File", "IP": "IP"}
@@ -242,7 +240,8 @@ def sync(client: Client):
         create_file_sync(temp_file_path)
         upload_file_to_bucket(temp_file_path)
         requests_kwargs = get_requests_kwargs(_json={"path_to_file": temp_file_path})
-        client.http_request(url_suffix="sync_tim_iocs", requests_kwargs=requests_kwargs)
+        res = client.http_request(url_suffix="sync_tim_iocs", requests_kwargs=requests_kwargs)
+        demisto.debug(f"{res=}")
     finally:
         os.remove(temp_file_path)
     set_integration_context(
@@ -257,7 +256,7 @@ def sync(client: Client):
 
 def iocs_to_keep(client: Client):
     if datetime.utcnow().hour not in range(1, 3):
-        raise DemistoException("iocs_to_keep runs only between 01:00 and 03:00.")
+        raise DemistoException("iocs_to_keep runs only between 01:00 and 03:00 UTC.")
     temp_file_path: str = get_temp_file()
     try:
         create_file_iocs_to_keep(temp_file_path)
@@ -435,7 +434,6 @@ def get_sync_file():
 def upload_file_to_bucket(file_path: str) -> None:
     gcpconf_project_id = demisto.callingContext["context"]["ProjectID"]
     gcpconf_papi_bucket = demisto.callingContext["context"]["PAPIBucket"]
-    return_results(f"{gcpconf_project_id=}, {gcpconf_papi_bucket=}")
     try:
         client = storage.Client(project=gcpconf_project_id)
         bucket = client.get_bucket(gcpconf_papi_bucket)
