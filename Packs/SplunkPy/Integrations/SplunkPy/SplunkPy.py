@@ -1729,10 +1729,10 @@ def get_last_update_in_splunk_time(last_update):
 def format_splunk_note_for_xsoar(note: dict) -> str:
     """Formats a Splunk note."""
 
-    raw_title = note.get("title", "")
+    raw_title = note.get("title") or ""
     decoded_title = urllib.parse.unquote(raw_title)
 
-    raw_content = note.get("content", "")
+    raw_content = note.get("content") or ""
     decoded_content = urllib.parse.unquote(raw_content)
 
     # Add a blank line after the title only if there's content

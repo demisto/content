@@ -1,8 +1,8 @@
 {
     "name": "Generic Export Indicators Service",
-    "description": "Use this pack to generate a list based on your Threat Intel Library, and export it to ANY other product in your network, such as your firewall, agent or SIEM. This pack is built for ongoing distribution of indicators from XSOAR to other products in the network, by creating an endpoint with a list of indicators that can be pulled by external vendors.",
+    "description": "Use this pack to generate a list based on your Threat Intel Library, and export it to any product in your network, such as firewalls, agents or SIEMs. This pack supports ongoing distribution of indicators from XSOAR to other products in the network, by creating an endpoint with a list of indicators that can be pulled by external vendors.",
     "support": "xsoar",
-    "currentVersion": "3.3.18",
+    "currentVersion": "3.3.20",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -33,6 +33,7 @@
         "X3",
         "X5",
         "ENT_PLUS",
-        "agentix"
+        "agentix",
+        "xsiam"
     ]
 }

@@ -30,6 +30,11 @@
         "ENT_PLUS",
         "asm",
         "exposure_management",
-        "agentix"
+        "agentix",
+        "cloud",
+        "cloud_runtime_security",
+        "cloud_posture",
+        "xsiam",
+        "edr"
     ]
 }
