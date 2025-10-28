@@ -449,7 +449,8 @@ def get_issue_recommendations_command(client: Client, args: dict) -> CommandResu
     request_data = build_webapp_request_data(
         table_name="ALERTS_VIEW_TABLE",
         filter_fields=filter_fields,
-        sort_field="detection_timestamp",
+        limit=1,
+        sort_field="source_insert_ts",
         sort_order="DESC",
         on_demand_fields=[],
     )
@@ -473,7 +474,7 @@ def get_issue_recommendations_command(client: Client, args: dict) -> CommandResu
 
     issue = issue_data[0]
     recommendation = {
-        "issue_id": issue.get("alert_id"),
+        "issue_id": issue.get("internal_id"),
         "issue_name": issue.get("alert_name"),
         "severity": issue.get("severity"),
         "description": issue.get("alert_description"),
