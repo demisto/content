@@ -996,7 +996,7 @@ def get_threat_objects_command(client: Client, args: dict, feed_tags: list = [],
     )
 
 
-def main():
+def main():  # pragma: no cover
     """
     The main function parses the params and runs the command functions
     """
