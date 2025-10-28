@@ -31,12 +31,12 @@ ANY.RUN Sandbox is an online interactive sandbox for malware analysis, a tool fo
 4. Insert ANY.RUN API-KEY into the **Password** parameter
 5. Click **Test** to validate the URLs, token, and connection.
 
-| **Parameter**    | **Description**                                                                                                                                                | **Required** |
-|------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
-| Password         | ANY.RUN API-KEY without prefix                                                                                                                               | True |
-| Server's FQDN    | Go to Settings &amp; Info → Settings → Integrations → API Keys. Click Copy API URL. Your FQDN is saved in the clipboard. Inline it without http/https protocol | True |
-| XSOAR API-KEY ID | In the API Keys table, locate the ID field. Note your corresponding ID number                                                                                  | True |
-| XSOAR API-KEY    | XSOAR API-KEY                                                                                                                                                  | True |
+| **Parameter**                                                                                                   | **Description**                                                                                                                                                 | **Required** |
+|-----------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
+| Password                                                                                                        | ANY.RUN API-KEY without prefix.                                                                                                                                 | True |
+| Server's FQDN                                                                                                   | Go to Settings &amp; Info → Settings → Integrations → API Keys. Click Copy API URL. Your FQDN is saved in the clipboard. Inline it without http/https protocol. | True |
+| [XSOAR API-KEY ID](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR-8-API/Get-your-Cortex-XSOAR-API-key-ID)                                                                                            | In the API Keys table, locate the ID field. Note your corresponding ID number.                                                                                  | True |
+| [XSOAR API-KEY](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR-8-API/Get-your-Cortex-XSOAR-API-key-ID) | XSOAR API-KEY.                                                                                                                                                  | True |
 
 ## Commands
 

@@ -1,6 +1,7 @@
 category: Data Enrichment & Threat Intelligence
 sectionOrder:
 - Connect
+- Collect
 commonfields:
   id: ANY.RUN TI Lookup
   version: -1
@@ -10,6 +11,31 @@ configuration:
   required: true
   type: 9
   section: Connect
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+  section: Connect
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  section: Connect
+  required: false
+- name: integrationReliability
+  additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: C - Fairly reliable
+  display: Source Reliability
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: true
+  type: 15
+  section: Collect
 description: TI Lookup is a searchable database of IOCs, IOAs, IOBs, and events for threat hunting and a service for browsing malicious files by their content.
 display: ANY.RUN TI Lookup
 name: ANY.RUN TI Lookup
@@ -719,7 +745,203 @@ script:
     - contextPath: ANYRUN.Lookup.summary.details.count
       description: 'Count of iocs/objects by threat level.'
       type: Number
-  dockerimage: demisto/anyrun-sdk:1.0.0.3970895
+  - arguments:
+      - default: true
+        description: IP address to query.
+        isArray: true
+        name: ip
+        required: true
+    description: Check IP reputation (when information is available, returns a JSON with details).
+    name: ip
+    outputs:
+      - contextPath: IP.Address
+        description: The IP address.
+        type: String
+      - contextPath: IP.Port
+        description: Ports that are associated with the IP.
+        type: String
+      - contextPath: IP.Tags
+        description: Tags related the IP use (hosting, proxy, tor, vpn).
+        type: String
+      - contextPath: IP.FeedRelatedIndicators.value
+        description: Names of indicators associated with the IP.
+        type: String
+      - contextPath: IP.FeedRelatedIndicators.type
+        description: Types of indicators associated with the IP.
+        type: String
+      - contextPath: IP.Country
+        description: The IP country.
+        type: String
+      - contextPath: IP.ASOwner
+        description: The autonomous system owner of the IP.
+        type: String
+      - contextPath: IP.LastModified
+        description: The date that the IP was last updated.
+        type: Date
+      - contextPath: DBotScore.Indicator
+        description: The indicator that was tested.
+        type: String
+      - contextPath: DBotScore.Score
+        description: The actual score.
+        type: Number
+      - contextPath: DBotScore.Reliability
+        description: How reliable the score is (for example, "C - fairly reliable").
+        type: String
+      - contextPath: DBotScore.Type
+        description: The indicator type.
+        type: String
+      - contextPath: DBotScore.Vendor
+        description: The vendor used to calculate the score.
+        type: String
+  - arguments:
+      - default: true
+        description: Domain name to query.
+        isArray: true
+        name: domain
+        required: true
+    description: Check Domain reputation (when information is available, returns a JSON with details).
+    name: domain
+    outputs:
+      - contextPath: Domain.Name
+        description: The Domain name.
+        type: String
+      - contextPath: Domain.Port
+        description: Ports that are associated with the Domain.
+        type: String
+      - contextPath: Domain.Tags
+        description: Tags related the Domain use (hosting, proxy, tor, vpn).
+        type: String
+      - contextPath: Domain.FeedRelatedIndicators.value
+        description: Names of indicators associated with the Domain.
+        type: String
+      - contextPath: Domain.FeedRelatedIndicators.type
+        description: Types of indicators associated with the Domain.
+        type: String
+      - contextPath: Domain.Country
+        description: The Domain country.
+        type: String
+      - contextPath: Domain.ASOwner
+        description: The autonomous system owner of the Domain.
+        type: String
+      - contextPath: Domain.LastModified
+        description: The date that the Domain was last updated.
+        type: Date
+      - contextPath: DBotScore.Indicator
+        description: The indicator that was tested.
+        type: String
+      - contextPath: DBotScore.Score
+        description: The actual score.
+        type: Number
+      - contextPath: DBotScore.Reliability
+        description: How reliable the score is (for example, "C - fairly reliable").
+        type: String
+      - contextPath: DBotScore.Type
+        description: The indicator type.
+        type: String
+      - contextPath: DBotScore.Vendor
+        description: The vendor used to calculate the score.
+        type: String
+  - arguments:
+      - default: true
+        description: URL to query.
+        isArray: true
+        name: url
+        required: true
+    description: Check URL reputation (when information is available, returns a JSON with details).
+    name: url
+    outputs:
+      - contextPath: URL.Data
+        description: The URL name.
+        type: String
+      - contextPath: URL.Port
+        description: Ports that are associated with the URL.
+        type: String
+      - contextPath: URL.Tags
+        description: Tags related the URL use (hosting, proxy, tor, vpn).
+        type: String
+      - contextPath: URL.ASOwner
+        description: The autonomous system owner of the IP.
+        type: String
+      - contextPath: URL.LastModified
+        description: The date that the IP was last updated.
+        type: Date
+      - contextPath: URL.FeedRelatedIndicators.value
+        description: Names of indicators associated with the URL.
+        type: String
+      - contextPath: URL.FeedRelatedIndicators.type
+        description: Types of indicators associated with the URL.
+        type: String
+      - contextPath: URL.Country
+        description: The URL country.
+        type: String
+      - contextPath: DBotScore.Indicator
+        description: The indicator that was tested.
+        type: String
+      - contextPath: DBotScore.Score
+        description: The actual score.
+        type: Number
+      - contextPath: DBotScore.Reliability
+        description: How reliable the score is (for example, "C - fairly reliable").
+        type: String
+      - contextPath: DBotScore.Type
+        description: The indicator type.
+        type: String
+      - contextPath: DBotScore.Vendor
+        description: The vendor used to calculate the score.
+        type: String
+  - arguments:
+      - default: true
+        description: File to query.
+        isArray: true
+        name: file
+        required: true
+    description: Check File reputation (when information is available, returns a JSON with details).
+    name: file
+    outputs:
+      - contextPath: File.Name
+        description: The File name.
+        type: String
+      - contextPath: File.Extension
+        description: The File name.
+        type: String
+      - contextPath: File.Path
+        description: The File path.
+        type: String
+      - contextPath: File.SHA256
+        description: The SHA256 hash of the file.
+      - contextPath: File.SHA1
+        description: The SHA1 hash of the file.
+      - contextPath: File.MD5
+        description: The MD5 hash of the file.
+        type: String
+      - contextPath: File.SSDeep
+        description: The ssdeep hash of the file (same as displayed in file entries).
+        type: String
+      - contextPath: File.Tags
+        description: Tags related the File use (hosting, proxy, tor, vpn).
+        type: String
+      - contextPath: File.FeedRelatedIndicators.value
+        description: Names of indicators associated with the File.
+        type: String
+      - contextPath: File.FeedRelatedIndicators.type
+        description: Types of indicators associated with the File.
+        type: String
+      - contextPath: DBotScore.Indicator
+        description: The indicator that was tested.
+        type: String
+      - contextPath: DBotScore.Score
+        description: The actual score.
+        type: Number
+      - contextPath: DBotScore.Reliability
+        description: How reliable the score is (for example, "C - fairly reliable").
+        type: String
+      - contextPath: DBotScore.Type
+        description: The indicator type.
+        type: String
+      - contextPath: DBotScore.Vendor
+        description: The vendor used to calculate the score.
+        type: String
+  dockerimage: demisto/anyrun-sdk:1.0.0.5185978
   subtype: python3
   runonce: false
   script: '-'
