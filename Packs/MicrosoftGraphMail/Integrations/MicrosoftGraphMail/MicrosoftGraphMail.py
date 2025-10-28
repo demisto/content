@@ -33,14 +33,17 @@ class MsGraphMailClient(MsGraphMailBaseClient):
             last_run=last_run, first_fetch=self._first_fetch_interval, look_back=self._look_back, date_format=API_DATE_FORMAT
         )
 
-        demisto.debug(f"{start_fetch_time=}, {end_fetch_time=}")
+        demisto.debug(f"MicrosoftGraphMail - {start_fetch_time=}, {end_fetch_time=}")
 
         exclude_ids = list(set(last_run.get("LAST_RUN_IDS", [])))  # remove any possible duplicates
+        demisto.debug(f"MicrosoftGraphMail - Exclude ids: {exclude_ids}")
 
         last_run_folder_path = last_run.get("LAST_RUN_FOLDER_PATH")
+        demisto.debug(f"MicrosoftGraphMail - {last_run_folder_path=}")
         folder_path_changed = last_run_folder_path != self._folder_to_fetch
 
         last_run_account = last_run.get("LAST_RUN_ACCOUNT")
+        demisto.debug(f"MicrosoftGraphMail - {last_run_account=}")
         mailbox_to_fetch_changed = last_run_account != self._mailbox_to_fetch
 
         if folder_path_changed or mailbox_to_fetch_changed:
@@ -48,16 +51,18 @@ class MsGraphMailClient(MsGraphMailBaseClient):
             folder_id = self._get_folder_by_path(
                 self._mailbox_to_fetch, self._folder_to_fetch, overwrite_rate_limit_retry=True
             ).get("id")
-            demisto.info("detected file path change, ignored LAST_RUN_FOLDER_ID from last run.")
+            demisto.info("MicrosoftGraphMail - detected file path change, ignored LAST_RUN_FOLDER_ID from last run.")
+            demisto.debug(f"MicrosoftGraphMail - {folder_id=}")
         else:
             # LAST_RUN_FOLDER_ID is stored in order to avoid calling _get_folder_by_path method in each fetch
             folder_id = last_run.get("LAST_RUN_FOLDER_ID")
+            demisto.debug(f"MicrosoftGraphMail - folder id from last run: {folder_id=}")
 
         fetched_emails, exclude_ids = self._fetch_last_emails(
             folder_id=folder_id, last_fetch=start_fetch_time, exclude_ids=exclude_ids
         )
-
-        demisto.debug(f'fetched email IDs before removing duplications - {[email.get("id") for email in fetched_emails]}')
+        demisto.debug(f"MicrosoftGraphMail - fetched {len(fetched_emails)} emails")
+        demisto.debug(f'MicrosoftGraphMail - fetched email IDs before removing duplications - {[email.get("id") for email in fetched_emails]}')
 
         # remove duplicate incidents which were already fetched
         incidents = filter_incidents_by_duplicates_and_limit(
@@ -67,7 +72,7 @@ class MsGraphMailClient(MsGraphMailBaseClient):
             id_field="ID",
         )
 
-        demisto.debug(f'fetched email IDs after removing duplications - {[email.get("ID") for email in incidents]}')
+        demisto.debug(f'MicrosoftGraphMail - fetched email IDs after removing duplications - {[email.get("ID") for email in incidents]}')
 
         next_run = update_last_run_object(
             last_run=last_run,
@@ -184,14 +189,22 @@ def main():  # pragma: no cover
 
         command = demisto.command()
         LOG(f"Command being called is {command}")
+        demisto.debug("MicrosoftGraphMail - Command being called is {command}")
 
         if command == "test-module":
             client.test_connection()
             return_results("ok")
         if command == "fetch-incidents":
+            demisto.debug("MicrosoftGraphMail - Fetching incidents")
             next_run, incidents = client.fetch_incidents(demisto.getLastRun())
+            demisto.debug("MicrosoftGraphMail - Completed fetching incidents")
+            demisto.debug(f"MicrosoftGraphMail - Fetched {len(incidents)} incidents")
+            demisto.debug("MicrosoftGraphMail - Setting last run")
+            demisto.debug(f"MicrosoftGraphMail - Next run: {next_run}")
             demisto.setLastRun(next_run)
+            demisto.debug("MicrosoftGraphMail - Completed setting last run, setting incidents")
             demisto.incidents(incidents)
+            demisto.debug("MicrosoftGraphMail - Completed setting incidents")
         elif command in ("msgraph-mail-list-emails", "msgraph-mail-search-email"):
             return_results(list_mails_command(client, args))
         elif command == "msgraph-mail-create-draft":
@@ -242,3 +255,5 @@ def main():  # pragma: no cover
 
 if __name__ in ["builtins", "__main__"]:
     main()
+    demisto.debug("MicrosoftGraphMail - Completed")
+

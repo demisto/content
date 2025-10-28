@@ -284,33 +284,38 @@ class MsGraphMailBaseClient(MicrosoftClient):
         :return: List of uploaded to War Room data, uploaded file path and name
         :rtype: ``list``
         """
+        demisto.debug(f"MicrosoftGraphMailApiModule._get_email_attachments: {message_id=}")
         user_id = user_id or self._mailbox_to_fetch
         attachment_results: list = []
         attachments = self.http_request(
             "Get", f"users/{user_id}/messages/{message_id}/attachments", overwrite_rate_limit_retry=overwrite_rate_limit_retry
         ).get("value", [])
 
+        demisto.debug(f"MicrosoftGraphMailApiModule._get_email_attachments: retrieved {len(attachments)} attachments. handling")
         for attachment in attachments:
             attachment_type = attachment.get("@odata.type", "")
             attachment_content_id = attachment.get("contentId")
             attachment_is_inline = attachment.get("isInline")
             attachment_name = attachment.get("name", "untitled_attachment")
+            demisto.debug(f"MicrosoftGraphMailApiModule._get_email_attachments: handling attachment {attachment_name=}")
             if attachment_is_inline and not self.legacy_name and attachment_content_id and attachment_content_id != "None":
                 attachment_name = f"{attachment_content_id}-attachmentName-{attachment_name}"
             if not attachment_name.isascii():
                 try:
-                    demisto.debug(f"Trying to decode the attachment file name: {attachment_name}")
+                    demisto.debug(f"MicrosoftGraphMailApiModule._get_email_attachments: Trying to decode the attachment file name: {attachment_name}")
                     attachment_name = b64_decode(attachment_name)  # type: ignore
                 except Exception as e:
-                    demisto.debug(f"Could not decode the {attachment_name=}: error: {e}")
+                    demisto.debug(f"MicrosoftGraphMailApiModule._get_email_attachments: Could not decode the {attachment_name=}: error: {e}")
 
             if attachment_type == self.FILE_ATTACHMENT:
                 try:
+                    demisto.debug(f"MicrosoftGraphMailApiModule._get_email_attachments: Decoding base64 file attachment")
                     attachment_content = b64_decode(attachment.get("contentBytes", ""))
                 except Exception as e:  # skip the uploading file step
-                    demisto.info(f"failed in decoding base64 file attachment with error {e!s}")
+                    demisto.info(f"MicrosoftGraphMailApiModule._get_email_attachments: failed in decoding base64 file attachment with error {e!s}")
                     continue
             elif attachment_type == self.ITEM_ATTACHMENT:
+                demisto.debug(f"MicrosoftGraphMailApiModule._get_email_attachments: Handling item attachment")
                 attachment_id = attachment.get("id", "")
                 attachment_content = self._get_attachment_mime(message_id, attachment_id, user_id, overwrite_rate_limit_retry)
                 attachment_name = f"{attachment_name}.eml"
@@ -318,7 +323,8 @@ class MsGraphMailBaseClient(MicrosoftClient):
                 # skip attachments that are not of the previous types (type referenceAttachment)
                 continue
             # upload the item/file attachment to War Room
-            demisto.debug(f"Uploading attachment file: {attachment_name=}, {attachment_content=}")
+            demisto.debug(f"MicrosoftGraphMailApiModule._get_email_attachments: Uploading attachment file: {attachment_name=}, {attachment_content=}")
+            demisto.debug("MicrosoftGraphMailApiModule._get_email_attachments uploading file")
             GraphMailUtils.upload_file(attachment_name, attachment_content, attachment_results)
 
         demisto.debug(f"Final attachment results = {attachment_results}")
@@ -621,6 +627,7 @@ class MsGraphMailBaseClient(MicrosoftClient):
         Returns:
             dict: API response
         """
+        demisto.debug(f"MicrosoftGraphMailApiModule.update_email_read_status: {read=}, {user_id=}, {message_id=}, {folder_id=}")
         user_id = user_id or self._mailbox_to_fetch
         folder_path = f"/{GraphMailUtils.build_folders_path(folder_id)}" if folder_id else ""
 
@@ -830,7 +837,7 @@ class MsGraphMailBaseClient(MicrosoftClient):
         :return: Fetched emails and exclude ids list that contains the new ids of fetched emails
         :rtype: ``list`` and ``list``
         """
-        demisto.debug(f"Fetching emails since {last_fetch}")
+        demisto.debug(f"MicrosoftGraphMailApiModule._fetch_last_emails: Fetching emails since {last_fetch}")
         fetched_emails = self.get_emails(
             exclude_ids=exclude_ids,
             last_fetch=last_fetch,
@@ -838,17 +845,20 @@ class MsGraphMailBaseClient(MicrosoftClient):
             overwrite_rate_limit_retry=True,
             mark_emails_as_read=self._mark_fetched_read,
         )
+        demisto.debug(f"MicrosoftGraphMailApiModule._fetch_last_emails: Fetched {len(fetched_emails)} emails since {last_fetch}")
 
         fetched_emails_ids = {email.get("id") for email in fetched_emails}
+        demisto.debug(f"MicrosoftGraphMailApiModule._fetch_last_emails: Fetched emails ids: {fetched_emails_ids=}")
         exclude_ids_set = set(exclude_ids)
         if not fetched_emails or not (filtered_new_email_ids := fetched_emails_ids - exclude_ids_set):
             # no new emails
-            demisto.debug(f"No new emails: {fetched_emails_ids=}. {exclude_ids_set=}")
+            demisto.debug(f"MicrosoftGraphMailApiModule._fetch_last_emails: No new emails: {fetched_emails_ids=}. {exclude_ids_set=}")
             return [], exclude_ids
 
         new_emails = [mail for mail in fetched_emails if mail.get("id") in filtered_new_email_ids][: self._emails_fetch_limit]
-
+        demisto.debug(f"MicrosoftGraphMailApiModule._fetch_last_emails: {new_emails=}")
         last_email_time = new_emails[-1].get("receivedDateTime")
+        demisto.debug(f"MicrosoftGraphMailApiModule._fetch_last_emails: {last_email_time=}")
         if last_email_time == last_fetch:
             # next fetch will need to skip existing exclude_ids
             excluded_ids_for_nextrun = exclude_ids + [email.get("id") for email in new_emails]
@@ -898,6 +908,7 @@ class MsGraphMailBaseClient(MicrosoftClient):
         )
 
         if mark_emails_as_read:
+            demisto.debug("Marking emails as read")
             for email in emails_as_html:
                 if email.get("id"):
                     self.update_email_read_status(
@@ -909,13 +920,17 @@ class MsGraphMailBaseClient(MicrosoftClient):
     @staticmethod
     def get_emails_as_text_and_html(emails_as_html, emails_as_text):
         text_emails_ids = {email.get("id"): email for email in emails_as_text}
+        demisto.debug(f"MicrosoftGraphMailApiModule.get_emails_as_text_and_html: {len(emails_as_html)} emails as html, {len(emails_as_text)} emails as text")
         emails_as_html_and_text = []
 
+        demisto.debug(f"MicrosoftGraphMailApiModule.get_emails_as_text_and_html iterating over {len(emails_as_html)} emails as html")
         for email_as_html in emails_as_html:
             html_email_id = email_as_html.get("id")
+            demisto.debug(f"MicrosoftGraphMailApiModule.get_emails_as_text_and_html handling email {html_email_id=}")
             text_email_data = text_emails_ids.get(html_email_id) or {}
             if not text_email_data:
-                demisto.info(f"There is no matching text email to html email-ID {html_email_id}")
+                ## TODO, shouldnt we stop execution if there is no matching text email to html email-ID?
+                demisto.info(f"MicrosoftGraphMailApiModule.get_emails_as_text_and_html There is no matching text email to html email-ID {html_email_id}")
 
             body_as_text = text_email_data.get("body")
             if body_as_html := email_as_html.get("body"):
@@ -934,12 +949,15 @@ class MsGraphMailBaseClient(MicrosoftClient):
         email_body: tuple = email.get("body") or ()  # email body including replyTo emails.
         email_unique_body: tuple = email.get("uniqueBody") or ()  # email-body without replyTo emails.
 
+        demisto.debug(f"MicrosoftGraphMailApiModule.get_email_content_as_text_and_html: {email_body=}")
+        demisto.debug(f"MicrosoftGraphMailApiModule.get_email_content_as_text_and_html: {email_unique_body=}")
+
         # there are situations where the 'body' key won't be returned from the api response, hence taking the uniqueBody
         # in those cases for both html/text formats.
         try:
             email_content_as_html, email_content_as_text = email_body or email_unique_body
         except ValueError:
-            demisto.info(f"email body content is missing from email {email}")
+            demisto.info(f"MicrosoftGraphMailApiModule.get_email_content_as_text_and_html: email body content is missing from email {email}")
             return "", ""
 
         return email_content_as_html.get("content"), email_content_as_text.get("content")
@@ -958,24 +976,32 @@ class MsGraphMailBaseClient(MicrosoftClient):
         # in those cases for both html/text formats.
 
         def body_extractor(email, parsed_email):
+            demisto.debug(f"MicrosoftGraphMailApiModule._parse_email_as_incident.body_extractor: {email=}")
             email_content_as_html, email_content_as_text = self.get_email_content_as_text_and_html(email)
             parsed_email["Body"] = email_content_as_html if self.fetch_html_formatting else email_content_as_text
             parsed_email["Text"] = email_content_as_text
             parsed_email["BodyType"] = "html" if self.fetch_html_formatting else "text"
+            demisto.debug(f"MicrosoftGraphMailApiModule._parse_email_as_incident.body_extractor: {parsed_email=}")
 
+        demisto.debug(f"MicrosoftGraphMailApiModule._parse_email_as_incident: {email=}")
         parsed_email = GraphMailUtils.parse_item_as_dict(email, body_extractor)
+        demisto.debug(f"MicrosoftGraphMailApiModule._parse_email_as_incident: {parsed_email=}")
 
+
+        demisto.debug(f"MicrosoftGraphMailApiModule._parse_email_as_incident: handling attachments of fetched email")
         # handling attachments of fetched email
         attachments = self._get_email_attachments(
             message_id=email.get("id", ""), overwrite_rate_limit_retry=overwrite_rate_limit_retry
         )
         if attachments:
+            demisto.debug("MicrosoftGraphMailApiModule._parse_email_as_incident: adding Attachments to parsed_email")
             parsed_email["Attachments"] = attachments
 
         parsed_email["Mailbox"] = self._mailbox_to_fetch
 
         body = email.get("bodyPreview", "")
         if not body or self._display_full_email_body:
+            demisto.debug("MicrosoftGraphMailApiModule._parse_email_as_incident: fetching full email body")
             _, body = self.get_email_content_as_text_and_html(email)
 
         incident = {
@@ -987,6 +1013,8 @@ class MsGraphMailBaseClient(MicrosoftClient):
             "rawJSON": json.dumps(parsed_email),
             "ID": parsed_email.get("ID"),  # only used for look-back to identify the email in a unique way
         }
+
+        demisto.debug(f"MicrosoftGraphMailApiModule._parse_email_as_incident: incident created: {incident=}")
 
         return incident
 
@@ -1502,6 +1530,7 @@ class GraphMailUtils:
         :return: Parsed email
         :rtype: ``dict``
         """
+        demisto.debug(f"MicrosoftGraphMailApiModule.parse_item_as_dict")
         parsed_email = {parsed_key: email.get(orig_key) for (orig_key, parsed_key) in GraphMailUtils.EMAIL_DATA_MAPPING.items()}
         parsed_email["Headers"] = email.get("internetMessageHeaders", [])
         parsed_email["Sender"] = GraphMailUtils.get_recipient_address(email.get("sender", {}))
@@ -1511,12 +1540,14 @@ class GraphMailUtils:
         parsed_email["Bcc"] = list(map(GraphMailUtils.get_recipient_address, email.get("bccRecipients", [])))
 
         if body_extractor:
+            demisto.debug(f"MicrosoftGraphMailApiModule.parse_item_as_dict: executing body extractor")
             body_extractor(email, parsed_email)
         else:
             email_body = email.get("body", {}) or email.get("uniqueBody", {})
             parsed_email["Body"] = email_body.get("content", "")
             parsed_email["BodyType"] = email_body.get("contentType", "")
 
+        demisto.debug(f"MicrosoftGraphMailApiModule.parse_item_as_dict completed with {parsed_email=}")
         return parsed_email
 
     @staticmethod
