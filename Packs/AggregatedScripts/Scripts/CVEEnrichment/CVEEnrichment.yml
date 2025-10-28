@@ -21,7 +21,7 @@ If the 'brands' argument is provided, this flag is ignored and enrichment is run
   defaultValue: 'false'
   required: false
 - name: verbose
-  description: Whether to retrieve a human-readable entry for every command. When set to false, human-readable will only summarize the final result and suppress error entries from commands.
+  description: Whether to retrieve a human-readable entry for every command; if false, only the final result is summarized and error entries are suppressed.
   auto: PREDEFINED
   predefined:
   - 'true'
