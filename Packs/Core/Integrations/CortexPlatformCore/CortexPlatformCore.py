@@ -443,13 +443,12 @@ def get_issue_recommendations_command(client: Client, args: dict) -> CommandResu
 
     # Build filter to get the specific issue
     filter_fields = [
-        FilterField("alert_id", "EQ", issue_id),
+        FilterField("internal_id", "CONTAINS", issue_id),
     ]
 
     request_data = build_webapp_request_data(
-        table_name="alerts_view_table",
+        table_name="ALERTS_VIEW_TABLE",
         filter_fields=filter_fields,
-        limit=1,
         sort_field="detection_timestamp",
         sort_order="DESC",
         on_demand_fields=[],
@@ -475,9 +474,9 @@ def get_issue_recommendations_command(client: Client, args: dict) -> CommandResu
     issue = issue_data[0]
     recommendation = {
         "issue_id": issue.get("alert_id"),
-        "issue_name": issue.get("name"),
+        "issue_name": issue.get("alert_name"),
         "severity": issue.get("severity"),
-        "description": issue.get("description"),
+        "description": issue.get("alert_description"),
         "remediation": issue.get("remediation"),
         "playbook_suggestions": playbook_suggestions,
     }
