@@ -562,16 +562,17 @@ def test_preprocess_get_cases_args_limit_enforced():
 def test_create_filter_from_fields_single_value():
     """
     GIVEN:
-        A list with a single FilterField containing one value.
+        A Filter with a single Field containing one value.
     WHEN:
-        create_filter_from_fields is called.
+        Filter.to_dict() is called.
     THEN:
         A filter with a single search object is created.
     """
-    from CortexPlatformCore import create_filter_from_fields, FilterField
+    from CortexPlatformCore import Filter, FilterType
 
-    fields = [FilterField("xdm.asset.name", "EQ", ["test-asset-name"])]
-    result = create_filter_from_fields(fields)
+    filter_obj = Filter()
+    filter_obj.add_field("xdm.asset.name", FilterType.EQ, ["test-asset-name"])
+    result = filter_obj.to_dict()
 
     expected = {
         "AND": [
@@ -588,21 +589,20 @@ def test_create_filter_from_fields_single_value():
 def test_create_filter_from_fields_multiple_fields():
     """
     GIVEN:
-        A list with multiple FilterField objects with different operators.
+        A Filter with multiple Field objects with different operators.
     WHEN:
-        create_filter_from_fields is called.
+        Filter.to_dict() is called.
     THEN:
         A filter with multiple AND conditions is created.
     """
-    from CortexPlatformCore import create_filter_from_fields, FilterField
+    from CortexPlatformCore import Filter, FilterType
 
-    fields = [
-        FilterField("xdm.asset.name", "EQ", ["test-asset"]),
-        FilterField("xdm.asset.tags", "CONTAINS", ["production", "critical"]),
-        FilterField("xdm.asset.id", "EQ", ["12345"]),
-        FilterField("xdm.asset.name", "EQ", []),
-    ]
-    result = create_filter_from_fields(fields)
+    filter_obj = Filter()
+    filter_obj.add_field("xdm.asset.name", FilterType.EQ, ["test-asset"])
+    filter_obj.add_field("xdm.asset.tags", FilterType.CONTAINS, ["production", "critical"])
+    filter_obj.add_field("xdm.asset.id", FilterType.EQ, ["12345"])
+    filter_obj.add_field("xdm.asset.name", FilterType.EQ, [])
+    result = filter_obj.to_dict()
 
     expected = {
         "AND": [

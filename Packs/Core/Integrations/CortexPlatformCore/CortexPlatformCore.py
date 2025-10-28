@@ -1,6 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from CoreIRApiModule import *
+from enum import Enum
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -22,11 +23,100 @@ ASSET_FIELDS = {
 }
 
 
-class FilterField:
-    def __init__(self, field_name: str, operator: str, values: Any):
-        self.field_name = field_name
-        self.operator = operator
-        self.values = values
+class FilterType(str, Enum):
+    """
+    Available type options for filter filtering.
+    """
+
+    EQ = "EQ"
+    RANGE = "RANGE"
+    CONTAINS = "CONTAINS"
+    ARRAY_CONTAINS = "ARRAY_CONTAINS"
+    JSON_WILDCARD = "JSON_WILDCARD"
+    IS_EMPTY = "IS_EMPTY"
+    NIS_EMPTY = "NIS_EMPTY"
+
+
+class Filter:
+    """
+    Filter class for creating filter dictionary objects.
+    """
+
+    AND = "AND"
+    OR = "OR"
+    FIELD = "SEARCH_FIELD"
+    TYPE = "SEARCH_TYPE"
+    VALUE = "SEARCH_VALUE"
+
+    class Field:
+        def __init__(self, field_name: str, filter_type: FilterType, values: Any):
+            self.field_name = field_name
+            self.filter_type = filter_type
+            self.values = values
+
+    def __init__(self, filter_fields: list[Field] = None):
+        self.filter_fields = filter_fields or []
+
+    def add_field(self, name: str, type: FilterType, values: Any):
+        """
+        Adds a new field to the filter.
+
+        Args:
+            name (str): The name of the field.
+            type (FilterType): The type to use for the field.
+            values (Any): The values to filter for.
+        """
+        self.filter_fields.append(Filter.Field(name, type, values))
+
+    def get_op_relationship(self, op: FilterType) -> str:
+        """
+        Returns the relationship between different filter values for the given operator.
+        Args:
+            op (FilterType): The operator to get the relationship for.
+
+        Returns:
+            str: The relationship between different filter values for the given operator.
+        """
+        op_using_and = [FilterType.NIS_EMPTY]
+        return Filter.AND if op in op_using_and else Filter.OR
+
+    def to_dict(self) -> dict[str, list]:
+        """
+        Creates a filter dict from a list of FilterField objects.
+        The filter will require each field to be one of the values provided.
+
+        Returns:
+            dict[str, list]: Filter object.
+        """
+        filter_structure: dict[str, list] = {Filter.AND: []}
+
+        for field in self.filter_fields:
+            if not isinstance(field.values, list):
+                field.values = [field.values]
+
+            search_values = []
+            for value in field.values:
+                if value is None:
+                    continue
+
+                search_values.append(
+                    {
+                        Filter.FIELD: field.field_name,
+                        Filter.TYPE: field.filter_type,
+                        Filter.VALUE: value,
+                    }
+                )
+
+            if search_values:
+                search_obj = (
+                    {self.get_op_relationship(field.filter_type): search_values} if len(search_values) > 1 else search_values[0]
+                )
+                filter_structure[Filter.AND].append(search_obj)
+
+        if not filter_structure[Filter.AND]:
+            filter_structure = {}
+
+        return filter_structure
 
 
 def replace_substring(data: dict | str, original: str, new: str) -> str | dict:
@@ -237,25 +327,35 @@ def get_extra_data_for_case_id_command(client, args):
 
 def search_assets_command(client: Client, args):
     """
-    Search for assets in XDR based on some filters.
+    Search for assets in XDR based on the provided filters.
+    Args:
+        client (Client): The client instance used to send the request.
+        args (dict): Dictionary containing the arguments for the command.
+                     Expected to include:
+                         - asset_names (list[str]): List of asset names to search for.
+                         - asset_types (list[str]): List of asset types to search for.
+                         - asset_tags (list[str]): List of asset tags to search for.
+                         - asset_ids (list[str]): List of asset IDs to search for.
+                         - asset_providers (list[str]): List of asset providers to search for.
+                         - asset_realms (list[str]): List of asset realms to search for.
+                         - asset_group_ids (list[str]): List of asset group IDs to search for.
     """
     asset_group_ids = get_asset_group_ids_from_names(client, argToList(args.get("asset_groups", "")))
-    fields_to_filter = [
-        FilterField(ASSET_FIELDS["asset_names"], "CONTAINS", argToList(args.get("asset_names", ""))),
-        FilterField(ASSET_FIELDS["asset_types"], "EQ", argToList(args.get("asset_types", ""))),
-        FilterField(ASSET_FIELDS["asset_tags"], "JSON_WILDCARD", safe_load_json(args.get("asset_tags", []))),
-        FilterField(ASSET_FIELDS["asset_ids"], "EQ", argToList(args.get("asset_ids", ""))),
-        FilterField(ASSET_FIELDS["asset_providers"], "EQ", argToList(args.get("asset_providers", ""))),
-        FilterField(ASSET_FIELDS["asset_realms"], "EQ", argToList(args.get("asset_realms", ""))),
-        FilterField(ASSET_FIELDS["asset_group_ids"], "ARRAY_CONTAINS", asset_group_ids),
-    ]
+    filter = Filter()
+    filter.add_field(ASSET_FIELDS["asset_names"], FilterType.CONTAINS, argToList(args.get("asset_names", "")))
+    filter.add_field(ASSET_FIELDS["asset_types"], FilterType.EQ, argToList(args.get("asset_types", "")))
+    filter.add_field(ASSET_FIELDS["asset_tags"], FilterType.JSON_WILDCARD, safe_load_json(args.get("asset_tags", [])))
+    filter.add_field(ASSET_FIELDS["asset_ids"], FilterType.EQ, argToList(args.get("asset_ids", "")))
+    filter.add_field(ASSET_FIELDS["asset_providers"], FilterType.EQ, argToList(args.get("asset_providers", "")))
+    filter.add_field(ASSET_FIELDS["asset_realms"], FilterType.EQ, argToList(args.get("asset_realms", "")))
+    filter.add_field(ASSET_FIELDS["asset_group_ids"], FilterType.ARRAY_CONTAINS, asset_group_ids)
+    filter_str = filter.to_dict()
 
-    filter = create_filter_from_fields(fields_to_filter)
-    demisto.debug(f"Search Assets Filter: {filter}")
+    demisto.debug(f"Search Assets Filter: {filter_str}")
     page_size = arg_to_number(args.get("page_size", SEARCH_ASSETS_DEFAULT_LIMIT))
     page_number = arg_to_number(args.get("page_number", 0))
     on_demand_fields = ["xdm.asset.tags"]
-    response = client.search_assets(filter, page_number, page_size, on_demand_fields).get("reply", {}).get("data", [])
+    response = client.search_assets(filter_str, page_number, page_size, on_demand_fields).get("reply", {}).get("data", [])
     # Remove "xdm.asset." suffix from all keys in the response
     response = [
         {k.replace("xdm.asset.", "") if k.startswith("xdm.asset.") else k: v for k, v in item.items()} for item in response
@@ -266,44 +366,6 @@ def search_assets_command(client: Client, args):
         outputs=response,
         raw_response=response,
     )
-
-
-def create_filter_from_fields(fields_to_filter: list[FilterField]):
-    """
-    Creates a filter from a list of FilterField objects.
-    The filter will require each field to be one of the values provided.
-    Args:
-        fields_to_filter (list[FilterField]): List of FilterField objects to create a filter from.
-    Returns:
-        dict[str, list]: Filter object.
-    """
-    filter_structure: dict[str, list] = {"AND": []}
-
-    for field in fields_to_filter:
-        if not isinstance(field.values, list):
-            field.values = [field.values]
-
-        search_values = []
-        for value in field.values:
-            if value is None:
-                continue
-
-            search_values.append(
-                {
-                    "SEARCH_FIELD": field.field_name,
-                    "SEARCH_TYPE": field.operator,
-                    "SEARCH_VALUE": value,
-                }
-            )
-
-        if search_values:
-            search_obj = {"OR": search_values} if len(search_values) > 1 else search_values[0]
-            filter_structure["AND"].append(search_obj)
-
-    if not filter_structure["AND"]:
-        filter_structure = {}
-
-    return filter_structure
 
 
 def get_asset_group_ids_from_names(client: Client, group_names: list[str]) -> list[str]:
@@ -320,9 +382,11 @@ def get_asset_group_ids_from_names(client: Client, group_names: list[str]) -> li
     if not group_names:
         return []
 
-    filter = create_filter_from_fields([FilterField("XDM.ASSET_GROUP.NAME", "EQ", group_names)])
+    filter = Filter()
+    filter.add_field("XDM.ASSET_GROUP.NAME", FilterType.EQ, group_names)
+    filter_str = filter.to_dict()
 
-    groups = client.search_asset_groups(filter).get("reply", {}).get("data", [])
+    groups = client.search_asset_groups(filter_str).get("reply", {}).get("data", [])
 
     group_ids = [group.get("XDM.ASSET_GROUP.ID") for group in groups if group.get("XDM.ASSET_GROUP.ID")]
 
