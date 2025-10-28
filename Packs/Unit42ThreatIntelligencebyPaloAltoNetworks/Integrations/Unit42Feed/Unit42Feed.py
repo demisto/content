@@ -1035,6 +1035,7 @@ def main():
                 demisto.debug(f"UNIT42FEED_DEBUG: Successfully created batch {batch_count}")
 
             demisto.debug(f"UNIT42FEED_DEBUG: Total batches created: {batch_count}")
+            demisto.setLastRun({"last_successful_run": now.strftime(DATE_FORMAT)})
             demisto.info(
                 f"The fetch-indicators command completed successfully. Next run will fetch from: {now.strftime(DATE_FORMAT)}"
             )
