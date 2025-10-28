@@ -1810,6 +1810,6 @@ Deletes a network security group (NSG) rule.
 | Azure.NSGRule.destinationPortRanges | String | For multiple ports, a list of destination ports. |
 | Azure.NSGRule.sourceAddressPrefix | String | The source address. |
 | Azure.NSGRule.destinationAddressPrefix | String | The destination address. |
-| Azure.NSGRule.access | String | The rule's access. Can be "Allow" or "Deny".
+| Azure.NSGRule.access | String | The rule's access. Can be "Allow" or "Deny". |
 | Azure.NSGRule.priority | Number | The rule's priority, ranging from 100 to 4096. |
 | Azure.NSGRule.direction | String | The rule's direction. Can be "Inbound" or "Outbound". |
