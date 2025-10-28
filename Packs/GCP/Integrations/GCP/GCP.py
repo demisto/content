@@ -1512,10 +1512,8 @@ def main():  # pragma: no cover
             "gcp-compute-subnet-update-enable-gcp-subnet-flow-logs-quick-action": compute_subnet_update,
             "gcp-compute-subnet-update-enable-private-access-quick-action": compute_subnet_update,
             # Quick Actions - Container Cluster Security
-            "gcp-container-cluster-security-update-enable-gke-cluster-intra-node-visibility-quick-action":
-                container_cluster_security_update,
-            "gcp-container-cluster-security-update-enable-master-authorized-networks-on-gke-quick-action":
-                container_cluster_security_update,
+            "gcp-container-cluster-security-update-enable-gke-cluster-intra-node-visibility-quick-action": container_cluster_security_update,  # noqa E501
+            "gcp-container-cluster-security-update-enable-master-authorized-networks-on-gke-quick-action": container_cluster_security_update,  # noqa E501
             # Quick Actions - Storage Bucket Metadata
             "gcp-storage-bucket-metadata-update-enable-GCP-bucket-versioning-quick-action": storage_bucket_metadata_update,
             "gcp-storage-bucket-metadata-update-set-GCP-bucket-access-to-uniform-quick-action": storage_bucket_metadata_update,
