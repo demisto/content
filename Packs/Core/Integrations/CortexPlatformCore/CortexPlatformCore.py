@@ -224,13 +224,12 @@ def update_issue_command(client: Client, args: dict):
         return_error("Issue ID is required for updating an issue.")
 
     severity_map = {1: "SEV_020_LOW", 2: "SEV_030_MEDIUM", 3: "SEV_040_HIGH", 4: "SEV_050_CRITICAL"}
-    assigned_user_mail = args.get("assigned_user_mail")
+    severity_value = arg_to_number(args.get("severity"))
     update_args = {
-        "assigned_user": assigned_user_mail,
-        "severity": severity_map.get(arg_to_number(args.get("severity"))),
+        "assigned_user": args.get("assigned_user_mail"),
+        "severity": severity_map.get(severity_value) if severity_value is not None else None,
         "name": args.get("name"),
         "occurred": args.get("occurred"),
-        "type": args.get("type"),
         "phase": args.get("phase"),
     }
 
@@ -329,7 +328,7 @@ def main():  # pragma: no cover
         elif command == "core-get-case-extra-data":
             return_results(get_extra_data_for_case_id_command(client, args))
 
-        elif command == "update-issue":
+        elif command == "core-update-issue":
             return_results(update_issue_command(client, args))
 
     except Exception as err:
