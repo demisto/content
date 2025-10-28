@@ -239,7 +239,7 @@ script:
       required: true
 
   - name: aws-s3-bucket-acl-set-to-private-quick-action
-    description: Sets the Access Control List (ACL) for the S3 bucket to private by running the aws s3api put-bucket-acl command in your environment. Successful execution requires the s3:PutBucketAcl permission.
+    description: Sets the Access Control List (ACL) for the S3 bucket to private.
     prettyname: Set Bucket ACL to Private
     hidden: true
     quickaction: true
@@ -266,7 +266,6 @@ script:
         description: 'The canned ACL to apply to the bucket.'
         defaultValue: 'private'
         hidden: true
-
 
   - name: aws-s3-bucket-logging-put
     description: Configure logging settings for an AWS S3 bucket, allowing to monitor access to the bucket through detailed access logs that are delivered to a designated target bucket.
@@ -322,7 +321,7 @@ script:
       required: false
 
   - name: aws-s3-bucket-enable-bucket-access-logging-quick-action
-    description: Enables server access logging for the S3 bucket, delivering detailed logs to a target bucket and prefix by running the aws s3api put-bucket-logging command. Successful execution requires the s3:PutBucketLogging permission.
+    description: Enables server access logging for the S3 bucket, delivering detailed logs to a target bucket and prefix.
     prettyname: Enable S3 Access Logging
     hidden: true
     quickaction: true
@@ -412,7 +411,7 @@ script:
       required: true
 
   - name: aws-s3-bucket-versioning-enable-quick-action
-    description: Enables versioning on the S3 bucket to retain multiple versions of objects by running the aws s3api put-bucket-versioning command. Successful execution requires the s3:PutBucketVersioning permission.
+    description: Enables versioning on the S3 bucket to retain multiple versions of objects.
     prettyname: Enable S3 Versioning
     hidden: true
     quickaction: true
@@ -538,7 +537,7 @@ script:
         required: true
 
   - name: aws-s3-bucket-website-disable-hosting-quick-action
-    description: Removes the static website hosting configuration from an S3 bucket by running the aws s3api delete-bucket-website command. Successful execution requires the s3:DeleteBucketWebsite permission.
+    description: Removes the static website hosting configuration from an S3 bucket.
     prettyname: Disable S3 Website Hosting
     hidden: true
     quickaction: true
@@ -1361,7 +1360,7 @@ script:
       - 'false'
 
   - name: aws-rds-db-cluster-enable-iam-auth-quick-action
-    description: This action enables 'iam database authentication' for the RDS cluster by running the aws rds modify-db-cluster command in your environment. It requires 'rds:ModifyDBCluster' permission.
+    description: This action enables 'iam database authentication' for the RDS cluster.
     prettyname: Enable IAM Authentication on RDS Cluster
     hidden: true
     quickaction: true
@@ -1446,7 +1445,7 @@ script:
       required: false
 
   - name: aws-rds-db-cluster-snapshot-set-to-private-quick-action
-    description: Revokes public access to the RDS DB cluster snapshot, making it private by running the aws rds modify-db-cluster-snapshot-attribute command. Successful execution requires the rds:ModifyDBClusterSnapshotAttribute permission.
+    description: Revokes public access to the RDS DB cluster snapshot and making it private.
     prettyname: Set RDS Cluster Snapshot to Private
     hidden: true
     quickaction: true
@@ -1479,7 +1478,7 @@ script:
         hidden: true
 
   - name: aws-rds-db-cluster-enable-deletion-protection-quick-action
-    description: Enables deletion protection for the RDS DB cluster to prevent accidental deletion by running the aws rds modify-db-cluster command. Successful execution requires the rds:ModifyDBCluster permission.
+    description: Enables deletion protection for the RDS DB cluster to prevent accidental deletion.
     prettyname: Enable RDS Cluster Deletion Protection
     hidden: true
     quickaction: true
@@ -1610,7 +1609,7 @@ script:
       - 'false'
 
   - name: aws-rds-db-instance-modify-publicly-accessible-quick-action
-    description: This action will disable public access for AWS RDS database instance by modifying the instance settings. It runs the aws rds modify-db-instance command in your AWS environment and requires 'rds:ModifyDBInstance' permission
+    description: This action will disable public access for AWS RDS database instance by modifying the instance settings.
     prettyname: Disable Public Access on RDS
     hidden: true
     quickaction: true
@@ -1643,7 +1642,7 @@ script:
         hidden: true
 
   - name: aws-rds-db-instance-modify-copy-tags-on-rds-snapshot-quick-action
-    description: This action enables 'copy tags to snapshots' for the RDS instance by running the aws rds modify-db-instance command in your environment. It requires 'rds:ModifyDBInstance' permission.
+    description: This action enables 'copy tags to snapshots' for the RDS instance.
     prettyname: Enable Copy Tags on RDS Snapshot
     hidden: true
     quickaction: true
@@ -1676,7 +1675,7 @@ script:
         hidden: true
 
   - name: aws-rds-db-instance-modify-enable-automatic-backup-quick-action
-    description: Enables the automatic backup settings for the RDS dB instance with a default retention period of 30 days by running the aws rds modify-db-instance command in your environment. Successful execution requires 'rds:ModifyDBInstance' permission.
+    description: Enables the automatic backup settings for the RDS DB instance with a default retention period of 30 days.
     prettyname: Enable Automatic Backup for RDS DB
     hidden: true
     quickaction: true
@@ -1709,7 +1708,7 @@ script:
         hidden: true
 
   - name: aws-rds-db-instance-enable-iam-auth-quick-action
-    description: Enables 'iam database authentication' for the RDS dB instance by running the aws rds modify-db-instance command in your environment. Successful execution requires 'rds:ModifyDBInstance' permission.
+    description: Enables 'iam database authentication' for the RDS DB instance.
     prettyname: Enable IAM Authentication on RDS
     hidden: true
     quickaction: true
@@ -1738,7 +1737,7 @@ script:
         hidden: true
 
   - name: aws-rds-db-instance-enable-deletion-protection-quick-action
-    description: Enables 'deletion protection' for the RDS dB instance by running the aws rds modify-db-instance command in your environment. Successful execution requires 'rds:ModifyDBInstance' permission.
+    description: Enables 'deletion protection' for the RDS DB instance.
     prettyname: Enable Deletion Protection on RDS
     hidden: true
     quickaction: true
@@ -1767,7 +1766,7 @@ script:
         hidden: true
 
   - name: aws-rds-db-instance-enable-auto-upgrade-quick-action
-    description: Enables automatic minor version upgrades for the RDS database instance by running the aws rds modify-db-instance command. Successful execution requires the rds:ModifyDBInstance permission.
+    description: Enables automatic minor version upgrades for the RDS DB instance.
     prettyname: Enable RDS Auto Upgrade
     hidden: true
     quickaction: true
@@ -1800,7 +1799,7 @@ script:
         hidden: true
 
   - name: aws-rds-db-instance-enable-multi-az-quick-action
-    description: Enables Multi-AZ deployment for the RDS database instance to enhance availability and durability by running the aws rds modify-db-instance command. Successful execution requires the rds:ModifyDBInstance permission.
+    description: Enables Multi-AZ deployment for the RDS database instance to enhance availability and durability.
     prettyname: Enable Multi-AZ for RDS
     hidden: true
     quickaction: true
@@ -1979,7 +1978,7 @@ script:
         type: string
 
   - name: aws-rds-db-snapshot-attribute-set-snapshot-to-private-quick-action
-    description: Revokes public access to the RDS DB snapshot, making it private by running the aws rds modify-db-snapshot-attribute command. Successful execution requires the rds:ModifyDBSnapshotAttribute permission.
+    description: Revokes public access to the RDS DB snapshot, making it private.
     prettyname: Set RDS Snapshot to Private
     hidden: true
     quickaction: true
@@ -2337,7 +2336,7 @@ script:
       description: A new value for the attribute. Use only with the kernel, ramdisk, userData, disableApiTermination, or instanceInitiatedShutdownBehavior attribute.
 
   - name: aws-ec2-instance-attribute-modify-quick-action
-    description: This action runs the aws-ec2-modify-instance-attribute command in your AWS environment to remove the associated security group from the EC2 instance profile. It requires ec2:ModifyEC2 permissions.
+    description: Remove the associated security group from the EC2 instance profile.
     prettyname: Detach Security Group from EC2
     hidden: true
     quickaction: true
@@ -2434,7 +2433,7 @@ script:
       required: false
 
   - name: aws-ec2-image-attribute-set-ami-to-private-quick-action
-    description: Revokes public launch permissions for the EC2 AMI by running the aws ec2 modify-image-attribute command in your environment. Successful execution requires the ec2:ModifyImageAttribute permission.
+    description: Revokes public launch permissions for the EC2 AMI.
     prettyname: Set AMI to Private
     hidden: true
     quickaction: true
@@ -2691,7 +2690,7 @@ script:
     description: Adds or removes permission settings for the specified snapshot.
 
   - name: aws-ec2-set-snapshot-to-private-quick-action
-    description: Revokes public access to the EC2 snapshot by running the aws ec2 modify-snapshot-attribute command in your environment. Successful execution requires the ec2:ModifySnapshotAttribute permission.
+    description: Revokes public access to the EC2 snapshot.
     prettyname: Set Snapshot to Private
     hidden: true
     quickaction: true
@@ -2709,11 +2708,11 @@ script:
         prettypredefined:
           Region: ${asset.xdm.asset.cloud.region}
       - name: snapshot_id
-        prettyname: EC2 Snapshot
+        prettyname: EC2 Snapshot ID
         description: The ID of the EBS snapshot.
         required: true
         prettypredefined:
-          EC2 Snapshot: ${asset.xdm.asset.name}
+          EC2 Snapshot ID: ${asset.xdm.asset.name}
       - name: operation_type
         description: The operation type, add or remove.
         defaultValue: 'remove'
@@ -2981,7 +2980,7 @@ script:
       type: boolean
 
   - name: aws-cloudtrail-trail-enable-log-validation-quick-action
-    description: Enables log file validation for the reported CloudTrail by running the aws-cloudtrail-update-trail command in your environment. Successful execution requires 'cloudtrail:UpdateTrail' permission.
+    description: Enables log file validation for the reported CloudTrail.
     prettyname: Enable CloudTrail Log Validation
     hidden: true
     quickaction: true
@@ -3005,7 +3004,7 @@ script:
         prettypredefined:
           Name: ${asset.xdm.asset.name}
       - name: enable_log_file_validation
-        description: Weather log file validation is enabled. The default is false.
+        description: Weather log file validation is enabled.
         defaultValue: 'true'
         hidden: true
     outputs:
@@ -3106,7 +3105,7 @@ script:
       required: true
 
   - name: aws-cloudtrail-logging-start-enable-logging-quick-action
-    description: Enables logging of a CloudTrail by running the aws-cloudtrail-start-logging command in your environment. Successful execution requires 'cloudtrail:StartLogging' permission.
+    description: Enables logging of a CloudTrail.
     prettyname: Enable CloudTrail Logging
     hidden: true
     quickaction: true
@@ -4554,12 +4553,12 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/boto3py3:1.0.0.4688278
+  dockerimage: demisto/boto3py3:1.0.0.5295752
 supportsquickactions: true
 fromversion: 5.5.0
 tests:
 - No test - No playbook part of this release.
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 isCloudProviderIntegration: true
