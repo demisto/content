@@ -1,12 +1,16 @@
 {
-    "msft_azure_raw": {
-      "category": {
-        "type": "string",
-        "is_array": false
-      },
-      "properties": {
-        "type": "string",
-        "is_array": false
-      }
+  "msft_azure_raw": {
+    "category": {
+      "type": "string",
+      "is_array": false
+    },
+    "properties": {
+      "type": "string",
+      "is_array": false
+    },
+    "time": {
+      "type": "string",
+      "is_array": false
     }
   }
+}

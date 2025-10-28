@@ -15,6 +15,10 @@
     "incident_field_values": {
       "type": "string",
       "is_array": false
+    },
+    "updated_at": {
+      "type": "string",
+      "is_array": false
     }
   }
 }
