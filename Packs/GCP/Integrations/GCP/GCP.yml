@@ -1057,11 +1057,6 @@ script:
           Bucket Name: ${asset.xdm.asset.name}
       - name: enable_uniform_access
         required: false
-        auto: PREDEFINED
-        predefined:
-          - "true"
-          - "false"
-        defaultValue: "true"
         hidden: true
         description: Enable uniform bucket-level access.
     outputs:
