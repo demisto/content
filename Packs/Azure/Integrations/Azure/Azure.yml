@@ -2252,6 +2252,242 @@ script:
         predefined:
           - "false"
           - "true"
+  - name: azure-vm-instance-start
+    description: Powers on a given virtual machine.
+    execution: true
+    arguments:
+    - description: The subscription ID.
+      name: subscription_id
+      required: true
+    - description: |
+        Resource Group to which the virtual machine belongs.
+        To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command.
+      name: resource_group_name
+      required: true
+    - description: Name of the virtual machine to power on. To see all virtual machines and their associated names for a specific resource group, run the `azure-vm-list-instances` command.
+      name: virtual_machine_name
+      required: true
+    outputs:
+    - contextPath: Azure.Compute.name
+      description: Name of the VM that was started.
+      type: string
+    - contextPath: Azure.Compute.resourceGroup
+      description: Resource group the VM resides in.
+      type: string
+    - contextPath: Azure.Compute.powerState
+      description: Whether the VM instance is powered on or off.
+      type: string
+  - name: azure-vm-instance-power-off
+    description: Powers off a given virtual machine.
+    execution: true
+    arguments:
+    - description: The subscription ID.
+      name: subscription_id
+      required: true
+    - description: |
+        The resource group to which the virtual machine belongs.
+        To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command.
+      name: resource_group_name
+      required: true
+    - description: The name of the virtual machine to power off. To see all virtual machines with their associated names for a specific resource group, run the `azure-vm-list-instances` command.
+      name: virtual_machine_name
+      required: true
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Set to True to request non-graceful VM shutdown. Default value is False.
+      name: skip_shutdown
+      predefined:
+        - 'true'
+        - 'false'
+    outputs:
+    - contextPath: Azure.Compute.name
+      description: The name of the virtual machine that was powered off.
+      type: string
+    - contextPath: Azure.Compute.resourceGroup
+      description: The resource group in which the virtual machine resides.
+      type: string
+    - contextPath: Azure.Compute.powerState
+      description: Whether the virtual machine instance is powered on or off.
+      type: string
+  - name: azure-vm-instance-details-get
+    description: Gets the properties of a given virtual machine.
+    arguments:
+    - description: The subscription ID.
+      name: subscription_id
+      required: true
+    - description: |
+        The resource group to which the virtual machine belongs.
+        To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command.
+      name: resource_group_name
+      required: true
+    - description: The name of the virtual machine you want to view the details of. To see all the virtual machines with their associated names for a specific resource group, run the `azure-vm-list-instances` command.
+      name: virtual_machine_name
+      required: true
+    - auto: PREDEFINED
+      defaultValue: instanceView
+      description: The expand expression to apply on the operation. 'InstanceView' retrieves a snapshot of the runtime properties of the virtual machine that is managed by the platform and can change outside of control plane operations. 'UserData' retrieves the UserData property as part of the VM model view that was provided by the user during the VM Create/Update operation.
+      name: expand
+      predefined:
+        - 'instanceView'
+        - 'userData'
+        - 'resiliencyView'
+    outputs:
+    - contextPath: Azure.Compute.name
+      description: The name of the virtual machine you want to get details of.
+      type: string
+    - contextPath: Azure.Compute.id
+      description: The ID of the virtual machine.
+      type: string
+    - contextPath: Azure.Compute.location
+      description: The region in which the virtual machine is hosted.
+      type: string
+    - contextPath: Azure.Compute.Size
+      description: The size of the deployed virtual machine (in gigabytes).
+      type: number
+    - contextPath: Azure.Compute.OS
+      description: The OS running on the given virtual machine.
+      type: string
+    - contextPath: Azure.Compute.properties.provisioningState
+      description: The provisioning state of the deployed virtual machine.
+      type: string
+    - contextPath: Azure.Compute.networkProfile.networkInterfaces
+      description: The list of network interfaces attached to this virtual machine.
+      type: string
+    - contextPath: Azure.Compute.properties.hardwareProfile.vmSize
+      description: The size or SKU of the virtual machine, defining CPU, memory, and storage capacity.
+      type: string
+    - contextPath: Azure.Compute.properties.provisioningState
+      description: The current provisioning state of the virtual machine (e.g., Succeeded, Updating, Failed).
+      type: string
+    - contextPath: Azure.Compute.properties.osProfile
+      description: The operating system configuration of the virtual machine, including admin credentials and hostname.
+      type: string
+    - contextPath: Azure.Compute.properties.storageProfile
+      description: The storage settings for the virtual machine, including OS and data disks.
+      type: string
+    - contextPath: Azure.Compute.properties.vmId
+      description: The unique identifier assigned to the virtual machine instance.
+      type: string
+    - contextPath: Azure.Compute.properties.instanceView
+      description: Detailed runtime status information about the virtual machine, such as power state and extensions.
+      type: string
+    - contextPath: Azure.Compute.properties.timeCreated
+      description: The timestamp when the virtual machine was created.
+      type: string
+    - contextPath: Azure.Compute.properties.networkProfile
+      description: The network configuration of the virtual machine, including associated network interfaces and settings.
+      type: string
+    - contextPath: Azure.Compute.properties.diagnosticsProfile
+      description: The configuration for boot diagnostics and monitoring of the virtual machine.
+      type: string
+  - name: azure-vm-network-interface-details-get
+    description: Gets the properties of a given network interface.
+    arguments:
+    - description: The subscription ID.
+      name: subscription_id
+      required: true
+    - description: |
+        The resource group to which the network interface belongs.
+        To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command.
+      name: resource_group_name
+      required: true
+    - description: The name of the network interface you want to view the details of.
+      name: network_interface_name
+      required: true
+    outputs:
+    - contextPath: Azure.Network.Interfaces.properties.ipConfigurations
+      description: The interface public IP address ID.
+      type: Unknown
+    - contextPath: Azure.Network.Interfaces.properties.macAddress
+      description: The interface MAC address.
+      type: String
+    - contextPath: Azure.Network.Interfaces.name
+      description: The interface name.
+      type: String
+    - contextPath: Azure.Network.Interfaces.location
+      description: The interface location.
+      type: String
+    - contextPath: Azure.Network.Interfaces.id
+      description: The interface ID.
+      type: String
+    - contextPath: Azure.Network.Interfaces.location
+      description: The Azure region where the network interface is deployed.
+      type: String
+    - contextPath: Azure.Network.Interfaces.etag
+      description: A unique read-only string that changes whenever the network interface resource is updated.
+      type: String
+    - contextPath: Azure.Network.Interfaces.kind
+      description: The type of the network interface resource, used for Azure internal classification.
+      type: String
+    - contextPath: Azure.Network.Interfaces.properties.tapConfigurations
+      description: The list of tap configurations attached to the network interface for traffic mirroring.
+      type: String
+    - contextPath: Azure.Network.Interfaces.properties.allowPort25Out
+      description: Indicates whether outbound traffic on port 25 (SMTP) is allowed from this network interface.
+      type: String
+    - contextPath: Azure.Network.Interfaces.properties.nicType
+      description: Specifies the type of network interface, such as Standard or Elastic.
+      type: String
+    - contextPath: Azure.Network.Interfaces.properties.provisioningState
+      description: The current provisioning state of the network interface (e.g., Succeeded, Updating, Failed).
+      type: String
+    - contextPath: Azure.Network.Interfaces.properties.dnsSettings
+      description: The DNS configuration of the network interface, including DNS servers and domain name.
+      type: String
+    - contextPath: Azure.Network.Interfaces.properties.enableIPForwarding
+      description: Indicates whether IP forwarding is enabled for the network interface.
+      type: String
+  - name: azure-vm-public-ip-details-get
+    description: Gets the properties of a given public IP address.
+    arguments:
+    - description: The subscription ID.
+      name: subscription_id
+      required: true
+    - description: |
+        The resource group to which the IP address belongs.
+        To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command.
+      name: resource_group_name
+      required: true
+    - description: The IP address name.
+      name: address_name
+      required: true
+    outputs:
+    - contextPath: Azure.Network.IPConfigurations.location
+      description: The Azure region where the IP configuration resource is located.
+      type: String
+    - contextPath: Azure.Network.IPConfigurations.id
+      description: The unique resource ID of the IP configuration.
+      type: String
+    - contextPath: Azure.Network.IPConfigurations.name
+      description: The name of the IP configuration.
+      type: String
+    - contextPath: Azure.Network.IPConfigurations.etag
+      description: A unique read-only string that changes whenever the IP configuration resource is updated.
+      type: String
+    - contextPath: Azure.Network.IPConfigurations.properties.idleTimeoutInMinutes
+      description: The idle timeout value in minutes for the associated public IP address.
+      type: String
+    - contextPath: Azure.Network.IPConfigurations.properties.ipAddress
+      description: The private IP address assigned to the network interface or resource.
+      type: String
+    - contextPath: Azure.Network.IPConfigurations.properties.provisioningState
+      description: The current provisioning state of the IP configuration (e.g., Succeeded, Updating, Failed).
+      type: String
+    - contextPath: Azure.Network.IPConfigurations.properties.ipConfiguration
+      description: The reference to another IP configuration associated with this resource.
+      type: String
+    - contextPath: Azure.Network.IPConfigurations.properties.publicIPAddressVersion
+      description: The version of the public IP address (IPv4 or IPv6).
+      type: String
+    - contextPath: Azure.Network.IPConfigurations.properties.publicIPAllocationMethod
+      description: Defines how the public IP address is allocated — Static or Dynamic.
+      type: String
+    - contextPath: Azure.Network.IPConfigurations.properties.resourceGuid
+      description: The unique Azure resource GUID for the IP configuration.
+      type: String
+    - contextPath: Azure.Network.IPConfigurations.properties.sku
+      description: The SKU of the public IP address associated with the configuration, defining its performance tier.
+      type: String
   - name: azure-billing-usage-list
     description: Returns actual usage and cost details for a given time period, optionally filtered by service name.
     arguments:

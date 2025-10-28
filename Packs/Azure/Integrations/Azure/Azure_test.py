@@ -2780,6 +2780,273 @@ def test_extract_azure_resource_info():
     assert account_name is None
 
 
+def test_start_vm_command(mocker):
+    """
+    Given: A subscription, resource group, and VM name.
+    When: start_vm_command is called with these parameters.
+    Then: It should call validate_provisioning_state and start_vm_request,
+          and return correct CommandResults with VM starting state.
+    """
+    from Azure import start_vm_command
+
+    mock_client = mocker.Mock()
+    params = {"subscription_id": "sub-id", "resource_group_name": "rg1"}
+    args = {"subscription_id": "sub-id", "resource_group_name": "rg1", "virtual_machine_name": "vm1"}
+
+    result = start_vm_command(mock_client, params, args)
+
+    mock_client.validate_provisioning_state.assert_called_once_with("sub-id", "rg1", "vm1")
+    mock_client.start_vm_request.assert_called_once_with("sub-id", "rg1", "vm1")
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "Azure.Compute"
+    assert result.outputs_key_field == "name"
+    assert result.outputs["name"] == "vm1"
+    assert result.outputs["resourceGroup"] == "rg1"
+    assert result.outputs["powerState"] == "VM starting"
+    assert "vm1" in result.readable_output
+
+
+def test_poweroff_vm_command(mocker):
+    """
+    Given: A subscription, resource group, VM name, and optional skip_shutdown.
+    When: poweroff_vm_command is called.
+    Then: It should call validate_provisioning_state and poweroff_vm_request,
+          and return correct CommandResults with VM stopping state.
+    """
+    from Azure import poweroff_vm_command
+
+    mock_client = mocker.Mock()
+    params = {"subscription_id": "sub-id", "resource_group_name": "rg1"}
+    args = {"subscription_id": "sub-id", "resource_group_name": "rg1", "virtual_machine_name": "vm1", "skip_shutdown": True}
+
+    result = poweroff_vm_command(mock_client, params, args)
+
+    mock_client.validate_provisioning_state.assert_called_once_with("sub-id", "rg1", "vm1")
+    mock_client.poweroff_vm_request.assert_called_once_with("sub-id", "rg1", "vm1", True)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "Azure.Compute"
+    assert result.outputs_key_field == "name"
+    assert result.outputs["name"] == "vm1"
+    assert result.outputs["resourceGroup"] == "rg1"
+    assert result.outputs["powerState"] == "VM stopping"
+    assert "vm1" in result.readable_output
+
+
+def test_get_vm_command(mocker):
+    """
+    Given: A subscription, resource group, and VM name.
+    When: get_vm_command is called.
+    Then: It should call get_vm_request and return correct CommandResults
+          including OS, size, power state, and network interfaces.
+    """
+    from Azure import get_vm_command
+
+    mock_client = mocker.Mock()
+    params = {"subscription_id": "sub-id", "resource_group_name": "rg1"}
+    args = {"subscription_id": "sub-id", "resource_group_name": "rg1", "virtual_machine_name": "vm1", "expand": ""}
+
+    mock_response = {
+        "location": "eastus",
+        "tags": {"env": "prod"},
+        "properties": {
+            "vmId": "vm123",
+            "provisioningState": "Succeeded",
+            "storageProfile": {"osDisk": {"diskSizeGB": 128, "osType": "Linux"}},
+            "instanceView": {"statuses": [{"code": "PowerState/running", "displayStatus": "VM running"}]},
+            "networkProfile": {"networkInterfaces": [{"id": "nic1"}]},
+            "userData": "userdata",
+        },
+    }
+
+    mocker.patch.object(mock_client, "get_vm_request", return_value=mock_response)
+
+    result = get_vm_command(mock_client, params, args)
+
+    mock_client.get_vm_request.assert_called_once_with("sub-id", "rg1", "vm1", expand="")
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "Azure.Compute"
+    assert result.outputs_key_field == "name"
+    assert result.outputs["properties"]["vmId"] == "vm123"
+    assert result.outputs["properties"]["provisioningState"] == "Succeeded"
+    assert result.outputs["properties"]["storageProfile"]["osDisk"]["osType"] == "Linux"
+    assert result.outputs["properties"]["instanceView"]["statuses"][0]["displayStatus"] == "VM running"
+    assert "vm1" in result.readable_output
+
+
+def test_get_network_interface_command(mocker):
+    """
+    Given: A subscription, resource group, and network interface name.
+    When: get_network_interface_command is called with these parameters.
+    Then: It should call get_network_interface_request and return correct CommandResults
+          with properly formatted network interface details.
+    """
+    from Azure import get_network_interface_command
+
+    mock_client = mocker.Mock()
+    mock_params = {"subscription_id": "sub-id", "resource_group_name": "rg1"}
+    args = {"subscription_id": "sub-id", "resource_group_name": "rg1", "network_interface_name": "nic1"}
+
+    mock_response = {
+        "id": "/subscriptions/sub-id/resourceGroups/rg1/providers/Microsoft.Network/networkInterfaces/nic1",
+        "name": "nic1",
+        "location": "eastus",
+        "properties": {
+            "macAddress": "00:11:22:33:44:55",
+            "primary": True,
+            "networkSecurityGroup": {"id": "nsg-id"},
+            "nicType": "Standard",
+            "virtualMachine": {"id": "vm-id"},
+            "dnsSettings": {"internalDomainNameSuffix": "internal.local"},
+            "ipConfigurations": [
+                {
+                    "name": "ipconfig1",
+                    "id": "ipconfig-id",
+                    "properties": {"privateIPAddress": "10.0.0.4", "publicIPAddress": {"id": "public-ip-id"}},
+                    "etag": 'W/"12345"',
+                }
+            ],
+        },
+    }
+
+    mocker.patch.object(mock_client, "get_network_interface_request", return_value=mock_response)
+
+    result = get_network_interface_command(mock_client, mock_params, args)
+
+    mock_client.get_network_interface_request.assert_called_once_with("sub-id", "rg1", "nic1")
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "Azure.Network.Interfaces"
+    assert result.outputs_key_field == "name"
+    assert result.outputs["name"] == "nic1"
+    assert result.outputs["properties"]["macAddress"] == "00:11:22:33:44:55"
+    assert result.outputs["properties"]["ipConfigurations"][0]["properties"]["privateIPAddress"] == "10.0.0.4"
+    assert result.outputs["properties"]["ipConfigurations"][0]["properties"]["publicIPAddress"]["id"] == "public-ip-id"
+    assert result.outputs["properties"]["ipConfigurations"][0]["etag"] == "12345"  # etag cleaned
+    assert "nic1" in result.readable_output
+
+
+def test_get_single_ip_details_from_list_of_ip_details():
+    """
+    Given: A subscription, resource group, and public IP name.
+    When: get_public_ip_details_command is called with these parameters.
+    Then: It should call get_public_ip_details_request and return correct CommandResults.
+    """
+    from Azure import get_single_ip_details_from_list_of_ip_details
+
+    list_of_ips = [
+        {"properties": {"ipAddress": "1.1.1.1"}},
+        {"properties": {"ipAddress": "2.2.2.2"}},
+        {"properties": {"nested": {"ipAddress": "3.3.3.3"}}},
+    ]
+
+    ip1 = get_single_ip_details_from_list_of_ip_details(list_of_ips, "1.1.1.1")
+    ip3 = get_single_ip_details_from_list_of_ip_details(list_of_ips, "3.3.3.3")
+    ip_missing = get_single_ip_details_from_list_of_ip_details(list_of_ips, "4.4.4.4")
+
+    assert ip1 == {"properties": {"ipAddress": "1.1.1.1"}}
+    assert ip3 == {"properties": {"nested": {"ipAddress": "3.3.3.3"}}}
+    assert ip_missing is None
+
+
+def test_get_public_ip_details_command_with_resource_group(mocker):
+    """
+    Given: A subscription, resource group, and public IP name.
+    When: get_public_ip_details_command is called with these parameters.
+    Then: It should call get_public_ip_details_request and return correct CommandResults.
+    """
+    from Azure import get_public_ip_details_command
+
+    mock_client = mocker.Mock()
+    mock_params = {"subscription_id": "sub-id", "resource_group_name": "rg1"}
+    args = {"subscription_id": "sub-id", "resource_group_name": "rg1", "address_name": "ip1"}
+
+    mock_response = {
+        "id": "/subscriptions/sub-id/resourceGroups/rg1/providers/Microsoft.Network/publicIPAddresses/ip1",
+        "name": "ip1",
+        "location": "eastus",
+        "etag": 'W/"12345"',
+        "properties": {
+            "ipAddress": "1.2.3.4",
+            "publicIPAddressVersion": "IPv4",
+            "publicIPAllocationMethod": "Static",
+            "ipConfiguration": {"id": "config-id"},
+            "dnsSettings": {"domainNameLabel": "label1", "fqdn": "ip1.eastus.cloudapp.azure.com"},
+        },
+    }
+
+    mocker.patch.object(mock_client, "get_public_ip_details_request", return_value=mock_response)
+
+    result = get_public_ip_details_command(mock_client, mock_params, args)
+
+    mock_client.get_public_ip_details_request.assert_called_once_with("sub-id", "rg1", "ip1")
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "Azure.Network.IPConfigurations"
+    assert result.outputs_key_field == "id"
+    assert result.outputs["properties"]["ipAddress"] == "1.2.3.4"
+    assert result.outputs["properties"]["publicIPAddressVersion"] == "IPv4"
+    assert result.outputs["properties"]["publicIPAllocationMethod"] == "Static"
+    assert result.outputs["etag"] == "12345"
+    assert "ip1" in result.readable_output
+
+
+def test_get_public_ip_details_command_without_resource_group(mocker):
+    """
+    Given: A subscription and public IP name, but no resource group.
+    When: get_public_ip_details_command is called.
+    Then: It should call get_all_public_ip_details_request, find the matching IP, and return details.
+    """
+    from Azure import get_public_ip_details_command
+
+    mock_client = mocker.Mock()
+    mock_params = {"subscription_id": "sub-id"}
+    args = {"subscription_id": "sub-id", "address_name": "ip1"}
+
+    mock_all_ips = {
+        "value": [
+            {
+                "id": "/subscriptions/sub-id/resourceGroups/rg1/providers/Microsoft.Network/publicIPAddresses/ip1",
+                "name": "ip1",
+                "location": "eastus",
+                "etag": 'W/"999"',
+                "properties": {
+                    "ipAddress": "5.6.7.8",
+                    "publicIPAddressVersion": "IPv4",
+                    "publicIPAllocationMethod": "Dynamic",
+                },
+            },
+            {
+                "id": "/subscriptions/sub-id/resourceGroups/rg2/providers/Microsoft.Network/publicIPAddresses/ip2",
+                "name": "ip2",
+                "location": "westus",
+                "etag": 'W/"888"',
+                "properties": {
+                    "ipAddress": "9.9.9.9",
+                    "publicIPAddressVersion": "IPv6",
+                    "publicIPAllocationMethod": "Static",
+                },
+            },
+        ]
+    }
+
+    # Mock the client and helper functions
+    mocker.patch.object(mock_client, "get_all_public_ip_details_request", return_value=mock_all_ips)
+    mocker.patch("Azure.get_single_ip_details_from_list_of_ip_details", return_value=mock_all_ips["value"][0])
+
+    result = get_public_ip_details_command(mock_client, mock_params, args)
+
+    mock_client.get_all_public_ip_details_request.assert_called_once_with("sub-id")
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs["properties"]["ipAddress"] == "5.6.7.8"
+    assert result.outputs["etag"] == "999"
+    assert "ip1" in result.readable_output
+    assert "rg1" in result.readable_output
+
+
 def test_azure_billing_usage_list_command_success(mocker, client, mock_params):
     """
     Given: An Azure client and valid billing usage arguments.
