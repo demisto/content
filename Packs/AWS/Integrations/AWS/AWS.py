@@ -1872,29 +1872,31 @@ class EC2:
                             and a md table with a concise summary of the latest AMI.
         """
         kwargs = {
-            # "ExecutableBy": parse_resource_ids(args.get("executable_by")),
-            # "Filter": parse_filter_field(args.get("filters")),
-            # "Owner": parse_resource_ids(args.get("owners")),
-            # "ImageId": parse_resource_ids(args.get("image_id")),
-            # "IncludeDeprecated": args.get("include_deprecated"),
-            # "IncludeDisabled": args.get("include_disabled"),
-            # "MaxResults": args.get("max_results"),
-            # "NextToken": args.get("next_token"),
+            "ExecutableUsers": parse_resource_ids(args.get("executable_users")) if args.get("executable_users") else None,
+            "Filters": parse_filter_field(args.get("filters")),
+            "Owners": parse_resource_ids(args.get("owners")) if args.get("owners") else None,
+            "ImageIds": parse_resource_ids(args.get("image_id")) if args.get("image_id") else None,
+            "IncludeDeprecated": args.get("include_deprecated"),
+            "IncludeDisabled": args.get("include_disabled"),
+            "MaxResults": args.get("max_results"),
+            "NextToken": args.get("next_token"),
         }
 
-        # remove_nulls_from_dictionary(kwargs)
+        remove_nulls_from_dictionary(kwargs)
         try:
             response = client.describe_images(**kwargs)
             demisto.info(f"{response=}")
-            return CommandResults(readable_output=response)
             amis = response.get("Images", [])
+            demisto.info(f"{amis=}")
             while response.get("nextToken"):
                 kwargs["NextToken"] = response.get("nextToken")
                 response = client.describe_images(**kwargs)
                 amis.extend(response.get("Images", []))
-
-            sorted_amis = sorted(amis["Images"], key=lambda x: x["CreationDate"], reverse=True)
+            demisto.info(f"#2 {amis=}")
+            sorted_amis = sorted(amis, key=lambda x: x["CreationDate"], reverse=True)
+            demisto.info(f"sorted_amis")
             image = sorted_amis[0]
+            demisto.info(f"image")
             data = {
                 "CreationDate": image.get("CreationDate"),
                 "ImageId": image.get("ImageId"),
@@ -1904,9 +1906,10 @@ class EC2:
                 "Region": args.get("region"),
                 "Description": image.get("Description"),
             }
-
+            demisto.info(f"{data=}")
             data.update({tag["Key"]: tag["Value"] for tag in image["Tags"]}) if "Tags" in image else None
             remove_nulls_from_dictionary(data)
+            demisto.info(f"#2 {data=}")
 
             try:
                 raw = json.loads(json.dumps(image, cls=DatetimeEncoder))

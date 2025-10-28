@@ -3562,7 +3562,7 @@ script:
           - me-south-1
           - me-central-1
           - sa-east-1
-      - name: executable_by
+      - name: executable_users
         description: Scopes the images by users with explicit launch permissions.
       - name: filters
         description: One or more filters separated by ','. See AWS documentation for details & filter options.
