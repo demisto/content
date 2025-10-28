@@ -104,13 +104,13 @@ def extract_entry_file_data(entry_id: str) -> tuple[str, str]:
         if not filepath_result or "path" not in filepath_result:
             raise ValueError("Entry is not a valid file entry.")
 
-    except ValueError as e:
-        demisto.debug(f"Error fetching file path for {entry_id!r}: {e}")
+    except ValueError as error:
+        demisto.debug(f"Error fetching file path for {entry_id!r}", error)
         raise DemistoException(f"Could not find file or entry: {entry_id!r}")
 
-    except Exception as e:
+    except Exception as error:
         raise DemistoException(
-            f"An unexpected error occurred while processing entry {entry_id!r}: {e}"
+            f"An unexpected error occurred while processing entry {entry_id!r}", error
         )
 
     path = filepath_result["path"]
@@ -199,13 +199,16 @@ def initiate_polling(
     )
 
     demisto.debug(
-        f"Command '{command}' execution finished successfully. Initiating Polling for Task ID: {task_id}. "
-        f"Interval: {polling_interval}s, Timeout: {polling_timeout}s."
+        f"Command '{command}' execution finished successfully. Initiating Polling for "
+        f"Task ID: {task_id}. Interval: {polling_interval}s, Timeout: {polling_timeout}s."
     )
 
     next_args = {**args, "task_id": str(task_id), "outputs_prefix": outputs_prefix}
 
-    readable = f"Submitted {api_target}. Task ID {task_id}. Polling initiated, checking every {polling_interval}s."
+    readable = (
+        f"Submitted {api_target}. Task ID {task_id}. Polling initiated, checking every "
+        f"{polling_interval}s."
+    )
 
     return CommandResults(
         readable_output=readable,
@@ -307,31 +310,29 @@ API_AUTH = f"{BASE_PREFIX}/{Resource.API_TOKEN_AUTH.value}/"
 # -- Tasks --
 TASK_CREATE_FILE = f"{TASKS_BASE}/{Action.CREATE.value}/{Action.FILE.value}/"
 TASK_CREATE_URL = f"{TASKS_BASE}/{Action.CREATE.value}/{Action.URL.value}/"
-TASK_STATUS = f"{TASKS_BASE}/{Action.STATUS.value}" + "/{task_id}/"
+TASK_STATUS = f"{TASKS_BASE}/{Action.STATUS.value}/{{task_id}}/"
 TASK_VIEW = f"{TASKS_BASE}/{Action.VIEW.value}/{{task_id}}/"
-TASK_LIST = f"{TASKS_BASE}/list" + "/{limit}/{offset}/"
-TASK_DELETE = f"{TASKS_BASE}/{Action.DELETE.value}" + "/{task_id}/"
-TASK_GET_REPORT_BASE = f"{TASKS_BASE}/{Action.GET.value}/report" + "/{task_id}/"
-TASK_GET_PCAP = f"{TASKS_BASE}/{Action.GET.value}/{Action.PCAP.value}" + "/{task_id}/"
+TASK_LIST = f"{TASKS_BASE}/list/{{limit}}/{{offset}}/"
+TASK_DELETE = f"{TASKS_BASE}/{Action.DELETE.value}/{{task_id}}/"
+TASK_GET_REPORT_BASE = f"{TASKS_BASE}/{Action.GET.value}/report/{{task_id}}/"
+TASK_GET_PCAP = f"{TASKS_BASE}/{Action.GET.value}/{Action.PCAP.value}/{{task_id}}/"
 CUCKOO_STATUS_URL = f"{BASE_PREFIX}/cuckoo/{Action.STATUS.value}/"
-TASK_SCREENSHOTS_LIST = f"{TASKS_BASE}/{Action.GET.value}/screenshot" + "/{task_id}/"
+TASK_SCREENSHOTS_LIST = f"{TASKS_BASE}/{Action.GET.value}/screenshot/{{task_id}}/"
 TASK_SCREENSHOT_GET = (
-    f"{TASKS_BASE}/{Action.GET.value}/screenshot" + "/{task_id}/{number}/"
+    f"{TASKS_BASE}/{Action.GET.value}/screenshot/{{task_id}}/{{number}}/"
 )
 
 # -- Files --
-FILE_VIEW_BY_TASK = (
-    f"{FILES_BASE}/{Action.VIEW.value}/{Action.ID.value}" + "/{task_id}/"
-)
-FILE_VIEW_BY_MD5 = f"{FILES_BASE}/{Action.VIEW.value}/{Action.MD5.value}" + "/{md5}/"
+FILE_VIEW_BY_TASK = f"{FILES_BASE}/{Action.VIEW.value}/{Action.ID.value}/{{task_id}}/"
+FILE_VIEW_BY_MD5 = f"{FILES_BASE}/{Action.VIEW.value}/{Action.MD5.value}/{{md5}}/"
 FILE_VIEW_BY_SHA256 = (
-    f"{FILES_BASE}/{Action.VIEW.value}/{Action.SHA256.value}" + "/{sha256}/"
+    f"{FILES_BASE}/{Action.VIEW.value}/{Action.SHA256.value}/{{sha256}}/"
 )
-FILES_GET_BY_TASK = f"{FILES_BASE}/{Action.GET.value}/task" + "/{task_id}"
-FILES_GET_BY_MD5 = f"{FILES_BASE}/{Action.GET.value}/{Action.MD5.value}" + "/{md5}"
-FILES_GET_BY_SHA1 = f"{FILES_BASE}/{Action.GET.value}/{Action.SHA1.value}" + "/{sha1}"
+FILES_GET_BY_TASK = f"{FILES_BASE}/{Action.GET.value}/task/{{task_id}}"
+FILES_GET_BY_MD5 = f"{FILES_BASE}/{Action.GET.value}/{Action.MD5.value}/{{md5}}"
+FILES_GET_BY_SHA1 = f"{FILES_BASE}/{Action.GET.value}/{Action.SHA1.value}/{{sha1}}"
 FILES_GET_BY_SHA256 = (
-    f"{FILES_BASE}/{Action.GET.value}/{Action.SHA256.value}" + "/{sha256}"
+    f"{FILES_BASE}/{Action.GET.value}/{Action.SHA256.value}/{{sha256}}"
 )
 
 # -- Machines --
@@ -446,15 +447,12 @@ class CapeSandboxClient(BaseClient):  # noqa: F405
 
             demisto.debug(
                 f"CAPE API call for {url_suffix} failed with explicit error flag",
-                {
-                    "url": url_suffix,
-                    "message": fail_message,
-                    "response": response,
-                },
+                {"url": url_suffix, "message": fail_message, "response": response},
             )
 
             raise DemistoException(
-                f"CapeSandbox API call failed for {url_suffix}, with error {fail_message}"
+                f"CapeSandbox API call failed for {url_suffix}, "
+                f"with error {fail_message}"
             )
 
     def ensure_token(self) -> str:
@@ -790,7 +788,10 @@ def cape_task_poll_report(
             demisto.debug(
                 f"Task ID {task_id}: Received throttling error (429). Ignoring failure and scheduling next poll."
             )
-            readable = f"Task ID {task_id} received a **Too Many Requests (429)** error. Continuing to poll in {polling_interval} seconds."
+            readable = (
+                f"Task ID {task_id} received a **Too Many Requests (429)** error. "
+                f"Continuing to poll in {polling_interval} seconds."
+            )
 
             return PollResult(
                 response=None,
@@ -849,22 +850,23 @@ def cape_task_poll_report(
             f"Polling finished successfully for Task {task_id}. Results returned."
         )
         demisto.debug(final_readable)
-        # readable = f"Polling finished successfully for Task {task_id}."
-        # demisto.debug(readable)
 
         return PollResult(
             response=[
                 file_result,
                 final_results,
-            ],  # Pass all results (file and HR) here
-            continue_to_poll=False,  # STOP POLLING
+            ],
+            continue_to_poll=False,
             partial_result=CommandResults(readable_output=final_readable),
         )
 
     # --- Polling Continuation ---
     else:
         continuation_output_prefix = args.get("outputs_prefix", "Cape.Task")
-        readable = f"Task ID {task_id} status is '{status}'. Scheduling next check in {polling_interval} seconds."
+        readable = (
+            f"Task ID {task_id} status is '{status}'. "
+            f"Scheduling next check in {polling_interval} seconds."
+        )
         demisto.debug(readable)
 
         status_update = CommandResults(
@@ -1474,14 +1476,14 @@ def cape_task_screenshot_download_command(
 
             processed_numbers.add(number)
 
-        except DemistoException as ex:
+        except DemistoException as error:
             demisto.debug(
-                f"Failed to fetch screenshot {number} for task {task_id}: {ex}"
+                f"Failed to fetch screenshot {number} for task {task_id}: {error}"
             )
 
-        except Exception as ex:
+        except Exception as error:
             demisto.debug(
-                f"Unexpected error while processing screenshot {number}: {ex}"
+                f"Unexpected error while processing screenshot {number}: {error}"
             )
 
     if not file_entries:
@@ -1573,6 +1575,7 @@ def main() -> None:
         demisto.error(
             f"Failed to execute {command} command. Error: {str(error)}.\n",
             traceback.format_exc(),
+            error,
         )
         return_error(
             f"Failed to execute {command} command. Error: {str(error)}",
