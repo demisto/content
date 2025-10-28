@@ -343,7 +343,6 @@ class Client(BaseClient):
             if response.status_code != 200:
                 raise Exception(f"Wrong status code: {response.status_code}")
             response = response.json()
-            demisto.debug(f"[get_all_services] response: {response}")
 
             if "data" in response and isinstance(response["data"], Sequence):
                 demisto.debug(f"Received services: {json.dumps(response['data'], indent=2)}")
