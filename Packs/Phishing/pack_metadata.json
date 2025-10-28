@@ -2,7 +2,7 @@
     "name": "Phishing",
     "description": "Phishing emails still hooking your end users? This Content Pack can drastically reduce the time your security team spends on phishing alerts.",
     "support": "xsoar",
-    "currentVersion": "3.7.11",
+    "currentVersion": "3.7.12",
     "serverMinVersion": "6.0.0",
     "videos": [
         "https://www.youtube.com/watch?v=SY-3L348PoY"
@@ -184,10 +184,6 @@
         "FortiGate": {
             "mandatory": false,
             "display_name": "FortiGate"
-        },
-        "CortexXDR": {
-            "mandatory": false,
-            "display_name": "Palo Alto Networks Cortex XDR - Investigation and Response"
         },
         "Cylance_Protect": {
             "mandatory": false,
