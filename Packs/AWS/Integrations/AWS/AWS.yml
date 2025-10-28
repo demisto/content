@@ -3039,7 +3039,7 @@ script:
         description: Weather log file validation is enabled.
         type: boolean
       - contextPath: AWS.CloudTrail.Trail.CloudWatchLogsLogGroupArn
-        description: Amazon Resource Name (ARN), a unique identifier that represents the log group to which CloudTrail logs will be delivered.
+        description: The Amazon Resource Name (ARN), a unique identifier representing the log group to which CloudTrail logs are delivered.
         type: string
       - contextPath: AWS.CloudTrail.Trail.CloudWatchLogsRoleArn
         description: The role for the CloudWatch Logs endpoint to assume to write to a user's log group.
