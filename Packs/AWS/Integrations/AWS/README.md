@@ -1381,7 +1381,6 @@ Modifies a subnet attribute.
 
 There is no context output for this command.
 
-
 ### aws-s3-bucket-website-delete
 
 ***
@@ -1701,4 +1700,3 @@ Lists the notifications that are associated with a budget.
 | AWS.Billing.Budget.Notification.Subscribers.SubscriptionType | string | Subscription type \(EMAIL or SNS\). |
 | AWS.Billing.Budget.Notification.Subscribers.Address | string | Email address or SNS topic ARN for the subscriber. |
 | AWS.Billing.NotificationNextToken | string | Next page token for pagination. |
-

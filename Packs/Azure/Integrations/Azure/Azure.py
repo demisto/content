@@ -7,7 +7,6 @@ from MicrosoftApiModule import *  # noqa: E402
 from COOCApiModule import *
 from requests.exceptions import ConnectionError, Timeout
 from urllib.parse import parse_qs, urlparse, urlencode, urlunparse
-import copy
 from datetime import UTC
 
 
@@ -1587,7 +1586,7 @@ class AzureClient:
         Raises:
             DemistoException: If Azure API call fails, subscription not found, or invalid parameters provided
         """
-        
+
         start_date = arg_to_datetime(start_date) if start_date else datetime.now(UTC)
         end_date = arg_to_datetime(end_date) if end_date else datetime.now(UTC) + timedelta(days=7)
 
@@ -1601,7 +1600,7 @@ class AzureClient:
             "dataset": {
                 "granularity": granularity,
                 "aggregation": {"totalCost": {"function": aggregation_function_type, "name": aggregation_function_name}},
-            }
+            },
         }
         if include_actual_cost:
             body["includeActualCost"] = include_actual_cost
