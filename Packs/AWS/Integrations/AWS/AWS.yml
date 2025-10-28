@@ -268,7 +268,7 @@ script:
         hidden: true
 
   - name: aws-s3-bucket-logging-put
-    description: Configure logging settings for an AWS S3 bucket, allowing to monitor access to the bucket through detailed access logs that are delivered to a designated target bucket.
+    description: Configures logging settings for an AWS S3 bucket, enabling monitoring of bucket access through detailed logs delivered to a designated target bucket.
     arguments:
     - description: The AWS account ID.
       name: account_id
