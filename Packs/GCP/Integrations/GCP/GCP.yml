@@ -762,10 +762,6 @@ script:
           Cluster Name: ${asset.xdm.asset.name}
       - name: enable_master_authorized_networks
         required: false
-        auto: PREDEFINED
-        predefined:
-          - "true"
-          - "false"
         defaultValue: "true"
         hidden: true
         description: Enable Master Authorized Networks.
