@@ -1282,7 +1282,7 @@ script:
     name: aws-iam-update-account-password-policy
 
   - name: aws-iam-update-account-password-policy-quick-action
-    description: This action will update the password policy requiring a minimum password length of 14, atleast one lowercase, atleast one uppercase, atleast one symbol, allow users to reset password, disallow reuse of the last 24 passwords and set password expiration to 90 days. It runs the aws-iam-update-account-password-policy CLI command in your AWS environment and requires 'iam:UpdateAccountPasswordPolicy' permission.
+    description: This action will update the password policy requiring a minimum password length of 14 characters, at least one lowercase letter, at least one uppercase letter, and at least one symbol. Allowing users to reset password, disallow reuse of the last 24 passwords and set password expiration to 90 days. It runs the aws-iam-update-account-password-policy CLI command in your AWS environment and requires 'iam:UpdateAccountPasswordPolicy' permission.
     prettyname: Apply IAM Password Policy
     hidden: true
     quickaction: true
