@@ -876,7 +876,7 @@ def cape_file_view_command(client: CapeSandboxClient, args: dict[str, Any]) -> C
     if sum(bool(x) for x in [task_id, md5, sha256]) > 1:
         raise DemistoException("Provide only one of task_id, md5, sha256")
 
-    resp = {}
+    resp: dict[str, Any] = {}
 
     if task_id:
         demisto.debug(f"Calling files_view_by_task for task ID: {task_id}.")
@@ -955,7 +955,7 @@ def cape_sample_file_download_command(client: CapeSandboxClient, args: dict[str,
     if sum(bool(x) for x in [task_id, md5, sha1, sha256]) > 1:
         raise DemistoException("Provide only one of task_id, md5, sha1 ,sha256")
 
-    resp = {}
+    resp: bytes | dict[str, Any] = b""
     filename_base = ""
 
     if task_id:
@@ -1308,9 +1308,14 @@ def cape_task_screenshot_download_command(client: CapeSandboxClient, args: dict[
     candidate_numbers = []
 
     for idx in candidates_raw:
-        number = idx.get("number") if isinstance(idx, dict) else idx
-        if number:
-            candidate_numbers.append(int(number))
+        current_number: int | None = None
+        if isinstance(idx, dict):
+            current_number = arg_to_number(idx.get("number"))
+        elif isinstance(idx, int):
+            current_number = idx
+
+        if current_number is not None:
+            candidate_numbers.append(current_number)
 
     if not candidate_numbers and not single_number:
         candidate_numbers.extend(range(1, 6))
