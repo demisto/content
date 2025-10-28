@@ -3027,7 +3027,7 @@ script:
         description: The Amazon Resource Name (ARN) of the Amazon SNS topic defined for notification of log file delivery.
         type: string
       - contextPath: AWS.CloudTrail.Trail.IncludeGlobalServiceEvents
-        description: Set to True to include AWS API calls from AWS global services such as IAM.
+        description: Set to True to include AWS API calls from global services, such as IAM.
         type: boolean
       - contextPath: AWS.CloudTrail.Trail.IsMultiRegionTrail
         description: Weather the trail exists only in one region or exists in all regions.
