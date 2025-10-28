@@ -773,6 +773,70 @@ class S3:
         except Exception as e:
             raise DemistoException(f"Error: {str(e)}")
 
+    @staticmethod
+    def file_download_command(client: BotoClient, args: Dict[str, Any]):
+        """
+        Download a file from an S3 bucket.
+
+        Args:
+            client (BotoClient): The initialized Boto3 S3 client.
+            args (Dict[str, Any]): Command arguments, typically containing:
+                - 'bucket' (str): The name of the S3 bucket. (Required)
+                - 'key' (str): The key of the file to download. (Required)
+
+        Returns:
+            fileResult: fileResult object
+        """
+        bucket = args.get("bucket")
+        key = args.get("key", "")
+        print_debug_logs(client, f"downloading bucket={bucket}, key={key}")
+        try:
+            resp = client.get_object(Bucket=bucket, Key=key)
+            body = resp["Body"]
+            try:
+                data = body.read()
+            finally:
+                try:
+                    body.close()
+                except Exception:
+                    pass
+            filename = key.rsplit("/", 1)[-1]
+            return fileResult(filename, data)
+        except ClientError as err:
+            AWSErrorHandler.handle_client_error(err)
+        except Exception as e:
+            raise DemistoException(f"Error: {str(e)}")
+
+    @staticmethod
+    def file_upload_command(client: BotoClient, args: Dict[str, Any]):
+        """
+        Upload a file to an S3 bucket.
+
+        Args:
+            client (BotoClient): The initialized Boto3 S3 client.
+            args (Dict[str, Any]): Command arguments, typically containing:
+                - 'bucket' (str): The name of the S3 bucket. (Required)
+                - 'key' (str): The key of the file to upload. (Required)
+                - 'entryID' (str): The ID of the file to upload. (Required)
+
+        Returns:
+            CommandResults: A CommandResults object with a success/fail message.
+        """
+        bucket = args.get("bucket")
+        key = args.get("key")
+        entry_id = args.get("entryID")
+        path = get_file_path(entry_id)
+        print_debug_logs(client, f"uploading entryID={entry_id} to bucket={bucket}, key={key}")
+        try:
+            with open(path["path"], "rb") as data:
+                client.upload_fileobj(data, bucket, key)
+                return CommandResults(readable_output=f"File {key} was uploaded successfully to {bucket}")
+        except ClientError as err:
+            AWSErrorHandler.handle_client_error(err)
+        except Exception as e:
+            raise DemistoException(f"Error: {str(e)}")
+        return CommandResults(readable_output="Failed to upload file")
+
 
 class IAM:
     service = AWSServices.IAM
@@ -2526,6 +2590,9 @@ class ELB:
 
         except Exception as e:
             raise DemistoException(f"Error modifying load balancer '{lb_name}': {str(e)}")
+def get_file_path(file_id):
+    filepath_result = demisto.getFilePath(file_id)
+    return filepath_result
 
 
 COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResults | None]] = {
@@ -2536,6 +2603,8 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-s3-bucket-policy-put": S3.put_bucket_policy_command,
     "aws-s3-bucket-website-delete": S3.delete_bucket_website_command,
     "aws-s3-bucket-ownership-controls-put": S3.put_bucket_ownership_controls_command,
+    "aws-s3-file-upload": S3.file_upload_command,
+    "aws-s3-file-download": S3.file_download_command,
     "aws-iam-account-password-policy-get": IAM.get_account_password_policy_command,
     "aws-iam-account-password-policy-update": IAM.update_account_password_policy_command,
     "aws-iam-role-policy-put": IAM.put_role_policy_command,
@@ -2599,6 +2668,8 @@ REQUIRED_ACTIONS: list[str] = [
     "s3:PutBucketVersioning",
     "s3:PutBucketPolicy",
     "s3:PutBucketPublicAccessBlock",
+    "s3:PutObject",
+    "s3:GetObject",
     "ec2:RevokeSecurityGroupEgress",
     "ec2:ModifyImageAttribute",
     "ec2:ModifyInstanceAttribute",

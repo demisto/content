@@ -1366,7 +1366,7 @@ Modifies a subnet attribute.
 | account_id | The AWS account ID. | Required |
 | region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
 | subnet_id | The ID of the subnet. | Required |
-| assign_ipv6_address_on_creation | Specify true to indicate that network interfaces created in the specified subnet should be assigned an IPv6 address. | Optional |
+| assign_ipv6_address_on_creation | Specify true to assign IPv6 addresses to network interfaces created in the specified subnet. | Optional |
 | customer_owned_ipv4_pool | The customer-owned IPv4 address pool associated with the subnet. | Optional |
 | disable_lni_at_device_index | Specify true to indicate that local network interfaces at the current position should be disabled. | Optional |
 | enable_dns64 | Indicates whether DNS queries made to the Amazon-provided DNS Resolver in this subnet should return synthetic IPv6 addresses for IPv4-only destinations. | Optional |
@@ -1375,7 +1375,7 @@ Modifies a subnet attribute.
 | enable_resource_name_dns_a_record_on_launch | Indicates whether to respond to DNS queries for instance hostnames with DNS A records. | Optional |
 | map_customer_owned_ip_on_launch | Specify true to indicate that network interfaces attached to instances created in the specified subnet should be assigned a customer-owned IPv4 address. | Optional |
 | map_public_ip_on_launch | Specify true to indicate that network interfaces attached to instances created in the specified subnet should be assigned a public IPv4 address. | Optional |
-| private_dns_hostname_type_on_launch | The type of hostname to assign to instances in the subnet at launch. | Optional |
+| private_dns_hostname_type_on_launch | The type of hostname to assign to instances in the subnet when they are launched. | Optional |
 
 #### Context Output
 
@@ -1459,6 +1459,62 @@ Modifies an existing RDS event notification subscription.
 | AWS.RDS.EventSubscription.SourceType | string | The source type for the RDS event notification subscription. |
 | AWS.RDS.EventSubscription.Status | string | The status of the RDS event notification subscription. |
 | AWS.RDS.EventSubscription.SubscriptionCreationTime | string | The time the RDS event notification subscription was created. |
+
+### aws-s3-file-upload
+
+***
+Upload file to S3 bucket.
+
+#### Base Command
+
+`aws-s3-file-upload`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| entryID | Entry ID of the file to upload. | Required |
+| bucket | Name of the S3 bucket containing the file. Must follow S3 naming conventions. | Required |
+| key | Key (path) where the file will be stored in the S3 bucket. | Required |
+| region | AWS region where the S3 bucket is located. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### aws-s3-file-download
+
+***
+Download a file from S3 bucket to the War Room.
+
+#### Base Command
+
+`aws-s3-file-download`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| bucket | Name of the target S3 bucket. Must follow S3 naming conventions. | Required |
+| key | Key (path) of the file to download from the S3 bucket. | Required |
+| region | AWS region where the S3 bucket is located. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| File.Size | Number | The size of the file. |
+| File.SHA1 | String | The SHA1 hash of the file. |
+| File.SHA256 | String | The SHA256 hash of the file. |
+| File.Name | String | The name of the file. |
+| File.SSDeep | String | The SSDeep hash of the file. |
+| File.EntryID | String | The entry ID of the file. |
+| File.Info | String | File information. |
+| File.Type | String | The file type. |
+| File.MD5 | String | The MD5 hash of the file. |
+| File.Extension | String | The file extension. |
 
 ### aws-kms-key-enable-rotation
 

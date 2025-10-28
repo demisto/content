@@ -38,7 +38,7 @@ Get asset information.
 | Core.CoreAsset.xdm__asset__first_observed | unknown | The timestamp when the asset was first observed, in ISO 8601 format. |
 | Core.CoreAsset.asset_hierarchy | unknown | The hierarchy or structure representing the asset. |
 | Core.CoreAsset.xdm__asset__type__category | unknown | The asset category type. |
-| Core.CoreAsset.xdm__cloud__region | unknown | The cloud region where the asset resides. |
+| Core.CoreAsset.xdm__asset__cloud__region | unknown | The cloud region where the asset resides. |
 | Core.CoreAsset.xdm__asset__module_unstructured_fields | unknown | The unstructured fields or metadata associated with the asset module. |
 | Core.CoreAsset.xdm__asset__source | unknown | The originating source of the asset's information. |
 | Core.CoreAsset.xdm__asset__id | unknown | The source unique identifier for the asset. |
@@ -62,7 +62,7 @@ Get asset information.
         {
             "asset_hierarchy": ["123"],
             "xdm__asset__type__category": "Policy",
-            "xdm__cloud__region": "Global",
+            "xdm__asset__cloud__region": "Global",
             "xdm__asset__module_unstructured_fields": {},
             "xdm__asset__source": "XSIAM",
             "xdm__asset__id": "123",
@@ -80,7 +80,7 @@ Get asset information.
 
 ##### Human Readable Output
 
->| asset_hierarchy | xdm__asset__type__category | xdm__cloud__region | xdm__asset__module_unstructured_fields | xdm__asset__source | xdm__asset__id | xdm__asset__type__class | xdm__asset__normalized_fields | xdm__asset__first_observed | xdm__asset__last_observed | xdm__asset__name | xdm__asset__type__name | xdm__asset__strong_id |
+>| asset_hierarchy | xdm__asset__type__category | xdm__asset__cloud__region | xdm__asset__module_unstructured_fields | xdm__asset__source | xdm__asset__id | xdm__asset__type__class | xdm__asset__normalized_fields | xdm__asset__first_observed | xdm__asset__last_observed | xdm__asset__name | xdm__asset__type__name | xdm__asset__strong_id |
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >|123|Policy|Global||XSIAM|123|Identity||100000000|100000000|Fake Name|IAM|FAKE ID|
 
