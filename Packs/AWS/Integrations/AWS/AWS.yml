@@ -1384,7 +1384,7 @@ script:
         prettypredefined:
           RDS Cluster ID: ${asset.xdm.asset.name}
       - name: enable_iam_database_authentication
-        description: 'Weather to enable mapping of Amazon Web Services Identity and Access Management (IAM) accounts to database accounts. By default, mapping isn’t enabled.'
+        description: 'Whether to enable mapping of Amazon Web Services Identity and Access Management (IAM) accounts to database accounts. By default, mapping isn’t enabled.'
         defaultValue: 'true'
         hidden: true
 
@@ -1445,7 +1445,7 @@ script:
       required: false
 
   - name: aws-rds-db-cluster-snapshot-set-to-private-quick-action
-    description: Revokes public access to the RDS DB cluster snapshot and making it private.
+    description: Revokes public access to the RDS DB cluster snapshot, making it private.
     prettyname: Set RDS Cluster Snapshot to Private
     hidden: true
     quickaction: true
@@ -1502,7 +1502,7 @@ script:
         prettypredefined:
           RDS Cluster ID: ${asset.xdm.asset.name}
       - name: deletion_protection
-        description: 'Weather the DB cluster has deletion protection enabled. The database can’t be deleted when deletion protection is enabled. By default, deletion protection isn’t enabled.'
+        description: 'Whether the DB cluster has deletion protection enabled. The database can’t be deleted when deletion protection is enabled. By default, deletion protection isn’t enabled.'
         defaultValue: 'true'
         hidden: true
 
@@ -1633,11 +1633,11 @@ script:
         prettypredefined:
           RDS Instance ID: ${asset.xdm.asset.name}
       - name: publicly_accessible
-        description: 'Weather the DB instance is publicly accessible.'
+        description: 'Whether the DB instance is publicly accessible.'
         defaultValue: 'false'
         hidden: true
       - name: apply_immediately
-        description: 'Weather the modifications in this request and any pending modifications are asynchronously applied as soon as possible, regardless of the PreferredMaintenanceWindow setting for the DB instance. By default, this parameter is disabled. If this parameter is disabled, changes to the DB instance are applied during the next maintenance window. Some parameter changes can cause an outage and are applied on the next call to RebootDBInstance , or the next failure reboot.'
+        description: 'Whether the modifications in this request and any pending modifications are asynchronously applied as soon as possible, regardless of the PreferredMaintenanceWindow setting for the DB instance. By default, this parameter is disabled. If this parameter is disabled, changes to the DB instance are applied during the next maintenance window. Some parameter changes can cause an outage and are applied on the next call to RebootDBInstance, or the next failure reboot.'
         defaultValue: 'true'
         hidden: true
 
@@ -1666,7 +1666,7 @@ script:
         prettypredefined:
           RDS Instance ID: ${asset.xdm.asset.name}
       - name: copy_tags_to_snapshot
-        description: 'Weather to copy all tags from the DB instance to snapshots of the DB instance. By default, tags aren’t copied.'
+        description: 'Whether to copy all tags from the DB instance to snapshots of the DB instance. By default, tags aren’t copied.'
         defaultValue: 'true'
         hidden: true
       - name: apply_immediately
@@ -1703,7 +1703,7 @@ script:
         defaultValue: '30'
         hidden: true
       - name: apply_immediately
-        description: 'Weather the modifications in this request and any pending modifications are asynchronously applied as soon as possible, regardless of the PreferredMaintenanceWindow setting for the DB instance. By default, this parameter is disabled. If this parameter is disabled, changes to the DB instance are applied during the next maintenance window. Some parameter changes can cause an outage and are applied on the next call to RebootDBInstance , or the next failure reboot.'
+        description: 'Whether the modifications in this request and any pending modifications are asynchronously applied as soon as possible, regardless of the PreferredMaintenanceWindow setting for the DB instance. By default, this parameter is disabled. If this parameter is disabled, changes to the DB instance are applied during the next maintenance window. Some parameter changes can cause an outage and are applied on the next call to RebootDBInstance, or the next failure reboot.'
         defaultValue: 'true'
         hidden: true
 
@@ -1732,7 +1732,7 @@ script:
         prettypredefined:
           RDS Instance ID: ${asset.xdm.asset.name}
       - name: enable_iam_database_authentication
-        description: 'Weather to enable mapping of Amazon Web Services Identity and Access Management (IAM) accounts to database accounts. By default, mapping isn’t enabled.'
+        description: 'Whether to enable mapping of Amazon Web Services Identity and Access Management (IAM) accounts to database accounts. By default, mapping isn’t enabled.'
         defaultValue: 'true'
         hidden: true
 
@@ -1761,7 +1761,7 @@ script:
         prettypredefined:
           RDS Instance ID: ${asset.xdm.asset.name}
       - name: deletion_protection
-        description: 'Weather the DB instance has deletion protection enabled. The database can’t be deleted when deletion protection is enabled. By default, deletion protection isn’t enabled. For more information, see Deleting a DB Instance.'
+        description: 'Whether the DB instance has deletion protection enabled. The database can’t be deleted when deletion protection is enabled. By default, deletion protection isn’t enabled. For more information, see [Deleting a DB Instance.](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_DeleteInstance.html)'
         defaultValue: 'true'
         hidden: true
 
@@ -1790,7 +1790,7 @@ script:
         prettypredefined:
           RDS Instance ID: ${asset.xdm.asset.name}
       - name: auto_minor_version_upgrade
-        description: 'Weather minor version upgrades are applied automatically to the DB instance during the maintenance window. An outage occurs when all the following conditions are met: The automatic upgrade is enabled for the maintenance window. A newer minor version is available. RDS has enabled automatic patching for the engine version. If any of the preceding conditions isn’t met, Amazon RDS applies the change as soon as possible and doesn’t cause an outage. For an RDS Custom DB instance, don’t enable this setting. Otherwise, the operation returns an error.'
+        description: 'Whether minor version upgrades are applied automatically to the DB instance during the maintenance window. An outage occurs only if all of the following conditions are met: the automatic upgrade is enabled for the maintenance window, a newer minor version is available, and RDS has enabled automatic patching for the engine version. If any of these conditions are not met, Amazon RDS applies the change as soon as possible without causing an outage. For an RDS Custom DB instance, do not enable this setting; otherwise, the operation returns an error.'
         defaultValue: 'true'
         hidden: true
       - name: apply_immediately
@@ -2976,7 +2976,7 @@ script:
       description: Weather a trail has insight selectors enabled.
       type: boolean
     - contextPath: AWS.CloudTrail.Trail.IsOrganizationTrail
-      description: Weather the trail is an organization trail.
+      description: Whether the trail is an organization trail.
       type: boolean
 
   - name: aws-cloudtrail-trail-enable-log-validation-quick-action
@@ -3030,13 +3030,13 @@ script:
         description: Set to True to include AWS API calls from global services, such as IAM.
         type: boolean
       - contextPath: AWS.CloudTrail.Trail.IsMultiRegionTrail
-        description: Weather the trail exists only in one region or exists in all regions.
+        description: Whether the trail exists in a single region or in all regions.
         type: boolean
       - contextPath: AWS.CloudTrail.Trail.HomeRegion
         description: The region in which the trail was created.
         type: string
       - contextPath: AWS.CloudTrail.Trail.LogFileValidationEnabled
-        description: Weather log file validation is enabled.
+        description: Whether log file validation is enabled.
         type: boolean
       - contextPath: AWS.CloudTrail.Trail.CloudWatchLogsLogGroupArn
         description: The Amazon Resource Name (ARN), a unique identifier representing the log group to which CloudTrail logs are delivered.
@@ -3051,7 +3051,7 @@ script:
         description: Specifies if the trail has custom event selectors.
         type: boolean
       - contextPath: AWS.CloudTrail.Trail.HasInsightSelectors
-        description: Weather a trail has insight selectors enabled.
+        description: Whether a trail has insight selectors enabled.
         type: boolean
       - contextPath: AWS.CloudTrail.Trail.IsOrganizationTrail
         description: Whether the trail is an organization trail.
