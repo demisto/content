@@ -2191,7 +2191,7 @@ script:
       required: false
 
   - name: aws-ec2-snapshot-attribute-modify
-    description: 'Adds or removes permission settings for the specified snapshot. Note: snapshots encrypted with the AWS-managed default key (alias/aws/ebs) cannot be shared—use unencrypted snapshots or those encrypted with a customer-managed KMS key to allow permission modifications.'
+    description: 'Adds or removes permission settings for the specified snapshot. Note: snapshots encrypted with the AWS-managed default key (alias/aws/ebs) cannot be shared. Use unencrypted snapshots or those encrypted with a customer-managed KMS key to allow permission modifications.'
     arguments:
     - name: account_id
       description: The AWS account ID.
