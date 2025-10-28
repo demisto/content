@@ -1352,8 +1352,8 @@ Enables App Service Authentication for the web app.
 | --- | --- | --- |
 | subscription_id | The subscription ID. | Required |
 | resource_group_name | The resource group name. | Required |
-| name | Name of the Web App. | Required | 
-| enabled | Whether App Service Authentication/Authorization is enabled. Default is true. | Optional 
+| name | Name of the Web App. | Required |
+| enabled | Whether App Service Authentication/Authorization is enabled. Default is true. | Optional
 
 #### Context Output
 
@@ -1488,7 +1488,7 @@ Disables public access to blobs for the storage account, blocking anonymous/publ
 | Azure.StorageAccount.properties.supportsHttpsTrafficOnly | Boolean | If set to true, allows https traffic only to storage service. |
 | Azure.StorageAccount.sku.name | String | The SKU name. Required for account creation; optional for update. |
 | Azure.StorageAccount.sku.tier | String | The SKU tier. This is based on the SKU name. |
-| Azure.StorageAccount.tags | unknown | Resource tags. | 
+| Azure.StorageAccount.tags | unknown | Resource tags. |
 | Azure.StorageAccount.type | String | The storage account type. |
 
 ### azure-storage-allow-access-quick-action
@@ -1810,6 +1810,6 @@ Deletes a network security group (NSG) rule.
 | Azure.NSGRule.destinationPortRanges | String | For multiple ports, a list of destination ports. |
 | Azure.NSGRule.sourceAddressPrefix | String | The source address. |
 | Azure.NSGRule.destinationAddressPrefix | String | The destination address. |
-| Azure.NSGRule.access | String | The rule's access. Can be "Allow" or "Deny". 
+| Azure.NSGRule.access | String | The rule's access. Can be "Allow" or "Deny".
 | Azure.NSGRule.priority | Number | The rule's priority, ranging from 100 to 4096. |
 | Azure.NSGRule.direction | String | The rule's direction. Can be "Inbound" or "Outbound". |
