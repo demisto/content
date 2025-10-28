@@ -240,15 +240,14 @@ class Client(CoreClient):
         Returns:
             dict: The response containing playbook suggestions.
         """
-        # Convert issue_id to alert_id for the API call
-        reply = demisto._apiCall(
+        reply = self._http_request(
             method="POST",
-            data=json.dumps({"alert_internal_id": issue_id}),
+            json_data={"alert_internal_id": issue_id},
             headers=self._headers,
-            path="/api/webapp/incident/get_playbook_suggestion_by_alert/",
+            url_suffix="/incident/get_playbook_suggestion_by_alert/",
         )
 
-        return reply.get("data")
+        return reply
 
 
 def search_asset_groups_command(client: Client, args: dict) -> CommandResults:
