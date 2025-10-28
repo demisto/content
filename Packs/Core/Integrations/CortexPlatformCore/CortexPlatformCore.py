@@ -248,7 +248,7 @@ class Client(CoreClient):
             path="/api/webapp/incident/get_playbook_suggestion_by_alert/",
         )
 
-        return reply
+        return reply.get("data")
 
 
 def search_asset_groups_command(client: Client, args: dict) -> CommandResults:
