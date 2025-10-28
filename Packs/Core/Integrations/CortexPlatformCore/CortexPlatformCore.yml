@@ -1119,7 +1119,7 @@ script:
         type: string
       - name: occurred
         description: >
-          Change the occurred time of an issue. Supports different time formats, for example: 2017-09-27T10:00:00+03:00.
+          Change the occurred time of an issue. Supports different time formats, for example: 3 days ago, 2017-09-27T10:00:00+03:00.
         type: string
       - name: phase
         description: Change the phase of an issue.
