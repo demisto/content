@@ -82,7 +82,7 @@ tasks:
       version: -1
       name: Run cve enrichment script
       description: This script collects CVE reputation data from multiple integrations
-        and returns a "CVEEnrichment" object with consolidated information to the
+        and returns a "CVEEnrichment" object with consolidated information in the
         context output.
       scriptName: cve-enrichment
       type: regular
