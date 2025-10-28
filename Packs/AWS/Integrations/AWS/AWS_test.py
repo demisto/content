@@ -4571,7 +4571,7 @@ def test_elb_modify_lb_attributes_success_all_blocks(mocker):
     assert result.outputs_prefix == "AWS.ELB.LoadBalancer"
     assert result.outputs_key_field == "LoadBalancerName"
     assert result.outputs["LoadBalancerName"] == "my-classic-elb"
-    assert "Updated attributes for Classic ELB my-classic-elb." in result.readable_output
+    assert "Updated attributes for Classic ELB my-classic-elb" in result.readable_output
 
     mock_client.modify_load_balancer_attributes.assert_called_once_with(
         LoadBalancerName="my-classic-elb",
