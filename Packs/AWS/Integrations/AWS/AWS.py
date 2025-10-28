@@ -1117,7 +1117,6 @@ class EC2:
         }
         remove_nulls_from_dictionary(kwargs)
         response = client.modify_instance_attribute(**kwargs)
-
         if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK:
             return CommandResults(
                 readable_output=f"Successfully modified EC2 instance `{args.get('instance_id')}` attribute `{kwargs.popitem()}"
@@ -2136,7 +2135,9 @@ class RDS:
                 "EnableIAMDatabaseAuthentication": arg_to_bool_or_none(args.get("enable_iam_database_authentication")),
                 "PubliclyAccessible": arg_to_bool_or_none(args.get("publicly_accessible")),
                 "CopyTagsToSnapshot": arg_to_bool_or_none(args.get("copy_tags_to_snapshot")),
-                "BackupRetentionPeriod": arg_to_bool_or_none(args.get("backup_retention_period")),
+                "BackupRetentionPeriod": int(args.get("backup_retention_period", ""))
+                if args.get("backup_retention_period")
+                else None,
             }
             remove_nulls_from_dictionary(kwargs)
             demisto.info(f"modify_db_instance {kwargs=}")
@@ -2434,10 +2435,14 @@ def get_file_path(file_id):
 COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResults | None]] = {
     "aws-s3-public-access-block-update": S3.put_public_access_block_command,
     "aws-s3-bucket-versioning-put": S3.put_bucket_versioning_command,
+    "aws-s3-bucket-versioning-enable-quick-action": S3.put_bucket_versioning_command,
     "aws-s3-bucket-logging-put": S3.put_bucket_logging_command,
+    "aws-s3-bucket-enable-bucket-access-logging-quick-action": S3.put_bucket_logging_command,
     "aws-s3-bucket-acl-put": S3.put_bucket_acl_command,
+    "aws-s3-bucket-acl-set-to-private-quick-action": S3.put_bucket_acl_command,
     "aws-s3-bucket-policy-put": S3.put_bucket_policy_command,
     "aws-s3-bucket-website-delete": S3.delete_bucket_website_command,
+    "aws-s3-bucket-website-disable-hosting-quick-action": S3.delete_bucket_website_command,
     "aws-s3-bucket-ownership-controls-put": S3.put_bucket_ownership_controls_command,
     "aws-s3-file-upload": S3.file_upload_command,
     "aws-s3-file-download": S3.file_download_command,
@@ -2450,24 +2455,40 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-iam-access-key-update": IAM.update_access_key_command,
     "aws-ec2-instance-metadata-options-modify": EC2.modify_instance_metadata_options_command,
     "aws-ec2-instance-attribute-modify": EC2.modify_instance_attribute_command,
+    "aws-ec2-instance-attribute-modify-quick-action": EC2.modify_instance_attribute_command,
     "aws-ec2-snapshot-attribute-modify": EC2.modify_snapshot_attribute_command,
     "aws-ec2-image-attribute-modify": EC2.modify_image_attribute_command,
+    "aws-ec2-image-attribute-set-ami-to-private-quick-action": EC2.modify_image_attribute_command,
     "aws-ec2-security-group-ingress-revoke": EC2.revoke_security_group_ingress_command,
     "aws-ec2-security-group-ingress-authorize": EC2.authorize_security_group_ingress_command,
     "aws-ec2-security-group-egress-revoke": EC2.revoke_security_group_egress_command,
     "aws-ec2-create-snapshot": EC2.create_snapshot_command,
     "aws-ec2-modify-snapshot-permission": EC2.modify_snapshot_permission_command,
     "aws-ec2-subnet-attribute-modify": EC2.modify_subnet_attribute_command,
+    "aws-ec2-set-snapshot-to-private-quick-action": EC2.modify_snapshot_permission_command,
     "aws-eks-cluster-config-update": EKS.update_cluster_config_command,
     "aws-eks-describe-cluster": EKS.describe_cluster_command,
     "aws-eks-associate-access-policy": EKS.associate_access_policy_command,
     "aws-rds-db-cluster-modify": RDS.modify_db_cluster_command,
+    "aws-rds-db-cluster-enable-iam-auth-quick-action": RDS.modify_db_cluster_command,
+    "aws-rds-db-cluster-enable-deletion-protection-quick-action": RDS.modify_db_cluster_command,
     "aws-rds-db-cluster-snapshot-attribute-modify": RDS.modify_db_cluster_snapshot_attribute_command,
+    "aws-rds-db-cluster-snapshot-set-to-private-quick-action": RDS.modify_db_cluster_snapshot_attribute_command,
     "aws-rds-db-instance-modify": RDS.modify_db_instance_command,
+    "aws-rds-db-instance-modify-publicly-accessible-quick-action": RDS.modify_db_instance_command,
+    "aws-rds-db-instance-modify-copy-tags-on-rds-snapshot-quick-action": RDS.modify_db_instance_command,
+    "aws-rds-db-instance-modify-enable-automatic-backup-quick-action": RDS.modify_db_instance_command,
+    "aws-rds-db-instance-enable-iam-auth-quick-action": RDS.modify_db_instance_command,
+    "aws-rds-db-instance-enable-deletion-protection-quick-action": RDS.modify_db_instance_command,
+    "aws-rds-db-instance-enable-auto-upgrade-quick-action": RDS.modify_db_instance_command,
+    "aws-rds-db-instance-enable-multi-az-quick-action": RDS.modify_db_instance_command,
     "aws-rds-db-snapshot-attribute-modify": RDS.modify_db_snapshot_attribute_command,
     "aws-rds-event-subscription-modify": RDS.modify_event_subscription_command,
+    "aws-rds-db-snapshot-attribute-set-snapshot-to-private-quick-action": RDS.modify_db_snapshot_attribute_command,
     "aws-cloudtrail-logging-start": CloudTrail.start_logging_command,
+    "aws-cloudtrail-logging-start-enable-logging-quick-action": CloudTrail.start_logging_command,
     "aws-cloudtrail-trail-update": CloudTrail.update_trail_command,
+    "aws-cloudtrail-trail-enable-log-validation-quick-action": CloudTrail.update_trail_command,
     "aws-ec2-instances-describe": EC2.describe_instances_command,
     "aws-ec2-instances-start": EC2.start_instances_command,
     "aws-ec2-instances-stop": EC2.stop_instances_command,
