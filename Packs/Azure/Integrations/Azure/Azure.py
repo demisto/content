@@ -44,9 +44,6 @@ PERMISSIONS_TO_COMMANDS = {
         "azure-nsg-security-rule-delete",
         "azure-nsg-security-rule-delete-quick-action",
     ],
-<<<<<<< HEAD
-    "Microsoft.Network/networkInterfaces/read": ["azure-nsg-network-interfaces-list"],
-    "Microsoft.Network/publicIPAddresses/read": ["azure-nsg-public-ip-addresses-list"],
     "Microsoft.Storage/storageAccounts/read": [
         "azure-storage-account-update",
         "azure-storage-allow-access-quick-action",
@@ -59,13 +56,8 @@ PERMISSIONS_TO_COMMANDS = {
         "azure-storage-disable-cross-tenant-replication-quick-action",
         "azure-storage-disable-public-access-quick-action",
     ],
-=======
-    "Microsoft.Network/networkSecurityGroups/securityRules/delete": ["azure-nsg-security-rule-delete"],
     "Microsoft.Network/networkInterfaces/read": ["azure-nsg-network-interfaces-list", "azure-vm-network-interface-details-get"],
     "Microsoft.Network/publicIPAddresses/read": ["azure-nsg-public-ip-addresses-list", "azure-vm-public-ip-details-get"],
-    "Microsoft.Storage/storageAccounts/read": ["azure-storage-account-update"],
-    "Microsoft.Storage/storageAccounts/write": ["azure-storage-account-update"],
->>>>>>> dev-cloud
     "Microsoft.Storage/storageAccounts/blobServices/containers/write": ["azure-storage-blob-containers-update"],
     "Microsoft.Storage/storageAccounts/blobServices/read": [
         "azure-storage-blob-service-properties-set",
