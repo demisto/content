@@ -2,7 +2,7 @@ category: Vulnerability Management
 commonfields:
   id: AzureRiskyUsers
   version: -1
-sectionOrder:
+sectionorder:
 - Connect
 configuration:
 - display: Client ID

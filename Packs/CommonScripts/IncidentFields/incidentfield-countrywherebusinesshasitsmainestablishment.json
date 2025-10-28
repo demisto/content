@@ -5,7 +5,7 @@
     "name": "Country where business has its main establishment",
     "ownerOnly": false,
     "placeholder": "",
- "description": "\"‘main establishment’ means: as regards a controller with establishments in more than one Member State, the place of its central administration in the Union, unless the decisions on the purposes and means of the processing of personal data are taken in another establishment of the controller in the Union and the latter establishment has the power to have such decisions implemented, in which case the establishment having taken such decisions is to be considered to be the main establishment; as regards a processor with establishments in more than one Member State, the place of its central administration in the Union, or, if the processor has no central administration in the Union, the establishment of the processor in the Union where the main processing activities in the context of the activities of an establishment of the processor take place to the extent that the processor is subject to specific obligations under this Regulation;\" - GDPR Art. 4",
+    "description": "\"\u2018main establishment\u2019 means: as regards a controller with establishments in more than one Member State, the place of its central administration in the Union, unless the decisions on the purposes and means of the processing of personal data are taken in another establishment of the controller in the Union and the latter establishment has the power to have such decisions implemented, in which case the establishment having taken such decisions is to be considered to be the main establishment; as regards a processor with establishments in more than one Member State, the place of its central administration in the Union, or, if the processor has no central administration in the Union, the establishment of the processor in the Union where the main processing activities in the context of the activities of an establishment of the processor take place to the extent that the processor is subject to specific obligations under this Regulation;\" - GDPR Art. 4",
     "cliName": "countrywherebusinesshasitsmainestablishment",
     "type": "shortText",
     "closeForm": false,
@@ -39,6 +39,7 @@
         "X3",
         "X5",
         "ENT_PLUS",
-        "agentix"
+        "agentix",
+        "xsiam"
     ]
 }

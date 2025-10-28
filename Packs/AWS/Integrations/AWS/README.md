@@ -1366,7 +1366,7 @@ Modifies a subnet attribute.
 | account_id | The AWS account ID. | Required |
 | region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
 | subnet_id | The ID of the subnet. | Required |
-| assign_ipv6_address_on_creation | Specify true to indicate that network interfaces created in the specified subnet should be assigned an IPv6 address. | Optional |
+| assign_ipv6_address_on_creation | Specify true to assign IPv6 addresses to network interfaces created in the specified subnet. | Optional |
 | customer_owned_ipv4_pool | The customer-owned IPv4 address pool associated with the subnet. | Optional |
 | disable_lni_at_device_index | Specify true to indicate that local network interfaces at the current position should be disabled. | Optional |
 | enable_dns64 | Indicates whether DNS queries made to the Amazon-provided DNS Resolver in this subnet should return synthetic IPv6 addresses for IPv4-only destinations. | Optional |
@@ -1375,7 +1375,7 @@ Modifies a subnet attribute.
 | enable_resource_name_dns_a_record_on_launch | Indicates whether to respond to DNS queries for instance hostnames with DNS A records. | Optional |
 | map_customer_owned_ip_on_launch | Specify true to indicate that network interfaces attached to instances created in the specified subnet should be assigned a customer-owned IPv4 address. | Optional |
 | map_public_ip_on_launch | Specify true to indicate that network interfaces attached to instances created in the specified subnet should be assigned a public IPv4 address. | Optional |
-| private_dns_hostname_type_on_launch | The type of hostname to assign to instances in the subnet at launch. | Optional |
+| private_dns_hostname_type_on_launch | The type of hostname to assign to instances in the subnet when they are launched. | Optional |
 
 #### Context Output
 
@@ -1459,3 +1459,199 @@ Modifies an existing RDS event notification subscription.
 | AWS.RDS.EventSubscription.SourceType | string | The source type for the RDS event notification subscription. |
 | AWS.RDS.EventSubscription.Status | string | The status of the RDS event notification subscription. |
 | AWS.RDS.EventSubscription.SubscriptionCreationTime | string | The time the RDS event notification subscription was created. |
+
+### aws-s3-file-upload
+
+***
+Upload file to S3 bucket.
+
+#### Base Command
+
+`aws-s3-file-upload`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| entryID | Entry ID of the file to upload. | Required |
+| bucket | Name of the S3 bucket containing the file. Must follow S3 naming conventions. | Required |
+| key | Key (path) where the file will be stored in the S3 bucket. | Required |
+| region | AWS region where the S3 bucket is located. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### aws-s3-file-download
+
+***
+Download a file from S3 bucket to the War Room.
+
+#### Base Command
+
+`aws-s3-file-download`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| bucket | Name of the target S3 bucket. Must follow S3 naming conventions. | Required |
+| key | Key (path) of the file to download from the S3 bucket. | Required |
+| region | AWS region where the S3 bucket is located. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| File.Size | Number | The size of the file. |
+| File.SHA1 | String | The SHA1 hash of the file. |
+| File.SHA256 | String | The SHA256 hash of the file. |
+| File.Name | String | The name of the file. |
+| File.SSDeep | String | The SSDeep hash of the file. |
+| File.EntryID | String | The entry ID of the file. |
+| File.Info | String | File information. |
+| File.Type | String | The file type. |
+| File.MD5 | String | The MD5 hash of the file. |
+| File.Extension | String | The file extension. |
+
+
+### aws-ec2-vpcs-describe
+
+***
+Describes one or more of your VPCs.
+
+#### Base Command
+
+`aws-ec2-vpcs-describe`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| filters | One or more filters Separated by ';' (for example, name=<name>;values=<values>). See AWS documentation for details &amp; filter options. | Optional |
+| vpc_ids | A comma-separated list of VPC IDs. | Optional |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.EC2.Vpcs.CidrBlock | string | The primary IPv4 CIDR block for the VPC. |
+| AWS.EC2.Vpcs.DhcpOptionsId | string | The ID of the set of DHCP options you have associated with the VPC. |
+| AWS.EC2.Vpcs.State | string | The current state of the VPC. |
+| AWS.EC2.Vpcs.VpcId | string | The ID of the VPC. |
+| AWS.EC2.Vpcs.InstanceTenancy | string | The allowed tenancy of instances launched into the VPC. |
+| AWS.EC2.Vpcs.IsDefault | string | Indicates whether the VPC is the default VPC. |
+| AWS.EC2.Vpcs.Tags.Key | string | The key of the tag. |
+| AWS.EC2.Vpcs.Tags.Value | string | The value of the tag. |
+| AWS.EC2.Vpcs.Tags.Ipv6CidrBlockAssociationSet.AssociationId | string | The association ID for the IPv6 CIDR block. |
+| AWS.EC2.Vpcs.Tags.Ipv6CidrBlockAssociationSet.Ipv6CidrBlock | string | The IPv6 CIDR block. |
+| AWS.EC2.Vpcs.Tags.Ipv6CidrBlockAssociationSet.Ipv6CidrBlockState.State | string | The state of the CIDR block. |
+| AWS.EC2.Vpcs.Tags.Ipv6CidrBlockAssociationSet.Ipv6CidrBlockState.StatusMessage | string | A message about the status of the CIDR block, if applicable. |
+| AWS.EC2.Vpcs.Tags.CidrBlockAssociationSet.AssociationId | string | The association ID for the IPv4 CIDR block. |
+| AWS.EC2.Vpcs.Tags.CidrBlockAssociationSet.CidrBlock | string | The IPv4 CIDR block. |
+| AWS.EC2.Vpcs.Tags.CidrBlockAssociationSet.CidrBlockState.State | string | The state of the CIDR block. |
+| AWS.EC2.Vpcs.Tags.CidrBlockAssociationSet.CidrBlockState.StatusMessage | string | A message about the status of the CIDR block, if applicable. |
+| AWS.EC2.Vpcs.AccountId | string | The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided. |
+
+### aws-ec2-subnets-describe
+
+***
+Describes one or more of your subnets.
+
+#### Base Command
+
+`aws-ec2-subnets-describe`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| filters | One or more filters Separated by ';' (for example, name=<name>;values=<values>). See AWS documentation for details &amp; filter options. | Optional |
+| subnet_ids | A comma-separated list of subnet IDs. | Optional |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.EC2.Subnets.AvailabilityZone | string | The Availability Zone of the subnet. |
+| AWS.EC2.Subnets.AvailableIpAddressCount | number | The number of unused private IPv4 addresses in the subnet. Note that the IPv4 addresses for any stopped instances are considered unavailable. |
+| AWS.EC2.Subnets.CidrBlock | string | The IPv4 CIDR block assigned to the subnet. |
+| AWS.EC2.Subnets.DefaultForAz | boolean | Indicates whether this is the default subnet for the Availability Zone. |
+| AWS.EC2.Subnets.MapPublicIpOnLaunch | boolean | Indicates whether instances launched in this subnet receive a public IPv4 address. |
+| AWS.EC2.Subnets.State | string | The current state of the subnet. |
+| AWS.EC2.Subnets.SubnetId | string | The ID of the subnet. |
+| AWS.EC2.Subnets.VpcId | string | The ID of the VPC the subnet is in. |
+| AWS.EC2.Subnets.AssignIpv6AddressOnCreation | boolean | Indicates whether a network interface created in this subnet \(including a network interface created by RunInstances\) receives an IPv6 address. |
+| AWS.EC2.Subnets.Ipv6CidrBlockAssociationSet.AssociationId | string | The association ID for the CIDR block. |
+| AWS.EC2.Subnets.Ipv6CidrBlockAssociationSet.Ipv6CidrBlock | string | The IPv6 CIDR block. |
+| AWS.EC2.Subnets.Ipv6CidrBlockAssociationSet.Ipv6CidrBlockState.State | string | The state of a CIDR block. |
+| AWS.EC2.Subnets.Ipv6CidrBlockAssociationSet.Ipv6CidrBlockState.StatusMessage | string | A message about the status of the CIDR block, if applicable. |
+| AWS.EC2.Subnets.Tags.Key | string | The key of the tag. |
+| AWS.EC2.Subnets.Tags.Value | string | The value of the tag. |
+| AWS.EC2.Subnets.AccountId | string | The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided. |
+
+### aws-ec2-ipam-resource-discoveries-describe
+
+***
+Describes IPAM resource discoveries. A resource discovery is an IPAM component that enables IPAM to manage and monitor resources owned by the account.
+
+#### Base Command
+
+`aws-ec2-ipam-resource-discoveries-describe`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ipam_resource_discovery_ids | A comma-separated list of the IPAM resource discovery IDs. | Optional |
+| filters | One or more filters separated by ';' (for example, name=<name>;values=<values>). See AWS documentation for details &amp; filter options (https://docs.aws.amazon.com/cli/latest/userguide/cli-usage-filter.html). | Optional |
+| limit | The maximum number of results to return in a single call. Specify a value between 5 and 1000. Default value is 50. | Optional |
+| next_token | The token for the next set of results. | Optional |
+| address_region | The Amazon Web Services region for the IP address. | Optional |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.EC2.IpamResourceDiscoveries.IpamResourceDiscoveryId | String | The resource discovery ID. |
+| AWS.EC2.IpamResourceDiscoveries.OwnerId | String | The ID of the owner. |
+| AWS.EC2.IpamResourceDiscoveries.IpamResourceDiscoveryRegion | String | The resource discovery region. |
+| AWS.EC2.IpamResourceDiscoveries.AccountId | string | The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided. |
+
+### aws-ec2-ipam-resource-discovery-associations-describe
+
+***
+Describes resource discovery association with an Amazon VPC IPAM. An associated resource discovery is a resource discovery that has been associated with an IPAM.
+
+#### Base Command
+
+`aws-ec2-ipam-resource-discovery-associations-describe`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ipam_resource_discovery_association_ids | A comma-separated list of the resource discovery association IDs. | Optional |
+| filters | One or more filters separated by ';' (for example, name=<name>;values=<values>). See AWS documentation for details &amp; filter options (https://docs.aws.amazon.com/cli/latest/userguide/cli-usage-filter.html). | Optional |
+| limit | The maximum number of results to return in a single call. Specify a value between 5 and 1000. Default value is 50. | Optional |
+| next_token | The token for the next set of results. | Optional |
+| address_region | The Amazon Web Services region for the IP address. | Optional |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.EC2.IpamResourceDiscoveryAssociations.IpamResourceDiscoveryAssociationId | String | The resource discovery association ID. |
+| AWS.EC2.IpamResourceDiscoveryAssociations.IpamResourceDiscoveryId | String | The resource discovery ID. |
+| AWS.EC2.IpamResourceDiscoveryAssociations.IpamRegion | String | The IPAM home region. |
+| AWS.EC2.IpamResourceDiscoveryAssociations.AccountId | string | The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided. |
