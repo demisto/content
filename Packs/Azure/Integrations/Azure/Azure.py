@@ -1664,7 +1664,7 @@ class AzureClient:
                     message = status.get("message")
                     err_msg = provisioning_state_to_errors.get("failed")
                     raise Exception(err_msg.format(vm_name, status_code, message))  # type: ignore
-            # In the case that the microsoft API changes and the status code is no longer
+            # If the Microsoft API changes and the status code is no longer
             # relevant, preventing the above exception with its detailed error message from
             # being raised, then raise the below exception with a more general error message
             err_msg = "Cannot execute this command because the ProvisioningState of the VM is 'Failed'."
