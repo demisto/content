@@ -463,4 +463,12 @@ Retrieve asset groups from the Cortex platform with optional filtering.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Core.AssetGroups | Array | The list of asset groups retrieved from the Cortex platform. |
+| Core.AssetGroups.name | String | The name of the asset group. |
+| Core.AssetGroups.filter | String | The filter criteria for the asset group. |
+| Core.AssetGroups.membership_predicate | String | The predicate used to create the asset group. |
+| Core.AssetGroups.type | String | The type of the asset group. |
+| Core.AssetGroups.description | String | The description of the asset group. |
+| Core.AssetGroups.modified_by | String | The user who modified the asset group. |
+| Core.AssetGroups.modified_by_pretty | String | The formatted name of the user who created the asset group. |
+| Core.AssetGroups.created_by | String | The user who created the asset group. |
+| Core.AssetGroups.created_by_pretty | String | The formatted name of the user who created the asset group. |

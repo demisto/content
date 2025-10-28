@@ -596,10 +596,10 @@ def test_search_asset_groups_command_success_with_all_filters(mocker):
     result = search_asset_groups_command(mock_client, args)
 
     assert len(result.outputs) == 2
-    assert result.outputs[0]["XDM__ASSET_GROUP__ID"] == "group_1"
-    assert result.outputs[1]["XDM__ASSET_GROUP__ID"] == "group_2"
+    assert result.outputs[0]["id"] == "group_1"
+    assert result.outputs[1]["id"] == "group_2"
     assert result.outputs_prefix == "Core.AssetGroups"
-    assert result.outputs_key_field == "XDM__ASSET_GROUP__ID"
+    assert result.outputs_key_field == "id"
     assert "Test Group 1" in result.readable_output
     assert "Test Group 2" in result.readable_output
     assert mock_get_webapp_data.call_count == 1
@@ -634,8 +634,8 @@ def test_search_asset_groups_command_success_with_partial_filters(mocker):
     result = search_asset_groups_command(mock_client, args)
 
     assert len(result.outputs) == 1
-    assert result.outputs[0]["XDM__ASSET_GROUP__ID"] == "group_3"
-    assert result.outputs[0]["XDM__ASSET_GROUP__NAME"] == "Security Group"
+    assert result.outputs[0]["id"] == "group_3"
+    assert result.outputs[0]["name"] == "Security Group"
     assert result.outputs_prefix == "Core.AssetGroups"
     assert "Security Group" in result.readable_output
     assert mock_get_webapp_data.call_count == 1
@@ -676,8 +676,8 @@ def test_search_asset_groups_command_success_no_filters(mocker):
     result = search_asset_groups_command(mock_client, args)
 
     assert len(result.outputs) == 2
-    assert result.outputs[0]["XDM__ASSET_GROUP__ID"] == "group_all_1"
-    assert result.outputs[1]["XDM__ASSET_GROUP__ID"] == "group_all_2"
+    assert result.outputs[0]["id"] == "group_all_1"
+    assert result.outputs[1]["id"] == "group_all_2"
     assert result.outputs_prefix == "Core.AssetGroups"
     assert "All Groups 1" in result.readable_output
     assert "All Groups 2" in result.readable_output
@@ -703,7 +703,7 @@ def test_search_asset_groups_command_empty_response(mocker):
 
     assert len(result.outputs) == 0
     assert result.outputs_prefix == "Core.AssetGroups"
-    assert result.outputs_key_field == "XDM__ASSET_GROUP__ID"
+    assert result.outputs_key_field == "id"
     assert mock_get_webapp_data.call_count == 1
 
 
@@ -726,7 +726,7 @@ def test_search_asset_groups_command_missing_reply_key(mocker):
 
     assert len(result.outputs) == 0
     assert result.outputs_prefix == "Core.AssetGroups"
-    assert result.outputs_key_field == "XDM__ASSET_GROUP__ID"
+    assert result.outputs_key_field == "id"
     assert mock_get_webapp_data.call_count == 1
 
 
@@ -749,7 +749,7 @@ def test_search_asset_groups_command_missing_data_key(mocker):
 
     assert len(result.outputs) == 0
     assert result.outputs_prefix == "Core.AssetGroups"
-    assert result.outputs_key_field == "XDM__ASSET_GROUP__ID"
+    assert result.outputs_key_field == "id"
     assert mock_get_webapp_data.call_count == 1
 
 
@@ -788,8 +788,8 @@ def test_search_asset_groups_command_multiple_values_in_filters(mocker):
     result = search_asset_groups_command(mock_client, args)
 
     assert len(result.outputs) == 2
-    assert result.outputs[0]["XDM__ASSET_GROUP__ID"] == "group_multi_1"
-    assert result.outputs[1]["XDM__ASSET_GROUP__ID"] == "group_multi_2"
+    assert result.outputs[0]["id"] == "group_multi_1"
+    assert result.outputs[1]["id"] == "group_multi_2"
     assert result.outputs_prefix == "Core.AssetGroups"
     assert "Multi Group 1" in result.readable_output
     assert "Multi Group 2" in result.readable_output
