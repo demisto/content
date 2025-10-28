@@ -216,6 +216,7 @@ Create new requests
 | subject | Subject of this request | Required |
 | description | Description of this request | Optional |
 | request_type | Type of this request. Choose one of the listed options or provide a dictionary representing a request_type object. | Optional |
+| impact_details | The description of the impact of the request. | Optional |
 | impact | Impact of this request. Choose one of the listed options or provide a dictionary representing an impact object. | Optional |
 | status | Indicates the current status of this request. Choose one of the listed options or provide a dictionary representing a status object. | Optional |
 | mode | The mode in which the request is created. Choose one of the listed options or provide a dictionary representing a mode object. | Optional |
@@ -260,7 +261,7 @@ Create new requests
 
 #### Command Example
 
-```!service-desk-plus-request-create subject="Create New Request" requester="{'name':'First Last'}"```
+```!service-desk-plus-request-create subject="Create New Request" requester="{'name':'First Last'}" impact_details="Workflow affected"```
 
 #### Context Example
 
@@ -290,6 +291,7 @@ Create new requests
             "HasProject": false,
             "HasRequestInitiatedChange": false,
             "Id": "123640000000276021",
+            "ImpactDetails": "Workflow affected",
             "IsEscalated": false,
             "IsFcr": false,
             "IsFirstResponseOverdue": false,
