@@ -1516,7 +1516,6 @@ Download a file from S3 bucket to the War Room.
 | File.MD5 | String | The MD5 hash of the file. |
 | File.Extension | String | The file extension. |
 
-
 ### aws-ec2-vpcs-describe
 
 ***
