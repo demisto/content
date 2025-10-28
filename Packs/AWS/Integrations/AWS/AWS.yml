@@ -3058,7 +3058,7 @@ script:
         type: boolean
 
   - name: aws-cloudtrail-logging-start
-    description: Starts the recording of AWS API calls and log file delivery for a trail. For a trail that is enabled in all regions, this operation must be called from the region in which the trail was created. This operation cannot be called on the shadow trails (replicated trails in other regions) of a trail that is enabled in all regions.
+    description: Starts recording AWS API calls and log file delivery for a trail. For a trail enabled in all regions, this operation must be called from the region where the trail was created. This operation cannot be called on shadow trails (replicated trails in other regions) of a trail that is enabled in all regions.
     arguments:
     - name: account_id
       description: The AWS account ID.
