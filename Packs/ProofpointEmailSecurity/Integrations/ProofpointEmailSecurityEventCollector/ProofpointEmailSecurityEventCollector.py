@@ -28,7 +28,8 @@ BASE_BACKOFF_SECONDS = 2
 EVENT_TYPES = ["message", "maillog", "audit"]
 DEFAULT_GET_EVENTS_LIMIT = 10
 DATE_FILTER_FORMAT = "%Y-%m-%dT%H:%M:%S%z"
-
+PING_TIMEOUT = 60  # Timeout for keepalive pings in seconds
+CLOSE_TIMEOUT = 60  # Timeout for closing the connection in seconds
 
 class EventConnection:
     def __init__(
@@ -56,7 +57,7 @@ class EventConnection:
         """
         Establish a new WebSocket connection.
         """
-        return connect(self.url, additional_headers=self.headers)
+        return connect(self.url, additional_headers=self.headers, ping_timeout=PING_TIMEOUT, close_timeout=CLOSE_TIMEOUT)
 
     @property
     def is_to_archive(self) -> bool:
@@ -234,7 +235,7 @@ def fetch_events(
     demisto.debug(f"Starting to fetch events of type {event_type}")
     events: list[dict] = []
     event_ids = set()
-    fetch_start_time = datetime.now().astimezone(tz.tzutc())
+    fetch_start_time = datetime.utcnow()
     demisto.info(f"in {event_type=}, preparing to acquire lock & recv.")
     with connection.lock:
         while not is_interval_passed(fetch_start_time, fetch_interval):
@@ -287,7 +288,7 @@ def fetch_events(
     demisto.debug(f"Fetched {num_events} events of type {event_type} with {last_event_time=}")
     demisto.debug("The fetched events ids are: " + ", ".join([str(event_id) for event_id in event_ids]))
     if write_to_integration_context:
-        fetch_end_time = datetime.now().astimezone(tz.tzutc())
+        fetch_end_time = datetime.utcnow()
         set_the_integration_context(
             "last_run_results",
             f"Got from connection {num_events} events starting at {fetch_start_time!s} until {fetch_end_time!s}",
