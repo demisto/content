@@ -3882,6 +3882,60 @@ script:
     - contextPath: File.Extension
       description: The file extension.
       type: String
+  - name: aws-acm-certificate-options-update
+    description: Updates Certificate Transparency (CT) logging for an AWS Certificate Manager (ACM) certificate (ENABLED or DISABLED).
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+    - name: certificate_arn
+      description: 'The ARN of the ACM certificate to update. This must be of the form: ”arn:aws:acm:{region}:{account}:certificate/{certificate_id}”.'
+      required: true
+    - name: transparency_logging_preference
+      description: Whether the certificate is recorded in public CT logs.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - ENABLED
+      - DISABLED
+    outputs: []
   isfetch: false
   runonce: false
   script: '-'
