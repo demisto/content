@@ -86,7 +86,7 @@ To configure Microsoft Azure WAF to send logs to Cortex XSIAM, follow the below 
 
 For more information, refer to Microsoft's official [Azure Front Door Logs](https://learn.microsoft.com/en-us/azure/frontdoor/standard-premium/how-to-logs) or [Azure Application Gateway](https://learn.microsoft.com/en-us/azure/application-gateway/application-gateway-diagnostics).
 
-### Cortex XSIAM side
+### Cortex side
 
 To connect Cortex XSIAM to the Azure Event Hub, follow the below steps.
 
