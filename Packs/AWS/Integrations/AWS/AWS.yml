@@ -3054,7 +3054,7 @@ script:
         description: Weather a trail has insight selectors enabled.
         type: boolean
       - contextPath: AWS.CloudTrail.Trail.IsOrganizationTrail
-        description: Weather the trail is an organization trail.
+        description: Whether the trail is an organization trail.
         type: boolean
 
   - name: aws-cloudtrail-logging-start
