@@ -368,7 +368,7 @@ def get_vulnerabilities_command(client: Client, args: dict) -> CommandResults:
     """
     Retrieves vulnerabilities using the generic /api/webapp/get_data endpoint.
     """
-    limit = arg_to_number(args.get("limit")) or 50
+    limit = arg_to_number(args.get("limit")) or 5
     sort_field = args.get("sort_field", "LAST_OBSERVED")
     sort_order = args.get("sort_order", "DESC")
 
