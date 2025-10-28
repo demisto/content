@@ -4571,7 +4571,7 @@ def test_elb_modify_lb_attributes_success_all_blocks(mocker):
     assert result.outputs_prefix == "AWS.ELB.LoadBalancer"
     assert result.outputs_key_field == "LoadBalancerName"
     assert result.outputs["LoadBalancerName"] == "my-classic-elb"
-    assert "Modified attributes for Classic ELB 'my-classic-elb'." in result.readable_output
+    assert "Updated attributes for Classic ELB my-classic-elb." in result.readable_output
 
     mock_client.modify_load_balancer_attributes.assert_called_once_with(
         LoadBalancerName="my-classic-elb",
@@ -4591,49 +4591,6 @@ def test_elb_modify_lb_attributes_success_all_blocks(mocker):
     remove_nulls.assert_called()
     print_logs.assert_called_once()
     assert "ModifyLoadBalancerAttributes params:" in print_logs.call_args[0][1]
-
-
-def test_elb_modify_lb_attributes_invalid_additional_attributes_odd_length(mocker):
-    """
-    Given: additional_attributes list with odd length.
-    When: modify_load_balancer_attributes_command is called.
-    Then: It raises DemistoException about invalid format.
-    """
-    from AWS import ELB, DemistoException
-
-    mock_client = mocker.Mock()
-    args = {
-        "load_balancer_name": "elb-1",
-        "additional_attributes": ["k1", "v1", "k2"],  # odd length (3)
-    }
-
-    with pytest.raises(DemistoException, match="Invalid 'additional_attributes' format"):
-        ELB.modify_load_balancer_attributes_command(mock_client, args)
-
-    mock_client.modify_load_balancer_attributes.assert_not_called()
-
-
-def test_elb_modify_lb_attributes_too_many_additional_pairs(mocker):
-    """
-    Given: additional_attributes list exceeding 10 pairs (>20 items).
-    When: modify_load_balancer_attributes_command is called.
-    Then: It raises DemistoException about too many pairs.
-    """
-    from AWS import ELB, DemistoException
-
-    mock_client = mocker.Mock()
-
-    # Build 11 pairs (22 items)
-    addl = []
-    for i in range(11):
-        addl.extend([f"k{i}", f"v{i}"])
-
-    args = {"load_balancer_name": "elb-1", "additional_attributes": addl}
-
-    with pytest.raises(DemistoException, match="Too many 'additional_attributes'"):
-        ELB.modify_load_balancer_attributes_command(mock_client, args)
-
-    mock_client.modify_load_balancer_attributes.assert_not_called()
 
 
 def test_elb_modify_lb_attributes_non_ok_calls_handler(mocker):

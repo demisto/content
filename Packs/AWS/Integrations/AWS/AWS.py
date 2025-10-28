@@ -2559,6 +2559,7 @@ class ELB:
 
         except Exception as e:
             raise DemistoException(f"Error modifying load balancer '{lb_name}': {str(e)}")
+        
 def get_file_path(file_id):
     filepath_result = demisto.getFilePath(file_id)
     return filepath_result
