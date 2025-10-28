@@ -2135,7 +2135,9 @@ class RDS:
                 "EnableIAMDatabaseAuthentication": arg_to_bool_or_none(args.get("enable_iam_database_authentication")),
                 "PubliclyAccessible": arg_to_bool_or_none(args.get("publicly_accessible")),
                 "CopyTagsToSnapshot": arg_to_bool_or_none(args.get("copy_tags_to_snapshot")),
-                "BackupRetentionPeriod": int(args.get("backup_retention_period")) if args.get("backup_retention_period") else None
+                "BackupRetentionPeriod": int(args.get("backup_retention_period"))
+                if args.get("backup_retention_period")
+                else None,
             }
             remove_nulls_from_dictionary(kwargs)
             demisto.info(f"modify_db_instance {kwargs=}")
