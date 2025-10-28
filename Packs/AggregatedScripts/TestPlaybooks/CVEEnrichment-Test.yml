@@ -1282,7 +1282,7 @@ tasks:
       id: d5958a5d-28ff-4498-aecd-281e4b80f1f0
       version: -1
       name: Both exists
-      description: Make sure the Virus Total indicator returned from tim
+      description: Verify that the VirusTotal indicator from TIM exists.
       type: condition
       iscommand: false
       brand: ""
