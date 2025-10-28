@@ -187,7 +187,7 @@ script:
         description: The unique target ID, which identifies a specific incarnation of the target resource.
         type: string
       - contextPath: GCP.Compute.Operations.status
-        description: 'The status of the operation, which can be one of the following: PENDING RUNNING or DONE.'
+        description: 'The status of the operation, which can be one of the following: PENDING, RUNNING, or DONE.'
         type: string
       - contextPath: GCP.Compute.Operations.statusMessage
         description: An optional textual description of the current status of the operation.
