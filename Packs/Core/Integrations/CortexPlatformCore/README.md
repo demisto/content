@@ -439,3 +439,27 @@ Get cases information based on the specified filters.
 | Core.Case.tags | Array | Current tags assigned to the case. |
 | Core.Case.case_domain | String | Domain associated with the case. |
 | Core.Case.custom_fields | Unknown | Custom fields for the case with standardized lowercase, whitespace-free names. |
+
+### core-update-issue
+
+***
+Updates the properties of an issue. This command does not provide an explicit indication of success.
+
+#### Base Command
+
+`core-update-issue`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| issue_id | Issue ID to update. If empty, updates the current issue ID. | Optional | 
+| assigned_user_mail | Email address of the user to assign the issue to. | Optional | 
+| severity | Change the severity of an issue. Low (1), Medium (2), High (3), Critical (4). Must be a number. Possible values are: 1, 2, 3, 4. | Optional | 
+| name | Change the issue name. | Optional | 
+| occurred | Change the occurred time of an issue. Supports different time formats, for example: 3 days ago, 2017-09-27T10:00:00+03:00.<br/>. | Optional | 
+| phase | Change the phase of an issue. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.

@@ -1110,10 +1110,10 @@ script:
         description: Change the severity of an issue. Low (1), Medium (2), High (3), Critical (4). Must be a number.
         type: string
         predefined:
-        - 1
-        - 2
-        - 3
-        - 4
+        - '1'
+        - '2'
+        - '3'
+        - '4'
       - name: name
         description: Change the issue name.
         type: string
