@@ -1103,7 +1103,7 @@ script:
       arguments:
         - name: limit
           description: "The maximum number of vulnerabilities to return."
-          defaultValue: "50"
+          defaultValue: "5"
         - defaultValue: LAST_OBSERVED
           description: The field by which to sort the results.
           name: sort_field
