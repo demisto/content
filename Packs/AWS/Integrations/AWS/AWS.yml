@@ -2284,7 +2284,7 @@ script:
         name: private_dns_hostname_type_on_launch
 
   - arguments:
-    - description: One or more filters Separated by ';'. See AWS documentation for details & filter options.
+    - description: One or more filters Separated by ';' (for example, name=<name>;values=<values>). See AWS documentation for details & filter options.
       name: filters
     - description: A comma-separated list of VPC IDs.
       name: vpc_ids
@@ -2329,7 +2329,7 @@ script:
         - me-central-1
         - sa-east-1
     description: Describes one or more of your VPCs.
-    name: aws-ec2-describe-vpcs
+    name: aws-ec2-vpcs-describe
     outputs:
     - contextPath: AWS.EC2.Vpcs.CidrBlock
       description: The primary IPv4 CIDR block for the VPC.
@@ -2384,7 +2384,7 @@ script:
       type: string
 
   - arguments:
-    - description: One or more filters Separated by ';'. See AWS documentation for details & filter options.
+    - description: One or more filters Separated by ';' (for example, name=<name>;values=<values>). See AWS documentation for details & filter options.
       name: filters
     - description: A comma-separated list of subnet IDs.
       name: subnet_ids
@@ -2429,7 +2429,7 @@ script:
         - me-central-1
         - sa-east-1
     description: Describes one or more of your subnets.
-    name: aws-ec2-describe-subnets
+    name: aws-ec2-subnets-describe
     outputs:
     - contextPath: AWS.EC2.Subnets.AvailabilityZone
       description: The Availability Zone of the subnet.
@@ -2545,8 +2545,8 @@ script:
     - contextPath: AWS.EC2.IpamResourceDiscoveries.AccountId
       description: The ID of the AWS account associated with the EC2 instance. This key is only present when the parameter "AWS organization accounts" is provided.
       type: string
-    description: Describes IPAM resource discoveries. A resource discovery is an IPAM component that enables IPAM to manage and monitor resources that belong to the owning account.
-    name: aws-ec2-describe-ipam-resource-discoveries
+    description: Describes IPAM resource discoveries. A resource discovery is an IPAM component that enables IPAM to manage and monitor resources owned by the account.
+    name: aws-ec2-ipam-resource-discoveries-describe
 
   - arguments:
     - description: A comma-separated list of the resource discovery association IDs.
@@ -2614,7 +2614,7 @@ script:
       description: The ID of the AWS account associated with the EC2 instance. This key is only present when the parameter "AWS organization accounts" is provided.
       type: string
     description: Describes resource discovery association with an Amazon VPC IPAM. An associated resource discovery is a resource discovery that has been associated with an IPAM.
-    name: aws-ec2-describe-ipam-resource-discovery-associations
+    name: aws-ec2-ipam-resource-discovery-associations-describe
 
   - name: aws-cloudtrail-trail-update
     description: 'Updates trail settings that control what events you are logging, and how to handle log files. Changes to a trail do not require stopping the CloudTrail service. Use this action to designate an existing bucket for log delivery. If the existing bucket has previously been a target for CloudTrail log files, an IAM policy exists for the bucket. UpdateTrail must be called from the Region in which the trail was created; otherwise, an InvalidHomeRegionException is thrown.'

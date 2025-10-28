@@ -1460,20 +1460,20 @@ Modifies an existing RDS event notification subscription.
 | AWS.RDS.EventSubscription.Status | string | The status of the RDS event notification subscription. |
 | AWS.RDS.EventSubscription.SubscriptionCreationTime | string | The time the RDS event notification subscription was created. |
 
-### aws-ec2-describe-vpcs
+### aws-ec2-vpcs-describe
 
 ***
 Describes one or more of your VPCs.
 
 #### Base Command
 
-`aws-ec2-describe-vpcs`
+`aws-ec2-vpcs-describe`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| filters | One or more filters Separated by ';'. See AWS documentation for details &amp; filter options. | Optional |
+| filters | One or more filters Separated by ';' (for example, name=<name>;values=<values>). See AWS documentation for details &amp; filter options. | Optional |
 | vpc_ids | A comma-separated list of VPC IDs. | Optional |
 | account_id | The AWS account ID. | Required |
 | region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
@@ -1500,20 +1500,20 @@ Describes one or more of your VPCs.
 | AWS.EC2.Vpcs.Tags.CidrBlockAssociationSet.CidrBlockState.StatusMessage | string | A message about the status of the CIDR block, if applicable. |
 | AWS.EC2.Vpcs.AccountId | string | The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided. |
 
-### aws-ec2-describe-subnets
+### aws-ec2-subnets-describe
 
 ***
 Describes one or more of your subnets.
 
 #### Base Command
 
-`aws-ec2-describe-subnets`
+`aws-ec2-subnets-describe`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| filters | One or more filters Separated by ';'. See AWS documentation for details &amp; filter options. | Optional |
+| filters | One or more filters Separated by ';' (for example, name=<name>;values=<values>). See AWS documentation for details &amp; filter options. | Optional |
 | subnet_ids | A comma-separated list of subnet IDs. | Optional |
 | account_id | The AWS account ID. | Required |
 | region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
@@ -1539,14 +1539,14 @@ Describes one or more of your subnets.
 | AWS.EC2.Subnets.Tags.Value | string | The value of the tag. |
 | AWS.EC2.Subnets.AccountId | string | The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided. |
 
-### aws-ec2-describe-ipam-resource-discoveries
+### aws-ec2-ipam-resource-discoveries-describe
 
 ***
-Describes IPAM resource discoveries. A resource discovery is an IPAM component that enables IPAM to manage and monitor resources that belong to the owning account.
+Describes IPAM resource discoveries. A resource discovery is an IPAM component that enables IPAM to manage and monitor resources owned by the account.
 
 #### Base Command
 
-`aws-ec2-describe-ipam-resource-discoveries`
+`aws-ec2-ipam-resource-discoveries-describe`
 
 #### Input
 
@@ -1569,14 +1569,14 @@ Describes IPAM resource discoveries. A resource discovery is an IPAM component t
 | AWS.EC2.IpamResourceDiscoveries.IpamResourceDiscoveryRegion | String | The resource discovery region. |
 | AWS.EC2.IpamResourceDiscoveries.AccountId | string | The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided. |
 
-### aws-ec2-describe-ipam-resource-discovery-associations
+### aws-ec2-ipam-resource-discovery-associations-describe
 
 ***
 Describes resource discovery association with an Amazon VPC IPAM. An associated resource discovery is a resource discovery that has been associated with an IPAM.
 
 #### Base Command
 
-`aws-ec2-describe-ipam-resource-discovery-associations`
+`aws-ec2-ipam-resource-discovery-associations-describe`
 
 #### Input
 

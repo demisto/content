@@ -4280,7 +4280,7 @@ def test_modify_event_subscription_command_failure(mocker):
     """
     Given: A mocked boto3 RDS client and valid bucket subscription and event categories arguments.
     When: modify_event_subscription_command is called.
-    Then: It should return CommandResults with error entry type and error message.
+    Then: Client is called with the subscription name and event categories and CommandResults contains error message.
     """
     from AWS import RDS
 
@@ -4360,7 +4360,7 @@ def test_ec2_describe_subnets_command_success(mocker):
     """
     Given: A mocked boto3 EC2 client with valid subnet response.
     When: describe_subnets_command is called successfully.
-    Then: It should return CommandResults with subnet information and outputs.
+    Then: Client is called with no arguments and CommandResults contains subnet information and outputs.
     """
     from AWS import EC2
 
@@ -4395,7 +4395,7 @@ def test_ec2_describe_subnets_command_with_filters(mocker):
     """
     Given: A mocked boto3 EC2 client and subnet IDs/filters arguments.
     When: describe_subnets_command is called with filters and subnet IDs.
-    Then: It should pass the correct parameters to the boto3 client.
+    Then: Client is called with the correct parameters and CommandResults contains subnet information and outputs.
     """
     from AWS import EC2
 
@@ -4433,7 +4433,7 @@ def test_ec2_describe_subnets_command_no_results(mocker):
     """
     Given: A mocked boto3 EC2 client returning no subnets.
     When: describe_subnets_command is called with no matching subnets.
-    Then: It should return CommandResults with appropriate message.
+    Then: Client is called with no arguments and CommandResults contains no subnets message.
     """
     from AWS import EC2
 
@@ -4452,7 +4452,7 @@ def test_ec2_describe_vpcs_command_success(mocker):
     """
     Given: A mocked boto3 EC2 client with valid VPC response.
     When: describe_vpcs_command is called successfully.
-    Then: It should return CommandResults with VPC information and outputs.
+    Then: Client is called with no arguments and CommandResults contains VPC information and outputs.
     """
     from AWS import EC2
 
@@ -4487,7 +4487,7 @@ def test_ec2_describe_vpcs_command_with_filters(mocker):
     """
     Given: A mocked boto3 EC2 client and VPC IDs/filters arguments.
     When: describe_vpcs_command is called with filters and VPC IDs.
-    Then: It should pass the correct parameters to the boto3 client.
+    Then: Client is called with the correct parameters and CommandResults contains VPC information and outputs.
     """
     from AWS import EC2
 
@@ -4526,7 +4526,7 @@ def test_ec2_describe_vpcs_command_no_results(mocker):
     """
     Given: A mocked boto3 EC2 client returning no VPCs.
     When: describe_vpcs_command is called with no matching VPCs.
-    Then: It should return CommandResults with appropriate message.
+    Then: Client is called with no arguments and CommandResults contains no VPCs message.
     """
     from AWS import EC2
 
@@ -4539,3 +4539,160 @@ def test_ec2_describe_vpcs_command_no_results(mocker):
 
     assert isinstance(result, CommandResults)
     assert result.readable_output == "No VPCs were found."
+
+
+def test_ec2_describe_ipam_resource_discoveries_success_with_pagination(mocker):
+    """
+    Given: No explicit IPAM resource discovery IDs and valid filters/next token.
+    When: describe_ipam_resource_discoveries_command is called.
+    Then: Client is called with Filters and pagination kwargs, and CommandResults contains outputs.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.describe_ipam_resource_discoveries.return_value = {
+        "IpamResourceDiscoveries": [{"IpamResourceDiscoveryId": "ipam-res-disc-1", "OwnerId": "123456789012"}]
+    }
+
+    args = {
+        "filters": "name=owner-id,values=123456789012",
+        "next_token": "ABC123",
+    }
+
+    result = EC2.describe_ipam_resource_discoveries_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "AWS.EC2.IpamResourceDiscoveries"
+    assert result.outputs_key_field == "IpamResourceDiscoveryId"
+    assert result.outputs
+    assert isinstance(result.outputs, list)
+
+    # Verify client call kwargs include Filters and pagination
+    kwargs = mock_client.describe_ipam_resource_discoveries.call_args.kwargs
+    assert "Filters" in kwargs
+    assert kwargs["Filters"][0]["Name"] == "owner-id"
+    assert "MaxResults" in kwargs  # pagination should be applied when no IDs are provided
+    assert kwargs["NextToken"] == "ABC123"
+
+
+def test_ec2_describe_ipam_resource_discoveries_empty(mocker):
+    """
+    Given: EC2 returns no IPAM resource discoveries.
+    When: describe_ipam_resource_discoveries_command is executed.
+    Then: A readable message indicating no results is returned.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.describe_ipam_resource_discoveries.return_value = {"IpamResourceDiscoveries": []}
+
+    args = {"filters": "name=owner-id,values=000000000000"}
+
+    result = EC2.describe_ipam_resource_discoveries_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.readable_output == "No Ipam Resource Discoveries were found."
+
+
+def test_ec2_describe_ipam_resource_discoveries_with_ids_no_pagination(mocker):
+    """
+    Given: Explicit IPAM resource discovery IDs are provided.
+    When: describe_ipam_resource_discoveries_command is called.
+    Then: Pagination kwargs (MaxResults/NextToken) are NOT included in the client call and IDs are passed as list.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.describe_ipam_resource_discoveries.return_value = {
+        "IpamResourceDiscoveries": [{"IpamResourceDiscoveryId": "ipam-res-disc-3", "OwnerId": "999999999999"}]
+    }
+
+    args = {
+        "ipam_resource_discovery_ids": "ipam-res-disc-3",
+        # Even if next_token is passed, when IDs are provided pagination shouldn't be added by the command implementation
+        "next_token": "SHOULD_NOT_BE_USED",
+    }
+
+    result = EC2.describe_ipam_resource_discoveries_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "AWS.EC2.IpamResourceDiscoveries"
+
+    kwargs = mock_client.describe_ipam_resource_discoveries.call_args.kwargs
+    assert "IpamResourceDiscoveryIds" in kwargs
+    assert kwargs["IpamResourceDiscoveryIds"] == ["ipam-res-disc-3"]
+    assert "MaxResults" not in kwargs
+    assert "NextToken" not in kwargs
+
+
+def test_ec2_describe_ipam_resource_discovery_associations_success(mocker):
+    """
+    Given: No explicit association IDs and valid filters.
+    When: describe_ipam_resource_discovery_associations_command is called.
+    Then: Client is called with pagination and outputs are returned.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.describe_ipam_resource_discovery_associations.return_value = {
+        "IpamResourceDiscoveryAssociations": [
+            {
+                "IpamResourceDiscoveryId": "ipam-res-disc-1",
+                "IpamResourceDiscoveryAssociationId": "assoc-1",
+                "OwnerId": "123456789012",
+            }
+        ]
+    }
+
+    args = {
+        "filters": "name=owner-id,values=123456789012",
+    }
+
+    result = EC2.describe_ipam_resource_discovery_associations_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "AWS.EC2.IpamResourceDiscoveryAssociations"
+    assert result.outputs_key_field == "IpamResourceDiscoveryId"
+    assert result.outputs
+    assert isinstance(result.outputs, list)
+
+    kwargs = mock_client.describe_ipam_resource_discovery_associations.call_args.kwargs
+    assert "Filters" in kwargs
+    assert "MaxResults" in kwargs  # pagination should be applied when no IDs are provided
+
+
+def test_ec2_describe_ipam_resource_discovery_associations_with_ids_no_pagination(mocker):
+    """
+    Given: Explicit IPAM resource discovery association IDs are provided.
+    When: describe_ipam_resource_discovery_associations_command is called.
+    Then: Pagination kwargs (MaxResults/NextToken) are NOT included in the client call.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.describe_ipam_resource_discovery_associations.return_value = {
+        "IpamResourceDiscoveryAssociations": [
+            {
+                "IpamResourceDiscoveryId": "ipam-res-disc-2",
+                "IpamResourceDiscoveryAssociationId": "assoc-2",
+                "OwnerId": "210987654321",
+            }
+        ]
+    }
+
+    args = {
+        "ipam_resource_discovery_association_ids": "assoc-2",
+        # Even if next_token is passed, when IDs are provided pagination shouldn't be added by the command implementation
+        "next_token": "SHOULD_NOT_BE_USED",
+    }
+
+    result = EC2.describe_ipam_resource_discovery_associations_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "AWS.EC2.IpamResourceDiscoveryAssociations"
+
+    kwargs = mock_client.describe_ipam_resource_discovery_associations.call_args.kwargs
+    assert "IpamResourceDiscoveryAssociationIds" in kwargs
+    assert kwargs["IpamResourceDiscoveryAssociationIds"] == ["assoc-2"]
+    assert "MaxResults" not in kwargs
+    assert "NextToken" not in kwargs
