@@ -7,10 +7,10 @@
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "categories": ["Forensics & Malware Analysis"],
-    "tags": ["sandbox", "malware analysis", "forensics", "CAPE"],
+    "tags": ["Malware", "Forensics"],
     "useCases": [
-        "Malware Analysis",
-        "Threat Intelligence",
+        "Malware",
+        "Threat Intelligence Management",
         "Incident Response"
     ],
     "keywords": ["CAPE", "sandbox", "malware", "analysis", "forensics"],
