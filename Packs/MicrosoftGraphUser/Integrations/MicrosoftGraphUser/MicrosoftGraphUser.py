@@ -328,21 +328,29 @@ class MsGraphClient:
         self.ms_client.http_request(method="DELETE", url_suffix=url_suffix, resp_type="text")
         
         
-    def request_mfa_app_secret(self):
+    def request_mfa_app_secret(self) -> str:
         """
+        The function utilizes the MFA application ID (981f26a1-7f43-403b-a875-f8b09b8cd720) to retrieve the service principal ID.
+        Which then uses the service principal ID to retrieve the client secret.
+        The client secret has an expiration of 2 years and therefore the generation will occur only once and then retrieved from the integration context.
+        TODO: add a mechanism for renewal of the client secret if expired.
+        
         Args:
             None.
 
         Returns:
-            None.
-
-        API Reference:
-            https://graph.microsoft.com/v1.0/servicePrincipals?$filter=appId eq '981f26a1-7f43-403b-a875-f8b09b8cd720'&$select=id
+            (str): the MFA application client secret.
         """
-        SECRET_DISPLAY_NAME = "MFA App Secret"
-        url_suffix = f'servicePrincipals?$filter=appId eq \'{MFA_APP_ID}\'&$select=id'
+        # attempt to retrieve the client secret from the integration context if exist.
+        ctx = get_integration_context()
+        if client_secret := ctx.get('mfa_app_client_secret'):
+            return client_secret
+        
+        # if not exist, generate a new client secret.
+        # Search for the service principal with the MFA application ID.
+        sp_endpoint_url_suffix = f'servicePrincipals?$filter=appId eq \'{MFA_APP_ID}\'&$select=id'
         demisto.debug(f"Searching for Service Principal with appId: {MFA_APP_ID}...")
-        sp_data = self.ms_client.http_request(method="GET", url_suffix=url_suffix)
+        sp_data = self.ms_client.http_request(method="GET", url_suffix=sp_endpoint_url_suffix)
 
         if not sp_data.get('value'):
             raise DemistoException(f"Error: Service Principal with appId {MFA_APP_ID} not found.")
@@ -351,47 +359,60 @@ class MsGraphClient:
         service_principal_id = sp_data['value'][0]['id']
         demisto.debug(f"Service Principal ID (Object ID) found: {service_principal_id}")
 
-        # --- 4. ADD CLIENT SECRET (Equivalent to: Add-MgServicePrincipalPassword) ---
+        # Send request for new client secret.
+        SECRET_DISPLAY_NAME = "MFA App Secret"
+        
         # Endpoint to add a password credential to the service principal
-        url_suffix_2 = f'servicePrincipals/{service_principal_id}/addPassword'
+        secret_genertion_endpoint_url_suffix = f'servicePrincipals/{service_principal_id}/addPassword'
 
         # Request body for adding the secret
         secret_body = {
             "passwordCredential": {
-                "displayName": SECRET_DISPLAY_NAME
+                "displayName": SECRET_DISPLAY_NAME  # The display name for the secret, not mandatory
             }
         }
 
         demisto.debug(f"Adding new client secret with display name '{SECRET_DISPLAY_NAME}'")
-        secret_result = self.ms_client.http_request(method="POST", url_suffix=url_suffix_2,  data=json.dumps(secret_body))
+        secret_result = self.ms_client.http_request(method="POST",
+                                                    url_suffix=secret_genertion_endpoint_url_suffix,
+                                                    data=json.dumps(secret_body))
 
         # The 'secretText' is the actual secret value, which is only returned *once* on creation.
         new_secret_value = secret_result.get('secretText')
 
         demisto.debug(f"A new client secret with the name {secret_result.get('displayName')} was created successfully. the"
-            "secret is valid until {secret_result.get('endDateTime')}")
+            f"secret is valid until {secret_result.get('endDateTime')}")
+
+        # Update the integration context with the new client secret.
+        set_integration_context({
+            'mfa_app_client_secret': new_secret_value
+        })
 
         return new_secret_value
     
-    def push_mfa_notification(self, client_secret: str, user_email: str):
+    def push_mfa_notification(self, client_secret: str, user_principal_name: str):
+        """
+        Attempt to generate access token the MFA app using the given client secret.
+        Then send MFA push notification to the user with the given UPN.
+        If user Approve - return None, otherwise raise an error.
+        Args:
+            client_secret (str): The client secret of the MFA app.
+            user_principal_name (str): The user principal name of the user to send the MFA notification to.
+
+        Returns:
+            None.
+        """
         import requests
         import xml.etree.ElementTree as ET
         import uuid
 
-        # --- 1. CONFIGURATION (REPLACE WITH YOUR VALUES) ---
-        # NOTE: The client secret must be generated on the 'Entra Id MFA Notification Client' Service Principal
-        # as shown in the generateEntraMfaClientSecret.ps1 script (or the previous Python translation).
-        # params: dict = demisto.params()
-        # tenant_id = params.get("creds_tenant_id", {}).get("password", "") or params.get("tenant_id", "")
-
-        # Hardcoded values from the PowerShell script
+        # Hardcoded endpoints
         RESOURCE = 'https://adnotifications.windowsazure.com/StrongAuthenticationService.svc/Connector'
         AUTH_ENDPOINT = f'https://login.microsoftonline.com/{self.ms_client.tenant_id}/oauth2/token'
         MFA_SERVICE_URI = 'https://strongauthenticationservice.auth.microsoft.com/StrongAuthenticationService.svc/Connector//BeginTwoWayAuthentication'
 
-        # --- 2. GET MFA CLIENT ACCESS TOKEN (Equivalent to the first Invoke-RestMethod) ---
-        import time
-        time.sleep(30)
+        # Generating MFA app access token.
+        # acces token is valid for 1 day. TODO: implement a mechanism to create new one only when needed.
         demisto.debug("Getting MFA Client Access Token...")
 
         token_body = {
@@ -417,12 +438,13 @@ class MsGraphClient:
         # Generate a unique GUID for ContextId
         context_id = str(uuid.uuid4())
 
-        # Define the XML payload (Equivalent to the $XML heredoc)
+        # Define the XML payload
         # The ContextId is dynamically replaced with a new GUID
+        # The UPN is the user principal name of the user to send the MFA notification to.
         xml_payload = f"""
         <BeginTwoWayAuthenticationRequest>
             <Version>1.0</Version>
-            <UserPrincipalName>{user_email}</UserPrincipalName>
+            <UserPrincipalName>{user_principal_name}</UserPrincipalName>
             <Lcid>en-us</Lcid>
             <AuthenticationMethodProperties xmlns:a="http://schemas.microsoft.com/2003/10/Serialization/Arrays">
                 <a:KeyValueOfstringstring>
@@ -438,7 +460,6 @@ class MsGraphClient:
         </BeginTwoWayAuthenticationRequest>
         """
 
-        # Define the headers
         headers = {
             "Authorization": f"Bearer {mfa_client_token}",
             "Content-Type": "application/xml"
@@ -451,18 +472,17 @@ class MsGraphClient:
                 headers=headers,
                 data=xml_payload.strip().encode('utf-8')
             )
-            # This checks for HTTP errors (400, 500, etc.)
             mfa_result.raise_for_status()
 
             demisto.debug("MFA Challenge Request Sent. Waiting for response...")
 
-            # --- 4. PARSE THE XML RESPONSE AND OUTPUT RESULTS (CORRECTED) ---
+            # PARSE THE XML RESPONSE AND OUTPUT RESULTS
             
             # 1. Parse the XML string into an ElementTree root object
             root = ET.fromstring(mfa_result.text)
             
             # 2. Extract crucial nodes directly from the root element
-            result_node = root.find('./Result') 
+            result_node = root.find('./Result')
             auth_result_node = root.find('./AuthenticationResult')
 
             # Ensure the core nodes exist before accessing their text
