@@ -305,7 +305,7 @@ script:
         description: "Entity to remove from the Access Control List.\nCommon entity formats are:\n* user:<userId or email>\n* group:<groupId or email>\n* allUsers\n* allAuthenticatedUsers\nFor more options and details, see: https://cloud.google.com/storage/docs/json_api/v1/bucketAccessControls#resource "
 
   - name: gcp-storage-bucket-policy-delete-make-gcp-bucket-private-quick-action
-    description: Revokes 'allUsers' and 'allAuthenticatedUsers' access in a GCP Storage bucket.
+    description: Revokes 'allUsers' and 'allAuthenticatedUsers' permissions access in a GCP Storage bucket.
     prettyname: Make GCP Bucket Private
     quickaction: true
     hidden: true
