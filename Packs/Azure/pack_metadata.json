@@ -2,11 +2,7 @@
     "name": "Azure",
     "description": "Microsoft Azure",
     "support": "xsoar",
-<<<<<<< HEAD
     "currentVersion": "1.1.3",
-=======
-    "currentVersion": "1.1.2",
->>>>>>> dev-cloud
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
