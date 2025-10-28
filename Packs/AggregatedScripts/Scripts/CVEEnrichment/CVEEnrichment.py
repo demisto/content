@@ -10,10 +10,10 @@ def cve_enrichment_script(
     verbose: bool = False,
     enrichment_brands: list[str] | None = None,
     additional_fields: bool = False,
-)->CommandResults:
+) -> CommandResults:
     """
     Enriches CVE data with information from various integrations.
-    
+
     Args:
         cve_list (list[str]): A list of CVEs to enrich.
         external_enrichment (bool, optional): Whether to call external integrations for enrichment. Defaults to False.
@@ -22,7 +22,7 @@ def cve_enrichment_script(
         enrichment_brands (list[str], optional): A list of integration brands to run enrichment against. Defaults to None.
         additional_fields (bool, optional): When set to true, the output will also include an
         `AdditionalFields` object for each of the indicator result.
-    
+
     Returns:
         CommandResults: The enriched CVE data.
     """

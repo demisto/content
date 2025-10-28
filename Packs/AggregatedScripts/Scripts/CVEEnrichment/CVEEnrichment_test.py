@@ -125,7 +125,7 @@ def test_cve_enrichment_script_end_to_end_with_batch_file(mocker):
     assert {r.get("Brand") for r in cve2["Results"]} == {"TIM", "brand3"}
     b3 = next(r for r in cve2["Results"] if r["Brand"] == "brand3")
     assert b3.get("Reliability") == "Low"
-    
+
     # TIM summarization
     assert cve2.get("Status") is None
     assert cve2.get("ModifiedTime") is None
