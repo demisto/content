@@ -2069,3 +2069,387 @@ Sets the log profile’s retention policy to 365 days and enables it across all 
 | Azure.LogProfile.properties.categories | Array | A list of categories of logs that are collected. |
 | Azure.LogProfile.properties.retentionPolicy.enabled | Boolean | Specifies whether the retention policy is enabled. |
 | Azure.LogProfile.properties.retentionPolicy.days | Number | The number of days for the retention policy. |
+
+### azure-disk-set-data-access-aad-quick-action
+
+***
+Sets the data access authentication mode for the managed disk to Azure Active Directory.
+
+#### Base Command
+
+`azure-disk-set-data-access-aad-quick-action`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID. | Required |
+| resource_group_name | The resource group name. | Required |
+| disk_name | Name of the managed disk. Supported characters for the name are a-z, A-Z, 0-9, _ and -. The maximum name length is 80 characters. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.Disk.id | String | Resource ID of the disk. |
+| Azure.Disk.name | String | Name of the disk. |
+| Azure.Disk.type | String | Type of the resource. |
+| Azure.Disk.location | String | Location of the disk. |
+| Azure.Disk.tags | unknown | Resource tags. |
+| Azure.Disk.managedBy | String | ARM ID of the resource that manages the disk. |
+| Azure.Disk.sku | unknown | The name of the disk SKU. |
+| Azure.Disk.zones | unknown | A list of availability zones. |
+| Azure.Disk.properties.timeCreated | String | The time when the disk was created. |
+| Azure.Disk.properties.diskSizeGB | Number | Size of the disk in GB. |
+| Azure.Disk.properties.diskIopsReadWrite | Number | The number of IOPS allowed for this disk. |
+| Azure.Disk.properties.diskMBpsReadWrite | Number | The bandwidth allowed for this disk in MBps. |
+| Azure.Disk.properties.diskIOPSReadOnly | Number | The number of read-only IOPS for this disk. |
+| Azure.Disk.properties.diskMBpsReadOnly | Number | The read-only bandwidth for this disk in MBps. |
+| Azure.Disk.properties.diskSizeBytes | Number | The size of the disk in bytes. |
+| Azure.Disk.properties.networkAccessPolicy | String | Policy for accessing the disk via network. |
+| Azure.Disk.properties.publicNetworkAccess | String | Policy for export on the disk. |
+| Azure.Disk.properties.burstingEnabled | Boolean | Whether bursting is enabled on the disk. |
+| Azure.Disk.properties.optimization | String | The disk optimization setting. |
+| Azure.Disk.properties.diskState | String | The current state of the disk. |
+| Azure.Disk.properties.supportedCapabilities | unknown | Supported capabilities of the disk. |
+| Azure.Disk.properties.supportedPerformanceTiers | unknown | Supported performance tiers of the disk. |
+| Azure.Disk.properties.supportedDiskTypes | unknown | Supported disk types for the disk. |
+| Azure.Disk.properties.provisioningState | unknown | The provisioning state of the disk. |
+| Azure.Disk.properties.timeModified | unknown | The time when the disk was last modified. |
+| Azure.Disk.properties.diskAccessId | String | The ARM ID of the DiskAccess resource. |
+| Azure.Disk.properties.networkProfile | unknown | The network profile of the disk. |
+| Azure.Disk.properties.creationData | unknown | Disk creation data. |
+| Azure.Disk.properties.encryption | unknown | Encryption settings for the disk. |
+| Azure.Disk.properties.encryptionSettingsCollection | unknown | A collection of encryption settings. |
+| Azure.Disk.properties.encryptionType | String | The type of key used to encrypt the data on the disk. |
+| Azure.Disk.properties.securityProfile | unknown | Security profile for the disk. |
+| Azure.Disk.properties.tieringProfile | unknown | Tiering profile for the disk. |
+| Azure.Disk.properties.supportedTierList | unknown | List of supported tiers for the disk. |
+| Azure.Disk.properties.availabilityZone | String | Availability zone of the disk. |
+| Azure.Disk.properties.dataAccessAuthMode | String | Additional authentication requirements for exporting or uploading to the disk. |
+| Azure.Disk.properties.osType | String | The operating system type. |
+| Azure.Disk.properties.hyperVGeneration | String | The HyperVGenerationType of the virtual machine. |
+| Azure.Disk.properties.lastOwnershipUpdateTime | String | The last time ownership of the disk was updated. |
+
+### azure-webapp-update-assign-managed-identity-quick-action
+
+***
+Assigns a system-assigned managed identity to the Function App. This allows the app to securely access other Azure services while removing the need to manage sensitive credentials and the risk of exposing them.
+
+#### Base Command
+
+`azure-webapp-update-assign-managed-identity-quick-action`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID. | Required |
+| resource_group_name | The resource group name. | Required |
+| name | Name of the Function App. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.WebApp.id | String | Fully qualified resource ID for the web app. |
+| Azure.WebApp.name | String | The name of the web app. |
+| Azure.WebApp.type | String | The resource type, e.g., Microsoft.Web/sites. |
+| Azure.WebApp.location | String | Geographic location of the web app. |
+| Azure.WebApp.kind | String | The kind of the app, e.g., app, functionapp, etc. |
+| Azure.WebApp.tags | unknown | Resource tags as key-value pairs. |
+| Azure.WebApp.identity.type | String | The type of managed identity \(SystemAssigned, UserAssigned, etc.\). |
+| Azure.WebApp.identity.principalId | String | The principal ID of the system-assigned identity. |
+| Azure.WebApp.identity.tenantId | String | The tenant ID of the system-assigned identity. |
+| Azure.WebApp.identity.userAssignedIdentities | unknown | The list of user-assigned identities associated with the web app. |
+| Azure.WebApp.properties.state | String | Current state of the web app \(Running, Stopped, etc.\). |
+| Azure.WebApp.properties.enabled | Boolean | Whether the web app is enabled. |
+| Azure.WebApp.properties.defaultHostName | String | Default host name of the web app. |
+| Azure.WebApp.properties.hostNames | unknown | List of host names associated with the web app. |
+| Azure.WebApp.properties.repositorySiteName | String | Name of the repository site. |
+| Azure.WebApp.properties.clientAffinityEnabled | Boolean | Whether client affinity is enabled. |
+| Azure.WebApp.properties.clientCertEnabled | Boolean | Whether client certificates are enabled. |
+| Azure.WebApp.properties.clientCertExclusionPaths | String | Paths to exclude from client certificate authentication. |
+| Azure.WebApp.properties.hostingEnvironment | String | App Service Environment to use for the web app. |
+| Azure.WebApp.properties.serverFarmId | String | Resource ID of the associated App Service plan. |
+| Azure.WebApp.properties.reserved | Boolean | Whether the web app is on a Linux plan. |
+| Azure.WebApp.properties.isXenon | Boolean | Whether the web app is hosted in Xenon. |
+| Azure.WebApp.properties.hyperV | Boolean | Whether Hyper-V is enabled for the web app. |
+| Azure.WebApp.properties.siteConfig.appSettings | unknown | List of app settings. |
+| Azure.WebApp.properties.siteConfig.metadata | unknown | List of metadata settings. |
+| Azure.WebApp.properties.siteConfig.connectionStrings | unknown | List of connection strings. |
+| Azure.WebApp.properties.siteConfig.localMySqlEnabled | Boolean | Whether local MySQL is enabled. |
+| Azure.WebApp.properties.siteConfig.alwaysOn | Boolean | Whether Always On is enabled. |
+| Azure.WebApp.properties.siteConfig.http20Enabled | Boolean | Whether HTTP/2 is enabled. |
+| Azure.WebApp.properties.siteConfig.minTlsVersion | String | Minimum TLS version required. |
+| Azure.WebApp.properties.siteConfig.ftpsState | String | FTPS state \(Disabled, AllAllowed, etc.\). |
+| Azure.WebApp.properties.siteConfig.linuxFxVersion | String | Runtime stack for Linux apps. |
+| Azure.WebApp.properties.siteConfig.windowsFxVersion | String | Runtime stack for Windows apps. |
+| Azure.WebApp.properties.siteConfig.numberOfWorkers | Number | Number of workers allocated. |
+| Azure.WebApp.properties.siteConfig.webSocketsEnabled | Boolean | Whether WebSockets are enabled. |
+| Azure.WebApp.properties.siteConfig.preWarmedInstanceCount | Number | Number of pre-warmed instances. |
+| Azure.WebApp.properties.siteConfig.acrUseManagedIdentityCreds | Boolean | Whether ACR uses managed identity credentials. |
+| Azure.WebApp.properties.siteConfig.acrUserManagedIdentityID | String | User-assigned identity ID for ACR. |
+| Azure.WebApp.properties.siteConfig.scmType | String | Source control management type. |
+| Azure.WebApp.properties.siteConfig.use32BitWorkerProcess | Boolean | Whether to use 32-bit worker process. |
+| Azure.WebApp.properties.siteConfig.autoHealEnabled | Boolean | Whether auto-heal is enabled. |
+| Azure.WebApp.properties.siteConfig.autoHealRules | unknown | Auto-heal rules configuration. |
+| Azure.WebApp.properties.siteConfig.tracingOptions | String | Tracing options. |
+| Azure.WebApp.properties.siteConfig.remoteDebuggingEnabled | Boolean | Whether remote debugging is enabled. |
+| Azure.WebApp.properties.siteConfig.remoteDebuggingVersion | String | Remote debugging version. |
+| Azure.WebApp.properties.siteConfig.detailedErrorLoggingEnabled | Boolean | Whether detailed error logging is enabled. |
+| Azure.WebApp.properties.siteConfig.httpLoggingEnabled | Boolean | Whether HTTP logging is enabled. |
+| Azure.WebApp.properties.siteConfig.requestTracingEnabled | Boolean | Whether request tracing is enabled. |
+| Azure.WebApp.properties.siteConfig.requestTracingExpirationTime | DateTime | Request tracing expiration time. |
+| Azure.WebApp.properties.siteConfig.remoteDebuggingEnabled | Boolean | Whether remote debugging is enabled. |
+| Azure.WebApp.properties.siteConfig.remoteDebuggingVersion | String | Remote debugging version. |
+| Azure.WebApp.properties.siteConfig.defaultDocuments | unknown | List of default documents. |
+| Azure.WebApp.properties.siteConfig.virtualApplications | unknown | List of virtual applications. |
+| Azure.WebApp.properties.siteConfig.loadBalancing | String | Load balancing settings. |
+| Azure.WebApp.properties.siteConfig.experiments | unknown | Experiments configuration. |
+| Azure.WebApp.properties.siteConfig.limits | unknown | Site limits configuration. |
+| Azure.WebApp.properties.siteConfig.autoSwapSlotName | String | Auto-swap slot name. |
+| Azure.WebApp.properties.siteConfig.localMySqlEnabled | Boolean | Whether local MySQL is enabled. |
+| Azure.WebApp.properties.siteConfig.ipSecurityRestrictions | unknown | IP security restrictions. |
+| Azure.WebApp.properties.siteConfig.scmIpSecurityRestrictions | unknown | SCM IP security restrictions. |
+| Azure.WebApp.properties.siteConfig.scmIpSecurityRestrictionsUseMain | Boolean | Whether SCM IP restrictions use main settings. |
+| Azure.WebApp.properties.siteConfig.cors | unknown | CORS settings. |
+| Azure.WebApp.properties.siteConfig.push | unknown | Push settings. |
+| Azure.WebApp.properties.siteConfig.apiDefinition | unknown | API definition settings. |
+| Azure.WebApp.properties.siteConfig.apiManagementConfig | unknown | API management configuration. |
+| Azure.WebApp.properties.siteConfig.autoHealEnabled | Boolean | Whether auto-heal is enabled. |
+| Azure.WebApp.properties.siteConfig.autoHealRules | unknown | Auto-heal rules configuration. |
+| Azure.WebApp.properties.siteConfig.tracingOptions | String | Tracing options. |
+| Azure.WebApp.properties.siteConfig.remoteDebuggingEnabled | Boolean | Whether remote debugging is enabled. |
+| Azure.WebApp.properties.siteConfig.remoteDebuggingVersion | String | Remote debugging version. |
+| Azure.WebApp.properties.siteConfig.detailedErrorLoggingEnabled | Boolean | Whether detailed error logging is enabled. |
+| Azure.WebApp.properties.siteConfig.httpLoggingEnabled | Boolean | Whether HTTP logging is enabled. |
+| Azure.WebApp.properties.siteConfig.requestTracingEnabled | Boolean | Whether request tracing is enabled. |
+
+### azure-acr-disable-public-private-access-quick-action
+
+***
+Disables public network access and content exports for the Azure Container Registry (ACR) to enhance security.
+
+#### Base Command
+
+`azure-acr-disable-public-private-access-quick-action`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID. | Required |
+| resource_group_name | The resource group name. | Required |
+| registry_name | Name of the container registry. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.ACR.id | String | The resource ID. |
+| Azure.ACR.identity | Unknown | The identity of the container registry. |
+| Azure.ACR.location | String | The location of the resource. |
+| Azure.ACR.name | String | The name of the resource. |
+| Azure.ACR.properties.adminUserEnabled | Boolean | The value that indicates whether the admin user is enabled. |
+| Azure.ACR.properties.anonymousPullEnabled | Boolean | Enables registry-wide pull from unauthenticated clients. |
+| Azure.ACR.properties.creationDate | String | The creation date of the container registry in ISO8601 format. |
+| Azure.ACR.properties.dataEndpointEnabled | Boolean | Enable a single data endpoint per region for serving data. |
+| Azure.ACR.properties.dataEndpointHostNames | Unknown | List of host names that will serve data when dataEndpointEnabled is true. |
+| Azure.ACR.properties.encryption | Unknown | The encryption settings of container registry. |
+| Azure.ACR.properties.loginServer | String | The URL that can be used to log into the container registry. |
+| Azure.ACR.properties.networkRuleBypassOptions | String | Whether to allow trusted Azure services to access a network restricted registry. |
+| Azure.ACR.properties.networkRuleSet | Unknown | The network rule set for a container registry. |
+| Azure.ACR.properties.policies | Unknown | The policies for a container registry. |
+| Azure.ACR.properties.privateEndpointConnections | Unknown | List of private endpoint connections for a container registry. |
+| Azure.ACR.properties.provisioningState | String | The provisioning state of the container registry when the operation was called. |
+| Azure.ACR.properties.publicNetworkAccess | String | Whether or not public network access is allowed for the container registry. |
+| Azure.ACR.properties.status | Unknown | The status of the container registry at the time the operation was called. |
+| Azure.ACR.properties.zoneRedundancy | String | Whether or not zone redundancy is enabled for this container registry. |
+| Azure.ACR.sku | Unknown | The SKU of the container registry. |
+| Azure.ACR.systemData | Unknown | Metadata pertaining to creation and last modification of the resource. |
+| Azure.ACR.tags | Unknown | The tags of the resource. |
+| Azure.ACR.type | String | The type of the resource. |
+
+### azure-acr-disable-authentication-as-arm-quick-action
+
+***
+Disables the legacy 'authentication as ARM' feature for the Azure Container Registry (ACR).
+
+#### Base Command
+
+`azure-acr-disable-authentication-as-arm-quick-action`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID. | Required |
+| resource_group_name | The resource group name. | Required |
+| registry_name | The name of the container registry. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.ACR.id | String | The resource ID. |
+| Azure.ACR.identity | Unknown | The identity of the container registry. |
+| Azure.ACR.location | String | The location of the resource. |
+| Azure.ACR.name | String | The name of the resource. |
+| Azure.ACR.properties.adminUserEnabled | Boolean | The value that indicates whether the admin user is enabled. |
+| Azure.ACR.properties.anonymousPullEnabled | Boolean | Enables registry-wide pull from unauthenticated clients. |
+| Azure.ACR.properties.creationDate | String | The creation date of the container registry in ISO8601 format. |
+| Azure.ACR.properties.dataEndpointEnabled | Boolean | Enable a single data endpoint per region for serving data. |
+| Azure.ACR.properties.dataEndpointHostNames | Unknown | List of host names that will serve data when dataEndpointEnabled is true. |
+| Azure.ACR.properties.encryption | Unknown | The encryption settings of container registry. |
+| Azure.ACR.properties.loginServer | String | The URL that can be used to log into the container registry. |
+| Azure.ACR.properties.networkRuleBypassOptions | String | Whether to allow trusted Azure services to access a network restricted registry. |
+| Azure.ACR.properties.networkRuleSet | Unknown | The network rule set for a container registry. |
+| Azure.ACR.properties.policies | Unknown | The policies for a container registry. |
+| Azure.ACR.properties.privateEndpointConnections | Unknown | List of private endpoint connections for a container registry. |
+| Azure.ACR.properties.provisioningState | String | The provisioning state of the container registry when the operation was called. |
+| Azure.ACR.properties.publicNetworkAccess | String | Whether or not public network access is allowed for the container registry. |
+| Azure.ACR.properties.status | Unknown | The status of the container registry at the time the operation was called. |
+| Azure.ACR.properties.zoneRedundancy | String | Whether or not zone redundancy is enabled for this container registry. |
+| Azure.ACR.sku | Unknown | The SKU of the container registry. |
+| Azure.ACR.systemData | Unknown | Metadata pertaining to creation and last modification of the resource. |
+| Azure.ACR.tags | Unknown | The tags of the resource. |
+| Azure.ACR.type | String | The type of the resource. |
+
+### azure-acr-disable-anonymous-pull-quick-action
+
+***
+Disables anonymous pull access for the Azure Container Registry (ACR), requiring clients to authenticate before pulling images.
+
+#### Base Command
+
+`azure-acr-disable-anonymous-pull-quick-action`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID. | Required |
+| resource_group_name | The resource group name. | Required |
+| registry_name | The name of the container registry. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.ACR.id | String | The resource ID. |
+| Azure.ACR.identity | Unknown | The identity of the container registry. |
+| Azure.ACR.location | String | The location of the resource. |
+| Azure.ACR.name | String | The name of the resource. |
+| Azure.ACR.properties.adminUserEnabled | Boolean | The value that indicates whether the admin user is enabled. |
+| Azure.ACR.properties.anonymousPullEnabled | Boolean | Enables registry-wide pull from unauthenticated clients. |
+| Azure.ACR.properties.creationDate | String | The creation date of the container registry in ISO8601 format. |
+| Azure.ACR.properties.dataEndpointEnabled | Boolean | Enable a single data endpoint per region for serving data. |
+| Azure.ACR.properties.dataEndpointHostNames | Unknown | List of host names that will serve data when dataEndpointEnabled is true. |
+| Azure.ACR.properties.encryption | Unknown | The encryption settings of container registry. |
+| Azure.ACR.properties.loginServer | String | The URL that can be used to log into the container registry. |
+| Azure.ACR.properties.networkRuleBypassOptions | String | Whether to allow trusted Azure services to access a network restricted registry. |
+| Azure.ACR.properties.networkRuleSet | Unknown | The network rule set for a container registry. |
+| Azure.ACR.properties.policies | Unknown | The policies for a container registry. |
+| Azure.ACR.properties.privateEndpointConnections | Unknown | List of private endpoint connections for a container registry. |
+| Azure.ACR.properties.provisioningState | String | The provisioning state of the container registry when the operation was called. |
+| Azure.ACR.properties.publicNetworkAccess | String | Whether or not public network access is allowed for the container registry. |
+| Azure.ACR.properties.status | Unknown | The status of the container registry when the operation was called. |
+| Azure.ACR.properties.zoneRedundancy | String | Whether or not zone redundancy is enabled for this container registry. |
+| Azure.ACR.sku | Unknown | The SKU of the container registry. |
+| Azure.ACR.systemData | Unknown | Metadata pertaining to creation and last modification of the resource. |
+| Azure.ACR.tags | Unknown | The tags of the resource. |
+| Azure.ACR.type | String | The type of the resource. |
+
+### azure-storage-blob-enable-soft-delete-quick-action
+
+***
+Enables blob soft delete for the storage account to retain deleted blobs for 30 days.
+
+#### Base Command
+
+`azure-storage-blob-enable-soft-delete-quick-action`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID. | Required |
+| resource_group_name | The resource group name. | Required |
+| account_name | Name of the storage account. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.StorageAccountBlobServiceProperties.id | String | The resource ID. |
+| Azure.StorageAccountBlobServiceProperties.name | String | The name of the esource. |
+| Azure.StorageAccountBlobServiceProperties.type | String | The type of the resource. |
+| Azure.StorageAccountBlobServiceProperties.properties.cors | String | Specifies CORS rules for the Blob service. |
+| Azure.StorageAccountBlobServiceProperties.properties.defaultServiceVersion | Date | The default version for requests to the blob service if an incoming request's version is not specified. Possible values include version 2008-10-27 and and all later versions. |
+| Azure.StorageAccountBlobServiceProperties.properties.deleteRetentionPolicy | unknown | The service properties for soft delete. |
+| Azure.StorageAccountBlobServiceProperties.properties.isVersioningEnabled | Boolean | If set to true, enables versioning. |
+| Azure.StorageAccountBlobServiceProperties.properties.changeFeed | unknown | The blob service properties for change feed events. |
+| Azure.StorageAccountBlobServiceProperties.sku.name | String | The SKU name. |
+| Azure.StorageAccountBlobServiceProperties.sku.tier | String | The SKU tier. |
+
+### azure-disable-public-private-access-vm-disk-quick-action
+
+***
+Disables all public and private network access for the managed disk.
+
+#### Base Command
+
+`azure-disable-public-private-access-vm-disk-quick-action`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID. | Required |
+| resource_group_name | The resource group name. | Required |
+| disk_name | Name of the managed disk. Supported characters for the name are a-z, A-Z, 0-9, _ and -. The maximum name length is 80 characters. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.Disk.id | String | Resource ID of the disk. |
+| Azure.Disk.name | String | Name of the disk. |
+| Azure.Disk.type | String | Type of the resource. |
+| Azure.Disk.location | String | Location of the disk. |
+| Azure.Disk.tags | unknown | Resource tags. |
+| Azure.Disk.managedBy | String | ARM ID of the resource that manages the disk. |
+| Azure.Disk.sku | unknown | The name of the disk SKU. |
+| Azure.Disk.zones | unknown | A list of availability zones. |
+| Azure.Disk.properties.timeCreated | String | The time when the disk was created. |
+| Azure.Disk.properties.diskSizeGB | Number | Size of the disk in GB. |
+| Azure.Disk.properties.diskIopsReadWrite | Number | The number of IOPS allowed for this disk. |
+| Azure.Disk.properties.diskMBpsReadWrite | Number | The bandwidth allowed for this disk in MBps. |
+| Azure.Disk.properties.diskIOPSReadOnly | Number | The number of read-only IOPS for this disk. |
+| Azure.Disk.properties.diskMBpsReadOnly | Number | The read-only bandwidth for this disk in MBps. |
+| Azure.Disk.properties.diskSizeBytes | Number | The size of the disk in bytes. |
+| Azure.Disk.properties.networkAccessPolicy | String | Policy for accessing the disk via network. |
+| Azure.Disk.properties.publicNetworkAccess | String | Policy for export on the disk. |
+| Azure.Disk.properties.burstingEnabled | Boolean | Whether bursting is enabled on the disk. |
+| Azure.Disk.properties.optimization | String | The disk optimization setting. |
+| Azure.Disk.properties.diskState | String | The current state of the disk. |
+| Azure.Disk.properties.supportedCapabilities | unknown | Supported capabilities of the disk. |
+| Azure.Disk.properties.supportedPerformanceTiers | unknown | Supported performance tiers of the disk. |
+| Azure.Disk.properties.supportedDiskTypes | unknown | Supported disk types for the disk. |
+| Azure.Disk.properties.provisioningState | unknown | The provisioning state of the disk. |
+| Azure.Disk.properties.timeModified | unknown | The time when the disk was last modified. |
+| Azure.Disk.properties.diskAccessId | String | The ARM ID of the DiskAccess resource. |
+| Azure.Disk.properties.networkProfile | unknown | The network profile of the disk. |
+| Azure.Disk.properties.creationData | unknown | Disk creation data. |
+| Azure.Disk.properties.encryption | unknown | Encryption settings for the disk. |
+| Azure.Disk.properties.encryptionSettingsCollection | unknown | A collection of encryption settings. |
+| Azure.Disk.properties.encryptionType | String | The type of key used to encrypt the data on the disk. |
+| Azure.Disk.properties.securityProfile | unknown | Security profile for the disk. |
+| Azure.Disk.properties.tieringProfile | unknown | Tiering profile for the disk. |
+| Azure.Disk.properties.supportedTierList | unknown | List of supported tiers for the disk. |
+| Azure.Disk.properties.availabilityZone | String | Availability zone of the disk. |
+| Azure.Disk.properties.dataAccessAuthMode | String | Additional authentication requirements when exporting or uploading to a disk. |
+| Azure.Disk.properties.osType | String | The operating system type. |
+| Azure.Disk.properties.hyperVGeneration | String | The HyperVGenerationType of the virtual machine. |
+| Azure.Disk.properties.lastOwnershipUpdateTime | String | The last time ownership of the disk was updated. |

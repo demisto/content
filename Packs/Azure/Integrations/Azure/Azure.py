@@ -66,10 +66,12 @@ PERMISSIONS_TO_COMMANDS = {
     "Microsoft.Storage/storageAccounts/blobServices/read": [
         "azure-storage-blob-service-properties-set",
         "azure-storage-blob-service-properties-get",
+        "azure-storage-blob-enable-soft-delete-quick-action",
     ],
     "Microsoft.Storage/storageAccounts/blobServices/write": [
         "azure-storage-blob-service-properties-set",
         "azure-storage-blob-service-properties-get",
+        "azure-storage-blob-enable-soft-delete-quick-action",
     ],
     "Microsoft.Authorization/policyAssignments/read": [
         "azure-policy-assignment-create",
@@ -105,8 +107,16 @@ PERMISSIONS_TO_COMMANDS = {
         "azure-webapp-set-min-tls-version-quick-action",
         "azure-function-app-set-min-tls-version-quick-action",
     ],
-    "Microsoft.Web/sites/read": ["azure-webapp-update", "azure-webapp-assign-managed-identity-quick-action"],
-    "Microsoft.Web/sites/write": ["azure-webapp-update", "azure-webapp-assign-managed-identity-quick-action"],
+    "Microsoft.Web/sites/read": [
+        "azure-webapp-update",
+        "azure-webapp-assign-managed-identity-quick-action",
+        "azure-webapp-update-assign-managed-identity-quick-action",
+    ],
+    "Microsoft.Web/sites/write": [
+        "azure-webapp-update",
+        "azure-webapp-assign-managed-identity-quick-action",
+        "azure-webapp-update-assign-managed-identity-quick-action",
+    ],
     "Microsoft.DBforMySQL/flexibleServers/configurations/read": [
         "azure-mysql-flexible-server-param-set",
         "azure-mysql-set-secure-transport-quick-action",
@@ -123,13 +133,31 @@ PERMISSIONS_TO_COMMANDS = {
         "azure-monitor-log-profile-update",
         "azure-monitor-log-retention-period-quick-action",
     ],
-    "Microsoft.Compute/disks/read": ["azure-disk-update"],
-    "Microsoft.Compute/disks/write": ["azure-disk-update"],
+    "Microsoft.Compute/disks/read": [
+        "azure-disk-update",
+        "azure-disable-public-private-access-vm-disk-quick-action",
+        "azure-disk-set-data-access-aad-quick-action",
+    ],
+    "Microsoft.Compute/disks/write": [
+        "azure-disk-update",
+        "azure-disable-public-private-access-vm-disk-quick-action",
+        "azure-disk-set-data-access-aad-quick-action",
+    ],
     "Microsoft.Compute/virtualMachines/read": ["azure-vm-instance-details-get"],
     "Microsoft.Compute/virtualMachines/start/action": ["azure-vm-instance-start"],
     "Microsoft.Compute/virtualMachines/poweroff/action": ["azure-vm-instance-power-off"],
-    "Microsoft.ContainerRegistry/registries/read": ["azure-acr-update"],
-    "Microsoft.ContainerRegistry/registries/write": ["azure-acr-update"],
+    "Microsoft.ContainerRegistry/registries/read": [
+        "azure-acr-update",
+        "azure-acr-disable-public-private-access-quick-action",
+        "azure-acr-disable-authentication-as-arm-quick-action",
+        "azure-acr-disable-anonymous-pull-quick-action",
+    ],
+    "Microsoft.ContainerRegistry/registries/write": [
+        "azure-acr-update",
+        "azure-acr-disable-public-private-access-quick-action",
+        "azure-acr-disable-authentication-as-arm-quick-action",
+        "azure-acr-disable-anonymous-pull-quick-action",
+    ],
     "Microsoft.KeyVault/vaults/read": ["azure-key-vault-update"],
     "Microsoft.KeyVault/vaults/write": ["azure-key-vault-update"],
     "Microsoft.Sql/servers/databases/securityAlertPolicies/read": ["azure-sql-db-threat-policy-update"],
@@ -3569,6 +3597,13 @@ def main():  # pragma: no cover
             "azure-network-disable-storage-account-access-quick-action": storage_account_update_command,
             "azure-monitor-log-retention-period-quick-action": monitor_log_profile_update_command,
             "azure-set-storage-account-https-only-quick-action": storage_account_update_command,
+            "azure-webapp-update-assign-managed-identity-quick-action": webapp_update_command,
+            "azure-storage-blob-enable-soft-delete-quick-action": storage_blob_service_properties_set_command,
+            "azure-disable-public-private-access-vm-disk-quick-action": disk_update_command,
+            "azure-disk-set-data-access-aad-quick-action": disk_update_command,
+            "azure-acr-disable-public-private-access-quick-action": acr_update_command,
+            "azure-acr-disable-authentication-as-arm-quick-action": acr_update_command,
+            "azure-acr-disable-anonymous-pull-quick-action": acr_update_command,
         }
         if command == "test-module" and connector_id:
             demisto.debug(f"Running health check for connector ID: {connector_id}")
