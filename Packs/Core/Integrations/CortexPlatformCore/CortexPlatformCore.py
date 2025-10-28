@@ -460,21 +460,13 @@ def get_issue_recommendations_command(client: Client, args: dict) -> CommandResu
     reply = response.get("reply", {})
     issue_data = reply.get("DATA", [])
 
-    # Get playbook suggestions for the issue
-    playbook_suggestions = {}
-    try:
-        playbook_response = client.get_playbook_suggestion_by_issue(issue_id)
-        playbook_suggestions = playbook_response.get("reply", {})
-    except Exception as e:
-        demisto.debug(f"Failed to get playbook suggestions: {e}")
-
-    # Combine the data
-    if not issue_data:
-        raise DemistoException(f"No issue found with ID {issue_id}")
+    playbook_response = client.get_playbook_suggestion_by_issue(issue_id)
+    playbook_suggestions = playbook_response.get("reply", {})
+    demisto.debug(f"{playbook_response=}")
 
     issue = issue_data[0]
     recommendation = {
-        "issue_id": issue.get("internal_id"),
+        "issue_id": issue.get("internal_id") or issue_id,
         "issue_name": issue.get("alert_name"),
         "severity": issue.get("severity"),
         "description": issue.get("alert_description"),
