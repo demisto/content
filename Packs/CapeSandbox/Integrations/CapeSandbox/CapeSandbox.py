@@ -1,5 +1,6 @@
 import os
 import re
+import time
 from enum import Enum
 from pathlib import Path
 from typing import Any, Literal
@@ -150,7 +151,10 @@ def build_file_name(
             "ext": str(file_format) if file_format else "json",
             "part": "report",
         },
-        "file": {"ext": str(file_format) if file_format else "json", "part": "file"},
+        "file": {
+            "ext": str(file_format) if file_format else "json",
+            "part": "file",
+        },
         "network_dump": {
             "ext": "pcap",
             "part": "network_dump",
@@ -304,7 +308,7 @@ API_AUTH = f"{BASE_PREFIX}/{Resource.API_TOKEN_AUTH.value}/"
 TASK_CREATE_FILE = f"{TASKS_BASE}/{Action.CREATE.value}/{Action.FILE.value}/"
 TASK_CREATE_URL = f"{TASKS_BASE}/{Action.CREATE.value}/{Action.URL.value}/"
 TASK_STATUS = f"{TASKS_BASE}/{Action.STATUS.value}" + "/{task_id}/"
-TASK_VIEW = f"{TASKS_BASE}/{Action.VIEW.value}" + "/{task_id}/"
+TASK_VIEW = f"{TASKS_BASE}/{Action.VIEW.value}/{{task_id}}/"
 TASK_LIST = f"{TASKS_BASE}/list" + "/{limit}/{offset}/"
 TASK_DELETE = f"{TASKS_BASE}/{Action.DELETE.value}" + "/{task_id}/"
 TASK_GET_REPORT_BASE = f"{TASKS_BASE}/{Action.GET.value}/report" + "/{task_id}/"
@@ -332,7 +336,7 @@ FILES_GET_BY_SHA256 = (
 
 # -- Machines --
 MACHINES_LIST = f"{MACHINES_BASE}/list/"
-MACHINE_VIEW = f"{MACHINES_BASE}/{Action.VIEW.value}" + "/{name}/"
+MACHINE_VIEW = f"{MACHINES_BASE}/{Action.VIEW.value}/{{name}}/"
 
 
 # ---------- Client: Auth & HTTP ----------
@@ -434,20 +438,24 @@ class CapeSandboxClient(BaseClient):  # noqa: F405
         """
         if isinstance(response, dict) and response.get("error") is True:
             fail_message = (
-                response.get("failed")
+                response.get("error_value")
+                or response.get("failed")
                 or response.get("message")
                 or "Unknown API error occurred."
             )
 
-            full_error_message = (
-                f"CAPE API error for {url_suffix}: {fail_message}. Response: {response}"
-            )
-
             demisto.debug(
-                f"CAPE API call failed with explicit error flag: {full_error_message}"
+                f"CAPE API call for {url_suffix} failed with explicit error flag",
+                {
+                    "url": url_suffix,
+                    "message": fail_message,
+                    "response": response,
+                },
             )
 
-            raise DemistoException(f"CapeSandbox Error: {fail_message}")
+            raise DemistoException(
+                f"CapeSandbox API call failed for {url_suffix}, with error {fail_message}"
+            )
 
     def ensure_token(self) -> str:
         """
@@ -732,82 +740,6 @@ def test_module(client: CapeSandboxClient) -> str:
 
 
 # ---------- Submit & Poll ----------
-# def cape_file_submit_command2(
-#     client: CapeSandboxClient, args: dict[str, Any]
-# ) -> CommandResults:
-#     """Submit a file (or PCAP) to CAPE and poll until the task is reported.
-
-#     First call requires `entry_id`. Subsequent polls pass back `task_id`.
-#     """
-#     task_id = args.get("task_id")
-#     if task_id:
-#         status = client.get_task_status(task_id)
-#         if status_is_reported(status):
-#             task = client.get_task_view(task_id)
-#             readable = tableToMarkdown(
-#                 f"{INTEGRATION_NAME} Task {task_id}",
-#                 task.get("data") or task,
-#                 headers=[
-#                     "id",
-#                     "target",
-#                     "category",
-#                     "priority",
-#                     "machine",
-#                     "package",
-#                     "platform",
-#                     "started_on",
-#                     "completed_on",
-#                     "status",
-#                 ],
-#                 headerTransform=pascalToSpace,
-#             )
-#             return CommandResults(
-#                 readable_output=readable,
-#                 outputs_prefix="Cape.Task",
-#                 outputs_key_field="id",
-#                 outputs=task.get("data") or task,
-#             )
-#         return CommandResults(
-#             readable_output=f"Task {task_id} is not ready yet. Scheduling next poll in {POLLING_INTERVAL_SECONDS}s.",
-#             scheduled_command=ScheduledCommand(
-#                 command="cape-file-submit",
-#                 next_run_in_seconds=POLLING_INTERVAL_SECONDS,
-#                 args={"task_id": task_id},
-#             ),
-#         )
-
-#     entry_id = args.get("entry_id")
-#     if not entry_id:
-#         raise DemistoException("entry_id is required for cape-file-submit.")
-
-#     try:
-#         file_path, filename = get_entry_path(entry_id)
-#     except Exception as ex:
-#         raise DemistoException(
-#             f"Failed to resolve entry_id '{entry_id}' to a local file path: {ex}"
-#         )
-#     is_pcap = filename.lower().endswith(".pcap")
-
-#     form = build_submit_form(args)
-#     submit_resp = client.submit_file(form=form, file_path=file_path, is_pcap=is_pcap)
-#     task_ids = ((submit_resp or {}).get("data") or {}).get("task_ids") or []
-#     if not task_ids:
-#         raise DemistoException(
-#             f"No task id returned from CAPE. Response: {submit_resp}"
-#         )
-#     task_id = task_ids[0]
-
-#     md = f"Submitted file {filename}. Task ID {task_id}. Polling will continue every {POLLING_INTERVAL_SECONDS}s until ready."
-#     return CommandResults(
-#         readable_output=md,
-#         scheduled_command=ScheduledCommand(
-#             command="cape-file-submit",
-#             next_run_in_seconds=POLLING_INTERVAL_SECONDS,
-#             args={"task_id": task_id},
-#         ),
-#     )
-
-
 @polling_function(
     name="cape-task-poll",
     interval=POLLING_INTERVAL_SECONDS,
@@ -1020,90 +952,6 @@ def cape_url_submit_command(
         task_id=task_ids[0],
         api_target=url,
         outputs_prefix="Cape.Task.Url",
-    )
-
-
-# need to check
-def cape_url_submit_command2(
-    client: CapeSandboxClient, args: dict[str, Any]
-) -> CommandResults:
-    """Submit a URL to CAPE and poll until the task is reported."""
-    command = "Submit URL"
-    demisto.debug(f"Starting execution of command: {command}")
-
-    task_id = arg_to_number(args.get("task_id"))
-    url = args.get("url")
-
-    if task_id:
-        resp = client.get_task_status(task_id)
-        status = resp.get("data", "")
-        demisto.debug(f"The status for Task ID {task_id} is '{status}'.")
-
-        if status_is_reported(status):
-            task = client.get_task_view(task_id)
-            readable = tableToMarkdown(
-                f"{INTEGRATION_NAME} Task {task_id}",
-                task.get("data") or task,
-                headers=[
-                    "id",
-                    "target",
-                    "category",
-                    "priority",
-                    "machine",
-                    "package",
-                    "platform",
-                    "started_on",
-                    "completed_on",
-                    "status",
-                ],
-                headerTransform=string_to_table_header,
-            )
-
-            demisto.debug(
-                f"Command '{command}' execution finished successfully (Returning Polling Results)."
-            )
-            return CommandResults(
-                readable_output=readable,
-                outputs_prefix="Cape.Task",
-                outputs_key_field="id",
-                outputs=task.get("data") or task,
-            )
-
-        return CommandResults(
-            readable_output=f"URL Task {task_id} is not ready yet. Scheduling next poll in {POLLING_INTERVAL_SECONDS}s.",
-            scheduled_command=ScheduledCommand(
-                command="cape-url-submit",
-                next_run_in_seconds=POLLING_INTERVAL_SECONDS,
-                args={"task_id": task_id},
-            ),
-        )
-
-    if not url:
-        raise DemistoException("url is required for cape-url-submit.")
-
-    form = build_submit_form(args, url_mode=True)
-    submit_resp = client.submit_url(form=form)
-    task_ids = ((submit_resp or {}).get("data") or {}).get("task_ids") or []
-
-    if not task_ids:
-        raise DemistoException(
-            f"No task id returned from CAPE. Response: {submit_resp}"
-        )
-
-    task_id = task_ids[0]
-
-    md = f"Submitted URL {url}. Task ID {task_id}. Polling will continue every {POLLING_INTERVAL_SECONDS}s until ready."
-
-    demisto.debug(
-        f"Command '{command}' execution finished successfully (Scheduling Poll for Task ID: {task_id})."
-    )
-    return CommandResults(
-        readable_output=md,
-        scheduled_command=ScheduledCommand(
-            command="cape-url-submit",
-            next_run_in_seconds=POLLING_INTERVAL_SECONDS,
-            args={"task_id": task_id},
-        ),
     )
 
 
@@ -1329,97 +1177,6 @@ def cape_tasks_list_command(
     )
 
     demisto.debug(f"Command '{command}' execution finished successfully (List View).")
-    return CommandResults(
-        readable_output=readable,
-        outputs_prefix="Cape.Task",
-        outputs_key_field="id",
-        outputs=items,
-    )
-
-
-def cape_tasks_list_command22(
-    client: CapeSandboxClient, args: dict[str, Any]
-) -> CommandResults:
-    """List tasks with pagination or fetch a single task by `task_id`."""
-    task_id = args.get("task_id")
-
-    # --- Pagination Logic ---
-    # 1. User-defined overall limit (max results to return to the user)
-    user_limit = arg_to_number(args.get("limit")) or LIST_DEFAULT_LIMIT
-
-    # 2. Determine the API's page size (max items per API call), The API limit is 50, so the page size cannot exceed that.
-    page_size_arg = arg_to_number(args.get("page_size")) or LIST_DEFAULT_LIMIT
-
-    # We use the smaller of the page_size argument and LIST_DEFAULT_LIMIT
-    api_page_size = int(min(max(1, page_size_arg), LIST_DEFAULT_LIMIT))
-
-    # 3. Determine the page number, ensuring it's at least 1.
-    page = int(max(arg_to_number(args.get("page")) or 1, 1))
-
-    # 4. Calculate the starting point (offset) for the API call.
-    offset = (page - 1) * api_page_size
-    # ------------------------------------------------------------------
-
-    if task_id:
-        task = client.get_task_view(task_id)
-        data = task.get("data") or task
-        readable = tableToMarkdown(
-            f"{INTEGRATION_NAME} Task {task_id}",
-            data if isinstance(data, dict) else [data],
-            headers=[
-                "id",
-                "category",
-                "machine",
-                "target",
-                "package",
-                "platform",
-                "options",
-                "status",
-                "timeout",
-                "memory",
-                "tags",
-                "added_on",
-                "completed_on",
-            ],
-            headerTransform=string_to_table_header,
-        )
-        return CommandResults(
-            readable_output=readable,
-            outputs_prefix="Cape.Task",
-            outputs_key_field="id",
-            outputs=data,
-        )
-
-    # API Call: We use the calculated api_page_size as the API limit
-    resp = client.list_tasks(limit=api_page_size, offset=offset)
-    data = resp.get("data") or resp
-    items = data if isinstance(data, list) else [data]
-
-    # Trim the results based on the user's overall limit
-    if user_limit < len(items):
-        items = items[:user_limit]
-
-    readable = tableToMarkdown(
-        f"{INTEGRATION_NAME} Tasks (page={page}, page_size={api_page_size}, total_limit={user_limit})",
-        items,
-        headers=[
-            "id",
-            "category",
-            "machine",
-            "target",
-            "package",
-            "platform",
-            "options",
-            "status",
-            "timeout",
-            "memory",
-            "tags",
-            "added_on",
-            "completed_on",
-        ],
-        headerTransform=string_to_table_header,
-    )
-
     return CommandResults(
         readable_output=readable,
         outputs_prefix="Cape.Task",
@@ -1817,7 +1574,10 @@ def main() -> None:
             f"Failed to execute {command} command. Error: {str(error)}.\n",
             traceback.format_exc(),
         )
-        return_error(f"Failed to execute {command} command. Error: {str(error)}")
+        return_error(
+            f"Failed to execute {command} command. Error: {str(error)}",
+            error=str(error),
+        )
 
     finally:
         demisto.debug("--- CapeSandbox Integration END ---")
