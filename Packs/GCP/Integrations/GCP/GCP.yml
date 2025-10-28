@@ -144,7 +144,7 @@ script:
 
   - name: gcp-compute-firewall-patch-disable-gcp-default-firewall-rule-quick-action
     description: Disables default GCP firewall rule which is overly permissive (except http and https).
-    prettyname: Disable GCP Default Firewall Rule
+    prettyname: Disable GCP Firewall Rule
     quickaction: true
     hidden: true
     arguments:
