@@ -1,5 +1,5 @@
 category: Endpoint
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -1649,9 +1649,13 @@ script:
     - defaultValue: "1000"
       description: The maximum number of records to return.
       name: limit
-    - description: Hash to search for in the blocklist.
+    - description: SHA1 or SHA256 hash to search for in the blocklist.
       name: hash
-    description: Add a hash to the blocklist ("blacklist" in SentinelOne documentation). If the `global` flag is `true`, then group_ids, site_ids, and account_ids are ignored.
+    - description: SHA1 hash to search for in the blocklist.
+      name: sha1
+    - description: SHA256 hash to search for in the blocklist.
+      name: sha256Value
+    description: Retrieve the blocklist ("blacklist" in SentinelOne). You can filter by SHA1 or SHA256 hash. If the `global` flag is `true`, then group_ids, site_ids, and account_ids are ignored.
     name: sentinelone-get-blocklist
     outputs:
     - contextPath: SentinelOne.Blocklist.UserId
@@ -1661,7 +1665,7 @@ script:
       description: When entry was most recently updated.
       type: String
     - contextPath: SentinelOne.Blocklist.Value
-      description: File hash.
+      description: File hash (SHA1 or SHA256).
       type: String
     - contextPath: SentinelOne.Blocklist.ScopePath
       description: SentinelOne list scope.
@@ -1690,6 +1694,8 @@ script:
   - arguments:
     - description: SHA1 hash to add to the blocklist.
       name: sha1
+    - description: SHA256 hash to add to the blocklist.
+      name: sha256Value
     - defaultValue: XSOAR
       description: String describing the source of the block.
       name: source
@@ -1720,6 +1726,8 @@ script:
   - arguments:
     - description: SHA1 hash to remove from the global blocklist.
       name: sha1
+    - description: SHA256 hash to remove from the global blocklist.
+      name: sha256Value
     - auto: PREDEFINED
       description: Optional operating system type. If not supplied, will remove the SHA1 hash across all platforms.
       name: os_type
@@ -2843,7 +2851,7 @@ script:
     - contextPath: SentinelOne.Notes.UpdatedAt
       description: The note updated time.
       type: string
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.11.4819260
   isfetch: true
   ismappable: true
   isremotesyncin: true

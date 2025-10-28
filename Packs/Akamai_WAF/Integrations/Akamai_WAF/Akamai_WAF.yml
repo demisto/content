@@ -2,7 +2,7 @@ category: Network Security
 commonfields:
   id: Akamai WAF
   version: -1
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 configuration:
@@ -94,8 +94,9 @@ script:
       predefined:
       - 'true'
       - 'false'
-    description: Returns a list of all network lists available for an authenticated user who belongs to a group.
+    description: Deprecated. Use “akamai-get-client-list” instead.
     name: akamai-get-network-lists
+    deprecated: true
     outputs:
     - contextPath: Akamai.NetworkLists.Lists.Name
       description: The network list name.
@@ -140,8 +141,9 @@ script:
     - description: The network list ID.
       name: network_list_id
       required: true
-    description: Gets a network list by the network list ID.
+    description: Deprecated. Use “akamai-get-client-list” instead.
     name: akamai-get-network-list-by-id
+    deprecated: true
     outputs:
     - contextPath: Akamai.NetworkLists.Lists.Name
       description: The network list name.
@@ -200,8 +202,9 @@ script:
       name: entry_id
     - description: The network list description.
       name: description
-    description: Creates a new network list. Supports TXT file upload for elements.
+    description: Deprecated. Use “akamai-create-client-list” instead.
     name: akamai-create-network-list
+    deprecated: true
     outputs:
     - contextPath: Akamai.NetworkLists.Lists.Name
       description: The network list name.
@@ -222,8 +225,9 @@ script:
     - description: The ID of the network list to delete.
       name: network_list_id
       required: true
-    description: Deletes the specified network list.
+    description: Deprecated. Use “akamai-deprecate-client-list” instead.
     name: akamai-delete-network-list
+    deprecated: true
   - arguments:
     - description: 'A comma-separated list of network list IDs to activate. For example: list (list1,list2).'
       isArray: true
@@ -241,30 +245,33 @@ script:
     - description: A comma-separated list of email addresses.
       isArray: true
       name: notify
-    description: Activates a network list on the specified environment.
+    description: Deprecated. Use “akamai-activate-client-list” instead.
     name: akamai-activate-network-list
+    deprecated: true
   - arguments:
-    - description: The ID of the network in which to add elements.
+    - description: The ID of the network where elements will be added.
       name: network_list_id
       required: true
     - description: The War Room entry ID of the sample file.
       name: entry_id
-    - description: A comma-separated list of elements to add to the network list.
+    - description: A comma-separated list of elements to be added to the network list.
       isArray: true
       name: elements
-    description: Adds elements to the specified network list.
+    description: Deprecated. Use “akamai-add-client-list-entry” instead.
     name: akamai-add-elements-to-network-list
+    deprecated: true
   - arguments:
-    - description: The ID of the network list from which to remove elements.
+    - description: The ID of the network list from which elements are removed.
       name: network_list_id
       required: true
     - description: The element to remove from the network list.
       name: element
       required: true
-    description: Removes elements from the specified network list.
+    description: Deprecated. Use “akamai-remove-client-list-entry” instead.
     name: akamai-remove-element-from-network-list
+    deprecated: true
   - arguments:
-    - description: 'A comma-separated list of network list IDs for which to get the activation status. For example: (support list - list1,list2).'
+    - description: 'A comma-separated list of network list IDs, to check the activation status. For example: support list - list1,list2.'
       isArray: true
       name: network_list_ids
       required: true
@@ -275,8 +282,9 @@ script:
       - PRODUCTION
       - STAGING
       required: true
-    description: Gets the activation status of the specified network list.
+    description: Deprecated. There is no replacement for this command.
     name: akamai-get-network-list-activation-status
+    deprecated: true
     outputs:
     - contextPath: Akamai.NetworkLists.ActivationStatus.UniqueID
       description: The network list ID.
@@ -295,8 +303,9 @@ script:
       isArray: true
       name: elements
       required: true
-    description: Updates list elements of a network list.
+    description: Deprecated. There is no replacement for this command.
     name: akamai-update-network-list-elements
+    deprecated: true
   - arguments:
     - description: Group Name.
       name: checking_group_name
@@ -564,6 +573,268 @@ script:
       required: true
     description: Get group.
     name: akamai-get-group
+  - arguments:
+    - name: client_list_id
+      description: An optional URL parameter to get a specific client list.
+    - name: name
+      description: Filters the output to show only lists that match a given name.
+    - name: include_items
+      description: Include items in the response.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
+    - name: include_deprecated
+      description: Include deprecated lists in the response.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
+    - name: search
+      description: Returns results that contain the specified substring in any client list or entry details.
+    - name: type_list
+      description: 'Filters the output to show only lists of the specified types. Repeat the parameter to filter by multiple types. Valid values: IP, GEO, ASN, TLS_FINGERPRINT, FILE_HASH.'
+      isArray: true
+      auto: PREDEFINED
+      predefined:
+      - IP
+      - GEO
+      - ASN
+      - TLS_FINGERPRINT
+      - FILE_HASH
+      - USER
+    - name: include_network_list
+      description: Include network lists in the response.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
+    - name: page
+      description: Page number.
+      defaultValue: '0'
+    - name: page_size
+      description: Page size.
+      defaultValue: '50'
+    - name: limit
+      description: Limit.
+      defaultValue: '50'
+    name: akamai-get-client-list
+    description: Get a client list.
+    outputs:
+    - contextPath: Akamai.ClientList
+      description: The client list.
+      type: unknown
+  - arguments:
+    - name: name
+      required: true
+      description: The name of the new client list.
+    - name: type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - IP
+      - GEO
+      - ASN
+      - TLS_FINGERPRINT
+      - FILE_HASH
+      - USER
+      description: The type of client list.
+    - name: contract_id
+      required: true
+      description: The contract ID. You can get this value by running the `akamai-get-contract-group` command.
+    - name: group_id
+      required: true
+      description: The group ID. You can get this value by running the `akamai-get-contract-group` command.
+    - name: notes
+      description: A description of the client list.
+    - name: tags
+      isArray: true
+      description: A list of tags to attach to the client list.
+    - name: entry_value
+      description: The value of a single entry in the client list.
+    - name: entry_description
+      description: A description of the entry.
+    - name: entry_expiration_date
+      description: The expiration date for the entry. Use ISO 8601 format (e.g. 2025-09-29 or 2025-09-29T13:15:28).
+    - name: entry_tags
+      isArray: true
+      description: A list of tags attached to the entry.
+    name: akamai-create-client-list
+    description: Creates a new client list.
+    outputs:
+    - contextPath: Akamai.ClientList
+      description: The client list that was created.
+      type: unknown
+  - arguments:
+    - name: client_list_id
+      required: true
+      description: The ID of the client list to be deprecated.
+    name: akamai-deprecate-client-list
+    description: Deprecates a client list.
+  - name: akamai-activate-client-list
+    polling: true
+    description: Activates a client list.
+    arguments:
+      - name: list_id
+        required: true
+        description: The ID of the client list to activate.
+      - name: network_environment
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - STAGING
+          - PRODUCTION
+        description: The network environment where the list will be activated.
+      - name: comments
+        description: A description of the activation.
+      - name: notification_recipients
+        isArray: true
+        description: A list of email addresses to notify.
+      - name: siebel_ticket_id
+        description: A Siebel ticket ID.
+      - name: include_polling
+        description: Whether to poll deactivation status until completion.
+        auto: PREDEFINED
+        predefined:
+          - 'true'
+          - 'false'
+        defaultValue: 'true'
+      - name: interval
+        description: Interval in seconds between polling attempts.
+        defaultValue: 30
+        type: Number
+      - name: timeout
+        description: Timeout in seconds for polling.
+        defaultValue: 180
+        type: Number
+      - name: poll_status
+        description: The poll status.
+        deprecated: true
+    outputs:
+      - contextPath: Akamai.Activation
+        description: The activation details.
+        type: unknown
+  - name: akamai-add-client-list-entry
+    description: Adds an entry to a client list.
+    arguments:
+      - name: list_id
+        required: true
+        description: The ID of the client list.
+      - name: value
+        required: true
+        description: The value of the new entry.
+      - name: description
+        description: A description of the new entry.
+      - name: expiration_date
+        description: The expiration date for the new entry. Use ISO 8601 format (e.g. 2025-09-29 or 2025-09-29T13:15:28).
+      - name: tags
+        isArray: true
+        description: A list of tags for the new entry.
+  - name: akamai-remove-client-list-entry
+    description: Removes an entry from a client list.
+    arguments:
+      - name: list_id
+        required: true
+        description: The ID of the client list.
+      - name: value
+        isArray: true
+        required: true
+        description: A list of values to remove from the client list.
+  - name: akamai-get-contract-group
+    description: Get contract groups.
+    arguments: []
+    outputs:
+      - contextPath: Akamai.ContractGroup
+        description: The contract groups.
+        type: unknown
+  - name: akamai-update-client-list
+    description: Updates a client list.
+    arguments:
+      - name: list_id
+        required: true
+        description: The ID of the client list to update.
+      - name: name
+        required: true
+        description: The new name of the client list.
+      - name: notes
+        description: The new description of the client list.
+      - name: tags
+        isArray: true
+        description: The new tags for the client list.
+    outputs:
+      - contextPath: Akamai.ClientList
+        description: The updated client list.
+        type: unknown
+  - name: akamai-deactivate-client-list
+    polling: true
+    description: Deactivates a client list.
+    arguments:
+      - name: list_id
+        required: true
+        description: The ID of the client list to deactivate.
+      - name: network_environment
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - STAGING
+          - PRODUCTION
+        description: The network environment where the list is deactivated.
+      - name: comments
+        description: A description for the deactivation.
+      - name: notification_recipients
+        isArray: true
+        description: A list of email addresses to notify.
+      - name: siebel_ticket_id
+        description: A Siebel ticket ID.
+      - name: include_polling
+        description: Whether to poll deactivation status until completion.
+        auto: PREDEFINED
+        predefined:
+          - 'true'
+          - 'false'
+        defaultValue: 'true'
+      - name: interval
+        description: Interval in seconds between polling attempts.
+        defaultValue: 30
+        type: Number
+      - name: timeout
+        description: Timeout in seconds for polling.
+        defaultValue: 180
+        type: Number
+      - name: poll_status
+        description: The poll status.
+        deprecated: true
+    outputs:
+      - contextPath: Akamai.Activation
+        description: The deactivation details.
+        type: unknown
+  - name: akamai-update-client-list-entry
+    description: Updates an entry in a client list.
+    arguments:
+      - name: list_id
+        required: true
+        description: The ID of the client list.
+      - name: value
+        required: true
+        description: The value of the entry to update.
+      - name: description
+        description: The new description for the entry.
+      - name: expiration_date
+        description: The new expiration date for the entry. Use ISO 8601 format (e.g. 2025-09-29 or 2025-09-29T13:15:28).
+      - name: tags
+        isArray: true
+        description: The new tags for the entry.
+      - name: is_override
+        type: boolean
+        default: False
+        description: Whether to override missing entries.
+    outputs:
+      - contextPath: Akamai.ClientList
+        description: The updated client list.
+        type: unknown
   - arguments: []
     description: Get Google Tag Manager (GTM) domains.
     name: akamai-get-domains
@@ -1807,7 +2078,7 @@ script:
       name: with_metrics
     description: Akamai Generic API Call.
     name: akamai-generic-api-call-command
-  dockerimage: demisto/auth-utils:1.0.0.3562326
+  dockerimage: demisto/auth-utils:1.0.0.5476008
   script: ''
   subtype: python3
   type: python

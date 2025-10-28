@@ -2,7 +2,7 @@
     "name": "Aggregated Scripts",
     "description": "A pack containing all aggregated scripts.",
     "support": "xsoar",
-    "currentVersion": "1.1.15",
+    "currentVersion": "1.2.5",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -38,6 +38,10 @@
         "X3",
         "X5",
         "ENT_PLUS",
-        "agentix"
+        "agentix",
+        "xsiam",
+        "edr",
+        "cloud_runtime_security",
+        "cloud"
     ]
 }
