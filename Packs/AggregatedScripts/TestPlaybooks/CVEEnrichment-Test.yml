@@ -81,7 +81,7 @@ tasks:
       id: d336ef50-96e9-4655-89e7-a61b24a62529
       version: -1
       name: Run cve enrichment script
-      description: This script gathers CVE reputation data from multiple integrations
+      description: This script collects CVE reputation data from multiple integrations
         and returns a "CVEEnrichment" object with consolidated information to the
         context output.
       scriptName: cve-enrichment
