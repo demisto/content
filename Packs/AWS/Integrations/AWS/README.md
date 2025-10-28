@@ -445,7 +445,6 @@ Applies an Amazon S3 bucket policy to an Outposts bucket.
 There is no context output for this command.
 
 ### aws-cloudtrail-logging-start
-### aws-cloudtrail-logging-start
 
 ***
 Starts recording AWS API calls and log file delivery for a trail. For a trail enabled in all regions, this operation must be called from the region where the trail was created. This operation cannot be called on shadow trails (replicated trails in other regions) of a trail that is enabled in all regions.
@@ -466,6 +465,7 @@ Starts recording AWS API calls and log file delivery for a trail. For a trail en
 
 There is no context output for this command.
 
+### aws-ec2-instance-attribute-modify
 ***
 Modifies the specified attribute of the specified instance. You can specify only one attribute at a time.
 
@@ -676,7 +676,6 @@ Sets the access control list (ACL) permissions for an existing Amazon S3 bucket.
 
 There is no context output for this command.
 
-### aws-ec2-snapshot-attribute-modify
 ### aws-ec2-snapshot-attribute-modify
 
 ***
@@ -1262,9 +1261,9 @@ Enables the automatic backup settings for the RDS DB instance with a default ret
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| account_id | The AWS account ID. | Required | 
-| region | The AWS region. | Required | 
-| db_instance_identifier | The identifier of DB instance to modify. | Required | 
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. | Required |
+| db_instance_identifier | The identifier of DB instance to modify. | Required |
 
 #### Context Output
 
@@ -1462,13 +1461,14 @@ Enables automatic minor version upgrades for the RDS DB instance.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| account_id | The AWS account ID. | Required | 
-| region | The AWS region. | Required | 
-| db_instance_identifier | The identifier of DB instance to modify. | Required | 
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. | Required |
+| db_instance_identifier | The identifier of DB instance to modify. | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### aws-rds-db-snapshot-attribute-set-snapshot-to-private-quick-action
 
 ***
@@ -1482,13 +1482,14 @@ Revokes public access to the RDS DB snapshot, making it private.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| account_id | The AWS account ID. | Required | 
-| region | The AWS region. | Required | 
-| db_snapshot_identifier | The identifier for the DB snapshot to modify the attributes for. | Required | 
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. | Required |
+| db_snapshot_identifier | The identifier for the DB snapshot to modify the attributes for. | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### aws-rds-db-instance-enable-multi-az-quick-action
 
 ***
@@ -1502,13 +1503,14 @@ Enables Multi-AZ deployment for the RDS database instance to enhance availabilit
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| account_id | The AWS account ID. | Required | 
-| region | The AWS region. | Required | 
-| db_instance_identifier | The identifier of DB instance to modify. | Required | 
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. | Required |
+| db_instance_identifier | The identifier of DB instance to modify. | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### aws-rds-event-subscription-modify
 
 ***
@@ -1558,13 +1560,14 @@ Enables 'deletion protection' for the RDS DB instance.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| account_id | The AWS account ID. | Required | 
-| region | The AWS region. | Required | 
-| db_instance_identifier | The identifier of DB instance to modify. | Required | 
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. | Required |
+| db_instance_identifier | The identifier of DB instance to modify. | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### aws-rds-db-instance-modify-publicly-accessible-quick-action
 
 ***
@@ -1578,13 +1581,14 @@ This action will disable public access for AWS RDS database instance by modifyin
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| account_id | The AWS account ID. | Required | 
-| region | The AWS region. | Required | 
-| db_instance_identifier | The identifier of DB instance to modify. | Required | 
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. | Required |
+| db_instance_identifier | The identifier of DB instance to modify. | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### aws-ec2-modify-snapshot-permission
 
 ***
@@ -1609,6 +1613,7 @@ Adds or removes permission settings for the specified snapshot.
 #### Context Output
 
 There is no context output for this command.
+
 ### aws-ec2-set-snapshot-to-private-quick-action
 
 ***
@@ -1622,13 +1627,14 @@ Revokes public access to the EC2 snapshot.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| account_id | The AWS account ID. | Required | 
-| region | The AWS region. | Required | 
-| snapshot_id | The ID of the EBS snapshot. | Required | 
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. | Required |
+| snapshot_id | The ID of the EBS snapshot. | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### aws-ec2-image-attribute-set-ami-to-private-quick-action
 
 ***
@@ -1642,13 +1648,14 @@ Revokes public launch permissions for the EC2 AMI.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| account_id | The AWS account ID. | Required | 
-| region | The AWS region. | Required | 
-| image_id | The ID of the AMI. | Required | 
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. | Required |
+| image_id | The ID of the AMI. | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### aws-s3-bucket-enable-bucket-access-logging-quick-action
 
 ***
@@ -1662,13 +1669,14 @@ Enables server access logging for the S3 bucket, delivering detailed logs to a t
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| account_id | The AWS account ID. | Required | 
-| region | The AWS region. | Required | 
-| bucket | The name of the bucket for which to set the logging parameters. | Required | 
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. | Required |
+| bucket | The name of the bucket for which to set the logging parameters. | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### aws-rds-db-cluster-snapshot-set-to-private-quick-action
 
 ***
@@ -1682,13 +1690,14 @@ Revokes public access to the RDS DB cluster snapshot, making it private.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| account_id | The AWS account ID. | Required | 
-| region | The AWS region. | Required | 
-| db_cluster_snapshot_identifier | The identifier for the DB cluster snapshot to modify the attributes for. | Required | 
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. | Required |
+| db_cluster_snapshot_identifier | The identifier for the DB cluster snapshot to modify the attributes for. | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### aws-rds-db-cluster-enable-iam-auth-quick-action
 
 ***
@@ -1702,13 +1711,14 @@ This action enables 'iam database authentication' for the RDS cluster.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| account_id | The AWS account ID. | Required | 
-| region | The AWS region. | Required | 
-| db_cluster_identifier | The DB cluster identifier for the modified cluster. This parameter is not case sensitive and is valid for Aurora DB and Multi-AZ DB cluster types. It must match the identifier of an existing DB cluster. | Required | 
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. | Required |
+| db_cluster_identifier | The DB cluster identifier for the modified cluster. This parameter is not case sensitive and is valid for Aurora DB and Multi-AZ DB cluster types. It must match the identifier of an existing DB cluster. | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### aws-s3-bucket-website-disable-hosting-quick-action
 
 ***
@@ -1722,13 +1732,14 @@ Removes the static website hosting configuration from an S3 bucket.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| account_id | The AWS account ID. | Required | 
-| region | The AWS region. | Required | 
-| bucket | The name of the S3 bucket from which the website configuration will be removed. | Required | 
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. | Required |
+| bucket | The name of the S3 bucket from which the website configuration will be removed. | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### aws-s3-bucket-acl-set-to-private-quick-action
 
 ***
@@ -1742,13 +1753,14 @@ Sets the Access Control List (ACL) for the S3 bucket to private.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| account_id | The AWS account ID. | Required | 
-| region | The AWS region. | Required | 
-| bucket | The bucket to which to apply the ACL. | Required | 
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. | Required |
+| bucket | The bucket to which to apply the ACL. | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### aws-s3-bucket-versioning-enable-quick-action
 
 ***
@@ -1762,13 +1774,14 @@ Enables versioning on the S3 bucket to retain multiple versions of objects.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| account_id | The AWS account ID. | Required | 
-| region | The AWS region. | Required | 
-| bucket | The name of the bucket for which to set the logging parameters. | Required | 
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. | Required |
+| bucket | The name of the bucket for which to set the logging parameters. | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### aws-rds-db-cluster-enable-deletion-protection-quick-action
 
 ***
@@ -1782,9 +1795,9 @@ Enables deletion protection for the RDS DB cluster to prevent accidental deletio
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| account_id | The AWS account ID. | Required | 
-| region | The AWS region. | Required | 
-| db_cluster_identifier | The DB cluster identifier for the modified cluster. This parameter is not case sensitive and is valid for Aurora DB and Multi-AZ DB cluster types. It must match the identifier of an existing DB cluster. | Required | 
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. | Required |
+| db_cluster_identifier | The DB cluster identifier for the modified cluster. This parameter is not case sensitive and is valid for Aurora DB and Multi-AZ DB cluster types. It must match the identifier of an existing DB cluster. | Required |
 
 #### Context Output
 
