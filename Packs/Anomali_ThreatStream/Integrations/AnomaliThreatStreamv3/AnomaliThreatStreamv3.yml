@@ -2676,7 +2676,7 @@ script:
       - private
       - public
     - auto: PREDEFINED
-      defaultValue: WINDOWS7
+      defaultValue: WINDOWSXP
       description: The platform on which the submitted URL or file is run. To obtain a list of supported platforms, run the threatstream-supported-platforms command.
       name: report_platform
       predefined:
@@ -2694,7 +2694,7 @@ script:
       name: submission_value
       required: true
     - auto: PREDEFINED
-      defaultValue: 'false'
+      defaultValue: 'true'
       description: Whether the premium sandbox should be used for detonation.
       name: premium_sandbox
       predefined:

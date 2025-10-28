@@ -2565,8 +2565,8 @@ def submit_report(
     submission_value,
     import_indicators=True,
     submission_classification="private",
-    report_platform="WINDOWS7",
-    premium_sandbox="false",
+    report_platform="WINDOWSXP",
+    premium_sandbox="true",
     detail=None,
 ):
     """
