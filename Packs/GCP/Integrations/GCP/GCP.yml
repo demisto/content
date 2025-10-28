@@ -334,7 +334,7 @@ script:
       description: Storage size in bytes.
       type: number
   - name: gcp-compute-instances-aggregated-list-by-ip
-    description: Aggregated list of instances across all zones and filter by internal/external IP.
+    description: Aggregated list of instances across all zones; can be filtered by internal or external IP.
     arguments:
     - name: project_id
       required: true
@@ -389,7 +389,7 @@ script:
       predefined:
       - "true"
       - "false"
-      description: If true, add the tag to the existing tags; otherwise override the existing tags. (the default is true).
+      description: If true, adds the tag to the existing tags; otherwise, overrides them. The default is true.
     outputs: []
   - name: gcp-storage-bucket-policy-delete
     description: Removes an entity from a bucket's Access Control List.

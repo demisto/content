@@ -782,7 +782,7 @@ Retrieves details for a specific snapshot.
 ### gcp-compute-instances-aggregated-list-by-ip
 
 ***
-Aggregated list of instances across all zones and filter by internal/external IP.
+Aggregated list of instances across all zones; can be filtered by internal or external IP.
 
 #### Base Command
 
