@@ -4477,55 +4477,50 @@ def test_modify_subnet_attribute_command_failure(mocker):
         EC2.modify_subnet_attribute_command(mock_client, args)
 
 
-def test_acm_update_certificate_options_success(mocker):
+def test_kms_enable_key_rotation_success_with_period(mocker):
     """
-    Given: A mocked ACM client returning HTTP 200 and valid args.
-    When: update_certificate_options_command is called.
-    Then: It returns CommandResults with success message and calls boto with correct kwargs.
+    Given: A mocked KMS client that returns HTTP 200 and a valid rotation period.
+    When: enable_key_rotation_command is called.
+    Then: It returns CommandResults with a success message and calls boto with correct kwargs.
     """
-    from AWS import ACM, CommandResults
+    from AWS import KMS, CommandResults
 
     mock_client = mocker.Mock()
-    mock_client.update_certificate_options.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
+    mock_client.enable_key_rotation.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
 
-    args = {
-        "certificate_arn": "arn:aws:acm:us-east-1:111122223333:certificate/abc-123",
-        "transparency_logging_preference": "ENABLED",
-    }
+    args = {"key_id": "1234abcd-12ab-34cd-56ef-1234567890ab", "rotation_period_in_days": "120"}
 
-    result = ACM.update_certificate_options_command(mock_client, args)
+    result = KMS.enable_key_rotation_command(mock_client, args)
 
     assert isinstance(result, CommandResults)
-    assert "Updated Certificate Transparency (CT) logging to 'ENABLED'" in result.readable_output
+    assert "Enabled automatic rotation for KMS key '1234abcd-12ab-34cd-56ef-1234567890ab'" in result.readable_output
+    assert "(rotation period: 120 days)" in result.readable_output
 
-    mock_client.update_certificate_options.assert_called_once_with(
-        CertificateArn="arn:aws:acm:us-east-1:111122223333:certificate/abc-123",
-        Options={"CertificateTransparencyLoggingPreference": "ENABLED"},
+    mock_client.enable_key_rotation.assert_called_once_with(
+        KeyId="1234abcd-12ab-34cd-56ef-1234567890ab", RotationPeriodInDays=120
     )
 
 
-def test_acm_update_certificate_options_non_ok_calls_handler(mocker):
+def test_kms_enable_key_rotation_non_ok_calls_handler(mocker):
     """
     Given: Boto returns a non-OK status code.
-    When: update_certificate_options_command is called.
+    When: enable_key_rotation_command is called.
     Then: AWSErrorHandler.handle_response_error is invoked with the raw response.
     """
-    from AWS import ACM, AWSErrorHandler
+    from AWS import KMS, AWSErrorHandler
 
     mock_client = mocker.Mock()
     resp = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
-    mock_client.update_certificate_options.return_value = resp
+    mock_client.enable_key_rotation.return_value = resp
 
     handle_resp = mocker.patch.object(AWSErrorHandler, "handle_response_error")
     mocker.patch("AWS.remove_nulls_from_dictionary", side_effect=lambda d: d)
     mocker.patch("AWS.print_debug_logs")
 
-    args = {
-        "certificate_arn": "arn:aws:acm:us-east-1:111122223333:certificate/abc-123",
-        "transparency_logging_preference": "DISABLED",
-    }
+    args = {"key_id": "my-key", "rotation_period_in_days": 120}
 
-    ACM.update_certificate_options_command(mock_client, args)
+    # The command doesn't raise here; handler internally exits (in your pattern) or logs. We just assert it was called.
+    KMS.enable_key_rotation_command(mock_client, args)
 
     handle_resp.assert_called_once_with(resp)
 
