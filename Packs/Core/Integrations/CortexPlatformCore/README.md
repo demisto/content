@@ -457,7 +457,7 @@ Updates the properties of an issue. This command does not provide an explicit in
 | assigned_user_mail | Email address of the user to assign the issue to. | Optional | 
 | severity | Change the severity of an issue. Low (1), Medium (2), High (3), Critical (4). Must be a number. Possible values are: 1, 2, 3, 4. | Optional | 
 | name | Change the issue name. | Optional | 
-| occurred | Change the occurred time of an issue. Supports different time formats, for example: 3 days ago, 2017-09-27T10:00:00+03:00.<br/>. | Optional | 
+| occurred | Change the occurred time of an issue. Supports different time formats, for example: 3 days ago, 2017-09-27T10:00:00+03:00. | Optional | 
 | phase | Change the phase of an issue. | Optional | 
 
 #### Context Output
