@@ -613,7 +613,7 @@ def update_issue_command(client: Client, args: dict):
         "assigned_user": args.get("assigned_user_mail"),
         "severity": severity_map.get(severity_value) if severity_value is not None else None,
         "name": args.get("name"),
-        "occurred": args.get("occurred"),
+        "occurred": arg_to_timestamp(args.get("occurred"), "occurred"),
         "phase": args.get("phase"),
     }
 
