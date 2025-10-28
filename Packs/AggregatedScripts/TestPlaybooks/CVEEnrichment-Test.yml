@@ -1199,7 +1199,7 @@ tasks:
       id: 8973c4d5-d83a-4cf4-88b1-dbc14cbeb521
       version: -1
       name: DeleteContext
-      description: "Delete field from context.\n\nThis automation runs using the default
+      description: "Delete field from context. This automation runs with the default Limited User role unless permissions are explicitly changed. For more information, see the permissions section. 
         Limited User role, unless you explicitly change the permissions.\nFor more
         information, see the section about permissions here:\n- For Cortex XSOAR 6
         see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
