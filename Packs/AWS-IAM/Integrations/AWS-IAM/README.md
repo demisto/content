@@ -1980,7 +1980,7 @@ Updates the password policy to require a minimum length of 14 characters, at lea
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| account_id | The AWS account ID. | Required | 
+| account_id | The AWS account ID. | Required |
 
 #### Context Output
 
