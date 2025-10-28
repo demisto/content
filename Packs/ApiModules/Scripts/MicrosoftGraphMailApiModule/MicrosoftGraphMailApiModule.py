@@ -908,7 +908,7 @@ class MsGraphMailBaseClient(MicrosoftClient):
         )
 
         if mark_emails_as_read:
-            demisto.debug("Marking emails as read")
+            demisto.debug("[test]Marking emails as read")
             for email in emails_as_html:
                 if email.get("id"):
                     self.update_email_read_status(

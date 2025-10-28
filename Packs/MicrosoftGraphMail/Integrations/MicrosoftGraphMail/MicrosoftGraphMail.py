@@ -255,5 +255,5 @@ def main():  # pragma: no cover
 
 if __name__ in ["builtins", "__main__"]:
     main()
-    demisto.debug("MicrosoftGraphMail - Completed")
+    demisto.debug("[test]MicrosoftGraphMail - Completed")
 
