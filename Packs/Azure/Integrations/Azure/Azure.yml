@@ -2283,7 +2283,7 @@ script:
       - '1.2'
       - '1.3'
       defaultValue: '1.2'
-    description: "Sets the web app's minimum accepted TLS version to 1.2 to enhance security. Requires 'Microsoft.Web/sites/{app_name}/config/*' permission."
+    description: Sets the web app's minimum accepted TLS version to 1.2 to enhance security.
     name: azure-webapp-set-min-tls-version-quick-action
     prettyname: Set Web App Min TLS Version
     hidden: true
@@ -2344,7 +2344,7 @@ script:
       description: Minimum TLS version required.
       type: String
     - contextPath: Azure.WebAppConfig.properties.ftpsState
-      description: State of FTP / FTPS service.
+      description: State of FTP/ FTPS service.
       type: String
     - contextPath: Azure.WebAppConfig.properties.webSocketsEnabled
       description: Indicates whether WebSockets are enabled.
@@ -2406,7 +2406,7 @@ script:
       - '1.2'
       - '1.3'
       defaultValue: '1.2'
-    description: "Sets the Function App's minimum accepted TLS version to 1.2 to enhance security. Requires 'Microsoft.Web/sites/config/Write' permission."
+    description: Sets the Function App's minimum accepted TLS version to 1.2 to enhance security.
     name: azure-function-app-set-min-tls-version-quick-action
     prettyname: Set Function App Min TLS Version
     hidden: true
@@ -2467,7 +2467,7 @@ script:
       description: Minimum TLS version required.
       type: String
     - contextPath: Azure.WebAppConfig.properties.ftpsState
-      description: State of FTP / FTPS service.
+      description: State of FTP/ FTPS service.
       type: String
     - contextPath: Azure.WebAppConfig.properties.webSocketsEnabled
       description: Indicates whether WebSockets are enabled.
@@ -2529,7 +2529,7 @@ script:
       type: string
       description: Configuration value.
       defaultValue: 'on'
-    description: "Enforces secure transport (SSL/TLS) for connections to the MySQL Flexible Server. Requires 'Microsoft.DBforMySQL/flexibleServers/configurations/write' permission."
+    description: Enforces secure transport (SSL/TLS) for connections to the MySQL Flexible Server.
     name: azure-mysql-set-secure-transport-quick-action
     prettyname: Set Secure Transport for MySQL
     hidden: true
@@ -2559,7 +2559,7 @@ script:
       description: Default action when no other network rule matches.
       name: network_ruleset_default_action
       defaultValue: Deny
-    description: "Sets the storage account’s default network action to Deny. Only explicitly allowed IPs, subnets, or trusted Azure services will have access. Requires 'Microsoft.Storage/storageAccounts/*' permission."
+    description: Sets the storage account’s default network action to Deny. Only explicitly allowed IPs, subnets, or trusted Azure services will have access.
     name: azure-network-disable-storage-account-access-quick-action
     prettyname: Disable Network Access to Storage Account
     hidden: true
@@ -2578,7 +2578,7 @@ script:
       description: The name of the resource.
       type: String
     - contextPath: Azure.StorageAccount.properties.isHnsEnabled
-      description: Account HierarchicalNamespace enabled if sets to true.
+      description: If set to true, the account's HierarchicalNamespace is enabled.
       type: Boolean
     - contextPath: Azure.StorageAccount.properties.allowBlobPublicAccess
       description: If set to true (default), allows public access to all blobs or containers in the storage account.
@@ -2623,7 +2623,7 @@ script:
       description: Whether the storage account secondary location is available or unavailable. Only available if the SKU name is Standard_GRS or Standard_RAGRS.
       type: String
     - contextPath: Azure.StorageAccount.properties.supportsHttpsTrafficOnly
-      description: If set to true, allows https traffic only to storage service.
+      description: If set to true, allows only HTTPS traffic to the storage service.
       type: Boolean
     - contextPath: Azure.StorageAccount.sku.name
       description: The SKU name. Required for account creation; optional for update.
@@ -2663,7 +2663,7 @@ script:
       description: Whether to enable the retention policy.
       type: bool
       defaultValue: 'true'
-    description: "Sets the log profile’s retention policy to 365 days and enables it for all supported locations. Requires 'Microsoft.Insights/logProfiles/*' permission."
+    description: Sets the log profile’s retention policy to 365 days and enables it across all supported locations.
     name: azure-monitor-log-retention-period-quick-action
     prettyname: Update Azure Monitor Log Retention Period
     hidden: true
@@ -2727,7 +2727,7 @@ script:
       description: Whether to allow only HTTPS traffic to the storage account.
       name: supports_https_traffic_only
       defaultValue: 'true'
-    description: "Enforces HTTPS-only traffic for the storage account, rejecting any requests made over HTTP. Requires 'Microsoft.Storage/storageAccounts/*' permission."
+    description: Enforces HTTPS-only traffic for the storage account, rejecting any requests made over HTTP.
     name: azure-set-storage-account-https-only-quick-action
     prettyname: Set Storage Account to HTTPS only
     hidden: true
@@ -2746,7 +2746,7 @@ script:
       description: The name of the resource.
       type: String
     - contextPath: Azure.StorageAccount.properties.isHnsEnabled
-      description: Account HierarchicalNamespace enabled if sets to true.
+      description: If set to true, the account's HierarchicalNamespace enabled.
       type: Boolean
     - contextPath: Azure.StorageAccount.properties.allowBlobPublicAccess
       description: If set to true (default), allows public access to all blobs or containers in the storage account.
@@ -2791,7 +2791,7 @@ script:
       description: Whether the storage account secondary location is available or unavailable. Only available if the SKU name is Standard_GRS or Standard_RAGRS.
       type: String
     - contextPath: Azure.StorageAccount.properties.supportsHttpsTrafficOnly
-      description: If set to true, allows https traffic only to storage service.
+      description: If set to true, allows only HTTPS traffic to the storage service.
       type: Boolean
     - contextPath: Azure.StorageAccount.sku.name
       description: The SKU name. Required for account creation; optional for update.
