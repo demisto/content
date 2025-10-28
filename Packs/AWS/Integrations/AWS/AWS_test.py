@@ -4501,7 +4501,7 @@ def test_invoke_command_with_minimal_parameters(mocker):
     # Assert
     assert isinstance(result, CommandResults)
     assert result.outputs_prefix == "AWS.Lambda.InvokedFunction"
-    assert result.outputs_key_field == ["FunctionName", "RequestPayload"]
+    assert result.outputs_key_field == ["FunctionName", "Region"]
     mock_client.invoke.assert_called_once()
 
 
@@ -5033,7 +5033,7 @@ def test_get_policy_with_minimal_parameters(mocker):
     mock_client.get_policy.return_value = mock_policy_response
     mock_client.get_function_configuration.return_value = mock_config_response
 
-    args = {"function_name": "test-function"}
+    args = {"function_name": "test-function", "region": "us-east-1"}
 
     # Act
     result = Lambda.get_policy_command(mock_client, args)
@@ -5084,12 +5084,12 @@ def test_get_policy_with_all_parameters(mocker):
         "RevisionId": "RevisionId",
         "ResponseMetadata": {"HTTPStatusCode": 200, "RequestId": "prod-request-id"},
     }
-    mock_config_response = {"FunctionArn": "FunctionArn"}
+    mock_config_response = {"FunctionArn": "FunctionArn",}
 
     mock_client.get_policy.return_value = mock_policy_response
     mock_client.get_function_configuration.return_value = mock_config_response
 
-    args = {"function_name": "function_name", "qualifier": "LIVE"}
+    args = {"function_name": "function_name", "qualifier": "LIVE", "region": "us-east-1"}
 
     # Act
     result = Lambda.get_policy_command(mock_client, args)
@@ -5130,7 +5130,7 @@ def test_get_policy_command_result_outputs_prefix(mocker):
     mock_client.get_policy.return_value = mock_policy_response
     mock_client.get_function_configuration.return_value = mock_config_response
 
-    args = {"function_name": "prefix-test-function"}
+    args = {"function_name": "prefix-test-function", "region": "us-east-1"}
 
     # Act
     result = Lambda.get_policy_command(mock_client, args)

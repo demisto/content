@@ -2705,6 +2705,7 @@ class Lambda:
             "Region": args.get("region"),
             "RequestPayload": args.get("payload"),
         }
+        remove_nulls_from_dictionary(data)
         if "LogResult" in response:
             data.update({"LogResult": base64.b64decode(response["LogResult"]).decode("utf-8")})  # type:ignore
         if "Payload" in response:
