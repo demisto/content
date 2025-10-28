@@ -755,7 +755,6 @@ def fetch_indicators(client: Client, params: dict, current_time: datetime) -> li
     Returns:
         List. Processed indicators from feed.
     """
-    demisto.debug("UNIT42FEED_DEBUG: Starting fetch_indicators function")
     indicators = []
 
     # Get indicator types from params
@@ -778,7 +777,6 @@ def fetch_indicators(client: Client, params: dict, current_time: datetime) -> li
     demisto.debug(f"UNIT42FEED_DEBUG: TLP color: {tlp_color}")
 
     if "Indicators" in feed_types:
-        demisto.debug("UNIT42FEED_DEBUG: Processing Indicators feed type")
         # Get indicators from the API
         demisto.debug(
             f"UNIT42FEED_DEBUG: Making initial API call to get_indicators with types={indicator_types}, start_time={start_time}"
@@ -1037,12 +1035,9 @@ def main():
                 demisto.debug(f"UNIT42FEED_DEBUG: Successfully created batch {batch_count}")
 
             demisto.debug(f"UNIT42FEED_DEBUG: Total batches created: {batch_count}")
-            demisto.setLastRun({"last_successful_run": now.strftime(DATE_FORMAT)})
-            demisto.debug(f"UNIT42FEED_DEBUG: Set last run to: {now.strftime(DATE_FORMAT)}")
             demisto.info(
                 f"The fetch-indicators command completed successfully. Next run will fetch from: {now.strftime(DATE_FORMAT)}"
             )
-            demisto.debug("UNIT42FEED_DEBUG: fetch-indicators command completed successfully")
 
         elif command == "unit42-get-indicators":
             return_results(get_indicators_command(client, demisto.args()))
