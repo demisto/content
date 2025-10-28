@@ -1823,7 +1823,7 @@ script:
         prettypredefined:
           RDS Instance ID: ${asset.xdm.asset.name}
       - name: multi_az
-        description: 'Weather the DB instance is a Multi-AZ deployment. Changing this parameter doesn’t result in an outage. The change is applied during the next maintenance window unless the ApplyImmediately parameter is enabled for this request. This setting doesn’t apply to RDS Custom DB instances.'
+        description: 'Whether the DB instance is a Multi-AZ deployment. Changing this parameter does not cause an outage. The change is applied during the next maintenance window unless the ApplyImmediately parameter is enabled for this request. This setting does not apply to RDS Custom DB instances.'
         defaultValue: 'true'
         hidden: true
       - name: apply_immediately
