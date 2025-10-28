@@ -65,7 +65,7 @@ outputs:
   description: The max CVSS rating of the indicator.
   type: string
 - contextPath: CVEEnrichment.Results
-  description: List of all indicators found for the cve.
+  description: List of all indicators found for the CVE.
   type: array
 - contextPath: CVEEnrichment.Status
   description: The status of the indicator.
