@@ -1,5 +1,5 @@
 category: Network Security
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -791,7 +791,7 @@ script:
     - contextPath: Infoblox.NetworkInfo.AdditionalFields
       description: The additional fields for network.
       type: Unknown
-  dockerimage: demisto/python3:3.12.11.3982393
+  dockerimage: demisto/python3:3.12.11.4819260
   runonce: false
   script: ''
   subtype: python3

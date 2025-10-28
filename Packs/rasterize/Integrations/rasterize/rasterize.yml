@@ -1,5 +1,5 @@
 category: Utilities
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -351,7 +351,7 @@ script:
     - contextPath: InfoFile.Type
       description: The type of the image/pdf file.
       type: string
-  dockerimage: demisto/chromium:136.0.7103.3456100
+  dockerimage: demisto/chromium:141.0.7390.5492271
   runonce: false
   script: "-"
   subtype: python3

@@ -162,7 +162,7 @@ def test_global_search_command(mocker, single_session_fixture):
       - The global_search_command() function is called with the client and test_query arguments.
 
     Then:
-      - Ensures that the command’s outputs_prefix and outputs_key_field are correctly set to expected values.
+      - Ensures that the command's outputs_prefix and outputs_key_field are correctly set to expected values.
       - Verifies that the command returns the data structure with the correct outputs_key_field ("query"),
         ensuring compatibility with other functions that depend on this structure.
       - This test validates that the search command integrates smoothly with the client and returns
