@@ -386,6 +386,7 @@ def get_vulnerabilities_command(client: Client, args: dict) -> CommandResults:
         FilterField("HAS_KEV", "EQ", arg_to_bool_or_none(args.get("has_kev"))),
         FilterField("AFFECTED_SOFTWARE", "CONTAINS", argToList(args.get("affected_software"))),
         FilterField("PLATFORM_SEVERITY", "EQ", api_severities),
+        FilterField("ISSUE_ID", "CONTAINS", argToList(args.get("issue_id"))),
     ]
 
     if start_time and end_time:
