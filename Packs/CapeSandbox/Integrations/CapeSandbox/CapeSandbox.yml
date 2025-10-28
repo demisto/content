@@ -36,7 +36,7 @@ configuration:
 description: CAPE Sandbox is an Open Source software for automating analysis of suspicious files.
 display: Cape Sandbox
 name: CapeSandbox
-sectionOrder:
+sectionorder:
   - Connect
   - Collect
 script:
@@ -152,7 +152,7 @@ script:
         - name: polling
           deprecated: false
           defaultValue: "true"
-          description: "Cape generic polling"
+          description: "Cape generic polling."
           required: false
           isArray: false
           auto: PREDEFINED
@@ -176,7 +176,6 @@ script:
         - name: task_id
           description: Task ID to delete.
           required: true
-      outputs: []
     - name: cape-tasks-list
       description: Returns list of tasks. If task_id is provided, returns the task details.
       arguments:
@@ -274,7 +273,7 @@ script:
         - name: polling
           deprecated: false
           defaultValue: "true"
-          description: "Cape generic polling"
+          description: "Cape generic polling."
           required: false
           isArray: false
           auto: PREDEFINED

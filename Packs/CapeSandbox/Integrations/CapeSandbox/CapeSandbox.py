@@ -978,6 +978,8 @@ def cape_file_view_command(
     if sum(bool(x) for x in [task_id, md5, sha256]) > 1:
         raise DemistoException("Provide only one of task_id, md5, sha256")
 
+    resp = {}
+
     if task_id:
         demisto.debug(f"Calling files_view_by_task for task ID: {task_id}.")
         resp = client.files_view_by_task(task_id)
@@ -1060,6 +1062,9 @@ def cape_sample_file_download_command(
 
     if sum(bool(x) for x in [task_id, md5, sha1, sha256]) > 1:
         raise DemistoException("Provide only one of task_id, md5, sha1 ,sha256")
+
+    resp = {}
+    filename_base = ""
 
     if task_id:
         resp = client.files_get_by_task(task_id)
