@@ -10,6 +10,9 @@ INTEGRATION_CONTEXT_BRAND = "Core"
 INTEGRATION_NAME = "Cortex Platform Core"
 MAX_GET_INCIDENTS_LIMIT = 100
 
+WEBAPP_COMMANDS = ["core-get-issue-recommendations"]
+DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
+
 
 def replace_substring(data: dict | str, original: str, new: str) -> str | dict:
     """
@@ -138,6 +141,13 @@ class Client(CoreClient):
 
         return reply
 
+    def get_webapp_data(self, request_data: dict) -> dict:
+        return self._http_request(
+            method="POST",
+            url_suffix="/get_data",
+            json_data=request_data,
+        )
+
 
 def get_asset_details_command(client: Client, args: dict) -> CommandResults:
     """
@@ -210,33 +220,158 @@ def get_extra_data_for_case_id_command(client, args):
     )
 
 
-def get_playbook_suggestion_by_issue_command(client: Client, args: dict) -> CommandResults:
+class FilterField:
+    def __init__(self, field_name: str, operator: str, values: Any):
+        self.field_name = field_name
+        self.operator = operator
+        self.values = values
+
+
+def create_filter_from_fields(fields_to_filter: list[FilterField]):
     """
-    Get playbook suggestions for a specific issue.
-
+    Creates a filter from a list of FilterField objects.
+    The filter will require each field to be one of the values provided.
     Args:
-        client (Client): The client instance used to send the request.
-        args (dict): Dictionary containing the arguments for the command.
-                     Expected to include:
-                         - issue_id (str): The ID of the issue to get playbook suggestions for.
-
+        fields_to_filter (list[FilterField]): List of FilterField objects to create a filter from.
     Returns:
-        CommandResults: Object containing the playbook suggestions,
-                        raw response, and outputs for integration context.
+        dict[str, list]: Filter object.
+    """
+    filter_structure: dict[str, list] = {"AND": []}
+
+    for field in fields_to_filter:
+        if not isinstance(field.values, list):
+            field.values = [field.values]
+
+        search_values = []
+        for value in field.values:
+            if value is None:
+                continue
+
+            search_values.append(
+                {
+                    "SEARCH_FIELD": field.field_name,
+                    "SEARCH_TYPE": field.operator,
+                    "SEARCH_VALUE": value,
+                }
+            )
+
+        if search_values:
+            search_obj = {"OR": search_values} if len(search_values) > 1 else search_values[0]
+            filter_structure["AND"].append(search_obj)
+
+    if not filter_structure["AND"]:
+        filter_structure = {}
+
+    return filter_structure
+
+
+def build_webapp_request_data(
+    table_name: str,
+    filter_fields: list[FilterField],
+    limit: int,
+    sort_field: str,
+    on_demand_fields: list | None = None,
+    sort_order: str = "DESC",
+) -> dict:
+    """
+    Builds the request data for the generic /api/webapp/get_data endpoint.
+    """
+    dynamic_filter = create_filter_from_fields(filter_fields)
+
+    filter_data = {
+        "sort": [{"FIELD": sort_field, "ORDER": sort_order}],
+        "paging": {"from": 0, "to": limit},
+        "filter": dynamic_filter,
+    }
+    demisto.debug(f"{filter_data=}")
+
+    if on_demand_fields is None:
+        on_demand_fields = []
+
+    return {"type": "grid", "table_name": table_name, "filter_data": filter_data, "jsons": [], "onDemandFields": on_demand_fields}
+
+
+def get_issue_recommendations_command(client: Client, args: dict) -> CommandResults:
+    """
+    Get comprehensive recommendations for an issue, including remediation steps and playbook suggestions.
+    Retrieves issue data with remediation field using the generic /api/webapp/get_data endpoint.
     """
     issue_id = args.get("issue_id")
     if not issue_id:
         raise DemistoException("issue_id is required.")
 
-    response = client.get_playbook_suggestion_by_issue(issue_id)
+    # Build filter to get the specific issue
+    filter_fields = [
+        FilterField("alert_id", "EQ", issue_id),
+    ]
+
+    request_data = build_webapp_request_data(
+        table_name="alerts_view_table",
+        filter_fields=filter_fields,
+        limit=1,
+        sort_field="detection_timestamp",
+        sort_order="DESC",
+        on_demand_fields=[],
+    )
+
+    # Get issue data with remediation field
+    response = client.get_webapp_data(request_data)
     reply = response.get("reply", {})
+    issue_data = reply.get("DATA", [])
+
+    # Get playbook suggestions for the issue
+    playbook_suggestions = {}
+    try:
+        playbook_response = client.get_playbook_suggestion_by_issue(issue_id)
+        playbook_suggestions = playbook_response.get("reply", {})
+    except Exception as e:
+        demisto.debug(f"Failed to get playbook suggestions: {e}")
+
+    # Combine the data
+    if not issue_data:
+        raise DemistoException(f"No issue found with ID {issue_id}")
+
+    issue = issue_data[0]
+    recommendation = {
+        "issue_id": issue.get("alert_id"),
+        "issue_name": issue.get("name"),
+        "severity": issue.get("severity"),
+        "description": issue.get("description"),
+        "remediation": issue.get("remediation"),
+        "playbook_suggestions": playbook_suggestions,
+    }
+
+    headers = [
+        "issue_id",
+        "issue_name",
+        "severity",
+        "description",
+        "remediation",
+    ]
+
+    readable_output = tableToMarkdown(
+        f"Issue Recommendations for {issue_id}",
+        [recommendation],
+        headerTransform=string_to_table_header,
+        headers=headers,
+    )
+
+    if playbook_suggestions:
+        readable_output += "\n" + tableToMarkdown(
+            "Playbook Suggestions",
+            playbook_suggestions,
+            headerTransform=string_to_table_header,
+        )
 
     return CommandResults(
-        readable_output=tableToMarkdown("Playbook Suggestions", reply, headerTransform=string_to_table_header),
-        outputs_prefix="Core.Issue.PlaybookSuggestion",
-        outputs=reply,
-        raw_response=reply,
+        readable_output=readable_output,
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.IssueRecommendations",
+        outputs_key_field="issue_id",
+        outputs=recommendation,
+        raw_response=response,
     )
+
+
 
 
 def main():  # pragma: no cover
@@ -249,7 +384,11 @@ def main():  # pragma: no cover
     args["integration_context_brand"] = INTEGRATION_CONTEXT_BRAND
     args["integration_name"] = INTEGRATION_NAME
     headers: dict = {}
-    base_url = "/api/webapp/public_api/v1"
+
+    public_api_url = "/api/webapp/public_api/v1"
+    webapp_api_url = "/api/webapp"
+    data_platform_api_url = f"{webapp_api_url}/data-platform"
+
     proxy = demisto.params().get("proxy", False)
     verify_cert = not demisto.params().get("insecure", False)
 
@@ -259,8 +398,14 @@ def main():  # pragma: no cover
         demisto.debug(f"Failed casting timeout parameter to int, falling back to 120 - {e}")
         timeout = 120
 
+    client_url = public_api_url
+    if command in WEBAPP_COMMANDS:
+        client_url = webapp_api_url
+    elif command in DATA_PLATFORM_COMMANDS:
+        client_url = data_platform_api_url
+
     client = Client(
-        base_url=base_url,
+        base_url=client_url,
         proxy=proxy,
         verify=verify_cert,
         headers=headers,
@@ -273,7 +418,6 @@ def main():  # pragma: no cover
             demisto.results("ok")
 
         elif command == "core-get-asset-details":
-            client._base_url = "/api/webapp/data-platform"
             return_results(get_asset_details_command(client, args))
 
         elif command == "core-get-issues":
@@ -298,8 +442,8 @@ def main():  # pragma: no cover
         elif command == "core-get-case-extra-data":
             return_results(get_extra_data_for_case_id_command(client, args))
 
-        elif command == "core-get-playbook-suggestion-by-issue":
-            return_results(get_playbook_suggestion_by_issue_command(client, args))
+        elif command == "core-get-issue-recommendations":
+            return_results(get_issue_recommendations_command(client, args))
 
     except Exception as err:
         demisto.error(traceback.format_exc())
