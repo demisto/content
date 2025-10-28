@@ -4598,7 +4598,6 @@ def test_elb_modify_lb_attributes_success_all_blocks(mocker):
     )
 
 
-
 def test_elb_modify_lb_attributes_non_ok_calls_handler(mocker):
     """
     Given: Boto returns non-OK status.
