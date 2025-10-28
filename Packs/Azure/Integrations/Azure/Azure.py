@@ -72,10 +72,6 @@ PERMISSIONS_TO_COMMANDS = {
         "azure-storage-blob-service-properties-set",
         "azure-storage-blob-enable-soft-delete-quick-action",
     ],
-    "Microsoft.Storage/storageAccounts/blobServices/write": [
-        "azure-storage-blob-service-properties-set",
-        "azure-storage-blob-service-properties-get",
-    ],
     "Microsoft.Authorization/policyAssignments/read": [
         "azure-policy-assignment-create",
     ],
