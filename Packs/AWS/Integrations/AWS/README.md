@@ -1174,13 +1174,12 @@ Retrieves the bucket policy for an Amazon S3 bucket. Returns the policy document
 | AWS.S3-Buckets.BucketName | string | Name of the S3 bucket. |
 | AWS.S3-Buckets.Policy.Version | string | The version of the policy. |
 | AWS.S3-Buckets.Policy.Id | string | The id of the policy. |
-| AWS.S3-Buckets.Policy.Statement.Sid | string | Statement identifier. |
-| AWS.S3-Buckets.Policy.Statement.Effect | string | Allow or Deny. |
-| AWS.S3-Buckets.Policy.Statement.Principal | string | Principal to whom the statement applies. |
-| AWS.S3-Buckets.Policy.Statement.Action | Array | List of actions the statement applies to. |
-| AWS.S3-Buckets.Policy.Statement.Resource | Array | List of actions the statement applies to. |
-| AWS.S3-Buckets.Policy.Statement.Condition | string | Conditions for when the statement applies. |
-| AWS.S3-Buckets.PolicyExists | boolean | Whether a bucket policy exists. |
+| AWS.S3-Buckets.Policy.Statement.Sid | string | Identifier of the policy statement. |
+| AWS.S3-Buckets.Policy.Statement.Effect | string | Specifies whether the statement results in an allow or an explicit deny. |
+| AWS.S3-Buckets.Policy.Statement.Principal | unknown | Specify the principal that is allowed or denied access to a resource. |
+| AWS.S3-Buckets.Policy.Statement.Action | unknown | Describes the specific action or actions that will be allowed or denied. |
+| AWS.S3-Buckets.Policy.Statement.Resource | unknown | Defines the object or objects that the statement applies to. |
+| AWS.S3-Buckets.Policy.Statement.Condition | string | Specify conditions for when a policy is in effect. |
 
 ### aws-ec2-instance-attribute-modify-quick-action
 
@@ -1817,6 +1816,7 @@ Enables deletion protection for the RDS DB cluster to prevent accidental deletio
 #### Context Output
 
 There is no context output for this command.
+
 ### aws-s3-bucket-website-delete
 
 ***
@@ -1830,13 +1830,14 @@ Removes the website configuration for a bucket.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| account_id | The AWS account ID. | Required | 
-| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required | 
-| bucket | The name of the S3 bucket from which the website configuration will be removed. | Required | 
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
+| bucket | The name of the S3 bucket from which the website configuration will be removed. | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### aws-s3-bucket-ownership-controls-put
 
 ***
@@ -1850,14 +1851,15 @@ Creates or modifies OwnershipControls for an Amazon S3 bucket.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| account_id | The AWS account ID. | Required | 
-| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required | 
-| bucket | The name of the Amazon S3 bucket for which to configure Ownership Controls. | Required | 
-| ownership_controls_rule | Ownership for a bucket's ownership controls. Possible values are: BucketOwnerPreferred, ObjectWriter, BucketOwnerEnforced. | Required | 
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
+| bucket | The name of the Amazon S3 bucket for which to configure Ownership Controls. | Required |
+| ownership_controls_rule | Ownership for a bucket's ownership controls. Possible values are: BucketOwnerPreferred, ObjectWriter, BucketOwnerEnforced. | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### aws-eks-describe-cluster
 
 ***
@@ -1871,51 +1873,52 @@ Describes an Amazon EKS cluster.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| account_id | The AWS account ID. | Required | 
-| cluster_name | The name of the cluster to describe. | Required | 
-| region | The AWS Region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required | 
+| account_id | The AWS account ID. | Required |
+| cluster_name | The name of the cluster to describe. | Required |
+| region | The AWS Region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.EKS.Cluster.name | String | The name of your cluster. | 
-| AWS.EKS.Cluster.arn | String | The Amazon Resource Name \(ARN\) of the cluster. | 
-| AWS.EKS.Cluster.createdAt | String | The creation date of the object. | 
-| AWS.EKS.Cluster.version | String | The Kubernetes server version for the cluster. | 
-| AWS.EKS.Cluster.endpoint | String | The endpoint for your Kubernetes API server. | 
-| AWS.EKS.Cluster.roleArn | String | The Amazon Resource Name \(ARN\) of the IAM role that provides permissions for the Kubernetes control plane to make calls to Amazon Web Services API operations on your behalf. | 
-| AWS.EKS.Cluster.resourcesVpcConfig.subnetIds | List | The subnets associated with your cluster. | 
-| AWS.EKS.Cluster.resourcesVpcConfig.securityGroupIds | List | The security groups associated with the cross-account elastic network interfaces that are used to allow communication between your nodes and the Kubernetes control plane. | 
-| AWS.EKS.Cluster.resourcesVpcConfig.clusterSecurityGroupId | String | The cluster security group that was created by Amazon EKS for the cluster. Managed node groups use this security group for control-plane-to-data-plane communication. | 
-| AWS.EKS.Cluster.resourcesVpcConfig.vpcId | String | The VPC associated with your cluster. | 
-| AWS.EKS.Cluster.resourcesVpcConfig.endpointPublicAccess | Boolean | Whether the public API server endpoint is enabled. | 
-| AWS.EKS.Cluster.resourcesVpcConfig.endpointPrivateAccess | Boolean | This parameter indicates whether the Amazon EKS private API server endpoint is enabled. | 
-| AWS.EKS.Cluster.resourcesVpcConfig.publicAccessCidrs | List | The CIDR blocks that are allowed access to your cluster’s public Kubernetes API server endpoint. | 
-| AWS.EKS.Cluster.kubernetesNetworkConfig.serviceIpv4Cidr | String | The CIDR block that Kubernetes Pod and Service object IP addresses are assigned from. | 
-| AWS.EKS.Cluster.kubernetesNetworkConfig.serviceIpv6Cidr | String | The CIDR block that Kubernetes Pod and Service IP addresses are assigned from if you created a 1.21 or later cluster with version 1.10.1 or later of the Amazon VPC CNI add-on and specified ipv6 for ipFamily when you created the cluster. | 
-| AWS.EKS.Cluster.kubernetesNetworkConfig.ipFamily | String | The IP family used to assign Kubernetes Pod and Service objects IP addresses. | 
-| AWS.EKS.Cluster.logging.clusterLogging | Object | The cluster control plane logging configuration for your cluster. | 
-| AWS.EKS.Cluster.identity | Object | The identity provider information for the cluster. | 
-| AWS.EKS.Cluster.status | String | The current status of the cluster. | 
-| AWS.EKS.Cluster.certificateAuthority.data | String | The Base64-encoded certificate data required to communicate with your cluster. | 
-| AWS.EKS.Cluster.clientRequestToken | String | A unique, case-sensitive identifier that you provide to ensure the idempotency of the request. | 
-| AWS.EKS.Cluster.platformVersion | String | The platform version of your Amazon EKS cluster. | 
-| AWS.EKS.Cluster.tags | Object | A dictionary containing metadata for categorization and organization. | 
-| AWS.EKS.Cluster.encryptionConfig.resources | List | Specifies the resources to be encrypted. The only supported value is secrets. | 
-| AWS.EKS.Cluster.encryptionConfig.provider | Object | Key Management Service \(KMS\) key. | 
-| AWS.EKS.Cluster.connectorConfig.activationId | String | A unique ID associated with the cluster for registration purposes. | 
-| AWS.EKS.Cluster.connectorConfig.activationCode | String | A unique code associated with the cluster for registration purposes. | 
-| AWS.EKS.Cluster.connectorConfig.activationExpiry | String | The expiration time of the connected cluster. | 
-| AWS.EKS.Cluster.connectorConfig.provider | String | The cluster’s cloud service provider. | 
-| AWS.EKS.Cluster.connectorConfig.roleArn | String | The Amazon Resource Name \(ARN\) of the role to communicate with services from the connected Kubernetes cluster. | 
-| AWS.EKS.Cluster.id | String | The ID of your local Amazon EKS cluster on an Amazon Web Services Outpost. | 
-| AWS.EKS.Cluster.health.issues | List | An object representing the health issues of your local Amazon EKS cluster on an Amazon Web Services Outpost. | 
-| AWS.EKS.Cluster.outpostConfig.outpostArns | Object | An object representing the configuration of your local Amazon EKS cluster on an Amazon Web Services Outpost. | 
-| AWS.EKS.Cluster.outpostConfig.controlPlaneInstanceType | String | The Amazon EC2 instance type used for the control plane. | 
-| AWS.EKS.Cluster.outpostConfig.controlPlanePlacement | Object | An object representing the placement configuration for all the control plane instances of your local Amazon EKS cluster on an Amazon Web Services Outpost. | 
-| AWS.EKS.Cluster.accessConfig.bootstrapClusterCreatorAdminPermissions | Boolean | Specifies whether or not the cluster creator IAM principal was set as a cluster admin access entry during cluster creation time. | 
-| AWS.EKS.Cluster.accessConfig.authenticationMode | String | The current authentication mode of the cluster. | 
+| AWS.EKS.Cluster.name | String | The name of your cluster. |
+| AWS.EKS.Cluster.arn | String | The Amazon Resource Name \(ARN\) of the cluster. |
+| AWS.EKS.Cluster.createdAt | String | The creation date of the object. |
+| AWS.EKS.Cluster.version | String | The Kubernetes server version for the cluster. |
+| AWS.EKS.Cluster.endpoint | String | The endpoint for your Kubernetes API server. |
+| AWS.EKS.Cluster.roleArn | String | The Amazon Resource Name \(ARN\) of the IAM role that provides permissions for the Kubernetes control plane to make calls to Amazon Web Services API operations on your behalf. |
+| AWS.EKS.Cluster.resourcesVpcConfig.subnetIds | List | The subnets associated with your cluster. |
+| AWS.EKS.Cluster.resourcesVpcConfig.securityGroupIds | List | The security groups associated with the cross-account elastic network interfaces that are used to allow communication between your nodes and the Kubernetes control plane. |
+| AWS.EKS.Cluster.resourcesVpcConfig.clusterSecurityGroupId | String | The cluster security group that was created by Amazon EKS for the cluster. Managed node groups use this security group for control-plane-to-data-plane communication. |
+| AWS.EKS.Cluster.resourcesVpcConfig.vpcId | String | The VPC associated with your cluster. |
+| AWS.EKS.Cluster.resourcesVpcConfig.endpointPublicAccess | Boolean | Whether the public API server endpoint is enabled. |
+| AWS.EKS.Cluster.resourcesVpcConfig.endpointPrivateAccess | Boolean | This parameter indicates whether the Amazon EKS private API server endpoint is enabled. |
+| AWS.EKS.Cluster.resourcesVpcConfig.publicAccessCidrs | List | The CIDR blocks that are allowed access to your cluster’s public Kubernetes API server endpoint. |
+| AWS.EKS.Cluster.kubernetesNetworkConfig.serviceIpv4Cidr | String | The CIDR block that Kubernetes Pod and Service object IP addresses are assigned from. |
+| AWS.EKS.Cluster.kubernetesNetworkConfig.serviceIpv6Cidr | String | The CIDR block that Kubernetes Pod and Service IP addresses are assigned from if you created a 1.21 or later cluster with version 1.10.1 or later of the Amazon VPC CNI add-on and specified ipv6 for ipFamily when you created the cluster. |
+| AWS.EKS.Cluster.kubernetesNetworkConfig.ipFamily | String | The IP family used to assign Kubernetes Pod and Service objects IP addresses. |
+| AWS.EKS.Cluster.logging.clusterLogging | Object | The cluster control plane logging configuration for your cluster. |
+| AWS.EKS.Cluster.identity | Object | The identity provider information for the cluster. |
+| AWS.EKS.Cluster.status | String | The current status of the cluster. |
+| AWS.EKS.Cluster.certificateAuthority.data | String | The Base64-encoded certificate data required to communicate with your cluster. |
+| AWS.EKS.Cluster.clientRequestToken | String | A unique, case-sensitive identifier that you provide to ensure the idempotency of the request. |
+| AWS.EKS.Cluster.platformVersion | String | The platform version of your Amazon EKS cluster. |
+| AWS.EKS.Cluster.tags | Object | A dictionary containing metadata for categorization and organization. |
+| AWS.EKS.Cluster.encryptionConfig.resources | List | Specifies the resources to be encrypted. The only supported value is secrets. |
+| AWS.EKS.Cluster.encryptionConfig.provider | Object | Key Management Service \(KMS\) key. |
+| AWS.EKS.Cluster.connectorConfig.activationId | String | A unique ID associated with the cluster for registration purposes. |
+| AWS.EKS.Cluster.connectorConfig.activationCode | String | A unique code associated with the cluster for registration purposes. |
+| AWS.EKS.Cluster.connectorConfig.activationExpiry | String | The expiration time of the connected cluster. |
+| AWS.EKS.Cluster.connectorConfig.provider | String | The cluster’s cloud service provider. |
+| AWS.EKS.Cluster.connectorConfig.roleArn | String | The Amazon Resource Name \(ARN\) of the role to communicate with services from the connected Kubernetes cluster. |
+| AWS.EKS.Cluster.id | String | The ID of your local Amazon EKS cluster on an Amazon Web Services Outpost. |
+| AWS.EKS.Cluster.health.issues | List | An object representing the health issues of your local Amazon EKS cluster on an Amazon Web Services Outpost. |
+| AWS.EKS.Cluster.outpostConfig.outpostArns | Object | An object representing the configuration of your local Amazon EKS cluster on an Amazon Web Services Outpost. |
+| AWS.EKS.Cluster.outpostConfig.controlPlaneInstanceType | String | The Amazon EC2 instance type used for the control plane. |
+| AWS.EKS.Cluster.outpostConfig.controlPlanePlacement | Object | An object representing the placement configuration for all the control plane instances of your local Amazon EKS cluster on an Amazon Web Services Outpost. |
+| AWS.EKS.Cluster.accessConfig.bootstrapClusterCreatorAdminPermissions | Boolean | Specifies whether or not the cluster creator IAM principal was set as a cluster admin access entry during cluster creation time. |
+| AWS.EKS.Cluster.accessConfig.authenticationMode | String | The current authentication mode of the cluster. |
+
 ### aws-eks-associate-access-policy
 
 ***
@@ -1929,22 +1932,243 @@ Associates an access policy and its scope to an access entry.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| account_id | The AWS account ID. | Required | 
-| cluster_name | The name of the cluster for which to create an access entry. | Required | 
-| principal_arn | The Amazon Resource Name (ARN) of the IAM user or role for the AccessEntry that you’re associating the access policy to. | Required | 
-| policy_arn | The ARN of the AccessPolicy that you’re associating. | Required | 
-| type | The scope type of an access policy. Possible values are: cluster, namespace. | Required | 
-| namespaces | A comma-separated list of Kubernetes namespaces that an access policy is scoped to. A value is required if you specified namespace for type. | Optional | 
-| region | The AWS Region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required | 
+| account_id | The AWS account ID. | Required |
+| cluster_name | The name of the cluster for which to create an access entry. | Required |
+| principal_arn | The Amazon Resource Name (ARN) of the IAM user or role for the AccessEntry that you’re associating the access policy to. | Required |
+| policy_arn | The ARN of the AccessPolicy that you’re associating. | Required |
+| type | The scope type of an access policy. Possible values are: cluster, namespace. | Required |
+| namespaces | A comma-separated list of Kubernetes namespaces that an access policy is scoped to. A value is required if you specified namespace for type. | Optional |
+| region | The AWS Region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.EKS.AssociatedAccessPolicy.clusterName | String | The name of your cluster. | 
-| AWS.EKS.AssociatedAccessPolicy.principalArn | String | The ARN of the IAM principal for the AccessEntry. | 
-| AWS.EKS.AssociatedAccessPolicy.policyArn | String | The ARN of the AccessPolicy. | 
-| AWS.EKS.AssociatedAccessPolicy.accessScope.type | String | The scope type of an access policy. | 
-| AWS.EKS.AssociatedAccessPolicy.accessScope.namespaces | String | A Kubernetes namespace that an access policy is scoped to. | 
-| AWS.EKS.AssociatedAccessPolicy.associatedAt | String | The date and time the AccessPolicy was associated with an AccessEntry. | 
-| AWS.EKS.AssociatedAccessPolicy.modifiedAt | String | The date and time for the last modification to the object. | 
+| AWS.EKS.AssociatedAccessPolicy.clusterName | String | The name of your cluster. |
+| AWS.EKS.AssociatedAccessPolicy.principalArn | String | The ARN of the IAM principal for the AccessEntry. |
+| AWS.EKS.AssociatedAccessPolicy.policyArn | String | The ARN of the AccessPolicy. |
+| AWS.EKS.AssociatedAccessPolicy.accessScope.type | String | The scope type of an access policy. |
+| AWS.EKS.AssociatedAccessPolicy.accessScope.namespaces | String | A Kubernetes namespace that an access policy is scoped to. |
+| AWS.EKS.AssociatedAccessPolicy.associatedAt | String | The date and time the AccessPolicy was associated with an AccessEntry. |
+| AWS.EKS.AssociatedAccessPolicy.modifiedAt | String | The date and time for the last modification to the object. |
+
+### aws-lambda-function-configuration-get
+
+***
+Retrieves configuration information about a Lambda function.
+
+#### Base Command
+
+`aws-lambda-function-configuration-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. | Required |
+| function_name | Name, ARN, or qualified name of the Lambda function. | Required |
+| qualifier | Version number or alias name. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.Lambda.FunctionConfig.FunctionName | String | The name of the function. |
+| AWS.Lambda.FunctionConfig.FunctionArn | String | The function’s Amazon Resource Name \(ARN\). |
+| AWS.Lambda.FunctionConfig.Runtime | String | The identifier of the function’s runtime. |
+| AWS.Lambda.FunctionConfig.Role | String | The function’s execution role. |
+| AWS.Lambda.FunctionConfig.Handler | String | The function that Lambda calls to begin running your function. |
+| AWS.Lambda.FunctionConfig.CodeSize | Number | The size of the function’s deployment package, in bytes. |
+| AWS.Lambda.FunctionConfig.Description | String | The function’s description. |
+| AWS.Lambda.FunctionConfig.Timeout | Number | The amount of time in seconds that Lambda allows a function to run before stopping it. |
+| AWS.Lambda.FunctionConfig.MemorySize | Number | The amount of memory available to the function at runtime. |
+| AWS.Lambda.FunctionConfig.LastModified | String | The date and time that the function was last updated. |
+| AWS.Lambda.FunctionConfig.CodeSha256 | String | The SHA256 hash of the function’s deployment package. |
+| AWS.Lambda.FunctionConfig.Version | String | The version of the Lambda function. |
+| AWS.Lambda.FunctionConfig.VpcConfig.SubnetIds | unknown | A list of VPC subnet IDs. |
+| AWS.Lambda.FunctionConfig.VpcConfig.SecurityGroupIds | unknown | A list of VPC security group IDs. |
+| AWS.Lambda.FunctionConfig.VpcConfig.VpcId | String | The ID of the VPC. |
+| AWS.Lambda.FunctionConfig.VpcConfig.Ipv6AllowedForDualStack | Boolean | Allows outbound IPv6 traffic on VPC functions that are connected to dual-stack subnets. |
+| AWS.Lambda.FunctionConfig.DeadLetterConfig.TargetArn | String | The Amazon Resource Name \(ARN\) of an Amazon SQS queue or Amazon SNS topic. |
+| AWS.Lambda.FunctionConfig.Environment.Variables | unknown | Environment variable key-value pairs. Omitted from CloudTrail logs. |
+| AWS.Lambda.FunctionConfig.Environment.Error.ErrorCode | String | The error code. |
+| AWS.Lambda.FunctionConfig.Environment.Error.Message | String | The error message. |
+| AWS.Lambda.FunctionConfig.KMSKeyArn | String | The ARN of the Key Management Service \(KMS\). |
+| AWS.Lambda.FunctionConfig.TracingConfig.Mode | String | The tracing mode. |
+| AWS.Lambda.FunctionConfig.MasterArn | String | For Lambda@Edge functions, the ARN of the main function. |
+| AWS.Lambda.FunctionConfig.RevisionId | String | The latest updated revision of the function or alias. |
+| AWS.Lambda.FunctionConfig.Layers.Arn | String | The Amazon Resource Name \(ARN\) of the function layer. |
+| AWS.Lambda.FunctionConfig.Layers.CodeSize | Number | The size of the layer archive in bytes. |
+| AWS.Lambda.FunctionConfig.Layers.SigningProfileVersionArn | String | The Amazon Resource Name \(ARN\) for a signing profile version. |
+| AWS.Lambda.FunctionConfig.Layers.SigningJobArn | String | The Amazon Resource Name \(ARN\) of a signing job. |
+| AWS.Lambda.FunctionConfig.State | String | The current state of the function. |
+| AWS.Lambda.FunctionConfig.StateReason | String | The reason for the function’s current state. |
+| AWS.Lambda.FunctionConfig.StateReasonCode | String | The reason code for the function’s current state. |
+| AWS.Lambda.FunctionConfig.LastUpdateStatus | String | The status of the last update that was performed on the function. |
+| AWS.Lambda.FunctionConfig.LastUpdateStatusReason | String | The reason for the last update that was performed on the function. |
+| AWS.Lambda.FunctionConfig.LastUpdateStatusReasonCode | String | The reason code for the last update that was performed on the function. |
+| AWS.Lambda.FunctionConfig.FileSystemConfigs.Arn | String | The Amazon Resource Name \(ARN\) of the Amazon EFS access point that provides access to the file system. |
+| AWS.Lambda.FunctionConfig.FileSystemConfigs.LocalMountPath | String | The path where the function can access the file system, starting with /mnt/. |
+| AWS.Lambda.FunctionConfig.PackageType | String | The type of deployment package. |
+| AWS.Lambda.FunctionConfig.ImageConfigResponse.ImageConfig.EntryPoint | String | Specifies the entry point to their application, which is typically the location of the runtime executable. |
+| AWS.Lambda.FunctionConfig.ImageConfigResponse.ImageConfig.Command | String | Specifies parameters that you want to pass in with ENTRYPOINT. |
+| AWS.Lambda.FunctionConfig.ImageConfigResponse.ImageConfig.WorkingDirectory | String | Specifies the working directory. |
+| AWS.Lambda.FunctionConfig.ImageConfigResponse.Error.ErrorCode | String | Error code. |
+| AWS.Lambda.FunctionConfig.ImageConfigResponse.Error.Message | String | Error message. |
+| AWS.Lambda.FunctionConfig.SigningProfileVersionArn | String | The ARN of the signing profile version. |
+| AWS.Lambda.FunctionConfig.SigningJobArn | String | The ARN of the signing job. |
+| AWS.Lambda.FunctionConfig.Architectures | String | The size of the function’s /tmp directory in MB. |
+| AWS.Lambda.FunctionConfig.EphemeralStorage.Size | Number | The size of the function’s /tmp directory. |
+| AWS.Lambda.FunctionConfig.SnapStart.ApplyOn | String | When set to PublishedVersions, Lambda creates a snapshot of the execution environment when you publish a function version. |
+| AWS.Lambda.FunctionConfig.SnapStart.OptimizationStatus | String | When you provide a qualified Amazon Resource Name \(ARN\), this response element indicates whether SnapStart is activated for the specified function version. |
+| AWS.Lambda.FunctionConfig.RuntimeVersionConfig.RuntimeVersionArn | String | The ARN of the runtime version you want the function to use. |
+| AWS.Lambda.FunctionConfig.RuntimeVersionConfig.Error.ErrorCode | String | The error code. |
+| AWS.Lambda.FunctionConfig.RuntimeVersionConfig.Error.Message | String | The error message. |
+| AWS.Lambda.FunctionConfig.LoggingConfig.LogFormat | String | The format in which Lambda sends your function’s application and system logs to CloudWatch. |
+| AWS.Lambda.FunctionConfig.LoggingConfig.ApplicationLogLevel | String | Set this property to filter the application logs for your function that Lambda sends to CloudWatch. |
+| AWS.Lambda.FunctionConfig.LoggingConfig.SystemLogLevel | String | Set this property to filter the system logs for your function that Lambda sends to CloudWatch. |
+| AWS.Lambda.FunctionConfig.LoggingConfig.LogGroup | String | The name of the Amazon CloudWatch log group the function sends logs to. |
+
+### aws-lambda-function-url-config-get
+
+***
+Returns the configuration for a Lambda function URL.
+
+#### Base Command
+
+`aws-lambda-function-url-config-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. | Required |
+| function_name | Name of the Lambda function. | Required |
+| qualifier | The alias name or version number. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.Lambda.FunctionURLConfig.FunctionUrl | String | The HTTP URL endpoint for your function. |
+| AWS.Lambda.FunctionURLConfig.FunctionArn | String | The Amazon Resource Name \(ARN\) of your function. |
+| AWS.Lambda.FunctionURLConfig.AuthType | String | The type of authentication that your function URL uses. |
+| AWS.Lambda.FunctionURLConfig.Cors.AllowCredentials | Boolean | Whether to allow cookies or other credentials in requests to your function URL. |
+| AWS.Lambda.FunctionURLConfig.Cors.AllowHeaders | String | The HTTP headers that origins can include in requests to your function URL. |
+| AWS.Lambda.FunctionURLConfig.Cors.AllowMethods | String | The HTTP methods that are allowed when calling your function URL. |
+| AWS.Lambda.FunctionURLConfig.Cors.AllowOrigins | String | The origins that can access your function URL. |
+| AWS.Lambda.FunctionURLConfig.Cors.ExposeHeaders | String | The HTTP headers in your function response that you want to expose to origins that call your function URL. |
+| AWS.Lambda.FunctionURLConfig.Cors.MaxAge | Number | The maximum amount of time, in seconds, that web browsers can cache results of a preflight request. |
+| AWS.Lambda.FunctionURLConfig.CreationTime | String | When the function URL was created. |
+| AWS.Lambda.FunctionURLConfig.LastModifiedTime | String | When the function URL configuration was last updated. |
+| AWS.Lambda.FunctionURLConfig.InvokeMode | String | BUFFERED or RESPONSE_STREAM. |
+
+### aws-lambda-policy-get
+
+***
+Returns the resource-based IAM policy for a Lambda function.
+
+#### Base Command
+
+`aws-lambda-policy-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. | Required |
+| function_name | Name of the Lambda function, version, or alias. | Required |
+| qualifier | Version or alias to get the policy for. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.Lambda.Policy.Version | Date | The policy version. |
+| AWS.Lambda.Policy.Id | String | The identifier of the policy. |
+| AWS.Lambda.Policy.Statement.Sid | String | Identifier of the policy statement. |
+| AWS.Lambda.Policy.Statement.Effect | String | Specifies whether the statement results in an allow or an explicit deny. |
+| AWS.Lambda.Policy.Statement.Principal | unknown | Specify the principal that is allowed or denied access to a resource. |
+| AWS.Lambda.Policy.Statement.Action | unknown | Describes the specific action or actions that will be allowed or denied. |
+| AWS.Lambda.Policy.Statement.Resource | unknown | Defines the object or objects that the statement applies to. |
+| AWS.Lambda.Policy.Statement.Condition | String | Specify conditions for when a policy is in effect. |
+| AWS.Lambda.Policy.RevisionId | String | A unique identifier for the current revision of the policy. |
+
+### aws-lambda-invoke
+
+***
+Invokes a Lambda function. Specify just a function name to invoke the latest version of the function. To invoke a published version, use the Qualifier parameter to specify a version or alias. If you use the RequestResponse (synchronous) invocation option, note that the function may be invoked multiple times if a timeout is reached. For functions with a long timeout, your client may be disconnected during synchronous invocation while it waits for a response. If you use the Event (asynchronous) invocation option, the function will be invoked at least once in response to an event and the function must be idempotent to handle this.
+
+#### Base Command
+
+`aws-lambda-invoke`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. | Required |
+| function_name | Name of the Lambda function to invoke. | Required |
+| invocation_type | RequestResponse (sync), Event (async), or DryRun. Default is RequestResponse. Possible values are: RequestResponse, Event, DryRun. Default is RequestResponse. | Optional |
+| log_type | Set to Tail to include execution log in response. Possible values are: None, Tail. | Optional |
+| client_context | Base64-encoded client context data. | Optional |
+| payload | JSON input to provide to the Lambda function. | Optional |
+| qualifier | Version or alias to invoke. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.Lambda.InvokedFunction.StatusCode | Number | The HTTP status code is in the 200 range for a successful request. |
+| AWS.Lambda.InvokedFunction.FunctionError | String | If present, indicates that an error occurred during function execution. |
+| AWS.Lambda.InvokedFunction.LogResult | String | The last 4 KB of the execution log, which is base64-encoded. |
+| AWS.Lambda.InvokedFunction.Payload | Unknown | The response from the function, or an error object. |
+| AWS.Lambda.InvokedFunction.ExecutedVersion | String | The version of the function that executed. |
+| AWS.Lambda.InvokedFunction.FunctionName | string | The name of the Lambda function. |
+
+### aws-lambda-function-url-config-update
+
+***
+Updates the configuration for a Lambda function URL.
+
+#### Base Command
+
+`aws-lambda-function-url-config-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. | Required |
+| function_name | Name of the Lambda function. | Required |
+| qualifier | The alias name or version number. | Optional |
+| auth_type | AWS_IAM or NONE for authentication type. Possible values are: AWS_IAM, NONE. | Optional |
+| cors_allow_credentials | Allow credentials in CORS requests. Possible values are: true, false. | Optional |
+| cors_allow_headers | Comma-separated list of allowed headers. | Optional |
+| cors_allow_methods | Comma-separated list of allowed HTTP methods. | Optional |
+| cors_allow_origins | Comma-separated list of allowed origins. | Optional |
+| cors_expose_headers | Comma-separated list of headers to expose. | Optional |
+| cors_max_age | Maximum age for CORS preflight cache. | Optional |
+| invoke_mode | BUFFERED or RESPONSE_STREAM. Possible values are: BUFFERED, RESPONSE_STREAM. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.Lambda.FunctionURLConfig.FunctionUrl | String | The HTTP URL endpoint for your function. |
+| AWS.Lambda.FunctionURLConfig.FunctionArn | String | The Amazon Resource Name \(ARN\) of your function. |
+| AWS.Lambda.FunctionURLConfig.AuthType | String | The type of authentication that your function URL uses. |
+| AWS.Lambda.FunctionURLConfig.Cors.AllowCredentials | Boolean | Whether to allow cookies or other credentials in requests to your function URL. |
+| AWS.Lambda.FunctionURLConfig.Cors.AllowHeaders | String | The HTTP headers that origins can include in requests to your function URL. |
+| AWS.Lambda.FunctionURLConfig.Cors.AllowMethods | String | The HTTP methods that are allowed when calling your function URL. |
+| AWS.Lambda.FunctionURLConfig.Cors.AllowOrigins | String | The origins that can access your function URL. |
+| AWS.Lambda.FunctionURLConfig.Cors.ExposeHeaders | String | The HTTP headers in your function response that you want to expose to origins that call your function URL. |
+| AWS.Lambda.FunctionURLConfig.Cors.MaxAge | Number | The maximum amount of time, in seconds, that web browsers can cache results of a preflight request. |
+| AWS.Lambda.FunctionURLConfig.CreationTime | String | When the function URL was created. |
+| AWS.Lambda.FunctionURLConfig.LastModifiedTime | String | When the function URL configuration was last updated. |
+| AWS.Lambda.FunctionURLConfig.InvokeMode | String | BUFFERED or RESPONSE_STREAM. |
