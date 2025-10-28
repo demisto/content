@@ -3042,7 +3042,7 @@ script:
         description: The Amazon Resource Name (ARN), a unique identifier representing the log group to which CloudTrail logs are delivered.
         type: string
       - contextPath: AWS.CloudTrail.Trail.CloudWatchLogsRoleArn
-        description: The role for the CloudWatch Logs endpoint to assume to write to a user's log group.
+        description: The role that the CloudWatch Logs endpoint assumes to write to a user’s log group.
         type: string
       - contextPath: AWS.CloudTrail.Trail.KMSKeyId
         description: The KMS key ID that encrypts the logs delivered by CloudTrail.
