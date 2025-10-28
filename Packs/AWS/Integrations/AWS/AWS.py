@@ -2292,7 +2292,7 @@ class CostExplorer:
                         "Unit": total.get(metric, {}).get("Unit", ""),
                     }
                 )
-        outputs = {"AWS.Billing.Usage": results, "AWS.Billing.UsageNextToken(true)": next_token}
+        outputs = {"AWS.Billing.Usage": results, "AWS.Billing(true)": {"UsageNextToken": next_token}}
         readable_tables = []
         for metric in metrics:
             metric_results = results_by_metric[metric]
@@ -2388,7 +2388,7 @@ class CostExplorer:
 
         outputs = {
             "AWS.Billing.Forecast": results,
-            "AWS.Billing.ForecastNextToken(true)": next_token,
+            "AWS.Billing(true)": {"ForecastNextToken": next_token},
         }
 
         readable = tableToMarkdown(
@@ -2467,7 +2467,7 @@ class Budgets:
             )
         outputs = {
             "AWS.Billing.Budget": results,
-            "AWS.Billing.BudgetNextToken(true)": next_token,
+            "AWS.Billing(true)": {"BudgetNextToken": next_token},
         }
         readable = tableToMarkdown(
             "AWS Budgets",
@@ -2530,7 +2530,7 @@ class Budgets:
         demisto.debug(f"AWS Budget Notifications response - Notifications count: {len(notifications)},\n NextToken: {next_token}")
         outputs = {
             "AWS.Billing.Notification": notifications,
-            "AWS.Billing.NotificationNextToken(true)": next_token,
+            "AWS.Billing(true)": {"NotificationNextToken": next_token},
         }
         readable = tableToMarkdown(f"Notifications for Budget: {budget_name}", notifications)
         if next_token:

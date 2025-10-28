@@ -4372,8 +4372,8 @@ def test_cost_explorer_billing_cost_usage_list_command_success(mocker):
     assert isinstance(result, CommandResults)
     assert "AWS Billing Usage" in result.readable_output
     assert "AWS.Billing.Usage" in result.outputs
-    assert "AWS.Billing.UsageNextToken(true)" in result.outputs
-    assert result.outputs["AWS.Billing.UsageNextToken(true)"] == "next-token-123"
+    assert "AWS.Billing(true)" in result.outputs
+    assert result.outputs["AWS.Billing(true)"]["UsageNextToken"] == "next-token-123"
     assert result.raw_response == mock_response
 
 
@@ -4406,8 +4406,8 @@ def test_cost_explorer_billing_forecast_list_command_success(mocker):
     assert isinstance(result, CommandResults)
     assert "AWS Billing Forecast" in result.readable_output
     assert "AWS.Billing.Forecast" in result.outputs
-    assert "AWS.Billing.ForecastNextToken(true)" in result.outputs
-    assert result.outputs["AWS.Billing.ForecastNextToken(true)"] == "forecast-token-456"
+    assert "AWS.Billing(true)" in result.outputs
+    assert result.outputs["AWS.Billing(true)"]["ForecastNextToken"] == "forecast-token-456"
 
 
 def test_budgets_billing_budgets_list_command_success(mocker):
@@ -4441,8 +4441,8 @@ def test_budgets_billing_budgets_list_command_success(mocker):
     assert isinstance(result, CommandResults)
     assert "AWS Budgets" in result.readable_output
     assert "AWS.Billing.Budget" in result.outputs
-    assert "AWS.Billing.BudgetNextToken(true)" in result.outputs
-    assert result.outputs["AWS.Billing.BudgetNextToken(true)"] == "budget-token-789"
+    assert "AWS.Billing(true)" in result.outputs
+    assert result.outputs["AWS.Billing(true)"]["BudgetNextToken"] == "budget-token-789"
     assert len(result.outputs["AWS.Billing.Budget"]) == 1
     assert result.outputs["AWS.Billing.Budget"][0]["BudgetName"] == "test-budget"
 
@@ -4471,7 +4471,7 @@ def test_cost_explorer_billing_cost_usage_list_command_no_next_token(mocker):
     result = CostExplorer.billing_cost_usage_list_command(mock_client, args)
 
     assert isinstance(result, CommandResults)
-    assert result.outputs["AWS.Billing.UsageNextToken(true)"] == ""
+    assert result.outputs["AWS.Billing(true)"]["UsageNextToken"] == ""
     assert "Next Page Token" not in result.readable_output
 
 
@@ -4547,7 +4547,7 @@ def test_budgets_billing_budget_notification_list_command_success(mocker):
     assert isinstance(result, CommandResults)
     assert "AWS.Billing.Notification" in result.outputs
     assert len(result.outputs["AWS.Billing.Notification"]) == 1
-    assert result.outputs["AWS.Billing.NotificationNextToken(true)"] == "notif-token-001"
+    assert result.outputs["AWS.Billing(true)"]["NotificationNextToken"] == "notif-token-001"
     assert "Notifications for Budget: my-budget" in result.readable_output
 
 
