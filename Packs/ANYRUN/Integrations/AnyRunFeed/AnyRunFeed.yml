@@ -1,4 +1,7 @@
 category: Data Enrichment & Threat Intelligence
+sectionorder:
+- Connect
+- Collect
 commonfields:
   id: ANY.RUN TI Feed
   version: -1

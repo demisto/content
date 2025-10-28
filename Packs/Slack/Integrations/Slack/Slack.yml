@@ -1,6 +1,6 @@
 category: Messaging and Conferencing
 deprecated: true
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -436,3 +436,6 @@ script:
 fromversion: 5.0.0
 tests:
 - No tests (auto formatted)
+supportedModules:
+- xsiam
+- agentix
