@@ -997,14 +997,14 @@ def cape_file_view_command(
         f"{INTEGRATION_NAME} File View",
         data if isinstance(data, dict) else [data],
         headers=[
-            "Task Id",
-            "File type",
+            "id",
+            "file_type",
             "md5",
             "crc32",
             "sha256",
             "sha512",
             "Parent",
-            "Source url",
+            "source_url",
         ],
         headerTransform=string_to_table_header,
     )
@@ -1499,7 +1499,7 @@ def cape_task_screenshot_download_command(
     demisto.debug(f"Command '{command}' execution finished successfully.")
     return CommandResults(
         readable_output=readable,
-        outputs_prefix="Cape.Screenshot",
+        outputs_prefix="Cape.Task.Screenshot",
         outputs_key_field="ScreenshotNumber",
         outputs=file_entries,
     )
