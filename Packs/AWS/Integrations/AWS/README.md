@@ -1634,8 +1634,8 @@ Lists configured budgets for a given AWS account.
 | --- | --- | --- |
 | account_id | The AWS account on which to run the command. | Required |
 | region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
-| max_result | Maximum results to return. Default - 50, Max - 1000. | Optional |
-| show_filter_expression | Whether to show filter expression. Default - False. | Optional |
+| max_result | Maximum results to return. Default - 50, Max - 1000. Default is 50. | Optional |
+| show_filter_expression | Whether to show filter expression. Default - False. Possible values are: true, false. Default is false. | Optional |
 | next_page_token | Next page token for pagination. Use value from AWS.Billing.BudgetNextToken. | Optional |
 
 #### Context Output
@@ -1683,7 +1683,7 @@ Lists the notifications that are associated with a budget.
 | account_id | AWS account to run the command on. | Required |
 | region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
 | budget_name | Name of the budget. | Required |
-| max_result | Maximum results to return. Default - 50, Max - 100. | Optional |
+| max_result | Maximum results to return. Default - 50, Max - 100. Default is 50. | Optional |
 | next_page_token | Next page token for pagination. Use value from AWS.Billing.NotificationNextToken. | Optional |
 
 #### Context Output

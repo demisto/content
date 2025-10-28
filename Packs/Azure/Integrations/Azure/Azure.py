@@ -1587,8 +1587,9 @@ class AzureClient:
         Raises:
             DemistoException: If Azure API call fails, subscription not found, or invalid parameters provided
         """
-        start_date = (arg_to_datetime(start_date) or datetime.now(UTC)).strftime("%Y-%m-%dT00:00:00Z")
-        end_date = (arg_to_datetime(end_date) or (datetime.now(UTC) + timedelta(days=7))).strftime("%Y-%m-%dT23:59:59Z")
+        
+        start_date = arg_to_datetime(start_date) if start_date else datetime.now(UTC)
+        end_date = arg_to_datetime(end_date) if end_date else datetime.now(UTC) + timedelta(days=7)
 
         url = f"{subscription_id}/providers/Microsoft.CostManagement/forecast"
         api_version = "2025-03-01"
@@ -1596,14 +1597,16 @@ class AzureClient:
         body = {
             "type": forecast_type,
             "timeframe": "Custom",
-            "timePeriod": {"from": start_date, "to": end_date},
+            "timePeriod": {"from": start_date.strftime("%Y-%m-%dT00:00:00Z"), "to": end_date.strftime("%Y-%m-%dT00:00:00Z")},
             "dataset": {
                 "granularity": granularity,
                 "aggregation": {"totalCost": {"function": aggregation_function_type, "name": aggregation_function_name}},
-            },
-            "includeActualCost": include_actual_cost,
-            "includeFreshPartialCost": include_fresh_partial_cost,
+            }
         }
+        if include_actual_cost:
+            body["includeActualCost"] = include_actual_cost
+        if include_fresh_partial_cost:
+            body["includeFreshPartialCost"] = include_fresh_partial_cost
 
         if filter_param:
             body["dataset"]["filter"] = filter_param  # type: ignore[index]
@@ -3057,7 +3060,7 @@ def azure_billing_usage_list_command(client: AzureClient, params: dict, args: di
 
     outputs = {
         "Azure.Billing.Usage(val.name && val.name == obj.name)": items,
-        "Azure.Billing.UsageNextToken(true)": next_token,
+        "Azure.Billing(true)": {"UsageNextToken": next_token},
     }
     return CommandResults(
         readable_output=readable_output,
@@ -3090,12 +3093,10 @@ def azure_billing_forecast_list_command(client: AzureClient, params: dict, args:
     Raises:
         DemistoException: If Azure API call fails, subscription not found, or invalid parameters provided
     """
-    # Get required parameters
     subscription_id = args.get("subscription_id", "")
     forecast_type = args.get("type", "")
     aggregation_function_name = args.get("aggregation_function_name", "")
 
-    # Get optional parameters with defaults
     aggregation_function_type = args.get("aggregation_function_type", "Sum")
     granularity = args.get("granularity", "Daily")
     include_actual_cost = argToBoolean(args.get("include_actual_cost", False))
@@ -3130,12 +3131,7 @@ def azure_billing_forecast_list_command(client: AzureClient, params: dict, args:
         for obj in parsed_data
     ]
 
-    outputs = copy.deepcopy(response)
-    properties = {k: v for k, v in response.get("properties", {}).items() if k not in ["columns", "rows"]}
-    properties["forecasts"] = results
-    outputs["properties"] = properties
-
-    context = {"Azure.Billing.Forecast": outputs}
+    context = {"Azure.Billing.Forecast": results}
     readable = tableToMarkdown(
         "Azure Billing Forecast",
         results,

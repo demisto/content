@@ -4202,12 +4202,13 @@ script:
     - name: max_result
       description: Maximum results to return. Default - 50, Max - 1000.
       required: false
+      defaultValue: 50
     - name: show_filter_expression
-      defaultValue: false
+      defaultValue: 'false'
       auto: PREDEFINED
       predefined:
-      - true
-      - false
+      - 'true'
+      - 'false'
       description: Whether to show filter expression. Default - False.
       required: false
     - name: next_page_token
@@ -4327,6 +4328,7 @@ script:
     - name: max_result
       description: Maximum results to return. Default - 50, Max - 100.
       required: false
+      defaultValue: 50
     - name: next_page_token
       description: Next page token for pagination. Use value from AWS.Billing.NotificationNextToken.
       required: false

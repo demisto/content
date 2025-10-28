@@ -2814,16 +2814,15 @@ def test_azure_billing_usage_list_command_success(mocker, client, mock_params):
     assert isinstance(result, CommandResults)
     assert "Azure Billing Usage" in result.readable_output
     assert "Azure.Billing.Usage(val.name && val.name == obj.name)" in result.outputs
-    assert "Azure.Billing.UsageNextToken(true)" in result.outputs
+    assert "Azure.Billing(true)" in result.outputs
     assert (
         "https://management.azure.com/subscriptions/test/providers/Microsoft.Consumption/usageDetails?$skiptoken=abc123"
-        in result.outputs["Azure.Billing.UsageNextToken(true)"]
+        in result.outputs["Azure.Billing(true)"]["UsageNextToken"]
     )
+    assert len(result.outputs["Azure.Billing.Usage(val.name && val.name == obj.name)"]) == 1
     assert (
-        len(result.outputs["Azure.Billing.Usage(val.name && val.name == obj.name)"])
-        == 1
+        result.outputs["Azure.Billing.Usage(val.name && val.name == obj.name)"][0]["properties"]["product"] == "Virtual Machines"
     )
-    assert result.outputs["Azure.Billing.Usage(val.name && val.name == obj.name)"][0]["properties"]["product"] == "Virtual Machines"
     assert result.raw_response == mock_response
 
 
@@ -2856,7 +2855,6 @@ def test_azure_billing_forecast_list_command_success(mocker, client, mock_params
         "subscription_id": "test-subscription-id",
         "type": "Usage",
         "aggregation_function_name": "Pre Tax Cost USD",
-        # optional args are covered by defaults; include a filter to mirror typical usage
         "filter": "properties/UsageDate ge '2023-10-15'",
     }
     params = mock_params
@@ -2869,14 +2867,10 @@ def test_azure_billing_forecast_list_command_success(mocker, client, mock_params
     # Validate context structure and parsed forecasts
     assert "Azure.Billing.Forecast" in result.outputs
     forecast_ctx = result.outputs["Azure.Billing.Forecast"]
-    assert isinstance(forecast_ctx, dict)
-    assert "properties" in forecast_ctx
-    assert "forecasts" in forecast_ctx["properties"]
-    forecasts = forecast_ctx["properties"]["forecasts"]
-    assert isinstance(forecasts, list)
-    assert len(forecasts) == 1
+    assert isinstance(forecast_ctx, list)
+    assert len(forecast_ctx) == 1
 
-    row = forecasts[0]
+    row = forecast_ctx[0]
     # The command uses aggregation_function_name as a key in the result rows
     assert row["Pre Tax Cost USD"] == 250.50
     assert row["CostStatus"] == "Forecast"
@@ -2989,7 +2983,7 @@ def test_azure_billing_usage_list_command_no_next_token(mocker, client, mock_par
     result = azure_billing_usage_list_command(client, params, args)
 
     assert isinstance(result, CommandResults)
-    assert result.outputs["Azure.Billing.UsageNextToken(true)"] == ""
+    assert result.outputs["Azure.Billing(true)"]["UsageNextToken"] == ""
     assert "Next Page Token" not in result.readable_output
     assert result.outputs["Azure.Billing.Usage(val.name && val.name == obj.name)"][0]["properties"]["product"] == "Storage"
 

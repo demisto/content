@@ -2442,7 +2442,6 @@ class CostExplorer:
         for result in results:
             metric_results.append(
                 {
-                    "Service": aws_services[0] if aws_services else None,
                     "StartDate": result.get("TimePeriod", {}).get("Start"),
                     "EndDate": result.get("TimePeriod", {}).get("End"),
                     "TotalAmount": f"{float(result.get('MeanValue', 0)):.2f}",
@@ -2458,7 +2457,7 @@ class CostExplorer:
         readable = tableToMarkdown(
             f"AWS Billing Forecast - {metric}",
             metric_results,
-            headers=["Service", "StartDate", "EndDate", "TotalAmount", "TotalUnit"],
+            headers=["StartDate", "EndDate", "TotalAmount", "TotalUnit"],
             removeNull=True,
             headerTransform=pascalToSpace,
         )
@@ -2502,9 +2501,12 @@ class Budgets:
         max_results = int(args.get("max_result", 50))
         token = args.get("next_page_token")
         account_id = args.get("account_id")
+        show_filter_expression = argToBoolean(args.get("show_filter_expression"))
         request = {"AccountId": account_id, "MaxResults": max_results}
         if token:
             request["NextToken"] = token
+        if show_filter_expression:
+            request["ShowFilterExpression"] = show_filter_expression
         demisto.debug(f"AWS Budgets request: {request}")
 
         response = client.describe_budgets(**request)
@@ -2527,10 +2529,11 @@ class Budgets:
                     "ActualSpendAmount": actual_spend.get("Amount"),
                     "ActualSpendUnit": actual_spend.get("Unit"),
                     "TimePeriod": f"{start} - {end}",
+                    "FilterExpression": b.get("FilterExpression") if show_filter_expression else None,
                 }
             )
         outputs = {
-            "AWS.Billing.Budget": results,
+            "AWS.Billing.Budget(val.BudgetName && val.BudgetName == obj.BudgetName)": results,
             "AWS.Billing(true)": {"BudgetNextToken": next_token},
         }
         readable = tableToMarkdown(
@@ -2542,10 +2545,12 @@ class Budgets:
                 "BudgetType",
                 "BudgetLimitAmount",
                 "BudgetLimitUnit",
+                "FilterExpression",
                 "ActualSpendAmount",
                 "ActualSpendUnit",
             ],
             removeNull=True,
+            headerTransform=pascalToSpace,
         )
         if next_token:
             readable = f"Next Page Token: {next_token}\n\n" + readable

@@ -2506,66 +2506,37 @@ script:
         type: String
       - name: include_actual_cost
         description: Include actual cost data.
-        defaultValue: false
+        defaultValue: 'false'
         auto: PREDEFINED
         predefined:
-        - true
-        - false
+        - 'true'
+        - 'false'
         required: false
-        type: Boolean
       - name: include_fresh_partial_cost
         description: Include fresh partial cost data.
         auto: PREDEFINED
         predefined:
-        - true
-        - false
+        - 'true'
+        - 'false'
         required: false
-        type: Boolean
-        defaultValue: false
+        defaultValue: 'false'
     outputs:
-      - contextPath: Azure.Billing.Forecast
-        description: Complete Azure Cost Management API response with forecast data.
-      - contextPath: Azure.Billing.Forecast.id
-        description: Fully qualified resource ID for the forecast.
-        type: String
-      - contextPath: Azure.Billing.Forecast.name
-        description: Name of the forecast resource.
-        type: String
-      - contextPath: Azure.Billing.Forecast.type
-        description: Resource type (Microsoft.CostManagement/query).
-        type: String
-      - contextPath: Azure.Billing.Forecast.location
-        description: Location of the forecast resource.
-        type: String
-      - contextPath: Azure.Billing.Forecast.eTag
-        description: ETag for the forecast resource.
-        type: String
-      - contextPath: Azure.Billing.Forecast.properties
-        description: Properties object containing forecast data.
-      - contextPath: Azure.Billing.Forecast.properties.nextLink
-        description: Next link for pagination.
-        type: String
-      - contextPath: Azure.Billing.Forecast.properties.forecasts
-        description: Array of forecast data entries.
-      - contextPath: Azure.Billing.Forecast.properties.PreTaxCostUSD
-        description: Pre-tax cost in USD.
-        type: Number
-      - contextPath: Azure.Billing.Forecast.properties.Cost
+      - contextPath: Azure.Billing.Forecast.Cost
         description: Cost amount.
         type: Number
-      - contextPath: Azure.Billing.Forecast.properties.CostUSD
+      - contextPath: Azure.Billing.Forecast.CostUSD
         description: Cost in USD.
         type: Number
-      - contextPath: Azure.Billing.Forecast.properties.PreTaxCost
+      - contextPath: Azure.Billing.Forecast.PreTaxCost
         description: Pre-tax cost amount.
         type: Number
-      - contextPath: Azure.Billing.Forecast.properties.UsageDate
+      - contextPath: Azure.Billing.Forecast.UsageDate
         description: Usage date for the forecast (YYYY-MM-DD format).
         type: String
-      - contextPath: Azure.Billing.Forecast.properties.CostStatus
+      - contextPath: Azure.Billing.Forecast.CostStatus
         description: Cost status (Forecast, Actual).
         type: String
-      - contextPath: Azure.Billing.Forecast.properties.Currency
+      - contextPath: Azure.Billing.Forecast.Currency
         description: Currency code for the forecast.
         type: String
   - name: azure-billing-budgets-list

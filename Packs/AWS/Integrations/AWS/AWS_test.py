@@ -4572,17 +4572,17 @@ def test_budgets_billing_budgets_list_command_success(mocker):
     }
     mock_client.describe_budgets.return_value = mock_response
 
-    args = {"account_id": "123456789012", "max_result": "50"}
+    args = {"account_id": "123456789012", "max_result": "50", "show_filter_expression": "false"}
 
     result = Budgets.billing_budgets_list_command(mock_client, args)
-
+    budgets_path = "AWS.Billing.Budget(val.BudgetName && val.BudgetName == obj.BudgetName)"
     assert isinstance(result, CommandResults)
     assert "AWS Budgets" in result.readable_output
-    assert "AWS.Billing.Budget" in result.outputs
+    assert budgets_path in result.outputs
     assert "AWS.Billing(true)" in result.outputs
     assert result.outputs["AWS.Billing(true)"]["BudgetNextToken"] == "budget-token-789"
-    assert len(result.outputs["AWS.Billing.Budget"]) == 1
-    assert result.outputs["AWS.Billing.Budget"][0]["BudgetName"] == "test-budget"
+    assert len(result.outputs[budgets_path]) == 1
+    assert result.outputs[budgets_path][0]["BudgetName"] == "test-budget"
 
 
 def test_cost_explorer_billing_cost_usage_list_command_no_next_token(mocker):
@@ -4636,7 +4636,7 @@ def test_budgets_billing_budgets_list_command_with_next_token(mocker):
     }
     mock_client.describe_budgets.return_value = mock_response
 
-    args = {"account_id": "123456789012", "next_page_token": "existing-token"}
+    args = {"account_id": "123456789012", "next_page_token": "existing-token", "show_filter_expression": "false"}
 
     result = Budgets.billing_budgets_list_command(mock_client, args)
 
@@ -4646,7 +4646,8 @@ def test_budgets_billing_budgets_list_command_with_next_token(mocker):
     assert call_args["NextToken"] == "existing-token"
 
     assert isinstance(result, CommandResults)
-    assert result.outputs["AWS.Billing.Budget"][0]["BudgetName"] == "budget-page-2"
+    budgets_path = "AWS.Billing.Budget(val.BudgetName && val.BudgetName == obj.BudgetName)"
+    assert result.outputs[budgets_path][0]["BudgetName"] == "budget-page-2"
 
 
 def test_budgets_billing_budget_notification_list_command_success(mocker):

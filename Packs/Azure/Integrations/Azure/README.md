@@ -1233,29 +1233,19 @@ Returns cost forecast for a subscription over a given time range.
 | start_date | Start date for the forecast. Default value current time. | Optional |
 | end_date | End date for the forecast. Default value 7 days from current time. | Optional |
 | filter | A URL parameter to filter forecasts by properties/usageDate (Utc time), properties/chargeType or properties/grain. The filter supports 'eq', 'lt', 'gt', 'le', 'ge', and 'and'. It does not currently support 'ne', 'or', or 'not'. | Optional |
-| include_actual_cost | Include actual cost data. | Optional |
-| include_fresh_partial_cost | Include fresh partial cost data. | Optional |
+| include_actual_cost | Include actual cost data. Possible values are: true, false. Default is false. | Optional |
+| include_fresh_partial_cost | Include fresh partial cost data. Possible values are: true, false. Default is false. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.Billing.Forecast | unknown | Complete Azure Cost Management API response with forecast data. |
-| Azure.Billing.Forecast.id | String | Fully qualified resource ID for the forecast. |
-| Azure.Billing.Forecast.name | String | Name of the forecast resource. |
-| Azure.Billing.Forecast.type | String | Resource type \(Microsoft.CostManagement/query\). |
-| Azure.Billing.Forecast.location | String | Location of the forecast resource. |
-| Azure.Billing.Forecast.eTag | String | ETag for the forecast resource. |
-| Azure.Billing.Forecast.properties | unknown | Properties object containing forecast data. |
-| Azure.Billing.Forecast.properties.nextLink | String | Next link for pagination. |
-| Azure.Billing.Forecast.properties.forecasts | unknown | Array of forecast data entries. |
-| Azure.Billing.Forecast.properties.PreTaxCostUSD | Number | Pre-tax cost in USD. |
-| Azure.Billing.Forecast.properties.Cost | Number | Cost amount. |
-| Azure.Billing.Forecast.properties.CostUSD | Number | Cost in USD. |
-| Azure.Billing.Forecast.properties.PreTaxCost | Number | Pre-tax cost amount. |
-| Azure.Billing.Forecast.properties.UsageDate | String | Usage date for the forecast \(YYYY-MM-DD format\). |
-| Azure.Billing.Forecast.properties.CostStatus | String | Cost status \(Forecast, Actual\). |
-| Azure.Billing.Forecast.properties.Currency | String | Currency code for the forecast. |
+| Azure.Billing.Forecast.Cost | Number | Cost amount. |
+| Azure.Billing.Forecast.CostUSD | Number | Cost in USD. |
+| Azure.Billing.Forecast.PreTaxCost | Number | Pre-tax cost amount. |
+| Azure.Billing.Forecast.UsageDate | String | Usage date for the forecast \(YYYY-MM-DD format\). |
+| Azure.Billing.Forecast.CostStatus | String | Cost status \(Forecast, Actual\). |
+| Azure.Billing.Forecast.Currency | String | Currency code for the forecast. |
 
 ### azure-billing-budgets-list
 
