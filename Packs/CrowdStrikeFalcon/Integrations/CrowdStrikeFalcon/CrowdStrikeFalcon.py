@@ -69,8 +69,9 @@ USE_SSL = not PARAMS.get("insecure", False)
 FETCH_TIME = "now" if demisto.command() == "fetch-events" else PARAMS.get("fetch_time", "3 days")
 
 MAX_FETCH_SIZE = 10000
-MAX_FETCH_DETECTION_PER_API_CALL = 10000
-MAX_FETCH_INCIDENT_PER_API_CALL = 500
+MAX_FETCH_DETECTION_PER_API_CALL = 10000  # fetch limit for get ids call - detections
+MAX_FETCH_DETECTION_PER_API_CALL_ENTITY = 1000  # fetch limit for get entities call - detections
+MAX_FETCH_INCIDENT_PER_API_CALL = 500  # fetch limit for get ids call - incidents
 
 BYTE_CREDS = f"{CLIENT_ID}:{SECRET}".encode()
 
@@ -87,7 +88,7 @@ INCIDENTS_PER_FETCH = int(PARAMS.get("incidents_per_fetch", 15))
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 DETECTION_DATE_FORMAT = IOM_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 DEFAULT_TIMEOUT = 30
-LEGACY_VERSION = PARAMS.get("legacy_version", False)
+LEGACY_VERSION = False
 
 DEFAULT_TIMEOUT_ON_GENERIC_HTTP_REQUEST = 60
 TOTAL_RETRIES_ON_ENRICHMENT = 0
@@ -1533,6 +1534,18 @@ def get_file(file_id: list) -> dict:
     return response
 
 
+def get_file_id_by_name(file_name: str) -> str:
+    """
+    Retrieve the file ID for a put-file by its name.
+    :param file_name: Name of the file to search for
+    :return: File ID that matches the given name, or empty string if none found
+    """
+    endpoint_url = "/real-time-response/queries/put-files/v1"
+    params = {"filter": f"name:'{file_name}'"}
+    response = http_request("GET", endpoint_url, params=params)
+    return response.get("resources", "")
+
+
 def list_files() -> dict:
     """
     Get a list of put-file ID's that are available to the user for the put command.
@@ -1708,13 +1721,31 @@ def get_detections_entities(detections_ids: list):
     :param detections_ids: IDs of the requested detections.
     :return: Response json of the get detection entities endpoint (detection objects)
     """
-    ids_json = {"ids": detections_ids} if LEGACY_VERSION else {"composite_ids": detections_ids}
+    if not detections_ids:
+        return detections_ids
+
+    combined_resources = []
+
     url = "/detects/entities/summaries/GET/v1" if LEGACY_VERSION else "/alerts/entities/alerts/v2"
-    demisto.debug(f"Getting detections entities from {url} with {ids_json=}. {LEGACY_VERSION=}")
-    if detections_ids:
+
+    # Iterate through the detections_ids list in chunks of 1000 (According to API documentation).
+    for i in range(0, len(detections_ids), MAX_FETCH_DETECTION_PER_API_CALL_ENTITY):
+        batch_ids = detections_ids[i : i + MAX_FETCH_DETECTION_PER_API_CALL_ENTITY]
+
+        ids_json = {"ids": batch_ids} if LEGACY_VERSION else {"composite_ids": batch_ids}
+        demisto.debug(
+            f"Getting detections entities from {url} with {ids_json=} " f"with batch_ids len {len(batch_ids)}. {LEGACY_VERSION=}"
+        )
+
+        # Make the API call with the current batch.
         response = http_request("POST", url, data=json.dumps(ids_json))
-        return response
-    return detections_ids
+
+        if "resources" in response:
+            # Combine the resources from each response.
+            combined_resources.extend(response["resources"])
+
+    # Return the combined result.
+    return {"resources": combined_resources}
 
 
 def get_incidents_ids(
@@ -1791,11 +1822,27 @@ def get_detection_entities(incidents_ids: list):
     :return: The response.
     :rtype ``dict``
     """
+    combined_resources = []
+
     url_endpoint_version = "v1" if LEGACY_VERSION else "v2"
-    ids_json = {"ids": incidents_ids} if LEGACY_VERSION else {"composite_ids": incidents_ids}
-    demisto.debug(f"In get_detection_entities: Getting detection entities from\
-        {url_endpoint_version} with {ids_json=}. {LEGACY_VERSION=}")
-    return http_request("POST", f"/alerts/entities/alerts/{url_endpoint_version}", data=json.dumps(ids_json))
+    url = f"/alerts/entities/alerts/{url_endpoint_version}"
+
+    for i in range(0, len(incidents_ids), MAX_FETCH_DETECTION_PER_API_CALL_ENTITY):
+        batch_ids = incidents_ids[i : i + MAX_FETCH_DETECTION_PER_API_CALL_ENTITY]
+
+        ids_json = {"ids": batch_ids} if LEGACY_VERSION else {"composite_ids": batch_ids}
+        demisto.debug(f"In get_detection_entities: Getting detection entities from\
+            {url_endpoint_version} with {ids_json=} and with batch_ids len {len(batch_ids)} . {LEGACY_VERSION=}")
+
+        # Make the API call with the current batch.
+        raw_res = http_request("POST", url, data=json.dumps(ids_json))
+
+        if "resources" in raw_res:
+            # Combine the resources from each response.
+            combined_resources.extend(raw_res["resources"])
+
+    # Return the combined result.
+    return {"resources": combined_resources}
 
 
 def get_users(offset: int, limit: int, query_filter: str | None = None) -> dict:
@@ -3708,7 +3755,7 @@ def parse_ioa_iom_incidents(
     incidents: list[dict[str, Any]] = []
     fetched_ids: list[str] = []
     # Hold the date_time_since of all fetched incidents, to acquire the largest date
-    fetched_dates: list[datetime] = [datetime.strptime(last_date, date_format)]
+    fetched_dates: list[datetime] = [safe_strptime(last_date, date_format)]
     for data in fetched_data:
         data_id = data.get(id_key, "")
         if data_id not in last_fetched_ids:
@@ -3717,7 +3764,7 @@ def parse_ioa_iom_incidents(
             incident_context = to_incident_context(data, incident_type)
             incidents.append(incident_context)
             event_created = reformat_timestamp(data.get(date_key, ""), date_format)
-            fetched_dates.append(datetime.strptime(event_created, date_format))
+            fetched_dates.append(safe_strptime(event_created, date_format))
         else:
             demisto.debug(f"Ignoring CSPM incident with {data_id=} - was already fetched in the previous run")
     new_last_date = max(fetched_dates).strftime(date_format)
@@ -3825,7 +3872,7 @@ def add_seconds_to_date(date: str, seconds_to_add: int, date_format: str) -> str
     Returns:
         str: The date with an increase in seconds.
     """
-    added_datetime = datetime.strptime(date, date_format) + timedelta(seconds=seconds_to_add)
+    added_datetime = safe_strptime(date, date_format) + timedelta(seconds=seconds_to_add)
     return added_datetime.strftime(date_format)
 
 
@@ -4779,6 +4826,10 @@ def resolve_detection_command():
         assigned_to_uuid = get_username_uuid(username)
 
     status = args.get("status")
+    if status in ["true_positive", "false_positive", "ignored"]:
+        raise ValueError(
+            f"The status chosen: {status} is deprecated due to the deprecation of the Legacy API. Choose a different one from the available options."  # noqa: E501
+        )  # noqa: E501
     tag = args.get("tag")
     show_in_ui = args.get("show_in_ui")
     if not (username or assigned_to_uuid or comment or status or show_in_ui or tag):
@@ -5007,7 +5058,28 @@ def upload_file_command():
 
 
 def delete_file_command():
+    """
+    This command deletes a file by either file_id or file_name. If file_name is provided
+    without file_id, it will first list all files to find the corresponding file_id.
+    Args:
+        file_id (str, optional): The ID of the file to delete
+        file_name (str, optional): The name of the file to delete
+    Returns:
+        dict: Entry object with deletion confirmation message
+    Raises:
+        ValueError: If neither file_name nor file_id is provided, or if file with given name is not found
+    """
     file_id = demisto.args().get("file_id")
+    file_name = demisto.args().get("file_name")
+
+    if not file_name and not file_id:
+        raise ValueError("Either file_name or file_id must be provided.")
+
+    if not file_id:
+        file_id = get_file_id_by_name(file_name)
+
+        if not file_id:
+            raise ValueError(f"File with name '{file_name}' not found.")
 
     response = delete_file(file_id)
 

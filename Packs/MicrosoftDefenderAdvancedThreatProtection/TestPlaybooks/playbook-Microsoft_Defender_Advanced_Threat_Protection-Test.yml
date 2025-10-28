@@ -562,7 +562,17 @@ tasks:
       hostname:
         simple: ${MicrosoftATP.Machine.ComputerDNSName}
       id:
-        simple: ${MicrosoftATP.Machine.ID}
+        complex:
+          root: ${MicrosoftATP.Machine.ID}
+          transformers:
+          - operator: slice
+            args:
+              from:
+                value:
+                  simple: '0'
+              to:
+                value:
+                  simple: '5'
     separatecontext: false
     continueonerrortype: ""
     view: |-

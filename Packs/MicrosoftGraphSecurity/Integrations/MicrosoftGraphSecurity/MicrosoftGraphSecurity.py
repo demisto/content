@@ -108,8 +108,11 @@ class MsGraphClient:
 
     def search_alerts(self, params):
         cmd_url = CMD_URL
-        demisto.debug(f"Fetching MS Graph Security incidents with params: {params}")
-        response = self.ms_client.http_request(method="GET", url_suffix=cmd_url, params=params)
+        headers = {"Prefer": "include-unknown-enum-members"}
+        # This header maps unknownFutureValue value to the appropriate service resource.
+        # https://learn.microsoft.com/en-us/graph/api/resources/security-alert?view=graph-rest-1.0#:~:text=microsoftThreatIntelligence.%20Use%20the%20Prefer%3A-,include%2Dunknown%2Denum%2Dmembers,-request%20header%20to%20get%20the
+        demisto.debug(f"Fetching MS Graph Security incidents with params: {params} and header: {headers}")
+        response = self.ms_client.http_request(method="GET", url_suffix=cmd_url, params=params, headers=headers)
         return response
 
     def get_alert_details(self, alert_id):
@@ -1525,7 +1528,11 @@ def purge_ediscovery_data_command(client: MsGraphClient, args):
 
 def create_ediscovery_search_command(client: MsGraphClient, args):
     resp = client.create_ediscovery_search(
-        args.get("case_id"), args.get("display_name"), args.get("description"), args.get("query"), args.get("data_source_scopes")
+        args.get("case_id"),
+        args.get("display_name"),
+        args.get("description"),
+        args.get("content_query"),
+        args.get("data_source_scopes"),
     )
 
     return to_ediscovery_search_command_results(resp)

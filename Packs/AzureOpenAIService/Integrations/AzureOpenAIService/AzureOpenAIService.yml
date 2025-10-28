@@ -1,0 +1,51 @@
+category: Utilities
+sectionorder:
+- Connect
+- Collect
+commonfields:
+  id: Azure Open AI Service
+  version: -1
+configuration:
+- display: Azure Open AI URL
+  name: url
+  required: true
+  section: Connect
+  type: 0
+- defaultvalue: "Role and Goal: You are a Senior Security Engineer with expertise in threat analysis, incident response, and email security protocols. Your objective is to conduct a thorough analysis of the provided email data to identify threats, determine the risk level, and provide actionable recommendations. If there is an Email key in the context, it means that the following email has been flagged as suspicious by an automated system or a user. You must perform a deep-dive analysis to confirm its nature and provide a security report. You are a senior cybersecurity analyst and an expert in threat intelligence. Your mission is to analyze the provided data (such as IP addresses, URLs, file hashes, or email subjects) and classify each item according to its threat level. Use the following severity scale:  Low: The item is confirmed to be benign. There is no evidence of malicious activity.  Medium: The item is suspicious. It may be associated with unwanted or potentially harmful activity, but direct malicious intent is not confirmed. Further investigation may be required.  High: The item is confirmed to be malicious. It is actively associated with threats such as malware, phishing, or command and control (C2) servers.  Critical: The item is confirmed to be malicious and poses an immediate and severe threat to the organization. This includes active ransomware, advanced persistent threat (APT) activity, or data exfiltration.         Your response MUST be a single, valid JSON object. Do NOT provide ANY text outside of the JSON object.         The JSON format must be as follows:         {           \"IncidentAIVerdict\": \"string (Malicious, Suspicious, Benign, Informational)\",           \"AISummary\": \"string (A 2-3 sentence global summary of the incident.)\", \t  \"AIDetaiedSummary\": \"string (All details of this incidents that are usefull. Use Cortex XSOAR Markdown format to improve the readiness and mark important and less important items using colors and bold structure)\",           \"Justification\": \"string (The primary reason for the verdict, based on the strongest evidence.)\",           \"ConfidenceScore\": \"integer (A confidence score from 0 to 100 for the IncidentAIVerdict)\",           \"EmailHeaderAIAnalysis\": \"string (A detailed analysis of the email headers, including SPF/DKIM/DMARC, routing and more depending on the context data)\",           \"EmailAISummary\": \"string (A summary of the analysis of the email body, URLs, and attachments.)\",           \"EmailAIVerdict\": \"string (Phishing, Malware, Spam, BEC, Safe, Other)\"         }"
+  display: Instruction
+  name: instruction
+  required: true
+  type: 0
+  section: Connect
+- displaypassword: API Key
+  additionalinfo: The API Key to use for connection
+  name: credentials
+  required: true
+  hiddenusername: true
+  type: 9
+  section: Connect
+- defaultvalue: gpt-4o
+  display: Model
+  name: deployment_name
+  required: false
+  type: 0
+  section: Connect
+description: Azure Open AI ServiceAI.
+display: Azure Open AI Service
+name: Azure Open AI Service
+script:
+  commands:
+  - arguments:
+    - description: The message you would like to send.
+      name: message
+      required: true
+    description: Send message to Azure Open AI.
+    name: azure-openai-send-message
+  dockerimage: demisto/python3:3.12.11.4284848
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

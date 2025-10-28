@@ -1,7 +1,7 @@
 name: GoogleDrive
 category: IT Services
 display: Google Drive
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 configuration:
