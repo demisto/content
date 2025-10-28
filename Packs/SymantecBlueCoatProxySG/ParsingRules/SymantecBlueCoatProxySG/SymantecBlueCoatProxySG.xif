@@ -7,4 +7,5 @@ alter _raw_log = replex(_raw_log, "\r", "")
 | alter
     tmp_timestamp_extract = parse_timestamp("%F %T", arrayindex(regextract(_raw_log, "^(\d{4}\-\d{2}\-\d{2}\s+\d{2}\:\d{2}\:\d{2})\s"), 0))
 | alter
-    _time = tmp_timestamp_extract;
+    _time = tmp_timestamp_extract
+| fields - tmp*;
