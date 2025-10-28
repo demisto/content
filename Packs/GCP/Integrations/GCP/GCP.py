@@ -1503,7 +1503,6 @@ def main():  # pragma: no cover
             # IAM commands
             "gcp-iam-project-policy-binding-remove": iam_project_policy_binding_remove,
             # Quick Actions - Firewall
-            "gcp-compute-firewall-patch-update-gcp-firewall-rule-quick-action": compute_firewall_patch,
             "gcp-compute-firewall-patch-disable-gcp-default-firewall-rule-quick-action": compute_firewall_patch,
             # Quick Actions - Storage Bucket Policy
             "gcp-storage-bucket-policy-delete-remove-allusers-access-quick-action": storage_bucket_policy_delete,

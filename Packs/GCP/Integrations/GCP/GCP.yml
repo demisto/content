@@ -142,130 +142,6 @@ script:
       description: Type of the resource. Always compute#operation for Operation resources.
       type: string
 
-  - name: gcp-compute-firewall-patch-update-gcp-firewall-rule-quick-action
-    description: Disables a firewall rule that blocks internet traffic to Telnet port (23).
-    prettyname: Update GCP Firewall Rule to Block Traffic
-    quickaction: true
-    hidden: true
-    arguments:
-      - name: project_id
-        required: true
-        description: GCP project ID.
-        prettyname: GCP Project ID
-        prettypredefined:
-          Project ID: ${asset.xdm.asset.cloud.realm}
-      - name: resource_name
-        required: true
-        description: Name of the firewall rule to update.
-        prettyname: GCP Firewall Rule Name
-        prettypredefined:
-          Firewall Rule Name: ${asset.xdm.asset.cloud.id}
-      - description: An optional description of this resource, which you provide when you create the resource.
-        name: description
-      - description: URL of the network resource for this firewall rule. If not specified when creating a firewall rule, the default network is used.
-        name: network
-      - description: Priority for this rule. This is an integer between 0 and 65535, both inclusive. When not specified, the value assumed is 1000. Relative priorities determine precedence of conflicting rules. Lower value of priority implies higher precedence (eg, a rule with priority 0 has higher precedence than a rule with priority 1). DENY rules take precedence over ALLOW rules.
-        name: priority
-      - description: 'If source ranges are specified, the firewall applies only to traffic with source IP addresses in these ranges. These ranges must be expressed in CIDR format. One or both of sourceRanges and sourceTags may be set. If both properties are set, the firewall applies to traffic with a source IP address within sourceRanges OR the source IP belonging to a tag listed in the sourceTags property. The connection does not need to match both properties for the firewall to apply. Only IPv4 is supported, comma-separated.'
-        name: sourceRanges
-      - description: If destination ranges are specified, the firewall applies only to traffic with destination IP addresses in these ranges. These ranges must be expressed in CIDR format. Only IPv4 is supported. Comma-separated.
-        name: destinationRanges
-      - description: If source tags are specified, the firewall rule applies only to traffic with source IPs that match the primary network interfaces of VM instances that have the tag and are in the same VPC network. Source tags cannot be used to control traffic to an instance's external IP address. It only applies to traffic between instances in the same virtual network, because tags are associated with instances, not IP addresses. One or both of sourceRanges and sourceTags may be set. If both properties are set, the firewall will apply to traffic with a source IP address within sourceRanges OR the source IP belonging to a tag listed in the sourceTags property. The connection does not need to match both properties for the firewall to apply. Comma-separated.
-        name: sourceTags
-      - description: A list of tags that controls which instances the firewall rule applies to. If targetTags are specified, then the firewall rule applies only to instances in the VPC network that have one of those tags. If no targetTags are specified, the firewall rule applies to all instances on the specified network. Comma-separated.
-        name: targetTags
-      - description: If source service accounts are specified, the firewall applies only to traffic originating from an instance with a service account in this list. Source service accounts cannot be used to control traffic to an instance's external IP address because service accounts are associated with an instance, not an IP address. sourceRanges can be set at the same time as sourceServiceAccounts. If both are set, the firewall will apply to traffic that has a source IP address within sourceRanges OR the source IP belongs to an instance with a service account listed in sourceServiceAccount. The connection does not need to match both properties for the firewall to apply. sourceServiceAccounts cannot be used simultaneously as sourceTags or targetTags. Comma-separated.
-        name: sourceServiceAccounts
-      - description: A list of service accounts indicating sets of instances located in the network that may make network connections as specified in allowed[]. targetServiceAccounts cannot be used at the same time as targetTags or sourceTags. If neither targetServiceAccounts nor targetTags are specified, the firewall rule applies to all instances on the specified network. Comma-separated.
-        name: targetServiceAccounts
-      - description: 'The ALLOW rules list specified by this firewall. Each rule specifies a protocol and port-range tuple that describes a permitted connection. For example, ipprotocol=tcp,ports=22,443;ipprotocol=tcp,ports=8080,80.'
-        name: allowed
-      - description: 'The DENY rules list specified by this firewall. Each rule specifies a protocol and port-range tuple that describes a denied connection. For example, ipprotocol=tcp,ports=22,443;ipprotocol=tcp,ports=8080,80.'
-        name: denied
-      - description: 'Direction of traffic to which this firewall applies; default is INGRESS. Note: For INGRESS traffic, it is NOT supported to specify destinationRanges; For EGRESS traffic, it is NOT supported to specify sourceRanges OR sourceTags.'
-        name: direction
-      - auto: PREDEFINED
-        description: This field denotes whether to enable logging for a particular firewall rule.
-        name: logConfigEnable
-        predefined:
-          - 'true'
-          - 'false'
-      - auto: PREDEFINED
-        description: Denotes whether the firewall rule is disabled, i.e not applied to the network it is associated with. When set to true, the firewall rule is not enforced and the network behaves as if it did not exist. If this is unspecified, the firewall rule will be enabled.
-        name: disabled
-        predefined:
-          - 'true'
-          - 'false'
-        defaultValue: "true"
-        hidden: true
-    outputs:
-      - contextPath: GCP.Compute.Operations.id
-        description: The unique identifier for the resource. This identifier is defined by the server.
-        type: string
-      - contextPath: GCP.Compute.Operations.name
-        description: Name of the resource.
-        type: string
-      - contextPath: GCP.Compute.Operations.zone
-        description: The URL of the zone where the operation resides. Only available when performing per-zone operations. You must specify this field as part of the HTTP request URL. It is not configurable as a field in the request body.
-        type: string
-      - contextPath: GCP.Compute.Operations.clientOperationId
-        description: The value of requestId if you provided it in the request. Not present otherwise.
-        type: string
-      - contextPath: GCP.Compute.Operations.operationType
-        description: The type of operation, such as insert, update, or delete, and so on.
-        type: string
-      - contextPath: GCP.Compute.Operations.targetLink
-        description: The URL of the resource that the operation modifies. For operations related to creating a snapshot, this points to the persistent disk from which the snapshot was created.
-        type: string
-      - contextPath: GCP.Compute.Operations.targetId
-        description: The unique target ID, which identifies a specific incarnation of the target resource.
-        type: string
-      - contextPath: GCP.Compute.Operations.status
-        description: 'The status of the operation, which can be one of the following: PENDING RUNNING or DONE.'
-        type: string
-      - contextPath: GCP.Compute.Operations.statusMessage
-        description: An optional textual description of the current status of the operation.
-        type: string
-      - contextPath: GCP.Compute.Operations.user
-        description: The user who requested the operation, for example, EMAILADDRESS.
-        type: string
-      - contextPath: GCP.Compute.Operations.progress
-        description: An optional progress indicator that ranges from 0 to 100. There is no requirement that this be linear or support any granularity of operations. This should not be used to guess when the operation will be complete. This number should monotonically increase as the operation progresses.
-        type: number
-      - contextPath: GCP.Compute.Operations.insertTime
-        description: The time that this operation was requested. This value is in RFC3339 text format.
-        type: string
-      - contextPath: GCP.Compute.Operations.startTime
-        description: The time that this operation was started by the server. This value is in RFC3339 text format.
-        type: string
-      - contextPath: GCP.Compute.Operations.endTime
-        description: The time that this operation was completed. This value is in RFC3339 text format.
-        type: string
-      - contextPath: GCP.Compute.Operations.error
-        description: If errors are generated during processing of the operation, this field will be populated.
-        type: string
-      - contextPath: GCP.Compute.Operations.warnings
-        description: If warning messages are generated during processing of the operation, this field will be populated.
-        type: string
-      - contextPath: GCP.Compute.Operations.httpErrorStatusCode
-        description: If the operation fails, this field contains the HTTP error status code that was returned. For example, a 404 means the resource was not found.
-        type: number
-      - contextPath: GCP.Compute.Operations.httpErrorMessage
-        description: If the operation fails, this field contains the HTTP error message that was returned, such as NOT FOUND.
-        type: string
-      - contextPath: GCP.Compute.Operations.selfLink
-        description: Server-defined URL for the resource.
-        type: string
-      - contextPath: GCP.Compute.Operations.region
-        description: The URL of the region where the operation resides. Only available when performing regional operations. You must specify this field as part of the HTTP request URL. It is not configurable as a field in the request body.
-        type: string
-      - contextPath: GCP.Compute.Operations.description
-        description: A textual description of the operation, which is set when the operation is created.
-        type: string
-      - contextPath: GCP.Compute.Operations.kind
-        description: Type of the resource. Always compute#operation for Operation resources.
-        type: string
-
   - name: gcp-compute-firewall-patch-disable-gcp-default-firewall-rule-quick-action
     description: Disables default GCP firewall rule which is overly permissive (except http and https).
     prettyname: Disable GCP Default Firewall Rule
@@ -277,43 +153,13 @@ script:
         description: GCP project ID.
         prettyname: GCP Project ID
         prettypredefined:
-          Project ID: ${asset.xdm.asset.cloud.realm}
+          Project ID: ${asset.xdm.asset.realm}
       - name: resource_name
         required: true
         description: Name of the firewall rule to disable.
         prettyname: GCP Firewall Rule Name
         prettypredefined:
-          Firewall Rule Name: ${asset.xdm.asset.id}
-      - description: An optional description of this resource, which you provide when you create the resource.
-        name: description
-      - description: URL of the network resource for this firewall rule. If not specified when creating a firewall rule, the default network is used.
-        name: network
-      - description: Priority for this rule. This is an integer between 0 and 65535, both inclusive. When not specified, the value assumed is 1000. Relative priorities determine precedence of conflicting rules. Lower value of priority implies higher precedence (eg, a rule with priority 0 has higher precedence than a rule with priority 1). DENY rules take precedence over ALLOW rules.
-        name: priority
-      - description: 'If source ranges are specified, the firewall applies only to traffic with source IP addresses in these ranges. These ranges must be expressed in CIDR format. One or both of sourceRanges and sourceTags may be set. If both properties are set, the firewall applies to traffic with a source IP address within sourceRanges OR the source IP belonging to a tag listed in the sourceTags property. The connection does not need to match both properties for the firewall to apply. Only IPv4 is supported, comma-separated.'
-        name: sourceRanges
-      - description: If destination ranges are specified, the firewall applies only to traffic with destination IP addresses in these ranges. These ranges must be expressed in CIDR format. Only IPv4 is supported. Comma-separated.
-        name: destinationRanges
-      - description: If source tags are specified, the firewall rule applies only to traffic with source IPs that match the primary network interfaces of VM instances that have the tag and are in the same VPC network. Source tags cannot be used to control traffic to an instance's external IP address. It only applies to traffic between instances in the same virtual network, because tags are associated with instances, not IP addresses. One or both of sourceRanges and sourceTags may be set. If both properties are set, the firewall will apply to traffic with a source IP address within sourceRanges OR the source IP belonging to a tag listed in the sourceTags property. The connection does not need to match both properties for the firewall to apply. Comma-separated.
-        name: sourceTags
-      - description: A list of tags that controls which instances the firewall rule applies to. If targetTags are specified, then the firewall rule applies only to instances in the VPC network that have one of those tags. If no targetTags are specified, the firewall rule applies to all instances on the specified network. Comma-separated.
-        name: targetTags
-      - description: If source service accounts are specified, the firewall applies only to traffic originating from an instance with a service account in this list. Source service accounts cannot be used to control traffic to an instance's external IP address because service accounts are associated with an instance, not an IP address. sourceRanges can be set at the same time as sourceServiceAccounts. If both are set, the firewall will apply to traffic that has a source IP address within sourceRanges OR the source IP belongs to an instance with a service account listed in sourceServiceAccount. The connection does not need to match both properties for the firewall to apply. sourceServiceAccounts cannot be used simultaneously as sourceTags or targetTags. Comma-separated.
-        name: sourceServiceAccounts
-      - description: A list of service accounts indicating sets of instances located in the network that may make network connections as specified in allowed[]. targetServiceAccounts cannot be used at the same time as targetTags or sourceTags. If neither targetServiceAccounts nor targetTags are specified, the firewall rule applies to all instances on the specified network. Comma-separated.
-        name: targetServiceAccounts
-      - description: 'The ALLOW rules list specified by this firewall. Each rule specifies a protocol and port-range tuple that describes a permitted connection. For example, ipprotocol=tcp,ports=22,443;ipprotocol=tcp,ports=8080,80.'
-        name: allowed
-      - description: 'The DENY rules list specified by this firewall. Each rule specifies a protocol and port-range tuple that describes a denied connection. For example, ipprotocol=tcp,ports=22,443;ipprotocol=tcp,ports=8080,80.'
-        name: denied
-      - description: 'Direction of traffic to which this firewall applies; default is INGRESS. Note: For INGRESS traffic, it is NOT supported to specify destinationRanges; For EGRESS traffic, it is NOT supported to specify sourceRanges OR sourceTags.'
-        name: direction
-      - auto: PREDEFINED
-        description: This field denotes whether to enable logging for a particular firewall rule.
-        name: logConfigEnable
-        predefined:
-          - 'true'
-          - 'false'
+          Firewall Rule Name: ${asset.xdm.asset.name}
       - auto: PREDEFINED
         description: Denotes whether the firewall rule is disabled, i.e not applied to the network it is associated with. When set to true, the firewall rule is not enforced and the network behaves as if it did not exist. If this is unspecified, the firewall rule will be enabled.
         name: disabled
@@ -417,13 +263,13 @@ script:
         description: GCP project ID.
         prettyname: GCP Project ID
         prettypredefined:
-          Project ID: ${asset.xdm.asset.cloud.realm}
+          Project ID: ${asset.xdm.asset.realm}
       - name: resource_name
         required: true
         description: Name of the GCS bucket.
-        prettyname: Run action on
+        prettyname: GCP Storage Bucket Name
         prettypredefined:
-          Bucket Name: ${asset.xdm.asset.cloud.id}
+          Bucket Name: ${asset.xdm.asset.name}
       - name: entity
         auto: PREDEFINED
         defaultValue: "allUsers"
@@ -443,13 +289,13 @@ script:
         description: GCP project ID.
         prettyname: GCP Project ID
         prettypredefined:
-          Project ID: ${asset.xdm.asset.cloud.realm}
+          Project ID: ${asset.xdm.asset.realm}
       - name: resource_name
         required: true
         description: Name of the GCS bucket.
-        prettyname: Run action on
+        prettyname: GCP Bucket Name
         prettypredefined:
-          Bucket Name: ${asset.xdm.asset.cloud.id}
+          Bucket Name: ${asset.xdm.asset.name}
       - name: entity
         auto: PREDEFINED
         defaultValue: "allAuthenticatedUsers"
@@ -469,13 +315,13 @@ script:
         description: GCP project ID.
         prettyname: GCP Project ID
         prettypredefined:
-          Project ID: ${asset.xdm.asset.cloud.realm}
+          Project ID: ${asset.xdm.asset.realm}
       - name: resource_name
         required: true
-        description: Name of the GCS bucket.
-        prettyname: Run action on
+        description: Name of the GCP bucket.
+        prettyname: GCP Bucket Name
         prettypredefined:
-          Bucket Name: ${asset.xdm.asset.cloud.id}
+          Bucket Name: ${asset.xdm.asset.name}
       - name: entity
         auto: PREDEFINED
         defaultValue: "allAuthenticatedUsers,allUsers"
@@ -557,7 +403,7 @@ script:
         description: GCP project ID.
         prettyname: GCP Project ID
         prettypredefined:
-          Project ID: ${asset.xdm.asset.cloud.realm}
+          Project ID: ${asset.xdm.asset.realm}
       - name: region
         required: true
         description: GCP region.
@@ -569,7 +415,7 @@ script:
         description: Subnet name.
         prettyname: GCP Subnet Name
         prettypredefined:
-          Subnet Name: ${asset.xdm.asset.cloud.id}
+          Subnet Name: ${asset.xdm.asset.name}
       - name: enable_flow_logs
         required: false
         auto: PREDEFINED
@@ -579,13 +425,6 @@ script:
         defaultValue: "true"
         hidden: true
         description: Enable VPC Flow Logs.
-      - name: enable_private_ip_google_access
-        required: false
-        auto: PREDEFINED
-        predefined:
-          - "true"
-          - "false"
-        description: Enable Private Google Access.
     outputs:
       - contextPath: GCP.Compute.Operations.name
         description: The name of the updated subnet.
@@ -632,7 +471,7 @@ script:
         description: GCP project ID.
         prettyname: GCP Project ID
         prettypredefined:
-          Project ID: ${asset.xdm.asset.cloud.realm}
+          Project ID: ${asset.xdm.asset.realm}
       - name: region
         required: true
         description: GCP region.
@@ -644,14 +483,7 @@ script:
         description: Subnet name.
         prettyname: GCP Subnet Name
         prettypredefined:
-          Subnet Name: ${asset.xdm.asset.cloud.id}
-      - name: enable_flow_logs
-        required: false
-        auto: PREDEFINED
-        predefined:
-          - "true"
-          - "false"
-        description: Enable VPC Flow Logs.
+          Subnet Name: ${asset.xdm.asset.name}
       - name: enable_private_ip_google_access
         required: false
         auto: PREDEFINED
@@ -812,7 +644,7 @@ script:
         description: GCP project ID.
         prettyname: GCP Project ID
         prettypredefined:
-          Project ID: ${asset.xdm.asset.cloud.realm}
+          Project ID: ${asset.xdm.asset.realm}
       - name: region
         required: true
         description: GCP region.
@@ -824,7 +656,7 @@ script:
         description: Name of the GKE cluster.
         prettyname: GCP Cluster Name
         prettypredefined:
-          Cluster Name: ${asset.xdm.asset.cloud.id}
+          Cluster Name: ${asset.xdm.asset.name}
       - name: enable_intra_node_visibility
         required: false
         auto: PREDEFINED
@@ -834,18 +666,6 @@ script:
         defaultValue: "true"
         hidden: true
         description: Enable intra-node visibility.
-      - name: enable_master_authorized_networks
-        required: false
-        auto: PREDEFINED
-        predefined:
-          - "true"
-          - "false"
-        description: Enable Master Authorized Networks.
-      - name: cidrs
-        description: |
-          Comma-separated list of up to 50 CIDR blocks (e.g., "192.168.0.0/24,10.0.0.0/32") that are allowed to access the Kubernetes master via HTTPS.
-          If enable_master_authorized_networks is true and no CIDRs are provided, all access will be blocked.
-        isArray: true
     outputs:
       - contextPath: GCP.Container.Operations.name
         description: The name of the GKE cluster.
@@ -931,7 +751,7 @@ script:
         description: GCP project ID.
         prettyname: GCP Project ID
         prettypredefined:
-          Project ID: ${asset.xdm.asset.cloud.realm}
+          Project ID: ${asset.xdm.asset.realm}
       - name: region
         required: true
         description: GCP region.
@@ -943,14 +763,7 @@ script:
         description: Name of the GKE cluster.
         prettyname: GCP Cluster Name
         prettypredefined:
-          Cluster Name: ${asset.xdm.asset.cloud.id}
-      - name: enable_intra_node_visibility
-        required: false
-        auto: PREDEFINED
-        predefined:
-          - "true"
-          - "false"
-        description: Enable intra-node visibility.
+          Cluster Name: ${asset.xdm.asset.name}
       - name: enable_master_authorized_networks
         required: false
         auto: PREDEFINED
@@ -960,11 +773,6 @@ script:
         defaultValue: "true"
         hidden: true
         description: Enable Master Authorized Networks.
-      - name: cidrs
-        description: |
-          Comma-separated list of up to 50 CIDR blocks (e.g., "192.168.0.0/24,10.0.0.0/32") that are allowed to access the Kubernetes master via HTTPS.
-          If enable_master_authorized_networks is true and no CIDRs are provided, all access will be blocked.
-        isArray: true
     outputs:
       - contextPath: GCP.Container.Operations.name
         description: The name of the GKE cluster.
@@ -1147,13 +955,13 @@ script:
         description: GCP project ID.
         prettyname: GCP Project ID
         prettypredefined:
-          Project ID: ${asset.xdm.asset.cloud.realm}
+          Project ID: ${asset.xdm.asset.realm}
       - name: resource_name
         required: true
         description: Name of the bucket.
         prettyname: GCP Bucket Name
         prettypredefined:
-          Bucket Name: ${asset.xdm.asset.cloud.id}
+          Bucket Name: ${asset.xdm.asset.name}
       - name: enable_versioning
         required: false
         auto: PREDEFINED
@@ -1163,13 +971,6 @@ script:
           - "false"
         defaultValue: "true"
         description: Enable versioning.
-      - name: enable_uniform_access
-        required: false
-        auto: PREDEFINED
-        predefined:
-          - "true"
-          - "false"
-        description: Enable uniform bucket-level access.
     outputs:
       - contextPath: GCP.StorageBucket.Metadata
         description: Updated bucket metadata.
@@ -1255,20 +1056,13 @@ script:
         description: GCP project ID.
         prettyname: GCP Project ID
         prettypredefined:
-          Project ID: ${asset.xdm.asset.cloud.realm}
+          Project ID: ${asset.xdm.asset.realm}
       - name: resource_name
         required: true
         description: Name of the bucket.
         prettyname: GCP Bucket Name
         prettypredefined:
-          Bucket Name: ${asset.xdm.asset.cloud.id}
-      - name: enable_versioning
-        required: false
-        auto: PREDEFINED
-        predefined:
-          - "true"
-          - "false"
-        description: Enable versioning.
+          Bucket Name: ${asset.xdm.asset.name}
       - name: enable_uniform_access
         required: false
         auto: PREDEFINED
