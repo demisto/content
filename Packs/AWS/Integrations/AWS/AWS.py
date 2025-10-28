@@ -2534,11 +2534,8 @@ class ELB:
 
         # Additional attributes (JSON list of {Key,Value})
         # Only one additional attribute is supported on classic ELB, Therefore we directly set the key and value
-        add_block_if_any(
-            block_name="AdditionalAttributes",
-            value=[{"Key": "elb.http.desyncmitigationmode", "Value": args.get("desync_mitigation_mode")}],
-            target=attrs,
-        )
+        if desync_mitigation_mode := args.get("desync_mitigation_mode"):
+            attrs["AdditionalAttributes"] = [{"Key": "elb.http.desyncmitigationmode", "Value": desync_mitigation_mode}]
 
         kwargs = {"LoadBalancerName": lb_name, "LoadBalancerAttributes": attrs}
         remove_nulls_from_dictionary(kwargs)
