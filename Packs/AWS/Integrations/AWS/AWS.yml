@@ -3882,7 +3882,6 @@ script:
     - contextPath: File.Extension
       description: The file extension.
       type: String
-
   - name: aws-kms-key-enable-rotation
     description: Enables automatic rotation for a symmetric customer-managed KMS key. Not supported for asymmetric/HMAC keys, keys with imported material, or custom key stores.
     arguments:
@@ -3927,14 +3926,13 @@ script:
       - me-central-1
       - sa-east-1
     - name: key_id
-      description: The KMS key ID or ARN to enable rotation for.
+      description: The key ARN to enable rotation for.
       required: true
     - name: rotation_period_in_days
       description: 'Key rotation period in days. Valid range: 90–2560. If omitted when enabling rotation for the first time, the default is 365 days. If rotation is already enabled and this field is not specified, the existing period remains unchanged.'
       required: false
       type: number
     outputs: []
-  
   - name: aws-elb-load-balancer-attributes-modify
     description: Modifies attributes for a Classic Elastic Load Balancer.
     arguments:
@@ -3992,7 +3990,7 @@ script:
       description: S3 bucket name for access logs (required if access_log_enabled=true).
       required: false
     - name: access_log_interval
-      description: The interval for publishing the access logs. You can specify an interval of either 5 minutes or 60 minutes. If omitted when enabling logging for the first time, the default is 60 minutes. If logging is already enabled and this field is not specified, the existing period remains unchanged.'
+      description: The interval for publishing the access logs. You can specify an interval of either 5 minutes or 60 minutes. If omitted when enabling logging for the first time, the default is 60 minutes. If logging is already enabled and this field is not specified, the existing period remains unchanged.
       required: false
       type: number
       auto: PREDEFINED
@@ -4025,7 +4023,7 @@ script:
       - 'true'
       - 'false'
     - name: desync_mitigation_mode
-      description: >
+      description: |
         Determines how the Classic Load Balancer handles HTTP requests that might pose
         a security risk to your application. This sets the
         'elb.http.desyncmitigationmode' load balancer attribute.
@@ -4036,7 +4034,6 @@ script:
       - strictest
       required: false
       type: string
-
     outputs:
     - contextPath: AWS.ELB.LoadBalancer.LoadBalancerName
       description: The name of the Classic Load Balancer.
@@ -4068,7 +4065,6 @@ script:
     - contextPath: AWS.ELB.LoadBalancer.LoadBalancerAttributes.AdditionalAttributes
       description: Additional attributes returned by the API.
       type: unknown
-
   isfetch: false
   runonce: false
   script: '-'

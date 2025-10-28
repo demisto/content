@@ -1529,10 +1529,10 @@ Enables automatic rotation for a symmetric customer-managed KMS key. Not support
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| account_id | The AWS account ID. | Required |
-| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
-| key_id | The KMS key ID or ARN to enable rotation for. | Required |
-| rotation_period_in_days | Key rotation period in days. Valid range: 90–2560. If omitted when enabling rotation for the first time, the default is 365 days. If rotation is already enabled and this field is not specified, the existing period remains unchanged. | Optional |
+| account_id | The AWS account ID. | Required | 
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required | 
+| key_id | The key ARN to enable rotation for. | Required | 
+| rotation_period_in_days | Key rotation period in days. Valid range: 90–2560. If omitted when enabling rotation for the first time, the default is 365 days. If rotation is already enabled and this field is not specified, the existing period remains unchanged. | Optional | 
 
 #### Context Output
 
@@ -1562,7 +1562,8 @@ Modifies attributes for a Classic Elastic Load Balancer.
 | connection_draining_timeout | The maximum time, in seconds, to keep the existing connections open before de-registering the instance.  Valid Range: 1 - 3600. | Optional |
 | connection_settings_idle_timeout | The load balancer allows the connections to remain idle (no data is sent over the connection) for this specific duration in seconds. Valid Range: 1 - 4000. | Optional |
 | cross_zone_load_balancing_enabled | Whether to enable cross-zone load balancing. Possible values are: true, false. | Optional |
-| additional_attributes | A comma-separated list of additional load balancer attributes to modify. Provide pairs as key1,value1,key2,value2,... For example: "elb.http.desyncmitigationmode,defensive". Maximum of 10 pairs of attributes. | Optional |
+| desync_mitigation_mode | Determines how the Classic Load Balancer handles HTTP requests that might pose a security risk to your application. This sets the 'elb.http.desyncmitigationmode' load balancer attribute. Possible values are: monitor, defensive, strictest. | Optional |
+
 
 #### Context Output
 

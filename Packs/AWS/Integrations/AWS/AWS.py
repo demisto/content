@@ -217,6 +217,11 @@ def format_elb_modify_attributes_hr(lb_name: str, resp: dict) -> str:
             sections.append(tableToMarkdown(title, [{"Value": attr_value}], removeNull=True))
     return "\n\n".join(sections)
 
+def add_block_if_any(block_name: str, value: dict, target: dict):
+    remove_nulls_from_dictionary(value)
+    if value:
+        target[block_name] = value
+
 
 class AWSErrorHandler:
     """
@@ -2508,9 +2513,9 @@ class ELB:
             prefix = args.get("access_log_s3_bucket_prefix")
 
             access_log_block = {"Enabled": enabled, "S3BucketName": bucket, "S3BucketPrefix": prefix, "EmitInterval": interval}
-            remove_nulls_from_dictionary(access_log_block)
-            if access_log_block:  # only include if any field present
-                attrs["AccessLog"] = access_log_block
+            add_block_if_any(block_name="AccessLog",
+                             value=access_log_block,
+                             target=attrs)
 
         # Connection draining
         if "connection_draining_enabled" in args or "connection_draining_timeout" in args:
@@ -2519,20 +2524,18 @@ class ELB:
             )
             draining_timeout = arg_to_number(args.get("connection_draining_timeout"))
             conn_draining_block = {"Enabled": draining_enabled, "Timeout": draining_timeout}
-            remove_nulls_from_dictionary(conn_draining_block)
-            if conn_draining_block:
-                attrs["ConnectionDraining"] = conn_draining_block
+            add_block_if_any(block_name="ConnectionDraining", value=conn_draining_block, target=attrs)
 
         # Connection settings (idle timeout)
-        if "connection_settings_idle_timeout" in args:
-            idle = arg_to_number(args.get("connection_settings_idle_timeout"))
-            attrs["ConnectionSettings"] = {"IdleTimeout": idle}
+        add_block_if_any(block_name="ConnectionSettings",
+                         value={"IdleTimeout": arg_to_number(args.get("connection_settings_idle_timeout"))},
+                         target=attrs)
 
         # Additional attributes (JSON list of {Key,Value})
         # Only one additional attribute is supported on classic ELB, Therefore we directly set the key and value
-        desync_mitigation_mode = args.get("desync_mitigation_mode")
-        if desync_mitigation_mode:
-            attrs["AdditionalAttributes"] = [{"Key": "elb.http.desyncmitigationmode", "Value": desync_mitigation_mode}]
+        add_block_if_any(block_name="AdditionalAttributes",
+                         value=[{"Key": "elb.http.desyncmitigationmode",
+                                 "Value": args.get("desync_mitigation_mode")}], target=attrs)
 
         kwargs = {"LoadBalancerName": lb_name, "LoadBalancerAttributes": attrs}
         remove_nulls_from_dictionary(kwargs)
