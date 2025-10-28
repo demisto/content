@@ -1,5 +1,5 @@
 from dataclasses import dataclass, asdict
-from typing import Dict, List, Optional, Any, Union
+from typing import Any
 import json
 
 # Constants
@@ -11,45 +11,47 @@ DEFAULT_INSTANCE_URL_SUFFIX = "/api/now/table/sys_user_group/global"
 @dataclass
 class NetworkAdapter:
     """Represents a network adapter from ServiceNow CMDB."""
+
     sys_id: str
-    name: Optional[str] = None
-    ip: Optional[str] = None
+    name: str | None = None
+    ip: str | None = None
     owner: str = ""
     owner_id: str = ""
-    related_configuration_item_name: Optional[str] = None
-    related_configuration_item_id: Optional[str] = None
+    related_configuration_item_name: str | None = None
+    related_configuration_item_id: str | None = None
     instance_url: str = ""
     url: str = ""
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return asdict(self)
 
 
 @dataclass
 class ConfigurationItem:
     """Represents a related configuration item from ServiceNow CMDB."""
+
     sys_id: str
-    name: Optional[str] = None
-    ip: Optional[str] = None
-    owner: Optional[str] = None
-    owner_id: Optional[str] = None
-    hostname: Optional[str] = None
-    os: Optional[str] = None
-    os_version: Optional[str] = None
+    name: str | None = None
+    ip: str | None = None
+    owner: str | None = None
+    owner_id: str | None = None
+    hostname: str | None = None
+    os: str | None = None
+    os_version: str | None = None
     ci_class: str = ""
-    use: Optional[str] = None
+    use: str | None = None
     url: str = ""
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return asdict(self)
 
 
-def execute_command(command: str, args: Dict[str, Any]) -> Dict[str, Any]:
+def execute_command(command: str, args: dict[str, Any]) -> dict[str, Any]:
     """Execute a Demisto command and return the result."""
     try:
         command_results = demisto.executeCommand(command, args)
-        if command_results and isinstance(command_results, list) and command_results[0].get('Contents'):
-            return command_results[0]['Contents'].get('result', {})
+        if command_results and isinstance(command_results, list) and command_results[0].get("Contents"):
+            return command_results[0]["Contents"].get("result", {})
         return {}
     except Exception as e:
         demisto.error(f"Error executing command {command}: {str(e)}")
@@ -58,10 +60,7 @@ def execute_command(command: str, args: Dict[str, Any]) -> Dict[str, Any]:
 
 def get_network_adapter(sid: str) -> NetworkAdapter:
     """Fetch and parse network adapter details from ServiceNow."""
-    result = execute_command(
-        SERVICENOW_CMDB_RECORD_GET_BY_ID,
-        {"class": CMDB_CI_NETWORK_ADAPTER, "sys_id": sid}
-    )
+    result = execute_command(SERVICENOW_CMDB_RECORD_GET_BY_ID, {"class": CMDB_CI_NETWORK_ADAPTER, "sys_id": sid})
 
     attributes = result.get("attributes", {})
     sys_domain = attributes.get("sys_domain", {})
@@ -79,30 +78,21 @@ def get_network_adapter(sid: str) -> NetworkAdapter:
         related_configuration_item_name=cmdb_ci.get("display_value"),
         related_configuration_item_id=cmdb_ci.get("value"),
         instance_url=instance_url,
-        url=f"{instance_url}/nav_to.do?uri=cmdb_ci_network_adapter.do?sys_id={sid}" if instance_url else ""
+        url=f"{instance_url}/nav_to.do?uri=cmdb_ci_network_adapter.do?sys_id={sid}" if instance_url else "",
     )
 
 
 def get_related_configuration_item(sid: str, instance_url: str) -> ConfigurationItem:
     """Fetch and parse related configuration item details from ServiceNow."""
     # First get the CI class
-    result = execute_command(
-        SERVICENOW_CMDB_RECORD_GET_BY_ID,
-        {"class": "cmdb_ci", "sys_id": sid}
-    )
+    result = execute_command(SERVICENOW_CMDB_RECORD_GET_BY_ID, {"class": "cmdb_ci", "sys_id": sid})
 
     ci_class = result.get("attributes", {}).get("sys_class_name", "")
     if not ci_class:
-        return ConfigurationItem(
-            sys_id=sid,
-            url=f"{instance_url}/nav_to.do?uri=cmdb_ci.do?sys_id={sid}" if instance_url else ""
-        )
+        return ConfigurationItem(sys_id=sid, url=f"{instance_url}/nav_to.do?uri=cmdb_ci.do?sys_id={sid}" if instance_url else "")
 
     # Get full CI details with the specific class
-    result = execute_command(
-        SERVICENOW_CMDB_RECORD_GET_BY_ID,
-        {"class": ci_class, "sys_id": sid}
-    )
+    result = execute_command(SERVICENOW_CMDB_RECORD_GET_BY_ID, {"class": ci_class, "sys_id": sid})
 
     attributes = result.get("attributes", {})
     assigned_to = attributes.get("assigned_to", {}) if isinstance(attributes.get("assigned_to"), dict) else {}
@@ -118,14 +108,14 @@ def get_related_configuration_item(sid: str, instance_url: str) -> Configuration
         os_version=attributes.get("os_version"),
         ci_class=ci_class,
         use=attributes.get("used_for"),
-        url=f"{instance_url}/nav_to.do?uri={ci_class}.do?sys_id={sid}" if instance_url else ""
+        url=f"{instance_url}/nav_to.do?uri={ci_class}.do?sys_id={sid}" if instance_url else "",
     )
 
 
 def main():
     """
     Main function to resolve network adapters and related configuration items from ServiceNow CMDB.
-    
+
     This script queries ServiceNow CMDB for network adapters matching the provided IP address,
     then retrieves related configuration items and returns enriched information.
     """
@@ -138,8 +128,7 @@ def main():
 
         # Get network adapters for the given IP
         result = execute_command(
-            "servicenow-cmdb-records-list",
-            {"class": CMDB_CI_NETWORK_ADAPTER, "query": f"ip_address={ip_address}"}
+            "servicenow-cmdb-records-list", {"class": CMDB_CI_NETWORK_ADAPTER, "query": f"ip_address={ip_address}"}
         )
 
         if not isinstance(result, list):
@@ -151,10 +140,7 @@ def main():
         related_items = []
         for adapter in network_adapters:
             if adapter.related_configuration_item_id and adapter.instance_url:
-                related_item = get_related_configuration_item(
-                    adapter.related_configuration_item_id,
-                    adapter.instance_url
-                )
+                related_item = get_related_configuration_item(adapter.related_configuration_item_id, adapter.instance_url)
                 related_items.append(related_item)
 
         # Prepare outputs
@@ -178,7 +164,7 @@ def main():
                 outputs=outputs,
                 outputs_prefix="CortexExposureManagement.ServiceNowEnrichment.NetworkAdapter",
                 readable_output=human_readable,
-                raw_response=outputs
+                raw_response=outputs,
             )
         )
 
