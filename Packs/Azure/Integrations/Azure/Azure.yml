@@ -4046,6 +4046,558 @@ script:
       - contextPath: Azure.Billing.Budget.properties.forecastSpend.unit
         description: Currency unit for forecasted spend.
         type: String
+  
+  - arguments:
+    - name: subscription_id
+      type: string
+      description: The subscription ID.
+      required: true
+      prettyname: Subscription ID
+      prettypredefined:
+        Subscription ID: ${asset.xdm.asset.realm}
+    - name: resource_group_name
+      type: string
+      required: true
+      description: The resource group name.
+      prettyname: Resource Group
+    - name: name
+      type: string
+      required: true
+      description: Name of the Web App.
+      prettyname: AZ Webapp
+      prettypredefined:
+        AZ Webapp: ${asset.xdm.asset.name}
+    - name: min_tls_version
+      type: str
+      auto: PREDEFINED
+      description: Minimum TLS version required for SSL requests.
+      predefined:
+      - '1.0'
+      - '1.1'
+      - '1.2'
+      - '1.3'
+      defaultValue: '1.2'
+    description: Sets the web app's minimum accepted TLS version to 1.2 to enhance security.
+    name: azure-webapp-set-min-tls-version-quick-action
+    prettyname: Set Web App Min TLS Version
+    hidden: true
+    quickaction: true
+    outputs:
+    - contextPath: Azure.WebAppConfig.id
+      description: Resource ID.
+      type: String
+    - contextPath: Azure.WebAppConfig.name
+      description: Resource name.
+      type: String
+    - contextPath: Azure.WebAppConfig.type
+      description: Resource type.
+      type: String
+    - contextPath: Azure.WebAppConfig.location
+      description: Resource location.
+      type: String
+    - contextPath: Azure.WebAppConfig.properties.numberOfWorkers
+      description: Number of workers.
+      type: Number
+    - contextPath: Azure.WebAppConfig.properties.defaultDocuments
+      description: List of default documents.
+      type: Unknown
+    - contextPath: Azure.WebAppConfig.properties.netFrameworkVersion
+      description: .NET Framework version.
+      type: String
+    - contextPath: Azure.WebAppConfig.properties.phpVersion
+      description: PHP version.
+      type: String
+    - contextPath: Azure.WebAppConfig.properties.pythonVersion
+      description: Python version.
+      type: String
+    - contextPath: Azure.WebAppConfig.properties.nodeVersion
+      description: Node.js version.
+      type: String
+    - contextPath: Azure.WebAppConfig.properties.powerShellVersion
+      description: PowerShell version.
+      type: String
+    - contextPath: Azure.WebAppConfig.properties.linuxFxVersion
+      description: Linux app framework and version.
+      type: String
+    - contextPath: Azure.WebAppConfig.properties.windowsFxVersion
+      description: Windows container image name.
+      type: String
+    - contextPath: Azure.WebAppConfig.properties.requestTracingEnabled
+      description: Indicates whether request tracing is enabled.
+      type: Boolean
+    - contextPath: Azure.WebAppConfig.properties.remoteDebuggingEnabled
+      description: Indicates whether remote debugging is enabled.
+      type: Boolean
+    - contextPath: Azure.WebAppConfig.properties.remoteDebuggingVersion
+      description: Remote debugging version.
+      type: String
+    - contextPath: Azure.WebAppConfig.properties.http20Enabled
+      description: Indicates whether HTTP/2 is enabled.
+      type: Boolean
+    - contextPath: Azure.WebAppConfig.properties.minTlsVersion
+      description: Minimum TLS version required.
+      type: String
+    - contextPath: Azure.WebAppConfig.properties.ftpsState
+      description: State of FTP/ FTPS service.
+      type: String
+    - contextPath: Azure.WebAppConfig.properties.webSocketsEnabled
+      description: Indicates whether WebSockets are enabled.
+      type: Boolean
+    - contextPath: Azure.WebAppConfig.properties.alwaysOn
+      description: Indicates whether Always On is enabled.
+      type: Boolean
+    - contextPath: Azure.WebAppConfig.properties.managedPipelineMode
+      description: Managed pipeline mode.
+      type: String
+    - contextPath: Azure.WebAppConfig.properties.loadBalancing
+      description: Site load balancing mode.
+      type: String
+    - contextPath: Azure.WebAppConfig.properties.autoHealEnabled
+      description: Indicates whether Auto Heal is enabled.
+      type: Boolean
+    - contextPath: Azure.WebAppConfig.properties.autoHealRules
+      description: Auto Heal rules configuration.
+      type: Unknown
+    - contextPath: Azure.WebAppConfig.properties.cors.allowedOrigins
+      description: CORS allowed origins.
+      type: Unknown
+    - contextPath: Azure.WebAppConfig.properties.cors.supportCredentials
+      description: Indicates whether CORS supports credentials.
+      type: Boolean
+    - contextPath: Azure.WebAppConfig.properties.apiDefinition.url
+      description: URL of the API definition.
+      type: String
+    - contextPath: Azure.WebAppConfig.properties.apiManagementConfig.id
+      description: Azure API management integration ID.
+      type: String
+  - arguments:
+    - name: subscription_id
+      type: string
+      description: The subscription ID.
+      required: true
+      prettyname: Subscription ID
+      prettypredefined:
+        Subscription ID: ${asset.xdm.asset.realm}
+    - name: resource_group_name
+      type: string
+      required: true
+      description: The resource group name.
+      prettyname: Resource Group
+    - name: name
+      type: string
+      required: true
+      description: Name of the Web App.
+      prettyname: AZ Function Name
+      prettypredefined:
+        AZ Function Name: ${asset.xdm.asset.name}
+    - name: min_tls_version
+      type: str
+      auto: PREDEFINED
+      description: Minimum TLS version required for SSL requests.
+      predefined:
+      - '1.0'
+      - '1.1'
+      - '1.2'
+      - '1.3'
+      defaultValue: '1.2'
+    description: Sets the Function App's minimum accepted TLS version to 1.2 to enhance security.
+    name: azure-function-app-set-min-tls-version-quick-action
+    prettyname: Set Function App Min TLS Version
+    hidden: true
+    quickaction: true
+    outputs:
+    - contextPath: Azure.WebAppConfig.id
+      description: Resource ID.
+      type: String
+    - contextPath: Azure.WebAppConfig.name
+      description: Resource name.
+      type: String
+    - contextPath: Azure.WebAppConfig.type
+      description: Resource type.
+      type: String
+    - contextPath: Azure.WebAppConfig.location
+      description: Resource location.
+      type: String
+    - contextPath: Azure.WebAppConfig.properties.numberOfWorkers
+      description: Number of workers.
+      type: Number
+    - contextPath: Azure.WebAppConfig.properties.defaultDocuments
+      description: List of default documents.
+      type: Unknown
+    - contextPath: Azure.WebAppConfig.properties.netFrameworkVersion
+      description: .NET Framework version.
+      type: String
+    - contextPath: Azure.WebAppConfig.properties.phpVersion
+      description: PHP version.
+      type: String
+    - contextPath: Azure.WebAppConfig.properties.pythonVersion
+      description: Python version.
+      type: String
+    - contextPath: Azure.WebAppConfig.properties.nodeVersion
+      description: Node.js version.
+      type: String
+    - contextPath: Azure.WebAppConfig.properties.powerShellVersion
+      description: PowerShell version.
+      type: String
+    - contextPath: Azure.WebAppConfig.properties.linuxFxVersion
+      description: Linux app framework and version.
+      type: String
+    - contextPath: Azure.WebAppConfig.properties.windowsFxVersion
+      description: Windows container image name.
+      type: String
+    - contextPath: Azure.WebAppConfig.properties.requestTracingEnabled
+      description: Indicates whether request tracing is enabled.
+      type: Boolean
+    - contextPath: Azure.WebAppConfig.properties.remoteDebuggingEnabled
+      description: Indicates whether remote debugging is enabled.
+      type: Boolean
+    - contextPath: Azure.WebAppConfig.properties.remoteDebuggingVersion
+      description: Remote debugging version.
+      type: String
+    - contextPath: Azure.WebAppConfig.properties.http20Enabled
+      description: Indicates whether HTTP/2 is enabled.
+      type: Boolean
+    - contextPath: Azure.WebAppConfig.properties.minTlsVersion
+      description: Minimum TLS version required.
+      type: String
+    - contextPath: Azure.WebAppConfig.properties.ftpsState
+      description: State of FTP/ FTPS service.
+      type: String
+    - contextPath: Azure.WebAppConfig.properties.webSocketsEnabled
+      description: Indicates whether WebSockets are enabled.
+      type: Boolean
+    - contextPath: Azure.WebAppConfig.properties.alwaysOn
+      description: Indicates whether Always On is enabled.
+      type: Boolean
+    - contextPath: Azure.WebAppConfig.properties.managedPipelineMode
+      description: Managed pipeline mode.
+      type: String
+    - contextPath: Azure.WebAppConfig.properties.loadBalancing
+      description: Site load balancing mode.
+      type: String
+    - contextPath: Azure.WebAppConfig.properties.autoHealEnabled
+      description: Indicates whether Auto Heal is enabled.
+      type: Boolean
+    - contextPath: Azure.WebAppConfig.properties.autoHealRules
+      description: Auto Heal rules configuration.
+      type: Unknown
+    - contextPath: Azure.WebAppConfig.properties.cors.allowedOrigins
+      description: CORS allowed origins.
+      type: Unknown
+    - contextPath: Azure.WebAppConfig.properties.cors.supportCredentials
+      description: Indicates whether CORS supports credentials.
+      type: Boolean
+    - contextPath: Azure.WebAppConfig.properties.apiDefinition.url
+      description: URL of the API definition.
+      type: String
+    - contextPath: Azure.WebAppConfig.properties.apiManagementConfig.id
+      description: Azure API management integration ID.
+      type: String
+  - arguments:
+    - name: subscription_id
+      type: string
+      description: The subscription ID.
+      required: true
+      prettyname: Subscription ID
+      prettypredefined:
+        Subscription ID: ${asset.xdm.asset.realm}
+    - name: resource_group_name
+      type: string
+      required: true
+      description: The resource group name.
+      prettyname: Resource Group
+      prettypredefined:
+        Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroup}
+    - name: server_name
+      type: string
+      required: true
+      description: Name of the MySQL flexible server.
+      prettyname: MySQL Server
+      prettypredefined:
+        MySQL Server: ${asset.xdm.asset.name}
+    - name: configuration_name
+      type: string
+      description: Server configuration name.
+      defaultValue: 'require_secure_transport'
+    - name: value
+      type: string
+      description: Configuration value.
+      defaultValue: 'on'
+    description: Enforces secure transport (SSL/TLS) for connections to the MySQL Flexible Server.
+    name: azure-mysql-set-secure-transport-quick-action
+    prettyname: Set Secure Transport for MySQL
+    hidden: true
+    quickaction: true
+    outputs: [] # No outputs are returned in response
+  - arguments:
+    - name: subscription_id
+      type: string
+      description: The subscription ID.
+      required: true
+      prettyname: Subscription ID
+      prettypredefined:
+        Subscription ID: ${asset.xdm.asset.realm}
+    - description: The resource group name.
+      name: resource_group_name
+      required: true
+      prettyname: Resource Group
+      prettypredefined:
+        Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroup}
+    - description: Name of the storage account.
+      name: account_name
+      required: true
+      prettyname: Storage Account
+      prettypredefined:
+        Storage Account: ${asset.xdm.asset.name}
+    - auto: PREDEFINED
+      description: Default action when no other network rule matches.
+      name: network_ruleset_default_action
+      defaultValue: Deny
+    description: Sets the storage account’s default network action to Deny. Only explicitly allowed IPs, subnets, or trusted Azure services will have access.
+    name: azure-network-disable-storage-account-access-quick-action
+    prettyname: Disable Network Access to Storage Account
+    hidden: true
+    quickaction: true
+    outputs:
+    - contextPath: Azure.StorageAccount.id
+      description: Fully qualified resource ID for the resource.
+      type: String
+    - contextPath: Azure.StorageAccount.kind
+      description: The kind of storage account.
+      type: String
+    - contextPath: Azure.StorageAccount.location
+      description: The geo-location where the resource lives.
+      type: String
+    - contextPath: Azure.StorageAccount.name
+      description: The name of the resource.
+      type: String
+    - contextPath: Azure.StorageAccount.properties.isHnsEnabled
+      description: If set to true, the account's HierarchicalNamespace is enabled.
+      type: Boolean
+    - contextPath: Azure.StorageAccount.properties.allowBlobPublicAccess
+      description: If set to true (default), allows public access to all blobs or containers in the storage account.
+      type: Boolean
+    - contextPath: Azure.StorageAccount.properties.minimumTlsVersion
+      description: Sets the minimum TLS version to be permitted on requests to storage. Default is TLS 1.0.
+      type: String
+    - contextPath: Azure.StorageAccount.properties.allowSharedKeyAccess
+      description: Whether the storage account permits requests to be authorized with the account access key via Shared Key. If false, then all requests (including shared access signatures) must be authorized with Azure Active Directory (Azure AD).
+      type: Boolean
+    - contextPath: Azure.StorageAccount.properties.creationTime
+      description: The creation date and time of the storage account in UTC.
+      type: Date
+    - contextPath: Azure.StorageAccount.properties.primaryEndpoints
+      description: The URLs that are used to retrieve a public blob, queue, or table object.
+      type: String
+    - contextPath: Azure.StorageAccount.properties.primaryLocation
+      description: The storage account primary data center location.
+      type: String
+    - contextPath: Azure.StorageAccount.properties.provisioningState
+      description: The status of the storage account at the time the operation was called.
+      type: String
+    - contextPath: Azure.StorageAccount.properties.routingPreference.routingChoice
+      description: The kind of network routing the user chose.
+      type: String
+    - contextPath: Azure.StorageAccount.properties.routingPreference.publishMicrosoftEndpoints
+      description: Whether Microsoft routing storage endpoints are to be published.
+      type: Boolean
+    - contextPath: Azure.StorageAccount.properties.routingPreference.publishInternetEndpoints
+      description: Whether internet routing storage endpoints are to be published.
+      type: Boolean
+    - contextPath: Azure.StorageAccount.properties.encryption
+      description: Encryption settings to be used for server-side encryption for the storage account.
+      type: String
+    - contextPath: Azure.StorageAccount.properties.secondaryLocation
+      description: The geo-replicated secondary location for the storage account. Only available if the accountType is Standard_GRS or Standard_RAGRS.
+      type: String
+    - contextPath: Azure.StorageAccount.properties.statusOfPrimary
+      description: Whether the storage account primary location is available or unavailable.
+      type: String
+    - contextPath: Azure.StorageAccount.properties.statusOfSecondary
+      description: Whether the storage account secondary location is available or unavailable. Only available if the SKU name is Standard_GRS or Standard_RAGRS.
+      type: String
+    - contextPath: Azure.StorageAccount.properties.supportsHttpsTrafficOnly
+      description: If set to true, allows only HTTPS traffic to the storage service.
+      type: Boolean
+    - contextPath: Azure.StorageAccount.sku.name
+      description: The SKU name. Required for account creation; optional for update.
+      type: String
+    - contextPath: Azure.StorageAccount.sku.tier
+      description: The SKU tier. This is based on the SKU name.
+      type: String
+    - contextPath: Azure.StorageAccount.tags
+      description: Resource tags.
+    - contextPath: Azure.StorageAccount.type
+      description: The storage account type.
+      type: String
+  - arguments:
+    - name: subscription_id
+      type: string
+      description: The subscription ID.
+      required: true
+      prettyname: Subscription ID
+      prettypredefined:
+        Subscription ID: ${asset.xdm.asset.realm}
+    - name: log_profile_name
+      description: Name of the log profile to update.
+      required: true
+      type: String
+      prettyname: Log Profile
+      prettypredefined:
+        Log Profile: ${asset.xdm.asset.name}
+    - name: location
+      description: Resource location.
+      defaultValue: global
+    - name: retention_policy_days
+      description: Number of days to retain logs.
+      type: Number
+      defaultValue: 365
+    - auto: PREDEFINED
+      name: retention_policy_enabled
+      description: Whether to enable the retention policy.
+      type: bool
+      defaultValue: 'true'
+    description: Sets the log profile’s retention policy to 365 days and enables it across all supported locations.
+    name: azure-monitor-log-retention-period-quick-action
+    prettyname: Update Azure Monitor Log Retention Period
+    hidden: true
+    quickaction: true
+    outputs:
+    - contextPath: Azure.LogProfile.id
+      type: String
+      description: The fully qualified Azure resource ID for the log profile.
+    - contextPath: Azure.LogProfile.name
+      type: String
+      description: The name of the log profile.
+    - contextPath: Azure.LogProfile.type
+      type: String
+      description: The type of the resource (Microsoft.Insights/logProfiles).
+    - contextPath: Azure.LogProfile.location
+      type: String
+      description: The location of the log profile.
+    - contextPath: Azure.LogProfile.tags
+      type: Object
+      description: Resource tags.
+    - contextPath: Azure.LogProfile.properties.storageAccountId
+      type: String
+      description: The resource ID of the storage account to which diagnostic logs are delivered.
+    - contextPath: Azure.LogProfile.properties.serviceBusRuleId
+      type: String
+      description: The service bus rule ID to which diagnostic logs are sent.
+    - contextPath: Azure.LogProfile.properties.locations
+      type: Array
+      description: A list of regions for which events are collected.
+    - contextPath: Azure.LogProfile.properties.categories
+      type: Array
+      description: A list of categories of logs that are collected.
+    - contextPath: Azure.LogProfile.properties.retentionPolicy.enabled
+      type: Boolean
+      description: Specifies whether the retention policy is enabled.
+    - contextPath: Azure.LogProfile.properties.retentionPolicy.days
+      type: Number
+      description: The number of days for the retention policy.  
+  - arguments:
+    - name: subscription_id
+      type: string
+      description: The subscription ID.
+      required: true
+      prettyname: Subscription ID
+      prettypredefined:
+        Subscription ID: ${asset.xdm.asset.realm}
+    - name: resource_group_name
+      type: string
+      description: The resource group name.
+      required: true
+      prettyname: Resource Group
+      prettypredefined:
+        Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroup}
+    - description: Name of the storage account.
+      name: account_name
+      required: true 
+      prettyname: Storage Account
+      prettypredefined:
+        Storage Account: ${asset.xdm.asset.name}
+    - auto: PREDEFINED
+      description: Whether to allow only HTTPS traffic to the storage account.
+      name: supports_https_traffic_only
+      defaultValue: 'true'
+    description: Enforces HTTPS-only traffic for the storage account, rejecting any requests made over HTTP.
+    name: azure-set-storage-account-https-only-quick-action
+    prettyname: Set Storage Account to HTTPS only
+    hidden: true
+    quickaction: true
+    outputs:
+    - contextPath: Azure.StorageAccount.id
+      description: Fully qualified resource ID for the resource.
+      type: String
+    - contextPath: Azure.StorageAccount.kind
+      description: The kind of storage account.
+      type: String
+    - contextPath: Azure.StorageAccount.location
+      description: The geo-location where the resource lives.
+      type: String
+    - contextPath: Azure.StorageAccount.name
+      description: The name of the resource.
+      type: String
+    - contextPath: Azure.StorageAccount.properties.isHnsEnabled
+      description: If set to true, the account's HierarchicalNamespace enabled.
+      type: Boolean
+    - contextPath: Azure.StorageAccount.properties.allowBlobPublicAccess
+      description: If set to true (default), allows public access to all blobs or containers in the storage account.
+      type: Boolean
+    - contextPath: Azure.StorageAccount.properties.minimumTlsVersion
+      description: Sets the minimum TLS version to be permitted on requests to storage. Default is TLS 1.0.
+      type: String
+    - contextPath: Azure.StorageAccount.properties.allowSharedKeyAccess
+      description: Whether the storage account permits requests to be authorized with the account access key via Shared Key. If false, then all requests (including shared access signatures) must be authorized with Azure Active Directory (Azure AD).
+      type: Boolean
+    - contextPath: Azure.StorageAccount.properties.creationTime
+      description: The creation date and time of the storage account in UTC.
+      type: Date
+    - contextPath: Azure.StorageAccount.properties.primaryEndpoints
+      description: The URLs that are used to retrieve a public blob, queue, or table object.
+      type: String
+    - contextPath: Azure.StorageAccount.properties.primaryLocation
+      description: The storage account primary data center location.
+      type: String
+    - contextPath: Azure.StorageAccount.properties.provisioningState
+      description: The status of the storage account at the time the operation was called.
+      type: String
+    - contextPath: Azure.StorageAccount.properties.routingPreference.routingChoice
+      description: The kind of network routing the user chose.
+      type: String
+    - contextPath: Azure.StorageAccount.properties.routingPreference.publishMicrosoftEndpoints
+      description: Whether Microsoft routing storage endpoints are to be published.
+      type: Boolean
+    - contextPath: Azure.StorageAccount.properties.routingPreference.publishInternetEndpoints
+      description: Whether internet routing storage endpoints are to be published.
+      type: Boolean
+    - contextPath: Azure.StorageAccount.properties.encryption
+      description: Encryption settings to be used for server-side encryption for the storage account.
+      type: String
+    - contextPath: Azure.StorageAccount.properties.secondaryLocation
+      description: The geo-replicated secondary location for the storage account. Only available if the accountType is Standard_GRS or Standard_RAGRS.
+      type: String
+    - contextPath: Azure.StorageAccount.properties.statusOfPrimary
+      description: Whether the storage account primary location is available or unavailable.
+      type: String
+    - contextPath: Azure.StorageAccount.properties.statusOfSecondary
+      description: Whether the storage account secondary location is available or unavailable. Only available if the SKU name is Standard_GRS or Standard_RAGRS.
+      type: String
+    - contextPath: Azure.StorageAccount.properties.supportsHttpsTrafficOnly
+      description: If set to true, allows only HTTPS traffic to the storage service.
+      type: Boolean
+    - contextPath: Azure.StorageAccount.sku.name
+      description: The SKU name. Required for account creation; optional for update.
+      type: String
+    - contextPath: Azure.StorageAccount.sku.tier
+      description: The SKU tier. This is based on the SKU name.
+      type: String
+    - contextPath: Azure.StorageAccount.tags
+      description: Resource tags.
+    - contextPath: Azure.StorageAccount.type
+      description: The storage account type.
+      type: String 
   isfetch: false
   runonce: false
   script: '-'
