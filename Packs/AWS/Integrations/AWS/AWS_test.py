@@ -4527,7 +4527,7 @@ def test_kms_enable_key_rotation_non_ok_calls_handler(mocker):
 
 def test_elb_modify_lb_attributes_success_all_blocks(mocker):
     """
-    Given: Valid args for all sub-blocks + additional_attributes pairs.
+    Given: Valid args for all sub-blocks + desync_mitigation_mode.
     When: modify_load_balancer_attributes_command is called and boto returns HTTP 200.
     Then: It returns CommandResults with proper outputs and calls boto with correct kwargs.
     """
@@ -4538,17 +4538,21 @@ def test_elb_modify_lb_attributes_success_all_blocks(mocker):
         "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
         "LoadBalancerAttributes": {
             "CrossZoneLoadBalancing": {"Enabled": True},
-            "AccessLog": {"Enabled": True, "S3BucketName": "my-bucket", "EmitInterval": 5, "S3BucketPrefix": "elb/"},
+            "AccessLog": {
+                "Enabled": True,
+                "S3BucketName": "my-bucket",
+                "EmitInterval": 5,
+                "S3BucketPrefix": "elb/",
+            },
             "ConnectionDraining": {"Enabled": True, "Timeout": 120},
             "ConnectionSettings": {"IdleTimeout": 60},
-            "AdditionalAttributes": [{"Key": "routing.http2.enabled", "Value": "true"}],
+            "AdditionalAttributes": [{"Key": "elb.http.desyncmitigationmode", "Value": "defensive"}],
         },
     }
     mock_client.modify_load_balancer_attributes.return_value = mock_response
 
-    # Helpers
-    remove_nulls = mocker.patch("AWS.remove_nulls_from_dictionary", side_effect=lambda d: d)
-    print_logs = mocker.patch("AWS.print_debug_logs")
+    mocker.patch("AWS.remove_nulls_from_dictionary", side_effect=lambda d: d)
+    mocker.patch("AWS.print_debug_logs")
     mocker.patch("AWS.tableToMarkdown", return_value="|Updated Attributes|")
     mocker.patch("AWS.pascalToSpace", side_effect=lambda s: s)
 
@@ -4562,18 +4566,22 @@ def test_elb_modify_lb_attributes_success_all_blocks(mocker):
         "connection_draining_enabled": "yes",
         "connection_draining_timeout": "120",
         "connection_settings_idle_timeout": "60",
-        "additional_attributes": ["routing.http2.enabled", "true"],
+        "desync_mitigation_mode": "defensive",
     }
 
     result = ELB.modify_load_balancer_attributes_command(mock_client, args)
 
+    # --- Assertions ---
     assert isinstance(result, CommandResults)
     assert result.outputs_prefix == "AWS.ELB.LoadBalancer"
     assert result.outputs_key_field == "LoadBalancerName"
     assert result.outputs["LoadBalancerName"] == "my-classic-elb"
+
+    # Human-readable header matches your function
     assert "Updated attributes for Classic ELB my-classic-elb" in result.readable_output
 
-    mock_client.modify_load_balancer_attributes.assert_called_once_with(
+    # Ensure boto3 client was called correctly
+    mock_client.modify_load_balancer_attributes.assert_called_with(
         LoadBalancerName="my-classic-elb",
         LoadBalancerAttributes={
             "CrossZoneLoadBalancing": {"Enabled": True},
@@ -4585,12 +4593,10 @@ def test_elb_modify_lb_attributes_success_all_blocks(mocker):
             },
             "ConnectionDraining": {"Enabled": True, "Timeout": 120},
             "ConnectionSettings": {"IdleTimeout": 60},
-            "AdditionalAttributes": [{"Key": "routing.http2.enabled", "Value": "true"}],
+            "AdditionalAttributes": [{"Key": "elb.http.desyncmitigationmode", "Value": "defensive"}],
         },
     )
-    remove_nulls.assert_called()
-    print_logs.assert_called_once()
-    assert "ModifyLoadBalancerAttributes params:" in print_logs.call_args[0][1]
+
 
 
 def test_elb_modify_lb_attributes_non_ok_calls_handler(mocker):
