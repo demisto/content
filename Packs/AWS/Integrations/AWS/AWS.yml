@@ -1473,7 +1473,7 @@ script:
         defaultValue: 'restore'
         hidden: true
       - name: values_to_remove
-        description: 'A CSV list of DB cluster snapshot attributes to remove from the attribute specified by AttributeName. Default is all.'
+        description: 'A CSV list of DB cluster snapshot attributes to remove from the attribute specified by AttributeName. The default value is all.'
         defaultValue: 'all'
         hidden: true
 
