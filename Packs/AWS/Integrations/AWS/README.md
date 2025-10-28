@@ -1539,7 +1539,7 @@ Retrieves configuration information about a Lambda function.
 | --- | --- | --- |
 | AWS.Lambda.FunctionConfig.FunctionName | String | The name of the function. |
 | AWS.Lambda.FunctionConfig.FunctionArn | String | The function’s Amazon Resource Name \(ARN\). |
-| AWS.Lambda.FunctionConfig.Runtime | String | The function’s execution role. |
+| AWS.Lambda.FunctionConfig.Runtime | String | The identifier of the function’s runtime. |
 | AWS.Lambda.FunctionConfig.Role | String | The function’s execution role. |
 | AWS.Lambda.FunctionConfig.Handler | String | The function that Lambda calls to begin running your function. |
 | AWS.Lambda.FunctionConfig.CodeSize | Number | The size of the function’s deployment package, in bytes. |

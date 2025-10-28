@@ -2648,14 +2648,10 @@ class Lambda:
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
             AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
-        response_config = {}
         fixed_response = {}
-        try:
-            response_config = client.get_function_configuration(**kwargs)
-            fixed_response["FunctionArn"] = response_config.get("FunctionArn")
-            fixed_response["FunctionName"] = args["function_name"]
-        except ClientError:
-            fixed_response["FunctionName"] = args["function_name"]
+        fixed_response["AccountId"] = args.get("account_id", "")
+        fixed_response["FunctionName"] = args["function_name"]
+        fixed_response["Region"] = args["region"]
         response["Policy"] = json.loads(response["Policy"])
         fixed_response.update(response["Policy"])
         fixed_response.update({"RevisionId": response.get("RevisionId")})
@@ -2672,7 +2668,7 @@ class Lambda:
             outputs=fixed_response,
             readable_output=policy_table,
             outputs_prefix="AWS.Lambda.Policy",
-            outputs_key_field=["FunctionArn", "FunctionName"],
+            outputs_key_field=["Region", "FunctionName", "AccountId"],
             raw_response=response,
         )
 
@@ -2713,7 +2709,7 @@ class Lambda:
             data.update({"LogResult": base64.b64decode(response["LogResult"]).decode("utf-8")})  # type:ignore
         if "Payload" in response:
             data.update({"Payload": response["Payload"].read().decode("utf-8")})  # type:ignore
-            response["Payload"] =  data["Payload"]
+            response["Payload"] = data["Payload"]
         if "ExecutedVersion" in response:
             data.update({"ExecutedVersion": response["ExecutedVersion"]})  # type:ignore
         if "FunctionError" in response:
@@ -2724,7 +2720,7 @@ class Lambda:
             outputs=data,
             readable_output=human_readable,
             outputs_prefix="AWS.Lambda.InvokedFunction",
-            outputs_key_field=["FunctionName", "RequestPayload"],
+            outputs_key_field=["FunctionName", "Region"],
             raw_response=response,
         )
 

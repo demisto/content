@@ -3766,7 +3766,7 @@ script:
       description: The function’s Amazon Resource Name (ARN).
       type: String
     - contextPath: AWS.Lambda.FunctionConfig.Runtime
-      description: The function’s execution role.
+      description: The identifier of the function’s runtime.
       type: String
     - contextPath: AWS.Lambda.FunctionConfig.Role
       description: The function’s execution role.
