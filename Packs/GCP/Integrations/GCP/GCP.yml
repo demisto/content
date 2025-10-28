@@ -389,7 +389,7 @@ script:
       predefined:
       - "true"
       - "false"
-      description: If true, add the tag to the existing tags; otherwise override the existing tags. (the default is true)
+      description: If true, add the tag to the existing tags; otherwise override the existing tags. (the default is true).
     outputs: []
   - name: gcp-storage-bucket-policy-delete
     description: Removes an entity from a bucket's Access Control List.
