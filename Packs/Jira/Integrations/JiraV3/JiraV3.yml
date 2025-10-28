@@ -1834,7 +1834,7 @@ script:
       type: String
   - name: jira-reset-timezone-cache
     description: Clears the cached Jira user timezone used for fetching incidents and mirroring from the internal cache. Use if the timezone settings tied to the chosen authentication method were changed.
-  dockerimage: demisto/btfl-soup:1.0.1.4649489
+  dockerimage: demisto/btfl-soup:1.0.1.5185022
   isfetch: true
   ismappable: true
   isremotesyncin: true
