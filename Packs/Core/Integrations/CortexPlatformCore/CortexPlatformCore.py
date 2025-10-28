@@ -243,6 +243,7 @@ def search_asset_groups_command(client: Client, args: dict) -> CommandResults:
                          - type (str, optional): Filter by asset group type
                          - description (str, optional): Filter by description
                          - id (str, optional): Filter by asset group ids
+                         - limit (str, optional): Maximum number of results to return
 
     Returns:
         CommandResults: Object containing the formatted asset groups,
@@ -271,7 +272,7 @@ def search_asset_groups_command(client: Client, args: dict) -> CommandResults:
     return CommandResults(
         readable_output=tableToMarkdown("AssetGroups", response, headerTransform=string_to_table_header),
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.AssetGroups",
-        outputs_key_field="ID",
+        outputs_key_field="id",
         outputs=response,
         raw_response=response,
     )
