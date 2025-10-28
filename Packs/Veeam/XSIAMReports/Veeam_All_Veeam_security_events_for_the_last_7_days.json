@@ -475,8 +475,5 @@
                 "query_uses_library": false
             }
         }
-    ],
-    "supportedModules": [
-        "xsiam"
     ]
 }

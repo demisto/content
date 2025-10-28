@@ -4,8 +4,5 @@
     "name": "MySQLEnterprise",
     "content_global_id": "MySQLEnterprise",
     "from_xdr_version": "3.5.0",
-    "yaml_template": "",
-    "supportedModules": [
-        "xsiam"
-    ]
+    "yaml_template": ""
 }

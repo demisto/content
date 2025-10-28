@@ -4,8 +4,5 @@
     "name": "MicrosoftADFS",
     "content_global_id": "MicrosoftADFS",
     "from_xdr_version": "3.5.0",
-    "yaml_template": "",
-    "supportedModules": [
-        "xsiam"
-    ]
+    "yaml_template": ""
 }

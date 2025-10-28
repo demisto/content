@@ -1263,8 +1263,5 @@
             }
         }
     ],
-    "fromVersion": "8.4.0",
-    "supportedModules": [
-        "xsiam"
-    ]
+    "fromVersion": "8.4.0"
 }

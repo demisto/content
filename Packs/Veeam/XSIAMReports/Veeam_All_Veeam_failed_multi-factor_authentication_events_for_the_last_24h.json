@@ -98,8 +98,5 @@
         }
     ],
     "fromVersion": "8.9.0",
-    "widgets_data": [],
-    "supportedModules": [
-        "xsiam"
-    ]
+    "widgets_data": []
 }

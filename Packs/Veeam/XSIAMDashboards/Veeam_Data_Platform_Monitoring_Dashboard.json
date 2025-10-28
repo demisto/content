@@ -2683,8 +2683,5 @@
             }
         }
     ],
-    "fromVersion": "8.9.0",
-    "supportedModules": [
-        "xsiam"
-    ]
+    "fromVersion": "8.9.0"
 }
