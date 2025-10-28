@@ -1366,7 +1366,7 @@ Modifies a subnet attribute.
 | account_id | The AWS account ID. | Required |
 | region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
 | subnet_id | The ID of the subnet. | Required |
-| assign_ipv6_address_on_creation | Specify true to indicate that network interfaces created in the specified subnet should be assigned an IPv6 address. | Optional |
+| assign_ipv6_address_on_creation | Specify true to assign IPv6 addresses to network interfaces created in the specified subnet. | Optional |
 | customer_owned_ipv4_pool | The customer-owned IPv4 address pool associated with the subnet. | Optional |
 | disable_lni_at_device_index | Specify true to indicate that local network interfaces at the current position should be disabled. | Optional |
 | enable_dns64 | Indicates whether DNS queries made to the Amazon-provided DNS Resolver in this subnet should return synthetic IPv6 addresses for IPv4-only destinations. | Optional |
@@ -1375,11 +1375,12 @@ Modifies a subnet attribute.
 | enable_resource_name_dns_a_record_on_launch | Indicates whether to respond to DNS queries for instance hostnames with DNS A records. | Optional |
 | map_customer_owned_ip_on_launch | Specify true to indicate that network interfaces attached to instances created in the specified subnet should be assigned a customer-owned IPv4 address. | Optional |
 | map_public_ip_on_launch | Specify true to indicate that network interfaces attached to instances created in the specified subnet should be assigned a public IPv4 address. | Optional |
-| private_dns_hostname_type_on_launch | The type of hostname to assign to instances in the subnet at launch. | Optional |
+| private_dns_hostname_type_on_launch | The type of hostname to assign to instances in the subnet when they are launched. | Optional |
 
 #### Context Output
 
 There is no context output for this command.
+
 
 ### aws-s3-bucket-website-delete
 
@@ -1460,187 +1461,58 @@ Modifies an existing RDS event notification subscription.
 | AWS.RDS.EventSubscription.Status | string | The status of the RDS event notification subscription. |
 | AWS.RDS.EventSubscription.SubscriptionCreationTime | string | The time the RDS event notification subscription was created. |
 
-### aws-billing-cost-usage-list
+### aws-s3-file-upload
 
 ***
-Retrieves actual cost and usage data for a given time range and optional service filter.
+Upload file to S3 bucket.
 
 #### Base Command
 
-`aws-billing-cost-usage-list`
+`aws-s3-file-upload`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| account_id | The AWS account on which to run the command. | Required |
-| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
-| metrics | Metrics to retrieve. Default - UsageQuantity. Valid values [AmortizedCost, BlendedCost, NetAmortizedCost, NetUnblendedCost, NormalizedUsageAmount, UnblendedCost, UsageQuantity]. | Optional |
-| start_date | Start date for the report (YYYY-MM-DD). Default - 7 days ago. | Optional |
-| end_date | End date for the report (YYYY-MM-DD). Default - current day. | Optional |
-| granularity | Granularity of the data. Default - Daily. Valid values [Daily, Monthly, Hourly]. Possible values are: Daily, Monthly, Hourly. | Optional |
-| aws_services | Optional filter for retrieving data for specific AWS services. | Optional |
-| next_page_token | Next page token for pagination. Use value from AWS.Billing.UsageNextToken. | Optional |
+| account_id | The AWS account ID. | Required |
+| entryID | Entry ID of the file to upload. | Required |
+| bucket | Name of the S3 bucket containing the file. Must follow S3 naming conventions. | Required |
+| key | Key (path) where the file will be stored in the S3 bucket. | Required |
+| region | AWS region where the S3 bucket is located. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| AWS.Billing.Usage | unknown | Complete usage data from AWS Cost Explorer API. |
-| AWS.Billing.Usage.TimePeriod | unknown | Time period for the usage data. |
-| AWS.Billing.Usage.TimePeriod.Start | date | Start date of the time period. |
-| AWS.Billing.Usage.TimePeriod.End | date | End date of the time period. |
-| AWS.Billing.Usage.Total | unknown | Total cost and usage metrics for the time period. |
-| AWS.Billing.Usage.Total.AmortizedCost | unknown | Amortized cost information. |
-| AWS.Billing.Usage.Total.AmortizedCost.Amount | string | Amortized cost amount. |
-| AWS.Billing.Usage.Total.AmortizedCost.Unit | string | Amortized cost unit \(e.g., USD\). |
-| AWS.Billing.Usage.Total.BlendedCost | unknown | Blended cost information. |
-| AWS.Billing.Usage.Total.BlendedCost.Amount | string | Blended cost amount. |
-| AWS.Billing.Usage.Total.BlendedCost.Unit | string | Blended cost unit \(e.g., USD\). |
-| AWS.Billing.Usage.Total.NetAmortizedCost | unknown | Net amortized cost information. |
-| AWS.Billing.Usage.Total.NetAmortizedCost.Amount | string | Net amortized cost amount. |
-| AWS.Billing.Usage.Total.NetAmortizedCost.Unit | string | Net amortized cost unit \(e.g., USD\). |
-| AWS.Billing.Usage.Total.NetUnblendedCost | unknown | Net unblended cost information. |
-| AWS.Billing.Usage.Total.NetUnblendedCost.Amount | string | Net unblended cost amount. |
-| AWS.Billing.Usage.Total.NetUnblendedCost.Unit | string | Net unblended cost unit \(e.g., USD\). |
-| AWS.Billing.Usage.Total.NormalizedUsageAmount | unknown | Normalized usage amount information. |
-| AWS.Billing.Usage.Total.NormalizedUsageAmount.Amount | string | Normalized usage amount. |
-| AWS.Billing.Usage.Total.NormalizedUsageAmount.Unit | string | Normalized usage amount unit. |
-| AWS.Billing.Usage.Total.UnblendedCost | unknown | Unblended cost information. |
-| AWS.Billing.Usage.Total.UnblendedCost.Amount | string | Unblended cost amount. |
-| AWS.Billing.Usage.Total.UnblendedCost.Unit | string | Unblended cost unit \(e.g., USD\). |
-| AWS.Billing.Usage.Total.UsageQuantity | unknown | Usage quantity information. |
-| AWS.Billing.Usage.Total.UsageQuantity.Amount | string | Usage quantity amount. |
-| AWS.Billing.Usage.Total.UsageQuantity.Unit | string | Usage quantity unit \(e.g., Hrs, GB\). |
-| AWS.Billing.Usage.Groups | unknown | Usage data grouped by dimensions \(when grouping is applied\). |
-| AWS.Billing.Usage.Groups.Keys | unknown | Group keys \(dimension values\). |
-| AWS.Billing.Usage.Groups.Metrics | unknown | Metrics for the group. |
-| AWS.Billing.Usage.Estimated | boolean | Whether the data is estimated. |
-| AWS.Billing.UsageNextToken | string | Next page token for pagination. |
+There is no context output for this command.
 
-### aws-billing-forecast-list
+### aws-s3-file-download
 
 ***
-Forecasts AWS spending over a given future time period using historical trends.
+Download a file from S3 bucket to the War Room.
 
 #### Base Command
 
-`aws-billing-forecast-list`
+`aws-s3-file-download`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| account_id | The AWS account on which to run the command. | Required |
-| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
-| metric | Metric to forecast. Valid values [AMORTIZED_COST, BLENDED_COST, NET_AMORTIZED_COST, NET_UNBLENDED_COST, UNBLENDED_COST]. Possible values are: AMORTIZED_COST, BLENDED_COST, NET_AMORTIZED_COST, NET_UNBLENDED_COST, UNBLENDED_COST. Default is AMORTIZED_COST. | Optional |
-| start_date | Start date for the forecast (YYYY-MM-DD). Default - current day. | Optional |
-| end_date | End date for the forecast (YYYY-MM-DD). Default - in 7 days. | Optional |
-| granularity | Granularity of the forecast. Default - Daily. Valid values [ Daily, Monthly, Hourly]. Possible values are: Daily, Monthly, Hourly. | Optional |
-| aws_services | Optional filter for retrieving data for specific AWS services. | Optional |
-| next_page_token | Next page token for pagination. Use value from AWS.Billing.ForecastNextToken. | Optional |
+| account_id | The AWS account ID. | Required |
+| bucket | Name of the target S3 bucket. Must follow S3 naming conventions. | Required |
+| key | Key (path) of the file to download from the S3 bucket. | Required |
+| region | AWS region where the S3 bucket is located. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.Billing.Forecast | unknown | Complete forecast data from AWS Cost Explorer API. |
-| AWS.Billing.Forecast.Service | string | AWS Service \(if exists\). |
-| AWS.Billing.Forecast.StartDate | date | Start date of the forecast. |
-| AWS.Billing.Forecast.EndDate | date | End date of the forecast. |
-| AWS.Billing.Forecast.TotalAmount | string | Total forecasted amount. |
-| AWS.Billing.Forecast.TotalUnit | string | Unit for the forecasted amount. |
-| AWS.Billing.Forecast.ForecastResultsByTime | unknown | Forecast results grouped by time period. |
-| AWS.Billing.Forecast.ForecastResultsByTime.TimePeriod | unknown | Time period for the forecast. |
-| AWS.Billing.Forecast.ForecastResultsByTime.TimePeriod.Start | date | Start date of the forecast period. |
-| AWS.Billing.Forecast.ForecastResultsByTime.TimePeriod.End | date | End date of the forecast period. |
-| AWS.Billing.Forecast.ForecastResultsByTime.MeanValue | string | Mean forecasted value for the time period. |
-| AWS.Billing.Forecast.ForecastResultsByTime.PredictionIntervalLowerBound | string | Lower bound of the prediction interval. |
-| AWS.Billing.Forecast.ForecastResultsByTime.PredictionIntervalUpperBound | string | Upper bound of the prediction interval. |
-| AWS.Billing.Forecast.Total | unknown | Total forecast information. |
-| AWS.Billing.Forecast.Total.Amount | string | Total forecasted amount. |
-| AWS.Billing.Forecast.Total.Unit | string | Unit for the total forecasted amount. |
-| AWS.Billing.ForecastNextToken | string | Next page token for pagination. |
-
-### aws-billing-budgets-list
-
-***
-Lists configured budgets for a given AWS account.
-
-#### Base Command
-
-`aws-billing-budgets-list`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| account_id | The AWS account on which to run the command. | Required |
-| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
-| max_result | Maximum results to return. Default - 50, Max - 1000. | Optional |
-| show_filter_expression | Whether to show filter expression. Default - False. | Optional |
-| next_page_token | Next page token for pagination. Use value from AWS.Billing.BudgetNextToken. | Optional |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| AWS.Billing.Budget | unknown | Complete budget data from AWS Budgets API. |
-| AWS.Billing.Budget.BudgetName | string | Budget name. |
-| AWS.Billing.Budget.BudgetType | string | Budget type \(COST, USAGE, RI_UTILIZATION, RI_COVERAGE, SAVINGS_PLANS_UTILIZATION, SAVINGS_PLANS_COVERAGE\). |
-| AWS.Billing.Budget.TimeUnit | string | Time unit for the budget \(DAILY, MONTHLY, QUARTERLY, ANNUALLY\). |
-| AWS.Billing.Budget.TimePeriod | unknown | Time period for the budget. |
-| AWS.Billing.Budget.TimePeriod.Start | date | Start date of the budget time period. |
-| AWS.Billing.Budget.TimePeriod.End | date | End date of the budget time period. |
-| AWS.Billing.Budget.BudgetLimit | unknown | Budget limit configuration. |
-| AWS.Billing.Budget.BudgetLimit.Amount | string | Budget limit amount. |
-| AWS.Billing.Budget.BudgetLimit.Unit | string | Budget limit unit \(e.g., USD\). |
-| AWS.Billing.Budget.CostFilters | unknown | Cost filters applied to the budget. |
-| AWS.Billing.Budget.TimeUnit | string | Time unit for the budget period. |
-| AWS.Billing.Budget.CalculatedSpend | unknown | Calculated spend information. |
-| AWS.Billing.Budget.CalculatedSpend.ActualSpend | unknown | Actual spend information. |
-| AWS.Billing.Budget.CalculatedSpend.ActualSpend.Amount | string | Actual spend amount. |
-| AWS.Billing.Budget.CalculatedSpend.ActualSpend.Unit | string | Actual spend unit \(e.g., USD\) |
-| AWS.Billing.Budget.CalculatedSpend.ForecastedSpend | unknown | Forecasted spend information. |
-| AWS.Billing.Budget.CalculatedSpend.ForecastedSpend.Amount | string | Forecasted spend amount. |
-| AWS.Billing.Budget.CalculatedSpend.ForecastedSpend.Unit | string | Forecasted spend unit \(e.g., USD\). |
-| AWS.Billing.Budget.BudgetType | string | Type of budget \(COST, USAGE, etc.\). |
-| AWS.Billing.Budget.LastUpdatedTime | date | Last time the budget was updated. |
-| AWS.Billing.Budget.AutoAdjustData | unknown | Auto-adjust data for the budget. |
-| AWS.Billing.Budget.PlannedBudgetLimits | unknown | Planned budget limits for future periods. |
-| AWS.Billing.BudgetNextToken | string | Next page token for pagination. |
-
-### aws-billing-budget-notification-list
-
-***
-Lists the notifications that are associated with a budget.
-
-#### Base Command
-
-`aws-billing-budget-notification-list`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| account_id | AWS account to run the command on. | Required |
-| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
-| budget_name | Name of the budget. | Required |
-| max_result | Maximum results to return. Default - 50, Max - 100. | Optional |
-| next_page_token | Next page token for pagination. Use value from AWS.Billing.NotificationNextToken. | Optional |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| AWS.Billing.Budget.Notification | unknown | Complete budget notification data from AWS Budgets API. |
-| AWS.Billing.Budget.Notification.Notification | unknown | Notification configuration. |
-| AWS.Billing.Budget.Notification.Notification.NotificationType | string | Type of notification \(ACTUAL or FORECASTED\). |
-| AWS.Billing.Budget.Notification.Notification.ComparisonOperator | string | Comparison operator for the notification \(GREATER_THAN, LESS_THAN, EQUAL_TO\). |
-| AWS.Billing.Budget.Notification.Notification.Threshold | number | Threshold value that triggers the notification. |
-| AWS.Billing.Budget.Notification.Notification.ThresholdType | string | Type of threshold \(PERCENTAGE or ABSOLUTE_VALUE\). |
-| AWS.Billing.Budget.Notification.Notification.NotificationState | string | Current state of the notification \(OK or ALARM\). |
-| AWS.Billing.Budget.Notification.Subscribers | unknown | List of subscribers for the notification. |
-| AWS.Billing.Budget.Notification.Subscribers.SubscriptionType | string | Subscription type \(EMAIL or SNS\). |
-| AWS.Billing.Budget.Notification.Subscribers.Address | string | Email address or SNS topic ARN for the subscriber. |
-| AWS.Billing.NotificationNextToken | string | Next page token for pagination. |
+| File.Size | Number | The size of the file. |
+| File.SHA1 | String | The SHA1 hash of the file. |
+| File.SHA256 | String | The SHA256 hash of the file. |
+| File.Name | String | The name of the file. |
+| File.SSDeep | String | The SSDeep hash of the file. |
+| File.EntryID | String | The entry ID of the file. |
+| File.Info | String | File information. |
+| File.Type | String | The file type. |
+| File.MD5 | String | The MD5 hash of the file. |
+| File.Extension | String | The file extension. |
