@@ -1,3 +1,5 @@
+from typing import Final
+
 import demistomock as demisto
 from CommonServerUserPython import *
 from urllib.parse import quote
@@ -17,6 +19,7 @@ NO_OUTPUTS: dict = {}
 APP_NAME = "ms-graph-user"
 INVALID_USER_CHARS_REGEX = re.compile(r"[%&*+/=?`{|}]")
 API_VERSION: str = "v1.0"
+TEMP_PASSWORD: Final[str] = "TempP@ssw0rd123!"
 
 
 def camel_case_to_readable(text):
@@ -422,6 +425,9 @@ def change_password_user_command(client: MsGraphClient, args: dict):
 
     return CommandResults(readable_output=human_readable)
 
+def force_reset_password(client: MsGraphClient, args: dict):
+    args = {**args, "updated_fields": f'passwordProfile={{"forceChangePasswordNextSignIn": true, "password": {TEMP_PASSWORD}}}'}
+    return update_user_command(client, args)
 
 def get_delta_command(client: MsGraphClient, args: dict):
     properties = args.get("properties", "") + ",userPrincipalName"
@@ -733,14 +739,15 @@ def main():
             )
         elif not enc_key and not (certificate_thumbprint and private_key):
             raise DemistoException("Key or Certificate Thumbprint and Private Key must be provided.")
-
     commands = {
         "msgraph-user-test": test_function,
         "test-module": test_function,
         "msgraph-user-unblock": unblock_user_command,
         "msgraph-user-terminate-session": disable_user_account_command,
         "msgraph-user-account-disable": disable_user_account_command,
+        "msgraph-user-account-disable-quick-action": disable_user_account_command,
         "msgraph-user-update": update_user_command,
+        "msgraph-user-update-quick-action": force_reset_password,
         "msgraph-user-change-password": change_password_user_command,
         "msgraph-user-delete": delete_user_command,
         "msgraph-user-create": create_user_command,
@@ -751,10 +758,12 @@ def main():
         "msgraph-user-get-manager": get_manager_command,
         "msgraph-user-assign-manager": assign_manager_command,
         "msgraph-user-session-revoke": revoke_user_session_command,
+        "msgraph-user-session-revoke-quick-action": revoke_user_session_command,
         "msgraph-user-tap-policy-list": list_tap_policy_command,
         "msgraph-user-tap-policy-create": create_tap_policy_command,
         "msgraph-user-tap-policy-delete": delete_tap_policy_command,
     }
+
     command = demisto.command()
     LOG(f"Command being called is {command}")
 
