@@ -28,6 +28,8 @@
         "exposure_management",
         "agentix",
         "cloud_runtime_security",
-        "xsiam"
+        "xsiam",
+        "edr",
+        "cloud"
     ]
 }

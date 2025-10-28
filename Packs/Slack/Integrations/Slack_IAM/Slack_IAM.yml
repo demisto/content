@@ -373,3 +373,6 @@ fromversion: 6.0.0
 supportedModules:
 - xsiam
 - agentix
+- edr
+- cloud
+- cloud_runtime_security

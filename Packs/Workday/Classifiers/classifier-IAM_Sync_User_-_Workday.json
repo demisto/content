@@ -1141,6 +1141,7 @@
         "X5",
         "ENT_PLUS",
         "agentix",
-        "xsiam"
+        "xsiam",
+        "cloud_posture"
     ]
 }

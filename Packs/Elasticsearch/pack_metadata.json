@@ -29,6 +29,9 @@
         "cloud_runtime_security",
         "xsiam",
         "edr",
-        "cloud"
+        "cloud",
+        "asm",
+        "cloud_posture",
+        "exposure_management"
     ]
 }

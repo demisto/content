@@ -55,6 +55,9 @@
         "asm",
         "exposure_management",
         "agentix",
-        "xsiam"
+        "xsiam",
+        "edr",
+        "cloud",
+        "cloud_runtime_security"
     ]
 }

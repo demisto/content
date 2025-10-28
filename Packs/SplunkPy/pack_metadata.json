@@ -58,6 +58,9 @@
         "ENT_PLUS",
         "agentix",
         "xsiam",
-        "cloud_posture"
+        "cloud_posture",
+        "edr",
+        "cloud",
+        "cloud_runtime_security"
     ]
 }
