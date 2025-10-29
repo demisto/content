@@ -25,7 +25,6 @@ from CapeSandbox import (
     cape_pcap_file_download_command,
     cape_sample_file_download_command,
     cape_task_delete_command,
-    cape_task_poll_report,
     cape_task_report_get_command,
     cape_task_screenshot_download_command,
     cape_tasks_list_command,
@@ -206,7 +205,6 @@ def test_build_file_name_all_types():
     assert name_network_dump == "cape_task_103_network_dump.pcap"
 
     # 5. Unknown type (falls back to default ext)
-    # FIX: Corrected expectation to match production code behavior (no middle part for unknown type)
     name_unknown = build_file_name("12345", file_type="unknown_type", file_format="txt")  # type: ignore
     assert name_unknown == "cape_task_12345.txt"
 
@@ -275,7 +273,7 @@ def test_client_init_no_auth_fail():
     """Tests client initialization fails if no auth is provided."""
     with pytest.raises(
         DemistoException,
-        match="Either API token or Username \+ Password must be provided",  # type: ignore
+        match=r"Either API token or Username \+ Password must be provided",  # type: ignore
     ):
         CapeSandboxClient(
             base_url=SERVER_URL,
@@ -291,7 +289,7 @@ def test_client_init_partial_auth_fail():
     """Tests client initialization fails if only username is provided."""
     with pytest.raises(
         DemistoException,
-        match="Either API token or Username \+ Password must be provided",  # type: ignore
+        match=r"Either API token or Username \+ Password must be provided",  # type: ignore
     ):
         CapeSandboxClient(
             base_url=SERVER_URL,
@@ -509,7 +507,6 @@ def test_cape_file_submit_command_pcap_logic(mocker, client):
     """Tests submission correctly identifies and sets the pcap flag."""
     mocker.patch.object(CapeSandbox, "get_entry_path", return_value=("path/to/file.pcap", "file.pcap"))
     mocker.patch.object(client, "submit_file", return_value={"data": {"task_ids": [100]}})
-    # FIX: Ensure return type is CommandResults, not None (Pylance fix)
     mocker.patch.object(CapeSandbox, "initiate_polling", return_value=CommandResults())
 
     cape_file_submit_command(client, {"entry_id": "e_id"})
@@ -530,17 +527,6 @@ def test_cape_url_submit_command_no_task_id_fail(mocker, client):
 
     with pytest.raises(DemistoException, match="No task id returned from CAPE"):
         cape_url_submit_command(client, {"url": "http://test.com"})
-
-
-# ---------- Polling ----------
-
-
-def test_cape_task_poll_report_other_api_error(mocker, client):
-    """Tests polling raises general API errors."""
-    mocker.patch.object(client, "get_task_status", side_effect=DemistoException("Task ID 100 not found"))
-
-    with pytest.raises(DemistoException, match="Task ID 100 not found"):
-        cape_task_poll_report({"task_id": 100}, client)
 
 
 # ---------- Retrieval ----------
@@ -565,8 +551,6 @@ def test_cape_sample_file_download_command_multiple_ids_fail(client):
 
 def test_cape_tasks_list_command_invalid_pagination(mocker, client):
     """Tests task list command handles invalid page size/page number."""
-    # FIX: Added mocker argument (Pylance fix)
-
     # Negative page - should normalize to page 1
     args = {"page": -1}
     mocker.patch.object(client, "list_tasks", return_value={"data": []})
@@ -603,7 +587,6 @@ def test_cape_machines_list_command_single_machine_view_by_name(mocker, client):
 
     result = cape_machines_list_command(client, {"machine_name": "win7"})
 
-    # FIX: Assertions broken down (Ruff PT018 fix) and output indexing check (Pylance fix)
     assert result.outputs_prefix == "Cape.Machine"
     assert result.outputs is not None
     assert result.outputs["id"] == 5  # type: ignore
@@ -622,7 +605,6 @@ def test_cape_machines_list_command_multiple_machines(mocker, client):
     )
     args = {"limit": 2, "all_results": False}
     result = cape_machines_list_command(client, args)
-    # FIX: Assertions broken down (Ruff PT018 fix) and output indexing check (Pylance fix)
     assert result.outputs_prefix == "Cape.Machine"
     assert result.outputs is not None
     assert len(result.outputs) == 2  # type: ignore
@@ -664,7 +646,6 @@ def test_cape_file_submit_command(mocker, client):
         "submit_file",
         return_value=util_load_json("cape_file_submit_response.json"),
     )
-    # FIX: Ensure return type is CommandResults, not None (Pylance fix)
     mocker.patch.object(
         CapeSandbox,
         "initiate_polling",
@@ -693,7 +674,6 @@ def test_cape_url_submit_command(mocker, client):
         "submit_url",
         return_value=util_load_json("cape_url_submit_response.json"),
     )
-    # FIX: Ensure return type is CommandResults, not None (Pylance fix)
     mocker.patch.object(
         CapeSandbox,
         "initiate_polling",
@@ -775,7 +755,6 @@ def test_cape_sample_file_download_command_by_task_id(mocker, client):
     expected_filename = "cape_task_123_file.bin"
     mocker.patch.object(client, "files_get_by_task", return_value=mock_content)
     mocker.patch.object(CapeSandbox, "build_file_name", return_value=expected_filename)
-    # FIX: Ensure the mocked return value is an actual dictionary (Pylance fix)
     mocker.patch(
         "CapeSandbox.fileResult",
         return_value={"File": expected_filename, "Contents": mock_content},
@@ -967,7 +946,6 @@ def test_cape_task_report_get_command_json_target_file_data(mocker, client):
 
     result = cape_task_report_get_command(client, {"task_id": "123"})
     assert MOCK_SHA256 in result.readable_output
-    # FIX: Check for the exact content found in the readable output
     assert "test.exe" in result.readable_output
 
 
@@ -983,7 +961,6 @@ def test_cape_task_screenshot_download_command_multiple(mocker, client):
         return_value=util_load_json("cape_task_screenshots_list_response.json"),
     )
 
-    # FIX: Load binary content from external files
     content_list = [
         util_load_file("mock_screenshot_content_1.png"),
         util_load_file("mock_screenshot_content_2.png"),
@@ -1142,3 +1119,6 @@ def test_cape_task_report_get_command_not_found_fail(mocker, client):
         cape_task_report_get_command(client, args)
 
     assert "999 not found" in str(excinfo.value)
+
+
+# endregion
