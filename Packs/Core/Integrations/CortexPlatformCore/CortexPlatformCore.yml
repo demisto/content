@@ -1147,9 +1147,9 @@ script:
         - name: on_demand_fields
           description: "A comma-separated list of additional fields to retrieve."
           isArray: true
-        - description: Supports epoch timestamp and simplified extended ISO format (YYYY-MM-DDThh:mm:ss).
+        - description: "The start time for filtering according to case creation time. Supports free-text relative and absolute times. For example: 7 days ago, 2023-06-15T10:30:00Z, 13/8/2025."
           name: start_time
-        - description: Supports epoch timestamp and simplified extended ISO format (YYYY-MM-DDThh:mm:ss). If start time is provided without end_time it will be from start_time until now.
+        - description: "The end time for filtering according to case creation time. Supports free-text relative and absolute times. For example: 7 days ago, 2023-06-15T10:30:00Z, 13/8/2025."
           name: end_time
         - auto: PREDEFINED
           description: The severity of the vulnerability issue.

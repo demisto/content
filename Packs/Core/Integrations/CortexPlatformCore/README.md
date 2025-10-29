@@ -439,3 +439,53 @@ Get cases information based on the specified filters.
 | Core.Case.tags | Array | Current tags assigned to the case. |
 | Core.Case.case_domain | String | Domain associated with the case. |
 | Core.Case.custom_fields | Unknown | Custom fields for the case with standardized lowercase, whitespace-free names. |
+
+### core-get-vulnerabilities
+
+***
+Retrieves vulnerabilities based on specified filters.
+
+#### Base Command
+
+`core-get-vulnerabilities`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| limit | The maximum number of vulnerabilities to return. Default is 50. | Optional | 
+| sort_field | The field by which to sort the results. Default is LAST_OBSERVED. | Optional | 
+| sort_order | The order in which to sort the results. Possible values are: DESC, ASC. | Optional | 
+| cve_id | The CVE ID. Accepts a comma-separated list. | Optional | 
+| issue_id | The issue ID. Accepts a comma-separated list. | Optional | 
+| cvss_score_gte | The minimum CVSS score. | Optional | 
+| epss_score_gte | The minimum EPSS score. | Optional | 
+| internet_exposed | Filter by internet exposed assets. Possible values are: true, false. | Optional | 
+| exploitable | Filter by exploitable vulnerabilities. Possible values are: true, false. | Optional | 
+| has_kev | Filter by vulnerabilities that have a Known Exploited Vulnerability (KEV). Possible values are: true, false. | Optional | 
+| affected_software | Filter by affected software. Accepts a comma-separated list. | Optional | 
+| on_demand_fields | A comma-separated list of additional fields to retrieve. | Optional | 
+| start_time | Supports epoch timestamp and simplified extended ISO format (YYYY-MM-DDThh:mm:ss). | Optional | 
+| end_time | Supports epoch timestamp and simplified extended ISO format (YYYY-MM-DDThh:mm:ss). If start time is provided without end_time it will be from start_time until now. | Optional | 
+| severity | The severity of the vulnerability issue. Possible values are: info, low, medium, high, critical. | Optional | 
+| assignee | The email of the user assigned to the vulnerability. Accepts a comma-separated list. <br/>Use 'unassigned' for unassigned vulnerabilities or 'assigned' for all assigned vulnerabilities.<br/>. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Core.VulnerabilityIssue.ISSUE_ID | String | The unique identifier for the vulnerability issue. | 
+| Core.VulnerabilityIssue.CVE_ID | String | The CVE identifier for the vulnerability. | 
+| Core.VulnerabilityIssue.CVE_DESCRIPTION | String | The description of the CVE. | 
+| Core.VulnerabilityIssue.ASSET_NAME | String | The name of the affected asset. | 
+| Core.VulnerabilityIssue.PLATFORM_SEVERITY | String | The severity of the vulnerability as determined by the platform. | 
+| Core.VulnerabilityIssue.EPSS_SCORE | Number | The Exploit Prediction Scoring System \(EPSS\) score. | 
+| Core.VulnerabilityIssue.CVSS_SCORE | Number | The Common Vulnerability Scoring System \(CVSS\) score. | 
+| Core.VulnerabilityIssue.ASSIGNED_TO | String | The email of the user assigned to the vulnerability. | 
+| Core.VulnerabilityIssue.ASSIGNED_TO_PRETTY | String | The full name of the user assigned to the vulnerability. | 
+| Core.VulnerabilityIssue.AFFECTED_SOFTWARE | Unknown | The software affected by the vulnerability. | 
+| Core.VulnerabilityIssue.FIX_AVAILABLE | Boolean | Indicates if a fix is available for the vulnerability. | 
+| Core.VulnerabilityIssue.INTERNET_EXPOSED | Boolean | Indicates if the asset is exposed to the internet. | 
+| Core.VulnerabilityIssue.HAS_KEV | Boolean | Indicates if the vulnerability is a Known Exploited Vulnerability \(KEV\). | 
+| Core.VulnerabilityIssue.EXPLOITABLE | Boolean | Indicates if the vulnerability is exploitable. | 
+| Core.VulnerabilityIssue.ASSET_IDS | String | The unique identifier for the asset. | 
