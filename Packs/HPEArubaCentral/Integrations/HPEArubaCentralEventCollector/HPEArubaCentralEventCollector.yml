@@ -19,14 +19,14 @@ configuration:
   displaypassword: Client Secret
   section: Connect
   hiddenusername: false
-  additionalinfo: The secret key associated with your Client ID for API authentication.
+  additionalinfo: The secret key associated with your Client ID for API authentication. Can be obtained via the APIs page in the product.
 - name: customer_id
   required: true
   type: 9
   displaypassword: Customer ID
   section: Connect
   hiddenusername: true
-  additionalinfo: The unique identifier for your Aruba Central account.
+  additionalinfo: The unique identifier for your Aruba Central account. Can be obtained via the APIs page in the product.
 - name: user
   display: Username
   required: true
