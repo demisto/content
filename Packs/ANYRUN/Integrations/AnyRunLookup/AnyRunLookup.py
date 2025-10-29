@@ -251,6 +251,16 @@ def get_intelligence(params: dict, args: dict) -> None:  # pragma: no cover
 
     return_results(fileResult(f"anyrun_lookup_summary.json", json.dumps(intelligence).encode()))
 
+    command_results = CommandResults(
+        outputs_key_field="destinationIP",
+        outputs_prefix="ANYRUN.Lookup",
+        outputs=intelligence,
+        ignore_auto_extract=True,
+    )
+
+    return_results(command_results)
+
+
 
 def main():  # pragma: no cover
     """Main Execution block"""

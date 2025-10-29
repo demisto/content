@@ -89,7 +89,169 @@ Perform threat intelligence using specified IOC
 
 #### Context Output
 
-No output. Attaches JSON summary to the WarRoom instead
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| ANYRUN.Lookup.destinationPort | Unknown | Destination ports numbers. |
+| ANYRUN.Lookup.destinationIPgeo | Unknown | Destination IP Geo \(countries\). |
+| ANYRUN.Lookup.destinationIpAsn.asn | String | Destination IP ASN \(autonomous system number\). |
+| ANYRUN.Lookup.destinationIpAsn.date | Date | Destination IP ASN Date. |
+| ANYRUN.Lookup.relatedTasks | String | Links to related tasks in ANY.RUN sandbox. |
+| ANYRUN.Lookup.threatName | String | Threat names. |
+| ANYRUN.Lookup.relatedIncidents.task | String | Link to the task in ANY.RUN sandbox. |
+| ANYRUN.Lookup.relatedIncidents.time | Date | Creation time. |
+| ANYRUN.Lookup.relatedIncidents.MITRE | Unknown | Array of MITRE matrix techniques IDs ans sub-techniques IDs. |
+| ANYRUN.Lookup.relatedIncidents.event.destinationPort | String | Destination ports numbers. |
+| ANYRUN.Lookup.relatedIncidents.event.destinationIP | String | Destination IP address. |
+| ANYRUN.Lookup.relatedIncidents.process.commandLine | String | Command line string. |
+| ANYRUN.Lookup.relatedIncidents.process.imagePath | String | Image path string. |
+| ANYRUN.Lookup.relatedIncidents.process.threatName | String | Threat names. |
+| ANYRUN.Lookup.relatedIncidents.process.MITRE | Unknown | Array of MITRE matrix techniques IDs ans sub-techniques IDs. |
+| ANYRUN.Lookup.relatedIncidents.process.pid | Number | Process ID. |
+| ANYRUN.Lookup.relatedIncidents.process.scores.specs.known_threat | Boolean | Indicates if it is a known threat. |
+| ANYRUN.Lookup.relatedIncidents.process.scores.specs.network_loader | Boolean | Indicates if network download was detected. |
+| ANYRUN.Lookup.relatedIncidents.process.scores.specs.network | Boolean | Indicates if network activity was enabled. |
+| ANYRUN.Lookup.relatedIncidents.process.scores.specs.uac_request | Boolean | Indicates if User Access Control \(UAC\) request was detected. |
+| ANYRUN.Lookup.relatedIncidents.process.scores.specs.injects | Boolean | Indicates if threat uses injections. |
+| ANYRUN.Lookup.relatedIncidents.process.scores.specs.service_luncher | Boolean | Indicates if new service registration was detected. |
+| ANYRUN.Lookup.relatedIncidents.process.scores.specs.executable_dropped | Boolean | Indicates if threat uses dropped executables. |
+| ANYRUN.Lookup.relatedIncidents.process.scores.specs.multiprocessing | Boolean | Indicates if threat uses multiprocessing. |
+| ANYRUN.Lookup.relatedIncidents.process.scores.specs.crashed_apps | Boolean | Indicates if application crashed. |
+| ANYRUN.Lookup.relatedIncidents.process.scores.specs.debug_output | Boolean | Indicates if application has debug output message. |
+| ANYRUN.Lookup.relatedIncidents.process.scores.specs.stealing | Boolean | Indicates if process steals info from infected machine. |
+| ANYRUN.Lookup.relatedIncidents.process.scores.specs.exploitable | Boolean | Indicates if any known exploit was detected. |
+| ANYRUN.Lookup.relatedIncidents.process.scores.specs.static_detections | Boolean | Indicates if any malicious pattern was detected by static analysis engine. |
+| ANYRUN.Lookup.relatedIncidents.process.scores.specs.susp_struct | Boolean | Is susp struct |
+| ANYRUN.Lookup.relatedIncidents.process.scores.specs.autostart | Boolean | Indicates if application was added to autostart. |
+| ANYRUN.Lookup.relatedIncidents.process.scores.specs.low_access | Boolean | Indicates if threat uses low level access. |
+| ANYRUN.Lookup.relatedIncidents.process.scores.specs.tor | Boolean | Indicates if TOR was used. |
+| ANYRUN.Lookup.relatedIncidents.process.scores.specs.spam | Boolean | Indicates if spam was detected. |
+| ANYRUN.Lookup.relatedIncidents.process.scores.specs.malware_config | Boolean | Indicates if malware config was extracted from submitted file. |
+| ANYRUN.Lookup.relatedIncidents.process.scores.specs.process_dump | Boolean | Indicates if the process memory dump can be extracted. |
+| ANYRUN.Lookup.relatedIncidents.process.eventsCounters.raw.registry | Number | Number or registry events. |
+| ANYRUN.Lookup.relatedIncidents.process.eventsCounters.raw.files | Number | Number or files. |
+| ANYRUN.Lookup.relatedIncidents.process.eventsCounters.raw.modules | Number | Number or modules. |
+| ANYRUN.Lookup.relatedIncidents.process.eventsCounters.raw.objects | Number | Number or objects. |
+| ANYRUN.Lookup.relatedIncidents.process.threatLevel | Number | Threat level. |
+| ANYRUN.Lookup.relatedIncidents.event.destinationIpAsn | String | Destination IP ASN \(autonomous system number\). |
+| ANYRUN.Lookup.relatedIncidents.event.title | String | Title of event type. |
+| ANYRUN.Lookup.relatedIncidents.event.url | String | URL. |
+| ANYRUN.Lookup.relatedIncidents.event.domainName | String | Domain name |
+| ANYRUN.Lookup.relatedIncidents.event.ruleThreatLevel | String | Rule threat level. |
+| ANYRUN.Lookup.destinationIP.destinationIP | String | Destination IP address. |
+| ANYRUN.Lookup.destinationIP.date | Date | Creation date. |
+| ANYRUN.Lookup.destinationIP.threatLevel | Number | Threat level. |
+| ANYRUN.Lookup.destinationIP.threatName | Unknown | Threat names. |
+| ANYRUN.Lookup.destinationIP.isMalconf | Boolean | Indicates if the IOC was extracted from malware configuration. |
+| ANYRUN.Lookup.relatedFiles.task | String | Link to the task in ANY.RUN sandbox. |
+| ANYRUN.Lookup.relatedFiles.fileLink | String | Link to the HTTP response files. |
+| ANYRUN.Lookup.relatedFiles.time | Date | Creation date. |
+| ANYRUN.Lookup.relatedFiles.process.commandLine | String | Command line string. |
+| ANYRUN.Lookup.relatedFiles.process.imagePath | String | Image path string. |
+| ANYRUN.Lookup.relatedFiles.process.MITRE | String | Array of MITRE matrix techniques IDs ans sub-techniques IDs. |
+| ANYRUN.Lookup.relatedFiles.process.pid | Number | Process ID. |
+| ANYRUN.Lookup.relatedFiles.process.scores.specs.known_threat | Boolean | Indicates if it is a known threat. |
+| ANYRUN.Lookup.relatedFiles.process.scores.specs.network_loader | Boolean | Indicates if network download was detected. |
+| ANYRUN.Lookup.relatedFiles.process.scores.specs.network | Boolean | Indicates if network activity was enabled. |
+| ANYRUN.Lookup.relatedFiles.process.scores.specs.uac_request | Boolean | Indicates if User Access Control \(UAC\) request was detected. |
+| ANYRUN.Lookup.relatedFiles.process.scores.specs.injects | Boolean | Indicates if threat uses injections. |
+| ANYRUN.Lookup.relatedFiles.process.scores.specs.service_luncher | Boolean | Indicates if new service registration was detected. |
+| ANYRUN.Lookup.relatedFiles.process.scores.specs.executable_dropped | Boolean | Indicates if threat uses dropped executables. |
+| ANYRUN.Lookup.relatedFiles.process.scores.specs.multiprocessing | Boolean | Indicates if threat uses multiprocessing. |
+| ANYRUN.Lookup.relatedFiles.process.scores.specs.crashed_apps | Boolean | Indicates if application crashed. |
+| ANYRUN.Lookup.relatedFiles.process.scores.specs.debug_output | Boolean | Indicates if application has debug output message. |
+| ANYRUN.Lookup.relatedFiles.process.scores.specs.stealing | Boolean | Indicates if process steals info from infected machine. |
+| ANYRUN.Lookup.relatedFiles.process.scores.specs.exploitable | Boolean | Indicates if any known exploit was detected. |
+| ANYRUN.Lookup.relatedFiles.process.scores.specs.static_detections | Boolean | Indicates if any malicious pattern was detected by static analysis engine. |
+| ANYRUN.Lookup.relatedFiles.process.scores.specs.susp_struct | Boolean | Is susp struct. |
+| ANYRUN.Lookup.relatedFiles.process.scores.specs.autostart | Boolean | Indicates if application was added to autostart. |
+| ANYRUN.Lookup.relatedFiles.process.scores.specs.low_access | Boolean | Indicates if threat uses low level access. |
+| ANYRUN.Lookup.relatedFiles.process.scores.specs.tor | Boolean | Indicates if TOR was used. |
+| ANYRUN.Lookup.relatedFiles.process.scores.specs.spam | Boolean | Indicates if spam was detected. |
+| ANYRUN.Lookup.relatedFiles.process.scores.specs.malware_config | Boolean | Indicates if malware config was extracted from submitted file. |
+| ANYRUN.Lookup.relatedFiles.process.eventsCounters.raw.registry | Number | Number or registry events. |
+| ANYRUN.Lookup.relatedFiles.process.eventsCounters.raw.files | Number | Number or files. |
+| ANYRUN.Lookup.relatedFiles.process.eventsCounters.raw.modules | Number | Number or modules. |
+| ANYRUN.Lookup.relatedFiles.process.eventsCounters.raw.objects | Number | Number or objects. |
+| ANYRUN.Lookup.relatedFiles.process.threatLevel | Number | Threat level. |
+| ANYRUN.Lookup.relatedFiles.hashes.md5 | String | MD5 hash string. |
+| ANYRUN.Lookup.relatedFiles.hashes.sha1 | String | SHA1 hash string. |
+| ANYRUN.Lookup.relatedFiles.hashes.sha256 | String | SHA256 hash string. |
+| ANYRUN.Lookup.relatedFiles.hashes.ssdeep | String | Ssdeep hash string. |
+| ANYRUN.Lookup.relatedFiles.process.threatName | String | Threat name. |
+| ANYRUN.Lookup.relatedFiles.process.scores.specs.process_dump | Boolean | Indicates if the process memory dump can be extracted. |
+| ANYRUN.Lookup.relatedDNS.domainName | String | Domain name. |
+| ANYRUN.Lookup.relatedDNS.threatName | Unknown | Threat name. |
+| ANYRUN.Lookup.relatedDNS.threatLevel | Number | Threat level. |
+| ANYRUN.Lookup.relatedDNS.date | Date | Creation date. |
+| ANYRUN.Lookup.relatedDNS.isMalconf | Boolean | Indicates if the IOC was extracted from malware configuration. |
+| ANYRUN.Lookup.relatedURLs.url | String | URL. |
+| ANYRUN.Lookup.relatedURLs.date | Date | Creation date. |
+| ANYRUN.Lookup.relatedURLs.threatLevel | Number | Threat level. |
+| ANYRUN.Lookup.relatedURLs.threatName | Unknown | Threat names. |
+| ANYRUN.Lookup.relatedURLs.isMalconf | Boolean | Indicates if the IOC was extracted from malware configuration. |
+| ANYRUN.Lookup.sourceTasks.uuid | String | Task UUID. |
+| ANYRUN.Lookup.sourceTasks.related | String | Link to the task in ANY.RUN sandbox. |
+| ANYRUN.Lookup.sourceTasks.date | Date | Task creation time. |
+| ANYRUN.Lookup.sourceTasks.threatLevel | Number | Threat level. |
+| ANYRUN.Lookup.sourceTasks.tags | Unknown | Tags. |
+| ANYRUN.Lookup.sourceTasks.mainObject.type | String | Type. |
+| ANYRUN.Lookup.sourceTasks.mainObject.name | String | Name. |
+| ANYRUN.Lookup.sourceTasks.mainObject.hashes.md5 | String | MD5 hash string. |
+| ANYRUN.Lookup.sourceTasks.mainObject.hashes.sha1 | String | SHA1 hash string. |
+| ANYRUN.Lookup.sourceTasks.mainObject.hashes.sha256 | String | SHA256 hash string. |
+| ANYRUN.Lookup.sourceTasks.mainObject.hashes.ssdeep | String | Ssdeep hash string. |
+| ANYRUN.Lookup.relatedSynchronizationObjects.syncObjectTime | Date | Time. |
+| ANYRUN.Lookup.relatedSynchronizationObjects.syncObjectType | String | Type. |
+| ANYRUN.Lookup.relatedSynchronizationObjects.syncObjectOperation | String | Operation. |
+| ANYRUN.Lookup.relatedSynchronizationObjects.syncObjectName | String | Name. |
+| ANYRUN.Lookup.relatedSynchronizationObjects.task | String | Task link. |
+| ANYRUN.Lookup.relatedSynchronizationObjects.process.commandLine | String | Command line string. |
+| ANYRUN.Lookup.relatedSynchronizationObjects.process.imagePath | String | Image path string. |
+| ANYRUN.Lookup.relatedSynchronizationObjects.process.MITRE | Unknown | Array of MITRE matrix techniques IDs ans sub-techniques IDs. |
+| ANYRUN.Lookup.relatedSynchronizationObjects.process.pid | Number | Process ID. |
+| ANYRUN.Lookup.relatedSynchronizationObjects.process.scores.specs.known_threat | Boolean | Indicates if it is a known threat. |
+| ANYRUN.Lookup.relatedSynchronizationObjects.process.scores.specs.network_loader | Boolean | Indicates if network download was detected. |
+| ANYRUN.Lookup.relatedSynchronizationObjects.process.scores.specs.network | Boolean | Indicates if network activity was enabled. |
+| ANYRUN.Lookup.relatedSynchronizationObjects.process.scores.specs.uac_request | Boolean | Indicates if User Access Control \(UAC\) request was detected. |
+| ANYRUN.Lookup.relatedSynchronizationObjects.process.scores.specs.injects | Boolean | Indicates if threat uses injections. |
+| ANYRUN.Lookup.relatedSynchronizationObjects.process.scores.specs.service_luncher | Boolean | Indicates if new service registration was detected. |
+| ANYRUN.Lookup.relatedSynchronizationObjects.process.scores.specs.executable_dropped | Boolean | Indicates if threat uses dropped executables. |
+| ANYRUN.Lookup.relatedSynchronizationObjects.process.scores.specs.multiprocessing | Boolean | Indicates if threat uses multiprocessing. |
+| ANYRUN.Lookup.relatedSynchronizationObjects.process.scores.specs.crashed_apps | Boolean | Indicates if application crashed. |
+| ANYRUN.Lookup.relatedSynchronizationObjects.process.scores.specs.debug_output | Boolean | Indicates if application has debug output message. |
+| ANYRUN.Lookup.relatedSynchronizationObjects.process.scores.specs.stealing | Boolean | Indicates if process steals info from infected machine. |
+| ANYRUN.Lookup.relatedSynchronizationObjects.process.scores.specs.exploitable | Boolean | Indicates if any known exploit was detected. |
+| ANYRUN.Lookup.relatedSynchronizationObjects.process.scores.specs.static_detections | Boolean | Indicates if any malicious pattern was detected by static analysis engine |
+| ANYRUN.Lookup.relatedSynchronizationObjects.process.scores.specs.susp_struct | Boolean | Is susp struct. |
+| ANYRUN.Lookup.relatedSynchronizationObjects.process.scores.specs.autostart | Boolean | Indicates if application was added to autostart |
+| ANYRUN.Lookup.relatedSynchronizationObjects.process.scores.specs.low_access | Boolean | Indicates if threat uses low level access. |
+| ANYRUN.Lookup.relatedSynchronizationObjects.process.scores.specs.tor | Boolean | Indicates if TOR was used. |
+| ANYRUN.Lookup.relatedSynchronizationObjects.process.scores.specs.spam | Boolean | Indicates if spam was detected. |
+| ANYRUN.Lookup.relatedSynchronizationObjects.process.scores.specs.malware_config | Boolean | Indicates if malware config was extracted from submitted file. |
+| ANYRUN.Lookup.relatedSynchronizationObjects.process.eventsCounters.raw.registry | Number | Number or registry events. |
+| ANYRUN.Lookup.relatedSynchronizationObjects.process.eventsCounters.raw.files | Number | Number or files. |
+| ANYRUN.Lookup.relatedSynchronizationObjects.process.eventsCounters.raw.modules | Number | Number or modules. |
+| ANYRUN.Lookup.relatedSynchronizationObjects.process.eventsCounters.raw.objects | Number | Number or objects. |
+| ANYRUN.Lookup.relatedSynchronizationObjects.process.threatLevel | Number | Threat level. |
+| ANYRUN.Lookup.relatedSynchronizationObjects.process.threatName | String | Threat name. |
+| ANYRUN.Lookup.relatedSynchronizationObjects.process.scores.specs.process_dump | Boolean | Indicates if the process memory dump can be extracted. |
+| ANYRUN.Lookup.relatedNetworkThreats.suricataClass | String | Suricata class. |
+| ANYRUN.Lookup.relatedNetworkThreats.imagePath | String | Image path. |
+| ANYRUN.Lookup.relatedNetworkThreats.suricataID | String | SID. |
+| ANYRUN.Lookup.relatedNetworkThreats.suricataMessage | String | Suricata message. |
+| ANYRUN.Lookup.relatedNetworkThreats.tags | Unknown | Tags. |
+| ANYRUN.Lookup.relatedNetworkThreats.MITRE | Unknown | Array of MITRE matrix techniques IDs ans sub-techniques IDs. |
+| ANYRUN.Lookup.relatedNetworkThreats.suricataThreatLevel | String | Suricata threat level. |
+| ANYRUN.Lookup.relatedNetworkThreats.task | String | Task link. |
+| ANYRUN.Lookup.summary.threatLevel | Number | Threat level. |
+| ANYRUN.Lookup.summary.lastSeen | Date | Last Seen Date |
+| ANYRUN.Lookup.summary.detectedType | String | Detected type. |
+| ANYRUN.Lookup.summary.isTrial | Boolean | Is trial request. |
+| ANYRUN.Lookup.summary.tags | String | Tags. |
+| ANYRUN.Lookup.summary.details.type | String | IOC type. |
+| ANYRUN.Lookup.summary.details.threatLevel | Number | Threat level. |
+| ANYRUN.Lookup.summary.details.lastSeen | Date | Last Seen Date |
+| ANYRUN.Lookup.summary.details.count | Number | Count of iocs/objects by threat level |
 
 ### ip
 
@@ -141,21 +303,21 @@ Check the Domain name reputation.
 
 #### Context Output
 
-| **Path**                      | **Type** | **Description**                                            |
-|-------------------------------| --- |------------------------------------------------------------|
-| Domain.Address                | String | The Domain name.                                           |
-| Domain.Country                    | String | The Domain country.                                        |
-| Domain.Port                       | String | The Domain destination port.                               |
-| Domain.ASOwner                    | String | The Domain autonomous system owner.                        |
-| Domain.LastModified               | String | The Domain last modified date.                             |
-| Domain.Tags                       | String | The Domain related tags.                                   |
+| **Path**                           | **Type** | **Description**                                            |
+|------------------------------------| --- |------------------------------------------------------------|
+| Domain.Name                        | String | The Domain name.                                           |
+| Domain.Country                     | String | The Domain country.                                        |
+| Domain.Port                        | String | The Domain destination port.                               |
+| Domain.ASOwner                     | String | The Domain autonomous system owner.                        |
+| Domain.LastModified                | String | The Domain last modified date.                             |
+| Domain.Tags                        | String | The Domain related tags.                                   |
 | Domain.FeedRelatedIndicators.value | String | The Domain related indicator type.                         |
-| Domain.FeedRelatedIndicators.type | String | The Domain related indicator value.                        |
-| DBotScore.Indicator           | String | The indicator that was tested.                             |
-| DBotScore.Type                | String | The indicator type.                                        |
-| DBotScore.Vendor              | String | The vendor used to calculate the score.                    |
-| DBotScore.Score               | Number | The actual score.                                          |
-| DBotScore.Reliability         | String | Reliability of the source providing the intelligence data. |
+| Domain.FeedRelatedIndicators.type  | String | The Domain related indicator value.                        |
+| DBotScore.Indicator                | String | The indicator that was tested.                             |
+| DBotScore.Type                     | String | The indicator type.                                        |
+| DBotScore.Vendor                   | String | The vendor used to calculate the score.                    |
+| DBotScore.Score                    | Number | The actual score.                                          |
+| DBotScore.Reliability              | String | Reliability of the source providing the intelligence data. |
 
 ### url
 

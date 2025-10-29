@@ -287,7 +287,7 @@ script:
       required: false
       type: String
     - auto: PREDEFINED
-      description: 'Operation system. Possible values: ubuntu, debian'
+      description: 'Operation system. Possible values: ubuntu, debian.'
       name: env_os
       defaultValue: 'ubuntu'
       required: false
@@ -391,7 +391,7 @@ script:
       required: false
       type: String
     - auto: PREDEFINED
-      description: 'Operation system. Possible values: ubuntu, debian'
+      description: 'Operation system. Possible values: ubuntu, debian.'
       name: env_os
       defaultValue: 'ubuntu'
       required: false
@@ -1474,4 +1474,4 @@ script:
   type: python
 tests:
 - No tests
-fromversion: 6.0.0
+fromversion: 8.0.0
