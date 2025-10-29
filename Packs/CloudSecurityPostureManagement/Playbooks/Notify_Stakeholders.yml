@@ -1,0 +1,840 @@
+adopted: true
+description: This playbook automates notifying stakeholders via Slack v3, Microsoft
+  Teams, or email. You have the flexibility to notify other teams via Slack, Microsoft
+  Teams or Email by configuring the necessary integration. This playbook requires
+  existing integrations with Slack, Microsoft Teams, Mail Sender or Gmail to perform
+  these actions. If none of these integrations are found in your account, the playbook
+  will exit with no action.
+dirtyInputs: true
+id: 'Notify Stakeholders'
+inputSections:
+- description: Default inputs defined at sub-playbook level
+  inputs:
+  - Teams Channel
+  - Slack Channel
+  - Email Address
+  - Message
+  - Subject
+  name: General Inputs
+inputs:
+- description: Provide Microsoft Teams channel name to which to send messages.
+  key: Teams Channel
+  playbookInputQuery: null
+  required: false
+  value: {}
+- description: Provide Slack channel name to which to send messages.
+  key: Slack Channel
+  playbookInputQuery: null
+  required: false
+  value: {}
+- description: Provide an email address for notifications. Use comma separated values
+    to provide multiple addresses
+  key: Email Address
+  playbookInputQuery: null
+  required: false
+  value:
+    simple: amore@paloaltonetworks.com
+- description: The text to include in your notification.
+  key: Message
+  playbookInputQuery: null
+  required: false
+  value:
+    simple: |-
+      Issue Name - ${issue.name}
+      Severity ${issue.severity}
+      Details - ${issue.details}
+      Category - ${issue.alert_category}
+      Asset Name - ${Core.CoreAsset.xdm__asset__name}
+      Asset Type - ${Core.CoreAsset.xdm__asset__type__name}
+      Cloud Region - ${Core.CoreAsset.xdm__asset__cloud__region}
+      Cloud Account ID - ${Core.CoreAsset.xdm__asset__realm}
+      Issue Created - ${issue.created}
+- description: For email
+  key: Subject
+  playbookInputQuery: null
+  required: false
+  value: {}
+name: Notify Stakeholders
+outputSections:
+- description: Generic group for outputs
+  name: General (Outputs group)
+  outputs: []
+outputs: []
+sourceplaybookid: Create Ticket and Notify
+starttaskid: "0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "46"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 9a0ebb19-b027-4c60-8847-71580d3a8d26
+      iscommand: false
+      name: ""
+      playbooktaskmissingcomponent: null
+      version: -1
+    taskid: 9a0ebb19-b027-4c60-8847-71580d3a8d26
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 735,
+          "y": 70
+        }
+      }
+  "15":
+    continueonerrortype: ""
+    id: "15"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: d173f18a-04f1-4544-8f98-a98c005cce9f
+      iscommand: false
+      name: Done
+      playbooktaskmissingcomponent: null
+      type: title
+      version: -1
+    taskid: d173f18a-04f1-4544-8f98-a98c005cce9f
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 735,
+          "y": 1320
+        }
+      }
+  "16":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.Teams Channel
+          operator: isNotEmpty
+          right:
+            value: {}
+        - left:
+            iscontext: true
+            value:
+              simple: Provide at least 1 notification recipient.Answers.1
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: state
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: Microsoft Teams
+                root: modules
+          operator: isEqualString
+          right:
+            value:
+              simple: active
+      label: "yes"
+    continueonerrortype: ""
+    id: "16"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "15"
+      "yes":
+      - "42"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 00f1aedd-21b8-4996-b78e-51c96555bd26
+      iscommand: false
+      name: Is Microsoft Teams enabled and channel name provided?
+      playbooktaskmissingcomponent: null
+      type: condition
+      version: -1
+    taskid: 00f1aedd-21b8-4996-b78e-51c96555bd26
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 972.5,
+          "y": 940
+        }
+      }
+  "33":
+    continueonerrortype: ""
+    id: "33"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "15"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      htmlBody:
+        simple: "<html>\n<body style=\"font-family: Arial, sans-serif; background-color:
+          #f6f7f9; margin: 0; padding: 30px;\">\n  <div style=\"max-width: 600px;
+          margin: auto; background-color: #ffffff; border-radius: 6px; box-shadow:
+          0 2px 5px rgba(0,0,0,0.1); padding: 25px 30px;\">\n\n    <div style=\"text-align:
+          center; color: #0067b8; font-size: 20px; font-weight: bold; margin-bottom:
+          25px;\">\n      Cortex Cloud Issue Details\n    </div>\n\n    <table style=\"width:
+          100%; border-collapse: collapse; margin-bottom: 20px; font-size: 14px; border:
+          1px solid #e0e0e0;\">\n      <tr>\n        <td style=\"padding: 10px; border:
+          1px solid #e0e0e0; background-color: #f9f9f9; font-weight: bold; width:
+          40%;\">Issue Name</td>\n        <td style=\"padding: 10px; border: 1px solid
+          #e0e0e0;\">${issue.name}</td>\n      </tr>\n      <tr>\n        <td style=\"padding:
+          10px; border: 1px solid #e0e0e0; background-color: #f9f9f9; font-weight:
+          bold;\">Severity</td>\n        <td style=\"padding: 10px; border: 1px solid
+          #e0e0e0;\">${issue.severity}</td>\n      </tr>\n      <tr>\n        <td
+          style=\"padding: 10px; border: 1px solid #e0e0e0; background-color: #f9f9f9;
+          font-weight: bold;\">Details</td>\n        <td style=\"padding: 10px; border:
+          1px solid #e0e0e0;\">${issue.details}</td>\n      </tr>\n      <tr>\n        <td
+          style=\"padding: 10px; border: 1px solid #e0e0e0; background-color: #f9f9f9;
+          font-weight: bold;\">Category</td>\n        <td style=\"padding: 10px; border:
+          1px solid #e0e0e0;\">${issue.alert_category}</td>\n      </tr>\n      <tr>\n
+          \       <td style=\"padding: 10px; border: 1px solid #e0e0e0; background-color:
+          #f9f9f9; font-weight: bold;\">Asset Name</td>\n        <td style=\"padding:
+          10px; border: 1px solid #e0e0e0;\">${Core.CoreAsset.xdm__asset__name}</td>\n
+          \     </tr>\n      <tr>\n        <td style=\"padding: 10px; border: 1px
+          solid #e0e0e0; background-color: #f9f9f9; font-weight: bold;\">Asset Type</td>\n
+          \       <td style=\"padding: 10px; border: 1px solid #e0e0e0;\">${Core.CoreAsset.xdm__asset__type__name}</td>\n
+          \     </tr>\n      <tr>\n        <td style=\"padding: 10px; border: 1px
+          solid #e0e0e0; background-color: #f9f9f9; font-weight: bold;\">Cloud Region</td>\n
+          \       <td style=\"padding: 10px; border: 1px solid #e0e0e0;\">${Core.CoreAsset.xdm__asset__cloud__region}</td>\n
+          \     </tr>\n      <tr>\n        <td style=\"padding: 10px; border: 1px
+          solid #e0e0e0; background-color: #f9f9f9; font-weight: bold;\">Cloud Account
+          ID</td>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0;\">${Core.CoreAsset.xdm__asset__realm}</td>\n
+          \     </tr>\n      <tr>\n        <td style=\"padding: 10px; border: 1px
+          solid #e0e0e0; background-color: #f9f9f9; font-weight: bold;\">Issue Created</td>\n
+          \       <td style=\"padding: 10px; border: 1px solid #e0e0e0;\">${issue.created}</td>\n
+          \     </tr>\n      <tr>\n        <td style=\"padding: 10px; border: 1px
+          solid #e0e0e0; background-color: #f9f9f9; font-weight: bold;\">Remediation
+          Action Taken</td>\n        <td style=\"padding: 10px; border: 1px solid
+          #e0e0e0;\">${remediation_action}</td>\n      </tr>\n    </table>\n\n    <div
+          style=\"font-weight: bold; font-size: 14px; margin: 15px 0 8px;\">Asset
+          Tags</div>\n    <div style=\"background-color: #f2f2f2; border-radius: 4px;
+          font-family: monospace; font-size: 13px; color: #444; padding: 10px; white-space:
+          pre-wrap;\">\n      ${Core.CoreAsset.xdm__asset__tags}\n    </div>\n\n    <div
+          style=\"text-align: center; margin: 30px 0 10px;\">\n      <a href=\"${demistoUrls.server}/issue-view/${issue.id}\"
+          \n         target=\"_blank\"\n         style=\"display: inline-block; padding:
+          10px 24px; background-color: #0067b8; color: white !important; text-decoration:
+          none !important; border-radius: 4px; font-size: 14px; font-weight: bold;\">\n
+          \        View Issue\n      </a>\n      <a href=\"${demistoUrls.server}/assets/asset-layout/${Core.CoreAsset.xdm__asset__id}\"
+          \n         target=\"_blank\"\n         style=\"display: inline-block; padding:
+          10px 24px; background-color: #0067b8; color: white !important; text-decoration:
+          none !important; border-radius: 4px; font-size: 14px; font-weight: bold;\">\n
+          \        View Asset\n      </a>\n    </div>\n  </div>\n</body>\n</html>"
+      subject:
+        simple: ${inputs.Subject}
+      to:
+        complex:
+          root: inputs.Email Address
+          transformers:
+          - args:
+              applyIfEmpty: {}
+              defaultValue:
+                iscontext: true
+                value:
+                  simple: Provide at least 1 notification recipient.Answers.0
+            operator: SetIfEmpty
+          - args:
+              empty_values: {}
+              remove_keys: {}
+            operator: RemoveEmpty
+          - args:
+              delimiter:
+                value:
+                  simple: ','
+            operator: splitAndTrim
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: mail-sender
+      description: commands.server.mail.sendmail
+      id: 6946a413-d6bc-45d2-96e2-2b80846d7958
+      iscommand: true
+      name: Send Email Notification
+      playbooktaskmissingcomponent: null
+      script: mail-sender|||send-mail
+      type: regular
+      version: -1
+    taskid: 6946a413-d6bc-45d2-96e2-2b80846d7958
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 412.5,
+          "y": 1120
+        }
+      }
+  "36":
+    continueonerrortype: ""
+    id: "36"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "15"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      channel:
+        complex:
+          root: inputs.Slack Channel
+          transformers:
+          - args:
+              applyIfEmpty: {}
+              defaultValue:
+                iscontext: true
+                value:
+                  simple: Provide at least 1 notification recipient.Answers.2
+            operator: SetIfEmpty
+          - args:
+              empty_values: {}
+              remove_keys: {}
+            operator: RemoveEmpty
+      message:
+        simple: ${inputs.Message}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: SlackV3
+      description: Sends a message to a user, group, or channel.
+      id: c4008e60-0b7f-4456-9917-f3ab59fe6ae2
+      iscommand: true
+      name: Send Slack Notification
+      playbooktaskmissingcomponent: null
+      script: SlackV3|||slack-send-notification-quick-action
+      type: regular
+      version: -1
+    taskid: c4008e60-0b7f-4456-9917-f3ab59fe6ae2
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1525,
+          "y": 1120
+        }
+      }
+  "42":
+    continueonerrortype: ""
+    id: "42"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "15"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      channel:
+        complex:
+          root: inputs.Teams Channel
+          transformers:
+          - args:
+              applyIfEmpty: {}
+              defaultValue:
+                iscontext: true
+                value:
+                  simple: Provide at least 1 notification recipient.Answers.1
+            operator: SetIfEmpty
+          - args:
+              empty_values: {}
+              remove_keys: {}
+            operator: RemoveEmpty
+      message:
+        simple: ${inputs.Message}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Microsoft Teams
+      description: Sends a message to the specified teams.
+      id: fc12cda9-9b7b-4c4c-8e14-365628d1a68d
+      iscommand: true
+      name: Send Microsoft Teams Notification
+      playbooktaskmissingcomponent: null
+      script: Microsoft Teams|||teams-send-notification-quick-action
+      type: regular
+      version: -1
+    taskid: fc12cda9-9b7b-4c4c-8e14-365628d1a68d
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1065,
+          "y": 1120
+        }
+      }
+  "43":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.Email Address
+          operator: isNotEmpty
+          right:
+            value: {}
+        - left:
+            iscontext: true
+            value:
+              simple: Provide at least 1 notification recipient.Answers.0
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: brand
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.commands.name
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: send-mail
+                root: modules
+          operator: isNotEmpty
+      label: "yes"
+    continueonerrortype: ""
+    id: "43"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "15"
+      "yes":
+      - "33"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 7076fdb5-fe3b-4abc-a345-b32f8e35ee7e
+      iscommand: false
+      name: Is and Email integration enabled and address provided?
+      playbooktaskmissingcomponent: null
+      type: condition
+      version: -1
+    taskid: 7076fdb5-fe3b-4abc-a345-b32f8e35ee7e
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 940
+        }
+      }
+  "44":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.Slack Channel
+          operator: isNotEmpty
+          right:
+            value: {}
+        - left:
+            iscontext: true
+            value:
+              simple: Provide at least 1 notification recipient.Answers.2
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: state
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: Slack
+                root: modules
+          operator: isEqualString
+          right:
+            value:
+              simple: active
+      label: "yes"
+    continueonerrortype: ""
+    id: "44"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "15"
+      "yes":
+      - "36"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 6364bd14-d007-49f8-8928-cbcaf4160525
+      iscommand: false
+      name: Is Slack enabled and channel name provided?
+      playbooktaskmissingcomponent: null
+      type: condition
+      version: -1
+    taskid: 6364bd14-d007-49f8-8928-cbcaf4160525
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1412.5,
+          "y": 940
+        }
+      }
+  "45":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.Message
+          operator: isNotEmpty
+          right:
+            value: {}
+      label: "yes"
+    continueonerrortype: ""
+    id: "45"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "15"
+      "yes":
+      - "43"
+      - "16"
+      - "44"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 1324680c-84db-40fd-8d80-01549918ea08
+      iscommand: false
+      name: Is the notification message provided?
+      playbooktaskmissingcomponent: null
+      type: condition
+      version: -1
+    taskid: 1324680c-84db-40fd-8d80-01549918ea08
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 735,
+          "y": 760
+        }
+      }
+  "46":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.Teams Channel
+          operator: isNotEmpty
+          right:
+            value: {}
+        - left:
+            iscontext: true
+            value:
+              simple: inputs.Slack Channel
+          operator: isNotEmpty
+        - left:
+            iscontext: true
+            value:
+              simple: inputs.Email Address
+          operator: isNotEmpty
+      label: "yes"
+    continueonerrortype: ""
+    id: "46"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "47"
+      "yes":
+      - "45"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 2f850360-f056-4c0f-b54f-75ffd45e10ba
+      iscommand: false
+      name: Is at least one notification recipient provided?
+      playbooktaskmissingcomponent: null
+      type: condition
+      version: -1
+    taskid: 2f850360-f056-4c0f-b54f-75ffd45e10ba
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 735,
+          "y": 220
+        }
+      }
+  "47":
+    continueonerrortype: ""
+    form:
+      description: ""
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: Email Address
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: Use comma separated values to provide multiple addresses
+        type: shortText
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "1"
+        label: ""
+        labelarg:
+          simple: Microsoft Teams Channel
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: ""
+        type: shortText
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "2"
+        label: ""
+        labelarg:
+          simple: Slack Channel
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: ""
+        type: shortText
+      sender: ""
+      title: Provide at least 1 notification recipient
+      totalanswers: 0
+    id: "47"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc: null
+      body: null
+      cc: null
+      format: ""
+      methods: []
+      subject: null
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: true
+        retriescount: 2
+        retriesinterval: 360
+      to: null
+    nexttasks:
+      '#none#':
+      - "48"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      message:
+        simple: Please configure at least 1 recipient for notifications. Go to Notify
+          Stakeholders playbook -> Playbook Triggered header -> add inputs.
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Prints an error entry with a given message.
+      id: cacc329b-97fd-44ba-a2c0-c000ebea9952
+      iscommand: false
+      name: Please provide at least 1 notification recipient
+      playbooktaskmissingcomponent: null
+      type: collection
+      version: -1
+    taskid: cacc329b-97fd-44ba-a2c0-c000ebea9952
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 400
+        }
+      }
+  "48":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Provide at least 1 notification recipient.Answers.0
+          operator: isNotEmpty
+          right:
+            value: {}
+        - left:
+            iscontext: true
+            value:
+              simple: Provide at least 1 notification recipient.Answers.1
+          operator: isNotEmpty
+        - left:
+            iscontext: true
+            value:
+              simple: Provide at least 1 notification recipient.Answers.2
+          operator: isNotEmpty
+      label: "yes"
+    continueonerrortype: ""
+    id: "48"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "49"
+      "yes":
+      - "45"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 35bd83ef-56d0-4870-a825-5e8130c5bd55
+      iscommand: false
+      name: Is at least one notification recipient provided?
+      playbooktaskmissingcomponent: null
+      type: condition
+      version: -1
+    taskid: 35bd83ef-56d0-4870-a825-5e8130c5bd55
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 580
+        }
+      }
+  "49":
+    continueonerrortype: ""
+    id: "49"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "15"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      id:
+        simple: "47"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.task.reopen
+      id: 8e5d2f91-4d6b-4d18-833a-0d4445c1b6af
+      iscommand: true
+      name: Reopen task to ask for notification recipient
+      playbooktaskmissingcomponent: null
+      script: Builtin|||taskReopen
+      type: regular
+      version: -1
+    taskid: 8e5d2f91-4d6b-4d18-833a-0d4445c1b6af
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -247.5,
+          "y": 760
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "16_15_#default#": 0.27,
+      "16_42_yes": 0.46,
+      "43_15_#default#": 0.23,
+      "44_15_#default#": 0.26,
+      "44_36_yes": 0.45,
+      "45_15_#default#": 0.24,
+      "45_43_yes": 0.51,
+      "46_45_yes": 0.42
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1310,
+        "width": 2152.5,
+        "x": -247.5,
+        "y": 70
+      }
+    }
+  }
