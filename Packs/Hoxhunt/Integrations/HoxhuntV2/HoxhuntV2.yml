@@ -1,4 +1,4 @@
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -222,7 +222,7 @@ script:
     name: get-mapping-fields
     arguments: []
     outputs: []
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.12.5490952
   isfetch: true
   runonce: false
   subtype: python3

@@ -82,11 +82,14 @@ system: false
 timeout: 20m0s
 type: python
 subtype: python3
+compliantpolicies:
+  - IP Blockage
 dockerimage: demisto/python3:3.12.11.4508456
 fromversion: 6.1.0
 marketplaces:
 - xsoar
 - marketplacev2
+- platform
 polling: true
 tests:
 - BlockExternalIP - Test

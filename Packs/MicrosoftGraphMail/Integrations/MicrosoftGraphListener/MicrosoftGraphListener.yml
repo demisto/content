@@ -1,5 +1,5 @@
 category: Email
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -1068,7 +1068,7 @@ script:
       description: The replyTo recipients of the email.
       type: String
     polling: true
-  dockerimage: demisto/crypto:1.0.0.3539024
+  dockerimage: demisto/crypto:1.0.0.4834757
   isfetch: true
   script: ''
   type: python

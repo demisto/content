@@ -1,5 +1,5 @@
 category: Data Enrichment & Threat Intelligence
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -62,8 +62,9 @@ configuration:
   type: 8
   required: false
   section: Collect
-description: Use the Palo Alto Networks AutoFocus integration to distinguish the most important threats from everyday commodity attacks.
-display: Palo Alto Networks AutoFocus v2
+deprecated: true
+description: Deprecated. Use the Unit 42 Intelligence integration instead.
+display: Palo Alto Networks AutoFocus v2 (Deprecated)
 name: AutoFocus V2
 script:
   commands:
@@ -1022,7 +1023,7 @@ script:
       isArray: true
       name: url
       required: true
-    - description: A char to separate between the url's. 
+    - description: A char to separate between the url's.
       isArray: true
       name: separator
       required: false
