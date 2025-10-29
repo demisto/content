@@ -22,6 +22,7 @@ configuration:
   displaypassword: Application ID / Client ID
   hiddenusername: true
   required: false
+  section: Connect
 - display: Token / Tenant ID
   name: tenant_id
   type: 4
@@ -778,7 +779,7 @@ script:
   - description: Generate the login URL used for Authorization code flow.
     name: msgraph-files-generate-login-url
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.3539024
+  dockerimage: demisto/crypto:1.0.0.5490413
   script: ''
   subtype: python3
   type: python
