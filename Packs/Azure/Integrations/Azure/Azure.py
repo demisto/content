@@ -1942,7 +1942,7 @@ class AzureClient:
         """
 
         start_datetime = arg_to_datetime(start_date) or datetime.now(UTC)
-        end_datetime = arg_to_datetime(end_date) or datetime.now(UTC) + timedelta(days=7)
+        end_datetime = arg_to_datetime(end_date) or (datetime.now(UTC) + timedelta(days=7))
 
         url = f"{subscription_id}/providers/Microsoft.CostManagement/forecast"
         api_version = "2025-03-01"
