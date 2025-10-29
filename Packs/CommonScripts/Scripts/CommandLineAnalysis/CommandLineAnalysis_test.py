@@ -13,7 +13,6 @@ from CommandLineAnalysis import (
     check_macOS_suspicious_commands,
     analyze_command_line,
     handle_powershell_base64,
-    
 )
 
 # Test data
@@ -92,6 +91,7 @@ def test_check_suspicious_content():
     matches = check_suspicious_content(command)
     assert "-ec" in matches
 
+
 # Test check_amsi
 def test_check_amsi():
     command = "System.Management.Automation.AmsiUtils"
@@ -143,7 +143,7 @@ def test_handle_powershell_base64():
     result = handle_powershell_base64(command_line)
     assert result[0] == 'powershell "This is a test"'
     assert result[1] is True
-    
+
     command_line = "powershell -enc VGhpcyBpcyBhIHRlc3Q="
     result = handle_powershell_base64(command_line)
     assert result[0] == 'powershell "This is a test"'
