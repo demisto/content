@@ -517,7 +517,7 @@ def create_domain_risk_results(domain_result: dict):
         "Analytics": {
             "OverallRiskScore": domain_risk_score_details["overall_risk_score"],
             "ProximityRiskScore": domain_risk_score_details["proximity"],
-            "MalwareRiskScGore": domain_risk_score_details["threat_profile_malware"],
+            "MalwareRiskScore": domain_risk_score_details["threat_profile_malware"],
             "PhishingRiskScore": domain_risk_score_details["threat_profile_phishing"],
             "SpamRiskScore": domain_risk_score_details["threat_profile_spam"],
             "ThreatProfileRiskScore": {
