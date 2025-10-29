@@ -185,7 +185,7 @@ configuration:
   - Timestamp-Milliseconds
   section: Collect
   advanced: true
-- additionalinfo: Used for sorting and limiting data. If empty, results are not sorted. Relevant for generic feed type only.
+- additionalinfo: 'The time field used for incremental fetching (for example, @timestamp). When configured, only new indicators since the last fetch are retrieved. Relevant for generic feed type only.'
   display: Index Time Field
   name: time_field
   type: 0
@@ -230,7 +230,7 @@ script:
       required: true
     description: Gets indicators available in the configured Elasticsearch database.
     name: es-get-indicators
-  dockerimage: demisto/elasticsearch:1.0.0.117175
+  dockerimage: demisto/elasticsearch:1.0.0.4861252
   feed: true
   runonce: false
   script: '-'

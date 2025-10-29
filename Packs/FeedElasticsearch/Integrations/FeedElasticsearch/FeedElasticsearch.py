@@ -202,6 +202,8 @@ def test_command(
             err_msg += 'Please provide a "Indicator Type Field" or "Indicator Type"\n'
         elif not default_type:
             err_msg += 'Please provide a "Indicator Type"\n'
+        if not time_field:
+            err_msg += 'Please provide a "Time Field" e.g. @timestamp\n'
         if not time_method:
             err_msg += 'Please provide a "Time Method"\n'
         if time_field and not fetch_time:
