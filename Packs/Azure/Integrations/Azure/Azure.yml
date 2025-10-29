@@ -5499,6 +5499,8 @@ script:
       description: Scope for the policy assignment.
       required: true
       prettyname: Scope
+      prettypredefined:
+        Scope: ${asset.xdm.asset.raw_fields.Platform Discovery.properties.scope}
     - name: policy_definition_id
       type: string
       description: The ID of the policy definition or policy set definition being assigned.
@@ -5506,10 +5508,20 @@ script:
       defaultValue: 1f3afdf9-d0c9-4c3d-847f-89da613e70a8
     - name: parameters
       description: JSON object of policy parameter values.
-      defaultValue: '{"jitNetworkAccessMonitoringEffect":{"value":"AuditIfNotExists"}}'
+      defaultValue: |
+        {
+          "jitNetworkAccessMonitoringEffect": { "value": "AuditIfNotExists" },
+          "gcLinuxDiskEncryptionMonitoringEffect": { "value": "AuditIfNotExists" },
+          "gcWindowsDiskEncryptionMonitoringEffect": { "value": "AuditIfNotExists" },
+          "systemUpdatesV2MonitoringEffect": { "value": "AuditIfNotExists" }
+        }
       hidden: true
     name: azure-policy-assignment-create-quick-action
-    description: "Applies Microsoft Defender for Cloud built-in recommendations by setting the following to 'AuditIfNotExists': system updates, security configuration, endpoint protection, disk encryption, network security groups, web application firewall, next-generation firewall, vulnerability assessment, storage encryption, JIT network access, adaptive application controls, SQL auditing, and SQL encryption. Requires 'Microsoft.Authorization/policyAssignments/*' permission."
+    description: |
+      Applies Microsoft Defender for Cloud built-in recommendations by creating a policy assignment
+      for the SecurityCenterBuiltIn initiative. This sets the following policies to 'AuditIfNotExists':
+      disk encryption monitoring (Windows and Linux), system updates monitoring, and JIT network access monitoring.
+      Rules for adaptive application controls, endpoint protection, and security configuration are excluded.   
     prettyname: Apply MS Defender Policy
     quickaction: true
     hidden: true
