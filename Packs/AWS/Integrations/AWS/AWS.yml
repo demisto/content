@@ -5116,7 +5116,7 @@ script:
       - 'true'
       - 'false'
     - name: connection_draining_timeout
-      description: 'The maximum time, in seconds, to keep the existing connections open before de-registering the instance.  Valid Range: 1 - 3600. (Make sure connection_draining_enabled is true)'
+      description: 'The maximum time, in seconds, to keep the existing connections open before de-registering the instance.  Valid Range: 1 - 3600.'
       required: false
       type: number
     - name: connection_settings_idle_timeout
