@@ -1,7 +1,7 @@
 ShadowX AI plugin that analyzes security logs and returns response, recommendation, risk/result, and prediction score. Supports API Key (JSON /Api/ endpoints) and cookie (HTML) modes.
-This integration was integrated and tested with version xx of ShadowxSOCAI.
+This integration was tested against the ShadowX SOCAI cloud service as of October 2025.
 
-## Configure ShadowX SOCAI (Partner Contribution) in Cortex
+## Configure ShadowX SOCAI in Cortex
 
 
 | **Parameter** | **Required** |
