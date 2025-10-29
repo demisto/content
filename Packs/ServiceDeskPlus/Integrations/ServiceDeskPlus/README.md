@@ -216,7 +216,7 @@ Create new requests
 | subject | Subject of this request | Required |
 | description | Description of this request | Optional |
 | request_type | Type of this request. Choose one of the listed options or provide a dictionary representing a request_type object. | Optional |
-| impact_details | Description about the impact of the request; must be under 250 characters long. | Optional |
+| impact_details | Description about the impact of the request; must not exceed 250 characters. | Optional |
 | impact | Impact of this request. Choose one of the listed options or provide a dictionary representing an impact object. | Optional |
 | status | Indicates the current status of this request. Choose one of the listed options or provide a dictionary representing a status object. | Optional |
 | mode | The mode in which the request is created. Choose one of the listed options or provide a dictionary representing a mode object. | Optional |

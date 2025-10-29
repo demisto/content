@@ -194,7 +194,7 @@ script:
       - Incident
       - Request For Information
       - Service Request
-    - description: Description about the impact of the request; must be under 250 characters long.
+    - description: Description about the impact of the request; must not exceed 250 characters.
       name: impact_details
     - auto: PREDEFINED
       description: Impact of the request. Choose one of the listed options or provide a dictionary representing an impact object. Can be "Affects Business", "Affects Department", "Affects Group", or "Affects User".
