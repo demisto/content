@@ -289,6 +289,7 @@ def _wrap_simple_output(prefix: str, raw: dict, key_field: str = "") -> CommandR
             "abuse_dangerous": (summary.get("abuse_record") or {}).get("dangerous", 0),
             "cert_valid_to": certs[0].get("valid_to") if certs else "N/A",
             "connected_ips": _join_connected(connected_ips),
+            "score_percentage": (domain_info.get("domain_score") or {}).get("score_percentage") or "N/A",
             "ssl_vulns": ", ".join([k for k, v in (ssl_detail.get("vulnerable") or {}).items() if v]) or "None",
         }
 
@@ -495,7 +496,27 @@ def domain_lite_scan(client: Client, args: dict[str, Any]) -> CommandResults:
     domain = cast(str, domain)
 
     raw = client.domain_lite_scan(domain)
-    return _wrap_simple_output("CriminalIP.Domain_Lite", raw, key_field="scan_id")
+
+    scan_id = (raw.get("data") or {}).get("scan_id")
+    if not scan_id:
+        return_error(f"CriminalIP Error: No scan_id returned. Details: {raw}")
+
+    outputs = {"domain": domain, "scan_id": scan_id}
+
+    readable = tableToMarkdown(
+        "CriminalIP - Domain Lite Scan Started",
+        [{"Domain": domain, "Scan ID": scan_id}],
+        headers=["Domain", "Scan ID"],
+        removeNull=True,
+    )
+
+    return CommandResults(
+        readable_output=readable,
+        outputs_prefix="CriminalIP.Domain_Lite",
+        outputs_key_field="scan_id",
+        outputs=outputs,
+        raw_response=raw,
+    )
 
 
 def domain_lite_scan_status(client: Client, args: dict[str, Any]) -> CommandResults:
@@ -538,7 +559,9 @@ def domain_full_scan(client: Client, args: dict[str, Any]) -> CommandResults:
 
     readable = tableToMarkdown(
         "CriminalIP - Full Scan Started",
-        [{"Scan ID": scan_id, "Domain": domain}],
+        [{"Domain": domain}, {"Scan ID": scan_id}],
+        headers=[],
+        removeNull=True,
     )
 
     return CommandResults(

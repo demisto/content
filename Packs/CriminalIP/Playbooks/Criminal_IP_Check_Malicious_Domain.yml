@@ -223,6 +223,9 @@ tasks:
       version: -1
       name: CheckMalDomainQuick
       description: Decide by Quick Scan result
+        • If **safe**, playbook ends.
+        • If **malicious**, mark as malicious.
+        • If **unknown**, continue to Lite Scan for deeper analysis.
       type: condition
       iscommand: false
       brand: ""
