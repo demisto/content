@@ -274,7 +274,7 @@ class MsGraphClient:
             "recipientEmail": recipient_email,
             "expectedAssessment": expected_assessment,
             "category": category,
-            "messageUri": f"{self.ms_client.ms_url}/v1.0/users/{user_id}/messages/{message_id}",
+            "messageUri": urljoin(self.ms_client._base_url, "users/{user_id}/messages/{message_id}"),
         }
         return self.ms_client.http_request(method="POST", url_suffix=THREAT_ASSESSMENT_URL_PREFIX, json_data=body)
 
