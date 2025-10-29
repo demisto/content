@@ -1531,7 +1531,7 @@ class SecurityAndComplianceClient {
 
 function TestModuleCommand () {
     $raw_response = $null
-    $human_readable = "The test module does not work for MFA auth. Use the command !$script:COMMAND_PREFIX-auth-start for Oauth2.0 authorization and !$script:COMMAND_PREFIX-auth-test to instead."
+    $human_readable = "To test your connection, if you are using app-only authentication use the command !$script:COMMAND_PREFIX-auth-start and follow the instructions. If you are using UPN and password authentication, run the command !$script:COMMAND_PREFIX-auth-test to verify the connection."
     $entry_context = $null
 
     return $human_readable, $entry_context, $raw_response
@@ -1909,6 +1909,7 @@ function CaseHoldRuleCreateCommand([SecurityAndComplianceClient]$client, [hashta
     $entry_context = @{"$script:INTEGRATION_ENTRY_CASE_HOLD_RULE(obj.Guid === val.Guid)" = $raw_response}
     return $human_readable, $entry_context, $raw_response
 }
+
 function CaseHoldRuleListCommand([SecurityAndComplianceClient]$client, [hashtable]$kwargs) {
     $identity = $kwargs.identity
     $policy = $kwargs.policy
@@ -2170,7 +2171,7 @@ Handle-OAuth2AuthCommand "$script:COMMAND_PREFIX-auth-start" $false $oauth2_clie
 #>
 function Handle-OAuth2AuthCommand($command, [bool]$using_delegated, [OAuth2DeviceCodeClient]$oauth2_client) {
     if ($using_delegated) {
-        throw "When using UPN password authentication, you don't need to run this command. Please run ($script:COMMAND_PREFIX)-auth-test to verify that authentication is successful."
+        throw "When using UPN and password for authentication, you don't need to run this command. Please run $script:COMMAND_PREFIX-auth-test to verify that the authentication is successful."
     }
 
     switch ($command) {
@@ -2207,7 +2208,9 @@ function Main {
 
         # Executing oauth2 commands
         switch ($command) {
-            "$script:COMMAND_PREFIX-auth-start"
+            "$script:COMMAND_PREFIX-auth-start" {
+                ($human_readable, $entry_context, $raw_response) = Handle-OAuth2AuthCommand $command $using_delegated $oauth2_client
+            }
             "$script:COMMAND_PREFIX-auth-complete" {
                 ($human_readable, $entry_context, $raw_response) = Handle-OAuth2AuthCommand $command $using_delegated $oauth2_client
             }
