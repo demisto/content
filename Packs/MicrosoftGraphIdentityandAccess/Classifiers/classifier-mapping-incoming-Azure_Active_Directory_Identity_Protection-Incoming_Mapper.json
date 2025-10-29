@@ -51,6 +51,10 @@
                     },
                     "simple": ""
                 },
+                "Location Region": {
+                    "complex": null,
+                    "simple": "location.countryOrRegion"
+                },
                 "Country Code Number": {
                     "complex": null,
                     "simple": "location.countryOrRegion"
