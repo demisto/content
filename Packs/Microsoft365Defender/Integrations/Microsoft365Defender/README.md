@@ -58,7 +58,8 @@ Follow these steps:
 
 ## More Configuration Settings for Microsoft 365 Defender in Cortex
 
-1. - Cortex XSIAM: Go to **Settings** > **Configurations** > **Automation & Feed Integrations**.
+1.
+- Cortex XSIAM: Go to **Settings** > **Configurations** > **Automation & Feed Integrations**.
 - Cortex XSOAR 8:  Go to **Settings & Info** > **Instances**.
 - Cortex XSOAR 6: Go to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for Microsoft 365 Defender.
@@ -69,7 +70,7 @@ Follow these steps:
    3. Under **Incident type**, select **Microsoft 365 Defender Incident**.
    4. Under **Mapper (incoming)**, select **Microsoft 365 Defender - Incoming Mapper**.
    5. Under **Mapper (outgoing)**, select **Microsoft 365 Defender - Outgoing Mapper**.
-   6. To enable mirroring to close a ticket in Cortex XSOAR, check the **Close Mirrored Cortex XSOAR Incidents** checkbox.
+   6. To enable mirroring to close a ticket in Cortex XSOAR/XSIAM, check the **Close Mirrored Cortex XSOAR Incidents** checkbox.
    7. To enable mirroring to close an incident in Microsoft 365 Defender, check the **Close Mirrored Microsoft 365 Defender Incidents** checkbox.
 
 | **Parameter** | **Description**                                                                                                                                                                                                                                                                                                                                        | **Required** |
@@ -92,7 +93,7 @@ Follow these steps:
 | Use system proxy settings |                                                                                                                                                                                                                                                                                                                                                        | False |
 | Incidents Fetch Interval |                                                                                                                                                                                                                                                                                                                                                        | False |
 | Incident Mirroring Direction | Choose the direction to mirror the incident: Incoming \(from Microsoft 365 Defender to Cortex XSIAM/XSOAR\), Outgoing \(from Cortex XSIAM/XSOAR to  Microsoft 365 Defender\), or Incoming and Outgoing \(from/to Cortex XSIAM/XSOAR and  Microsoft 365 Defender\).                                                                                                       | False |
-| Close Mirrored Cortex XSIAM/XSOAR Incidents | Incoming Mirroring - when selected, closing the Microsoft 365 Defender incident is mirrored in Cortex XSIAM/XSOAR.                                                                                                                                                                                                                                           | False |
+| Close Mirrored Cortex XSOAR Incidents | Incoming Mirroring - when selected, closing the Microsoft 365 Defender incident is mirrored in Cortex XSIAM/XSOAR.                                                                                                                                                                                                                                           | False |
 | Close Mirrored Microsoft 365 Defender Incidents | Outgoing Mirroring - when selected, closing the Cortex XSIAM/XSOAR incident is mirrored in Microsoft 365 Defender.                                                                                                                                                                                                                                           | False |
 | Comment Entry Tag To Microsoft 365 Defender | Choose a tag to add to an entry to mirror it as a comment into Microsoft 365 Defender.                                                                                                                                                                                                                                                                 | False |
 | Comment Entry Tag From Microsoft 365 Defender | Choose a tag to add to an entry to mirror it as a comment from Microsoft 365 Defender.                                                                                                                                                                                                                                                                 | False |
@@ -101,9 +102,9 @@ Follow these steps:
 
 ## Incident Mirroring
 
-### Mirroring In (Microsoft 365 Defender → XSOAR)
+### Mirroring In (Microsoft 365 Defender → XSOAR/XSIAM)
 
-When incidents are mirrored into XSOAR from Microsoft 365 Defender:
+When incidents are mirrored into XSOAR/XSIAM from Microsoft 365 Defender:
 
 1. **Comments** mirrored from Microsoft 365 Defender will be added to the incident as entries in XSOAR and tagged with the **Comment Entry Tag From Microsoft 365 Defender**.  
    * By default, the tag is set to: `CommentFromMicrosoft365Defender`.  
@@ -111,9 +112,9 @@ When incidents are mirrored into XSOAR from Microsoft 365 Defender:
 2. If an incident is closed in Microsoft 365 Defender (`status` = **Resolved**) and Close Mirrored Cortex XSOAR Incidents is enabled:  
    * The **"classification"** field in Microsoft 365 Defender will be mapped to the **Close Reason** field in XSOAR.  
 
-### Mirroring Out (XSOAR → Microsoft 365 Defender)
+### Mirroring Out (XSOAR/XSIAM → Microsoft 365 Defender)
 
-When incidents are mirrored out from XSOAR to Microsoft 365 Defender:
+When incidents are mirrored out from XSOAR/XSIAM to Microsoft 365 Defender:
 
 1. **Supported Fields**:  
    The following fields are mirrored:  
@@ -131,7 +132,7 @@ When incidents are mirrored out from XSOAR to Microsoft 365 Defender:
 
 ### Closing Logic
 
-#### Incoming Closing Logic (Microsoft 365 Defender → XSOAR)
+#### Incoming Closing Logic (Microsoft 365 Defender → XSOAR/XSIAM)
 
 When an incident is resolved in Microsoft 365 Defender:
 
@@ -159,21 +160,21 @@ When an incident is resolved in Microsoft 365 Defender:
 | False Positive                          | False Positive             |
 | Informational / Expected Activity       | Resolved                   |
 
-#### Outgoing Closing Logic (XSOAR → Microsoft 365 Defender)
+#### Outgoing Closing Logic (XSOAR/XSIAM → Microsoft 365 Defender)
 
 Disclaimer: The closing form currently does not support the **Microsoft 365 Defender Classification** field, and False Positive Classification is not yet enforced when selecting "False Positive" as the close reason.
 If classification is required, please manually update the **Microsoft 365 Defender Classification** via the layout before closing the incident.
 
-When closing incidents from XSOAR to Microsoft 365 Defender, the following logic is applied to map the **Close Reason** field:
+When closing incidents from XSOAR/XSIAM to Microsoft 365 Defender, the following logic is applied to map the **Close Reason** field:
 
 1. **General Status Update**:  
-   When an incident is marked as closed in XSOAR, the `status` field in Microsoft 365 Defender will always be set to **Resolved**.  
+   When an incident is marked as closed in XSOAR/XSIAM, the `status` field in Microsoft 365 Defender will always be set to **Resolved**.  
 
 2. **Close Reason: Resolved or False Positive**  
-  If the **Close Reason** in XSOAR is **Resolved**, the **Microsoft 365 Defender Classification** field is mirrored to classification and determination fields **as-is** into Microsoft 365 Defender without any changes.
+  If the **Close Reason** in XSOAR/XSIAM is **Resolved**, the **Microsoft 365 Defender Classification** field is mirrored to classification and determination fields **as-is** into Microsoft 365 Defender without any changes.
 
 3. **Close Reason: Other or Duplicate**  
-   If the **Close Reason** in XSOAR is either **Other** or **Duplicate**, the following updates occur:  
+   If the **Close Reason** in XSOAR/XSIAM is either **Other** or **Duplicate**, the following updates occur:  
    * **classification** → `Unknown`  
    * **determination** → `NotAvailable`  
 
