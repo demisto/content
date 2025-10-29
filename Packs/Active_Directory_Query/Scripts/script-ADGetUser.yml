@@ -357,3 +357,11 @@ dependson:
   - activedir|||ad-search
 fromversion: 5.0.0
 dockerimage: demisto/python:2.7.18.24398
+supportedModules:
+- X1
+- X3
+- X5
+- ENT_PLUS
+- agentix
+- xsiam
+- edr
