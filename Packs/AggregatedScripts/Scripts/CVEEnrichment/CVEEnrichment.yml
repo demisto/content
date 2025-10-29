@@ -5,12 +5,6 @@ args:
   isArray: true
 - name: external_enrichment
   description: |
-    Whether to call external integrations for enrichment.  
-    - 'true': Enrich using enabled external integrations, for example, CIRCL CVE Search and CVE Search v2.  
-    - 'false': Use only existing TIM data and not external integrations.  
-
-    If the 'brands' argument is provided, this flag is ignored and enrichment is run only on the brands provided.
-
     Whether to call external integrations for enrichment.
     - 'true': enrich using enabled external integrations (e.g., CIRCL CVE Search, CVE Search v2).
     - 'false': use only existing TIM data; skip external integrations.
