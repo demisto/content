@@ -2,7 +2,7 @@
     "name": "Proofpoint ObserveIT",
     "description": "Proofpoint ObserveIT protects against data loss, malicious acts, and brand damage involving insiders acting maliciously, negligently, or unknowingly.",
     "support": "xsoar",
-    "currentVersion": "1.0.4",
+    "currentVersion": "1.0.5",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

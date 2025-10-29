@@ -2,7 +2,7 @@
     "name": "ManageEngine ADSelfService Plus",
     "description": "ManageEngine ADSelfService Plus is an identity security solution with adaptive MFA, SSO, and password management capabilities.",
     "support": "xsoar",
-    "currentVersion": "1.0.1",
+    "currentVersion": "1.0.2",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
