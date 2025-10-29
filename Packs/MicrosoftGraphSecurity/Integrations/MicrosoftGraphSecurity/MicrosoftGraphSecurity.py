@@ -2097,6 +2097,8 @@ def main():
             redirect_uri=redirect_uri,
             app_name=APP_NAME,
             azure_cloud=azure_cloud,
+            azure_ad_endpoint=azure_cloud.endpoints.active_directory,
+            token_retrieval_url=urljoin(azure_cloud.endpoints.active_directory, f'/{tenant}/oauth2/v2.0/token'),
             verify=use_ssl,
             proxy=proxy,
             self_deployed=self_deployed,
