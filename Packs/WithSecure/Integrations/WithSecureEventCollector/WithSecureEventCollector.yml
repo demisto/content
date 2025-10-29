@@ -52,6 +52,262 @@ script:
       name: limit
     description: Manual command used to fetch events and display them.
     name: with-secure-get-events
+  - arguments:
+    - description: Comma-separated list of incident IDs to retrieve. Leave empty to get all incidents.
+      name: incident_id
+    - description: Filter by incident status. Possible values are new, acknowledged, inProgress, monitoring, closed, waitingForCustomer.
+      name: status
+      auto: PREDEFINED
+      predefined:
+      - new
+      - acknowledged
+      - inProgress
+      - monitoring
+      - closed
+      - waitingForCustomer
+    - description: Filter by risk level. Possible values are info, low, medium, high, severe.
+      name: risk_level
+      auto: PREDEFINED
+      predefined:
+      - info
+      - low
+      - medium
+      - high
+      - severe
+    - description: Maximum number of incidents to return. Default is 20, maximum is 50.
+      name: limit
+      defaultValue: '20'
+    - description: Filter by incident source. Possible values are endpoint, cloud, customer, endpointExpert, identityAzure, workloadAzure, workloadAws.
+      name: source
+      auto: PREDEFINED
+      predefined:
+      - endpoint
+      - cloud
+      - customer
+      - endpointExpert
+      - identityAzure
+      - workloadAzure
+      - workloadAws
+    description: List EDR incidents (Broad Context Detections) from WithSecure.
+    name: with-secure-get-incidents
+    outputs:
+    - contextPath: WithSecure.Incident.incidentId
+      description: Unique identifier of the incident (BCD).
+      type: String
+    - contextPath: WithSecure.Incident.incidentPublicId
+      description: Public ID visible in the portal.
+      type: String
+    - contextPath: WithSecure.Incident.status
+      description: Status of the incident.
+      type: String
+    - contextPath: WithSecure.Incident.severity
+      description: Severity level of the incident.
+      type: String
+    - contextPath: WithSecure.Incident.riskLevel
+      description: Risk level of the incident.
+      type: String
+    - contextPath: WithSecure.Incident.riskScore
+      description: Risk score of the incident.
+      type: Number
+    - contextPath: WithSecure.Incident.categories
+      description: List of incident categories.
+      type: Unknown
+    - contextPath: WithSecure.Incident.name
+      description: Name related to the incident.
+      type: String
+  - arguments:
+    - description: The incident ID to update.
+      name: incident_id
+      required: true
+    - description: New status for the incident. Possible values are new, acknowledged, inProgress, monitoring, closed, waitingForCustomer.
+      name: status
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - new
+      - acknowledged
+      - inProgress
+      - monitoring
+      - closed
+      - waitingForCustomer
+    - description: Resolution of the incident (required if status is closed). Possible values are unconfirmed, confirmed, falsePositive, merged, securityTest, acceptedRisk, acceptedBehavior.
+      name: resolution
+      auto: PREDEFINED
+      predefined:
+      - unconfirmed
+      - confirmed
+      - falsePositive
+      - merged
+      - securityTest
+      - acceptedRisk
+      - acceptedBehavior
+    description: Update the status of a WithSecure EDR incident (BCD).
+    name: with-secure-update-incident-status
+    outputs:
+    - contextPath: WithSecure.IncidentUpdate.incidentId
+      description: ID of the updated incident.
+      type: String
+    - contextPath: WithSecure.IncidentUpdate.status
+      description: HTTP status of the update operation.
+      type: Number
+  - arguments:
+    - description: Comma-separated list of incident IDs to add comment to.
+      name: incident_ids
+      required: true
+    - description: Comment to add to the incidents.
+      name: comment
+      required: true
+    description: Add a comment to one or more WithSecure EDR incidents.
+    name: with-secure-add-incident-comment
+  - arguments:
+    - description: The incident ID to get detections for.
+      name: incident_id
+      required: true
+    - description: Maximum number of detections to return. Default is 100, maximum is 100.
+      name: limit
+      defaultValue: '100'
+    description: List detections for a given EDR incident (BCD).
+    name: with-secure-get-incident-detections
+    outputs:
+    - contextPath: WithSecure.Detection.detectionId
+      description: Unique identifier of the detection.
+      type: String
+    - contextPath: WithSecure.Detection.incidentId
+      description: ID of the incident to which the detection belongs.
+      type: String
+    - contextPath: WithSecure.Detection.deviceId
+      description: ID of the device on which the incident was detected.
+      type: String
+    - contextPath: WithSecure.Detection.name
+      description: Name related to the detection.
+      type: String
+    - contextPath: WithSecure.Detection.severity
+      description: Severity level of the detection.
+      type: String
+  - arguments:
+    - description: Filter by device ID (UUID format).
+      name: device_id
+    - description: Filter by device name.
+      name: name
+    - description: Filter by device type. Possible values are computer, connector, mobile.
+      name: type
+      auto: PREDEFINED
+      predefined:
+      - computer
+      - connector
+      - mobile
+    - description: Filter by device state. Possible values are active, blocked, inactive.
+      name: state
+      auto: PREDEFINED
+      predefined:
+      - active
+      - blocked
+      - inactive
+    - description: Filter devices by online status. Possible values are true, false.
+      name: online
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - description: Filter by protection status. Possible values are isolated, inactive, critical, warning, allOk.
+      name: protection_status
+      auto: PREDEFINED
+      predefined:
+      - isolated
+      - inactive
+      - critical
+      - warning
+      - allOk
+    - description: Maximum number of devices to return. Default is 50, maximum is 200.
+      name: limit
+      defaultValue: '50'
+    description: Query and list devices from WithSecure Elements.
+    name: with-secure-get-devices
+    outputs:
+    - contextPath: WithSecure.Device.id
+      description: Device ID.
+      type: String
+    - contextPath: WithSecure.Device.name
+      description: Device name.
+      type: String
+    - contextPath: WithSecure.Device.type
+      description: Device type (computer, connector, mobile).
+      type: String
+    - contextPath: WithSecure.Device.state
+      description: Device state (active, blocked, inactive).
+      type: String
+    - contextPath: WithSecure.Device.online
+      description: Whether the device is online.
+      type: Boolean
+    - contextPath: WithSecure.Device.protectionStatusOverview
+      description: Protection status overview.
+      type: String
+  - arguments:
+    - description: Comma-separated list of device IDs to isolate (max 5).
+      name: device_ids
+      required: true
+    - description: Message to display on isolated endpoint before isolation.
+      name: message
+    description: Isolate one or more endpoints from the network to contain threats.
+    name: with-secure-isolate-endpoint
+    outputs:
+    - contextPath: WithSecure.IsolationAction.deviceId
+      description: ID of the device being isolated.
+      type: String
+    - contextPath: WithSecure.IsolationAction.status
+      description: HTTP status of the isolation operation.
+      type: Number
+    - contextPath: WithSecure.IsolationAction.operationId
+      description: ID of the isolation operation for tracking.
+      type: String
+  - arguments:
+    - description: Comma-separated list of device IDs to release from isolation (max 5).
+      name: device_ids
+      required: true
+    description: Release one or more endpoints from network isolation.
+    name: with-secure-release-endpoint
+    outputs:
+    - contextPath: WithSecure.IsolationAction.deviceId
+      description: ID of the device being released.
+      type: String
+    - contextPath: WithSecure.IsolationAction.status
+      description: HTTP status of the release operation.
+      type: Number
+    - contextPath: WithSecure.IsolationAction.operationId
+      description: ID of the release operation for tracking.
+      type: String
+  - arguments:
+    - description: Comma-separated list of device IDs to scan (max 5).
+      name: device_ids
+      required: true
+    description: Trigger a malware scan on one or more endpoints.
+    name: with-secure-scan-endpoint
+    outputs:
+    - contextPath: WithSecure.ScanAction.deviceId
+      description: ID of the device being scanned.
+      type: String
+    - contextPath: WithSecure.ScanAction.status
+      description: HTTP status of the scan operation.
+      type: Number
+    - contextPath: WithSecure.ScanAction.operationId
+      description: ID of the scan operation for tracking.
+      type: String
+  - arguments:
+    - description: Device ID to query operations for.
+      name: device_id
+      required: true
+    description: List all operations triggered on a specific device.
+    name: with-secure-get-device-operations
+    outputs:
+    - contextPath: WithSecure.DeviceOperation.id
+      description: Operation ID.
+      type: String
+    - contextPath: WithSecure.DeviceOperation.status
+      description: Operation status (pending, finished, ongoing, failed).
+      type: String
+    - contextPath: WithSecure.DeviceOperation.operationName
+      description: Operation name.
+      type: String
   isfetchevents: true
   script: '-'
   type: python

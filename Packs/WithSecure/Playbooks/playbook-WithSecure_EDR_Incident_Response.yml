@@ -1,0 +1,417 @@
+id: WithSecure EDR Incident Response
+version: -1
+name: WithSecure EDR Incident Response
+description: |-
+  This playbook handles automated response to critical EDR incidents (Broad Context Detections) from WithSecure.
+  
+  The playbook performs the following actions:
+  1. Retrieves incident details and detections
+  2. Identifies affected devices
+  3. Isolates compromised endpoints from the network
+  4. Triggers malware scan on isolated endpoints
+  5. Adds investigation comment to the incident
+  6. Updates incident status to "inProgress"
+  7. Waits for analyst review before releasing endpoints
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 4a8b3c2e-1234-5678-9abc-def012345678
+    type: start
+    task:
+      id: 4a8b3c2e-1234-5678-9abc-def012345678
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 5b9c4d3f-2345-6789-abcd-ef0123456789
+    type: condition
+    task:
+      id: 5b9c4d3f-2345-6789-abcd-ef0123456789
+      version: -1
+      name: Is WithSecure integration available?
+      description: Check if WithSecure Event Collector integration is enabled
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: WithSecureEventCollector
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 6c0d5e4a-3456-789a-bcde-f01234567890
+    type: regular
+    task:
+      id: 6c0d5e4a-3456-789a-bcde-f01234567890
+      version: -1
+      name: Get incident detections
+      description: Retrieve all detections associated with the EDR incident
+      script: '|||with-secure-get-incident-detections'
+      type: regular
+      iscommand: true
+      brand: WithSecureEventCollector
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      incident_id:
+        complex:
+          root: incident
+          accessor: withsecureincidentid
+      limit:
+        simple: "100"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 7d1e6f5b-4567-89ab-cdef-012345678901
+    type: regular
+    task:
+      id: 7d1e6f5b-4567-89ab-cdef-012345678901
+      version: -1
+      name: Isolate affected endpoints
+      description: Isolate all devices affected by the incident from network
+      script: '|||with-secure-isolate-endpoint'
+      type: regular
+      iscommand: true
+      brand: WithSecureEventCollector
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      device_ids:
+        complex:
+          root: WithSecure.Detection
+          accessor: deviceId
+          transformers:
+          - operator: uniq
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+      message:
+        simple: "Security incident detected. This endpoint has been isolated for investigation. Contact IT Security team."
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 8e2f7g6c-5678-9abc-def0-123456789012
+    type: regular
+    task:
+      id: 8e2f7g6c-5678-9abc-def0-123456789012
+      version: -1
+      name: Trigger malware scan on isolated endpoints
+      description: Scan isolated endpoints for malware
+      script: '|||with-secure-scan-endpoint'
+      type: regular
+      iscommand: true
+      brand: WithSecureEventCollector
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      device_ids:
+        complex:
+          root: WithSecure.IsolationAction
+          accessor: deviceId
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 9f3g8h7d-6789-abcd-ef01-234567890123
+    type: regular
+    task:
+      id: 9f3g8h7d-6789-abcd-ef01-234567890123
+      version: -1
+      name: Add comment to incident
+      description: Document the automated response actions taken
+      script: '|||with-secure-add-incident-comment'
+      type: regular
+      iscommand: true
+      brand: WithSecureEventCollector
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      incident_ids:
+        complex:
+          root: incident
+          accessor: withsecureincidentid
+      comment:
+        simple: "Automated response: Endpoints isolated and malware scan triggered. Incident under investigation."
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: a04h9i8e-789a-bcde-f012-345678901234
+    type: regular
+    task:
+      id: a04h9i8e-789a-bcde-f012-345678901234
+      version: -1
+      name: Update incident status to In Progress
+      description: Mark the incident as being investigated
+      script: '|||with-secure-update-incident-status'
+      type: regular
+      iscommand: true
+      brand: WithSecureEventCollector
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      incident_id:
+        complex:
+          root: incident
+          accessor: withsecureincidentid
+      status:
+        simple: "inProgress"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: b15i0j9f-89ab-cdef-0123-456789012345
+    type: condition
+    task:
+      id: b15i0j9f-89ab-cdef-0123-456789012345
+      version: -1
+      name: Remediation completed?
+      description: Wait for analyst to confirm remediation
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "8"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    message:
+      to:
+      subject:
+      body:
+        simple: "Has the threat been remediated and is it safe to release the isolated endpoint?"
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+      replyOptions:
+      - "yes"
+      - "no"
+  "8":
+    id: "8"
+    taskid: c26j1k0g-9abc-def0-1234-567890123456
+    type: regular
+    task:
+      id: c26j1k0g-9abc-def0-1234-567890123456
+      version: -1
+      name: Release endpoints from isolation
+      description: Release endpoints from network isolation after remediation
+      script: '|||with-secure-release-endpoint'
+      type: regular
+      iscommand: true
+      brand: WithSecureEventCollector
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      device_ids:
+        complex:
+          root: WithSecure.IsolationAction
+          accessor: deviceId
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: d37k2l1h-abcd-ef01-2345-678901234567
+    type: title
+    task:
+      id: d37k2l1h-abcd-ef01-2345-678901234567
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1610,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.8.0
+

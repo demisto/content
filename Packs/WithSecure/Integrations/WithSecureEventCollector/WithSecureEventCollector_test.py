@@ -1,7 +1,16 @@
 import json
 import pytest
 import demistomock as demisto
-from WithSecureEventCollector import Client, get_events_command, fetch_events_command
+from WithSecureEventCollector import (
+    Client,
+    get_events_command,
+    fetch_events_command,
+    get_incidents_command,
+    update_incident_status_command,
+    get_devices_command,
+    isolate_endpoint_command,
+    release_endpoint_command,
+)
 
 
 def mock_client():
@@ -42,7 +51,7 @@ def test_get_events_command(requests_mock, mocker):
     args = {"fetch_from": "2022-12-26T00:00:00Z", "limit": 2}
     mocker.patch.object(Client, "get_access_token", return_value={"access_token": "access_token"})
     requests_mock.get(
-        "https://test.com/security-events/v1/security-events?limit=2&serverTimestampStart=2022-12-26T00:00:00Z",
+        "https://test.com/security-events/v1/security-events?limit=2&persistenceTimestampStart=2022-12-26T00:00:00Z",
         json=mock_response,
     )
     events, response = get_events_command(client, args)
@@ -63,7 +72,7 @@ def test_fetch_events_command(requests_mock, mocker):
     mocker.patch.object(Client, "get_access_token", return_value={"access_token": "access_token"})
     mocker.patch.object(demisto, "getLastRun", return_value={"fetch_from": "2023-03-15T14:39:13Z", "event_id": "test_id"})
     requests_mock.get(
-        "https://test.com/security-events/v1/security-events?serverTimestampStart=2023-03-15T14:39:13Z&limit=100",
+        "https://test.com/security-events/v1/security-events?persistenceTimestampStart=2023-03-15T14:39:13Z&limit=100",
         json=mock_response,
     )
     events, _ = fetch_events_command(client, first_fetch="1 day", limit=100)
@@ -72,3 +81,123 @@ def test_fetch_events_command(requests_mock, mocker):
     expected = [mock_response.get("items")[0]]
     assert len(events) == 1
     assert events == expected
+
+
+def test_get_incidents_command(requests_mock, mocker):
+    """Tests get-incidents command function."""
+    client = mock_client()
+    mock_response = {
+        "items": [
+            {
+                "incidentId": "2c902c73-e2a6-40fd-9532-257ee102e1c1",
+                "incidentPublicId": "3599-123456",
+                "status": "new",
+                "severity": "high",
+                "riskLevel": "high",
+                "riskScore": 85.5,
+                "categories": ["MALWARE", "LATERAL_MOVEMENT"],
+                "name": "Incident on DESKTOP-1"
+            }
+        ]
+    }
+    args = {"status": "new", "risk_level": "high", "limit": "20"}
+    mocker.patch.object(Client, "get_access_token", return_value="access_token")
+    requests_mock.get(
+        "https://test.com/incidents/v1/incidents?limit=20&archived=false&status=new&riskLevel=high",
+        json=mock_response,
+    )
+    result = get_incidents_command(client, args)
+    assert result.outputs == mock_response.get("items")
+    assert len(result.outputs) == 1
+
+
+def test_update_incident_status_command(requests_mock, mocker):
+    """Tests update-incident-status command function."""
+    client = mock_client()
+    mock_response = {
+        "multistatus": [
+            {"target": "2c902c73-e2a6-40fd-9532-257ee102e1c1", "status": 204}
+        ]
+    }
+    args = {"incident_id": "2c902c73-e2a6-40fd-9532-257ee102e1c1", "status": "acknowledged"}
+    mocker.patch.object(Client, "get_access_token", return_value="access_token")
+    requests_mock.patch(
+        "https://test.com/incidents/v1/incidents",
+        json=mock_response,
+    )
+    result = update_incident_status_command(client, args)
+    assert result.outputs[0]["status"] == 204
+
+
+def test_get_devices_command(requests_mock, mocker):
+    """Tests get-devices command function."""
+    client = mock_client()
+    mock_response = {
+        "items": [
+            {
+                "id": "ec8a0100-d313-4896-b3cb-02188e060bf3",
+                "name": "DESKTOP-ABC123",
+                "type": "computer",
+                "state": "active",
+                "online": True,
+                "protectionStatusOverview": "allOk"
+            }
+        ]
+    }
+    args = {"state": "active", "limit": "50"}
+    mocker.patch.object(Client, "get_access_token", return_value="access_token")
+    requests_mock.get(
+        "https://test.com/devices/v1/devices?limit=50&state=active",
+        json=mock_response,
+    )
+    result = get_devices_command(client, args)
+    assert result.outputs == mock_response.get("items")
+    assert len(result.outputs) == 1
+
+
+def test_isolate_endpoint_command(requests_mock, mocker):
+    """Tests isolate-endpoint command function."""
+    client = mock_client()
+    mock_response = {
+        "multistatus": [
+            {
+                "target": "ec8a0100-d313-4896-b3cb-02188e060bf3",
+                "status": 202,
+                "operationId": "7243413413490181"
+            }
+        ],
+        "transactionId": "0000-abcdef-1234"
+    }
+    args = {"device_ids": "ec8a0100-d313-4896-b3cb-02188e060bf3", "message": "Isolation test"}
+    mocker.patch.object(Client, "get_access_token", return_value="access_token")
+    requests_mock.post(
+        "https://test.com/devices/v1/operations",
+        json=mock_response,
+    )
+    result = isolate_endpoint_command(client, args)
+    assert result.outputs[0]["deviceId"] == "ec8a0100-d313-4896-b3cb-02188e060bf3"
+    assert result.outputs[0]["status"] == 202
+
+
+def test_release_endpoint_command(requests_mock, mocker):
+    """Tests release-endpoint command function."""
+    client = mock_client()
+    mock_response = {
+        "multistatus": [
+            {
+                "target": "ec8a0100-d313-4896-b3cb-02188e060bf3",
+                "status": 202,
+                "operationId": "7243413413490182"
+            }
+        ],
+        "transactionId": "0000-abcdef-1234"
+    }
+    args = {"device_ids": "ec8a0100-d313-4896-b3cb-02188e060bf3"}
+    mocker.patch.object(Client, "get_access_token", return_value="access_token")
+    requests_mock.post(
+        "https://test.com/devices/v1/operations",
+        json=mock_response,
+    )
+    result = release_endpoint_command(client, args)
+    assert result.outputs[0]["deviceId"] == "ec8a0100-d313-4896-b3cb-02188e060bf3"
+    assert result.outputs[0]["status"] == 202
