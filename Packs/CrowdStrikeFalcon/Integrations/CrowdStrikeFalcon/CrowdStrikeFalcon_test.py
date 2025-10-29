@@ -2500,7 +2500,9 @@ test_data2 = get_fetch_data2()
 def test_get_indicator_device_id(mocker, requests_mock):
     from CrowdStrikeFalcon import get_indicator_device_id
 
-    requests_mock.get("https://4.4.4.4/indicators/queries/devices/v1", json=test_data["response_for_get_indicator_device_id"])
+    requests_mock.get(
+        "https://4.4.4.4/iocs/queries/indicators/devices/v1", json=test_data["response_for_get_indicator_device_id"]
+    )
     mocker.patch.object(demisto, "args", return_value={"type": "sha256", "value": "example_sha"})
     res = get_indicator_device_id()
 
@@ -3278,7 +3280,7 @@ def test_get_ioc_device_count_command_rate_limit_exceeded(requests_mock):
         status_code=200,
     )
     requests_mock.get(
-        f"{SERVER_URL}/indicators/queries/devices/v1",
+        f"{SERVER_URL}/iocs/queries/indicators/devices/v1",
         json=indicators_queries_res_with_offset,
         status_code=200,
     )
@@ -3352,7 +3354,7 @@ def test_get_process_details_command_exists(requests_mock):
     assert resources == result["EntryContext"]["CrowdStrike.Process(val.process_id === obj.process_id)"][0]
 
 
-def test_get_proccesses_ran_on_command_exists(requests_mock):
+def test_get_processes_ran_on_command_exists(requests_mock):
     """
     Test cs-falcon-processes-ran-on with a successful query
 
@@ -3364,15 +3366,15 @@ def test_get_proccesses_ran_on_command_exists(requests_mock):
      - Return a human readable result with appropriate message
      - Do populate the entry context with the right value
     """
-    from CrowdStrikeFalcon import get_proccesses_ran_on_command
+    from CrowdStrikeFalcon import get_processes_ran_on_command
 
     response = {"resources": ["pid:fake:process"]}
     requests_mock.get(
-        f"{SERVER_URL}/indicators/queries/processes/v1",
+        f"{SERVER_URL}/iocs/queries/indicators/processes/v1",
         json=response,
         status_code=200,
     )
-    result = get_proccesses_ran_on_command(ioc_type="test", value="mock", device_id="123")
+    result = get_processes_ran_on_command(ioc_type="test", value="mock", device_id="123")
     assert "### Processes with custom IOC test:mock on device 123." in result["HumanReadable"]
     assert "| pid:fake:process |" in result["HumanReadable"]
 
@@ -3381,7 +3383,7 @@ def test_get_proccesses_ran_on_command_exists(requests_mock):
     assert expected_proc_result == actual_proc_result
 
 
-def test_get_proccesses_ran_on_command_not_exists(requests_mock):
+def test_get_processes_ran_on_command_not_exists(requests_mock):
     """
     Test cs-falcon-processes-ran-on with an unsuccessful query
 
@@ -3392,17 +3394,17 @@ def test_get_proccesses_ran_on_command_not_exists(requests_mock):
     Then
      - Raise an error
     """
-    from CrowdStrikeFalcon import get_proccesses_ran_on_command
+    from CrowdStrikeFalcon import get_processes_ran_on_command
 
     expected_error = [{"code": 404, "message": "pid:fake:process - Resource Not Found"}]
     response = {"resources": [], "errors": expected_error}
     requests_mock.get(
-        f"{SERVER_URL}/indicators/queries/processes/v1",
+        f"{SERVER_URL}/iocs/queries/indicators/processes/v1",
         json=response,
         status_code=200,
     )
     with pytest.raises(DemistoException) as excinfo:
-        get_proccesses_ran_on_command(ioc_type="test", value="mock", device_id="123")
+        get_processes_ran_on_command(ioc_type="test", value="mock", device_id="123")
     assert expected_error == excinfo.value.args[0]
 
 
