@@ -1,7 +1,8 @@
 id: Online Brand Protection Detect and Respond
 version: -1
 name: Online Brand Protection Detect and Respond
-description: Analyzes the domains and URLs in suspicious emails, reported by end users, 
+deprecated: true
+description: Deprecated. Analyzes the domains and URLs in suspicious emails, reported by end users, 
   to determine if the phishing campaign is impersonating your company’s brand. 
   Playbook can then trigger a domain take down email, with forensic evidence, to a target address.
 starttaskid: "0"
