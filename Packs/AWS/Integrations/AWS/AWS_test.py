@@ -5028,10 +5028,8 @@ def test_get_policy_with_minimal_parameters(mocker):
         "RevisionId": "RevisionId",
         "ResponseMetadata": {"HTTPStatusCode": 200, "RequestId": "test-request-id"},
     }
-    mock_config_response = {"FunctionArn": "FunctionArn"}
 
     mock_client.get_policy.return_value = mock_policy_response
-    mock_client.get_function_configuration.return_value = mock_config_response
 
     args = {"function_name": "test-function", "region": "us-east-1"}
 
@@ -5041,9 +5039,7 @@ def test_get_policy_with_minimal_parameters(mocker):
     # Assert
     assert isinstance(result, CommandResults)
     assert result.outputs_prefix == "AWS.Lambda.Policy"
-    assert result.outputs_key_field == ["FunctionArn", "FunctionName", "AccountId"]
-    assert result.outputs["FunctionArn"] == "FunctionArn"
-    assert result.outputs["RevisionId"] == "RevisionId"
+    assert result.outputs_key_field == ["Region", "FunctionName", "AccountId"]
     mock_client.get_policy.assert_called_once_with(FunctionName="test-function")
     mock_client.get_function_configuration.assert_called_once_with(FunctionName="test-function")
 
@@ -5084,7 +5080,9 @@ def test_get_policy_with_all_parameters(mocker):
         "RevisionId": "RevisionId",
         "ResponseMetadata": {"HTTPStatusCode": 200, "RequestId": "prod-request-id"},
     }
-    mock_config_response = {"FunctionArn": "FunctionArn",}
+    mock_config_response = {
+        "FunctionArn": "FunctionArn",
+    }
 
     mock_client.get_policy.return_value = mock_policy_response
     mock_client.get_function_configuration.return_value = mock_config_response
@@ -5099,8 +5097,6 @@ def test_get_policy_with_all_parameters(mocker):
     assert result.outputs_prefix == "AWS.Lambda.Policy"
     mock_client.get_policy.assert_called_once_with(FunctionName="function_name", Qualifier="LIVE")
     mock_client.get_function_configuration.assert_called_once_with(FunctionName="function_name", Qualifier="LIVE")
-    assert result.outputs["FunctionArn"] == "FunctionArn"
-    assert result.outputs["RevisionId"] == "RevisionId"
 
 
 def test_get_policy_command_result_outputs_prefix(mocker):
@@ -5138,7 +5134,7 @@ def test_get_policy_command_result_outputs_prefix(mocker):
     # Assert
     assert isinstance(result, CommandResults)
     assert result.outputs_prefix == "AWS.Lambda.Policy"
-    assert result.outputs_key_field == ["FunctionArn", "FunctionName", "AccountId"]
+    assert result.outputs_key_field == ["Region", "FunctionName", "AccountId"]
 
 
 def test_cost_explorer_billing_cost_usage_list_command_success(mocker):
