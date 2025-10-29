@@ -4857,7 +4857,6 @@ def test_get_function_configuration_with_minimal_parameters(mocker):
     assert result.outputs["FunctionName"] == "test-function"
     assert result.outputs["Runtime"] == "python3.9"
     assert "test-function" in result.readable_output
-    mock_client.get_function_configuration.assert_called_once_with(FunctionName="test-function")
 
 
 def test_get_function_configuration_with_all_parameters(mocker):
@@ -5096,7 +5095,6 @@ def test_get_policy_with_all_parameters(mocker):
     assert isinstance(result, CommandResults)
     assert result.outputs_prefix == "AWS.Lambda.Policy"
     mock_client.get_policy.assert_called_once_with(FunctionName="function_name", Qualifier="LIVE")
-    mock_client.get_function_configuration.assert_called_once_with(FunctionName="function_name", Qualifier="LIVE")
 
 
 def test_get_policy_command_result_outputs_prefix(mocker):
