@@ -5436,6 +5436,151 @@ script:
     - contextPath: AWS.Billing.NotificationNextToken
       description: Next page token for pagination.
       type: string
+  - name: aws-kms-key-enable-rotation
+    description: Enables automatic rotation for a symmetric customer-managed KMS key. Not supported for asymmetric/HMAC keys, keys with imported material, or custom key stores.
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+    - name: key_id
+      description: The key ARN to enable rotation for.
+      required: true
+    - name: rotation_period_in_days
+      description: 'Key rotation period in days. Valid range: 90–2560. If omitted when enabling rotation for the first time, the default is 365 days. If rotation is already enabled and this field is not specified, the existing period remains unchanged.'
+      required: false
+      type: number
+    outputs: []
+  - name: aws-elb-load-balancer-attributes-modify
+    description: Modifies attributes for a Classic Elastic Load Balancer.
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+    - name: load_balancer_name
+      description: The name of the Load Balancer.
+      required: true
+    - name: access_log_enabled
+      description: Whether to enable access logs. (if enabled make sure to provide access_log_s3_bucket_name).
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: access_log_s3_bucket_name
+      description: S3 bucket name for access logs (required if access_log_enabled=true).
+      required: false
+    - name: access_log_interval
+      description: The interval for publishing the access logs. You can specify an interval of either 5 minutes or 60 minutes. If omitted when enabling logging for the first time, the default is 60 minutes. If logging is already enabled and this field is not specified, the existing period remains unchanged.
+      required: false
+      type: number
+      auto: PREDEFINED
+      predefined:
+      - 5
+      - 60
+    - name: access_log_s3_bucket_prefix
+      description: S3 key prefix (Path) for access logs.  If the prefix is not provided, the log folder is placed at the root level of the bucket.
+      required: false
+    - name: connection_draining_enabled
+      description: Whether connection draining is enabled for the load balancer.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: connection_draining_timeout
+      description: 'The maximum time, in seconds, to keep the existing connections open before de-registering the instance.  Valid Range: 1 - 3600.'
+      required: false
+      type: number
+    - name: connection_settings_idle_timeout
+      description: 'The load balancer allows the connections to remain idle (no data is sent over the connection) for this specific duration in seconds. Valid Range: 1 - 4000.'
+      required: false
+      type: number
+    - name: cross_zone_load_balancing_enabled
+      description: Whether to enable cross-zone load balancing.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: desync_mitigation_mode
+      description: |
+        Determines how the Classic Load Balancer handles HTTP requests that might pose
+        a security risk to your application. This sets the
+        'elb.http.desyncmitigationmode' load balancer attribute.
+      auto: PREDEFINED
+      predefined:
+      - monitor
+      - defensive
+      - strictest
+      required: false
+      type: string
+    outputs:
+    - contextPath: AWS.ELB.LoadBalancer.LoadBalancerName
+      description: The name of the Classic Load Balancer.
+      type: string
+    - contextPath: AWS.ELB.LoadBalancer.LoadBalancerAttributes.CrossZoneLoadBalancing.Enabled
+      description: Whether cross-zone load balancing is enabled.
+      type: boolean
+    - contextPath: AWS.ELB.LoadBalancer.LoadBalancerAttributes.ConnectionDraining.Enabled
+      description: Whether connection draining is enabled.
+      type: boolean
+    - contextPath: AWS.ELB.LoadBalancer.LoadBalancerAttributes.ConnectionDraining.Timeout
+      description: Connection draining timeout in seconds.
+      type: number
+    - contextPath: AWS.ELB.LoadBalancer.LoadBalancerAttributes.ConnectionSettings.IdleTimeout
+      description: Idle connection timeout in seconds.
+      type: number
+    - contextPath: AWS.ELB.LoadBalancer.LoadBalancerAttributes.AccessLog.Enabled
+      description: Whether access logs are enabled.
+      type: boolean
+    - contextPath: AWS.ELB.LoadBalancer.LoadBalancerAttributes.AccessLog.S3BucketName
+      description: The S3 bucket name for access logs.
+      type: string
+    - contextPath: AWS.ELB.LoadBalancer.LoadBalancerAttributes.AccessLog.EmitInterval
+      description: Access log publish interval in minutes.
+      type: number
+    - contextPath: AWS.ELB.LoadBalancer.LoadBalancerAttributes.AccessLog.S3BucketPrefix
+      description: The S3 key prefix for access logs.
+      type: string
+    - contextPath: AWS.ELB.LoadBalancer.LoadBalancerAttributes.AdditionalAttributes
+      description: Additional attributes returned by the API.
+      type: unknown
   isfetch: false
   runonce: false
   script: '-'

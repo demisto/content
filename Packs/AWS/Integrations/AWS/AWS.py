@@ -362,6 +362,8 @@ class AWSServices(str, Enum):
     LAMBDA = "lambda"
     CloudTrail = "cloudtrail"
     ECS = "ecs"
+    KMS = "kms"
+    ELB = "elb"
     CostExplorer = "ce"
     BUDGETS = "budgets"
 
@@ -3157,6 +3159,8 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-lambda-policy-get": Lambda.get_policy_command,
     "aws-lambda-invoke": Lambda.invoke_command,
     "aws-lambda-function-url-config-update": Lambda.update_function_url_configuration_command,
+    "aws-kms-key-enable-rotation": KMS.enable_key_rotation_command,
+    "aws-elb-load-balancer-attributes-modify": ELB.modify_load_balancer_attributes_command,
 }
 
 REQUIRED_ACTIONS: list[str] = [
@@ -3164,6 +3168,7 @@ REQUIRED_ACTIONS: list[str] = [
     "kms:Decrypt",
     "kms:DescribeKey",
     "kms:GenerateDataKey",
+    "kms:EnableKeyRotation",
     "secretsmanager:CreateSecret",
     "secretsmanager:RotateSecret",
     "secretsmanager:TagResource",
@@ -3215,12 +3220,14 @@ REQUIRED_ACTIONS: list[str] = [
     "s3:GetBucketPublicAccessBlock",
     "s3:GetEncryptionConfiguration",
     "s3:DeleteBucketPolicy",
+    "acm:UpdateCertificateOptions",
     "cloudtrail:DescribeTrails",
     "lambda:GetFunctionConfiguration",
     "lambda:GetFunctionUrlConfig",
     "lambda:GetPolicy",
     "lambda:InvokeFunction",
     "lambda:UpdateFunctionUrlConfig",
+    "elasticloadbalancing:ModifyLoadBalancerAttributes",
     "ce:GetCostAndUsage",
     "ce:GetCostForecast",
     "budgets:DescribeBudgets",
