@@ -36,6 +36,7 @@ from Azure import (
     SCOPE_BY_CONNECTION,
     PREFIX_URL_AZURE,
 )
+from MicrosoftApiModule import Resources
 
 
 @pytest.fixture
@@ -851,6 +852,7 @@ def test_get_azure_client_no_token(mocker, mock_params):
     """
     # Setup mocks
     args = {"subscription_id": "arg_subscription_id"}
+    command = "command"
 
     mocker.patch("Azure.get_from_args_or_params", return_value="mocked_subscription_id")
     mocker.patch("Azure.get_cloud_credentials", return_value={})  # No token
@@ -861,7 +863,7 @@ def test_get_azure_client_no_token(mocker, mock_params):
 
     # Verify exception is raised
     with pytest.raises(DemistoException) as excinfo:
-        get_azure_client(params, args)
+        get_azure_client(params, args, command)
 
     assert "Failed to retrieve AZURE access token" in str(excinfo.value)
 
@@ -874,6 +876,7 @@ def test_get_azure_client_with_stored_credentials(mocker, mock_params):
     """
     # Setup mocks
     args = {"subscription_id": "arg_subscription_id"}
+    command = "command"
     mock_client = mocker.Mock()
 
     mock_azure_client_constructor = mocker.patch("Azure.AzureClient", return_value=mock_client)
@@ -883,7 +886,7 @@ def test_get_azure_client_with_stored_credentials(mocker, mock_params):
     params["credentials"] = {"password": "test_password"}
 
     # Call the function
-    result = get_azure_client(params, args)
+    result = get_azure_client(params, args, command)
 
     # Verify results
     assert result == mock_client
@@ -897,6 +900,7 @@ def test_get_azure_client_with_stored_credentials(mocker, mock_params):
         proxy=params["proxy"],
         tenant_id=params["tenant_id"],
         enc_key="test_password",
+        resource=Resources.management_azure,
         scope=SCOPE_BY_CONNECTION.get("Client Credentials"),
         headers={},
     )
@@ -910,6 +914,7 @@ def test_get_azure_client_with_cloud_credentials_azure_command(mocker, mock_para
     """
     # Setup mocks
     args = {"subscription_id": "arg_subscription_id"}
+    command = "command"
     mock_client = mocker.Mock()
     mock_token = "mock_access_token"
 
@@ -922,13 +927,13 @@ def test_get_azure_client_with_cloud_credentials_azure_command(mocker, mock_para
     params["credentials"] = {}  # No stored credentials
 
     # Call the function
-    result = get_azure_client(params, args)
+    result = get_azure_client(params, args, command)
 
     # Verify results
     assert result == mock_client
 
     # Verify cloud credentials were retrieved with correct parameters
-    Azure.get_cloud_credentials.assert_called_once_with(CloudTypes.AZURE.value, "test_subscription_id")
+    Azure.get_cloud_credentials.assert_called_once_with(CloudTypes.AZURE.value, "test_subscription_id", scopes=["DEFAULT"])
 
     # Verify AzureClient was instantiated with correct parameters including headers
     expected_headers = {"Authorization": f"Bearer {mock_token}", "Content-Type": "application/json", "Accept": "application/json"}
@@ -940,6 +945,7 @@ def test_get_azure_client_with_cloud_credentials_azure_command(mocker, mock_para
         proxy=params["proxy"],
         tenant_id=params["tenant_id"],
         enc_key=None,
+        resource=Resources.management_azure,
         scope=SCOPE_BY_CONNECTION.get("Client Credentials"),
         headers=expected_headers,
     )
@@ -953,7 +959,7 @@ def test_get_azure_client_no_token_raises_exception(mocker, mock_params):
     """
     # Setup mocks
     args = {"subscription_id": "arg_subscription_id"}
-
+    command = "command"
     mocker.patch("Azure.get_from_args_or_params", return_value="test_subscription_id")
     mocker.patch("Azure.get_cloud_credentials", return_value={})  # No access_token
 
@@ -963,7 +969,7 @@ def test_get_azure_client_no_token_raises_exception(mocker, mock_params):
 
     # Verify exception is raised
     with pytest.raises(DemistoException) as excinfo:
-        get_azure_client(params, args)
+        get_azure_client(params, args, command)
 
     assert "Failed to retrieve AZURE access token - token is missing from credentials" in str(excinfo.value)
 
@@ -976,6 +982,7 @@ def test_get_azure_client_insecure_and_proxy_settings(mocker, mock_params):
     """
     # Setup mocks
     args = {"subscription_id": "arg_subscription_id"}
+    command = "command"
     mock_client = mocker.Mock()
 
     mock_azure_client_constructor = mocker.patch("Azure.AzureClient", return_value=mock_client)
@@ -987,7 +994,7 @@ def test_get_azure_client_insecure_and_proxy_settings(mocker, mock_params):
     params["credentials"] = {"password": "test_password"}
 
     # Call the function
-    result = get_azure_client(params, args)
+    result = get_azure_client(params, args, command)
 
     # Verify results
     assert result == mock_client
@@ -1007,6 +1014,7 @@ def test_get_azure_client_missing_optional_params(mocker):
     # Setup mocks
     args = {}
     mock_client = mocker.Mock()
+    command = "command"
 
     mock_azure_client_constructor = mocker.patch("Azure.AzureClient", return_value=mock_client)
 
@@ -1014,7 +1022,7 @@ def test_get_azure_client_missing_optional_params(mocker):
     params = {"credentials": {"password": "test_password"}}
 
     # Call the function
-    result = get_azure_client(params, args)
+    result = get_azure_client(params, args, command)
 
     # Verify results
     assert result == mock_client

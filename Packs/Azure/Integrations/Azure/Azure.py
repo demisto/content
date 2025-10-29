@@ -5,7 +5,10 @@ from CommonServerUserPython import *  # noqa
 from MicrosoftApiModule import *  # noqa: E402
 from COOCApiModule import *
 from requests.exceptions import ConnectionError, Timeout
-
+import datetime as dt
+import defusedxml.ElementTree as defused_ET
+import hmac
+import hashlib
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -26,7 +29,10 @@ SCOPE_BY_CONNECTION = {
     "Authorization Code": "https://management.azure.com/.default",
     "Client Credentials": "https://management.azure.com/.default",
 }
-SCOPE_AZURE = "https://management.azure.com/.default"
+DEFAULT_SCOPE = "https://management.azure.com/.default"
+DEFAULT_RESOURCE = "https://management.azure.com/"
+STORAGE_SCOPE = "https://storage.azure.com/.default"
+STORAGE_RESOURCE = "https://storage.azure.com/"
 
 PERMISSIONS_TO_COMMANDS = {
     "Microsoft.Network/networkSecurityGroups/read": ["azure-nsg-security-groups-list"],
@@ -136,6 +142,13 @@ REQUIRED_ROLE_PERMISSIONS = [
     "Microsoft.Storage/storageAccounts/blobServices/read",
     "Microsoft.Storage/storageAccounts/blobServices/write",
     "Microsoft.Storage/storageAccounts/blobServices/containers/write",
+    "Microsoft.Storage/storageAccounts/blobServices/containers/read",
+    "Microsoft.Storage/storageAccounts/blobServices/containers/delete",
+    "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/read",
+    "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/tags/read",
+    "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/tags/write",
+    "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/write",
+    "Microsoft.Storage/storageAccounts/blobServices/containers/setAcl/action",
     "Microsoft.Authorization/policyAssignments/read",
     "Microsoft.Authorization/policyAssignments/write",
     "Microsoft.DBforPostgreSQL/servers/read",
@@ -181,6 +194,36 @@ SQL_DB_API_VERSION = "2021-11-01"
 COSMOS_DB_API_VERSION = "2024-11-15"
 PERMISSIONS_VERSION = "2022-04-01"
 
+
+class TokenScope:  # List taken from the be3 repo
+    STORAGE = "STORAGE"
+    GRAPH = "GRAPH"
+    NETWORK = "NETWORK"
+    COMPUTE = "COMPUTE"
+    VAULT = "VAULT"
+    CONTAINER_REGISTRY = "CONTAINER_REGISTRY"
+    DATABASE = "DATABASE"
+    COSMOS = "COSMOS"
+    DATA_LAKE_1 = "DATA_LAKE_1"
+    DATA_LAKE_2 = "DATA_LAKE_2"
+    SIGNALR = "SIGNALR"
+    EVENT_HUBS = "EVENT_HUBS"
+    SERVICE_BUS = "SERVICE_BUS"
+    MONITOR = "MONITOR"
+    DIGITAL_TWINS = "DIGITAL_TWINS"
+    COGNITIVE_SERVICES = "COGNITIVE_SERVICES"
+    SYNAPSE_ANALYTICS = "SYNAPSE_ANALYTICS"
+    ML = "ML"
+    NONE = "NONE"
+    DEFAULT = "DEFAULT"
+    SEARCH = "SEARCH"
+    WORKSPACE_MEMBERSHIP = "WORKSPACE_MEMBERSHIP"
+    WORKSPACE_GROUP = "WORKSPACE_GROUP"
+    WORKSPACE_USER = "WORKSPACE_USER"
+    WORKSPACE_DOMAIN = "WORKSPACE_DOMAIN"
+    WORKSPACE_CUSTOMER = "WORKSPACE_CUSTOMER"
+
+
 """ CLIENT CLASS """
 
 
@@ -194,6 +237,7 @@ class AzureClient:
         proxy: bool = False,
         tenant_id: str | None = None,
         enc_key: str | None = None,
+        resource: str | None = None,
         scope: str | None = None,
         headers: dict | None = None,
     ):
@@ -206,7 +250,7 @@ class AzureClient:
                 base_url=f"{PREFIX_URL_AZURE}",
                 verify=verify,
                 proxy=proxy,
-                resource=None,
+                resource=resource,
                 scope=scope,
                 tenant_id=tenant_id,
                 enc_key=enc_key,
@@ -606,126 +650,219 @@ class AzureClient:
                 resource_group_name=resource_group_name,
             )
 
-    def storage_container_property_get_request(
-        self, account_name: str, resource_group_name: str, subscription_id: str, container_name: str
-    ) -> dict:
+    def get_storage_container_properties_request(self, account_name: str, container_name: str) -> requests.Response:
         """
-        Get the properties of a storage container.
-        Args:
-            account_name (str): Name of the storage account.
-            resource_group_name (str): Name of the resource group.
-            subscription_id (str): ID of the subscription.
-            container_name (str): Name of the container.
-        Returns:
-            dict: The JSON response from the Azure API.
-        """
-        full_url = (
-            f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}/providers/"
-            f"Microsoft.Storage/storageAccounts/{account_name}/blobServices/default/containers/{container_name}"
-        )
-        return self.http_request(method="GET", full_url=full_url)
+        Retrieve properties for the specified Container.
 
-    def storage_container_delete_request(
-        self, account_name: str, resource_group_name: str, subscription_id: str, container_name: str
-    ) -> dict:
-        """
-        Delete a storage container.
         Args:
-            account_name (str): Name of the storage account.
-            resource_group_name (str): Name of the resource group.
-            subscription_id (str): ID of the subscription.
-            container_name (str): Name of the container.
+            container_name (str): Container name.
+
         Returns:
-            dict: The JSON response from the Azure API.
+            Response: API response from Azure.
+
         """
-        full_url = (
-            f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}/providers/"
-            f"Microsoft.Storage/storageAccounts/{account_name}/blobServices/default/containers/{container_name}"
-        )
-        return self.http_request(method="DELETE", full_url=full_url)
-   
-    def storage_container_blob_get_request(
-        self, account_name: str, resource_group_name: str, subscription_id: str, container_name: str, blob_name: str
-    ) -> dict:
+        params = assign_params(restype="container")
+        full_url = f"https://{account_name}.blob.core.windows.net/{container_name}"
+        request_headers = {
+            "x-ms-version": "2020-10-02",
+            "x-ms-date": dt.datetime.utcnow().strftime("%a, %d %b %Y %H:%M:%S GMT"),
+        }
+        if self.headers:
+            self.headers |= request_headers
+        else:
+            self.headers = request_headers
+
+        response = self.http_request(method="GET", full_url=full_url, params=params, resp_type="response")
+
+        return response
+
+    def create_storage_container_request(self, container_name: str, account_name: str) -> requests.Response:
+        """
+        Create a new Container under the specified account.
+
+        Args:
+            container_name (str): Container name.
+            account_name (str): Storage account name.
+
+        Returns:
+            Response: API response from Azure.
+
+        """
+        params = assign_params(restype="container")
+        full_url = f"https://{account_name}.blob.core.windows.net/{container_name}"
+        request_headers = {
+            "x-ms-version": "2020-10-02",
+            "x-ms-date": dt.datetime.utcnow().strftime("%a, %d %b %Y %H:%M:%S GMT"),
+        }
+        if self.headers:
+            self.headers |= request_headers
+        else:
+            self.headers = request_headers
+        response = self.http_request(method="PUT", full_url=full_url, params=params)
+
+        return response
+
+    def delete_storage_container_request(self, container_name: str, account_name: str) -> None:
+        """
+        Delete Container under the specified account.
+
+        Args:
+            container_name (str): Container name.
+            account_name (str): Storage account name.
+
+        Returns:
+            Response: API response from Azure.
+
+        """
+        params = assign_params(restype="container")
+        full_url = f"https://{account_name}.blob.core.windows.net/{container_name}"
+        request_headers = {
+            "x-ms-version": "2020-10-02",
+            "x-ms-date": dt.datetime.utcnow().strftime("%a, %d %b %Y %H:%M:%S GMT"),
+        }
+        if self.headers:
+            self.headers |= request_headers
+        else:
+            self.headers = request_headers
+
+        self.http_request(method="DELETE", full_url=full_url, params=params)
+
+    def storage_container_blob_get_request(self, container_name: str, blob_name: str, account_name: str) -> requests.Response:
         """
         Get a blob from a storage container.
         Args:
             account_name (str): Name of the storage account.
-            resource_group_name (str): Name of the resource group.
-            subscription_id (str): ID of the subscription.
             container_name (str): Name of the container.
             blob_name (str): Name of the blob.
         Returns:
             dict: The JSON response from the Azure API.
         """
-        full_url = (
-            f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}/providers/"
-            f"Microsoft.Storage/storageAccounts/{account_name}/blobServices/default/containers/{container_name}/blobs/{blob_name}"
-        )
-        return self.http_request(method="GET", full_url=full_url, headers={"Accept": "application/octet-stream"})
+        full_url = f"https://{account_name}.blob.core.windows.net/{container_name}/{blob_name}"
+        request_headers = {
+            "x-ms-version": "2020-10-02",
+            "x-ms-date": dt.datetime.utcnow().strftime("%a, %d %b %Y %H:%M:%S GMT"),
+        }
+        if self.headers:
+            self.headers |= request_headers
+        else:
+            self.headers = request_headers
+        response = self.http_request(method="GET", full_url=full_url, resp_type="response")
 
-    def storage_container_blob_tag_get_request(
-        self, account_name: str, resource_group_name: str, subscription_id: str, container_name: str, blob_name: str
-    ) -> dict:
+        return response
+
+    def storage_container_blob_tag_get_request(self, container_name: str, blob_name: str, account_name: str) -> requests.Response:
         """
         Get the tags of a blob from a storage container.
         Args:
             account_name (str): Name of the storage account.
-            resource_group_name (str): Name of the resource group.
-            subscription_id (str): ID of the subscription.
             container_name (str): Name of the container.
             blob_name (str): Name of the blob.
         Returns:
             dict: The JSON response from the Azure API.
         """
-        full_url = (
-            f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}/providers/"
-            f"Microsoft.Storage/storageAccounts/{account_name}/blobServices/default/containers/{container_name}/blobs/{blob_name}/tags"
-        )
-        return self.http_request(method="GET", full_url=full_url)
+        full_url = f"https://{account_name}.blob.core.windows.net/{container_name}/{blob_name}"
+        params = assign_params(comp="tags")
+        request_headers = {
+            "x-ms-version": "2020-10-02",
+            "x-ms-date": dt.datetime.utcnow().strftime("%a, %d %b %Y %H:%M:%S GMT"),
+        }
+        if self.headers:
+            self.headers |= request_headers
+        else:
+            self.headers = request_headers
+        response = self.http_request(method="GET", full_url=full_url, params=params, resp_type="text")
 
-    def get_blob_properties_request(
-        self, container_name: str, blob_name: str, subscription_id: str, resource_group_name: str, account_name: str
-    ):
+        return response
+
+    def storage_container_blob_properties_get_request(
+        self, container_name: str, blob_name: str, account_name: str
+    ) -> requests.Response:
         """
         Get the properties of a blob from a storage container.
         Args:
             container_name (str): Name of the container.
             blob_name (str): Name of the blob.
-            subscription_id (str): ID of the subscription.
-            resource_group_name (str): Name of the resource group.
             account_name (str): Name of the storage account.
         Returns:
             dict: The JSON response from the Azure API.
         """
-        full_url = (
-            f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}/providers/"
-            f"Microsoft.Storage/storageAccounts/{account_name}/blobServices/default/containers/{container_name}/blobs/{blob_name}/properties"
-        )
-        return self.http_request(method="HEAD", full_url=full_url, resp_type="response")
-    
-    def set_blob_tags_request(
-        self, container_name: str, blob_name: str, xml_data: str, subscription_id: str, resource_group_name: str, account_name: str  # noqa: E501
-    ):
+        full_url = f"https://{account_name}.blob.core.windows.net/{container_name}/{blob_name}"
+        request_headers = {
+            "x-ms-version": "2020-10-02",
+            "x-ms-date": dt.datetime.utcnow().strftime("%a, %d %b %Y %H:%M:%S GMT"),
+        }
+        if self.headers:
+            self.headers |= request_headers
+        else:
+            self.headers = request_headers
+        response = self.http_request(method="HEAD", full_url=full_url, resp_type="response")
+
+        return response
+
+    def storage_container_blob_tags_set_request(
+        self,
+        container_name: str,
+        blob_name: str,
+        tags: str,
+        account_name: str,
+    ) -> requests.Response:
         """
         Set the tags for a blob in a storage container.
         Args:
             container_name (str): Name of the container.
             blob_name (str): Name of the blob.
-            xml_data (str): XML data containing the tags to set.
-            subscription_id (str): ID of the subscription.
-            resource_group_name (str): Name of the resource group.
+            tags (str): XML data containing the tags to set.
             account_name (str): Name of the storage account.
         Returns:
             dict: The JSON response from the Azure API.
         """
-        full_url = (
-            f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}/providers/"
-            f"Microsoft.Storage/storageAccounts/{account_name}/blobServices/default/containers/{container_name}/blobs/{blob_name}/tags"
-        )
-        return self.http_request(method="PUT", full_url=full_url, data=xml_data, return_empty_response=True)
+        full_url = f"https://{account_name}.blob.core.windows.net/{container_name}/{blob_name}"
+        params = assign_params(comp="tags")
+        request_headers = {
+            "x-ms-version": "2020-10-02",
+            "x-ms-date": dt.datetime.utcnow().strftime("%a, %d %b %Y %H:%M:%S GMT"),
+        }
+        if self.headers:
+            self.headers |= request_headers
+        else:
+            self.headers = request_headers
 
-    def set_blob_properties_request(self, container_name: str, blob_name: str, headers: dict) -> Response:
+        response = self.http_request(method="PUT", full_url=full_url, params=params, json_data=tags, resp_type="response")
+
+        return response
+
+    def storage_container_blob_property_get_request(
+        self, container_name: str, blob_name: str, account_name: str
+    ) -> requests.Response:
+        """
+        Retrieve Blob properties.
+
+        Args:
+            container_name (str): Container name.
+            blob_name (str): Blob name.
+            account_name (str): Name of the storage account.
+
+        Returns:
+            Response: API response from Azure.
+
+        """
+        full_url = f"https://{account_name}.blob.core.windows.net/{container_name}/{blob_name}"
+        params = assign_params(comp="tags")
+        request_headers = {
+            "x-ms-version": "2020-10-02",
+            "x-ms-date": dt.datetime.utcnow().strftime("%a, %d %b %Y %H:%M:%S GMT"),
+        }
+        if self.headers:
+            self.headers |= request_headers
+        else:
+            self.headers = request_headers
+        response = self.http_request(method="HEAD", full_url=full_url, params=params, resp_type="response")
+
+        return response
+
+    def storage_container_blob_properties_set_request(
+        self, container_name: str, blob_name: str, account_name: str, headers: dict
+    ) -> requests.Response:
         """
         Set Blob properties.
 
@@ -738,16 +875,27 @@ class AzureClient:
             Response: API response from Azure.
 
         """
-
+        full_url = f"https://{account_name}.blob.core.windows.net/{container_name}/{blob_name}"
         params = assign_params(comp="properties")
-        response = self.ms_client.http_request(
-            method="PUT", url_suffix=f"{container_name}/{blob_name}", params=params, headers=headers, return_empty_response=True
-        )
+        request_headers = {
+            "x-ms-version": "2020-10-02",
+            "x-ms-date": dt.datetime.utcnow().strftime("%a, %d %b %Y %H:%M:%S GMT"),
+        }
+        if self.headers:
+            self.headers |= request_headers
+        else:
+            self.headers = request_headers
+        self.headers |= headers
+        response = self.http_request(method="PUT", full_url=full_url, params=params, resp_type="response")
 
         return response
 
-    def block_public_access(self, url, headers):
-        return self.ms_client.http_request(method="PUT", headers=headers, full_url=url, return_empty_response=True)
+    def storage_container_block_public_access(self, url, headers):
+        if self.headers:
+            self.headers |= headers
+        else:
+            self.headers = headers
+        return self.http_request(method="PUT", full_url=url)
 
     def create_policy_assignment(
         self, name: str, policy_definition_id: str, display_name: str, parameters: str, description: str, scope: str
@@ -2034,6 +2182,7 @@ def storage_blob_service_properties_get_command(client: AzureClient, params: dic
         ),
     )
 
+
 def storage_container_property_get_command(client: AzureClient, params: dict, args: dict) -> CommandResults:
     """
         Gets the properties of a storage container.
@@ -2045,86 +2194,110 @@ def storage_container_property_get_command(client: AzureClient, params: dict, ar
     Returns:
         CommandResults: The command results in MD table and context data.
     """
-    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
-    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+    container_name = args["container_name"]
     account_name = args.get("account_name", "")
-    container_name = args.get("container_name", "")
-    response = client.storage_container_property_get_request(
-        account_name=account_name, resource_group_name=resource_group_name, subscription_id=subscription_id, container_name=container_name
-    )
-    subscription_id, resource_group, account_name = extract_azure_resource_info(response.get("id", ""))
+    response = client.get_storage_container_properties_request(account_name, container_name)
 
-    readable_output = {
-        "Name": response.get("name", ""),
-        "Account Name": account_name,
-        "Subscription ID": subscription_id,
-        "Resource Group": resource_group,
-        "Change Feed": response.get("properties", {}).get("changeFeed", {}).get("enabled", ""),
-        "Delete Retention Policy": response.get("properties", {}).get("deleteRetentionPolicy", {}).get("enabled", ""),
-        "Versioning": response.get("properties", {}).get("isVersioningEnabled"),
-    }
+    raw_response = response.headers
+    raw_response = dict(raw_response)  # Convert raw_response from 'CaseInsensitiveDict' to 'dict'
+
+    response_headers = list(raw_response.keys())
+    outputs = {}
+
+    properties = transform_response_to_context_format(raw_response, response_headers)
+
+    outputs["name"] = container_name
+    outputs["Property"] = properties
+
+    convert_dict_time_format(outputs["Property"], ["last_modified", "date"])
+
+    readable_output = tableToMarkdown(
+        f"Container {container_name} Properties:",
+        outputs.get("Property"),
+        headers=["last_modified", "etag", "lease_status", "lease_state", "has_immutability_policy", "has_legal_hold"],
+        headerTransform=string_to_table_header,
+    )
 
     return CommandResults(
-        outputs_prefix="Azure.StorageBlobServiceProperties",
-        outputs_key_field="id",
-        outputs=response,
-        raw_response=response,
-        readable_output=tableToMarkdown(
-            name="Azure Storage Blob Service Properties",
-            t=readable_output,
-            headers=[
-                "Name",
-                "Account Name",
-                "Subscription ID",
-                "Resource Group",
-                "Change Feed",
-                "Delete Retention Policy",
-                "Versioning",
-            ],
-            removeNull=True,
-        ),
+        readable_output=readable_output,
+        outputs_prefix="Azure.StorageContainer",
+        outputs_key_field="name",
+        outputs=outputs,
+        raw_response=raw_response,
     )
+
+
+def storage_container_create_command(client: AzureClient, params: dict, args: dict) -> CommandResults:
+    """
+    Create a new Container under the specified account.
+
+    Args:
+        client (Client): Azure Blob Storage API client.
+        args (dict): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+
+    """
+    container_name = args["container_name"]
+    account_name = args.get("account_name", "")
+
+    container_name_regex = "^[a-z0-9](?!.*--)[a-z0-9-]{1,61}[a-z0-9]$"
+    # Rules for naming containers can be found here:
+    # https://docs.microsoft.com/en-us/rest/api/storageservices/naming-and-referencing-containers--blobs--and-metadata
+
+    if not re.search(container_name_regex, container_name):
+        raise Exception("The specified container name is invalid.")
+
+    client.create_storage_container_request(container_name, account_name)
+
+    return CommandResults(
+        readable_output=f"Container {container_name} successfully created.",
+    )
+
 
 def storage_container_delete_command(client: AzureClient, params: dict, args: dict) -> CommandResults:
     """
-        Deletes a storage container.
+    Delete Container under the specified account.
+
     Args:
-        client: The microsoft client.
-        params: The configuration parameters.
-        args: The users arguments.
+        client (Client): Azure Blob Storage API client.
+        args (dict): Command arguments from XSOAR.
 
     Returns:
-        CommandResults: The command results in MD table and context data.
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+
     """
-    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
-    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+    container_name = args["container_name"]
     account_name = args.get("account_name", "")
-    container_name = args.get("container_name", "")
-    client.storage_container_delete_request(
-        account_name=account_name, resource_group_name=resource_group_name, subscription_id=subscription_id, container_name=container_name
+
+    client.delete_storage_container_request(container_name, account_name)
+
+    return CommandResults(
+        readable_output=f"Container {container_name} successfully deleted.",
     )
-    return CommandResults(readable_output=f"Container {container_name} deleted successfully.")
+
 
 def storage_container_blob_get_command(client: AzureClient, params: dict, args: dict) -> fileResult:
     """
-        Gets a blob from the storage container.
+    Retrieve Blob from Container.
+
     Args:
-        client: The microsoft client.
-        params: The configuration parameters.
-        args: The users arguments.
+        client (Client): Azure Blob Storage API client.
+        args (dict): Command arguments from XSOAR.
 
     Returns:
-        fileResult: The blob file content.
+        fileResult: XSOAR File Result.
+
     """
-    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
-    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+    container_name = args["container_name"]
+    blob_name = args["blob_name"]
     account_name = args.get("account_name", "")
-    container_name = args.get("container_name", "")
-    blob_name = args.get("blob_name", "")
-    response = client.storage_container_blob_get_request(
-        account_name=account_name, resource_group_name=resource_group_name, subscription_id=subscription_id, container_name=container_name, blob_name=blob_name
-    )
+
+    response = client.storage_container_blob_get_request(container_name, blob_name, account_name)
+
     return fileResult(filename=blob_name, data=response.content)
+
 
 def storage_container_blob_tag_get_command(client: AzureClient, params: dict, args: dict):
     """
@@ -2137,34 +2310,101 @@ def storage_container_blob_tag_get_command(client: AzureClient, params: dict, ar
     Returns:
         CommandResults: The command results in MD table and context data.
     """
-    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
-    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+    container_name = args["container_name"]
+    blob_name = args["blob_name"]
     account_name = args.get("account_name", "")
-    container_name = args.get("container_name", "")
-    blob_name = args.get("blob_name", "")
-    response = client.storage_container_blob_tag_get_request(
-        account_name=account_name, resource_group_name=resource_group_name, subscription_id=subscription_id, container_name=container_name, blob_name=blob_name
+
+    response = client.storage_container_blob_tag_get_request(container_name, blob_name, account_name)
+
+    tree = ET.ElementTree(defused_ET.fromstring(response))
+    root = tree.getroot()
+
+    raw_response = []
+    outputs = {"name": container_name, "Blob": {"name": blob_name}}
+
+    for element in root.iter("Tag"):
+        tag = {"Key": element.findtext("Key"), "Value": element.findtext("Value")}
+        raw_response.append(dict(tag))
+
+    outputs["Blob"]["Tag"] = raw_response
+
+    readable_output = tableToMarkdown(
+        f"Blob {blob_name} Tags:", outputs["Blob"]["Tag"], headers=["Key", "Value"], headerTransform=pascalToSpace
     )
+
+    command_results = CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="Azure.StorageContainer",
+        outputs_key_field="name",
+        outputs=outputs,
+        raw_response=raw_response,
+    )
+
+    return command_results
+
+
+def convert_dict_time_format(data: dict, keys: list):
+    """
+    Convert dictionary data values time format.
+    Args:
+        data (dict): Data.
+        keys (list): Keys list to convert
+
+    """
+    for key in keys:
+        if data.get(key):
+            time_value = datetime.strptime(data.get(key), DATE_FORMAT)  # type: ignore
+            iso_time = FormatIso8601(time_value)
+            data[key] = iso_time
+
+
+def storage_container_blob_property_get_command(client: AzureClient, args: Dict[str, Any]) -> CommandResults:
+    """
+    Retrieve Blob properties.
+
+    Args:
+        client (Client): Azure Blob Storage API client.
+        args (dict): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+
+    """
+    container_name = args["container_name"]
+    blob_name = args["blob_name"]
+    account_name = args.get("account_name", "")
+
+    response = client.storage_container_blob_property_get_request(container_name, blob_name, account_name)
+
+    raw_response = response.headers
+    raw_response = dict(raw_response)  # Convert raw_response from 'CaseInsensitiveDict' to 'dict'
+
+    response_headers = list(raw_response.keys())
+    outputs = {}
+
+    properties = transform_response_to_context_format(raw_response, response_headers)
+
+    outputs["name"] = container_name
+    outputs["Blob"] = {"name": blob_name, "Property": properties}
+
+    convert_dict_time_format(outputs["Blob"]["Property"], ["creation_time", "last_modified", "date"])
+
+    readable_output = tableToMarkdown(
+        f"Blob {blob_name} Properties:",
+        outputs.get("Blob").get("Property"),  # type: ignore
+        headers=["creation_time", "last_modified", "content_length", "content_type", "etag"],
+        headerTransform=string_to_table_header,
+    )
+
     return CommandResults(
-        outputs_prefix="Azure.StorageContainerBlobTag",
-        outputs_key_field="id",
-        outputs=response,
-        raw_response=response,
-        readable_output=tableToMarkdown(
-            name="Azure Storage Container Blob Tag",
-            t=response,
-            headers=[
-                "Name",
-                "Account Name",
-                "Subscription ID",
-                "Resource Group",
-                "Change Feed",
-                "Delete Retention Policy",
-                "Versioning",
-            ],
-            removeNull=True,
-        ),
+        readable_output=readable_output,
+        outputs_prefix="Azure.StorageContainer",
+        outputs_key_field="name",
+        outputs=outputs,
+        raw_response=raw_response,
     )
+
+
 def storage_container_blob_property_set_command(client: AzureClient, params: dict, args: dict):
     """
     Set Blob properties.
@@ -2187,6 +2427,7 @@ def storage_container_blob_property_set_command(client: AzureClient, params: dic
     cache_control = args.get("cache_control")
     request_id = args.get("request_id")
     lease_id = args.get("lease_id")
+    account_name = args.get("account_name", "")
 
     headers = remove_empty_elements(
         {
@@ -2201,13 +2442,14 @@ def storage_container_blob_property_set_command(client: AzureClient, params: dic
         }
     )
 
-    client.set_blob_properties_request(container_name, blob_name, headers)
+    client.storage_container_blob_properties_set_request(container_name, blob_name, account_name, headers)
 
     command_results = CommandResults(
         readable_output=f"Blob {blob_name} properties successfully updated.",
     )
 
     return command_results
+
 
 def storage_container_block_public_access_command(client: AzureClient, args: Dict[str, Any]):
     """
@@ -2230,7 +2472,7 @@ def storage_container_block_public_access_command(client: AzureClient, args: Dic
         container_name = args.get("container_name")
         api_version = client.get_api_version()
         request_url = f"https://{account_name}.blob.core.windows.net/{container_name}?restype=container&comp=acl"
-        request_date = datetime.utcnow().strftime("%a, %d %b %Y %H:%M:%S GMT")
+        request_date = dt.datetime.utcnow().strftime("%a, %d %b %Y %H:%M:%S GMT")
 
         # string for API signature
         string_to_sign = (
@@ -2298,6 +2540,7 @@ def create_set_tags_request_body(tags: dict) -> str:
 
     return ET.tostring(top, encoding="unicode")
 
+
 def storage_container_blob_tag_set_command(client: AzureClient, params: dict, args: dict):
     """
     Sets the tags for the specified Blob.
@@ -2310,8 +2553,6 @@ def storage_container_blob_tag_set_command(client: AzureClient, params: dict, ar
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
-    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
     account_name = args.get("account_name", "")
     container_name = args["container_name"]
     blob_name = args["blob_name"]
@@ -2324,13 +2565,14 @@ def storage_container_blob_tag_set_command(client: AzureClient, params: dict, ar
 
     xml_data = create_set_tags_request_body(tags)
 
-    client.set_blob_tags_request(container_name, blob_name, xml_data, subscription_id, resource_group_name, account_name)
+    client.storage_container_blob_tags_set_request(container_name, blob_name, xml_data, account_name)
 
     command_results = CommandResults(
         readable_output=f"{blob_name} Tags successfully updated.",
     )
 
     return command_results
+
 
 def transform_response_to_context_format(data: dict, keys: list) -> dict:
     """
@@ -2345,6 +2587,7 @@ def transform_response_to_context_format(data: dict, keys: list) -> dict:
 
     """
     return {key.replace("x-ms-", "").replace("-", "_").lower(): value for key, value in data.items() if key in keys}
+
 
 def get_blob_properties_command(client: AzureClient, params: dict, args: dict):
     """
@@ -2391,6 +2634,7 @@ def get_blob_properties_command(client: AzureClient, params: dict, args: dict):
         outputs=outputs,
         raw_response=raw_response,
     )
+
 
 def create_policy_assignment_command(client: AzureClient, params: dict, args: dict):
     """
@@ -3369,11 +3613,17 @@ def health_check(shared_creds: dict, subscription_id: str, connector_id: str) ->
     return None
 
 
-def get_azure_client(params: dict, args: dict):
+def get_azure_client(params: dict, args: dict, command: str):
     headers = {}
+    client_scope, token_scopes = get_command_and_token_scopes(command)
+    demisto.debug(f"Got {client_scope=} and {token_scopes=}")
+    resource = get_command_resource(command)
+    demisto.debug(f"Got {resource=}")
     if not params.get("credentials", {}).get("password"):
         credentials = get_cloud_credentials(
-            CloudTypes.AZURE.value, get_from_args_or_params(params=params, args=args, key="subscription_id")
+            CloudTypes.AZURE.value,
+            get_from_args_or_params(params=params, args=args, key="subscription_id"),
+            scopes=token_scopes,  # noqa: E501
         )
         token = credentials.get("access_token")
         if not token:
@@ -3389,10 +3639,25 @@ def get_azure_client(params: dict, args: dict):
         proxy=params.get("proxy", False),
         tenant_id=params.get("tenant_id"),
         enc_key=params.get("credentials", {}).get("password"),
-        scope=SCOPE_AZURE,
+        resource=resource,
+        scope=client_scope,
         headers=headers,
     )
     return client
+
+
+def get_command_and_token_scopes(command: str) -> tuple[str, list[str]]:
+    """Get the command and token scopes for the command. Default is DEFAULT_SCOPE and [TokenScope.DEFAULT]."""
+    if "storage-container" in command:
+        return STORAGE_SCOPE, [TokenScope.STORAGE]
+    return DEFAULT_SCOPE, [TokenScope.DEFAULT]
+
+
+def get_command_resource(command: str) -> str:
+    """Get the resource for the command. Default is management_azure."""
+    if "storage-container" in command:
+        return STORAGE_RESOURCE
+    return DEFAULT_RESOURCE
 
 
 def main():
@@ -3411,6 +3676,7 @@ def main():
             "azure-storage-blob-service-properties-get": storage_blob_service_properties_get_command,
             "azure-storage-blob-containers-update": storage_blob_containers_update_command,
             "azure-storage-container-property-get": storage_container_property_get_command,
+            "azure-storage-container-create": storage_container_create_command,
             "azure-storage-container-delete": storage_container_delete_command,
             "azure-storage-container-blob-get": storage_container_blob_get_command,
             "azure-storage-container-blob-tag-get": storage_container_blob_tag_get_command,
@@ -3444,7 +3710,7 @@ def main():
             demisto.debug(f"Running health check for connector ID: {connector_id}")
             return return_results(run_health_check_for_accounts(connector_id, CloudTypes.AZURE.value, health_check))
 
-        client = get_azure_client(params, args)
+        client = get_azure_client(params, args, command)
         if command == "test-module":
             return_results(test_module(client))
         elif command in commands_with_params_and_args:
