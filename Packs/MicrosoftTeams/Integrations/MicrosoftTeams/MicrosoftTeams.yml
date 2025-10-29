@@ -1,5 +1,5 @@
 category: Messaging and Conferencing
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -79,6 +79,13 @@ configuration:
   section: Connect
   advanced: true
   hidden: true
+  required: false
+- display: Bot Type Converted to Single-Tenant
+  name: is_single_tenant_bot_type
+  type: 8
+  section: Connect
+  additionalinfo: Select this option if the bot was originally created as multi-tenant and later converted to single-tenant. The system will detect the bot type automatically in all other standard cases.
+  advanced: true
   required: false
 - display: Minimum incident severity to send notifications to Teams by
   name: min_incident_severity
@@ -808,7 +815,7 @@ script:
     - contextPath: MicrosoftTeams.Message.ID
       description: ID of the message sent.
       type: String
-  dockerimage: demisto/teams:1.0.0.3748709
+  dockerimage: demisto/teams:1.0.0.4835986
   longRunning: true
   longRunningPort: true
   script: ''
@@ -822,13 +829,13 @@ tests:
 supportsquickactions: true
 fromversion: 5.0.0
 triggers:
-  - conditions:
-      - name: engine
-        operator: not_exists
-      - name: isEngineGroup
-        operator: not_exists
-    effects:
-      - name: longRunningPort
-        action:
-          hidden: true
-          required: false
+- conditions:
+  - name: engine
+    operator: not_exists
+  - name: isEngineGroup
+    operator: not_exists
+  effects:
+  - name: longRunningPort
+    action:
+      hidden: true
+      required: false
