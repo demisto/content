@@ -16,7 +16,7 @@ Supported authentication methods:
     2. Add the user’s Microsoft 365 password (the regular sign-in password for that UPN).
     3. For testing completion of authorization process run the ***o365-sc-auth-test*** command.
 
-**Note: If a UPN password is provided**  
+**Note - If a UPN Password is provided:**  
 - Even if the password is incorrect, the integration will attempt to authenticate using it.
 - In this case, all connections to Microsoft Security and Compliance PowerShell will use interactive delegated authentication.
 
