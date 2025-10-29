@@ -35,6 +35,30 @@
         "BMC Incident": {
             "dontMapEventToLabels": false,
             "internalMapping": {
+                "BmcITSM Contact Sensitivity": {
+                    "simple": "ContactSensitivity"
+                },
+                "BmcITSM Display ID": {
+                    "simple": "DisplayID"
+                },
+                "BmcITSM Impact": {
+                    "simple": "Impact"
+                },
+                "BmcITSM Request ID": {
+                    "simple": "RequestID"
+                },
+                "BmcITSM Status Reason": {
+                    "simple": "StatusReason"
+                },
+                "BmcITSM Sub-Type": {
+                    "simple": "SubType"
+                },
+                "BmcITSM Submitter": {
+                    "simple": "Submitter"
+                },
+                "BmcITSM VIP Flag": {
+                    "simple": "VIP"
+                },
                 "Bmc Contact Sensitivity": {
                     "simple": "ContactSensitivity"
                 },
@@ -74,30 +98,6 @@
                 "Bmc Risk Level": {
                     "simple": "RiskLevel"
                 },
-                "BmcITSM Contact Sensitivity": {
-                    "simple": "ContactSensitivity"
-                },
-                "BmcITSM Display ID": {
-                    "simple": "DisplayID"
-                },
-                "BmcITSM Impact": {
-                    "simple": "Impact"
-                },
-                "BmcITSM Request ID": {
-                    "simple": "RequestID"
-                },
-                "BmcITSM Status Reason": {
-                    "simple": "StatusReason"
-                },
-                "BmcITSM Sub-Type": {
-                    "simple": "SubType"
-                },
-                "BmcITSM Submitter": {
-                    "simple": "Submitter"
-                },
-                "BmcITSM VIP Flag": {
-                    "simple": "VIP"
-                },
                 "BmcITSM Assignee": {
                     "simple": "Assignee"
                 },
@@ -112,7 +112,7 @@
                 },
                 "BmcITSM Risk Level": {
                     "simple": "RiskLevel"
-                } 
+                }
             }
         },
         "BMC Problem Investigation incident": {
