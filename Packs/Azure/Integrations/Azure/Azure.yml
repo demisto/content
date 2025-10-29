@@ -3676,6 +3676,376 @@ script:
       type: String
     - contextPath: Azure.WebAppConfig.properties.apiManagementConfig.id
       description: Azure API management integration ID.
+  - name: azure-billing-usage-list
+    description: Returns actual usage and cost details for a given time period, optionally filtered by service name.
+    arguments:
+      - name: subscription_id
+        description: The Azure subscription ID on which to run the command. It will be sent as a scope parameter - /subscriptions/{subscriptionId}/.
+        required: true
+      - name: expand_result
+        description: Whether to expand the result. Default - false.
+        default: false
+        auto: PREDEFINED
+        predefined:
+          - "false"
+          - "true"
+        required: false
+        type: Boolean
+      - name: filter
+        description: Optional filter for the API. API argument - $filter.
+        required: false
+      - name: metric
+        description: The metric to retrieve. API values [actualcost, amortizedcost, usage].
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - Actual Cost
+          - Amortized Cost
+          - Usage
+      - name: max_results
+        defaultValue: 50
+        description: Maximum results to return. Default - 50, Max - 1000.
+        required: false
+        type: Number
+      - name: next_page_token
+        description: Next page token for pagination. Use value from Azure.Billing.UsageNextToken.
+        required: false
+    outputs:
+      - contextPath: Azure.Billing.Usage
+        description: List of usage details from Azure Consumption API.
+      - contextPath: Azure.Billing.Usage.id
+        description: Fully qualified resource ID for the usage detail.
+        type: String
+      - contextPath: Azure.Billing.Usage.name
+        description: Name of the usage detail resource.
+        type: String
+      - contextPath: Azure.Billing.Usage.type
+        description: Resource type (Microsoft.Consumption/usageDetails).
+        type: String
+      - contextPath: Azure.Billing.Usage.kind
+        description: Kind of usage detail (legacy, modern).
+        type: String
+      - contextPath: Azure.Billing.Usage.properties.billingAccountId
+        description: Billing account identifier.
+        type: String
+      - contextPath: Azure.Billing.Usage.properties.billingAccountName
+        description: Billing account name.
+        type: String
+      - contextPath: Azure.Billing.Usage.properties.billingPeriodStartDate
+        description: Billing period start date.
+        type: Date
+      - contextPath: Azure.Billing.Usage.properties.billingPeriodEndDate
+        description: Billing period end date.
+        type: Date
+      - contextPath: Azure.Billing.Usage.properties.billingProfileId
+        description: Billing profile identifier.
+        type: String
+      - contextPath: Azure.Billing.Usage.properties.billingProfileName
+        description: Billing profile name.
+        type: String
+      - contextPath: Azure.Billing.Usage.properties.accountOwnerId
+        description: Account owner identifier.
+        type: String
+      - contextPath: Azure.Billing.Usage.properties.accountName
+        description: Account name.
+        type: String
+      - contextPath: Azure.Billing.Usage.properties.subscriptionId
+        description: Subscription identifier.
+        type: String
+      - contextPath: Azure.Billing.Usage.properties.subscriptionName
+        description: Subscription name.
+        type: String
+      - contextPath: Azure.Billing.Usage.properties.date
+        description: Usage date.
+        type: Date
+      - contextPath: Azure.Billing.Usage.properties.product
+        description: Product name.
+        type: String
+      - contextPath: Azure.Billing.Usage.properties.partNumber
+        description: Part number for the product.
+        type: String
+      - contextPath: Azure.Billing.Usage.properties.meterId
+        description: Meter identifier.
+        type: String
+      - contextPath: Azure.Billing.Usage.properties.meterDetails
+        description: Meter details object.
+      - contextPath: Azure.Billing.Usage.properties.meterDetails.meterName
+        description: Meter name.
+        type: String
+      - contextPath: Azure.Billing.Usage.properties.meterDetails.meterCategory
+        description: Meter category.
+        type: String
+      - contextPath: Azure.Billing.Usage.properties.meterDetails.meterSubCategory
+        description: Meter subcategory.
+        type: String
+      - contextPath: Azure.Billing.Usage.properties.meterDetails.unit
+        description: Unit of measure.
+        type: String
+      - contextPath: Azure.Billing.Usage.properties.meterDetails.meterLocation
+        description: Meter location.
+        type: String
+      - contextPath: Azure.Billing.Usage.properties.meterDetails.totalIncludedQuantity
+        description: Total included quantity.
+        type: Number
+      - contextPath: Azure.Billing.Usage.properties.meterDetails.pretaxStandardRate
+        description: Pretax standard rate.
+        type: Number
+      - contextPath: Azure.Billing.Usage.properties.quantity
+        description: Usage quantity.
+        type: Number
+      - contextPath: Azure.Billing.Usage.properties.effectivePrice
+        description: Effective price for the usage.
+        type: Number
+      - contextPath: Azure.Billing.Usage.properties.cost
+        description: Cost amount.
+        type: Number
+      - contextPath: Azure.Billing.Usage.properties.unitPrice
+        description: Unit price.
+        type: Number
+      - contextPath: Azure.Billing.Usage.properties.billingCurrency
+        description: Billing currency.
+        type: String
+      - contextPath: Azure.Billing.Usage.properties.resourceLocation
+        description: Resource location.
+        type: String
+      - contextPath: Azure.Billing.Usage.properties.consumedService
+        description: Consumed service name.
+        type: String
+      - contextPath: Azure.Billing.Usage.properties.resourceId
+        description: Resource identifier.
+        type: String
+      - contextPath: Azure.Billing.Usage.properties.resourceName
+        description: Resource name.
+        type: String
+      - contextPath: Azure.Billing.Usage.properties.serviceInfo1
+        description: Service info 1.
+        type: String
+      - contextPath: Azure.Billing.Usage.properties.serviceInfo2
+        description: Service info 2.
+        type: String
+      - contextPath: Azure.Billing.Usage.properties.additionalInfo
+        description: Additional information.
+        type: String
+      - contextPath: Azure.Billing.Usage.properties.invoiceSection
+        description: Invoice section.
+        type: String
+      - contextPath: Azure.Billing.Usage.properties.costCenter
+        description: Cost center.
+        type: String
+      - contextPath: Azure.Billing.Usage.properties.resourceGroup
+        description: Resource group name.
+        type: String
+      - contextPath: Azure.Billing.Usage.properties.reservationId
+        description: Reservation identifier.
+        type: String
+      - contextPath: Azure.Billing.Usage.properties.reservationName
+        description: Reservation name.
+        type: String
+      - contextPath: Azure.Billing.Usage.properties.productOrderId
+        description: Product order identifier.
+        type: String
+      - contextPath: Azure.Billing.Usage.properties.productOrderName
+        description: Product order name.
+        type: String
+      - contextPath: Azure.Billing.Usage.properties.offerId
+        description: Offer identifier.
+        type: String
+      - contextPath: Azure.Billing.Usage.properties.isAzureCreditEligible
+        description: Whether usage is Azure credit eligible.
+        type: Boolean
+      - contextPath: Azure.Billing.Usage.properties.term
+        description: Term.
+        type: String
+      - contextPath: Azure.Billing.Usage.properties.publisherName
+        description: Publisher name.
+        type: String
+      - contextPath: Azure.Billing.Usage.properties.publisherType
+        description: Publisher type.
+        type: String
+      - contextPath: Azure.Billing.Usage.properties.planName
+        description: Plan name.
+        type: String
+      - contextPath: Azure.Billing.Usage.properties.chargeType
+        description: Charge type.
+        type: String
+      - contextPath: Azure.Billing.Usage.properties.frequency
+        description: Frequency.
+        type: String
+      - contextPath: Azure.Billing.Usage.properties.payGPrice
+        description: Pay-as-you-go price.
+        type: Number
+      - contextPath: Azure.Billing.Usage.properties.pricingModel
+        description: Pricing model.
+        type: String
+      - contextPath: Azure.Billing.UsageNextToken
+        description: Next page token for pagination.
+        type: String
+  - name: azure-billing-forecast-list
+    description: Returns cost forecast for a subscription over a given time range.
+    arguments:
+      - name: subscription_id
+        description: Azure subscription ID (required).
+        required: true
+        type: String
+      - name: type
+        description: Forecast type (required).
+        required: true
+        type: String
+        auto: PREDEFINED
+        predefined:
+        - Usage
+        - ActualCost
+        - AmortizedCost
+      - name: aggregation_function_name
+        description: The name of the column to aggregate (required).
+        required: true
+        type: String
+        auto: PREDEFINED
+        predefined:
+        - PreTaxCostUSD
+        - Cost
+        - CostUSD
+        - PreTaxCost
+      - name: aggregation_function_type
+        description: The name of the aggregation function to use.
+        required: false
+        type: String
+        defaultValue: Sum
+      - name: granularity
+        description: The granularity of the forecast.
+        required: false
+        type: String
+        defaultValue: Daily
+      - name: start_date
+        description: Start date for the forecast. Default value current time (UTC). e.g. 2022-01-01T00:00:00Z.
+        required: false
+        type: String
+      - name: end_date
+        description: End date for the forecast. Default value 7 days from current time(UTC). e.g. 2022-01-01T00:00:00Z.
+        required: false
+        type: String
+      - name: filter
+        description: A URL parameter to filter forecasts by properties/usageDate (Utc time), properties/chargeType or properties/grain. The filter supports 'eq', 'lt', 'gt', 'le', 'ge', and 'and'. It does not currently support 'ne', 'or', or 'not'.
+        required: false
+        type: String
+      - name: include_actual_cost
+        description: Include actual cost data.
+        defaultValue: 'false'
+        auto: PREDEFINED
+        predefined:
+        - 'true'
+        - 'false'
+        required: false
+      - name: include_fresh_partial_cost
+        description: Include fresh partial cost data.
+        auto: PREDEFINED
+        predefined:
+        - 'true'
+        - 'false'
+        required: false
+        defaultValue: 'false'
+    outputs:
+      - contextPath: Azure.Billing.Forecast.Cost
+        description: Cost amount.
+        type: Number
+      - contextPath: Azure.Billing.Forecast.CostUSD
+        description: Cost in USD.
+        type: Number
+      - contextPath: Azure.Billing.Forecast.PreTaxCost
+        description: Pre-tax cost amount.
+        type: Number
+      - contextPath: Azure.Billing.Forecast.UsageDate
+        description: Usage date for the forecast (YYYY-MM-DD format).
+        type: String
+      - contextPath: Azure.Billing.Forecast.CostStatus
+        description: Cost status (Forecast, Actual).
+        type: String
+      - contextPath: Azure.Billing.Forecast.Currency
+        description: Currency code for the forecast.
+        type: String
+  - name: azure-billing-budgets-list
+    description: Lists configured budgets at the subscription or resource group scope.
+    arguments:
+      - name: subscription_id
+        description: The Azure subscription ID on which to run the command. Will be sent as a scope parameter - /subscriptions/{subscriptionId}/.
+        required: true
+      - name: budget_name
+        description: Name of the budget. Optional; if provided, returns a specific budget.
+        required: false
+    outputs:
+      - contextPath: Azure.Billing.Budget
+        description: List of budget details from Azure Consumption API.
+      - contextPath: Azure.Billing.Budget.id
+        description: Fully qualified resource ID for the budget.
+        type: String
+      - contextPath: Azure.Billing.Budget.name
+        description: Name of the budget resource.
+        type: String
+      - contextPath: Azure.Billing.Budget.type
+        description: Resource type (Microsoft.Consumption/budgets).
+        type: String
+      - contextPath: Azure.Billing.Budget.eTag
+        description: ETag for the budget resource.
+        type: String
+      - contextPath: Azure.Billing.Budget.properties.category
+        description: Budget category (Cost, Usage).
+        type: String
+      - contextPath: Azure.Billing.Budget.properties.amount
+        description: Budget amount limit.
+        type: Number
+      - contextPath: Azure.Billing.Budget.properties.timeGrain
+        description: Time grain for the budget (Monthly, Quarterly, Annually).
+        type: String
+      - contextPath: Azure.Billing.Budget.properties.timePeriod
+        description: Time period object for the budget.
+      - contextPath: Azure.Billing.Budget.properties.timePeriod.startDate
+        description: Start date of the budget period.
+        type: Date
+      - contextPath: Azure.Billing.Budget.properties.timePeriod.endDate
+        description: End date of the budget period.
+        type: Date
+      - contextPath: Azure.Billing.Budget.properties.currentSpend
+        description: Current spend object.
+      - contextPath: Azure.Billing.Budget.properties.currentSpend.amount
+        description: Current spend amount.
+        type: Number
+      - contextPath: Azure.Billing.Budget.properties.currentSpend.unit
+        description: Currency unit for current spend.
+        type: String
+      - contextPath: Azure.Billing.Budget.properties.notifications
+        description: Budget notifications configuration.
+      - contextPath: Azure.Billing.Budget.properties.filter
+        description: Budget filter configuration.
+      - contextPath: Azure.Billing.Budget.properties.filter.and
+        description: AND filter conditions.
+      - contextPath: Azure.Billing.Budget.properties.filter.dimensions
+        description: Dimension filters.
+      - contextPath: Azure.Billing.Budget.properties.filter.dimensions.name
+        description: Dimension name (ResourceGroup, ResourceType, etc.).
+        type: String
+      - contextPath: Azure.Billing.Budget.properties.filter.dimensions.operator
+        description: Filter operator (In, Equal).
+        type: String
+      - contextPath: Azure.Billing.Budget.properties.filter.dimensions.values
+        description: Filter values array.
+      - contextPath: Azure.Billing.Budget.properties.filter.tags
+        description: Tag filters.
+      - contextPath: Azure.Billing.Budget.properties.filter.tags.name
+        description: Tag name.
+        type: String
+      - contextPath: Azure.Billing.Budget.properties.filter.tags.operator
+        description: Tag filter operator.
+        type: String
+      - contextPath: Azure.Billing.Budget.properties.filter.tags.values
+        description: Tag filter values.
+      - contextPath: Azure.Billing.Budget.properties.forecastSpend
+        description: Forecasted spend object.
+      - contextPath: Azure.Billing.Budget.properties.forecastSpend.amount
+        description: Forecasted spend amount.
+        type: Number
+      - contextPath: Azure.Billing.Budget.properties.forecastSpend.unit
+        description: Currency unit for forecasted spend.
+        type: String
   
   - arguments:
     - name: subscription_id
