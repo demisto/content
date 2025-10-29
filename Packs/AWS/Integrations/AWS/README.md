@@ -1817,6 +1817,7 @@ Enables deletion protection for the RDS DB cluster to prevent accidental deletio
 #### Context Output
 
 There is no context output for this command.
+
 ### aws-s3-bucket-website-delete
 
 ***
@@ -1830,13 +1831,14 @@ Removes the website configuration for a bucket.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| account_id | The AWS account ID. | Required | 
-| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required | 
-| bucket | The name of the S3 bucket from which the website configuration will be removed. | Required | 
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
+| bucket | The name of the S3 bucket from which the website configuration will be removed. | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### aws-s3-bucket-ownership-controls-put
 
 ***
@@ -1850,14 +1852,15 @@ Creates or modifies OwnershipControls for an Amazon S3 bucket.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| account_id | The AWS account ID. | Required | 
-| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required | 
-| bucket | The name of the Amazon S3 bucket for which to configure Ownership Controls. | Required | 
-| ownership_controls_rule | Ownership for a bucket's ownership controls. Possible values are: BucketOwnerPreferred, ObjectWriter, BucketOwnerEnforced. | Required | 
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
+| bucket | The name of the Amazon S3 bucket for which to configure Ownership Controls. | Required |
+| ownership_controls_rule | Ownership for a bucket's ownership controls. Possible values are: BucketOwnerPreferred, ObjectWriter, BucketOwnerEnforced. | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### aws-eks-describe-cluster
 
 ***
@@ -1871,51 +1874,52 @@ Describes an Amazon EKS cluster.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| account_id | The AWS account ID. | Required | 
-| cluster_name | The name of the cluster to describe. | Required | 
-| region | The AWS Region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required | 
+| account_id | The AWS account ID. | Required |
+| cluster_name | The name of the cluster to describe. | Required |
+| region | The AWS Region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.EKS.Cluster.name | String | The name of your cluster. | 
-| AWS.EKS.Cluster.arn | String | The Amazon Resource Name \(ARN\) of the cluster. | 
-| AWS.EKS.Cluster.createdAt | String | The creation date of the object. | 
-| AWS.EKS.Cluster.version | String | The Kubernetes server version for the cluster. | 
-| AWS.EKS.Cluster.endpoint | String | The endpoint for your Kubernetes API server. | 
-| AWS.EKS.Cluster.roleArn | String | The Amazon Resource Name \(ARN\) of the IAM role that provides permissions for the Kubernetes control plane to make calls to Amazon Web Services API operations on your behalf. | 
-| AWS.EKS.Cluster.resourcesVpcConfig.subnetIds | List | The subnets associated with your cluster. | 
-| AWS.EKS.Cluster.resourcesVpcConfig.securityGroupIds | List | The security groups associated with the cross-account elastic network interfaces that are used to allow communication between your nodes and the Kubernetes control plane. | 
-| AWS.EKS.Cluster.resourcesVpcConfig.clusterSecurityGroupId | String | The cluster security group that was created by Amazon EKS for the cluster. Managed node groups use this security group for control-plane-to-data-plane communication. | 
-| AWS.EKS.Cluster.resourcesVpcConfig.vpcId | String | The VPC associated with your cluster. | 
-| AWS.EKS.Cluster.resourcesVpcConfig.endpointPublicAccess | Boolean | Whether the public API server endpoint is enabled. | 
-| AWS.EKS.Cluster.resourcesVpcConfig.endpointPrivateAccess | Boolean | This parameter indicates whether the Amazon EKS private API server endpoint is enabled. | 
-| AWS.EKS.Cluster.resourcesVpcConfig.publicAccessCidrs | List | The CIDR blocks that are allowed access to your cluster’s public Kubernetes API server endpoint. | 
-| AWS.EKS.Cluster.kubernetesNetworkConfig.serviceIpv4Cidr | String | The CIDR block that Kubernetes Pod and Service object IP addresses are assigned from. | 
-| AWS.EKS.Cluster.kubernetesNetworkConfig.serviceIpv6Cidr | String | The CIDR block that Kubernetes Pod and Service IP addresses are assigned from if you created a 1.21 or later cluster with version 1.10.1 or later of the Amazon VPC CNI add-on and specified ipv6 for ipFamily when you created the cluster. | 
-| AWS.EKS.Cluster.kubernetesNetworkConfig.ipFamily | String | The IP family used to assign Kubernetes Pod and Service objects IP addresses. | 
-| AWS.EKS.Cluster.logging.clusterLogging | Object | The cluster control plane logging configuration for your cluster. | 
-| AWS.EKS.Cluster.identity | Object | The identity provider information for the cluster. | 
-| AWS.EKS.Cluster.status | String | The current status of the cluster. | 
-| AWS.EKS.Cluster.certificateAuthority.data | String | The Base64-encoded certificate data required to communicate with your cluster. | 
-| AWS.EKS.Cluster.clientRequestToken | String | A unique, case-sensitive identifier that you provide to ensure the idempotency of the request. | 
-| AWS.EKS.Cluster.platformVersion | String | The platform version of your Amazon EKS cluster. | 
-| AWS.EKS.Cluster.tags | Object | A dictionary containing metadata for categorization and organization. | 
-| AWS.EKS.Cluster.encryptionConfig.resources | List | Specifies the resources to be encrypted. The only supported value is secrets. | 
-| AWS.EKS.Cluster.encryptionConfig.provider | Object | Key Management Service \(KMS\) key. | 
-| AWS.EKS.Cluster.connectorConfig.activationId | String | A unique ID associated with the cluster for registration purposes. | 
-| AWS.EKS.Cluster.connectorConfig.activationCode | String | A unique code associated with the cluster for registration purposes. | 
-| AWS.EKS.Cluster.connectorConfig.activationExpiry | String | The expiration time of the connected cluster. | 
-| AWS.EKS.Cluster.connectorConfig.provider | String | The cluster’s cloud service provider. | 
-| AWS.EKS.Cluster.connectorConfig.roleArn | String | The Amazon Resource Name \(ARN\) of the role to communicate with services from the connected Kubernetes cluster. | 
-| AWS.EKS.Cluster.id | String | The ID of your local Amazon EKS cluster on an Amazon Web Services Outpost. | 
-| AWS.EKS.Cluster.health.issues | List | An object representing the health issues of your local Amazon EKS cluster on an Amazon Web Services Outpost. | 
-| AWS.EKS.Cluster.outpostConfig.outpostArns | Object | An object representing the configuration of your local Amazon EKS cluster on an Amazon Web Services Outpost. | 
-| AWS.EKS.Cluster.outpostConfig.controlPlaneInstanceType | String | The Amazon EC2 instance type used for the control plane. | 
-| AWS.EKS.Cluster.outpostConfig.controlPlanePlacement | Object | An object representing the placement configuration for all the control plane instances of your local Amazon EKS cluster on an Amazon Web Services Outpost. | 
-| AWS.EKS.Cluster.accessConfig.bootstrapClusterCreatorAdminPermissions | Boolean | Specifies whether or not the cluster creator IAM principal was set as a cluster admin access entry during cluster creation time. | 
-| AWS.EKS.Cluster.accessConfig.authenticationMode | String | The current authentication mode of the cluster. | 
+| AWS.EKS.Cluster.name | String | The name of your cluster. |
+| AWS.EKS.Cluster.arn | String | The Amazon Resource Name \(ARN\) of the cluster. |
+| AWS.EKS.Cluster.createdAt | String | The creation date of the object. |
+| AWS.EKS.Cluster.version | String | The Kubernetes server version for the cluster. |
+| AWS.EKS.Cluster.endpoint | String | The endpoint for your Kubernetes API server. |
+| AWS.EKS.Cluster.roleArn | String | The Amazon Resource Name \(ARN\) of the IAM role that provides permissions for the Kubernetes control plane to make calls to Amazon Web Services API operations on your behalf. |
+| AWS.EKS.Cluster.resourcesVpcConfig.subnetIds | List | The subnets associated with your cluster. |
+| AWS.EKS.Cluster.resourcesVpcConfig.securityGroupIds | List | The security groups associated with the cross-account elastic network interfaces that are used to allow communication between your nodes and the Kubernetes control plane. |
+| AWS.EKS.Cluster.resourcesVpcConfig.clusterSecurityGroupId | String | The cluster security group that was created by Amazon EKS for the cluster. Managed node groups use this security group for control-plane-to-data-plane communication. |
+| AWS.EKS.Cluster.resourcesVpcConfig.vpcId | String | The VPC associated with your cluster. |
+| AWS.EKS.Cluster.resourcesVpcConfig.endpointPublicAccess | Boolean | Whether the public API server endpoint is enabled. |
+| AWS.EKS.Cluster.resourcesVpcConfig.endpointPrivateAccess | Boolean | This parameter indicates whether the Amazon EKS private API server endpoint is enabled. |
+| AWS.EKS.Cluster.resourcesVpcConfig.publicAccessCidrs | List | The CIDR blocks that are allowed access to your cluster’s public Kubernetes API server endpoint. |
+| AWS.EKS.Cluster.kubernetesNetworkConfig.serviceIpv4Cidr | String | The CIDR block that Kubernetes Pod and Service object IP addresses are assigned from. |
+| AWS.EKS.Cluster.kubernetesNetworkConfig.serviceIpv6Cidr | String | The CIDR block that Kubernetes Pod and Service IP addresses are assigned from if you created a 1.21 or later cluster with version 1.10.1 or later of the Amazon VPC CNI add-on and specified ipv6 for ipFamily when you created the cluster. |
+| AWS.EKS.Cluster.kubernetesNetworkConfig.ipFamily | String | The IP family used to assign Kubernetes Pod and Service objects IP addresses. |
+| AWS.EKS.Cluster.logging.clusterLogging | Object | The cluster control plane logging configuration for your cluster. |
+| AWS.EKS.Cluster.identity | Object | The identity provider information for the cluster. |
+| AWS.EKS.Cluster.status | String | The current status of the cluster. |
+| AWS.EKS.Cluster.certificateAuthority.data | String | The Base64-encoded certificate data required to communicate with your cluster. |
+| AWS.EKS.Cluster.clientRequestToken | String | A unique, case-sensitive identifier that you provide to ensure the idempotency of the request. |
+| AWS.EKS.Cluster.platformVersion | String | The platform version of your Amazon EKS cluster. |
+| AWS.EKS.Cluster.tags | Object | A dictionary containing metadata for categorization and organization. |
+| AWS.EKS.Cluster.encryptionConfig.resources | List | Specifies the resources to be encrypted. The only supported value is secrets. |
+| AWS.EKS.Cluster.encryptionConfig.provider | Object | Key Management Service \(KMS\) key. |
+| AWS.EKS.Cluster.connectorConfig.activationId | String | A unique ID associated with the cluster for registration purposes. |
+| AWS.EKS.Cluster.connectorConfig.activationCode | String | A unique code associated with the cluster for registration purposes. |
+| AWS.EKS.Cluster.connectorConfig.activationExpiry | String | The expiration time of the connected cluster. |
+| AWS.EKS.Cluster.connectorConfig.provider | String | The cluster’s cloud service provider. |
+| AWS.EKS.Cluster.connectorConfig.roleArn | String | The Amazon Resource Name \(ARN\) of the role to communicate with services from the connected Kubernetes cluster. |
+| AWS.EKS.Cluster.id | String | The ID of your local Amazon EKS cluster on an Amazon Web Services Outpost. |
+| AWS.EKS.Cluster.health.issues | List | An object representing the health issues of your local Amazon EKS cluster on an Amazon Web Services Outpost. |
+| AWS.EKS.Cluster.outpostConfig.outpostArns | Object | An object representing the configuration of your local Amazon EKS cluster on an Amazon Web Services Outpost. |
+| AWS.EKS.Cluster.outpostConfig.controlPlaneInstanceType | String | The Amazon EC2 instance type used for the control plane. |
+| AWS.EKS.Cluster.outpostConfig.controlPlanePlacement | Object | An object representing the placement configuration for all the control plane instances of your local Amazon EKS cluster on an Amazon Web Services Outpost. |
+| AWS.EKS.Cluster.accessConfig.bootstrapClusterCreatorAdminPermissions | Boolean | Specifies whether or not the cluster creator IAM principal was set as a cluster admin access entry during cluster creation time. |
+| AWS.EKS.Cluster.accessConfig.authenticationMode | String | The current authentication mode of the cluster. |
+
 ### aws-eks-associate-access-policy
 
 ***
@@ -1929,26 +1933,25 @@ Associates an access policy and its scope to an access entry.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| account_id | The AWS account ID. | Required | 
-| cluster_name | The name of the cluster for which to create an access entry. | Required | 
-| principal_arn | The Amazon Resource Name (ARN) of the IAM user or role for the AccessEntry that you’re associating the access policy to. | Required | 
-| policy_arn | The ARN of the AccessPolicy that you’re associating. | Required | 
-| type | The scope type of an access policy. Possible values are: cluster, namespace. | Required | 
-| namespaces | A comma-separated list of Kubernetes namespaces that an access policy is scoped to. A value is required if you specified namespace for type. | Optional | 
-| region | The AWS Region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required | 
+| account_id | The AWS account ID. | Required |
+| cluster_name | The name of the cluster for which to create an access entry. | Required |
+| principal_arn | The Amazon Resource Name (ARN) of the IAM user or role for the AccessEntry that you’re associating the access policy to. | Required |
+| policy_arn | The ARN of the AccessPolicy that you’re associating. | Required |
+| type | The scope type of an access policy. Possible values are: cluster, namespace. | Required |
+| namespaces | A comma-separated list of Kubernetes namespaces that an access policy is scoped to. A value is required if you specified namespace for type. | Optional |
+| region | The AWS Region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.EKS.AssociatedAccessPolicy.clusterName | String | The name of your cluster. | 
-| AWS.EKS.AssociatedAccessPolicy.principalArn | String | The ARN of the IAM principal for the AccessEntry. | 
-| AWS.EKS.AssociatedAccessPolicy.policyArn | String | The ARN of the AccessPolicy. | 
-| AWS.EKS.AssociatedAccessPolicy.accessScope.type | String | The scope type of an access policy. | 
-| AWS.EKS.AssociatedAccessPolicy.accessScope.namespaces | String | A Kubernetes namespace that an access policy is scoped to. | 
-| AWS.EKS.AssociatedAccessPolicy.associatedAt | String | The date and time the AccessPolicy was associated with an AccessEntry. | 
-| AWS.EKS.AssociatedAccessPolicy.modifiedAt | String | The date and time for the last modification to the object. | 
-
+| AWS.EKS.AssociatedAccessPolicy.clusterName | String | The name of your cluster. |
+| AWS.EKS.AssociatedAccessPolicy.principalArn | String | The ARN of the IAM principal for the AccessEntry. |
+| AWS.EKS.AssociatedAccessPolicy.policyArn | String | The ARN of the AccessPolicy. |
+| AWS.EKS.AssociatedAccessPolicy.accessScope.type | String | The scope type of an access policy. |
+| AWS.EKS.AssociatedAccessPolicy.accessScope.namespaces | String | A Kubernetes namespace that an access policy is scoped to. |
+| AWS.EKS.AssociatedAccessPolicy.associatedAt | String | The date and time the AccessPolicy was associated with an AccessEntry. |
+| AWS.EKS.AssociatedAccessPolicy.modifiedAt | String | The date and time for the last modification to the object. |
 
 ### aws-billing-cost-usage-list
 
