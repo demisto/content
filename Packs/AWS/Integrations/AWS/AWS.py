@@ -2,7 +2,7 @@ import demistomock as demisto  # noqa: F401
 from COOCApiModule import *  # noqa: E402
 from CommonServerPython import *  # noqa: F401
 from http import HTTPStatus
-from datetime import date
+from datetime import date, datetime, timedelta, UTC
 from collections.abc import Callable
 from botocore.client import BaseClient as BotoClient
 from botocore.config import Config
@@ -362,6 +362,8 @@ class AWSServices(str, Enum):
     LAMBDA = "lambda"
     CloudTrail = "cloudtrail"
     ECS = "ecs"
+    CostExplorer = "ce"
+    BUDGETS = "budgets"
 
 
 class DatetimeEncoder(json.JSONEncoder):
@@ -1117,7 +1119,6 @@ class EC2:
         }
         remove_nulls_from_dictionary(kwargs)
         response = client.modify_instance_attribute(**kwargs)
-
         if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK:
             return CommandResults(
                 readable_output=f"Successfully modified EC2 instance `{args.get('instance_id')}` attribute `{kwargs.popitem()}"
@@ -2334,7 +2335,9 @@ class RDS:
                 "EnableIAMDatabaseAuthentication": arg_to_bool_or_none(args.get("enable_iam_database_authentication")),
                 "PubliclyAccessible": arg_to_bool_or_none(args.get("publicly_accessible")),
                 "CopyTagsToSnapshot": arg_to_bool_or_none(args.get("copy_tags_to_snapshot")),
-                "BackupRetentionPeriod": arg_to_bool_or_none(args.get("backup_retention_period")),
+                "BackupRetentionPeriod": int(args.get("backup_retention_period", ""))
+                if args.get("backup_retention_period")
+                else None,
             }
             remove_nulls_from_dictionary(kwargs)
             demisto.info(f"modify_db_instance {kwargs=}")
@@ -2459,6 +2462,352 @@ class RDS:
             raise DemistoException(f"Failed to modify event subscription {args.get('subscription_name')}.")
         except Exception as e:
             raise DemistoException(f"Error: {str(e)}")
+
+
+class CostExplorer:
+    service = AWSServices.CostExplorer
+
+    @staticmethod
+    def billing_cost_usage_list_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Retrieves cost and usage data from AWS Cost Explorer API.
+
+        This command provides detailed cost and usage information for AWS services over a specified time period.
+        It supports multiple metrics including costs (blended, unblended, amortized) and usage quantities.
+        Results can be filtered by AWS services and support pagination for large datasets.
+
+        Args:
+            client (BotoClient): AWS Cost Explorer boto3 client
+            args (Dict[str, Any]): Command arguments containing:
+                - metrics: List of metrics to retrieve (UsageQuantity, BlendedCost, etc.)
+                - start_date: Start date for the report (YYYY-MM-DD format)
+                - end_date: End date for the report (YYYY-MM-DD format)
+                - granularity: Time granularity (Daily, Monthly, Hourly)
+                - aws_services: Optional filter for specific AWS services
+                - next_page_token: Token for pagination
+
+        Returns:
+            CommandResults: Contains usage data grouped by time periods and metrics,
+                          with separate tables for each metric type in readable output
+
+        Raises:
+            DemistoException: If AWS API call fails or invalid parameters provided
+        """
+        today_utc = datetime.now(UTC)
+        metrics = argToList(args.get("metrics", "UsageQuantity"))
+        allowed_metrics = {
+            "AmortizedCost",
+            "BlendedCost",
+            "NetAmortizedCost",
+            "NetUnblendedCost",
+            "NormalizedUsageAmount",
+            "UnblendedCost",
+            "UsageQuantity",
+        }
+        invalid_metrics = [m for m in metrics if m not in allowed_metrics]
+        if invalid_metrics:
+            raise DemistoException(
+                f"Invalid metrics: {', '.join(invalid_metrics)}. Allowed metrics: {', '.join(sorted(allowed_metrics))}"
+            )
+        start_date = arg_to_datetime(args.get("start_date")) or (today_utc - timedelta(days=7))
+        end_date = arg_to_datetime(args.get("end_date")) or today_utc
+        granularity = args.get("granularity", "Daily").upper()
+        aws_services = argToList(args.get("aws_services"))
+        token = args.get("next_page_token")
+
+        request = {
+            "TimePeriod": {
+                "Start": start_date.date().isoformat(),
+                "End": end_date.date().isoformat(),
+            },
+            "Granularity": granularity,
+            "Metrics": metrics,
+        }
+        if aws_services:
+            request["Filter"] = {
+                "Dimensions": {
+                    "Key": "SERVICE",
+                    "MatchOptions": ["EQUALS"],
+                    "Values": aws_services,
+                }
+            }
+        if token:
+            request["NextPageToken"] = token
+        demisto.debug(f"AWS get_cost_and_usage request: {request}")
+
+        response = client.get_cost_and_usage(**request)
+
+        results = response.get("ResultsByTime", [])
+        next_token = response.get("NextPageToken", "")
+        demisto.debug(f"AWS get_cost_and_usage response - ResultsByTime count: {len(results)},\n NextToken: {next_token}")
+
+        results_by_metric: dict[str, list] = {metric: [] for metric in metrics}
+        for result in results:
+            total = result.get("Total")
+            service = total.get("Keys", [None])[0] if total.get("Keys") else None
+            for metric in metrics:
+                results_by_metric[metric].append(
+                    {
+                        "Service": service,
+                        "StartDate": result.get("TimePeriod", {}).get("Start"),
+                        "EndDate": result.get("TimePeriod", {}).get("End"),
+                        "Amount": total.get(metric, {}).get("Amount", ""),
+                        "Unit": total.get(metric, {}).get("Unit", ""),
+                    }
+                )
+        outputs = {"AWS.Billing.Usage": results, "AWS.Billing(true)": {"UsageNextToken": next_token}}
+        readable_tables = []
+        for metric in metrics:
+            metric_results = results_by_metric[metric]
+            if metric_results:
+                table = tableToMarkdown(
+                    f"AWS Billing Usage - {metric}",
+                    metric_results,
+                    headers=["Service", "StartDate", "EndDate", "Amount", "Unit"],
+                    removeNull=True,
+                    headerTransform=pascalToSpace,
+                )
+                readable_tables.append(table)
+        readable = "\n".join(readable_tables) if readable_tables else "No billing usage data found."
+        if next_token:
+            readable = f"Next Page Token: {next_token}\n\n" + readable
+        return CommandResults(
+            readable_output=readable,
+            outputs=outputs,
+            raw_response=response,
+        )
+
+    @staticmethod
+    def billing_forecast_list_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Retrieves cost forecast data from AWS Cost Explorer API.
+
+        This command provides forecasted cost information for AWS services over a future time period.
+        It uses historical data to predict future spending patterns and supports multiple cost metrics.
+        Results can be filtered by AWS services and include prediction intervals for accuracy assessment.
+
+        Args:
+            client (BotoClient): AWS Cost Explorer boto3 client
+            args (Dict[str, Any]): Command arguments containing:
+                - metric: Single forecast metric (AMORTIZED_COST, BLENDED_COST, etc.)
+                - start_date: Start date for the forecast (YYYY-MM-DD format, defaults to today)
+                - end_date: End date for the forecast (YYYY-MM-DD format, defaults to +7 days)
+                - granularity: Time granularity (Daily, Monthly, Hourly)
+                - aws_services: Optional filter for specific AWS services
+                - next_page_token: Token for pagination
+
+        Returns:
+            CommandResults: Contains forecast data with mean values and prediction intervals,
+                          organized by time periods for the specified metric
+
+        Raises:
+            DemistoException: If AWS API call fails or invalid parameters provided
+        """
+        today_utc = datetime.now(UTC)
+        metric = args.get("metric", "AMORTIZED_COST")
+        start_date = arg_to_datetime(args.get("start_date")) or today_utc
+        end_date = arg_to_datetime(args.get("end_date")) or (today_utc + timedelta(days=7))
+        granularity = args.get("granularity", "Daily").upper()
+        aws_services = argToList(args.get("aws_services"))
+        token = args.get("next_page_token")
+
+        request = {
+            "TimePeriod": {
+                "Start": start_date.date().isoformat(),
+                "End": end_date.date().isoformat(),
+            },
+            "Granularity": granularity,
+            "Metric": metric,
+        }
+        if aws_services:
+            request["Filter"] = {
+                "Dimensions": {
+                    "Key": "SERVICE",
+                    "MatchOptions": ["EQUALS"],
+                    "Values": aws_services,
+                }
+            }
+        if token:
+            request["NextPageToken"] = token
+        demisto.debug(f"AWS Cost Forecast request: {request}")
+
+        response = client.get_cost_forecast(**request)
+
+        results = response.get("ForecastResultsByTime", [])
+        next_token = response.get("NextPageToken", "")
+        demisto.debug(f"AWS Cost Forecast response - ForecastResultsByTime count: {len(results)},\nNextToken: {next_token}")
+
+        metric_results = []
+        for result in results:
+            metric_results.append(
+                {
+                    "StartDate": result.get("TimePeriod", {}).get("Start"),
+                    "EndDate": result.get("TimePeriod", {}).get("End"),
+                    "TotalAmount": f"{float(result.get('MeanValue', 0)):.2f}",
+                    "TotalUnit": response.get("Unit"),
+                }
+            )
+
+        outputs = {
+            "AWS.Billing.Forecast": results,
+            "AWS.Billing(true)": {"ForecastNextToken": next_token},
+        }
+
+        readable = tableToMarkdown(
+            f"AWS Billing Forecast - {metric}",
+            metric_results,
+            headers=["StartDate", "EndDate", "TotalAmount", "TotalUnit"],
+            removeNull=True,
+            headerTransform=pascalToSpace,
+        )
+        if next_token:
+            readable = f"Next Page Token: {next_token}\n\n" + readable
+
+        return CommandResults(
+            readable_output=readable,
+            outputs=outputs,
+            raw_response=response,
+        )
+
+
+class Budgets:
+    service = AWSServices.BUDGETS
+
+    @staticmethod
+    def billing_budgets_list_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Retrieves budget information from AWS Budgets API.
+
+        This command lists all configured budgets for a specified AWS account, providing detailed
+        information about budget limits, actual spending, forecasted spending, and time periods.
+        Supports various budget types including cost, usage, and savings plans budgets.
+
+        Args:
+            client (BotoClient): AWS Budgets boto3 client
+            args (Dict[str, Any]): Command arguments containing:
+                - account_id: AWS account ID to retrieve budgets for (required)
+                - max_result: Maximum number of results to return (default: 50, max: 1000)
+                - show_filter_expression: Whether to include filter expressions in output
+                - next_page_token: Token for pagination
+
+        Returns:
+            CommandResults: Contains budget data including names, types, limits, actual spend,
+                          forecasted spend, and time periods with pagination support
+
+        Raises:
+            DemistoException: If AWS API call fails, account_id is invalid, or other errors occur
+        """
+        max_results = int(args.get("max_result", 50))
+        token = args.get("next_page_token")
+        account_id = args.get("account_id")
+        show_filter_expression = argToBoolean(args.get("show_filter_expression"))
+        request = {"AccountId": account_id, "MaxResults": max_results}
+        if token:
+            request["NextToken"] = token
+        if show_filter_expression:
+            request["ShowFilterExpression"] = show_filter_expression
+        demisto.debug(f"AWS Budgets request: {request}")
+
+        response = client.describe_budgets(**request)
+
+        budgets = response.get("Budgets", [])
+        next_token = response.get("NextToken")
+        demisto.debug(f"AWS Budgets response - Budgets count: {len(budgets)},\n NextToken: {next_token}")
+        results = []
+        for b in budgets:
+            budget_limit = b.get("BudgetLimit", {})
+            actual_spend = b.get("CalculatedSpend", {}).get("ActualSpend", {})
+            start = b.get("TimePeriod", {}).get("Start").strftime("%Y-%m-%d")
+            end = b.get("TimePeriod", {}).get("End").strftime("%Y-%m-%d")
+            results.append(
+                {
+                    "BudgetName": b.get("BudgetName"),
+                    "BudgetType": b.get("BudgetType"),
+                    "BudgetLimitAmount": budget_limit.get("Amount"),
+                    "BudgetLimitUnit": budget_limit.get("Unit"),
+                    "ActualSpendAmount": actual_spend.get("Amount"),
+                    "ActualSpendUnit": actual_spend.get("Unit"),
+                    "TimePeriod": f"{start} - {end}",
+                    "FilterExpression": b.get("FilterExpression") if show_filter_expression else None,
+                }
+            )
+        outputs = {
+            "AWS.Billing.Budget(val.BudgetName && val.BudgetName == obj.BudgetName)": results,
+            "AWS.Billing(true)": {"BudgetNextToken": next_token},
+        }
+        readable = tableToMarkdown(
+            "AWS Budgets",
+            results,
+            headers=[
+                "BudgetName",
+                "TimePeriod",
+                "BudgetType",
+                "BudgetLimitAmount",
+                "BudgetLimitUnit",
+                "FilterExpression",
+                "ActualSpendAmount",
+                "ActualSpendUnit",
+            ],
+            removeNull=True,
+            headerTransform=pascalToSpace,
+        )
+        if next_token:
+            readable = f"Next Page Token: {next_token}\n\n" + readable
+        return CommandResults(
+            readable_output=readable,
+            outputs=outputs,
+            raw_response=json.loads(json.dumps(response, cls=DatetimeEncoder)),
+        )
+
+    @staticmethod
+    def billing_budget_notification_list_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Retrieves notification configurations for a specific budget from AWS Budgets API.
+
+        This command lists all notification settings associated with a particular budget,
+        including notification types (actual vs forecasted), thresholds, comparison operators,
+        and subscriber information (email addresses or SNS topics).
+
+        Args:
+            client (BotoClient): AWS Budgets boto3 client
+            args (Dict[str, Any]): Command arguments containing:
+                - account_id: AWS account ID that owns the budget (required)
+                - budget_name: Name of the budget to retrieve notifications for (required)
+                - max_result: Maximum number of results to return (default: 50, max: 100)
+                - next_page_token: Token for pagination
+
+        Returns:
+            CommandResults: Contains notification configurations including notification types,
+                          thresholds, comparison operators, and subscriber details
+
+        Raises:
+            DemistoException: If AWS API call fails, budget doesn't exist, or invalid parameters provided
+        """
+        budget_name = args.get("budget_name")
+        max_results = int(args.get("max_result", 50))
+        token = args.get("next_page_token")
+        request = {"AccountId": args["account_id"], "BudgetName": budget_name, "MaxResults": max_results}
+        if token:
+            request["NextToken"] = token
+        demisto.debug(f"AWS Budget Notifications request: {request}")
+
+        response = client.describe_notifications_for_budget(**request)
+
+        notifications = response.get("Notifications", [])
+        next_token = response.get("NextToken", "")
+        demisto.debug(f"AWS Budget Notifications response - Notifications count: {len(notifications)},\n NextToken: {next_token}")
+        outputs = {
+            "AWS.Billing.Notification": notifications,
+            "AWS.Billing(true)": {"NotificationNextToken": next_token},
+        }
+        readable = tableToMarkdown(f"Notifications for Budget: {budget_name}", notifications)
+        if next_token:
+            readable = f"Next Page Token: {next_token}\n\n" + readable
+        return CommandResults(
+            readable_output=readable,
+            outputs=outputs,
+            raw_response=response,
+        )
 
 
 class CloudTrail:
@@ -2630,12 +2979,20 @@ def get_file_path(file_id):
 
 
 COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResults | None]] = {
+    "aws-billing-cost-usage-list": CostExplorer.billing_cost_usage_list_command,
+    "aws-billing-forecast-list": CostExplorer.billing_forecast_list_command,
+    "aws-billing-budgets-list": Budgets.billing_budgets_list_command,
+    "aws-billing-budget-notification-list": Budgets.billing_budget_notification_list_command,
     "aws-s3-public-access-block-update": S3.put_public_access_block_command,
     "aws-s3-bucket-versioning-put": S3.put_bucket_versioning_command,
+    "aws-s3-bucket-versioning-enable-quick-action": S3.put_bucket_versioning_command,
     "aws-s3-bucket-logging-put": S3.put_bucket_logging_command,
+    "aws-s3-bucket-enable-bucket-access-logging-quick-action": S3.put_bucket_logging_command,
     "aws-s3-bucket-acl-put": S3.put_bucket_acl_command,
+    "aws-s3-bucket-acl-set-to-private-quick-action": S3.put_bucket_acl_command,
     "aws-s3-bucket-policy-put": S3.put_bucket_policy_command,
     "aws-s3-bucket-website-delete": S3.delete_bucket_website_command,
+    "aws-s3-bucket-website-disable-hosting-quick-action": S3.delete_bucket_website_command,
     "aws-s3-bucket-ownership-controls-put": S3.put_bucket_ownership_controls_command,
     "aws-s3-file-upload": S3.file_upload_command,
     "aws-s3-file-download": S3.file_download_command,
@@ -2648,8 +3005,10 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-iam-access-key-update": IAM.update_access_key_command,
     "aws-ec2-instance-metadata-options-modify": EC2.modify_instance_metadata_options_command,
     "aws-ec2-instance-attribute-modify": EC2.modify_instance_attribute_command,
+    "aws-ec2-instance-attribute-modify-quick-action": EC2.modify_instance_attribute_command,
     "aws-ec2-snapshot-attribute-modify": EC2.modify_snapshot_attribute_command,
     "aws-ec2-image-attribute-modify": EC2.modify_image_attribute_command,
+    "aws-ec2-image-attribute-set-ami-to-private-quick-action": EC2.modify_image_attribute_command,
     "aws-ec2-security-group-ingress-revoke": EC2.revoke_security_group_ingress_command,
     "aws-ec2-security-group-ingress-authorize": EC2.authorize_security_group_ingress_command,
     "aws-ec2-security-group-egress-revoke": EC2.revoke_security_group_egress_command,
@@ -2660,16 +3019,30 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-ec2-subnets-describe": EC2.describe_subnets_command,
     "aws-ec2-ipam-resource-discoveries-describe": EC2.describe_ipam_resource_discoveries_command,
     "aws-ec2-ipam-resource-discovery-associations-describe": EC2.describe_ipam_resource_discovery_associations_command,
+    "aws-ec2-set-snapshot-to-private-quick-action": EC2.modify_snapshot_permission_command,
     "aws-eks-cluster-config-update": EKS.update_cluster_config_command,
     "aws-eks-describe-cluster": EKS.describe_cluster_command,
     "aws-eks-associate-access-policy": EKS.associate_access_policy_command,
     "aws-rds-db-cluster-modify": RDS.modify_db_cluster_command,
+    "aws-rds-db-cluster-enable-iam-auth-quick-action": RDS.modify_db_cluster_command,
+    "aws-rds-db-cluster-enable-deletion-protection-quick-action": RDS.modify_db_cluster_command,
     "aws-rds-db-cluster-snapshot-attribute-modify": RDS.modify_db_cluster_snapshot_attribute_command,
+    "aws-rds-db-cluster-snapshot-set-to-private-quick-action": RDS.modify_db_cluster_snapshot_attribute_command,
     "aws-rds-db-instance-modify": RDS.modify_db_instance_command,
+    "aws-rds-db-instance-modify-publicly-accessible-quick-action": RDS.modify_db_instance_command,
+    "aws-rds-db-instance-modify-copy-tags-on-rds-snapshot-quick-action": RDS.modify_db_instance_command,
+    "aws-rds-db-instance-modify-enable-automatic-backup-quick-action": RDS.modify_db_instance_command,
+    "aws-rds-db-instance-enable-iam-auth-quick-action": RDS.modify_db_instance_command,
+    "aws-rds-db-instance-enable-deletion-protection-quick-action": RDS.modify_db_instance_command,
+    "aws-rds-db-instance-enable-auto-upgrade-quick-action": RDS.modify_db_instance_command,
+    "aws-rds-db-instance-enable-multi-az-quick-action": RDS.modify_db_instance_command,
     "aws-rds-db-snapshot-attribute-modify": RDS.modify_db_snapshot_attribute_command,
     "aws-rds-event-subscription-modify": RDS.modify_event_subscription_command,
+    "aws-rds-db-snapshot-attribute-set-snapshot-to-private-quick-action": RDS.modify_db_snapshot_attribute_command,
     "aws-cloudtrail-logging-start": CloudTrail.start_logging_command,
+    "aws-cloudtrail-logging-start-enable-logging-quick-action": CloudTrail.start_logging_command,
     "aws-cloudtrail-trail-update": CloudTrail.update_trail_command,
+    "aws-cloudtrail-trail-enable-log-validation-quick-action": CloudTrail.update_trail_command,
     "aws-ec2-instances-describe": EC2.describe_instances_command,
     "aws-ec2-instances-start": EC2.start_instances_command,
     "aws-ec2-instances-stop": EC2.stop_instances_command,
@@ -2744,7 +3117,18 @@ REQUIRED_ACTIONS: list[str] = [
     "s3:GetEncryptionConfiguration",
     "s3:DeleteBucketPolicy",
     "cloudtrail:DescribeTrails",
+    "ce:GetCostAndUsage",
+    "ce:GetCostForecast",
+    "budgets:DescribeBudgets",
+    "budgets:DescribeNotificationsForBudget",
 ]
+
+COMMAND_SERVICE_MAP = {
+    "aws-billing-cost-usage-list": "ce",
+    "aws-billing-forecast-list": "ce",
+    "aws-billing-budgets-list": "budgets",
+    "aws-billing-budget-notification-list": "budgets",
+}
 
 
 def print_debug_logs(client: BotoClient, message: str):
@@ -2881,6 +3265,8 @@ def get_service_client(
     )
 
     # Resolve service name
+    if command in COMMAND_SERVICE_MAP:
+        service_name = COMMAND_SERVICE_MAP[command]
     service_name = service_name or command.split("-")[1]
     service = AWSServices(service_name)
 
