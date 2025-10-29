@@ -1,10 +1,11 @@
+import json
 import demistomock as demisto
 from CommonServerPython import *
 
 from anyrun.connectors import LookupConnector
 from anyrun import RunTimeException
 
-VERSION = "PA-XSOAR:2.1.0"
+VERSION = "PA-XSOAR:2.0.1"
 
 DBOT_SCORE_TYPE_RESOLVER = {
     "destination_ip": DBotScoreType.IP,
@@ -47,7 +48,7 @@ def generate_lookup_reference(indicator_type: str, indicator_value: str) -> str:
     """Generates ANY.RUN TI Lookup hyperlink"""
     return (
         "https://intelligence.any.run/analysis/lookup#{%22query%22:%22"
-        + LOOKUP_INDICATOR_TYPE_RESOLVER.get(indicator_type)
+        + LOOKUP_INDICATOR_TYPE_RESOLVER.get(indicator_type, "")
         + ":%5C%22"
         + indicator_value
         + "%5C%22%22,%22dateRange%22:180}"
@@ -57,6 +58,15 @@ def generate_lookup_reference(indicator_type: str, indicator_value: str) -> str:
 def generate_indicators(
     report: dict, parent_indicator_value: str, parent_indicator_type: str, reliability: str
 ) -> list[EntityRelationship] | None:
+    """
+    Converts ANY.RUN indicators to the Demisto relationships
+
+    :param report: ANY.RUN TI Lookup Summary
+    :param parent_indicator_value: Indicator value
+    :param parent_indicator_type: Indicator type
+    :param reliability: Source reliability
+    :return: The collection of the relationships
+    """
     related_indicators = []
 
     if domains := report.get("relatedDNS"):
@@ -107,14 +117,26 @@ def generate_indicators(
 
 
 def parse_results(report: dict, reliability: str, indicator_value: str, indicator_type: str) -> CommandResults:
+    """
+    Generates reputation command outputs
+
+    :param report: ANY.RUN TI Lookup summary
+    :param reliability: Source reliability
+    :param indicator_value: Indicator type
+    :param indicator_type: Indicator value
+    :return: Demisto Command results
+    """
     output_context = {}
+    outputs_prefix = ""
+    outputs_key_field = ""
+    indicator: Common.IP | Common.Domain | Common.URL | Common.File | None  = ""
     relationship = generate_indicators(report, indicator_value, FeedIndicatorType.IP, reliability)
     dbot_score = Common.DBotScore(
         indicator=indicator_value,
         indicator_type=DBOT_SCORE_TYPE_RESOLVER.get(indicator_type),
         reliability=reliability,
         integration_name="ANY.RUN TI Lookup",
-        score=DBOT_SCORE_RESOLVER.get(report.get("summary").get("threatLevel"), 0),
+        score=DBOT_SCORE_RESOLVER.get(report.get("summary", {}).get("threatLevel"), 0),
     )
 
     if indicator_type == "destination_ip":
@@ -168,9 +190,9 @@ def parse_results(report: dict, reliability: str, indicator_value: str, indicato
         if asn := report.get("destinationIpAsn"):
             output_context["ASOwner"] = asn[0].get("asn").upper()
 
-        output_context["LastModified"] = report.get("summary").get("lastSeen")
+        output_context["LastModified"] = report.get("summary", {}).get("lastSeen")
 
-    if tags := report.get("summary").get("tags"):
+    if tags := report.get("summary", {}).get("tags"):
         output_context["Tags"] = ",".join(tags)
 
     return_results(
@@ -193,13 +215,20 @@ def parse_results(report: dict, reliability: str, indicator_value: str, indicato
 
 
 def get_enrichment(params: dict, indicator_type: str, args: str):
+    """
+    Implements Demisto reputation command
+
+    :param params: Demisto params
+    :param indicator_type: Indicator type
+    :param args: Demisto args
+    """
     indicators = argToList(args)
     results = []
 
     with LookupConnector(get_authentication(params), integration=VERSION, verify_ssl=not params.get("insecure")) as connector:
         for indicator in indicators:
             intelligence = connector.get_intelligence(**{indicator_type: indicator}, lookup_depth=180)
-            results.append(parse_results(intelligence, params.get("integrationReliability"), indicator, indicator_type))
+            results.append(parse_results(intelligence, params.get("integrationReliability", ""), indicator, indicator_type))
 
     return results
 
@@ -220,13 +249,7 @@ def get_intelligence(params: dict, args: dict) -> None:  # pragma: no cover
     with LookupConnector(get_authentication(params), integration=VERSION, verify_ssl=not params.get("insecure")) as connector:
         intelligence = connector.get_intelligence(**args)
 
-    command_results = CommandResults(
-        outputs_prefix="ANYRUN.Lookup",
-        outputs=intelligence,
-        ignore_auto_extract=True,
-    )
-
-    return_results(command_results)
+    return_results(fileResult(f"anyrun_lookup_summary.json", json.dumps(intelligence).encode()))
 
 
 def main():  # pragma: no cover

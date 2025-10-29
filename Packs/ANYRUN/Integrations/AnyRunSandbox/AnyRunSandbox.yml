@@ -286,11 +286,15 @@ script:
       defaultValue: 'en-US'
       required: false
       type: String
-    - description: 'Operation system.'
+    - auto: PREDEFINED
+      description: 'Operation system. Possible values: ubuntu, debian'
       name: env_os
       defaultValue: 'ubuntu'
       required: false
       type: String
+      predefined:
+        - 'ubuntu'
+        - 'debian'
     - description: 'Network connection state.'
       name: opt_network_connect
       defaultValue: 'True'
@@ -371,7 +375,7 @@ script:
       required: false
       type: String
     name: anyrun-detonate-file-linux
-    description: 'Perform File analysis using Ubuntu VM.'
+    description: 'Perform File analysis using Linux VM.'
     outputs:
     - contextPath: ANYRUN_DetonateFileLinux.TaskID
       description: 'Task UUID.'
@@ -386,11 +390,15 @@ script:
       defaultValue: 'en-US'
       required: false
       type: String
-    - description: 'Operation system.'
+    - auto: PREDEFINED
+      description: 'Operation system. Possible values: ubuntu, debian'
       name: env_os
       defaultValue: 'ubuntu'
       required: false
       type: String
+      predefined:
+        - 'ubuntu'
+        - 'debian'
     - description: 'Network connection state.'
       name: opt_network_connect
       defaultValue: 'True'
@@ -457,7 +465,7 @@ script:
       required: false
       type: String
     name: anyrun-detonate-url-linux
-    description: 'Perform URL analysis using Ubuntu VM.'
+    description: 'Perform URL analysis using Linux VM.'
     outputs:
     - contextPath: ANYRUN_DetonateUrlLinux.TaskID
       description: 'Task UUID.'

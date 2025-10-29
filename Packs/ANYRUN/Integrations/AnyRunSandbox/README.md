@@ -6,7 +6,7 @@ ANY.RUN Sandbox is an online interactive sandbox for malware analysis, a tool fo
 
 1. Submit a file, remote file, or URL to ANY.RUN for analysis using the following OS:
     * Windows
-    * Ubuntu
+    * Ubuntu, Debian
     * Android
 2. Retrieve report details for a given analysis task ID in various formats:
     * Json summary
@@ -120,7 +120,7 @@ Perform URL analysis using Windows VM.
 ### anyrun-detonate-file-linux
 
 ***
-Perform File analysis using Ubuntu VM.
+Perform File analysis using Linux VM.
 
 #### Base Command
 
@@ -128,24 +128,24 @@ Perform File analysis using Ubuntu VM.
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| file | XSOAR Incident file data. | Required |
-| env_locale | Operation system language. Use locale identifier or country name (Ex: "en-US" or "Brazil"). Case insensitive. Default is en-US. | Optional |
-| env_os | Operation system. Default is ubuntu. | Optional |
-| opt_network_connect | Network connection state. Default is True. | Optional |
-| opt_network_fakenet | FakeNet feature status. Default is False. | Optional |
-| opt_network_tor | TOR using. Default is False. | Optional |
-| opt_network_geo | Tor geo location option. Example: US, AU. Default is fastest. | Optional |
-| opt_network_mitm | HTTPS MITM proxy option. Default is False. | Optional |
-| opt_network_residential_proxy | Residential proxy using. Default is False. | Optional |
-| opt_network_residential_proxy_geo | Residential proxy geo location option. Example: US, AU. Default is fastest. | Optional |
-| opt_privacy_type | Privacy settings. Possible values are: public, bylink, owner, byteam. Default is bylink. | Optional |
-| opt_timeout | Timeout option. Size range: 10-660. Default is 240. | Optional |
+| **Argument Name** | **Description**                                                                                                                                 | **Required** |
+| --- |-------------------------------------------------------------------------------------------------------------------------------------------------| --- |
+| file | XSOAR Incident file data.                                                                                                                       | Required |
+| env_locale | Operation system language. Use locale identifier or country name (Ex: "en-US" or "Brazil"). Case insensitive. Default is en-US.                 | Optional |
+| env_os | Operation system. Possible values are: ubuntu, debian. Default is ubuntu.                                                                       | Optional |
+| opt_network_connect | Network connection state. Default is True.                                                                                                      | Optional |
+| opt_network_fakenet | FakeNet feature status. Default is False.                                                                                                       | Optional |
+| opt_network_tor | TOR using. Default is False.                                                                                                                    | Optional |
+| opt_network_geo | Tor geo location option. Example: US, AU. Default is fastest.                                                                                   | Optional |
+| opt_network_mitm | HTTPS MITM proxy option. Default is False.                                                                                                      | Optional |
+| opt_network_residential_proxy | Residential proxy using. Default is False.                                                                                                      | Optional |
+| opt_network_residential_proxy_geo | Residential proxy geo location option. Example: US, AU. Default is fastest.                                                                     | Optional |
+| opt_privacy_type | Privacy settings. Possible values are: public, bylink, owner, byteam. Default is bylink.                                                        | Optional |
+| opt_timeout | Timeout option. Size range: 10-660. Default is 240.                                                                                             | Optional |
 | obj_ext_startfolder | Start file analysis from the specified directory. Possible values are: desktop, home, downloads, appdata, temp, windows, root. Default is temp. | Optional |
-| obj_ext_cmd | Optional command line. | Optional |
-| run_as_root | Run file with superuser privileges. Default is True. | Optional |
-| obj_ext_extension | Change extension to valid. Default is True. | Optional |
+| obj_ext_cmd | Optional command line.                                                                                                                          | Optional |
+| run_as_root | Run file with superuser privileges. Default is True.                                                                                            | Optional |
+| obj_ext_extension | Change extension to valid. Default is True.                                                                                                     | Optional |
 
 #### Context Output
 
@@ -156,7 +156,7 @@ Perform File analysis using Ubuntu VM.
 ### anyrun-detonate-url-linux
 
 ***
-Perform URL analysis using Ubuntu VM.
+Perform URL analysis using Linux VM.
 
 #### Base Command
 
@@ -164,22 +164,22 @@ Perform URL analysis using Ubuntu VM.
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| obj_url | Target URL. Size range 5-512. Example: (http/https)://(your-link). | Required |
+| **Argument Name** | **Description**                                                                                                                | **Required** |
+| --- |--------------------------------------------------------------------------------------------------------------------------------| --- |
+| obj_url | Target URL. Size range 5-512. Example: (http/https)://(your-link).                                                             | Required |
 | env_locale | Operation system language. Use locale identifier or country name (Ex: "en-US" or "Brazil"). Case insensitive. Default is en-US. | Optional |
-| env_os | Operation system. Default is ubuntu. | Optional |
-| opt_network_connect | Network connection state. Default is True. | Optional |
-| opt_network_fakenet | FakeNet feature status. Default is False. | Optional |
-| opt_network_tor | TOR using. Default is False. | Optional |
-| opt_network_geo | Tor geo location option. Example: US, AU. Default is fastest. | Optional |
-| opt_network_mitm | HTTPS MITM proxy option. Default is False. | Optional |
-| opt_network_residential_proxy | Residential proxy using. Default is False. | Optional |
-| opt_network_residential_proxy_geo | Residential proxy geo location option. Example: US, AU. Default is fastest. | Optional |
-| opt_privacy_type | Privacy settings. Possible values are: public, bylink, owner, byteam. Default is bylink. | Optional |
-| opt_timeout | Timeout option. Size range: 10-660. Default is 120. | Optional |
-| obj_ext_browser | Browser name. Possible values are: Google Chrome, Mozilla Firefox. Default is Google Chrome. | Optional |
-| obj_ext_extension | Change extension to valid. Default is True. | Optional |
+| env_os | Operation system. Possible values are: ubuntu, debian. Default is ubuntu.                                                      | Optional |
+| opt_network_connect | Network connection state. Default is True.                                                                                     | Optional |
+| opt_network_fakenet | FakeNet feature status. Default is False.                                                                                      | Optional |
+| opt_network_tor | TOR using. Default is False.                                                                                                   | Optional |
+| opt_network_geo | Tor geo location option. Example: US, AU. Default is fastest.                                                                  | Optional |
+| opt_network_mitm | HTTPS MITM proxy option. Default is False.                                                                                     | Optional |
+| opt_network_residential_proxy | Residential proxy using. Default is False.                                                                                     | Optional |
+| opt_network_residential_proxy_geo | Residential proxy geo location option. Example: US, AU. Default is fastest.                                                    | Optional |
+| opt_privacy_type | Privacy settings. Possible values are: public, bylink, owner, byteam. Default is bylink.                                       | Optional |
+| opt_timeout | Timeout option. Size range: 10-660. Default is 120.                                                                            | Optional |
+| obj_ext_browser | Browser name. Possible values are: Google Chrome, Mozilla Firefox. Default is Google Chrome.                                   | Optional |
+| obj_ext_extension | Change extension to valid. Default is True.                                                                                    | Optional |
 
 #### Context Output
 

@@ -16,7 +16,7 @@ With the ANY.RUN content pack for Cortex XSOAR, your
 organization can:
 
 * Submit files and URLs to a secure sandbox for analysis
-across Windows, Ubuntu, and Android to streamline triage.
+across Windows, Linux, and Android to streamline triage.
 * Retrieve detailed reports in JSON, HTML, or IoC formats
 for incident response.
 * Ingest fresh threat data every 2 hours from over 15,000
