@@ -49,17 +49,16 @@ To set up the integration and register the application in Azure, follow these st
    - Set **Allow public client flows** to **Yes**.
    - Click **Save** to apply the changes.
 
-
 ### Authentication Requirements
 
 To access the **Microsoft Purview** (formerly Compliance Center) capabilities used by this integration, the account used must either have global administrator permissions or the Role Management role, assigned within the Organization Management role group. This role allows users to view, create, and modify role groups.
 
 **Note:** The account used by the integration does not require Global Administrator permissions.
 
-1. **Sign in to the [Microsoft Purview portal](https://purview.microsoft.com/)**
+1. **Sign in to the [Microsoft Purview Portal](https://purview.microsoft.com/)**
 2. Log in with the account that is being used in the integration.
 3. **Set Up Roles**:
-   - Select Settings in the top-right corner, then select Roles and scopes, and then click Role groups in the left navigation pane. 
+   - Select Settings in the top-right corner, then select Roles and scopes, and then click Role groups in the left navigation pane.
    - Look for roles that allow purge actions (Only users with these roles can create or run purge rules):
      - Compliance Administrator.
      - Records Management
@@ -78,7 +77,7 @@ To access the **Microsoft Purview** (formerly Compliance Center) capabilities us
 ## Configure SecurityAndComplianceV2 on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for **O365 - Security And Compliance - Content Search v2**. 
+2. Search for **O365 - Security And Compliance - Content Search v2**.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter**   | **Description**                                                   | **Required** |
@@ -89,7 +88,9 @@ To access the **Microsoft Purview** (formerly Compliance Center) capabilities us
     | Tenant ID       | The directory (tenant) ID from Azure.                              | False        |
     | Organization    | The organization name for the Security & Compliance Center.        | False        |
     | Insecure        | Trust any certificate (not secure).                                | False        |
+
 4. Authentication / Authorization methods:
+
 - App-only (OAuth2.0) Authentication -
     1. Fill in the UPN, App ID, and Tenant ID parameters in the integration configuration.
     2. Run the ***o365-sc-auth-start*** command and follow the instructions.
@@ -100,18 +101,18 @@ To access the **Microsoft Purview** (formerly Compliance Center) capabilities us
     3. For testing completion of authorization process run the ***o365-sc-auth-test*** command.
 
 - **Note: If a UPN password is provided**
-    - Even if the password is incorrect, the integration will attempt to authenticate using it.
-    - In this case, all connections to Microsoft Security and Compliance PowerShell will use interactive delegated authentication.
-    
+  - Even if the password is incorrect, the integration will attempt to authenticate using it.
+  - In this case, all connections to Microsoft Security and Compliance PowerShell will use interactive delegated authentication.
+
 - **Expected Output:**
 
-   > ## Security and Compliance - Authorize Instructions App-only (OAuth2.0) Authentication 
+  > ## Security and Compliance - Authorize Instructions App-only (OAuth2.0) Authentication
    >
    > 1. To sign in, open [https://microsoft.com/devicelogin](https://microsoft.com/devicelogin) in a web browser and enter the code **XXXXXXX** to authenticate.
-   > 2. Run the `!o365-sc-auth-complete` command in the War Room. 
+   > 2. Run the `!o365-sc-auth-complete` command in the War Room.
    > 3. Test OAuth2.0 authorization by running the `!o365-sc-auth-test` command.
-   
-   > ## Security and Compliance - Authorize Instructions Delegated User Authentication
+
+  > ## Security and Compliance - Authorize Instructions Delegated User Authentication
    >
    > 1. **Test ok!**
 
@@ -165,14 +166,13 @@ Missing or incorrect values in these fields can cause a 404 error, as the integr
 
 - **Use the `!o365-sc-auth-test` Command**: Run this command to verify if the integration can successfully authenticate. If this test fails, revisit the app registration settings and verify all configurations.
 
-
 #### Failed Delegated User Authentication
 
 **Scenario:** You Filled out the 'UPN' and 'UPN Passwords' integation parameters and after running the `!o365-sc-auth-test` command, the authorization process fails, and you gen an error 'you must use multi-factor authentication to access ...'.
 
 **Solution:**
 
-- **Double-Check you disabled MFA**: 
+- **Double-Check you disabled MFA**:
   1. Go to the [Microsoft 365 Admin Center](https://admin.microsoft.com/) and sign in with your administrator account.
   2. Under **Users**, select **Active users**.
   3. At the top, click Multi-factor authentication.
