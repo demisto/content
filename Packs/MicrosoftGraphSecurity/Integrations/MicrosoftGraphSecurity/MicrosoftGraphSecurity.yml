@@ -19,12 +19,13 @@ configuration:
   - Germany
   - China
   - Custom
-  additionalinfo: When selecting the Custom option, the Azure AD endpoint parameter must be filled. More information about National clouds can be found here - https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#using-national-cloud
+  additionalinfo: When selecting the Custom option, the Host URL parameter must be filled. More information about National clouds can be found here - https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#using-national-cloud
   section: Connect
   advanced: true
-- display: Microsoft Graph Host URL
+- defaultvalue: https://graph.microsoft.com
+  display: Host URL
   name: host
-  required: false
+  required: true
   type: 0
   section: Connect
   advanced: true

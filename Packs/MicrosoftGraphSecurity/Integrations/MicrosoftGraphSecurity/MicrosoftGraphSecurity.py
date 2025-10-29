@@ -3,7 +3,6 @@ from enum import Enum
 from typing import Any
 
 import demistomock as demisto  # noqa: F401
-import urllib3
 from CommonServerPython import *  # noqa: F401
 from MicrosoftApiModule import *  # noqa: E402
 from requests import Response
@@ -12,7 +11,6 @@ from CommonServerUserPython import *
 
 #  disable insecure warnings
 DEFAULT_KEYS_TO_REPLACE = {"createdDateTime": "CreatedDate"}
-urllib3.disable_warnings()
 
 APP_NAME = "ms-graph-security"
 API_V2 = "Alerts v2"
@@ -89,7 +87,12 @@ class MsGraphClient:
     Microsoft Graph Mail Client enables authorized access to a user's Office 365 mail data in a personal account.
     """
 
-    def __init__(self, tenant_id, proxy, certificate_thumbprint: str | None = None, api_version: str = "", **kwargs):
+    def __init__(
+        self, tenant_id, proxy,
+        certificate_thumbprint: str | None = None,
+        api_version: str = "",
+        **kwargs
+    ):
         self.ms_client = MicrosoftClient(
             tenant_id=tenant_id,
             proxy=proxy,
@@ -2036,9 +2039,7 @@ def main():
     managed_identities_client_id = get_azure_managed_identities_client_id(params)
     self_deployed: bool = params.get("self_deployed", False) or managed_identities_client_id is not None
     api_version: str = params.get("api_version", API_V2)
-    
-    cloud_service = params.get("cloud_service") or "Custom"  # "Custom" is the default here to support backward compatibility
-    url = (params.get("host", "").rstrip("/") if cloud_service == "Custom" else MICROSOFT_GRAPH_ENDPOINTS[cloud_service]) + "/v1.0/"
+    azure_cloud = get_azure_cloud(params, 'MicrosoftGraphSecurity')
 
     if not managed_identities_client_id:
         if not self_deployed and not enc_key:
@@ -2100,7 +2101,7 @@ def main():
             enc_key=enc_key,
             redirect_uri=redirect_uri,
             app_name=APP_NAME,
-            base_url=url,
+            azure_cloud=azure_cloud,
             verify=use_ssl,
             proxy=proxy,
             self_deployed=self_deployed,
