@@ -1,4 +1,3 @@
-from requests import Response
 import demistomock as demisto
 import urllib3
 from CommonServerPython import *
@@ -1866,7 +1865,7 @@ class AzureClient:
         metric: str = "",
         max_results: int = 50,
         next_page_token: str = "",
-    ) -> Response | dict[str, Any] | None:
+    ):
         """
         Retrieves actual usage and cost details from Azure Consumption API.
         Args:
@@ -1922,7 +1921,7 @@ class AzureClient:
         filter_param: str = "",
         include_actual_cost: bool = False,
         include_fresh_partial_cost: bool = False,
-    ) -> Response | dict[str, Any] | None:
+    ):
         """
         Returns cost forecast for a subscription over a given time range.
         Args:
@@ -1942,19 +1941,27 @@ class AzureClient:
             DemistoException: If Azure API call fails, subscription not found, or invalid parameters provided
         """
 
-        start_date = arg_to_datetime(start_date) if start_date else datetime.now(UTC)
-        end_date = arg_to_datetime(end_date) if end_date else datetime.now(UTC) + timedelta(days=7)
+        start_datetime = arg_to_datetime(start_date) or datetime.now(UTC)
+        end_datetime = arg_to_datetime(end_date) or (datetime.now(UTC) + timedelta(days=7))
 
         url = f"{subscription_id}/providers/Microsoft.CostManagement/forecast"
         api_version = "2025-03-01"
 
-        body = {
+        body: dict[str, Any] = {
             "type": forecast_type,
             "timeframe": "Custom",
-            "timePeriod": {"from": start_date.strftime("%Y-%m-%dT00:00:00Z"), "to": end_date.strftime("%Y-%m-%dT00:00:00Z")},
+            "timePeriod": {
+                "from": start_datetime.strftime("%Y-%m-%dT00:00:00Z"),
+                "to": end_datetime.strftime("%Y-%m-%dT00:00:00Z"),
+            },
             "dataset": {
                 "granularity": granularity,
-                "aggregation": {"totalCost": {"function": aggregation_function_type, "name": aggregation_function_name}},
+                "aggregation": {
+                    "totalCost": {
+                        "function": aggregation_function_type,
+                        "name": aggregation_function_name,
+                    }
+                },
             },
         }
         if include_actual_cost:
@@ -1983,7 +1990,7 @@ class AzureClient:
         self,
         subscription_id: str,
         budget_name: str = "",
-    ) -> Response | dict[str, Any] | None:
+    ):
         """
         Retrieves budget information from Azure Consumption API.
         Args:
