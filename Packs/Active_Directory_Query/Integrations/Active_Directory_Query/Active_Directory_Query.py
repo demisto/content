@@ -1791,6 +1791,18 @@ def main():
     if port:
         # port was configured, cast to int
         port = int(port)
+
+        # Warn about non-standard port configuration
+        if secure_connection == SSL and port == 389:
+            demisto.info(
+                "Warning: Using SSL/TLS with port 389 is non-standard.\n"
+                "Port 389 is typically used for plain LDAP or StartTLS connections.\n"
+                "Standard configuration: SSL/TLS uses port 636, StartTLS uses port 389.\n"
+                "If connection fails, consider: \n"
+                "(1) Change port to 636 for SSL/TLS.\n"
+                "(2) Use 'Start TLS' with port 389 instead.\n"
+            )
+
     last_log_detail_level = None
     try:
         set_library_log_hide_sensitive_data(True)
