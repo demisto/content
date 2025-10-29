@@ -272,6 +272,3 @@ script:
 fromversion: 5.0.0
 tests:
 - No test - tested manually Zendesk_test playbook
-supportedModules:
-- xsiam
-- agentix

@@ -4728,10 +4728,3 @@ fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
 deprecated: true
-supportedModules:
-- X5
-- ENT_PLUS
-- X3
-- X1
-- xsiam
-- agentix

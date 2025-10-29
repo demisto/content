@@ -376,3 +376,10 @@ supportedModules:
 - edr
 - cloud
 - cloud_runtime_security
+- C1
+- C3
+- X0
+- X1
+- X3
+- X5
+- ENT_PLUS
