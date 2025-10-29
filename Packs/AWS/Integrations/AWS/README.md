@@ -1174,13 +1174,12 @@ Retrieves the bucket policy for an Amazon S3 bucket. Returns the policy document
 | AWS.S3-Buckets.BucketName | string | Name of the S3 bucket. |
 | AWS.S3-Buckets.Policy.Version | string | The version of the policy. |
 | AWS.S3-Buckets.Policy.Id | string | The id of the policy. |
-| AWS.S3-Buckets.Policy.Statement.Sid | string | Statement identifier. |
-| AWS.S3-Buckets.Policy.Statement.Effect | string | Allow or Deny. |
-| AWS.S3-Buckets.Policy.Statement.Principal | string | Principal to whom the statement applies. |
-| AWS.S3-Buckets.Policy.Statement.Action | Array | List of actions the statement applies to. |
-| AWS.S3-Buckets.Policy.Statement.Resource | Array | List of actions the statement applies to. |
-| AWS.S3-Buckets.Policy.Statement.Condition | string | Conditions for when the statement applies. |
-| AWS.S3-Buckets.PolicyExists | boolean | Whether a bucket policy exists. |
+| AWS.S3-Buckets.Policy.Statement.Sid | string | Identifier of the policy statement. |
+| AWS.S3-Buckets.Policy.Statement.Effect | string | Specifies whether the statement results in an allow or an explicit deny. |
+| AWS.S3-Buckets.Policy.Statement.Principal | unknown | Specify the principal that is allowed or denied access to a resource. |
+| AWS.S3-Buckets.Policy.Statement.Action | unknown | Describes the specific action or actions that will be allowed or denied. |
+| AWS.S3-Buckets.Policy.Statement.Resource | unknown | Defines the object or objects that the statement applies to. |
+| AWS.S3-Buckets.Policy.Statement.Condition | string | Specify conditions for when a policy is in effect. |
 
 ### aws-ec2-instance-attribute-modify-quick-action
 
