@@ -5,27 +5,24 @@ protection against sophisticated attacks.
 ## Authentication Using the Device Code Flow
 
 Use the [device code flow](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#device-code-flow)
-to link Microsoft 365 Defender with Cortex XSOAR.
+to link Microsoft Defender XDR with Cortex XSOAR/XSIAM.
 
-To connect to the Microsoft 365 Defender:
+In order to use the Cortex XSOAR application, use the default application ID:
+```9093c354-630a-47f1-b087-6768eb9427e6```
 
-1. Fill in the required parameters.
-2. Run the ***!microsoft-365-defender-auth-start*** command.
+To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal.
+For more details, follow [Self Deployed Application](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#self-deployed-application:~:text=Self%20Deployed%20Application%23).
+
+To connect to the Microsoft Defender XDR:
+1. Fill in the Client ID parameter of your application under the ID/Client ID parameter.
+2. Run the ***!microsoft-365-defender-auth-start*** command. 
 3. Follow the instructions that appear.
-4. Run the ***!microsoft-365-defender-auth-complete*** command.
+4. Run the ***!microsoft-365-defender-auth-complete*** command, you are supposed to get a message "authorization completed successfully".
+5. You can run the ***!microsoft-365-defender-auth-test** command to test the connection.
 
 At the end of the process you'll see a message that you've logged in successfully.
 
 *Note: In case of a password change, the `microsoft-365-defender-auth-reset` command should be executed followed by the authentication process described above.*
-
-### Cortex XSOAR App
-
-In order to use the Cortex XSOAR application, use the default application ID.
-```9093c354-630a-47f1-b087-6768eb9427e6```
-
-### Self-Deployed Application - Device Code Flow
-
-To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal. For more details, follow [Self Deployed Application - Device Code Flow](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#device-code-flow).
 
 #### Required Permissions
 
@@ -36,22 +33,28 @@ The required API permissions are for the ***Microsoft Threat Protection*** app.
 * Incident.ReadWrite.All - Application - See section 4 in [this article](https://learn.microsoft.com/en-us/microsoft-365/security/defender/api-create-app-user-context?view=o365-worldwide#create-an-app)
 * AdvancedHunting.Read.All - Application - See section 4 in [this article](https://learn.microsoft.com/en-us/microsoft-365/security/defender/api-create-app-user-context?view=o365-worldwide#create-an-app)
 
-## Self-Deployed Application - Client Credentials Flow
+### Client Credentials Flow
+___
+Use the [client credentials flow](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#authentication-flows:~:text=Client%20Credentials%20Flow%23)
+to link Microsoft Defender XDR with Cortex XSOAR/XSIAM.
 
-Follow these steps for a self-deployed configuration:
+To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal.
+For more details, follow [Self Deployed Application](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#self-deployed-application:~:text=Self%20Deployed%20Application%23).
 
-1. To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal. To add the registration, refer to the following [Microsoft article](https://docs.microsoft.com/en-us/microsoft-365/security/defender/api-create-app-web?view=o365-worldwide#create-an-app) steps 1-8.
-2. In the instance configuration, select the ***client-credentials*** checkbox.
-3. Enter your Client/Application ID in the ***Application ID*** parameter.
-4. Enter your Client Secret in the ***Client Secret*** parameter.
-5. Enter your Tenant ID in the ***Tenant ID*** parameter.
+Follow these steps:
+
+1. In the instance configuration, select the ***Use Client Credentials Authorization Flow*** checkbox.
+2. Enter your Client/Application ID in the ***Application ID*** parameter. 
+3. Enter your Client Secret in the ***Client Secret*** parameter.
+4. Enter your Tenant ID in the ***Tenant ID*** parameter.
+5. Run the ***microsoft-365-defender-auth-test*** command to test the connection and the authorization process.
 
 #### Required Permissions
 
 * AdvancedHunting.Read.All - Application
 * Incident.ReadWrite.All - Application
 
-## Configure Microsoft 365 Defender on Cortex XSOAR
+## More Configuration Settings for Microsoft 365 Defender on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for Microsoft 365 Defender.
@@ -65,38 +68,30 @@ Follow these steps for a self-deployed configuration:
    6. To enable mirroring to close a ticket in Cortex XSOAR, check the **Close Mirrored Cortex XSOAR Incidents** checkbox.
    7. To enable mirroring to close an incident in Microsoft 365 Defender, check the **Close Mirrored Microsoft 365 Defender Incidents** checkbox.
 
-| **Parameter** | **Description** | **Required** |
-| --- | --- | --- |
-| Endpoint URI | The United States: api-us.security.microsoft.com<br/>Europe: api-eu.security.microsoft.com<br/>The United Kingdom: api-uk.security.microsoft.co | True |
-| ID or Client ID |  | False |
-| Token or Tenant ID |  | False |
-| Application ID | The API key to use to connect. | False |
-| Use Client Credentials Authorization Flow | Use a self-deployed Azure application and authenticate using the Client Credentials flow. | False |
-| Tenant ID (for Client Credentials mode) |  | False |
-| Client Secret (for Client Credentials mode) |  | False |
-| Client Secret |  | False |
-| Certificate Thumbprint | Used for certificate authentication. As appears in the "Certificates &amp; secrets" page of the app. | False |
-| Private Key |  | False |
-| Certificate Thumbprint | Used for certificate authentication. As appears in the "Certificates &amp; secrets" page of the app. | False |
-| Private Key | Used for certificate authentication. The private key of the registered certificate. | False |
+| **Parameter** | **Description**                                                                                                                                                                                                                                                                                                                                        | **Required** |
+| --- |--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
+| Endpoint URI | The United States: api-us.security.microsoft.com<br/>Europe: api-eu.security.microsoft.com<br/>The United Kingdom: api-uk.security.microsoft.co                                                                                                                                                                                                        | True |
+| ID or Client ID | Your Application/Client ID, or Cortex XSOAR app ID.                                                                                                                                                                                                                                                                                                    | False |
+| Token or Tenant ID | Your tenant ID, used for client credentials.                                                                                                                                                                                                                                                                                                           | False |
+| Client Secret | The application Client Secret, used for client credentials.                                                                                                                                                                                                                                                                                            | False |
+| Use Client Credentials Authorization Flow | Use a self-deployed Azure application and authenticate using the Client Credentials flow.                                                                                                                                                                                                                                                              | False |
+| Certificate Thumbprint | Used for client credentials, instead of client secret. Used for certificate authentication. As appears in the "Certificates &amp; secrets" page of the app.                                                                                                                                                                                            | False |
+| Private Key | Used for client credentials, instead of client secret.                                                                                                                                                                                                                                                                                                                                                       | False |
 | Use Azure Managed Identities | Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab. | False |
-| Azure Managed Identities Client ID | The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM. | False |
-| First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
-| Fetch incidents timeout | The time limit in seconds for fetch incidents to run. Leave this empty to cancel the timeout limit. | False |
-| Number of incidents for each fetch. | Due to API limitations, the maximum is 100. | False |
-| Incident type |  | False |
-| Fetch incidents |  | False |
-| Trust any certificate (not secure) |  | False |
-| Use system proxy settings |  | False |
-| Application ID (Deprecated) |  | False |
-| Tenant ID (for Client Credentials mode) (Deprecated) |  | False |
-| Client Secret (for Client Credentials mode) (Deprecated) |  | False |
-| Incidents Fetch Interval |  | False |
-| Incident Mirroring Direction | Choose the direction to mirror the incident: Incoming \(from Microsoft 365 Defender to Cortex XSOAR\), Outgoing \(from Cortex XSOAR to  Microsoft 365 Defender\), or Incoming and Outgoing \(from/to Cortex XSOAR and  Microsoft 365 Defender\). | False |
-| Close Mirrored Cortex XSOAR Incidents | Incoming Mirroring - when selected, closing the Microsoft 365 Defender incident is mirrored in Cortex XSOAR. | False |
-| Close Mirrored Microsoft 365 Defender Incidents | Outgoing Mirroring - when selected, closing the Cortex XSOAR incident is mirrored in Microsoft 365 Defender. | False |
-| Comment Entry Tag To Microsoft 365 Defender | Choose a tag to add to an entry to mirror it as a comment into Microsoft 365 Defender. | False |
-| Comment Entry Tag From Microsoft 365 Defender | Choose a tag to add to an entry to mirror it as a comment from Microsoft 365 Defender. | False |
+| Azure Managed Identities Client ID | The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM.                                                                                                                                                                                                                                         | False |
+| First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |                                                                                                                                                                                                                                                                                                                                                        | False |
+| Fetch incidents timeout | The time limit in seconds for fetch incidents to run. Leave this empty to cancel the timeout limit.                                                                                                                                                                                                                                                    | False |
+| Number of incidents for each fetch. | Due to API limitations, the maximum is 100.                                                                                                                                                                                                                                                                                                            | False |
+| Incident type |                                                                                                                                                                                                                                                                                                                                                        | False |
+| Fetch incidents |                                                                                                                                                                                                                                                                                                                                                        | False |
+| Trust any certificate (not secure) |                                                                                                                                                                                                                                                                                                                                                        | False |
+| Use system proxy settings |                                                                                                                                                                                                                                                                                                                                                        | False |
+| Incidents Fetch Interval |                                                                                                                                                                                                                                                                                                                                                        | False |
+| Incident Mirroring Direction | Choose the direction to mirror the incident: Incoming \(from Microsoft 365 Defender to Cortex XSOAR\), Outgoing \(from Cortex XSOAR to  Microsoft 365 Defender\), or Incoming and Outgoing \(from/to Cortex XSOAR and  Microsoft 365 Defender\).                                                                                                       | False |
+| Close Mirrored Cortex XSOAR Incidents | Incoming Mirroring - when selected, closing the Microsoft 365 Defender incident is mirrored in Cortex XSOAR.                                                                                                                                                                                                                                           | False |
+| Close Mirrored Microsoft 365 Defender Incidents | Outgoing Mirroring - when selected, closing the Cortex XSOAR incident is mirrored in Microsoft 365 Defender.                                                                                                                                                                                                                                           | False |
+| Comment Entry Tag To Microsoft 365 Defender | Choose a tag to add to an entry to mirror it as a comment into Microsoft 365 Defender.                                                                                                                                                                                                                                                                 | False |
+| Comment Entry Tag From Microsoft 365 Defender | Choose a tag to add to an entry to mirror it as a comment from Microsoft 365 Defender.                                                                                                                                                                                                                                                                 | False |
 
 5. Run the !microsoft-365-defender-auth-test command to validate the authentication process.
 

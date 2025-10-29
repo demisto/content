@@ -30,16 +30,17 @@ At the end of the process you'll see a message that you've logged in successfull
 * microsoft-365-defender-incidents-list:
     * offline_access - Delegated 
     * AdvancedQuery.Read.All - Application - can be found under WindowsDefenderATP on the "APIs my organization uses" section.
-      
-      And one of the following:
+    * And one of the following:
       * Incident.Read.All	- Application - See section 4 in [this article](https://learn.microsoft.com/en-us/microsoft-365/security/defender/api-create-app-user-context?view=o365-worldwide#create-an-app)
       * AdvancedHunting.Read.All - Application - See section 4 in [this article](https://learn.microsoft.com/en-us/microsoft-365/security/defender/api-create-app-user-context?view=o365-worldwide#create-an-app)
+
 
 
 * microsoft-365-defender-incident-update:
    * offline_access - Delegated
    * AdvancedQuery.Read.All - Application - can be found under WindowsDefenderATP on the "APIs my organization uses" section.
    * Incident.ReadWrite.All - Application - See section 4 in [this article](https://learn.microsoft.com/en-us/microsoft-365/security/defender/api-create-app-user-context?view=o365-worldwide#create-an-app)
+
 
 
 * microsoft-365-defender-advanced-hunting:
@@ -69,13 +70,13 @@ Follow these steps:
 
 ### Azure Managed Identities Authentication
 ____
-##### Note: This option is relevant only if the integration is running on Azure VM.
+#### Note: This option is relevant only if the integration is running on Azure VM.
 Follow one of these steps for authentication based on Azure Managed Identities:
 
-- ##### To use System Assigned Managed Identity
+- #### To use System Assigned Managed Identity
    - Select the **Use Azure Managed Identities** checkbox and leave the **Azure Managed Identities Client ID** field empty.
 
-- ##### To use User Assigned Managed Identity
+- #### To use User Assigned Managed Identity
    1. Go to [Azure Portal](https://portal.azure.com/) -> **Managed Identities**.
    2. Select your User Assigned Managed Identity -> copy the Client ID -> paste it in the **Azure Managed Identities Client ID** field in the instance settings.
    3. Select the **Use Azure Managed Identities** checkbox.
