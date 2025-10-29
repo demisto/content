@@ -209,7 +209,8 @@
                                 },
                                 "operator": "join"
                             }
-                        ]                    },
+                        ]
+                    },
                     "simple": ""
                 },
                 "Email Return Path": {
@@ -370,6 +371,7 @@
         "X3",
         "X5",
         "ENT_PLUS",
-        "agentix"
+        "agentix",
+        "xsiam"
     ]
 }

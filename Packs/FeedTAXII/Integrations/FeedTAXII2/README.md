@@ -159,3 +159,7 @@ There is no context output for this command.
 #### Human Readable Output
 
 Fetch was reset successfully. Your next indicator fetch will collect indicators from the configured "First Fetch Time"
+
+### Troubleshooting
+
+When the feed is set to "Incremental Feed", we recommend specifying a value for the **Max Indicators Per Fetch** parameter to prevent potential timeout issues.
