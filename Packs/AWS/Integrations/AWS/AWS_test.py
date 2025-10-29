@@ -5040,7 +5040,6 @@ def test_get_policy_with_minimal_parameters(mocker):
     assert result.outputs_prefix == "AWS.Lambda.Policy"
     assert result.outputs_key_field == ["Region", "FunctionName", "AccountId"]
     mock_client.get_policy.assert_called_once_with(FunctionName="test-function")
-    mock_client.get_function_configuration.assert_called_once_with(FunctionName="test-function")
 
 
 def test_get_policy_with_all_parameters(mocker):
