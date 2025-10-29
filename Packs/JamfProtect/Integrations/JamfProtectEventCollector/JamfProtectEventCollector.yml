@@ -7,7 +7,7 @@ commonfields:
   version: -1
 configuration:
 - name: base_url
-  display: Server URL (e.g., https://example.protect.jamfcloud.com)
+  display: Server URL (e.g., https://example.protect.jamfcloud.com) 
   required: true
   defaultvalue:
   type: 0
