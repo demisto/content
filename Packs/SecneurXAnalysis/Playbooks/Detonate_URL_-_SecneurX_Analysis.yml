@@ -476,4 +476,4 @@ outputs:
   description: Analysis queued sample state
   type: String
 tests:
-- Detonate URL - SecneurX Anlaysis - Test
+- Detonate URL - SecneurX Analysis - Test
