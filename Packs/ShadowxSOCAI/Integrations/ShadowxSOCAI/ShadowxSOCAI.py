@@ -486,12 +486,12 @@ def shadowx_help_command():
 ### ShadowX SOCAI — Help
 
 **Commands**
-1) `!shadowx-submit-task` – submit a log (API Key or cookie mode)
+1) `!shadowx-submit-task` - submit a log (API Key or cookie mode)
    - In API mode, set instance paths:
      - API Submission Path: `/Api/SecurityTasks/Create`
      - API Check Path Format: `/Api/SecurityTasks/Details?taskID={task_id}`
    - Use `wait_seconds` to poll and return parsed results on first run.
-2) `!shadowx-get-task task_id="<GUID>"` – fetch details later (API mode)
+2) `!shadowx-get-task task_id="<GUID>"` - fetch details later (API mode)
 
 Returned fields (and Incident custom fields when in an incident):
 TaskName → shadowxaitaskname
@@ -510,7 +510,7 @@ PredictionScore → shadowxaipredictionscore
 
 
 # ============================
-# Main
+# Main    
 # ============================
 
 def main():
