@@ -5,7 +5,7 @@ from ServiceNowNetworkAdaptersEnrichment import (
     execute_command,
     get_network_adapter,
     get_related_configuration_item,
-    main
+    main,
 )
 
 
@@ -16,17 +16,9 @@ def mock_network_adapter_data():
             "attributes": {
                 "name": "eth0",
                 "ip_address": "192.168.1.1",
-                "assigned_to": {
-                    "display_value": "John Doe",
-                    "value": "user123"
-                },
-                "cmdb_ci": {
-                    "display_value": "Server123",
-                    "value": "ci123"
-                },
-                "sys_domain": {
-                    "link": "https://instance.service-now.com/api/now/table/sys_user_group/global"
-                }
+                "assigned_to": {"display_value": "John Doe", "value": "user123"},
+                "cmdb_ci": {"display_value": "Server123", "value": "ci123"},
+                "sys_domain": {"link": "https://instance.service-now.com/api/now/table/sys_user_group/global"},
             }
         }
     }
@@ -40,14 +32,11 @@ def mock_ci_data():
                 "sys_class_name": "cmdb_ci_linux_server",
                 "name": "Server123",
                 "ip_address": "192.168.1.1",
-                "assigned_to": {
-                    "display_value": "John Doe",
-                    "value": "user123"
-                },
+                "assigned_to": {"display_value": "John Doe", "value": "user123"},
                 "host_name": "server123.company.com",
                 "os": "Linux",
                 "os_version": "Ubuntu 20.04",
-                "used_for": "Production"
+                "used_for": "Production",
             }
         }
     }
@@ -55,9 +44,7 @@ def mock_ci_data():
 
 @pytest.fixture
 def mock_demisto_args():
-    return {
-        "ip_address": "192.168.1.1"
-    }
+    return {"ip_address": "192.168.1.1"}
 
 
 def test_network_adapter_initialization():
@@ -75,7 +62,7 @@ def test_network_adapter_initialization():
         related_configuration_item_name="Server123",
         related_configuration_item_id="ci123",
         instance_url="https://instance.service-now.com",
-        url="https://instance.service-now.com/nav_to.do?uri=cmdb_ci_network_adapter.do?sys_id=na123"
+        url="https://instance.service-now.com/nav_to.do?uri=cmdb_ci_network_adapter.do?sys_id=na123",
     )
 
     assert adapter.sys_id == "na123"
@@ -99,8 +86,7 @@ def test_execute_command(mocker):
     expected_result = {"result": "success"}
 
     mocker.patch(
-        "ServiceNowNetworkAdaptersEnrichment.demisto.executeCommand",
-        return_value=[{"Contents": {"result": expected_result}}]
+        "ServiceNowNetworkAdaptersEnrichment.demisto.executeCommand", return_value=[{"Contents": {"result": expected_result}}]
     )
 
     result = execute_command(mock_command, mock_args)
@@ -113,10 +99,7 @@ def test_get_network_adapter(mocker, mock_network_adapter_data):
     When get_network_adapter is called
     Then it should return a properly populated NetworkAdapter instance
     """
-    mocker.patch(
-        "ServiceNowNetworkAdaptersEnrichment.execute_command",
-        return_value=mock_network_adapter_data["result"]
-    )
+    mocker.patch("ServiceNowNetworkAdaptersEnrichment.execute_command", return_value=mock_network_adapter_data["result"])
 
     adapter = get_network_adapter("na123")
 
@@ -138,10 +121,7 @@ def test_get_related_configuration_item(mocker, mock_ci_data):
     # First call returns the CI class
     mocker.patch(
         "ServiceNowNetworkAdaptersEnrichment.execute_command",
-        side_effect=[
-            {"attributes": {"sys_class_name": "cmdb_ci_linux_server"}},
-            mock_ci_data["result"]
-        ]
+        side_effect=[{"attributes": {"sys_class_name": "cmdb_ci_linux_server"}}, mock_ci_data["result"]],
     )
 
     ci = get_related_configuration_item("ci123", "https://instance.service-now.com")
@@ -165,10 +145,7 @@ def test_main_success(mocker, mock_demisto_args, mock_network_adapter_data, mock
     Then it should process the network adapters and return the expected results
     """
     # Mock demisto functions
-    mocker.patch(
-        "ServiceNowNetworkAdaptersEnrichment.demisto.args",
-        return_value=mock_demisto_args
-    )
+    mocker.patch("ServiceNowNetworkAdaptersEnrichment.demisto.args", return_value=mock_demisto_args)
 
     # Mock command execution
     mocker.patch(
@@ -177,8 +154,8 @@ def test_main_success(mocker, mock_demisto_args, mock_network_adapter_data, mock
             [{"sys_id": "na123"}],  # First call to get network adapters
             mock_network_adapter_data["result"],  # Get network adapter details
             {"attributes": {"sys_class_name": "cmdb_ci_linux_server"}},  # Get CI class
-            mock_ci_data["result"]  # Get CI details
-        ]
+            mock_ci_data["result"],  # Get CI details
+        ],
     )
 
     # Mock return_results
@@ -200,10 +177,7 @@ def test_main_no_ip(mocker):
     When main is called
     Then it should raise a validation error
     """
-    mocker.patch(
-        "ServiceNowNetworkAdaptersEnrichment.demisto.args",
-        return_value={"ip_address": None}
-    )
+    mocker.patch("ServiceNowNetworkAdaptersEnrichment.demisto.args", return_value={"ip_address": None})
     mock_error = mocker.patch("ServiceNowNetworkAdaptersEnrichment.return_error")
 
     main()
@@ -218,14 +192,8 @@ def test_main_no_results(mocker, mock_demisto_args):
     When main is called
     Then it should return empty result sets
     """
-    mocker.patch(
-        "ServiceNowNetworkAdaptersEnrichment.demisto.args",
-        return_value=mock_demisto_args
-    )
-    mocker.patch(
-        "ServiceNowNetworkAdaptersEnrichment.execute_command",
-        return_value=[]
-    )
+    mocker.patch("ServiceNowNetworkAdaptersEnrichment.demisto.args", return_value=mock_demisto_args)
+    mocker.patch("ServiceNowNetworkAdaptersEnrichment.execute_command", return_value=[])
     mock_return = mocker.patch("ServiceNowNetworkAdaptersEnrichment.return_results")
 
     main()
