@@ -20,9 +20,9 @@ This is the Aruba Central event collector integration for Cortex XSIAM.
 
 You can find most of the required API credentials within your HPE Aruba Central account.
 
-1.  Log in to your **Aruba Central** account.
-2.  Navigate to the **Global Settings** menu (or the equivalent management scope).
-3.  Select **API Gateway**.
+1. Log in to your **Aruba Central** account.
+2. Navigate to the **Global Settings** menu (or the equivalent management scope).
+3. Select **API Gateway**.
 
 From this section, you can retrieve the following information:
 
