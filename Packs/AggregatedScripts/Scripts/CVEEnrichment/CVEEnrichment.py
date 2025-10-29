@@ -39,7 +39,7 @@ def cve_enrichment_script(
     cve_indicator = Indicator(
         type="cve",
         value_field="ID",
-        context_path_prefix="CVE(",
+        context_path_prefix="CVE(", # add ( to prefix to distinct from CVESearch v2 integration context path
         context_output_mapping=indicator_mapping,
     )
 

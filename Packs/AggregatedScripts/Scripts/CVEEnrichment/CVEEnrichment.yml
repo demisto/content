@@ -6,13 +6,13 @@ args:
 - name: external_enrichment
   description: |
     Whether to call external integrations for enrichment.  
-    - 'true': Enrich using enabled external integrations, for example, VirusTotal (API v3) and AlienVault OTX v2.  
+    - 'true': Enrich using enabled external integrations, for example, CIRCL CVE Search and CVE Search v2.  
     - 'false': Use only existing TIM data and not external integrations.  
 
     If the 'brands' argument is provided, this flag is ignored and enrichment is run only on the brands provided.
 
     Whether to call external integrations for enrichment.
-    - 'true': enrich using enabled external integrations (e.g., VirusTotal (API v3), AlienVault OTX v2).
+    - 'true': enrich using enabled external integrations (e.g., CIRCL CVE Search, CVE Search v2).
     - 'false': use only existing TIM data; skip external integrations.
     If the 'brands' argument is provided, this flag is ignored and enrichment is run only on the brands provided.
   auto: PREDEFINED
@@ -32,7 +32,7 @@ args:
 - name: brands
   description: |
     A list of integration brands to run enrichment against.  
-    Example: `"VirusTotal (API v3), AlienVault OTX v2"`.  
+    Example: `"CIRCL CVE Search, CVE Search v2"`.  
     - If provided, only the selected brands are used. 
     - If left empty, the script runs enrichment on all enabled integrations,
       depending on the `external_enrichment` flag.
