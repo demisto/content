@@ -1171,9 +1171,6 @@ script:
         - contextPath: Core.VulnerabilityIssue.ISSUE_ID
           description: The unique identifier for the vulnerability issue.
           type: String
-        - contextPath: Core.VulnerabilityIssue.ISSUE_NAME
-          description: The name of the vulnerability issue.
-          type: String
         - contextPath: Core.VulnerabilityIssue.CVE_ID
           description: The CVE identifier for the vulnerability.
           type: String
@@ -1192,12 +1189,6 @@ script:
         - contextPath: Core.VulnerabilityIssue.CVSS_SCORE
           description: The Common Vulnerability Scoring System (CVSS) score.
           type: Number
-        - contextPath: Core.VulnerabilityIssue.CVSS_SEVERITY
-          description: The severity level based on the CVSS score.
-          type: String
-        - contextPath: Core.VulnerabilityIssue.PROGRESS_STATUS
-          description: The current progress status of the vulnerability.
-          type: String
         - contextPath: Core.VulnerabilityIssue.ASSIGNED_TO
           description: The email of the user assigned to the vulnerability.
           type: String
@@ -1210,111 +1201,18 @@ script:
         - contextPath: Core.VulnerabilityIssue.FIX_AVAILABLE
           description: Indicates if a fix is available for the vulnerability.
           type: Boolean
-        - contextPath: Core.VulnerabilityIssue.ASSET_TYPE
-          description: The type of the affected asset.
-          type: String
-        - contextPath: Core.VulnerabilityIssue.ASSET_CATEGORY
-          description: The category of the affected asset.
-          type: String
-        - contextPath: Core.VulnerabilityIssue.PATH
-          description: The path related to the vulnerability finding.
-          type: Unknown
-        - contextPath: Core.VulnerabilityIssue.LOCATION
-          description: The location of the affected asset.
-          type: Unknown
         - contextPath: Core.VulnerabilityIssue.INTERNET_EXPOSED
           description: Indicates if the asset is exposed to the internet.
           type: Boolean
-        - contextPath: Core.VulnerabilityIssue.PROVIDER
-          description: The provider or source of the asset information.
-          type: String
         - contextPath: Core.VulnerabilityIssue.HAS_KEV
           description: Indicates if the vulnerability is a Known Exploited Vulnerability (KEV).
           type: Boolean
         - contextPath: Core.VulnerabilityIssue.EXPLOITABLE
           description: Indicates if the vulnerability is exploitable.
           type: Boolean
-        - contextPath: Core.VulnerabilityIssue.EXPLOIT_LEVEL
-          description: The level of exploit available for the vulnerability.
-          type: String
-        - contextPath: Core.VulnerabilityIssue.CVE_RISK_FACTORS
-          description: A list of risk factors associated with the CVE.
-          type: Unknown
-        - contextPath: Core.VulnerabilityIssue.FINDING_SOURCES
-          description: The sources that reported the vulnerability finding.
-          type: Unknown
-        - contextPath: Core.VulnerabilityIssue.FIRST_OBSERVED
-          description: The timestamp when the vulnerability was first observed.
-          type: Date
-        - contextPath: Core.VulnerabilityIssue.LAST_OBSERVED
-          description: The timestamp when the vulnerability was last observed.
-          type: Date
-        - contextPath: Core.VulnerabilityIssue.OPERATING_SYSTEM
-          description: The operating system of the affected asset.
-          type: Unknown
-        - contextPath: Core.VulnerabilityIssue.OS_FAMILY
-          description: The family of the operating system.
-          type: Unknown
-        - contextPath: Core.VulnerabilityIssue.IPV4_ADDRESSES
-          description: A list of IPv4 addresses associated with the asset.
-          type: Unknown
-        - contextPath: Core.VulnerabilityIssue.IPV6_ADDRESSES
-          description: A list of IPv6 addresses associated with the asset.
-          type: Unknown
-        - contextPath: Core.VulnerabilityIssue.IMAGE
-          description: The image related to the asset.
-          type: Unknown
-        - contextPath: Core.VulnerabilityIssue.FIX_VERSIONS
-          description: A list of versions that include a fix for the vulnerability.
-          type: Unknown
-        - contextPath: Core.VulnerabilityIssue.SYMBOLS
-          description: Symbols related to the vulnerability.
-          type: Unknown
-        - contextPath: Core.VulnerabilityIssue.PACKAGE_IN_USE
-          description: Indicates if the package is in use.
-          type: Unknown
-        - contextPath: Core.VulnerabilityIssue.ORIGIN_PACKAGE_NAME
-          description: The original name of the package.
-          type: Unknown
-        - contextPath: Core.VulnerabilityIssue.PACKAGE_FILE_CREATION_TIME
-          description: The creation time of the package file.
-          type: Unknown
-        - contextPath: Core.VulnerabilityIssue.PACKAGE_LICENSES
-          description: The licenses associated with the package.
-          type: Unknown
-        - contextPath: Core.VulnerabilityIssue.PACKAGE_VERSION
-          description: The version of the package.
-          type: Unknown
-        - contextPath: Core.VulnerabilityIssue.PACKAGE_PURL
-          description: The Package URL (PURL) for the package.
-          type: Unknown
-        - contextPath: Core.VulnerabilityIssue.PACKAGE_TYPE
-          description: The type of the package.
-          type: Unknown
-        - contextPath: Core.VulnerabilityIssue.AUTHOR
-          description: The author of the package or code.
-          type: Unknown
         - contextPath: Core.VulnerabilityIssue.ASSET_IDS
           description: The unique identifier for the asset.
           type: String
-        - contextPath: Core.VulnerabilityIssue.PLATFORM_ID
-          description: The unique identifier from the platform.
-          type: String
-        - contextPath: Core.VulnerabilityIssue.APPLICATION_VERSION
-          description: The version of the application.
-          type: Unknown
-        - contextPath: Core.VulnerabilityIssue.DERIVED_FROM_BASE_IMAGE
-          description: Indicates if the asset is derived from a base image.
-          type: Unknown
-        - contextPath: Core.VulnerabilityIssue.ASSET_GROUP_IDS
-          description: A list of asset group IDs.
-          type: Unknown
-        - contextPath: Core.VulnerabilityIssue.COMPENSATING_CONTROLS_DETECTED_COVERAGE
-          description: Coverage of detected compensating controls.
-          type: Unknown
-        - contextPath: Core.VulnerabilityIssue.COMPENSATING_CONTROLS_DETECTED_CONTROLS
-          description: Detected compensating controls.
-          type: Unknown
   runonce: false
   script: "-"
   subtype: python3
