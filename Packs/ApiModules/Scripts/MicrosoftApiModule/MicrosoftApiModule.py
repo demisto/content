@@ -83,6 +83,7 @@ MICROSOFT_DEFENDER_FOR_ENDPOINT_TYPE = {
 MICROSOFT_DEFENDER_FOR_ENDPOINT_TYPE_CUSTOM = "Custom"
 MICROSOFT_DEFENDER_FOR_ENDPOINT_DEFAULT_ENDPOINT_TYPE = "com"
 
+
 # https://learn.microsoft.com/en-us/microsoft-365/security/defender/api-supported?view=o365-worldwide#endpoint-uris
 # https://learn.microsoft.com/en-us/microsoft-365/security/defender-endpoint/gov?view=o365-worldwide#api
 MICROSOFT_DEFENDER_FOR_ENDPOINT_API = {

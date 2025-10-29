@@ -25,7 +25,7 @@ configuration:
 - defaultvalue: https://graph.microsoft.com
   display: Host URL
   name: host
-  required: true
+  required: false
   type: 0
   section: Connect
   advanced: true

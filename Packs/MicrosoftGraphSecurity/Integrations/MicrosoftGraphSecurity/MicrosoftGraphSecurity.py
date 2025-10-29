@@ -87,12 +87,7 @@ class MsGraphClient:
     Microsoft Graph Mail Client enables authorized access to a user's Office 365 mail data in a personal account.
     """
 
-    def __init__(
-        self, tenant_id, proxy,
-        certificate_thumbprint: str | None = None,
-        api_version: str = "",
-        **kwargs
-    ):
+    def __init__(self, tenant_id, proxy, certificate_thumbprint: str | None = None, api_version: str = "", **kwargs):
         self.ms_client = MicrosoftClient(
             tenant_id=tenant_id,
             proxy=proxy,
