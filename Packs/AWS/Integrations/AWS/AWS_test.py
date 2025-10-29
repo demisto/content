@@ -4532,3 +4532,41 @@ def test_get_latest_ami_command_failure(mocker):
 
     with pytest.raises(DemistoException, match=f"AWS EC2 API call to describe_images failed."):
         EC2.get_latest_ami_command(mock_client, {})
+
+
+def test_get_ipam_discovered_public_addresses_command_success(mocker):
+    """
+    Given: A mocked boto3 EC2 client and a valid IPAM Resource Discovery ID.
+    When: get_ipam_discovered_public_addresses_command is called.
+    Then: It should return `CommandResults` with a readable output containing the discovered public IP addresses.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.get_ipam_discovered_public_addresses.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+                                                                     "IpamDiscoveredPublicAddresses": {"mock_key": "mock_value"}}
+    args = {"ipam_resource_discovery_id": "mock_id"}
+    result = EC2.get_ipam_discovered_public_addresses_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert "Ipam Discovered Public Addresses" in result.readable_output
+
+
+def test_get_ipam_discovered_public_addresses_command_failure(mocker):
+    """
+    Given: A mocked boto3 EC2 client that is configured to raise a ClientError (e.g., due to an invalid ID).
+    When: get_ipam_discovered_public_addresses_command is called.
+    Then: It should catch the AWS `ClientError` and raise a descriptive `DemistoException` indicating the failure of the API call.
+    """
+    from AWS import EC2
+    from botocore.exceptions import ClientError
+
+    mock_error = ClientError(
+        {'Error': {'Code': 'InvalidParameterValue', 'Message': 'Invalid IpamResourceDiscoveryId'}},
+        'GetIpamDiscoveredPublicAddresses'
+    )
+
+    mock_client = mocker.Mock()
+    mock_client.get_ipam_discovered_public_addresses.side_effect = mock_error
+
+    with pytest.raises(DemistoException, match=f"AWS EC2 API call to get_ipam_discovered_public_addresses failed."):
+        EC2.get_ipam_discovered_public_addresses_command(mock_client, {})
