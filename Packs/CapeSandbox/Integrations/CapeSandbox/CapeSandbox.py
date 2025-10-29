@@ -132,7 +132,7 @@ def build_file_name(
     file_identifier: str | int,
     file_type: Literal["file", "report", "screenshot", "network_dump"] | None = None,
     screenshot_number: int | None = None,
-    file_format: (Literal["pdf", "html", "csv", "zip", "pcap", "bin"] | str | None) = None,
+    file_format: Literal["pdf", "html", "csv", "zip", "pcap", "bin"] | str | None = None,
 ) -> str:
     """
     Constructs a standardized filename based on the task identifier and file metadata.
