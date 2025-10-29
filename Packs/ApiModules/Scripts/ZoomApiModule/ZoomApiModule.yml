@@ -10,7 +10,7 @@ system: true
 scripttarget: 0
 dependson: {}
 timeout: 0s
-dockerimage: demisto/auth-utils:1.0.0.105764
+dockerimage: demisto/auth-utils:1.0.0.5476008
 fromversion: 5.0.0
 tests:
 - No tests (auto formatted)
