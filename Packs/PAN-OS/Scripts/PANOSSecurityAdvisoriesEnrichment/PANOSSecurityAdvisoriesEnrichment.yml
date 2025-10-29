@@ -86,5 +86,9 @@ type: python
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
+supportedModules:
+- agentix
+- xsiam
+- cloud_posture
 marketplaces:
 - platform

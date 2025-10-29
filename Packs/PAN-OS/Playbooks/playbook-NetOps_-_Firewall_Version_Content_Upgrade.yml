@@ -2,7 +2,8 @@ id: NetOps - Firewall Version and Content Upgrade
 version: -1
 fromversion: 5.0.0
 name: NetOps - Firewall Version and Content Upgrade
-description: Network operations playbook that updates the version and content of the firewall. You must have Superuser permissions to update the PAN-OS version.
+description: Network operations playbook that updates the version and content of
+  the firewall. You must have Superuser permissions to update the PAN-OS version.
 starttaskid: "0"
 tasks:
   "0":
@@ -404,7 +405,8 @@ tasks:
       Timeout:
         simple: "10"
       dt:
-        simple: Panorama.Content.Install(val.Status !== 'Completed' && val.Status !== 'Failed').JobID
+        simple: Panorama.Content.Install(val.Status !== 'Completed' && val.Status
+          !== 'Failed').JobID
     separatecontext: true
     loop:
       iscommand: false
@@ -492,7 +494,8 @@ tasks:
       Timeout:
         simple: "20"
       dt:
-        simple: Panorama.PANOS.Download(val.Status !== 'Completed' && val.Status !== 'Failed').JobID
+        simple: Panorama.PANOS.Download(val.Status !== 'Completed' && val.Status !==
+          'Failed').JobID
     separatecontext: true
     loop:
       iscommand: false
@@ -547,7 +550,8 @@ tasks:
       Timeout:
         simple: "20"
       dt:
-        simple: Panorama.PANOS.Install(val.Status !== 'Completed' && val.Status !== 'Failed').JobID
+        simple: Panorama.PANOS.Install(val.Status !== 'Completed' && val.Status !==
+          'Failed').JobID
     separatecontext: true
     loop:
       iscommand: false
@@ -593,3 +597,4 @@ supportedModules:
 - ENT_PLUS
 - agentix
 - xsiam
+- cloud_posture

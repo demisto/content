@@ -23,12 +23,12 @@ inputSections:
 inputs:
 - description: Serial Number of the firewall to check upgrade readiness for.
   key: targetDevice
-  playbookInputQuery:
+  playbookInputQuery: null
   required: true
   value: {}
 - description: The target PAN-OS version to check upgrade readiness for.
   key: targetVersion
-  playbookInputQuery:
+  playbookInputQuery: null
   required: false
   value: {}
 name: PAN-OS - Firewall Upgrade Readiness Checks
@@ -830,7 +830,8 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Determine if App / AV / Threat content is compatible between HA members for proper failover.
+      description: Determine if App / AV / Threat content is compatible between HA
+        members for proper failover.
       id: 4ffbdf8d-2661-4433-a9f0-0df710942e4c
       iscommand: false
       name: App/AV/Threat Compatible?
@@ -959,7 +960,8 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Check that the active GlobalProtect client is compatible between HA members for proper failover.
+      description: Check that the active GlobalProtect client is compatible between
+        HA members for proper failover.
       id: c9a360e9-fd23-402c-9d9d-ad52f884b269
       iscommand: false
       name: GP Client Compatible?
@@ -1482,7 +1484,9 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: This script is a wrapper for the 'pano-os-platform-get-available-software' command, adding options to return only images newer than is currently installed to minimize amount of context data generated.
+      description: This script is a wrapper for the 'pano-os-platform-get-available-software'
+        command, adding options to return only images newer than is currently installed
+        to minimize amount of context data generated.
       id: 902ddd93-8b4e-4dbc-8613-7a8387bef40d
       iscommand: false
       name: Get Available Software
@@ -1683,7 +1687,8 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Check that the system disk has enough free space to download the required image(s).
+      description: Check that the system disk has enough free space to download the
+        required image(s).
       id: 84860c44-d332-4d03-aa9d-34206b8f93b0
       iscommand: false
       name: Is Sufficient Disk Space Free?
@@ -1835,7 +1840,8 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Check if software image(s) need to be downloaded or if they are already present on the system, meaning no additional disk space is needed.
+      description: Check if software image(s) need to be downloaded or if they are
+        already present on the system, meaning no additional disk space is needed.
       id: e2b86aaf-febe-44cf-8b7a-d08ada8c0afc
       iscommand: false
       name: Does Software Need To Be Downloaded?
@@ -2083,7 +2089,8 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Check if the target device is already running the desired PAN-OS version.  If so, no upgrade is needed.
+      description: Check if the target device is already running the desired PAN-OS
+        version.  If so, no upgrade is needed.
       id: 8ba7d2dc-7c75-4e12-8062-8f627b826e4f
       iscommand: false
       name: Is Target Device Already Running Requested Version?
@@ -2112,12 +2119,14 @@ tasks:
     quietmode: 0
     scriptarguments:
       value:
-        simple: The target version is already installed on your firewall. Skipping readiness checks.
+        simple: The target version is already installed on your firewall. Skipping
+          readiness checks.
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
-      description: Print message to indicate that target version is already installed on the connected firewall.
+      description: Print message to indicate that target version is already installed
+        on the connected firewall.
       id: 6dbd4745-ebfd-417e-b500-a9a589adb211
       iscommand: false
       name: Firewall is already on target version
@@ -2180,7 +2189,8 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: This script fetches disk space info from the target device and returns all information or a subset as specified in command arguments.
+      description: This script fetches disk space info from the target device and
+        returns all information or a subset as specified in command arguments.
       id: 7b6c3775-28ad-41cc-817d-4bb372f99537
       iscommand: false
       name: Get Disk Space Info
@@ -2244,7 +2254,8 @@ tasks:
       headers:
         simple: CheckName, CheckResult
       title:
-        simple: Upgrade Readiness Check Result for Device ${PANOS.ShowSystemInfo.Summary.hostid} to Version ${inputs.targetVersion}.
+        simple: Upgrade Readiness Check Result for Device ${PANOS.ShowSystemInfo.Summary.hostid}
+          to Version ${inputs.targetVersion}.
       value:
         simple: ${ReadinessChecks}
     separatecontext: false
@@ -2312,7 +2323,8 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Checks for the latest available dynamic update versions and returns a list of latest available / currently installed content.
+      description: Checks for the latest available dynamic update versions and returns
+        a list of latest available / currently installed content.
       id: bb507505-9734-444e-8acf-a267cde6ef29
       iscommand: true
       name: Get Dynamic Update Status
@@ -2479,7 +2491,8 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Conditional task to check if active Panorama integration instance is available.
+      description: Conditional task to check if active Panorama integration instance
+        is available.
       id: fabe203f-5b0d-4e0f-ab5e-7c8bbc8102a0
       iscommand: false
       name: Is the Panorama integration enabled?
@@ -2594,7 +2607,8 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Conditional task to check if the Integration Instance type being used is Panorama then was a target device id provided.
+      description: Conditional task to check if the Integration Instance type being
+        used is Panorama then was a target device id provided.
       id: 0e8a0870-388e-40fa-96d1-894313cf1303
       iscommand: false
       name: If IntegrationInstanceType is Panorama, is targetDevice provided?
@@ -2628,7 +2642,8 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Prints an error entry for Target Device ID is required for Panorama Instance.
+      description: Prints an error entry for Target Device ID is required for Panorama
+        Instance.
       id: 2eaa27eb-9c2d-45ef-82b2-cab82fda9f45
       iscommand: false
       name: Target Device ID is required for Panorama Instance
@@ -2717,7 +2732,8 @@ tasks:
     quietmode: 0
     scriptarguments:
       message:
-        simple: The Target Version provided has an invalid base version. Please verify and try again. Skipping Disk Space check.
+        simple: The Target Version provided has an invalid base version. Please verify
+          and try again. Skipping Disk Space check.
     separatecontext: false
     skipunavailable: false
     task:
@@ -2783,12 +2799,6 @@ fromversion: 6.10.0
 supportedModules:
 - agentix
 - xsiam
-- C1
-- C3
-- X0
-- X1
-- X3
-- X5
-- ENT_PLUS
+- cloud_posture
 marketplaces:
 - platform
