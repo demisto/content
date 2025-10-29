@@ -30,6 +30,14 @@ configuration:
   displaypassword: Password
   hiddenpassword: true
   section: Connect
+- display: UPN Password
+  additionalinfo: Password for the specified UPN. Required when using interactive delegated authentication. Leave this field empty when using device code based authentication.
+  name: credentials_app_secret
+  required: false
+  type: 9
+  displaypassword: UPN Password
+  hiddenusername: true
+  section: Connect
 - display: The organization used in app-only authentication.
   name: organization
   type: 0
@@ -50,14 +58,6 @@ configuration:
   section: Connect
   displaypassword: Password
   hiddenpassword: true
-- display: UPN Password
-  additionalinfo: Password for the specified UPN. Required when using interactive delegated authentication. Leave this field empty when using device code based authentication.
-  name: credentials_app_secret
-  required: false
-  type: 9
-  displaypassword: UPN Password
-  hiddenusername: true
-  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
   defaultvalue: "false"
