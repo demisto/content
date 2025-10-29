@@ -4526,9 +4526,14 @@ def test_get_latest_ami_command_failure(mocker):
     Then: It should catch the failure response and raise a `DemistoException` indicating the AWS API call failure.
     """
     from AWS import EC2
+    from botocore.exceptions import ClientError
 
+    mock_error = ClientError(
+        {'Error': {'Code': 'InvalidParameterValue', 'Message': 'Invalid IpamResourceDiscoveryId'}},
+        'GetIpamDiscoveredPublicAddresses'
+    )
     mock_client = mocker.Mock()
-    mock_client.describe_images.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
+    mock_client.describe_images.side_effect = mock_error
 
     with pytest.raises(DemistoException, match=f"AWS EC2 API call to describe_images failed."):
         EC2.get_latest_ami_command(mock_client, {})

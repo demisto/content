@@ -1875,9 +1875,9 @@ class EC2:
             "ExecutableUsers": parse_resource_ids(args.get("executable_users")) if args.get("executable_users") else None,
             "Filters": parse_filter_field(args.get("filters")),
             "Owners": parse_resource_ids(args.get("owners")) if args.get("owners") else None,
-            "ImageIds": parse_resource_ids(args.get("image_id")) if args.get("image_id") else None,
-            "IncludeDeprecated": args.get("include_deprecated"),
-            "IncludeDisabled": args.get("include_disabled"),
+            "ImageIds": parse_resource_ids(args.get("image_ids")) if args.get("image_ids") else None,
+            "IncludeDeprecated": arg_to_bool_or_none(args.get("include_deprecated")),
+            "IncludeDisabled": arg_to_bool_or_none(args.get("include_disabled")),
             "MaxResults": args.get("max_results"),
             "NextToken": args.get("next_token"),
         }
@@ -1886,10 +1886,18 @@ class EC2:
         try:
             response = client.describe_images(**kwargs)
             amis = response.get("Images", [])
+            iterates = 1
             while response.get("nextToken"):
+                demisto.info(f"iterate #{iterates}")
                 kwargs["NextToken"] = response.get("nextToken")
                 response = client.describe_images(**kwargs)
                 amis.extend(response.get("Images", []))
+                iterates += 1
+
+            demisto.info(f"Fetched {len(amis)} AMIs")
+            if not amis:
+                return CommandResults(readable_output="No AMIs found.")
+
             sorted_amis = sorted(amis, key=lambda x: x["CreationDate"], reverse=True)
             image = sorted_amis[0]
             data = {
@@ -1938,12 +1946,21 @@ class EC2:
         kwargs = {
             "VpcId": args.get("vpc_id"),
             "ClientToken": args.get("client_token"),
-            "TagSpecification": args.get("tag_specification"),
+            "TagSpecifications": parse_filter_field(args.get("tag_specifications"))
         }
 
         remove_nulls_from_dictionary(kwargs)
+        if kwargs.get("TagSpecifications"):
+            tags = []
+            for key, value in kwargs.get("TagSpecifications").items():
+                tags.append({"Key": key, "Value": value})
+            tag_specifications = [{"ResourceType": "network-acl", "Tags": tags}]
+            kwargs["TagSpecifications"] = tag_specifications
+
         try:
+            demisto.info(f"{kwargs=}")
             response = client.create_network_acl(**kwargs)
+            demisto.info(f"{response=}")
             if response["ResponseMetadata"]["HTTPStatusCode"] in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
                 network_acl = response.get("NetworkAcl")
                 readable_data = {

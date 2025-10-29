@@ -3565,10 +3565,10 @@ script:
       - name: executable_users
         description: Scopes the images by users with explicit launch permissions.
       - name: filters
-        description: One or more filters separated by ','. See AWS documentation for details & filter options.
+        description: One or more filters. Filters must be separated by a comma (,) and specified using the format "key=key,values=val". Refer to the AWS documentation for detailed filter options.
       - name: owners
         description: Filters the images by the owner. Specify an AWS account ID, self (owner is the sender of the request), or an AWS owner alias (valid values are amazon | aws-marketplace | microsoft ). Omitting this option returns all images for which you have launch permissions, regardless of ownership.
-      - name: image_id
+      - name: image_ids
         description: The image IDs separated by ','.
       - name: include_deprecated
         description: Specifies whether to include deprecated AMIs.
@@ -3586,7 +3586,6 @@ script:
         description: The maximum number of items to return for this request. To get the next page of items, make another request with the token returned in the output.
       - name: next_token
         description: The token returned from a previous paginated request. Pagination continues from the end of the items returned by the previous request.
-
     outputs:
       - contextPath: AWS.EC2.Images.Architecture
         description: The architecture of the image.
@@ -3748,8 +3747,8 @@ script:
         required: true
       - name: client_token
         description: Unique, case-sensitive identifier that you provide to ensure the idempotency of the request.
-      - name: tag_specification
-        description: The tags to assign to the network ACL.
+      - name: tag_specifications
+        description: The tags to assign to the network ACL. Use with
     outputs:
       - contextPath: AWS.EC2.VpcId.NetworkAcl.Associations.NetworkAclAssociationId
         description: The ID of the association between a network ACL and a subnet.
