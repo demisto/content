@@ -2845,42 +2845,26 @@ class ELB:
         """
         lb_name = args.get("load_balancer_name", "")
         attrs: Dict[str, Any] = {}
-
         # Cross-zone
-        if "cross_zone_load_balancing_enabled" in args:
-            attrs["CrossZoneLoadBalancing"] = {"Enabled": argToBoolean(args.get("cross_zone_load_balancing_enabled"))}
-
+        add_block_if_any(block_name="CrossZoneLoadBalancing",
+                         value={"Enabled": arg_to_bool_or_none(args.get("cross_zone_load_balancing_enabled"))},
+                         target=attrs)
         # Access logs
-        if (
-            "access_log_enabled" in args
-            or "access_log_s3_bucket_name" in args
-            or "access_log_interval" in args
-            or "access_log_s3_bucket_prefix" in args
-        ):
-            enabled = argToBoolean(args.get("access_log_enabled")) if "access_log_enabled" in args else None
-            bucket = args.get("access_log_s3_bucket_name")
-            interval = arg_to_number(args.get("access_log_interval"))
-            prefix = args.get("access_log_s3_bucket_prefix")
-
-            access_log_block = {"Enabled": enabled, "S3BucketName": bucket, "S3BucketPrefix": prefix, "EmitInterval": interval}
-            add_block_if_any(block_name="AccessLog", value=access_log_block, target=attrs)
-
+        add_block_if_any(block_name="AccessLog",
+                         value={"Enabled": arg_to_bool_or_none(args.get("access_log_enabled")),
+                                "S3BucketName": args.get("access_log_s3_bucket_name"),
+                                "S3BucketPrefix": args.get("access_log_s3_bucket_prefix"),
+                                "EmitInterval": arg_to_number(args.get("access_log_interval"))},
+                         target=attrs)
         # Connection draining
-        if "connection_draining_enabled" in args or "connection_draining_timeout" in args:
-            draining_enabled = (
-                argToBoolean(args.get("connection_draining_enabled")) if "connection_draining_enabled" in args else None
-            )
-            draining_timeout = arg_to_number(args.get("connection_draining_timeout"))
-            conn_draining_block = {"Enabled": draining_enabled, "Timeout": draining_timeout}
-            add_block_if_any(block_name="ConnectionDraining", value=conn_draining_block, target=attrs)
-
+        add_block_if_any(block_name="ConnectionDraining",
+                         value={"Enabled": arg_to_bool_or_none(args.get("connection_draining_enabled")),
+                                "Timeout": arg_to_number(args.get("connection_draining_timeout"))},
+                         target=attrs)
         # Connection settings (idle timeout)
-        add_block_if_any(
-            block_name="ConnectionSettings",
-            value={"IdleTimeout": arg_to_number(args.get("connection_settings_idle_timeout"))},
-            target=attrs,
-        )
-
+        add_block_if_any(block_name="ConnectionSettings",
+                         value={"IdleTimeout": arg_to_number(args.get("connection_settings_idle_timeout"))},
+                         target=attrs)
         # Additional attributes (JSON list of {Key,Value})
         # Only one additional attribute is supported on classic ELB, Therefore we directly set the key and value
         if desync_mitigation_mode := args.get("desync_mitigation_mode"):
