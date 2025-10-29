@@ -422,7 +422,7 @@ script:
     - name: project_id
       required: true
       description: GCP project ID.
-    - name: max_results
+    - name: limit
       required: false
       description: Maximum number of buckets to return.
     - name: prefix
@@ -492,8 +492,8 @@ script:
       description: Filter results to objects whose names begin with this prefix.
     - name: delimiter
       required: false
-      description: Delimiter to use for grouping objects.
-    - name: max_results
+      description: Delimiter to use for grouping objects. For example delimiter="/" Returns results in a directory-like mode, with / being a common value for the delimiter.
+    - name: limit
       required: false
       description: Maximum number of objects to return.
     - name: page_token
@@ -578,7 +578,7 @@ script:
       required: true
       description: JSON string representing the IAM policy to set.
     - name: add
-      required: true
+      defaultValue: "false"
       auto: PREDEFINED
       predefined:
       - "true"

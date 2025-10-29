@@ -386,11 +386,10 @@ def _validate_bucket_policy_for_set(policy: dict[str, Any], add_mode: bool) -> N
         raise DemistoException("Policy must be a JSON object.")
 
     bindings = policy.get("bindings")
-    if add_mode:
-        if not isinstance(bindings, list) or any(not isinstance(b, dict) for b in bindings):
+    if bindings is not None and (not isinstance(bindings, list) or any(not isinstance(b, dict) for b in bindings)):
+        if add_mode:
             raise DemistoException("Policy must include 'bindings' as an array of objects when add=true.")
-    else:
-        if bindings is not None and (not isinstance(bindings, list) or any(not isinstance(b, dict) for b in bindings)):
+        else:
             raise DemistoException("'bindings' must be an array of objects if provided.")
 
     if isinstance(bindings, list):
@@ -483,7 +482,7 @@ def storage_bucket_list(creds: Credentials, args: dict[str, Any]) -> CommandResu
         CommandResults: List of buckets with their metadata.
     """
     project_id = args.get("project_id")
-    max_results = arg_to_number(args.get("max_results"))
+    max_results = arg_to_number(args.get("limit"))
     prefix = args.get("prefix")
     page_token = args.get("page_token")
     demisto.debug(f"[GCP: storage_bucket_list] \nMax results: {max_results}, \nPrefix: {prefix}, \nPage token: {page_token}")
@@ -500,34 +499,28 @@ def storage_bucket_list(creds: Credentials, args: dict[str, Any]) -> CommandResu
 
     buckets = response.get("items", [])
     demisto.debug(f"[GCP: storage_bucket_list] Buckets returned: {len(buckets)}")
-    bucket_data: list[dict[str, Any]] = []
     hr_bucket_data: list[dict[str, Any]] = []
 
     for bucket in buckets:
-        bucket_info = {
-            "Name": bucket.get("name"),
-            "TimeCreated": bucket.get("timeCreated"),
-            "TimeUpdated": bucket.get("updated"),
-            "OwnerID": bucket.get("owner", {}).get("entityId", ""),
-            "Location": bucket.get("location"),
-            "StorageClass": bucket.get("storageClass"),
-        }
-        bucket_data.append(bucket_info)
-
         hr_bucket_data.append(
             {
-                "Name": bucket_info["Name"],
-                "TimeCreated": _format_gcp_datetime(bucket_info["TimeCreated"]),
-                "TimeUpdated": _format_gcp_datetime(bucket_info["TimeUpdated"]),
-                "OwnerID": bucket_info["OwnerID"],
-                "Location": bucket_info["Location"],
-                "StorageClass": bucket_info["StorageClass"],
+                "Name": bucket.get("name"),
+                "TimeCreated": _format_gcp_datetime(bucket.get("timeCreated")),
+                "TimeUpdated": _format_gcp_datetime(bucket.get("updated")),
+                "OwnerID": bucket.get("owner", {}).get("entityId", ""),
+                "Location": bucket.get("location"),
+                "StorageClass": bucket.get("storageClass"),
             }
         )
+    hr = tableToMarkdown("GCP Storage Buckets", hr_bucket_data, removeNull=True, headerTransform=pascalToSpace)
 
-    hr = tableToMarkdown("GCP Storage Buckets", hr_bucket_data, removeNull=True)
-
-    return CommandResults(readable_output=hr, outputs_prefix="GCP.Storage.Bucket", outputs=bucket_data, outputs_key_field="Name")
+    return CommandResults(
+        readable_output=hr,
+        outputs_prefix="GCP.Storage.Bucket",
+        outputs=buckets,
+        outputs_key_field="Name",
+        raw_response=buckets,
+    )
 
 
 def storage_bucket_get(creds: Credentials, args: dict[str, Any]) -> CommandResults:
@@ -551,25 +544,22 @@ def storage_bucket_get(creds: Credentials, args: dict[str, Any]) -> CommandResul
 
     bucket_info = {
         "Name": response.get("name"),
-        "TimeCreated": response.get("timeCreated"),
-        "TimeUpdated": response.get("updated"),
+        "TimeCreated": _format_gcp_datetime(response.get("timeCreated")),
+        "TimeUpdated": _format_gcp_datetime(response.get("updated")),
         "OwnerID": response.get("owner", {}).get("entityId", ""),
         "Location": response.get("location"),
         "StorageClass": response.get("storageClass"),
     }
 
-    hr_bucket_info = {
-        "Name": bucket_info["Name"],
-        "TimeCreated": _format_gcp_datetime(bucket_info["TimeCreated"]),
-        "TimeUpdated": _format_gcp_datetime(bucket_info["TimeUpdated"]),
-        "OwnerID": bucket_info["OwnerID"],
-        "Location": bucket_info["Location"],
-        "StorageClass": bucket_info["StorageClass"],
-    }
+    hr = tableToMarkdown(f"GCP Storage Bucket: {bucket_name}", bucket_info, removeNull=True, headerTransform=pascalToSpace)
 
-    hr = tableToMarkdown(f"GCP Storage Bucket: {bucket_name}", hr_bucket_info, removeNull=True)
-
-    return CommandResults(readable_output=hr, outputs_prefix="GCP.Storage.Bucket", outputs=bucket_info, outputs_key_field="Name")
+    return CommandResults(
+        readable_output=hr,
+        outputs_prefix="GCP.Storage.Bucket",
+        outputs=response,
+        outputs_key_field="Name",
+        raw_response=response,
+    )
 
 
 def storage_bucket_objects_list(creds: Credentials, args: dict[str, Any]) -> CommandResults:
@@ -587,7 +577,7 @@ def storage_bucket_objects_list(creds: Credentials, args: dict[str, Any]) -> Com
 
     prefix = args.get("prefix", "")
     delimiter = args.get("delimiter", "")
-    max_results = arg_to_number(args.get("max_results"))
+    max_results = arg_to_number(args.get("limit"))
     page_token = args.get("page_token", "")
 
     storage = GCPServices.STORAGE.build(creds)
@@ -609,7 +599,6 @@ def storage_bucket_objects_list(creds: Credentials, args: dict[str, Any]) -> Com
     objects = response.get("items", [])
     demisto.debug(f"[GCP: storage_bucket_objects_list] Objects returned: {len(objects)}")
     object_data: list[dict[str, Any]] = []
-    hr_object_data: list[dict[str, Any]] = []
 
     for obj in objects:
         object_info = {
@@ -617,29 +606,20 @@ def storage_bucket_objects_list(creds: Credentials, args: dict[str, Any]) -> Com
             "Bucket": obj.get("bucket", ""),
             "ContentType": obj.get("contentType", ""),
             "Size": obj.get("size", ""),
-            "TimeCreated": obj.get("timeCreated", ""),
-            "TimeUpdated": obj.get("updated", ""),
+            "TimeCreated": _format_gcp_datetime(obj.get("timeCreated", "")),
+            "TimeUpdated": _format_gcp_datetime(obj.get("updated", "")),
             "MD5Hash": obj.get("md5Hash", ""),
             "CRC32c": obj.get("crc32c", ""),
         }
         object_data.append(object_info)
-
-        hr_object_data.append(
-            {
-                "Name": object_info["Name"],
-                "Bucket": object_info["Bucket"],
-                "ContentType": object_info["ContentType"],
-                "Size": object_info["Size"],
-                "TimeCreated": _format_gcp_datetime(object_info["TimeCreated"]),
-                "TimeUpdated": _format_gcp_datetime(object_info["TimeUpdated"]),
-                "MD5Hash": object_info["MD5Hash"],
-                "CRC32c": object_info["CRC32c"],
-            }
-        )
-    hr = tableToMarkdown(f"Objects in bucket: {bucket_name}", hr_object_data, removeNull=True)
+    hr = tableToMarkdown(f"Objects in bucket: {bucket_name}", object_data, removeNull=True, headerTransform=pascalToSpace)
 
     return CommandResults(
-        readable_output=hr, outputs_prefix="GCP.Storage.BucketObject", outputs=object_data, outputs_key_field="Name"
+        readable_output=hr,
+        outputs_prefix="GCP.Storage.BucketObject",
+        outputs=objects,
+        outputs_key_field="Name",
+        raw_response=objects,
     )
 
 
@@ -698,7 +678,13 @@ def storage_bucket_policy_list(
         f"ETag: {policy_summary['ETag']}\n Bindings count: {policy_summary['Bindings count']}"
     )
 
-    hr_bindings = tableToMarkdown("Bindings", bindings_rows, headers=["Role", "Members"], removeNull=True)
+    hr_bindings = tableToMarkdown(
+        "Bindings",
+        bindings_rows,
+        headers=["Role", "Members"],
+        removeNull=True,
+        headerTransform=pascalToSpace,
+    )
     demisto.debug(f"[GCP: storage_bucket_policy_list] Bindings count: {len(bindings_rows)}")
     hr = f"{summary_text}\n\n{hr_bindings}"
 
@@ -733,7 +719,7 @@ def storage_bucket_policy_set(creds: Credentials, args: dict[str, Any]) -> Comma
     storage = GCPServices.STORAGE.build(creds)
 
     demisto.debug(f"[GCP: storage_bucket_policy_set] Bucket: {bucket_name}; Policy keys: {list(policy.keys())}")
-    add_flag = argToBoolean(args.get("add")) if args.get("add") is not None else False
+    add_flag = argToBoolean(args.get("add"))
 
     _validate_bucket_policy_for_set(policy=policy, add_mode=add_flag)
     if add_flag:
@@ -771,10 +757,19 @@ def storage_bucket_policy_set(creds: Credentials, args: dict[str, Any]) -> Comma
 
     result_info = {"Bucket": bucket_name, "PolicyUpdatedSuccessfully": True, "NewPolicyVersion": response.get("version")}
 
-    hr = tableToMarkdown(f"IAM Policy updated for bucket: {bucket_name}", result_info, removeNull=True)
+    hr = tableToMarkdown(
+        f"IAM Policy updated for bucket: {bucket_name}",
+        result_info,
+        removeNull=True,
+        headerTransform=pascalToSpace,
+    )
 
     return CommandResults(
-        readable_output=hr, outputs_prefix="GCP.Storage.BucketPolicy", outputs=response, outputs_key_field="etag"
+        readable_output=hr,
+        outputs_prefix="GCP.Storage.BucketPolicy",
+        outputs=response,
+        outputs_key_field="etag",
+        raw_response=response,
     )
 
 
@@ -837,10 +832,14 @@ def storage_bucket_object_policy_list(creds: Credentials, args: dict[str, Any]) 
         raise
     # Build human readable output: summary + bindings table
     items = response.get("items", [])
-    hr = tableToMarkdown(f"Policy for object: {object_name} in bucket: {bucket_name}", items)
+    hr = tableToMarkdown(f"Policy for object: {object_name} in bucket: {bucket_name}", items, headerTransform=pascalToSpace)
 
     return CommandResults(
-        readable_output=hr, outputs_prefix="GCP.Storage.BucketObjectPolicy", outputs=items, raw_response=response
+        readable_output=hr,
+        outputs_prefix="GCP.Storage.BucketObjectPolicy",
+        outputs=items,
+        raw_response=response,
+        outputs_key_field=["Bucket", "Key"],
     )
 
 
@@ -906,7 +905,7 @@ def storage_bucket_object_policy_set(creds: Credentials, args: dict[str, Any]) -
         remove_nulls_from_dictionary(update_params)
         try:
             demisto.debug(f"[GCP: storage_bucket_object_policy_set] Updating ACL #{idx+1} for entity {entity}")
-            resp = storage.objectAccessControls().update(**update_params).execute()  # pylint: disable=E1101
+            resp = storage.objectAccessControls().patch(**update_params).execute()  # pylint: disable=E1101
             results.append(resp)
             continue
         except Exception as e:
@@ -928,6 +927,7 @@ def storage_bucket_object_policy_set(creds: Credentials, args: dict[str, Any]) -
         f"Object ACLs set for object: {object_name} in bucket: {bucket_name}",
         results if results else [{"message": "No ACL changes applied"}],
         removeNull=True,
+        headerTransform=pascalToSpace,
     )
 
     return CommandResults(
@@ -935,6 +935,7 @@ def storage_bucket_object_policy_set(creds: Credentials, args: dict[str, Any]) -
         outputs_prefix="GCP.Storage.BucketObjectPolicy",
         outputs=results,
         raw_response=results,
+        outputs_key_field="resourceId",
     )
 
 

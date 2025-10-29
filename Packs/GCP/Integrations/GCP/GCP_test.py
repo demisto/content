@@ -505,6 +505,77 @@ def test_storage_bucket_metadata_update_enable_both_settings(mocker):
     assert result.outputs_key_field == "name"
 
 
+def test_storage_bucket_policy_set_merge_add_true(mocker):
+    """
+    Given: A bucket with an existing IAM policy and a new set of bindings to add
+    When: storage_bucket_policy_set is called with add=true
+    Then: The resulting policy sent to setIamPolicy is a merge (union) of members per role
+    """
+    from GCP import storage_bucket_policy_set
+
+    bucket_name = "test-bucket"
+    current_policy = {
+        "version": 3,
+        "etag": "BwWKmjvelug=",
+        "bindings": [
+            {"role": "roles/storage.objectViewer", "members": ["user:viewer1@example.com"]},
+            {"role": "roles/storage.admin", "members": ["user:admin1@example.com"]},
+        ],
+    }
+    new_bindings = {
+        "bindings": [
+            {"role": "roles/storage.objectViewer", "members": ["allUsers"]},
+            {"role": "roles/storage.admin", "members": ["user:admin2@example.com"]},
+        ]
+    }
+    args = {
+        "bucket_name": bucket_name,
+        "policy": json.dumps(new_bindings),
+        "add": "true",
+    }
+
+    mock_storage = mocker.Mock()
+    mock_buckets = mocker.Mock()
+    mock_storage.buckets.return_value = mock_buckets
+    mock_buckets.getIamPolicy.return_value.execute.return_value = current_policy
+
+    expected_merged_bindings = [
+        {
+            "role": "roles/storage.objectViewer",
+            "members": sorted(["user:viewer1@example.com", "allUsers"]),
+        },
+        {
+            "role": "roles/storage.admin",
+            "members": sorted(["user:admin1@example.com", "user:admin2@example.com"]),
+        },
+    ]
+
+    mock_response = {"version": 3, "bindings": expected_merged_bindings}
+    mock_buckets.setIamPolicy.return_value.execute.return_value = mock_response
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mocker.patch("GCP.build", return_value=mock_storage)
+
+    result = storage_bucket_policy_set(mock_creds, args)
+
+    mock_buckets.getIamPolicy.assert_called_once_with(bucket=bucket_name)
+    assert mock_buckets.setIamPolicy.call_count == 1
+
+    _, set_kwargs = mock_buckets.setIamPolicy.call_args
+    assert set_kwargs["bucket"] == bucket_name
+    body_sent = set_kwargs["body"]
+
+    assert body_sent.get("version") == 3
+    assert body_sent.get("etag") == current_policy["etag"]
+
+    sent_bindings = {b["role"]: set(b.get("members", [])) for b in body_sent.get("bindings", [])}
+    expected_bindings = {b["role"]: set(b.get("members", [])) for b in expected_merged_bindings}
+    assert sent_bindings == expected_bindings
+
+    # Outputs should reflect mock response
+    assert result.outputs == mock_response
+
+
 def test_compute_instance_service_account_set(mocker):
     """
     Given: A VM instance that needs a service account assigned
@@ -2631,13 +2702,13 @@ def test_storage_bucket_list_basic(mocker):
     mocker.patch("GCP.GCPServices.STORAGE.build", return_value=mock_storage)
 
     creds = mocker.Mock(spec=Credentials)
-    args = {"project_id": "p1", "max_results": "10", "prefix": "p", "page_token": "t"}
+    args = {"project_id": "p1", "limit": "10", "prefix": "p", "page_token": "t"}
 
     result = storage_bucket_list(creds, args)
 
     mock_buckets.list.assert_called_with(project="p1", maxResults=10, prefix="p", pageToken="t")
     assert result.outputs_prefix == "GCP.Storage.Bucket"
-    assert result.outputs[0]["Name"] == "b1"
+    assert result.outputs[0]["name"] == "b1"
 
 
 def test_storage_bucket_get_basic(mocker):
@@ -2666,7 +2737,7 @@ def test_storage_bucket_get_basic(mocker):
 
     mock_buckets.get.assert_called_with(bucket="b1")
     assert result.outputs_prefix == "GCP.Storage.Bucket"
-    assert result.outputs["Name"] == "b1"
+    assert result.outputs["name"] == "b1"
 
 
 def test_storage_bucket_objects_list_basic(mocker):
@@ -2697,12 +2768,12 @@ def test_storage_bucket_objects_list_basic(mocker):
     mocker.patch("GCP.GCPServices.STORAGE.build", return_value=mock_storage)
 
     creds = mocker.Mock(spec=Credentials)
-    args = {"bucket_name": "b1", "prefix": "p/", "delimiter": "/", "max_results": "5", "page_token": "tok"}
+    args = {"bucket_name": "b1", "prefix": "p/", "delimiter": "/", "limit": "5", "page_token": "tok"}
     result = storage_bucket_objects_list(creds, args)
 
     mock_objects.list.assert_called_with(bucket="b1", prefix="p/", delimiter="/", maxResults=5, pageToken="tok")
     assert result.outputs_prefix == "GCP.Storage.BucketObject"
-    assert result.outputs[0]["Name"] == "o1"
+    assert result.outputs[0]["name"] == "o1"
 
 
 def test_storage_bucket_policy_list_with_version(mocker):
@@ -2743,8 +2814,8 @@ def test_storage_bucket_policy_set_basic(mocker):
     mocker.patch("GCP.GCPServices.STORAGE.build", return_value=mock_storage)
 
     creds = mocker.Mock(spec=Credentials)
-    policy = {"bindings": []}
-    args = {"bucket_name": "b1", "policy": json.dumps(policy)}
+    policy = {"bindings": [{"role": "roles/storage.objectViewer", "members": ["allUsers"]}]}
+    args = {"bucket_name": "b1", "policy": json.dumps(policy), "add": "false"}
     result = storage_bucket_policy_set(creds, args)
 
     mock_buckets.setIamPolicy.assert_called_with(bucket="b1", body=policy)
@@ -2794,8 +2865,8 @@ def test_storage_bucket_object_policy_set_update_then_insert(mocker):
     mock_oac = mocker.Mock()
     mock_storage.objectAccessControls.return_value = mock_oac
 
-    # Update fails, insert succeeds
-    mock_oac.update.return_value.execute.side_effect = Exception("not found")
+    # Patch fails, insert succeeds
+    mock_oac.patch.return_value.execute.side_effect = Exception("not found")
     mock_oac.insert.return_value.execute.return_value = {"entity": "allUsers", "role": "READER"}
 
     mocker.patch("GCP.GCPServices.STORAGE.build", return_value=mock_storage)
@@ -2805,7 +2876,7 @@ def test_storage_bucket_object_policy_set_update_then_insert(mocker):
     args = {"bucket_name": "b1", "object_name": "o1", "policy": json.dumps({"entity": "allUsers", "role": "READER"})}
     result = storage_bucket_object_policy_set(creds, args)
 
-    mock_oac.update.assert_called()
+    mock_oac.patch.assert_called()
     mock_oac.insert.assert_called()
     assert result.outputs_prefix == "GCP.Storage.BucketObjectPolicy"
     assert result.outputs[0]["entity"] == "allUsers"
@@ -2822,7 +2893,7 @@ def test_storage_bucket_object_policy_set_update_success(mocker):
     mock_storage = mocker.Mock()
     mock_oac = mocker.Mock()
     mock_storage.objectAccessControls.return_value = mock_oac
-    mock_oac.update.return_value.execute.return_value = {"entity": "user:a@example.com", "role": "WRITER"}
+    mock_oac.patch.return_value.execute.return_value = {"entity": "user:a@example.com", "role": "WRITER"}
 
     mocker.patch("GCP.GCPServices.STORAGE.build", return_value=mock_storage)
     mocker.patch("GCP._is_ubla_enabled", return_value=False)
@@ -2831,7 +2902,7 @@ def test_storage_bucket_object_policy_set_update_success(mocker):
     args = {"bucket_name": "b1", "object_name": "o1", "policy": json.dumps({"entity": "user:a@example.com", "role": "WRITER"})}
     result = storage_bucket_object_policy_set(creds, args)
 
-    mock_oac.update.assert_called()
+    mock_oac.patch.assert_called()
     mock_oac.insert.assert_not_called()
     assert result.outputs[0]["role"] == "WRITER"
 

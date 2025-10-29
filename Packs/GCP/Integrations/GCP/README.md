@@ -637,7 +637,7 @@ Retrieves the list of buckets in the project associated with the client.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | project_id | GCP project ID. | Required |
-| max_results | Maximum number of buckets to return. | Optional |
+| limit | Maximum number of buckets to return. | Optional |
 | prefix | Filter results to buckets whose names begin with this prefix. | Optional |
 | page_token | Token for pagination. | Optional |
 
@@ -654,7 +654,7 @@ Retrieves the list of buckets in the project associated with the client.
 
 #### Example
 
-``` !gcp-storage-bucket-list project_id="my-project" max_results="10" prefix="logs-" ```
+``` !gcp-storage-bucket-list project_id="my-project" limit="10" prefix="logs-" ```
 
 ### gcp-storage-bucket-get
 
@@ -699,8 +699,8 @@ Retrieves the list of objects in a bucket.
 | project_id | GCP project ID. | Required |
 | bucket_name | Name of the bucket to list objects from. | Required |
 | prefix | Filter results to objects whose names begin with this prefix. | Optional |
-| delimiter | Delimiter to use for grouping objects. | Optional |
-| max_results | Maximum number of objects to return. | Optional |
+| delimiter | Delimiter to use for grouping objects. For example delimiter="/" Returns results in a directory-like mode, with / being a common value for the delimiter. | Optional |
+| limit | Maximum number of objects to return. | Optional |
 | page_token | Token for pagination. | Optional |
 
 #### Context Output
@@ -723,7 +723,7 @@ Retrieves the list of objects in a bucket.
 
 #### Example
 
-``` !gcp-storage-bucket-objects-list project_id="my-project" bucket_name="my-bucket" prefix="reports/" delimiter="/" max_results="50" ```
+``` !gcp-storage-bucket-objects-list project_id="my-project" bucket_name="my-bucket" prefix="reports/" delimiter="/" limit="50" ```
 
 ### gcp-storage-bucket-policy-list
 
@@ -797,7 +797,7 @@ Notes:
 | project_id | GCP project ID. | Required |
 | bucket_name | Name of the bucket to set IAM policy on. | Required |
 | policy | JSON string representing the IAM policy to set. | Required |
-| add | When true, merges the provided policy bindings into the current bucket policy (per role, deduplicating members) by first calling getIamPolicy and then setIamPolicy with the merged result. When false, replaces the entire policy with the provided JSON via setIamPolicy.<br/>. Possible values are: true, false. | Required |
+| add | When true, merges the provided policy bindings into the current bucket policy (per role, deduplicating members) by first calling getIamPolicy and then setIamPolicy with the merged result. When false, replaces the entire policy with the provided JSON via setIamPolicy.<br/>. Possible values are: true, false. Default is false.  | Optional |
 
 #### Context Output
 
