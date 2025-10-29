@@ -960,32 +960,8 @@ class SecurityAndComplianceClient {
             $cmd_params.PurgeType = $purge_type
             $cmd_params.Confirm = $false
             $cmd_params.Force = $true
-        } elseif ($action -eq "Export") {
-            $cmd_params.Export = $true
-            $cmd_params.Confirm = $false
-            if ($share_point_archive_format) {
-                $cmd_params.SharePointArchiveFormat = $share_point_archive_format
-            }
-            if ($format) {
-                $cmd_params.Format = $format
-            }
-            if ($include_sharepoint_document_versions -eq "true") {
-                $cmd_params.IncludeSharePointDocumentVersions = $true
-            }
-            if ($notify_email) {
-                $cmd_params.NotifyEmail = $notify_email
-            }
-            if ($notify_email_cc) {
-                $cmd_params.NotifyEmailCC = $notify_email_cc
-            }
-            if ($scenario) {
-                $cmd_params.Scenario = $scenario
-            }
-            if ($scope) {
-                $cmd_params.Scope = $scope
-            }
         } else {
-            throw "New action must include valid action - Preview/Purge/Export"
+            throw "New action must include valid action - Preview/Purge"
         }
         $response = New-ComplianceSearchAction @cmd_params
 
@@ -1001,7 +977,7 @@ class SecurityAndComplianceClient {
             The name of the compliance search.
 
             .PARAMETER action
-            Search action type - Preview (Showing results) / Purge (Delete found emails) / Export (Create Export file in UI)
+            Search action type - Preview (Showing results) / Purge (Delete found emails)
 
             .PARAMETER purge_type
             Used if action type is purge, Search action purge type - SoftDelete (allow recover) / HardDelete (not recoverable).
@@ -1009,7 +985,6 @@ class SecurityAndComplianceClient {
             .EXAMPLE
             $client.NewSearchAction("search-name", "Preview")
             $client.NewSearchAction("search-name", "Purge", "HardDelete")
-            $client.NewSearchAction("search-name", "Export")
          #>
 
             .OUTPUTS
