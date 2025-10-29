@@ -4989,7 +4989,7 @@ def main():  # pragma: no cover
     except Exception as e:
         err = add_config_error_messages(str(e), cloud_id, server_url)
         return_error(err)
-        
+
     finally:
         # XSUP-57873
         client._return_execution_metrics_results()
