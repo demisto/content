@@ -2099,6 +2099,7 @@ def main():
             azure_cloud=azure_cloud,
             azure_ad_endpoint=azure_cloud.endpoints.active_directory,
             token_retrieval_url=urljoin(azure_cloud.endpoints.active_directory, f'/{tenant}/oauth2/v2.0/token'),
+            base_url=urljoin(azure_cloud.endpoints.microsoft_graph_resource_id, "/v1.0/"),
             verify=use_ssl,
             proxy=proxy,
             self_deployed=self_deployed,
