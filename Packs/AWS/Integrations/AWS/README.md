@@ -2281,6 +2281,9 @@ Returns the resource-based IAM policy for a Lambda function.
 | AWS.Lambda.Policy.Statement.Resource | unknown | Defines the object or objects that the statement applies to. |
 | AWS.Lambda.Policy.Statement.Condition | String | Specify conditions for when a policy is in effect. |
 | AWS.Lambda.Policy.RevisionId | String | A unique identifier for the current revision of the policy. |
+| AWS.Lambda.Policy.AccountId | String | The AWS account ID. |
+| AWS.Lambda.Policy.FunctionName | String | The Function Name. |
+| AWS.Lambda.Policy.Region | String | The AWS Region. |
 
 ### aws-lambda-invoke
 

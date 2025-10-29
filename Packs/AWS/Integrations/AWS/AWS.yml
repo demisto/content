@@ -4677,6 +4677,15 @@ script:
       - contextPath: AWS.Lambda.Policy.RevisionId
         description: A unique identifier for the current revision of the policy.
         type: String
+      - contextPath: AWS.Lambda.Policy.AccountId
+        description: The AWS account ID.
+        type: String
+      - contextPath: AWS.Lambda.Policy.FunctionName
+        description: The Function Name.
+        type: String
+      - contextPath: AWS.Lambda.Policy.Region
+        description: The AWS Region.
+        type: String
   - name: aws-lambda-invoke
     arguments:
     - name: account_id
