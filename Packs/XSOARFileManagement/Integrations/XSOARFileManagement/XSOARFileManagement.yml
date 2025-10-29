@@ -1,5 +1,5 @@
 category: Utilities
-sectionOrder:
+sectionorder:
 - Connect
 commonfields:
   id: XSOAR File Management
@@ -167,7 +167,7 @@ script:
       description: Size of the file.
       type: string
     description: Get file hash from URI.
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.8.3296088
   runonce: false
   script: ''
   subtype: python3

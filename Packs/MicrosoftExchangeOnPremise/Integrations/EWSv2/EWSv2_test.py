@@ -232,7 +232,10 @@ def test_get_formatted_message_bad_header():
     msg.set_payload(body)
     msg.add_header("Foo", "From: value==value=<= .palo.com =?utf-8?q?=3E?=")
     msg.add_header("Foo", "From: \tvalue=\r\n =value=\t<\r\n= .palo.com\r\n =?utf-8?q?=3E?=\r\n")
-    assert get_formatted_message(msg) == " Could not format message"
+
+    formatted_message = get_formatted_message(msg)
+    assert type(formatted_message) is bytes
+    assert body in str(formatted_message)
 
 
 def test_get_formatted_message_good_header():

@@ -1119,3 +1119,45 @@ def test_get_events_with_arguments(mocker: MockerFixture):
 
     assert actual_events == mocked_response["results"]
     mocked_search.assert_called_once_with(limit=int(DEFAULT_GET_EVENTS_LIMIT), start_date="1670000000", end_date="1680000000")
+
+
+def test_confluence_cloud_content_get_command_when_resource_not_found(mocker: MockerFixture):
+    from AtlassianConfluenceCloud import confluence_cloud_content_get_command, HTTP_ERROR
+
+    mock_client = mocker.Mock(spec=Client)
+    mock_client.http_request.side_effect = Exception(HTTP_ERROR[404])
+
+    args = {"content_id": "65639"}
+
+    with pytest.raises(Exception) as de:
+        confluence_cloud_content_get_command(mock_client, args)
+
+    assert str(de.value) == HTTP_ERROR[404]
+
+
+def test_confluence_cloud_content_get_command_when_valid_response_is_returned(requests_mock):
+    """
+    To test confluence_cloud_content_get command when valid response return.
+    Given:
+        - command arguments for get content command
+    When:
+        - Calling `confluence-cloud-content-get` command
+    Then:
+        - Returns the response data
+    """
+    from AtlassianConfluenceCloud import confluence_cloud_content_get_command
+
+    expected_response = util_load_json(os.path.join("test_data", "content_get/content_get_command_context.json"))
+    requests_mock.get("https://dummy.atlassian.com/wiki/rest/api/content/2097159?expand=body.storage", json=expected_response)
+    expected_context_output = util_load_json(os.path.join("test_data", "content_get/content_get_command_context.json"))
+
+    with open(os.path.join("test_data", "content_get/content_get_command.md")) as f:
+        expected_readable_output = f.read()
+
+    args = {"content_id": "2097159"}
+
+    response = confluence_cloud_content_get_command(client, args)
+    assert response.outputs_prefix == "ConfluenceCloud.Content"
+    assert response.outputs_key_field == "id"
+    assert response.outputs == expected_context_output
+    assert response.readable_output == expected_readable_output

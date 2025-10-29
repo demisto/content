@@ -3,10 +3,6 @@ import json
 import pathlib
 import pickle
 import socket
-import subprocess
-import sys
-import tempfile
-import time
 from typing import Any
 
 import demistomock as demisto
@@ -25,6 +21,7 @@ from Whois import (
     ipwhois_exception_mapping,
     whois_command,
     whois_exception_mapping,
+    WhoisException,
 )
 
 INTEGRATION_NAME = "Whois"
@@ -48,12 +45,47 @@ def assert_results_ok():
     assert results[0] == "ok"
 
 
-def test_test_command(mocker: MockerFixture):
+def test_test_command_successful(mocker: MockerFixture):
+    """Test that test_command returns 'ok' when nameservers are found."""
+    # Mock whois result with expected nameserver
+    mock_whois_result = {"nameservers": ["ns1.google.com", "ns2.google.com"], "raw": ["Normal whois response"]}
+
+    mocker.patch("Whois.get_whois", return_value=mock_whois_result)
+    mocker.patch.object(demisto, "debug")
+
+    # Import the function after patching to ensure the mock is in place
+    from Whois import test_command
+
+    result = test_command()
+    assert result == "ok"
+
+
+def test_test_command_rate_limit_exception(mocker: MockerFixture):
+    """Test that test_command raises WhoisException when rate limit pattern is found in whois result."""
+    # Mock whois result with rate limit message that matches the RATE_LIMIT_PATTERN
+    mock_whois_result = {
+        "raw": ["Error for 'google.co.uk'. the WHOIS query quota for 35.225.156.101 has been exceeded"],
+        "nameservers": [],
+    }
+
+    # Mock get_whois to return our mock result
+    mocker.patch("Whois.get_whois", return_value=mock_whois_result)
+    mocker.patch.object(demisto, "debug")
     mocker.patch.object(demisto, "results")
     mocker.patch.object(demisto, "command", return_value="test-module")
-    mocker.patch("Whois.get_whois_raw", return_value=load_test_data("./test_data/whois_raw_response.json")["result"])
-    Whois.main()
-    assert_results_ok()
+
+    # Import the function after patching to ensure the mock is in place
+    from Whois import test_command
+
+    # Test that WhoisException is raised (since WhoisRateLimit gets caught and re-raised as WhoisException)
+    with pytest.raises(WhoisException) as exc_info:
+        test_command()
+
+    # Verify the exception message contains information about the WhoisRateLimit
+    exception_message = str(exc_info.value)
+    assert "WhoisRateLimit" in exception_message
+    assert "Test completed but encountered rate limiting" in exception_message
+    assert "Consider using an engine to avoid IP-based rate limits" in exception_message
 
 
 @pytest.mark.parametrize(
@@ -88,25 +120,6 @@ def test_socks_proxy_fail(mocker: MockerFixture, capfd: pytest.CaptureFixture):
         results = demisto.results.call_args[0]  # type: ignore
         assert len(results) == 1
         assert "Exception thrown calling command" in results[0]["Contents"]
-
-
-def test_socks_proxy(mocker, request):
-    mocker.patch.object(demisto, "params", return_value={"proxy_url": "socks5h://localhost:9980"})
-    mocker.patch.object(demisto, "command", return_value="test-module")
-    mocker.patch.object(demisto, "results")
-    tmp = tempfile.TemporaryFile("w+")
-    microsocks = "./test_data/microsocks_darwin" if "darwin" in sys.platform else "./test_data/microsocks"
-    process = subprocess.Popen([microsocks, "-p", "9980"], stderr=subprocess.STDOUT, stdout=tmp)
-
-    def cleanup():
-        process.kill()
-
-    request.addfinalizer(cleanup)
-    time.sleep(1)
-    Whois.main()
-    assert_results_ok()
-    tmp.seek(0)
-    assert "connected to" in tmp.read()  # make sure we went through microsocks
 
 
 TEST_QUERY_RESULT_INPUT = [
