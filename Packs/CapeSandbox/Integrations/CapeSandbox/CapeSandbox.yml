@@ -191,7 +191,6 @@ script:
         - contextPath: Cape.Task
           description: Task data.
           type: Unknown
-          isArray: true
     - name: cape-task-report-get
       description: Returns the report associated with the specified task ID. If zip=true, a ZIP file is returned for download.
       arguments:
@@ -262,10 +261,11 @@ script:
       outputs: []
     - name: cape-task-poll
       description: Internal command used by cape-file-submit and cape-url-submit for polling status.
+      hidden: true
       polling: true
-      internal: true
       arguments:
         - name: hide_polling_output
+          description: Whether to hide polling output.
           hidden: true
         - name: task_id
           description: The ID of the task to poll.

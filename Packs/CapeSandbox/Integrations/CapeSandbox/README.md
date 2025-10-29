@@ -1,5 +1,5 @@
 CAPE Sandbox is an Open Source software for automating analysis of suspicious files.
-This integration was integrated and tested with version xx of CapeSandbox.
+This integration was integrated and tested with CAPE V2 API of CapeSandbox.
 
 ## Configure Cape Sandbox in Cortex
 
