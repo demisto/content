@@ -1,8 +1,7 @@
 id: Illusive-Collect-Forensics-On-Demand
 version: -1
 name: Illusive-Collect-Forensics-On-Demand
-description: This playbook is used to collect forensics on-demand on any compromised
-  host and retrieve the forensics timeline upon successful collection.
+description: This playbook is used to collect forensics on-demand on any compromised host and retrieve the forensics timeline upon successful collection.
 starttaskid: "0"
 tasks:
   "0":
@@ -40,8 +39,7 @@ tasks:
       id: 3d5d08b1-8544-487f-8f04-30ed968d8168
       version: -1
       name: illusive-run-forensics-on-demand
-      description: Collect forensics on a specified host and retrieve the forensics
-        timeline.
+      description: Collect forensics on a specified host and retrieve the forensics timeline.
       tags:
       - forensics
       script: IllusiveNetworks|||illusive-run-forensics-on-demand
