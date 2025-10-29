@@ -2,7 +2,7 @@
     "name": "Proactive Threat Hunting",
     "description": "The XSOAR Threat Hunting Pack enhances analyst capabilities by leveraging threat intelligence to uncover previously undetected threats, empowering proactive identification and mitigation of potential security risks.",
     "support": "xsoar",
-    "currentVersion": "1.0.7",
+    "currentVersion": "1.0.6",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -24,6 +24,10 @@
         "xsoar"
     ],
     "dependencies": {
+        "CortexXDR": {
+            "mandatory": false,
+            "display_name": "Cortex XDR by Palo Alto Networks"
+        },
         "FiltersAndTransformers": {
             "mandatory": true,
             "display_name": "Filters And Transformers"
@@ -50,6 +54,7 @@
         }
     },
     "displayedImages": [
+        "CortexXDR",
         "FiltersAndTransformers",
         "CommonTypes",
         "MicrosoftDefenderAdvancedThreatProtection",

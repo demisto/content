@@ -2,7 +2,7 @@
     "name": "Sigma",
     "description": "This pack contains all needed objects to import and manage Sigma rules within Cortex TIM",
     "support": "xsoar",
-    "currentVersion": "1.1.1",
+    "currentVersion": "1.1.0",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -43,6 +43,10 @@
         "CarbonBlackDefense": {
             "mandatory": false,
             "display_name": "Carbon Black"
+        },
+        "CortexXDR": {
+            "mandatory": false,
+            "display_name": "Cortex XDR"
         },
         "Elasticsearch": {
             "mandatory": false,

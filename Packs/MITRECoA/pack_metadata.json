@@ -2,7 +2,7 @@
     "name": "MITRE ATT&CK - Courses of Action",
     "description": "Looking for actionable intelligence? This intelligence-driven Pack provides manual or automated remediation of MITRE ATT&CK techniques.",
     "support": "xsoar",
-    "currentVersion": "1.0.10",
+    "currentVersion": "1.0.9",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -46,6 +46,10 @@
         "CommonScripts": {
             "display_name": "Common Scripts",
             "mandatory": true
+        },
+        "CortexXDR": {
+            "display_name": "Palo Alto Networks Cortex XDR - Investigation and Response",
+            "mandatory": false
         },
         "FeedMitreAttack": {
             "display_name": "MITRE ATT&CK",

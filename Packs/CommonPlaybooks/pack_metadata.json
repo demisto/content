@@ -2,7 +2,7 @@
     "name": "Common Playbooks",
     "description": "Frequently used playbooks pack.",
     "support": "xsoar",
-    "currentVersion": "2.7.21",
+    "currentVersion": "2.7.20",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -145,6 +145,10 @@
         "ProofpointThreatResponse": {
             "mandatory": false,
             "display_name": "Proofpoint Threat Response (Beta)"
+        },
+        "CortexXDR": {
+            "mandatory": false,
+            "display_name": "Palo Alto Networks Cortex XDR - Investigation and Response"
         },
         "Rapid7_Nexpose": {
             "mandatory": false,
@@ -335,6 +339,7 @@
         "SplunkPy",
         "CrowdStrikeHost",
         "ProofpointThreatResponse",
+        "CortexXDR",
         "Rapid7_Nexpose",
         "Active_Directory_Query",
         "CrowdStrikeFalcon",

@@ -44,6 +44,72 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
+                                "fieldId": "xdrdescription",
+                                "height": 26,
+                                "id": "a79303f0-0d99-11ec-83df-e184d3cc52d9",
+                                "index": 1,
+                                "listId": "caseinfoid-9d68c810-0d99-11ec-83df-e184d3cc52d9",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "xdrincidentid",
+                                "height": 26,
+                                "id": "c2e0ea00-0d99-11ec-83df-e184d3cc52d9",
+                                "index": 1,
+                                "listId": "caseinfoid-9d68c810-0d99-11ec-83df-e184d3cc52d9",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "xdrurl",
+                                "height": 26,
+                                "id": "b2f7e2b0-0d99-11ec-83df-e184d3cc52d9",
+                                "index": 1,
+                                "listId": "caseinfoid-9d68c810-0d99-11ec-83df-e184d3cc52d9",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "xdralertcategory",
+                                "height": 26,
+                                "id": "a3301f00-0d99-11ec-83df-e184d3cc52d9",
+                                "index": 1,
+                                "listId": "caseinfoid-9d68c810-0d99-11ec-83df-e184d3cc52d9",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "xdralertname",
+                                "height": 26,
+                                "id": "a5953820-0d99-11ec-83df-e184d3cc52d9",
+                                "index": 1,
+                                "listId": "caseinfoid-9d68c810-0d99-11ec-83df-e184d3cc52d9",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "xdrdetectiontime",
+                                "height": 26,
+                                "id": "a9356950-0d99-11ec-83df-e184d3cc52d9",
+                                "index": 1,
+                                "listId": "caseinfoid-9d68c810-0d99-11ec-83df-e184d3cc52d9",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
                                 "fieldId": "dbotcreated",
                                 "height": 26,
                                 "id": "incident-created-field",
@@ -55,21 +121,10 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "playbookid",
-                                "height": 26,
-                                "id": "incident-playbookId-field",
-                                "index": 2,
-                                "listId": "caseinfoid-psvkrie7fh-field-changed-caseinfoid-9d68c810-0d99-11ec-83df-e184d3cc52d9",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 2,
                                 "fieldId": "categoryname",
                                 "height": 26,
                                 "id": "298513a0-ffa4-11ed-8065-135924776b58",
-                                "index": 3,
+                                "index": 2,
                                 "listId": "caseinfoid-psvkrie7fh-field-changed-caseinfoid-9d68c810-0d99-11ec-83df-e184d3cc52d9",
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -80,6 +135,75 @@
                                 "fieldId": "severity",
                                 "height": 26,
                                 "id": "incident-severity-field",
+                                "index": 3,
+                                "listId": "caseinfoid-psvkrie7fh-field-changed-caseinfoid-9d68c810-0d99-11ec-83df-e184d3cc52d9",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "xdrhostcount",
+                                "height": 26,
+                                "id": "d50dc6d0-0d99-11ec-83df-e184d3cc52d9",
+                                "index": 4,
+                                "listId": "caseinfoid-9d68c810-0d99-11ec-83df-e184d3cc52d9",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "xdrusercount",
+                                "height": 26,
+                                "id": "cf9fda80-0d99-11ec-83df-e184d3cc52d9",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "xdralertcount",
+                                "height": 26,
+                                "id": "a4bba100-0d99-11ec-83df-e184d3cc52d9",
+                                "index": 4,
+                                "listId": "caseinfoid-9d68c810-0d99-11ec-83df-e184d3cc52d9",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "xdrhighseverityalertcount",
+                                "height": 26,
+                                "id": "16aacde0-0d9a-11ec-83df-e184d3cc52d9",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "xdrmediumseverityalertcount",
+                                "height": 26,
+                                "id": "23c76ec0-0d9a-11ec-83df-e184d3cc52d9",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "xdrlowseverityalertcount",
+                                "height": 26,
+                                "id": "25413d80-0d9a-11ec-83df-e184d3cc52d9",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "playbookid",
+                                "height": 26,
+                                "id": "incident-playbookId-field",
                                 "index": 4,
                                 "listId": "caseinfoid-psvkrie7fh-field-changed-caseinfoid-9d68c810-0d99-11ec-83df-e184d3cc52d9",
                                 "sectionItemType": "field",
@@ -87,25 +211,25 @@
                             },
                             {
                                 "dropEffect": "move",
-                                "endCol": 4,
+                                "endCol": 6,
                                 "fieldId": "mitreattcktactic",
                                 "height": 26,
                                 "id": "41242d10-ffa5-11ed-8065-135924776b58",
-                                "index": 1,
+                                "index": 0,
                                 "listId": "caseinfoid-psvkrie7fh-field-changed-caseinfoid-9d68c810-0d99-11ec-83df-e184d3cc52d9",
                                 "sectionItemType": "field",
-                                "startCol": 2
+                                "startCol": 4
                             },
                             {
                                 "dropEffect": "move",
-                                "endCol": 4,
+                                "endCol": 6,
                                 "fieldId": "mitreattcktechnique",
                                 "height": 26,
                                 "id": "42aceff0-ffa5-11ed-8065-135924776b58",
-                                "index": 2,
+                                "index": 1,
                                 "listId": "caseinfoid-psvkrie7fh-field-changed-caseinfoid-9d68c810-0d99-11ec-83df-e184d3cc52d9",
                                 "sectionItemType": "field",
-                                "startCol": 2
+                                "startCol": 4
                             }
                         ],
                         "maxW": 3,
@@ -123,6 +247,15 @@
                         "hideName": false,
                         "i": "caseinfoid-1ef783c0-4012-11ed-bd56-1f5a2b2d17b4",
                         "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "xdralerts",
+                                "height": 26,
+                                "id": "22a151e0-4012-11ed-bd56-1f5a2b2d17b4",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
@@ -215,7 +348,7 @@
                         "minH": 1,
                         "moved": false,
                         "name": "Alert Extended Information",
-                        "query": "XCloudAdditionalAlertInformationWidget",
+                        "query": "CortexXDRAdditionalAlertInformationWidget",
                         "queryType": "script",
                         "static": false,
                         "type": "dynamic",
@@ -232,7 +365,7 @@
                         "minH": 1,
                         "moved": false,
                         "name": "Cloud Provider",
-                        "query": "XCloudProviderWidget",
+                        "query": "CortexXDRCloudProviderWidget",
                         "queryType": "script",
                         "static": false,
                         "type": "dynamic",
@@ -252,7 +385,7 @@
                         "displayType": "ROW",
                         "h": 2,
                         "hideName": false,
-                        "i": "xmrrsnmlfj-caseinfoid-be53e110-3992-11ed-9adb-83e728f46893",
+                        "i": "caseinfoid-be53e110-3992-11ed-9adb-83e728f46893",
                         "items": [
                             {
                                 "dropEffect": "move",
@@ -323,13 +456,13 @@
                     {
                         "h": 1,
                         "hideName": false,
-                        "i": "xmrrsnmlfj-caseinfoid-90fd3b10-3e3f-11ed-ba28-af31a2402b20",
+                        "i": "caseinfoid-90fd3b10-3e3f-11ed-ba28-af31a2402b20",
                         "items": [],
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
                         "name": "Regions",
-                        "query": "EntryWidgetRegionNameXCLOUD",
+                        "query": "EntryWidgetNumberRegionsXCLOUD",
                         "queryType": "script",
                         "static": false,
                         "type": "dynamic",
@@ -339,7 +472,7 @@
                     },
                     {
                         "h": 3,
-                        "i": "xmrrsnmlfj-caseinfoid-944f47f0-3fce-11ed-81fb-f98f11f06b6f",
+                        "i": "caseinfoid-944f47f0-3fce-11ed-81fb-f98f11f06b6f",
                         "items": [],
                         "maxW": 3,
                         "minH": 1,
@@ -356,7 +489,7 @@
                     {
                         "h": 1,
                         "hideName": false,
-                        "i": "xmrrsnmlfj-caseinfoid-4d1a5360-4a0b-11ed-b8e1-8fa90b5d349b",
+                        "i": "caseinfoid-4d1a5360-4a0b-11ed-b8e1-8fa90b5d349b",
                         "items": [],
                         "maxW": 3,
                         "minH": 1,
@@ -374,7 +507,7 @@
                         "description": "",
                         "h": 3,
                         "hideName": true,
-                        "i": "xmrrsnmlfj-caseinfoid-270d9710-ffbc-11ed-91cb-b704c053731a",
+                        "i": "caseinfoid-270d9710-ffbc-11ed-91cb-b704c053731a",
                         "items": [],
                         "maxW": 3,
                         "minH": 1,
@@ -391,7 +524,7 @@
                     {
                         "h": 2,
                         "hideName": true,
-                        "i": "xmrrsnmlfj-caseinfoid-eb9e4280-ffbe-11ed-8455-4ba42b17a94b",
+                        "i": "caseinfoid-eb9e4280-ffbe-11ed-8455-4ba42b17a94b",
                         "items": [],
                         "maxW": 3,
                         "minH": 1,
@@ -407,14 +540,16 @@
                     },
                     {
                         "h": 3,
-                        "i": "xmrrsnmlfj-caseinfoid-738a28d0-ffd3-11ed-94b9-ab17767bb4e7",
+                        "i": "caseinfoid-738a28d0-ffd3-11ed-94b9-ab17767bb4e7",
                         "items": [],
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
                         "name": "Hunting Results",
                         "query": {
-                            "categories": [],
+                            "categories": [
+                                "tags"
+                            ],
                             "preDefinedFilters": true,
                             "tags": [
                                 "PersistenceHunting"
@@ -430,7 +565,7 @@
                     {
                         "description": "The indicators extracted from the threat hunting results.",
                         "h": 3,
-                        "i": "xmrrsnmlfj-caseinfoid-494706a0-063c-11ee-b283-eb5063f641e1",
+                        "i": "caseinfoid-494706a0-063c-11ee-b283-eb5063f641e1",
                         "items": [],
                         "maxW": 3,
                         "minH": 1,
@@ -458,10 +593,10 @@
                 "type": "workPlan"
             },
             {
-                "hidden": false,
                 "id": "canvas",
                 "name": "Canvas",
-                "type": "canvas"
+                "type": "canvas",
+                "hidden": false
             }
         ]
     },
