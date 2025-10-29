@@ -129,7 +129,7 @@ def parse_results(report: dict, reliability: str, indicator_value: str, indicato
     output_context = {}
     outputs_prefix = ""
     outputs_key_field = ""
-    indicator: Common.IP | Common.Domain | Common.URL | Common.File | None  = ""
+    indicator: Common.IP | Common.Domain | Common.URL | Common.File | None  = None
     relationship = generate_indicators(report, indicator_value, FeedIndicatorType.IP, reliability)
     dbot_score = Common.DBotScore(
         indicator=indicator_value,

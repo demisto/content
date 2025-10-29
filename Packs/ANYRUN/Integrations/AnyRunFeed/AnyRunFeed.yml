@@ -118,6 +118,3 @@ script:
 tests:
 - No tests
 fromversion: 6.0.0
-sectionorder:
-- Connect
-- Collect
