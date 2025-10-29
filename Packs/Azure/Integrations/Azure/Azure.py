@@ -78,9 +78,11 @@ PERMISSIONS_TO_COMMANDS = {
     ],
     "Microsoft.Authorization/policyAssignments/read": [
         "azure-policy-assignment-create",
+        "azure-policy-assignment-create-quick-action"
     ],
     "Microsoft.Authorization/policyAssignments/write": [
         "azure-policy-assignment-create",
+        "azure-policy-assignment-create-quick-action"
     ],
     "Microsoft.DBforPostgreSQL/servers/read": ["azure-postgres-server-update"],
     "Microsoft.DBforPostgreSQL/servers/write": ["azure-postgres-server-update"],
@@ -4043,6 +4045,7 @@ def main():  # pragma: no cover
             "azure-acr-disable-public-private-access-quick-action": acr_update_command,
             "azure-acr-disable-authentication-as-arm-quick-action": acr_update_command,
             "azure-acr-disable-anonymous-pull-quick-action": acr_update_command,
+            "azure-policy-assignment-create-quick-action": create_policy_assignment_command,
         }
         if command == "test-module" and connector_id:
             demisto.debug(f"Running health check for connector ID: {connector_id}")
