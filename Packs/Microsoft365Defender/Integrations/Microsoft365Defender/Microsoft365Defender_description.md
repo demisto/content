@@ -62,7 +62,7 @@ Follow these steps:
 2. Enter your Client/Application ID in the ***Application ID*** parameter. 
 3. Enter your Client Secret in the ***Client Secret*** parameter.
 4. Enter your Tenant ID in the ***Tenant ID*** parameter.
-5. Run the ***microsoft-365-defender-auth-test*** command to test the connection and the authorization process.
+5. Click on the "Test" button.
 
 #### Required Permissions
  * AdvancedHunting.Read.All - Application
