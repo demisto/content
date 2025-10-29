@@ -4475,3 +4475,420 @@ def test_modify_subnet_attribute_command_failure(mocker):
 
     with pytest.raises(DemistoException, match="Modification could not be performed."):
         EC2.modify_subnet_attribute_command(mock_client, args)
+
+
+def test_cost_explorer_billing_cost_usage_list_command_success(mocker):
+    """
+    Given: A mocked boto3 CostExplorer client and valid cost usage arguments.
+    When: billing_cost_usage_list_command is called successfully.
+    Then: It should return CommandResults with usage data and proper outputs.
+    """
+    from AWS import CostExplorer
+
+    mock_client = mocker.Mock()
+    mock_response = {
+        "ResultsByTime": [
+            {
+                "TimePeriod": {"Start": "2023-10-01", "End": "2023-10-02"},
+                "Total": {"UsageQuantity": {"Amount": "100.5", "Unit": "Hrs"}, "BlendedCost": {"Amount": "25.75", "Unit": "USD"}},
+            }
+        ],
+        "NextPageToken": "next-token-123",
+    }
+    mock_client.get_cost_and_usage.return_value = mock_response
+
+    args = {
+        "metrics": "UsageQuantity,BlendedCost",
+        "start_date": "2023-10-01",
+        "end_date": "2023-10-02",
+        "granularity": "Daily",
+        "aws_services": "EC2-Instance",
+    }
+
+    result = CostExplorer.billing_cost_usage_list_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert "AWS Billing Usage" in result.readable_output
+    assert "AWS.Billing.Usage" in result.outputs
+    assert "AWS.Billing(true)" in result.outputs
+    assert result.outputs["AWS.Billing(true)"]["UsageNextToken"] == "next-token-123"
+    assert result.raw_response == mock_response
+
+
+def test_cost_explorer_billing_forecast_list_command_success(mocker):
+    """
+    Given: A mocked boto3 CostExplorer client and valid forecast arguments.
+    When: billing_forecast_list_command is called successfully.
+    Then: It should return CommandResults with forecast data and proper outputs.
+    """
+    from AWS import CostExplorer
+
+    mock_client = mocker.Mock()
+    mock_response = {
+        "ForecastResultsByTime": [{"TimePeriod": {"Start": "2023-10-15", "End": "2023-10-16"}, "MeanValue": "150.25"}],
+        "Unit": "USD",
+        "NextPageToken": "forecast-token-456",
+    }
+    mock_client.get_cost_forecast.return_value = mock_response
+
+    args = {
+        "metrics": "BlendedCost",
+        "start_date": "2023-10-15",
+        "end_date": "2023-10-22",
+        "granularity": "Daily",
+        "aws_services": "EC2-Instance",
+    }
+
+    result = CostExplorer.billing_forecast_list_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert "AWS Billing Forecast" in result.readable_output
+    assert "AWS.Billing.Forecast" in result.outputs
+    assert "AWS.Billing(true)" in result.outputs
+    assert result.outputs["AWS.Billing(true)"]["ForecastNextToken"] == "forecast-token-456"
+
+
+def test_budgets_billing_budgets_list_command_success(mocker):
+    """
+    Given: A mocked boto3 Budgets client and valid budget list arguments.
+    When: billing_budgets_list_command is called successfully.
+    Then: It should return CommandResults with budget data and proper outputs.
+    """
+    from AWS import Budgets
+    from datetime import datetime
+
+    mock_client = mocker.Mock()
+    mock_response = {
+        "Budgets": [
+            {
+                "BudgetName": "test-budget",
+                "BudgetType": "COST",
+                "BudgetLimit": {"Amount": "1000.00", "Unit": "USD"},
+                "CalculatedSpend": {"ActualSpend": {"Amount": "750.50", "Unit": "USD"}},
+                "TimePeriod": {"Start": datetime(2023, 10, 1), "End": datetime(2023, 10, 31)},
+            }
+        ],
+        "NextToken": "budget-token-789",
+    }
+    mock_client.describe_budgets.return_value = mock_response
+
+    args = {"account_id": "123456789012", "max_result": "50", "show_filter_expression": "false"}
+
+    result = Budgets.billing_budgets_list_command(mock_client, args)
+    budgets_path = "AWS.Billing.Budget(val.BudgetName && val.BudgetName == obj.BudgetName)"
+    assert isinstance(result, CommandResults)
+    assert "AWS Budgets" in result.readable_output
+    assert budgets_path in result.outputs
+    assert "AWS.Billing(true)" in result.outputs
+    assert result.outputs["AWS.Billing(true)"]["BudgetNextToken"] == "budget-token-789"
+    assert len(result.outputs[budgets_path]) == 1
+    assert result.outputs[budgets_path][0]["BudgetName"] == "test-budget"
+
+
+def test_cost_explorer_billing_cost_usage_list_command_no_next_token(mocker):
+    """
+    Given: A mocked boto3 CostExplorer client with response containing no next token.
+    When: billing_cost_usage_list_command is called successfully.
+    Then: It should return CommandResults without next token in outputs.
+    """
+    from AWS import CostExplorer
+
+    mock_client = mocker.Mock()
+    mock_response = {
+        "ResultsByTime": [
+            {
+                "TimePeriod": {"Start": "2023-10-01", "End": "2023-10-02"},
+                "Total": {"UsageQuantity": {"Amount": "50.0", "Unit": "Hrs"}},
+            }
+        ]
+    }
+    mock_client.get_cost_and_usage.return_value = mock_response
+
+    args = {"metrics": "UsageQuantity"}
+
+    result = CostExplorer.billing_cost_usage_list_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs["AWS.Billing(true)"]["UsageNextToken"] == ""
+    assert "Next Page Token" not in result.readable_output
+
+
+def test_budgets_billing_budgets_list_command_with_next_token(mocker):
+    """
+    Given: A mocked boto3 Budgets client and arguments with next page token.
+    When: billing_budgets_list_command is called with pagination token.
+    Then: It should include the token in the request and handle the response properly.
+    """
+    from AWS import Budgets
+    from datetime import datetime
+
+    mock_client = mocker.Mock()
+    mock_response = {
+        "Budgets": [
+            {
+                "BudgetName": "budget-page-2",
+                "BudgetType": "USAGE",
+                "BudgetLimit": {"Amount": "500.00", "Unit": "USD"},
+                "CalculatedSpend": {"ActualSpend": {"Amount": "300.25", "Unit": "USD"}},
+                "TimePeriod": {"Start": datetime(2023, 11, 1), "End": datetime(2023, 11, 30)},
+            }
+        ]
+    }
+    mock_client.describe_budgets.return_value = mock_response
+
+    args = {"account_id": "123456789012", "next_page_token": "existing-token", "show_filter_expression": "false"}
+
+    result = Budgets.billing_budgets_list_command(mock_client, args)
+
+    # Verify the token was passed to the client
+    mock_client.describe_budgets.assert_called_once()
+    call_args = mock_client.describe_budgets.call_args[1]
+    assert call_args["NextToken"] == "existing-token"
+
+    assert isinstance(result, CommandResults)
+    budgets_path = "AWS.Billing.Budget(val.BudgetName && val.BudgetName == obj.BudgetName)"
+    assert result.outputs[budgets_path][0]["BudgetName"] == "budget-page-2"
+
+
+def test_budgets_billing_budget_notification_list_command_success(mocker):
+    """
+    Given: A mocked boto3 Budgets client and valid arguments to list budget notifications.
+    When: billing_budget_notification_list_command is called successfully.
+    Then: It should return CommandResults with notifications and next token in outputs.
+    """
+    from AWS import Budgets
+
+    mock_client = mocker.Mock()
+    mock_response = {
+        "Notifications": [
+            {
+                "NotificationType": "ACTUAL",
+                "ComparisonOperator": "GREATER_THAN",
+                "Threshold": 80.0,
+                "ThresholdType": "PERCENTAGE",
+                "Subscribers": [
+                    {"SubscriptionType": "EMAIL", "Address": "owner@example.com"},
+                ],
+            }
+        ],
+        "NextToken": "notif-token-001",
+    }
+    mock_client.describe_notifications_for_budget.return_value = mock_response
+
+    args = {
+        "account_id": "123456789012",
+        "budget_name": "my-budget",
+        "max_result": "25",
+    }
+
+    result = Budgets.billing_budget_notification_list_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert "AWS.Billing.Notification" in result.outputs
+    assert len(result.outputs["AWS.Billing.Notification"]) == 1
+    assert result.outputs["AWS.Billing(true)"]["NotificationNextToken"] == "notif-token-001"
+    assert "Notifications for Budget: my-budget" in result.readable_output
+
+
+def test_budgets_billing_budget_notification_list_command_with_pagination_and_params(mocker):
+    """
+    Given: Arguments with next_page_token and max_result provided.
+    When: billing_budget_notification_list_command is executed.
+    Then: It should forward MaxResults and NextToken to describe_notifications_for_budget and return raw_response.
+    """
+    from AWS import Budgets
+
+    mock_client = mocker.Mock()
+    mock_response = {"Notifications": [], "NextToken": "next-2"}
+    mock_client.describe_notifications_for_budget.return_value = mock_response
+
+    args = {
+        "account_id": "123456789012",
+        "budget_name": "budget-x",
+        "max_result": "100",
+        "next_page_token": "prev-token",
+    }
+
+    result = Budgets.billing_budget_notification_list_command(mock_client, args)
+
+    # Verify params forwarded correctly
+    mock_client.describe_notifications_for_budget.assert_called_once()
+    call_kwargs = mock_client.describe_notifications_for_budget.call_args[1]
+    assert call_kwargs["AccountId"] == "123456789012"
+    assert call_kwargs["BudgetName"] == "budget-x"
+    assert call_kwargs["MaxResults"] == 100
+    assert call_kwargs["NextToken"] == "prev-token"
+
+    assert isinstance(result, CommandResults)
+    assert result.raw_response == mock_response
+
+
+def test_kms_enable_key_rotation_success_with_period(mocker):
+    """
+    Given: A mocked KMS client that returns HTTP 200 and a valid rotation period.
+    When: enable_key_rotation_command is called.
+    Then: It returns CommandResults with a success message and calls boto with correct kwargs.
+    """
+    from AWS import KMS, CommandResults
+
+    mock_client = mocker.Mock()
+    mock_client.enable_key_rotation.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
+
+    args = {"key_id": "1234abcd-12ab-34cd-56ef-1234567890ab", "rotation_period_in_days": "120"}
+
+    result = KMS.enable_key_rotation_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert "Enabled automatic rotation for KMS key '1234abcd-12ab-34cd-56ef-1234567890ab'" in result.readable_output
+    assert "(rotation period: 120 days)" in result.readable_output
+
+    mock_client.enable_key_rotation.assert_called_once_with(
+        KeyId="1234abcd-12ab-34cd-56ef-1234567890ab", RotationPeriodInDays=120
+    )
+
+
+def test_kms_enable_key_rotation_non_ok_calls_handler(mocker):
+    """
+    Given: Boto returns a non-OK status code.
+    When: enable_key_rotation_command is called.
+    Then: AWSErrorHandler.handle_response_error is invoked with the raw response.
+    """
+    from AWS import KMS, AWSErrorHandler
+
+    mock_client = mocker.Mock()
+    resp = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
+    mock_client.enable_key_rotation.return_value = resp
+
+    handle_resp = mocker.patch.object(AWSErrorHandler, "handle_response_error")
+    mocker.patch("AWS.remove_nulls_from_dictionary", side_effect=lambda d: d)
+    mocker.patch("AWS.print_debug_logs")
+
+    args = {"key_id": "my-key", "rotation_period_in_days": 120}
+
+    # The command doesn't raise here; handler internally exits (in your pattern) or logs. We just assert it was called.
+    KMS.enable_key_rotation_command(mock_client, args)
+
+    handle_resp.assert_called_once_with(resp)
+
+
+def test_elb_modify_lb_attributes_success_all_blocks(mocker):
+    """
+    Given: Valid args for all sub-blocks + desync_mitigation_mode.
+    When: modify_load_balancer_attributes_command is called and boto returns HTTP 200.
+    Then: It returns CommandResults with proper outputs and calls boto with correct kwargs.
+    """
+    from AWS import ELB, CommandResults
+
+    mock_client = mocker.Mock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "LoadBalancerAttributes": {
+            "CrossZoneLoadBalancing": {"Enabled": True},
+            "AccessLog": {
+                "Enabled": True,
+                "S3BucketName": "my-bucket",
+                "EmitInterval": 5,
+                "S3BucketPrefix": "elb/",
+            },
+            "ConnectionDraining": {"Enabled": True, "Timeout": 120},
+            "ConnectionSettings": {"IdleTimeout": 60},
+            "AdditionalAttributes": [{"Key": "elb.http.desyncmitigationmode", "Value": "defensive"}],
+        },
+    }
+    mock_client.modify_load_balancer_attributes.return_value = mock_response
+
+    mocker.patch("AWS.remove_nulls_from_dictionary", side_effect=lambda d: d)
+    mocker.patch("AWS.print_debug_logs")
+    mocker.patch("AWS.tableToMarkdown", return_value="|Updated Attributes|")
+    mocker.patch("AWS.pascalToSpace", side_effect=lambda s: s)
+
+    args = {
+        "load_balancer_name": "my-classic-elb",
+        "cross_zone_load_balancing_enabled": "true",
+        "access_log_enabled": "true",
+        "access_log_s3_bucket_name": "my-bucket",
+        "access_log_interval": "5",
+        "access_log_s3_bucket_prefix": "elb/",
+        "connection_draining_enabled": "yes",
+        "connection_draining_timeout": "120",
+        "connection_settings_idle_timeout": "60",
+        "desync_mitigation_mode": "defensive",
+    }
+
+    result = ELB.modify_load_balancer_attributes_command(mock_client, args)
+
+    # --- Assertions ---
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "AWS.ELB.LoadBalancer"
+    assert result.outputs_key_field == "LoadBalancerName"
+    assert result.outputs["LoadBalancerName"] == "my-classic-elb"
+
+    # Human-readable header matches your function
+    assert "Updated attributes for Classic ELB my-classic-elb" in result.readable_output
+
+    # Ensure boto3 client was called correctly
+    mock_client.modify_load_balancer_attributes.assert_called_with(
+        LoadBalancerName="my-classic-elb",
+        LoadBalancerAttributes={
+            "CrossZoneLoadBalancing": {"Enabled": True},
+            "AccessLog": {
+                "Enabled": True,
+                "S3BucketName": "my-bucket",
+                "S3BucketPrefix": "elb/",
+                "EmitInterval": 5,
+            },
+            "ConnectionDraining": {"Enabled": True, "Timeout": 120},
+            "ConnectionSettings": {"IdleTimeout": 60},
+            "AdditionalAttributes": [{"Key": "elb.http.desyncmitigationmode", "Value": "defensive"}],
+        },
+    )
+
+
+def test_elb_modify_lb_attributes_non_ok_calls_handler(mocker):
+    """
+    Given: Boto returns non-OK status.
+    When: modify_load_balancer_attributes_command is called.
+    Then: AWSErrorHandler.handle_response_error is invoked with the raw response.
+    """
+    from AWS import ELB, AWSErrorHandler
+
+    mock_client = mocker.Mock()
+    resp = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
+    mock_client.modify_load_balancer_attributes.return_value = resp
+
+    handle_resp = mocker.patch.object(AWSErrorHandler, "handle_response_error")
+    mocker.patch("AWS.remove_nulls_from_dictionary", side_effect=lambda d: d)
+    mocker.patch("AWS.print_debug_logs")
+
+    args = {"load_balancer_name": "elb-1", "cross_zone_load_balancing_enabled": "false"}
+
+    ELB.modify_load_balancer_attributes_command(mock_client, args)
+
+    handle_resp.assert_called_once_with(resp)
+
+
+def test_elb_modify_lb_attributes_client_error_is_handled(mocker):
+    """
+    Given: client.modify_load_balancer_attributes raises ClientError.
+    When: modify_load_balancer_attributes_command is called.
+    Then: AWSErrorHandler.handle_client_error is invoked.
+    """
+    from AWS import ELB, AWSErrorHandler
+    from botocore.exceptions import ClientError
+
+    mock_client = mocker.Mock()
+    err = ClientError(
+        {"Error": {"Code": "AccessDenied", "Message": "nope"}, "ResponseMetadata": {"HTTPStatusCode": 403}},
+        "ModifyLoadBalancerAttributes",
+    )
+    mock_client.modify_load_balancer_attributes.side_effect = err
+
+    handle_client = mocker.patch.object(AWSErrorHandler, "handle_client_error")
+    mocker.patch("AWS.remove_nulls_from_dictionary", side_effect=lambda d: d)
+    mocker.patch("AWS.print_debug_logs")
+
+    args = {"load_balancer_name": "elb-1", "connection_settings_idle_timeout": "30"}
+
+    ELB.modify_load_balancer_attributes_command(mock_client, args)
+
+    handle_client.assert_called_once_with(err)
