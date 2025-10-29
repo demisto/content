@@ -1,3 +1,4 @@
+from requests import Response
 import demistomock as demisto
 import urllib3
 from CommonServerPython import *
@@ -5,6 +6,8 @@ from CommonServerUserPython import *  # noqa
 from MicrosoftApiModule import *  # noqa: E402
 from COOCApiModule import *
 from requests.exceptions import ConnectionError, Timeout
+from urllib.parse import parse_qs, urlparse, urlencode, urlunparse
+from datetime import UTC
 
 
 # Disable insecure warnings
@@ -66,10 +69,12 @@ PERMISSIONS_TO_COMMANDS = {
     "Microsoft.Storage/storageAccounts/blobServices/read": [
         "azure-storage-blob-service-properties-set",
         "azure-storage-blob-service-properties-get",
+        "azure-storage-blob-enable-soft-delete-quick-action",
     ],
     "Microsoft.Storage/storageAccounts/blobServices/write": [
         "azure-storage-blob-service-properties-set",
         "azure-storage-blob-service-properties-get",
+        "azure-storage-blob-enable-soft-delete-quick-action",
     ],
     "Microsoft.Authorization/policyAssignments/read": [
         "azure-policy-assignment-create",
@@ -105,8 +110,16 @@ PERMISSIONS_TO_COMMANDS = {
         "azure-webapp-set-min-tls-version-quick-action",
         "azure-function-app-set-min-tls-version-quick-action",
     ],
-    "Microsoft.Web/sites/read": ["azure-webapp-update", "azure-webapp-assign-managed-identity-quick-action"],
-    "Microsoft.Web/sites/write": ["azure-webapp-update", "azure-webapp-assign-managed-identity-quick-action"],
+    "Microsoft.Web/sites/read": [
+        "azure-webapp-update",
+        "azure-webapp-assign-managed-identity-quick-action",
+        "azure-webapp-update-assign-managed-identity-quick-action",
+    ],
+    "Microsoft.Web/sites/write": [
+        "azure-webapp-update",
+        "azure-webapp-assign-managed-identity-quick-action",
+        "azure-webapp-update-assign-managed-identity-quick-action",
+    ],
     "Microsoft.DBforMySQL/flexibleServers/configurations/read": [
         "azure-mysql-flexible-server-param-set",
         "azure-mysql-set-secure-transport-quick-action",
@@ -123,13 +136,31 @@ PERMISSIONS_TO_COMMANDS = {
         "azure-monitor-log-profile-update",
         "azure-monitor-log-retention-period-quick-action",
     ],
-    "Microsoft.Compute/disks/read": ["azure-disk-update"],
-    "Microsoft.Compute/disks/write": ["azure-disk-update"],
+    "Microsoft.Compute/disks/read": [
+        "azure-disk-update",
+        "azure-disable-public-private-access-vm-disk-quick-action",
+        "azure-disk-set-data-access-aad-quick-action",
+    ],
+    "Microsoft.Compute/disks/write": [
+        "azure-disk-update",
+        "azure-disable-public-private-access-vm-disk-quick-action",
+        "azure-disk-set-data-access-aad-quick-action",
+    ],
     "Microsoft.Compute/virtualMachines/read": ["azure-vm-instance-details-get"],
     "Microsoft.Compute/virtualMachines/start/action": ["azure-vm-instance-start"],
     "Microsoft.Compute/virtualMachines/poweroff/action": ["azure-vm-instance-power-off"],
-    "Microsoft.ContainerRegistry/registries/read": ["azure-acr-update"],
-    "Microsoft.ContainerRegistry/registries/write": ["azure-acr-update"],
+    "Microsoft.ContainerRegistry/registries/read": [
+        "azure-acr-update",
+        "azure-acr-disable-public-private-access-quick-action",
+        "azure-acr-disable-authentication-as-arm-quick-action",
+        "azure-acr-disable-anonymous-pull-quick-action",
+    ],
+    "Microsoft.ContainerRegistry/registries/write": [
+        "azure-acr-update",
+        "azure-acr-disable-public-private-access-quick-action",
+        "azure-acr-disable-authentication-as-arm-quick-action",
+        "azure-acr-disable-anonymous-pull-quick-action",
+    ],
     "Microsoft.KeyVault/vaults/read": ["azure-key-vault-update"],
     "Microsoft.KeyVault/vaults/write": ["azure-key-vault-update"],
     "Microsoft.Sql/servers/databases/securityAlertPolicies/read": ["azure-sql-db-threat-policy-update"],
@@ -139,6 +170,9 @@ PERMISSIONS_TO_COMMANDS = {
     "Microsoft.Sql/servers/databases/transparentDataEncryption/read": ["azure-sql-db-transparent-data-encryption-set"],
     "Microsoft.Sql/servers/databases/transparentDataEncryption/write": ["azure-sql-db-transparent-data-encryption-set"],
     "Microsoft.Resources/subscriptions/resourceGroups/read": ["azure-nsg-resource-group-list"],
+    "Microsoft.Consumption/usageDetails/read": ["azure-billing-usage-list"],
+    "Microsoft.Consumption/budgets/read": ["azure-billing-budgets-list"],
+    "Microsoft.CostManagement/forecast/read": ["azure-billing-forecast-list"],
 }
 
 API_FUNCTION_TO_PERMISSIONS = {
@@ -236,6 +270,9 @@ REQUIRED_ROLE_PERMISSIONS = [
     "Microsoft.Sql/servers/databases/transparentDataEncryption/write",
     "Microsoft.Resources/subscriptions/read",
     "Microsoft.Resources/subscriptions/resourceGroups/read",
+    "Microsoft.Consumption/usageDetails/read",
+    "Microsoft.Consumption/budgets/read",
+    "Microsoft.CostManagement/forecast/read",
 ]
 REQUIRED_API_PERMISSIONS = ["GroupMember.ReadWrite.All", "RoleManagement.ReadWrite.Directory"]
 
@@ -304,7 +341,7 @@ class AzureClient:
         params: dict | None = None,
         resp_type: str = "json",
         json_data: dict | None = None,
-    ) -> requests.Response | dict:
+    ) -> requests.Response | dict[str, Any]:
         params = params or {}
         if not params.get("api-version"):
             params["api-version"] = API_VERSION
@@ -1821,6 +1858,163 @@ class AzureClient:
                 resource_group_name=None,
             )
 
+    def billing_usage_list(
+        self,
+        subscription_id: str,
+        expand: str = "",
+        filter_: str = "",
+        metric: str = "",
+        max_results: int = 50,
+        next_page_token: str = "",
+    ) -> Response | dict[str, Any] | None:
+        """
+        Retrieves actual usage and cost details from Azure Consumption API.
+        Args:
+            subscription_id (str): Azure subscription ID.
+            expand (str): Expand usage details with additional properties.
+            filter_ (str): OData filter expression for filtering results.
+            metric (str): Specific metric to retrieve (e.g., ActualCost, UsageQuantity).
+            max_results (int): Maximum number of results to return (default: 50).
+            next_page_token (str): Token for pagination.
+        Returns:
+            dict: The response from the Azure Consumption API.
+        Raises:
+            DemistoException: If Azure API call fails, subscription not found, or invalid parameters provided
+        """
+        scope = f"/{subscription_id}"
+        url = f"{scope}/providers/Microsoft.Consumption/usageDetails"
+        api_version = "2024-08-01"
+        params_ = {
+            "$expand": expand,
+            "$filter": filter_,
+            "metric": metric.lower().replace(" ", ""),
+            "api-version": api_version,
+            "$top": max_results,
+        }
+        remove_nulls_from_dictionary(params_)
+
+        try:
+            if next_page_token:
+                new_url = remove_query_param_from_url(next_page_token, "api-version")
+                demisto.debug(f"Azure billing usage request (pagination): {new_url}")
+                return self.http_request("GET", full_url=new_url, params={"api-version": api_version})
+            else:
+                demisto.debug(f"Azure billing usage request: {url}, params: {params_}")
+                return self.http_request("GET", url_suffix=url, params=params_)
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=subscription_id,
+                resource_type="Usage Details",
+                subscription_id=subscription_id,
+                api_function_name="billing_usage_list",
+            )
+
+    def billing_forecast_list(
+        self,
+        subscription_id: str,
+        forecast_type: str,
+        aggregation_function_name: str,
+        aggregation_function_type: str = "Sum",
+        granularity: str = "Daily",
+        start_date: str = "",
+        end_date: str = "",
+        filter_param: str = "",
+        include_actual_cost: bool = False,
+        include_fresh_partial_cost: bool = False,
+    ) -> Response | dict[str, Any] | None:
+        """
+        Returns cost forecast for a subscription over a given time range.
+        Args:
+            subscription_id (str): Azure subscription ID.
+            forecast_type (str): Forecast type (Usage, ActualCost, AmortizedCost).
+            aggregation_function_name (str): Aggregation function name.
+            aggregation_function_type (str): Aggregation function type (default: "Sum").
+            granularity (str): Data granularity (default: "Daily").
+            start_date (str): Start date for the forecast.
+            end_date (str): End date for the forecast.
+            filter_param (str): URL parameter to filter forecasts.
+            include_actual_cost (bool): Include actual cost data (default: False).
+            include_fresh_partial_cost (bool): Include fresh partial cost data (default: False).
+        Returns:
+            dict: The response from the Azure Cost Management API.
+        Raises:
+            DemistoException: If Azure API call fails, subscription not found, or invalid parameters provided
+        """
+
+        start_date = arg_to_datetime(start_date) if start_date else datetime.now(UTC)
+        end_date = arg_to_datetime(end_date) if end_date else datetime.now(UTC) + timedelta(days=7)
+
+        url = f"{subscription_id}/providers/Microsoft.CostManagement/forecast"
+        api_version = "2025-03-01"
+
+        body = {
+            "type": forecast_type,
+            "timeframe": "Custom",
+            "timePeriod": {"from": start_date.strftime("%Y-%m-%dT00:00:00Z"), "to": end_date.strftime("%Y-%m-%dT00:00:00Z")},
+            "dataset": {
+                "granularity": granularity,
+                "aggregation": {"totalCost": {"function": aggregation_function_type, "name": aggregation_function_name}},
+            },
+        }
+        if include_actual_cost:
+            body["includeActualCost"] = include_actual_cost
+        if include_fresh_partial_cost:
+            body["includeFreshPartialCost"] = include_fresh_partial_cost
+
+        if filter_param:
+            body["dataset"]["filter"] = filter_param  # type: ignore[index]
+
+        demisto.debug(f"Azure billing forecast \nrequest body: \n{body}")
+        params_ = {"api-version": api_version}
+
+        try:
+            return self.http_request("POST", url_suffix=url, params=params_, json_data=body)
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=subscription_id,
+                resource_type="Cost Forecast",
+                subscription_id=subscription_id,
+                api_function_name="billing_forecast_list",
+            )
+
+    def billing_budgets_list(
+        self,
+        subscription_id: str,
+        budget_name: str = "",
+    ) -> Response | dict[str, Any] | None:
+        """
+        Retrieves budget information from Azure Consumption API.
+        Args:
+            subscription_id (str): Azure subscription ID.
+            budget_name (str): Optional specific budget name to retrieve.
+        Returns:
+            dict: The response from the Azure Consumption API.
+        Raises:
+            DemistoException: If Azure API call fails, subscription not found, or invalid parameters provided
+        """
+        scope = f"/{subscription_id}"
+        if budget_name:
+            url = f"{scope}/providers/Microsoft.Consumption/budgets/{budget_name}"
+        else:
+            url = f"{scope}/providers/Microsoft.Consumption/budgets"
+
+        api_version = "2024-08-01"
+        params_ = {"api-version": api_version}
+
+        demisto.debug(f"Azure billing budgets request: {url}, params: {params_}")
+        try:
+            return self.http_request("GET", url_suffix=url, params=params_)
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=budget_name or subscription_id,
+                resource_type="Budget",
+                subscription_id=subscription_id,
+                api_function_name="billing_budgets_list",
+            )
+
 
 """ HELPER FUNCTIONS """
 
@@ -1915,6 +2109,25 @@ def extract_azure_resource_info(resource_id: str) -> tuple[str | None, str | Non
         results[key] = match.group(1) if match else None
 
     return results["subscription_id"], results["resource_group"], results["account_name"]
+
+
+def remove_query_param_from_url(url: str, param: str) -> str:
+    """
+    Remove a specific query parameter from a given URL and return the updated URL.
+
+    Args:
+        url (str): The full URL that may contain a query string.
+        param (str): The name of the query parameter to remove.
+
+    Returns:
+        str: The URL with the specified query parameter removed. If the parameter
+             is not present, the original URL is returned unchanged.
+    """
+    parsed = urlparse(url)
+    qs = parse_qs(parsed.query)
+    qs.pop(param, None)
+    new_query = urlencode(qs, doseq=True)
+    return urlunparse(parsed._replace(query=new_query))
 
 
 """ COMMAND FUNCTIONS """
@@ -3420,6 +3633,257 @@ def get_public_ip_details_command(client: AzureClient, params: dict[str, Any], a
     )
 
 
+def azure_billing_usage_list_command(client: AzureClient, params: dict, args: dict) -> CommandResults:
+    """
+    Retrieves actual usage and cost details from Azure Consumption API.
+    This command provides detailed billing usage information for Azure resources over a specified time period.
+    It supports filtering by various criteria and includes pagination for large datasets. The command returns
+    usage quantities, costs, and resource details for comprehensive billing analysis.
+    Args:
+        client (AzureClient): Azure client instance for API communication
+        params (dict): Configuration parameters from integration settings
+        args (dict): Command arguments containing:
+            - subscription_id: Azure subscription ID (required)
+            - expand_result: Expand usage details with additional properties
+            - filter: OData filter expression for filtering results
+            - metric: Specific metric to retrieve (e.g., ActualCost, UsageQuantity)
+            - max_results: Maximum number of results to return (default: 50)
+            - next_page_token: Token for pagination
+    Returns:
+        CommandResults: Contains usage data with costs, quantities, and time periods,
+                      including pagination support via next page tokens
+    Raises:
+        DemistoException: If Azure API call fails, subscription not found, or invalid parameters provided
+    """
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    expand = args.get("expand_result", "")
+    filter_ = args.get("filter", "")
+    metric = args.get("metric", "")
+    max_results = int(args.get("max_results", 50))
+    next_page_token = args.get("next_page_token", "")
+
+    res = client.billing_usage_list(
+        subscription_id=subscription_id,
+        expand=expand,
+        filter_=filter_,
+        metric=metric,
+        max_results=max_results,
+        next_page_token=next_page_token,
+    )
+
+    items = res.get("value", [])
+    next_token = res.get("nextLink", "")
+    demisto.debug(f"Azure billing usage response - results count: {len(items)},\n nextLink: {bool(next_token)}")
+    results = []
+    for item in items:
+        start_date = item.get("properties", {}).get("billingPeriodStartDate")
+        end_date = item.get("properties", {}).get("billingPeriodEndDate")
+        results.append(
+            {
+                "Name": item.get("name"),
+                "Product": item.get("properties", {}).get("product"),
+                "PayGCostUSD": item.get("properties", {}).get("payGPrice"),
+                "UsageQuantity": item.get("properties", {}).get("quantity"),
+                "PeriodStartDate": datetime.strptime(start_date, "%Y-%m-%dT%H:%M:%S.%f0Z").strftime("%Y-%m-%d"),
+                "PeriodEndDate": datetime.strptime(end_date, "%Y-%m-%dT%H:%M:%S.%f0Z").strftime("%Y-%m-%d"),
+            }
+        )
+    metadata = (
+        "Run the following command to retrieve the next batch of billings:\n"
+        f"!azure-billing-usage-list subscription_id={subscription_id} next_page_token={next_token}"
+        if next_token
+        else None
+    )
+    readable_output = tableToMarkdown(
+        "Azure Billing Usage",
+        results,
+        headers=["Name", "Product", "PayGCostUSD", "UsageQuantity", "PeriodStartDate", "PeriodEndDate"],
+        headerTransform=pascalToSpace,
+        metadata=metadata,
+    )
+
+    outputs = {
+        "Azure.Billing.Usage(val.name && val.name == obj.name)": items,
+        "Azure.Billing(true)": {"UsageNextToken": next_token},
+    }
+    return CommandResults(
+        readable_output=readable_output,
+        outputs=outputs,
+        raw_response=res,
+    )
+
+
+def azure_billing_forecast_list_command(client: AzureClient, params: dict, args: dict) -> CommandResults:
+    """
+    Returns cost forecast for a subscription over a given time range.
+    This command retrieves cost forecast data from Azure Cost Management API using the Forecasts - Usage endpoint.
+    It provides forecasted cost information for Azure resources based on historical usage patterns.
+    Args:
+        client (AzureClient): Azure client instance for API communication
+        params (dict): Configuration parameters from integration settings
+        args (dict): Command arguments containing:
+            - subscription_id: Azure subscription ID (required)
+            - type: Forecast type (Usage, Actual Cost, Amortized Cost) (required)
+            - aggregation_function_name: Aggregation function name (Pre Tax Cost USD, Cost, Cost USD, Pre Tax Cost) (required)
+            - aggregation_function_type: Aggregation function type (default: "Sum")
+            - granularity: Data granularity (default: "Daily")
+            - start_date: Start date (default: 7 days ago)
+            - end_date: End date (default: current time)
+            - filter: URL parameter to filter forecasts
+            - include_actual_cost: Include actual cost data (default: False)
+            - include_fresh_partial_cost: Include fresh partial cost data (default: False)
+    Returns:
+        CommandResults: Contains forecast data with Name, Time Period, Charge, Currency, and Grain information
+    Raises:
+        DemistoException: If Azure API call fails, subscription not found, or invalid parameters provided
+    """
+    subscription_id = args.get("subscription_id", "")
+    forecast_type = args.get("type", "")
+    aggregation_function_name = args.get("aggregation_function_name", "")
+
+    aggregation_function_type = args.get("aggregation_function_type", "Sum")
+    granularity = args.get("granularity", "Daily")
+    include_actual_cost = argToBoolean(args.get("include_actual_cost", False))
+    include_fresh_partial_cost = argToBoolean(args.get("include_fresh_partial_cost", False))
+    filter_param = args.get("filter", "")
+    start_date = args.get("start_date", "")
+    end_date = args.get("end_date", "")
+
+    response = client.billing_forecast_list(
+        subscription_id=subscription_id,
+        forecast_type=forecast_type,
+        aggregation_function_name=aggregation_function_name,
+        aggregation_function_type=aggregation_function_type,
+        granularity=granularity,
+        start_date=start_date,
+        end_date=end_date,
+        filter_param=filter_param,
+        include_actual_cost=include_actual_cost,
+        include_fresh_partial_cost=include_fresh_partial_cost,
+    )
+
+    parsed_data = parse_forecast_table_to_dict(response)
+    demisto.debug(f"Parsed data:\n {parsed_data}\n")
+
+    results = [
+        {
+            aggregation_function_name: obj.get(aggregation_function_name),
+            "UsageDate": datetime.strptime(str(obj.get("UsageDate")), "%Y%m%d").strftime("%Y-%m-%d"),
+            "CostStatus": obj.get("CostStatus"),
+            "Currency": obj.get("Currency"),
+        }
+        for obj in parsed_data
+    ]
+
+    context = {"Azure.Billing.Forecast": results}
+    readable = tableToMarkdown(
+        "Azure Billing Forecast",
+        results,
+        headers=[aggregation_function_name, "UsageDate", "CostStatus", "Currency"],
+        removeNull=True,
+    )
+
+    return CommandResults(
+        readable_output=readable,
+        outputs=context,
+        raw_response=response,
+    )
+
+
+def azure_billing_budgets_list_command(client: AzureClient, params: dict, args: dict) -> CommandResults:
+    """
+    Retrieves budget information from Azure Consumption API.
+    This command lists all configured budgets for a specified Azure subscription or resource group,
+    providing detailed information about budget limits, current spending, and time periods.
+    Supports retrieving either all budgets or a specific budget by name for targeted analysis.
+    Args:
+        client (AzureClient): Azure client instance for API communication
+        params (dict): Configuration parameters from integration settings
+        args (dict): Command arguments containing:
+            - subscription_id: Azure subscription ID (required)
+            - budget_name: Optional specific budget name to retrieve (if not provided, returns all budgets)
+    Returns:
+        CommandResults: Contains budget data including names, amounts, current spending,
+                      resource types, and time periods for budget monitoring
+    Raises:
+        DemistoException: If Azure API call fails, subscription not found, budget doesn't exist, or invalid parameters provided
+    """
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    budget_name = args.get("budget_name", "")
+
+    res = client.billing_budgets_list(subscription_id=subscription_id, budget_name=budget_name)
+
+    response_data = res.json() if hasattr(res, "json") else res
+    if budget_name:
+        # Single budget response
+        items = [response_data]
+        demisto.debug(f"Azure billing budgets response - single budget: {response_data.get('name', '')}")
+    else:
+        # List of budgets response
+        items = response_data.get("value", [])
+        demisto.debug(f"Azure billing budgets response - budgets count: {len(items)}")
+
+    results = []
+    for item in items:
+        time_period = item.get("properties", {}).get("timePeriod", {})
+        start_raw = time_period.get("startDate")
+        end_raw = time_period.get("endDate")
+
+        start = datetime.fromisoformat(start_raw.replace("Z", "+00:00")).strftime("%Y-%m-%d") if start_raw else None
+        end = datetime.fromisoformat(end_raw.replace("Z", "+00:00")).strftime("%Y-%m-%d") if end_raw else None
+        results.append(
+            {
+                "BudgetName": item.get("name"),
+                "ResourceType": item.get("type"),
+                "TimePeriod": f"{start} - {end}",
+                "Amount": item.get("properties", {}).get("amount"),
+                "CurrentSpend": item.get("properties", {}).get("currentSpend", {}).get("amount"),
+            }
+        )
+    outputs = {"Azure.Billing.Budget": items}
+    readable = tableToMarkdown(
+        "Azure Budgets", results, headers=["BudgetName", "ResourceType", "TimePeriod", "Amount", "CurrentSpend"]
+    )
+    return CommandResults(
+        readable_output=readable,
+        outputs=outputs,
+        raw_response=res,
+    )
+
+
+def parse_forecast_table_to_dict(response: dict) -> list[dict]:
+    """
+    Parses a generic Azure table-like API response and organizes the data into a list of dictionaries.
+    Args:
+        response (dict): The raw JSON response from the Azure API.
+    Returns:
+        list[dict]: A list of dictionaries, where each dictionary represents a row
+                    and maps column names to their corresponding values.
+    Raises:
+        DemistoException: If the response is not in the expected format.
+    """
+    try:
+        properties = response.get("properties", {})
+        columns = [column["name"] for column in properties.get("columns", [])]
+        rows = properties.get("rows", [])
+
+        parsed_data = []
+        for row in rows:
+            if len(row) != len(columns):
+                # This check ensures data integrity.
+                demisto.debug(f"Mismatched data: Found {len(row)} values for {len(columns)} columns. Skipping row.")
+                continue
+
+            # Map column names to row values to create a dictionary for each row.
+            row_dict = dict(zip(columns, row))
+            parsed_data.append(row_dict)
+
+        return parsed_data
+
+    except (KeyError, TypeError) as e:
+        raise DemistoException(f"Failed to parse API response. Malformed data structure: {e}")
+
+
 def test_module(client: AzureClient) -> str:
     """Tests API connectivity and authentication'
     Returning 'ok' indicates that the integration works like it is supposed to.
@@ -3523,6 +3987,9 @@ def main():  # pragma: no cover
     try:
         commands_with_params_and_args = {
             "azure-nsg-security-rule-update": update_security_rule_command,
+            "azure-billing-usage-list": azure_billing_usage_list_command,
+            "azure-billing-forecast-list": azure_billing_forecast_list_command,
+            "azure-billing-budgets-list": azure_billing_budgets_list_command,
             "azure-storage-account-update": storage_account_update_command,
             "azure-storage-blob-service-properties-set": storage_blob_service_properties_set_command,
             "azure-storage-blob-service-properties-get": storage_blob_service_properties_get_command,
@@ -3569,6 +4036,13 @@ def main():  # pragma: no cover
             "azure-network-disable-storage-account-access-quick-action": storage_account_update_command,
             "azure-monitor-log-retention-period-quick-action": monitor_log_profile_update_command,
             "azure-set-storage-account-https-only-quick-action": storage_account_update_command,
+            "azure-webapp-update-assign-managed-identity-quick-action": webapp_update_command,
+            "azure-storage-blob-enable-soft-delete-quick-action": storage_blob_service_properties_set_command,
+            "azure-disable-public-private-access-vm-disk-quick-action": disk_update_command,
+            "azure-disk-set-data-access-aad-quick-action": disk_update_command,
+            "azure-acr-disable-public-private-access-quick-action": acr_update_command,
+            "azure-acr-disable-authentication-as-arm-quick-action": acr_update_command,
+            "azure-acr-disable-anonymous-pull-quick-action": acr_update_command,
         }
         if command == "test-module" and connector_id:
             demisto.debug(f"Running health check for connector ID: {connector_id}")

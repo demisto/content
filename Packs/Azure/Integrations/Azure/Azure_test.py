@@ -3045,3 +3045,366 @@ def test_get_public_ip_details_command_without_resource_group(mocker):
     assert result.outputs["etag"] == "999"
     assert "ip1" in result.readable_output
     assert "rg1" in result.readable_output
+
+
+def test_azure_billing_usage_list_command_success(mocker, client, mock_params):
+    """
+    Given: An Azure client and valid billing usage arguments.
+    When: azure_billing_usage_list_command is called successfully.
+    Then: It should return CommandResults with usage data and proper outputs.
+    """
+    from Azure import azure_billing_usage_list_command
+
+    mock_response = {
+        "value": [
+            {
+                "name": "usage-item-1",
+                "properties": {
+                    "product": "Virtual Machines",
+                    "meterName": "D2s v3",
+                    "paygCost": {"amount": 125.75},
+                    "quantity": 24.5,
+                    "billingPeriodStartDate": "2025-10-01T00:00:00.0000000Z",
+                    "billingPeriodEndDate": "2025-10-01T23:59:59.0000000Z",
+                },
+            }
+        ],
+        "nextLink": "https://management.azure.com/subscriptions/test/providers/Microsoft.Consumption/usageDetails?$skiptoken=abc123",
+    }
+    mocker.patch.object(client, "http_request", return_value=mock_response)
+
+    args = {"subscription_id": "test-subscription-id", "max_results": "50", "filter": "properties/usageStart ge '2023-10-01'"}
+    params = mock_params
+
+    result = azure_billing_usage_list_command(client, params, args)
+
+    assert isinstance(result, CommandResults)
+    assert "Azure Billing Usage" in result.readable_output
+    assert "Azure.Billing.Usage(val.name && val.name == obj.name)" in result.outputs
+    assert "Azure.Billing(true)" in result.outputs
+    assert (
+        "https://management.azure.com/subscriptions/test/providers/Microsoft.Consumption/usageDetails?$skiptoken=abc123"
+        in result.outputs["Azure.Billing(true)"]["UsageNextToken"]
+    )
+    assert len(result.outputs["Azure.Billing.Usage(val.name && val.name == obj.name)"]) == 1
+    assert (
+        result.outputs["Azure.Billing.Usage(val.name && val.name == obj.name)"][0]["properties"]["product"] == "Virtual Machines"
+    )
+    assert result.raw_response == mock_response
+
+
+def test_azure_billing_forecast_list_command_success(mocker, client, mock_params):
+    """
+    Given: An Azure client and valid billing forecast arguments.
+    When: azure_billing_forecast_list_command is called successfully.
+    Then: It should return CommandResults with forecast data and proper outputs.
+    """
+    from Azure import azure_billing_forecast_list_command
+
+    # The current implementation expects a table-like response under properties with columns and rows,
+    # and it calls client.billing_forecast_list (not http_request) directly.
+    mock_response = {
+        "properties": {
+            "columns": [
+                {"name": "UsageDate"},
+                {"name": "CostStatus"},
+                {"name": "Currency"},
+                {"name": "Pre Tax Cost USD"},
+            ],
+            "rows": [
+                [20231015, "Forecast", "USD", 250.50],
+            ],
+        }
+    }
+    mocker.patch.object(client, "billing_forecast_list", return_value=mock_response)
+
+    args = {
+        "subscription_id": "test-subscription-id",
+        "type": "Usage",
+        "aggregation_function_name": "Pre Tax Cost USD",
+        "filter": "properties/UsageDate ge '2023-10-15'",
+    }
+    params = mock_params
+
+    result = azure_billing_forecast_list_command(client, params, args)
+
+    assert isinstance(result, CommandResults)
+    assert "Azure Billing Forecast" in result.readable_output
+
+    # Validate context structure and parsed forecasts
+    assert "Azure.Billing.Forecast" in result.outputs
+    forecast_ctx = result.outputs["Azure.Billing.Forecast"]
+    assert isinstance(forecast_ctx, list)
+    assert len(forecast_ctx) == 1
+
+    row = forecast_ctx[0]
+    # The command uses aggregation_function_name as a key in the result rows
+    assert row["Pre Tax Cost USD"] == 250.50
+    assert row["CostStatus"] == "Forecast"
+    assert row["Currency"] == "USD"
+    # UsageDate should be formatted as YYYY-MM-DD from 20231015
+    assert row["UsageDate"] == "2023-10-15"
+
+    # Raw response should be the original mock response
+    assert result.raw_response == mock_response
+
+
+def test_azure_billing_budgets_list_command_success(mocker, client, mock_params):
+    """
+    Given: An Azure client and valid billing budgets arguments.
+    When: azure_billing_budgets_list_command is called successfully.
+    Then: It should return CommandResults with budget data and proper outputs.
+    """
+    from Azure import azure_billing_budgets_list_command
+
+    mock_response = {
+        "value": [
+            {
+                "name": "test-budget",
+                "type": "Microsoft.Consumption/budgets",
+                "properties": {
+                    "timePeriod": {"startDate": "2023-10-01T00:00:00Z", "endDate": "2023-10-31T23:59:59Z"},
+                    "amount": 1000.0,
+                    "currentSpend": {"amount": 750.25},
+                },
+            }
+        ]
+    }
+    mocker.patch.object(client, "http_request", return_value=mock_response)
+
+    args = {"subscription_id": "test-subscription-id"}
+    params = mock_params
+
+    result = azure_billing_budgets_list_command(client, params, args)
+
+    assert isinstance(result, CommandResults)
+    assert "Azure Budgets" in result.readable_output
+    assert "Azure.Billing.Budget" in result.outputs
+    assert len(result.outputs["Azure.Billing.Budget"]) == 1
+    assert result.outputs["Azure.Billing.Budget"][0]["name"] == "test-budget"
+    assert result.outputs["Azure.Billing.Budget"][0]["properties"]["amount"] == 1000.0
+    assert result.outputs["Azure.Billing.Budget"][0]["properties"]["currentSpend"]["amount"] == 750.25
+    assert result.raw_response == mock_response
+
+
+def test_azure_billing_budgets_list_command_single_budget(mocker, client, mock_params):
+    """
+    Given: An Azure client and arguments for retrieving a single budget by name.
+    When: azure_billing_budgets_list_command is called with budget_name parameter.
+    Then: It should return CommandResults with single budget data.
+    """
+    from Azure import azure_billing_budgets_list_command
+
+    mock_response = {
+        "name": "specific-budget",
+        "type": "Microsoft.Consumption/budgets",
+        "properties": {
+            "timePeriod": {"startDate": "2023-11-01T00:00:00Z", "endDate": "2023-11-30T23:59:59Z"},
+            "amount": 500.0,
+            "currentSpend": {"amount": 200.75},
+        },
+    }
+    mocker.patch.object(client, "http_request", return_value=mock_response)
+
+    args = {"subscription_id": "test-subscription-id", "budget_name": "specific-budget"}
+    params = mock_params
+
+    result = azure_billing_budgets_list_command(client, params, args)
+
+    assert isinstance(result, CommandResults)
+    assert "Azure Budgets" in result.readable_output
+    assert "Azure.Billing.Budget" in result.outputs
+    assert len(result.outputs["Azure.Billing.Budget"]) == 1
+    assert result.outputs["Azure.Billing.Budget"][0]["name"] == "specific-budget"
+    assert result.outputs["Azure.Billing.Budget"][0]["properties"]["amount"] == 500.0
+    assert result.raw_response == mock_response
+
+
+def test_azure_billing_usage_list_command_no_next_token(mocker, client, mock_params):
+    """
+    Given: An Azure client with response containing no next token.
+    When: azure_billing_usage_list_command is called successfully.
+    Then: It should return CommandResults without next token in outputs.
+    """
+    from Azure import azure_billing_usage_list_command
+
+    mock_response = {
+        "value": [
+            {
+                "name": "usage-item-2",
+                "properties": {
+                    "product": "Storage",
+                    "paygCost": {"amount": 15.25},
+                    "quantity": 100.0,
+                    "billingPeriodStartDate": "2025-10-01T00:00:00.0000000Z",
+                    "billingPeriodEndDate": "2025-10-02T23:59:59.0000000Z",
+                },
+            }
+        ]
+    }
+    mocker.patch.object(client, "http_request", return_value=mock_response)
+
+    args = {"subscription_id": "test-subscription-id", "max_results": "10"}
+    params = mock_params
+
+    result = azure_billing_usage_list_command(client, params, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs["Azure.Billing(true)"]["UsageNextToken"] == ""
+    assert "Next Page Token" not in result.readable_output
+    assert result.outputs["Azure.Billing.Usage(val.name && val.name == obj.name)"][0]["properties"]["product"] == "Storage"
+
+
+def test_azure_billing_usage_list_command_with_pagination_token(mocker, client, mock_params):
+    """
+    Given: An Azure client and arguments with next page token.
+    When: azure_billing_usage_list_command is called with pagination token.
+    Then: It should include the token in the request parameters.
+    """
+    from Azure import azure_billing_usage_list_command
+
+    mock_response = {
+        "value": [
+            {
+                "name": "usage-item-page-2",
+                "properties": {
+                    "product": "Networking",
+                    "paygCost": {"amount": 5.50},
+                    "quantity": 10.0,
+                    "billingPeriodStartDate": "2025-10-04T00:00:00.0000000Z",
+                    "billingPeriodEndDate": "2025-10-04T23:59:59.0000000Z",
+                },
+            }
+        ]
+    }
+    mocker.patch.object(client, "http_request", return_value=mock_response)
+
+    args = {"subscription_id": "test-subscription-id", "next_page_token": "existing-skiptoken"}
+    params = mock_params
+
+    result = azure_billing_usage_list_command(client, params, args)
+
+    # Verify the token was passed to the client
+    client.http_request.assert_called_once()
+    call_args = client.http_request.call_args[1]
+    assert call_args["params"].keys() == {"api-version"}
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs["Azure.Billing.Usage(val.name && val.name == obj.name)"][0]["properties"]["product"] == "Networking"
+
+
+def test_parse_forecast_table_to_dict_success():
+    """
+    Given: A table-like Azure Cost Management response with columns and rows.
+    When: parse_forecast_table_to_dict is invoked.
+    Then: It should return a list of dict rows mapping column names to values.
+    """
+    from Azure import parse_forecast_table_to_dict
+
+    response = {
+        "properties": {
+            "columns": [
+                {"name": "UsageDate"},
+                {"name": "CostUSD"},
+                {"name": "CostStatus"},
+            ],
+            "rows": [
+                ["2025-10-01", 12.34, "Forecast"],
+                ["2025-10-02", 56.78, "Actual"],
+            ],
+        }
+    }
+
+    parsed = parse_forecast_table_to_dict(response)
+    assert isinstance(parsed, list)
+    assert parsed[0]["UsageDate"] == "2025-10-01"
+    assert parsed[0]["CostUSD"] == 12.34
+    assert parsed[0]["CostStatus"] == "Forecast"
+    assert parsed[1]["UsageDate"] == "2025-10-02"
+
+
+def test_parse_forecast_table_to_dict_mismatch_row_length(mocker):
+    """
+    Given: Response where one row length doesn't match columns length.
+    When: parse_forecast_table_to_dict runs.
+    Then: It should skip the mismatched row and parse the valid one.
+    """
+    from Azure import parse_forecast_table_to_dict
+
+    mocker.patch.object(demisto, "debug")
+
+    response = {
+        "properties": {
+            "columns": [{"name": "A"}, {"name": "B"}],
+            "rows": [
+                [1],  # mismatched (len 1 vs 2 columns) -> should be skipped
+                [2, 3],  # valid
+            ],
+        }
+    }
+
+    parsed = parse_forecast_table_to_dict(response)
+    assert parsed == [{"A": 2, "B": 3}]
+
+
+def test_parse_forecast_table_to_dict_malformed_raises():
+    """
+    Given: Malformed response (columns missing 'name').
+    When: parse_forecast_table_to_dict runs.
+    Then: It should raise DemistoException.
+    """
+    from Azure import parse_forecast_table_to_dict, DemistoException
+
+    bad_response = {
+        "properties": {
+            "columns": [{"wrong": "UsageDate"}],  # will cause KeyError in parsing
+            "rows": [["2025-10-01"]],
+        }
+    }
+
+    with pytest.raises(DemistoException):
+        parse_forecast_table_to_dict(bad_response)
+
+
+def test_remove_query_param_from_url_basic():
+    """
+    Given: A URL with multiple query parameters including duplicates for a key.
+    When: remove_query_param_from_url is used to remove that key.
+    Then: The resulting URL should not contain the removed parameter and others remain.
+    """
+    from Azure import remove_query_param_from_url
+    from urllib.parse import urlparse, parse_qs
+
+    url = "https://example.com/path?a=1&b=2&b=3&c=x"
+    out = remove_query_param_from_url(url, "b")
+    parsed = urlparse(out)
+    qs = parse_qs(parsed.query)
+    assert "b" not in qs
+    assert qs == {"a": ["1"], "c": ["x"]}
+
+
+def test_remove_query_param_from_url_param_absent():
+    """
+    Given: A URL without the specified parameter.
+    When: remove_query_param_from_url is called.
+    Then: The URL query mapping remains logically the same.
+    """
+    from Azure import remove_query_param_from_url
+    from urllib.parse import urlparse, parse_qs
+
+    url = "https://example.com/path?a=1&c=x"
+    out = remove_query_param_from_url(url, "b")
+    assert parse_qs(urlparse(out).query) == {"a": ["1"], "c": ["x"]}
+
+
+def test_remove_query_param_from_url_no_query():
+    """
+    Given: A URL without any query string.
+    When: remove_query_param_from_url is called.
+    Then: The URL remains unchanged.
+    """
+    from Azure import remove_query_param_from_url
+
+    url = "https://example.com/path"
+    out = remove_query_param_from_url(url, "b")
+    assert out == url
