@@ -78,8 +78,8 @@ configuration:
   type: 9
   section: Connect
   required: false
-description: Use the Azure Active Directory Applications integration to manage authorized applications.
-display: Azure Active Directory Applications
+description: Use the Entra ID Applications integration (formerly Azure Active Directory Applications) to manage authorized applications.
+display: Entra ID Applications
 name: MicrosoftGraphApplications
 script:
   commands:

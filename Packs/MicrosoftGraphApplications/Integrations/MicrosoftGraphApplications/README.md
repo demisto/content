@@ -1,8 +1,7 @@
-Use the Azure Active Directory Applications integration to manage authorized applications.
-Use the Azure Active Directory Applications integration to manage authorized application.
+Use the Entra ID Applications integration (formerly Azure Active Directory Applications) to manage authorized applications.
 This integration was integrated and tested with version v1.0 of Microsoft Graph Services API.
 
-## Configure Azure Active Directory Applications in Cortex
+## Configure Entra ID Applications in Cortex
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |

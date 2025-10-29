@@ -35,7 +35,7 @@ Microsoft Defender Advanced Threat Protection Get Machine Action Status
 
 ---
 
-Microsoft integrations (Graph and Azure) in Cortex use Azure Active Directory applications to authenticate with Microsoft APIs. These integrations use OAuth 2.0 and OpenID Connect standard-compliant authentication services, which use an Application to sign-in or delegate authentication. For more information, see the [Microsoft identity platform overview](https://learn.microsoft.com/en-us/entra/identity-platform/v2-overview).
+Microsoft integrations (Graph and Azure) in Cortex use Entra ID applications to authenticate with Microsoft APIs. These integrations use OAuth 2.0 and OpenID Connect standard-compliant authentication services, which use an Application to sign-in or delegate authentication. For more information, see the [Microsoft identity platform overview](https://learn.microsoft.com/en-us/entra/identity-platform/v2-overview).
 
 Two application authentication methods are available:
 
