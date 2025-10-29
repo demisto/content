@@ -2146,6 +2146,38 @@ function SearchAndDeleteEmailCommand($client, [hashtable]$kwargs) {
     return HandleSearchStatus $client $search_name $search $entry_context $polling_args $polling_first_run
 }
 
+<#
+.SYNOPSIS
+Handles OAuth2 authentication commands for the Security and Compliance integration.
+
+.DESCRIPTION
+Executes the appropriate OAuth2 authentication flow based on the provided command.§
+
+.PARAMETER command
+The authentication command to execute. Supported values:
+- "$script:COMMAND_PREFIX-auth-start"
+- "$script:COMMAND_PREFIX-auth-complete"
+
+.PARAMETER using_delegated
+Boolean flag indicating whether interactive delegated authentication is enabled
+(i.e., using UPN and password).
+
+.PARAMETER oauth2_client
+The OAuth2 client object used to perform authentication operations.
+
+.EXAMPLE
+Handle-OAuth2AuthCommand "$script:COMMAND_PREFIX-auth-start" $false $oauth2_client
+#>
+function Handle-OAuth2AuthCommand($command, [bool]$using_delegated, [OAuth2DeviceCodeClient]$oauth2_client) {
+    if ($using_delegated) {
+        throw "When using UPN password authentication, you don't need to run this command. Please run ($script:COMMAND_PREFIX)-auth-test to verify that authentication is successful."
+    }
+
+    switch ($command) {
+        "$script:COMMAND_PREFIX-auth-start"   { return StartAuthCommand $oauth2_client }
+        "$script:COMMAND_PREFIX-auth-complete" { return CompleteAuthCommand $oauth2_client }
+    }
+}
 
 #### INTEGRATION COMMANDS MANAGER ####
 
@@ -2172,22 +2204,19 @@ function Main {
         $oauth2_client = [OAuth2DeviceCodeClient]::CreateClientFromIntegrationContext($insecure, $false,
             $app_id, $tenant_id)
 
-        if (-not $using_delegated){
-            # Executing oauth2 commands
-            switch ($command) {
-                "$script:COMMAND_PREFIX-auth-start" {
-                    ($human_readable, $entry_context, $raw_response) = StartAuthCommand $oauth2_client
-                }
-                "$script:COMMAND_PREFIX-auth-complete" {
-                    ($human_readable, $entry_context, $raw_response) = CompleteAuthCommand $oauth2_client
-                }
-            }
 
-            # Refreshing tokens if expired
-            if ($command -ne "$script:COMMAND_PREFIX-auth-start")
-            {
-                $oauth2_client.RefreshTokenIfExpired()
+        # Executing oauth2 commands
+        switch ($command) {
+            "$script:COMMAND_PREFIX-auth-start"
+            "$script:COMMAND_PREFIX-auth-complete" {
+                ($human_readable, $entry_context, $raw_response) = Handle-OAuth2AuthCommand $command $using_delegated $oauth2_client
             }
+        }
+
+        # Refreshing tokens if expired
+        if (($command -ne "$script:COMMAND_PREFIX-auth-start") -and (-not $using_delegated))
+        {
+            $oauth2_client.RefreshTokenIfExpired()
         }
 
 
