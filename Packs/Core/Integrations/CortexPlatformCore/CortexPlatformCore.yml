@@ -1147,12 +1147,6 @@ script:
         - name: on_demand_fields
           description: "A comma-separated list of additional fields to retrieve."
           isArray: true
-        - name: not_assigned
-          description: "Filter by vulnerabilities not assigned to a user."
-          auto: PREDEFINED
-          predefined:
-            - "true"
-            - "false"
         - description: Supports epoch timestamp and simplified extended ISO format (YYYY-MM-DDThh:mm:ss).
           name: start_time
         - description: Supports epoch timestamp and simplified extended ISO format (YYYY-MM-DDThh:mm:ss). If start time is provided without end_time it will be from start_time until now.
@@ -1167,6 +1161,11 @@ script:
             - medium
             - high
             - critical
+        - name: assignee
+          description: |
+            The email of the user assigned to the vulnerability. Accepts a comma-separated list. 
+            Use 'unassigned' for unassigned vulnerabilities or 'assigned' for all assigned vulnerabilities.
+          isArray: true
       outputs:
         - contextPath: Core.VulnerabilityIssue.ISSUE_ID
           description: The unique identifier for the vulnerability issue.

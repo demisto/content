@@ -2,6 +2,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from CoreIRApiModule import *
 import dateparser
+from enum import Enum
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -21,6 +22,160 @@ SEVERITY_MAPPING = {
 
 WEBAPP_COMMANDS = ["core-get-vulnerabilities"]
 DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
+
+
+class FilterBuilder:
+    """
+    Filter class for creating filter dictionary objects.
+    """
+
+    class FilterType(str, Enum):
+        operator: str
+
+        """
+        Available type options for filter filtering.
+        Each member holds its string value and its logical operator for multi-value scenarios.
+        """
+
+        def __new__(cls, value, operator):
+            obj = str.__new__(cls, value)
+            obj._value_ = value
+            obj.operator = operator
+            return obj
+
+        EQ = ("EQ", "OR")
+        RANGE = ("RANGE", "OR")
+        CONTAINS = ("CONTAINS", "OR")
+        GTE = ("GTE", "OR")
+        ARRAY_CONTAINS = ("ARRAY_CONTAINS", "OR")
+        JSON_WILDCARD = ("JSON_WILDCARD", "OR")
+        IS_EMPTY = ("IS_EMPTY", "OR")
+        NIS_EMPTY = ("NIS_EMPTY", "AND")
+
+    AND = "AND"
+    OR = "OR"
+    FIELD = "SEARCH_FIELD"
+    TYPE = "SEARCH_TYPE"
+    VALUE = "SEARCH_VALUE"
+
+    class Field:
+        def __init__(self, field_name: str, filter_type: "FilterType", values: Any):
+            self.field_name = field_name
+            self.filter_type = filter_type
+            self.values = values
+
+    class MappedValuesField(Field):
+        def __init__(self, field_name: str, filter_type: "FilterType", values: Any, mappings: dict[str, "FilterType"]):
+            super().__init__(field_name, filter_type, values)
+            self.mappings = mappings
+
+    def __init__(self, filter_fields: list[Field] = None):
+        self.filter_fields = filter_fields or []
+
+    def add_field(self, name: str, type: "FilterType", values: Any):
+        """
+        Adds a new field to the filter.
+        Args:
+            name (str): The name of the field.
+            type (FilterType): The type to use for the field.
+            values (Any): The values to filter for.
+        """
+        self.filter_fields.append(FilterBuilder.Field(name, type, values))
+
+    def add_field_with_mappings(self, name: str, type: "FilterType", values: Any, mappings: dict[str, "FilterType"]):
+        """
+        Adds a new field to the filter with special value mappings.
+        Args:
+            name (str): The name of the field.
+            type (FilterType): The default filter type for non-mapped values.
+            values (Any): The values to filter for.
+            mappings (dict[str, FilterType]): A dictionary mapping special values to specific filter types.
+        """
+        self.filter_fields.append(FilterBuilder.MappedValuesField(name, type, values, mappings))
+
+    def add_time_range_field(self, name: str, start_time: str | None, end_time: str | None):
+        """
+        Adds a time range field to the filter.
+        Args:
+            name (str): The name of the field.
+            start_time (str | None): The start time of the range.
+            end_time (str | None): The end time of the range.
+        """
+        start, end = self._prepare_time_range(start_time, end_time)
+        if start and end:
+            self.add_field(name, FilterType.RANGE, {"from": start, "to": end})
+
+    def to_dict(self) -> dict[str, list]:
+        """
+        Creates a filter dict from a list of Field objects.
+        The filter will require each field to be one of the values provided.
+        Returns:
+            dict[str, list]: Filter object.
+        """
+        filter_structure: dict[str, list] = {FilterBuilder.AND: []}
+
+        for field in self.filter_fields:
+            if not isinstance(field.values, list):
+                field.values = [field.values]
+
+            search_values = []
+            for value in field.values:
+                if value is None:
+                    continue
+
+                current_filter_type = field.filter_type
+                current_value = value
+
+                if isinstance(field, FilterBuilder.MappedValuesField) and value in field.mappings:
+                    current_filter_type = field.mappings[value]
+                    if current_filter_type in [FilterType.IS_EMPTY, FilterType.NIS_EMPTY]:
+                        current_value = "<No Value>"
+
+                search_values.append(
+                    {
+                        FilterBuilder.FIELD: field.field_name,
+                        FilterBuilder.TYPE: current_filter_type.value,
+                        FilterBuilder.VALUE: current_value,
+                    }
+                )
+
+            if search_values:
+                search_obj = {field.filter_type.operator: search_values} if len(search_values) > 1 else search_values[0]
+                filter_structure[FilterBuilder.AND].append(search_obj)
+
+        if not filter_structure[FilterBuilder.AND]:
+            filter_structure = {}
+
+        return filter_structure
+
+    @staticmethod
+    def _prepare_time_range(start_time_str: str | None, end_time_str: str | None) -> tuple[int | None, int | None]:
+        """Prepare start and end time from args, parsing relative time strings."""
+        if end_time_str and not start_time_str:
+            raise DemistoException("When 'end_time' is provided, 'start_time' must be provided as well.")
+
+        start_time, end_time = None, None
+
+        if start_time_str:
+            if start_dt := dateparser.parse(str(start_time_str)):
+                start_time = int(start_dt.timestamp() * 1000)
+            else:
+                raise ValueError(f"Could not parse start_time: {start_time_str}")
+
+        if end_time_str:
+            if end_dt := dateparser.parse(str(end_time_str)):
+                end_time = int(end_dt.timestamp() * 1000)
+            else:
+                raise ValueError(f"Could not parse end_time: {end_time_str}")
+
+        if start_time and not end_time:
+            # Set end_time to the current time if only start_time is provided
+            end_time = int(datetime.now().timestamp() * 1000)
+
+        return start_time, end_time
+
+
+FilterType = FilterBuilder.FilterType
 
 
 def replace_substring(data: dict | str, original: str, new: str) -> str | dict:
@@ -138,54 +293,9 @@ class Client(CoreClient):
         )
 
 
-class FilterField:
-    def __init__(self, field_name: str, operator: str, values: Any):
-        self.field_name = field_name
-        self.operator = operator
-        self.values = values
-
-
-def create_filter_from_fields(fields_to_filter: list[FilterField]):
-    """
-    Creates a filter from a list of FilterField objects.
-    The filter will require each field to be one of the values provided.
-    Args:
-        fields_to_filter (list[FilterField]): List of FilterField objects to create a filter from.
-    Returns:
-        dict[str, list]: Filter object.
-    """
-    filter_structure: dict[str, list] = {"AND": []}
-
-    for field in fields_to_filter:
-        if not isinstance(field.values, list):
-            field.values = [field.values]
-
-        search_values = []
-        for value in field.values:
-            if value is None:
-                continue
-
-            search_values.append(
-                {
-                    "SEARCH_FIELD": field.field_name,
-                    "SEARCH_TYPE": field.operator,
-                    "SEARCH_VALUE": value,
-                }
-            )
-
-        if search_values:
-            search_obj = {"OR": search_values} if len(search_values) > 1 else search_values[0]
-            filter_structure["AND"].append(search_obj)
-
-    if not filter_structure["AND"]:
-        filter_structure = {}
-
-    return filter_structure
-
-
 def build_webapp_request_data(
     table_name: str,
-    filter_fields: list[FilterField],
+    filter_dict: dict,
     limit: int,
     sort_field: str,
     on_demand_fields: list | None = None,
@@ -194,12 +304,10 @@ def build_webapp_request_data(
     """
     Builds the request data for the generic /api/webapp/get_data endpoint.
     """
-    dynamic_filter = create_filter_from_fields(filter_fields)
-
     filter_data = {
         "sort": [{"FIELD": sort_field, "ORDER": sort_order}],
         "paging": {"from": 0, "to": limit},
-        "filter": dynamic_filter,
+        "filter": filter_dict,
     }
     demisto.debug(f"{filter_data=}")
 
@@ -207,35 +315,6 @@ def build_webapp_request_data(
         on_demand_fields = []
 
     return {"type": "grid", "table_name": table_name, "filter_data": filter_data, "jsons": [], "onDemandFields": on_demand_fields}
-
-
-def prepare_start_end_time(args: dict) -> tuple[int | None, int | None]:
-    """Prepare start and end time from args, parsing relative time strings."""
-    start_time_str = args.get("start_time")
-    end_time_str = args.get("end_time")
-
-    if end_time_str and not start_time_str:
-        raise DemistoException("When 'end_time' is provided, 'start_time' must be provided as well.")
-
-    start_time, end_time = None, None
-
-    if start_time_str:
-        if start_dt := dateparser.parse(str(start_time_str)):
-            start_time = int(start_dt.timestamp() * 1000)
-        else:
-            raise ValueError(f"Could not parse start_time: {start_time_str}")
-
-    if end_time_str:
-        if end_dt := dateparser.parse(str(end_time_str)):
-            end_time = int(end_dt.timestamp() * 1000)
-        else:
-            raise ValueError(f"Could not parse end_time: {end_time_str}")
-
-    if start_time and not end_time:
-        # Set end_time to the current time if only start_time is provided
-        end_time = int(datetime.now().timestamp() * 1000)
-
-    return start_time, end_time
 
 
 def get_vulnerabilities_command(client: Client, args: dict) -> CommandResults:
@@ -246,34 +325,33 @@ def get_vulnerabilities_command(client: Client, args: dict) -> CommandResults:
     sort_field = args.get("sort_field", "LAST_OBSERVED")
     sort_order = args.get("sort_order", "DESC")
 
-    start_time, end_time = prepare_start_end_time(args)
-
     severities = argToList(args.get("severity"))
     api_severities = [SEVERITY_MAPPING[sev] for sev in severities if sev in SEVERITY_MAPPING]
 
-    filter_fields = [
-        FilterField("CVE_ID", "CONTAINS", argToList(args.get("cve_id"))),
-        FilterField("CVSS_SCORE", "GTE", arg_to_number(args.get("cvss_score_gte"))),
-        FilterField("EPSS_SCORE", "GTE", arg_to_number(args.get("epss_score_gte"))),
-        FilterField("INTERNET_EXPOSED", "EQ", arg_to_bool_or_none(args.get("internet_exposed"))),
-        FilterField("EXPLOITABLE", "EQ", arg_to_bool_or_none(args.get("exploitable"))),
-        FilterField("HAS_KEV", "EQ", arg_to_bool_or_none(args.get("has_kev"))),
-        FilterField("AFFECTED_SOFTWARE", "CONTAINS", argToList(args.get("affected_software"))),
-        FilterField("PLATFORM_SEVERITY", "EQ", api_severities),
-        FilterField("ISSUE_ID", "CONTAINS", argToList(args.get("issue_id"))),
-    ]
-
-    if start_time and end_time:
-        filter_fields.append(FilterField("LAST_OBSERVED", "RANGE", {"from": start_time, "to": end_time}))
-
-    not_assigned = arg_to_bool_or_none(args.get("not_assigned"))
-    if not_assigned is not None:
-        not_assigned_operator = "IS_EMPTY" if not_assigned else "NIS_EMPTY"
-        filter_fields.append(FilterField("ASSIGNED_TO", not_assigned_operator, ""))
+    filter_builder = FilterBuilder()
+    filter_builder.add_field("CVE_ID", FilterType.CONTAINS, argToList(args.get("cve_id")))
+    filter_builder.add_field("CVSS_SCORE", FilterType.GTE, arg_to_number(args.get("cvss_score_gte")))
+    filter_builder.add_field("EPSS_SCORE", FilterType.GTE, arg_to_number(args.get("epss_score_gte")))
+    filter_builder.add_field("INTERNET_EXPOSED", FilterType.EQ, arg_to_bool_or_none(args.get("internet_exposed")))
+    filter_builder.add_field("EXPLOITABLE", FilterType.EQ, arg_to_bool_or_none(args.get("exploitable")))
+    filter_builder.add_field("HAS_KEV", FilterType.EQ, arg_to_bool_or_none(args.get("has_kev")))
+    filter_builder.add_field("AFFECTED_SOFTWARE", FilterType.CONTAINS, argToList(args.get("affected_software")))
+    filter_builder.add_field("PLATFORM_SEVERITY", FilterType.EQ, api_severities)
+    filter_builder.add_field("ISSUE_ID", FilterType.CONTAINS, argToList(args.get("issue_id")))
+    filter_builder.add_time_range_field("LAST_OBSERVED", args.get("start_time"), args.get("end_time"))
+    filter_builder.add_field_with_mappings(
+        "ASSIGNED_TO",
+        FilterType.CONTAINS,
+        argToList(args.get("assignee")),
+        {
+            "unassigned": FilterType.IS_EMPTY,
+            "assigned": FilterType.NIS_EMPTY,
+        },
+    )
 
     request_data = build_webapp_request_data(
         table_name="VULNERABLE_ISSUES_TABLE",
-        filter_fields=filter_fields,
+        filter_dict=filter_builder.to_dict(),
         limit=limit,
         sort_field=sort_field,
         sort_order=sort_order,
@@ -283,22 +361,8 @@ def get_vulnerabilities_command(client: Client, args: dict) -> CommandResults:
     reply = response.get("reply", {})
     data = reply.get("DATA", [])
 
-    headers = [
-        "ISSUE_ID",
-        "ISSUE_NAME",
-        "CVE_ID",
-        "PLATFORM_SEVERITY",
-        "CVSS_SEVERITY",
-        "EPSS_SCORE",
-        "CVSS_SCORE",
-        "FIX_AVAILABLE",
-        "ASSET_ID",
-        "ASSIGNED_TO_PRETTY",
-        "ASSIGNED_TO",
-        "CVE_DESCRIPTION",
-    ]
     return CommandResults(
-        readable_output=tableToMarkdown("Vulnerabilities", data, headerTransform=string_to_table_header, headers=headers),
+        readable_output=tableToMarkdown("Vulnerabilities", data, headerTransform=string_to_table_header, sort_headers=False),
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Vulnerability",
         outputs_key_field="ISSUE_ID",
         outputs=data,
