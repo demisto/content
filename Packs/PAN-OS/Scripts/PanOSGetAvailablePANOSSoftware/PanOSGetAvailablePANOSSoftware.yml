@@ -67,5 +67,7 @@ tests:
 fromversion: 6.10.0
 supportedModules:
 - agentix
+- xsiam
+- cloud_posture
 marketplaces:
 - platform
