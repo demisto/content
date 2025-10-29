@@ -295,42 +295,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "247":
-    id: "247"
-    taskid: 18662da2-884a-4691-8f32-cfb7690f0a47
-    type: regular
-    task:
-      id: 18662da2-884a-4691-8f32-cfb7690f0a47
-      version: -1
-      name: Verify Context Data Error - Command Netstat - Filename
-      description: Prints an error entry with a given message
-      scriptName: PrintErrorEntry
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      message:
-        simple: |-
-          The 'CrowdStrike.Command.netstat.Filename’ context key was not populated. This may indicate that one or more of the following changes have been made to the 'CrowdStrike Falcon - Get Endpoint Forensics Data' playbook:
-          1- The 'List network connections' task failed.
-          2- The 'cs-falcon-rtr-list-network-stats' automation outputs have been modified and no longer contain the 'CrowdStrike.Command.netstat.Filename' context key.
-          3- The 'host_id' input configuration was changed for the 'cs-falcon-rtr-list-network-stats' automation used in the 'List network connections' task.
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 360,
-          "y": -740
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
