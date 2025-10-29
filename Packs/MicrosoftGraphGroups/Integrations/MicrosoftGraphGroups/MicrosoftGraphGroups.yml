@@ -134,8 +134,8 @@ configuration:
   hidden: true
   section: Connect
   required: false
-description: Microsoft Graph Groups enables you to create and manage different types of groups and group functionality according to your requirements.
-display: Azure Active Directory Groups
+description: Entra ID Groups integration (formely Azure Active Directory Groups) enables you to create and manage different types of groups and group functionality according to your requirements.
+display: Entra ID Groups
 name: Microsoft Graph Groups
 script:
   commands:
