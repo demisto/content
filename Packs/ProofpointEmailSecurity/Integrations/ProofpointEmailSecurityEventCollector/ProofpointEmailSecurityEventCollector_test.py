@@ -17,6 +17,9 @@ from ProofpointEmailSecurityEventCollector import (
     perform_long_running_loop,
     timedelta,
     websocket_connections,
+    get_events_command,
+    PING_TIMEOUT,
+    CLOSE_TIMEOUT,
 )
 
 CURRENT_TIME: datetime | None = None
@@ -141,6 +144,8 @@ def test_connects_to_websocket(mocker):
         connect_mock.assert_any_call(
             f"wss://host/v1/stream?cid=cluster_id&type={event_type}&sinceTime=2023-08-16T12:24:12.147573",
             additional_headers={"Authorization": "Bearer api_key"},
+            ping_timeout=PING_TIMEOUT,
+            close_timeout=CLOSE_TIMEOUT,
         )
 
     connect_mock = mocker.patch.object(ProofpointEmailSecurityEventCollector, "connect")
@@ -156,6 +161,8 @@ def test_connects_to_websocket(mocker):
         connect_mock.assert_any_call(
             f"wss://host/v1/stream?cid=cluster_id&type={event_type}&sinceTime=2023-08-14T12:24:12.147573&toTime=2023-08-16T12:24:12.147573",
             additional_headers={"Authorization": "Bearer api_key"},
+            ping_timeout=PING_TIMEOUT,
+            close_timeout=CLOSE_TIMEOUT,
         )
 
 
@@ -304,3 +311,70 @@ def test_recovering_execution(mocker, connection):
         long_running_execution_command("host", "cid", "key", 60, ["audit"])
 
     assert demisto_error_mocker.call_count > 1
+
+
+@pytest.mark.parametrize(
+    "args, expected_since, expected_to",
+    [
+        pytest.param(
+            {"since_time": "2023-01-01T10:00:00", "to_time": "2023-01-01T11:00:00", "timezone_offset": "-5"},
+            "2023-01-01T10:00:00-0500",
+            "2023-01-01T11:00:00-0500",
+            id="Negative timezone offset",
+        ),
+        pytest.param(
+            {"since_time": "2023-02-01T00:00:00", "to_time": "2023-02-01T01:00:00"},
+            "2023-02-01T00:00:00+0000",
+            "2023-02-01T01:00:00+0000",
+            id="No timezone offset (default to UTC)",
+        ),
+        pytest.param(
+            {"since_time": "2023-03-01T12:00:00", "to_time": "2023-03-01T13:00:00", "timezone_offset": "3"},
+            "2023-03-01T12:00:00+0300",
+            "2023-03-01T13:00:00+0300",
+            id="Positive timezone offset",
+        ),
+        pytest.param(
+            {"since_time": "3 days ago", "to_time": "2 days ago"},
+            "2024-10-22T12:00:00+0000",
+            "2024-10-23T12:00:00+0000",
+            id="Relative time",
+        ),
+    ],
+)
+@freeze_time("2024-10-25T12:00:00Z")
+def test_get_events_command(mocker, connection, args, expected_since, expected_to):
+    """
+    Given:
+        - A request to get historical events with a specified time range.
+
+    When:
+        - The get_events_command is called.
+
+    Then:
+        - Ensure the command processes the arguments correctly.
+        - Ensure it calls websocket_connections with correctly formatted time strings.
+        - Ensure it returns the list of events fetched.
+    """
+    mock_events = [{"event": 1}, {"event": 2}]
+    mocker.patch.object(ProofpointEmailSecurityEventCollector, "fetch_events", return_value=mock_events)
+
+    @contextmanager
+    def mock_websocket_connections(host, cluster_id, api_key, **kwargs):
+        with ExitStack():
+            yield [EventConnection("audit", url="wss://test", headers={}, check_heartbeat=False)]
+
+    websocket_connections_mocker = mocker.patch.object(
+        ProofpointEmailSecurityEventCollector,
+        "websocket_connections",
+        side_effect=mock_websocket_connections,
+    )
+    mocker.patch.object(EventConnection, "connect", return_value=connection)
+
+    events, _ = get_events_command("host", "cid", "key", args)
+
+    assert events == mock_events
+
+    websocket_connections_kwargs = websocket_connections_mocker.call_args.kwargs
+    assert websocket_connections_kwargs["since_time"] == expected_since
+    assert websocket_connections_kwargs["to_time"] == expected_to
