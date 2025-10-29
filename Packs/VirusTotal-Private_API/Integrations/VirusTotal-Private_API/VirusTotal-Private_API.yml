@@ -463,3 +463,13 @@ tests:
 - virusTotalPrivateAPI-test-playbook
 - File Enrichment - Virus Total Private API Test
 fromversion: 5.0.0
+supportedModules:
+- edr
+- cloud
+- X5
+- ENT_PLUS
+- cloud_runtime_security
+- X3
+- X1
+- xsiam
+- agentix
