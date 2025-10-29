@@ -2785,6 +2785,12 @@ class KMS:
         """
         Enables automatic rotation for a symmetric customer-managed KMS key.
         Uses a custom rotation period (days) from args; valid range is 90–2560.
+        Args:
+            client (BotoClient): The boto3 client for KMS service.
+            args (Dict[str, Any]): Command arguments including key id and rotation period in days.
+
+        Returns:
+            CommandResults: Results of the operation with updated key rotation settings.
         """
         key_id = args.get("key_id", "")
         rot_period = arg_to_number(args.get("rotation_period_in_days"))
@@ -2816,6 +2822,17 @@ class ELB:
         Modifies Classic ELB attributes:
         Cross-Zone Load Balancing, Access Logs, Connection Draining, Connection Settings, AdditionalAttributes.
         Sends only sub-blocks provided by the user.
+        Args:
+            client (BotoClient): The boto3 client for ELB service.
+            args (Dict[str, Any]): Command arguments including load balancer name and setting values:
+                - cross-zone load balancing (enabled).
+                - access logs (enabled, s3 bucket name, s3 bucket prefix, emit interval).
+                - connection draining (enabled, timeout).
+                - connection settings (idle timeout).
+                - desync mitigation mode (monitor, defensive, strictest).
+
+        Returns:
+            CommandResults: Results of the operation with updated load balancer attributes.
         """
         lb_name = args.get("load_balancer_name", "")
         attrs: Dict[str, Any] = {}
@@ -2884,9 +2901,15 @@ class ELB:
             raise DemistoException(f"Error modifying load balancer '{lb_name}': {str(e)}")
 
     @staticmethod
-    def add_block_if_any(block_name: str, block: dict, target: dict):
+    def add_block_if_any(block_name: str, block: dict, target: dict) -> None:
         """
         Adds a block to the target dictionary if the value is not empty.
+        Args:
+            block_name (str): The name of the block to add.
+            block (dict): The block to add.
+            target (dict): The target dictionary to add the block to.
+        Returns:
+            None
         """
         remove_nulls_from_dictionary(block)
         if block:
@@ -2898,18 +2921,24 @@ class ELB:
         Minimal formatter:
         - prints "Updated attributes for <lb>"
         - then one table per attribute block under LoadBalancerAttributes
+        Args:
+            lb_name (str): The name of the Classic ELB.
+            resp (dict): The response from the modify_load_balancer_attributes API call.
+        Returns:
+            str: The formatted output.
         """
         lb_attrs = resp.get("LoadBalancerAttributes", {})
         sections: list[str] = [f"### Updated attributes for Classic ELB {lb_name}"]
 
-        for attr_name, attr_value in lb_attrs.items():
+        for attr_name, attr_values in lb_attrs.items():
             title = attr_name
-            if isinstance(attr_value, dict):
-                sections.append(tableToMarkdown(title, [attr_value], removeNull=True))
-            elif isinstance(attr_value, list) and attr_value and isinstance(attr_value[0], dict):
-                sections.append(tableToMarkdown(title, attr_value, removeNull=True))
+            if isinstance(attr_values, dict):
+                sections.append(tableToMarkdown(title, [attr_values], removeNull=True))
+            elif attr_values and isinstance(attr_values, list):
+                for attr_value in attr_values:
+                    sections.append(tableToMarkdown(title, attr_value, removeNull=True))
             else:
-                sections.append(tableToMarkdown(title, [{"Value": attr_value}], removeNull=True))
+                sections.append(tableToMarkdown(title, [{"Value": attr_values}], removeNull=True))
         return "\n\n".join(sections)
 
 
