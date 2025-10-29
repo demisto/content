@@ -203,7 +203,7 @@ MSHTA = [
 
 
 SUSPICIOUS_COMMAND_PATTERNS = [
-    r"\-(?:EncodedCommand|enc|e)\b",
+    r"\-(?:EncodedCommand|enc|ec|e)\b",
     r"\-(?:ExecutionPolicy|exec)\s+Bypass\b",
     r"\-(?:NonInteractive|noi)\b",
     r"\-(?:noprofile|nop)\b",

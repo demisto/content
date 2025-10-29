@@ -12,6 +12,8 @@ from CommandLineAnalysis import (
     check_powershell_suspicious_patterns,
     check_macOS_suspicious_commands,
     analyze_command_line,
+    handle_powershell_base64,
+    
 )
 
 # Test data
@@ -86,6 +88,9 @@ def test_check_suspicious_content():
     assert "-enc" in matches
     assert "-WindowStyle Hidden" in matches
 
+    command = "powershell -ec Y2FsYy5leGU="
+    matches = check_suspicious_content(command)
+    assert "-ec" in matches
 
 # Test check_amsi
 def test_check_amsi():
@@ -130,6 +135,19 @@ def test_custom_high_risk_combo():
     result = analyze_command_line(command, custom_patterns=["test"])
     assert result["score"] == 71
     assert result["risk"] == "High Risk"
+
+
+# Test handle_powershell_base64
+def test_handle_powershell_base64():
+    command_line = "powershell -ec VGhpcyBpcyBhIHRlc3Q="
+    result = handle_powershell_base64(command_line)
+    assert result[0] == 'powershell "This is a test"'
+    assert result[1] is True
+    
+    command_line = "powershell -enc VGhpcyBpcyBhIHRlc3Q="
+    result = handle_powershell_base64(command_line)
+    assert result[0] == 'powershell "This is a test"'
+    assert result[1] is True
 
 
 # Test analyze_command_line
