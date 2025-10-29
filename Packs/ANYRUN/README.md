@@ -15,17 +15,11 @@ coverage, and increase the detection rate, including hidden and missed malware.
 With the ANY.RUN content pack for Cortex XSOAR, your
 organization can:
 
-* Submit files and URLs to a secure sandbox for analysis
-across Windows, Linux, and Android to streamline triage.
-* Retrieve detailed reports in JSON, HTML, or IoC formats
-for incident response.
-* Ingest fresh threat data every 2 hours from over 15,000
-organizations for threat hunting.
-* Query threat details for IoCs, indicators of attack (IoAs),
-and indicators of behavior (IoBs) to enrich incident
-investigations.
-* Automate workflows using Cortex XSOAR playbooks to
-reduce manual workload.
+* Submit files and URLs to a secure sandbox for analysis across Windows, Linux, and Android to streamline triage.
+* Retrieve detailed reports in JSON, HTML, or IoC formats for incident response.
+* Ingest fresh threat data in real time from over 15,000 organizations for threat hunting.
+* Query threat details for IoCs, indicators of attack (IoAs), and indicators of behavior (IoBs) to enrich incident investigations.
+* Automate workflows using Cortex XSOAR playbooks to reduce manual workload.
 
 ### Palo Alto Networks and ANY.RUN Integrations
 
@@ -39,17 +33,11 @@ Product integrations between Palo Alto Networks and ANY.RUN include:
 
 * Slash incident response time with automated, secure
 malware analysis in Cortex XSOAR®
-* Increase detection rates via interactive sandboxing
-across Windows, Linux, and Android.
-* Improve proactive security with fresh indicators
-of compromise (IoCs) from 15,000 SOCs, updated
-every 2 hours.
-* Enhance incident context with threat analysis results
-right in Cortex XSOAR.
-* Reduce SOC workload by automating threat triage
-and response tasks.
-* Help ensure compliance with SOC 2/GDPR via a
-secure, private analysis mode.
+* Increase detection rates via interactive sandboxing across Windows, Linux, and Android.
+* Improve proactive security with fresh indicators of compromise (IoCs) from 15,000 SOCs, updated in real time.
+* Enhance incident context with threat analysis results right in Cortex XSOAR.
+* Reduce SOC workload by automating threat triage and response tasks.
+* Help ensure compliance with SOC 2/GDPR via a secure, private analysis mode.
 
 ### Support
 
