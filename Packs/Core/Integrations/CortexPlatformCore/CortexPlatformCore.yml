@@ -1098,6 +1098,285 @@ script:
         - contextPath: Core.CaseExtraData.file_artifacts.data.type
           description: The type of the file artifact.
           type: String
+    - name: core-get-vulnerabilities
+      description: "Retrieves vulnerabilities based on specified filters."
+      arguments:
+        - name: limit
+          description: "The maximum number of vulnerabilities to return."
+          defaultValue: "5"
+        - defaultValue: LAST_OBSERVED
+          description: The field by which to sort the results.
+          name: sort_field
+        - auto: PREDEFINED
+          description: The order in which to sort the results.
+          name: sort_order
+          predefined:
+            - DESC
+            - ASC
+        - name: cve_id
+          description: "The CVE ID. Accepts a comma-separated list."
+          isArray: true
+        - name: issue_id
+          description: "The issue ID. Accepts a comma-separated list."
+          isArray: true
+        - name: cvss_score_gte
+          description: "The minimum CVSS score."
+        - name: epss_score_gte
+          description: "The minimum EPSS score."
+        - name: internet_exposed
+          description: "Filter by internet exposed assets."
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+        - name: exploitable
+          description: "Filter by exploitable vulnerabilities."
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+        - name: has_kev
+          description: "Filter by vulnerabilities that have a Known Exploited Vulnerability (KEV)."
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+        - name: affected_software
+          description: "Filter by affected software. Accepts a comma-separated list."
+          isArray: true
+        - name: on_demand_fields
+          description: "A comma-separated list of additional fields to retrieve."
+          isArray: true
+        - name: not_assigned
+          description: "Filter by vulnerabilities not assigned to a user."
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+        - description: Supports epoch timestamp and simplified extended ISO format (YYYY-MM-DDThh:mm:ss).
+          name: start_time
+        - description: Supports epoch timestamp and simplified extended ISO format (YYYY-MM-DDThh:mm:ss). If start time is provided without end_time it will be from start_time until now.
+          name: end_time
+        - auto: PREDEFINED
+          description: The severity of the vulnerability issue.
+          isArray: true
+          name: severity
+          predefined:
+            - info
+            - low
+            - medium
+            - high
+            - critical
+      outputs:
+        - contextPath: Core.VulnerabilityIssue.ISSUE_ID
+          description: The unique identifier for the vulnerability issue.
+          type: String
+        - contextPath: Core.VulnerabilityIssue.CVE_ID
+          description: The CVE identifier for the vulnerability.
+          type: String
+        - contextPath: Core.VulnerabilityIssue.CVE_DESCRIPTION
+          description: The description of the CVE.
+          type: String
+        - contextPath: Core.VulnerabilityIssue.ASSET_NAME
+          description: The name of the affected asset.
+          type: String
+        - contextPath: Core.VulnerabilityIssue.PLATFORM_SEVERITY
+          description: The severity of the vulnerability as determined by the platform.
+          type: String
+        - contextPath: Core.VulnerabilityIssue.EPSS_SCORE
+          description: The Exploit Prediction Scoring System (EPSS) score.
+          type: Number
+        - contextPath: Core.VulnerabilityIssue.CVSS_SCORE
+          description: The Common Vulnerability Scoring System (CVSS) score.
+          type: Number
+        - contextPath: Core.VulnerabilityIssue.ASSIGNED_TO
+          description: The email of the user assigned to the vulnerability.
+          type: String
+        - contextPath: Core.VulnerabilityIssue.ASSIGNED_TO_PRETTY
+          description: The full name of the user assigned to the vulnerability.
+          type: String
+        - contextPath: Core.VulnerabilityIssue.AFFECTED_SOFTWARE
+          description: The software affected by the vulnerability.
+          type: Unknown
+        - contextPath: Core.VulnerabilityIssue.FIX_AVAILABLE
+          description: Indicates if a fix is available for the vulnerability.
+          type: Boolean
+        - contextPath: Core.VulnerabilityIssue.INTERNET_EXPOSED
+          description: Indicates if the asset is exposed to the internet.
+          type: Boolean
+        - contextPath: Core.VulnerabilityIssue.HAS_KEV
+          description: Indicates if the vulnerability is a Known Exploited Vulnerability (KEV).
+          type: Boolean
+        - contextPath: Core.VulnerabilityIssue.EXPLOITABLE
+          description: Indicates if the vulnerability is exploitable.
+          type: Boolean
+        - contextPath: Core.VulnerabilityIssue.ASSET_IDS
+          description: The unique identifier for the asset.
+          type: String
+    - arguments:
+      - name: page_size
+        description: The number of assets to return per page. Default is 100.
+      - name: page_number
+        description: The page number for the assets to return for pagination. Default is 0.
+      - name: asset_names
+        description: Comma-separated list of asset names to search for.
+      - name: asset_types
+        description: Comma-separated list of asset types to search for.
+      - name: asset_tags
+        description: |
+          JSON list of asset tag:value pairs to search for. (e.g. `[{"tag1": "value1"}, {"tag2": "value2"}]`).
+      - name: asset_ids
+        description: Comma-separated list of asset IDs to search for.
+      - name: asset_providers
+        description: Comma-separated list of asset providers to search for.
+      - name: asset_realms
+        description: Comma-separated list of asset realms to search for.
+      - name: asset_groups
+        description: |
+          JSON list of asset group to search for. (e.g. `["group1", "group2"]`).
+      name: core-search-assets
+      description: Search for assets in XDR based on some filters.
+      outputs:
+      - contextPath: Core.Asset.external_provider_id
+        description: The external provider ID of the asset.
+      - contextPath: Core.Asset.first_observed
+        description: The first time the asset was observed.
+      - contextPath: Core.Asset.tags
+        description: The tags of the asset.
+      - contextPath: Core.Asset.realm
+        description: The realm of the asset.
+      - contextPath: Core.Asset.type.id
+        description: The ID of the asset type.
+      - contextPath: Core.Asset.related_issues.critical_issues
+        description: Critical issues related to the asset.
+      - contextPath: Core.Asset.id
+        description: The ID of the asset.
+      - contextPath: Core.Asset.last_observed
+        description: The last time the asset was observed.
+      - contextPath: Core.Asset.type.category
+        description: The category of the asset type.
+      - contextPath: Core.Asset.related_cases.critical_cases
+        description: Critical cases related to the asset.
+      - contextPath: Core.Asset.group_ids
+        description: The group IDs of the asset.
+      - contextPath: Core.Asset.type.class
+        description: The class of the asset type.
+      - contextPath: Core.Asset.related_issues.issues_breakdown
+        description: The related issues breakdown of the asset.
+      - contextPath: Core.Asset.type.name
+        description: The type of the asset.
+      - contextPath: Core.Asset.name
+        description: The name of the asset.
+      - contextPath: Core.Asset.strong_id
+        description: The strong ID of the asset.
+      - contextPath: Core.Asset.cloud.region
+        description: The cloud region of the asset.
+      - contextPath: Core.Asset.related_cases.cases_breakdown
+        description: The related cases breakdown of the asset.
+      - contextPath: Core.Asset.provider
+        description: The asset provider.
+    - arguments:
+      - description: Issue ID to update. If empty, updates the current issue ID.
+        name: issue_id
+        type: string
+      - description: Email address of the user to assign the issue to.
+        name: assigned_user_mail
+        type: string
+      - name: severity
+        auto: PREDEFINED
+        description: Change the severity of an issue. Low (1), Medium (2), High (3), Critical (4). Must be a number.
+        type: string
+        predefined:
+        - 1
+        - 2
+        - 3
+        - 4
+      - name: name
+        description: Change the issue name.
+        type: string
+      - name: occurred
+        description: >
+          Change the occurred time of an issue. Supports different time formats, for example: 3 days ago, 2017-09-27T10:00:00+03:00.
+        type: string
+      - name: phase
+        description: Change the phase of an issue.
+        type: string
+      name: core-update-issue
+      description: Updates the properties of an issue. This command does not provide an explicit indication of success.
+    - arguments:
+        - description: The maximum number of groups to return.
+          defaultValue: "50"
+          name: limit
+        - description: JSON list of groups to search for. (e.g. `["group1", "group2"]`).
+          name: name
+        - description: Comma separated list of ids to search for.
+          name: id
+        - auto: PREDEFINED
+          description: Filter asset groups by type.
+          name: type
+          predefined:
+            - STATIC
+            - DYNAMIC
+        - description: JSON list of descriptions to search for. (e.g. `["description1", "description2"]`).
+          name: description
+      name: core-search-asset-groups
+      description: Retrieve asset groups from the Cortex platform with optional filtering.
+      outputs:
+        - contextPath: Core.AssetGroups.name
+          description: The name of the asset group.
+          type: String
+        - contextPath: Core.AssetGroups.filter
+          description: The filter criteria for the asset group.
+          type: String
+        - contextPath: Core.AssetGroups.membership_predicate
+          description: The predicate used to create the asset group.
+          type: String
+        - contextPath: Core.AssetGroups.type
+          description: The type of the asset group.
+          type: String
+        - contextPath: Core.AssetGroups.description
+          description: The description of the asset group.
+          type: String
+        - contextPath: Core.AssetGroups.modified_by
+          description: The user who modified the asset group.
+          type: String
+        - contextPath: Core.AssetGroups.created_by
+          description: The user who created the asset group.
+          type: String
+        - contextPath: Core.AssetGroups.created_by_pretty
+          description: The formatted name of the user who created the asset group.
+          type: String
+        - contextPath: Core.AssetGroups.modified_by_pretty
+          description: The formatted name of the user who created the asset group.
+          type: String
+    - arguments:
+        - description: The ID of the issue to get recommendations for.
+          name: issue_id
+          required: true
+      name: core-get-issue-recommendations
+      description: Get comprehensive recommendations for an issue, including remediation steps, playbook suggestions, and recommended actions.
+      outputs:
+        - contextPath: Core.IssueRecommendations.issue_id
+          description: The unique identifier for the issue.
+          type: String
+        - contextPath: Core.IssueRecommendations.issue_name
+          description: The name of the issue.
+          type: String
+        - contextPath: Core.IssueRecommendations.severity
+          description: The severity of the issue.
+          type: String
+        - contextPath: Core.IssueRecommendations.description
+          description: Description of the issue.
+          type: String
+        - contextPath: Core.IssueRecommendations.remediation
+          description: Remediation steps and recommendations for the issue.
+          type: String
+        - contextPath: Core.IssueRecommendations.playbook_suggestions.playbook_id
+          description: The ID of the suggested playbook.
+          type: String
+        - contextPath: Core.IssueRecommendations.playbook_suggestions.suggestion_rule_id
+          description: The ID of the suggestion rule that generated this recommendation.
+          type: String
   runonce: false
   script: "-"
   subtype: python3
