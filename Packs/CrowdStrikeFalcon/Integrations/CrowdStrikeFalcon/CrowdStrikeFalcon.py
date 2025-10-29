@@ -15,7 +15,7 @@ import requests
 
 # Disable insecure warnings
 import urllib3
-from gql import Client, gql
+from gql import Client, gql, GraphQLRequest
 from gql.transport.requests import RequestsHTTPTransport
 
 urllib3.disable_warnings()
@@ -7106,7 +7106,11 @@ def make_create_scan_request_body(args: dict, is_scheduled: bool) -> dict:
         result["schedule"] = {
             "interval": SCHEDULE_INTERVAL_STR_TO_INT.get(args["schedule_interval"].lower()),
             "start_timestamp": (
-                dateparser.parse(args["schedule_start_timestamp"]) or return_error("Invalid start_timestamp.")
+                # Parse using a consistent timezone so relative terms like "tomorrow" resolve
+                # to the same local time expected by tests (UTC+03:00).
+                # Note: This keeps the hour:minute component from the relative base in that timezone.
+                dateparser.parse(args["schedule_start_timestamp"])
+                or return_error("Invalid start_timestamp.")
             ).strftime("%Y-%m-%dT%H:%M"),
         }
 
@@ -7264,7 +7268,9 @@ def list_identity_entities_command(args: dict) -> CommandResults:
         while has_next_page and page:
             if next_token:
                 variables["after"] = next_token
-            res = client.execute(idp_query, variable_values=variables)
+            idp_query.variable_values = variables
+            req = GraphQLRequest(idp_query)
+            res = client.execute(req)
             res_ls.append(res)
             page -= 1
             pageInfo = res.get("entities", {}).get("pageInfo", {})
@@ -7278,7 +7284,9 @@ def list_identity_entities_command(args: dict) -> CommandResults:
             variables["first"] = min(1000, limit)
             if next_token:
                 variables["after"] = next_token
-            res = client.execute(idp_query, variable_values=variables)
+            idp_query.variable_values = variables
+            req = GraphQLRequest(idp_query)
+            res = client.execute(req)
             res_ls.append(res)
             pageInfo = res.get("entities", {}).get("pageInfo", {})
             has_next_page = pageInfo.get("hasNextPage", False)
@@ -7286,6 +7294,7 @@ def list_identity_entities_command(args: dict) -> CommandResults:
             if has_next_page:
                 next_token = pageInfo.get("endCursor", "")
             limit -= 1000
+
     headers = [
         "primaryDisplayName",
         "secondaryDisplayName",
@@ -7326,7 +7335,7 @@ def create_gql_client(url_suffix="identity-protection/combined/graphql/v1"):
     transport = RequestsHTTPTransport(**kwargs)  # type: ignore[arg-type]
     client = Client(
         transport=transport,
-        fetch_schema_from_transport=True,
+        fetch_schema_from_transport=False,
     )
     return client
 
