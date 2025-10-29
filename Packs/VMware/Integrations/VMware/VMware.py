@@ -63,7 +63,7 @@ class Client(BaseClient):
         """Authenticates and returns a session ID."""
         # https://developer.broadcom.com/xapis/vsphere-automation-api/latest/api/session/post/
         auth = (self.user_name, self.password)
-        session_id_response = self._http_request(method="POST", url_suffix="/api/session", auth=auth, resp_type="content")
+        session_id_response = self._http_request(method="POST", url_suffix="/api/session", auth=auth, resp_type="text")
         demisto.debug(f"Got {session_id_response=}.")
         session_id = session_id_response
         if not session_id:
