@@ -18,6 +18,8 @@ from ProofpointEmailSecurityEventCollector import (
     timedelta,
     websocket_connections,
     get_events_command,
+    PING_TIMEOUT,
+    CLOSE_TIMEOUT,
 )
 
 CURRENT_TIME: datetime | None = None
@@ -142,6 +144,8 @@ def test_connects_to_websocket(mocker):
         connect_mock.assert_any_call(
             f"wss://host/v1/stream?cid=cluster_id&type={event_type}&sinceTime=2023-08-16T12:24:12.147573",
             additional_headers={"Authorization": "Bearer api_key"},
+            ping_timeout=PING_TIMEOUT,
+            close_timeout=CLOSE_TIMEOUT,
         )
 
     connect_mock = mocker.patch.object(ProofpointEmailSecurityEventCollector, "connect")
@@ -157,6 +161,8 @@ def test_connects_to_websocket(mocker):
         connect_mock.assert_any_call(
             f"wss://host/v1/stream?cid=cluster_id&type={event_type}&sinceTime=2023-08-14T12:24:12.147573&toTime=2023-08-16T12:24:12.147573",
             additional_headers={"Authorization": "Bearer api_key"},
+            ping_timeout=PING_TIMEOUT,
+            close_timeout=CLOSE_TIMEOUT,
         )
 
 

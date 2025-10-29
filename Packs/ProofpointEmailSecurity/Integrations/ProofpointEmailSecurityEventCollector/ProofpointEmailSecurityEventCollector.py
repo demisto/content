@@ -31,6 +31,7 @@ DATE_FILTER_FORMAT = "%Y-%m-%dT%H:%M:%S%z"
 PING_TIMEOUT = 60  # Timeout for keepalive pings in seconds
 CLOSE_TIMEOUT = 60  # Timeout for closing the connection in seconds
 
+
 class EventConnection:
     def __init__(
         self,

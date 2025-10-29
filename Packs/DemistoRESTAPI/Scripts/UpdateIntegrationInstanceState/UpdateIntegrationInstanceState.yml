@@ -13,7 +13,6 @@ args:
   description: Whether to enable or disable the instance.
 timeout: '0'
 type: python
-runas: DBotRole
 subtype: python3
 tests:
 - No tests
