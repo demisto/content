@@ -1,0 +1,18 @@
+commonfields:
+  id: DatadogSyncIncidentFields
+  version: -1
+name: DatadogSyncIncidentFields
+script: ""
+type: python
+tags:
+  - datadog
+comment: Fetches the latest Datadog Security Signal data and updates incident fields.
+enabled: true
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.12.11.4819260
+runas: DBotWeakRole
+fromversion: 6.8.0
+tests:
+  - No tests (auto formatted)
