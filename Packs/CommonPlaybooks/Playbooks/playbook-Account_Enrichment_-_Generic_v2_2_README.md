@@ -207,4 +207,4 @@ This playbook does not use any integrations.
 
 ---
 
-![Account Enrichment - Generic v2.2](../doc_files/Account_Enrichment_-_Generic_v2_2.png)
+![Account Enrichment - Generic v2_2](../doc_files/Account_Enrichment_-_Generic_v2_2.png)
