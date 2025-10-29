@@ -197,33 +197,6 @@ def convert_datetimes_to_iso_safe(data):
     json_string = json.dumps(data, cls=ISOEncoder)
     return json.loads(json_string)
 
-
-def format_elb_modify_attributes_hr(lb_name: str, resp: dict) -> str:
-    """
-    Minimal formatter:
-    - prints "Updated attributes for <lb>"
-    - then one table per attribute block under LoadBalancerAttributes
-    """
-    lb_attrs = resp.get("LoadBalancerAttributes", {})
-    sections: list[str] = [f"### Updated attributes for Classic ELB {lb_name}"]
-
-    for attr_name, attr_value in lb_attrs.items():
-        title = attr_name
-        if isinstance(attr_value, dict):
-            sections.append(tableToMarkdown(title, [attr_value], removeNull=True))
-        elif isinstance(attr_value, list) and attr_value and isinstance(attr_value[0], dict):
-            sections.append(tableToMarkdown(title, attr_value, removeNull=True))
-        else:
-            sections.append(tableToMarkdown(title, [{"Value": attr_value}], removeNull=True))
-    return "\n\n".join(sections)
-
-
-def add_block_if_any(block_name: str, value: dict, target: dict):
-    remove_nulls_from_dictionary(value)
-    if value:
-        target[block_name] = value
-
-
 class AWSErrorHandler:
     """
     Centralized error handling for AWS boto3 client errors.
@@ -2846,15 +2819,15 @@ class ELB:
         lb_name = args.get("load_balancer_name", "")
         attrs: Dict[str, Any] = {}
         # Cross-zone
-        add_block_if_any(
+        ELB.add_block_if_any(
             block_name="CrossZoneLoadBalancing",
-            value={"Enabled": arg_to_bool_or_none(args.get("cross_zone_load_balancing_enabled"))},
+            block={"Enabled": arg_to_bool_or_none(args.get("cross_zone_load_balancing_enabled"))},
             target=attrs,
         )
         # Access logs
-        add_block_if_any(
+        ELB.add_block_if_any(
             block_name="AccessLog",
-            value={
+            block={
                 "Enabled": arg_to_bool_or_none(args.get("access_log_enabled")),
                 "S3BucketName": args.get("access_log_s3_bucket_name"),
                 "S3BucketPrefix": args.get("access_log_s3_bucket_prefix"),
@@ -2863,18 +2836,18 @@ class ELB:
             target=attrs,
         )
         # Connection draining
-        add_block_if_any(
+        ELB.add_block_if_any(
             block_name="ConnectionDraining",
-            value={
+            block={
                 "Enabled": arg_to_bool_or_none(args.get("connection_draining_enabled")),
                 "Timeout": arg_to_number(args.get("connection_draining_timeout")),
             },
             target=attrs,
         )
         # Connection settings (idle timeout)
-        add_block_if_any(
+        ELB.add_block_if_any(
             block_name="ConnectionSettings",
-            value={"IdleTimeout": arg_to_number(args.get("connection_settings_idle_timeout"))},
+            block={"IdleTimeout": arg_to_number(args.get("connection_settings_idle_timeout"))},
             target=attrs,
         )
         # Additional attributes (JSON list of {Key,Value})
@@ -2892,7 +2865,7 @@ class ELB:
             if status == HTTPStatus.OK:
                 lb_attrs = resp.get("LoadBalancerAttributes", {})
                 out = {"LoadBalancerName": lb_name, "LoadBalancerAttributes": lb_attrs}
-                hr = format_elb_modify_attributes_hr(lb_name, resp)
+                hr = ELB.format_elb_modify_attributes_hr(lb_name, resp)
                 return CommandResults(
                     readable_output=hr,
                     outputs_prefix="AWS.ELB.LoadBalancer",
@@ -2908,6 +2881,35 @@ class ELB:
 
         except Exception as e:
             raise DemistoException(f"Error modifying load balancer '{lb_name}': {str(e)}")
+    
+    @staticmethod
+    def add_block_if_any(block_name: str, block: dict, target: dict):
+        """
+        Adds a block to the target dictionary if the value is not empty.
+        """
+        remove_nulls_from_dictionary(block)
+        if block:
+            target[block_name] = block
+            
+    @staticmethod
+    def format_elb_modify_attributes_hr(lb_name: str, resp: dict) -> str:
+        """
+        Minimal formatter:
+        - prints "Updated attributes for <lb>"
+        - then one table per attribute block under LoadBalancerAttributes
+        """
+        lb_attrs = resp.get("LoadBalancerAttributes", {})
+        sections: list[str] = [f"### Updated attributes for Classic ELB {lb_name}"]
+
+        for attr_name, attr_value in lb_attrs.items():
+            title = attr_name
+            if isinstance(attr_value, dict):
+                sections.append(tableToMarkdown(title, [attr_value], removeNull=True))
+            elif isinstance(attr_value, list) and attr_value and isinstance(attr_value[0], dict):
+                sections.append(tableToMarkdown(title, attr_value, removeNull=True))
+            else:
+                sections.append(tableToMarkdown(title, [{"Value": attr_value}], removeNull=True))
+        return "\n\n".join(sections)
 
 
 def get_file_path(file_id):
