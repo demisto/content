@@ -348,8 +348,20 @@ def test_compute_instances_aggregated_list_by_ip_internal(mocker):
         "items": {
             "zones/us": {
                 "instances": [
-                    {"name": "i-1", "id": "1", "status": "RUNNING", "zone": "us", "networkInterfaces": [{"networkIP": "10.0.0.5"}]},
-                    {"name": "i-2", "id": "2", "status": "RUNNING", "zone": "us", "networkInterfaces": [{"networkIP": "10.0.0.6"}]},
+                    {
+                        "name": "i-1",
+                        "id": "1",
+                        "status": "RUNNING",
+                        "zone": "us",
+                        "networkInterfaces": [{"networkIP": "10.0.0.5"}],
+                    },
+                    {
+                        "name": "i-2",
+                        "id": "2",
+                        "status": "RUNNING",
+                        "zone": "us",
+                        "networkInterfaces": [{"networkIP": "10.0.0.6"}],
+                    },
                 ]
             }
         }
@@ -359,9 +371,7 @@ def test_compute_instances_aggregated_list_by_ip_internal(mocker):
     mocker.patch("GCP.build", return_value=mock_compute)
     mocker.patch("GCP.tableToMarkdown", return_value="md")
 
-    res = compute_instances_aggregated_list_by_ip(
-        mock_creds, {"project_id": "p1", "ip_address": "10.0.0.6"}
-    )
+    res = compute_instances_aggregated_list_by_ip(mock_creds, {"project_id": "p1", "ip_address": "10.0.0.6"})
 
     # Expect only i-2
     assert len(res.outputs) == 1
@@ -390,18 +400,14 @@ def test_compute_instances_aggregated_list_by_ip_external(mocker):
                         "id": "1",
                         "status": "RUNNING",
                         "zone": "us",
-                        "networkInterfaces": [
-                            {"networkIP": "10.0.0.5", "accessConfigs": [{"natIP": "34.1.1.1"}]}
-                        ],
+                        "networkInterfaces": [{"networkIP": "10.0.0.5", "accessConfigs": [{"natIP": "34.1.1.1"}]}],
                     },
                     {
                         "name": "i-2",
                         "id": "2",
                         "status": "RUNNING",
                         "zone": "us",
-                        "networkInterfaces": [
-                            {"networkIP": "10.0.0.6", "accessConfigs": [{"natIP": "34.1.1.2"}]}
-                        ],
+                        "networkInterfaces": [{"networkIP": "10.0.0.6", "accessConfigs": [{"natIP": "34.1.1.2"}]}],
                     },
                 ]
             }
@@ -449,11 +455,7 @@ def test__match_instance_by_ip_internal_external_none():
     """
     from GCP import _match_instance_by_ip
 
-    instance = {
-        "networkInterfaces": [
-            {"networkIP": "10.0.0.5", "accessConfigs": [{"natIP": "34.1.1.1"}]}
-        ]
-    }
+    instance = {"networkInterfaces": [{"networkIP": "10.0.0.5", "accessConfigs": [{"natIP": "34.1.1.1"}]}]}
 
     # Internal mode
     matched, t = _match_instance_by_ip(instance, "10.0.0.5", match_external=False)
@@ -496,9 +498,7 @@ def test_compute_instances_aggregated_list_by_ip_hr_headers(mocker):
                         "id": "1",
                         "status": "RUNNING",
                         "zone": "us",
-                        "networkInterfaces": [
-                            {"networkIP": "10.0.0.5", "accessConfigs": [{"natIP": "34.1.1.1"}]}
-                        ],
+                        "networkInterfaces": [{"networkIP": "10.0.0.5", "accessConfigs": [{"natIP": "34.1.1.1"}]}],
                     }
                 ]
             }
@@ -509,9 +509,7 @@ def test_compute_instances_aggregated_list_by_ip_hr_headers(mocker):
     mocker.patch("GCP.build", return_value=mock_compute)
     ttmd = mocker.patch("GCP.tableToMarkdown", return_value="md")
 
-    compute_instances_aggregated_list_by_ip(
-        mock_creds, {"project_id": "p1", "ip_address": "10.0.0.5"}
-    )
+    compute_instances_aggregated_list_by_ip(mock_creds, {"project_id": "p1", "ip_address": "10.0.0.5"})
 
     # Inspect headers
     _, kwargs = ttmd.call_args
@@ -535,9 +533,7 @@ def test_compute_network_tag_set_add_and_error(mocker):
     mock_compute.instances.return_value = mock_instances
 
     # Instance has tags
-    mock_instances.get.return_value.execute.return_value = {
-        "tags": {"fingerprint": "fp", "items": ["old"]}
-    }
+    mock_instances.get.return_value.execute.return_value = {"tags": {"fingerprint": "fp", "items": ["old"]}}
     # Successful setTags
     mock_instances.setTags.return_value.execute.return_value = {"id": "op"}
 
@@ -554,13 +550,15 @@ def test_compute_network_tag_set_add_and_error(mocker):
     assert "Added 'new' tag" in res.readable_output
 
     # Error path
-    resp = mocker.MagicMock(); resp.status = 400
+    resp = mocker.MagicMock()
+    resp.status = 400
     mock_instances.setTags.return_value.execute.side_effect = HttpError(resp, b"bad request")
     res2 = compute_network_tag_set(
         mock_creds,
         {"project_id": "p1", "zone": "us-central1-a", "resource_name": "i-1", "tag": "x"},
     )
     assert "status code: 400" in res2.readable_output
+
 
 def test_storage_bucket_policy_delete_multiple_entities(mocker):
     """

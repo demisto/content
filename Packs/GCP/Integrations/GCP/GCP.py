@@ -716,9 +716,7 @@ def compute_network_tag_set(creds: Credentials, args: dict[str, Any]) -> Command
 
     demisto.debug(f"Add network tag response for {project_id}: \n{response}")
     new_tag = args.get("tag")
-    readable_output = (
-        f"Added '{new_tag}' tag to instance {resource_name} successfully\n" f"The full network tag list is: {tags}"
-    )
+    readable_output = f"Added '{new_tag}' tag to instance {resource_name} successfully\n" f"The full network tag list is: {tags}"
 
     return CommandResults(readable_output=readable_output)
 
