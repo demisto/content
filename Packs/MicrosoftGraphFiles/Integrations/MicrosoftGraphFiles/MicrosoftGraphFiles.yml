@@ -112,7 +112,7 @@ script:
         For resource type 'drive': To get a list of all drives in your site, use the msgraph-list-drives-in-site command.
         For resource type 'group': To get a list of all groups that exists, configure the 'Entra ID Groups' integration and use the msgraph-groups-list-groups command.
         For resource type 'sites': To get a list of all sites, use the msgraph-list-sharepoint-sites command.
-        For resource type 'users': To get a list of all users that exists, configure the 'Azure Active Directory Users' integration and use the msgraph-user-list command.
+        For resource type 'users': To get a list of all users that exists, configure the 'Entra ID Users' integration and use the msgraph-user-list command.
       name: object_type_id
       required: true
     - description: |-
@@ -137,7 +137,7 @@ script:
         For resource type 'drive': To get a list of all drives in your site, use the msgraph-list-drives-in-site command.
         For resource type 'group': To get a list of all groups that exists, configure the 'Entra ID Groups' integration and use the msgraph-groups-list-groups command.
         For resource type 'sites': To get a list of all sites, use the msgraph-list-sharepoint-sites command.
-        For resource type 'users': To get a list of all users that exists, configure the 'Azure Active Directory Users' integration and use the msgraph-user-list command.
+        For resource type 'users': To get a list of all users that exists, configure the 'Entra ID Users' integration and use the msgraph-user-list command.
       name: object_type_id
       required: true
     - description: |-
@@ -235,7 +235,7 @@ script:
         For resource type 'drive': To get a list of all drives in your site, use the msgraph-list-drives-in-site command.
         For resource type 'group': To get a list of all groups that exists, configure the 'Entra ID Groups' integration and use the msgraph-groups-list-groups command.
         For resource type 'sites': To get a list of all sites, use the msgraph-list-sharepoint-sites command.
-        For resource type 'users': To get a list of all users that exists, configure the 'Azure Active Directory Users' integration and use the msgraph-user-list command.
+        For resource type 'users': To get a list of all users that exists, configure the 'Entra ID Users' integration and use the msgraph-user-list command.
       name: object_type_id
       required: true
     - description: |-
@@ -330,7 +330,7 @@ script:
         For resource type 'drive': To get a list of all drives in your site, use the msgraph-list-drives-in-site command.
         For resource type 'group': To get a list of all groups that exists, configure the 'Entra ID Groups' integration and use the msgraph-groups-list-groups command.
         For resource type 'sites': To get a list of all sites, use the msgraph-list-sharepoint-sites command.
-        For resource type 'users': To get a list of all users that exists, configure the 'Azure Active Directory Users' integration and use the msgraph-user-list command.
+        For resource type 'users': To get a list of all users that exists, configure the 'Entra ID Users' integration and use the msgraph-user-list command.
       name: object_type_id
       required: true
     - description: |-
@@ -470,7 +470,7 @@ script:
         For resource type 'drive': To get a list of all drives in your site, use the msgraph-list-drives-in-site command.
         For resource type 'group': To get a list of all groups that exists, configure the 'Entra ID Groups' integration and use the msgraph-groups-list-groups command.
         For resource type 'sites': To get a list of all sites, use the msgraph-list-sharepoint-sites command.
-        For resource type 'users': To get a list of all users that exists, configure the 'Azure Active Directory Users' integration and use the msgraph-user-list command.
+        For resource type 'users': To get a list of all users that exists, configure the 'Entra ID Users' integration and use the msgraph-user-list command.
       name: object_type_id
       required: true
     - description: |-
@@ -609,7 +609,7 @@ script:
         For resource type 'drive': To get a list of all drives in your site, use the msgraph-list-drives-in-site command.
         For resource type 'group': To get a list of all groups that exists, configure the 'Entra ID Groups' integration and use the msgraph-groups-list-groups command.
         For resource type 'sites': To get a list of all sites, use the msgraph-list-sharepoint-sites command.
-        For resource type 'users': To get a list of all users that exists, configure the 'Azure Active Directory Users' integration and use the msgraph-user-list command.
+        For resource type 'users': To get a list of all users that exists, configure the 'Entra ID Users' integration and use the msgraph-user-list command.
       name: object_type_id
       required: true
     - description: |-

@@ -963,8 +963,8 @@ tasks:
     task:
       id: be533930-e327-4945-8fb7-c47ada329a2f
       version: -1
-      name: Is Azure Active Directory Users integration enabled?
-      description: Returns 'yes' if the integration brand is available. Otherwise returns 'no'.
+      name: Is Entra ID Users integration enabled?
+      description: Returns 'yes' if the Entra ID Users integration (formerly azure active directory users) is available. Otherwise returns 'no'.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
