@@ -1,6 +1,8 @@
 from dataclasses import dataclass, asdict
 from typing import Any
 import json
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
 # Constants
 SERVICENOW_CMDB_RECORD_GET_BY_ID = "servicenow-cmdb-record-get-by-id"
