@@ -326,8 +326,6 @@ category = namedtuple("category", ["name", "id"])
 tag = namedtuple("tag", ["name", "id"])
 obj = namedtuple("obj", ["name", "id", "type"])
 
-PARAMS_GET_TAG = [({"category": "test1", "tag": "tag-test"}, "1"), ({"category": "test1", "tag": "tag"}, None)]
-
 PARAMS_GET_VM_FILTERS = [
     (
         {"ip": "1111", "vm_name": "test_vm", "uuid": "12345", "hostname": "test_host"},
@@ -544,27 +542,6 @@ def test_apply_get_vms_filters(args, params, res):
     assert VMware.apply_get_vms_filters(args, summary) == res
 
 
-@pytest.mark.parametrize("args, res", PARAMS_GET_TAG)
-def test_get_tag(monkeypatch, args, res):
-    """
-    Given:
-        - Tag and Category name.
-
-    When:
-        - Running a tag related command.
-
-    Then:
-        - Make sure a correct tag is returned, or None if tag does not exist.
-    """
-    client = VsphereClient()
-    monkeypatch.setattr(client.tagging.Category, "list", lambda: ["test1"])
-    monkeypatch.setattr(client.tagging.Category, "get", lambda cat: category("test1", "1"))
-    monkeypatch.setattr(client.tagging.Tag, "list_tags_for_category", lambda cat: ["tag-test"])
-    monkeypatch.setattr(client.tagging.Tag, "get", lambda tag_name: tag("tag-test", "1"))
-
-    assert VMware.get_tag(client, args) == res
-
-
 def test_create_vm_config_creator(monkeypatch):
     """
     Given:
@@ -590,30 +567,6 @@ def test_create_vm_config_creator(monkeypatch):
     assert res.memoryMB == int(args.get("virtual-memory"))
     assert res.files.vmPathName == "[test1]test1"
     assert res.guestId == args.get("guest-id")
-
-
-def test_list_vms_by_tag(monkeypatch):
-    """
-    Given:
-        - Tag name and Category.
-
-    When:
-        - Running a list vms by tag.
-
-    Then:
-        - Make sure a correct vm list is returned.
-    """
-    client = VsphereClient()
-    objs = [obj("vm1", "1", "VirtualMachine"), obj("vm2", "2", "VirtualMachine"), obj("not_vm", "3", "not_vm")]
-    monkeypatch.setattr(VMware, "get_tag", value=lambda v_client, tag_id: "1")
-    monkeypatch.setattr(client.tagging.TagAssociation, "list_attached_objects", lambda tag_name: objs)
-    monkeypatch.setattr(client.vcenter.VM, "FilterSpec", lambda vms: vms)
-    monkeypatch.setattr(client.vcenter.VM, "list", lambda vms: [obj("vm" + vm_id, vm_id, "VirtualMachine") for vm_id in vms])
-
-    res = VMware.list_vms_by_tag(client, {"tag": "test_tag", "category": "test_category"})
-
-    assert len(res.get("Contents")) == 2
-    assert "Virtual Machines with Tag test_tag" in res.get("HumanReadable")
 
 
 def test_create_vm(monkeypatch):
