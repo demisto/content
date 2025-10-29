@@ -197,6 +197,7 @@ def convert_datetimes_to_iso_safe(data):
     json_string = json.dumps(data, cls=ISOEncoder)
     return json.loads(json_string)
 
+
 class AWSErrorHandler:
     """
     Centralized error handling for AWS boto3 client errors.
@@ -2881,7 +2882,7 @@ class ELB:
 
         except Exception as e:
             raise DemistoException(f"Error modifying load balancer '{lb_name}': {str(e)}")
-    
+
     @staticmethod
     def add_block_if_any(block_name: str, block: dict, target: dict):
         """
@@ -2890,7 +2891,7 @@ class ELB:
         remove_nulls_from_dictionary(block)
         if block:
             target[block_name] = block
-            
+
     @staticmethod
     def format_elb_modify_attributes_hr(lb_name: str, resp: dict) -> str:
         """
