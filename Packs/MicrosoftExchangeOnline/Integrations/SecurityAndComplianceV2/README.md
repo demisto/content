@@ -63,8 +63,6 @@ To access the **Microsoft Purview** (formerly Compliance Center) capabilities us
    - Look for roles that allow purge actions (Only users with these roles can create or run purge rules):
      - Compliance Administrator.
      - Records Management
-   
-
 
 ### Known Endpoints
 
@@ -80,31 +78,42 @@ To access the **Microsoft Purview** (formerly Compliance Center) capabilities us
 ## Configure SecurityAndComplianceV2 on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for **O365 - Security and Compliance - Content Search**.
-3. Authentication / Authorization methods:
-   1. Click **Add instance** to create and configure a new integration instance.
+2. Search for **O365 - Security And Compliance - Content Search v2**. 
+3. Click **Add instance** to create and configure a new integration instance.
 
-      | **Parameter**   | **Description**                                                   | **Required** |
-      | --------------- | ----------------------------------------------------------------- | ------------ |
-      | url             | Search and Compliance URL.                                         | True         |
-      | App Secret      | The client secret created in Azure.                                | True         |
-      | App ID          | The application (client) ID from Azure                            | True         |
-      | Tenant ID       | The directory (tenant) ID from Azure.                              | True         |
-      | Organization    | The organization name for the Security & Compliance Center.        | True         |
-      | UPN/Email       | The email address (UPN) of the user account for the integration.   | True         |
-      | Insecure        | Trust any certificate (not secure).                                | False        |
+    | **Parameter**   | **Description**                                                   | **Required** |
+    | --------------- | ----------------------------------------------------------------- |--------------|
+    | UPN/Email       | The email address (UPN) of the user account for the integration.   | True         |
+    | UPN Password    | Password for the specified UPN. Required when using interactive delegated authentication.   | False        |
+    | App ID          | The application (client) ID from Azure                            | False        |
+    | Tenant ID       | The directory (tenant) ID from Azure.                              | False        |
+    | Organization    | The organization name for the Security & Compliance Center.        | False        |
+    | Insecure        | Trust any certificate (not secure).                                | False        |
+4. Authentication / Authorization methods:
+- App-only (OAuth2.0) Authentication -
+    1. Fill in the UPN, App ID, and Tenant ID parameters in the integration configuration.
+    2. Run the ***o365-sc-auth-start*** command and follow the instructions.
+    3. For testing completion of authorization process run the ***o365-sc-auth-test*** command.
+- Delegated User Authentication -
+    1. Fill in the UPN parameter in the integration configuration.
+    2. Add the user’s Microsoft 365 password (the regular sign-in password for that UPN).
+    3. For testing completion of authorization process run the ***o365-sc-auth-test*** command.
 
-   2. Open the War Room in the playground.
-   3. Run the `!o365-sc-auth-start` command and follow the instructions.
+- **Note: If a UPN password is provided**
+    - Even if the password is incorrect, the integration will attempt to authenticate using it.
+    - In this case, all connections to Microsoft Security and Compliance PowerShell will use interactive delegated authentication.
+    
+- **Expected Output:**
 
-   **Expected Output:**
-
-   > ## Security and Compliance - Authorize Instructions
+   > ## Security and Compliance - Authorize Instructions App-only (OAuth2.0) Authentication 
    >
    > 1. To sign in, open [https://microsoft.com/devicelogin](https://microsoft.com/devicelogin) in a web browser and enter the code **XXXXXXX** to authenticate.
-   > 2. Run the `!o365-sc-auth-complete` command in the War Room.
-
-   4. Test OAuth2.0 authorization by running the `!o365-sc-auth-test` command.
+   > 2. Run the `!o365-sc-auth-complete` command in the War Room. 
+   > 3. Test OAuth2.0 authorization by running the `!o365-sc-auth-test` command.
+   
+   > ## Security and Compliance - Authorize Instructions Delegated User Authentication
+   >
+   > 1. **Test ok!**
 
 ## Troubleshooting and Testing
 
@@ -117,12 +126,10 @@ To access the **Microsoft Purview** (formerly Compliance Center) capabilities us
 **Solution:**
 **Verify Required Parameters:** Ensure that all required parameters in the integration instance configuration are correctly filled out. This includes:
 
-- **URL**: Ensure the correct URL is provided for the Security & Compliance Center.
-- **App Secret**: The client secret created in Azure.
+- **UPN/Email**: The email address (UPN) of the user account for the integration.
 - **App ID**: The application (client) ID from Azure.
 - **Tenant ID**: The directory (tenant) ID from Azure.
 - **Organization**: The organization name for the Security & Compliance Center.
-- **UPN/Email**: The email address (UPN) of the user account for the integration.
   
 Missing or incorrect values in these fields can cause a 404 error, as the integration might be attempting to connect to an incorrect or non-existent endpoint.
 
@@ -139,7 +146,6 @@ Missing or incorrect values in these fields can cause a 404 error, as the integr
 **Check Parameters for Accuracy:** A 400 Bad Request error often indicates that there is a problem with the request sent to the server. Double-check the following:
 
 - **App ID and Tenant ID**: Ensure these are correctly copied from your Azure app registration.
-- **App Secret**: Verify that the secret has been correctly entered and has not expired.
 - **UPN/Email**: Ensure that the email address is correctly formatted and belongs to a user with the necessary permissions.
 
 **Additional Steps:**
@@ -154,6 +160,23 @@ Missing or incorrect values in these fields can cause a 404 error, as the integr
 - **Double-Check App Permissions**: Make sure that the app registration in Azure has the necessary permissions, specifically `Exchange.ManageAsApp`.
 - **Grant Admin Consent**: Ensure that admin consent has been granted for the required permissions. Without this, the application cannot function correctly.
 - **Review Authentication Setup**: Ensure that "Allow public client flows" is enabled in the Azure app registration settings under **Authentication**.
+
+**Additional Steps:**
+
+- **Use the `!o365-sc-auth-test` Command**: Run this command to verify if the integration can successfully authenticate. If this test fails, revisit the app registration settings and verify all configurations.
+
+
+#### Failed Delegated User Authentication
+
+**Scenario:** You Filled out the 'UPN' and 'UPN Passwords' integation parameters and after running the `!o365-sc-auth-test` command, the authorization process fails, and you gen an error 'you must use multi-factor authentication to access ...'.
+
+**Solution:**
+
+- **Double-Check you disabled MFA**: 
+  1. Go to the [Microsoft 365 Admin Center](https://admin.microsoft.com/) and sign in with your administrator account.
+  2. Under **Users**, select **Active users**.
+  3. At the top, click Multi-factor authentication.
+  4. In the list that appears, find your user and check the Multi-Factor Auth Status column is disabled.
 
 **Additional Steps:**
 
@@ -794,15 +817,8 @@ Please note that when performing the *Delete* action, items which are deleted wi
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | search_name | The name of the compliance search. | Required |
-| action | Search action to perform. Possible values are: Preview, Purge, Export. Default is Preview. | Optional |
+| action | Search action to perform. Possible values are: Preview, Purge. Default is Preview. | Optional |
 | purge_type | Purge type. Possible values are: SoftDelete, HardDelete. Default is SoftDelete. | Optional |
-| share_point_archive_format | Specifies how to export SharePoint and OneDrive search results. Possible values are: IndividualMessage, PerUserZip, SingleZip. IndividualMessage: Export the files uncompressed. This is the default value. PerUserZip: One ZIP file for each user. Each ZIP file contains the exported files for the user. SingleZip: One ZIP file for all users. The ZIP file contains all exported files from all users. This output setting is available only in PowerShell. To specify the format for Exchange search results, use the exchange_archive_format parameter.  | Optional |
-| format | The Format parameter specifies the format of the search results when you use the Export action. Valid values are: FxStream: Export to PST files. This is the only option that's available when you export search results from the Microsoft Purview compliance portal. Mime: Export to .eml message files. This is the default value when you use cmdlets to export the search results. Msg: Export to .msg message files. Possible values are: FxStream, Mime, Msg. | Optional |
-| include_sharepoint_document_versions | Specifies whether to export previous versions of the document when you use the Export action. Possible values are: true, false. | Optional |
-| notify_email | Specifies the email address target for the search results when you use the Export action. | Optional |
-| notify_email_cc | Specifies the cc email address target for the search results when you use the Export action. | Optional |
-| scenario | Specifies the scenario type when you use the Export action. Possible values are: AnalyzeWithZoom, General, GenerateReportsOnly, Inventory, RetentionReports, TriagePreview. | Optional |
-| scope | Specifies the items to include when the action is Export. Possible values are: IndexedItemsOnly, UnindexedItemsOnly, BothIndexedAndUnindexedItems. | Optional |
 
 #### Context Output
 
