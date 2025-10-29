@@ -29,10 +29,7 @@
                 "cloud_runtime_security",
                 "cloud_posture",
                 "xsiam",
-                "edr",
-                "C1",
-                "C3",
-                "X0"
+                "edr"
             ]
         },
         {
@@ -119,8 +116,7 @@
                 "cloud_runtime_security",
                 "cloud_posture",
                 "xsiam",
-                "edr",
-                "asm"
+                "edr"
             ]
         },
         {
@@ -146,10 +142,7 @@
                 "cloud_runtime_security",
                 "cloud_posture",
                 "xsiam",
-                "edr",
-                "C1",
-                "C3",
-                "X0"
+                "edr"
             ]
         },
         {
@@ -178,10 +171,7 @@
                 "X5",
                 "ENT_PLUS",
                 "agentix",
-                "xsiam",
-                "edr",
-                "cloud",
-                "cloud_runtime_security"
+                "xsiam"
             ]
         },
         {
@@ -192,13 +182,7 @@
                 "X5",
                 "ENT_PLUS",
                 "agentix",
-                "xsiam",
-                "edr",
-                "cloud",
-                "cloud_runtime_security",
-                "asm",
-                "cloud_posture",
-                "exposure_management"
+                "xsiam"
             ]
         },
         {
@@ -251,10 +235,7 @@
                 "X5",
                 "ENT_PLUS",
                 "agentix",
-                "xsiam",
-                "edr",
-                "cloud",
-                "cloud_runtime_security"
+                "xsiam"
             ]
         },
         {
@@ -268,9 +249,7 @@
                 "cloud",
                 "cloud_runtime_security",
                 "xsiam",
-                "edr",
-                "C3",
-                "X0"
+                "edr"
             ]
         },
         {
@@ -281,11 +260,7 @@
                 "X5",
                 "ENT_PLUS",
                 "agentix",
-                "xsiam",
-                "X0",
-                "edr",
-                "cloud",
-                "cloud_runtime_security"
+                "xsiam"
             ]
         },
         {
@@ -318,10 +293,7 @@
                 "X5",
                 "ENT_PLUS",
                 "agentix",
-                "xsiam",
-                "edr",
-                "cloud",
-                "cloud_runtime_security"
+                "xsiam"
             ]
         },
         {
