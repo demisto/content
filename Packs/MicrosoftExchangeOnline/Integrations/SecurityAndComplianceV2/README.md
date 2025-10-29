@@ -49,32 +49,22 @@ To set up the integration and register the application in Azure, follow these st
    - Set **Allow public client flows** to **Yes**.
    - Click **Save** to apply the changes.
 
-#### 3. Add an App Secret
-
-1. **Navigate to Certificates & Secrets**: In your app registration, select **Certificates & secrets** under **Manage**.
-2. **Add a Client Secret**:
-   - Click **New client secret**.
-   - Provide a description and select an expiration period.
-   - Click **Add** and immediately copy the secret value for future use.
 
 ### Authentication Requirements
 
-To access the Security & Compliance Center, the account used must either have global administrator permissions or the Role Management role, assigned within the Organization Management role group. This role allows users to view, create, and modify role groups.
+To access the **Microsoft Purview** (formerly Compliance Center) capabilities used by this integration, the account used must either have global administrator permissions or the Role Management role, assigned within the Organization Management role group. This role allows users to view, create, and modify role groups.
 
 **Note:** The account used by the integration does not require Global Administrator permissions.
 
-1. **Login to the [Compliance Center](https://compliance.microsoft.com/)**.
-2. **Set Up Roles**:
-   - Navigate to **Role & Scopes** > **Permissions** under **Microsoft Purview solutions** > **Roles**.
-   - Click **Create role group**.
-   - Provide a name and optional description.
-   - Click **Choose roles** and select the necessary roles (e.g., Case Management, Compliance Search, Search And Purge).
-   - Click **Choose users** to assign users to the role group.
-   - Click **Create**.
+1. **Sign in to the [Microsoft Purview portal](https://purview.microsoft.com/)**
+2. Log in with the account that is being used in the integration.
+3. **Set Up Roles**:
+   - Select Settings in the top-right corner, then select Roles and scopes, and then click Role groups in the left navigation pane. 
+   - Look for roles that allow purge actions (Only users with these roles can create or run purge rules):
+     - Compliance Administrator.
+     - Records Management
+   
 
-The username and password for the user you intend to use must be added to the **UPN/Email** and **Delegated Password** fields in the integration instance configuration.
-
-**Important:** Ensure that the connection is secure, as disabling certificate verification is not supported.
 
 ### Known Endpoints
 
