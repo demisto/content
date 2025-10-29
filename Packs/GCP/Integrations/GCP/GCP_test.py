@@ -421,6 +421,105 @@ def test_compute_instances_aggregated_list_by_ip_external(mocker):
     assert res.outputs[0]["name"] == "i-2"
 
 
+def test__collect_instance_ips_basic():
+    """
+    Given: An instance with multiple NICs and access configs
+    When: _collect_instance_ips is called
+    Then: It returns lists of internal and external IPs
+    """
+    from GCP import _collect_instance_ips
+
+    instance = {
+        "networkInterfaces": [
+            {"networkIP": "10.0.0.5", "accessConfigs": [{"natIP": "34.1.1.1"}]},
+            {"networkIP": "10.0.0.6", "accessConfigs": [{"natIP": "34.1.1.2"}]},
+        ]
+    }
+
+    internal, external = _collect_instance_ips(instance)
+    assert internal == ["10.0.0.5", "10.0.0.6"]
+    assert external == ["34.1.1.1", "34.1.1.2"]
+
+
+def test__match_instance_by_ip_internal_external_none():
+    """
+    Given: An instance with both internal and external IPs
+    When: _match_instance_by_ip is called in both modes
+    Then: It reports correct match flag and matchType
+    """
+    from GCP import _match_instance_by_ip
+
+    instance = {
+        "networkInterfaces": [
+            {"networkIP": "10.0.0.5", "accessConfigs": [{"natIP": "34.1.1.1"}]}
+        ]
+    }
+
+    # Internal mode
+    matched, t = _match_instance_by_ip(instance, "10.0.0.5", match_external=False)
+    assert matched is True
+    assert t == "internal"
+
+    matched, t = _match_instance_by_ip(instance, "34.1.1.1", match_external=False)
+    assert matched is False
+    assert t == "none"
+
+    # External mode
+    matched, t = _match_instance_by_ip(instance, "34.1.1.1", match_external=True)
+    assert matched is True
+    assert t == "external"
+
+    matched, t = _match_instance_by_ip(instance, "1.2.3.4", match_external=True)
+    assert matched is False
+    assert t == "none"
+
+
+def test_compute_instances_aggregated_list_by_ip_hr_headers(mocker):
+    """
+    Given: A match is found
+    When: compute_instances_aggregated_list_by_ip runs
+    Then: HR headers include matchType and matchedIP
+    """
+    from GCP import compute_instances_aggregated_list_by_ip
+
+    mock_creds = mocker.Mock()
+    mock_compute = mocker.Mock()
+    mock_instances = mocker.Mock()
+    mock_compute.instances.return_value = mock_instances
+
+    response = {
+        "items": {
+            "zones/us": {
+                "instances": [
+                    {
+                        "name": "i-1",
+                        "id": "1",
+                        "status": "RUNNING",
+                        "zone": "us",
+                        "networkInterfaces": [
+                            {"networkIP": "10.0.0.5", "accessConfigs": [{"natIP": "34.1.1.1"}]}
+                        ],
+                    }
+                ]
+            }
+        }
+    }
+    mock_instances.aggregatedList.return_value.execute.return_value = response
+
+    mocker.patch("GCP.build", return_value=mock_compute)
+    ttmd = mocker.patch("GCP.tableToMarkdown", return_value="md")
+
+    compute_instances_aggregated_list_by_ip(
+        mock_creds, {"project_id": "p1", "ip_address": "10.0.0.5"}
+    )
+
+    # Inspect headers
+    _, kwargs = ttmd.call_args
+    headers = kwargs.get("headers")
+    assert "matchType" in headers
+    assert "matchedIP" in headers
+
+
 def test_compute_network_tag_set_add_and_error(mocker):
     """
     Given: A VM with existing tags and a new tag to add

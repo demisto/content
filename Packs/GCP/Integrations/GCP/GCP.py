@@ -502,10 +502,10 @@ def compute_firewall_list(creds: Credentials, args: dict[str, Any]) -> CommandRe
     compute = GCPServices.COMPUTE.build(creds)
     response = compute.firewalls().list(**params).execute()  # pylint: disable=E1101
     items = response.get("items", [])
-    next_token = response.get("nextPageToken", "")
+    next_token = response.get("nextPageToken")
     headers = ["name", "id", "direction", "priority", "sourceRanges", "targetTags", "creationTimestamp", "network", "disabled"]
     metadata = (
-        "Run the following command to retrieve the next batch of billings:\n"
+        "Run the following command to retrieve the next batch of firewalls:\n"
         f"!gcp-compute-firewall-list project_id={project_id} page_token={next_token}"
         if next_token
         else None
@@ -569,7 +569,7 @@ def compute_snapshots_list(creds: Credentials, args: dict[str, Any]) -> CommandR
     response = compute.snapshots().list(**params).execute()  # pylint: disable=E1101
     demisto.debug(f"GCP Compute Snapshots \nresponse: \n{response}")
     items = response.get("items", [])
-    next_token = response.get("nextPageToken", "")
+    next_token = response.get("nextPageToken")
     metadata = (
         "Run the following command to retrieve the next batch of billings:\n"
         f"!gcp-compute-snapshots-list project_id={project_id} page_token={next_token}"
@@ -607,12 +607,43 @@ def compute_snapshot_get(creds: Credentials, args: dict[str, Any]) -> CommandRes
     return CommandResults(readable_output=hr, outputs_prefix="GCP.Compute.Snapshot", outputs=response, outputs_key_field="id")
 
 
+def _collect_instance_ips(instance: dict[str, Any]) -> tuple[list[str], list[str]]:
+    """
+    Collect internal and external IPs from a compute instance resource.
+
+    Returns:
+        tuple[list[str], list[str]]: (internal_ips, external_ips)
+    """
+    internal_ips: list[str] = []
+    external_ips: list[str] = []
+    for nic in instance.get("networkInterfaces", []) or []:
+        if ip := nic.get("networkIP"):
+            internal_ips.append(ip)
+        for ac in nic.get("accessConfigs", []) or []:
+            if eip := ac.get("natIP"):
+                external_ips.append(eip)
+    return internal_ips, external_ips
+
+
+def _match_instance_by_ip(instance: dict[str, Any], ip_address: str, match_external: bool) -> tuple[bool, str]:
+    """
+    Determine whether the instance matches the given IP according to mode.
+
+    Returns:
+        (matched, match_type) where match_type is one of "internal"|"external"|"none".
+    """
+    internal_ips, external_ips = _collect_instance_ips(instance)
+    if match_external:
+        return (ip_address in external_ips, "external" if ip_address in external_ips else "none")
+    return (ip_address in internal_ips, "internal" if ip_address in internal_ips else "none")
+
+
 def compute_instances_aggregated_list_by_ip(creds: Credentials, args: dict[str, Any]) -> CommandResults:
     """
     Aggregated list of instances across all zones, filtered by IP address (internal by default, external if match_external=true).
     """
     project_id = args.get("project_id")
-    ip_address = args.get("ip_address")
+    ip_address = args.get("ip_address", "")
     match_external = argToBoolean(args.get("match_external", "false"))
     max_results = arg_to_number(args.get("max_results"))
     page_token = args.get("page_token")
@@ -631,22 +662,9 @@ def compute_instances_aggregated_list_by_ip(creds: Credentials, args: dict[str, 
     hr_items: list[dict[str, str]] = []
     for scope in response.get("items", {}).values():
         for inst in scope.get("instances", []) or []:
-            nics = inst.get("networkInterfaces", [])
-            found = False
-            for nic in nics:
-                # Internal IP match
-                if not match_external and nic.get("networkIP") == ip_address:
-                    found = True
-                    break
-                # External IP match
-                if match_external:
-                    for ac in nic.get("accessConfigs", []) or []:
-                        if ac.get("natIP") == ip_address:
-                            found = True
-                            break
-                if found:
-                    break
-            if found:
+            is_match, match_type = _match_instance_by_ip(inst, ip_address, match_external)
+            if is_match:
+                internal_ips, external_ips = _collect_instance_ips(inst)
                 matched.append(inst)
                 hr_items.append(
                     {
@@ -654,18 +672,14 @@ def compute_instances_aggregated_list_by_ip(creds: Credentials, args: dict[str, 
                         "id": inst.get("id"),
                         "status": inst.get("status"),
                         "zone": inst.get("zone"),
-                        "networkIP": ", ".join([net_inc.get("networkIP") for net_inc in inst.get("networkInterfaces", [])]),
-                        "accessConfigs.natIP": ", ".join(
-                            [
-                                ac.get("natIP")
-                                for net_inc in inst.get("networkInterfaces", [])
-                                for ac in net_inc.get("accessConfigs", [])
-                            ]
-                        ),
+                        "networkIP": ", ".join(internal_ips),
+                        "accessConfigs.natIP": ", ".join(external_ips),
+                        "matchType": match_type,
+                        "matchedIP": ip_address,
                     }
                 )
 
-    hr_headers = ["name", "id", "status", "zone", "networkIP", "accessConfigs.natIP"]
+    hr_headers = ["name", "id", "status", "zone", "networkIP", "accessConfigs.natIP", "matchType", "matchedIP"]
     hr = tableToMarkdown("GCP Compute Instances (filtered by IP)", hr_items, headers=hr_headers, removeNull=True)
     return CommandResults(readable_output=hr, outputs_prefix="GCP.Compute.Instance", outputs=matched)
 
