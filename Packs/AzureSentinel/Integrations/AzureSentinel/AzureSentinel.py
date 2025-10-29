@@ -1,7 +1,5 @@
-import demistomock as demisto  # noqa
-from CommonServerPython import *  # noqa
-from CommonServerUserPython import *  # noqa
-
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 # IMPORTS
 
 import json
@@ -10,6 +8,7 @@ import requests
 import dateparser
 import uuid
 from enum import Enum
+
 from MicrosoftApiModule import *  # noqa: E402
 from typing import Literal
 
@@ -1179,17 +1178,23 @@ def list_watchlist_items_command(client, args):
     """
 
     # prepare the request
+    limit = arg_to_number(args.get('limit', 0))
     alias = args.get("watchlist_alias", "")
     url_suffix = f"watchlists/{alias}/watchlistItems"
     item_id = args.get("watchlist_item_id")
     if item_id:
         url_suffix += f"/{item_id}"
 
-    # request
-    result = client.http_request("GET", url_suffix)
+    raw_items = []
+    next_link = True
+    while next_link:
+        full_url = next_link if isinstance(next_link, str) else None
+        result = client.http_request("GET", url_suffix, full_url=full_url)
+        raw_items += [result] if item_id else result.get("value", [])
+        next_link = result.get("nextLink")
+        if limit and len(raw_items) >= limit:
+            next_link = False
 
-    # prepare result
-    raw_items = [result] if item_id else result.get("value")
     items = [{"WatchlistAlias": alias, **watchlist_item_data_to_xsoar_format(item)} for item in raw_items]
     readable_output = tableToMarkdown(
         "Watchlist items results",
