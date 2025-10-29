@@ -1885,18 +1885,13 @@ class EC2:
         remove_nulls_from_dictionary(kwargs)
         try:
             response = client.describe_images(**kwargs)
-            demisto.info(f"{response=}")
             amis = response.get("Images", [])
-            demisto.info(f"{amis=}")
             while response.get("nextToken"):
                 kwargs["NextToken"] = response.get("nextToken")
                 response = client.describe_images(**kwargs)
                 amis.extend(response.get("Images", []))
-            demisto.info(f"#2 {amis=}")
             sorted_amis = sorted(amis, key=lambda x: x["CreationDate"], reverse=True)
-            demisto.info(f"sorted_amis")
             image = sorted_amis[0]
-            demisto.info(f"image")
             data = {
                 "CreationDate": image.get("CreationDate"),
                 "ImageId": image.get("ImageId"),
@@ -1906,10 +1901,8 @@ class EC2:
                 "Region": args.get("region"),
                 "Description": image.get("Description"),
             }
-            demisto.info(f"{data=}")
             data.update({tag["Key"]: tag["Value"] for tag in image["Tags"]}) if "Tags" in image else None
             remove_nulls_from_dictionary(data)
-            demisto.info(f"#2 {data=}")
 
             try:
                 raw = json.loads(json.dumps(image, cls=DatetimeEncoder))
@@ -1951,7 +1944,6 @@ class EC2:
         remove_nulls_from_dictionary(kwargs)
         try:
             response = client.create_network_acl(**kwargs)
-            demisto.info(f"{response=}")
             if response["ResponseMetadata"]["HTTPStatusCode"] in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
                 network_acl = response.get("NetworkAcl")
                 readable_data = {
@@ -2002,13 +1994,6 @@ class EC2:
         remove_nulls_from_dictionary(kwargs)
         try:
             response = client.get_ipam_discovered_public_addresses(**kwargs)
-            demisto.info(f"{response=}")
-            ipam_discovered_public_addresses = response.get("IpamDiscoveredPublicAddresses", [])
-            while response.get("nextToken"):
-                kwargs["NextToken"] = response.get("nextToken")
-                response = client.get_ipam_discovered_public_addresses(**kwargs)
-                ipam_discovered_public_addresses.extend(response.get("IpamDiscoveredPublicAddresses", []))
-
             if not response.get("IpamDiscoveredPublicAddresses"):
                 return CommandResults(readable_output="No Ipam Discovered Public Addresses were found.")
 
