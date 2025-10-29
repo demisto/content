@@ -4,6 +4,8 @@ This integration allows you to manage and interact with Microsoft Security & Com
 
 This integration has been developed and tested with the [Security & Compliance Center](https://docs.microsoft.com/en-us/powershell/module/exchange/?view=exchange-ps#policy-and-compliance-content-search).
 
+As of September 2025, Microsoft representatives have confirmed that the Security and Compliance PowerShell module relies on legacy eDiscovery. Microsoft now recommends transitioning to the new eDiscovery experience, which is built on the Microsoft Graph API. This functionality is implemented in the XSOAR integration [**Microsoft Graph Security**](https://xsoar.pan.dev/docs/reference/integrations/microsoft-graph).  
+
 ## Key Features
 
 - **Content Search Management**: Create, modify, retrieve, list, remove, and trigger content searches within the Security & Compliance Center.
