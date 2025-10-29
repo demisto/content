@@ -59,9 +59,10 @@ Follow these steps:
 ## More Configuration Settings for Microsoft 365 Defender in Cortex
 
 1.
-- Cortex XSIAM: Go to **Settings** > **Configurations** > **Automation & Feed Integrations**.
-- Cortex XSOAR 8:  Go to **Settings & Info** > **Instances**.
-- Cortex XSOAR 6: Go to **Settings** > **Integrations** > **Servers & Services**.
+* Cortex XSIAM: Go to **Settings** > **Configurations** > **Automation & Feed Integrations**.
+* Cortex XSOAR 8:  Go to **Settings & Info** > **Instances**.
+* Cortex XSOAR 6: Go to **Settings** > **Integrations** > **Servers & Services**.
+
 2. Search for Microsoft 365 Defender.
 3. Click **Add instance** to create and configure a new integration instance.
 4. To ensure that mirroring works:
