@@ -23,7 +23,7 @@ configuration:
   advanced: true
   required: false
 - display: UPN/Email
-  additionalinfo: These fields are required for Delegated Access. Details regarding delegated access can be found here - https://xsoar.pan.dev/docs/reference/integrations/security-and-compliance#delegated-authentication
+  additionalinfo: User Principal Name (UPN) of the Microsoft account used for authentication.
   name: delegated_auth
   required: true
   type: 9
@@ -51,7 +51,7 @@ configuration:
   displaypassword: Password
   hiddenpassword: true
 - display: UPN Password
-  additionalinfo: UPN password - required for interactive delegated authentication.
+  additionalinfo: Password for the specified UPN. Required when using interactive delegated authentication. Leave this field empty when using device code based authentication.
   name: credentials_app_secret
   required: false
   type: 9
