@@ -14,8 +14,9 @@ To use a self-configured Azure application, you need to add a new Azure App Regi
 For more details, follow [Self Deployed Application](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#self-deployed-application:~:text=Self%20Deployed%20Application%23).
 
 To connect to the Microsoft Defender XDR:
+
 1. Fill in the Client ID parameter of your application under the ID/Client ID parameter.
-2. Run the ***!microsoft-365-defender-auth-start*** command. 
+2. Run the ***!microsoft-365-defender-auth-start*** command.
 3. Follow the instructions that appear.
 4. Run the ***!microsoft-365-defender-auth-complete*** command, you are supposed to get a message "authorization completed successfully".
 5. You can run the ***!microsoft-365-defender-auth-test** command to test the connection.
@@ -34,6 +35,7 @@ The required API permissions are for the ***Microsoft Threat Protection*** app.
 * AdvancedHunting.Read.All - Application - See section 4 in [this article](https://learn.microsoft.com/en-us/microsoft-365/security/defender/api-create-app-user-context?view=o365-worldwide#create-an-app)
 
 ### Client Credentials Flow
+
 ___
 Use the [client credentials flow](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#authentication-flows:~:text=Client%20Credentials%20Flow%23)
 to link Microsoft Defender XDR with Cortex XSOAR/XSIAM.
@@ -44,7 +46,7 @@ For more details, follow [Self Deployed Application](https://xsoar.pan.dev/docs/
 Follow these steps:
 
 1. In the instance configuration, select the ***Use Client Credentials Authorization Flow*** checkbox.
-2. Enter your Client/Application ID in the ***Application ID*** parameter. 
+2. Enter your Client/Application ID in the ***Application ID*** parameter.
 3. Enter your Client Secret in the ***Client Secret*** parameter.
 4. Enter your Tenant ID in the ***Tenant ID*** parameter.
 5. Click on the "Test" button.
