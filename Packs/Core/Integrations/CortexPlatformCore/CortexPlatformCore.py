@@ -394,7 +394,7 @@ def get_vulnerabilities_command(client: Client, args: dict) -> CommandResults:
     )
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Vulnerability",
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.VulnerabilityIssue",
         outputs_key_field="ISSUE_ID",
         outputs=filtered_data,
         raw_response=response,
