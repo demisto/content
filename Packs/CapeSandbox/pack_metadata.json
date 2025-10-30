@@ -1,0 +1,18 @@
+{
+    "name": "Cape Sandbox",
+    "description": "CAPE Sandbox is an Open Source software for automating analysis of suspicious files.",
+    "support": "xsoar",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "categories": ["Forensics & Malware Analysis"],
+    "tags": ["Malware", "Forensics"],
+    "useCases": [
+        "Malware",
+        "Threat Intelligence Management",
+        "Incident Response"
+    ],
+    "keywords": ["CAPE", "sandbox", "malware", "analysis", "forensics"],
+    "marketplaces": ["xsoar", "marketplacev2"]
+}
