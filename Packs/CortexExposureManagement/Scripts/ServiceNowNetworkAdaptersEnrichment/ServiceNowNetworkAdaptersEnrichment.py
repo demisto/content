@@ -172,7 +172,6 @@ def main():
 
     except Exception as e:
         error_msg = f"Failed to execute ResolveNetworkAdapters: {str(e)}"
-        demisto.error(error_msg)
         return_error(error_msg)
 
 
