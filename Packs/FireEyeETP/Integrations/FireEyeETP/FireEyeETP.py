@@ -7,10 +7,12 @@ from CommonServerUserPython import *
 IMPORTS
 """
 
+import base64
 import copy
 import json
 import os
 import re
+import time
 from datetime import datetime, timedelta
 
 import requests
@@ -22,11 +24,20 @@ urllib3.disable_warnings()
 GLOBAL VARS
 """
 
-API_KEY = demisto.params().get("credentials_api_key", {}).get("password") or demisto.params().get("api_key")
-BASE_PATH = "{}/api/v1".format(demisto.params().get("server"))
+PARAMS = demisto.params()
+
+CLIENT_ID = PARAMS.get("credentials", {}).get("identifier", "")
+CLIENT_SECRET = PARAMS.get("credentials", {}).get("password", "")
+API_KEY = PARAMS.get("credentials_api_key", {}).get("password") or PARAMS.get("api_key")
+
+BASE_PATH = "{}/api/v1".format(PARAMS.get("server"))
 HTTP_HEADERS = {"Content-Type": "application/json"}
-USE_SSL = not demisto.params().get("unsecure")
-MESSAGE_STATUS = argToList(demisto.params().get("message_status"))
+USE_SSL = not PARAMS.get("unsecure")
+MESSAGE_STATUS = argToList(PARAMS.get("message_status"))
+
+# OAuth2 token constants
+OAUTH_TOKEN_KEY = "oauth_access_token"
+OAUTH_EXPIRES_KEY = "oauth_token_expires_at"
 
 """
 SEARCH ATTRIBUTES VALID VALUES
@@ -71,6 +82,143 @@ BASIC FUNCTIONS
 """
 
 
+def fetch_oauth_token():
+    """
+    Fetch OAuth 2.0 access token
+    """
+    # Trellix Email Security OAuth2 endpoint
+    token_url = "https://auth.trellix.com/auth/realms/IAM/protocol/openid-connect/token" #TODO only for IAM?
+    
+    # Create Basic auth header with base64 encoded client credentials
+    credentials = f"{CLIENT_ID}:{CLIENT_SECRET}"
+    encoded_credentials = base64.b64encode(credentials.encode()).decode()
+    
+    headers = {
+        "Content-Type": "application/x-www-form-urlencoded",
+        "Authorization": f"Basic {encoded_credentials}"
+    }
+    
+    # ETP scopes for Email Security Cloud API access    #TODO check if all are needed if we need it at all
+    etp_scopes = ("etp.conf.ro etp.trce.rw etp.admn.ro etp.domn.ro etp.accs.rw etp.quar.rw "
+                  "etp.domn.rw etp.rprt.rw etp.accs.ro etp.quar.ro etp.alrt.rw etp.rprt.ro "
+                  "etp.conf.rw etp.trce.ro etp.alrt.ro etp.admn.rw")
+    
+    # Form data for OAuth2 request
+    data = {
+        "grant_type": "client_credentials",
+        "scope": etp_scopes
+    }
+    
+    try:
+        response = requests.post(
+            token_url,
+            headers=headers,
+            data=data,
+            verify=USE_SSL
+        )
+        response.raise_for_status()
+        
+        result = response.json()
+        access_token = result.get("access_token")
+        expires_in = result.get("expires_in", 3600)  # Default to 1 hour #TODO is that true?
+        
+        if not access_token:
+            raise Exception("Failed to retrieve access token from OAuth response")
+        
+        # Store token and expiration time in integration context
+        expires_at = time.time() + expires_in
+        ctx = get_integration_context() or {}
+        ctx[OAUTH_TOKEN_KEY] = access_token
+        ctx[OAUTH_EXPIRES_KEY] = expires_at
+        set_integration_context(ctx)
+        
+        demisto.debug(f"OAuth token fetched successfully, expires in {expires_in} seconds")
+        return access_token
+        
+    except Exception as e:
+        demisto.error(f"OAuth authentication failed: {str(e)}")
+        raise Exception(f"OAuth authentication failed: {str(e)}")
+
+
+def is_oauth_token_expired(ctx):
+    """
+    Check if the current OAuth token is expired or about to expire (within 60 seconds)
+    """
+    expires_at = ctx.get(OAUTH_EXPIRES_KEY, 0)
+    current_time = time.time()
+    
+    # Consider token expired if it expires within the next 60 seconds
+    is_expired = current_time >= (expires_at - 60)
+    return is_expired
+
+
+def get_valid_oauth_token():
+    """
+    Get a valid OAuth token, refreshing if necessary
+    """
+    ctx = get_integration_context() or {}
+    access_token = ctx.get(OAUTH_TOKEN_KEY)
+    
+    if not access_token:
+        demisto.debug("No OAuth token found, fetching new one")
+    elif is_oauth_token_expired(ctx):
+        demisto.debug("OAuth token expired, fetching new one")
+    else:
+        demisto.debug("Using existing valid OAuth token")
+        return access_token
+    
+    # Need to fetch new token (either missing or expired)
+    return fetch_oauth_token()
+
+
+def validate_authentication():
+    """
+    Validate authentication parameters and determine which method to use.
+    Returns: 'oauth2' for Client ID/Secret, 'api_key' for legacy API Key
+    Raises: ValueError if authentication configuration is invalid
+    #TODO add a comment about that this is for xsoar 6
+    """
+    has_client_id = bool(CLIENT_ID)
+    has_client_secret = bool(CLIENT_SECRET)
+    has_api_key = bool(API_KEY)
+    
+    # Check if both Client ID and Client Secret are provided
+    if has_client_id and has_client_secret:
+        demisto.info("Authentication: Using OAuth2 (Client ID/Secret)")
+        return "oauth2"
+    
+    # Check if only API Key is provided
+    if has_api_key and not has_client_id and not has_client_secret:
+        demisto.info("Authentication: Using legacy API Key")
+        return "api_key"
+    
+    # Check for incomplete OAuth2 configuration
+    if has_client_id and not has_client_secret:
+        raise ValueError("Client ID provided but Client Secret is missing. "
+                        "Both Client ID and Client Secret are required for OAuth2 authentication.")
+    
+    if has_client_secret and not has_client_id:
+        raise ValueError("Client Secret provided but Client ID is missing. "
+                        "Both Client ID and Client Secret are required for OAuth2 authentication.")
+    
+    # No authentication method provided
+    raise ValueError("No authentication credentials provided.")
+
+
+
+def get_auth_headers():
+    """Get authentication headers based on available authentication method."""
+    auth_method = validate_authentication()
+    
+    if auth_method == "oauth2":
+        access_token = get_valid_oauth_token()
+        return {"Content-Type": "application/json", "Authorization": f"Bearer {access_token}"}
+    elif auth_method == "api_key":
+        return {"Content-Type": "application/json", "x-fireeye-api-key": API_KEY}
+    else:
+        raise ValueError("Unknown authentication method")
+
+
 class Client(BaseClient):
     def get_artifacts(self, alert_id):
         url = f"/alerts/{alert_id}/downloadzip"
@@ -108,7 +256,7 @@ class Client(BaseClient):
 
 
 def set_proxies():
-    if not demisto.params().get("proxy", False):
+    if not PARAMS.get("proxy", False):
         del os.environ["HTTP_PROXY"]
         del os.environ["HTTPS_PROXY"]
         del os.environ["http_proxy"]
@@ -710,12 +858,16 @@ def main():
 
     verify_certificate = not params.get("unsecure", False)
 
-    if not API_KEY:
-        return_error("API key must be provided.")
+    # Validate authentication configuration
+    try:
+        validate_authentication()
+    except ValueError as e:
+        return_error(str(e))
+        
     set_proxies()
 
     try:
-        headers = {"Content-Type": "application/json", "x-fireeye-api-key": API_KEY}
+        headers = get_auth_headers()
 
         client = Client(base_url=BASE_PATH, verify=verify_certificate, headers=headers, proxy=proxy)
 

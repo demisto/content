@@ -1,5 +1,7 @@
+import base64
 import dateparser
 import demistomock as demisto
+import time
 import urllib3
 from CommonServerPython import *
 
@@ -65,17 +67,111 @@ class Client(BaseClient):  # pragma: no cover
         base_url: str,
         verify_certificate: bool,
         proxy: bool,
-        api_key: str,
-        outbound_traffic: bool,
-        hide_sensitive: bool,
+        client_id: str = "",
+        client_secret: str = "",
+        api_key: str = "",
+        outbound_traffic: bool = False,
+        hide_sensitive: bool = False,
     ) -> None:
         super().__init__(base_url, verify_certificate, proxy)
-        self._headers = {
-            "x-fireeye-api-key": api_key,
-            "Content-Type": "application/json",
-        }
+        self.client_id = client_id
+        self.client_secret = client_secret
+        self.api_key = api_key
         self.outbound_traffic = outbound_traffic
         self.hide_sensitive = hide_sensitive
+        self.access_token = ""
+        
+        # Set up headers based on authentication method
+        self._headers = {"Content-Type": "application/json"}
+        
+        # Prioritize OAuth2 (Client ID/Secret) over legacy API Key
+        if self.client_id and self.client_secret:
+            demisto.info(f"{LOG_LINE} Using OAuth2 authentication (Client ID/Secret)")
+            self.access_token = self._get_valid_oauth_token()
+            self._headers["Authorization"] = f"Bearer {self.access_token}"
+        elif self.api_key:
+            demisto.info(f"{LOG_LINE} Using legacy API Key authentication")
+            self._headers["x-fireeye-api-key"] = self.api_key
+        else:
+            raise ValueError("Either Client ID/Secret (OAuth2) or API Key (legacy) must be provided for authentication")
+    
+    def _get_valid_oauth_token(self) -> str:
+        """
+        Get a valid OAuth access token, reusing cached token if still valid.
+        Returns the access token or raises ValueError if authentication fails.
+        """
+        context = get_integration_context()
+        cached_token = context.get("access_token", "")
+        token_expiry = context.get("token_expiry", 0)
+        
+        # Check if cached token is still valid (with 60-second buffer)
+        current_time = time.time()
+        is_expired = current_time >= (token_expiry - 60)
+        
+        if cached_token and not is_expired:
+            demisto.debug(f"{LOG_LINE} Using cached OAuth token")
+            return cached_token
+        
+        # Need to fetch new token
+        demisto.debug(f"{LOG_LINE} Fetching new OAuth token")
+        return self._fetch_oauth_token()
+    
+    def _fetch_oauth_token(self) -> str:
+        """
+        Fetch a new OAuth access token using this client instance and cache it in integration context.
+        Returns the access token or raises ValueError if authentication fails.
+        """
+        try:
+            # Trellix Email Security OAuth2 endpoint
+            token_url = "https://auth.trellix.com/auth/realms/IAM/protocol/openid-connect/token"
+            
+            # Create Basic auth header with base64 encoded client credentials
+            credentials = f"{self.client_id}:{self.client_secret}"
+            encoded_credentials = base64.b64encode(credentials.encode()).decode()
+            
+            # ETP scopes for Email Security Cloud API access TODO is this correct?
+            etp_scopes = ("etp.conf.ro etp.trce.rw etp.admn.ro etp.domn.ro etp.accs.rw etp.quar.rw "
+                          "etp.domn.rw etp.rprt.rw etp.accs.ro etp.quar.ro etp.alrt.rw etp.rprt.ro "
+                          "etp.conf.rw etp.trce.ro etp.alrt.ro etp.admn.rw")
+            
+            # Form data for OAuth2 request
+            auth_data = {
+                "grant_type": "client_credentials",
+                "scope": etp_scopes
+            }
+            
+            # Use requests directly since we need to hit the Trellix IAM endpoint, not the ETP instance
+            response = requests.post(
+                token_url,
+                headers={
+                    "Content-Type": "application/x-www-form-urlencoded",
+                    "Authorization": f"Basic {encoded_credentials}"
+                },
+                data=auth_data,
+                verify=self._verify
+            )
+            response.raise_for_status()
+            
+            result = response.json()
+            access_token = result.get("access_token", "")
+            expires_in = result.get("expires_in", 3600)  # Default 1 hour
+            
+            if not access_token:
+                raise ValueError("Failed to obtain access token from OAuth2 authentication")
+            
+            # Cache token in integration context
+            token_expiry = int(time.time()) + int(expires_in)
+            set_integration_context({
+                "access_token": access_token,
+                "token_expiry": token_expiry
+            })
+            
+            demisto.info(f"{LOG_LINE} OAuth2 authentication successful, token cached")
+            return access_token
+            
+        except Exception as e:
+            demisto.error(f"{LOG_LINE} OAuth2 authentication failed: {str(e)}")
+            raise ValueError(f"OAuth2 authentication failed: {str(e)}")
 
     def get_alerts(self, from_LastModifiedOn: str, size: int, outbound: bool = False) -> dict:
         req_body = assign_params(
@@ -641,16 +737,61 @@ def _get_max_events_to_fetch(params_max_fetch: str | int, arg_limit: str | int) 
         raise ValueError("Please provide a valid integer value for a fetch limit.")
 
 
+
+def validate_authentication(client_id: str, client_secret: str, api_key: str) -> str:
+    """
+    Validate authentication parameters and determine which method to use.
+    Returns: 'oauth2' for Client ID/Secret, 'api_key' for legacy API Key
+    Raises: ValueError if authentication configuration is invalid
+    TODO add a comment that this is for OPP only, that does not have the triggers.
+    """
+    has_client_id = bool(client_id)
+    has_client_secret = bool(client_secret)
+    has_api_key = bool(api_key)
+    
+    # Check if both Client ID and Client Secret are provided
+    if has_client_id and has_client_secret:
+        demisto.info(f"{LOG_LINE} Authentication: Using OAuth2 (Client ID/Secret)")
+        return "oauth2"
+    
+    # Check if only API Key is provided
+    if has_api_key and not has_client_id and not has_client_secret:
+        demisto.info(f"{LOG_LINE} Authentication: Using legacy API Key")
+        return "api_key"
+    
+    # Check for incomplete OAuth2 configuration
+    if has_client_id and not has_client_secret:
+        raise ValueError("Client ID provided but Client Secret is missing. "
+                        "Both Client ID and Client Secret are required for OAuth2 authentication.")
+    
+    if has_client_secret and not has_client_id:
+        raise ValueError("Client Secret provided but Client ID is missing. "
+                        "Both Client ID and Client Secret are required for OAuth2 authentication.")
+    
+    # No authentication method provided
+    raise ValueError("No authentication credentials provided.")
+
+
 def main() -> None:  # pragma: no cover
     params = demisto.params()
     args = demisto.args()
 
+    # Extract authentication parameters - prioritize OAuth2 over legacy API Key
+    client_id = params.get("oauth_credentials", {}).get("identifier", "")
+    client_secret = params.get("oauth_credentials", {}).get("password", "")
     api_key = params.get("credentials", {}).get("password", "")
+    
     base_url = params.get("url", "").rstrip("/")
     verify = not params.get("insecure", False)
     proxy = params.get("proxy", False)
     outbound_traffic = argToBoolean(params.get("outbound_traffic", False))
     hide_sensitive = argToBoolean(params.get("hide_sensitive", True))
+
+    # Validate authentication configuration
+    try:
+        validate_authentication(client_id, client_secret, api_key)
+    except ValueError as e:
+        return_error(str(e))
 
     last_run = demisto.getLastRun()
 
@@ -681,6 +822,8 @@ def main() -> None:  # pragma: no cover
             base_url=base_url,
             verify_certificate=verify,
             proxy=proxy,
+            client_id=client_id,
+            client_secret=client_secret,
             api_key=api_key,
             outbound_traffic=outbound_traffic,
             hide_sensitive=hide_sensitive,
