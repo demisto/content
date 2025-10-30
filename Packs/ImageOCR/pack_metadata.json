@@ -2,7 +2,7 @@
     "name": "Image OCR",
     "description": "Extracts text from images.",
     "support": "xsoar",
-    "currentVersion": "1.1.41",
+    "currentVersion": "1.1.42",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -25,6 +25,9 @@
         "X5",
         "ENT_PLUS",
         "agentix",
-        "xsiam"
+        "xsiam",
+        "edr",
+        "cloud",
+        "cloud_runtime_security"
     ]
 }
