@@ -47,6 +47,7 @@ class ConfigurationItem:
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
 
+
 def get_command_results(command: str, args: dict[str, Any]) -> Union[dict[str, Any] | list]:
     """Execute a Demisto command and return the result."""
     try:
@@ -61,7 +62,7 @@ def get_command_results(command: str, args: dict[str, Any]) -> Union[dict[str, A
 
 def get_network_adapter(sid: str) -> NetworkAdapter:
     """Fetch and parse network adapter details from ServiceNow."""
-    result = get_command_results(SERVICENOW_CMDB_RECORD_GET_BY_ID, {"class": CMDB_CI_NETWORK_ADAPTER, "sys_id": sid})
+    result: dict = get_command_results(SERVICENOW_CMDB_RECORD_GET_BY_ID, {"class": CMDB_CI_NETWORK_ADAPTER, "sys_id": sid})
 
     attributes = result.get("attributes", {})
     sys_domain = attributes.get("sys_domain", {})
@@ -86,14 +87,14 @@ def get_network_adapter(sid: str) -> NetworkAdapter:
 def get_related_configuration_item(sid: str, instance_url: str) -> ConfigurationItem:
     """Fetch and parse related configuration item details from ServiceNow."""
     # First get the CI class
-    result = get_command_results(SERVICENOW_CMDB_RECORD_GET_BY_ID, {"class": "cmdb_ci", "sys_id": sid})
+    result : dict = get_command_results(SERVICENOW_CMDB_RECORD_GET_BY_ID, {"class": "cmdb_ci", "sys_id": sid})
 
     ci_class = result.get("attributes", {}).get("sys_class_name", "")
     if not ci_class:
         return ConfigurationItem(sys_id=sid, url=f"{instance_url}/nav_to.do?uri=cmdb_ci.do?sys_id={sid}" if instance_url else "")
 
     # Get full CI details with the specific class
-    result = get_command_results(SERVICENOW_CMDB_RECORD_GET_BY_ID, {"class": ci_class, "sys_id": sid})
+    result :dict  = get_command_results(SERVICENOW_CMDB_RECORD_GET_BY_ID, {"class": ci_class, "sys_id": sid})
 
     attributes = result.get("attributes", {})
     assigned_to = attributes.get("assigned_to", {}) if isinstance(attributes.get("assigned_to"), dict) else {}
