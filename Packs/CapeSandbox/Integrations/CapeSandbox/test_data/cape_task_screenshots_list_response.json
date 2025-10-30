@@ -1,0 +1,6 @@
+{
+    "screenshots": [
+        {"number": 1, "url": "http://test.com/screenshot1.png"},
+        {"number": 2, "url": "http://test.com/screenshot2.png"}
+    ]
+}
