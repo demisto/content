@@ -1174,13 +1174,12 @@ Retrieves the bucket policy for an Amazon S3 bucket. Returns the policy document
 | AWS.S3-Buckets.BucketName | string | Name of the S3 bucket. |
 | AWS.S3-Buckets.Policy.Version | string | The version of the policy. |
 | AWS.S3-Buckets.Policy.Id | string | The id of the policy. |
-| AWS.S3-Buckets.Policy.Statement.Sid | string | Statement identifier. |
-| AWS.S3-Buckets.Policy.Statement.Effect | string | Allow or Deny. |
-| AWS.S3-Buckets.Policy.Statement.Principal | string | Principal to whom the statement applies. |
-| AWS.S3-Buckets.Policy.Statement.Action | Array | List of actions the statement applies to. |
-| AWS.S3-Buckets.Policy.Statement.Resource | Array | List of actions the statement applies to. |
-| AWS.S3-Buckets.Policy.Statement.Condition | string | Conditions for when the statement applies. |
-| AWS.S3-Buckets.PolicyExists | boolean | Whether a bucket policy exists. |
+| AWS.S3-Buckets.Policy.Statement.Sid | string | Identifier of the policy statement. |
+| AWS.S3-Buckets.Policy.Statement.Effect | string | Specifies whether the statement results in an allow or an explicit deny. |
+| AWS.S3-Buckets.Policy.Statement.Principal | unknown | Specify the principal that is allowed or denied access to a resource. |
+| AWS.S3-Buckets.Policy.Statement.Action | unknown | Describes the specific action or actions that will be allowed or denied. |
+| AWS.S3-Buckets.Policy.Statement.Resource | unknown | Defines the object or objects that the statement applies to. |
+| AWS.S3-Buckets.Policy.Statement.Condition | string | Specify conditions for when a policy is in effect. |
 
 ### aws-ec2-instance-attribute-modify-quick-action
 
@@ -2137,3 +2136,429 @@ Lists the notifications that are associated with a budget.
 | AWS.Billing.Budget.Notification.Subscribers.SubscriptionType | string | Subscription type \(EMAIL or SNS\). |
 | AWS.Billing.Budget.Notification.Subscribers.Address | string | Email address or SNS topic ARN for the subscriber. |
 | AWS.Billing.NotificationNextToken | string | Next page token for pagination. |
+
+### aws-lambda-function-configuration-get
+
+***
+Retrieves configuration information about a Lambda function.
+
+#### Base Command
+
+`aws-lambda-function-configuration-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. | Required |
+| function_name | Name, ARN, or qualified name of the Lambda function. | Required |
+| qualifier | Version number or alias name. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.Lambda.FunctionConfig.FunctionName | String | The name of the function. |
+| AWS.Lambda.FunctionConfig.FunctionArn | String | The function’s Amazon Resource Name \(ARN\). |
+| AWS.Lambda.FunctionConfig.Runtime | String | The identifier of the function’s runtime. |
+| AWS.Lambda.FunctionConfig.Role | String | The function’s execution role. |
+| AWS.Lambda.FunctionConfig.Handler | String | The function that Lambda calls to begin running your function. |
+| AWS.Lambda.FunctionConfig.CodeSize | Number | The size of the function’s deployment package, in bytes. |
+| AWS.Lambda.FunctionConfig.Description | String | The function’s description. |
+| AWS.Lambda.FunctionConfig.Timeout | Number | The amount of time in seconds that Lambda allows a function to run before stopping it. |
+| AWS.Lambda.FunctionConfig.MemorySize | Number | The amount of memory available to the function at runtime. |
+| AWS.Lambda.FunctionConfig.LastModified | String | The date and time that the function was last updated. |
+| AWS.Lambda.FunctionConfig.CodeSha256 | String | The SHA256 hash of the function’s deployment package. |
+| AWS.Lambda.FunctionConfig.Version | String | The version of the Lambda function. |
+| AWS.Lambda.FunctionConfig.VpcConfig.SubnetIds | unknown | A list of VPC subnet IDs. |
+| AWS.Lambda.FunctionConfig.VpcConfig.SecurityGroupIds | unknown | A list of VPC security group IDs. |
+| AWS.Lambda.FunctionConfig.VpcConfig.VpcId | String | The ID of the VPC. |
+| AWS.Lambda.FunctionConfig.VpcConfig.Ipv6AllowedForDualStack | Boolean | Allows outbound IPv6 traffic on VPC functions that are connected to dual-stack subnets. |
+| AWS.Lambda.FunctionConfig.DeadLetterConfig.TargetArn | String | The Amazon Resource Name \(ARN\) of an Amazon SQS queue or Amazon SNS topic. |
+| AWS.Lambda.FunctionConfig.Environment.Variables | unknown | Environment variable key-value pairs. Omitted from CloudTrail logs. |
+| AWS.Lambda.FunctionConfig.Environment.Error.ErrorCode | String | The error code. |
+| AWS.Lambda.FunctionConfig.Environment.Error.Message | String | The error message. |
+| AWS.Lambda.FunctionConfig.KMSKeyArn | String | The ARN of the Key Management Service \(KMS\). |
+| AWS.Lambda.FunctionConfig.TracingConfig.Mode | String | The tracing mode. |
+| AWS.Lambda.FunctionConfig.MasterArn | String | For Lambda@Edge functions, the ARN of the main function. |
+| AWS.Lambda.FunctionConfig.RevisionId | String | The latest updated revision of the function or alias. |
+| AWS.Lambda.FunctionConfig.Layers.Arn | String | The Amazon Resource Name \(ARN\) of the function layer. |
+| AWS.Lambda.FunctionConfig.Layers.CodeSize | Number | The size of the layer archive in bytes. |
+| AWS.Lambda.FunctionConfig.Layers.SigningProfileVersionArn | String | The Amazon Resource Name \(ARN\) for a signing profile version. |
+| AWS.Lambda.FunctionConfig.Layers.SigningJobArn | String | The Amazon Resource Name \(ARN\) of a signing job. |
+| AWS.Lambda.FunctionConfig.State | String | The current state of the function. |
+| AWS.Lambda.FunctionConfig.StateReason | String | The reason for the function’s current state. |
+| AWS.Lambda.FunctionConfig.StateReasonCode | String | The reason code for the function’s current state. |
+| AWS.Lambda.FunctionConfig.LastUpdateStatus | String | The status of the last update that was performed on the function. |
+| AWS.Lambda.FunctionConfig.LastUpdateStatusReason | String | The reason for the last update that was performed on the function. |
+| AWS.Lambda.FunctionConfig.LastUpdateStatusReasonCode | String | The reason code for the last update that was performed on the function. |
+| AWS.Lambda.FunctionConfig.FileSystemConfigs.Arn | String | The Amazon Resource Name \(ARN\) of the Amazon EFS access point that provides access to the file system. |
+| AWS.Lambda.FunctionConfig.FileSystemConfigs.LocalMountPath | String | The path where the function can access the file system, starting with /mnt/. |
+| AWS.Lambda.FunctionConfig.PackageType | String | The type of deployment package. |
+| AWS.Lambda.FunctionConfig.ImageConfigResponse.ImageConfig.EntryPoint | String | Specifies the entry point to their application, which is typically the location of the runtime executable. |
+| AWS.Lambda.FunctionConfig.ImageConfigResponse.ImageConfig.Command | String | Specifies parameters that you want to pass in with ENTRYPOINT. |
+| AWS.Lambda.FunctionConfig.ImageConfigResponse.ImageConfig.WorkingDirectory | String | Specifies the working directory. |
+| AWS.Lambda.FunctionConfig.ImageConfigResponse.Error.ErrorCode | String | Error code. |
+| AWS.Lambda.FunctionConfig.ImageConfigResponse.Error.Message | String | Error message. |
+| AWS.Lambda.FunctionConfig.SigningProfileVersionArn | String | The ARN of the signing profile version. |
+| AWS.Lambda.FunctionConfig.SigningJobArn | String | The ARN of the signing job. |
+| AWS.Lambda.FunctionConfig.Architectures | String | The size of the function’s /tmp directory in MB. |
+| AWS.Lambda.FunctionConfig.EphemeralStorage.Size | Number | The size of the function’s /tmp directory. |
+| AWS.Lambda.FunctionConfig.SnapStart.ApplyOn | String | When set to PublishedVersions, Lambda creates a snapshot of the execution environment when you publish a function version. |
+| AWS.Lambda.FunctionConfig.SnapStart.OptimizationStatus | String | When you provide a qualified Amazon Resource Name \(ARN\), this response element indicates whether SnapStart is activated for the specified function version. |
+| AWS.Lambda.FunctionConfig.RuntimeVersionConfig.RuntimeVersionArn | String | The ARN of the runtime version you want the function to use. |
+| AWS.Lambda.FunctionConfig.RuntimeVersionConfig.Error.ErrorCode | String | The error code. |
+| AWS.Lambda.FunctionConfig.RuntimeVersionConfig.Error.Message | String | The error message. |
+| AWS.Lambda.FunctionConfig.LoggingConfig.LogFormat | String | The format in which Lambda sends your function’s application and system logs to CloudWatch. |
+| AWS.Lambda.FunctionConfig.LoggingConfig.ApplicationLogLevel | String | Set this property to filter the application logs for your function that Lambda sends to CloudWatch. |
+| AWS.Lambda.FunctionConfig.LoggingConfig.SystemLogLevel | String | Set this property to filter the system logs for your function that Lambda sends to CloudWatch. |
+| AWS.Lambda.FunctionConfig.LoggingConfig.LogGroup | String | The name of the Amazon CloudWatch log group the function sends logs to. |
+
+### aws-lambda-function-url-config-get
+
+***
+Returns the configuration for a Lambda function URL.
+
+#### Base Command
+
+`aws-lambda-function-url-config-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. | Required |
+| function_name | Name of the Lambda function. | Required |
+| qualifier | The alias name or version number. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.Lambda.FunctionURLConfig.FunctionUrl | String | The HTTP URL endpoint for your function. |
+| AWS.Lambda.FunctionURLConfig.FunctionArn | String | The Amazon Resource Name \(ARN\) of your function. |
+| AWS.Lambda.FunctionURLConfig.AuthType | String | The type of authentication that your function URL uses. |
+| AWS.Lambda.FunctionURLConfig.Cors.AllowCredentials | Boolean | Whether to allow cookies or other credentials in requests to your function URL. |
+| AWS.Lambda.FunctionURLConfig.Cors.AllowHeaders | String | The HTTP headers that origins can include in requests to your function URL. |
+| AWS.Lambda.FunctionURLConfig.Cors.AllowMethods | String | The HTTP methods that are allowed when calling your function URL. |
+| AWS.Lambda.FunctionURLConfig.Cors.AllowOrigins | String | The origins that can access your function URL. |
+| AWS.Lambda.FunctionURLConfig.Cors.ExposeHeaders | String | The HTTP headers in your function response that you want to expose to origins that call your function URL. |
+| AWS.Lambda.FunctionURLConfig.Cors.MaxAge | Number | The maximum amount of time, in seconds, that web browsers can cache results of a preflight request. |
+| AWS.Lambda.FunctionURLConfig.CreationTime | String | When the function URL was created. |
+| AWS.Lambda.FunctionURLConfig.LastModifiedTime | String | When the function URL configuration was last updated. |
+| AWS.Lambda.FunctionURLConfig.InvokeMode | String | BUFFERED or RESPONSE_STREAM. |
+
+### aws-lambda-policy-get
+
+***
+Returns the resource-based IAM policy for a Lambda function.
+
+#### Base Command
+
+`aws-lambda-policy-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. | Required |
+| function_name | Name of the Lambda function, version, or alias. | Required |
+| qualifier | Version or alias to get the policy for. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.Lambda.Policy.Version | Date | The policy version. |
+| AWS.Lambda.Policy.Id | String | The identifier of the policy. |
+| AWS.Lambda.Policy.Statement.Sid | String | Identifier of the policy statement. |
+| AWS.Lambda.Policy.Statement.Effect | String | Specifies whether the statement results in an allow or an explicit deny. |
+| AWS.Lambda.Policy.Statement.Principal | unknown | Specify the principal that is allowed or denied access to a resource. |
+| AWS.Lambda.Policy.Statement.Action | unknown | Describes the specific action or actions that will be allowed or denied. |
+| AWS.Lambda.Policy.Statement.Resource | unknown | Defines the object or objects that the statement applies to. |
+| AWS.Lambda.Policy.Statement.Condition | String | Specify conditions for when a policy is in effect. |
+| AWS.Lambda.Policy.RevisionId | String | A unique identifier for the current revision of the policy. |
+| AWS.Lambda.Policy.AccountId | String | The AWS account ID. |
+| AWS.Lambda.Policy.FunctionName | String | The Function Name. |
+| AWS.Lambda.Policy.Region | String | The AWS Region. |
+
+### aws-lambda-invoke
+
+***
+Invokes a Lambda function. Specify just a function name to invoke the latest version of the function. To invoke a published version, use the Qualifier parameter to specify a version or alias. If you use the RequestResponse (synchronous) invocation option, note that the function may be invoked multiple times if a timeout is reached. For functions with a long timeout, your client may be disconnected during synchronous invocation while it waits for a response. If you use the Event (asynchronous) invocation option, the function will be invoked at least once in response to an event and the function must be idempotent to handle this.
+
+#### Base Command
+
+`aws-lambda-invoke`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. | Required |
+| function_name | Name of the Lambda function to invoke. | Required |
+| invocation_type | RequestResponse (sync), Event (async), or DryRun. Default is RequestResponse. Possible values are: RequestResponse, Event, DryRun. Default is RequestResponse. | Optional |
+| log_type | Set to Tail to include execution log in response. Possible values are: None, Tail. | Optional |
+| client_context | Base64-encoded client context data. | Optional |
+| payload | JSON input to provide to the Lambda function. | Optional |
+| qualifier | Version or alias to invoke. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.Lambda.InvokedFunction.StatusCode | Number | The HTTP status code is in the 200 range for a successful request. |
+| AWS.Lambda.InvokedFunction.FunctionError | String | If present, indicates that an error occurred during function execution. |
+| AWS.Lambda.InvokedFunction.LogResult | String | The last 4 KB of the execution log, which is base64-encoded. |
+| AWS.Lambda.InvokedFunction.Payload | Unknown | The response from the function, or an error object. |
+| AWS.Lambda.InvokedFunction.ExecutedVersion | String | The version of the function that executed. |
+| AWS.Lambda.InvokedFunction.FunctionName | string | The name of the Lambda function. |
+
+### aws-lambda-function-url-config-update
+
+***
+Updates the configuration for a Lambda function URL.
+
+#### Base Command
+
+`aws-lambda-function-url-config-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. | Required |
+| function_name | Name of the Lambda function. | Required |
+| qualifier | The alias name or version number. | Optional |
+| auth_type | AWS_IAM or NONE for authentication type. Possible values are: AWS_IAM, NONE. | Optional |
+| cors_allow_credentials | Allow credentials in CORS requests. Possible values are: true, false. | Optional |
+| cors_allow_headers | Comma-separated list of allowed headers. | Optional |
+| cors_allow_methods | Comma-separated list of allowed HTTP methods. | Optional |
+| cors_allow_origins | Comma-separated list of allowed origins. | Optional |
+| cors_expose_headers | Comma-separated list of headers to expose. | Optional |
+| cors_max_age | Maximum age for CORS preflight cache. | Optional |
+| invoke_mode | BUFFERED or RESPONSE_STREAM. Possible values are: BUFFERED, RESPONSE_STREAM. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.Lambda.FunctionURLConfig.FunctionUrl | String | The HTTP URL endpoint for your function. |
+| AWS.Lambda.FunctionURLConfig.FunctionArn | String | The Amazon Resource Name \(ARN\) of your function. |
+| AWS.Lambda.FunctionURLConfig.AuthType | String | The type of authentication that your function URL uses. |
+| AWS.Lambda.FunctionURLConfig.Cors.AllowCredentials | Boolean | Whether to allow cookies or other credentials in requests to your function URL. |
+| AWS.Lambda.FunctionURLConfig.Cors.AllowHeaders | String | The HTTP headers that origins can include in requests to your function URL. |
+| AWS.Lambda.FunctionURLConfig.Cors.AllowMethods | String | The HTTP methods that are allowed when calling your function URL. |
+| AWS.Lambda.FunctionURLConfig.Cors.AllowOrigins | String | The origins that can access your function URL. |
+| AWS.Lambda.FunctionURLConfig.Cors.ExposeHeaders | String | The HTTP headers in your function response that you want to expose to origins that call your function URL. |
+| AWS.Lambda.FunctionURLConfig.Cors.MaxAge | Number | The maximum amount of time, in seconds, that web browsers can cache results of a preflight request. |
+| AWS.Lambda.FunctionURLConfig.CreationTime | String | When the function URL was created. |
+| AWS.Lambda.FunctionURLConfig.LastModifiedTime | String | When the function URL configuration was last updated. |
+| AWS.Lambda.FunctionURLConfig.InvokeMode | String | BUFFERED or RESPONSE_STREAM. |
+
+### aws-kms-key-enable-rotation
+
+***
+Enables automatic rotation for a symmetric customer-managed KMS key. Not supported for asymmetric/HMAC keys, keys with imported material, or custom key stores.
+
+#### Base Command
+
+`aws-kms-key-enable-rotation`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
+| key_id | The key ARN to enable rotation for. | Required |
+| rotation_period_in_days | Key rotation period in days. Valid range: 90–2560. If omitted when enabling rotation for the first time, the default is 365 days. If rotation is already enabled and this field is not specified, the existing period remains unchanged. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+### aws-elb-load-balancer-attributes-modify
+
+***
+Modifies attributes for a Classic Elastic Load Balancer.
+
+#### Base Command
+
+`aws-elb-load-balancer-attributes-modify`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
+| load_balancer_name | The name of the Load Balancer. | Required |
+| access_log_enabled | Whether to enable access logs. (if enabled make sure to provide access_log_s3_bucket_name) Possible values are: true, false. | Optional |
+| access_log_s3_bucket_name | S3 bucket name for access logs (required if access_log_enabled=true). | Optional |
+| access_log_interval | The interval for publishing the access logs. You can specify an interval of either 5 minutes or 60 minutes. If omitted when enabling logging for the first time, the default is 60 minutes. If logging is already enabled and this field is not specified, the existing period remains unchanged. Possible values are: 5, 60. | Optional |
+| access_log_s3_bucket_prefix | S3 key prefix (Path) for access logs.  If the prefix is not provided, the log folder is placed at the root level of the bucket. | Optional |
+| connection_draining_enabled | Whether connection draining is enabled for the load balancer. Possible values are: true, false. | Optional |
+| connection_draining_timeout | The maximum time, in seconds, to keep the existing connections open before de-registering the instance.  Valid Range: 1 - 3600. | Optional |
+| connection_settings_idle_timeout | The load balancer allows the connections to remain idle (no data is sent over the connection) for this specific duration in seconds. Valid Range: 1 - 4000. | Optional |
+| cross_zone_load_balancing_enabled | Whether to enable cross-zone load balancing. Possible values are: true, false. | Optional |
+| desync_mitigation_mode | Determines how the Classic Load Balancer handles HTTP requests that might pose a security risk to your application. This sets the 'elb.http.desyncmitigationmode' load balancer attribute. Possible values are: monitor, defensive, strictest. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.ELB.LoadBalancer.LoadBalancerName | string | The name of the Classic Load Balancer. |
+| AWS.ELB.LoadBalancer.LoadBalancerAttributes.CrossZoneLoadBalancing.Enabled | boolean | Whether cross-zone load balancing is enabled. |
+| AWS.ELB.LoadBalancer.LoadBalancerAttributes.ConnectionDraining.Enabled | boolean | Whether connection draining is enabled. |
+| AWS.ELB.LoadBalancer.LoadBalancerAttributes.ConnectionDraining.Timeout | number | Connection draining timeout in seconds. |
+| AWS.ELB.LoadBalancer.LoadBalancerAttributes.ConnectionSettings.IdleTimeout | number | Idle connection timeout in seconds. |
+| AWS.ELB.LoadBalancer.LoadBalancerAttributes.AccessLog.Enabled | boolean | Whether access logs are enabled. |
+| AWS.ELB.LoadBalancer.LoadBalancerAttributes.AccessLog.S3BucketName | string | The S3 bucket name for access logs. |
+| AWS.ELB.LoadBalancer.LoadBalancerAttributes.AccessLog.EmitInterval | number | Access log publish interval in minutes. |
+| AWS.ELB.LoadBalancer.LoadBalancerAttributes.AccessLog.S3BucketPrefix | string | The S3 key prefix for access logs. |
+| AWS.ELB.LoadBalancer.LoadBalancerAttributes.AdditionalAttributes | unknown | Additional attributes returned by the API. |
+
+### aws-ec2-vpcs-describe
+
+***
+Describes one or more of your VPCs.
+
+#### Base Command
+
+`aws-ec2-vpcs-describe`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| filters | One or more filters separated by ';' (for example, name=&lt;name&gt;;values=&lt;values&gt;). See AWS documentation for details &amp; filter options (https://docs.aws.amazon.com/cli/latest/userguide/cli-usage-filter.html). | Optional |
+| vpc_ids | A comma-separated list of VPC IDs. | Optional |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.EC2.Vpcs.CidrBlock | string | The primary IPv4 CIDR block for the VPC. |
+| AWS.EC2.Vpcs.DhcpOptionsId | string | The ID of the set of DHCP options you have associated with the VPC. |
+| AWS.EC2.Vpcs.State | string | The current state of the VPC. |
+| AWS.EC2.Vpcs.VpcId | string | The ID of the VPC. |
+| AWS.EC2.Vpcs.InstanceTenancy | string | The allowed tenancy of instances launched into the VPC. |
+| AWS.EC2.Vpcs.IsDefault | string | Indicates whether the VPC is the default VPC. |
+| AWS.EC2.Vpcs.Tags.Key | string | The key of the tag. |
+| AWS.EC2.Vpcs.Tags.Value | string | The value of the tag. |
+| AWS.EC2.Vpcs.Tags.Ipv6CidrBlockAssociationSet.AssociationId | string | The association ID for the IPv6 CIDR block. |
+| AWS.EC2.Vpcs.Tags.Ipv6CidrBlockAssociationSet.Ipv6CidrBlock | string | The IPv6 CIDR block. |
+| AWS.EC2.Vpcs.Tags.Ipv6CidrBlockAssociationSet.Ipv6CidrBlockState.State | string | The state of the CIDR block. |
+| AWS.EC2.Vpcs.Tags.Ipv6CidrBlockAssociationSet.Ipv6CidrBlockState.StatusMessage | string | A message about the status of the CIDR block, if applicable. |
+| AWS.EC2.Vpcs.Tags.CidrBlockAssociationSet.AssociationId | string | The association ID for the IPv4 CIDR block. |
+| AWS.EC2.Vpcs.Tags.CidrBlockAssociationSet.CidrBlock | string | The IPv4 CIDR block. |
+| AWS.EC2.Vpcs.Tags.CidrBlockAssociationSet.CidrBlockState.State | string | The state of the CIDR block. |
+| AWS.EC2.Vpcs.Tags.CidrBlockAssociationSet.CidrBlockState.StatusMessage | string | A message about the status of the CIDR block, if applicable. |
+| AWS.EC2.Vpcs.AccountId | string | The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided. |
+
+### aws-ec2-subnets-describe
+
+***
+Describes one or more of your subnets.
+
+#### Base Command
+
+`aws-ec2-subnets-describe`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| filters | One or more filters separated by ';' (for example, name=&lt;name&gt;;values=&lt;values&gt;). See AWS documentation for details &amp; filter options (https://docs.aws.amazon.com/cli/latest/userguide/cli-usage-filter.html). | Optional |
+| subnet_ids | A comma-separated list of subnet IDs. | Optional |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.EC2.Subnets.AvailabilityZone | string | The Availability Zone of the subnet. |
+| AWS.EC2.Subnets.AvailableIpAddressCount | number | The number of unused private IPv4 addresses in the subnet. Note that the IPv4 addresses for any stopped instances are considered unavailable. |
+| AWS.EC2.Subnets.CidrBlock | string | The IPv4 CIDR block assigned to the subnet. |
+| AWS.EC2.Subnets.DefaultForAz | boolean | Indicates whether this is the default subnet for the Availability Zone. |
+| AWS.EC2.Subnets.MapPublicIpOnLaunch | boolean | Indicates whether instances launched in this subnet receive a public IPv4 address. |
+| AWS.EC2.Subnets.State | string | The current state of the subnet. |
+| AWS.EC2.Subnets.SubnetId | string | The ID of the subnet. |
+| AWS.EC2.Subnets.VpcId | string | The ID of the VPC the subnet is in. |
+| AWS.EC2.Subnets.AssignIpv6AddressOnCreation | boolean | Indicates whether a network interface created in this subnet \(including a network interface created by RunInstances\) receives an IPv6 address. |
+| AWS.EC2.Subnets.Ipv6CidrBlockAssociationSet.AssociationId | string | The association ID for the CIDR block. |
+| AWS.EC2.Subnets.Ipv6CidrBlockAssociationSet.Ipv6CidrBlock | string | The IPv6 CIDR block. |
+| AWS.EC2.Subnets.Ipv6CidrBlockAssociationSet.Ipv6CidrBlockState.State | string | The state of a CIDR block. |
+| AWS.EC2.Subnets.Ipv6CidrBlockAssociationSet.Ipv6CidrBlockState.StatusMessage | string | A message about the status of the CIDR block, if applicable. |
+| AWS.EC2.Subnets.Tags.Key | string | The key of the tag. |
+| AWS.EC2.Subnets.Tags.Value | string | The value of the tag. |
+| AWS.EC2.Subnets.AccountId | string | The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided. |
+
+### aws-ec2-ipam-resource-discoveries-describe
+
+***
+Describes IPAM resource discoveries. A resource discovery is an IPAM component that enables IPAM to manage and monitor resources owned by the account.
+
+#### Base Command
+
+`aws-ec2-ipam-resource-discoveries-describe`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ipam_resource_discovery_ids | A comma-separated list of the IPAM resource discovery IDs. | Optional |
+| filters | One or more filters separated by ';' (for example, name=&lt;name&gt;;values=&lt;values&gt;). See AWS documentation for details &amp; filter options (https://docs.aws.amazon.com/cli/latest/userguide/cli-usage-filter.html). | Optional |
+| limit | The maximum number of results to return in a single call. Specify a value between 5 and 1000. Default value is 50. | Optional |
+| next_token | The token for the next set of results. | Optional |
+| address_region | The Amazon Web Services region for the IP address. | Optional |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.EC2.IpamResourceDiscoveries.IpamResourceDiscoveryId | String | The resource discovery ID. |
+| AWS.EC2.IpamResourceDiscoveries.OwnerId | String | The ID of the owner. |
+| AWS.EC2.IpamResourceDiscoveries.IpamResourceDiscoveryRegion | String | The resource discovery region. |
+| AWS.EC2.IpamResourceDiscoveries.AccountId | string | The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided. |
+
+### aws-ec2-ipam-resource-discovery-associations-describe
+
+***
+Describes resource discovery association with an Amazon VPC IPAM. An associated resource discovery is a resource discovery that has been associated with an IPAM.
+
+#### Base Command
+
+`aws-ec2-ipam-resource-discovery-associations-describe`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ipam_resource_discovery_association_ids | A comma-separated list of the resource discovery association IDs. | Optional |
+| filters | One or more filters separated by ';' (for example, name=&lt;name&gt;;values=&lt;values&gt;). See AWS documentation for details &amp; filter options (https://docs.aws.amazon.com/cli/latest/userguide/cli-usage-filter.html). | Optional |
+| limit | The maximum number of results to return in a single call. Specify a value between 5 and 1000. Default value is 50. | Optional |
+| next_token | The token for the next set of results. | Optional |
+| address_region | The Amazon Web Services region for the IP address. | Optional |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.EC2.IpamResourceDiscoveryAssociations.IpamResourceDiscoveryAssociationId | String | The resource discovery association ID. |
+| AWS.EC2.IpamResourceDiscoveryAssociations.IpamResourceDiscoveryId | String | The resource discovery ID. |
+| AWS.EC2.IpamResourceDiscoveryAssociations.IpamRegion | String | The IPAM home region. |
+| AWS.EC2.IpamResourceDiscoveryAssociations.AccountId | string | The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided. |
