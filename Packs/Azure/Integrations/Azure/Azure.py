@@ -88,9 +88,21 @@ PERMISSIONS_TO_COMMANDS = {
     "Microsoft.DBforPostgreSQL/servers/write": ["azure-postgres-server-update"],
     "Microsoft.DBforPostgreSQL/servers/configurations/read": [
         "azure-postgres-config-set",
+        "azure-postgres-config-set-disconnection-logging-quick-action"
+        "azure-postgres-config-set-checkpoint-logging-quick-action",
+        "azure-postgres-config-set-connection-throttling-quick-action",
+        "azure-postgres-config-set-session-connection-logging-quick-action",
+        "azure-postgres-config-set-log-retention-period-quick-action",
+        "azure-postgres-config-set-statement-logging-quick-action",
     ],
     "Microsoft.DBforPostgreSQL/servers/configurations/write": [
         "azure-postgres-config-set",
+        "azure-postgres-config-set-disconnection-logging-quick-action"
+        "azure-postgres-config-set-checkpoint-logging-quick-action",
+        "azure-postgres-config-set-connection-throttling-quick-action",
+        "azure-postgres-config-set-session-connection-logging-quick-action",
+        "azure-postgres-config-set-log-retention-period-quick-action",
+        "azure-postgres-config-set-statement-logging-quick-action",
     ],
     "Microsoft.Web/sites/config/read": [
         "azure-webapp-config-set",

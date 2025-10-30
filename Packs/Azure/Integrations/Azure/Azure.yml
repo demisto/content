@@ -5575,6 +5575,245 @@ script:
       description: The resource selectors to filter policies by resource properties.
     - contextPath: Azure.PolicyAssignment.SystemData
       description: The system metadata relating to this resource.
+  - arguments:
+    - name: subscription_id
+      required: true
+      type: string
+      description: Subscription ID.
+      prettypredefined:
+        Subscription ID: ${asset.xdm.asset.realm}
+    - name: resource_group_name
+      type: string
+      description: The resource group name.
+      required: true
+      prettyname: Resource Group
+    - name: server_name
+      type: string
+      required: true
+      description: Name of the PostgreSQL server.
+      prettyname: Postgres Server Name
+      prettypredefined:
+        Postgres Server Name: ${asset.xdm.asset.name}
+    - name: configuration_name
+      type: string
+      description: The configuration setting name.
+      hidden: true
+      defaultValue: log_disconnections
+    - name: value
+      type: string
+      description: 'Value of the configuration.'
+      hidden: true
+      defaultValue: 'on'
+    name: azure-postgres-config-set-disconnection-logging-quick-action
+    pretttyname: Enable Disconnection Logging on PostgreSQL
+    hidden: true
+    quickaction: true
+    description: Enables logging of client disconnections on the PostgreSQL server.
+    outputs: [] # have no outputs for these command by response
+  - arguments:
+    - name: subscription_id
+      required: true
+      type: string
+      description: Subscription ID.
+      prettypredefined:
+        Subscription ID: ${asset.xdm.asset.realm}
+    - name: resource_group_name
+      type: string
+      description: The resource group name.
+      required: true
+      prettyname: Resource Group
+    - name: server_name
+      type: string
+      required: true
+      description: Name of the PostgreSQL server.
+      prettyname: Postgres Server Name
+      prettypredefined:
+        Postgres Server Name: ${asset.xdm.asset.name}
+    - name: configuration_name
+      type: string
+      description: The configuration setting name.
+      hidden: true
+      defaultValue: 'log_checkpoints'
+    - name: value
+      type: string
+      description: Value of the configuration.
+      hidden: true
+      defaultValue: 'on'
+    name: azure-postgres-config-set-checkpoint-logging-quick-action
+    pretttyname: Enable PostgreSQL Checkpoint Logging
+    hidden: true
+    quickaction: true
+    description: Enables checkpoint logging on the PostgreSQL server.
+    outputs: [] # have no outputs for these command by response
+  - arguments:
+    - name: subscription_id
+      required: true
+      type: string
+      description: Subscription ID.
+      prettypredefined:
+        Subscription ID: ${asset.xdm.asset.realm}
+    - name: resource_group_name
+      type: string
+      description: The resource group name.
+      required: true
+      prettyname: Resource Group
+    - name: server_name
+      type: string
+      required: true
+      description: Name of the PostgreSQL server.
+      prettyname: Postgres Server Name
+      prettypredefined:
+        Postgres Server Name: ${asset.xdm.asset.name}
+    - name: configuration_name
+      type: string
+      description: The configuration setting name.
+      hidden: true
+      defaultValue: 'connection_throttling'
+    - name: value
+      type: string
+      description: Value of the configuration.
+      hidden: true
+      defaultValue: 'on'
+    name: azure-postgres-config-set-connection-throttling-quick-action
+    pretttyname: Enable Connection Throttling on PostgreSQL
+    hidden: true
+    quickaction: true
+    description: Enables connection throttling on the PostgreSQL server. This enables the PostgreSQL database to set the verbosity of logged messages allowing generation of query and error logs with respect to concurrent connections.
+    outputs: [] # have no outputs for these command by response
+  - arguments:
+    - name: subscription_id
+      required: true
+      type: string
+      description: Subscription ID.
+      prettypredefined:
+        Subscription ID: ${asset.xdm.asset.realm}
+    - name: resource_group_name
+      type: string
+      description: The resource group name.
+      required: true
+      prettyname: Resource Group
+    - name: server_name
+      type: string
+      required: true
+      description: Name of the PostgreSQL server.
+      prettyname: Postgres Server Name
+      prettypredefined:
+        Postgres Server Name: ${asset.xdm.asset.name}
+    - name: configuration_name
+      type: string
+      description: The configuration setting name.
+      hidden: true
+      defaultValue: 'log_connections'
+    - name: value
+      type: string
+      description: Value of the configuration.
+      hidden: true
+      defaultValue: 'on'
+    name: azure-postgres-config-set-session-connection-logging-quick-action
+    prettyname: Enable Session Connection Logging on PostgreSQL
+    hidden: true
+    quickaction: true
+    description: Enables logging of client connections on the PostgreSQL.
+    outputs: [] # have no outputs for these command by response
+  - arguments:
+    - name: subscription_id
+      required: true
+      type: string
+      description: Subscription ID.
+      prettypredefined:
+        Subscription ID: ${asset.xdm.asset.realm}
+    - name: resource_group_name
+      type: string
+      description: The resource group name.
+      required: true
+      prettyname: Resource Group
+    - name: server_name
+      type: string
+      required: true
+      description: Name of the PostgreSQL server.
+      prettyname: Postgres Server Name
+      prettypredefined:
+        Postgres Server Name: ${asset.xdm.asset.name}
+    - name: configuration_name
+      type: string
+      description: The configuration setting name.
+      hidden: true
+      defaultValue: 'log_retention_days'
+    - name: value
+      type: string
+      description: Value of the configuration.
+      hidden: true
+      defaultValue: '4'
+    name: azure-postgres-config-set-log-retention-period-quick-action
+    prettyname: Set Postgres Log Retention
+    hidden: true
+    quickaction: true
+    description: 'Sets the log retention period for the PostgreSQL server to 4 days. NOTE: Recommended Log retention days value can be in 4-7 inclusive range.'
+    outputs: [] # have no outputs for these command by response
+  - arguments:
+    - name: subscription_id
+      required: true
+      type: string
+      description: Subscription ID.
+      prettypredefined:
+        Subscription ID: ${asset.xdm.asset.realm}
+    - name: resource_group_name
+      type: string
+      description: The resource group name.
+      required: true
+      prettyname: Resource Group
+    - name: server_name
+      type: string
+      required: true
+      description: Name of the PostgreSQL server.
+      prettyname: Postgres Server Name
+      prettypredefined:
+        Postgres Server Name: ${asset.xdm.asset.name}
+    - name: configuration_name
+      type: string
+      description: The configuration setting name.
+      hidden: true
+      defaultValue: 'log_duration'
+    - name: value
+      type: string
+      description: Value of the configuration.
+      hidden: true
+      defaultValue: 'on'
+    name: azure-postgres-config-set-statement-logging-quick-action
+    prettyname: Enable Postgres Statement Logging
+    hidden: true
+    quickaction: true
+    description: Enables logging of statement execution duration on the PostgreSQL server to help with performance analysis.
+    outputs: [] # have no outputs for these command by response
+  - arguments:
+    - name: resource_group_name
+      type: String
+      required: true
+      description: The resource group name.
+      prettyname: Resource Group
+    - name: subscription_id
+      type: String
+      required: true
+      description: Subscription ID.
+      prettypredefined:
+        Subscription ID: ${asset.xdm.asset.realm}
+    - name: server_name
+      type: String
+      required: true
+      description: Name of the PostgreSQL server.
+      prettyname: Postgres Server Name
+      prettypredefined:
+        Postgres Server Name: ${asset.xdm.asset.name}
+    - name: ssl_enforcement
+      type: String
+      description: Whether to enable SSL authentication when connecting to the server.
+      defaultValue: Enabled
+    name: azure-postgres-server-update-ssl-enforcement-quick-action
+    description: Enforces SSL/TLS connections for the PostgreSQL server to reject unencrypted traffic.
+    outputs: [] # No outputs are returned in the response.
+    hidden: true
+    quickaction: true
+    prettyname: Enable SSL on Postgres Server
   isfetch: false
   runonce: false
   script: '-'
