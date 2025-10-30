@@ -2,7 +2,7 @@
     "name": "IBM Storage Scale",
     "description": "The IBM Storage Scale pack provides high-performance collection of Command Line Interface (CLI) audit log records. Its concurrent fetching architecture is engineered for large-scale deployments, ensuring efficient data ingestion into Cortex XSIAM. It enables monitoring of critical configuration changes and user commands to enhance the security of the storage infrastructure.",
     "support": "xsoar",
-    "currentVersion": "1.0.0",
+    "currentVersion": "1.0.1",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -14,12 +14,5 @@
     "keywords": [],
     "marketplaces": [
         "marketplacev2"
-    ],
-    "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS",
-        "agentix"
     ]
 }
