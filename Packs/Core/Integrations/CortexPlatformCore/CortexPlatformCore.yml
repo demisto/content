@@ -1,6 +1,6 @@
 category: Endpoint
 defaultEnabled: true
-sectionOrder:
+sectionorder:
   - Connect
   - Collect
 commonfields:
@@ -351,7 +351,7 @@ script:
           description: The hierarchy or structure representing the asset.
         - contextPath: Core.CoreAsset.xdm__asset__type__category
           description: The asset category type.
-        - contextPath: Core.CoreAsset.xdm__cloud__region
+        - contextPath: Core.CoreAsset.xdm__asset__cloud__region
           description: The cloud region where the asset resides.
         - contextPath: Core.CoreAsset.xdm__asset__module_unstructured_fields
           description: The unstructured fields or metadata associated with the asset module.
@@ -1098,13 +1098,141 @@ script:
         - contextPath: Core.CaseExtraData.file_artifacts.data.type
           description: The type of the file artifact.
           type: String
+    - name: core-get-vulnerabilities
+      description: "Retrieves vulnerabilities based on specified filters."
+      arguments:
+        - name: limit
+          description: "The maximum number of vulnerabilities to return."
+          defaultValue: "50"
+        - defaultValue: LAST_OBSERVED
+          description: The field by which to sort the results.
+          name: sort_field
+        - auto: PREDEFINED
+          description: The order in which to sort the results.
+          name: sort_order
+          predefined:
+            - DESC
+            - ASC
+        - name: cve_id
+          description: "The CVE ID. Accepts a comma-separated list."
+          isArray: true
+        - name: issue_id
+          description: "The issue ID. Accepts a comma-separated list."
+          isArray: true
+        - name: cvss_score_gte
+          description: "The minimum CVSS score."
+        - name: epss_score_gte
+          description: "The minimum EPSS score."
+        - name: internet_exposed
+          description: "Filter by internet exposed assets."
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+        - name: exploitable
+          description: "Filter by exploitable vulnerabilities."
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+        - name: has_kev
+          description: "Filter by vulnerabilities that have a Known Exploited Vulnerability (KEV)."
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+        - name: affected_software
+          description: "Filter by affected software. Accepts a comma-separated list."
+          isArray: true
+        - name: on_demand_fields
+          description: "A comma-separated list of additional fields to retrieve."
+          isArray: true
+        - description: "The start time for filtering according to case creation time. Supports free-text relative and absolute times. For example: 7 days ago, 2023-06-15T10:30:00Z, 13/8/2025."
+          name: start_time
+        - description: "The end time for filtering according to case creation time. Supports free-text relative and absolute times. For example: 7 days ago, 2023-06-15T10:30:00Z, 13/8/2025."
+          name: end_time
+        - auto: PREDEFINED
+          description: The severity of the vulnerability issue.
+          isArray: true
+          name: severity
+          predefined:
+            - info
+            - low
+            - medium
+            - high
+            - critical
+        - name: assignee
+          description: |
+            The email of the user assigned to the vulnerability. Accepts a comma-separated list. 
+            Use 'unassigned' for unassigned vulnerabilities or 'assigned' for all assigned vulnerabilities.
+          isArray: true
+      outputs:
+        - contextPath: Core.VulnerabilityIssue.ISSUE_ID
+          description: The unique identifier for the vulnerability issue.
+          type: String
+        - contextPath: Core.VulnerabilityIssue.CVE_ID
+          description: The CVE identifier for the vulnerability.
+          type: String
+        - contextPath: Core.VulnerabilityIssue.CVE_DESCRIPTION
+          description: The description of the CVE.
+          type: String
+        - contextPath: Core.VulnerabilityIssue.ASSET_NAME
+          description: The name of the affected asset.
+          type: String
+        - contextPath: Core.VulnerabilityIssue.PLATFORM_SEVERITY
+          description: The severity of the vulnerability as determined by the platform.
+          type: String
+        - contextPath: Core.VulnerabilityIssue.EPSS_SCORE
+          description: The Exploit Prediction Scoring System (EPSS) score.
+          type: Number
+        - contextPath: Core.VulnerabilityIssue.CVSS_SCORE
+          description: The Common Vulnerability Scoring System (CVSS) score.
+          type: Number
+        - contextPath: Core.VulnerabilityIssue.ASSIGNED_TO
+          description: The email of the user assigned to the vulnerability.
+          type: String
+        - contextPath: Core.VulnerabilityIssue.ASSIGNED_TO_PRETTY
+          description: The full name of the user assigned to the vulnerability.
+          type: String
+        - contextPath: Core.VulnerabilityIssue.AFFECTED_SOFTWARE
+          description: The software affected by the vulnerability.
+          type: Unknown
+        - contextPath: Core.VulnerabilityIssue.FIX_AVAILABLE
+          description: Indicates if a fix is available for the vulnerability.
+          type: Boolean
+        - contextPath: Core.VulnerabilityIssue.INTERNET_EXPOSED
+          description: Indicates if the asset is exposed to the internet.
+          type: Boolean
+        - contextPath: Core.VulnerabilityIssue.HAS_KEV
+          description: Indicates if the vulnerability is a Known Exploited Vulnerability (KEV).
+          type: Boolean
+        - contextPath: Core.VulnerabilityIssue.EXPLOITABLE
+          description: Indicates if the vulnerability is exploitable.
+          type: Boolean
+        - contextPath: Core.VulnerabilityIssue.ASSET_IDS
+          description: The unique identifier for the asset.
+          type: String
   runonce: false
   script: "-"
   subtype: python3
   type: python
-  dockerimage: demisto/google-cloud-storage:1.0.0.4088897
+  dockerimage: demisto/google-cloud-storage:1.0.0.4885491
 tests:
   - No tests
 fromversion: 6.2.0
 marketplaces:
-  - platform
+- platform
+supportedModules:
+- "C1"
+- "C3"
+- "X0"
+- "X1"
+- "X3"
+- "X5"
+- "ENT_PLUS"
+- xsiam
+- agentix
+- cloud
+- cloud_posture
+- cloud_runtime_security
+- edr

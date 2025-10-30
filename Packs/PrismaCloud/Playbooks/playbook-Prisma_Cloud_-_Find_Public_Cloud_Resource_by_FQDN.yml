@@ -436,8 +436,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Set a value in context under the key you entered. If no value is
-        entered, the script doesn't do anything.
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
       id: a3ad6ced-1383-405b-83d6-650df4aeff52
       iscommand: false
       name: Join list of inputs with CNAMEs
@@ -633,9 +632,3 @@ view: |-
 fromversion: 6.0.0
 tests:
 - No tests
-supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
-- agentix

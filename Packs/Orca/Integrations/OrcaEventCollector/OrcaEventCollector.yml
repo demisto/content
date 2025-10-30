@@ -2,7 +2,7 @@ category: Analytics & SIEM
 commonfields:
   id: Orca Event Collector
   version: -1
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 description: Orca Security event collector integration for Cortex XSIAM.
@@ -76,3 +76,4 @@ supportedModules:
 - X5
 - ENT_PLUS
 - agentix
+- xsiam
