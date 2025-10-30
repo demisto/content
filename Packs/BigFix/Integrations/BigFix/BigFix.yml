@@ -7,18 +7,38 @@ configuration:
   name: url
   required: true
   type: 0
+  section: Connect
 - display: Username
   name: credentials
   required: true
   type: 9
+  section: Connect
 - display: Trust any certificate (not secure)
   name: unsecure
   type: 8
   required: false
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
+- display: Fetch events
+  name: isFetchEvents
+  type: 8
+  section: Collect
+  required: false
+  defaultvalue: 'true'
+  hidden:
+  - xsoar
+- display: Maximum number of events per fetch
+  name: max_fetch
+  type: 0
+  section: Collect
+  defaultvalue: '50'
+  required: false
+  hidden:
+  - xsoar
 description: HCL BigFix Patch provides an automated, simplified patching process that is administered from a single console.
 display: BigFix
 name: BigFix
@@ -474,11 +494,31 @@ script:
     - contextPath: Bigfix.QueryResults
       description: The results of the query.
       type: unknown
+  - description: Manual command to fetch events.
+    name: bigfix-get-events
+    arguments:
+    - auto: PREDEFINED
+      defaultValue: 'False'
+      description: Set this argument to True in order to create events, otherwise the command will only display them.
+      name: should_push_events
+      predefined:
+      - 'True'
+      - 'False'
+      required: true
+    - description: Maximum number of events to retrieve.
+      name: limit
+      type: 0
+      defaultValue: '10'
+      required: false    #TODO add hidden from xsoar
   runonce: false
   script: '-'
   subtype: python3
   type: python
   dockerimage: demisto/python3:3.12.8.3296088
+  isfetchevents: true
 fromversion: 5.0.0
 tests:
 - No tests (auto formatted)
+sectionorder:
+- Connect
+- Collect
