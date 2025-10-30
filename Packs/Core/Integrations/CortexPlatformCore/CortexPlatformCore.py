@@ -133,9 +133,6 @@ def get_asset_details_command(client: Client, args: dict) -> CommandResults:
         CommandResults: Object containing the formatted asset details,
                         raw response, and outputs for integration context.
     """
-    if demisto.demistoVersion().get("module") == "x0":
-        raise DemistoException("get-asset-details is currently not supported in this module.")
-
     asset_id = args.get("asset_id")
     response = client.get_asset_details(asset_id)
     if not response:
