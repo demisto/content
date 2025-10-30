@@ -5,7 +5,7 @@
     "propagationLabels": [
         "all"
     ],
-    "name": "Bmc Customer",
+    "name": "BmcITSM Customer",
     "ownerOnly": false,
     "cliName": "bmccustomer",
     "type": "grid",
@@ -23,7 +23,7 @@
     "openEnded": false,
     "associatedToAll": true,
     "unmapped": false,
-    "unsearchable": true,
+    "unsearchable": false,
     "caseInsensitive": true,
     "columns": [
         {
@@ -128,7 +128,7 @@
         {
             "cliName": "bmcitsmcustomer",
             "type": "grid",
-            "name": "BmcITSM Customer"
+            "name": "Bmc Customer"
         }
     ]
 }

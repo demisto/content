@@ -35,7 +35,7 @@ class DatetimeEncoder(json.JSONEncoder):
 
 
 """ COMMAND FUNCTIONS """
-SENSITIVE_COMMANDS = ["aws-secrets-manager-secret–value-get"]
+SENSITIVE_COMMANDS = ["aws-secrets-manager-secret–value-get"]  # noqa: RUF001
 
 
 def test_module(client: AWSClient):
@@ -304,13 +304,13 @@ def main():  # pragma: no cover:
             test_module(aws_client)
         elif demisto.command() == "aws-secrets-manager-secret-list":
             aws_secrets_manager_secret_list_command(aws_client, args)
-        elif demisto.command() == "aws-secrets-manager-secret–value-get":
+        elif demisto.command() == "aws-secrets-manager-secret–value-get":  # noqa: RUF001 (backwards compatibility)
             aws_secrets_manager_secret_value_get_command(aws_client, args)
-        elif demisto.command() == "aws-secrets-manager-secret–delete":
+        elif demisto.command() == "aws-secrets-manager-secret–delete":  # noqa: RUF001 (backwards compatibility)
             aws_secrets_manager_secret_delete_command(aws_client, args)
-        elif demisto.command() == "aws-secrets-manager-secret–restore":
+        elif demisto.command() == "aws-secrets-manager-secret–restore":  # noqa: RUF001 (backwards compatibility)
             aws_secrets_manager_secret_restore_command(aws_client, args)
-        elif demisto.command() == "aws-secrets-manager-secret–policy-get":
+        elif demisto.command() == "aws-secrets-manager-secret–policy-get":  # noqa: RUF001 (backwards compatibility)
             aws_secrets_manager_secret_policy_get_command(aws_client, args)
         elif demisto.command() == "fetch-credentials":
             fetch_credentials(aws_client, args)

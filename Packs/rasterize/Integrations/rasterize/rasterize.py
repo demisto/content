@@ -1253,19 +1253,22 @@ def perform_rasterize(
 
                 # Start a new thread in group of max_tabs
                 rasterization_threads.append(
-                    executor.submit(
-                        rasterize_thread,
-                        browser=browser,
-                        chrome_port=chrome_port,
-                        path=current_path,
-                        rasterize_type=rasterize_type,
-                        wait_time=wait_time,
-                        offline_mode=offline_mode,
-                        navigation_timeout=navigation_timeout,
-                        include_url=include_url,
-                        full_screen=full_screen,
-                        width=width,
-                        height=height,
+                    (
+                        executor.submit(
+                            rasterize_thread,
+                            browser=browser,
+                            chrome_port=chrome_port,
+                            path=current_path,
+                            rasterize_type=rasterize_type,
+                            wait_time=wait_time,
+                            offline_mode=offline_mode,
+                            navigation_timeout=navigation_timeout,
+                            include_url=include_url,
+                            full_screen=full_screen,
+                            width=width,
+                            height=height,
+                        ),
+                        current_path,
                     )
                 )
             # Wait for all tasks to complete
@@ -1294,16 +1297,22 @@ def perform_rasterize(
                 increase_counter_chrome_instances_file(chrome_port=chrome_port)
 
             # Get the results
-            for current_thread in rasterization_threads:
-                ret_value, response_body = current_thread.result()
-                if ret_value:
-                    rasterization_results.append((ret_value, response_body))
-                else:
-                    return_results(
-                        CommandResults(
-                            readable_output=str(response_body), entry_type=(EntryType.ERROR if WITH_ERRORS else EntryType.WARNING)
+            for current_thread, path in rasterization_threads:
+                try:
+                    ret_value, response_body = current_thread.result()
+                    if ret_value:
+                        rasterization_results.append((ret_value, response_body))
+                    else:
+                        return_results(
+                            CommandResults(
+                                readable_output=str(response_body),
+                                entry_type=(EntryType.ERROR if WITH_ERRORS else EntryType.WARNING),
+                            )
                         )
-                    )
+                except Exception as ex:
+                    error_msg = f"Failed to rasterize the path {path}, exception: {str(ex)}"
+                    demisto.debug(error_msg)
+                    return_err_or_warn(error_msg)
             return rasterization_results
 
     else:

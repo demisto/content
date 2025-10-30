@@ -5,7 +5,7 @@
     "propagationLabels": [
         "all"
     ],
-    "name": "Bmc Sub-Type",
+    "name": "BmcITSM Sub-Type",
     "ownerOnly": false,
     "cliName": "bmcsubtype",
     "type": "shortText",
@@ -31,7 +31,7 @@
     ],
     "associatedToAll": false,
     "unmapped": false,
-    "unsearchable": true,
+    "unsearchable": false,
     "caseInsensitive": true,
     "sla": 0,
     "threshold": 72,
@@ -40,7 +40,7 @@
         {
             "cliName": "bmcitsmsubtype",
             "type": "shortText",
-            "name": "BmcITSM Sub-Type"
+            "name": "Bmc Sub-Type"
         }
     ]
 }

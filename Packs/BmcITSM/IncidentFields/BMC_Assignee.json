@@ -5,7 +5,7 @@
     "propagationLabels": [
         "all"
     ],
-    "name": "Bmc Assignee",
+    "name": "BmcITSM Assignee",
     "ownerOnly": false,
     "cliName": "bmcassignee",
     "type": "grid",
@@ -23,7 +23,7 @@
     "openEnded": false,
     "associatedToAll": true,
     "unmapped": false,
-    "unsearchable": true,
+    "unsearchable": false,
     "caseInsensitive": true,
     "columns": [
         {
@@ -89,7 +89,7 @@
         {
             "cliName": "bmcitsmassignee",
             "type": "grid",
-            "name": "BmcITSM Assignee"
+            "name": "Bmc Assignee"
         }
     ]
 }

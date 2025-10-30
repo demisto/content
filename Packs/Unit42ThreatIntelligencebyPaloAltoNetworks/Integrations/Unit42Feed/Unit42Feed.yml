@@ -2,7 +2,7 @@ category: Data Enrichment & Threat Intelligence
 commonfields:
   id: Unit 42 Feed
   version: -1
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 configuration:
@@ -80,19 +80,6 @@ configuration:
   - WHITE
   defaultvalue: AMBER
   required: false
-  section: Collect
-  advanced: true
-- display: Indicator Reputation
-  name: feedReputation
-  additionalinfo: Indicators from this integration instance will be marked with this reputation.
-  type: 18
-  options:
-  - "None"
-  - "Good"
-  - "Suspicious"
-  - "Bad"
-  defaultvalue: "Bad"
-  required: true
   section: Collect
   advanced: true
 - display: ''
