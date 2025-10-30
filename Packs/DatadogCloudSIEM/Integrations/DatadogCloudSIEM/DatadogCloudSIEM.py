@@ -813,7 +813,13 @@ def security_signals_search_query(args: dict[str, Any]) -> str:
         query_parts.append(f"@workflow.triage.state:{args.get('state')}")
 
     if args.get("severity"):
-        query_parts.append(f"status:{args.get('severity')}")
+        # Fetch given an higher severity: low > info > medium > high > critical
+        severity_levels = ["info", "low", "medium", "high", "critical"]
+        sev = args.get("severity", "medium").lower()
+        if sev in severity_levels:
+            idx = severity_levels.index(sev)
+            higher_or_equal = severity_levels[idx:]
+            query_parts.append(f"status:({' OR '.join(higher_or_equal)})")
 
     if args.get("source"):
         query_parts.append(f"source:{args.get('source')}")

@@ -62,7 +62,7 @@ configuration:
     type: 0
     defaultvalue: "50"
     required: false
-  - additionalinfo: Fetch only security signals with these severity levels. Comma-separated list. Leave empty to fetch all severities.
+  - additionalinfo: Fetch only security signals with these severity levels or higher.
     display: Fetch severity
     name: fetch_severity
     type: 15
