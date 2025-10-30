@@ -72,15 +72,22 @@ class FilterBuilder:
     def __init__(self, filter_fields: list[Field] = None):
         self.filter_fields = filter_fields or []
 
-    def add_field(self, name: str, type: "FilterType", values: Any):
+    def add_field(self, name: str, type: "FilterType", values: Any, mapper: dict | None = None):
         """
         Adds a new field to the filter.
         Args:
             name (str): The name of the field.
             type (FilterType): The type to use for the field.
             values (Any): The values to filter for.
+            mapper (dict | None): An optional dictionary to map values before filtering.
         """
-        self.filter_fields.append(FilterBuilder.Field(name, type, values))
+        processed_values = values
+        if mapper:
+            if not isinstance(values, list):
+                values = [values]
+            processed_values = [mapper[v] for v in values if v in mapper]
+
+        self.filter_fields.append(FilterBuilder.Field(name, type, processed_values))
 
     def add_field_with_mappings(self, name: str, type: "FilterType", values: Any, mappings: dict[str, "FilterType"]):
         """
@@ -90,6 +97,11 @@ class FilterBuilder:
             type (FilterType): The default filter type for non-mapped values.
             values (Any): The values to filter for.
             mappings (dict[str, FilterType]): A dictionary mapping special values to specific filter types.
+                Example:
+                    mappings = {
+                        "unassigned": FilterType.IS_EMPTY,
+                        "assigned": FilterType.NIS_EMPTY,
+                    }
         """
         self.filter_fields.append(FilterBuilder.MappedValuesField(name, type, values, mappings))
 
@@ -325,9 +337,6 @@ def get_vulnerabilities_command(client: Client, args: dict) -> CommandResults:
     sort_field = args.get("sort_field", "LAST_OBSERVED")
     sort_order = args.get("sort_order", "DESC")
 
-    severities = argToList(args.get("severity"))
-    api_severities = [SEVERITY_MAPPING[sev] for sev in severities if sev in SEVERITY_MAPPING]
-
     filter_builder = FilterBuilder()
     filter_builder.add_field("CVE_ID", FilterType.CONTAINS, argToList(args.get("cve_id")))
     filter_builder.add_field("CVSS_SCORE", FilterType.GTE, arg_to_number(args.get("cvss_score_gte")))
@@ -336,7 +345,7 @@ def get_vulnerabilities_command(client: Client, args: dict) -> CommandResults:
     filter_builder.add_field("EXPLOITABLE", FilterType.EQ, arg_to_bool_or_none(args.get("exploitable")))
     filter_builder.add_field("HAS_KEV", FilterType.EQ, arg_to_bool_or_none(args.get("has_kev")))
     filter_builder.add_field("AFFECTED_SOFTWARE", FilterType.CONTAINS, argToList(args.get("affected_software")))
-    filter_builder.add_field("PLATFORM_SEVERITY", FilterType.EQ, api_severities)
+    filter_builder.add_field("PLATFORM_SEVERITY", FilterType.EQ, argToList(args.get("severity")), SEVERITY_MAPPING)
     filter_builder.add_field("ISSUE_ID", FilterType.CONTAINS, argToList(args.get("issue_id")))
     filter_builder.add_time_range_field("LAST_OBSERVED", args.get("start_time"), args.get("end_time"))
     filter_builder.add_field_with_mappings(
@@ -361,11 +370,33 @@ def get_vulnerabilities_command(client: Client, args: dict) -> CommandResults:
     reply = response.get("reply", {})
     data = reply.get("DATA", [])
 
+    output_keys = [
+        "ISSUE_ID",
+        "CVE_ID",
+        "CVE_DESCRIPTION",
+        "ASSET_NAME",
+        "PLATFORM_SEVERITY",
+        "EPSS_SCORE",
+        "CVSS_SCORE",
+        "ASSIGNED_TO",
+        "ASSIGNED_TO_PRETTY",
+        "AFFECTED_SOFTWARE",
+        "FIX_AVAILABLE",
+        "INTERNET_EXPOSED",
+        "HAS_KEV",
+        "EXPLOITABLE",
+        "ASSET_IDS",
+    ]
+    filtered_data = [{k: v for k, v in item.items() if k in output_keys} for item in data]
+
+    readable_output = tableToMarkdown(
+        "Vulnerabilities", filtered_data, headerTransform=string_to_table_header, sort_headers=False
+    )
     return CommandResults(
-        readable_output=tableToMarkdown("Vulnerabilities", data, headerTransform=string_to_table_header, sort_headers=False),
+        readable_output=readable_output,
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Vulnerability",
         outputs_key_field="ISSUE_ID",
-        outputs=data,
+        outputs=filtered_data,
         raw_response=response,
     )
 
