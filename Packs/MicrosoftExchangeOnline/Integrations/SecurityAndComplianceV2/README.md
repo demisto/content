@@ -80,7 +80,29 @@ To access the **Microsoft Purview** (formerly Compliance Center) capabilities us
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for **O365 - Security And Compliance - Content Search v2**.
-3. Click **Add instance** to create and configure a new integration instance.
+3. Authentication / Authorization methods:
+
+- App-only (OAuth2.0) Authentication -
+    1. Fill in the UPN, App ID, and Tenant ID parameters in the integration configuration.
+    2. Run the ***o365-sc-auth-start*** command and follow the instructions.
+    3. For testing completion of authorization process run the ***o365-sc-auth-test*** command.
+- Delegated User Authentication -
+    1. Fill in the UPN parameter in the integration configuration.
+    2. Add the user’s Microsoft 365 password (the regular sign-in password for that UPN).
+    3. For testing completion of authorization process run the ***o365-sc-auth-test*** command. 
+    4. As part of a Microsoft update, some commands will only work with this authentication method. The commands are:
+       - o365-sc-new-search-action
+       - o365-sc-case-hold-policy-create
+       - o365-sc-case-hold-policy-set
+       - o365-sc-case-hold-policy-delete
+       - o365-sc-case-hold-rule-create
+       - o365-sc-case-hold-rule-delete 
+
+- **Note - If a UPN Password is provided:**
+  - Even if the password is incorrect, the integration will attempt to authenticate using it.
+  - In this case, all connections to Microsoft Security and Compliance PowerShell will use interactive delegated authentication.
+
+4. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter**   | **Description**                                                   | **Required** |
     | --------------- | ----------------------------------------------------------------- |--------------|
@@ -91,20 +113,6 @@ To access the **Microsoft Purview** (formerly Compliance Center) capabilities us
     | Organization    | The organization name for the Security & Compliance Center.        | False        |
     | Insecure        | Trust any certificate (not secure).                                | False        |
 
-4. Authentication / Authorization methods:
-
-- App-only (OAuth2.0) Authentication -
-    1. Fill in the UPN, App ID, and Tenant ID parameters in the integration configuration.
-    2. Run the ***o365-sc-auth-start*** command and follow the instructions.
-    3. For testing completion of authorization process run the ***o365-sc-auth-test*** command.
-- Delegated User Authentication -
-    1. Fill in the UPN parameter in the integration configuration.
-    2. Add the user’s Microsoft 365 password (the regular sign-in password for that UPN).
-    3. For testing completion of authorization process run the ***o365-sc-auth-test*** command.
-
-- **Note - If a UPN Password is provided:**
-  - Even if the password is incorrect, the integration will attempt to authenticate using it.
-  - In this case, all connections to Microsoft Security and Compliance PowerShell will use interactive delegated authentication.
 
 - **Expected Output:**
 
