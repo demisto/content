@@ -1,6 +1,8 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from CoreIRApiModule import *
+import dateparser
+from enum import Enum
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -13,6 +15,8 @@ MAX_GET_INCIDENTS_LIMIT = 100
 WEBAPP_COMMANDS = ["core-get-vulnerabilities", "core-search-asset-groups"]
 DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
 
+ASSET_GROUPS_TABLE = "UNIFIED_ASSET_MANAGEMENT_ASSET_GROUPS"
+
 ASSET_GROUP_FIELDS = {
     "asset_group_name": "XDM__ASSET_GROUP__NAME",
     "asset_group_type": "XDM__ASSET_GROUP__TYPE",
@@ -21,16 +25,175 @@ ASSET_GROUP_FIELDS = {
 }
 
 
-class FilterField:
-    def __init__(self, field_name: str, operator: str, values: list):
-        self.field_name = field_name
-        self.operator = operator
-        self.values = values
+class FilterBuilder:
+    """
+    Filter class for creating filter dictionary objects.
+    """
+
+    class FilterType(str, Enum):
+        operator: str
+
+        """
+        Available type options for filter filtering.
+        Each member holds its string value and its logical operator for multi-value scenarios.
+        """
+
+        def __new__(cls, value, operator):
+            obj = str.__new__(cls, value)
+            obj._value_ = value
+            obj.operator = operator
+            return obj
+
+        EQ = ("EQ", "OR")
+        RANGE = ("RANGE", "OR")
+        CONTAINS = ("CONTAINS", "OR")
+        GTE = ("GTE", "OR")
+        ARRAY_CONTAINS = ("ARRAY_CONTAINS", "OR")
+        JSON_WILDCARD = ("JSON_WILDCARD", "OR")
+        IS_EMPTY = ("IS_EMPTY", "OR")
+        NIS_EMPTY = ("NIS_EMPTY", "AND")
+
+    AND = "AND"
+    OR = "OR"
+    FIELD = "SEARCH_FIELD"
+    TYPE = "SEARCH_TYPE"
+    VALUE = "SEARCH_VALUE"
+
+    class Field:
+        def __init__(self, field_name: str, filter_type: "FilterType", values: Any):
+            self.field_name = field_name
+            self.filter_type = filter_type
+            self.values = values
+
+    class MappedValuesField(Field):
+        def __init__(self, field_name: str, filter_type: "FilterType", values: Any, mappings: dict[str, "FilterType"]):
+            super().__init__(field_name, filter_type, values)
+            self.mappings = mappings
+
+    def __init__(self, filter_fields: list[Field] | None = None):
+        self.filter_fields = filter_fields or []
+
+    def add_field(self, name: str, type: "FilterType", values: Any, mapper: dict | None = None):
+        """
+        Adds a new field to the filter.
+        Args:
+            name (str): The name of the field.
+            type (FilterType): The type to use for the field.
+            values (Any): The values to filter for.
+            mapper (dict | None): An optional dictionary to map values before filtering.
+        """
+        processed_values = values
+        if mapper:
+            if not isinstance(values, list):
+                values = [values]
+            processed_values = [mapper[v] for v in values if v in mapper]
+
+        self.filter_fields.append(FilterBuilder.Field(name, type, processed_values))
+
+    def add_field_with_mappings(self, name: str, type: "FilterType", values: Any, mappings: dict[str, "FilterType"]):
+        """
+        Adds a new field to the filter with special value mappings.
+        Args:
+            name (str): The name of the field.
+            type (FilterType): The default filter type for non-mapped values.
+            values (Any): The values to filter for.
+            mappings (dict[str, FilterType]): A dictionary mapping special values to specific filter types.
+                Example:
+                    mappings = {
+                        "unassigned": FilterType.IS_EMPTY,
+                        "assigned": FilterType.NIS_EMPTY,
+                    }
+        """
+        self.filter_fields.append(FilterBuilder.MappedValuesField(name, type, values, mappings))
+
+    def add_time_range_field(self, name: str, start_time: str | None, end_time: str | None):
+        """
+        Adds a time range field to the filter.
+        Args:
+            name (str): The name of the field.
+            start_time (str | None): The start time of the range.
+            end_time (str | None): The end time of the range.
+        """
+        start, end = self._prepare_time_range(start_time, end_time)
+        if start and end:
+            self.add_field(name, FilterType.RANGE, {"from": start, "to": end})
+
+    def to_dict(self) -> dict[str, list]:
+        """
+        Creates a filter dict from a list of Field objects.
+        The filter will require each field to be one of the values provided.
+        Returns:
+            dict[str, list]: Filter object.
+        """
+        filter_structure: dict[str, list] = {FilterBuilder.AND: []}
+
+        for field in self.filter_fields:
+            if not isinstance(field.values, list):
+                field.values = [field.values]
+
+            search_values = []
+            for value in field.values:
+                if value is None:
+                    continue
+
+                current_filter_type = field.filter_type
+                current_value = value
+
+                if isinstance(field, FilterBuilder.MappedValuesField) and value in field.mappings:
+                    current_filter_type = field.mappings[value]
+                    if current_filter_type in [FilterType.IS_EMPTY, FilterType.NIS_EMPTY]:
+                        current_value = "<No Value>"
+
+                search_values.append(
+                    {
+                        FilterBuilder.FIELD: field.field_name,
+                        FilterBuilder.TYPE: current_filter_type.value,
+                        FilterBuilder.VALUE: current_value,
+                    }
+                )
+
+            if search_values:
+                search_obj = {field.filter_type.operator: search_values} if len(search_values) > 1 else search_values[0]
+                filter_structure[FilterBuilder.AND].append(search_obj)
+
+        if not filter_structure[FilterBuilder.AND]:
+            filter_structure = {}
+
+        return filter_structure
+
+    @staticmethod
+    def _prepare_time_range(start_time_str: str | None, end_time_str: str | None) -> tuple[int | None, int | None]:
+        """Prepare start and end time from args, parsing relative time strings."""
+        if end_time_str and not start_time_str:
+            raise DemistoException("When 'end_time' is provided, 'start_time' must be provided as well.")
+
+        start_time, end_time = None, None
+
+        if start_time_str:
+            if start_dt := dateparser.parse(str(start_time_str)):
+                start_time = int(start_dt.timestamp() * 1000)
+            else:
+                raise ValueError(f"Could not parse start_time: {start_time_str}")
+
+        if end_time_str:
+            if end_dt := dateparser.parse(str(end_time_str)):
+                end_time = int(end_dt.timestamp() * 1000)
+            else:
+                raise ValueError(f"Could not parse end_time: {end_time_str}")
+
+        if start_time and not end_time:
+            # Set end_time to the current time if only start_time is provided
+            end_time = int(datetime.now().timestamp() * 1000)
+
+        return start_time, end_time
+
+
+FilterType = FilterBuilder.FilterType
 
 
 def build_webapp_request_data(
     table_name: str,
-    filter_fields: list[FilterField],
+    filter_dict: dict,
     limit: int,
     sort_field: str,
     on_demand_fields: list | None = None,
@@ -39,63 +202,17 @@ def build_webapp_request_data(
     """
     Builds the request data for the generic /api/webapp/get_data endpoint.
     """
-    dynamic_filter = create_filter_from_fields(filter_fields)
-
     filter_data = {
         "sort": [{"FIELD": sort_field, "ORDER": sort_order}],
         "paging": {"from": 0, "to": limit},
-        "filter": dynamic_filter,
+        "filter": filter_dict,
     }
     demisto.debug(f"{filter_data=}")
 
     if on_demand_fields is None:
         on_demand_fields = []
 
-    return {
-        "type": "grid",
-        "table_name": table_name,
-        "filter_data": filter_data,
-        "jsons": [],
-        "onDemandFields": on_demand_fields,
-    }
-
-
-def create_filter_from_fields(fields_to_filter: list[FilterField]):
-    """
-    Creates a filter from a list of FilterField objects.
-    The filter will require each field to be one of the values provided.
-    Args:
-        fields_to_filter (list[FilterField]): List of FilterField objects to create a filter from.
-    Returns:
-        dict[str, list]: Filter object.
-    """
-    filter_structure: dict[str, list] = {"AND": []}
-
-    for field in fields_to_filter:
-        if not isinstance(field.values, list):
-            field.values = [field.values]
-
-        search_values = []
-        for value in field.values:
-            if value is None:
-                continue
-
-            search_values.append(
-                {
-                    "SEARCH_FIELD": field.field_name,
-                    "SEARCH_TYPE": field.operator,
-                    "SEARCH_VALUE": value,
-                }
-            )
-
-        if search_values:
-            search_obj = {"OR": search_values} if len(search_values) > 1 else search_values[0]
-            filter_structure["AND"].append(search_obj)
-
-    if not filter_structure["AND"]:
-        filter_structure = {}
-
-    return filter_structure
+    return {"type": "grid", "table_name": table_name, "filter_data": filter_data, "jsons": [], "onDemandFields": on_demand_fields}
 
 
 def replace_substring(data: dict | str, original: str, new: str) -> str | dict:
@@ -233,31 +350,36 @@ def search_asset_groups_command(client: Client, args: dict) -> CommandResults:
                         raw response, and outputs for integration context.
     """
     limit = arg_to_number(args.get("limit")) or 50
-    filter_fields = [
-        FilterField(ASSET_GROUP_FIELDS["asset_group_name"], "CONTAINS", argToList(args.get("name", ""))),
-        FilterField(ASSET_GROUP_FIELDS["asset_group_type"], "EQ", argToList(args.get("type", ""))),
-        FilterField(ASSET_GROUP_FIELDS["asset_group_id"], "EQ", argToList(args.get("id", ""))),
-        FilterField(ASSET_GROUP_FIELDS["asset_group_description"], "CONTAINS", argToList(args.get("description", ""))),
-    ]
+    filter_builder = FilterBuilder()
+    filter_builder.add_field(ASSET_GROUP_FIELDS["asset_group_name"], FilterType.CONTAINS, argToList(args.get("name")))
+    filter_builder.add_field(ASSET_GROUP_FIELDS["asset_group_type"], FilterType.EQ, args.get("type"))
+    filter_builder.add_field(
+        ASSET_GROUP_FIELDS["asset_group_description"], FilterType.CONTAINS, argToList(args.get("description"))
+    )
+    filter_builder.add_field(ASSET_GROUP_FIELDS["asset_group_id"], FilterType.EQ, argToList(args.get("id")))
 
     request_data = build_webapp_request_data(
-        table_name="UNIFIED_ASSET_MANAGEMENT_ASSET_GROUPS",
-        filter_fields=filter_fields,
+        table_name=ASSET_GROUPS_TABLE,
+        filter_dict=filter_builder.to_dict(),
         limit=limit,
         sort_field="XDM__ASSET_GROUP__LAST_UPDATE_TIME",
+        sort_order="DESC",
     )
 
-    response = client.get_webapp_data(request_data).get("reply", {}).get("DATA", [])
+    response = client.get_webapp_data(request_data)
+    reply = response.get("reply", {})
+    data = reply.get("DATA", [])
 
-    response = [
+    data = [
         {(k.replace("XDM__ASSET_GROUP__", "") if k.startswith("XDM__ASSET_GROUP__") else k).lower(): v for k, v in item.items()}
-        for item in response
+        for item in data
     ]
+
     return CommandResults(
-        readable_output=tableToMarkdown("AssetGroups", response, headerTransform=string_to_table_header),
+        readable_output=tableToMarkdown("AssetGroups", data, headerTransform=string_to_table_header),
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.AssetGroups",
         outputs_key_field="id",
-        outputs=response,
+        outputs=data,
         raw_response=response,
     )
 
