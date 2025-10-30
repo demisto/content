@@ -96,7 +96,7 @@ configuration:
 - section: Collect
   defaultvalue: '50'
   display: Max Fetch Incidents Returned
-  additionalinfo: The maximum number of incidents per request from the Azure Active Directory. Default is 50.
+  additionalinfo: The maximum number of incidents per request from Entra ID. Default is 50.
   name: max_fetch
   type: 0
   required: false

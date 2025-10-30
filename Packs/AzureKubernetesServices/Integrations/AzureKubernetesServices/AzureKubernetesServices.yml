@@ -96,7 +96,7 @@ configuration:
   name: azure_ad_endpoint
   type: 0
   advanced: true
-  additionalinfo: Use this option when required to customize the URL to the Azure Active Directory endpoint. More information can be found here - https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#using-national-cloud
+  additionalinfo: Use this option when required to customize the URL to the Entra ID endpoint. More information can be found here - https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#using-national-cloud
   section: Connect
   required: false
 description: Deploy and manage containerized applications with a fully managed Kubernetes service.

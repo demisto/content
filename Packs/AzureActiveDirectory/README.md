@@ -1,6 +1,6 @@
 # Azure AD Identity Protection
 
-Acquire information and perform operations on risks and risky users from Microsoft’s Azure Active Directory Identity Protection using the Microsoft Graph API.
+Acquire information and perform operations on risks and risky users from Microsoft’s Entra ID Identity Protection using the Microsoft Graph API.
 
 Query Microsoft Graph using Microsoft Graph APIs riskDetection and riskyUsers. These APIs are used to identify suspicious activity and determine the probability that a user has been compromised.
 
@@ -23,7 +23,7 @@ Make sure to provide the following permissions:
 
 ## Authorization
 
-To connect to the Azure Active Directory Identity Protection using either Cortex XSOAR Azure application or the Self-Deployed Azure application:
+To connect to the Entra ID Identity Protection using either Cortex XSOAR Azure application or the Self-Deployed Azure application:
 
 1. Fill in the required parameters (application ID and script ID).
 

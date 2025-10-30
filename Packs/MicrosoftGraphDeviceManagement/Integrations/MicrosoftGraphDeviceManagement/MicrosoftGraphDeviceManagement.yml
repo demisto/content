@@ -194,7 +194,7 @@ script:
       description: Email(s) for the user associated with the device.
       type: String
     - contextPath: MSGraphDeviceManagement.Device.AzureADDeviceId
-      description: The unique identifier for the Azure Active Directory device. Read only.
+      description: The unique identifier for the Entra ID device. Read only.
       type: String
     - contextPath: MSGraphDeviceManagement.Device.CategoryDisplayName
       description: Device category display name.
@@ -605,7 +605,7 @@ script:
       description: Email(s) for the user associated with the device.
       type: String
     - contextPath: MSGraphDeviceManagement.Device.AzureADDeviceId
-      description: The unique identifier for the Azure Active Directory device. Read only.
+      description: The unique identifier for the Entra ID device. Read only.
       type: String
     - contextPath: MSGraphDeviceManagement.Device.CategoryDisplayName
       description: Device category display name.
@@ -825,7 +825,7 @@ script:
       description: Email(s) for the user associated with the device.
       type: string
     - contextPath: MSGraphDeviceManagement.Device.AzureADDeviceId
-      description: The unique identifier for the Azure Active Directory device. Read only.
+      description: The unique identifier for the Entra ID device. Read only.
       type: string
     - contextPath: MSGraphDeviceManagement.Device.CategoryDisplayName
       description: Device category display name.

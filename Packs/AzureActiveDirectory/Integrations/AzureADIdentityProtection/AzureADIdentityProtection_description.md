@@ -3,7 +3,7 @@ Note: This is a beta Integration, which lets you implement and test pre-release 
 The API this integration uses is defined as beta by Microsoft.
 
 ---
-Theres two ways to connect to the Azure Active Directory Identity Protection:
+Theres two ways to connect to the  Identity Protection:
 1. Azure app flows:
     - Cortex XSOAR Azure app
     - Self Deployed Azure app
