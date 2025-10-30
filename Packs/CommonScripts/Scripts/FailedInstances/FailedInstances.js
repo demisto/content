@@ -38,7 +38,7 @@ const brandConfig = {
 };
 
 Object.keys(all).forEach(function(m) {
-    var isShouldBeTesting = all[m].defaultIgnored !== 'true' && INTERNAL_MODULES_BRANDS.indexOf(all[m].brand) === -1;
+    var isShouldBeTesting = INTERNAL_MODULES_BRANDS.indexOf(all[m].brand) === -1;
     if (all[m].state === 'active' && isShouldBeTesting) {
         var cmd = m.replace(/\s/g,'_') + '-test-module';
         var firstRest = executeCommand("addEntries", {"entries": JSON.stringify([{
