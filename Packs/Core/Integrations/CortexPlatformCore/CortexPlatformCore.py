@@ -12,7 +12,8 @@ INTEGRATION_CONTEXT_BRAND = "Core"
 INTEGRATION_NAME = "Cortex Platform Core"
 MAX_GET_INCIDENTS_LIMIT = 100
 
-SEVERITY_MAPPING = {
+VULNERABLE_ISSUES_TABLE = "VULNERABLE_ISSUES_TABLE"
+VULNERABILITIES_SEVERITY_MAPPING = {
     "info": "SEV_030_INFO",
     "low": "SEV_040_LOW",
     "medium": "SEV_050_MEDIUM",
@@ -69,7 +70,7 @@ class FilterBuilder:
             super().__init__(field_name, filter_type, values)
             self.mappings = mappings
 
-    def __init__(self, filter_fields: list[Field] = None):
+    def __init__(self, filter_fields: list[Field] | None = None):
         self.filter_fields = filter_fields or []
 
     def add_field(self, name: str, type: "FilterType", values: Any, mapper: dict | None = None):
@@ -345,7 +346,9 @@ def get_vulnerabilities_command(client: Client, args: dict) -> CommandResults:
     filter_builder.add_field("EXPLOITABLE", FilterType.EQ, arg_to_bool_or_none(args.get("exploitable")))
     filter_builder.add_field("HAS_KEV", FilterType.EQ, arg_to_bool_or_none(args.get("has_kev")))
     filter_builder.add_field("AFFECTED_SOFTWARE", FilterType.CONTAINS, argToList(args.get("affected_software")))
-    filter_builder.add_field("PLATFORM_SEVERITY", FilterType.EQ, argToList(args.get("severity")), SEVERITY_MAPPING)
+    filter_builder.add_field(
+        "PLATFORM_SEVERITY", FilterType.EQ, argToList(args.get("severity")), VULNERABILITIES_SEVERITY_MAPPING
+    )
     filter_builder.add_field("ISSUE_ID", FilterType.CONTAINS, argToList(args.get("issue_id")))
     filter_builder.add_time_range_field("LAST_OBSERVED", args.get("start_time"), args.get("end_time"))
     filter_builder.add_field_with_mappings(
@@ -359,7 +362,7 @@ def get_vulnerabilities_command(client: Client, args: dict) -> CommandResults:
     )
 
     request_data = build_webapp_request_data(
-        table_name="VULNERABLE_ISSUES_TABLE",
+        table_name=VULNERABLE_ISSUES_TABLE,
         filter_dict=filter_builder.to_dict(),
         limit=limit,
         sort_field=sort_field,
@@ -483,8 +486,8 @@ def main():  # pragma: no cover
     args["integration_name"] = INTEGRATION_NAME
     headers: dict = {}
 
-    public_api_url = "/api/webapp/public_api/v1"
     webapp_api_url = "/api/webapp"
+    public_api_url = f"{webapp_api_url}/public_api/v1"
     data_platform_api_url = f"{webapp_api_url}/data-platform"
 
     proxy = demisto.params().get("proxy", False)
