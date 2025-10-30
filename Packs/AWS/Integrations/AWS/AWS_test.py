@@ -5080,3 +5080,172 @@ def test_ec2_describe_ipam_resource_discovery_associations_with_ids_no_paginatio
     assert kwargs["IpamResourceDiscoveryAssociationIds"] == ["assoc-2"]
     assert "MaxResults" not in kwargs
     assert "NextToken" not in kwargs
+def test_kms_enable_key_rotation_success_with_period(mocker):
+    """
+    Given: A mocked KMS client that returns HTTP 200 and a valid rotation period.
+    When: enable_key_rotation_command is called.
+    Then: It returns CommandResults with a success message and calls boto with correct kwargs.
+    """
+    from AWS import KMS, CommandResults
+
+    mock_client = mocker.Mock()
+    mock_client.enable_key_rotation.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
+
+    args = {"key_id": "1234abcd-12ab-34cd-56ef-1234567890ab", "rotation_period_in_days": "120"}
+
+    result = KMS.enable_key_rotation_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert "Enabled automatic rotation for KMS key '1234abcd-12ab-34cd-56ef-1234567890ab'" in result.readable_output
+    assert "(rotation period: 120 days)" in result.readable_output
+
+    mock_client.enable_key_rotation.assert_called_once_with(
+        KeyId="1234abcd-12ab-34cd-56ef-1234567890ab", RotationPeriodInDays=120
+    )
+
+
+def test_kms_enable_key_rotation_non_ok_calls_handler(mocker):
+    """
+    Given: Boto returns a non-OK status code.
+    When: enable_key_rotation_command is called.
+    Then: AWSErrorHandler.handle_response_error is invoked with the raw response.
+    """
+    from AWS import KMS, AWSErrorHandler
+
+    mock_client = mocker.Mock()
+    resp = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
+    mock_client.enable_key_rotation.return_value = resp
+
+    handle_resp = mocker.patch.object(AWSErrorHandler, "handle_response_error")
+    mocker.patch("AWS.remove_nulls_from_dictionary", side_effect=lambda d: d)
+    mocker.patch("AWS.print_debug_logs")
+
+    args = {"key_id": "my-key", "rotation_period_in_days": 120}
+
+    # The command doesn't raise here; handler internally exits (in your pattern) or logs. We just assert it was called.
+    KMS.enable_key_rotation_command(mock_client, args)
+
+    handle_resp.assert_called_once_with(resp)
+
+
+def test_elb_modify_lb_attributes_success_all_blocks(mocker):
+    """
+    Given: Valid args for all sub-blocks + desync_mitigation_mode.
+    When: modify_load_balancer_attributes_command is called and boto returns HTTP 200.
+    Then: It returns CommandResults with proper outputs and calls boto with correct kwargs.
+    """
+    from AWS import ELB, CommandResults
+
+    mock_client = mocker.Mock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "LoadBalancerAttributes": {
+            "CrossZoneLoadBalancing": {"Enabled": True},
+            "AccessLog": {
+                "Enabled": True,
+                "S3BucketName": "my-bucket",
+                "EmitInterval": 5,
+                "S3BucketPrefix": "elb/",
+            },
+            "ConnectionDraining": {"Enabled": True, "Timeout": 120},
+            "ConnectionSettings": {"IdleTimeout": 60},
+            "AdditionalAttributes": [{"Key": "elb.http.desyncmitigationmode", "Value": "defensive"}],
+        },
+    }
+    mock_client.modify_load_balancer_attributes.return_value = mock_response
+
+    mocker.patch("AWS.remove_nulls_from_dictionary", side_effect=lambda d: d)
+    mocker.patch("AWS.print_debug_logs")
+    mocker.patch("AWS.tableToMarkdown", return_value="|Updated Attributes|")
+    mocker.patch("AWS.pascalToSpace", side_effect=lambda s: s)
+
+    args = {
+        "load_balancer_name": "my-classic-elb",
+        "cross_zone_load_balancing_enabled": "true",
+        "access_log_enabled": "true",
+        "access_log_s3_bucket_name": "my-bucket",
+        "access_log_interval": "5",
+        "access_log_s3_bucket_prefix": "elb/",
+        "connection_draining_enabled": "yes",
+        "connection_draining_timeout": "120",
+        "connection_settings_idle_timeout": "60",
+        "desync_mitigation_mode": "defensive",
+    }
+
+    result = ELB.modify_load_balancer_attributes_command(mock_client, args)
+
+    # --- Assertions ---
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "AWS.ELB.LoadBalancer"
+    assert result.outputs_key_field == "LoadBalancerName"
+    assert result.outputs["LoadBalancerName"] == "my-classic-elb"
+
+    # Human-readable header matches your function
+    assert "Updated attributes for Classic ELB my-classic-elb" in result.readable_output
+
+    # Ensure boto3 client was called correctly
+    mock_client.modify_load_balancer_attributes.assert_called_with(
+        LoadBalancerName="my-classic-elb",
+        LoadBalancerAttributes={
+            "CrossZoneLoadBalancing": {"Enabled": True},
+            "AccessLog": {
+                "Enabled": True,
+                "S3BucketName": "my-bucket",
+                "S3BucketPrefix": "elb/",
+                "EmitInterval": 5,
+            },
+            "ConnectionDraining": {"Enabled": True, "Timeout": 120},
+            "ConnectionSettings": {"IdleTimeout": 60},
+            "AdditionalAttributes": [{"Key": "elb.http.desyncmitigationmode", "Value": "defensive"}],
+        },
+    )
+
+
+def test_elb_modify_lb_attributes_non_ok_calls_handler(mocker):
+    """
+    Given: Boto returns non-OK status.
+    When: modify_load_balancer_attributes_command is called.
+    Then: AWSErrorHandler.handle_response_error is invoked with the raw response.
+    """
+    from AWS import ELB, AWSErrorHandler
+
+    mock_client = mocker.Mock()
+    resp = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
+    mock_client.modify_load_balancer_attributes.return_value = resp
+
+    handle_resp = mocker.patch.object(AWSErrorHandler, "handle_response_error")
+    mocker.patch("AWS.remove_nulls_from_dictionary", side_effect=lambda d: d)
+    mocker.patch("AWS.print_debug_logs")
+
+    args = {"load_balancer_name": "elb-1", "cross_zone_load_balancing_enabled": "false"}
+
+    ELB.modify_load_balancer_attributes_command(mock_client, args)
+
+    handle_resp.assert_called_once_with(resp)
+
+
+def test_elb_modify_lb_attributes_client_error_is_handled(mocker):
+    """
+    Given: client.modify_load_balancer_attributes raises ClientError.
+    When: modify_load_balancer_attributes_command is called.
+    Then: AWSErrorHandler.handle_client_error is invoked.
+    """
+    from AWS import ELB, AWSErrorHandler
+    from botocore.exceptions import ClientError
+
+    mock_client = mocker.Mock()
+    err = ClientError(
+        {"Error": {"Code": "AccessDenied", "Message": "nope"}, "ResponseMetadata": {"HTTPStatusCode": 403}},
+        "ModifyLoadBalancerAttributes",
+    )
+    mock_client.modify_load_balancer_attributes.side_effect = err
+
+    handle_client = mocker.patch.object(AWSErrorHandler, "handle_client_error")
+    mocker.patch("AWS.remove_nulls_from_dictionary", side_effect=lambda d: d)
+    mocker.patch("AWS.print_debug_logs")
+
+    args = {"load_balancer_name": "elb-1", "connection_settings_idle_timeout": "30"}
+
+    ELB.modify_load_balancer_attributes_command(mock_client, args)
+
+    handle_client.assert_called_once_with(err)
