@@ -2034,7 +2034,7 @@ def main():
     managed_identities_client_id = get_azure_managed_identities_client_id(params)
     self_deployed: bool = params.get("self_deployed", False) or managed_identities_client_id is not None
     api_version: str = params.get("api_version", API_V2)
-    azure_cloud = get_azure_cloud(params, 'MicrosoftGraphSecurity')
+    azure_cloud = get_azure_cloud(params, "MicrosoftGraphSecurity")
 
     if not managed_identities_client_id:
         if not self_deployed and not enc_key:
@@ -2098,7 +2098,7 @@ def main():
             app_name=APP_NAME,
             azure_cloud=azure_cloud,
             azure_ad_endpoint=azure_cloud.endpoints.active_directory,
-            token_retrieval_url=urljoin(azure_cloud.endpoints.active_directory, f'/{tenant}/oauth2/v2.0/token'),
+            token_retrieval_url=urljoin(azure_cloud.endpoints.active_directory, f"/{tenant}/oauth2/v2.0/token"),
             base_url=urljoin(azure_cloud.endpoints.microsoft_graph_resource_id, "/v1.0/"),
             verify=use_ssl,
             proxy=proxy,
