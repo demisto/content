@@ -747,8 +747,14 @@ class AzureClient:
         try:
             return self.http_request(method="PUT", full_url=full_url, json_data=data, params=params)
         except Exception as e:
-            if "400" in str(e) or "bad request" in str(e) and "intercepted by proxydome" in str(e):
-                raise DemistoException("The request was intercepted by proxydome.")
+            self.handle_azure_error(
+                e=e,
+                resource_name=f"{name}",
+                resource_type="Policy Assignment",
+                api_function_name="create_policy_assignment",
+                subscription_id=self.subscription_id,
+                resource_group_name=self.resource_group_name,
+            )
 
     def set_postgres_config(
         self, server_name: str, subscription_id: str, resource_group_name: str, configuration_name: str, source: str, value: str
