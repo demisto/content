@@ -15,7 +15,7 @@ Supported authentication methods:
     1. Fill in the 'UPN' parameter in the integration configuration. 
     2. Fill in the 'UPN Password' parameter - the user’s Microsoft 365 password (the regular sign-in password for that UPN).
     3. For testing completion of authorization process run the ***o365-sc-auth-test*** command.
-    4. As part of a Microsoft update, some commands will only work with this authentication method. The commands are:
+    4. The following commands are only available when using the Delegated User Authentication method, as per the [Microsoft Update](https://mc.merill.net/message/MC1131771):
        - o365-sc-new-search-action
        - o365-sc-case-hold-policy-create
        - o365-sc-case-hold-policy-set
