@@ -5,8 +5,6 @@ from pytest_mock import MockerFixture
 
 import demistomock as demisto
 
-from CortexPlatformCore import Client, search_asset_groups_command
-
 MAX_GET_INCIDENTS_LIMIT = 100
 
 
@@ -1790,6 +1788,8 @@ def test_search_asset_groups_command_success_with_all_filters(mocker):
     THEN:
         The request is built correctly with all filters and the response is formatted properly.
     """
+    from CortexPlatformCore import Client, search_asset_groups_command
+
     mock_client = Client(base_url="", headers={})
     mock_response = {
         "reply": {
@@ -1797,13 +1797,13 @@ def test_search_asset_groups_command_success_with_all_filters(mocker):
                 {
                     "XDM__ASSET_GROUP__ID": "group_1",
                     "XDM__ASSET_GROUP__NAME": "Test Group 1",
-                    "XDM__ASSET_GROUP__TYPE": "security",
+                    "XDM__ASSET_GROUP__TYPE": "DYNAMIC",
                     "XDM__ASSET_GROUP__DESCRIPTION": "Test description 1",
                 },
                 {
                     "XDM__ASSET_GROUP__ID": "group_2",
                     "XDM__ASSET_GROUP__NAME": "Test Group 2",
-                    "XDM__ASSET_GROUP__TYPE": "network",
+                    "XDM__ASSET_GROUP__TYPE": "STATIC",
                     "XDM__ASSET_GROUP__DESCRIPTION": "Test description 2",
                 },
             ]
@@ -1834,6 +1834,8 @@ def test_search_asset_groups_command_success_with_partial_filters(mocker):
     THEN:
         The request is built correctly with partial filters and the response is formatted properly.
     """
+    from CortexPlatformCore import Client, search_asset_groups_command
+
     mock_client = Client(base_url="", headers={})
     mock_response = {
         "reply": {
@@ -1841,7 +1843,7 @@ def test_search_asset_groups_command_success_with_partial_filters(mocker):
                 {
                     "XDM__ASSET_GROUP__ID": "group_3",
                     "XDM__ASSET_GROUP__NAME": "Security Group",
-                    "XDM__ASSET_GROUP__TYPE": "security",
+                    "XDM__ASSET_GROUP__TYPE": "DYNAMIC",
                     "XDM__ASSET_GROUP__DESCRIPTION": "Security asset group",
                 }
             ]
@@ -1849,7 +1851,7 @@ def test_search_asset_groups_command_success_with_partial_filters(mocker):
     }
     mock_get_webapp_data = mocker.patch.object(mock_client, "get_webapp_data", return_value=mock_response)
 
-    args = {"name": "Security", "type": "security"}
+    args = {"name": "Security", "type": "DYNAMIC"}
 
     result = search_asset_groups_command(mock_client, args)
 
@@ -1870,6 +1872,8 @@ def test_search_asset_groups_command_success_no_filters(mocker):
     THEN:
         The request is built with empty filters and returns all asset groups.
     """
+    from CortexPlatformCore import Client, search_asset_groups_command
+
     mock_client = Client(base_url="", headers={})
     mock_response = {
         "reply": {
@@ -1877,13 +1881,13 @@ def test_search_asset_groups_command_success_no_filters(mocker):
                 {
                     "XDM__ASSET_GROUP__ID": "group_all_1",
                     "XDM__ASSET_GROUP__NAME": "All Groups 1",
-                    "XDM__ASSET_GROUP__TYPE": "general",
+                    "XDM__ASSET_GROUP__TYPE": "static",
                     "XDM__ASSET_GROUP__DESCRIPTION": "General group",
                 },
                 {
                     "XDM__ASSET_GROUP__ID": "group_all_2",
                     "XDM__ASSET_GROUP__NAME": "All Groups 2",
-                    "XDM__ASSET_GROUP__TYPE": "special",
+                    "XDM__ASSET_GROUP__TYPE": "static",
                     "XDM__ASSET_GROUP__DESCRIPTION": "Special group",
                 },
             ]
@@ -1913,6 +1917,8 @@ def test_search_asset_groups_command_empty_response(mocker):
     THEN:
         The function handles the empty response gracefully and returns empty results.
     """
+    from CortexPlatformCore import Client, search_asset_groups_command
+
     mock_client = Client(base_url="", headers={})
     mock_response = {"reply": {"DATA": []}}
     mock_get_webapp_data = mocker.patch.object(mock_client, "get_webapp_data", return_value=mock_response)
@@ -1936,11 +1942,13 @@ def test_search_asset_groups_command_missing_reply_key(mocker):
     THEN:
         The function handles the malformed response gracefully and returns empty results.
     """
+    from CortexPlatformCore import Client, search_asset_groups_command
+
     mock_client = Client(base_url="", headers={})
     mock_response = {}
     mock_get_webapp_data = mocker.patch.object(mock_client, "get_webapp_data", return_value=mock_response)
 
-    args = {"type": "security"}
+    args = {"type": "DYNAMIC"}
 
     result = search_asset_groups_command(mock_client, args)
 
@@ -1959,6 +1967,8 @@ def test_search_asset_groups_command_missing_data_key(mocker):
     THEN:
         The function handles the incomplete response gracefully and returns empty results.
     """
+    from CortexPlatformCore import Client, search_asset_groups_command
+
     mock_client = Client(base_url="", headers={})
     mock_response = {"reply": {}}
     mock_get_webapp_data = mocker.patch.object(mock_client, "get_webapp_data", return_value=mock_response)
@@ -1982,6 +1992,8 @@ def test_search_asset_groups_command_multiple_values_in_filters(mocker):
     THEN:
         The filters are processed correctly with multiple values and the response is formatted properly.
     """
+    from CortexPlatformCore import Client, search_asset_groups_command
+
     mock_client = Client(base_url="", headers={})
     mock_response = {
         "reply": {
@@ -1989,13 +2001,13 @@ def test_search_asset_groups_command_multiple_values_in_filters(mocker):
                 {
                     "XDM__ASSET_GROUP__ID": "group_multi_1",
                     "XDM__ASSET_GROUP__NAME": "Multi Group 1",
-                    "XDM__ASSET_GROUP__TYPE": "security",
+                    "XDM__ASSET_GROUP__TYPE": "static",
                     "XDM__ASSET_GROUP__DESCRIPTION": "Multi description 1",
                 },
                 {
                     "XDM__ASSET_GROUP__ID": "group_multi_2",
                     "XDM__ASSET_GROUP__NAME": "Multi Group 2",
-                    "XDM__ASSET_GROUP__TYPE": "network",
+                    "XDM__ASSET_GROUP__TYPE": "STATIC",
                     "XDM__ASSET_GROUP__DESCRIPTION": "Multi description 2",
                 },
             ]
@@ -2003,7 +2015,7 @@ def test_search_asset_groups_command_multiple_values_in_filters(mocker):
     }
     mock_get_webapp_data = mocker.patch.object(mock_client, "get_webapp_data", return_value=mock_response)
 
-    args = {"name": "Multi Group 1,Multi Group 2", "type": "security,network", "id": "group_multi_1,group_multi_2"}
+    args = {"name": '["Multi Group 1","Multi Group 2"]', "type": "STATIC", "id": "group_multi_1,group_multi_2"}
 
     result = search_asset_groups_command(mock_client, args)
 

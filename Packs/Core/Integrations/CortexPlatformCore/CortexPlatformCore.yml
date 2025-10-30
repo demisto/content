@@ -1102,20 +1102,21 @@ script:
         - description: The maximum number of groups to return.
           defaultValue: "50"
           name: limit
-        - description: JSON list of groups to search for. (e.g. `["group1", "group2"]`).
+        - description: A JSON list of asset group names to search for. (e.g., `["group1", "group2"]`).
           name: name
-        - description: Comma separated list of ids to search for.
+        - description: A comma-separated list of asset group IDs to search for.
+          isArray: true
           name: id
         - auto: PREDEFINED
-          description: Filter asset groups by type.
+          description: Filter asset groups by type. When not specified, both types are used.
           name: type
           predefined:
             - STATIC
             - DYNAMIC
-        - description: JSON list of descriptions to search for. (e.g. `["description1", "description2"]`).
+        - description: A JSON list of asset group descriptions to search for. (e.g. `["description1", "description2"]`).
           name: description
       name: core-search-asset-groups
-      description: Retrieve asset groups from the Cortex platform with optional filtering.
+      description: Searches for asset groups from the Cortex platform using one or more filter criteria.
       outputs:
         - contextPath: Core.AssetGroups.name
           description: The name of the asset group.
