@@ -55,6 +55,16 @@ ENTITY_TYPE_TAGS: dict[str, str] = {
     "INDICATOR": "Analyst1: Indicator",
 }
 
+# Benign entity keys for verdict calculation
+BENIGN_ENTITY_KEYS: list[str] = [
+    "ASSET",
+    "IN_SYSTEM_RANGE",
+    "IN_HOME_RANGE",
+    "IN_PRIVATE_RANGE",
+    "IGNORED_INDICATOR",
+    "IGNORED_ASSET",
+]
+
 # Analyst1 indicator type to XSOAR indicator type mappings
 ANALYST1_TO_XSOAR_TYPE: dict[str, str] = {
     "domain": "domain",
@@ -206,8 +216,7 @@ def calculate_batch_check_verdict(entity_key: str | None, risk_score: str | None
         return 1  # Benign
 
     # Priority 2: Check entity.key for benign categories
-    benign_entity_keys = ["ASSET", "IN_SYSTEM_RANGE", "IN_HOME_RANGE", "IN_PRIVATE_RANGE", "IGNORED_INDICATOR", "IGNORED_ASSET"]
-    if entity_key and entity_key in benign_entity_keys:
+    if entity_key and entity_key in BENIGN_ENTITY_KEYS:
         return 1  # Benign
 
     # Priority 3: If entity.key is "INDICATOR", use risk score mapping
@@ -254,8 +263,6 @@ def has_benign_entity_type(results_for_search_value: list[dict]) -> bool:
     Returns:
         True if any result has a benign entity type, False otherwise
     """
-    benign_entity_keys = ["ASSET", "IN_SYSTEM_RANGE", "IN_HOME_RANGE", "IN_PRIVATE_RANGE", "IGNORED_INDICATOR", "IGNORED_ASSET"]
-
     for result in results_for_search_value:
         # Check benign=True (handle both dict and direct boolean)
         benign_data = result.get("benign")
@@ -269,10 +276,76 @@ def has_benign_entity_type(results_for_search_value: list[dict]) -> bool:
 
         # Check benign entity types
         entity_key = get_nested_value(result, "entity", "key")
-        if entity_key and entity_key in benign_entity_keys:
+        if entity_key and entity_key in BENIGN_ENTITY_KEYS:
             return True
 
     return False
+
+
+def process_batch_check_results(results_list: list[dict]) -> list[dict]:
+    """
+    Processes batch check results by grouping by searchedValue, calculating verdicts,
+    and adding DBotScore and tags to each result.
+
+    This is the shared logic used by both analyst1_batch_check_command and analyst1_batch_check_post
+    to process batch check API responses consistently.
+
+    Args:
+        results_list: List of raw batch check result objects from the API
+
+    Returns:
+        The same list of results with DBotScore and Tags fields added to each result
+    """
+    # Group results by searchedValue (the actual value searched) to handle multiple entity types per indicator
+    # Note: matchedValue can be a regex pattern, searchedValue is always the literal searched value
+    # We ONLY group by searchedValue - never fall back to matchedValue as it would be incorrect
+    results_by_indicator: dict[str, list[dict]] = {}
+    for result in results_list:
+        searched_value = result.get("searchedValue")
+        if searched_value:  # Only process results with searchedValue
+            if searched_value not in results_by_indicator:
+                results_by_indicator[searched_value] = []
+            results_by_indicator[searched_value].append(result)
+
+    # Process each unique indicator
+    for matched_value, indicator_results in results_by_indicator.items():
+        # Determine tags for this indicator across all its entity types
+        tags = get_analyst1_tags_for_batch_result(indicator_results)
+
+        # Calculate verdict (use first result - they should have same verdict logic per indicator)
+        first_result = indicator_results[0]
+        risk_score = get_nested_value(first_result, "indicatorRiskScore", "title")
+
+        # Handle benign field - can be either a dict with "value" key or a direct boolean
+        benign_data = first_result.get("benign")
+        if isinstance(benign_data, dict):
+            benign_value = benign_data.get("value")
+        else:
+            benign_value = benign_data
+
+        entity_key = get_nested_value(first_result, "entity", "key")
+
+        # Calculate verdict score based on entity.key and risk score
+        verdict_score = calculate_batch_check_verdict(entity_key, risk_score, benign_value, demisto.params())
+
+        # Get the XSOAR indicator type from the batch check result
+        indicator_type = get_xsoar_indicator_type_from_batch_result(first_result)
+
+        # Create DBotScore and indicator context with tags
+        dbot_score = {
+            "Indicator": matched_value,
+            "Score": verdict_score,
+            "Type": indicator_type,
+            "Vendor": INTEGRATION_NAME,
+            "Reliability": demisto.params().get("integrationReliability"),
+        }
+
+        # Add DBotScore and tags to all results for this indicator
+        for result in indicator_results:
+            result["DBotScore"] = dbot_score
+            result["Tags"] = tags
+
+    return results_list
 
 
 def enrich_with_batch_check(
@@ -1037,57 +1110,11 @@ def analyst1_batch_check_command(client: Client, args) -> CommandResults | None:
     raw_data = client.get_batch_search(argsToStr(args, "values"))
     # assume succesful result or client will have errored
     if len(raw_data["results"]) > 0:
-        # Group results by searchedValue (the actual value searched) to handle multiple entity types per indicator
-        # Note: matchedValue can be a regex pattern, searchedValue is always the literal searched value
-        # We ONLY group by searchedValue - never fall back to matchedValue as it would be incorrect
-        results_by_indicator: dict[str, list[dict]] = {}
-        for result in raw_data["results"]:
-            searched_value = result.get("searchedValue")
-            if searched_value:  # Only process results with searchedValue
-                if searched_value not in results_by_indicator:
-                    results_by_indicator[searched_value] = []
-                results_by_indicator[searched_value].append(result)
-
-        # Process each unique indicator
-        for matched_value, indicator_results in results_by_indicator.items():
-            # Determine tags for this indicator across all its entity types
-            tags = get_analyst1_tags_for_batch_result(indicator_results)
-
-            # Calculate verdict (use first result - they should have same verdict logic per indicator)
-            first_result = indicator_results[0]
-            risk_score = get_nested_value(first_result, "indicatorRiskScore", "title")
-
-            # Handle benign field - can be either a dict with "value" key or a direct boolean
-            benign_data = first_result.get("benign")
-            if isinstance(benign_data, dict):
-                benign_value = benign_data.get("value")
-            else:
-                benign_value = benign_data
-
-            entity_key = get_nested_value(first_result, "entity", "key")
-
-            # Calculate verdict score based on entity.key and risk score
-            verdict_score = calculate_batch_check_verdict(entity_key, risk_score, benign_value, demisto.params())
-
-            # Get the XSOAR indicator type from the batch check result
-            indicator_type = get_xsoar_indicator_type_from_batch_result(first_result)
-
-            # Create DBotScore and indicator context with tags
-            dbot_score = {
-                "Indicator": matched_value,
-                "Score": verdict_score,
-                "Type": indicator_type,
-                "Vendor": INTEGRATION_NAME,
-                "Reliability": demisto.params().get("integrationReliability"),
-            }
-
-            # Add DBotScore and tags to all results for this indicator
-            for result in indicator_results:
-                result["DBotScore"] = dbot_score
-                result["Tags"] = tags
+        # Process batch check results using shared helper function
+        processed_results = process_batch_check_results(raw_data["results"])
 
         command_results = CommandResults(
-            outputs_prefix="Analyst1.BatchResults", outputs_key_field="ID", outputs=raw_data["results"]
+            outputs_prefix="Analyst1.BatchResults", outputs_key_field="ID", outputs=processed_results
         )
         return_results(command_results)
         return command_results
@@ -1136,57 +1163,11 @@ def analyst1_batch_check_post(client: Client, args: dict) -> dict | None:
     raw_data = client.post_batch_search(values)
     # assume succesful result or client will have errored
     if len(raw_data["results"]) > 0:
-        # Group results by searchedValue (the actual value searched) to handle multiple entity types per indicator
-        # Note: matchedValue can be a regex pattern, searchedValue is always the literal searched value
-        # We ONLY group by searchedValue - never fall back to matchedValue as it would be incorrect
-        results_by_indicator: dict[str, list[dict]] = {}
-        for result in raw_data["results"]:
-            searched_value = result.get("searchedValue")
-            if searched_value:  # Only process results with searchedValue
-                if searched_value not in results_by_indicator:
-                    results_by_indicator[searched_value] = []
-                results_by_indicator[searched_value].append(result)
-
-        # Process each unique indicator
-        for matched_value, indicator_results in results_by_indicator.items():
-            # Determine tags for this indicator across all its entity types
-            tags = get_analyst1_tags_for_batch_result(indicator_results)
-
-            # Calculate verdict (use first result - they should have same verdict logic per indicator)
-            first_result = indicator_results[0]
-            risk_score = get_nested_value(first_result, "indicatorRiskScore", "title")
-
-            # Handle benign field - can be either a dict with "value" key or a direct boolean
-            benign_data = first_result.get("benign")
-            if isinstance(benign_data, dict):
-                benign_value = benign_data.get("value")
-            else:
-                benign_value = benign_data
-
-            entity_key = get_nested_value(first_result, "entity", "key")
-
-            # Calculate verdict score based on entity.key and risk score
-            verdict_score = calculate_batch_check_verdict(entity_key, risk_score, benign_value, demisto.params())
-
-            # Get the XSOAR indicator type from the batch check result
-            indicator_type = get_xsoar_indicator_type_from_batch_result(first_result)
-
-            # Create DBotScore and indicator context with tags
-            dbot_score = {
-                "Indicator": matched_value,
-                "Score": verdict_score,
-                "Type": indicator_type,
-                "Vendor": INTEGRATION_NAME,
-                "Reliability": demisto.params().get("integrationReliability"),
-            }
-
-            # Add DBotScore and tags to all results for this indicator
-            for result in indicator_results:
-                result["DBotScore"] = dbot_score
-                result["Tags"] = tags
+        # Process batch check results using shared helper function
+        processed_results = process_batch_check_results(raw_data["results"])
 
         command_results = CommandResults(
-            outputs_prefix="Analyst1.BatchResults", outputs_key_field="ID", outputs=raw_data["results"]
+            outputs_prefix="Analyst1.BatchResults", outputs_key_field="ID", outputs=processed_results
         )
         return_results(command_results)
         output_check: dict = {"command_results": command_results, "submitted_values": values, "original_data": output_check_data}
