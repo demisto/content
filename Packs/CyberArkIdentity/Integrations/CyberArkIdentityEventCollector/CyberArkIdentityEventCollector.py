@@ -218,7 +218,7 @@ def main(command: str, demisto_params: dict):
 
             if command == "cyberarkidentity-get-events":
                 command_results = CommandResults(
-                    readable_output=tableToMarkdown(
+                    readable_output=tableToMarkdown( 
                         "CyberArk Identity RedRock records", events, removeNull=True, headerTransform=pascalToSpace
                     ),
                     raw_response=events,
