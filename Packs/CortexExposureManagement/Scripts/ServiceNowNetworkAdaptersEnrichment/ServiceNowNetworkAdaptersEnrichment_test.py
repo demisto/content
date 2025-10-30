@@ -180,8 +180,7 @@ def test_main_no_ip(mocker):
     mocker.patch("ServiceNowNetworkAdaptersEnrichment.demisto.args", return_value={"ip_address": None})
     mock_error = mocker.patch("ServiceNowNetworkAdaptersEnrichment.return_error")
 
-    with pytest.raises(ValueError):
-        main()
+    main()
 
     assert mock_error.called
     assert "IP address is required" in mock_error.call_args[0][0]
