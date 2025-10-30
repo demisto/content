@@ -23,24 +23,33 @@ ASSET_FIELDS = {
 }
 
 
-class FilterType(str, Enum):
-    """
-    Available type options for filter filtering.
-    """
-
-    EQ = "EQ"
-    RANGE = "RANGE"
-    CONTAINS = "CONTAINS"
-    ARRAY_CONTAINS = "ARRAY_CONTAINS"
-    JSON_WILDCARD = "JSON_WILDCARD"
-    IS_EMPTY = "IS_EMPTY"
-    NIS_EMPTY = "NIS_EMPTY"
-
-
-class Filter:
+class FilterBuilder:
     """
     Filter class for creating filter dictionary objects.
     """
+
+    class FilterType(str, Enum):
+        operator: str
+
+        """
+        Available type options for filter filtering.
+        Each member holds its string value and its logical operator for multi-value scenarios.
+        """
+
+        def __new__(cls, value, operator):
+            obj = str.__new__(cls, value)
+            obj._value_ = value
+            obj.operator = operator
+            return obj
+
+        EQ = ("EQ", "OR")
+        RANGE = ("RANGE", "OR")
+        CONTAINS = ("CONTAINS", "OR")
+        GTE = ("GTE", "OR")
+        ARRAY_CONTAINS = ("ARRAY_CONTAINS", "OR")
+        JSON_WILDCARD = ("JSON_WILDCARD", "OR")
+        IS_EMPTY = ("IS_EMPTY", "OR")
+        NIS_EMPTY = ("NIS_EMPTY", "AND")
 
     AND = "AND"
     OR = "OR"
@@ -49,46 +58,72 @@ class Filter:
     VALUE = "SEARCH_VALUE"
 
     class Field:
-        def __init__(self, field_name: str, filter_type: FilterType, values: Any):
+        def __init__(self, field_name: str, filter_type: "FilterType", values: Any):
             self.field_name = field_name
             self.filter_type = filter_type
             self.values = values
 
-    def __init__(self, filter_fields: list[Field] = None):
+    class MappedValuesField(Field):
+        def __init__(self, field_name: str, filter_type: "FilterType", values: Any, mappings: dict[str, "FilterType"]):
+            super().__init__(field_name, filter_type, values)
+            self.mappings = mappings
+
+    def __init__(self, filter_fields: list[Field] | None = None):
         self.filter_fields = filter_fields or []
 
-    def add_field(self, name: str, type: FilterType, values: Any):
+    def add_field(self, name: str, type: "FilterType", values: Any, mapper: dict | None = None):
         """
         Adds a new field to the filter.
-
         Args:
             name (str): The name of the field.
             type (FilterType): The type to use for the field.
             values (Any): The values to filter for.
+            mapper (dict | None): An optional dictionary to map values before filtering.
         """
-        self.filter_fields.append(Filter.Field(name, type, values))
+        processed_values = values
+        if mapper:
+            if not isinstance(values, list):
+                values = [values]
+            processed_values = [mapper[v] for v in values if v in mapper]
 
-    def get_op_relationship(self, op: FilterType) -> str:
+        self.filter_fields.append(FilterBuilder.Field(name, type, processed_values))
+
+    def add_field_with_mappings(self, name: str, type: "FilterType", values: Any, mappings: dict[str, "FilterType"]):
         """
-        Returns the relationship between different filter values for the given operator.
+        Adds a new field to the filter with special value mappings.
         Args:
-            op (FilterType): The operator to get the relationship for.
-
-        Returns:
-            str: The relationship between different filter values for the given operator.
+            name (str): The name of the field.
+            type (FilterType): The default filter type for non-mapped values.
+            values (Any): The values to filter for.
+            mappings (dict[str, FilterType]): A dictionary mapping special values to specific filter types.
+                Example:
+                    mappings = {
+                        "unassigned": FilterType.IS_EMPTY,
+                        "assigned": FilterType.NIS_EMPTY,
+                    }
         """
-        op_using_and = [FilterType.NIS_EMPTY]
-        return Filter.AND if op in op_using_and else Filter.OR
+        self.filter_fields.append(FilterBuilder.MappedValuesField(name, type, values, mappings))
+
+    def add_time_range_field(self, name: str, start_time: str | None, end_time: str | None):
+        """
+        Adds a time range field to the filter.
+        Args:
+            name (str): The name of the field.
+            start_time (str | None): The start time of the range.
+            end_time (str | None): The end time of the range.
+        """
+        start, end = self._prepare_time_range(start_time, end_time)
+        if start and end:
+            self.add_field(name, FilterType.RANGE, {"from": start, "to": end})
 
     def to_dict(self) -> dict[str, list]:
         """
-        Creates a filter dict from a list of FilterField objects.
+        Creates a filter dict from a list of Field objects.
         The filter will require each field to be one of the values provided.
-
         Returns:
             dict[str, list]: Filter object.
         """
-        filter_structure: dict[str, list] = {Filter.AND: []}
+        filter_structure: dict[str, list] = {FilterBuilder.AND: []}
 
         for field in self.filter_fields:
             if not isinstance(field.values, list):
@@ -99,24 +134,59 @@ class Filter:
                 if value is None:
                     continue
 
+                current_filter_type = field.filter_type
+                current_value = value
+
+                if isinstance(field, FilterBuilder.MappedValuesField) and value in field.mappings:
+                    current_filter_type = field.mappings[value]
+                    if current_filter_type in [FilterType.IS_EMPTY, FilterType.NIS_EMPTY]:
+                        current_value = "<No Value>"
+
                 search_values.append(
                     {
-                        Filter.FIELD: field.field_name,
-                        Filter.TYPE: field.filter_type,
-                        Filter.VALUE: value,
+                        FilterBuilder.FIELD: field.field_name,
+                        FilterBuilder.TYPE: current_filter_type.value,
+                        FilterBuilder.VALUE: current_value,
                     }
                 )
 
             if search_values:
-                search_obj = (
-                    {self.get_op_relationship(field.filter_type): search_values} if len(search_values) > 1 else search_values[0]
-                )
-                filter_structure[Filter.AND].append(search_obj)
+                search_obj = {field.filter_type.operator: search_values} if len(search_values) > 1 else search_values[0]
+                filter_structure[FilterBuilder.AND].append(search_obj)
 
-        if not filter_structure[Filter.AND]:
+        if not filter_structure[FilterBuilder.AND]:
             filter_structure = {}
 
         return filter_structure
+
+    @staticmethod
+    def _prepare_time_range(start_time_str: str | None, end_time_str: str | None) -> tuple[int | None, int | None]:
+        """Prepare start and end time from args, parsing relative time strings."""
+        if end_time_str and not start_time_str:
+            raise DemistoException("When 'end_time' is provided, 'start_time' must be provided as well.")
+
+        start_time, end_time = None, None
+
+        if start_time_str:
+            if start_dt := dateparser.parse(str(start_time_str)):
+                start_time = int(start_dt.timestamp() * 1000)
+            else:
+                raise ValueError(f"Could not parse start_time: {start_time_str}")
+
+        if end_time_str:
+            if end_dt := dateparser.parse(str(end_time_str)):
+                end_time = int(end_dt.timestamp() * 1000)
+            else:
+                raise ValueError(f"Could not parse end_time: {end_time_str}")
+
+        if start_time and not end_time:
+            # Set end_time to the current time if only start_time is provided
+            end_time = int(datetime.now().timestamp() * 1000)
+
+        return start_time, end_time
+
+
+FilterType = FilterBuilder.FilterType
 
 
 def replace_substring(data: dict | str, original: str, new: str) -> str | dict:
@@ -341,7 +411,7 @@ def search_assets_command(client: Client, args):
                          - asset_group_ids (list[str]): List of asset group IDs to search for.
     """
     asset_group_ids = get_asset_group_ids_from_names(client, argToList(args.get("asset_groups", "")))
-    filter = Filter()
+    filter = FilterBuilder()
     filter.add_field(ASSET_FIELDS["asset_names"], FilterType.CONTAINS, argToList(args.get("asset_names", "")))
     filter.add_field(ASSET_FIELDS["asset_types"], FilterType.EQ, argToList(args.get("asset_types", "")))
     filter.add_field(ASSET_FIELDS["asset_tags"], FilterType.JSON_WILDCARD, safe_load_json(args.get("asset_tags", [])))
@@ -382,7 +452,7 @@ def get_asset_group_ids_from_names(client: Client, group_names: list[str]) -> li
     if not group_names:
         return []
 
-    filter = Filter()
+    filter = FilterBuilder()
     filter.add_field("XDM.ASSET_GROUP.NAME", FilterType.EQ, group_names)
     filter_str = filter.to_dict()
 

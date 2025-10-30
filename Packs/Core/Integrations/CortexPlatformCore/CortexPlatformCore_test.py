@@ -568,9 +568,9 @@ def test_create_filter_from_fields_single_value():
     THEN:
         A filter with a single search object is created.
     """
-    from CortexPlatformCore import Filter, FilterType
+    from CortexPlatformCore import FilterBuilder, FilterType
 
-    filter_obj = Filter()
+    filter_obj = FilterBuilder()
     filter_obj.add_field("xdm.asset.name", FilterType.EQ, ["test-asset-name"])
     result = filter_obj.to_dict()
 
@@ -595,9 +595,9 @@ def test_create_filter_from_fields_multiple_fields():
     THEN:
         A filter with multiple AND conditions is created.
     """
-    from CortexPlatformCore import Filter, FilterType
+    from CortexPlatformCore import FilterBuilder, FilterType
 
-    filter_obj = Filter()
+    filter_obj = FilterBuilder()
     filter_obj.add_field("xdm.asset.name", FilterType.EQ, ["test-asset"])
     filter_obj.add_field("xdm.asset.tags", FilterType.CONTAINS, ["production", "critical"])
     filter_obj.add_field("xdm.asset.id", FilterType.EQ, ["12345"])
