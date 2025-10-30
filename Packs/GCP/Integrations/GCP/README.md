@@ -422,51 +422,96 @@ Stops a running instance, shutting it down cleanly, and allows you to restart th
 | GCP.Compute.Operations.description | string | A textual description of the operation, which is set when the operation is created. |
 | GCP.Compute.Operations.kind | string | Type of the resource. Always compute\#operation for Operation resources. |
 
-### gcp-compute-instance-labels-set
+### gcp-storage-bucket-metadata-update-enable-GCP-bucket-versioning-quick-action
 
 ***
-Sets labels on an instance.
+Enables versioning on a GCP Storage bucket to preserve object versions.
 
 #### Base Command
 
-`gcp-compute-instance-labels-set`
+`gcp-storage-bucket-metadata-update-enable-GCP-bucket-versioning-quick-action`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| instance | Name of the instance resource to return. | Required |
 | project_id | GCP project ID. | Required |
-| zone | The name of the zone for this request. | Required |
-| labels | An object containing a list of "key": value pairs, without spaces. Example: key=abc,value=123;key=ABC,value=321. | Required |
-| label_fingerprint | Fingerprint of the previous set of labels for this resource, used to prevent conflicts. Provide the latest fingerprint value when making a request to add or change labels. | Required |
-| add_labels | Whether to add the new labels to the existing ones or override the previous labels with the news. True - add, False - override. Possible values are: true, false. Default is false. | Optional |
+| resource_name | Name of the bucket. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCP.Compute.Operations.id | string | The unique identifier for the resource. This identifier is defined by the server. |
-| GCP.Compute.Operations.name | string | Name of the resource. |
-| GCP.Compute.Operations.zone | string | The URL of the zone where the operation resides. Only available when performing per-zone operations. You must specify this field as part of the HTTP request URL. It is not settable as a field in the request body. |
-| GCP.Compute.Operations.clientOperationId | string | The value of requestId if you provided it in the request. Not present otherwise. |
-| GCP.Compute.Operations.operationType | string | The type of operation, such as insert, update, or delete. |
-| GCP.Compute.Operations.targetLink | string | The URL of the resource that the operation modifies. For snapshot-creation operations, this points to the persistent disk from which the snapshot was created. |
-| GCP.Compute.Operations.targetId | string | The unique target ID, which identifies a specific incarnation of the target resource. |
-| GCP.Compute.Operations.status | string | The status of the operation, which can be one of the following: PENDING, RUNNING or DONE. |
-| GCP.Compute.Operations.statusMessage | string | An optional textual description of the current status of the operation. |
-| GCP.Compute.Operations.user | string | User who requested the operation, for example, EMAILADDRESS. |
-| GCP.Compute.Operations.progress | number | An optional progress indicator ranging from 0 to 100. It does not need to be linear or support any specific granularity of operations. This indicator should not be used to estimate completion time. The value should monotonically increase as the operation progresses. |
-| GCP.Compute.Operations.insertTime | string | The time the operation was requested, in RFC3339 text format. |
-| GCP.Compute.Operations.startTime | string | The time that the operation was started by the server, in RFC3339 text format. |
-| GCP.Compute.Operations.endTime | string | The time that the operation was completed, in RFC3339 text format. |
-| GCP.Compute.Operations.error | string | If errors are generated during processing of the operation, this field will be populated. |
-| GCP.Compute.Operations.httpErrorStatusCode | number | If the operation fails, this field contains the HTTP error status code that was returned. For example, a 404 means the resource was not found. |
-| GCP.Compute.Operations.httpErrorMessage | string | If the operation fails, this field contains the HTTP error message that was returned, such as NOT FOUND. |
-| GCP.Compute.Operations.selfLink | string | Server-defined URL for the resource. |
-| GCP.Compute.Operations.region | string | The URL of the region where the operation resides. Only available when performing regional operations. You must specify this field as part of the HTTP request URL. It is not settable as a field in the request body. |
-| GCP.Compute.Operations.description | string | A textual description of the operation, which is set when the operation is created. |
-| GCP.Compute.Operations.kind | string | Type of the resource. Always compute\#operation for Operation resources. |
+| GCP.StorageBucket.Metadata | Unknown | Updated bucket metadata. |
+| GCP.StorageBucket.Metadata.name | String | The name of the GCP bucket. |
+| GCP.StorageBucket.Metadata.id | String | The ID of the GCP bucket. |
+| GCP.StorageBucket.Metadata.location | String | The location of the bucket. |
+| GCP.StorageBucket.Metadata.storageClass | String | The storage class of the bucket \(e.g., STANDARD, NEARLINE\). |
+| GCP.StorageBucket.Metadata.created | Date | The creation timestamp of the bucket. |
+| GCP.StorageBucket.Metadata.updated | Date | The last update timestamp of the bucket. |
+| GCP.StorageBucket.Metadata.metageneration | Number | The metadata generation of the bucket. |
+| GCP.StorageBucket.Metadata.labels | Unknown | The labels attached to the bucket. |
+| GCP.StorageBucket.Metadata.defaultEventBasedHold | Boolean | Whether a default event-based hold is enabled on the bucket. |
+| GCP.StorageBucket.Metadata.retentionPolicy.retentionPeriod | Number | The duration in seconds that objects in the bucket must be retained. |
+| GCP.StorageBucket.Metadata.retentionPolicy.effectiveTime | Date | The time from which the retention policy is effective. |
+| GCP.StorageBucket.Metadata.retentionPolicy.isLocked | Boolean | Whether the retention policy is locked. |
+| GCP.StorageBucket.Metadata.versioning.enabled | Boolean | Whether object versioning is enabled. |
+| GCP.StorageBucket.Metadata.logging.logBucket | String | The destination bucket where access logs are stored. |
+| GCP.StorageBucket.Metadata.logging.logObjectPrefix | String | The object prefix used for logging. |
+| GCP.StorageBucket.Metadata.lifecycle.rule | Unknown | A list of lifecycle management rules for the bucket. |
+| GCP.StorageBucket.Metadata.iamConfiguration.uniformBucketLevelAccess | Boolean | Whether uniform bucket-level access is enabled. |
+| GCP.StorageBucket.Metadata.cors | Unknown | CORS configuration for the bucket. |
+| GCP.StorageBucket.Metadata.customPlacementConfig | Unknown | Custom placement configuration for multi-region buckets. |
+| GCP.StorageBucket.Metadata.encryption.defaultKmsKeyName | String | The default Cloud KMS key used to encrypt objects. |
+| GCP.StorageBucket.Metadata.billing.requesterPays | Boolean | Whether requester pays is enabled. |
+| GCP.StorageBucket.Metadata.website.mainPageSuffix | String | Suffix appended to requests for the bucket's website configuration. |
+| GCP.StorageBucket.Metadata.website.notFoundPage | String | The path to the custom 404 page for the bucket website. |
+
+### gcp-container-cluster-security-update-enable-gke-cluster-intra-node-visibility-quick-action
+
+***
+Enables intra-node visibility on a GKE cluster for enhanced network monitoring.
+
+#### Base Command
+
+`gcp-container-cluster-security-update-enable-gke-cluster-intra-node-visibility-quick-action`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | GCP project ID. | Required |
+| region | GCP region. | Required |
+| resource_name | Name of the GKE cluster. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Container.Operations.name | String | The name of the GKE cluster. |
+| GCP.Container.Operations.zone | String | The zone of the GKE cluster. |
+| GCP.Container.Operations.enableStackdriverLogging | Boolean | Whether Stackdriver Logging is enabled for the cluster. |
+| GCP.Container.Operations.enableStackdriverMonitoring | Boolean | Whether Stackdriver Monitoring is enabled for the cluster. |
+| GCP.Container.Operations.enablePrivateNodes | Boolean | Whether private nodes are enabled for the GKE cluster. |
+| GCP.Container.Operations.enablePrivateEndpoint | Boolean | Whether private endpoint is enabled for the GKE cluster control plane. |
+| GCP.Container.Operations.enableHttpsOnly | Boolean | Whether HTTPS-only traffic is enforced for the cluster. |
+| GCP.Container.Operations.enableNetworkPolicy | Boolean | Whether network policies are enabled for the cluster. |
+| GCP.Container.Operations.enableAutoscaling | Boolean | Whether autoscaling is enabled for the cluster nodes. |
+| GCP.Container.Operations.enableIstio | Boolean | Whether Istio is enabled for the GKE cluster. |
+| GCP.Container.Operations.enablePodSecurityPolicy | Boolean | Whether PodSecurityPolicy is enabled for the GKE cluster. |
+| GCP.Container.Operations.enableBinaryAuthorization | Boolean | Whether Binary Authorization is enabled for the cluster. |
+| GCP.Container.Operations.enableLegacyABAC | Boolean | Whether legacy ABAC is enabled for the cluster. |
+| GCP.Container.Operations.clusterIpv4Cidr | String | The cluster's IPv4 CIDR block. |
+| GCP.Container.Operations.masterAuthorizedNetworksConfig.cidrBlocks | Unknown | List of authorized CIDR blocks that can access the GKE cluster master. |
+| GCP.Container.Operations.masterAuthorizedNetworksConfig.enabled | Boolean | Whether master authorized networks are enabled for the cluster. |
+| GCP.Container.Operations.network | String | The network to which the GKE cluster belongs. |
+| GCP.Container.Operations.subnetwork | String | The subnetwork to which the GKE cluster belongs. |
+| GCP.Container.Operations.loggingService | String | The logging service used for the cluster \(e.g., "logging.googleapis.com"\). |
+| GCP.Container.Operations.monitoringService | String | The monitoring service used for the cluster \(e.g., "monitoring.googleapis.com"\). |
+| GCP.Container.Operations.nodePools | Unknown | A list of node pools in the cluster, with their configuration and security settings. |
+| GCP.Container.Operations.privateClusterConfig.enablePrivateNodes | Boolean | Whether private nodes are enabled in the cluster. |
+| GCP.Container.Operations.privateClusterConfig.enablePrivateEndpoint | Boolean | Whether private endpoint is enabled for the cluster control plane. |
+| GCP.Container.Operations.masterVersion | String | The current version of the Kubernetes master in the GKE cluster. |
 
 ### gcp-compute-instances-list
 
@@ -539,6 +584,143 @@ Retrieves the list of instances in the specified zone.
 | GCP.Compute.InstancesNextPageToken | String | The token used to retrieve the next page of results for list requests. |
 | GCP.Compute.InstancesSelfLink | String | Server-defined URL for the resource. |
 | GCP.Compute.InstancesWarning | Object | Informational warning message. |
+
+### gcp-storage-bucket-metadata-update-set-GCP-bucket-access-to-uniform-quick-action
+
+***
+Enables uniform bucket-level access on a GCP Storage bucket for enhanced security.
+
+#### Base Command
+
+`gcp-storage-bucket-metadata-update-set-GCP-bucket-access-to-uniform-quick-action`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | GCP project ID. | Required |
+| resource_name | Name of the bucket. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.StorageBucket.Metadata | Unknown | Updated bucket metadata. |
+| GCP.StorageBucket.Metadata.name | String | The name of the GCP bucket. |
+| GCP.StorageBucket.Metadata.id | String | The ID of the GCP bucket. |
+| GCP.StorageBucket.Metadata.location | String | The location of the bucket. |
+| GCP.StorageBucket.Metadata.storageClass | String | The storage class of the bucket \(e.g., STANDARD, NEARLINE\). |
+| GCP.StorageBucket.Metadata.created | Date | The creation timestamp of the bucket. |
+| GCP.StorageBucket.Metadata.updated | Date | The last update timestamp of the bucket. |
+| GCP.StorageBucket.Metadata.metageneration | Number | The metadata generation of the bucket. |
+| GCP.StorageBucket.Metadata.labels | Unknown | The labels attached to the bucket. |
+| GCP.StorageBucket.Metadata.defaultEventBasedHold | Boolean | Whether a default event-based hold is enabled on the bucket. |
+| GCP.StorageBucket.Metadata.retentionPolicy.retentionPeriod | Number | The duration in seconds that objects in the bucket must be retained. |
+| GCP.StorageBucket.Metadata.retentionPolicy.effectiveTime | Date | The time from which the retention policy is effective. |
+| GCP.StorageBucket.Metadata.retentionPolicy.isLocked | Boolean | Whether the retention policy is locked. |
+| GCP.StorageBucket.Metadata.versioning.enabled | Boolean | Whether object versioning is enabled. |
+| GCP.StorageBucket.Metadata.logging.logBucket | String | The destination bucket where access logs are stored. |
+| GCP.StorageBucket.Metadata.logging.logObjectPrefix | String | The object prefix used for logging. |
+| GCP.StorageBucket.Metadata.lifecycle.rule | Unknown | A list of lifecycle management rules for the bucket. |
+| GCP.StorageBucket.Metadata.iamConfiguration.uniformBucketLevelAccess | Boolean | Whether uniform bucket-level access is enabled. |
+| GCP.StorageBucket.Metadata.cors | Unknown | CORS configuration for the bucket. |
+| GCP.StorageBucket.Metadata.customPlacementConfig | Unknown | Custom placement configuration for multi-region buckets. |
+| GCP.StorageBucket.Metadata.encryption.defaultKmsKeyName | String | The default Cloud KMS key used to encrypt objects. |
+| GCP.StorageBucket.Metadata.billing.requesterPays | Boolean | Whether requester pays is enabled. |
+| GCP.StorageBucket.Metadata.website.mainPageSuffix | String | Suffix appended to requests for the bucket's website configuration. |
+| GCP.StorageBucket.Metadata.website.notFoundPage | String | The path to the custom 404 page for the bucket website. |
+
+### gcp-container-cluster-security-update-enable-master-authorized-networks-on-gke-quick-action
+
+***
+Enables Master Authorized Networks on a GKE cluster to restrict API server access.
+
+#### Base Command
+
+`gcp-container-cluster-security-update-enable-master-authorized-networks-on-gke-quick-action`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | GCP project ID. | Required |
+| region | GCP region. | Required |
+| resource_name | Name of the GKE cluster. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Container.Operations.name | String | The name of the GKE cluster. |
+| GCP.Container.Operations.zone | String | The zone of the GKE cluster. |
+| GCP.Container.Operations.enableStackdriverLogging | Boolean | Whether Stackdriver Logging is enabled for the cluster. |
+| GCP.Container.Operations.enableStackdriverMonitoring | Boolean | Whether Stackdriver Monitoring is enabled for the cluster. |
+| GCP.Container.Operations.enablePrivateNodes | Boolean | Whether private nodes are enabled for the GKE cluster. |
+| GCP.Container.Operations.enablePrivateEndpoint | Boolean | Whether private endpoint is enabled for the GKE cluster control plane. |
+| GCP.Container.Operations.enableHttpsOnly | Boolean | Whether HTTPS-only traffic is enforced for the cluster. |
+| GCP.Container.Operations.enableNetworkPolicy | Boolean | Whether network policies are enabled for the cluster. |
+| GCP.Container.Operations.enableAutoscaling | Boolean | Whether autoscaling is enabled for the cluster nodes. |
+| GCP.Container.Operations.enableIstio | Boolean | Whether Istio is enabled for the GKE cluster. |
+| GCP.Container.Operations.enablePodSecurityPolicy | Boolean | Whether PodSecurityPolicy is enabled for the GKE cluster. |
+| GCP.Container.Operations.enableBinaryAuthorization | Boolean | Whether Binary Authorization is enabled for the cluster. |
+| GCP.Container.Operations.enableLegacyABAC | Boolean | Whether legacy ABAC is enabled for the cluster. |
+| GCP.Container.Operations.clusterIpv4Cidr | String | The cluster's IPv4 CIDR block. |
+| GCP.Container.Operations.masterAuthorizedNetworksConfig.cidrBlocks | Unknown | List of authorized CIDR blocks that can access the GKE cluster master. |
+| GCP.Container.Operations.masterAuthorizedNetworksConfig.enabled | Boolean | Whether master authorized networks are enabled for the cluster. |
+| GCP.Container.Operations.network | String | The network to which the GKE cluster belongs. |
+| GCP.Container.Operations.subnetwork | String | The subnetwork to which the GKE cluster belongs. |
+| GCP.Container.Operations.loggingService | String | The logging service used for the cluster \(e.g., "logging.googleapis.com"\). |
+| GCP.Container.Operations.monitoringService | String | The monitoring service used for the cluster \(e.g., "monitoring.googleapis.com"\). |
+| GCP.Container.Operations.nodePools | Unknown | A list of node pools in the cluster, with their configuration and security settings. |
+| GCP.Container.Operations.privateClusterConfig.enablePrivateNodes | Boolean | Whether private nodes are enabled in the cluster. |
+| GCP.Container.Operations.privateClusterConfig.enablePrivateEndpoint | Boolean | Whether private endpoint is enabled for the cluster control plane. |
+| GCP.Container.Operations.masterVersion | String | The current version of the Kubernetes master in the GKE cluster. |
+
+### gcp-compute-instance-labels-set
+
+***
+Sets labels on an instance.
+
+#### Base Command
+
+`gcp-compute-instance-labels-set`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| instance | Name of the instance resource to return. | Required |
+| project_id | GCP project ID. | Required |
+| zone | The name of the zone for this request. | Required |
+| labels | An object containing a list of "key": value pairs, without spaces. Example: key=abc,value=123;key=ABC,value=321. | Required |
+| label_fingerprint | Fingerprint of the previous set of labels for this resource, used to prevent conflicts. Provide the latest fingerprint value when making a request to add or change labels. | Required |
+| add_labels | Whether to add the new labels to the existing ones or override the previous labels with the news. True - add, False - override. Possible values are: true, false. Default is false. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Compute.Operations.id | string | The unique identifier for the resource. This identifier is defined by the server. |
+| GCP.Compute.Operations.name | string | Name of the resource. |
+| GCP.Compute.Operations.zone | string | The URL of the zone where the operation resides. Only available when performing per-zone operations. You must specify this field as part of the HTTP request URL. It is not settable as a field in the request body. |
+| GCP.Compute.Operations.clientOperationId | string | The value of requestId if you provided it in the request. Not present otherwise. |
+| GCP.Compute.Operations.operationType | string | The type of operation, such as insert, update, or delete. |
+| GCP.Compute.Operations.targetLink | string | The URL of the resource that the operation modifies. For snapshot-creation operations, this points to the persistent disk from which the snapshot was created. |
+| GCP.Compute.Operations.targetId | string | The unique target ID, which identifies a specific incarnation of the target resource. |
+| GCP.Compute.Operations.status | string | The status of the operation, which can be one of the following: PENDING, RUNNING or DONE. |
+| GCP.Compute.Operations.statusMessage | string | An optional textual description of the current status of the operation. |
+| GCP.Compute.Operations.user | string | User who requested the operation, for example, EMAILADDRESS. |
+| GCP.Compute.Operations.progress | number | An optional progress indicator ranging from 0 to 100. It does not need to be linear or support any specific granularity of operations. This indicator should not be used to estimate completion time. The value should monotonically increase as the operation progresses. |
+| GCP.Compute.Operations.insertTime | string | The time the operation was requested, in RFC3339 text format. |
+| GCP.Compute.Operations.startTime | string | The time that the operation was started by the server, in RFC3339 text format. |
+| GCP.Compute.Operations.endTime | string | The time that the operation was completed, in RFC3339 text format. |
+| GCP.Compute.Operations.error | string | If errors are generated during processing of the operation, this field will be populated. |
+| GCP.Compute.Operations.httpErrorStatusCode | number | If the operation fails, this field contains the HTTP error status code that was returned. For example, a 404 means the resource was not found. |
+| GCP.Compute.Operations.httpErrorMessage | string | If the operation fails, this field contains the HTTP error message that was returned, such as NOT FOUND. |
+| GCP.Compute.Operations.selfLink | string | Server-defined URL for the resource. |
+| GCP.Compute.Operations.region | string | The URL of the region where the operation resides. Only available when performing regional operations. You must specify this field as part of the HTTP request URL. It is not settable as a field in the request body. |
+| GCP.Compute.Operations.description | string | A textual description of the operation, which is set when the operation is created. |
+| GCP.Compute.Operations.kind | string | Type of the resource. Always compute\#operation for Operation resources. |
 
 ### gcp-compute-instance-get
 

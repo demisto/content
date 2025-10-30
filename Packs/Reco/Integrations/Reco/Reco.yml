@@ -1,5 +1,5 @@
 category: Data Enrichment & Threat Intelligence
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -97,13 +97,22 @@ script:
     description: Add exclusion filter to Reco Classifier.
     name: reco-add-exclusion-filter
   - arguments:
-    - description: Comment to add to the incident.
+    - description: Comment to add to the alert.
+      name: comment
+      required: true
+    - description: Alert ID to add the comment to.
+      name: alert_id
+      required: true
+    description: Add a comment to an alert in Reco.
+    name: reco-add-comment-to-alert
+  - arguments:
+    - description: Comment to add to the alert.
       name: comment
       required: true
     - description: Incident ID to add the comment to.
       name: incident_id
       required: true
-    description: Add a comment to an incident in Reco.
+    description: Add a comment to an alert in Reco.
     name: reco-update-incident-timeline
   - arguments:
     - description: entity id of the file to resolve.

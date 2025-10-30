@@ -1,6 +1,6 @@
 category: Endpoint
 defaultEnabled: true
-sectionOrder:
+sectionorder:
   - Connect
   - Collect
 commonfields:
@@ -351,7 +351,7 @@ script:
           description: The hierarchy or structure representing the asset.
         - contextPath: Core.CoreAsset.xdm__asset__type__category
           description: The asset category type.
-        - contextPath: Core.CoreAsset.xdm__cloud__region
+        - contextPath: Core.CoreAsset.xdm__asset__cloud__region
           description: The cloud region where the asset resides.
         - contextPath: Core.CoreAsset.xdm__asset__module_unstructured_fields
           description: The unstructured fields or metadata associated with the asset module.
@@ -1102,9 +1102,23 @@ script:
   script: "-"
   subtype: python3
   type: python
-  dockerimage: demisto/google-cloud-storage:1.0.0.4088897
+  dockerimage: demisto/google-cloud-storage:1.0.0.4885491
 tests:
   - No tests
 fromversion: 6.2.0
 marketplaces:
-  - platform
+- platform
+supportedModules:
+- "C1"
+- "C3"
+- "X0"
+- "X1"
+- "X3"
+- "X5"
+- "ENT_PLUS"
+- xsiam
+- agentix
+- cloud
+- cloud_posture
+- cloud_runtime_security
+- edr
