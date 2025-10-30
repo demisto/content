@@ -1472,8 +1472,8 @@ Get The latest AMI.
 | account_id | The AWS account ID. | Required | 
 | region | The AWS region where instances will be created. Must be a valid AWS region identifier. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required | 
 | executable_users | Scopes the images by users with explicit launch permissions. | Optional | 
-| filters | One or more filters. Filters must be separated by a comma (,) and specified using the format "key=key,values=val". Refer to the AWS documentation for detailed filter options. | Optional | 
-| owners | Filters the images by the owner. Specify an AWS account ID, self (owner is the sender of the request), or an AWS owner alias (valid values are amazon \| aws-marketplace \| microsoft ). Omitting this option returns all images for which you have launch permissions, regardless of ownership. | Optional | 
+| filters | One or more filters. Filters must be separated by a semicolon (;) and specified using the format "key=key,values=val". Refer to the AWS documentation for detailed filter options. | Optional | 
+| owners | Filters the images by the owner. Specify an AWS account ID, self (owner is the sender of the request), or an AWS owner alias (valid values are amazon \| aws-marketplace \| microsoft ). Omitting this option returns all images for which you have launch permissions, regardless of ownership. Separated by ','. | Optional | 
 | image_ids | The image IDs separated by ','. | Optional | 
 | include_deprecated | Specifies whether to include deprecated AMIs. Possible values are: true, false. | Optional | 
 | include_disabled | Specifies whether to include disabled AMIs. Possible values are: true, false. | Optional | 
@@ -1521,6 +1521,7 @@ Get The latest AMI.
 | AWS.EC2.Images.Tags.Value | string | The value of the tag. | 
 | AWS.EC2.Images.VirtualizationType | string | The type of virtualization of the AMI. | 
 | AWS.EC2.Images.AccountId | string | The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided. | 
+
 ### aws-ec2-network-acl-create
 
 ***
@@ -1538,7 +1539,7 @@ Creates a network ACL in a VPC. Network ACLs provide an optional layer of securi
 | region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required | 
 | vpc_id | The ID of the VPC. | Required | 
 | client_token | Unique, case-sensitive identifier that you provide to ensure the idempotency of the request. | Optional | 
-| tag_specifications | The tags to assign to the network ACL. Use with. | Optional | 
+| tag_specifications | The tags to assign to the network ACL. Must be separated by a semicolon (;) and specified using the format "key=key,values=val". | Optional | 
 
 #### Context Output
 
@@ -1563,6 +1564,7 @@ Creates a network ACL in a VPC. Network ACLs provide an optional layer of securi
 | AWS.EC2.VpcId.NetworkAcl.VpcId | String | The ID of the VPC for the network ACL. | 
 | AWS.EC2.VpcId.NetworkAcl.OwnerId | String | The ID of the AWS account that owns the network ACL. | 
 | AWS.EC2.VpcId.NetworkAcl.AccountId | string | The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided. | 
+
 ### aws-ec2-ipam-discovered-public-addresses-get
 
 ***
@@ -1580,7 +1582,7 @@ Gets the public IP addresses that have been discovered by IPAM.
 | region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required | 
 | ipam_resource_discovery_id | An IPAM resource discovery ID. | Required | 
 | address_region | The Amazon Web Services region for the IP address. | Required | 
-| filters | One or more filters separated by ';'. See AWS documentation for details &amp; filter options (https://docs.aws.amazon.com/cli/latest/userguide/cli-usage-filter.html). | Optional | 
+| filters | One or more filters. Filters must be separated by a semicolon (;) and specified using the format "key=key,values=val". Refer to the AWS documentation for detailed filter options. | Optional | 
 | max_results | The maximum number of results to return in a single call. Specify a value between 5 and 1000. | Optional | 
 | next_token | The token for the next set of results. | Optional | 
 
@@ -1595,6 +1597,7 @@ Gets the public IP addresses that have been discovered by IPAM.
 | AWS.EC2.IpamDiscoveredPublicAddresses.InstanceId | String | The instance ID of the instance the assigned IP address is assigned to. | 
 | AWS.EC2.IpamDiscoveredPublicAddresses.Tags | Unknown | Tags associated with the IP address. | 
 | AWS.EC2.IpamDiscoveredPublicAddresses.AccountId | string | The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided. | 
+
 ### aws-ec2-tags-create
 
 ***
@@ -1611,7 +1614,7 @@ Adds or overwrites one or more tags for the specified Amazon EC2 resource or res
 | account_id | The AWS account ID. | Required | 
 | region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required | 
 | resources | The IDs of one or more resources to tag. For example, ami-1a2b3c4d. | Required | 
-| tags | One or more tags. | Required | 
+| tags | One or more tags. Must be separated by a semicolon (;) and specified using the format "key=abc,value=123;key=fed,value=456". | Required | 
 
 #### Context Output
 
