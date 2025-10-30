@@ -4,7 +4,6 @@ import json
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-# Constants
 SERVICENOW_CMDB_RECORD_GET_BY_ID = "servicenow-cmdb-record-get-by-id"
 CMDB_CI_NETWORK_ADAPTER = "cmdb_ci_network_adapter"
 DEFAULT_INSTANCE_URL_SUFFIX = "/api/now/table/sys_user_group/global"
