@@ -901,6 +901,49 @@ class MicrosoftClient(BaseClient):
         except ValueError as exception:
             raise DemistoException(f"Failed to parse json object from response: {response.content}", exception)
 
+    def main_test_module(self, integration_command_prefix: str):
+        flow = self.grant_type
+
+        def require_fields(fields: list[str], message_prefix: str):
+            """Helper to validate required fields."""
+            for field in fields:
+                if not getattr(self, field):
+                    raise DemistoException(f"{message_prefix} enter your {field.replace('_', ' ').title()}.")
+
+        if flow == CLIENT_CREDENTIALS:
+            require_fields(fields=["tenant_id", "client_secret", "client_id"],
+                           message_prefix="When using client credentials flow you must")
+            try:
+                self.get_access_token()
+                return "ok"
+            except Exception as e:
+                raise DemistoException(
+                    f"Couldn't connect to the application. Error: {e}. "
+                    f"Please make sure you marked the self-deployed checkbox "
+                    f"if you are using a self-deployed application."
+                )
+
+        elif flow == DEVICE_CODE:
+            require_fields(["client_id"], "When using device code flow you must")
+            raise DemistoException(
+                f"The *Test* button is not available for the Device Code Flow. "
+                f"Please run !{integration_command_prefix}-auth-start and then "
+                f"{integration_command_prefix}-auth-complete. You can then check the connection using "
+                f"!{integration_command_prefix}-auth-test."
+            )
+
+        elif flow == AUTHORIZATION_CODE:
+            require_fields(["tenant_id", "client_secret", "client_id", "redirect_uri"],
+                           "When using authorization code flow you must")
+            raise DemistoException(
+                f"The *Test* button is not available for the Authorization Code Flow. "
+                f"Use the !{integration_command_prefix}-generate-login-url command instead. "
+                f"Then use the !{integration_command_prefix}-auth-test command to test the connection."
+            )
+
+        else:
+            raise DemistoException(f"Unsupported grant type: {flow}")
+
     def get_access_token(self, resource: str = "", scope: str | None = None) -> str:
         """
         Obtains access and refresh token from oproxy server or just a token from a self deployed app.
