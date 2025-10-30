@@ -48,7 +48,7 @@ class ConfigurationItem:
         return asdict(self)
 
 
-def execute_command(command: str, args: dict[str, Any]) -> dict[str, Any]:
+def get_command_results(command: str, args: dict[str, Any]) -> dict[str, Any]:
     """Execute a Demisto command and return the result."""
     try:
         command_results = demisto.executeCommand(command, args)
@@ -62,7 +62,7 @@ def execute_command(command: str, args: dict[str, Any]) -> dict[str, Any]:
 
 def get_network_adapter(sid: str) -> NetworkAdapter:
     """Fetch and parse network adapter details from ServiceNow."""
-    result = execute_command(SERVICENOW_CMDB_RECORD_GET_BY_ID, {"class": CMDB_CI_NETWORK_ADAPTER, "sys_id": sid})
+    result = get_command_results(SERVICENOW_CMDB_RECORD_GET_BY_ID, {"class": CMDB_CI_NETWORK_ADAPTER, "sys_id": sid})
 
     attributes = result.get("attributes", {})
     sys_domain = attributes.get("sys_domain", {})
@@ -87,14 +87,14 @@ def get_network_adapter(sid: str) -> NetworkAdapter:
 def get_related_configuration_item(sid: str, instance_url: str) -> ConfigurationItem:
     """Fetch and parse related configuration item details from ServiceNow."""
     # First get the CI class
-    result = execute_command(SERVICENOW_CMDB_RECORD_GET_BY_ID, {"class": "cmdb_ci", "sys_id": sid})
+    result = get_command_results(SERVICENOW_CMDB_RECORD_GET_BY_ID, {"class": "cmdb_ci", "sys_id": sid})
 
     ci_class = result.get("attributes", {}).get("sys_class_name", "")
     if not ci_class:
         return ConfigurationItem(sys_id=sid, url=f"{instance_url}/nav_to.do?uri=cmdb_ci.do?sys_id={sid}" if instance_url else "")
 
     # Get full CI details with the specific class
-    result = execute_command(SERVICENOW_CMDB_RECORD_GET_BY_ID, {"class": ci_class, "sys_id": sid})
+    result = get_command_results(SERVICENOW_CMDB_RECORD_GET_BY_ID, {"class": ci_class, "sys_id": sid})
 
     attributes = result.get("attributes", {})
     assigned_to = attributes.get("assigned_to", {}) if isinstance(attributes.get("assigned_to"), dict) else {}
@@ -129,7 +129,7 @@ def main():
             raise ValueError("IP address is required")
 
         # Get network adapters for the given IP
-        result = execute_command(
+        result = get_command_results(
             "servicenow-cmdb-records-list", {"class": CMDB_CI_NETWORK_ADAPTER, "query": f"ip_address={ip_address}"}
         )
 

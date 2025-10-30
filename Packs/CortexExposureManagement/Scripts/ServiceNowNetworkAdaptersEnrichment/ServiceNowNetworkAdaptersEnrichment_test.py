@@ -2,7 +2,7 @@ import pytest
 from ServiceNowNetworkAdaptersEnrichment import (
     NetworkAdapter,
     ConfigurationItem,
-    execute_command,
+    get_command_results,
     get_network_adapter,
     get_related_configuration_item,
     main,
@@ -75,10 +75,10 @@ def test_network_adapter_initialization():
     assert adapter.instance_url == "https://instance.service-now.com"
 
 
-def test_execute_command(mocker):
+def test_get_command_results(mocker):
     """
     Given a command and arguments
-    When execute_command is called
+    When get_command_results is called
     Then it should return the expected command results
     """
     mock_command = "test-command"
@@ -89,7 +89,7 @@ def test_execute_command(mocker):
         "ServiceNowNetworkAdaptersEnrichment.demisto.executeCommand", return_value=[{"Contents": {"result": expected_result}}]
     )
 
-    result = execute_command(mock_command, mock_args)
+    result = get_command_results(mock_command, mock_args)
     assert result == expected_result
 
 
@@ -99,7 +99,7 @@ def test_get_network_adapter(mocker, mock_network_adapter_data):
     When get_network_adapter is called
     Then it should return a properly populated NetworkAdapter instance
     """
-    mocker.patch("ServiceNowNetworkAdaptersEnrichment.execute_command", return_value=mock_network_adapter_data["result"])
+    mocker.patch("ServiceNowNetworkAdaptersEnrichment.get_command_results", return_value=mock_network_adapter_data["result"])
 
     adapter = get_network_adapter("na123")
 
@@ -120,7 +120,7 @@ def test_get_related_configuration_item(mocker, mock_ci_data):
     """
     # First call returns the CI class
     mocker.patch(
-        "ServiceNowNetworkAdaptersEnrichment.execute_command",
+        "ServiceNowNetworkAdaptersEnrichment.get_command_results",
         side_effect=[{"attributes": {"sys_class_name": "cmdb_ci_linux_server"}}, mock_ci_data["result"]],
     )
 
@@ -149,7 +149,7 @@ def test_main_success(mocker, mock_demisto_args, mock_network_adapter_data, mock
 
     # Mock command execution
     mocker.patch(
-        "ServiceNowNetworkAdaptersEnrichment.execute_command",
+        "ServiceNowNetworkAdaptersEnrichment.get_command_results",
         side_effect=[
             [{"sys_id": "na123"}],  # First call to get network adapters
             mock_network_adapter_data["result"],  # Get network adapter details
@@ -193,7 +193,7 @@ def test_main_no_results(mocker, mock_demisto_args):
     Then it should return empty result sets
     """
     mocker.patch("ServiceNowNetworkAdaptersEnrichment.demisto.args", return_value=mock_demisto_args)
-    mocker.patch("ServiceNowNetworkAdaptersEnrichment.execute_command", return_value=[])
+    mocker.patch("ServiceNowNetworkAdaptersEnrichment.get_command_results", return_value=[])
     mock_return = mocker.patch("ServiceNowNetworkAdaptersEnrichment.return_results")
 
     main()
