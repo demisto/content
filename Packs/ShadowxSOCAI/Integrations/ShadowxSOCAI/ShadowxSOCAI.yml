@@ -4,25 +4,29 @@ commonfields:
 name: ShadowxSOCAI
 display: ShadowX SOCAI
 category: Analytics & SIEM
-description: ShadowX AI plugin that analyzes security logs and returns response, recommendation, risk/result, and prediction score. Supports API Key (JSON /Api/ endpoints) and cookie (HTML) modes.
+description: ShadowX SOCAI filters sensitive data in security logs, analyzes them with GenAI (e.g. ChatGPT, Gemini, Claude), and returns enriched guidance such as AI response, recommendation, risk/result classification, and prediction score. Supports API Key (JSON /Api/ endpoints) and cookie (HTML) modes.
 fromversion: 6.10.0
 
 configuration:
+# Base URL
 - display: Server URL (e.g., https://app.shadowx.ai)
   name: url
   type: 0
   required: true
 
 # API Key (Bearer) mode
-- display: API Key (recommended). If set, email/password are ignored.
-  name: api_key
-  type: 4
+- displaypassword: API Key (recommended). If set, email/password are ignored.
+  name: credentials_api
+  type: 9
+  hiddenusername: true
   required: false
+
 - display: API Submission Path (optional)
   name: api_submission_path
   type: 0
   required: false
   defaultvalue: /Api/SecurityTasks/Create
+
 - display: API Check Path Format
   name: api_check_path_format
   type: 0
@@ -35,24 +39,29 @@ configuration:
   name: user_email
   type: 0
   required: false
-- display: User Password (cookie mode)
-  name: user_password
-  type: 4
+
+- displaypassword: User Password (cookie mode)
+  name: credentials_cookie
+  type: 9
+  hiddenusername: true
   required: false
 
-# Optional defaults used in the payload
+# Optional defaults used in the submitted task payload
 - display: AI Driver ID (GUID)
   name: ai_driver_id
   type: 0
   required: false
+
 - display: Assigned User ID (GUID)
   name: assigned_user_id
   type: 0
   required: false
+
 - display: Default Policy ID (GUID)
   name: policy_id
   type: 0
   required: false
+
 - display: Default Task Name
   name: task_name
   type: 0
@@ -60,12 +69,13 @@ configuration:
   defaultvalue: XSOAR submit
 
 # Network settings
-- display: Trust any certificate (not secure)
-  name: insecure
-  type: 8
-  required: false
 - display: Use system proxy settings
   name: proxy
+  type: 8
+  required: false
+
+- display: Trust any certificate (not secure)
+  name: insecure
   type: 8
   required: false
 
@@ -73,10 +83,11 @@ script:
   type: python
   subtype: python3
   dockerimage: demisto/python3:3.11.10.116949
-  script: '-'   # REQUIRED when code is in a separate .py file
+  script: '-'
+
   commands:
   - name: shadowx-submit-task
-    description: Submit a log to ShadowX for analysis. Supports API Key (Bearer) mode or cookie (HTML) mode. Adds TaskURL and optional polling, and parses results to incident fields.
+    description: Submit a log to ShadowX SOCAI for analysis. Supports API Key (Bearer) mode or cookie (HTML) mode. In API Key mode, you can optionally poll until completion and get the parsed result back immediately.
     arguments:
     - name: log
       required: true
@@ -92,7 +103,10 @@ script:
       description: Policy ID to apply for analysis (overrides instance setting).
     - name: wait_seconds
       required: false
-      description: Seconds to wait for completion polling if supported (0 = do not wait).
+      description: Seconds to wait/poll for completion in API Key mode (0 = do not poll).
+    - name: interval_seconds
+      required: false
+      description: Poll interval in seconds (API key mode). Default 30.
     outputs:
     - contextPath: ShadowxSOCAI.TaskSubmit
       description: Response after task submission.
@@ -104,7 +118,7 @@ script:
       description: Direct link to the task in the ShadowX UI.
       type: String
     - contextPath: ShadowxSOCAI.TaskResult
-      description: Final task result if wait_seconds > 0 (API mode).
+      description: Final task result if wait_seconds > 0 (API Key mode).
       type: Unknown
     - contextPath: ShadowxSOCAI.TaskResult.TaskId
       description: Task id.
@@ -150,7 +164,7 @@ script:
       type: String
 
   - name: shadowx-get-task
-    description: Get task details by Task ID (API key mode). Parses the result like the submit command and (if run inside an incident) updates incident custom fields.
+    description: Get task details by Task ID (API Key mode). Parses the result and (if running inside an incident) updates incident custom fields.
     arguments:
     - name: task_id
       required: true

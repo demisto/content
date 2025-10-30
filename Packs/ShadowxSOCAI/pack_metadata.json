@@ -2,7 +2,7 @@
     "name": "ShadowX SOCAI",
     "description": "Analyze security logs with GEN AI to produce response/recommendation, risk/result, and prediction scores. Supports API Key and cookie modes.",
     "support": "partner",
-    "currentVersion": "1.1.0",
+    "currentVersion": "1.1.1",
     "author": "Shadowx AI",
     "url": "https://shadowx.ai",
     "email": "info@shadowx.ai",
