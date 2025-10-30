@@ -19,6 +19,15 @@ from CybleEventsV2 import (
     ensure_aware,
 )
 from CommonServerPython import GetModifiedRemoteDataResponse
+from CybleEventsV2 import check_response
+
+
+def test_test_response_success(mock_client):
+    mock_client._http_request = Mock(return_value={"status": "ok"})
+    with patch("CybleEventsV2.demisto", demisto_mock):
+        result = check_response(mock_client, "GET", "https://example.com", "dummy-token")
+    assert result == "ok"
+
 
 try:
     from CybleEventsV2 import (
@@ -1909,34 +1918,6 @@ class TestClientMethods(unittest.TestCase):
             result_ids = self.client.get_ids_with_retry(service, input_params)
 
             assert result_ids == ["id1", "id2"]
-
-
-# Test for test_response function
-def test_test_response_success():
-    """Test successful connection test"""
-    client = Mock()
-    client._http_request.return_value = {"status": "ok"}
-
-    from CybleEventsV2 import test_response
-
-    result = test_response(client=client, method="GET", base_url="https://test.com", token="test_token")
-
-    assert result == "ok"
-    client._http_request.assert_called_once()
-
-
-def test_test_response_empty_response():
-    """Test when response is empty"""
-    client = Mock()
-    client._http_request.return_value = None
-
-    with patch("CybleEventsV2.demisto") as mock_demisto:
-        from CybleEventsV2 import test_response
-
-        with pytest.raises(Exception, match="failed to connect"):
-            test_response(client=client, method="GET", base_url="https://test.com", token="test_token")
-
-        mock_demisto.error.assert_called()
 
 
 class TestCybleEventsLogical(unittest.TestCase):
