@@ -2619,3 +2619,193 @@ Lists configured budgets at the subscription or resource group scope.
 | Azure.Billing.Budget.properties.forecastSpend | unknown | Forecasted spend object. |
 | Azure.Billing.Budget.properties.forecastSpend.amount | Number | Forecasted spend amount. |
 | Azure.Billing.Budget.properties.forecastSpend.unit | String | Currency unit for forecasted spend. |
+
+### azure-postgres-server-update-ssl-enforcement-quick-action
+
+***
+Enforces SSL/TLS connections for the PostgreSQL server to reject unencrypted traffic.
+
+#### Base Command
+
+`azure-postgres-server-update-ssl-enforcement-quick-action`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID. | Required |
+| resource_group_name | The resource group name. | Required |
+| server_name | Name of the PostgreSQL server. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### azure-postgres-config-set-statement-logging-quick-action
+
+***
+Enables logging of statement execution duration on the PostgreSQL server to help with performance analysis.
+
+#### Base Command
+
+`azure-postgres-config-set-statement-logging-quick-action`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID. | Required |
+| resource_group_name | The resource group name. | Required |
+| server_name | Name of the PostgreSQL server. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### azure-postgres-config-set-log-retention-period-quick-action
+
+***
+Sets the log retention period for the PostgreSQL server to 4 days. NOTE: Recommended Log retention days value can be in 4-7 inclusive range.
+
+#### Base Command
+
+`azure-postgres-config-set-log-retention-period-quick-action`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID. | Required |
+| resource_group_name | The resource group name. | Required |
+| server_name | Name of the PostgreSQL server. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### azure-postgres-config-set-session-connection-logging-quick-action
+
+***
+Enables logging of client connections on the PostgreSQL.
+
+#### Base Command
+
+`azure-postgres-config-set-session-connection-logging-quick-action`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID. | Required |
+| resource_group_name | The resource group name. | Required |
+| server_name | Name of the PostgreSQL server. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### azure-postgres-config-set-connection-throttling-quick-action
+
+***
+Enables connection throttling on the PostgreSQL server. This enables the PostgreSQL database to set the verbosity of logged messages allowing generation of query and error logs with respect to concurrent connections.
+
+#### Base Command
+
+`azure-postgres-config-set-connection-throttling-quick-action`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID. | Required |
+| resource_group_name | The resource group name. | Required |
+| server_name | Name of the PostgreSQL server. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### azure-postgres-config-set-checkpoint-logging-quick-action
+
+***
+Enables checkpoint logging on the PostgreSQL server.
+
+#### Base Command
+
+`azure-postgres-config-set-checkpoint-logging-quick-action`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID. | Required |
+| resource_group_name | The resource group name. | Required |
+| server_name | Name of the PostgreSQL server. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### azure-postgres-config-set-disconnection-logging-quick-action
+
+***
+Enables logging of client disconnections on the PostgreSQL server.
+
+#### Base Command
+
+`azure-postgres-config-set-disconnection-logging-quick-action`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID. | Required |
+| resource_group_name | The resource group name. | Required |
+| server_name | Name of the PostgreSQL server. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### azure-policy-assignment-create-quick-action
+
+***
+Applies Microsoft Defender for Cloud built-in recommendations by creating a policy assignment
+for the SecurityCenterBuiltIn initiative. This sets the following policies to 'AuditIfNotExists':
+disk encryption monitoring (Windows and Linux), system updates monitoring, and JIT network access monitoring.
+Rules for adaptive application controls, endpoint protection, and security configuration are excluded.
+
+#### Base Command
+
+`azure-policy-assignment-create-quick-action`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID. | Required |
+| scope | Scope for the policy assignment. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.PolicyAssignment.ID | string | The resource ID of the policy assignment. |
+| Azure.PolicyAssignment.Name | string | The name of the policy assignment. |
+| Azure.PolicyAssignment.Type | string | The type of the resource \(e.g., 'Microsoft.Authorization/policyAssignments'\). |
+| Azure.PolicyAssignment.Location | string | The location of the policy assignment. |
+| Azure.PolicyAssignment.Identity | unknown | The managed identity associated with the policy assignment. |
+| Azure.PolicyAssignment.Properties.DisplayName | string | The display name of the policy assignment. |
+| Azure.PolicyAssignment.Properties.Description | string | The description of the policy assignment. |
+| Azure.PolicyAssignment.Properties.PolicyDefinitionId | string | The ID of the policy definition or policy set definition being assigned. |
+| Azure.PolicyAssignment.Properties.Scope | string | The scope of the policy assignment. |
+| Azure.PolicyAssignment.Properties.NotScopes | unknown | The list of scopes that are excluded from the policy assignment. |
+| Azure.PolicyAssignment.Properties.Parameters | unknown | The parameter values for the assigned policy rule. |
+| Azure.PolicyAssignment.Properties.Metadata | unknown | The metadata associated with the policy assignment. |
+| Azure.PolicyAssignment.Properties.EnforcementMode | string | The policy assignment enforcement mode \(e.g., 'Default' or 'DoNotEnforce'\). |
+| Azure.PolicyAssignment.Properties.latestDefinitionVersion | string | The latest version of the policy definition available. This is only present if requested via the $expand query parameter. |
+| Azure.PolicyAssignment.Properties.NonComplianceMessages | unknown | The messages that describe why a resource is non-compliant with the policy. |
+| Azure.PolicyAssignment.Properties.DefinitionVersion | string | The version of the policy definition to use. |
+| Azure.PolicyAssignment.Properties.Overrides | unknown | The policy property value overrides. |
+| Azure.PolicyAssignment.Properties.ResourceSelectors | unknown | The resource selectors to filter policies by resource properties. |
+| Azure.PolicyAssignment.SystemData | unknown | The system metadata relating to this resource. |
