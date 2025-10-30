@@ -33,3 +33,22 @@ See [Creating Application & Token](https://developer.arubanetworks.com/hpe-aruba
 | APAC-EAST1 | <https://apigw-apaceast.central.arubanetworks.com> |
 | APAC-SOUTH1 | <https://apigw-apacsouth.central.arubanetworks.com> |
 | UAE-NORTH1 | <https://apigw-uaenorth1.central.arubanetworks.com> |
+
+## How to Find Required Parameters
+
+You can find most of the required API credentials within your HPE Aruba Central account.
+
+1.  Log in to your **Aruba Central** account.
+2.  Navigate to the **Global Settings** menu (or the equivalent management scope).
+3.  Select **API Gateway**.
+
+From this section, you can retrieve the following information:
+
+* **Access Token URL:** Found on the **APIs** tab.
+* **Customer ID:** Found on the **APIs** tab.
+* **Server URL:** This is the base domain of your Aruba Central portal (e.g., `https://app-uswest4.central.arubanetworks.com`).
+* **Client ID & Client Secret:** Found on the **My Apps** tab. Select the application you created for XSOAR to view its details.
+
+**User Credentials:**
+
+* **Username & Password:** These are the credentials for the Aruba Central user account that you used to generate the API application (Client ID and Secret). This account must have at least read-only privileges.
