@@ -22,7 +22,7 @@ filter UNIFIcategory = "Monitoring" and UNIFIcategory = "Security" and UNIFIcate
     xdm.alert.severity = UNIFIrisk,
     xdm.alert.category = UNIFIcategory,
     xdm.alert.subcategory = UNIFIsubCategory,
-    xdm.target.host.mac_addresses = arraycreate(UNIFIclientMac),
+    xdm.target.host.mac_addresses = arraycreate(UNIFIdeviceMac),
     xdm.network.session_id = UNIFIipsSessionId,
     xdm.alert.original_threat_name = UNIFIipsSignature,
     xdm.observer.name = UNIFIdeviceName,
