@@ -80,7 +80,10 @@ from TrendMicroVisionOneV3 import (
     get_endpoint_info,
     get_file_analysis_result,
     get_file_analysis_status,
+    get_mapping_fields_command,
+    get_modified_remote_data_command,
     get_observed_attack_techniques,
+    get_remote_data_command,
     get_sandbox_submission_status,
     get_task_status,
     isolate_or_restore_connection,
@@ -92,7 +95,10 @@ from TrendMicroVisionOneV3 import (
     submit_urls_to_sandbox,
     terminate_process,
     update_custom_script,
+    update_remote_system_command,
     update_status,
+    vision_one_status_to_xsoar,
+    xsoar_status_to_vision_one,
 )
 
 # Provide valid API KEY
@@ -1620,3 +1626,572 @@ def test_get_observed_attack_techniques(mocker):
     assert isinstance(result.outputs[0]["id"], str)
     assert result.outputs_prefix == "VisionOne.Get_Observed_Attack_Techniques"
     assert result.outputs_key_field == "id"
+
+
+def test_xsoar_status_to_vision_one():
+    """
+    Test the xsoar_status_to_vision_one helper function that maps XSOAR incident statuses
+    to Vision One alert statuses.
+
+    Given:
+        - incident_status: XSOAR IncidentStatus value (0=Pending, 1=Active, 2=Closed, or unknown)
+    When:
+        - Execute xsoar_status_to_vision_one function
+    Then:
+        - Validate correct mapping to Vision One status
+    """
+    # Test Pending (0) -> "open"
+    status = xsoar_status_to_vision_one(0)
+    assert status == "open"
+
+    # Test Active (1) -> "in_progress"
+    status = xsoar_status_to_vision_one(1)
+    assert status == "in_progress"
+
+    # Test Closed (2) -> "closed"
+    status = xsoar_status_to_vision_one(2)
+    assert status == "closed"
+
+    # Test Unknown status (999) -> defaults to "open"
+    status = xsoar_status_to_vision_one(999)
+    assert status == "open"
+
+
+def test_update_remote_system_mirroring_disabled(mocker):
+    """
+    Test update_remote_system when mirroring is disabled.
+
+    Given:
+        - mirror_direction set to "None"
+        - A remote incident ID
+    When:
+        - Execute update_remote_system command
+    Then:
+        - The function should return the remote ID without making any API calls
+    """
+    client = Mock()
+    mocker.patch.object(demisto, "params", return_value={"mirror_direction": "None"})
+
+    args = {
+        "remoteId": "WB-14-20190709-00003",
+        "data": {"status": 2},
+        "entries": [],
+        "incidentChanged": True,
+    }
+
+    result = update_remote_system_command(client, args)
+
+    # Should return remote ID without any API calls
+    assert result == "WB-14-20190709-00003"
+    client.alert.get.assert_not_called()
+    client.alert.update_status.assert_not_called()
+
+
+def test_update_remote_system_status_update(mocker):
+    """
+    Test update_remote_system when incident status changes.
+
+    Given:
+        - mirror_direction set to "Outgoing"
+        - Incident status changed from Active (1) to Closed (2)
+        - Close reason contains "True Positive"
+    When:
+        - Execute update_remote_system command
+    Then:
+        - Should retrieve alert details to get ETag
+        - Should update Vision One alert status to "closed" with investigation result "true_positive"
+    """
+    client = Mock()
+    mocker.patch.object(demisto, "params", return_value={"mirror_direction": "Outgoing"})
+
+    # Mock get_alert_details response
+    mocker.patch(
+        "TrendMicroVisionOneV3.get_alert_details",
+        return_value=Mock(outputs={"etag": "test-etag-123", "alert": {"id": "WB-14-20190709-00003"}}),
+    )
+
+    # Mock update_status response
+    mocker.patch(
+        "TrendMicroVisionOneV3.update_status",
+        return_value=Mock(outputs={"code": 204, "message": "Success"}),
+    )
+
+    # Mock debug logging
+    mocker.patch.object(demisto, "debug")
+
+    args = {
+        "remoteId": "WB-14-20190709-00003",
+        "data": {"status": 2, "closeReason": "True Positive - Confirmed malware"},
+        "entries": [],
+        "incidentChanged": True,
+    }
+
+    result = update_remote_system_command(client, args)
+
+    # Should return remote ID
+    assert result == "WB-14-20190709-00003"
+
+
+def test_update_remote_system_add_note(mocker):
+    """
+    Test update_remote_system when adding notes to Vision One alert.
+
+    Given:
+        - mirror_direction set to "Incoming And Outgoing"
+        - User adds a comment/note in XSOAR incident
+    When:
+        - Execute update_remote_system command
+    Then:
+        - Should add the note to Vision One alert
+    """
+    client = Mock()
+    mocker.patch.object(demisto, "params", return_value={"mirror_direction": "Incoming And Outgoing"})
+
+    # Mock get_alert_details response
+    mocker.patch(
+        "TrendMicroVisionOneV3.get_alert_details",
+        return_value=Mock(outputs={"etag": "test-etag-456", "alert": {"id": "WB-14-20190709-00003"}}),
+    )
+
+    # Mock add_note response
+    mocker.patch(
+        "TrendMicroVisionOneV3.add_note",
+        return_value=Mock(outputs={"code": 201, "note_id": "note-123"}),
+    )
+
+    # Mock debug logging
+    mocker.patch.object(demisto, "debug")
+
+    args = {
+        "remoteId": "WB-14-20190709-00003",
+        "data": {},
+        "entries": [
+            {"type": 1, "contents": "Analyst comment: Investigated and confirmed malicious activity"},
+            {"type": 0, "contents": "System entry"},  # Should be ignored
+        ],
+        "incidentChanged": False,
+    }
+
+    result = update_remote_system_command(client, args)
+
+    # Should return remote ID
+    assert result == "WB-14-20190709-00003"
+
+
+def test_update_remote_system_no_remote_id(mocker):
+    """
+    Test update_remote_system when no remote ID is provided.
+
+    Given:
+        - mirror_direction set to "Outgoing"
+        - No remote incident ID (empty string)
+    When:
+        - Execute update_remote_system command
+    Then:
+        - Should return empty string without making API calls
+    """
+    client = Mock()
+    mocker.patch.object(demisto, "params", return_value={"mirror_direction": "Outgoing"})
+    mocker.patch.object(demisto, "debug")
+
+    args = {
+        "remoteId": "",
+        "data": {"status": 2},
+        "entries": [],
+        "incidentChanged": True,
+    }
+
+    result = update_remote_system_command(client, args)
+
+    # Should return empty string without any API calls
+    assert result == ""
+    client.alert.get.assert_not_called()
+
+
+def test_update_remote_system_close_reason_mapping(mocker):
+    """
+    Test update_remote_system close reason to investigation result mapping.
+
+    Given:
+        - mirror_direction set to "Outgoing"
+        - Incident closed with various close reasons
+    When:
+        - Execute update_remote_system command with different close reasons
+    Then:
+        - Should map close reasons correctly to investigation results
+    """
+    client = Mock()
+    mocker.patch.object(demisto, "params", return_value={"mirror_direction": "Outgoing"})
+
+    # Mock get_alert_details
+    mocker.patch(
+        "TrendMicroVisionOneV3.get_alert_details",
+        return_value=Mock(outputs={"etag": "test-etag", "alert": {"id": "WB-TEST"}}),
+    )
+
+    # Mock update_status to capture the call
+    mock_update_status = mocker.patch("TrendMicroVisionOneV3.update_status", return_value=Mock(outputs={"code": 204}))
+    mocker.patch.object(demisto, "debug")
+
+    # Test case 1: "False Positive" -> should map to "false_positive"
+    args_fp = {
+        "remoteId": "WB-TEST",
+        "data": {"status": 2, "closeReason": "False Positive - Benign activity"},
+        "entries": [],
+        "incidentChanged": True,
+    }
+    update_remote_system_command(client, args_fp)
+
+    # Test case 2: "Benign True Positive" -> should map to "benign_true_positive"
+    args_btp = {
+        "remoteId": "WB-TEST",
+        "data": {"status": 2, "closeReason": "Benign True Positive"},
+        "entries": [],
+        "incidentChanged": True,
+    }
+    update_remote_system_command(client, args_btp)
+
+    # Test case 3: "Noteworthy" -> should map to "noteworthy"
+    args_noteworthy = {
+        "remoteId": "WB-TEST",
+        "data": {"status": 2, "closeReason": "Noteworthy - Requires monitoring"},
+        "entries": [],
+        "incidentChanged": True,
+    }
+    update_remote_system_command(client, args_noteworthy)
+
+    # Verify update_status was called (at least once for each test case)
+    assert mock_update_status.call_count >= 3
+
+
+# ========== Incoming Mirroring Tests ==========
+
+
+def test_vision_one_status_to_xsoar():
+    """
+    Test the vision_one_status_to_xsoar helper function that maps Vision One alert statuses
+    to XSOAR incident statuses.
+
+    Given:
+        - v1_status: Vision One alert status string (open, in_progress, closed, or unknown)
+    When:
+        - Execute vision_one_status_to_xsoar function
+    Then:
+        - Validate correct mapping to XSOAR IncidentStatus values
+    """
+    # Test "open" -> 0 (Pending)
+    status = vision_one_status_to_xsoar("open")
+    assert status == 0
+
+    # Test "in_progress" -> 1 (Active)
+    status = vision_one_status_to_xsoar("in_progress")
+    assert status == 1
+
+    # Test "closed" -> 2 (Closed)
+    status = vision_one_status_to_xsoar("closed")
+    assert status == 2
+
+    # Test case insensitivity "OPEN" -> 0
+    status = vision_one_status_to_xsoar("OPEN")
+    assert status == 0
+
+    # Test unknown status -> defaults to 0 (Pending)
+    status = vision_one_status_to_xsoar("unknown_status")
+    assert status == 0
+
+
+def test_get_modified_remote_data_mirroring_disabled(mocker):
+    """
+    Test get_modified_remote_data when incoming mirroring is disabled.
+
+    Given:
+        - mirror_direction set to "None"
+        - lastUpdate timestamp
+    When:
+        - Execute get_modified_remote_data command
+    Then:
+        - Should return empty list without making any API calls
+    """
+    client = Mock()
+    mocker.patch.object(demisto, "params", return_value={"mirror_direction": "None"})
+
+    args = {"lastUpdate": "2024-01-01T00:00:00Z"}
+
+    result = get_modified_remote_data_command(client, args)
+
+    # Should return empty list
+    assert result.modified_incident_ids == []
+    client.alert.consume.assert_not_called()
+
+
+def test_get_modified_remote_data_outgoing_only(mocker):
+    """
+    Test get_modified_remote_data when only outgoing mirroring is enabled.
+
+    Given:
+        - mirror_direction set to "Outgoing" (not "Incoming" or "Incoming And Outgoing")
+        - lastUpdate timestamp
+    When:
+        - Execute get_modified_remote_data command
+    Then:
+        - Should return empty list without making any API calls
+    """
+    client = Mock()
+    mocker.patch.object(demisto, "params", return_value={"mirror_direction": "Outgoing"})
+
+    args = {"lastUpdate": "2024-01-01T00:00:00Z"}
+
+    result = get_modified_remote_data_command(client, args)
+
+    # Should return empty list
+    assert result.modified_incident_ids == []
+    client.alert.consume.assert_not_called()
+
+
+def test_get_modified_remote_data_success(mocker):
+    """
+    Test get_modified_remote_data successfully detecting modified alerts.
+
+    Given:
+        - mirror_direction set to "Incoming"
+        - lastUpdate timestamp
+        - Vision One has modified alerts
+    When:
+        - Execute get_modified_remote_data command
+    Then:
+        - Should call pytmv1 alert.consume with date_time_target="updatedDateTime"
+        - Should return list of modified alert IDs
+    """
+    from datetime import UTC, datetime
+
+    from pytmv1 import SaeAlert
+
+    client = Mock()
+    mocker.patch.object(demisto, "params", return_value={"mirror_direction": "Incoming"})
+    mocker.patch.object(demisto, "debug")
+    mocker.patch.object(demisto, "error")
+
+    # Mock alert.consume to simulate modified alerts
+    def mock_consume(callback, **kwargs):
+        # Simulate 3 modified alerts
+        alert1 = Mock(spec=SaeAlert)
+        alert1.id = "WB-1234-20240101-00001"
+        alert2 = Mock(spec=SaeAlert)
+        alert2.id = "WB-1234-20240101-00002"
+        alert3 = Mock(spec=SaeAlert)
+        alert3.id = "WB-1234-20240101-00003"
+
+        callback(alert1)
+        callback(alert2)
+        callback(alert3)
+
+    client.alert.consume = Mock(side_effect=mock_consume)
+
+    args = {"lastUpdate": "2024-01-01T00:00:00Z"}
+
+    result = get_modified_remote_data_command(client, args)
+
+    # Should return 3 alert IDs
+    assert len(result.modified_incident_ids) == 3
+    assert "WB-1234-20240101-00001" in result.modified_incident_ids
+    assert "WB-1234-20240101-00002" in result.modified_incident_ids
+    assert "WB-1234-20240101-00003" in result.modified_incident_ids
+
+    # Verify alert.consume was called with date_time_target="updatedDateTime"
+    client.alert.consume.assert_called_once()
+    call_kwargs = client.alert.consume.call_args[1]
+    assert call_kwargs.get("date_time_target") == "updatedDateTime"
+
+
+def test_get_modified_remote_data_no_last_update(mocker):
+    """
+    Test get_modified_remote_data when no lastUpdate is provided.
+
+    Given:
+        - mirror_direction set to "Incoming And Outgoing"
+        - No lastUpdate timestamp (empty string)
+    When:
+        - Execute get_modified_remote_data command
+    Then:
+        - Should use 1 hour ago as default start time
+        - Should call pytmv1 alert.consume
+    """
+    from datetime import UTC, datetime
+
+    client = Mock()
+    mocker.patch.object(demisto, "params", return_value={"mirror_direction": "Incoming And Outgoing"})
+    mocker.patch.object(demisto, "debug")
+    mocker.patch.object(demisto, "error")
+
+    # Mock alert.consume
+    client.alert.consume = Mock()
+
+    args = {"lastUpdate": ""}
+
+    result = get_modified_remote_data_command(client, args)
+
+    # Should call alert.consume
+    client.alert.consume.assert_called_once()
+
+
+def test_get_remote_data_mirroring_disabled(mocker):
+    """
+    Test get_remote_data when incoming mirroring is disabled.
+
+    Given:
+        - mirror_direction set to "None"
+        - Alert ID
+    When:
+        - Execute get_remote_data command
+    Then:
+        - Should return error response without making API calls
+    """
+    client = Mock()
+    mocker.patch.object(demisto, "params", return_value={"mirror_direction": "None"})
+
+    args = {"id": "WB-1234-20240101-00001"}
+
+    result = get_remote_data_command(client, args)
+
+    # Should return error response
+    assert result.mirrored_object["id"] == "WB-1234-20240101-00001"
+    assert "in_mirror_error" in result.mirrored_object
+    assert "not enabled" in result.mirrored_object["in_mirror_error"]
+
+
+def test_get_remote_data_success(mocker):
+    """
+    Test get_remote_data successfully fetching alert data.
+
+    Given:
+        - mirror_direction set to "Incoming"
+        - Valid alert ID
+        - Alert exists in Vision One
+    When:
+        - Execute get_remote_data command
+    Then:
+        - Should fetch alert details
+        - Should map Vision One fields to XSOAR fields
+        - Should return incident data with correct status and severity
+    """
+    client = Mock()
+    mocker.patch.object(demisto, "params", return_value={"mirror_direction": "Incoming"})
+    mocker.patch.object(demisto, "debug")
+
+    # Mock get_alert_details response
+    mocker.patch(
+        "TrendMicroVisionOneV3.get_alert_details",
+        return_value=Mock(
+            outputs={
+                "etag": "test-etag",
+                "alert": {
+                    "id": "WB-1234-20240101-00001",
+                    "status": "in_progress",
+                    "severity": "high",
+                    "description": "Suspicious activity detected",
+                    "model": "Malware Detection",
+                    "created_date_time": "2024-01-01T00:00:00Z",
+                },
+            }
+        ),
+    )
+
+    args = {"id": "WB-1234-20240101-00001"}
+
+    result = get_remote_data_command(client, args)
+
+    # Should return incident data with mapped fields
+    assert result.mirrored_object["id"] == "WB-1234-20240101-00001"
+    assert result.mirrored_object["status"] == 1  # in_progress -> 1 (Active)
+    assert result.mirrored_object["severity"] == 3  # high -> 3
+    assert result.mirrored_object["details"] == "Suspicious activity detected"
+    assert result.mirrored_object["name"] == "Malware Detection"
+    assert result.mirrored_object["occurred"] == "2024-01-01T00:00:00Z"
+    assert "rawJSON" in result.mirrored_object
+
+
+def test_get_remote_data_no_alert_id(mocker):
+    """
+    Test get_remote_data when no alert ID is provided.
+
+    Given:
+        - mirror_direction set to "Incoming And Outgoing"
+        - No alert ID (empty string)
+    When:
+        - Execute get_remote_data command
+    Then:
+        - Should return error response
+    """
+    client = Mock()
+    mocker.patch.object(demisto, "params", return_value={"mirror_direction": "Incoming And Outgoing"})
+    mocker.patch.object(demisto, "debug")
+
+    args = {"id": ""}
+
+    result = get_remote_data_command(client, args)
+
+    # Should return error response
+    assert result.mirrored_object["id"] == ""
+    assert "in_mirror_error" in result.mirrored_object
+    assert "No alert ID" in result.mirrored_object["in_mirror_error"]
+
+
+def test_get_remote_data_alert_not_found(mocker):
+    """
+    Test get_remote_data when alert cannot be retrieved.
+
+    Given:
+        - mirror_direction set to "Incoming"
+        - Valid alert ID but alert doesn't exist
+    When:
+        - Execute get_remote_data command
+    Then:
+        - Should return error response
+    """
+    client = Mock()
+    mocker.patch.object(demisto, "params", return_value={"mirror_direction": "Incoming"})
+    mocker.patch.object(demisto, "debug")
+    mocker.patch.object(demisto, "error")
+
+    # Mock get_alert_details to return None (alert not found)
+    mocker.patch("TrendMicroVisionOneV3.get_alert_details", return_value=Mock(outputs=None))
+
+    args = {"id": "WB-NONEXISTENT"}
+
+    result = get_remote_data_command(client, args)
+
+    # Should return error response
+    assert result.mirrored_object["id"] == "WB-NONEXISTENT"
+    assert "in_mirror_error" in result.mirrored_object
+
+
+def test_get_mapping_fields(mocker):
+    """
+    Test get_mapping_fields returns correct field mappings.
+
+    Given:
+        - No arguments (function takes no parameters)
+    When:
+        - Execute get_mapping_fields command
+    Then:
+        - Should return GetMappingFieldsResponse with SchemeTypeMapping
+        - Should include mirrored Vision One alert fields
+    """
+    mocker.patch.object(demisto, "debug")
+
+    # get_mapping_fields() takes no parameters
+    result = get_mapping_fields_command()
+
+    # Should return GetMappingFieldsResponse
+    assert result is not None
+    assert len(result.fields) > 0
+
+    # Verify incident type name
+    scheme_type = result.fields[0]
+    assert scheme_type.type_name == "Trend Micro Vision One XDR Incident"
+
+    # Verify mirrored fields are present
+    field_names = [field.name for field in scheme_type.fields]
+    assert "status" in field_names
+    assert "severity" in field_names
+    assert "investigation_result" in field_names
