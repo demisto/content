@@ -84,8 +84,14 @@ PERMISSIONS_TO_COMMANDS = {
         "azure-policy-assignment-create",
         "azure-policy-assignment-create-quick-action"
     ],
-    "Microsoft.DBforPostgreSQL/servers/read": ["azure-postgres-server-update"],
-    "Microsoft.DBforPostgreSQL/servers/write": ["azure-postgres-server-update"],
+    "Microsoft.DBforPostgreSQL/servers/read": [
+        "azure-postgres-server-update",
+        "azure-postgres-server-update-ssl-enforcement-quick-action",
+    ],
+    "Microsoft.DBforPostgreSQL/servers/write": [
+        "azure-postgres-server-update",
+        "azure-postgres-server-update-ssl-enforcement-quick-action",
+    ],
     "Microsoft.DBforPostgreSQL/servers/configurations/read": [
         "azure-postgres-config-set",
         "azure-postgres-config-set-disconnection-logging-quick-action"
@@ -4064,6 +4070,13 @@ def main():  # pragma: no cover
             "azure-acr-disable-authentication-as-arm-quick-action": acr_update_command,
             "azure-acr-disable-anonymous-pull-quick-action": acr_update_command,
             "azure-policy-assignment-create-quick-action": create_policy_assignment_command,
+            "azure-postgres-config-set-disconnection-logging-quick-action": set_postgres_config_command,
+            "azure-postgres-config-set-checkpoint-logging-quick-action": set_postgres_config_command,
+            "azure-postgres-config-set-connection-throttling-quick-action": set_postgres_config_command,
+            "azure-postgres-config-set-session-connection-logging-quick-action": set_postgres_config_command,
+            "azure-postgres-config-set-log-retention-period-quick-action": set_postgres_config_command,
+            "azure-postgres-config-set-statement-logging-quick-action": set_postgres_config_command,
+            "azure-postgres-server-update-ssl-enforcement-quick-action": postgres_server_update_command,
         }
         if command == "test-module" and connector_id:
             demisto.debug(f"Running health check for connector ID: {connector_id}")
