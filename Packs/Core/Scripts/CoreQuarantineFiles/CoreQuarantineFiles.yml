@@ -59,5 +59,4 @@ tests:
 marketplaces:
 - platform
 supportedModules:
-- agentix_xsiam
 - xsiam
