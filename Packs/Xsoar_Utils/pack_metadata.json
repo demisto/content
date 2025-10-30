@@ -2,7 +2,7 @@
     "name": "Xsoar_Utils",
     "description": "This is a wrapper on top of XSOAR API. Can be used to implement commands that call the XSOAR API in the background.",
     "support": "community",
-    "currentVersion": "1.0.5",
+    "currentVersion": "1.0.6",
     "author": "Arun Narayanan",
     "url": "",
     "email": "",
@@ -26,6 +26,7 @@
         "X3",
         "X5",
         "ENT_PLUS",
-        "agentix"
+        "agentix",
+        "xsiam"
     ]
 }
