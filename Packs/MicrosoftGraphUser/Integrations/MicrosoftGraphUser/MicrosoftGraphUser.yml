@@ -170,7 +170,8 @@ script:
   - arguments:
       - description: User ID or userPrincipalName.
         prettyname: User
-        prettypredefined: ${issue.original_alert_json.raw_abioc.event.auth_normalized_user.upn}
+        prettypredefined:
+          User UPN: ${issue.original_alert_json.raw_abioc.event.auth_normalized_user.upn}
         name: user
         required: true
     description: |-
@@ -242,7 +243,8 @@ script:
   - arguments:
     - description: User ID or userPrincipalName to update properties for.
       prettyname: User
-      prettypredefined: ${issue.original_alert_json.raw_abioc.event.auth_normalized_user.upn}
+      prettypredefined:
+        User UPN: ${issue.original_alert_json.raw_abioc.event.auth_normalized_user.upn}
       name: user
       required: true
     description: |-
@@ -691,7 +693,8 @@ script:
   - arguments:
     - description: User ID or userPrincipalName.
       prettyname: User
-      prettypredefined: ${issue.original_alert_json.raw_abioc.event.auth_normalized_user.upn}
+      prettypredefined:
+        User UPN: ${issue.original_alert_json.raw_abioc.event.auth_normalized_user.upn}
       name: user
       required: true
     description: |-
