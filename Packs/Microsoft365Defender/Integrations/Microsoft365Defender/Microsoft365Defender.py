@@ -295,7 +295,7 @@ def test_context_for_token(client: Client) -> None:
         )
 
 
-def test_module(client: Client) -> str:
+def test_module(client: Client) -> str | CommandResults:
     """Tests API connectivity and authentication'
 
     Returning 'ok' indicates that the integration works like it is supposed to.
@@ -311,12 +311,11 @@ def test_module(client: Client) -> str:
     # This  should validate all the inputs given in the integration configuration panel,
     # either manually or by using an API that uses them.
     if client.client_credentials:
-        raise DemistoException(
-            "When using a self-deployed configuration, run the !microsoft-365-defender-auth-test "
-            "command in order to test the connection"
-        )
+        client.ms_client.get_access_token()
+        return "ok"
 
-    test_connection(client)
+    else:  # in case its device code flow
+        test_connection(client)
 
     return "ok"
 

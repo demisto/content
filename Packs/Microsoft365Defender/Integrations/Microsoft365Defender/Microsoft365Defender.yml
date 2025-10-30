@@ -28,26 +28,6 @@ configuration:
   hiddenusername: true
   section: Connect
   required: false
-- additionalinfo: The API key to use to connect.
-  defaultvalue: 9093c354-630a-47f1-b087-6768eb9427e6
-  display: Application ID
-  name: _app_id
-  type: 0
-  section: Connect
-  hidden: true
-  required: false
-- additionalinfo: Use a self-deployed Azure application and authenticate using the Client Credentials flow.
-  display: Use Client Credentials Authorization Flow
-  name: client_credentials
-  type: 8
-  section: Connect
-  required: false
-- display: Tenant ID (for Client Credentials mode)
-  name: _tenant_id
-  type: 0
-  section: Connect
-  hidden: true
-  required: false
 - display: Client Secret (for Client Credentials mode)
   hiddenusername: true
   name: credentials
@@ -63,21 +43,19 @@ configuration:
   section: Connect
   advanced: true
   required: false
-- additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
-  display: Certificate Thumbprint
-  name: certificate_thumbprint
-  type: 4
+- additionalinfo: Use a self-deployed Azure application and authenticate using the Client Credentials flow.
+  display: Use Client Credentials Authorization Flow
+  name: client_credentials
+  type: 8
   section: Connect
-  advanced: true
-  hidden: true
   required: false
-- additionalinfo: Used for certificate authentication. The private key of the registered certificate.
-  display: Private Key
-  name: private_key
-  type: 14
+- additionalinfo: The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM.
+  displaypassword: Azure Managed Identities Client ID
+  name: managed_identities_client_id
+  hiddenusername: true
+  type: 9
   section: Connect
   advanced: true
-  hidden: true
   required: false
 - additionalinfo: Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab.
   display: Use Azure Managed Identities
@@ -86,11 +64,9 @@ configuration:
   section: Connect
   advanced: true
   required: false
-- additionalinfo: The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM.
-  displaypassword: Azure Managed Identities Client ID
-  name: managed_identities_client_id
-  hiddenusername: true
-  type: 9
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
   section: Connect
   advanced: true
   required: false
@@ -126,36 +102,9 @@ configuration:
   type: 8
   section: Collect
   required: false
-- display: Trust any certificate (not secure)
-  name: insecure
-  type: 8
-  section: Connect
-  advanced: true
-  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
-  section: Connect
-  advanced: true
-  required: false
-- display: Application ID (Deprecated)
-  hidden: true
-  name: app_id
-  type: 4
-  section: Connect
-  advanced: true
-  required: false
-- display: Tenant ID (for Client Credentials mode) (Deprecated)
-  hidden: true
-  name: tenant_id
-  type: 4
-  section: Connect
-  advanced: true
-  required: false
-- display: Client Secret (for Client Credentials mode) (Deprecated)
-  hidden: true
-  name: enc_key
-  type: 4
   section: Connect
   advanced: true
   required: false
@@ -224,6 +173,58 @@ configuration:
   hidden:
   - marketplacev2
   - platform
+  required: false
+# Hidden Parameters
+- additionalinfo: The API key to use to connect.
+  defaultvalue: 9093c354-630a-47f1-b087-6768eb9427e6
+  display: Application ID
+  name: _app_id
+  type: 0
+  section: Connect
+  hidden: true
+  required: false
+- display: Tenant ID (for Client Credentials mode)
+  name: _tenant_id
+  type: 0
+  section: Connect
+  hidden: true
+  required: false
+- additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
+  display: Certificate Thumbprint
+  name: certificate_thumbprint
+  type: 4
+  section: Connect
+  advanced: true
+  hidden: true
+  required: false
+- display: Tenant ID (for Client Credentials mode) (Deprecated)
+  hidden: true
+  name: tenant_id
+  type: 4
+  section: Connect
+  advanced: true
+  required: false
+- display: Application ID (Deprecated)
+  hidden: true
+  name: app_id
+  type: 4
+  section: Connect
+  advanced: true
+  required: false
+- display: Client Secret (for Client Credentials mode) (Deprecated)
+  hidden: true
+  name: enc_key
+  type: 4
+  section: Connect
+  advanced: true
+  required: false
+- additionalinfo: Used for certificate authentication. The private key of the registered certificate.
+  display: Private Key
+  name: private_key
+  type: 14
+  section: Connect
+  advanced: true
+  hidden: true
   required: false
 description: Microsoft 365 Defender is a unified pre- and post-breach enterprise defense suite that natively coordinates detection, prevention, investigation, and response across endpoints, identities, email, and applications to provide integrated protection against sophisticated attacks.
 display: Microsoft 365 Defender
