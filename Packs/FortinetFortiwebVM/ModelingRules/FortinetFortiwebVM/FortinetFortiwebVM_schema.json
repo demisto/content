@@ -181,11 +181,11 @@
             "is_array": false
         },
         "log_timestamp": {
-            "type": "string",
+            "type": "int",
             "is_array": false
         },
         "rt": {
-            "type": "string",
+            "type": "int",
             "is_array": false
         }
     }
