@@ -47,6 +47,10 @@
             "display_name": "Common Scripts",
             "mandatory": true
         },
+        "DemistoRESTAPI": {
+            "mandatory": true,
+            "display_name": "Demisto REST API"
+        },
         "FeedMitreAttack": {
             "display_name": "MITRE ATT&CK",
             "mandatory": false
