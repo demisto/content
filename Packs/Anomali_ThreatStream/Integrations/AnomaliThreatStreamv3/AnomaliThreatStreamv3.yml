@@ -3,7 +3,7 @@ sectionorder:
 - Connect
 - Collect
 commonfields:
-  id: Anomali ThreatStream v3
+  id: Anomali ThreatStream v3 - test
   version: -1
 configuration:
 - defaultvalue: https://api.threatstream.com
@@ -112,7 +112,7 @@ configuration:
 defaultclassifier: 'null'
 description: Use Anomali ThreatStream to query and submit threats.
 display: Anomali ThreatStream v3
-name: Anomali ThreatStream v3
+name: Anomali ThreatStream v3 - test
 script:
   commands:
   - arguments:

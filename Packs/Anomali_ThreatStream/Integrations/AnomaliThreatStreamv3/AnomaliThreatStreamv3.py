@@ -2565,7 +2565,7 @@ def submit_report(
     submission_value,
     import_indicators=True,
     submission_classification="private",
-    report_platform="WINDOWSXP",
+    report_platform="WINDOWS7",
     premium_sandbox="true",
     detail=None,
 ):
@@ -2573,6 +2573,12 @@ def submit_report(
     Detonates URL or file that was uploaded to war room to ThreatStream sandbox.
     """
     import_indicators = argToBoolean(import_indicators)
+    
+    if premium_sandbox != "true":
+        message = "premium_sandbox must be enabled due to ThreatStream API changes."
+        demisto.debug(message)
+        raise DemistoException(f"{THREAT_STREAM} - Entry\n{message}. Please re-run the command with premium_sandbox=true")
+
     data = {
         "report_radio-classification": submission_classification,
         "report_radio-platform": report_platform,
