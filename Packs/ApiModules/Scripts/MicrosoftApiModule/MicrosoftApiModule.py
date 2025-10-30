@@ -928,8 +928,8 @@ class MicrosoftClient(BaseClient):
             raise DemistoException(
                 f"The *Test* button is not available for the Device Code Flow. "
                 f"Please run !{integration_command_prefix}-auth-start and then "
-                f"{integration_command_prefix}-auth-complete. You can then check the connection using "
-                f"!{integration_command_prefix}-auth-test."
+                f"{integration_command_prefix}-auth-complete. Then you can check the connection using the"
+                f"!{integration_command_prefix}-auth-test command."
             )
 
         elif flow == AUTHORIZATION_CODE:
@@ -937,8 +937,9 @@ class MicrosoftClient(BaseClient):
                            "When using authorization code flow you must")
             raise DemistoException(
                 f"The *Test* button is not available for the Authorization Code Flow. "
-                f"Use the !{integration_command_prefix}-generate-login-url command instead. "
-                f"Then use the !{integration_command_prefix}-auth-test command to test the connection."
+                f"Please use the !{integration_command_prefix}-generate-login-url command. "
+                f"Then you can check the connection using the"
+                f"!{integration_command_prefix}-auth-test command."
             )
 
         else:
@@ -960,6 +961,7 @@ class MicrosoftClient(BaseClient):
         """
         integration_context = get_integration_context()
         refresh_token = integration_context.get("current_refresh_token", "")
+
         # Set keywords. Default without the scope prefix.
         access_token_keyword = f"{scope}_access_token" if scope else "access_token"
         valid_until_keyword = f"{scope}_valid_until" if scope else "valid_until"
