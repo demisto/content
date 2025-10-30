@@ -15,6 +15,7 @@ MAX_GET_INCIDENTS_LIMIT = 100
 WEBAPP_COMMANDS = ["core-get-vulnerabilities", "core-search-asset-groups"]
 DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
 
+VULNERABLE_ISSUES_TABLE = "VULNERABLE_ISSUES_TABLE"
 ASSET_GROUPS_TABLE = "UNIFIED_ASSET_MANAGEMENT_ASSET_GROUPS"
 
 ASSET_GROUP_FIELDS = {
@@ -22,6 +23,14 @@ ASSET_GROUP_FIELDS = {
     "asset_group_type": "XDM__ASSET_GROUP__TYPE",
     "asset_group_description": "XDM__ASSET_GROUP__DESCRIPTION",
     "asset_group_id": "XDM__ASSET_GROUP__ID",
+}
+
+VULNERABILITIES_SEVERITY_MAPPING = {
+    "info": "SEV_030_INFO",
+    "low": "SEV_040_LOW",
+    "medium": "SEV_050_MEDIUM",
+    "high": "SEV_060_HIGH",
+    "critical": "SEV_070_CRITICAL",
 }
 
 
@@ -190,31 +199,6 @@ class FilterBuilder:
 
 FilterType = FilterBuilder.FilterType
 
-
-def build_webapp_request_data(
-    table_name: str,
-    filter_dict: dict,
-    limit: int,
-    sort_field: str,
-    on_demand_fields: list | None = None,
-    sort_order: str = "DESC",
-) -> dict:
-    """
-    Builds the request data for the generic /api/webapp/get_data endpoint.
-    """
-    filter_data = {
-        "sort": [{"FIELD": sort_field, "ORDER": sort_order}],
-        "paging": {"from": 0, "to": limit},
-        "filter": filter_dict,
-    }
-    demisto.debug(f"{filter_data=}")
-
-    if on_demand_fields is None:
-        on_demand_fields = []
-
-    return {"type": "grid", "table_name": table_name, "filter_data": filter_data, "jsons": [], "onDemandFields": on_demand_fields}
-
-
 def replace_substring(data: dict | str, original: str, new: str) -> str | dict:
     """
     Replace all occurrences of a substring in the keys of a dictionary with a new substring or in a string.
@@ -323,7 +307,7 @@ class Client(CoreClient):
         return reply
 
     def get_webapp_data(self, request_data: dict) -> dict:
-        reply = self._http_request(
+        return self._http_request(
             method="POST",
             url_suffix="/get_data",
             json_data=request_data,
@@ -363,23 +347,119 @@ def search_asset_groups_command(client: Client, args: dict) -> CommandResults:
         filter_dict=filter_builder.to_dict(),
         limit=limit,
         sort_field="XDM__ASSET_GROUP__LAST_UPDATE_TIME",
-        sort_order="DESC",
     )
-
+    
     response = client.get_webapp_data(request_data)
     reply = response.get("reply", {})
     data = reply.get("DATA", [])
-
+    
     data = [
         {(k.replace("XDM__ASSET_GROUP__", "") if k.startswith("XDM__ASSET_GROUP__") else k).lower(): v for k, v in item.items()}
         for item in data
     ]
-
+    
     return CommandResults(
         readable_output=tableToMarkdown("AssetGroups", data, headerTransform=string_to_table_header),
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.AssetGroups",
         outputs_key_field="id",
         outputs=data,
+        raw_response=response
+    )
+
+def build_webapp_request_data(
+    table_name: str,
+    filter_dict: dict,
+    limit: int,
+    sort_field: str,
+    on_demand_fields: list | None = None,
+    sort_order: str = "DESC",
+) -> dict:
+    """
+    Builds the request data for the generic /api/webapp/get_data endpoint.
+    """
+    filter_data = {
+        "sort": [{"FIELD": sort_field, "ORDER": sort_order}],
+        "paging": {"from": 0, "to": limit},
+        "filter": filter_dict,
+    }
+    demisto.debug(f"{filter_data=}")
+
+    if on_demand_fields is None:
+        on_demand_fields = []
+
+    return {"type": "grid", "table_name": table_name, "filter_data": filter_data, "jsons": [], "onDemandFields": on_demand_fields}
+
+
+def get_vulnerabilities_command(client: Client, args: dict) -> CommandResults:
+    """
+    Retrieves vulnerabilities using the generic /api/webapp/get_data endpoint.
+    """
+    limit = arg_to_number(args.get("limit")) or 50
+    sort_field = args.get("sort_field", "LAST_OBSERVED")
+    sort_order = args.get("sort_order", "DESC")
+
+    filter_builder = FilterBuilder()
+    filter_builder.add_field("CVE_ID", FilterType.CONTAINS, argToList(args.get("cve_id")))
+    filter_builder.add_field("CVSS_SCORE", FilterType.GTE, arg_to_number(args.get("cvss_score_gte")))
+    filter_builder.add_field("EPSS_SCORE", FilterType.GTE, arg_to_number(args.get("epss_score_gte")))
+    filter_builder.add_field("INTERNET_EXPOSED", FilterType.EQ, arg_to_bool_or_none(args.get("internet_exposed")))
+    filter_builder.add_field("EXPLOITABLE", FilterType.EQ, arg_to_bool_or_none(args.get("exploitable")))
+    filter_builder.add_field("HAS_KEV", FilterType.EQ, arg_to_bool_or_none(args.get("has_kev")))
+    filter_builder.add_field("AFFECTED_SOFTWARE", FilterType.CONTAINS, argToList(args.get("affected_software")))
+    filter_builder.add_field(
+        "PLATFORM_SEVERITY", FilterType.EQ, argToList(args.get("severity")), VULNERABILITIES_SEVERITY_MAPPING
+    )
+    filter_builder.add_field("ISSUE_ID", FilterType.CONTAINS, argToList(args.get("issue_id")))
+    filter_builder.add_time_range_field("LAST_OBSERVED", args.get("start_time"), args.get("end_time"))
+    filter_builder.add_field_with_mappings(
+        "ASSIGNED_TO",
+        FilterType.CONTAINS,
+        argToList(args.get("assignee")),
+        {
+            "unassigned": FilterType.IS_EMPTY,
+            "assigned": FilterType.NIS_EMPTY,
+        },
+    )
+
+    request_data = build_webapp_request_data(
+        table_name=VULNERABLE_ISSUES_TABLE,
+        filter_dict=filter_builder.to_dict(),
+        limit=limit,
+        sort_field=sort_field,
+        sort_order=sort_order,
+        on_demand_fields=argToList(args.get("on_demand_fields")),
+    )
+    response = client.get_webapp_data(request_data)
+    reply = response.get("reply", {})
+    data = reply.get("DATA", [])
+
+    output_keys = [
+        "ISSUE_ID",
+        "CVE_ID",
+        "CVE_DESCRIPTION",
+        "ASSET_NAME",
+        "PLATFORM_SEVERITY",
+        "EPSS_SCORE",
+        "CVSS_SCORE",
+        "ASSIGNED_TO",
+        "ASSIGNED_TO_PRETTY",
+        "AFFECTED_SOFTWARE",
+        "FIX_AVAILABLE",
+        "INTERNET_EXPOSED",
+        "HAS_KEV",
+        "EXPLOITABLE",
+        "ASSET_IDS",
+    ]
+    filtered_data = [{k: v for k, v in item.items() if k in output_keys} for item in data]
+
+    readable_output = tableToMarkdown(
+        "Vulnerabilities", filtered_data, headerTransform=string_to_table_header, sort_headers=False
+    )
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.VulnerabilityIssue",
+        outputs_key_field="ISSUE_ID",
+        outputs=filtered_data,
         raw_response=response,
     )
 
@@ -465,9 +545,11 @@ def main():  # pragma: no cover
     args["integration_context_brand"] = INTEGRATION_CONTEXT_BRAND
     args["integration_name"] = INTEGRATION_NAME
     headers: dict = {}
-    public_api_url = "/api/webapp/public_api/v1"
+
     webapp_api_url = "/api/webapp"
+    public_api_url = f"{webapp_api_url}/public_api/v1"
     data_platform_api_url = f"{webapp_api_url}/data-platform"
+
     proxy = demisto.params().get("proxy", False)
     verify_cert = not demisto.params().get("insecure", False)
 
@@ -523,6 +605,9 @@ def main():  # pragma: no cover
 
         elif command == "core-get-case-extra-data":
             return_results(get_extra_data_for_case_id_command(client, args))
+
+        elif command == "core-get-vulnerabilities":
+            return_results(get_vulnerabilities_command(client, args))
 
     except Exception as err:
         demisto.error(traceback.format_exc())
