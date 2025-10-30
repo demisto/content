@@ -29,6 +29,7 @@ configuration:
   type: 0
   section: Connect
   advanced: true
+  additionalinfo: The host URL. When using this parameter, select the Custom option for the Azure Cloud. More information about National clouds can be found here - https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#using-national-cloud
 - defaultvalue: Alerts v2
   display: MS graph security alert API Version
   name: api_version
