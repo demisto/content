@@ -771,6 +771,8 @@ def test_search_assets_command_success(mocker):
     # Check other parameters
     assert mock_search_assets.call_args[0][1] == 0  # page_number
     assert mock_search_assets.call_args[0][2] == 50  # page_size
+
+
 def test_get_vulnerabilities_command_success(mocker: MockerFixture):
     """
     Given:
