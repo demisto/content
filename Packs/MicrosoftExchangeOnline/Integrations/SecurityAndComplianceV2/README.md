@@ -82,13 +82,13 @@ To access the **Microsoft Purview** (formerly Compliance Center) capabilities us
 2. Search for **O365 - Security And Compliance - Content Search v2**.
 3. Authentication / Authorization methods:
 
-- App-only (OAuth2.0) Authentication -
+- App-only (OAuth2.0) using device code Authentication -
     1. Fill in the UPN, App ID, and Tenant ID parameters in the integration configuration.
     2. Run the ***o365-sc-auth-start*** command and follow the instructions.
     3. For testing completion of authorization process run the ***o365-sc-auth-test*** command.
 - Delegated User Authentication -
-    1. Fill in the UPN parameter in the integration configuration.
-    2. Add the user’s Microsoft 365 password (the regular sign-in password for that UPN).
+    1. Fill in the UPN parameter in the integration configuration. 
+    2. Fill in the 'UPN Password' parameter - the user’s Microsoft 365 password (the regular sign-in password for that UPN).
     3. For testing completion of authorization process run the ***o365-sc-auth-test*** command. 
     4. As part of a Microsoft update, some commands will only work with this authentication method. The commands are:
        - o365-sc-new-search-action
@@ -116,7 +116,7 @@ To access the **Microsoft Purview** (formerly Compliance Center) capabilities us
 
 - **Expected Output:**
 
-  > ## Security and Compliance - Authorize Instructions App-only (OAuth2.0) Authentication
+  > ## Security and Compliance - Authorize Instructions App-only (OAuth2.0) using device code Authentication
    >
    > 1. To sign in, open [https://microsoft.com/devicelogin](https://microsoft.com/devicelogin) in a web browser and enter the code **XXXXXXX** to authenticate.
    > 2. Run the `!o365-sc-auth-complete` command in the War Room.
