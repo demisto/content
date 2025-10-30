@@ -7,7 +7,7 @@ alter
     unifi_client_ipv4 = if(UNIFIclientIp ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}",UNIFIclientIp ,null),
     unifi_client_ipv6 = if(UNIFIclientIp ~= "^((?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4})$",UNIFIclientIp  ,null);
 [MODEL: dataset = ubiquiti_unifi_raw]
-filter UNIFIcategory = "Monitoring" and UNIFIcategory = "Security" and UNIFIcategory = "System" and UNIFIcategory = "Internet" and UNIFIcategory = "Power"
+filter UNIFIcategory = "Monitoring" or UNIFIcategory = "Security" or UNIFIcategory = "System" or UNIFIcategory = "Internet" or UNIFIcategory = "Power"
 | call UBIQUITI_GENERAL_FIELDS 
 | alter 
     xdm.target.port = to_integer(dpt),
