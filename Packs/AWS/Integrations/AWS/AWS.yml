@@ -3565,9 +3565,9 @@ script:
       - name: executable_users
         description: Scopes the images by users with explicit launch permissions.
       - name: filters
-        description: One or more filters. Filters must be separated by a comma (,) and specified using the format "key=key,values=val". Refer to the AWS documentation for detailed filter options.
+        description: One or more filters. Filters must be separated by a semicolon (;) and specified using the format "key=key,values=val". Refer to the AWS documentation for detailed filter options.
       - name: owners
-        description: Filters the images by the owner. Specify an AWS account ID, self (owner is the sender of the request), or an AWS owner alias (valid values are amazon | aws-marketplace | microsoft ). Omitting this option returns all images for which you have launch permissions, regardless of ownership.
+        description: Filters the images by the owner. Specify an AWS account ID, self (owner is the sender of the request), or an AWS owner alias (valid values are amazon | aws-marketplace | microsoft ). Omitting this option returns all images for which you have launch permissions, regardless of ownership. Separated by ','.
       - name: image_ids
         description: The image IDs separated by ','.
       - name: include_deprecated
@@ -3748,7 +3748,7 @@ script:
       - name: client_token
         description: Unique, case-sensitive identifier that you provide to ensure the idempotency of the request.
       - name: tag_specifications
-        description: The tags to assign to the network ACL. Use with
+        description: The tags to assign to the network ACL. Must be separated by a semicolon (;) and specified using the format "key=key,values=val".
     outputs:
       - contextPath: AWS.EC2.VpcId.NetworkAcl.Associations.NetworkAclAssociationId
         description: The ID of the association between a network ACL and a subnet.
@@ -3858,7 +3858,7 @@ script:
         description: The Amazon Web Services region for the IP address.
         required: true
       - name: filters
-        description: One or more filters separated by ';'. See AWS documentation for details & filter options (https://docs.aws.amazon.com/cli/latest/userguide/cli-usage-filter.html).
+        description: One or more filters. Filters must be separated by a semicolon (;) and specified using the format "key=key,values=val". Refer to the AWS documentation for detailed filter options.
       - name: max_results
         description: The maximum number of results to return in a single call. Specify a value between 5 and 1000.
       - name: next_token
@@ -3933,7 +3933,7 @@ script:
         description: The IDs of one or more resources to tag. For example, ami-1a2b3c4d.
         required: true
       - name: tags
-        description: One or more tags.
+        description: One or more tags. Must be separated by a semicolon (;) and specified using the format "key=abc,value=123;key=fed,value=456".
         required: true
 
   - name: aws-cloudtrail-trails-describe
