@@ -2777,6 +2777,171 @@ class ECS:
             )
 
 
+class KMS:
+    service = AWSServices.KMS
+
+    @staticmethod
+    def enable_key_rotation_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
+        """
+        Enables automatic rotation for a symmetric customer-managed KMS key.
+        Uses a custom rotation period (days) from args; valid range is 90–2560.
+        Args:
+            client (BotoClient): The boto3 client for KMS service.
+            args (Dict[str, Any]): Command arguments including key id and rotation period in days.
+
+        Returns:
+            CommandResults: Results of the operation with updated key rotation settings.
+        """
+        key_id = args.get("key_id", "")
+        rot_period = arg_to_number(args.get("rotation_period_in_days"))
+        kwargs = {"KeyId": key_id, "RotationPeriodInDays": rot_period}
+        remove_nulls_from_dictionary(kwargs)
+        print_debug_logs(client, f"EnableKeyRotation params: {kwargs}")
+
+        try:
+            resp = client.enable_key_rotation(**kwargs)
+            status = resp.get("ResponseMetadata", {}).get("HTTPStatusCode")
+            if status in (HTTPStatus.OK, HTTPStatus.NO_CONTENT):
+                hr = f"Enabled automatic rotation for KMS key '{key_id}' (rotation period: {rot_period} days)."
+                return CommandResults(readable_output=hr, raw_response=resp)
+            return AWSErrorHandler.handle_response_error(resp)
+
+        except ClientError as e:
+            return AWSErrorHandler.handle_client_error(e)
+
+        except Exception as e:
+            raise DemistoException(f"Error enabling key rotation for '{key_id}': {str(e)}")
+
+
+class ELB:
+    service = AWSServices.ELB
+
+    @staticmethod
+    def modify_load_balancer_attributes_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
+        """
+        Modifies Classic ELB attributes:
+        Cross-Zone Load Balancing, Access Logs, Connection Draining, Connection Settings, AdditionalAttributes.
+        Sends only sub-blocks provided by the user.
+        Args:
+            client (BotoClient): The boto3 client for ELB service.
+            args (Dict[str, Any]): Command arguments including load balancer name and setting values:
+                - cross-zone load balancing (enabled).
+                - access logs (enabled, s3 bucket name, s3 bucket prefix, emit interval).
+                - connection draining (enabled, timeout).
+                - connection settings (idle timeout).
+                - desync mitigation mode (monitor, defensive, strictest).
+
+        Returns:
+            CommandResults: Results of the operation with updated load balancer attributes.
+        """
+        lb_name = args.get("load_balancer_name", "")
+        attrs: Dict[str, Any] = {}
+        # Cross-zone
+        ELB.add_block_if_any(
+            block_name="CrossZoneLoadBalancing",
+            block={"Enabled": arg_to_bool_or_none(args.get("cross_zone_load_balancing_enabled"))},
+            target=attrs,
+        )
+        # Access logs
+        ELB.add_block_if_any(
+            block_name="AccessLog",
+            block={
+                "Enabled": arg_to_bool_or_none(args.get("access_log_enabled")),
+                "S3BucketName": args.get("access_log_s3_bucket_name"),
+                "S3BucketPrefix": args.get("access_log_s3_bucket_prefix"),
+                "EmitInterval": arg_to_number(args.get("access_log_interval")),
+            },
+            target=attrs,
+        )
+        # Connection draining
+        ELB.add_block_if_any(
+            block_name="ConnectionDraining",
+            block={
+                "Enabled": arg_to_bool_or_none(args.get("connection_draining_enabled")),
+                "Timeout": arg_to_number(args.get("connection_draining_timeout")),
+            },
+            target=attrs,
+        )
+        # Connection settings (idle timeout)
+        ELB.add_block_if_any(
+            block_name="ConnectionSettings",
+            block={"IdleTimeout": arg_to_number(args.get("connection_settings_idle_timeout"))},
+            target=attrs,
+        )
+        # Additional attributes (JSON list of {Key,Value})
+        # Only one additional attribute is supported on classic ELB, Therefore we directly set the key and value
+        if desync_mitigation_mode := args.get("desync_mitigation_mode"):
+            attrs["AdditionalAttributes"] = [{"Key": "elb.http.desyncmitigationmode", "Value": desync_mitigation_mode}]
+
+        kwargs = {"LoadBalancerName": lb_name, "LoadBalancerAttributes": attrs}
+        remove_nulls_from_dictionary(kwargs)
+        print_debug_logs(client, f"ModifyLoadBalancerAttributes params: {kwargs}")
+
+        try:
+            resp = client.modify_load_balancer_attributes(**kwargs)
+            status = resp.get("ResponseMetadata", {}).get("HTTPStatusCode")
+            if status == HTTPStatus.OK:
+                lb_attrs = resp.get("LoadBalancerAttributes", {})
+                out = {"LoadBalancerName": lb_name, "LoadBalancerAttributes": lb_attrs}
+                hr = ELB.format_elb_modify_attributes_hr(lb_name, resp)
+                return CommandResults(
+                    readable_output=hr,
+                    outputs_prefix="AWS.ELB.LoadBalancer",
+                    outputs_key_field="LoadBalancerName",
+                    outputs=out,
+                    raw_response=resp,
+                )
+
+            return AWSErrorHandler.handle_response_error(resp)
+
+        except ClientError as e:
+            return AWSErrorHandler.handle_client_error(e)
+
+        except Exception as e:
+            raise DemistoException(f"Error modifying load balancer '{lb_name}': {str(e)}")
+
+    @staticmethod
+    def add_block_if_any(block_name: str, block: dict, target: dict) -> None:
+        """
+        Adds a block to the target dictionary if the value is not empty.
+        Args:
+            block_name (str): The name of the block to add.
+            block (dict): The block to add.
+            target (dict): The target dictionary to add the block to.
+        Returns:
+            None
+        """
+        remove_nulls_from_dictionary(block)
+        if block:
+            target[block_name] = block
+
+    @staticmethod
+    def format_elb_modify_attributes_hr(lb_name: str, resp: dict) -> str:
+        """
+        Minimal formatter:
+        - prints "Updated attributes for <lb>"
+        - then one table per attribute block under LoadBalancerAttributes
+        Args:
+            lb_name (str): The name of the Classic ELB.
+            resp (dict): The response from the modify_load_balancer_attributes API call.
+        Returns:
+            str: The formatted output.
+        """
+        lb_attrs = resp.get("LoadBalancerAttributes", {})
+        sections: list[str] = [f"### Updated attributes for Classic ELB {lb_name}"]
+
+        for attr_name, attr_values in lb_attrs.items():
+            title = attr_name
+            if isinstance(attr_values, dict):
+                sections.append(tableToMarkdown(title, [attr_values], removeNull=True))
+            elif attr_values and isinstance(attr_values, list):
+                for attr_value in attr_values:
+                    sections.append(tableToMarkdown(title, attr_value, removeNull=True))
+            else:
+                sections.append(tableToMarkdown(title, [{"Value": attr_values}], removeNull=True))
+        return "\n\n".join(sections)
+
+
 class Lambda:
     service = AWSServices.LAMBDA
 
