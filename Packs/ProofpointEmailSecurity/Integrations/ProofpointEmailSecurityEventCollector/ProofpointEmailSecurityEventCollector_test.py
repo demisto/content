@@ -105,7 +105,7 @@ def test_fetch_events(mocker, connection):
     assert events[1]["_time"] == "2023-08-14T11:24:12.147573+00:00"
     assert events[1]["event_type"] == "message"
 
-    debug_logs.assert_any_call("The fetched events ids are: 1, 2")
+    debug_logs.assert_any_call("[message] Fetched events IDs: 1, 2.")
     # Now we want to freeze the time, so we will get the next interval
     with freeze_time(CURRENT_TIME):
         debug_logs = mocker.patch.object(demisto, "debug")
@@ -117,7 +117,7 @@ def test_fetch_events(mocker, connection):
     assert events[0]["_time"] == "2023-08-12T13:24:11.147573+00:00"
     assert events[0]["event_type"] == "message"
 
-    debug_logs.assert_any_call("The fetched events ids are: 3")
+    debug_logs.assert_any_call("[message] Fetched events IDs: 3.")
 
 
 @freeze_time("2023-08-16T13:24:12.147573+0100")

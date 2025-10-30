@@ -2,6 +2,7 @@ import demistomock as demisto
 from UpdateIntegrationInstanceState import update_integration_instance_state
 from CommonServerPython import EntryType
 
+
 def test_update_integration_instance_state(mocker):
     """
     Given:
@@ -34,7 +35,7 @@ def test_update_integration_instance_state(mocker):
                         }
                     ]
                 }
-            }
+            },
         }
     ]
 

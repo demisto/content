@@ -30,6 +30,7 @@ DEFAULT_GET_EVENTS_LIMIT = 10
 DATE_FILTER_FORMAT = "%Y-%m-%dT%H:%M:%S%z"
 PING_TIMEOUT = 60  # Timeout for keepalive pings in seconds
 CLOSE_TIMEOUT = 60  # Timeout for closing the connection in seconds
+RECEIVE_TIMEOUT = 1  # Timeout for receiving events in seconds
 
 
 class EventConnection:
@@ -93,7 +94,7 @@ class EventConnection:
                     time.sleep(delay)
 
                 else:
-                    demisto.error(f"[{self.event_type}] Fatal connection status error: {e!s}.")
+                    demisto.error(f"[{self.event_type}] Connection status error: {e!s}.")
                     raise
 
             except Exception as e:
@@ -233,61 +234,55 @@ def fetch_events(
         list[dict]: A list of events
     """
     event_type = connection.event_type
-    demisto.debug(f"Starting to fetch events of type {event_type}")
+    demisto.debug(f"[{event_type}] Starting to fetch events.")
     events: list[dict] = []
     event_ids = set()
     fetch_start_time = datetime.utcnow()
-    demisto.info(f"in {event_type=}, preparing to acquire lock & recv.")
+
+    demisto.info(f"[{event_type}] Preparing to acquire lock & recv.")
     with connection.lock:
         while not is_interval_passed(fetch_start_time, fetch_interval):
             try:
-                event = json.loads(connection.connection.recv(timeout=1))
-                event_id = event.get("id", event.get("guid"))
-                event_ts = event.get("ts")
-                if not event_ts:
-                    # if timestamp is not in the response, use the current time
-                    demisto.debug(f"Event {event_id} does not have a timestamp, using current time.")
-                    event_ts = datetime.utcnow().isoformat()
-                date = dateparser.parse(event_ts)
-                if not date:
-                    demisto.debug(f"Event {event_id} has an invalid timestamp, using current time.")
-                    # if timestamp is not in correct format, use the current time
-                    date = datetime.utcnow()
-                # the `ts` parameter is not always in UTC, so we need to convert it
-                event["_time"] = date.astimezone(tz.tzutc()).isoformat()
-                event["event_type"] = event_type
+                event = receive_event(connection, timeout=RECEIVE_TIMEOUT)
                 events.append(event)
-                event_ids.add(event_id)
+                event_ids.add(event.get("id", event.get("guid")))
+
             except TimeoutError:
-                demisto.debug(f"Timeout while waiting for the event on {connection.event_type}, breaking.")
+                # This exception typically indicates no new events from websocket stream
+                demisto.debug(f"[{event_type}] Timeout while waiting for a new event in stream. Breaking.")
                 break
+
             except exceptions.ConnectionClosedError:
-                demisto.error(f"[{connection.event_type}] Connection closed with error. Attempting to reconnect...")
-                connection.reconnect()
+                demisto.error(f"[{event_type}] Connection closed with error. Starting recovery.")
+                recover_after_disconnection(connection, events, event_ids, reconnect=True)
                 continue
+
             except exceptions.ConnectionClosedOK:
-                # `ConnectionClosedOK` exception from archive websocket means event fetching completed successfully
+                # This exception from archive websocket means event fetching completed successfully
                 if connection.is_to_archive:
-                    demisto.info(f"[{connection.event_type}] Connection closed with OK status. All archived events were fetched.")
+                    demisto.info(f"[{event_type}] Connection closed with OK status. All archived events were fetched.")
                     break
-                demisto.error(f"[{connection.event_type}] Connection closed with OK status. Attempting to reconnect...")
-                connection.reconnect()
+                demisto.error(f"[{event_type}] Connection closed with OK status. Starting recovery.")
+                recover_after_disconnection(connection, events, event_ids, reconnect=True)
                 continue
+
             except Exception as e:
-                demisto.error(f"[{connection.event_type}] Got general error in fetch_events {e}")
-                events.extend(integration_context.get(connection.event_type, []))
-                integration_context[connection.event_type] = events  # update events in context in case of fail
+                demisto.error(f"[{event_type}] Got general error in fetch_events. Starting recovery. Error: {e}")
+                recover_after_disconnection(connection, events, event_ids, reconnect=False)
+                events.extend(integration_context.get(event_type, []))
+                integration_context[event_type] = events  # update events in context in case of fail
                 integration_context["last_run_results"] = f"{e!s} \nThe error happened at {datetime.now().astimezone(tz.tzutc())}"
                 if write_to_integration_context:
                     set_integration_context(integration_context)
                 raise DemistoException(str(e))
-    demisto.info(f"in {event_type=}, released the lock and finished recv.")
+
+    demisto.info(f"[{event_type}] Released the lock and finished recv.")
     num_events = len(events)
     last_event_time = None
     if events:
         last_event_time = events[-1].get("_time")
-    demisto.debug(f"Fetched {num_events} events of type {event_type} with {last_event_time=}")
-    demisto.debug("The fetched events ids are: " + ", ".join([str(event_id) for event_id in event_ids]))
+    demisto.debug(f"[{event_type}] Fetched {num_events} events with {last_event_time=}")
+    demisto.debug(f"[{event_type}] Fetched events IDs: {', '.join([str(event_id) for event_id in event_ids])}.")
     if write_to_integration_context:
         fetch_end_time = datetime.utcnow()
         set_the_integration_context(
@@ -296,6 +291,78 @@ def fetch_events(
         )
     should_skip_sleeping.append(True)
     return events
+
+
+def receive_event(connection: EventConnection, timeout: int = RECEIVE_TIMEOUT) -> dict:
+    """
+    Processes a single event by parsing its timestamp and adding metadata.
+
+    Args:
+        connection (EventConnection): The connection to the event type.
+        event_type (str): The type of the event.
+
+    Returns:
+        dict: The processed event with '_time' and 'event_type' fields.
+    """
+    event = json.loads(connection.connection.recv(timeout=timeout))
+    event_id = event.get("id", event.get("guid"))
+    event_ts = event.get("ts")
+    if not event_ts:
+        # if timestamp is not in the response, use the current time
+        demisto.debug(f"Event {event_id} does not have a timestamp, using current time.")
+        event_ts = datetime.utcnow().isoformat()
+    date = dateparser.parse(event_ts)
+    if not date:
+        demisto.debug(f"Event {event_id} has an invalid timestamp, using current time.")
+        # if timestamp is not in correct format, use the current time
+        date = datetime.utcnow()
+    # the `ts` parameter is not always in UTC, so we need to convert it
+    event["_time"] = date.astimezone(tz.tzutc()).isoformat()
+    event["event_type"] = connection.event_type
+    return event
+
+
+def receive_events_after_disconnection(connection: EventConnection):
+    """Receive events after disconnection.
+
+    Args:
+        connection (EventConnection): The connection to the event type.
+
+    Returns:
+        list[dict]: A list of events received after disconnection.
+    """
+    events = []
+    demisto.info(f"[{connection.event_type}] Trying to receive in-transit events following disconnection.")
+    while True:
+        try:
+            event = receive_event(connection)
+            events.append(event)
+        except Exception as e:
+            demisto.debug(f"[{connection.event_type}] Terminating post-disconnection receive loop after error: {e}")
+            break
+    demisto.info(f"[{connection.event_type}] Returning {len(events)} in-transit events following disconnection.")
+    return events
+
+
+def recover_after_disconnection(connection: EventConnection, events: list[dict], event_ids: set[str], reconnect: bool = True):
+    """Recover after disconnection by attempting to receive in-transit events and (optionally) reconnecting.
+
+    Args:
+        connection (EventConnection): The connection to the event type.
+        events (list[dict]): The list of events.
+        event_ids (set[str]): The set of event ids.
+        reconnect (bool, optional): Whether to reconnect. Defaults to True.
+    """
+    demisto.debug(f"[{connection.event_type}] Recovering after disconnection.")
+    in_transit_events = receive_events_after_disconnection(connection)
+    events.extend(in_transit_events)
+    event_ids.update([event.get("id", event.get("guid")) for event in in_transit_events])
+    demisto.debug(
+        f"[{connection.event_type}] Received {len(in_transit_events)} in-transit events and event ids after disconnection."
+    )
+    if reconnect:
+        demisto.info(f"[{connection.event_type}] Attempting to reconnect after disconnection.")
+        connection.reconnect()
 
 
 def test_module(host: str, cluster_id: str, api_key: str):
