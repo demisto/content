@@ -36,12 +36,12 @@ password: Specify the password to log in to Saviynt Identity Cloud.
 ### Configure Cortex XSIAM
 
 1. Navigate to **Settings** -> **Data Sources**.
-2. On the top right corner, click on **+ Add Data Source**.
-3. Search for Saviynt Enterprise Identity Cloud and click on the _Connect_ button.
+2. On the top right corner, click **+ Add Data Source**.
+3. Search for Saviynt Enterprise Identity Cloud and click _Connect_.
 4. Under _Connect_, insert the name for the instance.
 5. Insert the **Server URL**.
 6. Insert the **Username**.
 7. Insert the **Password**.
-8. Under _Collect_, select _Fetch events_ checkbox.
+8. Under _Collect_, select _Fetch events_ checkbox, and click **Connect**.
 
 </~XSIAM>
