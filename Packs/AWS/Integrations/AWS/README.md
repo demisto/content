@@ -1477,7 +1477,7 @@ Get The latest AMI.
 | image_ids | The image IDs separated by ','. | Optional | 
 | include_deprecated | Specifies whether to include deprecated AMIs. Possible values are: true, false. | Optional | 
 | include_disabled | Specifies whether to include disabled AMIs. Possible values are: true, false. | Optional | 
-| max_results | The maximum number of items to return for this request. To get the next page of items, make another request with the token returned in the output. | Optional | 
+| limit | The maximum number of items to return for this request. To get the next page of items, make another request with the token returned in the output. | Optional | 
 | next_token | The token returned from a previous paginated request. Pagination continues from the end of the items returned by the previous request. | Optional | 
 
 #### Context Output
@@ -1583,7 +1583,7 @@ Gets the public IP addresses that have been discovered by IPAM.
 | ipam_resource_discovery_id | An IPAM resource discovery ID. | Required | 
 | address_region | The Amazon Web Services region for the IP address. | Required | 
 | filters | One or more filters. Filters must be separated by a semicolon (;) and specified using the format "key=key,values=val". Refer to the AWS documentation for detailed filter options. | Optional | 
-| max_results | The maximum number of results to return in a single call. Specify a value between 5 and 1000. | Optional | 
+| limit | The maximum number of results to return in a single call. Specify a value between 5 and 1000. | Optional | 
 | next_token | The token for the next set of results. | Optional | 
 
 #### Context Output

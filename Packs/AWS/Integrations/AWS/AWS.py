@@ -1865,7 +1865,7 @@ class EC2:
             client (BotoClient): The initialized Boto3 EC2 client.
             args (Dict[str, Any]): Command arguments, typically containing:
                   Expected keys include 'executable_by', 'filters', 'owners', 'image_id',
-                  'include_deprecated', 'include_disabled', 'max_results', and 'next_token'.
+                  'include_deprecated', 'include_disabled', 'limit', and 'next_token'.
 
         Returns:
             CommandResults: An object containing the raw image details as outputs,
@@ -1878,7 +1878,7 @@ class EC2:
             "ImageIds": parse_resource_ids(args.get("image_ids")) if args.get("image_ids") else None,
             "IncludeDeprecated": arg_to_bool_or_none(args.get("include_deprecated")),
             "IncludeDisabled": arg_to_bool_or_none(args.get("include_disabled")),
-            "MaxResults": args.get("max_results"),
+            "MaxResults": args.get("limit"),
             "NextToken": args.get("next_token"),
         }
 
@@ -1974,7 +1974,7 @@ class EC2:
                     outputs_key_field="VpcId",
                     readable_output=(
                         tableToMarkdown("AWS EC2 ACL Entries", [entry for entry in network_acl.get("Entries")], removeNull=True)
-                        + tableToMarkdown("AWS EC2 Instance ACL", readable_data, removeNull=True)
+                        + tableToMarkdown("The AWS EC2 Instance ACL that the entries belong to", readable_data, removeNull=True)
                     ),
                 )
             raise DemistoException(
@@ -2001,7 +2001,7 @@ class EC2:
         kwargs = {
             "IpamResourceDiscoveryId": args.get("ipam_resource_discovery_id"),
             "AddressRegion": args.get("address_region"),
-            "MaxResults": args.get("max_results"),
+            "MaxResults": args.get("limit"),
             "Filters": parse_filter_field(args.get("filters")),
             "NextToken": args.get("next_token")
         }
