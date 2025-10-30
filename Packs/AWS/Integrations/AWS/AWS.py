@@ -74,7 +74,7 @@ def process_instance_data(instance: Dict[str, Any]) -> Dict[str, Any]:
     return instance_data
 
 
-def build_pagination_kwargs(args: Dict[str, Any]) -> Dict[str, Any]:
+def build_pagination_kwargs(args: Dict[str, Any], minimum_limit: int = 0) -> Dict[str, Any]:
     """
     Build pagination parameters for AWS API calls with proper validation and limits.
 
@@ -101,8 +101,8 @@ def build_pagination_kwargs(args: Dict[str, Any]) -> Dict[str, Any]:
         raise ValueError(f"Invalid limit parameter: {limit_arg}. Must be a valid number.") from e
 
     # Validate limit constraints
-    if limit is not None and limit <= 0:
-        raise ValueError("Limit must be greater than 0")
+    if limit is not None and limit <= minimum_limit:
+        raise ValueError(f"Limit must be greater than {minimum_limit}")
 
     # AWS API constraints - most services have a max of 1000 items per request
     if limit is not None and limit > MAX_LIMIT_VALUE:
@@ -1834,6 +1834,204 @@ class EC2:
         except Exception as e:
             raise DemistoException(f"Error: {str(e)}")
 
+    @staticmethod
+    def describe_vpcs_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Describes one or more of your VPCs.
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including VPC IDs
+
+        Returns:
+            CommandResults: Results of the operation with VPC information
+        """
+        kwargs = {}
+        data = []
+        if args.get("filters"):
+            kwargs.update({"Filters": parse_filter_field(args.get("filters"))})
+        if args.get("vpc_ids"):
+            kwargs.update({"VpcIds": parse_resource_ids(args.get("vpc_ids"))})
+
+        response = client.describe_vpcs(**kwargs)
+
+        if len(response["Vpcs"]) == 0:
+            return CommandResults(readable_output="No VPCs were found.")
+        for i, vpc in enumerate(response["Vpcs"]):
+            data.append(
+                {
+                    "CidrBlock": vpc["CidrBlock"],
+                    "DhcpOptionsId": vpc["DhcpOptionsId"],
+                    "State": vpc["State"],
+                    "VpcId": vpc["VpcId"],
+                    "InstanceTenancy": vpc["InstanceTenancy"],
+                    "IsDefault": vpc["IsDefault"],
+                    "Region": args["region"],
+                }
+            )
+
+            if "Tags" in vpc:
+                for tag in vpc["Tags"]:
+                    data[i].update({tag["Key"]: tag["Value"]})
+
+        try:
+            output = json.dumps(response["Vpcs"], cls=DatetimeEncoder)
+            raw = json.loads(output)
+            raw[0].update({"Region": args["region"]})
+        except ValueError as e:
+            raise DemistoException(f"Could not decode/encode the raw response - {e}")
+        return CommandResults(
+            outputs=raw,
+            outputs_prefix="AWS.EC2.Vpcs",
+            outputs_key_field="VpcId",
+            readable_output=tableToMarkdown(
+                "AWS EC2 Vpcs",
+                data,
+                headers=["VpcId", "IsDefault", "CidrBlock", "DhcpOptionsId", "State", "InstanceTenancy", "Region"],
+                removeNull=True,
+            ),
+            raw_response=response,
+        )
+
+    @staticmethod
+    def describe_subnets_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Describes one or more of your subnets.
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including subnet IDs
+
+        Returns:
+            CommandResults: Results of the operation with subnet information
+        """
+        kwargs = {}
+        data = []
+        if args.get("filters"):
+            kwargs.update({"Filters": parse_filter_field(args.get("filters"))})
+        if args.get("subnet_ids"):
+            kwargs.update({"SubnetIds": parse_resource_ids(args.get("subnet_ids"))})
+
+        response = client.describe_subnets(**kwargs)
+
+        if len(response["Subnets"]) == 0:
+            return CommandResults(readable_output="No subnets were found.")
+        for i, subnet in enumerate(response["Subnets"]):
+            data.append(
+                {
+                    "AvailabilityZone": subnet["AvailabilityZone"],
+                    "AvailableIpAddressCount": subnet["AvailableIpAddressCount"],
+                    "CidrBlock": subnet.get("CidrBlock", ""),
+                    "DefaultForAz": subnet["DefaultForAz"],
+                    "State": subnet["State"],
+                    "SubnetId": subnet["SubnetId"],
+                    "VpcId": subnet["VpcId"],
+                    "Region": args["region"],
+                }
+            )
+
+            if "Tags" in subnet:
+                for tag in subnet["Tags"]:
+                    data[i].update({tag["Key"]: tag["Value"]})
+
+        try:
+            output = json.dumps(response["Subnets"], cls=DatetimeEncoder)
+            raw = json.loads(output)
+            raw[0].update({"Region": args["region"]})
+        except ValueError as e:
+            raise DemistoException(f"Could not decode/encode the raw response - {e}")
+        return CommandResults(
+            outputs=raw,
+            outputs_prefix="AWS.EC2.Subnets",
+            outputs_key_field="SubnetId",
+            readable_output=tableToMarkdown(
+                "AWS EC2 Subnets",
+                data,
+                headers=[
+                    "SubnetId",
+                    "AvailabilityZone",
+                    "AvailableIpAddressCount",  # noqa: E501
+                    "CidrBlock",
+                    "DefaultForAz",
+                    "State",
+                    "VpcId",
+                    "Region",
+                ],
+                removeNull=True,
+            ),
+            raw_response=response,
+        )
+
+    @staticmethod
+    def describe_ipam_resource_discoveries_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """Describes one or more IPAM resource discoveries.
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including filters, max results, next token, and IPAM resource discovery IDs
+
+        Returns:
+            CommandResults: Results of the operation with IPAM resource discovery information
+        """
+        kwargs = {
+            "Filters": parse_filter_field(args.get("filters")),
+            "IpamResourceDiscoveryIds": argToList(args.get("ipam_resource_discovery_ids")),
+        }
+        if not args.get("ipam_resource_discovery_ids"):
+            pagination_kwargs = build_pagination_kwargs(args, minimum_limit=5)
+            kwargs.update(pagination_kwargs)
+
+        remove_nulls_from_dictionary(kwargs)
+
+        response = client.describe_ipam_resource_discoveries(**kwargs)
+
+        if len(response["IpamResourceDiscoveries"]) == 0:
+            return CommandResults(readable_output="No Ipam Resource Discoveries were found.")
+
+        human_readable = tableToMarkdown("Ipam Resource Discoveries", response["IpamResourceDiscoveries"], removeNull=True)
+        command_results = CommandResults(
+            outputs_prefix="AWS.EC2.IpamResourceDiscoveries",
+            outputs_key_field="IpamResourceDiscoveryId",
+            outputs=response["IpamResourceDiscoveries"],
+            raw_response=response,
+            readable_output=human_readable,
+        )
+        return command_results
+
+    @staticmethod
+    def describe_ipam_resource_discovery_associations_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """Describes one or more IPAM resource discovery associations.
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including filters, max results, next token, and IPAM resource discovery IDs
+
+        Returns:
+            CommandResults: Results of the operation with IPAM resource discovery association information
+        """
+        kwargs = {
+            "Filters": parse_filter_field(args.get("filters")),
+            "IpamResourceDiscoveryAssociationIds": argToList(args.get("ipam_resource_discovery_association_ids")),
+        }
+        if not args.get("ipam_resource_discovery_association_ids"):
+            pagination_kwargs = build_pagination_kwargs(args, minimum_limit=5)
+            kwargs.update(pagination_kwargs)
+
+        remove_nulls_from_dictionary(kwargs)
+
+        response = client.describe_ipam_resource_discovery_associations(**kwargs)
+
+        if len(response["IpamResourceDiscoveryAssociations"]) == 0:
+            return CommandResults(readable_output="No Ipam Resource Discovery Associations were found.")
+
+        human_readable = tableToMarkdown(
+            "Ipam Resource Discovery Associations", response["IpamResourceDiscoveryAssociations"], removeNull=True
+        )  # noqa: E501
+        command_results = CommandResults(
+            outputs_prefix="AWS.EC2.IpamResourceDiscoveryAssociations",
+            outputs_key_field="IpamResourceDiscoveryId",
+            outputs=response["IpamResourceDiscoveryAssociations"],
+            raw_response=response,
+            readable_output=human_readable,
+        )
+        return command_results
+
 
 class EKS:
     service = AWSServices.EKS
@@ -2984,6 +3182,10 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-ec2-create-snapshot": EC2.create_snapshot_command,
     "aws-ec2-modify-snapshot-permission": EC2.modify_snapshot_permission_command,
     "aws-ec2-subnet-attribute-modify": EC2.modify_subnet_attribute_command,
+    "aws-ec2-vpcs-describe": EC2.describe_vpcs_command,
+    "aws-ec2-subnets-describe": EC2.describe_subnets_command,
+    "aws-ec2-ipam-resource-discoveries-describe": EC2.describe_ipam_resource_discoveries_command,
+    "aws-ec2-ipam-resource-discovery-associations-describe": EC2.describe_ipam_resource_discovery_associations_command,
     "aws-ec2-set-snapshot-to-private-quick-action": EC2.modify_snapshot_permission_command,
     "aws-eks-cluster-config-update": EKS.update_cluster_config_command,
     "aws-eks-describe-cluster": EKS.describe_cluster_command,
@@ -3051,6 +3253,10 @@ REQUIRED_ACTIONS: list[str] = [
     "ec2:ModifySnapshotAttribute",
     "ec2:RevokeSecurityGroupIngress",
     "ec2:CreateSnapshot",
+    "ec2:DescribeVpcs",
+    "ec2:DescribeSubnets",
+    "ec2:DescribeIpamResourceDiscoveries",
+    "ec2:DescribeIpamResourceDiscoveryAssociations",
     "eks:DescribeCluster",
     "eks:AssociateAccessPolicy",
     "ec2:CreateSecurityGroup",
