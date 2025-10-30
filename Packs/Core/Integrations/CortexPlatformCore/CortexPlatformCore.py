@@ -199,6 +199,7 @@ class FilterBuilder:
 
 FilterType = FilterBuilder.FilterType
 
+
 def replace_substring(data: dict | str, original: str, new: str) -> str | dict:
     """
     Replace all occurrences of a substring in the keys of a dictionary with a new substring or in a string.
@@ -313,8 +314,6 @@ class Client(CoreClient):
             json_data=request_data,
         )
 
-        return reply
-
 
 def search_asset_groups_command(client: Client, args: dict) -> CommandResults:
     """
@@ -348,23 +347,24 @@ def search_asset_groups_command(client: Client, args: dict) -> CommandResults:
         limit=limit,
         sort_field="XDM__ASSET_GROUP__LAST_UPDATE_TIME",
     )
-    
+
     response = client.get_webapp_data(request_data)
     reply = response.get("reply", {})
     data = reply.get("DATA", [])
-    
+
     data = [
         {(k.replace("XDM__ASSET_GROUP__", "") if k.startswith("XDM__ASSET_GROUP__") else k).lower(): v for k, v in item.items()}
         for item in data
     ]
-    
+
     return CommandResults(
         readable_output=tableToMarkdown("AssetGroups", data, headerTransform=string_to_table_header),
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.AssetGroups",
         outputs_key_field="id",
         outputs=data,
-        raw_response=response
+        raw_response=response,
     )
+
 
 def build_webapp_request_data(
     table_name: str,

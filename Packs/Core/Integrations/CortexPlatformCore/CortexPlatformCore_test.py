@@ -1780,6 +1780,7 @@ class TestFilterBuilder:
         assert isinstance(start_time, int)
         assert isinstance(end_time, int)
 
+
 def test_search_asset_groups_command_success_with_all_filters(mocker):
     """
     GIVEN:
