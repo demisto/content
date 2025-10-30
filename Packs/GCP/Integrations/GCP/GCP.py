@@ -160,6 +160,13 @@ COMMAND_REQUIREMENTS: dict[str, tuple[GCPServices, list[str]]] = {
     "gcp-compute-instance-labels-set": (GCPServices.COMPUTE, ["compute.instances.setLabels"]),
     "gcp-storage-bucket-policy-delete": (GCPServices.STORAGE, ["storage.buckets.getIamPolicy", "storage.buckets.setIamPolicy"]),
     "gcp-storage-bucket-metadata-update": (GCPServices.STORAGE, ["storage.buckets.update"]),
+    "gcp-compute-network-get": (GCPServices.COMPUTE, ["compute.networks.get"]),
+    "gcp-compute-image-get": (GCPServices.COMPUTE, ["compute.images.get"]),
+    "gcp-compute-instance-group-get": (GCPServices.COMPUTE, ["compute.instanceGroups.get"]),
+    "gcp-compute-region-get": (GCPServices.COMPUTE, ["compute.regions.get"]),
+    "gcp-compute-zone-get": (GCPServices.COMPUTE, ["compute.zone.get"]),
+    "gcp-compute-networks-list": (GCPServices.COMPUTE, ["compute.networks.list"]),
+    "gcp-compute-network-insert": (GCPServices.COMPUTE, ["compute.networks.insert"]),
     "gcp-container-cluster-security-update": (
         GCPServices.CONTAINER,
         ["container.clusters.update", "container.clusters.get", "container.clusters.list"],
@@ -1471,6 +1478,267 @@ def get_credentials(args: dict, params: dict) -> Credentials:
         raise DemistoException(f"Failed to authenticate with GCP: {str(e)}")
 
 
+def gcp_compute_network_get_command(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Returns the specified network.
+    Args:
+        creds (Credentials): GCP credentials with admin directory security scope.
+        args (dict[str, Any]): _description_
+    Returns:
+        CommandResults: _description_
+    """
+    project = args.get("project_id")
+    network = args.get("network")
+
+    compute = GCPServices.COMPUTE.build(creds)
+    response = compute.networks().get(project=project, network=network).execute()
+
+    data_res = {"name": response.get("name"), "id": response.get("id")}
+
+    headers = ["id", "name"]
+
+    readable_output = tableToMarkdown(f"GCP network {network}", data_res, headers=headers, removeNull=True)
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="GCP.Compute.Networks",
+        outputs_key_field="id",
+        outputs=response,
+        raw_response=response,
+    )
+
+
+def gcp_compute_image_get(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Returns the specified image.
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): _description_
+    Returns:
+        CommandResults: _description_
+    """
+    project = args.get("project_id")
+    image = args.get("image")
+
+    compute = GCPServices.COMPUTE.build(creds)
+    response = compute.images().get(project=project, image=image).execute()
+
+    data_res = {"id": response.get("id"), "name": response.get("name")}
+    headers = ["id", "name"]
+
+    readable_output = tableToMarkdown(f"GCP images {image}", data_res, headers=headers, removeNull=True)
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="GCP.Compute.Images",
+        outputs_key_field="id",
+        outputs=response,
+    )
+
+
+def gcp_compute_region_get(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Get a specified region resource.
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): _description_
+    Returns:
+        CommandResults: _description_
+    """
+    project = args.get("project_id")
+    region = args.get("region")
+
+    compute = GCPServices.COMPUTE.build(creds)
+    response = compute.regions().get(project=project, region=region).execute()
+
+    data_res = {"id": response.get("id"), "name": response.get("name"), "status": response.get("status")}
+    headers = ["id", "name", "status"]
+
+    readable_output = tableToMarkdown(f"GCP region {region}", data_res, headers=headers, removeNull=True)
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="GCP.Compute.Regions",
+        outputs_key_field="id",
+        outputs=response,
+    )
+
+
+def gcp_compute_instance_group_get(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Returns the specified instance group.
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): _description_
+    Returns:
+        CommandResults: _description_
+    """
+    project = args.get("project_id")
+    instance_group = args.get("instanceGroup")
+    zone = args.get("zone")
+
+    compute = GCPServices.COMPUTE.build(creds)
+    response = compute.instanceGroups().get(project=project, zone=zone, instanceGroup=instance_group).execute()
+
+    data_res = {
+        "id": response.get("id"),
+        "name": response.get("name"),
+        "zone": response.get("zone"),
+        "network": response.get("network"),
+    }
+    headers = ["id", "name", "zone", "network"]
+
+    readable_output = tableToMarkdown(f"GCP instanceGroups {instance_group}", data_res, headers=headers, removeNull=True)
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="GCP.Compute.InstanceGroups",
+        outputs_key_field="id",
+        outputs=response,
+    )
+
+
+def gcp_compute_zone_get(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Get a specified zone resource.
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): _description_
+    Returns:
+        CommandResults: _description_
+    """
+    project = args.get("project_id")
+    zone = args.get("zone")
+    compute = GCPServices.COMPUTE.build(creds)
+    response = compute.zones().get(project=project, zone=zone).execute()
+    data_res = {
+        "status": response.get("status"),
+        "name": response.get("name"),
+        "id": response.get("id"),
+    }
+
+    headers = ["status", "id", "name"]
+
+    readable_output = tableToMarkdown(f"GCP zone {zone}", data_res, headers=headers, removeNull=True)
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="gcp.compute.Zones",
+        outputs_key_field="id",
+        outputs=response,
+    )
+
+
+def gcp_compute_network_insert(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Creates a subnet-mode network in the specified project using the data provided.
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): Arguments including:
+            - name: Name of the network
+            - description: Optional description
+            - autoCreateSubnetworks: "true"/"false" (optional, defaults to True)
+            - routingConfigRoutingMode: "REGIONAL" or "GLOBAL" (optional)
+            - project_id: GCP project ID
+    Returns:
+        CommandResults: The result of the network creation operation.
+    """
+    config = {}
+
+    # Name (required)
+    if args.get("name"):
+        name = args.get("name", "").lower()
+        config["name"] = name
+    else:
+        raise ValueError("The 'name' argument is required to create a network.")
+
+    # Description (optional)
+    if args.get("description"):
+        config["description"] = args.get("description")
+
+    # Auto-create subnets (default to True)
+    auto_create_sub_networks = args.get("autoCreateSubnetworks")
+    if auto_create_sub_networks is not None:
+        if isinstance(auto_create_sub_networks, str):
+            auto_create_sub_networks = auto_create_sub_networks.lower() == "true"
+        config["autoCreateSubnetworks"] = auto_create_sub_networks
+    else:
+        config["autoCreateSubnetworks"] = True  # default to subnet-mode network
+
+    # Optional routing config
+    if args.get("routingConfigRoutingMode"):
+        config["routingConfig"] = {"routingMode": args["routingConfigRoutingMode"]}
+
+    # Project ID
+    project = args.get("project_id")
+    # Build the compute service
+    compute = GCPServices.COMPUTE.build(creds)
+
+    # Execute the insert network request
+    response = compute.networks().insert(project=project, body=config).execute()
+
+    # Prepare output
+    data_res = {
+        "status": response.get("status"),
+        "kind": response.get("kind"),
+        "name": response.get("name"),
+        "id": response.get("id"),
+        "progress": response.get("progress"),
+        "operationType": response.get("operationType"),
+    }
+
+    headers = ["status", "kind", "id", "progress", "operationType", "name"]
+    readable_output = tableToMarkdown("Google Cloud Compute Network Insert", data_res, headers=headers, removeNull=True)
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="GCP.Compute.Operations",
+        outputs_key_field="id",
+        outputs=response,
+    )
+
+
+def gcp_compute_networks_list(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Retrieves the list of networks available to the specified project.
+    """
+    project = args.get("project_id")
+    max_results = args.get("maxResults")
+    filters = args.get("filters")
+    order_by = args.get("orderBy")
+    page_token = args.get("pageToken")
+
+    output = []
+    data_res = []
+    compute = GCPServices.COMPUTE.build(creds)
+    request = compute.networks().list(
+        project=project,
+        filter=filters,
+        maxResults=max_results,
+        orderBy=order_by,
+        pageToken=page_token,
+    )
+
+    while request:
+        response = request.execute()
+        if "items" in response:
+            for item in response["items"]:
+                output.append(item)
+                data_res_item = {"name": item.get("name"), "id": item.get("id")}
+                data_res.append(data_res_item)
+        request = compute.networks().list_next(previous_request=request, previous_response=response)
+
+    headers = ["name", "id"]
+    readable_output = tableToMarkdown("Google Cloud Compute Networks", data_res, headers=headers, removeNull=True)
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="GCP.Compute.Networks",
+        outputs_key_field="id",
+        outputs=response,
+    )
+
+
 def main():  # pragma: no cover
     """
     Main function to route commands and execute logic.
@@ -1495,6 +1763,13 @@ def main():  # pragma: no cover
             "gcp-compute-instances-list": gcp_compute_instances_list_command,
             "gcp-compute-instance-get": gcp_compute_instance_get_command,
             "gcp-compute-instance-labels-set": gcp_compute_instance_label_set_command,
+            "gcp-compute-network-get": gcp_compute_network_get_command,
+            "gcp-compute-image-get": gcp_compute_image_get,
+            "gcp-compute-instance-group-get": gcp_compute_instance_group_get,
+            "gcp-compute-region-get": gcp_compute_region_get,
+            "gcp-compute-zone-get": gcp_compute_zone_get,
+            "gcp-compute-networks-list": gcp_compute_networks_list,
+            "gcp-compute-network-insert": gcp_compute_network_insert,
             # Storage commands
             "gcp-storage-bucket-policy-delete": storage_bucket_policy_delete,
             "gcp-storage-bucket-metadata-update": storage_bucket_metadata_update,
