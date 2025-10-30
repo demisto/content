@@ -23,8 +23,10 @@ configuration:
   name: isFetch
   type: 8
   required: false
+  section: Collect
 - additionalinfo: Choose the severity(s) (not minimum) to fetch. If none is chosen, all severity levels will be returned.
   display: Fetch Severity
+  section: Collect
   name: fetch_severity
   options:
   - low

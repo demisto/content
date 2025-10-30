@@ -47,6 +47,7 @@ configuration:
   required: false
   hiddenusername: true
   type: 9
+  section: Connect
 - additionalinfo: Used for certificate authentication. The private key of the registered certificate.
   display: Private Key
   name: private_key
