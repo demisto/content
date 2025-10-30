@@ -38,7 +38,9 @@ def to_float(val: Any) -> float | int:
 
 
 def get_target_type():
-    if is_xsiam() or is_platform():
+    if is_platform():
+        return "issues"
+    elif is_xsiam():
         return "alerts"
     else:
         return "incidents"

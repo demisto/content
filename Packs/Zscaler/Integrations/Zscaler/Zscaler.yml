@@ -1,5 +1,5 @@
 category: Network Security
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -1939,10 +1939,10 @@ script:
       description: A comma-separated list of unique identifiers for the IP destination groups.
       type: textArea
       isArray: true
-    description: Deletes the IP destination groups for the specified group ID.
+    description: Deletes the IP destination group associated with the specified group ID.
   script: ''
   subtype: python3
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.11.4819260
   type: python
 fromversion: 5.0.0
 tests:

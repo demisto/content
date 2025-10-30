@@ -2,7 +2,7 @@
     "name": "CVE-2022-26134 - Confluence RCE",
     "description": "This pack handles Confluence RCE CVE-2022-26134 vulnerability, a 0-day exploit via OGNL injection in Confluence Server & Data Center. ",
     "support": "xsoar",
-    "currentVersion": "1.0.3",
+    "currentVersion": "1.0.5",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -31,6 +31,7 @@
         "X3",
         "X5",
         "ENT_PLUS",
-        "agentix"
+        "agentix",
+        "xsiam"
     ]
 }

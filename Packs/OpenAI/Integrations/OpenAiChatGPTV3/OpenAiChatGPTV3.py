@@ -96,15 +96,15 @@ class OpenAiClient(BaseClient):
         options: Dict[str, Any] = {ArgAndParamNames.MODEL: self.model}
         max_tokens = completion_params.get(ArgAndParamNames.MAX_TOKENS, None)
         if max_tokens:
-            options[ArgAndParamNames.MAX_TOKENS] = max_tokens
+            options[ArgAndParamNames.MAX_TOKENS] = int(max_tokens)
 
         temperature = completion_params.get(ArgAndParamNames.TEMPERATURE, None)
         if temperature:
-            options[ArgAndParamNames.TEMPERATURE] = temperature
+            options[ArgAndParamNames.TEMPERATURE] = float(temperature)
 
         top_p = completion_params.get(ArgAndParamNames.TOP_P, None)
         if top_p:
-            options[ArgAndParamNames.TOP_P] = top_p
+            options[ArgAndParamNames.TOP_P] = float(top_p)
 
         options["messages"] = chat_context
         demisto.debug(f"openai-gpt Using options for chat completion: {options=}")
