@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: a66618e3-bb75-4756-8686-044e7e5788bc
+    taskid: 68743676-5ffc-456d-8ad0-0da4cb47319c
     type: start
     task:
-      id: a66618e3-bb75-4756-8686-044e7e5788bc
+      id: 68743676-5ffc-456d-8ad0-0da4cb47319c
       version: -1
       name: ""
       iscommand: false
@@ -35,16 +35,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: b97ba6c9-7c48-4c05-a277-42cc593b6314
+    taskid: 955a76b4-d403-42be-8c78-1e0b748d994f
     type: regular
     task:
-      id: b97ba6c9-7c48-4c05-a277-42cc593b6314
+      id: 955a76b4-d403-42be-8c78-1e0b748d994f
       version: -1
       name: DeleteContext
-      description: "Delete field from context. This automation runs with the default Limited User role unless permissions are explicitly changed. For more information, see the permissions section. 
-        Limited User role, unless you explicitly change the permissions.\nFor more
-        information, see the section about permissions here:\n- For Cortex XSOAR 6
-        see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+      description: "Delete field from context. This automation runs with the default
+        Limited User role unless permissions are explicitly changed. For more information,
+        see the permissions section. Limited User role, unless you explicitly change
+        the permissions.\nFor more information, see the section about permissions
+        here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
         \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
         For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
       scriptName: DeleteContext
@@ -75,10 +76,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: d336ef50-96e9-4655-89e7-a61b24a62529
+    taskid: d65b4c15-3de3-4006-87f4-8894b266ccfb
     type: regular
     task:
-      id: d336ef50-96e9-4655-89e7-a61b24a62529
+      id: d65b4c15-3de3-4006-87f4-8894b266ccfb
       version: -1
       name: Run cve enrichment script
       description: This script collects CVE reputation data from multiple integrations
@@ -90,7 +91,6 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "6"
       - "14"
       - "15"
     scriptarguments:
@@ -118,64 +118,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "6":
-    id: "6"
-    taskid: 0798ab61-5670-4b97-8ac1-4f9798ee63ff
-    type: condition
-    task:
-      id: 0798ab61-5670-4b97-8ac1-4f9798ee63ff
-      version: -1
-      name: CIRCL CVE Search Indicator Exists
-      description: Verify that the VirusTotal indicator from TIM exists.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "7"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: CVEEnrichment.Results.Brand
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: CVEEnrichment.Results.Brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: CIRCL CVE Search
-            iscontext: true
-          right:
-            value:
-              simple: CIRCL CVE Search
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 710
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 371ed5ca-2f2d-4a19-9fdd-0f6918adbe33
+    taskid: 38d0d312-d987-4c2d-8781-8e2069e702e1
     type: title
     task:
-      id: 371ed5ca-2f2d-4a19-9fdd-0f6918adbe33
+      id: 38d0d312-d987-4c2d-8781-8e2069e702e1
       version: -1
       name: Case 2 - External Enrichment
       type: title
@@ -202,10 +150,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 5d7c3cf2-f83c-4019-848f-8287fd4e8601
+    taskid: 4724f97b-9cbb-45c8-8e4e-94565988caab
     type: title
     task:
-      id: 5d7c3cf2-f83c-4019-848f-8287fd4e8601
+      id: 4724f97b-9cbb-45c8-8e4e-94565988caab
       version: -1
       name: Case 1 - Base
       type: title
@@ -232,10 +180,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: ccc35615-792d-4988-a105-d712d67e193d
+    taskid: 7f555ebe-09ef-4fe6-b9a6-1efbefa01149
     type: condition
     task:
-      id: ccc35615-792d-4988-a105-d712d67e193d
+      id: 7f555ebe-09ef-4fe6-b9a6-1efbefa01149
       version: -1
       name: Main Keys Exists
       description: MaxScore And MaxVerdict enriched for https://google.com
@@ -257,16 +205,11 @@ tasks:
           right:
             value:
               simple: CVE-2021-44228
-      - - operator: isExists
-          left:
-            value:
-              simple: CVEEnrichment.Status
-            iscontext: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 265,
           "y": 710
         }
       }
@@ -279,10 +222,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 43248b2b-aaea-4af4-9bf1-0d74134fb48d
+    taskid: f665ac78-954b-4de1-8902-a63818616cc6
     type: condition
     task:
-      id: 43248b2b-aaea-4af4-9bf1-0d74134fb48d
+      id: f665ac78-954b-4de1-8902-a63818616cc6
       version: -1
       name: No additional fields
       description: Additional fields empty
@@ -307,7 +250,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 695,
           "y": 710
         }
       }
@@ -320,10 +263,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 0c369682-2d80-461b-90c5-495a8537c4eb
+    taskid: 38d855fd-f894-4097-8495-b9217bdfb7f4
     type: title
     task:
-      id: 0c369682-2d80-461b-90c5-495a8537c4eb
+      id: 38d855fd-f894-4097-8495-b9217bdfb7f4
       version: -1
       name: Case 3 - External Enrichment + Additional Fields
       type: title
@@ -350,10 +293,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: 049c3734-146f-4b10-b60e-6138b40fac75
+    taskid: 586494d3-aee9-4006-8177-5ce237cdf029
     type: title
     task:
-      id: 049c3734-146f-4b10-b60e-6138b40fac75
+      id: 586494d3-aee9-4006-8177-5ce237cdf029
       version: -1
       name: Case 4 - Multiple Inputs
       type: title
@@ -380,17 +323,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "60":
     id: "60"
-    taskid: fa10a204-f54c-4a74-87f3-152ad8de02fe
+    taskid: 6b9ea541-c9f4-4eed-80ea-54c30a2b9b82
     type: regular
     task:
-      id: fa10a204-f54c-4a74-87f3-152ad8de02fe
+      id: 6b9ea541-c9f4-4eed-80ea-54c30a2b9b82
       version: -1
       name: DeleteContext
-      description: "Delete field from context. This automation runs with the default Limited User role unless permissions are explicitly changed. For more information, see the permissions section. 
-
-        Limited User role, unless you explicitly change the permissions.\nFor more
-        information, see the section about permissions here:\n- For Cortex XSOAR 6
-        see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+      description: "Delete field from context. This automation runs with the default
+        Limited User role unless permissions are explicitly changed. For more information,
+        see the permissions section.\nLimited User role, unless you explicitly change
+        the permissions.\nFor more information, see the section about permissions
+        here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
         \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
         For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
       scriptName: DeleteContext
@@ -421,10 +364,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "62":
     id: "62"
-    taskid: 9d54a762-f7cd-4606-8265-a3d91a059316
+    taskid: 0f7449d7-a930-48b4-8854-fa0c354d06fd
     type: regular
     task:
-      id: 9d54a762-f7cd-4606-8265-a3d91a059316
+      id: 0f7449d7-a930-48b4-8854-fa0c354d06fd
       version: -1
       name: Run cve enrichment script
       description: This script gathers CVE reputation data from multiple integrations
@@ -466,10 +409,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "63":
     id: "63"
-    taskid: de5760da-26ee-4ea7-accb-c28f5e036c70
+    taskid: 86d72011-1b23-4113-86c6-fdf1be7ea3d4
     type: condition
     task:
-      id: de5760da-26ee-4ea7-accb-c28f5e036c70
+      id: 86d72011-1b23-4113-86c6-fdf1be7ea3d4
       version: -1
       name: Palo Alto Networks Threat Vault v2 Indicator Exists
       description: Verify that the VirusTotal indicator from TIM exists
@@ -518,10 +461,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "65":
     id: "65"
-    taskid: dfe6e3b6-4a6c-4ac3-84e6-2752ccac0b83
+    taskid: a3077162-2904-4bf9-8c39-f87ecefae69d
     type: condition
     task:
-      id: dfe6e3b6-4a6c-4ac3-84e6-2752ccac0b83
+      id: a3077162-2904-4bf9-8c39-f87ecefae69d
       version: -1
       name: No additional fields
       description: Additional fields empty
@@ -559,16 +502,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "66":
     id: "66"
-    taskid: 613417a5-8f5b-4046-8b6d-f64a8e0b2fa8
+    taskid: 9d7a6ee9-5820-4b73-8ad5-f8a17516fa61
     type: regular
     task:
-      id: 613417a5-8f5b-4046-8b6d-f64a8e0b2fa8
+      id: 9d7a6ee9-5820-4b73-8ad5-f8a17516fa61
       version: -1
       name: DeleteContext
-      description: "Delete field from context. This automation runs with the default Limited User role unless permissions are explicitly changed. For more information, see the permissions section. 
-        Limited User role, unless you explicitly change the permissions.\nFor more
-        information, see the section about permissions here:\n- For Cortex XSOAR 6
-        see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+      description: "Delete field from context. This automation runs with the default
+        Limited User role unless permissions are explicitly changed. For more information,
+        see the permissions section. Limited User role, unless you explicitly change
+        the permissions.\nFor more information, see the section about permissions
+        here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
         \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
         For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
       scriptName: DeleteContext
@@ -599,10 +543,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "67":
     id: "67"
-    taskid: eb242019-0a14-467b-b812-72222e714158
+    taskid: 8984738e-73ce-4321-8c11-5d9d3274f3ac
     type: regular
     task:
-      id: eb242019-0a14-467b-b812-72222e714158
+      id: 8984738e-73ce-4321-8c11-5d9d3274f3ac
       version: -1
       name: Run cve enrichment script
       description: This script gathers CVE reputation data from multiple integrations
@@ -644,10 +588,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "68":
     id: "68"
-    taskid: 034df7df-835c-4e3b-83ac-fd502344044a
+    taskid: b85e2037-d04b-4078-89f0-fe37c1b2b708
     type: condition
     task:
-      id: 034df7df-835c-4e3b-83ac-fd502344044a
+      id: b85e2037-d04b-4078-89f0-fe37c1b2b708
       version: -1
       name: Palo Alto Networks Threat Vault v2 Indicator Exists
       description: Verify that the VirusTotal indicator from TIM exists.
@@ -696,10 +640,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "70":
     id: "70"
-    taskid: da56fd66-e293-4bc6-a84a-0061f617b29f
+    taskid: aef0e0df-8d9b-4bc6-838d-0687d30adfe9
     type: condition
     task:
-      id: da56fd66-e293-4bc6-a84a-0061f617b29f
+      id: aef0e0df-8d9b-4bc6-838d-0687d30adfe9
       version: -1
       name: Additional Fields Exists
       description: Additional fields empty
@@ -735,10 +679,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "73":
     id: "73"
-    taskid: 7ee8e3aa-4169-4822-8665-5d8bd531a9c0
+    taskid: 733c52ef-3378-4800-853c-9559cea0d682
     type: condition
     task:
-      id: 7ee8e3aa-4169-4822-8665-5d8bd531a9c0
+      id: 733c52ef-3378-4800-853c-9559cea0d682
       version: -1
       name: Main Keys Exists
       description: MaxScore And MaxVerdict enriched for https://google.com
@@ -763,41 +707,16 @@ tasks:
       - - operator: isExists
           left:
             value:
-              complex:
-                root: CVEEnrichment
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: CVEEnrichment.Value
-                      iscontext: true
-                    right:
-                      value:
-                        simple: CVE-2021-44228
-                accessor: MaxCVSS
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: CVEEnrichment
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: CVEEnrichment.Value
-                      iscontext: true
-                    right:
-                      value:
-                        simple: CVE-2021-44228
-                accessor: MaxSeverity
-            iscontext: true
-          ignorecase: true
-      - - operator: isExists
-          left:
-            value:
               simple: CVEEnrichment.Status
             iscontext: true
+      - - operator: stringHasLength
+          left:
+            value:
+              simple: CVEEnrichment.Results.Brand
+            iscontext: true
+          right:
+            value:
+              simple: "3"
     continueonerrortype: ""
     view: |-
       {
@@ -815,10 +734,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "74":
     id: "74"
-    taskid: aaccbe51-ef6f-4bc6-86b9-5040a7335f85
+    taskid: 7bcdfb3e-75f7-4fb2-9827-199f8b25c672
     type: condition
     task:
-      id: aaccbe51-ef6f-4bc6-86b9-5040a7335f85
+      id: 7bcdfb3e-75f7-4fb2-9827-199f8b25c672
       version: -1
       name: Main Keys Exists
       description: MaxScore And MaxVerdict enriched for https://google.com
@@ -843,39 +762,6 @@ tasks:
       - - operator: isExists
           left:
             value:
-              complex:
-                root: CVEEnrichment
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: CVEEnrichment.Value
-                      iscontext: true
-                    right:
-                      value:
-                        simple: CVE-2021-44228
-                accessor: MaxCVSS
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: CVEEnrichment
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: CVEEnrichment.Value
-                      iscontext: true
-                    right:
-                      value:
-                        simple: CVE-2021-44228
-                accessor: MaxSeverity
-            iscontext: true
-          ignorecase: true
-      - - operator: isExists
-          left:
-            value:
               simple: CVEEnrichment.Status
             iscontext: true
     continueonerrortype: ""
@@ -895,10 +781,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "75":
     id: "75"
-    taskid: 806a547b-70a7-4ed2-8b2b-62d724e2b7f5
+    taskid: 19c26955-ab17-4659-81a1-abf8146b28d7
     type: title
     task:
-      id: 806a547b-70a7-4ed2-8b2b-62d724e2b7f5
+      id: 19c26955-ab17-4659-81a1-abf8146b28d7
       version: -1
       name: Case 1 - Bad Input
       type: title
@@ -925,16 +811,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "76":
     id: "76"
-    taskid: f7ce55ec-8afe-44c9-8f6b-9cb660055e42
+    taskid: ff1cffd8-2614-44f1-8cf1-bb514ecdcc58
     type: regular
     task:
-      id: f7ce55ec-8afe-44c9-8f6b-9cb660055e42
+      id: ff1cffd8-2614-44f1-8cf1-bb514ecdcc58
       version: -1
       name: DeleteContext
-      description: "Delete field from context. This automation runs with the default Limited User role unless permissions are explicitly changed. For more information, see the permissions section. 
-        Limited User role, unless you explicitly change the permissions.\nFor more
-        information, see the section about permissions here:\n- For Cortex XSOAR 6
-        see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+      description: "Delete field from context. This automation runs with the default
+        Limited User role unless permissions are explicitly changed. For more information,
+        see the permissions section. Limited User role, unless you explicitly change
+        the permissions.\nFor more information, see the section about permissions
+        here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
         \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
         For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
       scriptName: DeleteContext
@@ -965,10 +852,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "77":
     id: "77"
-    taskid: 953604fd-d6d0-482d-ae4e-2bee63d74a05
+    taskid: 056005bf-6ae5-478d-83a9-148dee401f65
     type: regular
     task:
-      id: 953604fd-d6d0-482d-ae4e-2bee63d74a05
+      id: 056005bf-6ae5-478d-83a9-148dee401f65
       version: -1
       name: Run cve enrichment script
       description: This script gathers CVE reputation data from multiple integrations
@@ -1011,10 +898,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "78":
     id: "78"
-    taskid: e9b9db6b-c6e7-4f6d-8803-b42a836a61ab
+    taskid: 135fea3e-d95e-4f00-8b8b-eba2fa674183
     type: condition
     task:
-      id: e9b9db6b-c6e7-4f6d-8803-b42a836a61ab
+      id: 135fea3e-d95e-4f00-8b8b-eba2fa674183
       version: -1
       name: Failure
       type: condition
@@ -1048,10 +935,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "79":
     id: "79"
-    taskid: e545f99d-17dc-4195-8d28-a2803f6c33aa
+    taskid: 6e1a082c-317b-46b6-81ed-e9afd2a9082b
     type: title
     task:
-      id: e545f99d-17dc-4195-8d28-a2803f6c33aa
+      id: 6e1a082c-317b-46b6-81ed-e9afd2a9082b
       version: -1
       name: Case 2 - Bad Brand
       type: title
@@ -1078,16 +965,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "80":
     id: "80"
-    taskid: c9b675f1-3e8b-44ba-8f6f-8b44f82ac11d
+    taskid: 77dba59e-0864-47b6-814b-99276af7dc79
     type: regular
     task:
-      id: c9b675f1-3e8b-44ba-8f6f-8b44f82ac11d
+      id: 77dba59e-0864-47b6-814b-99276af7dc79
       version: -1
       name: DeleteContext
-      description: "Delete field from context. This automation runs with the default Limited User role unless permissions are explicitly changed. For more information, see the permissions section. 
-        Limited User role, unless you explicitly change the permissions.\nFor more
-        information, see the section about permissions here:\n- For Cortex XSOAR 6
-        see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+      description: "Delete field from context. This automation runs with the default
+        Limited User role unless permissions are explicitly changed. For more information,
+        see the permissions section. Limited User role, unless you explicitly change
+        the permissions.\nFor more information, see the section about permissions
+        here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
         \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
         For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
       scriptName: DeleteContext
@@ -1118,10 +1006,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "81":
     id: "81"
-    taskid: f2730138-be1f-4634-a1b9-6bdfb4c0fed2
+    taskid: 2274766c-049d-4c1d-8d2b-5447c8b9d0dd
     type: regular
     task:
-      id: f2730138-be1f-4634-a1b9-6bdfb4c0fed2
+      id: 2274766c-049d-4c1d-8d2b-5447c8b9d0dd
       version: -1
       name: Run cve enrichment script
       description: This script gathers CVE reputation data from multiple integrations
@@ -1166,10 +1054,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "82":
     id: "82"
-    taskid: 0151f8ff-6393-43de-88ce-92c76eca91e4
+    taskid: 709903d3-d46d-47f9-8624-02625ff39d4a
     type: title
     task:
-      id: 0151f8ff-6393-43de-88ce-92c76eca91e4
+      id: 709903d3-d46d-47f9-8624-02625ff39d4a
       version: -1
       name: Pass
       type: title
@@ -1193,16 +1081,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "83":
     id: "83"
-    taskid: 8973c4d5-d83a-4cf4-88b1-dbc14cbeb521
+    taskid: 74758e54-adb0-4976-8b62-08facd00d752
     type: regular
     task:
-      id: 8973c4d5-d83a-4cf4-88b1-dbc14cbeb521
+      id: 74758e54-adb0-4976-8b62-08facd00d752
       version: -1
       name: DeleteContext
-      description: "Delete field from context. This automation runs with the default Limited User role unless permissions are explicitly changed. For more information, see the permissions section. 
-        Limited User role, unless you explicitly change the permissions.\nFor more
-        information, see the section about permissions here:\n- For Cortex XSOAR 6
-        see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+      description: "Delete field from context. This automation runs with the default
+        Limited User role unless permissions are explicitly changed. For more information,
+        see the permissions section. Limited User role, unless you explicitly change
+        the permissions.\nFor more information, see the section about permissions
+        here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
         \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
         For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
       scriptName: DeleteContext
@@ -1233,10 +1122,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "84":
     id: "84"
-    taskid: 0809c3a4-fe87-42c9-b94d-a4b4f1c4ec59
+    taskid: 8cbc45cd-da15-4c25-8009-6d8ba8f092c4
     type: regular
     task:
-      id: 0809c3a4-fe87-42c9-b94d-a4b4f1c4ec59
+      id: 8cbc45cd-da15-4c25-8009-6d8ba8f092c4
       version: -1
       name: Run cve enrichment script
       description: This script gathers CVE reputation data from multiple integrations
@@ -1276,10 +1165,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "85":
     id: "85"
-    taskid: d5958a5d-28ff-4498-aecd-281e4b80f1f0
+    taskid: 3baba0c8-67cd-450c-87df-ca82b133a259
     type: condition
     task:
-      id: d5958a5d-28ff-4498-aecd-281e4b80f1f0
+      id: 3baba0c8-67cd-450c-87df-ca82b133a259
       version: -1
       name: Both exists
       description: Verify that the VirusTotal indicator from TIM exists.

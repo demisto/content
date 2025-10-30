@@ -58,12 +58,9 @@ outputs:
 - contextPath: CVEEnrichment.Value
   description: The CVE.
   type: string
-- contextPath: CVEEnrichment.MaxCVSS
+- contextPath: CVEEnrichment.TIMCVSS
   description: The max CVSS of the indicator.
   type: number
-- contextPath: CVEEnrichment.MaxCVSSRating
-  description: The max CVSS rating of the indicator.
-  type: string
 - contextPath: CVEEnrichment.Results
   description: List of all indicators found for the CVE.
   type: array
