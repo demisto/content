@@ -147,11 +147,10 @@ def main():
                 related_item = get_related_configuration_item(adapter.related_configuration_item_id, adapter.instance_url)
                 related_items.append(related_item)
 
-        # Prepare outputs
         outputs = {
             "summary": (
                 f"Found {len(network_adapters)} related network adapters and "
-                f"{len(related_items)} related configuration items in ServiceNow."
+                f"{len(related_items)} related configuration items in ServiceNow for ip {ip_address}."
             ),
             "network_adapters": [adapter.to_dict() for adapter in network_adapters],
             "related_configuration_items": [item.to_dict() for item in related_items],
@@ -166,7 +165,7 @@ def main():
         return_results(
             CommandResults(
                 outputs=outputs,
-                outputs_prefix="CortexExposureManagement.ServiceNowEnrichment.NetworkAdapter",
+                outputs_prefix="CortexExposureManagement.ServiceNowEnrichment",
                 readable_output=human_readable,
                 raw_response=outputs,
             )

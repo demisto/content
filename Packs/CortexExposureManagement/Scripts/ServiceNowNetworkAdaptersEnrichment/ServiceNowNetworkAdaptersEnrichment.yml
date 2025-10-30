@@ -4,82 +4,82 @@ args:
   description: The ip address of the network adapters to look for.
 comment: This script resolves the owner and related configuration items of a network adapter by searching the ServiceNow CMDB network adapter table using a specified IP address.
 outputs:
-- contextPath: CortexExposureManagement.ServiceNowEnrichment.NetworkAdapter.summary
+- contextPath: CortexExposureManagement.ServiceNowEnrichment.summary
   description: A brief summary of the results of enrichment.
   type: string
-- contextPath: CortexExposureManagement.ServiceNowEnrichment.NetworkAdapter.network_adapters.sys_id
+- contextPath: CortexExposureManagement.ServiceNowEnrichment.network_adapters.sys_id
   description: The unique system identifier (Sys ID) of the network adapter record in ServiceNow.
   type: string
 
-- contextPath: CortexExposureManagement.ServiceNowEnrichment.NetworkAdapter.network_adapters.name
+- contextPath: CortexExposureManagement.ServiceNowEnrichment.network_adapters.name
   description: The name of the network adapter.
   type: string
 
-- contextPath: CortexExposureManagement.ServiceNowEnrichment.NetworkAdapter.network_adapters.ip
+- contextPath: CortexExposureManagement.ServiceNowEnrichment.network_adapters.ip
   description: The IP address assigned to the network adapter.
   type: string
 
-- contextPath: CortexExposureManagement.ServiceNowEnrichment.NetworkAdapter.network_adapters.owner
+- contextPath: CortexExposureManagement.ServiceNowEnrichment.network_adapters.owner
   description: The display name of the user assigned as the owner of the network adapter.
   type: string
 
-- contextPath: CortexExposureManagement.ServiceNowEnrichment.NetworkAdapter.network_adapters.owner_id
+- contextPath: CortexExposureManagement.ServiceNowEnrichment.network_adapters.owner_id
   description: The unique Sys ID of the user assigned to the network adapter.
   type: string
 
-- contextPath: CortexExposureManagement.ServiceNowEnrichment.NetworkAdapter.network_adapters.related_configuration_item_name
+- contextPath: CortexExposureManagement.ServiceNowEnrichment.network_adapters.related_configuration_item_name
   description: The display name of the related configuration item (CI) associated with this network adapter.
   type: string
 
-- contextPath: CortexExposureManagement.ServiceNowEnrichment.NetworkAdapter.network_adapters.related_configuration_item_id
+- contextPath: CortexExposureManagement.ServiceNowEnrichment.network_adapters.related_configuration_item_id
   description: The Sys ID of the related configuration item associated with this network adapter.
   type: string
 
-- contextPath: CortexExposureManagement.ServiceNowEnrichment.NetworkAdapter.network_adapters.url
+- contextPath: CortexExposureManagement.ServiceNowEnrichment.network_adapters.url
   description: A direct URL link to the network adapter record in the ServiceNow instance.
   type: string
 
-- contextPath: CortexExposureManagement.ServiceNowEnrichment.NetworkAdapter.related_configuration_items.sys_id
+- contextPath: CortexExposureManagement.ServiceNowEnrichment.related_configuration_items.sys_id
   description: The unique system identifier (Sys ID) of the related configuration item (CI) record in ServiceNow.
   type: string
 
-- contextPath: CortexExposureManagement.ServiceNowEnrichment.NetworkAdapter.related_configuration_items.name
+- contextPath: CortexExposureManagement.ServiceNowEnrichment.related_configuration_items.name
   description: The name of the related configuration item.
   type: string
 
-- contextPath: CortexExposureManagement.ServiceNowEnrichment.NetworkAdapter.related_configuration_items.ip
+- contextPath: CortexExposureManagement.ServiceNowEnrichment.related_configuration_items.ip
   description: The IP address associated with the configuration item.
   type: string
 
-- contextPath: CortexExposureManagement.ServiceNowEnrichment.NetworkAdapter.related_configuration_items.owner
+- contextPath: CortexExposureManagement.ServiceNowEnrichment.related_configuration_items.owner
   description: The display name of the user assigned as the owner of the configuration item.
   type: string
 
-- contextPath: CortexExposureManagement.ServiceNowEnrichment.NetworkAdapter.related_configuration_items.owner_id
+- contextPath: CortexExposureManagement.ServiceNowEnrichment.related_configuration_items.owner_id
   description: The unique Sys ID of the user assigned to the configuration item.
   type: string
 
-- contextPath: CortexExposureManagement.ServiceNowEnrichment.NetworkAdapter.related_configuration_items.hostname
+- contextPath: CortexExposureManagement.ServiceNowEnrichment.related_configuration_items.hostname
   description: The hostname of the configuration item.
   type: string
 
-- contextPath: CortexExposureManagement.ServiceNowEnrichment.NetworkAdapter.related_configuration_items.os
+- contextPath: CortexExposureManagement.ServiceNowEnrichment.related_configuration_items.os
   description: The operating system running on the configuration item.
   type: string
 
-- contextPath: CortexExposureManagement.ServiceNowEnrichment.NetworkAdapter.related_configuration_items.os_version
+- contextPath: CortexExposureManagement.ServiceNowEnrichment.related_configuration_items.os_version
   description: The version of the operating system running on the configuration item.
   type: string
 
-- contextPath: CortexExposureManagement.ServiceNowEnrichment.NetworkAdapter.related_configuration_items.ci_class
+- contextPath: CortexExposureManagement.ServiceNowEnrichment.related_configuration_items.ci_class
   description: The ServiceNow CI class that defines the type of the configuration item (e.g., Server, Application, Network Gear).
   type: string
 
-- contextPath: CortexExposureManagement.ServiceNowEnrichment.NetworkAdapter.related_configuration_items.use
+- contextPath: CortexExposureManagement.ServiceNowEnrichment.related_configuration_items.use
   description: The intended purpose or usage of the configuration item as recorded in ServiceNow.
   type: string
 
-- contextPath: CortexExposureManagement.ServiceNowEnrichment.NetworkAdapter.related_configuration_items.url
+- contextPath: CortexExposureManagement.ServiceNowEnrichment.related_configuration_items.url
   description: A direct URL link to the configuration item record in the ServiceNow instance.
   type: string
 
