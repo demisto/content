@@ -1952,15 +1952,13 @@ class EC2:
         remove_nulls_from_dictionary(kwargs)
         if kwargs.get("TagSpecifications"):
             tags = []
-            for key, value in kwargs.get("TagSpecifications").items():
-                tags.append({"Key": key, "Value": value})
+            for tag in kwargs.get("TagSpecifications"):
+                tags.append({"Key": tag.get("Name"), "Value": tag.get("Values", [])[0]})
             tag_specifications = [{"ResourceType": "network-acl", "Tags": tags}]
             kwargs["TagSpecifications"] = tag_specifications
 
         try:
-            demisto.info(f"{kwargs=}")
             response = client.create_network_acl(**kwargs)
-            demisto.info(f"{response=}")
             if response["ResponseMetadata"]["HTTPStatusCode"] in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
                 network_acl = response.get("NetworkAcl")
                 readable_data = {
