@@ -101,7 +101,7 @@
             "is_array": false
         },
         "eventTime": {
-            "type": "string",
+            "type": "datetime",
             "is_array": false
         }
     }

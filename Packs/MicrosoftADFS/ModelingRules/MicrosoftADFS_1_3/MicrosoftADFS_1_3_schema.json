@@ -1,7 +1,7 @@
 {
     "microsoft_adfs_raw": {
         "time_created": {
-            "type": "string",
+            "type": "datetime",
             "is_array": false
         },
         "_collector_type": {

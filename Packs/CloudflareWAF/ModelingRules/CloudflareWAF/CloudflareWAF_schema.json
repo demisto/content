@@ -113,7 +113,7 @@
             "is_array": false
         },
         "edgeendtimestamp": {
-            "type": "string",
+            "type": "datetime",
             "is_array": false
         },
         "Datetime": {

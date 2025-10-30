@@ -65,7 +65,7 @@
             "is_array": false
         },
         "time_created": {
-            "type": "string",
+            "type": "datetime",
             "is_array": false
         }
     }

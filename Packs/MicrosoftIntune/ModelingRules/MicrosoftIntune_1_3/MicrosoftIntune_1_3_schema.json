@@ -33,7 +33,7 @@
             "is_array": false
         },
         "time": {
-            "type": "string",
+            "type": "datetime",
             "is_array": false
         }
     }

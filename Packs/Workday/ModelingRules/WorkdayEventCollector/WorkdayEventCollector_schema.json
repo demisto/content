@@ -37,7 +37,7 @@
             "is_array": false
         },
         "requestTime": {
-            "type": "string",
+            "type": "datetime",
             "is_array": false
         }
     },

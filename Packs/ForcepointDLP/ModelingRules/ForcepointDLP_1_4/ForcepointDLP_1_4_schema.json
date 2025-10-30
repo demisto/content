@@ -125,7 +125,7 @@
             "is_array": false
         },
         "timeStamp": {
-            "type": "string",
+            "type": "datetime",
             "is_array": false
         }
     }

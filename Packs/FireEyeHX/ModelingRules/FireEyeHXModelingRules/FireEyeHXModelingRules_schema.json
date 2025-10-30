@@ -181,7 +181,7 @@
             "is_array": false
         },
         "event_at": {
-            "type": "string",
+            "type": "datetime",
             "is_array": false
         }
     },
