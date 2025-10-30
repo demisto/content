@@ -1074,3 +1074,41 @@ Creates a network in the specified project using the data included in the reques
 | GCP.Compute.Operations.region | string | The URL of the region where the operation resides. Only available when performing regional operations. You must specify this field as part of the HTTP request URL. It is not settable as a field in the request body. |
 | GCP.Compute.Operations.description | string | A textual description of the operation, which is set when the operation is created. |
 | GCP.Compute.Operations.kind | string | Type of the resource. Always compute\#operation for Operation resources. |
+
+### gcp-compute-get-network
+
+***
+Returns the specified network.
+
+##### Base Command
+
+`gcp-compute-network-get`
+
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| network | Name of the network to return. | Required |
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Compute.Networks.id | string | The unique identifier for the resource. This identifier is defined by the server. |
+| GCP.Compute.Networks.creationTimestamp | string | Creation timestamp in RFC3339 text format. |
+| GCP.Compute.Networks.name | string | Name of the resource. Provided by the client when the resource is created. The name must be 1\-63 characters long, and comply with RFC1035. Specifically, the name must be 1\-63 characters long and match the regular expression \[a\-z\]\(\[\-a\-z0\-9\]\*\[a\-z0\-9\]\)? which means the first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash. |
+| GCP.Compute.Networks.description | string | An optional description of this resource. Provide this property when you create the resource. |
+| GCP.Compute.Networks.gatewayIPv4 | string | The gateway address for default routing out of the network. This value is read only and is selected by GCP. |
+| GCP.Compute.Networks.selfLink | string | Server\-defined URL for the resource. |
+| GCP.Compute.Networks.autoCreateSubnetworks | boolean | When set to true, the VPC network is created in &quot;auto&quot; mode. When set to false, the VPC network is created in &quot;custom&quot; mode. |
+| GCP.Compute.Networks.subnetworks | string | Server\-defined fully\-qualified URLs for all subnetworks in this VPC network. |
+| GCP.Compute.Networks.peerings | string |  A list of network peerings for the resource. |
+| GCP.Compute.Networks.peerings.name | string | Name of this peering. Provided by the client when the peering is created. The name must comply with RFC1035. Specifically, the name must be 1\-63 characters long and match regular expression \[a\-z\]\(\[\-a\-z0\-9\]\*\[a\-z0\-9\]\)? which means the first character must be a lowercase letter, and all the following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash. |
+| GCP.Compute.Networks.peerings.network | string | The URL of the peer network. It can be either full URL or partial URL. The peer network may belong to a different project. If the partial URL does not contain project, it is assumed that the peer network is in the same project as the current network. |
+| GCP.Compute.Networks.peerings.state | string | State for the peering. |
+| GCP.Compute.Networks.peerings.stateDetails | string | Details about the current state of the peering. |
+| GCP.Compute.Networks.peerings.autoCreateRoutes | boolean | This field will be deprecated soon. Prefer using exchangeSubnetRoutes instead. Indicates whether full mesh connectivity is created and managed automatically. When it is set to true, Google Compute Engine will automatically create and manage the routes between two networks when the state is ACTIVE. Otherwise, user needs to create routes manually to route packets to peer network. |
+| GCP.Compute.Networks.peerings.exchangeSubnetRoutes | boolean | Whether full mesh connectivity is created and managed automatically. When it is set to true, Google Compute Engine will automatically create and manage the routes between two networks when the peering state is ACTIVE. Otherwise, user needs to create routes manually to route packets to peer network. |
+| GCP.Compute.Networks.routingConfig | string | The network\-level routing configuration for this network. Used by Cloud Router to determine what type of network\-wide routing behavior to enforce. |
+| GCP.Compute.Networks.routingConfig.routingMode | string | The network\-wide routing mode to use. If set to REGIONAL, this networks cloud routers will only advertise routes with subnets of this network in the same region as the router. If set to GLOBAL, this networks cloud routers will advertise routes with all subnets of this network, across regions. |
+| GCP.Compute.Networks.kind | string | Type of the resource. Always compute\#network for networks. |
