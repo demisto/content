@@ -5080,6 +5080,8 @@ def test_ec2_describe_ipam_resource_discovery_associations_with_ids_no_paginatio
     assert kwargs["IpamResourceDiscoveryAssociationIds"] == ["assoc-2"]
     assert "MaxResults" not in kwargs
     assert "NextToken" not in kwargs
+
+
 def test_kms_enable_key_rotation_success_with_period(mocker):
     """
     Given: A mocked KMS client that returns HTTP 200 and a valid rotation period.

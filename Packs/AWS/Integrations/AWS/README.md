@@ -74,9 +74,9 @@ Get AWS account password policy.
 | --- | --- | --- |
 | AWS.IAM.PasswordPolicy.MinimumPasswordLength | number | Minimum length to require for IAM user passwords. |
 | AWS.IAM.PasswordPolicy.RequireSymbols | boolean | Specifies whether IAM user passwords must contain at least one of the symbols. |
-| AWS.IAM.PasswordPolicy.RequireNumbers | boolean | Specifies whether IAM user passwords must contain at least one numeric character \(0 to 9\). |
-| AWS.IAM.PasswordPolicy.RequireUppercaseCharacters | boolean | Specifies whether IAM user passwords must contain at least one uppercase character \(A to Z\). |
-| AWS.IAM.PasswordPolicy.RequireLowercaseCharacters | boolean | Specifies whether IAM user passwords must contain at least one lowercase character \(a to z\). |
+| AWS.IAM.PasswordPolicy.RequireNumbers | boolean | Specifies whether IAM user passwords must contain at least one numeric character (0 to 9). |
+| AWS.IAM.PasswordPolicy.RequireUppercaseCharacters | boolean | Specifies whether IAM user passwords must contain at least one uppercase character (A to Z). |
+| AWS.IAM.PasswordPolicy.RequireLowercaseCharacters | boolean | Specifies whether IAM user passwords must contain at least one lowercase character (a to z). |
 | AWS.IAM.PasswordPolicy.AllowUsersToChangePassword | boolean | Specifies whether IAM users are allowed to change their own password. |
 | AWS.IAM.PasswordPolicy.ExpirePasswords | boolean | Indicates whether passwords in the account expire. |
 | AWS.IAM.PasswordPolicy.MaxPasswordAge | number | The number of days that an IAM user password is valid. |
@@ -2138,110 +2138,6 @@ Lists the notifications that are associated with a budget.
 | AWS.Billing.Budget.Notification.Subscribers.Address | string | Email address or SNS topic ARN for the subscriber. |
 | AWS.Billing.NotificationNextToken | string | Next page token for pagination. |
 
-### aws-kms-key-enable-rotation
-
-***
-Enables automatic rotation for a symmetric customer-managed KMS key. Not supported for asymmetric/HMAC keys, keys with imported material, or custom key stores.
-
-#### Base Command
-
-`aws-kms-key-enable-rotation`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| account_id | The AWS account ID. | Required |
-| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
-| key_id | The key ARN to enable rotation for. | Required |
-| rotation_period_in_days | Key rotation period in days. Valid range: 90–2560. If omitted when enabling rotation for the first time, the default is 365 days. If rotation is already enabled and this field is not specified, the existing period remains unchanged. | Optional |
-
-#### Context Output
-
-There is no context output for this command.
-
-### aws-elb-load-balancer-attributes-modify
-
-***
-Modifies attributes for a Classic Elastic Load Balancer.
-
-#### Base Command
-
-`aws-elb-load-balancer-attributes-modify`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| account_id | The AWS account ID. | Required |
-| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
-| load_balancer_name | The name of the Load Balancer. | Required |
-| access_log_enabled | Whether to enable access logs. (if enabled make sure to provide access_log_s3_bucket_name) Possible values are: true, false. | Optional |
-| access_log_s3_bucket_name | S3 bucket name for access logs (required if access_log_enabled=true). | Optional |
-| access_log_interval | The interval for publishing the access logs. You can specify an interval of either 5 minutes or 60 minutes. If omitted when enabling logging for the first time, the default is 60 minutes. If logging is already enabled and this field is not specified, the existing period remains unchanged. Possible values are: 5, 60. | Optional |
-| access_log_s3_bucket_prefix | S3 key prefix (Path) for access logs.  If the prefix is not provided, the log folder is placed at the root level of the bucket. | Optional |
-| connection_draining_enabled | Whether connection draining is enabled for the load balancer. Possible values are: true, false. | Optional |
-| connection_draining_timeout | The maximum time, in seconds, to keep the existing connections open before de-registering the instance.  Valid Range: 1 - 3600. | Optional |
-| connection_settings_idle_timeout | The load balancer allows the connections to remain idle (no data is sent over the connection) for this specific duration in seconds. Valid Range: 1 - 4000. | Optional |
-| cross_zone_load_balancing_enabled | Whether to enable cross-zone load balancing. Possible values are: true, false. | Optional |
-| desync_mitigation_mode | Determines how the Classic Load Balancer handles HTTP requests that might pose a security risk to your application. This sets the 'elb.http.desyncmitigationmode' load balancer attribute. Possible values are: monitor, defensive, strictest. | Optional |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| AWS.ELB.LoadBalancer.LoadBalancerName | string | The name of the Classic Load Balancer. |
-| AWS.ELB.LoadBalancer.LoadBalancerAttributes.CrossZoneLoadBalancing.Enabled | boolean | Whether cross-zone load balancing is enabled. |
-| AWS.ELB.LoadBalancer.LoadBalancerAttributes.ConnectionDraining.Enabled | boolean | Whether connection draining is enabled. |
-| AWS.ELB.LoadBalancer.LoadBalancerAttributes.ConnectionDraining.Timeout | number | Connection draining timeout in seconds. |
-| AWS.ELB.LoadBalancer.LoadBalancerAttributes.ConnectionSettings.IdleTimeout | number | Idle connection timeout in seconds. |
-| AWS.ELB.LoadBalancer.LoadBalancerAttributes.AccessLog.Enabled | boolean | Whether access logs are enabled. |
-| AWS.ELB.LoadBalancer.LoadBalancerAttributes.AccessLog.S3BucketName | string | The S3 bucket name for access logs. |
-| AWS.ELB.LoadBalancer.LoadBalancerAttributes.AccessLog.EmitInterval | number | Access log publish interval in minutes. |
-| AWS.ELB.LoadBalancer.LoadBalancerAttributes.AccessLog.S3BucketPrefix | string | The S3 key prefix for access logs. |
-| AWS.ELB.LoadBalancer.LoadBalancerAttributes.AdditionalAttributes | unknown | Additional attributes returned by the API. |
-
-
-### aws-ec2-vpcs-describe
-
-***
-Describes one or more of your VPCs.
-
-#### Base Command
-
-`aws-ec2-vpcs-describe`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| filters | One or more filters Separated by ';' (for example, name=<name>;values=<values>). See AWS documentation for details &amp; filter options. | Optional |
-| vpc_ids | A comma-separated list of VPC IDs. | Optional |
-| account_id | The AWS account ID. | Required |
-| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| AWS.EC2.Vpcs.CidrBlock | string | The primary IPv4 CIDR block for the VPC. |
-| AWS.EC2.Vpcs.DhcpOptionsId | string | The ID of the set of DHCP options you have associated with the VPC. |
-| AWS.EC2.Vpcs.State | string | The current state of the VPC. |
-| AWS.EC2.Vpcs.VpcId | string | The ID of the VPC. |
-| AWS.EC2.Vpcs.InstanceTenancy | string | The allowed tenancy of instances launched into the VPC. |
-| AWS.EC2.Vpcs.IsDefault | string | Indicates whether the VPC is the default VPC. |
-| AWS.EC2.Vpcs.Tags.Key | string | The key of the tag. |
-| AWS.EC2.Vpcs.Tags.Value | string | The value of the tag. |
-| AWS.EC2.Vpcs.Tags.Ipv6CidrBlockAssociationSet.AssociationId | string | The association ID for the IPv6 CIDR block. |
-| AWS.EC2.Vpcs.Tags.Ipv6CidrBlockAssociationSet.Ipv6CidrBlock | string | The IPv6 CIDR block. |
-| AWS.EC2.Vpcs.Tags.Ipv6CidrBlockAssociationSet.Ipv6CidrBlockState.State | string | The state of the CIDR block. |
-| AWS.EC2.Vpcs.Tags.Ipv6CidrBlockAssociationSet.Ipv6CidrBlockState.StatusMessage | string | A message about the status of the CIDR block, if applicable. |
-| AWS.EC2.Vpcs.Tags.CidrBlockAssociationSet.AssociationId | string | The association ID for the IPv4 CIDR block. |
-| AWS.EC2.Vpcs.Tags.CidrBlockAssociationSet.CidrBlock | string | The IPv4 CIDR block. |
-| AWS.EC2.Vpcs.Tags.CidrBlockAssociationSet.CidrBlockState.State | string | The state of the CIDR block. |
-| AWS.EC2.Vpcs.Tags.CidrBlockAssociationSet.CidrBlockState.StatusMessage | string | A message about the status of the CIDR block, if applicable. |
-| AWS.EC2.Vpcs.AccountId | string | The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided. |
-
 ### aws-ec2-subnets-describe
 
 ***
@@ -2255,7 +2151,7 @@ Describes one or more of your subnets.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| filters | One or more filters Separated by ';' (for example, name=<name>;values=<values>). See AWS documentation for details &amp; filter options. | Optional |
+| filters | One or more filters Separated by ';' (for example, name=&lt;name&gt;;values=&lt;values&gt;). See AWS documentation for details &amp; filter options. | Optional |
 | subnet_ids | A comma-separated list of subnet IDs. | Optional |
 | account_id | The AWS account ID. | Required |
 | region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
@@ -2295,7 +2191,7 @@ Describes IPAM resource discoveries. A resource discovery is an IPAM component t
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | ipam_resource_discovery_ids | A comma-separated list of the IPAM resource discovery IDs. | Optional |
-| filters | One or more filters separated by ';' (for example, name=<name>;values=<values>). See AWS documentation for details &amp; filter options (https://docs.aws.amazon.com/cli/latest/userguide/cli-usage-filter.html). | Optional |
+| filters | One or more filters separated by ';' (for example, name=&lt;name&gt;;values=&lt;values&gt;). See AWS documentation for details &amp; filter options (https://docs.aws.amazon.com/cli/latest/userguide/cli-usage-filter.html). | Optional |
 | limit | The maximum number of results to return in a single call. Specify a value between 5 and 1000. Default value is 50. | Optional |
 | next_token | The token for the next set of results. | Optional |
 | address_region | The Amazon Web Services region for the IP address. | Optional |
@@ -2325,7 +2221,7 @@ Describes resource discovery association with an Amazon VPC IPAM. An associated 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | ipam_resource_discovery_association_ids | A comma-separated list of the resource discovery association IDs. | Optional |
-| filters | One or more filters separated by ';' (for example, name=<name>;values=<values>). See AWS documentation for details &amp; filter options (https://docs.aws.amazon.com/cli/latest/userguide/cli-usage-filter.html). | Optional |
+| filters | One or more filters separated by ';' (for example, name=&lt;name&gt;;values=&lt;values&gt;). See AWS documentation for details &amp; filter options (https://docs.aws.amazon.com/cli/latest/userguide/cli-usage-filter.html). | Optional |
 | limit | The maximum number of results to return in a single call. Specify a value between 5 and 1000. Default value is 50. | Optional |
 | next_token | The token for the next set of results. | Optional |
 | address_region | The Amazon Web Services region for the IP address. | Optional |
@@ -2340,3 +2236,5 @@ Describes resource discovery association with an Amazon VPC IPAM. An associated 
 | AWS.EC2.IpamResourceDiscoveryAssociations.IpamResourceDiscoveryId | String | The resource discovery ID. |
 | AWS.EC2.IpamResourceDiscoveryAssociations.IpamRegion | String | The IPAM home region. |
 | AWS.EC2.IpamResourceDiscoveryAssociations.AccountId | string | The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided. |
+
+```
