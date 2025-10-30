@@ -2,7 +2,7 @@
     "name": "CybleEventsV2",
     "description": "Cyble Events for Vision Users. Must have Vision API access to use the threat intelligence.",
     "support": "partner",
-    "currentVersion": "1.1.3",
+    "currentVersion": "1.1.5",
     "author": "Cyble Info Sec",
     "url": "https://cyble.com/",
     "email": "",
@@ -21,7 +21,8 @@
     "supportedModules": [
         "X3",
         "X5",
-        "agentix"
+        "agentix",
+        "xsiam"
     ],
     "githubUser": []
 }
