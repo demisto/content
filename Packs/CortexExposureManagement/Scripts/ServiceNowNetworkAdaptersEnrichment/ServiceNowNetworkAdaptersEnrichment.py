@@ -47,8 +47,7 @@ class ConfigurationItem:
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
 
-
-def get_command_results(command: str, args: dict[str, Any]) -> dict[str, Any]:
+def get_command_results(command: str, args: dict[str, Any]) -> Union[dict[str, Any] | list]:
     """Execute a Demisto command and return the result."""
     try:
         command_results = demisto.executeCommand(command, args)
