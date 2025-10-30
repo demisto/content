@@ -2036,13 +2036,13 @@ script:
     - contextPath: GCP.Compute.Operations.error.errors
       description: The array of errors encountered while processing this operation.
       type: string
-    - contextPath: GCP.Compute.Operations.error.errors.code
+    - contextPath: GCP.Compute.Operations.error.errors
       description: The error type identifier for this error.
       type: string
-    - contextPath: GCP.Compute.Operations.error.errors.location
+    - contextPath: GCP.Compute.Operations.error.errors
       description: Indicates the field in the request that caused the error. This property is optional.
       type: string
-    - contextPath: GCP.Compute.Operations.error.errors.message
+    - contextPath: GCP.Compute.Operations.error.errors
       description: An optional, human-readable error message.
       type: string
     - contextPath: GCP.Compute.Operations.warnings
@@ -2057,10 +2057,10 @@ script:
     - contextPath: GCP.Compute.Operations.warnings.data
       description: 'Metadata about this warning in key: value format.'
       type: string
-    - contextPath: GCP.Compute.Operations.warnings.data.key
+    - contextPath: GCP.Compute.Operations.warnings.data
       description: A key that provides more detail on the warning being returned. For example, for warnings where there are no results in a list request for a particular zone, this key might be scope and the key value might be the zone name. Other examples might be a key indicating a deprecated resource and a suggested replacement, or a warning about invalid network settings (for example, if an instance attempts to perform IP forwarding but is not enabled for IP forwarding).
       type: string
-    - contextPath: GCP.Compute.Operations.warnings.data.value
+    - contextPath: GCP.Compute.Operations.warnings.data
       description: A warning data value corresponding to the key.
       type: string
     - contextPath: GCP.Compute.Operations.httpErrorStatusCode
