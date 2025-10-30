@@ -78,11 +78,11 @@ PERMISSIONS_TO_COMMANDS = {
     ],
     "Microsoft.Authorization/policyAssignments/read": [
         "azure-policy-assignment-create",
-        "azure-policy-assignment-create-quick-action"
+        "azure-policy-assignment-create-quick-action",
     ],
     "Microsoft.Authorization/policyAssignments/write": [
         "azure-policy-assignment-create",
-        "azure-policy-assignment-create-quick-action"
+        "azure-policy-assignment-create-quick-action",
     ],
     "Microsoft.DBforPostgreSQL/servers/read": [
         "azure-postgres-server-update",
