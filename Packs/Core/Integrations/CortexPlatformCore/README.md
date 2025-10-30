@@ -38,7 +38,7 @@ Get asset information.
 | Core.CoreAsset.xdm__asset__first_observed | unknown | The timestamp when the asset was first observed, in ISO 8601 format. |
 | Core.CoreAsset.asset_hierarchy | unknown | The hierarchy or structure representing the asset. |
 | Core.CoreAsset.xdm__asset__type__category | unknown | The asset category type. |
-| Core.CoreAsset.xdm__cloud__region | unknown | The cloud region where the asset resides. |
+| Core.CoreAsset.xdm__asset__cloud__region | unknown | The cloud region where the asset resides. |
 | Core.CoreAsset.xdm__asset__module_unstructured_fields | unknown | The unstructured fields or metadata associated with the asset module. |
 | Core.CoreAsset.xdm__asset__source | unknown | The originating source of the asset's information. |
 | Core.CoreAsset.xdm__asset__id | unknown | The source unique identifier for the asset. |
@@ -62,7 +62,7 @@ Get asset information.
         {
             "asset_hierarchy": ["123"],
             "xdm__asset__type__category": "Policy",
-            "xdm__cloud__region": "Global",
+            "xdm__asset__cloud__region": "Global",
             "xdm__asset__module_unstructured_fields": {},
             "xdm__asset__source": "XSIAM",
             "xdm__asset__id": "123",
@@ -80,7 +80,7 @@ Get asset information.
 
 ##### Human Readable Output
 
->| asset_hierarchy | xdm__asset__type__category | xdm__cloud__region | xdm__asset__module_unstructured_fields | xdm__asset__source | xdm__asset__id | xdm__asset__type__class | xdm__asset__normalized_fields | xdm__asset__first_observed | xdm__asset__last_observed | xdm__asset__name | xdm__asset__type__name | xdm__asset__strong_id |
+>| asset_hierarchy | xdm__asset__type__category | xdm__asset__cloud__region | xdm__asset__module_unstructured_fields | xdm__asset__source | xdm__asset__id | xdm__asset__type__class | xdm__asset__normalized_fields | xdm__asset__first_observed | xdm__asset__last_observed | xdm__asset__name | xdm__asset__type__name | xdm__asset__strong_id |
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >|123|Policy|Global||XSIAM|123|Identity||100000000|100000000|Fake Name|IAM|FAKE ID|
 
@@ -439,3 +439,53 @@ Get cases information based on the specified filters.
 | Core.Case.tags | Array | Current tags assigned to the case. |
 | Core.Case.case_domain | String | Domain associated with the case. |
 | Core.Case.custom_fields | Unknown | Custom fields for the case with standardized lowercase, whitespace-free names. |
+
+### core-get-vulnerabilities
+
+***
+Retrieves vulnerabilities based on specified filters.
+
+#### Base Command
+
+`core-get-vulnerabilities`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| limit | The maximum number of vulnerabilities to return. Default is 50. | Optional |
+| sort_field | The field by which to sort the results. Default is LAST_OBSERVED. | Optional |
+| sort_order | The order in which to sort the results. Possible values are: DESC, ASC. | Optional |
+| cve_id | The CVE ID. Accepts a comma-separated list. | Optional |
+| issue_id | The issue ID. Accepts a comma-separated list. | Optional |
+| cvss_score_gte | The minimum CVSS score. | Optional |
+| epss_score_gte | The minimum EPSS score. | Optional |
+| internet_exposed | Filter by internet exposed assets. Possible values are: true, false. | Optional |
+| exploitable | Filter by exploitable vulnerabilities. Possible values are: true, false. | Optional |
+| has_kev | Filter by vulnerabilities that have a Known Exploited Vulnerability (KEV). Possible values are: true, false. | Optional |
+| affected_software | Filter by affected software. Accepts a comma-separated list. | Optional |
+| on_demand_fields | A comma-separated list of additional fields to retrieve. | Optional |
+| start_time | The start time for filtering according to case creation time. Supports free-text relative and absolute times. For example: 7 days ago, 2023-06-15T10:30:00Z, 13/8/2025. | Optional |
+| end_time | The end time for filtering according to case creation time. Supports free-text relative and absolute times. For example: 7 days ago, 2023-06-15T10:30:00Z, 13/8/2025. | Optional |
+| severity | The severity of the vulnerability issue. Possible values are: info, low, medium, high, critical. | Optional |
+| assignee | The email of the user assigned to the vulnerability. Accepts a comma-separated list. <br/>Use 'unassigned' for unassigned vulnerabilities or 'assigned' for all assigned vulnerabilities.<br/>. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Core.VulnerabilityIssue.ISSUE_ID | String | The unique identifier for the vulnerability issue. |
+| Core.VulnerabilityIssue.CVE_ID | String | The CVE identifier for the vulnerability. |
+| Core.VulnerabilityIssue.CVE_DESCRIPTION | String | The description of the CVE. |
+| Core.VulnerabilityIssue.ASSET_NAME | String | The name of the affected asset. |
+| Core.VulnerabilityIssue.PLATFORM_SEVERITY | String | The severity of the vulnerability as determined by the platform. |
+| Core.VulnerabilityIssue.EPSS_SCORE | Number | The Exploit Prediction Scoring System \(EPSS\) score. |
+| Core.VulnerabilityIssue.CVSS_SCORE | Number | The Common Vulnerability Scoring System \(CVSS\) score. |
+| Core.VulnerabilityIssue.ASSIGNED_TO | String | The email of the user assigned to the vulnerability. |
+| Core.VulnerabilityIssue.ASSIGNED_TO_PRETTY | String | The full name of the user assigned to the vulnerability. |
+| Core.VulnerabilityIssue.AFFECTED_SOFTWARE | Unknown | The software affected by the vulnerability. |
+| Core.VulnerabilityIssue.FIX_AVAILABLE | Boolean | Indicates if a fix is available for the vulnerability. |
+| Core.VulnerabilityIssue.INTERNET_EXPOSED | Boolean | Indicates if the asset is exposed to the internet. |
+| Core.VulnerabilityIssue.HAS_KEV | Boolean | Indicates if the vulnerability is a Known Exploited Vulnerability \(KEV\). |
+| Core.VulnerabilityIssue.EXPLOITABLE | Boolean | Indicates if the vulnerability is exploitable. |
+| Core.VulnerabilityIssue.ASSET_IDS | String | The unique identifier for the asset. |

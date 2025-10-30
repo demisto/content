@@ -171,7 +171,8 @@ lint.select = [
     "RET502", # implicit-return-value
 
     "RSE102", # unnecessary-paren-on-raise-exception
-
+    
+    "RUF001", # ambiguous-unicode-character-string
     "RUF006", # asyncio-dangling-task
     "RUF007", # pairwise-over-zipped
     "RUF008", # mutable-dataclass-default
