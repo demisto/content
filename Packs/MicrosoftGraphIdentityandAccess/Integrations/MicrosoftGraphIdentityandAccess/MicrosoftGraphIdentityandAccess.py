@@ -1151,11 +1151,10 @@ def date_str_to_azure_format(date_str: str) -> str:
 
 
 def detection_to_incident(detection: dict, detection_date: str) -> dict:
-    detection_id: str = detection.get("id", "")
     detection_type: str = detection.get("riskEventType", "")
     detection_detail: str = detection.get("riskDetail", "")
     incident = {
-        "name": f"Azure AD: {detection_id} {detection_type} {detection_detail}",
+        "name": f"Risky Microsoft Entra ID sign-in: {detection_type} {detection_detail}",
         "occurred": f"{detection_date}Z",
         "rawJSON": json.dumps(detection),
     }
