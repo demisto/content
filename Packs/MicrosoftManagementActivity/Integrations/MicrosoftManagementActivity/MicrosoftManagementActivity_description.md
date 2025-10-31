@@ -2,9 +2,9 @@ Microsoft Management Activity API (O365/Azure Events) should be used to retrieve
 Through the integration you can subscribe to new content types or stop your subscription, list the available content of each content type, and most importantly - fetch new content records from content types of your choice as Cortex XSOAR incidents.
 
 # Authentication
-You can authenticate either by Azure Active Directory applications or by Azure Managed Identities.
+You can authenticate either by Entra ID applications or by Azure Managed Identities.
 
-## Authentication based on Azure Active Directory applications
+## Authentication based on Entra ID applications
 
 There are two application authentication methods available:
 

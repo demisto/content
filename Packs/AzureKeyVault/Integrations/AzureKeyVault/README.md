@@ -59,7 +59,7 @@ Create or update a key vault in the specified subscription. If the Key Vault exi
 | vault_name | Key Vault name. | Required |
 | location | Key Vault supported Azure location. The location cannot be changed after the Key Vault is created. Default value is 'westus'. Possible values are: northcentralus, eastus, northeurope, westeurope, eastasia, southeastasia, eastus2, centralus, southcentralus, westus, japaneast, japanwest, australiaeast, australiasoutheast, brazilsouth, centralindia, southindia, westindia, canadacentral, canadaeast, uksouth, ukwest, westcentralus, westus2, koreacentral, francecentral, australiacentral, uaenorth, southafricanorth, switzerlandnorth, germanywestcentral, norwayeast, westus3, jioindiawest. | Optional |
 | sku_name | Specify whether the key vault is a standard vault or a premium vault. Default value is 'standard'. Possible values are: standard, premium. | Optional |
-| object_id | The object ID of a user, service principal or security group in the Azure Active Directory tenant for the vault. The object ID must be unique for the list of access policies: Any change in the access policy regards that object ID, will override the exists one. To retrieve it navigate in the Azure Portal to App registrations &gt; your registered application &gt; click on manage application in local directory &gt; copy Object ID property. | Required |
+| object_id | The object ID of a user, service principal or security group in the Entra ID tenant for the vault. The object ID must be unique for the list of access policies: Any change in the access policy regards that object ID, will override the exists one. To retrieve it navigate in the Azure Portal to App registrations &gt; your registered application &gt; click on manage application in local directory &gt; copy Object ID property. | Required |
 | keys | Permissions to keys. If the Key Vault exists, you must supply the previous keys' permissions in order to keep them unchanged. Access policy property. Default value is [get,list,create,update,import,delete,backup,restore,recover]. . Possible values are: get, list, create, update, import, delete, backup, restore, recover, decrypt, encrypt, unwrapKey, wrapKey, verify, sign, purge. | Optional |
 | secrets | Permissions to secrets. If the Key Vault exists, you must supply the previous secrets' permissions in order to keep them unchanged. Access policy property. Default value is [get,list,set,delete,backup,restore,recover]. Possible values are: get, list, set, delete, recover, backup, restore, purge. | Optional |
 | certificates | Permissions to certificates. If the Key Vault exists, you must supply the previous certificate's permissions in order to keep them unchanged. Access policy property. Default value is [get,list,update,create,import,delete,recover,backup,restore,managecontacts,manageissuers,getissuers,listissuers,setissuers,deleteissuers]. Possible values are: get, list, update, create, import, delete, recover, backup, restore, managecontacts, manageissuers, getissuers, listissuers, setissuers, deleteissuers, purge. | Optional |
@@ -85,9 +85,9 @@ resource_group_name|The resource group name. Note: This argument will override t
 | AzureKeyVault.KeyVault.location | String | Key Vault location. |
 | AzureKeyVault.KeyVault.properties.sku.family | String | SKU family name. |
 | AzureKeyVault.KeyVault.properties.sku.name | String | SKU name to specify whether the key vault is a standard vault or a premium vault. |
-| AzureKeyVault.KeyVault.properties.tenantId | String | The Azure Active Directory tenant ID that should be used for authenticating requests to the key vault. |
-| AzureKeyVault.KeyVault.properties.accessPolicies.tenantId | String | The Azure Active Directory tenant ID that should be used for authenticating requests to the key vault. |
-| AzureKeyVault.KeyVault.properties.accessPolicies.objectId | String | The object ID of a user, service principal or security group in the Azure Active Directory tenant for the vault. The object ID must be unique for the list of access policies. |
+| AzureKeyVault.KeyVault.properties.tenantId | String | The Entra ID tenant ID that should be used for authenticating requests to the key vault. |
+| AzureKeyVault.KeyVault.properties.accessPolicies.tenantId | String | The Entra ID tenant ID that should be used for authenticating requests to the key vault. |
+| AzureKeyVault.KeyVault.properties.accessPolicies.objectId | String | The object ID of a user, service principal or security group in the Entra ID tenant for the vault. The object ID must be unique for the list of access policies. |
 | AzureKeyVault.KeyVault.properties.accessPolicies.permissions.keys | Unknown | Permissions to keys. |
 | AzureKeyVault.KeyVault.properties.accessPolicies.permissions.secrets | Unknown | Permissions to secrets. |
 | AzureKeyVault.KeyVault.properties.accessPolicies.permissions.certificates | Unknown | Permissions to certificates. |
@@ -242,9 +242,9 @@ resource_group_name| The resource group name. Note: This argument will override 
 | AzureKeyVault.KeyVault.location | String | Key Vault location. |
 | AzureKeyVault.KeyVault.properties.sku.family | String | SKU family name. |
 | AzureKeyVault.KeyVault.properties.sku.name | String | SKU name to specify whether the key vault is a standard vault or a premium vault. |
-| AzureKeyVault.KeyVault.properties.tenantId | String | The Azure Active Directory tenant ID that should be used for authenticating requests to the key vault. |
-| AzureKeyVault.KeyVault.properties.accessPolicies.tenantId | String | The Azure Active Directory tenant ID that should be used for authenticating requests to the key vault. |
-| AzureKeyVault.KeyVault.properties.accessPolicies.objectId | String | The object ID of a user, service principal or security group in the Azure Active Directory tenant for the vault. The object ID must be unique for the list of access policies. |
+| AzureKeyVault.KeyVault.properties.tenantId | String | The Entra ID tenant ID that should be used for authenticating requests to the key vault. |
+| AzureKeyVault.KeyVault.properties.accessPolicies.tenantId | String | The Entra ID tenant ID that should be used for authenticating requests to the key vault. |
+| AzureKeyVault.KeyVault.properties.accessPolicies.objectId | String | The object ID of a user, service principal or security group in the Entra ID tenant for the vault. The object ID must be unique for the list of access policies. |
 | AzureKeyVault.KeyVault.properties.accessPolicies.permissions.keys | Unknown | Permissions to keys. |
 | AzureKeyVault.KeyVault.properties.accessPolicies.permissions.secrets | Unknown | Permissions to secrets. |
 | AzureKeyVault.KeyVault.properties.accessPolicies.permissions.certificates | Unknown | Permissions to certificates. |
@@ -378,9 +378,9 @@ The List operation gets information about the vaults associated with the subscri
 | AzureKeyVault.KeyVault.location | String | Key Vault location. |
 | AzureKeyVault.KeyVault.properties.sku.family | String | SKU family name. |
 | AzureKeyVault.KeyVault.properties.sku.name | String | SKU name to specify whether the key vault is a standard vault or a premium vault. |
-| AzureKeyVault.KeyVault.properties.tenantId | String | The Azure Active Directory tenant ID that should be used for authenticating requests to the key vault. |
-| AzureKeyVault.KeyVault.properties.accessPolicies.tenantId | String | The Azure Active Directory tenant ID that should be used for authenticating requests to the key vault. |
-| AzureKeyVault.KeyVault.properties.accessPolicies.objectId | String | The object ID of a user, service principal or security group in the Azure Active Directory tenant for the vault. The object ID must be unique for the list of access policies. |
+| AzureKeyVault.KeyVault.properties.tenantId | String | The Entra ID tenant ID that should be used for authenticating requests to the key vault. |
+| AzureKeyVault.KeyVault.properties.accessPolicies.tenantId | String | The Entra ID tenant ID that should be used for authenticating requests to the key vault. |
+| AzureKeyVault.KeyVault.properties.accessPolicies.objectId | String | The object ID of a user, service principal or security group in the Entra ID tenant for the vault. The object ID must be unique for the list of access policies. |
 | AzureKeyVault.KeyVault.properties.accessPolicies.permissions.keys | Unknown | Permissions to keys. |
 | AzureKeyVault.KeyVault.properties.accessPolicies.permissions.secrets | Unknown | Permissions to secrets. |
 | AzureKeyVault.KeyVault.properties.accessPolicies.permissions.certificates | Unknown | Permissions to certificates. |
@@ -502,7 +502,7 @@ Update access policies in a key vault in the specified subscription. The update 
 | --- | --- | --- |
 | vault_name | The name of the Key Vault to update it's access policy. | Required |
 | operation_kind | The name of the operation to do on the vault's access policy. Supports three operations: add,remove,replace. For example, to add get, list permissions to the current secret permissions, use operation_kind=add and secrets=get,list. Possible values are: add, remove, replace. | Required |
-| object_id | The object ID of a user, service principal or security group in the Azure Active Directory tenant for the vault. The update regards only the access policy for the specified object ID. | Required |
+| object_id | The object ID of a user, service principal or security group in the Entra ID tenant for the vault. The update regards only the access policy for the specified object ID. | Required |
 | keys | Permissions to keys. Possible values are: encrypt, decrypt, wrapKey, unwrapKey, sign, verify, get, list, create, update, import, delete, backup, restore, recover, purge. | Optional |
 | secrets | Permissions to secrets. Possible values are: get, list, set, delete, backup, restore, recover, purge. | Optional |
 | certificates | Permissions to certificates. Possible values are: get, list, delete, create, import, update, managecontacts, getissuers, listissuers, setissuers, deleteissuers, manageissuers, recover, purge. | Optional |
@@ -516,8 +516,8 @@ Update access policies in a key vault in the specified subscription. The update 
 | --- | --- | --- |
 | AzureKeyVault.VaultAccessPolicy.id | String | Resource ID. |
 | AzureKeyVault.VaultAccessPolicy.type | String | Resource type in Azure. |
-| AzureKeyVault.VaultAccessPolicy.properties.accessPolicies.tenantId | String | The Azure Active Directory tenant ID that should be used for authenticating requests to the key vault. |
-| AzureKeyVault.VaultAccessPolicy.properties.accessPolicies.objectId | String | The object ID of a user, service principal or security group in the Azure Active Directory tenant for the vault. The object ID must be unique for the list of access policies. |
+| AzureKeyVault.VaultAccessPolicy.properties.accessPolicies.tenantId | String | The Entra ID tenant ID that should be used for authenticating requests to the key vault. |
+| AzureKeyVault.VaultAccessPolicy.properties.accessPolicies.objectId | String | The object ID of a user, service principal or security group in the Entra ID tenant for the vault. The object ID must be unique for the list of access policies. |
 | AzureKeyVault.VaultAccessPolicy.properties.accessPolicies.permissions.keys | Unknown | Permissions to keys. |
 | AzureKeyVault.VaultAccessPolicy.properties.accessPolicies.permissions.secrets | Unknown | Permissions to secrets. |
 | AzureKeyVault.VaultAccessPolicy.properties.accessPolicies.permissions.certificates | Unknown | Permissions to certificates. |

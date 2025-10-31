@@ -963,8 +963,8 @@ tasks:
     task:
       id: be533930-e327-4945-8fb7-c47ada329a2f
       version: -1
-      name: Is Azure Active Directory Users integration enabled?
-      description: Returns 'yes' if the integration brand is available. Otherwise returns 'no'.
+      name: Is Entra ID Users integration enabled?
+      description: Returns 'yes' if the Entra ID Users integration is available. Otherwise returns 'no'.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -1002,7 +1002,7 @@ tasks:
     task:
       id: da04f484-d65e-40a4-82da-e5e1f4afd88b
       version: -1
-      name: Get account info from Azure Active Directory
+      name: Get account info from Entra ID
       description: |-
         Retrieves the properties and relationships of a user object. For more information, visit: https://docs.microsoft.com/en-us/graph/api/user-update?view=graph-rest-1.0).
         Permissions: - User.Read (Delegated) - User.Read.All (Application)
@@ -1088,7 +1088,7 @@ tasks:
     task:
       id: e5aab025-d489-4bc6-89d8-ffde4c23ac36
       version: -1
-      name: Azure Active Directory - Get manager details
+      name: Entra ID - Get manager details
       description: Retrieves the properties from the manager of a user.
       script: '|||msgraph-user-get-manager'
       type: regular

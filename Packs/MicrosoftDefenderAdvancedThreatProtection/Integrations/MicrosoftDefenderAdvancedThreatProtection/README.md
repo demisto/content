@@ -35,7 +35,7 @@ Microsoft Defender Advanced Threat Protection Get Machine Action Status
 
 ---
 
-Microsoft integrations (Graph and Azure) in Cortex use Azure Active Directory applications to authenticate with Microsoft APIs. These integrations use OAuth 2.0 and OpenID Connect standard-compliant authentication services, which use an Application to sign-in or delegate authentication. For more information, see the [Microsoft identity platform overview](https://learn.microsoft.com/en-us/entra/identity-platform/v2-overview).
+Microsoft integrations (Graph and Azure) in Cortex use Entra ID applications to authenticate with Microsoft APIs. These integrations use OAuth 2.0 and OpenID Connect standard-compliant authentication services, which use an Application to sign-in or delegate authentication. For more information, see the [Microsoft identity platform overview](https://learn.microsoft.com/en-us/entra/identity-platform/v2-overview).
 
 Two application authentication methods are available:
 
@@ -3276,7 +3276,7 @@ Deprecated. Use the microsoft-atp-sc-indicator-list command instead. Lists all i
 | MicrosoftATP.Indicators.id | String | Created by the system when the indicator is ingested. Generated GUID/unique identifier. |
 | MicrosoftATP.Indicators.action | String | The action to apply if the indicator is matched from within the targetProduct security tool. Possible values are: unknown, allow, block, alert. |
 | MicrosoftATP.Indicators.additionalInformation | String | A catchall area into which extra data from the indicator not covered by the other indicator properties may be placed. Data placed into additionalInformation is typically not be used by the targetProduct security tool. |
-| MicrosoftATP.Indicators.azureTenantId | String | Stamped by the system when the indicator is ingested. The Azure Active Directory tenant ID of submitting client. |
+| MicrosoftATP.Indicators.azureTenantId | String | Stamped by the system when the indicator is ingested. The Entra ID tenant ID of submitting client. |
 | MicrosoftATP.Indicators.confidence | Number | An integer representing the confidence with which the data within the indicator accurately identifies malicious behavior. Possible values are 0 – 100, with 100 being the highest. |
 | MicrosoftATP.Indicators.description | String | Brief description \(100 characters or less\) of the threat represented by the indicator. |
 | MicrosoftATP.Indicators.diamondModel | String | The area of the Diamond Model in which this indicator exists. Possible values are: "unknown", "adversary", "capability", "infrastructure", "victim". |
