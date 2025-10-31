@@ -89,9 +89,22 @@ configuration:
   - any
   type: 15
   required: false
+- display: Incident Mirroring Direction
+  name: mirror_direction
+  type: 15
+  section: Collect
+  options:
+  - None
+  - Incoming
+  - Outgoing
+  - Incoming And Outgoing
+  defaultvalue: None
+  additionalinfo: Choose the direction to mirror incidents. Outgoing mirrors XSOAR changes to Vision One alerts.
+  required: false
 description: Trend Micro Vision One is a purpose-built threat defense platform that provides added value and new benefits beyond XDR solutions, allowing you to see more and respond faster. Providing deep and broad extended detection and response (XDR) capabilities that collect and automatically correlate data across multiple security layers—email, endpoints, servers, cloud workloads, and networks—Trend Micro Vision One prevents the majority of attacks with automated protection.
-display: Trend Micro Vision One V3.
+display: Trend Micro Vision One V3
 defaultmapperin: Trend Micro Vision One V3 XDR - Incoming Mapper
+defaultmapperout: Trend Micro Vision One V3 XDR - Outgoing Mapper
 name: Trend Micro Vision One V3
 script:
   commands:
@@ -1446,9 +1459,32 @@ script:
       type: string
     description: Displays a list of Observed Attack Techniques events that match the specified criteria.
     name: trendmicro-visionone-get-observed-attack-techniques
-  dockerimage: demisto/pytmv1:0.9.2.4398531
+  - name: get-mapping-fields
+    description: Returns the list of fields for an incident type. This command is used for incident mirroring.
+    arguments: []
+  - name: update-remote-system
+    description: Pushes local XSOAR incident changes to the remote Vision One alert system. This command is used for outgoing mirroring.
+    arguments: []
+  - name: get-remote-data
+    description: Gets remote data from Vision One for a specific alert. This method is used for incoming mirroring and debugging purposes.
+    arguments:
+    - name: id
+      description: The Vision One alert ID.
+      required: true
+    - name: lastUpdate
+      description: Retrieve entries that were modified after lastUpdate timestamp.
+      required: true
+  - name: get-modified-remote-data
+    description: Gets the list of Vision One alerts that were modified since the last update time. This command is used for incoming mirroring.
+    arguments:
+    - name: lastUpdate
+      description: Retrieve entries that were modified after lastUpdate timestamp.
+  dockerimage: demisto/pytmv1:0.9.3.5531492
   isFetchSamples: true
   isfetch: true
+  ismappable: true
+  isremotesyncin: true
+  isremotesyncout: true
   script: ''
   subtype: python3
   type: python
