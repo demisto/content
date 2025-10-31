@@ -179,10 +179,6 @@
         "cefVersion": {
             "type": "string",
             "is_array": false
-        },
-        "event_at": {
-            "type": "datetime",
-            "is_array": false
         }
     },
     "fireeye_hx_audit_raw": {

@@ -67,10 +67,6 @@
         "evidence": {
             "type": "string",
             "is_array": false
-        },
-        "timestamp": {
-            "type": "int",
-            "is_array": false
         }
     }
 }

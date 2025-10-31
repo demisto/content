@@ -37,7 +37,7 @@
             "is_array": false
         },
         "datetime": {
-            "type": "string",
+            "type": "datetime",
             "is_array": false
         },
         "IP": {
