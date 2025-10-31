@@ -1,7 +1,8 @@
-id: 7e2581e0-beff-4c5a-8415-42ee2cf5a9d4
-version: 4
+id: Doppel Screenshot Preview
+version: -1
 vcShouldKeepItemLegacyProdMachine: false
 name: Doppel Screenshot Preview
+description: Previews the Doppel Screenshot URL to an actual image in the Incident War Room
 starttaskid: "0"
 tasks:
   "0":
