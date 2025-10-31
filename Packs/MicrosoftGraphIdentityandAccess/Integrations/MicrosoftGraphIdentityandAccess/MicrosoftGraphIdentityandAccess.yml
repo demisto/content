@@ -96,7 +96,7 @@ configuration:
 - section: Collect
   defaultvalue: '50'
   display: Max Fetch Incidents Returned
-  additionalinfo: The maximum number of incidents per request from the Azure Active Directory. Default is 50.
+  additionalinfo: The maximum number of incidents per request from Entra ID. Default is 50.
   name: max_fetch
   type: 0
   required: false
@@ -123,8 +123,8 @@ configuration:
   type: 0
   advanced: true
   required: false
-description: Use the Azure Active Directory Identity And Access integration to manage roles and members.
-display: Azure Active Directory Identity And Access
+description: Use the Entra ID Identity And Access integration to manage roles and members (formerly Azure Active Directory Identity And Access).
+display: Entra ID Identity And Access
 name: MicrosoftGraphIdentityandAccess
 script:
   commands:
