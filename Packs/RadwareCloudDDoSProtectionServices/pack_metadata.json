@@ -2,7 +2,7 @@
     "name": "Radware Cloud DDoS Protection Services",
     "description": "Radware Cloud DDoS Protection Service offers multi-layered defense using advanced behavioral algorithms to detect and mitigate Distributed Denial of Service (DDoS) attacks, from infrastructure-level floods to application-layer assaults. The service leverages a global network of scrubbing centers and supports flexible deployment options, including always-on, on-demand, and hybrid models, backed by an industry-leading mitigation SLA.",
     "support": "xsoar",
-    "currentVersion": "1.0.2",
+    "currentVersion": "1.0.3",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -30,11 +30,5 @@
     ],
     "marketplaces": [
         "marketplacev2"
-    ],
-    "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS"
     ]
 }

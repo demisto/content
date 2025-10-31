@@ -5888,6 +5888,7 @@
         },
         {
             "playbookID": "QuarantineFile-Test",
+            "integrations": "Cortex XDR - IR",
             "timeout": 300,
             "fromversion": "6.10.0"
         },
@@ -5937,6 +5938,15 @@
             "instance_names": [
                 "virus_total_v3"
             ],
+            "fromversion": "6.10.0"
+        },
+        {
+            "playbookID": "GetEndpointData-Test",
+            "integrations": ["Active Directory Query v2", "CrowdstrikeFalcon", "FireEyeHX v2", "Cortex XDR - IR"],
+            "instance_names": [
+                "active_directory_80k"
+            ],
+            "timeout": 300,
             "fromversion": "6.10.0"
         },
         {
@@ -6343,6 +6353,7 @@
         "PaloAltoNetworks_IoT",
         "PaloAltoNetworksAIOps",
         "Jira",
+        "AggregatedScripts",
         "Campaign"
     ],
     "selected_nightly_tpb": [
