@@ -15,6 +15,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#none#':
       - "1"
@@ -171,3 +172,4 @@ outputs: []
 sourceplaybookid: 78d4704a-1b65-41b6-86cd-b7fd3242579b
 quiet: true
 dirtyInputs: true
+fromversion: 5.0.0
