@@ -811,6 +811,7 @@ class MicrosoftClient(BaseClient):
         scope: str | None = None,
         resource: str = "",
         overwrite_rate_limit_retry=False,
+        empty_valid_codes: list[int] | None = None,
         **kwargs,
     ):
         """
@@ -842,7 +843,13 @@ class MicrosoftClient(BaseClient):
             kwargs["error_handler"] = self.handle_error_with_metrics
 
         response = super()._http_request(  # type: ignore[misc]
-            *args, resp_type="response", headers=default_headers, status_list_to_retry=[503], retries=3, **kwargs
+            *args,
+            resp_type="response",
+            headers=default_headers,
+            status_list_to_retry=[503],
+            retries=3,
+            empty_valid_codes=empty_valid_codes,
+            **kwargs,
         )
 
         if should_http_retry_on_rate_limit and MicrosoftClient.is_command_executed_from_integration():
@@ -851,7 +858,9 @@ class MicrosoftClient(BaseClient):
         # In that case, logs with the warning header will be written.
         if response.status_code == 206:
             demisto.debug(str(response.headers))
-        is_response_empty_and_successful = response.status_code == 204
+        if not empty_valid_codes:
+            empty_valid_codes = [204]
+        is_response_empty_and_successful = response.status_code in empty_valid_codes
         if is_response_empty_and_successful and return_empty_response:
             return response
 
