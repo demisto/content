@@ -15,6 +15,7 @@
 	"hoursR": 0,
 	"id": "Doppel Alert Email",
 	"layout": "Doppel Incident Layout",
+	"playbookId": "Doppel Screenshot Preview",
 	"locked": false,
 	"name": "Doppel Alert Email",
 	"onChangeRepAlg": 0,

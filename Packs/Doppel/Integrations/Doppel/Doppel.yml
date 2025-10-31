@@ -29,6 +29,12 @@ configuration:
   required: false
   type: 9
   section: Connect
+- additionalinfo: The Organization Code to use for connection with Doppel.
+  display: Organization Code
+  name: organization_code
+  required: false 
+  type: 0
+  section: Connect
 - display: Fetch incidents
   name: isFetch
   required: false
