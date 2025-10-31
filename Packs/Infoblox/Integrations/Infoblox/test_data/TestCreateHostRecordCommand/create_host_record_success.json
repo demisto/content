@@ -1,0 +1,38 @@
+{
+    "result": {
+        "_ref": "record:host/45678:example/%20",
+        "name": "example",
+        "view": "default",
+        "network_view": "default",
+        "comment": "",
+        "disable": false,
+        "configure_for_dns": false,
+        "ddns_protected": false,
+        "disable_discovery": false,
+        "dns_name": "example",
+        "extattrs": {},
+        "ipv4addrs": [
+            {
+                "_ref": "record:host_ipv4addr/12345:0.0.0.1/example/%20",
+                "configure_for_dhcp": false,
+                "host": "example",
+                "ipv4addr": "0.0.0.1"
+            }
+        ],
+        "ipv6addrs": [
+            {
+                "_ref": "record:host_ipv6addr/23456:0000:000:0000::0000:000:001/example/%20",
+                "configure_for_dhcp": false,
+                "host": "example",
+                "ipv6addr": "0000:000:0000::0000:000:001"
+            }
+        ],
+        "rrset_order": "cyclic",
+        "type": "record:host",
+        "use_cli_credentials": false,
+        "use_snmp3_credential": false,
+        "use_snmp_credential": false,
+        "use_ttl": false,
+        "zone": ""
+    }
+}
