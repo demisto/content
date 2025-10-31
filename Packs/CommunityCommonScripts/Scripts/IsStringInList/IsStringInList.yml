@@ -1,0 +1,41 @@
+args:
+- description: the string to look for.
+  name: searchString
+  required: true
+- description: the XSOAR system list name.
+  name: listName
+  required: true
+- auto: PREDEFINED
+  description: ' Set to "true" to ignore case when matching. Default is "false".'
+  name: caseInsensitive
+  predefined:
+  - 'true'
+  - 'false'
+- auto: PREDEFINED
+  description: ' Set to "true" to enable * and ? wildcard matching. Default is "false".'
+  name: useWildcard
+  predefined:
+  - 'true'
+  - 'false'
+comment: "This automation is for comparing array(list) data of context to existing lists on XSOAR server. You can avoid using loop of sub-playbook.\ninputArray: the context array/list data\nlistName: the XSOAR system list."
+commonfields:
+  id: isStringInList
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ''
+dockerimage: demisto/python3:3.12.12.5490952
+enabled: true
+engineinfo: {}
+name: isStringInList
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- Condition
+type: python
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)
