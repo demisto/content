@@ -1,6 +1,5 @@
 id: Doppel Screenshot Preview
 version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: Doppel Screenshot Preview
 description: Previews the Doppel Screenshot URL to an actual image in the Incident War Room
 starttaskid: "0"
