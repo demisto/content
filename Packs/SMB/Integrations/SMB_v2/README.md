@@ -253,3 +253,47 @@ There is no context output for this command.
 #### Human Readable Output
 
 >Directory: 127.0.0.1/Shared/Tests was removed successfully
+
+### smb-path-rename
+
+***
+    Renames a file or directory on an SMB server.
+
+#### Base Command
+
+`smb-path-rename`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| hostname | No description provided. | Required | 
+| src_path | No description provided. | Required | 
+| dest_path | No description provided. | Required | 
+| overwrite | No description provided. Possible values are: yes, no. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+### smb-copy
+
+***
+Copies files and directories from one location to another.
+
+#### Base Command
+
+`smb-copy`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| source_host | Server that you will copy from. | Required | 
+| source_path | Directory or file name .  Also accepts wildcards * and ?. | Required | 
+| destination_host | Server that you will copy to.  If this is left blank, it will assume the destination_host is the same as the source_host. | Optional | 
+| destination_path | directory or file name . | Required | 
+| overwrite | If files exist at the destination location should it overwrite. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
