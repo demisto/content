@@ -1,9 +1,6 @@
 commonfields:
   id: Server Message Block (SMB) v2
   version: -1
-sectionorder:
-- Connect
-- Collect
 name: Server Message Block (SMB) v2
 display: Server Message Block (SMB) v2
 category: Utilities
@@ -172,9 +169,39 @@ script:
     - name: password
       description: The password to use for authentication. If empty, the password from the instance configuration is used.
     description: Removes a directory from the given path.
-  dockerimage: demisto/smbprotocol:1.0.0.2035850
+  - arguments:
+    - description: Server that you will copy from.
+      name: source_host
+      required: true
+    - description: Directory or file name .  Also accepts wildcards * and ?
+      name: source_path
+      required: true
+    - description: Server that you will copy to.  If this is left blank, it will assume the destination_host is the same as the source_host.
+      name: destination_host
+    - description: directory or file name .
+      name: destination_path
+      required: true
+    - description: If files exist at the destination location should it overwrite.
+      name: overwrite
+    description: Copies files and directories from one location to another.
+    name: smb-copy
+  - arguments:
+    - name: hostname
+      required: true
+    - name: src_path
+      required: true
+    - name: dest_path
+      required: true
+    - auto: PREDEFINED
+      name: overwrite
+      predefined:
+      - yes
+      - no
+    description: '    Renames a file or directory on an SMB server.'
+    name: smb-path-rename
+  dockerimage: demisto/smbprotocol:1.0.0.4820677
   runonce: false
-  script: '-'
+  script: ''
   type: python
   subtype: python3
 tests:
