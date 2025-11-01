@@ -1005,3 +1005,58 @@ def test_http_request_status_list_to_retry_parameter(requests_mock, mocker):
     assert isinstance(
         status_list, Iterable
     ), f"status_list_to_retry should be an Iterable, got {type(status_list)}: {status_list}"
+
+
+def _make_response(status: int, content: bytes = b"") -> Response:
+    r = Response()
+    r.status_code = status
+    r._content = content
+    return r
+
+
+def test_http_request_empty_valid_codes_202_returns_response(mocker):
+    """
+    Given:
+        - MicrosoftClient.http_request with empty_valid_codes=[202] and return_empty_response=True
+    When:
+        - Underlying HTTP returns 202 with an empty body
+    Then:
+        - The method should treat it as an empty successful response and return the raw Response object
+        - The empty_valid_codes should be forwarded to BaseClient._http_request
+    """
+    client = self_deployed_client()
+    mocked_response = _make_response(202, b"")
+
+    http_mock = mocker.patch.object(BaseClient, "_http_request", return_value=mocked_response)
+    mocker.patch.object(client, "get_access_token", return_value=TOKEN)
+
+    res = client.http_request(method="GET", url_suffix="dummy", return_empty_response=True, empty_valid_codes=[202])
+
+    # Returned object is the raw Response
+    assert isinstance(res, Response)
+    assert res.status_code == 202
+
+    # Ensure empty_valid_codes was forwarded to the underlying _http_request
+    forwarded_kwargs = http_mock.call_args.kwargs
+    assert forwarded_kwargs.get("empty_valid_codes") == [202]
+
+
+def test_http_request_default_empty_valid_codes_204_returns_response(mocker):
+    """
+    Given:
+        - MicrosoftClient.http_request with return_empty_response=True and no empty_valid_codes provided
+    When:
+        - Underlying HTTP returns 204 with an empty body
+    Then:
+        - The method should default empty_valid_codes to [204] and return the raw Response object
+    """
+    client = self_deployed_client()
+    mocked_response = _make_response(204, b"")
+
+    mocker.patch.object(BaseClient, "_http_request", return_value=mocked_response)
+    mocker.patch.object(client, "get_access_token", return_value=TOKEN)
+
+    res = client.http_request(method="DELETE", url_suffix="dummy", return_empty_response=True)
+
+    assert isinstance(res, Response)
+    assert res.status_code == 204
