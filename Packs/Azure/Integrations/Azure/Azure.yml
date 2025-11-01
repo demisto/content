@@ -771,6 +771,15 @@ script:
     - description: The name of the blob.
       name: blob_name
       required: true
+    - description: "The subscription ID."
+      name: subscription_id
+      required: true
+    - description: "The resource group name."
+      name: resource_group_name
+      required: true
+    - description: The storage account name.
+      name: account_name
+      required: true
     - description: Blob content type. Indicates the media type of the blob.
       name: content_type
     - description: Blob MD5 hash value. Can be used by the client to check for content integrity.
@@ -793,6 +802,15 @@ script:
   - arguments:
     - description: Name of a container.
       name: container_name
+      required: true
+    - description: "The subscription ID."
+      name: subscription_id
+      required: true
+    - description: "The resource group name."
+      name: resource_group_name
+      required: true
+    - description: The storage account name.
+      name: account_name
       required: true
     description: Block public access to a container.
     name: azure-storage-container-block-public-access

@@ -277,7 +277,7 @@ class AzureClient:
         json_data: dict | None = None,
     ) -> requests.Response | dict:
         params = params or {}
-        if not params.get("api-version"):
+        if not params.get("api-version") or not "api-version" in self.headers:
             params["api-version"] = API_VERSION
 
         proxies = {"http": os.environ.get("CRTX_HTTP_PROXY"), "https": os.environ.get("CRTX_HTTP_PROXY")}
@@ -649,6 +649,26 @@ class AzureClient:
                 subscription_id=subscription_id,
                 resource_group_name=resource_group_name,
             )
+    
+    def storage_container_set_headers(self, custom_headers: dict = None):
+        """
+        Set the headers for the storage container request.
+        Args:
+            custom_headers (dict, optional): Custom headers to be added to the request.
+        """ 
+        request_headers = {
+            "x-ms-version": "2020-10-02",
+            "x-ms-date": dt.datetime.utcnow().strftime("%a, %d %b %Y %H:%M:%S GMT"),
+        }
+        if self.headers:
+            self.headers |= request_headers
+        else:
+            self.headers = request_headers
+        
+        if custom_headers:
+            self.headers |= custom_headers
+        
+        demisto.debug(f"Request headers: {self.headers}")
 
     def get_storage_container_properties_request(self, account_name: str, container_name: str) -> requests.Response:
         """
@@ -663,14 +683,7 @@ class AzureClient:
         """
         params = assign_params(restype="container")
         full_url = f"https://{account_name}.blob.core.windows.net/{container_name}"
-        request_headers = {
-            "x-ms-version": "2020-10-02",
-            "x-ms-date": dt.datetime.utcnow().strftime("%a, %d %b %Y %H:%M:%S GMT"),
-        }
-        if self.headers:
-            self.headers |= request_headers
-        else:
-            self.headers = request_headers
+        self.storage_container_set_headers()
 
         response = self.http_request(method="GET", full_url=full_url, params=params, resp_type="response")
 
@@ -690,14 +703,8 @@ class AzureClient:
         """
         params = assign_params(restype="container")
         full_url = f"https://{account_name}.blob.core.windows.net/{container_name}"
-        request_headers = {
-            "x-ms-version": "2020-10-02",
-            "x-ms-date": dt.datetime.utcnow().strftime("%a, %d %b %Y %H:%M:%S GMT"),
-        }
-        if self.headers:
-            self.headers |= request_headers
-        else:
-            self.headers = request_headers
+        self.storage_container_set_headers()
+
         response = self.http_request(method="PUT", full_url=full_url, params=params)
 
         return response
@@ -716,14 +723,7 @@ class AzureClient:
         """
         params = assign_params(restype="container")
         full_url = f"https://{account_name}.blob.core.windows.net/{container_name}"
-        request_headers = {
-            "x-ms-version": "2020-10-02",
-            "x-ms-date": dt.datetime.utcnow().strftime("%a, %d %b %Y %H:%M:%S GMT"),
-        }
-        if self.headers:
-            self.headers |= request_headers
-        else:
-            self.headers = request_headers
+        self.storage_container_set_headers()
 
         self.http_request(method="DELETE", full_url=full_url, params=params)
 
@@ -738,14 +738,8 @@ class AzureClient:
             dict: The JSON response from the Azure API.
         """
         full_url = f"https://{account_name}.blob.core.windows.net/{container_name}/{blob_name}"
-        request_headers = {
-            "x-ms-version": "2020-10-02",
-            "x-ms-date": dt.datetime.utcnow().strftime("%a, %d %b %Y %H:%M:%S GMT"),
-        }
-        if self.headers:
-            self.headers |= request_headers
-        else:
-            self.headers = request_headers
+        self.storage_container_set_headers()
+
         response = self.http_request(method="GET", full_url=full_url, resp_type="response")
 
         return response
@@ -762,40 +756,8 @@ class AzureClient:
         """
         full_url = f"https://{account_name}.blob.core.windows.net/{container_name}/{blob_name}"
         params = assign_params(comp="tags")
-        request_headers = {
-            "x-ms-version": "2020-10-02",
-            "x-ms-date": dt.datetime.utcnow().strftime("%a, %d %b %Y %H:%M:%S GMT"),
-        }
-        if self.headers:
-            self.headers |= request_headers
-        else:
-            self.headers = request_headers
+        self.storage_container_set_headers()
         response = self.http_request(method="GET", full_url=full_url, params=params, resp_type="text")
-
-        return response
-
-    def storage_container_blob_properties_get_request(
-        self, container_name: str, blob_name: str, account_name: str
-    ) -> requests.Response:
-        """
-        Get the properties of a blob from a storage container.
-        Args:
-            container_name (str): Name of the container.
-            blob_name (str): Name of the blob.
-            account_name (str): Name of the storage account.
-        Returns:
-            dict: The JSON response from the Azure API.
-        """
-        full_url = f"https://{account_name}.blob.core.windows.net/{container_name}/{blob_name}"
-        request_headers = {
-            "x-ms-version": "2020-10-02",
-            "x-ms-date": dt.datetime.utcnow().strftime("%a, %d %b %Y %H:%M:%S GMT"),
-        }
-        if self.headers:
-            self.headers |= request_headers
-        else:
-            self.headers = request_headers
-        response = self.http_request(method="HEAD", full_url=full_url, resp_type="response")
 
         return response
 
@@ -818,14 +780,7 @@ class AzureClient:
         """
         full_url = f"https://{account_name}.blob.core.windows.net/{container_name}/{blob_name}"
         params = assign_params(comp="tags")
-        request_headers = {
-            "x-ms-version": "2020-10-02",
-            "x-ms-date": dt.datetime.utcnow().strftime("%a, %d %b %Y %H:%M:%S GMT"),
-        }
-        if self.headers:
-            self.headers |= request_headers
-        else:
-            self.headers = request_headers
+        self.storage_container_set_headers()
 
         response = self.http_request(method="PUT", full_url=full_url, params=params, json_data=tags, resp_type="response")
 
@@ -847,15 +802,8 @@ class AzureClient:
 
         """
         full_url = f"https://{account_name}.blob.core.windows.net/{container_name}/{blob_name}"
-        params = assign_params(comp="tags")
-        request_headers = {
-            "x-ms-version": "2020-10-02",
-            "x-ms-date": dt.datetime.utcnow().strftime("%a, %d %b %Y %H:%M:%S GMT"),
-        }
-        if self.headers:
-            self.headers |= request_headers
-        else:
-            self.headers = request_headers
+        self.storage_container_set_headers()
+
         response = self.http_request(method="HEAD", full_url=full_url, params=params, resp_type="response")
 
         return response
@@ -877,25 +825,32 @@ class AzureClient:
         """
         full_url = f"https://{account_name}.blob.core.windows.net/{container_name}/{blob_name}"
         params = assign_params(comp="properties")
-        request_headers = {
-            "x-ms-version": "2020-10-02",
-            "x-ms-date": dt.datetime.utcnow().strftime("%a, %d %b %Y %H:%M:%S GMT"),
-        }
-        if self.headers:
-            self.headers |= request_headers
-        else:
-            self.headers = request_headers
-        self.headers |= headers
+        self.storage_container_set_headers(custom_headers=headers)
+
         response = self.http_request(method="PUT", full_url=full_url, params=params, resp_type="response")
 
         return response
 
-    def storage_container_block_public_access(self, url, headers):
-        if self.headers:
-            self.headers |= headers
-        else:
-            self.headers = headers
-        return self.http_request(method="PUT", full_url=url)
+    def storage_container_block_public_access_request(self, account_name: str, container_name: str, headers: dict):
+        """
+        Block public access to a container.
+
+        Args:
+            account_name (str): Name of the storage account.
+            container_name (str): Name of the container.
+            headers (dict): Request Headers.
+
+        Returns:
+            Response: API response from Azure.
+
+        """
+        full_url = f"https://{account_name}.blob.core.windows.net/{container_name}"
+        params = assign_params(restype="container", comp="acl")
+        self.storage_container_set_headers(custom_headers=headers)
+
+        response = self.http_request(method="PUT", full_url=full_url, params=params, resp_type="response")
+
+        return response
 
     def create_policy_assignment(
         self, name: str, policy_definition_id: str, display_name: str, parameters: str, description: str, scope: str
@@ -2394,6 +2349,7 @@ def storage_container_blob_property_get_command(client: AzureClient, args: Dict[
         outputs.get("Blob").get("Property"),  # type: ignore
         headers=["creation_time", "last_modified", "content_length", "content_type", "etag"],
         headerTransform=string_to_table_header,
+        removeNull=True,
     )
 
     return CommandResults(
@@ -2464,56 +2420,15 @@ def storage_container_block_public_access_command(client: AzureClient, args: Dic
 
     """
 
-    account_key = demisto.params().get("shared_key", {}).get("password")
-    if not account_key:
-        raise KeyError("The 'shared_key' parameter must be provided.")
-    else:
-        account_name = demisto.params().get("credentials", {}).get("identifier")
-        container_name = args.get("container_name")
-        api_version = client.get_api_version()
-        request_url = f"https://{account_name}.blob.core.windows.net/{container_name}?restype=container&comp=acl"
-        request_date = dt.datetime.utcnow().strftime("%a, %d %b %Y %H:%M:%S GMT")
-
-        # string for API signature
-        string_to_sign = (
-            f"PUT\n"  # HTTP Verb
-            f"\n"  # Content-Encoding
-            f"\n"  # Content-Language
-            f"\n"  # Content-Length
-            f"\n"  # Content-MD5
-            f"\n"  # Content-Type
-            f"\n"  # Date
-            f"\n"  # If-Modified-Since
-            f"\n"  # If-Match
-            f"\n"  # If-None-Match
-            f"\n"  # If-Unmodified-Since
-            f"\n"  # Range
-            f"x-ms-date:{request_date}\n"
-            f"x-ms-version:{api_version}\n"
-            f"/{account_name}/{container_name}\n"
-            "comp:acl\n"
-            "restype:container"
-        )
-
-        # create signature token for API auth
-        try:
-            decoded_key = base64.b64decode(account_key)
-            signature = hmac.new(decoded_key, string_to_sign.encode("utf-8"), hashlib.sha256).digest()
-            encoded_signature = base64.b64encode(signature).decode("utf-8")
-        except ValueError:
-            raise ValueError("Incorrect shared key provided")
-        authorization_header = f"SharedKey {account_name}:{encoded_signature}"
-        headers = {
-            "x-ms-date": request_date,
-            "Authorization": authorization_header,
-            "x-ms-version": api_version,
-        }
-        response = client.block_public_access(request_url, headers)
-        demisto.debug(f"Response from block public access API:- {response}")
-        command_results = CommandResults(
-            readable_output=f"Public access to container '{container_name}' has been successfully blocked",
-        )
-        return command_results
+    account_name = args.get("account_name")
+    container_name = args.get("container_name")
+    
+    response = client.storage_container_block_public_access_request(account_name, container_name)
+    demisto.debug(f"Response from block public access API:- {response}")
+    command_results = CommandResults(
+        readable_output=f"Public access to container '{container_name}' has been successfully blocked",
+    )
+    return command_results
 
 
 def create_set_tags_request_body(tags: dict) -> str:
