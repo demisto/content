@@ -1,0 +1,17 @@
+commonfields:
+  id: EntryWidgetNumberResourcesXCLOUD
+  version: -1
+name: EntryWidgetNumberResourcesXCLOUD
+script: ''
+type: python
+tags:
+- dynamic-section
+comment: Entry widget that returns the number of resources in a Cortex XDR incident.
+enabled: true
+scripttarget: 0
+subtype: python3
+dockerimage: demisto/python3:3.12.8.3296088
+runas: DBotWeakRole
+fromversion: 6.5.0
+tests:
+- No tests (auto formatted)

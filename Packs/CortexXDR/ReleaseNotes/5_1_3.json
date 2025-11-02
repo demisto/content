@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "**Important Note**: Unused XDR fields were removed from the XDR incoming mapper. This change affects only **Malware Investigation And Response** incident type, and should reduce incident context size and avoid duplicated data. Make sure your custom content items do not use any of the removed XDR fields and the **Malware Investigation And Response** incident type."
+}

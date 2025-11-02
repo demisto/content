@@ -1,0 +1,222 @@
+deprecated: true
+description: Deprecated. Use the `xdr-file-delete-script-execute` command instead. Initiates a new endpoint script execution to delete the specified file
+  and retrieve the results.
+id: Cortex XDR - delete file
+inputs:
+- description: 'A comma-separated list of endpoint IDs. '
+  key: endpoint_id
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: |-
+    A comma-separated list of file paths to delete.
+    Files will be deleted on all provided endpoint ids
+  key: file_path
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: |-
+    The timeout in seconds for this execution.
+    (Default is: '600')
+  key: script_timeout
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: Amount of time to poll action status before declaring a timeout and
+    resuming the playbook (in minutes).
+  key: polling_timeout
+  playbookInputQuery:
+  required: false
+  value:
+    simple: "10"
+name: Cortex XDR - delete file
+outputs:
+- contextPath: PaloAltoNetworksXDR.ScriptResult.results._return_value
+  description: Value returned by the script in case the type is not a dictionary.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 2e8588ea-e14e-4a63-87e5-35bcb394c162
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 2e8588ea-e14e-4a63-87e5-35bcb394c162
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      endpoint_ids:
+        complex:
+          root: inputs.endpoint_id
+      file_path:
+        complex:
+          root: inputs.file_path
+      timeout:
+        complex:
+          root: inputs.script_timeout
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Initiates a new endpoint script execution to delete the specified
+        file.
+      id: d5336998-61b4-4fa1-8e34-00a69873b5cc
+      iscommand: true
+      name: Run script delete file
+      script: '|||xdr-run-script-delete-file'
+      type: regular
+      version: -1
+    taskid: d5336998-61b4-4fa1-8e34-00a69873b5cc
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 200
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      action_id:
+        complex:
+          accessor: action_id
+          root: PaloAltoNetworksXDR.ScriptRun
+      timeout:
+        complex:
+          root: inputs.polling_timeout
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checks the action status of an action ID. \nEnter the action ID
+        of the action whose status you want to know.
+      id: ec15490c-27b7-4852-80e1-04d66ba73b0c
+      iscommand: false
+      name: Cortex XDR - Check Action Status
+      playbookId: Cortex XDR - Check Action Status
+      type: playbook
+      version: -1
+    taskid: ec15490c-27b7-4852-80e1-04d66ba73b0c
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 380
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      action_id:
+        complex:
+          accessor: action_id
+          root: PaloAltoNetworksXDR.ScriptRun
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Retrieve the results of a script execution action.
+      id: 8034abda-d134-4b58-821b-54de3c774b29
+      iscommand: true
+      name: Get script execution results
+      script: '|||xdr-get-script-execution-results'
+      type: regular
+      version: -1
+    taskid: 8034abda-d134-4b58-821b-54de3c774b29
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 560
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 91e2d310-e3ac-4781-8866-d2a422edc8b6
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 91e2d310-e3ac-4781-8866-d2a422edc8b6
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 740
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 755,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 5.5.0

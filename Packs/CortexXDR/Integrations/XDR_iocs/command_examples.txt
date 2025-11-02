@@ -1,0 +1,4 @@
+!xdr-iocs-sync
+!xdr-iocs-enable indicator=11.11.11.11
+!xdr-iocs-disable indicator=22.22.22.22
+!xdr-iocs-push indicator='test.com'

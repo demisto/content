@@ -1,0 +1,54 @@
+{
+    "reply": {
+        "total_count": 2,
+        "result_count": 2,
+        "incidents": [
+            {
+                "incident_id": "1",
+                "creation_time": 1575806909185,
+                "modification_time": 1575813875168,
+                "detection_time": null,
+                "status": "under_investigation",
+                "severity": "medium",
+                "description": "desc1",
+                "assigned_user_mail": null,
+                "assigned_user_pretty_name": null,
+                "alert_count": 1,
+                "low_severity_alert_count": 0,
+                "med_severity_alert_count": 1,
+                "high_severity_alert_count": 0,
+                "user_count": 1,
+                "host_count": 1,
+                "notes": null,
+                "resolve_comment": null,
+                "manual_severity": null,
+                "manual_description": null,
+                "xdr_url": "https://example/incident-view?caseId=1",
+                "starred": false
+            },
+            {
+                "incident_id": "2",
+                "creation_time": 1575806909185,
+                "modification_time": 1575813875168,
+                "detection_time": null,
+                "status": "new",
+                "severity": "high",
+                "description": "desc 2",
+                "assigned_user_mail": null,
+                "assigned_user_pretty_name": null,
+                "alert_count": 1,
+                "low_severity_alert_count": 0,
+                "med_severity_alert_count": 1,
+                "high_severity_alert_count": 0,
+                "user_count": 1,
+                "host_count": 1,
+                "notes": null,
+                "resolve_comment": null,
+                "manual_severity": null,
+                "manual_description": null,
+                "xdr_url": "https://example/incident-view?caseId=2",
+                "starred": false
+            }
+        ]
+    }
+}

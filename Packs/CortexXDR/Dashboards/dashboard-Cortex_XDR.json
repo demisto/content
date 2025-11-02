@@ -1,0 +1,1861 @@
+{
+    "id": "Cortex XDR",
+    "version": -1,
+    "fromDate": "0001-01-01T00:00:00Z",
+    "toDate": "0001-01-01T00:00:00Z",
+    "period": {
+        "by": "",
+        "byTo": "",
+        "byFrom": "days",
+        "toValue": null,
+        "fromValue": 30,
+        "field": ""
+    },
+    "fromDateLicense": "0001-01-01T00:00:00Z",
+    "name": "Cortex XDR",
+    "layout": [
+        {
+            "id": "73cd3050-6415-11eb-b8ff-9fe539e200bc",
+            "forceRange": false,
+            "x": 0,
+            "y": 1,
+            "i": "73cd3050-6415-11eb-b8ff-9fe539e200bc",
+            "w": 2,
+            "h": 1,
+            "widget": {
+                "id": "ac4ba4c9-b52a-4ea3-8ddd-752ff0c821c6",
+                "version": 1,
+                "modified": "2021-01-31T22:41:20.146561482Z",
+                "sortValues": null,
+                "packID": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "name": "Cortex XDR Connected Endpoints",
+                "prevName": "Cortex XDR Connected Endpoints",
+                "dataType": "scripts",
+                "widgetType": "number",
+                "query": "XDRConnectedEndpoints",
+                "sort": null,
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 7,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "tableColumns": [
+
+                    ]
+                },
+                "size": 0,
+                "category": ""
+            }
+        },
+        {
+            "id": "d653a970-6415-11eb-b8ff-9fe539e200bc",
+            "forceRange": false,
+            "x": 2,
+            "y": 1,
+            "i": "d653a970-6415-11eb-b8ff-9fe539e200bc",
+            "w": 2,
+            "h": 1,
+            "widget": {
+                "id": "0361981e-c627-4c09-8fcc-085ffe0a7e56",
+                "version": 1,
+                "modified": "2021-01-31T22:42:52.531099409Z",
+                "sortValues": null,
+                "packID": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "name": " Cortex XDR Disconnected Endpoints",
+                "prevName": " Cortex XDR Disconnected Endpoints",
+                "dataType": "scripts",
+                "widgetType": "number",
+                "query": "XDRDisconnectedEndpoints",
+                "sort": null,
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 7,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "tableColumns": [
+
+                    ]
+                },
+                "size": 0,
+                "category": ""
+            }
+        },
+        {
+            "id": "18eb3d20-6416-11eb-b8ff-9fe539e200bc",
+            "forceRange": false,
+            "x": 0,
+            "y": 3,
+            "i": "18eb3d20-6416-11eb-b8ff-9fe539e200bc",
+            "w": 2,
+            "h": 1,
+            "widget": {
+                "id": "2a2be295-58f7-4807-8bf9-37dcb89f0493",
+                "version": 1,
+                "modified": "2021-01-31T22:45:58.890470112Z",
+                "sortValues": null,
+                "packID": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "name": "Cortex XDR Unassigned Incidents",
+                "prevName": "Cortex XDR Unassigned Incidents",
+                "dataType": "incidents",
+                "widgetType": "number",
+                "query": "type:\"Cortex XDR Incident\" and status:Active and owner:\"\"",
+                "sort": null,
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 7,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "tableColumns": [
+                        {
+                            "isDefault": true,
+                            "key": "id",
+                            "position": 0,
+                            "width": 110
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "name",
+                            "position": 2,
+                            "width": 300
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "type",
+                            "position": 3,
+                            "width": 200
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "severity",
+                            "position": 4,
+                            "width": 80
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "status",
+                            "position": 5,
+                            "width": 80
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "owner",
+                            "position": 6,
+                            "width": 160
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "roles",
+                            "position": 7,
+                            "width": 160
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "playbookId",
+                            "position": 8,
+                            "width": 150
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "occurred",
+                            "position": 9,
+                            "width": 200
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "dueDate",
+                            "position": 10,
+                            "width": 200
+                        }
+                    ]
+                },
+                "size": 0,
+                "category": ""
+            }
+        },
+        {
+            "id": "3c0f8400-6416-11eb-b8ff-9fe539e200bc",
+            "forceRange": false,
+            "x": 2,
+            "y": 3,
+            "i": "3c0f8400-6416-11eb-b8ff-9fe539e200bc",
+            "w": 2,
+            "h": 1,
+            "widget": {
+                "id": "0057b0a3-cc6a-4811-8e05-98658b878af4",
+                "version": 1,
+                "modified": "2021-01-31T22:46:55.36484948Z",
+                "sortValues": null,
+                "packID": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "name": "Cortex XDR Closed Incidents",
+                "prevName": "Cortex XDR Closed Incidents",
+                "dataType": "incidents",
+                "widgetType": "number",
+                "query": "type:\"Cortex XDR Incident\" and status:Closed",
+                "sort": null,
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 7,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "tableColumns": [
+                        {
+                            "isDefault": true,
+                            "key": "id",
+                            "position": 0,
+                            "width": 110
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "name",
+                            "position": 2,
+                            "width": 300
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "type",
+                            "position": 3,
+                            "width": 200
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "severity",
+                            "position": 4,
+                            "width": 80
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "status",
+                            "position": 5,
+                            "width": 80
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "owner",
+                            "position": 6,
+                            "width": 160
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "roles",
+                            "position": 7,
+                            "width": 160
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "playbookId",
+                            "position": 8,
+                            "width": 150
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "occurred",
+                            "position": 9,
+                            "width": 200
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "dueDate",
+                            "position": 10,
+                            "width": 200
+                        }
+                    ]
+                },
+                "size": 0,
+                "category": ""
+            }
+        },
+        {
+            "id": "0a2995e0-6626-11eb-b982-ab7ceff3dffb",
+            "forceRange": false,
+            "x": 0,
+            "y": 0,
+            "i": "0a2995e0-6626-11eb-b982-ab7ceff3dffb",
+            "w": 4,
+            "h": 1,
+            "widget": {
+                "id": "f2974c2d-ba6d-4deb-8d0e-be8122901b37",
+                "version": 2,
+                "modified": "2021-02-03T13:20:54.259563294Z",
+                "sortValues": null,
+                "packID": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "name": "Cortex XDR Active High Severity Incidents",
+                "prevName": "Cortex XDR Active High Severity Incidents",
+                "dataType": "incidents",
+                "widgetType": "trend",
+                "query": "type:\"Cortex XDR Incident\" and severity:High and status:Active",
+                "sort": null,
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 7,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "colors": {
+                        "isEnabled": true,
+                        "items": {
+                            "#FF1B15": {
+                                "value": -1
+                            }
+                        },
+                        "type": "above"
+                    },
+                    "tableColumns": [
+                        {
+                            "isDefault": true,
+                            "key": "id",
+                            "position": 0,
+                            "width": 110
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "name",
+                            "position": 2,
+                            "width": 300
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "type",
+                            "position": 3,
+                            "width": 200
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "severity",
+                            "position": 4,
+                            "width": 80
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "status",
+                            "position": 5,
+                            "width": 80
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "owner",
+                            "position": 6,
+                            "width": 160
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "roles",
+                            "position": 7,
+                            "width": 160
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "playbookId",
+                            "position": 8,
+                            "width": 150
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "occurred",
+                            "position": 9,
+                            "width": 200
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "dueDate",
+                            "position": 10,
+                            "width": 200
+                        }
+                    ]
+                },
+                "size": 0,
+                "category": ""
+            }
+        },
+        {
+            "id": "152356c0-6626-11eb-b982-ab7ceff3dffb",
+            "forceRange": false,
+            "x": 4,
+            "y": 0,
+            "i": "152356c0-6626-11eb-b982-ab7ceff3dffb",
+            "w": 4,
+            "h": 1,
+            "widget": {
+                "id": "6173e162-ff22-4f6c-835f-92f857225e56",
+                "version": 2,
+                "modified": "2021-02-03T13:21:26.486392167Z",
+                "sortValues": null,
+                "packID": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "name": "Cortex XDR Active Medium Severity Incidents",
+                "prevName": "Cortex XDR Active Medium Severity Incidents",
+                "dataType": "incidents",
+                "widgetType": "trend",
+                "query": "type:\"Cortex XDR Incident\" and severity:medium and status:Active",
+                "sort": null,
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 7,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "colors": {
+                        "isEnabled": true,
+                        "items": {
+                            "#00CD33": {
+                                "value": null
+                            },
+                            "#FAC100": {
+                                "value": -1
+                            }
+                        },
+                        "type": "above"
+                    },
+                    "tableColumns": [
+                        {
+                            "isDefault": true,
+                            "key": "id",
+                            "position": 0,
+                            "width": 110
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "name",
+                            "position": 2,
+                            "width": 300
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "type",
+                            "position": 3,
+                            "width": 200
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "severity",
+                            "position": 4,
+                            "width": 80
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "status",
+                            "position": 5,
+                            "width": 80
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "owner",
+                            "position": 6,
+                            "width": 160
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "roles",
+                            "position": 7,
+                            "width": 160
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "playbookId",
+                            "position": 8,
+                            "width": 150
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "occurred",
+                            "position": 9,
+                            "width": 200
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "dueDate",
+                            "position": 10,
+                            "width": 200
+                        }
+                    ]
+                },
+                "size": 0,
+                "category": ""
+            }
+        },
+        {
+            "id": "1e3e6c90-6626-11eb-b982-ab7ceff3dffb",
+            "forceRange": false,
+            "x": 8,
+            "y": 0,
+            "i": "1e3e6c90-6626-11eb-b982-ab7ceff3dffb",
+            "w": 4,
+            "h": 1,
+            "widget": {
+                "id": "b49cb3c0-33e0-493d-8462-31929b4509e1",
+                "version": 2,
+                "modified": "2021-02-03T13:22:26.410229241Z",
+                "sortValues": null,
+                "packID": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "name": "Cortex XDR Active Low Severity Incidents",
+                "prevName": "Cortex XDR Active Low Severity Incidents",
+                "dataType": "incidents",
+                "widgetType": "trend",
+                "query": "type:\"Cortex XDR Incident\" and severity:Low and status:Active",
+                "sort": null,
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 7,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "colors": {
+                        "isEnabled": true,
+                        "items": {
+                            "#418ae6": {
+                                "value": -1
+                            }
+                        },
+                        "type": "above"
+                    },
+                    "tableColumns": [
+                        {
+                            "isDefault": true,
+                            "key": "id",
+                            "position": 0,
+                            "width": 110
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "name",
+                            "position": 2,
+                            "width": 300
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "type",
+                            "position": 3,
+                            "width": 200
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "severity",
+                            "position": 4,
+                            "width": 80
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "status",
+                            "position": 5,
+                            "width": 80
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "owner",
+                            "position": 6,
+                            "width": 160
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "roles",
+                            "position": 7,
+                            "width": 160
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "playbookId",
+                            "position": 8,
+                            "width": 150
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "occurred",
+                            "position": 9,
+                            "width": 200
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "dueDate",
+                            "position": 10,
+                            "width": 200
+                        }
+                    ]
+                },
+                "size": 0,
+                "category": ""
+            }
+        },
+        {
+            "id": "47a1f980-6626-11eb-b982-ab7ceff3dffb",
+            "forceRange": false,
+            "x": 0,
+            "y": 2,
+            "i": "47a1f980-6626-11eb-b982-ab7ceff3dffb",
+            "w": 2,
+            "h": 1,
+            "widget": {
+                "id": "f39f1990-8c88-4e76-8fa7-a0e564692d77",
+                "version": 2,
+                "modified": "2021-02-03T13:23:21.581809197Z",
+                "sortValues": null,
+                "packID": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "name": "Cortex XDR Active Device Control Violations Incidents",
+                "prevName": "Cortex XDR Active Device Control Violations Incidents",
+                "dataType": "incidents",
+                "widgetType": "number",
+                "query": "type:\"Cortex XDR Device Control Violations\" and status:Active",
+                "sort": null,
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 30,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "tableColumns": [
+                        {
+                            "isDefault": true,
+                            "key": "id",
+                            "position": 0,
+                            "width": 110
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "name",
+                            "position": 2,
+                            "width": 300
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "type",
+                            "position": 3,
+                            "width": 200
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "severity",
+                            "position": 4,
+                            "width": 80
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "status",
+                            "position": 5,
+                            "width": 80
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "owner",
+                            "position": 6,
+                            "width": 160
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "roles",
+                            "position": 7,
+                            "width": 160
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "playbookId",
+                            "position": 8,
+                            "width": 150
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "occurred",
+                            "position": 9,
+                            "width": 200
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "dueDate",
+                            "position": 10,
+                            "width": 200
+                        }
+                    ]
+                },
+                "size": 0,
+                "category": ""
+            }
+        },
+        {
+            "id": "4e78ebb0-6626-11eb-b982-ab7ceff3dffb",
+            "forceRange": false,
+            "x": 2,
+            "y": 2,
+            "i": "4e78ebb0-6626-11eb-b982-ab7ceff3dffb",
+            "w": 2,
+            "h": 1,
+            "widget": {
+                "id": "2de3d4e6-573a-4c4e-86c1-85d57dbd88b7",
+                "version": 1,
+                "modified": "2021-02-03T13:17:58.925310112Z",
+                "sortValues": null,
+                "packID": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "name": "Cortex XDR Closed Device Control Violations",
+                "prevName": "Cortex XDR Closed Device Control Violations",
+                "dataType": "incidents",
+                "widgetType": "number",
+                "query": "type:\"Cortex XDR Device Control Violations\" and status:Closed",
+                "sort": null,
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 30,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "tableColumns": [
+                        {
+                            "isDefault": true,
+                            "key": "id",
+                            "position": 0,
+                            "width": 110
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "name",
+                            "position": 2,
+                            "width": 300
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "type",
+                            "position": 3,
+                            "width": 200
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "severity",
+                            "position": 4,
+                            "width": 80
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "status",
+                            "position": 5,
+                            "width": 80
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "owner",
+                            "position": 6,
+                            "width": 160
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "roles",
+                            "position": 7,
+                            "width": 160
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "playbookId",
+                            "position": 8,
+                            "width": 150
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "occurred",
+                            "position": 9,
+                            "width": 200
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "dueDate",
+                            "position": 10,
+                            "width": 200
+                        }
+                    ]
+                },
+                "size": 0,
+                "category": ""
+            }
+        },
+        {
+            "id": "841288d0-97a4-11eb-b45a-c3f5fab2d0d2",
+            "forceRange": false,
+            "x": 8,
+            "y": 7,
+            "i": "841288d0-97a4-11eb-b45a-c3f5fab2d0d2",
+            "w": 4,
+            "h": 3,
+            "widget": {
+                "id": "b0d7015d-ea2d-4590-854e-b922a257f368",
+                "version": 2,
+                "modified": "2021-04-07T13:23:54.614585662Z",
+                "sortValues": null,
+                "packID": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "name": "Cortex XDR Top 10 MITRE Tactics",
+                "prevName": "Cortex XDR Top 10 MITRE Tactics",
+                "dataType": "incidents",
+                "widgetType": "pie",
+                "query": "type:\"Cortex XDR Incident\" and -status:Closed and -xdrmitretactics:\"\"",
+                "sort": null,
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 7,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "groupBy": [
+                        "xdrmitretactics"
+                    ],
+                    "tableColumns": [
+                        {
+                            "isDefault": true,
+                            "key": "id",
+                            "position": 0,
+                            "width": 110
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "name",
+                            "position": 2,
+                            "width": 300
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "type",
+                            "position": 3,
+                            "width": 200
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "severity",
+                            "position": 4,
+                            "width": 80
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "status",
+                            "position": 5,
+                            "width": 80
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "owner",
+                            "position": 6,
+                            "width": 160
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "roles",
+                            "position": 7,
+                            "width": 160
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "playbookId",
+                            "position": 8,
+                            "width": 150
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "occurred",
+                            "position": 9,
+                            "width": 200
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "dueDate",
+                            "position": 10,
+                            "width": 200
+                        }
+                    ]
+                },
+                "size": 0,
+                "category": ""
+            }
+        },
+        {
+            "id": "91802fe0-97a4-11eb-b45a-c3f5fab2d0d2",
+            "forceRange": false,
+            "x": 4,
+            "y": 7,
+            "i": "91802fe0-97a4-11eb-b45a-c3f5fab2d0d2",
+            "w": 4,
+            "h": 3,
+            "widget": {
+                "id": "0bef45cc-5c29-4504-89c6-9c5f9c742587",
+                "version": 1,
+                "modified": "2021-04-07T13:23:41.530295138Z",
+                "sortValues": null,
+                "packID": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "name": "Cortex XDR Top 10 MITRE Techniques",
+                "prevName": "Cortex XDR Top 10 MITRE Techniques",
+                "dataType": "incidents",
+                "widgetType": "pie",
+                "query": "type:\"Cortex XDR Incident\" -status:Closed  and -xdrmitretechniques:\"\"",
+                "sort": null,
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 7,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "groupBy": [
+                        "xdrmitretechniques"
+                    ],
+                    "tableColumns": [
+                        {
+                            "isDefault": true,
+                            "key": "id",
+                            "position": 0,
+                            "width": 110
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "name",
+                            "position": 2,
+                            "width": 300
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "type",
+                            "position": 3,
+                            "width": 200
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "severity",
+                            "position": 4,
+                            "width": 80
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "status",
+                            "position": 5,
+                            "width": 80
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "owner",
+                            "position": 6,
+                            "width": 160
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "roles",
+                            "position": 7,
+                            "width": 160
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "playbookId",
+                            "position": 8,
+                            "width": 150
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "occurred",
+                            "position": 9,
+                            "width": 200
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "dueDate",
+                            "position": 10,
+                            "width": 200
+                        }
+                    ]
+                },
+                "size": 0,
+                "category": ""
+            }
+        },
+        {
+            "id": "adb604f0-97a4-11eb-b45a-c3f5fab2d0d2",
+            "forceRange": false,
+            "x": 4,
+            "y": 1,
+            "i": "adb604f0-97a4-11eb-b45a-c3f5fab2d0d2",
+            "w": 4,
+            "h": 3,
+            "widget": {
+                "id": "d027f9c1-326a-4cca-8854-a3fe08219d1d",
+                "version": 1,
+                "modified": "2021-04-07T13:25:06.830693113Z",
+                "sortValues": null,
+                "packID": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "name": "Cortex XDR Top 10 Users",
+                "prevName": "Cortex XDR Top 10 Users",
+                "dataType": "incidents",
+                "widgetType": "column",
+                "query": "type:\"Cortex XDR Incident\" and -status:Closed and -xdrusers:\"\"",
+                "sort": null,
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": null,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "groupBy": [
+                        "xdrusers"
+                    ],
+                    "tableColumns": [
+                        {
+                            "isDefault": true,
+                            "key": "id",
+                            "position": 0,
+                            "width": 110
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "name",
+                            "position": 2,
+                            "width": 300
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "type",
+                            "position": 3,
+                            "width": 200
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "severity",
+                            "position": 4,
+                            "width": 80
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "status",
+                            "position": 5,
+                            "width": 80
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "owner",
+                            "position": 6,
+                            "width": 160
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "roles",
+                            "position": 7,
+                            "width": 160
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "playbookId",
+                            "position": 8,
+                            "width": 150
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "occurred",
+                            "position": 9,
+                            "width": 200
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "dueDate",
+                            "position": 10,
+                            "width": 200
+                        }
+                    ]
+                },
+                "size": 0,
+                "category": ""
+            }
+        },
+        {
+            "id": "ce2209a0-97a4-11eb-b45a-c3f5fab2d0d2",
+            "forceRange": false,
+            "x": 8,
+            "y": 1,
+            "i": "ce2209a0-97a4-11eb-b45a-c3f5fab2d0d2",
+            "w": 4,
+            "h": 3,
+            "widget": {
+                "id": "a2d2fd64-e057-4d57-8ee7-dd6ca6cefa42",
+                "version": 1,
+                "modified": "2021-04-07T13:25:59.472449275Z",
+                "sortValues": null,
+                "packID": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "name": "Cortex XDR Top 10 Hosts",
+                "prevName": "Cortex XDR Top 10 Hosts",
+                "dataType": "incidents",
+                "widgetType": "column",
+                "query": "type:\"Cortex XDR Incident\" -status:Closed and -hostnames:\"\"",
+                "sort": null,
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 7,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "groupBy": [
+                        "hostnames"
+                    ],
+                    "tableColumns": [
+                        {
+                            "isDefault": true,
+                            "key": "id",
+                            "position": 0,
+                            "width": 110
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "name",
+                            "position": 2,
+                            "width": 300
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "type",
+                            "position": 3,
+                            "width": 200
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "severity",
+                            "position": 4,
+                            "width": 80
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "status",
+                            "position": 5,
+                            "width": 80
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "owner",
+                            "position": 6,
+                            "width": 160
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "roles",
+                            "position": 7,
+                            "width": 160
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "playbookId",
+                            "position": 8,
+                            "width": 150
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "occurred",
+                            "position": 9,
+                            "width": 200
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "dueDate",
+                            "position": 10,
+                            "width": 200
+                        }
+                    ]
+                },
+                "size": 0,
+                "category": ""
+            }
+        },
+        {
+            "id": "f6fdf000-97a4-11eb-b45a-c3f5fab2d0d2",
+            "forceRange": false,
+            "x": 4,
+            "y": 4,
+            "i": "f6fdf000-97a4-11eb-b45a-c3f5fab2d0d2",
+            "w": 4,
+            "h": 3,
+            "widget": {
+                "id": "0b674563-66ca-4c41-8eac-134722296026",
+                "version": 1,
+                "modified": "2021-04-07T13:27:10.964416573Z",
+                "sortValues": null,
+                "packID": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "name": "Cortex XDR Top 10 Categories",
+                "prevName": "Cortex XDR Top 10 Categories",
+                "dataType": "incidents",
+                "widgetType": "column",
+                "query": "type:\"Cortex XDR Incident\" -status:Closed",
+                "sort": null,
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 7,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "groupBy": [
+                        "xdralertcategory"
+                    ],
+                    "tableColumns": [
+                        {
+                            "isDefault": true,
+                            "key": "id",
+                            "position": 0,
+                            "width": 110
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "name",
+                            "position": 2,
+                            "width": 300
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "type",
+                            "position": 3,
+                            "width": 200
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "severity",
+                            "position": 4,
+                            "width": 80
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "status",
+                            "position": 5,
+                            "width": 80
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "owner",
+                            "position": 6,
+                            "width": 160
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "roles",
+                            "position": 7,
+                            "width": 160
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "playbookId",
+                            "position": 8,
+                            "width": 150
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "occurred",
+                            "position": 9,
+                            "width": 200
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "dueDate",
+                            "position": 10,
+                            "width": 200
+                        }
+                    ]
+                },
+                "size": 0,
+                "category": ""
+            }
+        },
+        {
+            "id": "3d5e2470-97a5-11eb-b45a-c3f5fab2d0d2",
+            "forceRange": false,
+            "x": 8,
+            "y": 4,
+            "i": "3d5e2470-97a5-11eb-b45a-c3f5fab2d0d2",
+            "w": 4,
+            "h": 3,
+            "widget": {
+                "id": "f0021d41-aef6-4870-8f61-2c0bb2df3685",
+                "version": 1,
+                "modified": "2021-04-07T13:29:10.049137856Z",
+                "sortValues": null,
+                "packID": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "name": "Cortex XDR Top 10 Alerts",
+                "prevName": "Cortex XDR Top 10 Alerts",
+                "dataType": "incidents",
+                "widgetType": "column",
+                "query": "type:\"Cortex XDR Incident\" -status:Closed",
+                "sort": null,
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 7,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "groupBy": [
+                        "xdralertname"
+                    ],
+                    "tableColumns": [
+                        {
+                            "isDefault": true,
+                            "key": "id",
+                            "position": 0,
+                            "width": 110
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "name",
+                            "position": 2,
+                            "width": 300
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "type",
+                            "position": 3,
+                            "width": 200
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "severity",
+                            "position": 4,
+                            "width": 80
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "status",
+                            "position": 5,
+                            "width": 80
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "owner",
+                            "position": 6,
+                            "width": 160
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "roles",
+                            "position": 7,
+                            "width": 160
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "playbookId",
+                            "position": 8,
+                            "width": 150
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "occurred",
+                            "position": 9,
+                            "width": 200
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "dueDate",
+                            "position": 10,
+                            "width": 200
+                        }
+                    ]
+                },
+                "size": 0,
+                "category": ""
+            }
+        },
+        {
+            "id": "6ce0c540-97a5-11eb-b45a-c3f5fab2d0d2",
+            "forceRange": false,
+            "x": 0,
+            "y": 4,
+            "i": "6ce0c540-97a5-11eb-b45a-c3f5fab2d0d2",
+            "w": 4,
+            "h": 3,
+            "widget": {
+                "id": "24adf3d5-48e2-450a-834d-badbffba52a7",
+                "version": 1,
+                "modified": "2021-04-07T13:30:29.006278544Z",
+                "sortValues": null,
+                "packID": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "name": "Cortex XDR Top 10 files",
+                "prevName": "Cortex XDR Top 10 files",
+                "dataType": "incidents",
+                "widgetType": "pie",
+                "query": "type:\"Cortex XDR Incident\" -status:Closed and -xdrfilename:\"\"",
+                "sort": null,
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 7,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "groupBy": [
+                        "xdrfilename"
+                    ],
+                    "tableColumns": [
+                        {
+                            "isDefault": true,
+                            "key": "id",
+                            "position": 0,
+                            "width": 110
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "name",
+                            "position": 2,
+                            "width": 300
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "type",
+                            "position": 3,
+                            "width": 200
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "severity",
+                            "position": 4,
+                            "width": 80
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "status",
+                            "position": 5,
+                            "width": 80
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "owner",
+                            "position": 6,
+                            "width": 160
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "roles",
+                            "position": 7,
+                            "width": 160
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "playbookId",
+                            "position": 8,
+                            "width": 150
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "occurred",
+                            "position": 9,
+                            "width": 200
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "dueDate",
+                            "position": 10,
+                            "width": 200
+                        }
+                    ]
+                },
+                "size": 0,
+                "category": ""
+            }
+        },
+        {
+            "id": "8cd48cb0-97a5-11eb-b45a-c3f5fab2d0d2",
+            "forceRange": false,
+            "x": 0,
+            "y": 7,
+            "i": "8cd48cb0-97a5-11eb-b45a-c3f5fab2d0d2",
+            "w": 4,
+            "h": 3,
+            "widget": {
+                "id": "c147b637-9e76-470f-8c9d-cf13361fcb33",
+                "version": 1,
+                "modified": "2021-04-07T13:31:21.51411527Z",
+                "sortValues": null,
+                "packID": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "name": "Cortex XDR Top 10 File SHA256",
+                "prevName": "Cortex XDR Top 10 File SHA256",
+                "dataType": "incidents",
+                "widgetType": "pie",
+                "query": "type:\"Cortex XDR Incident\" -status:Closed and -xdrfilesha256:\"\"",
+                "sort": null,
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 7,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "groupBy": [
+                        "xdrfilesha256"
+                    ],
+                    "tableColumns": [
+                        {
+                            "isDefault": true,
+                            "key": "id",
+                            "position": 0,
+                            "width": 110
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "name",
+                            "position": 2,
+                            "width": 300
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "type",
+                            "position": 3,
+                            "width": 200
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "severity",
+                            "position": 4,
+                            "width": 80
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "status",
+                            "position": 5,
+                            "width": 80
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "owner",
+                            "position": 6,
+                            "width": 160
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "roles",
+                            "position": 7,
+                            "width": 160
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "playbookId",
+                            "position": 8,
+                            "width": 150
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "occurred",
+                            "position": 9,
+                            "width": 200
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "dueDate",
+                            "position": 10,
+                            "width": 200
+                        }
+                    ]
+                },
+                "size": 0,
+                "category": ""
+            }
+        }
+    ],
+    "fromVersion": "6.0.0",
+    "description": "",
+    "isPredefined": true
+}

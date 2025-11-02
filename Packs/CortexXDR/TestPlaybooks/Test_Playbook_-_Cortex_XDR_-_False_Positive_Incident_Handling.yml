@@ -1,0 +1,1356 @@
+id: Test Playbook - Cortex XDR - False Positive Incident Handling
+version: -1
+name: Test Playbook - Cortex XDR - False Positive Incident Handling
+description: |-
+  This playbook tests the 'Cortex XDR - False Positive Incident Handling' playbook which is part of the 'Malware Investigation and Response' pack.
+
+  Following are the tests conducted in the playbook:
+  1- Incident Status.
+  2- Incident close note.
+  3. Verify that the XSOAR indicators include the file hashes of the test incident and correctly tag them.
+  4- Verify that the XDR allow list includes the file hashes of the test incident.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: ce53f9de-f436-41e7-8503-462a2f1d335b
+    type: start
+    task:
+      id: ce53f9de-f436-41e7-8503-462a2f1d335b
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "32"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 560,
+          "y": -2485
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 6eebd48a-4a31-4a46-8f8e-9861faacf644
+    type: regular
+    task:
+      id: 6eebd48a-4a31-4a46-8f8e-9861faacf644
+      version: -1
+      name: Delete Context
+      description: The task deletes all of the context data. Having a clean beginning to a test playbook ensures that a test can be sterile and that unrelated issues can be eliminated.
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "154"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 560,
+          "y": -2355
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: 63fea88a-b750-4336-88c9-58bda3c2ce1e
+    type: regular
+    task:
+      id: 63fea88a-b750-4336-88c9-58bda3c2ce1e
+      version: -1
+      name: Investigate the incident
+      description: Begin investigating the incident.
+      scriptName: InvestigateMine
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "156"
+    scriptarguments:
+      id:
+        complex:
+          root: CreatedIncidentID
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 560,
+          "y": -1545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "47":
+    id: "47"
+    taskid: 0349926e-9011-4eef-8724-d138ea6936fc
+    type: regular
+    task:
+      id: 0349926e-9011-4eef-8724-d138ea6936fc
+      version: -1
+      name: Wait for incident to be created
+      description: 'This task delays the playbook flow progress for 15 seconds to ensure that the incident has been created before moving on. '
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "186"
+    scriptarguments:
+      seconds:
+        simple: "15"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 560,
+          "y": -2030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "84":
+    id: "84"
+    taskid: 2e4e3fde-110c-4ce4-8f40-00180e9ff00e
+    type: title
+    task:
+      id: 2e4e3fde-110c-4ce4-8f40-00180e9ff00e
+      version: -1
+      name: Start Tests
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "171"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 560,
+          "y": -590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "93":
+    id: "93"
+    taskid: 2c7351bb-4408-4a01-8ef1-7e8a9aefca9c
+    type: regular
+    task:
+      id: 2c7351bb-4408-4a01-8ef1-7e8a9aefca9c
+      version: -1
+      name: Set playbook for new incident
+      description: Assign the 'Cortex XDR - False Positive Incident Handling' playbook to the newly created test incident.
+      script: Builtin|||setPlaybook
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      incidentId:
+        complex:
+          root: CreatedIncidentID
+      name:
+        simple: Cortex XDR - False Positive Incident Handling
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 560,
+          "y": -1710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "154":
+    id: "154"
+    taskid: 918b1e3b-0596-4c16-852f-a1245b6acae6
+    type: regular
+    task:
+      id: 918b1e3b-0596-4c16-852f-a1245b6acae6
+      version: -1
+      name: Create New Incident For Testing
+      description: 'As part of this task, an incident will be created for testing purposes, which includes all the incident fields that are essential to the testing process. '
+      script: Builtin|||createNewIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "47"
+    scriptarguments:
+      deviceid:
+        simple: f8a2f58846b542579c12090652e79f3d
+      externalcategoryname:
+        simple: Hash
+      externallink:
+        simple: https://demisto-dev.xdr.us.paloaltonetworks.com/incident-view?caseId=54
+      externalsystemid:
+        simple: "54"
+      filesha256:
+        simple: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855, cd6e0d42f2f24b1202d1d9ce7976ceb5dc2258c20989074b557b0a5eaf6185a0, 37dda78756d7ab9e446f04816451c8946ab2fd6672cdfdfd731c38020b44f3e4
+      name:
+        simple: Test Incident for Cortex XDR - False Positive Incident Handling
+      type:
+        simple: Malware Investigation and Response
+      xdrurl:
+        simple: https://demisto-dev.xdr.us.paloaltonetworks.com/incident-view?caseId=54
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 560,
+          "y": -2190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "155":
+    id: "155"
+    taskid: f5ffcc11-bd19-4f4c-8973-1fc35ff772ab
+    type: regular
+    task:
+      id: f5ffcc11-bd19-4f4c-8973-1fc35ff772ab
+      version: -1
+      name: Complete Data Collection Task - Choose the marked IOC to be added to approve list
+      description: |
+        Complete the 'Choose the marked IOC to be added to approve list' task (task number 14) of the 'Cortex XDR - False Positive Incident Handling' playbook automatically.
+      scriptName: WaitAndCompleteTask
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "185"
+    scriptarguments:
+      complete_task:
+        simple: "true"
+      incident_id:
+        complex:
+          root: CreatedIncidentID
+      interval_between_tries:
+        simple: "15"
+      max_timeout:
+        simple: "120"
+      task_name:
+        simple: Choose the marked IOC to be added to approve list
+      task_states:
+        simple: Waiting
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 560,
+          "y": -1220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "156":
+    id: "156"
+    taskid: a7be3dad-cda0-45c2-8145-9a7eb0fee17a
+    type: regular
+    task:
+      id: a7be3dad-cda0-45c2-8145-9a7eb0fee17a
+      version: -1
+      name: Completed Task Manually - Approve Un-isolation
+      description: Complete the 'Approve unisolation' task (task number 5) of the 'Cortex XDR - False Positive Incident Handling' playbook automatically. In order to run the 'Cortex XDR - Unisolate Endpoint' sub-playbook, the task is configured to select the 'Yes' replay option.
+      scriptName: WaitAndCompleteTask
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "155"
+    scriptarguments:
+      complete_option:
+        simple: "Yes"
+      complete_task:
+        simple: "true"
+      incident_id:
+        complex:
+          root: CreatedIncidentID
+      interval_between_tries:
+        simple: "15"
+      max_timeout:
+        simple: "120"
+      task_name:
+        simple: Approve unisolation
+      task_states:
+        simple: Waiting
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 560,
+          "y": -1380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "164":
+    id: "164"
+    taskid: dc2f7d11-171a-417e-8302-15376ba5ddea
+    type: title
+    task:
+      id: dc2f7d11-171a-417e-8302-15376ba5ddea
+      version: -1
+      name: Check Indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "175"
+      - "176"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1430,
+          "y": -285
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "165":
+    id: "165"
+    taskid: 28c88d35-6740-4ce1-884d-bd8d47128e6f
+    type: regular
+    task:
+      id: 28c88d35-6740-4ce1-884d-bd8d47128e6f
+      version: -1
+      name: Get Indicators Details
+      description: 'Return details of the XSOAR indicators that match the hashes stored in the ''filesha256'' incident field. '
+      scriptName: SearchIndicator
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "172"
+    scriptarguments:
+      add_fields_to_context:
+        simple: tags
+      query:
+        simple: value:${foundIncidents.CustomFields.filesha256.[0]} or value:${foundIncidents.CustomFields.filesha256.[1]} or value:${foundIncidents.CustomFields.filesha256.[2]}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1170,
+          "y": -15
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "171":
+    id: "171"
+    taskid: 75ff3635-b391-4f19-8526-89017b7b6667
+    type: regular
+    task:
+      id: 75ff3635-b391-4f19-8526-89017b7b6667
+      version: -1
+      name: Get final incident fields
+      description: Obtained the final incident field before testing.
+      scriptName: SearchIncidentsV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "164"
+      - "198"
+    scriptarguments:
+      id:
+        complex:
+          root: CreatedIncidentID
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 560,
+          "y": -455
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "172":
+    id: "172"
+    taskid: 5cf0e8d2-a102-433b-8aa2-cb1778e1b33c
+    type: condition
+    task:
+      id: 5cf0e8d2-a102-433b-8aa2-cb1778e1b33c
+      version: -1
+      name: Verify Indicators tags
+      description: 'Ensure that each of the indicators has the appropriate tag set. '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "173"
+      Verified:
+      - "174"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: foundIndicators.[0].tags
+            iscontext: true
+          right:
+            value:
+              simple: AllowTag
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: foundIndicators.[1].tags
+            iscontext: true
+          right:
+            value:
+              simple: AllowTag
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: foundIndicators.[2].tags
+            iscontext: true
+          right:
+            value:
+              simple: AllowTag
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1170,
+          "y": 160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "173":
+    id: "173"
+    taskid: 517f91d9-b9b6-4db0-8647-eb325960038f
+    type: regular
+    task:
+      id: 517f91d9-b9b6-4db0-8647-eb325960038f
+      version: -1
+      name: Verify XSOAR Indicators Error - Indicators Tag
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          XSOAR indicators tag was not set correctly (the tag value is not 'AllowTag'). This may indicate that one or more of the following changes have been made to the 'Cortex XDR - False Positive Incident Handling' playbook:
+          1- The playbook input value for 'AllowTag' was changed.
+          2- The 'tags' argument input configuration was changed for the 'setIndicators' automation used in the 'Tag Indicators' task.
+          3- The 'indicatorsValues' argument input configuration was changed for the 'setIndicators' automation used in the 'Tag Indicators' task. This means that the indicators were not added to XSOAR TIM.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1170,
+          "y": 550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "174":
+    id: "174"
+    taskid: 6c836fb0-16bf-4f68-82d0-b3b4c59dc794
+    type: title
+    task:
+      id: 6c836fb0-16bf-4f68-82d0-b3b4c59dc794
+      version: -1
+      name: Done Checking Indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "202"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 730,
+          "y": 490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "175":
+    id: "175"
+    taskid: 40ff5235-84e3-41e3-8bb1-78632a4d945b
+    type: title
+    task:
+      id: 40ff5235-84e3-41e3-8bb1-78632a4d945b
+      version: -1
+      name: XSOAR Indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "165"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1170,
+          "y": -145
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "176":
+    id: "176"
+    taskid: 2526fd3a-cc17-463b-826e-0e058263c59f
+    type: title
+    task:
+      id: 2526fd3a-cc17-463b-826e-0e058263c59f
+      version: -1
+      name: XDR Indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "184"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1780,
+          "y": -145
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "184":
+    id: "184"
+    taskid: feac293a-a2c5-4b90-8316-dfa8c732ed24
+    type: regular
+    task:
+      id: feac293a-a2c5-4b90-8316-dfa8c732ed24
+      version: -1
+      name: Verify indicators appear in the XDR allow list
+      description: "Ensure that the SHA256 file hashes stored in the 'filesha256' incident field are permitted in Cortex XDR by trying to add them to the Cortex XDR allowlist again. \n\nSince the file hashes were already added to the XDR allowlist by the 'Create IOCs in Cortex XDR - Approved Hashes' task of the tested playbook, this task is expected to return an error. \n\nIn cases where this task does not return an error but successfully adds the files to the Cortex XDR allowlist, it means that the 'Create IOCs in Cortex XDR - Approved Hashed' task of the tested playbook failed."
+      script: Cortex XDR - IR|||xdr-allowlist-files
+      type: regular
+      iscommand: true
+      brand: Cortex XDR - IR
+    nexttasks:
+      '#error#':
+      - "188"
+      '#none#':
+      - "207"
+    scriptarguments:
+      comment:
+        simple: 'Added by Cortex XSOAR - Test Incident #${CreatedIncidentID}'
+      hash_list:
+        simple: ${foundIncidents.CustomFields.filesha256}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 1780,
+          "y": -15
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "185":
+    id: "185"
+    taskid: b604e16b-77b6-4988-8cbd-9d1ff9cf19a4
+    type: regular
+    task:
+      id: b604e16b-77b6-4988-8cbd-9d1ff9cf19a4
+      version: -1
+      name: Complete Data Collection Task - Create IOCs in Cortex XDR - Approved Hashes
+      description: Complete the 'Create IOCs in Cortex XDR - Approved Hashes' task (task number 71) of the 'Cortex XDR - False Positive Incident Handling' playbook automatically.
+      scriptName: WaitAndCompleteTask
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "208"
+    scriptarguments:
+      complete_task:
+        simple: "true"
+      incident_id:
+        complex:
+          root: CreatedIncidentID
+      interval_between_tries:
+        simple: "15"
+      task_name:
+        simple: Create IOCs in Cortex XDR - Approved Hashes
+      task_states:
+        simple: Error
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 560,
+          "y": -1060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "186":
+    id: "186"
+    taskid: 08ca0469-7af4-47f0-8044-c6dd3e981d80
+    type: regular
+    task:
+      id: 08ca0469-7af4-47f0-8044-c6dd3e981d80
+      version: -1
+      name: Set 'Indicators to Allow.Answers' Into Context
+      description: |-
+        In the task, the 'Indicators to Allow.Answers.0' context data key and value are set.
+
+        This context data is used by task 72 of the tested playbook (Cortex XDR - False Positive Incident Handling), so setting this key and value before testing is essential.
+      scriptName: SetByIncidentId
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "93"
+    scriptarguments:
+      append:
+        simple: "true"
+      id:
+        complex:
+          root: CreatedIncidentID
+      key:
+        simple: Indicators to Allow.Answers.0
+      value:
+        simple: '["e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "cd6e0d42f2f24b1202d1d9ce7976ceb5dc2258c20989074b557b0a5eaf6185a0", "37dda78756d7ab9e446f04816451c8946ab2fd6672cdfdfd731c38020b44f3e4"]'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 560,
+          "y": -1870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "188":
+    id: "188"
+    taskid: e6998b89-3685-4020-8fc9-a7c4e87fe2e1
+    type: regular
+    task:
+      id: e6998b89-3685-4020-8fc9-a7c4e87fe2e1
+      version: -1
+      name: get the relevant error entry and Check WarRoom Notes
+      description: 'Get the error(s) associated with the previous task entries if exists. '
+      scriptName: GetErrorsFromEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "190"
+    scriptarguments:
+      entry_id:
+        simple: ${lastCompletedTaskEntries}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1570,
+          "y": 160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "190":
+    id: "190"
+    taskid: 591a36ce-3d96-41d0-8045-3840a2670b60
+    type: condition
+    task:
+      id: 591a36ce-3d96-41d0-8045-3840a2670b60
+      version: -1
+      name: Check the Error Entry Message
+      description: 'Ensure that the Error Entry Message contains "All hashes have already been added to the allow or block list". This means that the indicators have been added to the XDR allow list. '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "192"
+      Verified:
+      - "174"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              complex:
+                root: ErrorEntries
+            iscontext: true
+          right:
+            value:
+              simple: All hashes have already been added to the allow or block list
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1570,
+          "y": 320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "192":
+    id: "192"
+    taskid: d66225f8-c31b-4f80-85d8-458f2c896f02
+    type: regular
+    task:
+      id: d66225f8-c31b-4f80-85d8-458f2c896f02
+      version: -1
+      name: Verify XDR Indicators Error - Indicators were not permitted
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The error entry message associated with the 'Verify indicators appear in the XDR allow list' task in this test playbook does not include the phrase "All hashes have already been added to the allow or block list".
+          There may have been an API error or not all indicators were added to the XDR allow list by the tested playbook.
+          This may indicate that the following changes have been made to the 'Cortex XDR - False Positive Incident Handling' playbook:
+          1- The 'hash_list' argument input configuration was changed for the 'xdr-allowlist-files' automation used in the 'Create IOCs in Cortex XDR - Approved Hashes' task.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1570,
+          "y": 550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "198":
+    id: "198"
+    taskid: 923ebfdf-5533-45c2-8c4e-9837f18a03d8
+    type: title
+    task:
+      id: 923ebfdf-5533-45c2-8c4e-9837f18a03d8
+      version: -1
+      name: Check Incident Fields
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "199"
+      - "204"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -260,
+          "y": -285
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "199":
+    id: "199"
+    taskid: 313d7022-7a5b-4316-8be3-9abe5c569629
+    type: condition
+    task:
+      id: 313d7022-7a5b-4316-8be3-9abe5c569629
+      version: -1
+      name: Verify CloseNotes
+      description: 'Verify that the ''closeNotes'' incident field was filled out correctly. '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "200"
+      Verified:
+      - "201"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: startWith
+          left:
+            value:
+              complex:
+                root: foundIncidents
+                accessor: closeNotes
+            iscontext: true
+          right:
+            value:
+              simple: 'XSOAR Incident #'
+          ignorecase: true
+      - - operator: endWith
+          left:
+            value:
+              complex:
+                root: foundIncidents
+                accessor: closeNotes
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: foundIncidents
+                accessor: id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -50,
+          "y": -145
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "200":
+    id: "200"
+    taskid: 63a73c94-f125-4f4a-8b94-210a7f3f8252
+    type: regular
+    task:
+      id: 63a73c94-f125-4f4a-8b94-210a7f3f8252
+      version: -1
+      name: Verify Incident Field Error - CloseNotes
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'CloseNotes' incident field was not set correctly (the field value is not 'XSOAR Incident #${foundIncidents.id}'). This may indicate that one or more of the following changes have been made to the 'Cortex XDR - False Positive Incident Handling' playbook:
+          1- The playbook input value for 'Reason' was changed.
+          2- The 'closeReason' argument input configuration was changed for the 'closeInvestigation' automation used in the 'Close XSOAR incident' task.
+          3- The 'id' argument input configuration was changed for the 'closeInvestigation' automation used in the 'Close XSOAR incident' task.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -50,
+          "y": 65
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "201":
+    id: "201"
+    taskid: 50b81d7b-c232-4d5e-8824-4774614134f5
+    type: title
+    task:
+      id: 50b81d7b-c232-4d5e-8824-4774614134f5
+      version: -1
+      name: Done Checking Incident Fields
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "202"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 350,
+          "y": 30
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "202":
+    id: "202"
+    taskid: 8fcb70fe-56c8-472a-8624-63495efdd2f5
+    type: title
+    task:
+      id: 8fcb70fe-56c8-472a-8624-63495efdd2f5
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 350,
+          "y": 630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "203":
+    id: "203"
+    taskid: d1e6bd34-a6f8-4a78-86be-04ad447dbd72
+    type: regular
+    task:
+      id: d1e6bd34-a6f8-4a78-86be-04ad447dbd72
+      version: -1
+      name: Wait for incident to close
+      description: 'Ensure that the playbook is complete before starting tests by waiting until the final task (Close XSOAR incident) is completed. '
+      scriptName: WaitAndCompleteTask
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "84"
+    scriptarguments:
+      complete_task:
+        simple: "false"
+      incident_id:
+        complex:
+          root: CreatedIncidentID
+      interval_between_tries:
+        simple: "10"
+      max_timeout:
+        simple: "3000"
+      task_name:
+        simple: Close  XSOAR incident
+      task_states:
+        simple: Completed
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 560,
+          "y": -735
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "204":
+    id: "204"
+    taskid: 504c04a7-d89c-4062-81ef-ec3bd1d76c7a
+    type: condition
+    task:
+      id: 504c04a7-d89c-4062-81ef-ec3bd1d76c7a
+      version: -1
+      name: Verify CloseReason
+      description: 'Verify that the ''closeReason'' incident field was filled out correctly. '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "205"
+      Verified:
+      - "201"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: foundIncidents
+                accessor: closeReason
+            iscontext: true
+          right:
+            value:
+              simple: FalsePositive
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -470,
+          "y": -145
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "205":
+    id: "205"
+    taskid: aa392c34-57b6-4759-822d-a7f69ab1db22
+    type: regular
+    task:
+      id: aa392c34-57b6-4759-822d-a7f69ab1db22
+      version: -1
+      name: Verify Incident Field Error - CloseReason
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'CloseReason' incident field was not set correctly (the field value is not 'FalsePositive'). This may indicate that one or more of the following changes have been made to the 'Cortex XDR - False Positive Incident Handling' playbook:
+          1- The playbook input value for 'Comment' was changed.
+          2- The 'closeNotes' argument input configuration was changed for the 'closeInvestigation' automation used in the 'Close XSOAR incident' task.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -470,
+          "y": 65
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "206":
+    id: "206"
+    taskid: 1d787e28-9596-49a1-83ca-a83f93565663
+    type: regular
+    task:
+      id: 1d787e28-9596-49a1-83ca-a83f93565663
+      version: -1
+      name: Verify XDR Indicators Error - Indicators were not permitted
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The indicators were not added to the XDR allow list by the tested playbook but instead were added by this test playbook. This may indicate that the following changes have been made to the 'Cortex XDR - False Positive Incident Handling' playbook:
+          1- The 'hash_list' argument input configuration was changed for the 'xdr-allowlist-files' automation used in the 'Create IOCs in Cortex XDR - Approved Hashes' task.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2000,
+          "y": 320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "207":
+    id: "207"
+    taskid: 60863741-5b8a-4026-8706-6eaca0df4264
+    type: regular
+    task:
+      id: 60863741-5b8a-4026-8706-6eaca0df4264
+      version: -1
+      name: Remove indicators from XDR allow list
+      description: 'This task removes the SHA256 file hashes from the Cortex XDR allow list, as they were added by the test playbook instead of the ''Cortex XDR - False Positive Incident Handling'' playbook. '
+      script: Cortex XDR - IR|||xdr-remove-allowlist-files
+      type: regular
+      iscommand: true
+      brand: Cortex XDR - IR
+    nexttasks:
+      '#none#':
+      - "206"
+    scriptarguments:
+      comment:
+        simple: 'Removed by Cortex XSOAR - Test Incident #${CreatedIncidentID}'
+      hash_list:
+        simple: ${foundIncidents.CustomFields.filesha256}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2000,
+          "y": 160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "208":
+    id: "208"
+    taskid: 21749081-573d-4fff-8f3e-c5551e24c58b
+    type: regular
+    task:
+      id: 21749081-573d-4fff-8f3e-c5551e24c58b
+      version: -1
+      name: Complete Data Collection Task - Cortex XDR - Unisolate Endpoint
+      description: Complete the 'Create IOCs in Cortex XDR - Approved Hashes' task (task number 71) of the 'Cortex XDR - False Positive Incident Handling' playbook automatically.
+      scriptName: WaitAndCompleteTask
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "203"
+    scriptarguments:
+      complete_task:
+        simple: "true"
+      incident_id:
+        complex:
+          root: CreatedIncidentID
+      interval_between_tries:
+        simple: "15"
+      task_name:
+        simple: Cortex XDR - Unisolate Endpoint
+      task_states:
+        simple: Error,Completed
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 560,
+          "y": -900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "172_173_#default#": 0.82,
+      "172_174_Verified": 0.27,
+      "190_174_Verified": 0.18,
+      "199_200_#default#": 0.74,
+      "199_201_Verified": 0.19,
+      "204_201_Verified": 0.35,
+      "204_205_#default#": 0.7
+    },
+    "paper": {
+      "dimensions": {
+        "height": 3180,
+        "width": 2850,
+        "x": -470,
+        "y": -2485
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.8.0
