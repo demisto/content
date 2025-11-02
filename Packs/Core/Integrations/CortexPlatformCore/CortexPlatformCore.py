@@ -527,7 +527,7 @@ def search_assets_command(client: Client, args):
                          - asset_ids (list[str]): List of asset IDs to search for.
                          - asset_providers (list[str]): List of asset providers to search for.
                          - asset_realms (list[str]): List of asset realms to search for.
-                         - asset_group_ids (list[str]): List of asset group IDs to search for.
+                         - asset_group_names (list[str]): List of asset group names to search for.
     """
     asset_group_ids = get_asset_group_ids_from_names(client, argToList(args.get("asset_groups", "")))
     filter = FilterBuilder()
@@ -544,16 +544,16 @@ def search_assets_command(client: Client, args):
     page_size = arg_to_number(args.get("page_size", SEARCH_ASSETS_DEFAULT_LIMIT))
     page_number = arg_to_number(args.get("page_number", 0))
     on_demand_fields = ["xdm.asset.tags"]
-    response = client.search_assets(filter_str, page_number, page_size, on_demand_fields).get("reply", {}).get("data", [])
+    raw_response = client.search_assets(filter_str, page_number, page_size, on_demand_fields).get("reply", {}).get("data", [])
     # Remove "xdm.asset." suffix from all keys in the response
     response = [
-        {k.replace("xdm.asset.", "") if k.startswith("xdm.asset.") else k: v for k, v in item.items()} for item in response
+        {k.replace("xdm.asset.", "") if k.startswith("xdm.asset.") else k: v for k, v in item.items()} for item in raw_response
     ]
     return CommandResults(
         readable_output=tableToMarkdown("Assets", response, headerTransform=string_to_table_header),
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Asset",
         outputs=response,
-        raw_response=response,
+        raw_response=raw_response,
     )
 
 
