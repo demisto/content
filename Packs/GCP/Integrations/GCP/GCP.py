@@ -160,6 +160,34 @@ COMMAND_REQUIREMENTS: dict[str, tuple[GCPServices, list[str]]] = {
     "gcp-compute-instance-labels-set": (GCPServices.COMPUTE, ["compute.instances.setLabels"]),
     "gcp-storage-bucket-policy-delete": (GCPServices.STORAGE, ["storage.buckets.getIamPolicy", "storage.buckets.setIamPolicy"]),
     "gcp-storage-bucket-metadata-update": (GCPServices.STORAGE, ["storage.buckets.update"]),
+    "gcp-storage-bucket-list": (
+        GCPServices.STORAGE,
+        ["storage.buckets.list"],
+    ),
+    "gcp-storage-bucket-get": (
+        GCPServices.STORAGE,
+        ["storage.buckets.get"],
+    ),
+    "gcp-storage-bucket-objects-list": (
+        GCPServices.STORAGE,
+        ["storage.objects.list"],
+    ),
+    "gcp-storage-bucket-policy-list": (
+        GCPServices.STORAGE,
+        ["storage.buckets.getIamPolicy", "storage.buckets.get"],
+    ),
+    "gcp-storage-bucket-policy-set": (
+        GCPServices.STORAGE,
+        ["storage.buckets.setIamPolicy"],
+    ),
+    "gcp-storage-bucket-object-policy-list": (
+        GCPServices.STORAGE,
+        ["storage.objects.getIamPolicy"],
+    ),
+    "gcp-storage-bucket-object-policy-set": (
+        GCPServices.STORAGE,
+        ["storage.objects.setIamPolicy"],
+    ),
     "gcp-container-cluster-security-update": (
         GCPServices.CONTAINER,
         ["container.clusters.update", "container.clusters.get", "container.clusters.list"],
@@ -315,6 +343,69 @@ def handle_permission_error(e: HttpError, project_id: str, command_name: str):
         return_error(f"Failed to execute command {demisto.command()}. Error: {str(e)}")
 
 
+def _format_gcp_datetime(ts: str | None) -> str | None:
+    if not ts:
+        return None
+    dt = datetime.fromisoformat(ts.replace("Z", "+00:00"))
+    return dt.strftime("%Y-%m-%d %H:%M:%S")
+
+
+def _is_ubla_enabled(storage_client, bucket_name: str) -> bool:
+    """Returns True if Uniform Bucket-Level Access (UBLA) is enabled for the bucket."""
+    try:
+        meta = storage_client.buckets().get(bucket=bucket_name, fields="iamConfiguration").execute()  # pylint: disable=E1101
+        return meta.get("iamConfiguration", {}).get("uniformBucketLevelAccess", {}).get("enabled") is True
+    except Exception as e:
+        demisto.debug(f"_is_ubla_enabled: failed to fetch bucket metadata for {bucket_name}: {e}")
+        return False
+
+
+def _is_ubla_error(e: HttpError) -> bool:
+    """Detects UBLA-related 400 error content from Google API."""
+    try:
+        if isinstance(e.content, bytes | bytearray):
+            content_lower = e.content.decode("utf-8", errors="ignore").lower()
+        else:
+            content_lower = str(e.content).lower()
+    except Exception:
+        content_lower = ""
+    return e.resp.status == 400 and "uniform bucket-level access" in content_lower
+
+
+def _validate_bucket_policy_for_set(policy: dict[str, Any], add_mode: bool) -> None:
+    """Validate the structure of a bucket IAM policy for set operation.
+
+    Args:
+        policy: The JSON-decoded policy payload provided by the user.
+        add_mode: If True, we only require valid bindings for merge; if False, validate full policy fields where applicable.
+
+    Raises:
+        DemistoException: If validation fails.
+    """
+    if not isinstance(policy, dict):
+        raise DemistoException("Policy must be a JSON object.")
+
+    bindings = policy.get("bindings")
+    if bindings is not None and (not isinstance(bindings, list) or any(not isinstance(b, dict) for b in bindings)):
+        if add_mode:
+            raise DemistoException("Policy must include 'bindings' as an array of objects when add=true.")
+        else:
+            raise DemistoException("'bindings' must be an array of objects if provided.")
+
+    if isinstance(bindings, list):
+        for idx, b in enumerate(bindings):
+            role = b.get("role")
+            if not isinstance(role, str) or not role:
+                raise DemistoException(f"Binding at index {idx} is missing a valid 'role' string.")
+            members = b.get("members", [])
+            if not isinstance(members, list) or any(not isinstance(m, str) for m in members):
+                raise DemistoException(f"Binding at index {idx} must include 'members' as an array of strings.")
+            if "condition" in b:
+                version = policy.get("version", 1)
+                if not isinstance(version, int) or version < 3:
+                    raise DemistoException("Policy with IAM Conditions requires 'version' to be 3 or greater.")
+
+
 ##########
 
 
@@ -377,6 +468,475 @@ def compute_firewall_patch(creds: Credentials, args: dict[str, Any]) -> CommandR
         removeNull=True,
     )
     return CommandResults(readable_output=hr, outputs_prefix="GCP.Compute.Operations", outputs=response)
+
+
+def storage_bucket_list(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Retrieves the list of buckets in the project associated with the client.
+
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): Command arguments including optional project_id, max_results, prefix, page_token.
+
+    Returns:
+        CommandResults: List of buckets with their metadata.
+    """
+    project_id = args.get("project_id")
+    max_results = arg_to_number(args.get("limit"))
+    prefix = args.get("prefix")
+    page_token = args.get("page_token")
+    demisto.debug(f"[GCP: storage_bucket_list] \nMax results: {max_results}, \nPrefix: {prefix}, \nPage token: {page_token}")
+
+    storage = GCPServices.STORAGE.build(creds)
+
+    # Build request parameters
+    request_params = {"project": project_id, "maxResults": max_results, "prefix": prefix, "pageToken": page_token}
+
+    remove_nulls_from_dictionary(request_params)
+
+    demisto.debug(f"[GCP: storage_bucket_list] Request params: {request_params}")
+    response = storage.buckets().list(**request_params).execute()  # pylint: disable=E1101
+
+    buckets = response.get("items", [])
+    demisto.debug(f"[GCP: storage_bucket_list] Buckets returned: {len(buckets)}")
+    hr_bucket_data: list[dict[str, Any]] = []
+
+    for bucket in buckets:
+        hr_bucket_data.append(
+            {
+                "Name": bucket.get("name"),
+                "TimeCreated": _format_gcp_datetime(bucket.get("timeCreated")),
+                "TimeUpdated": _format_gcp_datetime(bucket.get("updated")),
+                "OwnerID": bucket.get("owner", {}).get("entityId", ""),
+                "Location": bucket.get("location"),
+                "StorageClass": bucket.get("storageClass"),
+            }
+        )
+    hr = tableToMarkdown("GCP Storage Buckets", hr_bucket_data, removeNull=True, headerTransform=pascalToSpace)
+
+    return CommandResults(
+        readable_output=hr,
+        outputs_prefix="GCP.Storage.Bucket",
+        outputs=buckets,
+        outputs_key_field="Name",
+        raw_response=buckets,
+    )
+
+
+def storage_bucket_get(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Retrieves information about a specific bucket.
+
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): Command arguments including required bucket_name.
+
+    Returns:
+        CommandResults: Bucket information.
+    """
+    bucket_name = args.get("bucket_name", "")
+
+    storage = GCPServices.STORAGE.build(creds)
+
+    response = storage.buckets().get(bucket=bucket_name).execute()  # pylint: disable=E1101
+
+    demisto.debug(f"[GCP: storage_bucket_get] \nResponse: \n{response}")
+
+    bucket_info = {
+        "Name": response.get("name"),
+        "TimeCreated": _format_gcp_datetime(response.get("timeCreated")),
+        "TimeUpdated": _format_gcp_datetime(response.get("updated")),
+        "OwnerID": response.get("owner", {}).get("entityId", ""),
+        "Location": response.get("location"),
+        "StorageClass": response.get("storageClass"),
+    }
+
+    hr = tableToMarkdown(f"GCP Storage Bucket: {bucket_name}", bucket_info, removeNull=True, headerTransform=pascalToSpace)
+
+    return CommandResults(
+        readable_output=hr,
+        outputs_prefix="GCP.Storage.Bucket",
+        outputs=response,
+        outputs_key_field="Name",
+        raw_response=response,
+    )
+
+
+def storage_bucket_objects_list(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Retrieves the list of objects in a bucket.
+
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): Command arguments including required bucket_name and optional filters.
+
+    Returns:
+        CommandResults: List of objects in the bucket.
+    """
+    bucket_name = args.get("bucket_name", "")
+
+    prefix = args.get("prefix", "")
+    delimiter = args.get("delimiter", "")
+    max_results = arg_to_number(args.get("limit"))
+    page_token = args.get("page_token", "")
+
+    storage = GCPServices.STORAGE.build(creds)
+
+    # Build request parameters
+    request_params = {
+        "bucket": bucket_name,
+        "prefix": prefix,
+        "delimiter": delimiter,
+        "maxResults": max_results,
+        "pageToken": page_token,
+    }
+    remove_nulls_from_dictionary(request_params)
+    demisto.debug(f"[GCP: storage_bucket_objects_list] Request params: {request_params}")
+
+    response = storage.objects().list(**request_params).execute()  # pylint: disable=E1101
+    demisto.debug(f" \nResponse: \n{response}")
+
+    objects = response.get("items", [])
+    demisto.debug(f"[GCP: storage_bucket_objects_list] Objects returned: {len(objects)}")
+    object_data: list[dict[str, Any]] = []
+
+    for obj in objects:
+        object_info = {
+            "Name": obj.get("name", ""),
+            "Bucket": obj.get("bucket", ""),
+            "ContentType": obj.get("contentType", ""),
+            "Size": obj.get("size", ""),
+            "TimeCreated": _format_gcp_datetime(obj.get("timeCreated", "")),
+            "TimeUpdated": _format_gcp_datetime(obj.get("updated", "")),
+            "MD5Hash": obj.get("md5Hash", ""),
+            "CRC32c": obj.get("crc32c", ""),
+        }
+        object_data.append(object_info)
+    hr = tableToMarkdown(f"Objects in bucket: {bucket_name}", object_data, removeNull=True, headerTransform=pascalToSpace)
+
+    return CommandResults(
+        readable_output=hr,
+        outputs_prefix="GCP.Storage.BucketObject",
+        outputs=objects,
+        outputs_key_field="Name",
+        raw_response=objects,
+    )
+
+
+def storage_bucket_policy_list(
+    creds: Credentials,
+    args: dict[str, Any],
+    outputs_prefix: str = "GCP.Storage.BucketPolicy",
+    object_name: str = "",
+) -> CommandResults:
+    """
+    Retrieves the IAM policy for a bucket.
+
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): Command arguments including required bucket_name and optional requested_policy_version.
+
+    Returns:
+        CommandResults: IAM policy for the bucket.
+    """
+    bucket_name = args.get("bucket_name", "")
+    requested_policy_version = arg_to_number(args.get("requested_policy_version"))
+    storage = GCPServices.STORAGE.build(creds)
+
+    # Build request parameters
+    request_params = {
+        "bucket": bucket_name,
+        "optionsRequestedPolicyVersion": requested_policy_version,
+    }
+    remove_nulls_from_dictionary(request_params)
+    demisto.debug(f"[GCP: storage_bucket_policy_list] Request params: {request_params}")
+    response = storage.buckets().getIamPolicy(**request_params).execute()  # pylint: disable=E1101
+
+    policy_summary = {
+        "Bucket": bucket_name,
+        "Version": response.get("version"),
+        "ETag": response.get("etag"),
+        "Bindings count": len(response.get("bindings", [])),
+    }
+    bindings_rows = []
+    for binding in response.get("bindings", []):
+        role = binding.get("role", "")
+        members = binding.get("members", [])
+        bindings_rows.append({"Role": role, "Members": "\n".join(members) if members else ""})
+
+    summary_object_type = f"bucket: {bucket_name}"
+    outputs = response
+    primary_key: str | list[str] = "resourceId"
+    # Build outputs for object policy command
+    if object_name:
+        summary_object_type = f"object: {object_name}"
+        outputs = {"bucketName": bucket_name, "objectName": object_name, "bindings": response.get("bindings", [])}
+        primary_key = ["bucketName", "objectName"]
+
+    summary_text = (
+        f"IAM Policy for {summary_object_type}\n Version: {policy_summary['Version']}\n"
+        f"ETag: {policy_summary['ETag']}\n Bindings count: {policy_summary['Bindings count']}"
+    )
+
+    hr_bindings = tableToMarkdown(
+        "Bindings",
+        bindings_rows,
+        headers=["Role", "Members"],
+        removeNull=True,
+        headerTransform=pascalToSpace,
+    )
+    demisto.debug(f"[GCP: storage_bucket_policy_list] Bindings count: {len(bindings_rows)}")
+    hr = f"{summary_text}\n\n{hr_bindings}"
+
+    return CommandResults(
+        readable_output=hr,
+        outputs_prefix=outputs_prefix,
+        outputs=outputs,
+        raw_response=response,
+        outputs_key_field=primary_key,
+    )
+
+
+def storage_bucket_policy_set(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Sets the IAM policy for a bucket.
+
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): Command arguments including required bucket_name and policy.
+
+    Returns:
+        CommandResults: Result of the policy update operation.
+    """
+    bucket_name = args.get("bucket_name", "")
+    policy_json = args.get("policy", {})
+
+    try:
+        policy = json.loads(policy_json)
+    except json.JSONDecodeError as e:
+        raise DemistoException(f"Invalid JSON format for policy: {str(e)}")
+
+    storage = GCPServices.STORAGE.build(creds)
+
+    demisto.debug(f"[GCP: storage_bucket_policy_set] Bucket: {bucket_name}; Policy keys: {list(policy.keys())}")
+    add_flag = argToBoolean(args.get("add"))
+
+    _validate_bucket_policy_for_set(policy=policy, add_mode=add_flag)
+    if add_flag:
+        current = storage.buckets().getIamPolicy(bucket=bucket_name).execute()  # pylint: disable=E1101
+        current_bindings: list[dict] = current.get("bindings", [])
+        provided_bindings: list[dict] = policy.get("bindings", [])
+
+        # Index current bindings by role
+        by_role: dict[str, dict] = {
+            str(b.get("role")): {"role": b.get("role"), "members": set(b.get("members", []))}
+            for b in current_bindings
+            if b.get("role")
+        }
+        # Merge provided bindings
+        for pb in provided_bindings:
+            role = pb.get("role")
+            members = set(pb.get("members", []) or [])
+            if not role:
+                continue
+            if role in by_role:
+                by_role[role]["members"].update(members)
+            else:
+                by_role[role] = {"role": role, "members": set(members)}
+
+        # Build merged bindings list
+        merged_bindings = [{"role": r, "members": sorted(data["members"])} for r, data in by_role.items()]
+        # Preserve other top-level fields from current policy if present (e.g., etag/version)
+        merged_policy = dict(current)
+        merged_policy["bindings"] = merged_bindings
+        response = storage.buckets().setIamPolicy(bucket=bucket_name, body=merged_policy).execute()  # pylint: disable=E1101
+    else:
+        response = storage.buckets().setIamPolicy(bucket=bucket_name, body=policy).execute()  # pylint: disable=E1101
+
+    demisto.debug(f" \nResponse: \n{response}")
+
+    result_info = {"Bucket": bucket_name, "PolicyUpdatedSuccessfully": True, "NewPolicyVersion": response.get("version")}
+
+    hr = tableToMarkdown(
+        f"IAM Policy updated for bucket: {bucket_name}",
+        result_info,
+        removeNull=True,
+        headerTransform=pascalToSpace,
+    )
+
+    return CommandResults(
+        readable_output=hr,
+        outputs_prefix="GCP.Storage.BucketPolicy",
+        outputs=response,
+        outputs_key_field="etag",
+        raw_response=response,
+    )
+
+
+def storage_bucket_object_policy_list(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Lists object-level ACLs for a specific object using the GCS ObjectAccessControls API.
+
+    If Uniform Bucket-Level Access (UBLA) is enabled on the bucket, object-level ACLs are
+    disabled and the command returns the bucket-level IAM policy instead for guidance.
+
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]):
+            - bucket_name (str): Target bucket name.
+            - object_name (str): Target object name.
+            - generation (Number, optional): Object generation to target when listing ACLs.
+
+    Returns:
+        CommandResults: Human-readable table of ACL entries and machine outputs under
+        'GCP.Storage.BucketObjectPolicy'.
+    """
+    bucket_name = args.get("bucket_name", "")
+    object_name = args.get("object_name", "")
+
+    generation = arg_to_number(args.get("generation"))
+
+    storage = GCPServices.STORAGE.build(creds)
+
+    # UBLA short-circuit
+    if _is_ubla_enabled(storage, bucket_name):
+        demisto.debug(f"Uniform Bucket-Level Access is enabled for {bucket_name} bucket. return the bucket policy")
+        return storage_bucket_policy_list(
+            creds=creds,
+            args=args,
+            outputs_prefix="GCP.Storage.BucketObjectPolicy",
+            object_name=object_name,
+        )
+
+    # Build request parameters
+    request_params = {"bucket": bucket_name, "object": object_name, "generation": generation}
+    remove_nulls_from_dictionary(request_params)
+
+    demisto.debug(f"[GCP: storage_bucket_object_policy_list] Request params: {request_params}")
+    try:
+        response = (
+            storage.objectAccessControls()  # pylint: disable=E1101
+            .list(bucket=bucket_name, object=object_name)
+            .execute()
+        )
+    except HttpError as e:
+        if _is_ubla_error(e):
+            demisto.debug(f"Uniform Bucket-Level Access is enabled for {bucket_name} bucket. return the bucket policy")
+            return storage_bucket_policy_list(
+                creds=creds,
+                args=args,
+                outputs_prefix="GCP.Storage.BucketObjectPolicy",
+                object_name=object_name,
+            )
+        demisto.debug(f"[GCP: storage_bucket_object_policy_get] HttpError status={getattr(e.resp, 'status', None)}")
+        raise
+    # Build human readable output: summary + bindings table
+    items = response.get("items", [])
+    hr = tableToMarkdown(f"Policy for object: {object_name} in bucket: {bucket_name}", items, headerTransform=pascalToSpace)
+
+    return CommandResults(
+        readable_output=hr,
+        outputs_prefix="GCP.Storage.BucketObjectPolicy",
+        outputs=items,
+        raw_response=response,
+        outputs_key_field=["Bucket", "Key"],
+    )
+
+
+def storage_bucket_object_policy_set(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Sets object-level ACLs using the GCS ObjectAccessControls API.
+
+    This command applies one or more ACL entries to a specific object. For each provided entry
+    (with fields like 'entity' and 'role'), it attempts an idempotent update first and falls back
+    to insert if the ACL entry does not exist. If Uniform Bucket-Level Access (UBLA) is enabled
+    on the bucket, object-level ACLs are not permitted and the command returns guidance to use
+    bucket-level IAM instead.
+
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]):
+            - bucket_name (str): Target bucket name.
+            - object_name (str): Target object name.
+            - policy (JSON str): A single ACL object or a JSON array of ACL objects. Each object must
+              include 'entity' and 'role' (e.g., {"entity": "allUsers", "role": "READER"}).
+            - generation (Number, optional): Object generation to target.
+
+    Returns:
+        CommandResults: Human-readable table of applied ACL entries and machine outputs under
+        'GCP.Storage.BucketObjectPolicy'.
+    """
+    bucket_name = args.get("bucket_name", "")
+    object_name = args.get("object_name", "")
+    policy_json = args.get("policy", {})
+    generation = arg_to_number(args.get("generation"))
+
+    try:
+        policy = json.loads(policy_json)
+    except json.JSONDecodeError as e:
+        raise DemistoException(f"Invalid JSON format for policy: {str(e)}")
+
+    storage = GCPServices.STORAGE.build(creds)
+
+    # UBLA short-circuit
+    ubla_message = f"""Uniform Bucket-Level Access (UBLA) is enabled for the bucket: {bucket_name}.
+    Use `gcp-storage-bucket-policy-set` at the bucket level instead."""
+    if _is_ubla_enabled(storage, bucket_name):
+        return CommandResults(readable_output=ubla_message)
+
+    # Interpret policy as one or many ObjectAccessControls entries
+    entries: list[dict[str, Any]]
+    if isinstance(policy, list):
+        entries = policy
+    elif isinstance(policy, dict):
+        entries = [policy]
+    else:
+        raise DemistoException("'policy' must be a JSON object or an array of objects representing ACL entries.")
+
+    results: list[dict[str, Any]] = []
+    for idx, entry in enumerate(entries):
+        entity = entry.get("entity")
+        role = entry.get("role")
+        if not entity or not role:
+            raise DemistoException("Each ACL entry must include 'entity' and 'role'.")
+
+        # Try update first (idempotent). If it doesn't exist, fallback to insert.
+        update_params = {"bucket": bucket_name, "object": object_name, "entity": entity, "body": entry, "generation": generation}
+        remove_nulls_from_dictionary(update_params)
+        try:
+            demisto.debug(f"[GCP: storage_bucket_object_policy_set] Updating ACL #{idx+1} for entity {entity}")
+            resp = storage.objectAccessControls().patch(**update_params).execute()  # pylint: disable=E1101
+            results.append(resp)
+            continue
+        except Exception as e:
+            # If update fails (e.g., 404), attempt insert. If UBLA error detected, short-circuit.
+            if isinstance(e, HttpError) and _is_ubla_error(e):
+                return CommandResults(readable_output=ubla_message)
+            demisto.debug(f"[GCP: storage_bucket_object_policy_set] Update failed for entity {entity}: {e}. Trying insert.")
+            try:
+                insert_params = {"bucket": bucket_name, "object": object_name, "body": entry, "generation": generation}
+                remove_nulls_from_dictionary(insert_params)
+                resp = storage.objectAccessControls().insert(**insert_params).execute()  # pylint: disable=E1101
+                results.append(resp)
+            except Exception as ie:
+                if isinstance(ie, HttpError) and _is_ubla_error(ie):
+                    return CommandResults(readable_output=ubla_message)
+                raise
+
+    hr = tableToMarkdown(
+        f"Object ACLs set for object: {object_name} in bucket: {bucket_name}",
+        results if results else [{"message": "No ACL changes applied"}],
+        removeNull=True,
+        headerTransform=pascalToSpace,
+    )
+
+    return CommandResults(
+        readable_output=hr,
+        outputs_prefix="GCP.Storage.BucketObjectPolicy",
+        outputs=results,
+        raw_response=results,
+        outputs_key_field="resourceId",
+    )
 
 
 def storage_bucket_policy_delete(creds: Credentials, args: dict[str, Any]) -> CommandResults:
@@ -1483,7 +2043,7 @@ def main():  # pragma: no cover
     params = demisto.params()
 
     try:
-        command_map = {
+        command_map: dict[str, Callable[[Any, dict], Any]] = {
             "test-module": test_module,
             # Compute Engine commands
             "gcp-compute-firewall-patch": compute_firewall_patch,
@@ -1496,6 +2056,13 @@ def main():  # pragma: no cover
             "gcp-compute-instance-get": gcp_compute_instance_get_command,
             "gcp-compute-instance-labels-set": gcp_compute_instance_label_set_command,
             # Storage commands
+            "gcp-storage-bucket-list": storage_bucket_list,
+            "gcp-storage-bucket-get": storage_bucket_get,
+            "gcp-storage-bucket-objects-list": storage_bucket_objects_list,
+            "gcp-storage-bucket-policy-list": storage_bucket_policy_list,
+            "gcp-storage-bucket-policy-set": storage_bucket_policy_set,
+            "gcp-storage-bucket-object-policy-list": storage_bucket_object_policy_list,
+            "gcp-storage-bucket-object-policy-set": storage_bucket_object_policy_set,
             "gcp-storage-bucket-policy-delete": storage_bucket_policy_delete,
             "gcp-storage-bucket-metadata-update": storage_bucket_metadata_update,
             # Container (GKE) commands
