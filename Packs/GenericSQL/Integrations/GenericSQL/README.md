@@ -102,6 +102,10 @@ Example: "CREATE PROCEDURE _PROCEDURE_NAME_ @timestamp DATETIME
 5. After creating the procedure, fill in 'Fetch events query' the value: 'EXEC _PROCEDURE_NAME_' with your procedure name.
 6. Fetch parameters, ts (timestamp) or id and l (limit), will be added by the fetch mechanism.
 
+##### Trino
+Trino can be fetched by executing a simple query that allows concatenating to it:
+"where {column_name} > {last value} order by {column_name} ASC limit {fetch limit}"
+
 Note: Other SQL databases are currently not supported by the fetch incidents.
 
 ##### Fetch Incidents query Notes
