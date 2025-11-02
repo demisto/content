@@ -3490,6 +3490,8 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-ec2-ipam-resource-discovery-associations-describe": EC2.describe_ipam_resource_discovery_associations_command,
     "aws-ec2-set-snapshot-to-private-quick-action": EC2.modify_snapshot_permission_command,
     "aws-eks-cluster-config-update": EKS.update_cluster_config_command,
+    "aws-eks-enable-control-plane-logging-quick-action": EKS.update_cluster_config_command,
+    "aws-eks-enable-control-plane-logging-quick-action": EKS.update_cluster_config_command,
     "aws-eks-describe-cluster": EKS.describe_cluster_command,
     "aws-eks-associate-access-policy": EKS.associate_access_policy_command,
     "aws-rds-db-cluster-modify": RDS.modify_db_cluster_command,
