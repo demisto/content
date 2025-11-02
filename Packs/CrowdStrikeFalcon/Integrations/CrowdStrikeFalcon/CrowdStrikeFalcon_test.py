@@ -1858,7 +1858,6 @@ class TestFetchFunctionsTimestampFormatting:
         """Setup common mocks used across all test methods."""
         # CommonServerPython.update_last_run_object only formats detection["occurred"] field when offset is zero
         mocker.patch("CrowdStrikeFalcon.calculate_new_offset", return_value=0)
-        mocker.patch("CrowdStrikeFalcon.LEGACY_VERSION", False)
 
     def test_fetch_endpoint_incidents__update_last_run_object(self, mocker):
         from CrowdStrikeFalcon import fetch_endpoint_incidents
