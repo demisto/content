@@ -448,6 +448,7 @@ Updates the properties of an issue. This command does not provide an explicit in
 #### Base Command
 
 `core-update-issue`
+
 ### core-search-asset-groups
 
 ***
