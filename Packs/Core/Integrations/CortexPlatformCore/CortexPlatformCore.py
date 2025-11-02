@@ -24,7 +24,19 @@ ASSET_FIELDS = {
 }
 
 
+WEBAPP_COMMANDS = ["core-get-vulnerabilities", "core-search-asset-groups"]
+DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
+
 VULNERABLE_ISSUES_TABLE = "VULNERABLE_ISSUES_TABLE"
+ASSET_GROUPS_TABLE = "UNIFIED_ASSET_MANAGEMENT_ASSET_GROUPS"
+
+ASSET_GROUP_FIELDS = {
+    "asset_group_name": "XDM__ASSET_GROUP__NAME",
+    "asset_group_type": "XDM__ASSET_GROUP__TYPE",
+    "asset_group_description": "XDM__ASSET_GROUP__DESCRIPTION",
+    "asset_group_id": "XDM__ASSET_GROUP__ID",
+}
+
 VULNERABILITIES_SEVERITY_MAPPING = {
     "info": "SEV_030_INFO",
     "low": "SEV_040_LOW",
@@ -32,9 +44,6 @@ VULNERABILITIES_SEVERITY_MAPPING = {
     "high": "SEV_060_HIGH",
     "critical": "SEV_070_CRITICAL",
 }
-
-WEBAPP_COMMANDS = ["core-get-vulnerabilities"]
-DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
 
 
 class FilterBuilder:
@@ -345,6 +354,57 @@ class Client(CoreClient):
         )
 
 
+def search_asset_groups_command(client: Client, args: dict) -> CommandResults:
+    """
+    Retrieves asset groups from the Cortex platform based on provided filters.
+
+    Args:
+        client (Client): The client instance used to send the request.
+        args (dict): Dictionary containing the arguments for the command.
+                     Expected to include:
+                         - name (str, optional): Filter by asset group names
+                         - type (str, optional): Filter by asset group type
+                         - description (str, optional): Filter by description
+                         - id (str, optional): Filter by asset group ids
+
+    Returns:
+        CommandResults: Object containing the formatted asset groups,
+                        raw response, and outputs for integration context.
+    """
+    limit = arg_to_number(args.get("limit")) or 50
+    filter_builder = FilterBuilder()
+    filter_builder.add_field(ASSET_GROUP_FIELDS["asset_group_name"], FilterType.CONTAINS, argToList(args.get("name")))
+    filter_builder.add_field(ASSET_GROUP_FIELDS["asset_group_type"], FilterType.EQ, args.get("type"))
+    filter_builder.add_field(
+        ASSET_GROUP_FIELDS["asset_group_description"], FilterType.CONTAINS, argToList(args.get("description"))
+    )
+    filter_builder.add_field(ASSET_GROUP_FIELDS["asset_group_id"], FilterType.EQ, argToList(args.get("id")))
+
+    request_data = build_webapp_request_data(
+        table_name=ASSET_GROUPS_TABLE,
+        filter_dict=filter_builder.to_dict(),
+        limit=limit,
+        sort_field="XDM__ASSET_GROUP__LAST_UPDATE_TIME",
+    )
+
+    response = client.get_webapp_data(request_data)
+    reply = response.get("reply", {})
+    data = reply.get("DATA", [])
+
+    data = [
+        {(k.replace("XDM__ASSET_GROUP__", "") if k.startswith("XDM__ASSET_GROUP__") else k).lower(): v for k, v in item.items()}
+        for item in data
+    ]
+
+    return CommandResults(
+        readable_output=tableToMarkdown("AssetGroups", data, headerTransform=string_to_table_header),
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.AssetGroups",
+        outputs_key_field="id",
+        outputs=data,
+        raw_response=response,
+    )
+
+
 def build_webapp_request_data(
     table_name: str,
     filter_dict: dict,
@@ -632,6 +692,9 @@ def main():  # pragma: no cover
 
         elif command == "core-get-asset-details":
             return_results(get_asset_details_command(client, args))
+
+        elif command == "core-search-asset-groups":
+            return_results(search_asset_groups_command(client, args))
 
         elif command == "core-get-issues":
             # replace all dict keys that contain issue with alert
