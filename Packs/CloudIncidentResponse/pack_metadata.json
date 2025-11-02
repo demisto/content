@@ -39,5 +39,74 @@
         "ENT_PLUS",
         "agentix",
         "xsiam"
+    ],
+    "dependencies": {
+        "TIM_Processing": {
+            "mandatory": true,
+            "display_name": "TIM - Indicator Auto-Processing"
+        },
+        "CommonTypes": {
+            "mandatory": true,
+            "display_name": "Common Types"
+        },
+        "AWS-Enrichment-Remediation": {
+            "mandatory": true,
+            "display_name": "AWS Enrichment and Remediation"
+        },
+        "CommonPlaybooks": {
+            "mandatory": false,
+            "display_name": "Common Playbooks"
+        },
+        "GoogleCloudLogging": {
+            "mandatory": false,
+            "display_name": "Google Cloud Logging"
+        },
+        "AWS-CloudTrail": {
+            "mandatory": true,
+            "display_name": "AWS - CloudTrail"
+        },
+        "FiltersAndTransformers": {
+            "mandatory": true,
+            "display_name": "Filters And Transformers"
+        },
+        "CommonScripts": {
+            "mandatory": true,
+            "display_name": "Common Scripts"
+        },
+        "CoreAlertFields": {
+            "mandatory": true,
+            "display_name": "Core Alert Fields"
+        },
+        "Identity": {
+            "mandatory": true,
+            "display_name": "Identity"
+        },
+        "AzureLogAnalytics": {
+            "mandatory": false,
+            "display_name": "Azure Log Analytics"
+        },
+        "AWS-Lambda": {
+            "mandatory": true,
+            "display_name": "AWS - Lambda"
+        },
+        "Core": {
+            "mandatory": true,
+            "display_name": "Core"
+        }
+    },
+    "displayedImages": [
+        "TIM_Processing",
+        "CommonTypes",
+        "AWS-Enrichment-Remediation",
+        "CommonPlaybooks",
+        "GoogleCloudLogging",
+        "AWS-CloudTrail",
+        "FiltersAndTransformers",
+        "CommonScripts",
+        "CoreAlertFields",
+        "Identity",
+        "AzureLogAnalytics",
+        "AWS-Lambda",
+        "Core"
     ]
 }

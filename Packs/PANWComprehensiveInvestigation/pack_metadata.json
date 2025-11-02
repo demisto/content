@@ -18,49 +18,61 @@
     ],
     "keywords": [],
     "dependencies": {
-        "Traps": {
-            "mandatory": false,
-            "display_name": "Palo Alto Networks Traps"
-        },
-        "Palo_Alto_Networks_WildFire": {
-            "mandatory": false,
-            "display_name": "Palo Alto Networks WildFire"
-        },
-        "Active_Directory_Query": {
-            "mandatory": false,
-            "display_name": "Active Directory Query"
-        },
-        "CommonTypes": {
-            "mandatory": true,
-            "display_name": "Common Types"
-        },
-        "PaloAltoNetworks_PAN_OS_EDL_Management": {
-            "mandatory": false,
-            "display_name": "Palo Alto Networks PAN-OS EDL Management"
-        },
-        "CommonPlaybooks": {
-            "mandatory": true,
-            "display_name": "Common Playbooks"
-        },
-        "PAN-OS": {
-            "mandatory": false,
-            "display_name": "PAN-OS"
-        },
         "AutoFocus": {
-            "mandatory": false,
-            "display_name": "AutoFocus"
+            "mandatory": true,
+            "display_name": "AutoFocus by Palo Alto Networks"
         },
         "CortexDataLake": {
             "mandatory": false,
-            "display_name": "Cortex Data Lake"
+            "display_name": "Strata Logging Service by Palo Alto Networks"
+        },
+        "FiltersAndTransformers": {
+            "mandatory": true,
+            "display_name": "Filters And Transformers"
+        },
+        "CoreAlertFields": {
+            "mandatory": true,
+            "display_name": "Core Alert Fields"
+        },
+        "Traps": {
+            "mandatory": false,
+            "display_name": "Palo Alto Networks Traps (Deprecated)"
+        },
+        "Active_Directory_Query": {
+            "mandatory": true,
+            "display_name": "Active Directory Query"
         },
         "CommonScripts": {
             "mandatory": true,
             "display_name": "Common Scripts"
         },
+        "PrismaCloud": {
+            "mandatory": false,
+            "display_name": "Prisma Cloud by Palo Alto Networks"
+        },
         "Malware": {
             "mandatory": true,
-            "display_name": "Malware"
+            "display_name": "Malware Core"
+        },
+        "PAN-OS": {
+            "mandatory": false,
+            "display_name": "PAN-OS by Palo Alto Networks"
+        },
+        "PaloAltoNetworks_PAN_OS_EDL_Management": {
+            "mandatory": false,
+            "display_name": "Palo Alto Networks PAN-OS EDL Management (Deprecated)"
+        },
+        "CommonTypes": {
+            "mandatory": true,
+            "display_name": "Common Types"
+        },
+        "Palo_Alto_Networks_WildFire": {
+            "mandatory": false,
+            "display_name": "WildFire by Palo Alto Networks"
+        },
+        "CommonPlaybooks": {
+            "mandatory": true,
+            "display_name": "Common Playbooks"
         }
     },
     "marketplaces": [
@@ -78,5 +90,21 @@
         "edr",
         "cloud",
         "cloud_runtime_security"
+    ],
+    "displayedImages": [
+        "AutoFocus",
+        "CortexDataLake",
+        "FiltersAndTransformers",
+        "CoreAlertFields",
+        "Traps",
+        "Active_Directory_Query",
+        "CommonScripts",
+        "PrismaCloud",
+        "Malware",
+        "PAN-OS",
+        "PaloAltoNetworks_PAN_OS_EDL_Management",
+        "CommonTypes",
+        "Palo_Alto_Networks_WildFire",
+        "CommonPlaybooks"
     ]
 }

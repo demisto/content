@@ -30,53 +30,63 @@
         "RCE"
     ],
     "dependencies": {
+        "PANWComprehensiveInvestigation": {
+            "mandatory": false,
+            "display_name": "Comprehensive Investigation by Palo Alto Networks"
+        },
+        "PrismaCloud": {
+            "mandatory": false,
+            "display_name": "Prisma Cloud by Palo Alto Networks"
+        },
+        "MajorBreachesInvestigationandResponse": {
+            "mandatory": false,
+            "display_name": "Rapid Breach Response"
+        },
+        "CommonPlaybooks": {
+            "mandatory": false,
+            "display_name": "Common Playbooks"
+        },
+        "SplunkPyPreRelease": {
+            "mandatory": false,
+            "display_name": "Splunk Prerelease (Deprecated)"
+        },
         "QRadar": {
             "mandatory": false,
             "display_name": "IBM QRadar"
-        },
-        "PAN-OS": {
-            "mandatory": false,
-            "display_name": "PAN-OS"
         },
         "CommonScripts": {
             "mandatory": true,
             "display_name": "Common Scripts"
         },
-        "MajorBreachesInvestigationandResponse": {
-            "mandatory": true,
-            "display_name": "Rapid Breach Response"
-        },
-        "SplunkPyPreRelease": {
-            "mandatory": false,
-            "display_name": "Splunk Prerelease"
-        },
         "SplunkPy": {
             "mandatory": false,
             "display_name": "Splunk"
         },
-        "PaloAltoNetworks_PAN_OS_EDL_Management": {
+        "PAN-OS": {
             "mandatory": false,
-            "display_name": "Palo Alto Networks PAN-OS EDL Management"
+            "display_name": "PAN-OS by Palo Alto Networks"
         },
-        "PANWComprehensiveInvestigation": {
+        "ExpanseV2": {
             "mandatory": false,
-            "display_name": "PANW Comprehensive Investigation"
+            "display_name": "Cortex Xpanse by Palo Alto Networks (Deprecated)"
         },
-        "CommonPlaybooks": {
-            "mandatory": false,
-            "display_name": "Common Playbooks"
+        "Core": {
+            "mandatory": true,
+            "display_name": "Core"
         }
     },
     "displayedImages": [
-        "QRadar",
-        "PAN-OS",
-        "CommonScripts",
-        "MajorBreachesInvestigationandResponse",
-        "SplunkPyPreRelease",
-        "SplunkPy",
-        "PaloAltoNetworks_PAN_OS_EDL_Management",
         "PANWComprehensiveInvestigation",
-        "CommonPlaybooks"
+        "PrismaCloud",
+        "MajorBreachesInvestigationandResponse",
+        "CommonPlaybooks",
+        "SplunkPyPreRelease",
+        "QRadar",
+        "CommonScripts",
+        "SplunkPy",
+        "PAN-OS",
+        "ExpanseV2",
+        "Core"
     ],
     "marketplaces": [
         "xsoar",

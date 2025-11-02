@@ -24,9 +24,9 @@
         "xsoar"
     ],
     "dependencies": {
-        "FiltersAndTransformers": {
-            "mandatory": true,
-            "display_name": "Filters And Transformers"
+        "WindowsDefenderAdvancedThreatProtection": {
+            "mandatory": false,
+            "display_name": "Windows Defender Advanced Threat Protection (Deprecated)"
         },
         "CommonTypes": {
             "mandatory": true,
@@ -36,25 +36,40 @@
             "mandatory": true,
             "display_name": "Common Playbooks"
         },
-        "FeedLOLBAS": {
+        "CommonScripts": {
             "mandatory": true,
-            "display_name": "LOLBAS Feed"
+            "display_name": "Common Scripts"
+        },
+        "Core": {
+            "mandatory": true,
+            "display_name": "Core"
+        },
+        "FiltersAndTransformers": {
+            "mandatory": true,
+            "display_name": "Filters And Transformers"
         },
         "MicrosoftDefenderAdvancedThreatProtection": {
             "mandatory": false,
             "display_name": "Microsoft Defender for Endpoint"
         },
-        "FeedUnit42v2": {
+        "FeedLOLBAS": {
             "mandatory": false,
-            "display_name": "Feed Unit42 v2"
+            "display_name": "LOLBAS Feed"
+        },
+        "TIM_Processing": {
+            "mandatory": true,
+            "display_name": "TIM - Indicator Auto-Processing"
         }
     },
     "displayedImages": [
-        "FiltersAndTransformers",
+        "WindowsDefenderAdvancedThreatProtection",
         "CommonTypes",
-        "MicrosoftDefenderAdvancedThreatProtection",
-        "LOLBASFeed",
         "CommonPlaybooks",
-        "FeedUnit42v2"
+        "CommonScripts",
+        "Core",
+        "FiltersAndTransformers",
+        "MicrosoftDefenderAdvancedThreatProtection",
+        "FeedLOLBAS",
+        "TIM_Processing"
     ]
 }
