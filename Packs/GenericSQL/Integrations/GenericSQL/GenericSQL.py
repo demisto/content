@@ -452,7 +452,7 @@ def sql_query_execute(client: Client, args: dict, *_) -> tuple[str, dict[str, An
         result, headers = client.sql_query_execute_request(sql_query, bind_variables, limit)
 
         table = result_to_list_of_dicts(result)
-        table = table[skip: skip + limit]
+        table = table[skip : skip + limit]
 
         human_readable = tableToMarkdown(name="Query result:", t=table, headers=headers, removeNull=True)
         context = {
@@ -513,8 +513,10 @@ def create_sql_query_for_trino(params: dict, last_run: dict) -> str:
         return f"{query} WHERE {fetch_column_name} > {fetch_column_name_value} ORDER BY {fetch_column_name} ASC LIMIT {limit}"
 
     if params.get("fetch_parameters") == "ID and timestamp":
-        return f"{query} WHERE {fetch_column_name} > {fetch_column_name_value} " \
-               f"AND {id_column} > {current_id} ORDER BY {id_column} ASC LIMIT {limit}"
+        return (
+            f"{query} WHERE {fetch_column_name} > {fetch_column_name_value} "
+            f"AND {id_column} > {current_id} ORDER BY {id_column} ASC LIMIT {limit}"
+        )
 
     return query
 
@@ -700,8 +702,10 @@ def fetch_incidents_for_trino(client: Client, params: dict):
     )
     demisto.debug(f"This is the table: {table}")
     if table:
-        last_run = {"id": table[-1].get(params.get("id_column")),
-                    "fetch_column_name_value": table[-1].get(params.get("column_name"))}
+        last_run = {
+            "id": table[-1].get(params.get("id_column")),
+            "fetch_column_name_value": table[-1].get(params.get("column_name")),
+        }
 
     demisto.debug(f"GenericSQL - Next run after incidents fetching: {json.dumps(last_run)}")
     demisto.debug(f"GenericSQL - Number of result: {len(incidents)}")

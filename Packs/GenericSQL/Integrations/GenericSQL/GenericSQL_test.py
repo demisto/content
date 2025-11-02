@@ -973,14 +973,15 @@ TRINO_TEST_PARAMS = {
     "column_name": "incident_time",
     "id_column": "incident_id",
     "max_fetch": "5",
-    "incident_name": "Trino Incident"
+    "incident_name": "Trino Incident",
 }
 
 TRINO_TEST_RESPONSE = [
     {"incident_id": 1001, "incident_time": "2023-01-01 10:00:00", "description": "First incident"},
     {"incident_id": 1002, "incident_time": "2023-01-02 10:00:00", "description": "Second incident"},
-    {"incident_id": 1003, "incident_time": "2023-01-03 10:00:00", "description": "Third incident"}
+    {"incident_id": 1003, "incident_time": "2023-01-03 10:00:00", "description": "Third incident"},
 ]
+
 
 def test_create_sql_query_for_trino_unique_timestamp():
     """
@@ -998,7 +999,7 @@ def test_create_sql_query_for_trino_unique_timestamp():
         "query": "SELECT * FROM incidents",
         "fetch_parameters": "Unique timestamp",
         "column_name": "incident_time",
-        "max_fetch": "5"
+        "max_fetch": "5",
     }
     last_run = {"fetch_column_name_value": "2023-01-01 00:00:00"}
 
@@ -1007,6 +1008,7 @@ def test_create_sql_query_for_trino_unique_timestamp():
     assert "WHERE incident_time > 2023-01-01 00:00:00" in result
     assert "ORDER BY incident_time ASC" in result
     assert "LIMIT 5" in result
+
 
 def test_create_sql_query_for_trino_unique_id():
     """
@@ -1024,7 +1026,7 @@ def test_create_sql_query_for_trino_unique_id():
         "query": "SELECT * FROM incidents",
         "fetch_parameters": "Unique ascending ID",
         "column_name": "incident_id",
-        "max_fetch": "3"
+        "max_fetch": "3",
     }
     last_run = {"fetch_column_name_value": 1000}
 
@@ -1033,6 +1035,7 @@ def test_create_sql_query_for_trino_unique_id():
     assert "WHERE incident_id > 1000" in result
     assert "ORDER BY incident_id ASC" in result
     assert "LIMIT 3" in result
+
 
 def test_create_sql_query_for_trino_id_and_timestamp():
     """
@@ -1051,12 +1054,9 @@ def test_create_sql_query_for_trino_id_and_timestamp():
         "fetch_parameters": "ID and timestamp",
         "column_name": "incident_time",
         "id_column": "incident_id",
-        "max_fetch": "10"
+        "max_fetch": "10",
     }
-    last_run = {
-        "fetch_column_name_value": "2023-01-01 00:00:00",
-        "id": 1000
-    }
+    last_run = {"fetch_column_name_value": "2023-01-01 00:00:00", "id": 1000}
 
     result = create_sql_query_for_trino(params, last_run)
 
