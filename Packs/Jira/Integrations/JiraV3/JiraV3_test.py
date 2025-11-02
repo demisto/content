@@ -16,7 +16,7 @@ def util_load_json(path: str):
 def util_load_bytes_file(path: str):
     with open(path, mode="rb") as f:
         return f.read()
-        # return   json.loads(f.read())
+        # return json.loads(f.read())
 
 
 @patch.object(JiraBaseClient, "__abstractmethods__", set())
