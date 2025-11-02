@@ -28,6 +28,7 @@ PARAMS = demisto.params()
 
 CLIENT_ID = PARAMS.get("credentials", {}).get("identifier", "")
 CLIENT_SECRET = PARAMS.get("credentials", {}).get("password", "")
+SCOPES = PARAMS.get("oauth_scopes", "etp.conf.ro etp.rprt.ro").strip()
 API_KEY = PARAMS.get("credentials_api_key", {}).get("password") or PARAMS.get("api_key")
 
 BASE_PATH = "{}/api/v1".format(PARAMS.get("server"))
@@ -98,16 +99,12 @@ def fetch_oauth_token():
         "Authorization": f"Basic {encoded_credentials}"
     }
     
-    # ETP scopes for Email Security Cloud API access    #TODO check if all are needed if we need it at all
-    etp_scopes = ("etp.conf.ro etp.trce.rw etp.admn.ro etp.domn.ro etp.accs.rw etp.quar.rw "
-                  "etp.domn.rw etp.rprt.rw etp.accs.ro etp.quar.ro etp.alrt.rw etp.rprt.ro "
-                  "etp.conf.rw etp.trce.ro etp.alrt.ro etp.admn.rw")
     
-    # Form data for OAuth2 request
     data = {
         "grant_type": "client_credentials",
-        "scope": etp_scopes
+        "scope": SCOPES
     }
+
     
     try:
         response = requests.post(
@@ -238,7 +235,7 @@ class Client(BaseClient):
     def upload_yara_file(self, policy_uuid, ruleset_uuid, files):
         url = f"/policies/{policy_uuid}/configuration/rules/yara/rulesets/{ruleset_uuid}/file"
         response = self._http_request(
-            method="PUT", headers={"x-fireeye-api-key": API_KEY}, url_suffix=url, files=files, resp_type="response"
+            method="PUT", url_suffix=url, files=files, resp_type="response"
         )
         return response
 
@@ -251,7 +248,7 @@ class Client(BaseClient):
     def quarantine_release(self, message_id):
         url = f"/quarantine/release/{message_id}"
 
-        response = self._http_request(method="POST", headers={"x-fireeye-api-key": API_KEY}, url_suffix=url, resp_type="response")
+        response = self._http_request(method="POST", url_suffix=url, resp_type="response")
         return response
 
 
@@ -274,8 +271,11 @@ def http_request(method, url, body=None, headers={}, url_params=None):
     returns the http response
     """
 
-    # add API key to headers
-    headers["x-fireeye-api-key"] = API_KEY
+    # Use proper authentication method
+    auth_headers = get_auth_headers()
+    demisto.debug(f"Headers before update: {headers}")
+    headers.update(auth_headers)
+    demisto.debug(f"Headers after update: {headers}")
 
     request_kwargs = {"headers": headers, "verify": USE_SSL}
 
