@@ -218,8 +218,6 @@ tasks:
       '#none#':
       - "6"
     scriptarguments:
-      execution-timeout:
-        simple: "120"
       height: {}
       htmlBody:
         complex:
