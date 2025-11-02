@@ -342,7 +342,7 @@ def test_module(client: Client, *_) -> tuple[str, dict[Any, Any], list[Any]]:
 
     if params.get("isFetch"):
         dialect = params.get("dialect")
-        if params.get("dialect") not in {MY_SQL, MICROSOFT_SQL_SERVER, MS_ODBC_DRIVER ,TRINO}:
+        if params.get("dialect") not in {MY_SQL, MICROSOFT_SQL_SERVER, MS_ODBC_DRIVER, TRINO}:
             return (
                 (
                     f"Fetch Incidents is supported only for the following SQL databases: "
@@ -501,8 +501,8 @@ def initialize_last_run(fetch_parameters: str, first_fetch: str):
     return last_run
 
 
-def create_sql_query_for_trine(params: dict, last_run:Optional[dict]) -> str:
-    current_id = last_run.get("id") or 0
+def create_sql_query_for_trine(params: dict, last_run: Optional[dict]) -> str:
+    current_id = last_run.get("id") or 0  # type:ignore[union-attr]
     query = params.get("query", "")
     id_column_name = params.get("column_name", "")
     limit = params.get("max_fetch") or FETCH_DEFAULT_LIMIT
@@ -699,6 +699,7 @@ def fetch_incidents_for_trino(client: Client, params: dict):
     demisto.info(f"last record now is: {last_run}, number of incidents fetched is {len(incidents)}")
 
     return incidents, last_run
+
 
 # list of loggers we should set to debug when running in debug_mode
 # taken from: https://docs.sqlalchemy.org/en/13/core/engines.html#configuring-logging
