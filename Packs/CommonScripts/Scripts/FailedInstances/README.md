@@ -1,4 +1,5 @@
 Executes a test for all integration instances available and returns a detailed table with information about any failed integration instances.
+The script runs on all enabled instances, regardless of whether the “Do not use by default in CLI” checkbox is selected.
 
 ## Script Data
 
