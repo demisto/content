@@ -74,7 +74,7 @@ In order to connect to Microsoft Teams use one of the following authentication m
 
 **Perform the following steps to add the needed permissions**:
 
-1. Go to your [Microsoft Azure portal](https://portal.azure.com/), and from the left navigation pane select **Azure Active Directory > App registrations**.
+1. Go to your [Microsoft Azure portal](https://portal.azure.com/), and from the left navigation pane select **Entra ID > App registrations**.
 2. Search for and click **Demisto Bot**.
 3. Click **API permissions > Add a permission > Microsoft Graph > Application/Delegated permissions**.
 4. For each of the next permissions listed below, search for the permission, select the checkbox, and click **Add permissions**.
@@ -425,7 +425,9 @@ When [installing the bot in Microsoft Teams](#add-the-demisto-bot-to-a-team), ac
     ```
 
     *And* the bot's application type was converted *from Multi-tenant to Single-tenant*, the integration may fail to recognize the change, leading to the denial of authorization.
+
     *To resolve this:*
+
     1.Navigate to your instance configuration settings.
     2.Select the *Bot Type Converted to Single-Tenant parameter* in the advanced settings of the Connect section.
     3.Run the command !microsoft-teams-auth-reset in the War Room.
