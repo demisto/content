@@ -522,7 +522,7 @@ Retrieves vulnerabilities based on specified filters.
 ### core-search-assets
 
 ***
-Search for assets in XDR based on some filters.
+Retrieves asset from the Cortex platform using optional filter criteria.
 
 #### Base Command
 
@@ -534,13 +534,13 @@ Search for assets in XDR based on some filters.
 | --- | --- | --- |
 | page_size | The number of assets to return per page. Default is 100. | Optional |
 | page_number | The page number for the assets to return for pagination. Default is 0. | Optional |
-| asset_names | Comma-separated list of asset names to search for. | Optional |
-| asset_types | Comma-separated list of asset types to search for. | Optional |
-| asset_tags | JSON list of asset tag:value pairs to search for. (e.g. `[{"tag1": "value1"}, {"tag2": "value2"}]`).<br/>. | Optional |
-| asset_ids | Comma-separated list of asset IDs to search for. | Optional |
-| asset_providers | Comma-separated list of asset providers to search for. | Optional |
-| asset_realms | Comma-separated list of asset realms to search for. | Optional |
-| asset_groups | JSON list of asset group to search for. (e.g. `["group1", "group2"]`).<br/>. | Optional |
+| asset_names | Comma-separated list of asset names to search for. (e.g., "asset_name1,asset_name2"). | Optional |
+| asset_types | Comma-separated list of asset types to search for. (e.g., "asset_type1,asset_type2"). | Optional |
+| asset_tags | A JSON encoded string representing a list of tag:value pairs to search for. (e.g., `[{"tag1": "value1"}, {"tag2": "value2"}]`).<br/>. | Optional |
+| asset_ids | Comma-separated list of asset IDs to search for. (e.g., "asset_id1,asset_id2"). | Optional |
+| asset_providers | Comma-separated list of asset providers to search for. (e.g., "provider1,provider2"). | Optional |
+| asset_realms | Comma-separated list of asset realms to search for. (e.g., "realm1,realm2"). | Optional |
+| asset_groups | A JSON encoded string representing a list of asset groups to search for. (e.g., `["group1", "group2"]`).<br/>. | Optional |
 
 #### Context Output
 
