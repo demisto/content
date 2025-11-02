@@ -1167,6 +1167,7 @@ script:
         description: The related cases breakdown of the asset.
       - contextPath: Core.Asset.provider
         description: The asset provider.
+    - arguments:
         - description: The maximum number of groups to return.
           defaultValue: "50"
           name: limit
