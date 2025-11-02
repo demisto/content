@@ -6,11 +6,11 @@ To use this integration, you need to configure authentication. There are three a
 Note: Depending on the authentication method that you use, the integration parameters might change.
 
 #### Cortex XSOAR Azure App
-You need to grant Cortex XSOAR authorization to access Azure Active Directory Users.
+You need to grant Cortex XSOAR authorization to access Entra ID Users.
 
 1. Access the [authorization flow](https://oproxy.demisto.ninja/ms-graph-user).
-2. Click the **Start Authorization Process** button and you will be prompted to grant Cortex XSOAR permissions for your Azure Active Directory Users.
-3. Click the **Accept** button and you will receive your ID, token, and key. You will need to enter these when you configure the Azure Active Directory Users integration instance in Cortex XSOAR.
+2. Click the **Start Authorization Process** button and you will be prompted to grant Cortex XSOAR permissions for your Entra ID Users.
+3. Click the **Accept** button and you will receive your ID, token, and key. You will need to enter these when you configure the Entra ID Users integration instance in Cortex XSOAR.
 
 #### Self-Deployed Azure App
 
