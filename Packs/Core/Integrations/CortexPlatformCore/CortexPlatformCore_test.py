@@ -560,6 +560,219 @@ def test_preprocess_get_cases_args_limit_enforced():
     assert out["limit"] == 50
 
 
+def test_get_asset_group_ids_from_names_success(mocker):
+    """
+    GIVEN:
+        A client and a list of valid asset group names.
+    WHEN:
+        get_asset_group_ids_from_names is called.
+    THEN:
+        The corresponding asset group IDs are returned.
+    """
+    from CortexPlatformCore import Client, get_asset_group_ids_from_names
+
+    mock_client = Client(base_url="", headers={})
+    mock_search_asset_groups = mocker.patch.object(
+        mock_client,
+        "search_asset_groups",
+        return_value={
+            "reply": {
+                "data": [
+                    {"XDM.ASSET_GROUP.ID": 1, "XDM.ASSET_GROUP.NAME": "Production Servers"},
+                    {"XDM.ASSET_GROUP.ID": 2, "XDM.ASSET_GROUP.NAME": "Development Workstations"},
+                ]
+            }
+        },
+    )
+
+    group_names = ["Production Servers", "Development Workstations"]
+    result = get_asset_group_ids_from_names(mock_client, group_names)
+
+    assert set(result) == {1, 2}
+    assert mock_search_asset_groups.call_count == 1
+
+    filter = mock_search_asset_groups.call_args[0][0]
+    expected_filter = {
+        "AND": [
+            {
+                "OR": [
+                    {
+                        "SEARCH_FIELD": "XDM.ASSET_GROUP.NAME",
+                        "SEARCH_TYPE": "EQ",
+                        "SEARCH_VALUE": "Production Servers",
+                    },
+                    {
+                        "SEARCH_FIELD": "XDM.ASSET_GROUP.NAME",
+                        "SEARCH_TYPE": "EQ",
+                        "SEARCH_VALUE": "Development Workstations",
+                    },
+                ]
+            }
+        ]
+    }
+    assert filter == expected_filter
+
+
+def test_get_asset_group_ids_from_names_empty_list():
+    """
+    GIVEN:
+        A client and an empty list of asset group names.
+    WHEN:
+        get_asset_group_ids_from_names is called.
+    THEN:
+        An empty list is returned without making API calls.
+    """
+    from CortexPlatformCore import Client, get_asset_group_ids_from_names
+
+    mock_client = Client(base_url="", headers={})
+    result = get_asset_group_ids_from_names(mock_client, [])
+
+    assert result == []
+
+
+def test_get_asset_group_ids_from_names_partial_match(mocker):
+    """
+    GIVEN:
+        A client and asset group names where only some are found.
+    WHEN:
+        get_asset_group_ids_from_names is called.
+    THEN:
+        A DemistoException is raised indicating invalid group names.
+    """
+    from CortexPlatformCore import Client, get_asset_group_ids_from_names
+    import pytest
+
+    mock_client = Client(base_url="", headers={})
+    mocker.patch.object(
+        mock_client,
+        "search_asset_groups",
+        return_value={
+            "reply": {
+                "data": [
+                    {"XDM.ASSET_GROUP.ID": "group-id-1", "XDM.ASSET_GROUP.NAME": "Production Servers"},
+                ]
+            }
+        },
+    )
+
+    group_names = ["Production Servers", "Invalid Group"]
+
+    with pytest.raises(Exception) as exc_info:
+        get_asset_group_ids_from_names(mock_client, group_names)
+
+    assert "Failed to fetch asset group IDs" in str(exc_info.value)
+    assert "Invalid Group" in str(exc_info.value)
+
+
+def test_search_assets_command_success(mocker):
+    """
+    GIVEN:
+        A client and valid arguments for searching assets.
+    WHEN:
+        search_assets_command is called.
+    THEN:
+        Asset group IDs are resolved, filter is created, and assets are searched successfully.
+    """
+    from CortexPlatformCore import Client, search_assets_command
+
+    mock_client = Client(base_url="", headers={})
+
+    # Mock get_asset_group_ids_from_names
+    mock_get_asset_group_ids = mocker.patch("CortexPlatformCore.get_asset_group_ids_from_names", return_value=[1, 2])
+
+    # Mock client.search_assets
+    mock_reply = {
+        "data": [
+            {"xdm.asset.id": "asset-1", "xdm.asset.name": "Server-1", "xdm.asset.type.name": "server"},
+            {"xdm.asset.id": "asset-2", "xdm.asset.name": "Server-2", "xdm.asset.type.name": "server"},
+        ]
+    }
+    expected_reply = [
+        {"id": "asset-1", "name": "Server-1", "type.name": "server"},
+        {"id": "asset-2", "name": "Server-2", "type.name": "server"},
+    ]
+    mock_search_assets = mocker.patch.object(
+        mock_client,
+        "search_assets",
+        return_value={"reply": mock_reply},
+    )
+
+    args = {
+        "asset_names": "Server-1,Server-2",
+        "asset_types": "server",
+        "asset_groups": "Production Servers,Development Workstations",
+        "asset_tags": json.dumps([{"tag1": "value1"}, {"tag2": "value2"}]),
+        "page_size": "50",
+        "page_number": "0",
+    }
+
+    result = search_assets_command(mock_client, args)
+
+    assert len(result.outputs) == 2
+    assert result.outputs == expected_reply
+    mock_search_assets.assert_called_once()
+    mock_get_asset_group_ids.assert_called_once_with(mock_client, ["Production Servers", "Development Workstations"])
+
+    filter_arg = mock_search_assets.call_args[0][0]
+    expected_filter = {
+        "AND": [
+            {
+                "OR": [
+                    {
+                        "SEARCH_FIELD": "xdm.asset.name",
+                        "SEARCH_TYPE": "CONTAINS",
+                        "SEARCH_VALUE": "Server-1",
+                    },
+                    {
+                        "SEARCH_FIELD": "xdm.asset.name",
+                        "SEARCH_TYPE": "CONTAINS",
+                        "SEARCH_VALUE": "Server-2",
+                    },
+                ]
+            },
+            {
+                "SEARCH_FIELD": "xdm.asset.type.name",
+                "SEARCH_TYPE": "EQ",
+                "SEARCH_VALUE": "server",
+            },
+            {
+                "OR": [
+                    {
+                        "SEARCH_FIELD": "xdm.asset.tags",
+                        "SEARCH_TYPE": "JSON_WILDCARD",
+                        "SEARCH_VALUE": {"tag1": "value1"},
+                    },
+                    {
+                        "SEARCH_FIELD": "xdm.asset.tags",
+                        "SEARCH_TYPE": "JSON_WILDCARD",
+                        "SEARCH_VALUE": {"tag2": "value2"},
+                    },
+                ]
+            },
+            {
+                "OR": [
+                    {
+                        "SEARCH_FIELD": "xdm.asset.group_ids",
+                        "SEARCH_TYPE": "ARRAY_CONTAINS",
+                        "SEARCH_VALUE": 1,
+                    },
+                    {
+                        "SEARCH_FIELD": "xdm.asset.group_ids",
+                        "SEARCH_TYPE": "ARRAY_CONTAINS",
+                        "SEARCH_VALUE": 2,
+                    },
+                ]
+            },
+        ]
+    }
+
+    assert filter_arg == expected_filter
+
+    # Check other parameters
+    assert mock_search_assets.call_args[0][1] == 0  # page_number
+    assert mock_search_assets.call_args[0][2] == 50  # page_size
+
+
 def test_get_vulnerabilities_command_success(mocker: MockerFixture):
     """
     Given:
@@ -1777,3 +1990,252 @@ class TestFilterBuilder:
         assert end_time == expected_end
         assert isinstance(start_time, int)
         assert isinstance(end_time, int)
+
+
+def test_search_asset_groups_command_success_with_all_filters(mocker):
+    """
+    GIVEN:
+        A mocked client and arguments with all filter parameters provided.
+    WHEN:
+        The search_asset_groups_command function is called.
+    THEN:
+        The request is built correctly with all filters and the response is formatted properly.
+    """
+    from CortexPlatformCore import Client, search_asset_groups_command
+
+    mock_client = Client(base_url="", headers={})
+    mock_response = {
+        "reply": {
+            "DATA": [
+                {
+                    "XDM__ASSET_GROUP__ID": "group_1",
+                    "XDM__ASSET_GROUP__NAME": "Test Group 1",
+                    "XDM__ASSET_GROUP__TYPE": "DYNAMIC",
+                    "XDM__ASSET_GROUP__DESCRIPTION": "Test description 1",
+                },
+                {
+                    "XDM__ASSET_GROUP__ID": "group_2",
+                    "XDM__ASSET_GROUP__NAME": "Test Group 2",
+                    "XDM__ASSET_GROUP__TYPE": "STATIC",
+                    "XDM__ASSET_GROUP__DESCRIPTION": "Test description 2",
+                },
+            ]
+        }
+    }
+    mock_get_webapp_data = mocker.patch.object(mock_client, "get_webapp_data", return_value=mock_response)
+
+    args = {"name": "Test Group", "type": "security", "id": "group_1", "description": "Test description"}
+
+    result = search_asset_groups_command(mock_client, args)
+
+    assert len(result.outputs) == 2
+    assert result.outputs[0]["id"] == "group_1"
+    assert result.outputs[1]["id"] == "group_2"
+    assert result.outputs_prefix == "Core.AssetGroups"
+    assert result.outputs_key_field == "id"
+    assert "Test Group 1" in result.readable_output
+    assert "Test Group 2" in result.readable_output
+    assert mock_get_webapp_data.call_count == 1
+
+
+def test_search_asset_groups_command_success_with_partial_filters(mocker):
+    """
+    GIVEN:
+        A mocked client and arguments with only some filter parameters provided.
+    WHEN:
+        The search_asset_groups_command function is called.
+    THEN:
+        The request is built correctly with partial filters and the response is formatted properly.
+    """
+    from CortexPlatformCore import Client, search_asset_groups_command
+
+    mock_client = Client(base_url="", headers={})
+    mock_response = {
+        "reply": {
+            "DATA": [
+                {
+                    "XDM__ASSET_GROUP__ID": "group_3",
+                    "XDM__ASSET_GROUP__NAME": "Security Group",
+                    "XDM__ASSET_GROUP__TYPE": "DYNAMIC",
+                    "XDM__ASSET_GROUP__DESCRIPTION": "Security asset group",
+                }
+            ]
+        }
+    }
+    mock_get_webapp_data = mocker.patch.object(mock_client, "get_webapp_data", return_value=mock_response)
+
+    args = {"name": "Security", "type": "DYNAMIC"}
+
+    result = search_asset_groups_command(mock_client, args)
+
+    assert len(result.outputs) == 1
+    assert result.outputs[0]["id"] == "group_3"
+    assert result.outputs[0]["name"] == "Security Group"
+    assert result.outputs_prefix == "Core.AssetGroups"
+    assert "Security Group" in result.readable_output
+    assert mock_get_webapp_data.call_count == 1
+
+
+def test_search_asset_groups_command_success_no_filters(mocker):
+    """
+    GIVEN:
+        A mocked client and empty arguments with no filter parameters.
+    WHEN:
+        The search_asset_groups_command function is called.
+    THEN:
+        The request is built with empty filters and returns all asset groups.
+    """
+    from CortexPlatformCore import Client, search_asset_groups_command
+
+    mock_client = Client(base_url="", headers={})
+    mock_response = {
+        "reply": {
+            "DATA": [
+                {
+                    "XDM__ASSET_GROUP__ID": "group_all_1",
+                    "XDM__ASSET_GROUP__NAME": "All Groups 1",
+                    "XDM__ASSET_GROUP__TYPE": "static",
+                    "XDM__ASSET_GROUP__DESCRIPTION": "General group",
+                },
+                {
+                    "XDM__ASSET_GROUP__ID": "group_all_2",
+                    "XDM__ASSET_GROUP__NAME": "All Groups 2",
+                    "XDM__ASSET_GROUP__TYPE": "static",
+                    "XDM__ASSET_GROUP__DESCRIPTION": "Special group",
+                },
+            ]
+        }
+    }
+    mock_get_webapp_data = mocker.patch.object(mock_client, "get_webapp_data", return_value=mock_response)
+
+    args = {}
+
+    result = search_asset_groups_command(mock_client, args)
+
+    assert len(result.outputs) == 2
+    assert result.outputs[0]["id"] == "group_all_1"
+    assert result.outputs[1]["id"] == "group_all_2"
+    assert result.outputs_prefix == "Core.AssetGroups"
+    assert "All Groups 1" in result.readable_output
+    assert "All Groups 2" in result.readable_output
+    assert mock_get_webapp_data.call_count == 1
+
+
+def test_search_asset_groups_command_empty_response(mocker):
+    """
+    GIVEN:
+        A mocked client that returns an empty response.
+    WHEN:
+        The search_asset_groups_command function is called.
+    THEN:
+        The function handles the empty response gracefully and returns empty results.
+    """
+    from CortexPlatformCore import Client, search_asset_groups_command
+
+    mock_client = Client(base_url="", headers={})
+    mock_response = {"reply": {"DATA": []}}
+    mock_get_webapp_data = mocker.patch.object(mock_client, "get_webapp_data", return_value=mock_response)
+
+    args = {"name": "NonExistent"}
+
+    result = search_asset_groups_command(mock_client, args)
+
+    assert len(result.outputs) == 0
+    assert result.outputs_prefix == "Core.AssetGroups"
+    assert result.outputs_key_field == "id"
+    assert mock_get_webapp_data.call_count == 1
+
+
+def test_search_asset_groups_command_missing_reply_key(mocker):
+    """
+    GIVEN:
+        A mocked client that returns a response without the 'reply' key.
+    WHEN:
+        The search_asset_groups_command function is called.
+    THEN:
+        The function handles the malformed response gracefully and returns empty results.
+    """
+    from CortexPlatformCore import Client, search_asset_groups_command
+
+    mock_client = Client(base_url="", headers={})
+    mock_response = {}
+    mock_get_webapp_data = mocker.patch.object(mock_client, "get_webapp_data", return_value=mock_response)
+
+    args = {"type": "DYNAMIC"}
+
+    result = search_asset_groups_command(mock_client, args)
+
+    assert len(result.outputs) == 0
+    assert result.outputs_prefix == "Core.AssetGroups"
+    assert result.outputs_key_field == "id"
+    assert mock_get_webapp_data.call_count == 1
+
+
+def test_search_asset_groups_command_missing_data_key(mocker):
+    """
+    GIVEN:
+        A mocked client that returns a response with 'reply' but without 'DATA' key.
+    WHEN:
+        The search_asset_groups_command function is called.
+    THEN:
+        The function handles the incomplete response gracefully and returns empty results.
+    """
+    from CortexPlatformCore import Client, search_asset_groups_command
+
+    mock_client = Client(base_url="", headers={})
+    mock_response = {"reply": {}}
+    mock_get_webapp_data = mocker.patch.object(mock_client, "get_webapp_data", return_value=mock_response)
+
+    args = {"id": "test_id"}
+
+    result = search_asset_groups_command(mock_client, args)
+
+    assert len(result.outputs) == 0
+    assert result.outputs_prefix == "Core.AssetGroups"
+    assert result.outputs_key_field == "id"
+    assert mock_get_webapp_data.call_count == 1
+
+
+def test_search_asset_groups_command_multiple_values_in_filters(mocker):
+    """
+    GIVEN:
+        A mocked client and arguments with comma-separated values for filters.
+    WHEN:
+        The search_asset_groups_command function is called.
+    THEN:
+        The filters are processed correctly with multiple values and the response is formatted properly.
+    """
+    from CortexPlatformCore import Client, search_asset_groups_command
+
+    mock_client = Client(base_url="", headers={})
+    mock_response = {
+        "reply": {
+            "DATA": [
+                {
+                    "XDM__ASSET_GROUP__ID": "group_multi_1",
+                    "XDM__ASSET_GROUP__NAME": "Multi Group 1",
+                    "XDM__ASSET_GROUP__TYPE": "static",
+                    "XDM__ASSET_GROUP__DESCRIPTION": "Multi description 1",
+                },
+                {
+                    "XDM__ASSET_GROUP__ID": "group_multi_2",
+                    "XDM__ASSET_GROUP__NAME": "Multi Group 2",
+                    "XDM__ASSET_GROUP__TYPE": "STATIC",
+                    "XDM__ASSET_GROUP__DESCRIPTION": "Multi description 2",
+                },
+            ]
+        }
+    }
+    mock_get_webapp_data = mocker.patch.object(mock_client, "get_webapp_data", return_value=mock_response)
+
+    args = {"name": '["Multi Group 1","Multi Group 2"]', "type": "STATIC", "id": "group_multi_1,group_multi_2"}
+
+    result = search_asset_groups_command(mock_client, args)
+
+    assert len(result.outputs) == 2
+    assert result.outputs[0]["id"] == "group_multi_1"
+    assert result.outputs[1]["id"] == "group_multi_2"
+    assert result.outputs_prefix == "Core.AssetGroups"
+    assert "Multi Group 1" in result.readable_output
+    assert "Multi Group 2" in result.readable_output
+    assert mock_get_webapp_data.call_count == 1
