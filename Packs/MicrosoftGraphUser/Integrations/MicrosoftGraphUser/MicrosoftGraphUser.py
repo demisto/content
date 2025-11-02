@@ -162,6 +162,14 @@ class MsGraphClient:
             body[field] = value
         self.ms_client.http_request(method="PATCH", url_suffix=f"users/{quote(user)}", json_data=body, resp_type="text")
 
+    def force_change_password(self, user: str):
+        body = {
+            "passwordProfile": {
+                "forceChangePasswordNextSignIn": True
+            }
+        }
+        self.ms_client.http_request(method="PATCH", url_suffix=f"users/{quote(user)}", json_data=body, resp_type="text")
+
     #  If successful, this method returns 204 No Content response code.
     #  Using resp_type=text to avoid parsing error.
     def password_change_user(
@@ -408,7 +416,6 @@ def update_user_command(client: MsGraphClient, args: dict):
     user: str = args["user"]
     updated_fields: str = args["updated_fields"]
     delimiter: str = args.get("updated_fields_delimiter", ",")
-
     client.update_user(user, updated_fields, delimiter)
     return get_user_command(client, args)
 
@@ -426,8 +433,11 @@ def change_password_user_command(client: MsGraphClient, args: dict):
     return CommandResults(readable_output=human_readable)
 
 def force_reset_password(client: MsGraphClient, args: dict):
-    args = {**args, "updated_fields": f'passwordProfile={{"forceChangePasswordNextSignIn": true, "password": {TEMP_PASSWORD}}}'}
-    return update_user_command(client, args)
+    user = args["user"]
+    client.force_change_password(user)
+
+    human_readable = f"User {user} is forced to change password"
+    return CommandResults(readable_output=human_readable)
 
 def get_delta_command(client: MsGraphClient, args: dict):
     properties = args.get("properties", "") + ",userPrincipalName"
