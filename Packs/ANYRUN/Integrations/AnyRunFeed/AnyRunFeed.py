@@ -8,7 +8,7 @@ from anyrun.iterators import FeedsIterator
 from anyrun import RunTimeException
 
 DATE_TIME_FORMAT = "%Y-%m-%d %H:%M:%S"
-VERSION = "PA-XSOAR:2.0.1"
+VERSION = "PA-XSOAR:2.1.1"
 
 
 def test_module(params: dict) -> str:  # pragma: no cover
