@@ -901,7 +901,10 @@ class MicrosoftClient(BaseClient):
         except ValueError as exception:
             raise DemistoException(f"Failed to parse json object from response: {response.content}", exception)
 
-    def main_test_module(self, integration_command_prefix: str):
+    def main_test_module(self, integration_command_prefix: str, can_be_self_deployed: bool = True):
+        """
+        Checks all necessary fields for the specific authentication flow.
+        """
         flow = self.grant_type
 
         def require_fields(fields: list[str], message_prefix: str):
@@ -917,11 +920,16 @@ class MicrosoftClient(BaseClient):
                 self.get_access_token()
                 return "ok"
             except Exception as e:
-                raise DemistoException(
-                    f"Couldn't connect to the application. Error: {e}. "
-                    f"Please make sure you marked the self-deployed checkbox "
-                    f"if you are using a self-deployed application."
-                )
+                if can_be_self_deployed:
+                    raise DemistoException(
+                        f"Couldn't connect to the application. Error: {e}. "
+                        f"Please make sure you marked the self-deployed checkbox "
+                        f"if you are using a self-deployed application."
+                    )
+                else:
+                    raise DemistoException(
+                        f"Couldn't connect to the application. Error: {e}. "
+                    )
 
         elif flow == DEVICE_CODE:
             require_fields(["client_id"], "When using device code flow you must")

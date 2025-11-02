@@ -89,8 +89,9 @@ class MsGraphClient:
     Microsoft Graph Mail Client enables authorized access to a user's Office 365 mail data in a personal account.
     """
 
-    def __init__(self, tenant_id, proxy, certificate_thumbprint: str | None = None, api_version: str = "", **kwargs):
+    def __init__(self, tenant_id, proxy, grant_type, certificate_thumbprint: str | None = None, api_version: str = "", **kwargs):
         self.ms_client = MicrosoftClient(
+            grant_type=grant_type,
             tenant_id=tenant_id,
             proxy=proxy,
             certificate_thumbprint=certificate_thumbprint,
@@ -2045,8 +2046,6 @@ def main():
     managed_identities_client_id = get_azure_managed_identities_client_id(params)
     self_deployed: bool = params.get("self_deployed", False) or managed_identities_client_id is not None
     api_version: str = params.get("api_version", API_V2)
-    auth_flow = params.get("auth_flow")
-    grant_type = AUTHORIZATION_CODE if auth_flow == "Authorization Code" else CLIENT_CREDENTIALS
 
     if not managed_identities_client_id:
         if not self_deployed and not enc_key:
@@ -2097,9 +2096,13 @@ def main():
     command = demisto.command()
     LOG(f"Command being called is {command}")
     try:
+        auth_code = params.get("auth_code", {}).get("password")
+        redirect_uri = params.get("redirect_uri")
+        # auth_flow = params.get("auth_flow")
+        grant_type = AUTHORIZATION_CODE if auth_code and redirect_uri else CLIENT_CREDENTIALS
         client: MsGraphClient = MsGraphClient(
             tenant_id=tenant,
-            auth_code= (auth_flow == "Authorization Code"),
+            auth_code=auth_code,
             auth_id=auth_and_token_url,
             enc_key=enc_key,
             redirect_uri=redirect_uri,
