@@ -7,7 +7,7 @@ In order to connect to the Azure Log Analytics use either the Cortex XSOAR Azure
 
 Depending on the authentication method that you use, the integration parameters might change.
 
-**Note**: The Azure account must have permission to manage applications in Azure Active Directory (Azure AD). Any of the following Azure AD roles include the required permissions:
+**Note**: The Azure account must have permission to manage applications in Entra ID (Azure AD). Any of the following Entra ID roles include the required permissions:
 
 - Application administrator
 - Application developer
