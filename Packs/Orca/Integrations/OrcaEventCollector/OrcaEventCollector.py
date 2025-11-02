@@ -21,27 +21,62 @@ class Client(BaseClient):
         super().__init__(base_url=server_url, verify=verify, proxy=proxy, headers=headers)
 
     def get_alerts_request(self, max_fetch: int, last_fetch: str, next_page_token: Optional[str]) -> dict:
-        """Retrieve information about alerts.
+        """Retrieve information about alerts using the new Serving Layer API.
         Args:
             max_fetch: int - Limit number of returned records.
-            last_fetch: str - the date and time of the last fetch
-            next_page_token: Optional[str] - the token to the next page
+            last_fetch: str - The date and time of the last fetch.
+                             **MUST be a valid ISO 8601 string (e.g., "2023-10-27T10:00:00Z" or "2023-10-27T10:00:00+00:00").**
+                             The API is very strict about this format.
+            next_page_token: Optional[str] - The token for the next page, used as start_at_index.
         Returns:
             A dictionary with the alerts details.
         """
-        params = {
-            "limit": max_fetch,
-            "dsl_filter": '{\n"filter":\n[\n{\n"field": "state.created_at",\n"range": {\n"'
-            'gt": "' + last_fetch + '"\n}\n}\n],\n"sort":\n[\n{"field":'
-            '"state.created_at",\n"order":"asc"\n}\n]}',
-            "show_all_statuses_alerts": True,
-            "show_informational_alerts": True,
-        }
-        if next_page_token:
-            params["next_page_token"] = next_page_token
 
-        demisto.info(f"In get_alerts request {params=}")
-        return self._http_request(method="GET", url_suffix="/query/alerts", params=params)
+        start_index = 0
+        if next_page_token:
+            try:
+                start_index = int(next_page_token)
+            except ValueError:
+                demisto.info(
+                    f"Invalid next_page_token (expected integer for start_at_index): {next_page_token}. Defaulting to 0.")
+                start_index = 0
+
+        payload = {
+            "query": {
+                "models": ["Alert"],
+                "type": "object_set",
+                "with": {
+                    "type": "operation",
+                    "operator": "and",
+                    "values": [
+                        {
+                            "key": "CreatedAt",
+                            "values": [last_fetch],
+                            "type": "datetime",
+                            "operator": "date_gte",
+                            "value_type": "days"
+                        }
+                    ]
+                }
+            },
+            "limit": max_fetch,
+            "start_at_index": start_index,
+            "order_by[]": ["CreatedAt"],
+            "select": [
+                "AlertId", "AlertType", "OrcaScore", "RiskLevel",
+                "RuleSource", "ScoreVector", "Category", "Inventory.Name",
+                "CloudAccount.Name", "CloudAccount.CloudProvider", "Source",
+                "Status", "CreatedAt", "LastSeen", "Labels"
+            ]
+        }
+
+        demisto.debug(f"In get_alerts (Serving Layer API) request payload: {json.dumps(payload)}")
+
+        return self._http_request(
+            method="POST",
+            url_suffix="/serving-layer/query",
+            json_data=payload
+        )
 
 
 """ HELPER FUNCTIONS """
@@ -66,7 +101,7 @@ def add_time_key_to_alerts(alerts: List[dict]) -> List[dict]:
 """ COMMAND FUNCTIONS """
 
 
-def test_module(client: Client, last_fetch: str, max_fetch: int) -> str:
+def orca_test_module(client: Client, last_fetch: str, max_fetch: int) -> str:
     """Test the connection to Orca Security.
     Args:
         client: client - An Orca client.
@@ -97,7 +132,7 @@ def get_alerts(client: Client, max_fetch: int, last_fetch: str, next_page_token:
         - next_page_token if exist
     """
     response = client.get_alerts_request(max_fetch, last_fetch, next_page_token)
-    next_page_token = response.get("next_page_token")
+    next_page_token = response.get("next_page_token", None)  # TODO: We need to determine how we handle the pagination. I haven't seen in testing an instance of pagination yet.
     alerts = response.get("data", [])
     demisto.debug(f"Get Alerts Response {next_page_token=} , {len(alerts)=}\n {alerts=}")
     return alerts, next_page_token
@@ -135,7 +170,7 @@ def main() -> None:
         next_page_token = last_run.get("next_page_token")
 
         if command == "test-module":
-            return_results(test_module(client, last_fetch, max_fetch))
+            return_results(orca_test_module(client, last_fetch, max_fetch))
         elif command in ("fetch-events", "orca-security-get-events"):
             alerts, next_page_token = get_alerts(client, max_fetch, last_fetch, next_page_token)
 
