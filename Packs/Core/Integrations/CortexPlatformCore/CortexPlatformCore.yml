@@ -1117,32 +1117,35 @@ script:
       name: core-search-asset-groups
       description: Retrieve asset groups from the Cortex platform with optional filtering.
       outputs:
-        - contextPath: Core.AssetGroups.name
+        - contextPath: Core.AssetGroups.groups.name
           description: The name of the asset group.
           type: String
-        - contextPath: Core.AssetGroups.filter
+        - contextPath: Core.AssetGroups.groups.filter
           description: The filter criteria for the asset group.
           type: String
-        - contextPath: Core.AssetGroups.membership_predicate
+        - contextPath: Core.AssetGroups.groups.membership_predicate
           description: The predicate used to create the asset group.
           type: String
-        - contextPath: Core.AssetGroups.type
+        - contextPath: Core.AssetGroups.groups.type
           description: The type of the asset group.
           type: String
-        - contextPath: Core.AssetGroups.description
+        - contextPath: Core.AssetGroups.groups.description
           description: The description of the asset group.
           type: String
-        - contextPath: Core.AssetGroups.modified_by
+        - contextPath: Core.AssetGroups.groups.modified_by
           description: The user who modified the asset group.
           type: String
-        - contextPath: Core.AssetGroups.created_by
+        - contextPath: Core.AssetGroups.groups.created_by
           description: The user who created the asset group.
           type: String
-        - contextPath: Core.AssetGroups.created_by_pretty
+        - contextPath: Core.AssetGroups.groups.created_by_pretty
           description: The formatted name of the user who created the asset group.
           type: String
-        - contextPath: Core.AssetGroups.modified_by_pretty
+        - contextPath: Core.AssetGroups.groups.modified_by_pretty
           description: The formatted name of the user who created the asset group.
+          type: String
+        - contextPath: Core.AssetGroups.metadata
+          description: The metadata about search results including total matches, retrieved count, and system totals.
           type: String
   runonce: false
   script: "-"

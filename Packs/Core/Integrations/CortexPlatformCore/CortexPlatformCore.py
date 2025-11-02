@@ -265,16 +265,28 @@ def search_asset_groups_command(client: Client, args: dict) -> List[CommandResul
     ))
     
     filter_count = response.get("FILTER_COUNT")
-    total_count = response.get("TOTAL_COUNT")
+    #total_count = response.get("TOTAL_COUNT")
 
-    metadata = f"fetched {min(filter_count,limit)} out of the {filter_count} available under this search filter, the total group count is {total_count}"
+    #metadata = f"fetched {min(filter_count,limit)} out of the {filter_count} available under this search filter, the total group count is {total_count}"
+    
+    # command_results.append(CommandResults(
+    #     outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.AssetGroups.metadata",
+    #     outputs=metadata,
+    #     raw_response=response,
+    # ))
     
     command_results.append(CommandResults(
-        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.AssetGroups.returned_results_metadata",
-        outputs=metadata,
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.AssetGroups.returned_count",
+        outputs=min(filter_count, limit),
         raw_response=response,
     ))
     
+    command_results.append(CommandResults(
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.AssetGroups.filtered_count",
+        outputs=filter_count,
+        raw_response=response,
+    ))
+        
     return command_results
 
 
