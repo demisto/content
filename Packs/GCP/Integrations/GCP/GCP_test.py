@@ -220,7 +220,7 @@ def test_compute_firewall_list_with_pagination_and_filter(mocker):
     """
     from GCP import compute_firewall_list
 
-    args = {"project_id": "p1", "max_results": "2", "page_token": "t0", "filter": "name eq fw-*"}
+    args = {"project_id": "p1", "limit": "2", "page_token": "t0", "filter": "name eq fw-*"}
 
     mock_creds = mocker.Mock(spec=Credentials)
     mock_compute = mocker.Mock()
@@ -283,7 +283,7 @@ def test_compute_snapshots_list_with_pagination(mocker):
     """
     from GCP import compute_snapshots_list
 
-    args = {"project_id": "p1", "max_results": "5", "page_token": "a", "filter": "status = READY"}
+    args = {"project_id": "p1", "limit": "5", "page_token": "a", "filter": "status = READY"}
 
     mock_creds = mocker.Mock(spec=Credentials)
     mock_compute = mocker.Mock()
