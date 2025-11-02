@@ -1477,6 +1477,31 @@ script:
       required: true
     description: Adds or updates an inline policy document that is embedded in the specified IAM role.
     name: aws-iam-put-role-policy
+
+  - name: aws-iam-suspend-access-for-role-quick-action
+    description: Attach an inline "Deny All" Policy effectively denying all actions for all entities assuming the IAM role.
+    hidden: true
+    quickaction: true
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        prettyname: Account ID
+        required: true
+        prettypredefined:
+          Account ID: ${asset.xdm.asset.realm}
+      - name: roleName
+        description: The name of the role to associate the policy with.
+        prettyname: Role Name
+        required: true
+      - name: policyName
+        description: The name of the policy document.
+        defaultValue: 'DenyAllPolicy'
+        hidden: true
+      - name: policyDocument
+        description: The policy document. You must provide policies in JSON format in IAM.
+        defaultValue: '{"Version": "2012-10-17", "Statement": [{"Effect": "Deny", "Action": "*", "Resource": "*"}]}'
+        hidden: true
+
   - arguments:
     - description: The policy document. You must provide policies in JSON format in IAM.
       name: policyDocument
