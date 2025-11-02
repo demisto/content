@@ -380,7 +380,7 @@ def test_module(client: Client, *_) -> tuple[str, dict[Any, Any], list[Any]]:
             msg += "A starting point for fetching is missing, please enter First fetch timestamp or First fetch ID. "
 
         # in case of query and not procedure
-        if not params.get("query").lower().startswith(("call", "exec", "execute")):
+        if not params.get("query").lower().startswith(("call", "exec", "execute")) and dialect != TRINO:
             first_condition_key_word, second_condition_key_word = "where", "order by"
             query = params.get("query").lower()
             if not (first_condition_key_word in query and second_condition_key_word in query):

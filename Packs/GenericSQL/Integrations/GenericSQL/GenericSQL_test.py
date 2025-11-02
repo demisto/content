@@ -965,3 +965,102 @@ def test_create_api_metrics(mocker, response, result):
     metric_results = demisto.results.call_args_list[0][0][0]
     assert metric_results.get("Contents") == "Metrics reported successfully."
     assert metric_results.get("APIExecutionMetrics") == result
+
+
+# Test data for Trino fetch-incidents
+TRINO_TEST_PARAMS = {
+    "query": "SELECT * FROM incidents",
+    "column_name": "incident_time",
+    "id_column": "incident_id",
+    "max_fetch": "5",
+    "incident_name": "Trino Incident"
+}
+
+TRINO_TEST_RESPONSE = [
+    {"incident_id": 1001, "incident_time": "2023-01-01 10:00:00", "description": "First incident"},
+    {"incident_id": 1002, "incident_time": "2023-01-02 10:00:00", "description": "Second incident"},
+    {"incident_id": 1003, "incident_time": "2023-01-03 10:00:00", "description": "Third incident"}
+]
+
+def test_create_sql_query_for_trino_unique_timestamp():
+    """
+    Given:
+        - A query and parameters for Trino with 'Unique timestamp' fetch_parameters
+    When:
+        - Creating SQL query for Trino
+    Then:
+        - The query should include a WHERE clause with the timestamp condition
+        - The query should be ordered by timestamp and limited
+    """
+    from GenericSQL import create_sql_query_for_trino
+
+    params = {
+        "query": "SELECT * FROM incidents",
+        "fetch_parameters": "Unique timestamp",
+        "column_name": "incident_time",
+        "max_fetch": "5"
+    }
+    last_run = {"fetch_column_name_value": "2023-01-01 00:00:00"}
+
+    result = create_sql_query_for_trino(params, last_run)
+
+    assert "WHERE incident_time > 2023-01-01 00:00:00" in result
+    assert "ORDER BY incident_time ASC" in result
+    assert "LIMIT 5" in result
+
+def test_create_sql_query_for_trino_unique_id():
+    """
+    Given:
+        - A query and parameters for Trino with 'Unique ascending ID' fetch_parameters
+    When:
+        - Creating SQL query for Trino
+    Then:
+        - The query should include a WHERE clause with the ID condition
+        - The query should be ordered by ID and limited
+    """
+    from GenericSQL import create_sql_query_for_trino
+
+    params = {
+        "query": "SELECT * FROM incidents",
+        "fetch_parameters": "Unique ascending ID",
+        "column_name": "incident_id",
+        "max_fetch": "3"
+    }
+    last_run = {"fetch_column_name_value": 1000}
+
+    result = create_sql_query_for_trino(params, last_run)
+
+    assert "WHERE incident_id > 1000" in result
+    assert "ORDER BY incident_id ASC" in result
+    assert "LIMIT 3" in result
+
+def test_create_sql_query_for_trino_id_and_timestamp():
+    """
+    Given:
+        - A query and parameters for Trino with 'ID and timestamp' fetch_parameters
+    When:
+        - Creating SQL query for Trino
+    Then:
+        - The query should include WHERE clauses for both ID and timestamp
+        - The query should be ordered by ID and limited
+    """
+    from GenericSQL import create_sql_query_for_trino
+
+    params = {
+        "query": "SELECT * FROM incidents",
+        "fetch_parameters": "ID and timestamp",
+        "column_name": "incident_time",
+        "id_column": "incident_id",
+        "max_fetch": "10"
+    }
+    last_run = {
+        "fetch_column_name_value": "2023-01-01 00:00:00",
+        "id": 1000
+    }
+
+    result = create_sql_query_for_trino(params, last_run)
+
+    assert "WHERE incident_time > 2023-01-01 00:00:00" in result
+    assert "AND incident_id > 1000" in result
+    assert "ORDER BY incident_id ASC" in result
+    assert "LIMIT 10" in result
