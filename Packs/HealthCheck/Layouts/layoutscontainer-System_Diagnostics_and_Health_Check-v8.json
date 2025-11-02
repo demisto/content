@@ -497,5 +497,5 @@
     "version": -1,
     "fromVersion": "8.0.0",
     "description": "",
-    "marketplaces": ["xsoar"]
+    "marketplaces": ["xsoar_saas"]
 }
