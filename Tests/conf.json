@@ -5947,6 +5947,10 @@
         {
             "integrations": "Unit 42 Intelligence",
             "playbookID": "Unit 42 Intelligence Test"
+        },
+        {
+            "playbookID": "CVEEnrichment-Test",
+            "integrations": ["CIRCL CVE Search","Palo Alto Networks Threat Vault v2"]
         }
     ],
     "skipped_tests": {
