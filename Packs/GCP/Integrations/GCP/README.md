@@ -827,12 +827,20 @@ Retrieves the list of buckets in the project associated with the client.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCP.Storage.Bucket.Name | String | Bucket name. |
-| GCP.Storage.Bucket.TimeCreated | Date | The time the bucket was created. |
-| GCP.Storage.Bucket.TimeUpdated | Date | The time the bucket was last updated. |
-| GCP.Storage.Bucket.OwnerID | String | The owner entity ID of the bucket. |
-| GCP.Storage.Bucket.Location | String | The location of the bucket. |
-| GCP.Storage.Bucket.StorageClass | String | The storage class of the bucket. |
+| GCP.Storage.Bucket.id | String | The unique identifier for the bucket. |
+| GCP.Storage.Bucket.name | String | The name of the bucket. |
+| GCP.Storage.Bucket.kind | String | The type of resource \(for example, storage\#bucket\). |
+| GCP.Storage.Bucket.location | String | The location of the bucket. |
+| GCP.Storage.Bucket.locationType | String | The type of location \(for example, multi-region\). |
+| GCP.Storage.Bucket.projectNumber | String | The GCP project number associated with the bucket. |
+| GCP.Storage.Bucket.storageClass | String | The storage class of the bucket. |
+| GCP.Storage.Bucket.rpo | String | The recovery point objective setting of the bucket. |
+| GCP.Storage.Bucket.etag | String | The HTTP entity tag of the bucket. |
+| GCP.Storage.Bucket.generation | String | The generation number of the bucket. |
+| GCP.Storage.Bucket.metageneration | String | The metageneration number of the bucket. |
+| GCP.Storage.Bucket.timeCreated | Date | The time the bucket was created. |
+| GCP.Storage.Bucket.timeUpdated | Date | The time the bucket was last updated. |
+| GCP.Storage.Bucket.selfLink | String | The link to the bucket resource on the GCP API. |
 
 #### Example
 
@@ -858,12 +866,20 @@ Retrieves information about a specific bucket.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCP.Storage.Bucket.Name | String | Bucket name. |
-| GCP.Storage.Bucket.TimeCreated | Date | The time the bucket was created. |
-| GCP.Storage.Bucket.TimeUpdated | Date | The time the bucket was last updated. |
-| GCP.Storage.Bucket.OwnerID | String | The owner entity ID of the bucket. |
-| GCP.Storage.Bucket.Location | String | The location of the bucket. |
-| GCP.Storage.Bucket.StorageClass | String | The storage class of the bucket. |
+| GCP.Storage.Bucket.id | String | The unique identifier for the bucket. |
+| GCP.Storage.Bucket.name | String | The name of the bucket. |
+| GCP.Storage.Bucket.kind | String | The type of resource \(for example, storage\#bucket\). |
+| GCP.Storage.Bucket.location | String | The location of the bucket. |
+| GCP.Storage.Bucket.locationType | String | The type of location \(for example, multi-region\). |
+| GCP.Storage.Bucket.projectNumber | String | The GCP project number associated with the bucket. |
+| GCP.Storage.Bucket.storageClass | String | The storage class of the bucket. |
+| GCP.Storage.Bucket.rpo | String | The recovery point objective setting of the bucket. |
+| GCP.Storage.Bucket.etag | String | The HTTP entity tag of the bucket. |
+| GCP.Storage.Bucket.generation | String | The generation number of the bucket. |
+| GCP.Storage.Bucket.metageneration | String | The metageneration number of the bucket. |
+| GCP.Storage.Bucket.timeCreated | Date | The time the bucket was created. |
+| GCP.Storage.Bucket.timeUpdated | Date | The time the bucket was last updated. |
+| GCP.Storage.Bucket.selfLink | String | The link to the bucket resource on the GCP API. |
 
 ### gcp-storage-bucket-objects-list
 
@@ -889,19 +905,24 @@ Retrieves the list of objects in a bucket.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCP.Storage.BucketObject.Name | String | Object name. |
-| GCP.Storage.BucketObject.Bucket | String | Bucket containing the object. |
-| GCP.Storage.BucketObject.ContentType | String | MIME type of the object. |
-| GCP.Storage.BucketObject.Size | Number | Size of the object in bytes. |
-| GCP.Storage.BucketObject.TimeCreated | Date | The time the object was created. |
-| GCP.Storage.BucketObject.TimeUpdated | Date | The time the object was last updated. |
-| GCP.Storage.BucketObject.MD5Hash | String | MD5 hash of the object. |
-| GCP.Storage.BucketObject.CRC32c | String | CRC32C checksum of the object. |
-| GCP.Storage.BucketObject.TimeDeleted | Date | The time the object was deleted \(if applicable\). |
-| GCP.Storage.BucketObject.MD5 | String | MD5 hash of the object \(legacy field name for compatibility\). |
-| GCP.Storage.BucketObject.OwnerID | String | The owner entity ID of the object. |
-| GCP.Storage.BucketObject.EncryptionAlgorithm | String | The encryption algorithm used for the object. |
-| GCP.Storage.BucketObject.EncryptionKeySHA256 | String | SHA256 hash of the customer-supplied encryption key. |
+| GCP.Storage.BucketObject.id | String | The unique identifier for the object. |
+| GCP.Storage.BucketObject.name | String | The name of the object. |
+| GCP.Storage.BucketObject.kind | String | The type of resource \(for example, storage\#object\). |
+| GCP.Storage.BucketObject.bucket | String | The name of the bucket containing the object. |
+| GCP.Storage.BucketObject.contentType | String | The MIME type of the object. |
+| GCP.Storage.BucketObject.size | Number | The size of the object in bytes. |
+| GCP.Storage.BucketObject.crc32c | String | The CRC32C checksum of the object. |
+| GCP.Storage.BucketObject.md5Hash | String | The MD5 hash of the object. |
+| GCP.Storage.BucketObject.etag | String | The HTTP entity tag of the object. |
+| GCP.Storage.BucketObject.generation | String | The generation number of the object. |
+| GCP.Storage.BucketObject.metageneration | String | The metageneration number of the object. |
+| GCP.Storage.BucketObject.storageClass | String | The storage class of the object. |
+| GCP.Storage.BucketObject.mediaLink | String | The link for downloading the object content. |
+| GCP.Storage.BucketObject.selfLink | String | The link to the object resource in the GCP API. |
+| GCP.Storage.BucketObject.timeCreated | Date | The time when the object was created. |
+| GCP.Storage.BucketObject.timeFinalized | Date | The time when the object was finalized. |
+| GCP.Storage.BucketObject.timeStorageClassUpdated | Date | The time when the object's storage class was last updated. |
+| GCP.Storage.BucketObject.updated | Date | The time when the object was last modified. |
 
 #### Example
 

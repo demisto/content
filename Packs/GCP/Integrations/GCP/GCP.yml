@@ -1132,7 +1132,7 @@ script:
       - contextPath: GCP.StorageBucket.Metadata.website.notFoundPage
         description: The path to the custom 404 page for the bucket website.
         type: String
-    - name: gcp-storage-bucket-list
+  - name: gcp-storage-bucket-list
     description: Retrieves the list of buckets in the project associated with the client.
     arguments:
     - name: project_id
@@ -1148,24 +1148,48 @@ script:
       required: false
       description: Token for pagination.
     outputs:
-    - contextPath: GCP.Storage.Bucket.Name
-      description: Bucket name.
-      type: String
-    - contextPath: GCP.Storage.Bucket.TimeCreated
-      description: The time the bucket was created.
-      type: Date
-    - contextPath: GCP.Storage.Bucket.TimeUpdated
-      description: The time the bucket was last updated.
-      type: Date
-    - contextPath: GCP.Storage.Bucket.OwnerID
-      description: The owner entity ID of the bucket.
-      type: String
-    - contextPath: GCP.Storage.Bucket.Location
-      description: The location of the bucket.
-      type: String
-    - contextPath: GCP.Storage.Bucket.StorageClass
-      description: The storage class of the bucket.
-      type: String
+      - contextPath: GCP.Storage.Bucket.id
+        description: The unique identifier for the bucket.
+        type: String
+      - contextPath: GCP.Storage.Bucket.name
+        description: The name of the bucket.
+        type: String
+      - contextPath: GCP.Storage.Bucket.kind
+        description: The type of resource (for example, storage#bucket).
+        type: String
+      - contextPath: GCP.Storage.Bucket.location
+        description: The location of the bucket.
+        type: String
+      - contextPath: GCP.Storage.Bucket.locationType
+        description: The type of location (for example, multi-region).
+        type: String
+      - contextPath: GCP.Storage.Bucket.projectNumber
+        description: The GCP project number associated with the bucket.
+        type: String
+      - contextPath: GCP.Storage.Bucket.storageClass
+        description: The storage class of the bucket.
+        type: String
+      - contextPath: GCP.Storage.Bucket.rpo
+        description: The recovery point objective setting of the bucket.
+        type: String
+      - contextPath: GCP.Storage.Bucket.etag
+        description: The HTTP entity tag of the bucket.
+        type: String
+      - contextPath: GCP.Storage.Bucket.generation
+        description: The generation number of the bucket.
+        type: String
+      - contextPath: GCP.Storage.Bucket.metageneration
+        description: The metageneration number of the bucket.
+        type: String
+      - contextPath: GCP.Storage.Bucket.timeCreated
+        description: The time the bucket was created.
+        type: Date
+      - contextPath: GCP.Storage.Bucket.timeUpdated
+        description: The time the bucket was last updated.
+        type: Date
+      - contextPath: GCP.Storage.Bucket.selfLink
+        description: The link to the bucket resource on the GCP API.
+        type: String
   - name: gcp-storage-bucket-get
     description: Retrieves information about a specific bucket.
     arguments:
@@ -1176,24 +1200,48 @@ script:
       required: true
       description: Name of the bucket to retrieve.
     outputs:
-    - contextPath: GCP.Storage.Bucket.Name
-      description: Bucket name.
-      type: String
-    - contextPath: GCP.Storage.Bucket.TimeCreated
-      description: The time the bucket was created.
-      type: Date
-    - contextPath: GCP.Storage.Bucket.TimeUpdated
-      description: The time the bucket was last updated.
-      type: Date
-    - contextPath: GCP.Storage.Bucket.OwnerID
-      description: The owner entity ID of the bucket.
-      type: String
-    - contextPath: GCP.Storage.Bucket.Location
-      description: The location of the bucket.
-      type: String
-    - contextPath: GCP.Storage.Bucket.StorageClass
-      description: The storage class of the bucket.
-      type: String
+      - contextPath: GCP.Storage.Bucket.id
+        description: The unique identifier for the bucket.
+        type: String
+      - contextPath: GCP.Storage.Bucket.name
+        description: The name of the bucket.
+        type: String
+      - contextPath: GCP.Storage.Bucket.kind
+        description: The type of resource (for example, storage#bucket).
+        type: String
+      - contextPath: GCP.Storage.Bucket.location
+        description: The location of the bucket.
+        type: String
+      - contextPath: GCP.Storage.Bucket.locationType
+        description: The type of location (for example, multi-region).
+        type: String
+      - contextPath: GCP.Storage.Bucket.projectNumber
+        description: The GCP project number associated with the bucket.
+        type: String
+      - contextPath: GCP.Storage.Bucket.storageClass
+        description: The storage class of the bucket.
+        type: String
+      - contextPath: GCP.Storage.Bucket.rpo
+        description: The recovery point objective setting of the bucket.
+        type: String
+      - contextPath: GCP.Storage.Bucket.etag
+        description: The HTTP entity tag of the bucket.
+        type: String
+      - contextPath: GCP.Storage.Bucket.generation
+        description: The generation number of the bucket.
+        type: String
+      - contextPath: GCP.Storage.Bucket.metageneration
+        description: The metageneration number of the bucket.
+        type: String
+      - contextPath: GCP.Storage.Bucket.timeCreated
+        description: The time the bucket was created.
+        type: Date
+      - contextPath: GCP.Storage.Bucket.timeUpdated
+        description: The time the bucket was last updated.
+        type: Date
+      - contextPath: GCP.Storage.Bucket.selfLink
+        description: The link to the bucket resource on the GCP API.
+        type: String
   - name: gcp-storage-bucket-objects-list
     description: Retrieves the list of objects in a bucket.
     arguments:
@@ -1216,45 +1264,60 @@ script:
       required: false
       description: Token for pagination.
     outputs:
-    - contextPath: GCP.Storage.BucketObject.Name
-      description: Object name.
+    - contextPath: GCP.Storage.BucketObject.id
+      description: The unique identifier for the object.
       type: String
-    - contextPath: GCP.Storage.BucketObject.Bucket
-      description: Bucket containing the object.
+    - contextPath: GCP.Storage.BucketObject.name
+      description: The name of the object.
       type: String
-    - contextPath: GCP.Storage.BucketObject.ContentType
-      description: MIME type of the object.
+    - contextPath: GCP.Storage.BucketObject.kind
+      description: The type of resource (for example, storage#object).
       type: String
-    - contextPath: GCP.Storage.BucketObject.Size
-      description: Size of the object in bytes.
+    - contextPath: GCP.Storage.BucketObject.bucket
+      description: The name of the bucket containing the object.
+      type: String
+    - contextPath: GCP.Storage.BucketObject.contentType
+      description: The MIME type of the object.
+      type: String
+    - contextPath: GCP.Storage.BucketObject.size
+      description: The size of the object in bytes.
       type: Number
-    - contextPath: GCP.Storage.BucketObject.TimeCreated
-      description: The time the object was created.
+    - contextPath: GCP.Storage.BucketObject.crc32c
+      description: The CRC32C checksum of the object.
+      type: String
+    - contextPath: GCP.Storage.BucketObject.md5Hash
+      description: The MD5 hash of the object.
+      type: String
+    - contextPath: GCP.Storage.BucketObject.etag
+      description: The HTTP entity tag of the object.
+      type: String
+    - contextPath: GCP.Storage.BucketObject.generation
+      description: The generation number of the object.
+      type: String
+    - contextPath: GCP.Storage.BucketObject.metageneration
+      description: The metageneration number of the object.
+      type: String
+    - contextPath: GCP.Storage.BucketObject.storageClass
+      description: The storage class of the object.
+      type: String
+    - contextPath: GCP.Storage.BucketObject.mediaLink
+      description: The link for downloading the object content.
+      type: String
+    - contextPath: GCP.Storage.BucketObject.selfLink
+      description: The link to the object resource in the GCP API.
+      type: String
+    - contextPath: GCP.Storage.BucketObject.timeCreated
+      description: The time when the object was created.
       type: Date
-    - contextPath: GCP.Storage.BucketObject.TimeUpdated
-      description: The time the object was last updated.
+    - contextPath: GCP.Storage.BucketObject.timeFinalized
+      description: The time when the object was finalized.
       type: Date
-    - contextPath: GCP.Storage.BucketObject.MD5Hash
-      description: MD5 hash of the object.
-      type: String
-    - contextPath: GCP.Storage.BucketObject.CRC32c
-      description: CRC32C checksum of the object.
-      type: String
-    - contextPath: GCP.Storage.BucketObject.TimeDeleted
-      description: The time the object was deleted (if applicable).
+    - contextPath: GCP.Storage.BucketObject.timeStorageClassUpdated
+      description: The time when the object's storage class was last updated.
       type: Date
-    - contextPath: GCP.Storage.BucketObject.MD5
-      description: MD5 hash of the object (legacy field name for compatibility).
-      type: String
-    - contextPath: GCP.Storage.BucketObject.OwnerID
-      description: The owner entity ID of the object.
-      type: String
-    - contextPath: GCP.Storage.BucketObject.EncryptionAlgorithm
-      description: The encryption algorithm used for the object.
-      type: String
-    - contextPath: GCP.Storage.BucketObject.EncryptionKeySHA256
-      description: SHA256 hash of the customer-supplied encryption key.
-      type: String
+    - contextPath: GCP.Storage.BucketObject.updated
+      description: The time when the object was last modified.
+      type: Date
   - name: gcp-storage-bucket-policy-list
     description: Retrieves the IAM policy for a bucket.
     arguments:
