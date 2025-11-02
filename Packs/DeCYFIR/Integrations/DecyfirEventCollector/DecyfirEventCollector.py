@@ -1,5 +1,6 @@
 import math
 import uuid
+from datetime import timezone
 from xml.etree.ElementTree import Element
 
 from requests import Response
@@ -7,7 +8,7 @@ from requests import Response
 import demistomock as demisto
 from CommonServerPython import *
 import urllib3
-from typing import Any
+from typing import Any, Dict, List
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -37,18 +38,23 @@ SOURCE_LOG_TYPES = {
 
 def get_timestamp_from_datetime(value: datetime, event_type: str) -> int:
     """
-    Converts a `datetime` object to a Unix timestamp in milliseconds.
+    Convert a datetime object to a Unix timestamp in milliseconds.
 
     Args:
         value (datetime): The datetime object to convert.
+        event_type (str): The type of event (e.g., 'access_logs').
 
     Returns:
         int: The corresponding Unix timestamp in milliseconds.
-
     """
+    # Convert to milliseconds since epoch
+    timestamp_ms = int(value.timestamp() * 1000)
+
+    # For ACCESS_LOGS, round down to the nearest second (in ms)
     if event_type == ACCESS_LOGS:
-        return int(value.timestamp())  # epoch timestamp in seconds #todo: test the resolution - do i need to deduct a second?
-    return int(value.timestamp() * 1000)  # epoch timestamp in milliseconds
+        timestamp_ms -= timestamp_ms % 1000
+
+    return timestamp_ms
 
 
 """ CLIENT CLASS """
@@ -273,46 +279,52 @@ def increase_datetime_for_next_fetch(
 
     return next_fetch_time.isoformat()
 
+def get_after_param_fetch_events(last_run, event_type, first_fetch_time):
+    last_time = arg_to_datetime(last_run.get(event_type, {}).get("next_fetch_time", None))
+    last_time = last_time.replace(tzinfo=timezone.utc) if last_time else None
+    start_date = first_fetch_time if not last_time else last_time
+    after = get_timestamp_from_datetime(start_date, event_type)
+    demisto.debug(f"start date, after {event_type} {start_date} {after}")
+    return after
 
-def save_potential_duplicates_for_next_run(next_fetch_time, log_events):
-    pass
+def remove_duplicate_logs(log_events, last_run, event_type = ACCESS_LOGS):
+    return [log_event for log_event in log_events if
+                  log_event.get("uid") not in last_run.get(event_type, {}).get("fetched_events_ids", None)]
+def set_fetched_events_ids(log_events, current_run, event_type = ACCESS_LOGS):
+    fetched_events_ids = [log_event.get("uid") for log_event in log_events]
+    current_run[event_type]["fetched_events_ids"] = fetched_events_ids
 
 
-def remove_duplicate_events(log_events, duplicate_events):
-    pass
-
-
+def set_next_fetch_time(log_events, current_run, last_run, event_type):
+    next_fetch_time = increase_datetime_for_next_fetch(log_events, start_date, last_run.get(event_type), event_type)
+    current_run[event_type] = {"next_fetch_time": next_fetch_time}
 def fetch_events(client: Client, last_run: dict[str, int],
                  first_fetch_time, event_types_to_fetch: list[str], max_events_per_fetch: Dict[str, int]
                  ) -> tuple[Dict, List[Dict]]:
-    next_run: dict[str, dict] = {}
+    current_run: dict[str, dict] = {}
     events = []
 
     for event_type in event_types_to_fetch:
-        last_time = arg_to_datetime(last_run.get(event_type, {}).get("next_fetch_time", None))
-        last_time = last_time.replace(tzinfo=timezone.utc) if last_time else None
-        start_date = first_fetch_time if not last_time else last_time
-        after = get_timestamp_from_datetime(start_date)
-        demisto.debug(f"start date, after {event_type} {start_date} {after}")
         log_events = client.search_events(
             event_type=event_type,
             max_events_per_fetch=max_events_per_fetch.get(event_type, MAX_EVENTS_PER_FETCH),
-            after=after
+            after=get_after_param_fetch_events(last_run, event_type, first_fetch_time)
         )
         if event_type == ACCESS_LOGS:
-            log_events = remove_duplicate_events(log_events, next_run.get(ACCESS_LOGS).get("duplicate_events", []))
-        next_fetch_time = increase_datetime_for_next_fetch(log_events, start_date, next_run.get(event_type), event_type)
-        next_run[event_type] = {"next_fetch_time": next_fetch_time}
-        if event_type == ACCESS_LOGS:
-            save_potential_duplicates_for_next_run(next_fetch_time, next_run)
+            set_fetched_events_ids(log_events, current_run)
+            log_events = remove_duplicate_logs(log_events, last_run)
+
 
         demisto.debug(f"Received {len(log_events)} events for event type {event_type}")
         add_fields_to_events(log_events, event_type)
         events.extend(log_events)
 
+
+
+
     demisto.debug(f"Returning {len(events)} events in total")
-    demisto.debug(f"Returning next run {next_run}.")
-    return next_run, events
+    demisto.debug(f"Returning next run {last_run}.")
+    return last_run, events
 
 
 """ MAIN FUNCTION """
@@ -358,7 +370,7 @@ def main() -> None:  # pragma: no cover
 
         elif command == "fetch-events":
             last_run = demisto.getLastRun()
-            next_run, events = fetch_events(
+            current_run, events = fetch_events(
                 client=client,
                 last_run=last_run,
                 first_fetch_time=first_fetch_time,
@@ -369,8 +381,8 @@ def main() -> None:  # pragma: no cover
             demisto.debug(f"Sending {len(events)} events to XSIAM.")
             send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
             demisto.debug("Sent events to XSIAM successfully")
-            demisto.setLastRun(next_run)
-            demisto.debug(f"Setting next run to {next_run}.")
+            demisto.setLastRun(current_run)
+            demisto.debug(f"Setting last run to {current_run}.")
 
     # Log exceptions and return errors
     except Exception as e:
