@@ -518,3 +518,29 @@ Retrieves vulnerabilities based on specified filters.
 | Core.VulnerabilityIssue.HAS_KEV | Boolean | Indicates if the vulnerability is a Known Exploited Vulnerability \(KEV\). |
 | Core.VulnerabilityIssue.EXPLOITABLE | Boolean | Indicates if the vulnerability is exploitable. |
 | Core.VulnerabilityIssue.ASSET_IDS | String | The unique identifier for the asset. |
+### core-get-issue-recommendations
+
+***
+Get comprehensive recommendations for an issue, including remediation steps, playbook suggestions, and recommended actions.
+
+#### Base Command
+
+`core-get-issue-recommendations`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| issue_id | The ID of the issue to get recommendations for. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Core.IssueRecommendations.issue_id | String | The unique identifier for the issue. | 
+| Core.IssueRecommendations.issue_name | String | The name of the issue. | 
+| Core.IssueRecommendations.severity | String | The severity of the issue. | 
+| Core.IssueRecommendations.description | String | Description of the issue. | 
+| Core.IssueRecommendations.remediation | String | Remediation steps and recommendations for the issue. | 
+| Core.IssueRecommendations.playbook_suggestions.playbook_id | String | The ID of the suggested playbook. | 
+| Core.IssueRecommendations.playbook_suggestions.suggestion_rule_id | String | The ID of the suggestion rule that generated this recommendation. | 
