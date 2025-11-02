@@ -2069,6 +2069,21 @@ def main():  # pragma: no cover
             "gcp-container-cluster-security-update": container_cluster_security_update,
             # IAM commands
             "gcp-iam-project-policy-binding-remove": iam_project_policy_binding_remove,
+            # Quick Actions - Firewall
+            "gcp-compute-firewall-patch-disable-gcp-default-firewall-rule-quick-action": compute_firewall_patch,
+            # Quick Actions - Storage Bucket Policy
+            "gcp-storage-bucket-policy-delete-remove-allusers-access-quick-action": storage_bucket_policy_delete,
+            "gcp-storage-bucket-policy-delete-remove-AllAuthenticatedUser-access-quick-action": storage_bucket_policy_delete,
+            "gcp-storage-bucket-policy-delete-make-gcp-bucket-private-quick-action": storage_bucket_policy_delete,
+            # Quick Actions - Subnet Update
+            "gcp-compute-subnet-update-enable-gcp-subnet-flow-logs-quick-action": compute_subnet_update,
+            "gcp-compute-subnet-update-enable-private-access-quick-action": compute_subnet_update,
+            # Quick Actions - Container Cluster Security
+            "gcp-container-cluster-security-update-enable-gke-cluster-intra-node-visibility-quick-action": container_cluster_security_update,  # noqa E501
+            "gcp-container-cluster-security-update-enable-master-authorized-networks-on-gke-quick-action": container_cluster_security_update,  # noqa E501
+            # Quick Actions - Storage Bucket Metadata
+            "gcp-storage-bucket-metadata-update-enable-GCP-bucket-versioning-quick-action": storage_bucket_metadata_update,
+            "gcp-storage-bucket-metadata-update-set-GCP-bucket-access-to-uniform-quick-action": storage_bucket_metadata_update,
             # The following commands are currently unsupported:
             # # Compute Engine commands
             # "gcp-compute-instance-metadata-add": compute_instance_metadata_add,

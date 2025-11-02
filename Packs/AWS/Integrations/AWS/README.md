@@ -248,16 +248,16 @@ Updates trail settings that control what events you are logging, and how to hand
 | --- | --- | --- |
 | account_id | The AWS account ID. | Required |
 | region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
-| name | Specifies the name of the trail or trail ARN. | Required |
-| s3_bucket_name | Specifies the name of the Amazon S3 bucket designated for publishing log files. | Optional |
-| s3_key_prefix | Specifies the Amazon S3 key prefix that comes after the name of the bucket you have designated for log file delivery. | Optional |
-| sns_topic_name | Specifies the name of the Amazon SNS topic defined for notification of log file delivery. | Optional |
-| include_global_service_events | Specifies whether the trail is publishing events from global services such as IAM to the log files. Possible values are: true, false. | Optional |
-| is_multi_region_trail | Specifies whether the trail applies only to the current region or to all regions. The default is false. If the trail exists only in the current region and this value is set to true, shadow trails (replications of the trail) will be created in the other regions. If the trail exists in all regions and this value is set to false, the trail will remain in the region where it was created, and its shadow trails in other regions will be deleted. Possible values are: true, false. | Optional |
-| enable_log_file_validation | Specifies whether log file validation is enabled. The default is false. Possible values are: true, false. | Optional |
+| name | The name of the trail or trail ARN. | Required |
+| s3_bucket_name | The name of the Amazon S3 bucket designated for publishing log files. | Optional |
+| s3_key_prefix | The Amazon S3 key prefix that comes after the name of the bucket you have designated for log file delivery. | Optional |
+| sns_topic_name | The name of the Amazon SNS topic defined for notification of log file delivery. | Optional |
+| include_global_service_events | Weather the trail is publishing events from global services such as IAM to the log files. Possible values are: true, false. | Optional |
+| is_multi_region_trail | Weather the trail applies only to the current region or to all regions. The default is false. If the trail exists only in the current region and this value is set to true, shadow trails (replications of the trail) will be created in the other regions. If the trail exists in all regions and this value is set to false, the trail will remain in the region where it was created, and its shadow trails in other regions will be deleted. Possible values are: true, false. | Optional |
+| enable_log_file_validation | Weather log file validation is enabled. The default is false. Possible values are: true, false. | Optional |
 | cloud_watch_logs_log_group_arn | Specifies a log group name using an Amazon Resource Name (ARN), a unique identifier that represents the log group to which CloudTrail logs will be delivered. Not required unless you specify CloudWatchLogsRoleArn. | Optional |
-| cloud_watch_logs_role_arn | Specifies the role for the CloudWatch Logs endpoint to assume to write to a user's log group. | Optional |
-| kms_key_id | Specifies the KMS key ID to use to encrypt the logs delivered by CloudTrail. | Optional |
+| cloud_watch_logs_role_arn | The role for the CloudWatch Logs endpoint to assume to write to a user's log group. | Optional |
+| kms_key_id | The KMS key ID to use to encrypt the logs delivered by CloudTrail. | Optional |
 
 #### Context Output
 
@@ -270,15 +270,15 @@ Updates trail settings that control what events you are logging, and how to hand
 | AWS.CloudTrail.Trail.SnsTopicName | string | The name of the Amazon SNS topic defined for notification of log file delivery. |
 | AWS.CloudTrail.Trail.SnsTopicARN | string | The Amazon Resource Name \(ARN\) of the Amazon SNS topic defined for notification of log file delivery. |
 | AWS.CloudTrail.Trail.IncludeGlobalServiceEvents | boolean | Set to True to include AWS API calls from AWS global services such as IAM. |
-| AWS.CloudTrail.Trail.IsMultiRegionTrail | boolean | Specifies whether the trail exists only in one region or exists in all regions. |
+| AWS.CloudTrail.Trail.IsMultiRegionTrail | boolean | Weather the trail exists only in one region or exists in all regions. |
 | AWS.CloudTrail.Trail.HomeRegion | string | The region in which the trail was created. |
-| AWS.CloudTrail.Trail.LogFileValidationEnabled | boolean | Specifies whether log file validation is enabled. |
-| AWS.CloudTrail.Trail.CloudWatchLogsLogGroupArn | string | Specifies an Amazon Resource Name \(ARN\), a unique identifier that represents the log group to which CloudTrail logs will be delivered. |
-| AWS.CloudTrail.Trail.CloudWatchLogsRoleArn | string | Specifies the role for the CloudWatch Logs endpoint to assume to write to a user's log group. |
-| AWS.CloudTrail.Trail.KMSKeyId | string | Specifies the KMS key ID that encrypts the logs delivered by CloudTrail. |
+| AWS.CloudTrail.Trail.LogFileValidationEnabled | boolean | Weather log file validation is enabled. |
+| AWS.CloudTrail.Trail.CloudWatchLogsLogGroupArn | string | Amazon Resource Name \(ARN\), a unique identifier that represents the log group to which CloudTrail logs will be delivered. |
+| AWS.CloudTrail.Trail.CloudWatchLogsRoleArn | string | The role for the CloudWatch Logs endpoint to assume to write to a user's log group. |
+| AWS.CloudTrail.Trail.KMSKeyId | string | The KMS key ID that encrypts the logs delivered by CloudTrail. |
 | AWS.CloudTrail.Trail.HasCustomEventSelectors | boolean | Specifies if the trail has custom event selectors. |
-| AWS.CloudTrail.Trail.HasInsightSelectors | boolean | Specifies whether a trail has insight selectors enabled. |
-| AWS.CloudTrail.Trail.IsOrganizationTrail | boolean | Specifies whether the trail is an organization trail. |
+| AWS.CloudTrail.Trail.HasInsightSelectors | boolean | Weather a trail has insight selectors enabled. |
+| AWS.CloudTrail.Trail.IsOrganizationTrail | boolean | Whether the trail is an organization trail. |
 
 ### aws-ec2-security-group-ingress-authorize
 
@@ -358,7 +358,7 @@ There is no context output for this command.
 ### aws-s3-bucket-logging-put
 
 ***
-Configure logging settings for an AWS S3 bucket, allowing to monitor access to the bucket through detailed access logs that are delivered to a designated target bucket.
+Configures logging settings for an AWS S3 bucket, enabling monitoring of bucket access through detailed logs delivered to a designated target bucket.
 
 #### Base Command
 
@@ -448,7 +448,7 @@ There is no context output for this command.
 ### aws-cloudtrail-logging-start
 
 ***
-Starts the recording of AWS API calls and log file delivery for a trail. For a trail that is enabled in all regions, this operation must be called from the region in which the trail was created. This operation cannot be called on the shadow trails (replicated trails in other regions) of a trail that is enabled in all regions.
+Starts recording AWS API calls and log file delivery for a trail. For a trail enabled in all regions, this operation must be called from the region where the trail was created. This operation cannot be called on shadow trails (replicated trails in other regions) of a trail that is enabled in all regions.
 
 #### Base Command
 
@@ -460,7 +460,7 @@ Starts the recording of AWS API calls and log file delivery for a trail. For a t
 | --- | --- | --- |
 | account_id | The AWS account ID. | Required |
 | region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
-| name | Specifies the name or the CloudTrail ARN of the trail for which CloudTrail logs Amazon Web Services API calls. e.g. arn:aws:cloudtrail:us-east-2:123456789012:trail/MyTrail. | Required |
+| name | The name or the CloudTrail ARN of the trail for which CloudTrail logs Amazon Web Services API calls. e.g. arn:aws:cloudtrail:us-east-2:123456789012:trail/MyTrail. | Required |
 
 #### Context Output
 
@@ -681,7 +681,7 @@ There is no context output for this command.
 ### aws-ec2-snapshot-attribute-modify
 
 ***
-Adds or removes permission settings for the specified snapshot. Note: snapshots encrypted with the AWS-managed default key (alias/aws/ebs) cannot be shared—use unencrypted snapshots or those encrypted with a customer-managed KMS key to allow permission modifications.
+Adds or removes permission settings for the specified snapshot. Note: snapshots encrypted with the AWS-managed default key (alias/aws/ebs) cannot be shared. Use unencrypted snapshots or those encrypted with a customer-managed KMS key to allow permission modifications.
 
 #### Base Command
 
@@ -703,43 +703,121 @@ Adds or removes permission settings for the specified snapshot. Note: snapshots 
 
 There is no context output for this command.
 
-### aws-cloudtrail-trails-describe
+### aws-rds-db-instance-enable-iam-auth-quick-action
 
 ***
-Retrieves settings for the specified trail or returns information about all trails in the current AWS account.
+Enables 'iam database authentication' for the RDS DB instance.
 
 #### Base Command
 
-`aws-cloudtrail-trails-describe`
+`aws-rds-db-instance-enable-iam-auth-quick-action`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| trail_names | A comma-separated list of trail names or trail ARNs. If the list is empty, it returns information for the trail in the current region. | Optional |
-| include_shadow_trails | Include shadow trails in the response. A shadow trail is a replication in a region of a trail created in another region. Possible values are: true, false. Default is true. | Optional |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. | Required |
+| db_instance_identifier | The identifier of DB instance to modify. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### aws-s3-bucket-encryption-get
+
+***
+Retrieves the default encryption configuration for an Amazon S3 bucket. Shows the server-side encryption settings that are applied to new objects stored in the bucket.
+
+#### Base Command
+
+`aws-s3-bucket-encryption-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
 | account_id | The AWS account ID. | Required |
 | region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
+| bucket | Name of the S3 bucket to retrieve encryption configuration from. Must follow S3 naming conventions. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.CloudTrail.Trails.Name | string | The name of the trail, as set in CreateTrail. |
-| AWS.CloudTrail.Trails.S3BucketName | string | The name of the Amazon S3 bucket where CloudTrail delivers trail files. |
-| AWS.CloudTrail.Trails.S3KeyPrefix | string | The Amazon S3 key prefix appended to the bucket name designated for log file delivery. |
-| AWS.CloudTrail.Trails.SnsTopicARN | string | The ARN of the Amazon SNS topic that CloudTrail uses to send notifications when log files are delivered. |
-| AWS.CloudTrail.Trails.IncludeGlobalServiceEvents | boolean | Whether to include AWS API calls from AWS global services such as IAM. |
-| AWS.CloudTrail.Trails.IsMultiRegionTrail | boolean | Specifies whether the trail belongs only to one region or exists in all regions. |
-| AWS.CloudTrail.Trails.HomeRegion | string | The region where the trail was created. |
-| AWS.CloudTrail.Trails.TrailARN | string | The ARN of the trail. |
-| AWS.CloudTrail.Trails.LogFileValidationEnabled | boolean | Whether log file validation is enabled. |
-| AWS.CloudTrail.Trails.CloudWatchLogsLogGroupArn | string | The ARN of the CloudWatch log group to which CloudTrail logs are delivered. |
-| AWS.CloudTrail.Trails.CloudWatchLogsRoleArn | string | The role assumed by CloudTrail to write logs to the CloudWatch log group. |
-| AWS.CloudTrail.KmsKeyId | string | The KMS key ID that encrypts logs delivered by CloudTrail. |
-| AWS.CloudTrail.HasCustomEventSelectors | boolean | Specifies if the trail has custom event selectors. |
-| AWS.CloudTrail.HasInsightSelectors | boolean | Specifies whether a trail has insight types specified in an InsightSelector list. |
-| AWS.CloudTrail.IsOrganizationTrail | boolean | Specifies whether the trail is an organization trail. |
+| AWS.S3-Buckets.BucketName | string | Name of the S3 bucket. |
+| AWS.S3-Buckets.ServerSideEncryptionConfiguration.Rules | array | Container for information about a particular server-side encryption configuration rule. |
+
+### aws-s3-file-download
+
+***
+Download a file from S3 bucket to the War Room.
+
+#### Base Command
+
+`aws-s3-file-download`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| bucket | Name of the target S3 bucket. Must follow S3 naming conventions. | Required |
+| key | Key (path) of the file to download from the S3 bucket. | Required |
+| region | AWS region where the S3 bucket is located. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| File.Size | Number | The size of the file. |
+| File.SHA1 | String | The SHA1 hash of the file. |
+| File.SHA256 | String | The SHA256 hash of the file. |
+| File.Name | String | The name of the file. |
+| File.SSDeep | String | The SSDeep hash of the file. |
+| File.EntryID | String | The entry ID of the file. |
+| File.Info | String | File information. |
+| File.Type | String | The file type. |
+| File.MD5 | String | The MD5 hash of the file. |
+| File.Extension | String | The file extension. |
+
+### aws-cloudtrail-trail-enable-log-validation-quick-action
+
+***
+Enables log file validation for the reported CloudTrail.
+
+#### Base Command
+
+`aws-cloudtrail-trail-enable-log-validation-quick-action`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. | Required |
+| name | The name of the trail or trail ARN. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.CloudTrail.Trail.TrailARN | string | The Amazon Resource Name \(ARN\) of the trail. |
+| AWS.CloudTrail.Trail.Name | string | The name of the trail. |
+| AWS.CloudTrail.Trail.S3BucketName | string | The name of the Amazon S3 bucket into which CloudTrail delivers your trail files. |
+| AWS.CloudTrail.Trail.S3KeyPrefix | string | The Amazon S3 key prefix that comes after the name of the bucket you have designated for log file delivery. |
+| AWS.CloudTrail.Trail.SnsTopicName | string | The name of the Amazon SNS topic defined for notification of log file delivery. |
+| AWS.CloudTrail.Trail.SnsTopicARN | string | The Amazon Resource Name \(ARN\) of the Amazon SNS topic defined for notification of log file delivery. |
+| AWS.CloudTrail.Trail.IncludeGlobalServiceEvents | boolean | Set to True to include AWS API calls from global services, such as IAM. |
+| AWS.CloudTrail.Trail.IsMultiRegionTrail | boolean | Whether the trail exists in a single region or in all regions. |
+| AWS.CloudTrail.Trail.HomeRegion | string | The region in which the trail was created. |
+| AWS.CloudTrail.Trail.LogFileValidationEnabled | boolean | Whether log file validation is enabled. |
+| AWS.CloudTrail.Trail.CloudWatchLogsLogGroupArn | string | The Amazon Resource Name \(ARN\), a unique identifier representing the log group to which CloudTrail logs are delivered. |
+| AWS.CloudTrail.Trail.CloudWatchLogsRoleArn | string | The role that the CloudWatch Logs endpoint assumes to write to a user’s log group. |
+| AWS.CloudTrail.Trail.KMSKeyId | string | The KMS key ID that encrypts the logs delivered by CloudTrail. |
+| AWS.CloudTrail.Trail.HasCustomEventSelectors | boolean | Specifies if the trail has custom event selectors. |
+| AWS.CloudTrail.Trail.HasInsightSelectors | boolean | Whether a trail has insight selectors enabled. |
+| AWS.CloudTrail.Trail.IsOrganizationTrail | boolean | Whether the trail is an organization trail. |
 
 ### aws-s3-bucket-policy-delete
 
@@ -757,6 +835,103 @@ Deletes the bucket policy from an Amazon S3 bucket. This operation removes all p
 | account_id | The AWS account ID. | Required |
 | region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
 | bucket | The name of the Amazon S3 bucket from which to delete the bucket policy. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### aws-ecs-update-cluster-settings
+
+***
+Updates the containerInsights setting of an ECS cluster.
+
+#### Base Command
+
+`aws-ecs-update-cluster-settings`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| cluster_name | The name of the cluster. | Required |
+| value | The value of the containerInsights setting to update. Possible values are: enabled, disabled, enhanced. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### aws-s3-file-upload
+
+***
+Upload file to S3 bucket.
+
+#### Base Command
+
+`aws-s3-file-upload`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| entryID | Entry ID of the file to upload. | Required |
+| bucket | Name of the S3 bucket containing the file. Must follow S3 naming conventions. | Required |
+| key | Key (path) where the file will be stored in the S3 bucket. | Required |
+| region | AWS region where the S3 bucket is located. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### aws-ec2-subnet-attribute-modify
+
+***
+Modifies a subnet attribute.
+
+#### Base Command
+
+`aws-ec2-subnet-attribute-modify`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
+| subnet_id | The ID of the subnet. | Required |
+| assign_ipv6_address_on_creation | Set to true to assign an IPv6 address to network interfaces created in the specified subnet. | Optional |
+| customer_owned_ipv4_pool | The customer-owned IPv4 address pool associated with the subnet. | Optional |
+| disable_lni_at_device_index | Set to true to disable local network interfaces at the current position. | Optional |
+| enable_dns64 | Indicates whether DNS queries made to the Amazon-provided DNS Resolver in this subnet should return synthetic IPv6 addresses for IPv4-only destinations. | Optional |
+| enable_lni_at_device_index | Indicates the device position for local network interfaces in this subnet. | Optional |
+| enable_resource_name_dns_aaaa_record_on_launch | Indicates whether to respond to DNS queries for instance hostnames with DNS AAAA records. | Optional |
+| enable_resource_name_dns_a_record_on_launch | Indicates whether to respond to DNS queries for instance hostnames with DNS A records. | Optional |
+| map_customer_owned_ip_on_launch | Set to true to assign a customer-owned IPv4 address to network interfaces attached to instances created in the specified subnet. | Optional |
+| map_public_ip_on_launch | Set to true to assign a public IPv4 address to network interfaces attached to instances created in the specified subnet. | Optional |
+| private_dns_hostname_type_on_launch | The type of hostname to assign to instances in the subnet at launch. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+### aws-ec2-instances-terminate
+
+***
+Shuts down specified instances. This operation is idempotent; you can terminate an instance multiple times without causing an error.
+
+#### Base Command
+
+`aws-ec2-instances-terminate`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region where target instances are located. Must be a valid AWS region identifier. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
+| instance_ids | A comma-separated list of instance IDs to terminate. If you specify multiple instances and the request fails (for example, because of a single incorrect instance ID), none of the instances are terminated. | Required |
 
 #### Context Output
 
@@ -790,62 +965,49 @@ Retrieves the public access block configuration for an Amazon S3 bucket. Shows t
 | AWS.S3-Buckets.PublicAccessBlock.BlockPublicPolicy | boolean | Whether Amazon S3 blocks public bucket policies for this bucket. |
 | AWS.S3-Buckets.PublicAccessBlock.RestrictPublicBuckets | boolean | Whether Amazon S3 restricts public bucket policies for this bucket. |
 
-### aws-s3-bucket-encryption-get
+### aws-ec2-instances-stop
 
 ***
-Retrieves the default encryption configuration for an Amazon S3 bucket. Shows the server-side encryption settings that are applied to new objects stored in the bucket.
+Stops an Amazon EBS-backed instance.
 
 #### Base Command
 
-`aws-s3-bucket-encryption-get`
+`aws-ec2-instances-stop`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | account_id | The AWS account ID. | Required |
-| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
-| bucket | Name of the S3 bucket to retrieve encryption configuration from. Must follow S3 naming conventions. | Required |
+| region | The AWS region where target instances are located. Must be a valid AWS region identifier. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
+| instance_ids | A comma-separated list of instance IDs to stop. Must be in 'running' or 'pending' state. User must have stop permissions for each instance. | Required |
+| force | Force stop instances without graceful shutdown. Default: false. Use with caution, as it may cause data loss. Possible values are: true, false. Default is false. | Optional |
+| hibernate | Hibernates the instance if the instance was enabled for hibernation at launch. If the instance cannot hibernate successfully, a normal shutdown occurs. Possible values are: true, false. Default is false. | Optional |
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| AWS.S3-Buckets.BucketName | string | Name of the S3 bucket. |
-| AWS.S3-Buckets.ServerSideEncryptionConfiguration.Rules | array | Container for information about a particular server-side encryption configuration rule. |
+There is no context output for this command.
 
-### aws-s3-bucket-policy-get
+### aws-cloudtrail-logging-start-enable-logging-quick-action
 
 ***
-Retrieves the bucket policy for an Amazon S3 bucket. Returns the policy document in JSON format if one exists.
+Enables logging of a CloudTrail.
 
 #### Base Command
 
-`aws-s3-bucket-policy-get`
+`aws-cloudtrail-logging-start-enable-logging-quick-action`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | account_id | The AWS account ID. | Required |
-| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
-| bucket | The name of the S3 bucket whose policy you want to retrieve. Must follow S3 naming conventions. | Required |
-| expected_bucket_owner | The account ID of the expected bucket owner. If the account ID that you provide does not match the actual owner of the bucket, the request fails. | Optional |
+| region | The AWS region. | Required |
+| name | The name or the CloudTrail ARN of the trail for which CloudTrail logs Amazon Web Services API calls. e.g. arn:aws:cloudtrail:us-east-2:123456789012:trail/MyTrail. | Required |
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| AWS.S3-Buckets.BucketName | string | Name of the S3 bucket. |
-| AWS.S3-Buckets.Policy.Version | string | The version of the policy. |
-| AWS.S3-Buckets.Policy.Id | string | The id of the policy. |
-| AWS.S3-Buckets.Policy.Statement.Sid | string | Statement identifier. |
-| AWS.S3-Buckets.Policy.Statement.Effect | string | Allow or Deny. |
-| AWS.S3-Buckets.Policy.Statement.Principal | string | Principal to whom the statement applies. |
-| AWS.S3-Buckets.Policy.Statement.Action | Array | List of actions the statement applies to. |
-| AWS.S3-Buckets.Policy.Statement.Resource | Array | List of actions the statement applies to. |
-| AWS.S3-Buckets.Policy.Statement.Condition | string | Conditions for when the statement applies. |
-| AWS.S3-Buckets.PolicyExists | boolean | Whether a bucket policy exists. |
+There is no context output for this command.
 
 ### aws-ec2-instances-describe
 
@@ -966,6 +1128,118 @@ Describes specified instances or all instances.
 | AWS.EC2.Instances.PrivateIpAddress | String | The private IPv4 address assigned to the instance. |
 | AWS.EC2.Instances.PublicIpAddress | String | The public IPv4 address assigned to the instance. |
 
+### aws-rds-db-instance-modify-copy-tags-on-rds-snapshot-quick-action
+
+***
+This action enables 'copy tags to snapshots' for the RDS instance.
+
+#### Base Command
+
+`aws-rds-db-instance-modify-copy-tags-on-rds-snapshot-quick-action`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. | Required |
+| db_instance_identifier | The identifier of DB instance to modify. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### aws-s3-bucket-policy-get
+
+***
+Retrieves the bucket policy for an Amazon S3 bucket. Returns the policy document in JSON format if one exists.
+
+#### Base Command
+
+`aws-s3-bucket-policy-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
+| bucket | The name of the S3 bucket whose policy you want to retrieve. Must follow S3 naming conventions. | Required |
+| expected_bucket_owner | The account ID of the expected bucket owner. If the account ID that you provide does not match the actual owner of the bucket, the request fails. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.S3-Buckets.BucketName | string | Name of the S3 bucket. |
+| AWS.S3-Buckets.Policy.Version | string | The version of the policy. |
+| AWS.S3-Buckets.Policy.Id | string | The id of the policy. |
+| AWS.S3-Buckets.Policy.Statement.Sid | string | Identifier of the policy statement. |
+| AWS.S3-Buckets.Policy.Statement.Effect | string | Specifies whether the statement results in an allow or an explicit deny. |
+| AWS.S3-Buckets.Policy.Statement.Principal | unknown | Specify the principal that is allowed or denied access to a resource. |
+| AWS.S3-Buckets.Policy.Statement.Action | unknown | Describes the specific action or actions that will be allowed or denied. |
+| AWS.S3-Buckets.Policy.Statement.Resource | unknown | Defines the object or objects that the statement applies to. |
+| AWS.S3-Buckets.Policy.Statement.Condition | string | Specify conditions for when a policy is in effect. |
+
+### aws-ec2-instance-attribute-modify-quick-action
+
+***
+Remove the associated security group from the EC2 instance profile.
+
+#### Base Command
+
+`aws-ec2-instance-attribute-modify-quick-action`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. | Required |
+| instance_id | The ID of the instance. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### aws-cloudtrail-trails-describe
+
+***
+Retrieves settings for the specified trail or returns information about all trails in the current AWS account.
+
+#### Base Command
+
+`aws-cloudtrail-trails-describe`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| trail_names | A comma-separated list of trail names or trail ARNs. If the list is empty, it returns information for the trail in the current region. | Optional |
+| include_shadow_trails | Include shadow trails in the response. A shadow trail is a replication in a region of a trail created in another region. Possible values are: true, false. Default is true. | Optional |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.CloudTrail.Trails.Name | string | The name of the trail, as set in CreateTrail. |
+| AWS.CloudTrail.Trails.S3BucketName | string | The name of the Amazon S3 bucket where CloudTrail delivers trail files. |
+| AWS.CloudTrail.Trails.S3KeyPrefix | string | The Amazon S3 key prefix appended to the bucket name designated for log file delivery. |
+| AWS.CloudTrail.Trails.SnsTopicARN | string | The ARN of the Amazon SNS topic that CloudTrail uses to send notifications when log files are delivered. |
+| AWS.CloudTrail.Trails.IncludeGlobalServiceEvents | boolean | Whether to include AWS API calls from AWS global services such as IAM. |
+| AWS.CloudTrail.Trails.IsMultiRegionTrail | boolean | Specifies whether the trail belongs only to one region or exists in all regions. |
+| AWS.CloudTrail.Trails.HomeRegion | string | The region where the trail was created. |
+| AWS.CloudTrail.Trails.TrailARN | string | The ARN of the trail. |
+| AWS.CloudTrail.Trails.LogFileValidationEnabled | boolean | Whether log file validation is enabled. |
+| AWS.CloudTrail.Trails.CloudWatchLogsLogGroupArn | string | The ARN of the CloudWatch log group to which CloudTrail logs are delivered. |
+| AWS.CloudTrail.Trails.CloudWatchLogsRoleArn | string | The role assumed by CloudTrail to write logs to the CloudWatch log group. |
+| AWS.CloudTrail.KmsKeyId | string | The KMS key ID that encrypts logs delivered by CloudTrail. |
+| AWS.CloudTrail.HasCustomEventSelectors | boolean | Specifies if the trail has custom event selectors. |
+| AWS.CloudTrail.HasInsightSelectors | boolean | Specifies whether a trail has insight types specified in an InsightSelector list. |
+| AWS.CloudTrail.IsOrganizationTrail | boolean | Specifies whether the trail is an organization trail. |
+
 ### aws-ec2-instances-start
 
 ***
@@ -987,49 +1261,66 @@ Starts an Amazon EBS-backed instance that was previously stopped.
 
 There is no context output for this command.
 
-### aws-ec2-instances-stop
+### aws-rds-db-instance-modify-enable-automatic-backup-quick-action
 
 ***
-Stops an Amazon EBS-backed instance.
+Enables the automatic backup settings for the RDS DB instance with a default retention period of 30 days.
 
 #### Base Command
 
-`aws-ec2-instances-stop`
+`aws-rds-db-instance-modify-enable-automatic-backup-quick-action`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | account_id | The AWS account ID. | Required |
-| region | The AWS region where target instances are located. Must be a valid AWS region identifier. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
-| instance_ids | A comma-separated list of instance IDs to stop. Must be in 'running' or 'pending' state. User must have stop permissions for each instance. | Required |
-| force | Force stop instances without graceful shutdown. Default: false. Use with caution, as it may cause data loss. Possible values are: true, false. Default is false. | Optional |
-| hibernate | Hibernates the instance if the instance was enabled for hibernation at launch. Default: false. If the instance cannot hibernate successfully, a normal shutdown occurs. Possible values are: true, false. Default is false. | Optional |
+| region | The AWS region. | Required |
+| db_instance_identifier | The identifier of DB instance to modify. | Required |
 
 #### Context Output
 
 There is no context output for this command.
 
-### aws-ec2-instances-terminate
+### aws-ec2-create-snapshot
 
 ***
-Shuts down specified instances. This operation is idempotent; you can terminate an instance multiple times without causing an error.
+Creates a snapshot of an EBS volume and stores it in Amazon S3. You can use snapshots for backups, to make copies of EBS volumes, and to save data before shutting down an instance.
 
 #### Base Command
 
-`aws-ec2-instances-terminate`
+`aws-ec2-create-snapshot`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | account_id | The AWS account ID. | Required |
-| region | The AWS region where target instances are located. Must be a valid AWS region identifier. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
-| instance_ids | A comma-separated list of instance IDs to terminate. If you specify multiple instances and the request fails (for example, because of a single incorrect instance ID), none of the instances are terminated. | Required |
+| volume_id | The ID of the EBS volume. | Required |
+| description | A description for the snapshot. | Optional |
+| tags | The tags to apply to the snapshot during creation. | Optional |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.EC2.Snapshot.DataEncryptionKeyId | string | The data encryption key identifier for the snapshot. |
+| AWS.EC2.Snapshot.Description | string | The description for the snapshot. |
+| AWS.EC2.Snapshot.Encrypted | number | Indicates whether the snapshot is encrypted. |
+| AWS.EC2.Snapshot.KmsKeyId | string | The full ARN of the AWS Key Management Service \(AWS KMS\) customer master key \(CMK\) that was used to protect the volume encryption key for the parent volume. |
+| AWS.EC2.Snapshot.OwnerId | string | The AWS account ID of the EBS snapshot owner. |
+| AWS.EC2.Snapshot.Progress | string | The progress of the snapshot, as a percentage. |
+| AWS.EC2.Snapshot.SnapshotId | string | The ID of the snapshot. |
+| AWS.EC2.Snapshot.StartTime | date | The time stamp when the snapshot was initiated. |
+| AWS.EC2.Snapshot.State | string | The snapshot state. |
+| AWS.EC2.Snapshot.StateMessage | string | this field displays error state details to help you diagnose why the error occurred. |
+| AWS.EC2.Snapshot.VolumeId | string | The ID of the volume that was used to create the snapshot. |
+| AWS.EC2.Snapshot.VolumeSize | number | The size of the volume, in GiB. |
+| AWS.EC2.Snapshot.OwnerAlias | string | Value from an Amazon-maintained list of snapshot owners. |
+| AWS.EC2.Snapshot.Tags.Key | string | The key of the tag. |
+| AWS.EC2.Snapshot.Tags.Value | string | The value of the tag. |
+| AWS.EC2.Snapshot.AccountId | string | The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided. |
 
 ### aws-ec2-instances-run
 
@@ -1070,7 +1361,7 @@ Launches a specified number of instances using an AMI you have access to. You ca
 | launch_template_name | The name of the launch template to use to launch the instances. Any parameters that you specify in the command override the same parameters in the launch template. You can specify either the name or ID of a launch template, but not both. | Optional |
 | launch_template_version | The launch template version number, $Latest, or $Default. | Optional |
 | tags | One or more tags to apply to a resource when the resource is being created, separated by ';' (for example, key=&lt;name&gt;;value=&lt;value&gt;). | Optional |
-| host_id | The dedicated Host ID. | Optional |
+| host_id | The Dedicated Host ID. | Optional |
 | enabled_monitoring | Indicates whether detailed monitoring is enabled. Otherwise, basic monitoring is enabled. Possible values are: true, false. Default is false. | Optional |
 
 #### Context Output
@@ -1171,6 +1462,404 @@ Launches a specified number of instances using an AMI you have access to. You ca
 | AWS.EC2.Instances.PrivateIpAddress | String | The private IPv4 address assigned to the instance. |
 | AWS.EC2.Instances.PublicIpAddress | String | The public IPv4 address assigned to the instance. |
 
+### aws-rds-db-instance-enable-auto-upgrade-quick-action
+
+***
+Enables automatic minor version upgrades for the RDS DB instance.
+
+#### Base Command
+
+`aws-rds-db-instance-enable-auto-upgrade-quick-action`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. | Required |
+| db_instance_identifier | The identifier of DB instance to modify. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### aws-rds-db-snapshot-attribute-set-snapshot-to-private-quick-action
+
+***
+Revokes public access to the RDS DB snapshot, making it private.
+
+#### Base Command
+
+`aws-rds-db-snapshot-attribute-set-snapshot-to-private-quick-action`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. | Required |
+| db_snapshot_identifier | The identifier for the DB snapshot to modify the attributes for. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### aws-rds-db-instance-enable-multi-az-quick-action
+
+***
+Enables Multi-AZ deployment for the RDS database instance to enhance availability and durability.
+
+#### Base Command
+
+`aws-rds-db-instance-enable-multi-az-quick-action`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. | Required |
+| db_instance_identifier | The identifier of DB instance to modify. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### aws-rds-event-subscription-modify
+
+***
+Modifies an existing RDS event notification subscription.
+
+#### Base Command
+
+`aws-rds-event-subscription-modify`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
+| subscription_name | The name of the RDS event notification subscription. | Required |
+| enabled | Specifies whether to activate the subscription. | Optional |
+| event_categories | A list of event categories for a source type (SourceType) that you want to subscribe to. | Optional |
+| sns_topic_arn | The Amazon Resource Name (ARN) of the SNS topic created for event notification. | Optional |
+| source_type | The type of source that is generating the events. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.RDS.EventSubscription.CustomerAwsId | string | The AWS customer account associated with the RDS event notification subscription. |
+| AWS.RDS.EventSubscription.CustSubscriptionId | string | The RDS event notification subscription Id. |
+| AWS.RDS.EventSubscription.Enabled | boolean | Specifies whether the subscription is enabled. True indicates the subscription is enabled. |
+| AWS.RDS.EventSubscription.EventCategoriesList | array | A list of event categories for the RDS event notification subscription. |
+| AWS.RDS.EventSubscription.EventSubscriptionArn | string | The Amazon Resource Name \(ARN\) for the event subscription. |
+| AWS.RDS.EventSubscription.SnsTopicArn | string | The topic ARN of the RDS event notification subscription. |
+| AWS.RDS.EventSubscription.SourceIdsList | array | A list of source IDs for the RDS event notification subscription. |
+| AWS.RDS.EventSubscription.SourceType | string | The source type for the RDS event notification subscription. |
+| AWS.RDS.EventSubscription.Status | string | The status of the RDS event notification subscription. |
+| AWS.RDS.EventSubscription.SubscriptionCreationTime | string | The time the RDS event notification subscription was created. |
+
+### aws-rds-db-instance-enable-deletion-protection-quick-action
+
+***
+Enables 'deletion protection' for the RDS DB instance.
+
+#### Base Command
+
+`aws-rds-db-instance-enable-deletion-protection-quick-action`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. | Required |
+| db_instance_identifier | The identifier of DB instance to modify. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### aws-rds-db-instance-modify-publicly-accessible-quick-action
+
+***
+This action will disable public access for AWS RDS database instance by modifying the instance settings.
+
+#### Base Command
+
+`aws-rds-db-instance-modify-publicly-accessible-quick-action`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. | Required |
+| db_instance_identifier | The identifier of DB instance to modify. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### aws-ec2-modify-snapshot-permission
+
+***
+Adds or removes permission settings for the specified snapshot.
+
+#### Base Command
+
+`aws-ec2-modify-snapshot-permission`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| snapshot_id | The ID of the EBS snapshot. | Required |
+| operation_type | The operation type, add or remove. Possible values are: add, remove. | Required |
+| group_names | CSV of security group names. This parameter can be used only when UserIds not provided. | Optional |
+| user_ids | CSV of AWS account IDs. This parameter can be used only when groupNames not provided. | Optional |
+| dry_run | Checks whether you have the required permissions for the action, without actually making the request, and provides an error response. Possible values are: True, False. | Optional |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### aws-ec2-set-snapshot-to-private-quick-action
+
+***
+Revokes public access to the EC2 snapshot.
+
+#### Base Command
+
+`aws-ec2-set-snapshot-to-private-quick-action`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. | Required |
+| snapshot_id | The ID of the EBS snapshot. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### aws-ec2-image-attribute-set-ami-to-private-quick-action
+
+***
+Revokes public launch permissions for the EC2 AMI.
+
+#### Base Command
+
+`aws-ec2-image-attribute-set-ami-to-private-quick-action`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. | Required |
+| image_id | The ID of the AMI. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### aws-s3-bucket-enable-bucket-access-logging-quick-action
+
+***
+Enables server access logging for the S3 bucket, delivering detailed logs to a target bucket and prefix.
+
+#### Base Command
+
+`aws-s3-bucket-enable-bucket-access-logging-quick-action`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. | Required |
+| bucket | The name of the bucket for which to set the logging parameters. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### aws-rds-db-cluster-snapshot-set-to-private-quick-action
+
+***
+Revokes public access to the RDS DB cluster snapshot, making it private.
+
+#### Base Command
+
+`aws-rds-db-cluster-snapshot-set-to-private-quick-action`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. | Required |
+| db_cluster_snapshot_identifier | The identifier for the DB cluster snapshot to modify the attributes for. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### aws-rds-db-cluster-enable-iam-auth-quick-action
+
+***
+This action enables 'iam database authentication' for the RDS cluster.
+
+#### Base Command
+
+`aws-rds-db-cluster-enable-iam-auth-quick-action`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. | Required |
+| db_cluster_identifier | The DB cluster identifier for the modified cluster. This parameter is not case sensitive and is valid for Aurora DB and Multi-AZ DB cluster types. It must match the identifier of an existing DB cluster. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### aws-s3-bucket-website-disable-hosting-quick-action
+
+***
+Removes the static website hosting configuration from an S3 bucket.
+
+#### Base Command
+
+`aws-s3-bucket-website-disable-hosting-quick-action`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. | Required |
+| bucket | The name of the S3 bucket from which the website configuration will be removed. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### aws-s3-bucket-acl-set-to-private-quick-action
+
+***
+Sets the Access Control List (ACL) for the S3 bucket to private.
+
+#### Base Command
+
+`aws-s3-bucket-acl-set-to-private-quick-action`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. | Required |
+| bucket | The bucket to which to apply the ACL. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### aws-s3-bucket-versioning-enable-quick-action
+
+***
+Enables versioning on the S3 bucket to retain multiple versions of objects.
+
+#### Base Command
+
+`aws-s3-bucket-versioning-enable-quick-action`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. | Required |
+| bucket | The name of the bucket for which to set the logging parameters. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### aws-rds-db-cluster-enable-deletion-protection-quick-action
+
+***
+Enables deletion protection for the RDS DB cluster to prevent accidental deletion.
+
+#### Base Command
+
+`aws-rds-db-cluster-enable-deletion-protection-quick-action`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. | Required |
+| db_cluster_identifier | The DB cluster identifier for the modified cluster. This parameter is not case sensitive and is valid for Aurora DB and Multi-AZ DB cluster types. It must match the identifier of an existing DB cluster. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### aws-s3-bucket-website-delete
+
+***
+Removes the website configuration for a bucket.
+
+#### Base Command
+
+`aws-s3-bucket-website-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
+| bucket | The name of the S3 bucket from which the website configuration will be removed. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### aws-s3-bucket-ownership-controls-put
+
+***
+Creates or modifies OwnershipControls for an Amazon S3 bucket.
+
+#### Base Command
+
+`aws-s3-bucket-ownership-controls-put`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
+| bucket | The name of the Amazon S3 bucket for which to configure Ownership Controls. | Required |
+| ownership_controls_rule | Ownership for a bucket's ownership controls. Possible values are: BucketOwnerPreferred, ObjectWriter, BucketOwnerEnforced. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
 ### aws-eks-describe-cluster
 
 ***
@@ -1263,199 +1952,613 @@ Associates an access policy and its scope to an access entry.
 | AWS.EKS.AssociatedAccessPolicy.associatedAt | String | The date and time the AccessPolicy was associated with an AccessEntry. |
 | AWS.EKS.AssociatedAccessPolicy.modifiedAt | String | The date and time for the last modification to the object. |
 
-### aws-ec2-create-snapshot
+### aws-billing-cost-usage-list
 
 ***
-Creates a snapshot of an EBS volume and stores it in Amazon S3. You can use snapshots for backups, to make copies of EBS volumes, and to save data before shutting down an instance.
+Retrieves actual cost and usage data for a given time range and optional service filter.
 
 #### Base Command
 
-`aws-ec2-create-snapshot`
+`aws-billing-cost-usage-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account on which to run the command. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
+| metrics | Metrics to retrieve. Default - UsageQuantity. Valid values [AmortizedCost, BlendedCost, NetAmortizedCost, NetUnblendedCost, NormalizedUsageAmount, UnblendedCost, UsageQuantity]. | Optional |
+| start_date | Start date for the report (YYYY-MM-DD). Default - 7 days ago. | Optional |
+| end_date | End date for the report (YYYY-MM-DD). Default - current day. | Optional |
+| granularity | Granularity of the data. Default - Daily. Valid values [Daily, Monthly, Hourly]. Possible values are: Daily, Monthly, Hourly. | Optional |
+| aws_services | Optional filter for retrieving data for specific AWS services. | Optional |
+| next_page_token | Next page token for pagination. Use value from AWS.Billing.UsageNextToken. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.Billing.Usage | unknown | Complete usage data from AWS Cost Explorer API. |
+| AWS.Billing.Usage.TimePeriod | unknown | Time period for the usage data. |
+| AWS.Billing.Usage.TimePeriod.Start | date | Start date of the time period. |
+| AWS.Billing.Usage.TimePeriod.End | date | End date of the time period. |
+| AWS.Billing.Usage.Total | unknown | Total cost and usage metrics for the time period. |
+| AWS.Billing.Usage.Total.AmortizedCost | unknown | Amortized cost information. |
+| AWS.Billing.Usage.Total.AmortizedCost.Amount | string | Amortized cost amount. |
+| AWS.Billing.Usage.Total.AmortizedCost.Unit | string | Amortized cost unit \(e.g., USD\). |
+| AWS.Billing.Usage.Total.BlendedCost | unknown | Blended cost information. |
+| AWS.Billing.Usage.Total.BlendedCost.Amount | string | Blended cost amount. |
+| AWS.Billing.Usage.Total.BlendedCost.Unit | string | Blended cost unit \(e.g., USD\). |
+| AWS.Billing.Usage.Total.NetAmortizedCost | unknown | Net amortized cost information. |
+| AWS.Billing.Usage.Total.NetAmortizedCost.Amount | string | Net amortized cost amount. |
+| AWS.Billing.Usage.Total.NetAmortizedCost.Unit | string | Net amortized cost unit \(e.g., USD\). |
+| AWS.Billing.Usage.Total.NetUnblendedCost | unknown | Net unblended cost information. |
+| AWS.Billing.Usage.Total.NetUnblendedCost.Amount | string | Net unblended cost amount. |
+| AWS.Billing.Usage.Total.NetUnblendedCost.Unit | string | Net unblended cost unit \(e.g., USD\). |
+| AWS.Billing.Usage.Total.NormalizedUsageAmount | unknown | Normalized usage amount information. |
+| AWS.Billing.Usage.Total.NormalizedUsageAmount.Amount | string | Normalized usage amount. |
+| AWS.Billing.Usage.Total.NormalizedUsageAmount.Unit | string | Normalized usage amount unit. |
+| AWS.Billing.Usage.Total.UnblendedCost | unknown | Unblended cost information. |
+| AWS.Billing.Usage.Total.UnblendedCost.Amount | string | Unblended cost amount. |
+| AWS.Billing.Usage.Total.UnblendedCost.Unit | string | Unblended cost unit \(e.g., USD\). |
+| AWS.Billing.Usage.Total.UsageQuantity | unknown | Usage quantity information. |
+| AWS.Billing.Usage.Total.UsageQuantity.Amount | string | Usage quantity amount. |
+| AWS.Billing.Usage.Total.UsageQuantity.Unit | string | Usage quantity unit \(e.g., Hrs, GB\). |
+| AWS.Billing.Usage.Groups | unknown | Usage data grouped by dimensions \(when grouping is applied\). |
+| AWS.Billing.Usage.Groups.Keys | unknown | Group keys \(dimension values\). |
+| AWS.Billing.Usage.Groups.Metrics | unknown | Metrics for the group. |
+| AWS.Billing.Usage.Estimated | boolean | Whether the data is estimated. |
+| AWS.Billing.UsageNextToken | string | Next page token for pagination. |
+
+### aws-billing-forecast-list
+
+***
+Forecasts AWS spending over a given future time period using historical trends.
+
+#### Base Command
+
+`aws-billing-forecast-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account on which to run the command. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
+| metric | Metric to forecast. Valid values [AMORTIZED_COST, BLENDED_COST, NET_AMORTIZED_COST, NET_UNBLENDED_COST, UNBLENDED_COST]. Possible values are: AMORTIZED_COST, BLENDED_COST, NET_AMORTIZED_COST, NET_UNBLENDED_COST, UNBLENDED_COST. Default is AMORTIZED_COST. | Optional |
+| start_date | Start date for the forecast (YYYY-MM-DD). Default - current day. | Optional |
+| end_date | End date for the forecast (YYYY-MM-DD). Default - in 7 days. | Optional |
+| granularity | Granularity of the forecast. Default - Daily. Valid values [ Daily, Monthly, Hourly]. Possible values are: Daily, Monthly, Hourly. | Optional |
+| aws_services | Optional filter for retrieving data for specific AWS services. | Optional |
+| next_page_token | Next page token for pagination. Use value from AWS.Billing.ForecastNextToken. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.Billing.Forecast | unknown | Complete forecast data from AWS Cost Explorer API. |
+| AWS.Billing.Forecast.Service | string | AWS Service \(if exists\). |
+| AWS.Billing.Forecast.StartDate | date | Start date of the forecast. |
+| AWS.Billing.Forecast.EndDate | date | End date of the forecast. |
+| AWS.Billing.Forecast.TotalAmount | string | Total forecasted amount. |
+| AWS.Billing.Forecast.TotalUnit | string | Unit for the forecasted amount. |
+| AWS.Billing.Forecast.ForecastResultsByTime | unknown | Forecast results grouped by time period. |
+| AWS.Billing.Forecast.ForecastResultsByTime.TimePeriod | unknown | Time period for the forecast. |
+| AWS.Billing.Forecast.ForecastResultsByTime.TimePeriod.Start | date | Start date of the forecast period. |
+| AWS.Billing.Forecast.ForecastResultsByTime.TimePeriod.End | date | End date of the forecast period. |
+| AWS.Billing.Forecast.ForecastResultsByTime.MeanValue | string | Mean forecasted value for the time period. |
+| AWS.Billing.Forecast.ForecastResultsByTime.PredictionIntervalLowerBound | string | Lower bound of the prediction interval. |
+| AWS.Billing.Forecast.ForecastResultsByTime.PredictionIntervalUpperBound | string | Upper bound of the prediction interval. |
+| AWS.Billing.Forecast.Total | unknown | Total forecast information. |
+| AWS.Billing.Forecast.Total.Amount | string | Total forecasted amount. |
+| AWS.Billing.Forecast.Total.Unit | string | Unit for the total forecasted amount. |
+| AWS.Billing.ForecastNextToken | string | Next page token for pagination. |
+
+### aws-billing-budgets-list
+
+***
+Lists configured budgets for a given AWS account.
+
+#### Base Command
+
+`aws-billing-budgets-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account on which to run the command. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
+| max_result | Maximum results to return. Default - 50, Max - 1000. Default is 50. | Optional |
+| show_filter_expression | Whether to show filter expression. Default - False. Possible values are: true, false. Default is false. | Optional |
+| next_page_token | Next page token for pagination. Use value from AWS.Billing.BudgetNextToken. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.Billing.Budget | unknown | Complete budget data from AWS Budgets API. |
+| AWS.Billing.Budget.BudgetName | string | Budget name. |
+| AWS.Billing.Budget.BudgetType | string | Budget type \(COST, USAGE, RI_UTILIZATION, RI_COVERAGE, SAVINGS_PLANS_UTILIZATION, SAVINGS_PLANS_COVERAGE\). |
+| AWS.Billing.Budget.TimeUnit | string | Time unit for the budget \(DAILY, MONTHLY, QUARTERLY, ANNUALLY\). |
+| AWS.Billing.Budget.TimePeriod | unknown | Time period for the budget. |
+| AWS.Billing.Budget.TimePeriod.Start | date | Start date of the budget time period. |
+| AWS.Billing.Budget.TimePeriod.End | date | End date of the budget time period. |
+| AWS.Billing.Budget.BudgetLimit | unknown | Budget limit configuration. |
+| AWS.Billing.Budget.BudgetLimit.Amount | string | Budget limit amount. |
+| AWS.Billing.Budget.BudgetLimit.Unit | string | Budget limit unit \(e.g., USD\). |
+| AWS.Billing.Budget.CostFilters | unknown | Cost filters applied to the budget. |
+| AWS.Billing.Budget.TimeUnit | string | Time unit for the budget period. |
+| AWS.Billing.Budget.CalculatedSpend | unknown | Calculated spend information. |
+| AWS.Billing.Budget.CalculatedSpend.ActualSpend | unknown | Actual spend information. |
+| AWS.Billing.Budget.CalculatedSpend.ActualSpend.Amount | string | Actual spend amount. |
+| AWS.Billing.Budget.CalculatedSpend.ActualSpend.Unit | string | Actual spend unit \(e.g., USD\) |
+| AWS.Billing.Budget.CalculatedSpend.ForecastedSpend | unknown | Forecasted spend information. |
+| AWS.Billing.Budget.CalculatedSpend.ForecastedSpend.Amount | string | Forecasted spend amount. |
+| AWS.Billing.Budget.CalculatedSpend.ForecastedSpend.Unit | string | Forecasted spend unit \(e.g., USD\). |
+| AWS.Billing.Budget.BudgetType | string | Type of budget \(COST, USAGE, etc.\). |
+| AWS.Billing.Budget.LastUpdatedTime | date | Last time the budget was updated. |
+| AWS.Billing.Budget.AutoAdjustData | unknown | Auto-adjust data for the budget. |
+| AWS.Billing.Budget.PlannedBudgetLimits | unknown | Planned budget limits for future periods. |
+| AWS.Billing.BudgetNextToken | string | Next page token for pagination. |
+
+### aws-billing-budget-notification-list
+
+***
+Lists the notifications that are associated with a budget.
+
+#### Base Command
+
+`aws-billing-budget-notification-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | AWS account to run the command on. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
+| budget_name | Name of the budget. | Required |
+| max_result | Maximum results to return. Default - 50, Max - 100. Default is 50. | Optional |
+| next_page_token | Next page token for pagination. Use value from AWS.Billing.NotificationNextToken. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.Billing.Budget.Notification | unknown | Complete budget notification data from AWS Budgets API. |
+| AWS.Billing.Budget.Notification.Notification | unknown | Notification configuration. |
+| AWS.Billing.Budget.Notification.Notification.NotificationType | string | Type of notification \(ACTUAL or FORECASTED\). |
+| AWS.Billing.Budget.Notification.Notification.ComparisonOperator | string | Comparison operator for the notification \(GREATER_THAN, LESS_THAN, EQUAL_TO\). |
+| AWS.Billing.Budget.Notification.Notification.Threshold | number | Threshold value that triggers the notification. |
+| AWS.Billing.Budget.Notification.Notification.ThresholdType | string | Type of threshold \(PERCENTAGE or ABSOLUTE_VALUE\). |
+| AWS.Billing.Budget.Notification.Notification.NotificationState | string | Current state of the notification \(OK or ALARM\). |
+| AWS.Billing.Budget.Notification.Subscribers | unknown | List of subscribers for the notification. |
+| AWS.Billing.Budget.Notification.Subscribers.SubscriptionType | string | Subscription type \(EMAIL or SNS\). |
+| AWS.Billing.Budget.Notification.Subscribers.Address | string | Email address or SNS topic ARN for the subscriber. |
+| AWS.Billing.NotificationNextToken | string | Next page token for pagination. |
+
+### aws-lambda-function-configuration-get
+
+***
+Retrieves configuration information about a Lambda function.
+
+#### Base Command
+
+`aws-lambda-function-configuration-get`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | account_id | The AWS account ID. | Required |
-| volume_id | The ID of the EBS volume. | Required |
-| description | A description for the snapshot. | Optional |
-| tags | The tags to apply to the snapshot during creation. | Optional |
+| region | The AWS region. | Required |
+| function_name | Name, ARN, or qualified name of the Lambda function. | Required |
+| qualifier | Version number or alias name. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.Lambda.FunctionConfig.FunctionName | String | The name of the function. |
+| AWS.Lambda.FunctionConfig.FunctionArn | String | The function’s Amazon Resource Name \(ARN\). |
+| AWS.Lambda.FunctionConfig.Runtime | String | The identifier of the function’s runtime. |
+| AWS.Lambda.FunctionConfig.Role | String | The function’s execution role. |
+| AWS.Lambda.FunctionConfig.Handler | String | The function that Lambda calls to begin running your function. |
+| AWS.Lambda.FunctionConfig.CodeSize | Number | The size of the function’s deployment package, in bytes. |
+| AWS.Lambda.FunctionConfig.Description | String | The function’s description. |
+| AWS.Lambda.FunctionConfig.Timeout | Number | The amount of time in seconds that Lambda allows a function to run before stopping it. |
+| AWS.Lambda.FunctionConfig.MemorySize | Number | The amount of memory available to the function at runtime. |
+| AWS.Lambda.FunctionConfig.LastModified | String | The date and time that the function was last updated. |
+| AWS.Lambda.FunctionConfig.CodeSha256 | String | The SHA256 hash of the function’s deployment package. |
+| AWS.Lambda.FunctionConfig.Version | String | The version of the Lambda function. |
+| AWS.Lambda.FunctionConfig.VpcConfig.SubnetIds | unknown | A list of VPC subnet IDs. |
+| AWS.Lambda.FunctionConfig.VpcConfig.SecurityGroupIds | unknown | A list of VPC security group IDs. |
+| AWS.Lambda.FunctionConfig.VpcConfig.VpcId | String | The ID of the VPC. |
+| AWS.Lambda.FunctionConfig.VpcConfig.Ipv6AllowedForDualStack | Boolean | Allows outbound IPv6 traffic on VPC functions that are connected to dual-stack subnets. |
+| AWS.Lambda.FunctionConfig.DeadLetterConfig.TargetArn | String | The Amazon Resource Name \(ARN\) of an Amazon SQS queue or Amazon SNS topic. |
+| AWS.Lambda.FunctionConfig.Environment.Variables | unknown | Environment variable key-value pairs. Omitted from CloudTrail logs. |
+| AWS.Lambda.FunctionConfig.Environment.Error.ErrorCode | String | The error code. |
+| AWS.Lambda.FunctionConfig.Environment.Error.Message | String | The error message. |
+| AWS.Lambda.FunctionConfig.KMSKeyArn | String | The ARN of the Key Management Service \(KMS\). |
+| AWS.Lambda.FunctionConfig.TracingConfig.Mode | String | The tracing mode. |
+| AWS.Lambda.FunctionConfig.MasterArn | String | For Lambda@Edge functions, the ARN of the main function. |
+| AWS.Lambda.FunctionConfig.RevisionId | String | The latest updated revision of the function or alias. |
+| AWS.Lambda.FunctionConfig.Layers.Arn | String | The Amazon Resource Name \(ARN\) of the function layer. |
+| AWS.Lambda.FunctionConfig.Layers.CodeSize | Number | The size of the layer archive in bytes. |
+| AWS.Lambda.FunctionConfig.Layers.SigningProfileVersionArn | String | The Amazon Resource Name \(ARN\) for a signing profile version. |
+| AWS.Lambda.FunctionConfig.Layers.SigningJobArn | String | The Amazon Resource Name \(ARN\) of a signing job. |
+| AWS.Lambda.FunctionConfig.State | String | The current state of the function. |
+| AWS.Lambda.FunctionConfig.StateReason | String | The reason for the function’s current state. |
+| AWS.Lambda.FunctionConfig.StateReasonCode | String | The reason code for the function’s current state. |
+| AWS.Lambda.FunctionConfig.LastUpdateStatus | String | The status of the last update that was performed on the function. |
+| AWS.Lambda.FunctionConfig.LastUpdateStatusReason | String | The reason for the last update that was performed on the function. |
+| AWS.Lambda.FunctionConfig.LastUpdateStatusReasonCode | String | The reason code for the last update that was performed on the function. |
+| AWS.Lambda.FunctionConfig.FileSystemConfigs.Arn | String | The Amazon Resource Name \(ARN\) of the Amazon EFS access point that provides access to the file system. |
+| AWS.Lambda.FunctionConfig.FileSystemConfigs.LocalMountPath | String | The path where the function can access the file system, starting with /mnt/. |
+| AWS.Lambda.FunctionConfig.PackageType | String | The type of deployment package. |
+| AWS.Lambda.FunctionConfig.ImageConfigResponse.ImageConfig.EntryPoint | String | Specifies the entry point to their application, which is typically the location of the runtime executable. |
+| AWS.Lambda.FunctionConfig.ImageConfigResponse.ImageConfig.Command | String | Specifies parameters that you want to pass in with ENTRYPOINT. |
+| AWS.Lambda.FunctionConfig.ImageConfigResponse.ImageConfig.WorkingDirectory | String | Specifies the working directory. |
+| AWS.Lambda.FunctionConfig.ImageConfigResponse.Error.ErrorCode | String | Error code. |
+| AWS.Lambda.FunctionConfig.ImageConfigResponse.Error.Message | String | Error message. |
+| AWS.Lambda.FunctionConfig.SigningProfileVersionArn | String | The ARN of the signing profile version. |
+| AWS.Lambda.FunctionConfig.SigningJobArn | String | The ARN of the signing job. |
+| AWS.Lambda.FunctionConfig.Architectures | String | The size of the function’s /tmp directory in MB. |
+| AWS.Lambda.FunctionConfig.EphemeralStorage.Size | Number | The size of the function’s /tmp directory. |
+| AWS.Lambda.FunctionConfig.SnapStart.ApplyOn | String | When set to PublishedVersions, Lambda creates a snapshot of the execution environment when you publish a function version. |
+| AWS.Lambda.FunctionConfig.SnapStart.OptimizationStatus | String | When you provide a qualified Amazon Resource Name \(ARN\), this response element indicates whether SnapStart is activated for the specified function version. |
+| AWS.Lambda.FunctionConfig.RuntimeVersionConfig.RuntimeVersionArn | String | The ARN of the runtime version you want the function to use. |
+| AWS.Lambda.FunctionConfig.RuntimeVersionConfig.Error.ErrorCode | String | The error code. |
+| AWS.Lambda.FunctionConfig.RuntimeVersionConfig.Error.Message | String | The error message. |
+| AWS.Lambda.FunctionConfig.LoggingConfig.LogFormat | String | The format in which Lambda sends your function’s application and system logs to CloudWatch. |
+| AWS.Lambda.FunctionConfig.LoggingConfig.ApplicationLogLevel | String | Set this property to filter the application logs for your function that Lambda sends to CloudWatch. |
+| AWS.Lambda.FunctionConfig.LoggingConfig.SystemLogLevel | String | Set this property to filter the system logs for your function that Lambda sends to CloudWatch. |
+| AWS.Lambda.FunctionConfig.LoggingConfig.LogGroup | String | The name of the Amazon CloudWatch log group the function sends logs to. |
+
+### aws-lambda-function-url-config-get
+
+***
+Returns the configuration for a Lambda function URL.
+
+#### Base Command
+
+`aws-lambda-function-url-config-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. | Required |
+| function_name | Name of the Lambda function. | Required |
+| qualifier | The alias name or version number. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.Lambda.FunctionURLConfig.FunctionUrl | String | The HTTP URL endpoint for your function. |
+| AWS.Lambda.FunctionURLConfig.FunctionArn | String | The Amazon Resource Name \(ARN\) of your function. |
+| AWS.Lambda.FunctionURLConfig.AuthType | String | The type of authentication that your function URL uses. |
+| AWS.Lambda.FunctionURLConfig.Cors.AllowCredentials | Boolean | Whether to allow cookies or other credentials in requests to your function URL. |
+| AWS.Lambda.FunctionURLConfig.Cors.AllowHeaders | String | The HTTP headers that origins can include in requests to your function URL. |
+| AWS.Lambda.FunctionURLConfig.Cors.AllowMethods | String | The HTTP methods that are allowed when calling your function URL. |
+| AWS.Lambda.FunctionURLConfig.Cors.AllowOrigins | String | The origins that can access your function URL. |
+| AWS.Lambda.FunctionURLConfig.Cors.ExposeHeaders | String | The HTTP headers in your function response that you want to expose to origins that call your function URL. |
+| AWS.Lambda.FunctionURLConfig.Cors.MaxAge | Number | The maximum amount of time, in seconds, that web browsers can cache results of a preflight request. |
+| AWS.Lambda.FunctionURLConfig.CreationTime | String | When the function URL was created. |
+| AWS.Lambda.FunctionURLConfig.LastModifiedTime | String | When the function URL configuration was last updated. |
+| AWS.Lambda.FunctionURLConfig.InvokeMode | String | BUFFERED or RESPONSE_STREAM. |
+
+### aws-lambda-policy-get
+
+***
+Returns the resource-based IAM policy for a Lambda function.
+
+#### Base Command
+
+`aws-lambda-policy-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. | Required |
+| function_name | Name of the Lambda function, version, or alias. | Required |
+| qualifier | Version or alias to get the policy for. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.Lambda.Policy.Version | Date | The policy version. |
+| AWS.Lambda.Policy.Id | String | The identifier of the policy. |
+| AWS.Lambda.Policy.Statement.Sid | String | Identifier of the policy statement. |
+| AWS.Lambda.Policy.Statement.Effect | String | Specifies whether the statement results in an allow or an explicit deny. |
+| AWS.Lambda.Policy.Statement.Principal | unknown | Specify the principal that is allowed or denied access to a resource. |
+| AWS.Lambda.Policy.Statement.Action | unknown | Describes the specific action or actions that will be allowed or denied. |
+| AWS.Lambda.Policy.Statement.Resource | unknown | Defines the object or objects that the statement applies to. |
+| AWS.Lambda.Policy.Statement.Condition | String | Specify conditions for when a policy is in effect. |
+| AWS.Lambda.Policy.RevisionId | String | A unique identifier for the current revision of the policy. |
+| AWS.Lambda.Policy.AccountId | String | The AWS account ID. |
+| AWS.Lambda.Policy.FunctionName | String | The Function Name. |
+| AWS.Lambda.Policy.Region | String | The AWS Region. |
+
+### aws-lambda-invoke
+
+***
+Invokes a Lambda function. Specify just a function name to invoke the latest version of the function. To invoke a published version, use the Qualifier parameter to specify a version or alias. If you use the RequestResponse (synchronous) invocation option, note that the function may be invoked multiple times if a timeout is reached. For functions with a long timeout, your client may be disconnected during synchronous invocation while it waits for a response. If you use the Event (asynchronous) invocation option, the function will be invoked at least once in response to an event and the function must be idempotent to handle this.
+
+#### Base Command
+
+`aws-lambda-invoke`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. | Required |
+| function_name | Name of the Lambda function to invoke. | Required |
+| invocation_type | RequestResponse (sync), Event (async), or DryRun. Default is RequestResponse. Possible values are: RequestResponse, Event, DryRun. Default is RequestResponse. | Optional |
+| log_type | Set to Tail to include execution log in response. Possible values are: None, Tail. | Optional |
+| client_context | Base64-encoded client context data. | Optional |
+| payload | JSON input to provide to the Lambda function. | Optional |
+| qualifier | Version or alias to invoke. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.Lambda.InvokedFunction.StatusCode | Number | The HTTP status code is in the 200 range for a successful request. |
+| AWS.Lambda.InvokedFunction.FunctionError | String | If present, indicates that an error occurred during function execution. |
+| AWS.Lambda.InvokedFunction.LogResult | String | The last 4 KB of the execution log, which is base64-encoded. |
+| AWS.Lambda.InvokedFunction.Payload | Unknown | The response from the function, or an error object. |
+| AWS.Lambda.InvokedFunction.ExecutedVersion | String | The version of the function that executed. |
+| AWS.Lambda.InvokedFunction.FunctionName | string | The name of the Lambda function. |
+
+### aws-lambda-function-url-config-update
+
+***
+Updates the configuration for a Lambda function URL.
+
+#### Base Command
+
+`aws-lambda-function-url-config-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. | Required |
+| function_name | Name of the Lambda function. | Required |
+| qualifier | The alias name or version number. | Optional |
+| auth_type | AWS_IAM or NONE for authentication type. Possible values are: AWS_IAM, NONE. | Optional |
+| cors_allow_credentials | Allow credentials in CORS requests. Possible values are: true, false. | Optional |
+| cors_allow_headers | Comma-separated list of allowed headers. | Optional |
+| cors_allow_methods | Comma-separated list of allowed HTTP methods. | Optional |
+| cors_allow_origins | Comma-separated list of allowed origins. | Optional |
+| cors_expose_headers | Comma-separated list of headers to expose. | Optional |
+| cors_max_age | Maximum age for CORS preflight cache. | Optional |
+| invoke_mode | BUFFERED or RESPONSE_STREAM. Possible values are: BUFFERED, RESPONSE_STREAM. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.Lambda.FunctionURLConfig.FunctionUrl | String | The HTTP URL endpoint for your function. |
+| AWS.Lambda.FunctionURLConfig.FunctionArn | String | The Amazon Resource Name \(ARN\) of your function. |
+| AWS.Lambda.FunctionURLConfig.AuthType | String | The type of authentication that your function URL uses. |
+| AWS.Lambda.FunctionURLConfig.Cors.AllowCredentials | Boolean | Whether to allow cookies or other credentials in requests to your function URL. |
+| AWS.Lambda.FunctionURLConfig.Cors.AllowHeaders | String | The HTTP headers that origins can include in requests to your function URL. |
+| AWS.Lambda.FunctionURLConfig.Cors.AllowMethods | String | The HTTP methods that are allowed when calling your function URL. |
+| AWS.Lambda.FunctionURLConfig.Cors.AllowOrigins | String | The origins that can access your function URL. |
+| AWS.Lambda.FunctionURLConfig.Cors.ExposeHeaders | String | The HTTP headers in your function response that you want to expose to origins that call your function URL. |
+| AWS.Lambda.FunctionURLConfig.Cors.MaxAge | Number | The maximum amount of time, in seconds, that web browsers can cache results of a preflight request. |
+| AWS.Lambda.FunctionURLConfig.CreationTime | String | When the function URL was created. |
+| AWS.Lambda.FunctionURLConfig.LastModifiedTime | String | When the function URL configuration was last updated. |
+| AWS.Lambda.FunctionURLConfig.InvokeMode | String | BUFFERED or RESPONSE_STREAM. |
+
+### aws-kms-key-enable-rotation
+
+***
+Enables automatic rotation for a symmetric customer-managed KMS key. Not supported for asymmetric/HMAC keys, keys with imported material, or custom key stores.
+
+#### Base Command
+
+`aws-kms-key-enable-rotation`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
+| key_id | The key ARN to enable rotation for. | Required |
+| rotation_period_in_days | Key rotation period in days. Valid range: 90–2560. If omitted when enabling rotation for the first time, the default is 365 days. If rotation is already enabled and this field is not specified, the existing period remains unchanged. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+### aws-elb-load-balancer-attributes-modify
+
+***
+Modifies attributes for a Classic Elastic Load Balancer.
+
+#### Base Command
+
+`aws-elb-load-balancer-attributes-modify`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
+| load_balancer_name | The name of the Load Balancer. | Required |
+| access_log_enabled | Whether to enable access logs. (if enabled make sure to provide access_log_s3_bucket_name) Possible values are: true, false. | Optional |
+| access_log_s3_bucket_name | S3 bucket name for access logs (required if access_log_enabled=true). | Optional |
+| access_log_interval | The interval for publishing the access logs. You can specify an interval of either 5 minutes or 60 minutes. If omitted when enabling logging for the first time, the default is 60 minutes. If logging is already enabled and this field is not specified, the existing period remains unchanged. Possible values are: 5, 60. | Optional |
+| access_log_s3_bucket_prefix | S3 key prefix (Path) for access logs.  If the prefix is not provided, the log folder is placed at the root level of the bucket. | Optional |
+| connection_draining_enabled | Whether connection draining is enabled for the load balancer. Possible values are: true, false. | Optional |
+| connection_draining_timeout | The maximum time, in seconds, to keep the existing connections open before de-registering the instance.  Valid Range: 1 - 3600. | Optional |
+| connection_settings_idle_timeout | The load balancer allows the connections to remain idle (no data is sent over the connection) for this specific duration in seconds. Valid Range: 1 - 4000. | Optional |
+| cross_zone_load_balancing_enabled | Whether to enable cross-zone load balancing. Possible values are: true, false. | Optional |
+| desync_mitigation_mode | Determines how the Classic Load Balancer handles HTTP requests that might pose a security risk to your application. This sets the 'elb.http.desyncmitigationmode' load balancer attribute. Possible values are: monitor, defensive, strictest. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.ELB.LoadBalancer.LoadBalancerName | string | The name of the Classic Load Balancer. |
+| AWS.ELB.LoadBalancer.LoadBalancerAttributes.CrossZoneLoadBalancing.Enabled | boolean | Whether cross-zone load balancing is enabled. |
+| AWS.ELB.LoadBalancer.LoadBalancerAttributes.ConnectionDraining.Enabled | boolean | Whether connection draining is enabled. |
+| AWS.ELB.LoadBalancer.LoadBalancerAttributes.ConnectionDraining.Timeout | number | Connection draining timeout in seconds. |
+| AWS.ELB.LoadBalancer.LoadBalancerAttributes.ConnectionSettings.IdleTimeout | number | Idle connection timeout in seconds. |
+| AWS.ELB.LoadBalancer.LoadBalancerAttributes.AccessLog.Enabled | boolean | Whether access logs are enabled. |
+| AWS.ELB.LoadBalancer.LoadBalancerAttributes.AccessLog.S3BucketName | string | The S3 bucket name for access logs. |
+| AWS.ELB.LoadBalancer.LoadBalancerAttributes.AccessLog.EmitInterval | number | Access log publish interval in minutes. |
+| AWS.ELB.LoadBalancer.LoadBalancerAttributes.AccessLog.S3BucketPrefix | string | The S3 key prefix for access logs. |
+| AWS.ELB.LoadBalancer.LoadBalancerAttributes.AdditionalAttributes | unknown | Additional attributes returned by the API. |
+
+### aws-ec2-vpcs-describe
+
+***
+Describes one or more of your VPCs.
+
+#### Base Command
+
+`aws-ec2-vpcs-describe`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| filters | One or more filters separated by ';' (for example, name=&lt;name&gt;;values=&lt;values&gt;). See AWS documentation for details &amp; filter options (https://docs.aws.amazon.com/cli/latest/userguide/cli-usage-filter.html). | Optional |
+| vpc_ids | A comma-separated list of VPC IDs. | Optional |
+| account_id | The AWS account ID. | Required |
 | region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.EC2.Snapshot.DataEncryptionKeyId | string | The data encryption key identifier for the snapshot. |
-| AWS.EC2.Snapshot.Description | string | The description for the snapshot. |
-| AWS.EC2.Snapshot.Encrypted | number | Indicates whether the snapshot is encrypted. |
-| AWS.EC2.Snapshot.KmsKeyId | string | The full ARN of the AWS Key Management Service \(AWS KMS\) customer master key \(CMK\) that was used to protect the volume encryption key for the parent volume. |
-| AWS.EC2.Snapshot.OwnerId | string | The AWS account ID of the EBS snapshot owner. |
-| AWS.EC2.Snapshot.Progress | string | The progress of the snapshot, as a percentage. |
-| AWS.EC2.Snapshot.SnapshotId | string | The ID of the snapshot. |
-| AWS.EC2.Snapshot.StartTime | date | The time stamp when the snapshot was initiated. |
-| AWS.EC2.Snapshot.State | string | The snapshot state. |
-| AWS.EC2.Snapshot.StateMessage | string | this field displays error state details to help you diagnose why the error occurred. |
-| AWS.EC2.Snapshot.VolumeId | string | The ID of the volume that was used to create the snapshot. |
-| AWS.EC2.Snapshot.VolumeSize | number | The size of the volume, in GiB. |
-| AWS.EC2.Snapshot.OwnerAlias | string | Value from an Amazon-maintained list of snapshot owners. |
-| AWS.EC2.Snapshot.Tags.Key | string | The key of the tag. |
-| AWS.EC2.Snapshot.Tags.Value | string | The value of the tag. |
-| AWS.EC2.Snapshot.AccountId | string | The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided. |
+| AWS.EC2.Vpcs.CidrBlock | string | The primary IPv4 CIDR block for the VPC. |
+| AWS.EC2.Vpcs.DhcpOptionsId | string | The ID of the set of DHCP options you have associated with the VPC. |
+| AWS.EC2.Vpcs.State | string | The current state of the VPC. |
+| AWS.EC2.Vpcs.VpcId | string | The ID of the VPC. |
+| AWS.EC2.Vpcs.InstanceTenancy | string | The allowed tenancy of instances launched into the VPC. |
+| AWS.EC2.Vpcs.IsDefault | string | Indicates whether the VPC is the default VPC. |
+| AWS.EC2.Vpcs.Tags.Key | string | The key of the tag. |
+| AWS.EC2.Vpcs.Tags.Value | string | The value of the tag. |
+| AWS.EC2.Vpcs.Tags.Ipv6CidrBlockAssociationSet.AssociationId | string | The association ID for the IPv6 CIDR block. |
+| AWS.EC2.Vpcs.Tags.Ipv6CidrBlockAssociationSet.Ipv6CidrBlock | string | The IPv6 CIDR block. |
+| AWS.EC2.Vpcs.Tags.Ipv6CidrBlockAssociationSet.Ipv6CidrBlockState.State | string | The state of the CIDR block. |
+| AWS.EC2.Vpcs.Tags.Ipv6CidrBlockAssociationSet.Ipv6CidrBlockState.StatusMessage | string | A message about the status of the CIDR block, if applicable. |
+| AWS.EC2.Vpcs.Tags.CidrBlockAssociationSet.AssociationId | string | The association ID for the IPv4 CIDR block. |
+| AWS.EC2.Vpcs.Tags.CidrBlockAssociationSet.CidrBlock | string | The IPv4 CIDR block. |
+| AWS.EC2.Vpcs.Tags.CidrBlockAssociationSet.CidrBlockState.State | string | The state of the CIDR block. |
+| AWS.EC2.Vpcs.Tags.CidrBlockAssociationSet.CidrBlockState.StatusMessage | string | A message about the status of the CIDR block, if applicable. |
+| AWS.EC2.Vpcs.AccountId | string | The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided. |
 
-### aws-ec2-modify-snapshot-permission
+### aws-ec2-subnets-describe
 
 ***
-Adds or removes permission settings for the specified snapshot.
+Describes one or more of your subnets.
 
 #### Base Command
 
-`aws-ec2-modify-snapshot-permission`
+`aws-ec2-subnets-describe`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| account_id | The AWS account ID. | Required |
-| snapshot_id | The ID of the EBS snapshot. | Required |
-| operation_type | The operation type, add or remove. Possible values are: add, remove. | Required |
-| group_names | CSV of security group names. This parameter can be used only when UserIds not provided. | Optional |
-| user_ids | CSV of AWS account IDs. This parameter can be used only when groupNames not provided. | Optional |
-| dry_run | Checks whether you have the required permissions for the action, without actually making the request, and provides an error response. Possible values are: True, False. | Optional |
-| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
-
-#### Context Output
-
-There is no context output for this command.
-
-### aws-ecs-update-cluster-settings
-
-***
-Updates the containerInsights setting of an ECS cluster.
-
-#### Base Command
-
-`aws-ecs-update-cluster-settings`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| account_id | The AWS account ID. | Required |
-| cluster_name | The name of the cluster. | Required |
-| value | The value of the containerInsights setting to update. Possible values are: enabled, disabled, enhanced. | Required |
-| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
-
-#### Context Output
-
-There is no context output for this command.
-
-### aws-ec2-subnet-attribute-modify
-
-***
-Modifies a subnet attribute.
-
-#### Base Command
-
-`aws-ec2-subnet-attribute-modify`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
+| filters | One or more filters separated by ';' (for example, name=&lt;name&gt;;values=&lt;values&gt;). See AWS documentation for details &amp; filter options (https://docs.aws.amazon.com/cli/latest/userguide/cli-usage-filter.html). | Optional |
+| subnet_ids | A comma-separated list of subnet IDs. | Optional |
 | account_id | The AWS account ID. | Required |
 | region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
-| subnet_id | The ID of the subnet. | Required |
-| assign_ipv6_address_on_creation | Specify true to indicate that network interfaces created in the specified subnet should be assigned an IPv6 address. | Optional |
-| customer_owned_ipv4_pool | The customer-owned IPv4 address pool associated with the subnet. | Optional |
-| disable_lni_at_device_index | Specify true to indicate that local network interfaces at the current position should be disabled. | Optional |
-| enable_dns64 | Indicates whether DNS queries made to the Amazon-provided DNS Resolver in this subnet should return synthetic IPv6 addresses for IPv4-only destinations. | Optional |
-| enable_lni_at_device_index | Indicates the device position for local network interfaces in this subnet. | Optional |
-| enable_resource_name_dns_aaaa_record_on_launch | Indicates whether to respond to DNS queries for instance hostnames with DNS AAAA records. | Optional |
-| enable_resource_name_dns_a_record_on_launch | Indicates whether to respond to DNS queries for instance hostnames with DNS A records. | Optional |
-| map_customer_owned_ip_on_launch | Specify true to indicate that network interfaces attached to instances created in the specified subnet should be assigned a customer-owned IPv4 address. | Optional |
-| map_public_ip_on_launch | Specify true to indicate that network interfaces attached to instances created in the specified subnet should be assigned a public IPv4 address. | Optional |
-| private_dns_hostname_type_on_launch | The type of hostname to assign to instances in the subnet at launch. | Optional |
-
-#### Context Output
-
-There is no context output for this command.
-
-### aws-s3-bucket-website-delete
-
-***
-Removes the website configuration for a bucket.
-
-#### Base Command
-
-`aws-s3-bucket-website-delete`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| account_id | The AWS account ID. | Required |
-| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
-| bucket | The bucket name for which you want to remove the website configuration. | Required |
-
-#### Context Output
-
-There is no context output for this command.
-
-### aws-s3-bucket-ownership-controls-put
-
-***
-Creates or modifies OwnershipControls for an Amazon S3 bucket.
-
-#### Base Command
-
-`aws-s3-bucket-ownership-controls-put`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| account_id | The AWS account ID. | Required |
-| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
-| bucket | The name of the Amazon S3 bucket whose OwnershipControls you want to set. | Required |
-| ownership_controls_rule | Ownership for a bucket's ownership controls. Possible values are: BucketOwnerPreferred, ObjectWriter, BucketOwnerEnforced. | Required |
-
-#### Context Output
-
-There is no context output for this command.
-
-### aws-rds-event-subscription-modify
-
-***
-Modifies an existing RDS event notification subscription.
-
-#### Base Command
-
-`aws-rds-event-subscription-modify`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| account_id | The AWS account ID. | Required |
-| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
-| subscription_name | The name of the RDS event notification subscription. | Required |
-| enabled | Specifies whether to activate the subscription. | Optional |
-| event_categories | A list of event categories for a source type (SourceType) that you want to subscribe to. | Optional |
-| sns_topic_arn | The Amazon Resource Name (ARN) of the SNS topic created for event notification. | Optional |
-| source_type | The type of source that is generating the events. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.RDS.EventSubscription.CustomerAwsId | string | The AWS customer account associated with the RDS event notification subscription. |
-| AWS.RDS.EventSubscription.CustSubscriptionId | string | The RDS event notification subscription Id. |
-| AWS.RDS.EventSubscription.Enabled | boolean | Specifies whether the subscription is enabled. True indicates the subscription is enabled. |
-| AWS.RDS.EventSubscription.EventCategoriesList | array | A list of event categories for the RDS event notification subscription. |
-| AWS.RDS.EventSubscription.EventSubscriptionArn | string | The Amazon Resource Name \(ARN\) for the event subscription. |
-| AWS.RDS.EventSubscription.SnsTopicArn | string | The topic ARN of the RDS event notification subscription. |
-| AWS.RDS.EventSubscription.SourceIdsList | array | A list of source IDs for the RDS event notification subscription. |
-| AWS.RDS.EventSubscription.SourceType | string | The source type for the RDS event notification subscription. |
-| AWS.RDS.EventSubscription.Status | string | The status of the RDS event notification subscription. |
-| AWS.RDS.EventSubscription.SubscriptionCreationTime | string | The time the RDS event notification subscription was created. |
+| AWS.EC2.Subnets.AvailabilityZone | string | The Availability Zone of the subnet. |
+| AWS.EC2.Subnets.AvailableIpAddressCount | number | The number of unused private IPv4 addresses in the subnet. Note that the IPv4 addresses for any stopped instances are considered unavailable. |
+| AWS.EC2.Subnets.CidrBlock | string | The IPv4 CIDR block assigned to the subnet. |
+| AWS.EC2.Subnets.DefaultForAz | boolean | Indicates whether this is the default subnet for the Availability Zone. |
+| AWS.EC2.Subnets.MapPublicIpOnLaunch | boolean | Indicates whether instances launched in this subnet receive a public IPv4 address. |
+| AWS.EC2.Subnets.State | string | The current state of the subnet. |
+| AWS.EC2.Subnets.SubnetId | string | The ID of the subnet. |
+| AWS.EC2.Subnets.VpcId | string | The ID of the VPC the subnet is in. |
+| AWS.EC2.Subnets.AssignIpv6AddressOnCreation | boolean | Indicates whether a network interface created in this subnet \(including a network interface created by RunInstances\) receives an IPv6 address. |
+| AWS.EC2.Subnets.Ipv6CidrBlockAssociationSet.AssociationId | string | The association ID for the CIDR block. |
+| AWS.EC2.Subnets.Ipv6CidrBlockAssociationSet.Ipv6CidrBlock | string | The IPv6 CIDR block. |
+| AWS.EC2.Subnets.Ipv6CidrBlockAssociationSet.Ipv6CidrBlockState.State | string | The state of a CIDR block. |
+| AWS.EC2.Subnets.Ipv6CidrBlockAssociationSet.Ipv6CidrBlockState.StatusMessage | string | A message about the status of the CIDR block, if applicable. |
+| AWS.EC2.Subnets.Tags.Key | string | The key of the tag. |
+| AWS.EC2.Subnets.Tags.Value | string | The value of the tag. |
+| AWS.EC2.Subnets.AccountId | string | The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided. |
+
+### aws-ec2-ipam-resource-discoveries-describe
+
+***
+Describes IPAM resource discoveries. A resource discovery is an IPAM component that enables IPAM to manage and monitor resources owned by the account.
+
+#### Base Command
+
+`aws-ec2-ipam-resource-discoveries-describe`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ipam_resource_discovery_ids | A comma-separated list of the IPAM resource discovery IDs. | Optional |
+| filters | One or more filters separated by ';' (for example, name=&lt;name&gt;;values=&lt;values&gt;). See AWS documentation for details &amp; filter options (https://docs.aws.amazon.com/cli/latest/userguide/cli-usage-filter.html). | Optional |
+| limit | The maximum number of results to return in a single call. Specify a value between 5 and 1000. Default value is 50. | Optional |
+| next_token | The token for the next set of results. | Optional |
+| address_region | The Amazon Web Services region for the IP address. | Optional |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.EC2.IpamResourceDiscoveries.IpamResourceDiscoveryId | String | The resource discovery ID. |
+| AWS.EC2.IpamResourceDiscoveries.OwnerId | String | The ID of the owner. |
+| AWS.EC2.IpamResourceDiscoveries.IpamResourceDiscoveryRegion | String | The resource discovery region. |
+| AWS.EC2.IpamResourceDiscoveries.AccountId | string | The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided. |
+
+### aws-ec2-ipam-resource-discovery-associations-describe
+
+***
+Describes resource discovery association with an Amazon VPC IPAM. An associated resource discovery is a resource discovery that has been associated with an IPAM.
+
+#### Base Command
+
+`aws-ec2-ipam-resource-discovery-associations-describe`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ipam_resource_discovery_association_ids | A comma-separated list of the resource discovery association IDs. | Optional |
+| filters | One or more filters separated by ';' (for example, name=&lt;name&gt;;values=&lt;values&gt;). See AWS documentation for details &amp; filter options (https://docs.aws.amazon.com/cli/latest/userguide/cli-usage-filter.html). | Optional |
+| limit | The maximum number of results to return in a single call. Specify a value between 5 and 1000. Default value is 50. | Optional |
+| next_token | The token for the next set of results. | Optional |
+| address_region | The Amazon Web Services region for the IP address. | Optional |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.EC2.IpamResourceDiscoveryAssociations.IpamResourceDiscoveryAssociationId | String | The resource discovery association ID. |
+| AWS.EC2.IpamResourceDiscoveryAssociations.IpamResourceDiscoveryId | String | The resource discovery ID. |
+| AWS.EC2.IpamResourceDiscoveryAssociations.IpamRegion | String | The IPAM home region. |
+| AWS.EC2.IpamResourceDiscoveryAssociations.AccountId | string | The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided. |
