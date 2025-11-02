@@ -1362,7 +1362,6 @@ script:
   dockerimage: demisto/google-cloud-storage:1.0.0.4885491
 tests:
   - No tests
-enabled: true
 fromversion: 6.2.0
 marketplaces:
 - platform
