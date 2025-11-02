@@ -1258,6 +1258,34 @@ script:
         - contextPath: Core.VulnerabilityIssue.ASSET_IDS
           description: The unique identifier for the asset.
           type: String
+    - arguments:
+        - description: The ID of the issue to get recommendations for.
+          name: issue_id
+          required: true
+      name: core-get-issue-recommendations
+      description: Get comprehensive recommendations for an issue, including remediation steps, playbook suggestions, and recommended actions.
+      outputs:
+        - contextPath: Core.IssueRecommendations.issue_id
+          description: The unique identifier for the issue.
+          type: String
+        - contextPath: Core.IssueRecommendations.issue_name
+          description: The name of the issue.
+          type: String
+        - contextPath: Core.IssueRecommendations.severity
+          description: The severity of the issue.
+          type: String
+        - contextPath: Core.IssueRecommendations.description
+          description: Description of the issue.
+          type: String
+        - contextPath: Core.IssueRecommendations.remediation
+          description: Remediation steps and recommendations for the issue.
+          type: String
+        - contextPath: Core.IssueRecommendations.playbook_suggestions.playbook_id
+          description: The ID of the suggested playbook.
+          type: String
+        - contextPath: Core.IssueRecommendations.playbook_suggestions.suggestion_rule_id
+          description: The ID of the suggestion rule that generated this recommendation.
+          type: String
   runonce: false
   script: "-"
   subtype: python3
