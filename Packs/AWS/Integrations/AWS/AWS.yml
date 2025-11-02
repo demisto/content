@@ -2844,6 +2844,339 @@ script:
       - description: The type of hostname to assign to instances in the subnet at launch.
         name: private_dns_hostname_type_on_launch
 
+  - arguments:
+    - description: One or more filters Separated by ';' (for example, name=<name>;values=<values>). See AWS documentation for details & filter options.
+      name: filters
+    - description: A comma-separated list of VPC IDs.
+      name: vpc_ids
+    - description: The AWS account ID.
+      name: account_id
+      required: true
+    - description: The AWS region.
+      name: region
+      required: true
+      auto: PREDEFINED
+      predefined:
+        - us-east-1
+        - us-east-2
+        - us-west-1
+        - us-west-2
+        - af-south-1
+        - ap-east-1
+        - ap-south-2
+        - ap-southeast-3
+        - ap-southeast-5
+        - ap-southeast-4
+        - ap-south-1
+        - ap-northeast-3
+        - ap-northeast-2
+        - ap-southeast-1
+        - ap-southeast-2
+        - ap-southeast-7
+        - ap-northeast-1
+        - ca-central-1
+        - ca-west-1
+        - eu-central-1
+        - eu-west-1
+        - eu-west-2
+        - eu-south-1
+        - eu-west-3
+        - eu-south-2
+        - eu-north-1
+        - eu-central-2
+        - il-central-1
+        - mx-central-1
+        - me-south-1
+        - me-central-1
+        - sa-east-1
+    description: Describes one or more of your VPCs.
+    name: aws-ec2-vpcs-describe
+    outputs:
+    - contextPath: AWS.EC2.Vpcs.CidrBlock
+      description: The primary IPv4 CIDR block for the VPC.
+      type: string
+    - contextPath: AWS.EC2.Vpcs.DhcpOptionsId
+      description: The ID of the set of DHCP options you have associated with the VPC.
+      type: string
+    - contextPath: AWS.EC2.Vpcs.State
+      description: The current state of the VPC.
+      type: string
+    - contextPath: AWS.EC2.Vpcs.VpcId
+      description: The ID of the VPC.
+      type: string
+    - contextPath: AWS.EC2.Vpcs.InstanceTenancy
+      description: The allowed tenancy of instances launched into the VPC.
+      type: string
+    - contextPath: AWS.EC2.Vpcs.IsDefault
+      description: Indicates whether the VPC is the default VPC.
+      type: string
+    - contextPath: AWS.EC2.Vpcs.Tags.Key
+      description: The key of the tag.
+      type: string
+    - contextPath: AWS.EC2.Vpcs.Tags.Value
+      description: The value of the tag.
+      type: string
+    - contextPath: AWS.EC2.Vpcs.Tags.Ipv6CidrBlockAssociationSet.AssociationId
+      description: The association ID for the IPv6 CIDR block.
+      type: string
+    - contextPath: AWS.EC2.Vpcs.Tags.Ipv6CidrBlockAssociationSet.Ipv6CidrBlock
+      description: The IPv6 CIDR block.
+      type: string
+    - contextPath: AWS.EC2.Vpcs.Tags.Ipv6CidrBlockAssociationSet.Ipv6CidrBlockState.State
+      description: The state of the CIDR block.
+      type: string
+    - contextPath: AWS.EC2.Vpcs.Tags.Ipv6CidrBlockAssociationSet.Ipv6CidrBlockState.StatusMessage
+      description: A message about the status of the CIDR block, if applicable.
+      type: string
+    - contextPath: AWS.EC2.Vpcs.Tags.CidrBlockAssociationSet.AssociationId
+      description: The association ID for the IPv4 CIDR block.
+      type: string
+    - contextPath: AWS.EC2.Vpcs.Tags.CidrBlockAssociationSet.CidrBlock
+      description: The IPv4 CIDR block.
+      type: string
+    - contextPath: AWS.EC2.Vpcs.Tags.CidrBlockAssociationSet.CidrBlockState.State
+      description: The state of the CIDR block.
+      type: string
+    - contextPath: AWS.EC2.Vpcs.Tags.CidrBlockAssociationSet.CidrBlockState.StatusMessage
+      description: A message about the status of the CIDR block, if applicable.
+      type: string
+    - contextPath: AWS.EC2.Vpcs.AccountId
+      description: The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided.
+      type: string
+
+  - arguments:
+    - description: One or more filters Separated by ';' (for example, name=<name>;values=<values>). See AWS documentation for details & filter options.
+      name: filters
+    - description: A comma-separated list of subnet IDs.
+      name: subnet_ids
+    - description: The AWS account ID.
+      name: account_id
+      required: true
+    - description: The AWS region.
+      name: region
+      required: true
+      auto: PREDEFINED
+      predefined:
+        - us-east-1
+        - us-east-2
+        - us-west-1
+        - us-west-2
+        - af-south-1
+        - ap-east-1
+        - ap-south-2
+        - ap-southeast-3
+        - ap-southeast-5
+        - ap-southeast-4
+        - ap-south-1
+        - ap-northeast-3
+        - ap-northeast-2
+        - ap-southeast-1
+        - ap-southeast-2
+        - ap-southeast-7
+        - ap-northeast-1
+        - ca-central-1
+        - ca-west-1
+        - eu-central-1
+        - eu-west-1
+        - eu-west-2
+        - eu-south-1
+        - eu-west-3
+        - eu-south-2
+        - eu-north-1
+        - eu-central-2
+        - il-central-1
+        - mx-central-1
+        - me-south-1
+        - me-central-1
+        - sa-east-1
+    description: Describes one or more of your subnets.
+    name: aws-ec2-subnets-describe
+    outputs:
+    - contextPath: AWS.EC2.Subnets.AvailabilityZone
+      description: The Availability Zone of the subnet.
+      type: string
+    - contextPath: AWS.EC2.Subnets.AvailableIpAddressCount
+      description: The number of unused private IPv4 addresses in the subnet. Note that the IPv4 addresses for any stopped instances are considered unavailable.
+      type: number
+    - contextPath: AWS.EC2.Subnets.CidrBlock
+      description: The IPv4 CIDR block assigned to the subnet.
+      type: string
+    - contextPath: AWS.EC2.Subnets.DefaultForAz
+      description: Indicates whether this is the default subnet for the Availability Zone.
+      type: boolean
+    - contextPath: AWS.EC2.Subnets.MapPublicIpOnLaunch
+      description: Indicates whether instances launched in this subnet receive a public IPv4 address.
+      type: boolean
+    - contextPath: AWS.EC2.Subnets.State
+      description: The current state of the subnet.
+      type: string
+    - contextPath: AWS.EC2.Subnets.SubnetId
+      description: The ID of the subnet.
+      type: string
+    - contextPath: AWS.EC2.Subnets.VpcId
+      description: The ID of the VPC the subnet is in.
+      type: string
+    - contextPath: AWS.EC2.Subnets.AssignIpv6AddressOnCreation
+      description: Indicates whether a network interface created in this subnet (including a network interface created by RunInstances) receives an IPv6 address.
+      type: boolean
+    - contextPath: AWS.EC2.Subnets.Ipv6CidrBlockAssociationSet.AssociationId
+      description: The association ID for the CIDR block.
+      type: string
+    - contextPath: AWS.EC2.Subnets.Ipv6CidrBlockAssociationSet.Ipv6CidrBlock
+      description: The IPv6 CIDR block.
+      type: string
+    - contextPath: AWS.EC2.Subnets.Ipv6CidrBlockAssociationSet.Ipv6CidrBlockState.State
+      description: The state of a CIDR block.
+      type: string
+    - contextPath: AWS.EC2.Subnets.Ipv6CidrBlockAssociationSet.Ipv6CidrBlockState.StatusMessage
+      description: A message about the status of the CIDR block, if applicable.
+      type: string
+    - contextPath: AWS.EC2.Subnets.Tags.Key
+      description: The key of the tag.
+      type: string
+    - contextPath: AWS.EC2.Subnets.Tags.Value
+      description: The value of the tag.
+      type: string
+    - contextPath: AWS.EC2.Subnets.AccountId
+      description: The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided.
+      type: string
+
+  - arguments:
+    - description: A comma-separated list of the IPAM resource discovery IDs.
+      name: ipam_resource_discovery_ids
+    - description: One or more filters separated by ';' (for example, name=<name>;values=<values>). See AWS documentation for details & filter options (https://docs.aws.amazon.com/cli/latest/userguide/cli-usage-filter.html).
+      name: filters
+    - description: The maximum number of results to return in a single call. Specify a value between 5 and 1000. Default value is 50.
+      name: limit
+      defaultValue: 50
+    - description: The token for the next set of results.
+      name: next_token
+    - description: The Amazon Web Services region for the IP address.
+      name: address_region
+    - description: The AWS account ID.
+      name: account_id
+      required: true
+    - description: The AWS region.
+      name: region
+      required: true
+      auto: PREDEFINED
+      predefined:
+        - us-east-1
+        - us-east-2
+        - us-west-1
+        - us-west-2
+        - af-south-1
+        - ap-east-1
+        - ap-south-2
+        - ap-southeast-3
+        - ap-southeast-5
+        - ap-southeast-4
+        - ap-south-1
+        - ap-northeast-3
+        - ap-northeast-2
+        - ap-southeast-1
+        - ap-southeast-2
+        - ap-southeast-7
+        - ap-northeast-1
+        - ca-central-1
+        - ca-west-1
+        - eu-central-1
+        - eu-west-1
+        - eu-west-2
+        - eu-south-1
+        - eu-west-3
+        - eu-south-2
+        - eu-north-1
+        - eu-central-2
+        - il-central-1
+        - mx-central-1
+        - me-south-1
+        - me-central-1
+        - sa-east-1
+    outputs:
+    - contextPath: AWS.EC2.IpamResourceDiscoveries.IpamResourceDiscoveryId
+      description: The resource discovery ID.
+      type: String
+    - contextPath: AWS.EC2.IpamResourceDiscoveries.OwnerId
+      description: The ID of the owner.
+      type: String
+    - contextPath: AWS.EC2.IpamResourceDiscoveries.IpamResourceDiscoveryRegion
+      description: The resource discovery region.
+      type: String
+    - contextPath: AWS.EC2.IpamResourceDiscoveries.AccountId
+      description: The ID of the AWS account associated with the EC2 instance. This key is only present when the parameter "AWS organization accounts" is provided.
+      type: string
+    description: Describes IPAM resource discoveries. A resource discovery is an IPAM component that enables IPAM to manage and monitor resources owned by the account.
+    name: aws-ec2-ipam-resource-discoveries-describe
+
+  - arguments:
+    - description: A comma-separated list of the resource discovery association IDs.
+      name: ipam_resource_discovery_association_ids
+    - description: One or more filters separated by ';' (for example, name=<name>;values=<values>). See AWS documentation for details & filter options (https://docs.aws.amazon.com/cli/latest/userguide/cli-usage-filter.html).
+      name: filters
+    - description: The maximum number of results to return in a single call. Specify a value between 5 and 1000. Default value is 50.
+      name: limit
+      defaultValue: 50
+    - description: The token for the next set of results.
+      name: next_token
+    - description: The Amazon Web Services region for the IP address.
+      name: address_region
+    - description: The AWS account ID.
+      name: account_id
+      required: true
+    - description: The AWS region.
+      name: region
+      required: true
+      auto: PREDEFINED
+      predefined:
+        - us-east-1
+        - us-east-2
+        - us-west-1
+        - us-west-2
+        - af-south-1
+        - ap-east-1
+        - ap-south-2
+        - ap-southeast-3
+        - ap-southeast-5
+        - ap-southeast-4
+        - ap-south-1
+        - ap-northeast-3
+        - ap-northeast-2
+        - ap-southeast-1
+        - ap-southeast-2
+        - ap-southeast-7
+        - ap-northeast-1
+        - ca-central-1
+        - ca-west-1
+        - eu-central-1
+        - eu-west-1
+        - eu-west-2
+        - eu-south-1
+        - eu-west-3
+        - eu-south-2
+        - eu-north-1
+        - eu-central-2
+        - il-central-1
+        - mx-central-1
+        - me-south-1
+        - me-central-1
+        - sa-east-1
+    outputs:
+    - contextPath: AWS.EC2.IpamResourceDiscoveryAssociations.IpamResourceDiscoveryAssociationId
+      description: The resource discovery association ID.
+      type: String
+    - contextPath: AWS.EC2.IpamResourceDiscoveryAssociations.IpamResourceDiscoveryId
+      description: The resource discovery ID.
+      type: String
+    - contextPath: AWS.EC2.IpamResourceDiscoveryAssociations.IpamRegion
+      description: The IPAM home region.
+      type: String
+    - contextPath: AWS.EC2.IpamResourceDiscoveryAssociations.AccountId
+      description: The ID of the AWS account associated with the EC2 instance. This key is only present when the parameter "AWS organization accounts" is provided.
+      type: string
+    description: Describes resource discovery association with an Amazon VPC IPAM. An associated resource discovery is a resource discovery that has been associated with an IPAM.
+    name: aws-ec2-ipam-resource-discovery-associations-describe
+
   - name: aws-cloudtrail-trail-update
     description: 'Updates trail settings that control what events you are logging, and how to handle log files. Changes to a trail do not require stopping the CloudTrail service. Use this action to designate an existing bucket for log delivery. If the existing bucket has previously been a target for CloudTrail log files, an IAM policy exists for the bucket. UpdateTrail must be called from the Region in which the trail was created; otherwise, an InvalidHomeRegionException is thrown.'
     arguments:
@@ -4393,26 +4726,434 @@ script:
       description: The id of the policy.
       type: string
     - contextPath: AWS.S3-Buckets.Policy.Statement.Sid
-      description: Statement identifier.
+      description: Identifier of the policy statement.
       type: string
     - contextPath: AWS.S3-Buckets.Policy.Statement.Effect
-      description: Allow or Deny.
+      description: Specifies whether the statement results in an allow or an explicit deny.
       type: string
     - contextPath: AWS.S3-Buckets.Policy.Statement.Principal
-      description: Principal to whom the statement applies.
-      type: string
+      description: Specify the principal that is allowed or denied access to a resource.
     - contextPath: AWS.S3-Buckets.Policy.Statement.Action
-      description: List of actions the statement applies to.
-      type: Array
+      description: Describes the specific action or actions that will be allowed or denied.
     - contextPath: AWS.S3-Buckets.Policy.Statement.Resource
-      description: List of actions the statement applies to.
-      type: Array
+      description: Defines the object or objects that the statement applies to.
     - contextPath: AWS.S3-Buckets.Policy.Statement.Condition
-      description: Conditions for when the statement applies.
+      description: Specify conditions for when a policy is in effect.
       type: string
-    - contextPath: AWS.S3-Buckets.PolicyExists
-      description: Whether a bucket policy exists.
-      type: boolean
+
+  - name: aws-lambda-function-configuration-get
+    arguments:
+    - name: account_id
+      required: true
+      description: The AWS account ID.
+    - name: region
+      required: true
+      description: The AWS region.
+    - name: function_name
+      required: true
+      description: Name, ARN, or qualified name of the Lambda function.
+    - name: qualifier
+      description: Version number or alias name.
+    description: Retrieves configuration information about a Lambda function.
+    outputs:
+    - contextPath: AWS.Lambda.FunctionConfig.FunctionName
+      description: The name of the function.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.FunctionArn
+      description: The function’s Amazon Resource Name (ARN).
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.Runtime
+      description: The identifier of the function’s runtime.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.Role
+      description: The function’s execution role.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.Handler
+      description: The function that Lambda calls to begin running your function.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.CodeSize
+      description: The size of the function’s deployment package, in bytes.
+      type: Number
+    - contextPath: AWS.Lambda.FunctionConfig.Description
+      description: The function’s description.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.Timeout
+      description: The amount of time in seconds that Lambda allows a function to run before stopping it.
+      type: Number
+    - contextPath: AWS.Lambda.FunctionConfig.MemorySize
+      description: The amount of memory available to the function at runtime.
+      type: Number
+    - contextPath: AWS.Lambda.FunctionConfig.LastModified
+      description: The date and time that the function was last updated.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.CodeSha256
+      description: The SHA256 hash of the function’s deployment package.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.Version
+      description: The version of the Lambda function.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.VpcConfig.SubnetIds
+      description: A list of VPC subnet IDs.
+    - contextPath: AWS.Lambda.FunctionConfig.VpcConfig.SecurityGroupIds
+      description: A list of VPC security group IDs.
+    - contextPath: AWS.Lambda.FunctionConfig.VpcConfig.VpcId
+      description: The ID of the VPC.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.VpcConfig.Ipv6AllowedForDualStack
+      description: Allows outbound IPv6 traffic on VPC functions that are connected to dual-stack subnets.
+      type: Boolean
+    - contextPath: AWS.Lambda.FunctionConfig.DeadLetterConfig.TargetArn
+      description: The Amazon Resource Name (ARN) of an Amazon SQS queue or Amazon SNS topic.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.Environment.Variables
+      description: Environment variable key-value pairs. Omitted from CloudTrail logs.
+    - contextPath: AWS.Lambda.FunctionConfig.Environment.Error.ErrorCode
+      description: The error code.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.Environment.Error.Message
+      description: The error message.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.KMSKeyArn
+      description: The ARN of the Key Management Service (KMS).
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.TracingConfig.Mode
+      description: The tracing mode.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.MasterArn
+      description: For Lambda@Edge functions, the ARN of the main function.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.RevisionId
+      description: The latest updated revision of the function or alias.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.Layers.Arn
+      description: The Amazon Resource Name (ARN) of the function layer.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.Layers.CodeSize
+      description: The size of the layer archive in bytes.
+      type: Number
+    - contextPath: AWS.Lambda.FunctionConfig.Layers.SigningProfileVersionArn
+      description: The Amazon Resource Name (ARN) for a signing profile version.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.Layers.SigningJobArn
+      description: The Amazon Resource Name (ARN) of a signing job.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.State
+      description: The current state of the function.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.StateReason
+      description: The reason for the function’s current state.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.StateReasonCode
+      description: The reason code for the function’s current state. 
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.LastUpdateStatus
+      description: The status of the last update that was performed on the function.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.LastUpdateStatusReason
+      description: The reason for the last update that was performed on the function.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.LastUpdateStatusReasonCode
+      description: The reason code for the last update that was performed on the function.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.FileSystemConfigs.Arn
+      description: The Amazon Resource Name (ARN) of the Amazon EFS access point that provides access to the file system.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.FileSystemConfigs.LocalMountPath
+      description: The path where the function can access the file system, starting with /mnt/.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.PackageType
+      description: The type of deployment package.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.ImageConfigResponse.ImageConfig.EntryPoint
+      description: Specifies the entry point to their application, which is typically the location of the runtime executable.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.ImageConfigResponse.ImageConfig.Command
+      description: Specifies parameters that you want to pass in with ENTRYPOINT.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.ImageConfigResponse.ImageConfig.WorkingDirectory
+      description: Specifies the working directory.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.ImageConfigResponse.Error.ErrorCode
+      description: Error code.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.ImageConfigResponse.Error.Message
+      description: Error message.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.SigningProfileVersionArn
+      description: The ARN of the signing profile version.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.SigningJobArn
+      description: The ARN of the signing job.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.Architectures
+      description: The size of the function’s /tmp directory in MB.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.EphemeralStorage.Size
+      description: The size of the function’s /tmp directory.
+      type: Number
+    - contextPath: AWS.Lambda.FunctionConfig.SnapStart.ApplyOn
+      description: When set to PublishedVersions, Lambda creates a snapshot of the execution environment when you publish a function version.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.SnapStart.OptimizationStatus
+      description: When you provide a qualified Amazon Resource Name (ARN), this response element indicates whether SnapStart is activated for the specified function version.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.RuntimeVersionConfig.RuntimeVersionArn
+      description: The ARN of the runtime version you want the function to use.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.RuntimeVersionConfig.Error.ErrorCode
+      description: The error code.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.RuntimeVersionConfig.Error.Message
+      description: The error message.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.LoggingConfig.LogFormat
+      description: The format in which Lambda sends your function’s application and system logs to CloudWatch.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.LoggingConfig.ApplicationLogLevel
+      description: Set this property to filter the application logs for your function that Lambda sends to CloudWatch.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.LoggingConfig.SystemLogLevel
+      description: Set this property to filter the system logs for your function that Lambda sends to CloudWatch.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.LoggingConfig.LogGroup
+      description: The name of the Amazon CloudWatch log group the function sends logs to.
+      type: String
+
+  - name: aws-lambda-function-url-config-get
+    arguments:
+    - name: account_id
+      required: true
+      description: The AWS account ID.
+    - name: region
+      required: true
+      description: The AWS region.
+    - name: function_name
+      required: true
+      description: Name of the Lambda function.
+    - name: qualifier
+      description: The alias name or version number.
+    description: Returns the configuration for a Lambda function URL.
+    outputs:
+    - contextPath: AWS.Lambda.FunctionURLConfig.FunctionUrl
+      description: The HTTP URL endpoint for your function.
+      type: String
+    - contextPath: AWS.Lambda.FunctionURLConfig.FunctionArn
+      description: The Amazon Resource Name (ARN) of your function.
+      type: String
+    - contextPath: AWS.Lambda.FunctionURLConfig.AuthType
+      description: The type of authentication that your function URL uses.
+      type: String
+    - contextPath: AWS.Lambda.FunctionURLConfig.Cors.AllowCredentials
+      description: Whether to allow cookies or other credentials in requests to your function URL.
+      type: Boolean
+    - contextPath: AWS.Lambda.FunctionURLConfig.Cors.AllowHeaders
+      description: The HTTP headers that origins can include in requests to your function URL.
+      type: String
+    - contextPath: AWS.Lambda.FunctionURLConfig.Cors.AllowMethods
+      description: The HTTP methods that are allowed when calling your function URL.
+      type: String
+    - contextPath: AWS.Lambda.FunctionURLConfig.Cors.AllowOrigins
+      description: The origins that can access your function URL.
+      type: String
+    - contextPath: AWS.Lambda.FunctionURLConfig.Cors.ExposeHeaders
+      description: The HTTP headers in your function response that you want to expose to origins that call your function URL.
+      type: String
+    - contextPath: AWS.Lambda.FunctionURLConfig.Cors.MaxAge
+      description: The maximum amount of time, in seconds, that web browsers can cache results of a preflight request.
+      type: Number
+    - contextPath: AWS.Lambda.FunctionURLConfig.CreationTime
+      description: When the function URL was created.
+      type: String
+    - contextPath: AWS.Lambda.FunctionURLConfig.LastModifiedTime
+      description: When the function URL configuration was last updated.
+      type: String
+    - contextPath: AWS.Lambda.FunctionURLConfig.InvokeMode
+      description: BUFFERED or RESPONSE_STREAM.
+      type: String
+
+  - name: aws-lambda-policy-get
+    arguments:
+    - name: account_id
+      required: true
+      description: The AWS account ID.
+    - name: region
+      required: true
+      description: The AWS region.
+    - name: function_name
+      required: true
+      description: Name of the Lambda function, version, or alias.
+    - name: qualifier
+      description: Version or alias to get the policy for.
+    description: Returns the resource-based IAM policy for a Lambda function.
+    outputs:
+      - contextPath: AWS.Lambda.Policy.Version
+        description: The policy version. 
+        type: Date
+      - contextPath: AWS.Lambda.Policy.Id
+        description: The identifier of the policy.
+        type: String
+      - contextPath: AWS.Lambda.Policy.Statement.Sid
+        description: Identifier of the policy statement.
+        type: String
+      - contextPath: AWS.Lambda.Policy.Statement.Effect
+        description: Specifies whether the statement results in an allow or an explicit deny.
+        type: String
+      - contextPath: AWS.Lambda.Policy.Statement.Principal
+        description: Specify the principal that is allowed or denied access to a resource.
+      - contextPath: AWS.Lambda.Policy.Statement.Action
+        description: Describes the specific action or actions that will be allowed or denied.
+      - contextPath: AWS.Lambda.Policy.Statement.Resource
+        description: Defines the object or objects that the statement applies to.
+      - contextPath: AWS.Lambda.Policy.Statement.Condition
+        description: Specify conditions for when a policy is in effect.
+        type: String
+      - contextPath: AWS.Lambda.Policy.RevisionId
+        description: A unique identifier for the current revision of the policy.
+        type: String
+      - contextPath: AWS.Lambda.Policy.AccountId
+        description: The AWS account ID.
+        type: String
+      - contextPath: AWS.Lambda.Policy.FunctionName
+        description: The Function Name.
+        type: String
+      - contextPath: AWS.Lambda.Policy.Region
+        description: The AWS Region.
+        type: String
+  - name: aws-lambda-invoke
+    arguments:
+    - name: account_id
+      required: true
+      description: The AWS account ID.
+    - name: region
+      required: true
+      description: The AWS region.
+    - name: function_name
+      required: true
+      description: Name of the Lambda function to invoke.
+    - name: invocation_type
+      description: RequestResponse (sync), Event (async), or DryRun. Default is RequestResponse.
+      defaultValue: RequestResponse
+      auto: PREDEFINED
+      predefined:
+      - RequestResponse
+      - Event
+      - DryRun
+    - name: log_type
+      auto: PREDEFINED
+      predefined:
+      - None
+      - Tail
+      description: Set to Tail to include execution log in response.
+    - name: client_context
+      description: Base64-encoded client context data.
+    - name: payload
+      description: JSON input to provide to the Lambda function.
+    - name: qualifier
+      description: Version or alias to invoke.
+    description: Invokes a Lambda function. Specify just a function name to invoke the latest version of the function. To invoke a published version, use the Qualifier parameter to specify a version or alias. If you use the RequestResponse (synchronous) invocation option, note that the function may be invoked multiple times if a timeout is reached. For functions with a long timeout, your client may be disconnected during synchronous invocation while it waits for a response. If you use the Event (asynchronous) invocation option, the function will be invoked at least once in response to an event and the function must be idempotent to handle this.
+    execution: true
+    outputs:
+    - contextPath: AWS.Lambda.InvokedFunction.StatusCode
+      description: The HTTP status code is in the 200 range for a successful request.
+      type: Number
+    - contextPath: AWS.Lambda.InvokedFunction.FunctionError
+      description: If present, indicates that an error occurred during function execution.
+      type: String
+    - contextPath: AWS.Lambda.InvokedFunction.LogResult
+      description: The last 4 KB of the execution log, which is base64-encoded.
+      type: String
+    - contextPath: AWS.Lambda.InvokedFunction.Payload
+      description: The response from the function, or an error object.
+      type: Unknown
+    - contextPath: AWS.Lambda.InvokedFunction.ExecutedVersion
+      description: The version of the function that executed.
+      type: String
+    - contextPath: AWS.Lambda.InvokedFunction.FunctionName
+      description: The name of the Lambda function.
+      type: string
+  - name: aws-lambda-function-url-config-update
+    arguments:
+    - name: account_id
+      required: true
+      description: The AWS account ID.
+    - name: region
+      required: true
+      description: The AWS region.
+    - name: function_name
+      required: true
+      description: Name of the Lambda function.
+    - name: qualifier
+      description: The alias name or version number.
+    - name: auth_type
+      description: AWS_IAM or NONE for authentication type.
+      auto: PREDEFINED
+      predefined:
+      - "AWS_IAM"
+      - "NONE"
+    - name: cors_allow_credentials
+      description: Allow credentials in CORS requests.
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+    - name: cors_allow_headers
+      description: Comma-separated list of allowed headers.
+      isArray: true
+    - name: cors_allow_methods
+      description: Comma-separated list of allowed HTTP methods.
+      isArray: true
+    - name: cors_allow_origins
+      description: Comma-separated list of allowed origins.
+      isArray: true
+    - name: cors_expose_headers
+      description: Comma-separated list of headers to expose.
+      isArray: true
+    - name: cors_max_age
+      description: Maximum age for CORS preflight cache.
+    - name: invoke_mode
+      auto: PREDEFINED
+      predefined:
+      - "BUFFERED"
+      - "RESPONSE_STREAM"
+      description: BUFFERED or RESPONSE_STREAM.
+    description: Updates the configuration for a Lambda function URL.
+    outputs:
+    - contextPath: AWS.Lambda.FunctionURLConfig.FunctionUrl
+      description: The HTTP URL endpoint for your function.
+      type: String
+    - contextPath: AWS.Lambda.FunctionURLConfig.FunctionArn
+      description: The Amazon Resource Name (ARN) of your function.
+      type: String
+    - contextPath: AWS.Lambda.FunctionURLConfig.AuthType
+      description: The type of authentication that your function URL uses.
+      type: String
+    - contextPath: AWS.Lambda.FunctionURLConfig.Cors.AllowCredentials
+      description: Whether to allow cookies or other credentials in requests to your function URL.
+      type: Boolean
+    - contextPath: AWS.Lambda.FunctionURLConfig.Cors.AllowHeaders
+      description: The HTTP headers that origins can include in requests to your function URL.
+      type: String
+    - contextPath: AWS.Lambda.FunctionURLConfig.Cors.AllowMethods
+      description: The HTTP methods that are allowed when calling your function URL.
+      type: String
+    - contextPath: AWS.Lambda.FunctionURLConfig.Cors.AllowOrigins
+      description: The origins that can access your function URL.
+      type: String
+    - contextPath: AWS.Lambda.FunctionURLConfig.Cors.ExposeHeaders
+      description: The HTTP headers in your function response that you want to expose to origins that call your function URL.
+      type: String
+    - contextPath: AWS.Lambda.FunctionURLConfig.Cors.MaxAge
+      description: The maximum amount of time, in seconds, that web browsers can cache results of a preflight request.
+      type: Number
+    - contextPath: AWS.Lambda.FunctionURLConfig.CreationTime
+      description: When the function URL was created.
+      type: String
+    - contextPath: AWS.Lambda.FunctionURLConfig.LastModifiedTime
+      description: When the function URL configuration was last updated.
+      type: String
+    - contextPath: AWS.Lambda.FunctionURLConfig.InvokeMode
+      description: BUFFERED or RESPONSE_STREAM.
+      type: String
 
   - arguments:
     - description: The AWS account ID.
