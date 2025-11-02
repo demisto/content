@@ -387,8 +387,7 @@ tasks:
       id: e2c924b0-b500-43da-8ad9-f7b332b712cd
       version: -1
       name: Remove search action
-      description: Remove compliance search action by search action name from the
-        Security & Compliance Center.
+      description: Remove a compliance search action by specifying its action name.
       script: '|||o365-sc-remove-search-action'
       type: regular
       iscommand: true
@@ -549,8 +548,7 @@ tasks:
       id: 0ea17519-bb89-46a7-8c12-d7e16382c136
       version: -1
       name: Remove search action
-      description: Remove compliance search action by search action name from the
-        Security & Compliance Center.
+      description: Remove a compliance search action by specifying its action name.
       script: '|||o365-sc-remove-search-action'
       type: regular
       iscommand: true

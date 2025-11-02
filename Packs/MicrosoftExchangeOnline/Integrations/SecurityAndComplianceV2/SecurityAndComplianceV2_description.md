@@ -88,4 +88,4 @@ Before using this method, verify that your account allows password-only sign-in 
 1. Go to the [Microsoft 365 Admin Center](https://admin.microsoft.com/) and sign in with your administrator account.
 2. Under **Users**, select **Active users**.
 3. At the top, click Multi-factor authentication.
-4. In the list that appears, find your user and check the Multi-Factor Auth Status column is disabled.
+4. In the list that appears, find your user and confirm that the Multi-Factor Auth Status column is disabled.

@@ -4,7 +4,7 @@ This integration allows you to manage and interact with Microsoft Security & Com
 
 This integration has been developed and tested with the [Security & Compliance Center](https://docs.microsoft.com/en-us/powershell/module/exchange/?view=exchange-ps#policy-and-compliance-content-search).
 
-As of September 2025, Microsoft representatives have confirmed that the Security and Compliance PowerShell module relies on legacy eDiscovery. Microsoft now recommends transitioning to the new eDiscovery experience, which is built on the Microsoft Graph API. This functionality is implemented in the XSOAR integration [**Microsoft Graph Security**](https://xsoar.pan.dev/docs/reference/integrations/microsoft-graph).  
+As of September 2025, Microsoft representatives have confirmed that the Security and Compliance PowerShell module relies on legacy eDiscovery. Microsoft now recommends transitioning to the new eDiscovery experience, which is built on the Microsoft Graph API. This functionality is implemented in the Cortex XSIAM and XSOAR integration [**Microsoft Graph Security**](https://xsoar.pan.dev/docs/reference/integrations/microsoft-graph).  
 
 ## Key Features
 
@@ -76,31 +76,33 @@ To access the **Microsoft Purview** (formerly Compliance Center) capabilities us
 
 [More information available here](https://learn.microsoft.com/en-us/powershell/exchange/connect-to-scc-powershell?view=exchange-ps#step-2-connect-and-authenticate).
 
-## Configure SecurityAndComplianceV2 on Cortex XSOAR
+## Configure SecurityAndComplianceV2 in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+1. Navigate to one of the following:
+   - Cortex XSOAR 6: **Settings** > **Integrations**
+   - Cortex XSOAR 8: **Settings & Info** > **Settings** > **Integrations** > **Instances**
+   - Cortex XSIAM: **Settings** > **Configurations** > **Automation & Feed Integrations**
 2. Search for **O365 - Security And Compliance - Content Search v2**.
 3. Authentication / Authorization methods:
+   - App-only (OAuth2.0) using device code Authentication -
+       1. Fill in the UPN, App ID, and Tenant ID parameters in the integration configuration.
+       2. Run the ***o365-sc-auth-start*** command and follow the instructions.
+       3. For testing completion of authorization process run the ***o365-sc-auth-test*** command.
+   - Delegated User Authentication -
+       1. Fill in the UPN parameter in the integration configuration.
+       2. Fill in the 'UPN Password' parameter - the user’s Microsoft 365 password (the regular sign-in password for that UPN).
+       3. For testing completion of authorization process run the ***o365-sc-auth-test*** command.
+       4. The following commands are only available when using the Delegated User Authentication method, as per the [Microsoft Update](https://mc.merill.net/message/MC1131771):
+          - o365-sc-new-search-action
+          - o365-sc-case-hold-policy-create
+          - o365-sc-case-hold-policy-set
+          - o365-sc-case-hold-policy-delete
+          - o365-sc-case-hold-rule-create
+          - o365-sc-case-hold-rule-delete
 
-- App-only (OAuth2.0) using device code Authentication -
-    1. Fill in the UPN, App ID, and Tenant ID parameters in the integration configuration.
-    2. Run the ***o365-sc-auth-start*** command and follow the instructions.
-    3. For testing completion of authorization process run the ***o365-sc-auth-test*** command.
-- Delegated User Authentication -
-    1. Fill in the UPN parameter in the integration configuration.
-    2. Fill in the 'UPN Password' parameter - the user’s Microsoft 365 password (the regular sign-in password for that UPN).
-    3. For testing completion of authorization process run the ***o365-sc-auth-test*** command.
-    4. The following commands are only available when using the Delegated User Authentication method, as per the [Microsoft Update](https://mc.merill.net/message/MC1131771):
-       - o365-sc-new-search-action
-       - o365-sc-case-hold-policy-create
-       - o365-sc-case-hold-policy-set
-       - o365-sc-case-hold-policy-delete
-       - o365-sc-case-hold-rule-create
-       - o365-sc-case-hold-rule-delete
-
-- **Note - If a UPN Password is provided:**
-  - Even if the password is incorrect, the integration will attempt to authenticate using it.
-  - In this case, all connections to Microsoft Security and Compliance PowerShell will use interactive delegated authentication.
+   - **Note - If a UPN Password is provided:**
+     - Even if the password is incorrect, the integration will attempt to authenticate using it.
+     - In this case, all connections to Microsoft Security and Compliance PowerShell will use interactive delegated authentication.
 
 4. Click **Add instance** to create and configure a new integration instance.
 
@@ -177,7 +179,7 @@ Missing or incorrect values in these fields can cause a 404 error, as the integr
 
 #### Failed Delegated User Authentication
 
-**Scenario:** You Filled out the 'UPN' and 'UPN Passwords' integation parameters and after running the `!o365-sc-auth-test` command, the authorization process fails, and you gen an error 'you must use multi-factor authentication to access ...'.
+**Scenario:** You Filled out the 'UPN' and 'UPN Passwords' integration parameters and after running the `!o365-sc-auth-test` command, the authorization process fails, and you get the error 'you must use multi-factor authentication to access ...'.
 
 **Solution:**
 
