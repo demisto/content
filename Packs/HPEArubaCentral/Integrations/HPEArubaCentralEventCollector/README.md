@@ -4,17 +4,36 @@ This is the Aruba Central event collector integration for Cortex XSIAM.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Server URL | Domain URL for API gateway access | True |
-| Client ID || True |
-| Client Secret || True |
-| Customer ID || True |
-| Username || True |
-| Password || True |
-| Fetch networking events | Whether to fetch networking events or only audit logs. | False |
-| The maximum number of audit events per fetch | Default - 100 | False |
-| The maximum number of networking events per fetch | Default - 5000 | False |
-| Trust any certificate (not secure) || False |
-| Use system proxy settings || False |
+| **Server URL** | The region-specific Base URL for the Aruba Central API Gateway. | True |
+| **Access Token URL** | The full, region-specific URL for the OAuth2 token retrieval endpoint. | True |
+| **Client ID** | The unique identifier for your API application registered in Aruba Central. | True |
+| **Client Secret** | The secret key associated with your Client ID for API authentication. | True |
+| **Customer ID** | The unique identifier for your Aruba Central account. | True |
+| **Username** | The username of an Aruba Central account with at least read-only privileges. | True |
+| **Password** | The password associated with the specified Aruba Central username. | True |
+| **Fetch networking events** | Select this to fetch networking events in addition to audit logs. If cleared, the collector will only fetch audit logs. | False |
+| **The maximum number of audit events per fetch** | The maximum number of audit events to pull in a single fetch. The default is `100`. | False |
+| **The maximum number of networking events per fetch** | The maximum number of networking events to pull in a single fetch. The default is `5000`. | False |
+| **Trust any certificate (not secure)** | Select this to bypass certificate validation. Use this only for testing or in trusted, isolated environments. | False |
+
+## How to Find Required Parameters
+
+You can find most of the required API credentials within your HPE Aruba Central account.
+
+1. Log in to your **Aruba Central** account.
+2. Navigate to the **Global Settings** menu (or the equivalent management scope).
+3. Select **API Gateway**.
+
+From this section, you can retrieve the following information:
+
+* **Access Token URL:** Found on the **APIs** tab.
+* **Customer ID:** Found on the **APIs** tab.
+* **Server URL:** This is the base domain of your Aruba Central portal (e.g., `https://app-uswest4.central.arubanetworks.com`).
+* **Client ID & Client Secret:** Found on the **My Apps** tab. Select the application you created for XSOAR to view its details.
+
+**User Credentials:**
+
+* **Username & Password:** These are the credentials for the Aruba Central user account that you used to generate the API application (Client ID and Secret). This account must have at least read-only privileges.
 
 ## Commands
 

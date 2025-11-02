@@ -37,7 +37,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 ### Integrations
 
 * Cortex Core - IR
-* Azure Active Directory Users
+* Entra ID Users
 * Google Workspace Admin
 * AWS IAM
 
