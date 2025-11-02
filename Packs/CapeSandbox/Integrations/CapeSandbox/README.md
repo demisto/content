@@ -1,3 +1,4 @@
+# CAPEv2 Malware Sandbox
 CAPE Sandbox is an Open Source software for automating analysis of suspicious files.
 This integration was integrated and tested with CAPE V2 API of CapeSandbox.
 
@@ -276,28 +277,6 @@ Returns overall CAPE/Cuckoo status. Human-readable only.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-
-#### Context Output
-
-There is no context output for this command.
-
-### cape-task-poll
-
-***
-Internal command used by cape-file-submit and cape-url-submit for polling status.
-
-#### Base Command
-
-`cape-task-poll`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| task_id | The ID of the task to poll. | Required |
-| polling | Cape generic polling. Possible values are: true, false. Default is true. | Optional |
-| pollingInterval | The polling interval **in seconds**. We strongly recommend an interval of 60 seconds or more to prevent API throttling by the CAPE server. | Optional |
-| pollingTimeout | Total time allowed **in seconds** for the XSOAR polling sequence to complete. | Optional |
 
 #### Context Output
 
