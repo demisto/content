@@ -17,7 +17,7 @@ MINUTES_BEFORE_TOKEN_EXPIRED = 2
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 
 
-""" CLIENT CLASS  """
+""" CLIENT CLASS """
 
 
 class Client(BaseClient):
