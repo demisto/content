@@ -440,6 +440,35 @@ Get cases information based on the specified filters.
 | Core.Case.case_domain | String | Domain associated with the case. |
 | Core.Case.custom_fields | Unknown | Custom fields for the case with standardized lowercase, whitespace-free names. |
 
+### core-search-asset-groups
+
+***
+Retrieve asset groups from the Cortex platform with optional filtering.
+
+#### Base Command
+
+`core-search-asset-groups`
+
+#### Input
+
+| name | JSON list of asset groups to search for. (e.g. `["group1", "group2"]`). | Optional |
+| type | Filter asset groups by type. | Optional |
+| description | JSON list of descriptions to search for. (e.g. `["description1", "description2"]`). | Optional |
+| limit | The maximum number of groups to return. | Optional |
+| id | Comma separated list of ids to search for. | Optional |
+
+#### Context Output
+
+| Core.AssetGroups.name | String | The name of the asset group. |
+| Core.AssetGroups.filter | String | The filter criteria for the asset group. |
+| Core.AssetGroups.membership_predicate | String | The predicate used to create the asset group. |
+| Core.AssetGroups.type | String | The type of the asset group. |
+| Core.AssetGroups.description | String | The description of the asset group. |
+| Core.AssetGroups.modified_by | String | The user who modified the asset group. |
+| Core.AssetGroups.modified_by_pretty | String | The formatted name of the user who created the asset group. |
+| Core.AssetGroups.created_by | String | The user who created the asset group. |
+| Core.AssetGroups.created_by_pretty | String | The formatted name of the user who created the asset group. |
+
 ### core-get-vulnerabilities
 
 ***
