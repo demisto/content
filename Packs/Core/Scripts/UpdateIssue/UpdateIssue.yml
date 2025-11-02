@@ -49,14 +49,11 @@ args:
 - name: replace_playbook
   description: If provided (any value), the playbook for the issue will be replaced according to the new type if such type is provided, different from the old one and is valid.
   type: string
-- name: customFields
+- name: custom_fields
   description: Set the custom fields of the issue in the form of a JSON string with field name as key and value as the value.
   type: string
 - name: details
   description: Change the details of an issue.
-  type: string
-- name: owner
-  description: Change the owner of an issue.
   type: string
 scripttarget: 0
 subtype: python3

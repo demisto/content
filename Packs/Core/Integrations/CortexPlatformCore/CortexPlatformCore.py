@@ -24,7 +24,7 @@ ASSET_FIELDS = {
 }
 
 
-WEBAPP_COMMANDS = ["core-get-vulnerabilities", "core-search-asset-groups"]
+WEBAPP_COMMANDS = ["core-get-vulnerabilities", "core-search-asset-groups", "core-update-issue"]
 DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
 
 VULNERABLE_ISSUES_TABLE = "VULNERABLE_ISSUES_TABLE"
@@ -320,8 +320,12 @@ class Client(CoreClient):
         return reply
 
     def update_issue(self, filter_data):
-        reply = demisto._apiCall(
-            method="POST", data=json.dumps(filter_data), headers=self._headers, path="/api/webapp/alerts/update_alerts"
+        return self._http_request(
+            method="POST",
+            json_data=filter_data,
+            url_suffix="/alerts/update_alerts"
+        )
+            # method="POST", data=json.dumps(filter_data), headers=self._headers, path="/api/webapp/alerts/update_alerts"
           
     def search_assets(self, filter, page_number, page_size, on_demand_fields):
         reply = self._http_request(
@@ -578,15 +582,23 @@ def create_filter_data(issue_id: str, update_args: dict) -> dict:
     Returns:
         dict: Object representing updated issue details
     """
+    filter_builder = FilterBuilder()
+    filter_builder.add_field("internal_id", FilterType.EQ, issue_id)
+    
     filter_data = {
-        "filter_data": {"filter": {"OR": [{"SEARCH_FIELD": "internal_id", "SEARCH_TYPE": "EQ", "SEARCH_VALUE": issue_id}]}},
+        "filter_data": {"filter": filter_builder.to_dict()},
         "filter_type": "static",
+        "update_data": update_args
     }
-    update_data = {}
-    for key, value in update_args.items():
-        update_data[key] = value
+    # filter_data = {
+    #     "filter_data": {"filter": {"OR": [{"SEARCH_FIELD": "internal_id", "SEARCH_TYPE": "EQ", "SEARCH_VALUE": issue_id}]}},
+    #     "filter_type": "static",
+    # }
+    # update_data = {}
+    # for key, value in update_args.items():
+    #     update_data[key] = value
 
-    filter_data["update_data"] = update_data
+    # filter_data["update_data"] = update_data
     return filter_data
 
 
@@ -791,6 +803,7 @@ def main():  # pragma: no cover
 
         elif command == "core-get-case-extra-data":
             return_results(get_extra_data_for_case_id_command(client, args))
+            
         elif command == "core-search-assets":
             return_results(search_assets_command(client, args))
 
