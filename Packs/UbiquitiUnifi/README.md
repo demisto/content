@@ -31,6 +31,7 @@ Select **Broker VM Server** as the destination.
 Choose the log categories you wish to export (e.g., security, system, client activity).
 Enter the **IP Address** and **Port** used by your SIEM or external syslog server.
 
+NOTE: The types of logs supported in this package are **CEF** only.
 For more information use the following guide [here](https://help.ui.com/hc/en-us/articles/33349041044119-UniFi-System-Logs-SIEM-Integration).
 
 </~XSIAM>
