@@ -2,7 +2,7 @@ category: Database
 commonfields:
   id: Generic SQL - dev
   version: -1
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 configuration:

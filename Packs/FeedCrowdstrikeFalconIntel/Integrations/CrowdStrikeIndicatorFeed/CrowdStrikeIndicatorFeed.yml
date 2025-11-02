@@ -260,6 +260,6 @@ script:
 tests:
 - Fetch Indicators Test
 fromversion: 5.5.0
-sectionOrder:
+sectionorder:
 - Connect
 - Collect

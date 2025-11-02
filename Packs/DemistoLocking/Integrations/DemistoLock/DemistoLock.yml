@@ -1,7 +1,7 @@
 commonfields:
   id: Demisto Lock
   version: -1
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 name: Demisto Lock
@@ -19,7 +19,7 @@ configuration:
 - display: Polling interval
   name: polling_interval
   type: 0
-  additionalinfo: Default polling interval value for `demisto-lock-get`, can be overridden by the "polling_interval" argument. 
+  additionalinfo: Default polling interval value for `demisto-lock-get`, can be overridden by the "polling_interval" argument.
   section: Connect
   advanced: true
   required: false
