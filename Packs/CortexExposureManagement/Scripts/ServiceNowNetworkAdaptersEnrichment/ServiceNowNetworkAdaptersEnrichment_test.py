@@ -166,7 +166,7 @@ def test_main_success(mocker, mock_demisto_args, mock_network_adapter_data, mock
     # Verify return_results was called with expected data
     assert mock_return.called
     call_args = mock_return.call_args[0][0]
-    assert call_args.outputs_prefix == "CortexExposureManagement.ServiceNowEnrichment.NetworkAdapter"
+    assert call_args.outputs_prefix == "CortexExposureManagement.ServiceNowEnrichment"
     assert len(call_args.outputs["network_adapters"]) == 1
     assert len(call_args.outputs["related_configuration_items"]) == 1
 
