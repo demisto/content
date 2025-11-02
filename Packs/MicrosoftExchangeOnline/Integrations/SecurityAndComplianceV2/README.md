@@ -24,7 +24,7 @@ As of September 2025, Microsoft representatives have confirmed that the Security
 
 To set up the integration and register the application in Azure, follow these steps:
 
-1. **App Registration**: Register a new application in Azure Active Directory and configure necessary permissions.
+1. **App Registration**: Register a new application in Entra ID and configure necessary permissions.
 2. **Authentication Configuration**: Enable public client flows and create an app secret.
 3. **Role Setup**: Assign the required roles in the Security & Compliance Center for the integration to function correctly.
 
@@ -33,7 +33,7 @@ To set up the integration and register the application in Azure, follow these st
 #### 1. App Registration and Permission Configuration
 
 1. **Navigate to Azure Portal**: Go to the [Azure Portal](https://portal.azure.com/) and sign in with your administrator account.
-2. **Access App Registrations**: In the left-hand navigation pane, select **Azure Active Directory** > **App registrations**.
+2. **Access App Registrations**: In the left-hand navigation pane, select **Entra ID** > **App registrations**.
 3. **Register a New App**: Click **New registration**, provide a name, and register the app.
 4. **Add API Permissions**:
    - Under **Manage**, select **API permissions** > **Add a permission**.

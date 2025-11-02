@@ -43,7 +43,7 @@ In response to Microsoft's deprecation of the App ID, the following changes to a
    Go to the [Azure Portal](https://portal.azure.com/) and sign in with your administrator account.
 
 2. **Access App Registrations:**
-   In the left-hand navigation pane, select **Azure Active Directory**. Then, under **Manage**, select **App registrations**.
+   In the left-hand navigation pane, select **Entra ID**. Then, under **Manage**, select **App registrations**.
 
 3. **Select Your App:**
    Find and select the app registration you are working on.
@@ -70,7 +70,7 @@ In response to Microsoft's deprecation of the App ID, the following changes to a
 
 
 ### Additional Resources
-- [Azure Active Directory App Registrations](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app)
+- [Entra ID App Registrations](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app)
 - [API Permissions in Microsoft Graph](https://docs.microsoft.com/en-us/graph/permissions-reference)
 - [Configure Authentication in Azure AD](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-auth-code-flow)
 - [Add a Client Secret](https://docs.microsoft.com/en-us/azure/active-directory/develop/howto-create-service-principal-portal#option-2-create-a-new-application-secret)
