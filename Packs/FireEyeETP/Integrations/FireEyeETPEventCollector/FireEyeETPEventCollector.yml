@@ -6,8 +6,8 @@ commonfields:
   id: FireEye ETP Event Collector
   version: -1
 configuration:
-- defaultvalue: https://etp.us.fireeye.com
-  display: Server URL (e.g., https://etp.us.fireeye.com)
+- defaultvalue: https://etp.us.fireeye.com.   #TODO should i change it?
+  display: Server URL (e.g., https://etp.us.fireeye.com).  #TODO should i change it?
   name: url
   required: true
   type: 0
@@ -17,6 +17,12 @@ configuration:
   displaypassword: Client Secret
   type: 9
   section: Connect
+- display: OAuth Scopes
+  name: oauth_scopes
+  defaultvalue: etp.alrt.ro etp.trce.ro
+  type: 0
+  required: false
+  additionalinfo: "Space-separated list of OAuth scopes. Note: Only include scopes that your application's Client ID has already been authorized to use."
 - displaypassword: API Key
   additionalinfo: The API Key allows you to integrate with the Trellix Email Security - Cloud.
   name: credentials
@@ -24,7 +30,7 @@ configuration:
   hiddenusername: true
   type: 9
   section: Connect
-  hidden: true
+  hidden: true  #TODO reconsider
 - defaultvalue: "1000"
   display: Maximum number of Alerts to fetch.
   name: alerts_max_fetch

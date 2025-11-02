@@ -21,7 +21,7 @@ configuration:
   defaultvalue: etp.alrt.ro etp.trce.ro
   type: 0
   required: false
-  additionalinfo: Space-separated list of OAuth scopes required for Trellix Email Security Cloud API access.
+  additionalinfo: "Space-separated list of OAuth scopes. Note: Only include scopes that your application's Client ID has already been authorized to use."
 - display: API key
   name: api_key
   defaultvalue: ""

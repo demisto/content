@@ -22,7 +22,7 @@ DEFAULT_FIRST_FETCH = "3 days"
 DEFAULT_MAX_FETCH = 1000
 CALCULATED_MAX_FETCH = 5000
 DEFAULT_LIMIT = 10
-DEFAULT_URL = "https://etp.us.fireeye.com"
+DEFAULT_URL = "https://etp.us.fireeye.com"  #TODO should i change it?
 DATEPARSER_SETTINGS = {
     "RETURN_AS_TIMEZONE_AWARE": True,
     "TIMEZONE": "UTC",
@@ -69,6 +69,7 @@ class Client(BaseClient):  # pragma: no cover
         proxy: bool,
         client_id: str = "",
         client_secret: str = "",
+        scope: str = "",
         api_key: str = "",
         outbound_traffic: bool = False,
         hide_sensitive: bool = False,
@@ -76,6 +77,7 @@ class Client(BaseClient):  # pragma: no cover
         super().__init__(base_url, verify_certificate, proxy)
         self.client_id = client_id
         self.client_secret = client_secret
+        self.scope = scope
         self.api_key = api_key
         self.outbound_traffic = outbound_traffic
         self.hide_sensitive = hide_sensitive
@@ -122,22 +124,18 @@ class Client(BaseClient):  # pragma: no cover
         Returns the access token or raises ValueError if authentication fails.
         """
         try:
-            # Trellix Email Security OAuth2 endpoint
+            # Trellix OAuth2 endpoint
             token_url = "https://auth.trellix.com/auth/realms/IAM/protocol/openid-connect/token"
             
             # Create Basic auth header with base64 encoded client credentials
             credentials = f"{self.client_id}:{self.client_secret}"
             encoded_credentials = base64.b64encode(credentials.encode()).decode()
             
-            # ETP scopes for Email Security Cloud API access TODO is this correct?
-            etp_scopes = ("etp.conf.ro etp.trce.rw etp.admn.ro etp.domn.ro etp.accs.rw etp.quar.rw "
-                          "etp.domn.rw etp.rprt.rw etp.accs.ro etp.quar.ro etp.alrt.rw etp.rprt.ro "
-                          "etp.conf.rw etp.trce.ro etp.alrt.ro etp.admn.rw")
             
             # Form data for OAuth2 request
             auth_data = {
                 "grant_type": "client_credentials",
-                "scope": etp_scopes
+                "scope": self.scope
             }
             
             # Use requests directly since we need to hit the Trellix IAM endpoint, not the ETP instance
@@ -779,6 +777,7 @@ def main() -> None:  # pragma: no cover
     # Extract authentication parameters - prioritize OAuth2 over legacy API Key
     client_id = params.get("oauth_credentials", {}).get("identifier", "")
     client_secret = params.get("oauth_credentials", {}).get("password", "")
+    scope = params.get("oauth_scopes", "etp.conf.ro etp.rprt.ro").strip()
     api_key = params.get("credentials", {}).get("password", "")
     
     base_url = params.get("url", "").rstrip("/")
@@ -824,6 +823,7 @@ def main() -> None:  # pragma: no cover
             proxy=proxy,
             client_id=client_id,
             client_secret=client_secret,
+            scope=scope,
             api_key=api_key,
             outbound_traffic=outbound_traffic,
             hide_sensitive=hide_sensitive,
