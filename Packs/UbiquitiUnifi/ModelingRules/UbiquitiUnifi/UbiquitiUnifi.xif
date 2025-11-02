@@ -31,5 +31,4 @@ filter UNIFIcategory = "Monitoring" or UNIFIcategory = "Security" or UNIFIcatego
     xdm.auth.auth_method = UNIFIauthMethod,
     xdm.alert.name = cefName,
     xdm.source.user.username = UNIFIadmin,
-    xdm.source.host.mac_addresses = arraycreate(UNIFIclientMac),
-    xdm.network.protocol_layers = arraycreate(if(proto = "1", "Physical", proto = "2", "Data Link", proto = "3", "Network", proto = "4", "Transport", proto = "5", "Session", proto = "6", "Presentation", proto = "7", "Application"));
+    xdm.source.host.mac_addresses = arraycreate(UNIFIclientMac);
