@@ -2027,6 +2027,10 @@ def list_threat_assessment_requests_command(client: MsGraphClient, args) -> list
     return command_results
 
 
+def test_module(client: MsGraphClient, args):
+    client.ms_client.main_test_module('msg-')
+
+
 def main():
     params: dict = demisto.params()
     args: dict = demisto.args()
@@ -2041,6 +2045,8 @@ def main():
     managed_identities_client_id = get_azure_managed_identities_client_id(params)
     self_deployed: bool = params.get("self_deployed", False) or managed_identities_client_id is not None
     api_version: str = params.get("api_version", API_V2)
+    auth_flow = params.get("auth_flow")
+    grant_type = AUTHORIZATION_CODE if auth_flow == "Authorization Code" else CLIENT_CREDENTIALS
 
     if not managed_identities_client_id:
         if not self_deployed and not enc_key:
@@ -2052,7 +2058,7 @@ def main():
             raise DemistoException("Key or Certificate Thumbprint and Private Key must be provided.")
 
     commands = {
-        "test-module": test_function,
+        "test-module": test_module,
         "msg-auth-test": test_auth_code_command,
         "msg-search-alerts": search_alerts_command,
         "msg-get-alert-details": get_alert_details_command,
@@ -2091,13 +2097,9 @@ def main():
     command = demisto.command()
     LOG(f"Command being called is {command}")
     try:
-        auth_code = params.get("auth_code", {}).get("password")
-        redirect_uri = params.get("redirect_uri")
-        grant_type = AUTHORIZATION_CODE if auth_code and redirect_uri else CLIENT_CREDENTIALS
-
         client: MsGraphClient = MsGraphClient(
             tenant_id=tenant,
-            auth_code=auth_code,
+            auth_code= (auth_flow == "Authorization Code"),
             auth_id=auth_and_token_url,
             enc_key=enc_key,
             redirect_uri=redirect_uri,
