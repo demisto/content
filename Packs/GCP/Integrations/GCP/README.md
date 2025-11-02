@@ -1115,11 +1115,18 @@ Creates a new firewall rule in the specified project.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCP.Compute.Operations.id | string | The unique identifier for the resource. This identifier is defined by the server. |
-| GCP.Compute.Operations.name | string | Name of the resource. |
-| GCP.Compute.Operations.operationType | string | The type of operation, such as insert, update, or delete, and so on. |
-| GCP.Compute.Operations.status | string | The status of the operation. |
-| GCP.Compute.Operations.targetLink | string | The URL of the resource that the operation modifies. |
+| GCP.Compute.Operations.id | String | Unique identifier for the operation resource, defined by the server. |
+| GCP.Compute.Operations.name | String | Name of the operation resource. |
+| GCP.Compute.Operations.kind | String | Type of the resource, for example compute\#operation. |
+| GCP.Compute.Operations.operationType | String | Type of operation, such as insert, update, or delete. |
+| GCP.Compute.Operations.status | String | Current status of the operation. |
+| GCP.Compute.Operations.progress | Number | Progress of the operation as a percentage between 0 and 100. |
+| GCP.Compute.Operations.targetId | String | Unique target ID of the resource affected by the operation. |
+| GCP.Compute.Operations.targetLink | String | URL of the target resource modified by the operation. |
+| GCP.Compute.Operations.selfLink | String | Server-defined URL for the operation resource. |
+| GCP.Compute.Operations.insertTime | Date | The time when the operation resource was created. |
+| GCP.Compute.Operations.startTime | Date | The time when the operation started running. |
+| GCP.Compute.Operations.user | String | The user account that performed the operation. |
 
 ### gcp-compute-firewall-list
 
@@ -1135,7 +1142,7 @@ Lists firewall rules in the specified project.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | project_id | GCP project ID. | Required |
-| max_results | Maximum number of results to return. | Optional |
+| limit | Maximum number of results to return. | Optional |
 | page_token | Token for pagination. | Optional |
 | filter | API filter expression. | Optional |
 
@@ -1143,14 +1150,20 @@ Lists firewall rules in the specified project.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCP.Compute.Firewall.name | string | Firewall rule name. |
-| GCP.Compute.Firewall.network | string | Network URL for the firewall rule. |
-| GCP.Compute.Firewall.direction | string | Direction of traffic \(INGRESS/EGRESS\). |
-| GCP.Compute.Firewall.priority | number | Priority of the rule. |
-| GCP.Compute.Firewall.allowed | Unknown | Allowed tuples. |
-| GCP.Compute.Firewall.denied | Unknown | Denied tuples. |
-| GCP.Compute.Firewall.targetTags | Unknown | Target instance tags. |
-| GCP.Compute.FirewallNextToken | string | Next page token for pagination. |
+| GCP.Compute.Firewall.id | String | Unique identifier for the firewall rule. |
+| GCP.Compute.Firewall.name | String | Name of the firewall rule. |
+| GCP.Compute.Firewall.kind | String | Type of the resource \(for example, compute\#firewall\). |
+| GCP.Compute.Firewall.description | String | Description of the firewall rule. |
+| GCP.Compute.Firewall.direction | String | Direction of traffic for the rule \(INGRESS or EGRESS\). |
+| GCP.Compute.Firewall.disabled | Boolean | Indicates whether the firewall rule is disabled. |
+| GCP.Compute.Firewall.priority | Number | Priority value of the firewall rule. |
+| GCP.Compute.Firewall.network | String | The network URL this firewall rule applies to. |
+| GCP.Compute.Firewall.selfLink | String | Server-defined URL for the resource. |
+| GCP.Compute.Firewall.creationTimestamp | Date | The creation timestamp of the firewall rule. |
+| GCP.Compute.Firewall.logConfig.enable | Boolean | Indicates whether logging is enabled for the firewall rule. |
+| GCP.Compute.Firewall.sourceRanges | Unknown | List of source IP ranges that the rule applies to. |
+| GCP.Compute.Firewall.targetTags | Unknown | List of target instance tags to which the rule applies. |
+| GCP.Compute.FirewallNextToken | String | Next page token for pagination. |
 
 ### gcp-compute-firewall-get
 
@@ -1194,7 +1207,7 @@ Lists snapshots in the specified project.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | project_id | GCP project ID. | Required |
-| max_results | Maximum number of results to return. | Optional |
+| limit | Maximum number of results to return. | Optional |
 | page_token | Token for pagination. | Optional |
 | filter | API filter expression. | Optional |
 
@@ -1202,13 +1215,29 @@ Lists snapshots in the specified project.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCP.Compute.Snapshot.name | string | Snapshot name. |
-| GCP.Compute.Snapshot.id | string | Snapshot ID. |
-| GCP.Compute.Snapshot.status | string | Snapshot status. |
-| GCP.Compute.Snapshot.sourceDisk | string | Source disk URL. |
-| GCP.Compute.Snapshot.creationTimestamp | string | Creation timestamp \(RFC3339\). |
-| GCP.Compute.Snapshot.storageBytes | number | Storage size in bytes. |
-| GCP.Compute.SnapshotNextToken | string | Next page token for pagination. |
+| GCP.Compute.Snapshot.id | String | Unique identifier for the snapshot resource. |
+| GCP.Compute.Snapshot.name | String | Name of the snapshot resource. |
+| GCP.Compute.Snapshot.kind | String | Type of the resource, for example compute\#snapshot. |
+| GCP.Compute.Snapshot.status | String | Current status of the snapshot, such as READY or FAILED. |
+| GCP.Compute.Snapshot.autoCreated | Boolean | Indicates whether the snapshot was automatically created. |
+| GCP.Compute.Snapshot.architecture | String | CPU architecture of the source disk, for example X86_64. |
+| GCP.Compute.Snapshot.creationTimestamp | Date | The time when the snapshot was created. |
+| GCP.Compute.Snapshot.creationSizeBytes | Number | Total size of the snapshot in bytes at creation time. |
+| GCP.Compute.Snapshot.diskSizeGb | Number | Size of the snapshot in gigabytes. |
+| GCP.Compute.Snapshot.downloadBytes | Number | Total bytes downloaded to create the snapshot. |
+| GCP.Compute.Snapshot.enableConfidentialCompute | Boolean | Indicates if confidential compute is enabled for this snapshot. |
+| GCP.Compute.Snapshot.labelFingerprint | String | Fingerprint for the labels applied to the snapshot. |
+| GCP.Compute.Snapshot.licenseCodes | Unknown | List of license code identifiers attached to the snapshot. |
+| GCP.Compute.Snapshot.licenses | Unknown | List of license URLs associated with the snapshot. |
+| GCP.Compute.Snapshot.selfLink | String | Server-defined URL for the snapshot resource. |
+| GCP.Compute.Snapshot.sourceDisk | String | URL of the source disk used to create the snapshot. |
+| GCP.Compute.Snapshot.sourceDiskId | String | Unique ID of the source disk used to create the snapshot. |
+| GCP.Compute.Snapshot.sourceSnapshotSchedulePolicy | String | URL of the snapshot schedule policy used to create this snapshot. |
+| GCP.Compute.Snapshot.sourceSnapshotSchedulePolicyId | String | Unique ID of the snapshot schedule policy used to create this snapshot. |
+| GCP.Compute.Snapshot.storageBytes | Number | Total storage size of the snapshot in bytes. |
+| GCP.Compute.Snapshot.storageBytesStatus | String | Status of the storage bytes usage, for example UP_TO_DATE. |
+| GCP.Compute.Snapshot.storageLocations | Unknown | List of storage locations for the snapshot. |
+| GCP.Compute.SnapshotNextToken | String | Next page token for pagination. |
 
 ### gcp-compute-snapshot-get
 
@@ -1230,12 +1259,28 @@ Retrieves details for a specific snapshot.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCP.Compute.Snapshot.name | string | Snapshot name. |
-| GCP.Compute.Snapshot.id | string | Snapshot ID. |
-| GCP.Compute.Snapshot.status | string | Snapshot status. |
-| GCP.Compute.Snapshot.sourceDisk | string | Source disk URL. |
-| GCP.Compute.Snapshot.creationTimestamp | string | Creation timestamp \(RFC3339\). |
-| GCP.Compute.Snapshot.storageBytes | number | Storage size in bytes. |
+| GCP.Compute.Snapshot.id | String | Unique identifier for the snapshot resource. |
+| GCP.Compute.Snapshot.name | String | Name of the snapshot resource. |
+| GCP.Compute.Snapshot.kind | String | Type of the resource, for example compute\#snapshot. |
+| GCP.Compute.Snapshot.status | String | Current status of the snapshot, such as READY or FAILED. |
+| GCP.Compute.Snapshot.autoCreated | Boolean | Indicates whether the snapshot was automatically created. |
+| GCP.Compute.Snapshot.architecture | String | CPU architecture of the source disk, for example X86_64. |
+| GCP.Compute.Snapshot.creationTimestamp | Date | The time when the snapshot was created. |
+| GCP.Compute.Snapshot.creationSizeBytes | Number | Total size of the snapshot in bytes at creation time. |
+| GCP.Compute.Snapshot.diskSizeGb | Number | Size of the snapshot in gigabytes. |
+| GCP.Compute.Snapshot.downloadBytes | Number | Total bytes downloaded to create the snapshot. |
+| GCP.Compute.Snapshot.enableConfidentialCompute | Boolean | Indicates if confidential compute is enabled for this snapshot. |
+| GCP.Compute.Snapshot.labelFingerprint | String | Fingerprint for the labels applied to the snapshot. |
+| GCP.Compute.Snapshot.licenseCodes | Unknown | List of license code identifiers attached to the snapshot. |
+| GCP.Compute.Snapshot.licenses | Unknown | List of license URLs associated with the snapshot. |
+| GCP.Compute.Snapshot.selfLink | String | Server-defined URL for the snapshot resource. |
+| GCP.Compute.Snapshot.sourceDisk | String | URL of the source disk used to create the snapshot. |
+| GCP.Compute.Snapshot.sourceDiskId | String | Unique ID of the source disk used to create the snapshot. |
+| GCP.Compute.Snapshot.sourceSnapshotSchedulePolicy | String | URL of the snapshot schedule policy used to create this snapshot. |
+| GCP.Compute.Snapshot.sourceSnapshotSchedulePolicyId | String | Unique ID of the snapshot schedule policy used to create this snapshot. |
+| GCP.Compute.Snapshot.storageBytes | Number | Total storage size of the snapshot in bytes. |
+| GCP.Compute.Snapshot.storageBytesStatus | String | Status of the storage bytes usage, for example UP_TO_DATE. |
+| GCP.Compute.Snapshot.storageLocations | Unknown | List of storage locations for the snapshot. |
 
 ### gcp-compute-instances-aggregated-list-by-ip
 
@@ -1253,7 +1298,7 @@ Aggregated list of instances across all zones; can be filtered by internal or ex
 | project_id | GCP project ID. | Required |
 | ip_address | The IP address to search for. | Required |
 | match_external | If true, match against external NAT IPs; otherwise internal NIC IPs. Possible values are: true, false. | Optional |
-| max_results | Maximum number of results to return. | Optional |
+| limit | Maximum number of results to return. | Optional |
 | page_token | Token for pagination. | Optional |
 
 #### Context Output
@@ -1283,7 +1328,7 @@ Adds a network tag to a VM instance (merges with existing tags).
 | zone | Zone of the VM (e.g., us-central1-a). | Required |
 | resource_name | Instance name. | Required |
 | tag | Tag to add. | Required |
-| add_tag | If true, add the tag to the existing tags; otherwise override the existing tags. (the default is true). Possible values are: true, false. Default is true. | Optional |
+| add_tag | If true, adds the tag to the existing tags; otherwise, overrides them. The default is true. Possible values are: true, false. Default is true. | Optional |
 
 #### Context Output
 

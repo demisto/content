@@ -188,27 +188,48 @@ script:
       description: Whether this firewall rule is disabled.
     outputs:
     - contextPath: GCP.Compute.Operations.id
-      description: The unique identifier for the resource. This identifier is defined by the server.
-      type: string
+      description: Unique identifier for the operation resource, defined by the server.
+      type: String
     - contextPath: GCP.Compute.Operations.name
-      description: Name of the resource.
-      type: string
+      description: Name of the operation resource.
+      type: String
+    - contextPath: GCP.Compute.Operations.kind
+      description: Type of the resource, for example compute#operation.
+      type: String
     - contextPath: GCP.Compute.Operations.operationType
-      description: The type of operation, such as insert, update, or delete, and so on.
-      type: string
+      description: Type of operation, such as insert, update, or delete.
+      type: String
     - contextPath: GCP.Compute.Operations.status
-      description: The status of the operation.
-      type: string
+      description: Current status of the operation.
+      type: String
+    - contextPath: GCP.Compute.Operations.progress
+      description: Progress of the operation as a percentage between 0 and 100.
+      type: Number
+    - contextPath: GCP.Compute.Operations.targetId
+      description: Unique target ID of the resource affected by the operation.
+      type: String
     - contextPath: GCP.Compute.Operations.targetLink
-      description: The URL of the resource that the operation modifies.
-      type: string
+      description: URL of the target resource modified by the operation.
+      type: String
+    - contextPath: GCP.Compute.Operations.selfLink
+      description: Server-defined URL for the operation resource.
+      type: String
+    - contextPath: GCP.Compute.Operations.insertTime
+      description: The time when the operation resource was created.
+      type: Date
+    - contextPath: GCP.Compute.Operations.startTime
+      description: The time when the operation started running.
+      type: Date
+    - contextPath: GCP.Compute.Operations.user
+      description: The user account that performed the operation.
+      type: String
   - name: gcp-compute-firewall-list
     description: Lists firewall rules in the specified project.
     arguments:
     - name: project_id
       required: true
       description: GCP project ID.
-    - name: max_results
+    - name: limit
       description: Maximum number of results to return.
     - name: page_token
       description: Token for pagination.
@@ -216,30 +237,48 @@ script:
     - name: filter
       description: API filter expression.
     outputs:
+    - contextPath: GCP.Compute.Firewall.id
+      description: Unique identifier for the firewall rule.
+      type: String
     - contextPath: GCP.Compute.Firewall.name
-      description: Firewall rule name.
-      type: string
-    - contextPath: GCP.Compute.Firewall.network
-      description: Network URL for the firewall rule.
-      type: string
+      description: Name of the firewall rule.
+      type: String
+    - contextPath: GCP.Compute.Firewall.kind
+      description: Type of the resource (for example, compute#firewall).
+      type: String
+    - contextPath: GCP.Compute.Firewall.description
+      description: Description of the firewall rule.
+      type: String
     - contextPath: GCP.Compute.Firewall.direction
-      description: Direction of traffic (INGRESS/EGRESS).
-      type: string
+      description: Direction of traffic for the rule (INGRESS or EGRESS).
+      type: String
+    - contextPath: GCP.Compute.Firewall.disabled
+      description: Indicates whether the firewall rule is disabled.
+      type: Boolean
     - contextPath: GCP.Compute.Firewall.priority
-      description: Priority of the rule.
-      type: number
-    - contextPath: GCP.Compute.Firewall.allowed
-      description: Allowed tuples.
-      type: Unknown
-    - contextPath: GCP.Compute.Firewall.denied
-      description: Denied tuples.
+      description: Priority value of the firewall rule.
+      type: Number
+    - contextPath: GCP.Compute.Firewall.network
+      description: The network URL this firewall rule applies to.
+      type: String
+    - contextPath: GCP.Compute.Firewall.selfLink
+      description: Server-defined URL for the resource.
+      type: String
+    - contextPath: GCP.Compute.Firewall.creationTimestamp
+      description: The creation timestamp of the firewall rule.
+      type: Date
+    - contextPath: GCP.Compute.Firewall.logConfig.enable
+      description: Indicates whether logging is enabled for the firewall rule.
+      type: Boolean
+    - contextPath: GCP.Compute.Firewall.sourceRanges
+      description: List of source IP ranges that the rule applies to.
       type: Unknown
     - contextPath: GCP.Compute.Firewall.targetTags
-      description: Target instance tags.
+      description: List of target instance tags to which the rule applies.
       type: Unknown
     - contextPath: GCP.Compute.FirewallNextToken
       description: Next page token for pagination.
-      type: string
+      type: String
   - name: gcp-compute-firewall-get
     description: Retrieves a specific firewall rule by name.
     arguments:
@@ -277,34 +316,82 @@ script:
     - name: project_id
       required: true
       description: GCP project ID.
-    - name: max_results
+    - name: limit
       description: Maximum number of results to return.
     - name: page_token
       description: Token for pagination.
     - name: filter
       description: API filter expression.
     outputs:
-    - contextPath: GCP.Compute.Snapshot.name
-      description: Snapshot name.
-      type: string
     - contextPath: GCP.Compute.Snapshot.id
-      description: Snapshot ID.
-      type: string
+      description: Unique identifier for the snapshot resource.
+      type: String
+    - contextPath: GCP.Compute.Snapshot.name
+      description: Name of the snapshot resource.
+      type: String
+    - contextPath: GCP.Compute.Snapshot.kind
+      description: Type of the resource, for example compute#snapshot.
+      type: String
     - contextPath: GCP.Compute.Snapshot.status
-      description: Snapshot status.
-      type: string
-    - contextPath: GCP.Compute.Snapshot.sourceDisk
-      description: Source disk URL.
-      type: string
+      description: Current status of the snapshot, such as READY or FAILED.
+      type: String
+    - contextPath: GCP.Compute.Snapshot.autoCreated
+      description: Indicates whether the snapshot was automatically created.
+      type: Boolean
+    - contextPath: GCP.Compute.Snapshot.architecture
+      description: CPU architecture of the source disk, for example X86_64.
+      type: String
     - contextPath: GCP.Compute.Snapshot.creationTimestamp
-      description: Creation timestamp (RFC3339).
-      type: string
+      description: The time when the snapshot was created.
+      type: Date
+    - contextPath: GCP.Compute.Snapshot.creationSizeBytes
+      description: Total size of the snapshot in bytes at creation time.
+      type: Number
+    - contextPath: GCP.Compute.Snapshot.diskSizeGb
+      description: Size of the snapshot in gigabytes.
+      type: Number
+    - contextPath: GCP.Compute.Snapshot.downloadBytes
+      description: Total bytes downloaded to create the snapshot.
+      type: Number
+    - contextPath: GCP.Compute.Snapshot.enableConfidentialCompute
+      description: Indicates if confidential compute is enabled for this snapshot.
+      type: Boolean
+    - contextPath: GCP.Compute.Snapshot.labelFingerprint
+      description: Fingerprint for the labels applied to the snapshot.
+      type: String
+    - contextPath: GCP.Compute.Snapshot.licenseCodes
+      description: List of license code identifiers attached to the snapshot.
+      type: Unknown
+    - contextPath: GCP.Compute.Snapshot.licenses
+      description: List of license URLs associated with the snapshot.
+      type: Unknown
+    - contextPath: GCP.Compute.Snapshot.selfLink
+      description: Server-defined URL for the snapshot resource.
+      type: String
+    - contextPath: GCP.Compute.Snapshot.sourceDisk
+      description: URL of the source disk used to create the snapshot.
+      type: String
+    - contextPath: GCP.Compute.Snapshot.sourceDiskId
+      description: Unique ID of the source disk used to create the snapshot.
+      type: String
+    - contextPath: GCP.Compute.Snapshot.sourceSnapshotSchedulePolicy
+      description: URL of the snapshot schedule policy used to create this snapshot.
+      type: String
+    - contextPath: GCP.Compute.Snapshot.sourceSnapshotSchedulePolicyId
+      description: Unique ID of the snapshot schedule policy used to create this snapshot.
+      type: String
     - contextPath: GCP.Compute.Snapshot.storageBytes
-      description: Storage size in bytes.
-      type: number
+      description: Total storage size of the snapshot in bytes.
+      type: Number
+    - contextPath: GCP.Compute.Snapshot.storageBytesStatus
+      description: Status of the storage bytes usage, for example UP_TO_DATE.
+      type: String
+    - contextPath: GCP.Compute.Snapshot.storageLocations
+      description: List of storage locations for the snapshot.
+      type: Unknown
     - contextPath: GCP.Compute.SnapshotNextToken
       description: Next page token for pagination.
-      type: string
+      type: String
   - name: gcp-compute-snapshot-get
     description: Retrieves details for a specific snapshot.
     arguments:
@@ -315,24 +402,72 @@ script:
       required: true
       description: Snapshot name.
     outputs:
-    - contextPath: GCP.Compute.Snapshot.name
-      description: Snapshot name.
-      type: string
     - contextPath: GCP.Compute.Snapshot.id
-      description: Snapshot ID.
-      type: string
+      description: Unique identifier for the snapshot resource.
+      type: String
+    - contextPath: GCP.Compute.Snapshot.name
+      description: Name of the snapshot resource.
+      type: String
+    - contextPath: GCP.Compute.Snapshot.kind
+      description: Type of the resource, for example compute#snapshot.
+      type: String
     - contextPath: GCP.Compute.Snapshot.status
-      description: Snapshot status.
-      type: string
-    - contextPath: GCP.Compute.Snapshot.sourceDisk
-      description: Source disk URL.
-      type: string
+      description: Current status of the snapshot, such as READY or FAILED.
+      type: String
+    - contextPath: GCP.Compute.Snapshot.autoCreated
+      description: Indicates whether the snapshot was automatically created.
+      type: Boolean
+    - contextPath: GCP.Compute.Snapshot.architecture
+      description: CPU architecture of the source disk, for example X86_64.
+      type: String
     - contextPath: GCP.Compute.Snapshot.creationTimestamp
-      description: Creation timestamp (RFC3339).
-      type: string
+      description: The time when the snapshot was created.
+      type: Date
+    - contextPath: GCP.Compute.Snapshot.creationSizeBytes
+      description: Total size of the snapshot in bytes at creation time.
+      type: Number
+    - contextPath: GCP.Compute.Snapshot.diskSizeGb
+      description: Size of the snapshot in gigabytes.
+      type: Number
+    - contextPath: GCP.Compute.Snapshot.downloadBytes
+      description: Total bytes downloaded to create the snapshot.
+      type: Number
+    - contextPath: GCP.Compute.Snapshot.enableConfidentialCompute
+      description: Indicates if confidential compute is enabled for this snapshot.
+      type: Boolean
+    - contextPath: GCP.Compute.Snapshot.labelFingerprint
+      description: Fingerprint for the labels applied to the snapshot.
+      type: String
+    - contextPath: GCP.Compute.Snapshot.licenseCodes
+      description: List of license code identifiers attached to the snapshot.
+      type: Unknown
+    - contextPath: GCP.Compute.Snapshot.licenses
+      description: List of license URLs associated with the snapshot.
+      type: Unknown
+    - contextPath: GCP.Compute.Snapshot.selfLink
+      description: Server-defined URL for the snapshot resource.
+      type: String
+    - contextPath: GCP.Compute.Snapshot.sourceDisk
+      description: URL of the source disk used to create the snapshot.
+      type: String
+    - contextPath: GCP.Compute.Snapshot.sourceDiskId
+      description: Unique ID of the source disk used to create the snapshot.
+      type: String
+    - contextPath: GCP.Compute.Snapshot.sourceSnapshotSchedulePolicy
+      description: URL of the snapshot schedule policy used to create this snapshot.
+      type: String
+    - contextPath: GCP.Compute.Snapshot.sourceSnapshotSchedulePolicyId
+      description: Unique ID of the snapshot schedule policy used to create this snapshot.
+      type: String
     - contextPath: GCP.Compute.Snapshot.storageBytes
-      description: Storage size in bytes.
-      type: number
+      description: Total storage size of the snapshot in bytes.
+      type: Number
+    - contextPath: GCP.Compute.Snapshot.storageBytesStatus
+      description: Status of the storage bytes usage, for example UP_TO_DATE.
+      type: String
+    - contextPath: GCP.Compute.Snapshot.storageLocations
+      description: List of storage locations for the snapshot.
+      type: Unknown
   - name: gcp-compute-instances-aggregated-list-by-ip
     description: Aggregated list of instances across all zones; can be filtered by internal or external IP.
     arguments:
@@ -348,7 +483,7 @@ script:
       - "true"
       - "false"
       description: If true, match against external NAT IPs; otherwise internal NIC IPs.
-    - name: max_results
+    - name: limit
       description: Maximum number of results to return.
     - name: page_token
       description: Token for pagination.

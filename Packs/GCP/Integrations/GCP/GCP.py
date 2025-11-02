@@ -560,7 +560,7 @@ def storage_bucket_list(creds: Credentials, args: dict[str, Any]) -> CommandResu
         readable_output=hr,
         outputs_prefix="GCP.Storage.Bucket",
         outputs=buckets,
-        outputs_key_field="Name",
+        outputs_key_field=["name", "id"],
         raw_response=buckets,
     )
 
@@ -599,7 +599,7 @@ def storage_bucket_get(creds: Credentials, args: dict[str, Any]) -> CommandResul
         readable_output=hr,
         outputs_prefix="GCP.Storage.Bucket",
         outputs=response,
-        outputs_key_field="Name",
+        outputs_key_field=["name", "id"],
         raw_response=response,
     )
 
@@ -660,7 +660,7 @@ def storage_bucket_objects_list(creds: Credentials, args: dict[str, Any]) -> Com
         readable_output=hr,
         outputs_prefix="GCP.Storage.BucketObject",
         outputs=objects,
-        outputs_key_field="Name",
+        outputs_key_field=["name", "id"],
         raw_response=objects,
     )
 
@@ -1037,6 +1037,7 @@ def compute_firewall_insert(creds: Credentials, args: dict[str, Any]) -> Command
         "Google Cloud Compute Firewall Rule Insert Operation Started Successfully",
         t=response,
         headers=OPERATION_TABLE,
+        headerTransform=pascalToSpace,
         removeNull=True,
     )
     return CommandResults(readable_output=hr, outputs_prefix="GCP.Compute.Operations", outputs=response)
@@ -1047,13 +1048,13 @@ def compute_firewall_list(creds: Credentials, args: dict[str, Any]) -> CommandRe
     Lists firewall rules in the specified project.
     """
     project_id = args.get("project_id")
-    max_results = arg_to_number(args.get("max_results"))
+    limit = arg_to_number(args.get("limit"))
     page_token = args.get("page_token")
     flt = args.get("filter")
 
     params: dict[str, Any] = {
         "project": project_id,
-        "maxResults": max_results,
+        "maxResults": limit,
         "pageToken": page_token,
         "filter": flt,
     }
@@ -1079,7 +1080,7 @@ def compute_firewall_list(creds: Credentials, args: dict[str, Any]) -> CommandRe
     )
 
     outputs = {
-        "GCP.Compute.Firewall(val.id && val.id == obj.id)": items,
+        "GCP.Compute.Firewall(val.name && val.name == obj.name)": items,
         "GCP.Compute(true)": {"FirewallNextToken": next_token},
     }
     return CommandResults(
@@ -1104,8 +1105,18 @@ def compute_firewall_get(creds: Credentials, args: dict[str, Any]) -> CommandRes
             return CommandResults(readable_output=f"Firewall '{resource_name}' not found in project '{project_id}'")
         raise
     demisto.debug(f"Firewall get response for {project_id}: \n{response}")
-    hr = tableToMarkdown(f"GCP Compute Firewall: {resource_name}", response, removeNull=True)
-    return CommandResults(readable_output=hr, outputs_prefix="GCP.Compute.Firewall", outputs=response)
+    hr = tableToMarkdown(
+        f"GCP Compute Firewall: {resource_name}",
+        response,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+    return CommandResults(
+        readable_output=hr,
+        outputs_prefix="GCP.Compute.Firewall",
+        outputs=response,
+        outputs_key_field="name",
+    )
 
 
 def compute_snapshots_list(creds: Credentials, args: dict[str, Any]) -> CommandResults:
@@ -1113,13 +1124,13 @@ def compute_snapshots_list(creds: Credentials, args: dict[str, Any]) -> CommandR
     Lists snapshots in the specified project.
     """
     project_id = args.get("project_id")
-    max_results = arg_to_number(args.get("max_results"))
+    limit = arg_to_number(args.get("limit"))
     page_token = args.get("page_token")
     flt = args.get("filter")
 
     params: dict[str, Any] = {"project": project_id}
-    if max_results:
-        params["maxResults"] = max_results
+    if limit:
+        params["maxResults"] = limit
     if page_token:
         params["pageToken"] = page_token
     if flt:
@@ -1138,7 +1149,12 @@ def compute_snapshots_list(creds: Credentials, args: dict[str, Any]) -> CommandR
     )
     headers = ["name", "status", "creationTimestamp"]
     hr = tableToMarkdown(
-        "GCP Compute Snapshots", items, headers=headers, removeNull=True, metadata=metadata, headerTransform=pascalToSpace
+        "GCP Compute Snapshots",
+        items,
+        headers=headers,
+        removeNull=True,
+        metadata=metadata,
+        headerTransform=pascalToSpace,
     )
     outputs = {
         "GCP.Compute.Snapshot(val.id && val.id == obj.id)": items,
@@ -1163,7 +1179,12 @@ def compute_snapshot_get(creds: Credentials, args: dict[str, Any]) -> CommandRes
         raise
     demisto.debug(f"Snapshot get response for {project_id}: \n{response}")
 
-    hr = tableToMarkdown(f"GCP Compute Snapshot: {resource_name}", response, removeNull=True)
+    hr = tableToMarkdown(
+        f"GCP Compute Snapshot: {resource_name}",
+        response,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
     return CommandResults(readable_output=hr, outputs_prefix="GCP.Compute.Snapshot", outputs=response, outputs_key_field="id")
 
 
@@ -1205,12 +1226,12 @@ def compute_instances_aggregated_list_by_ip(creds: Credentials, args: dict[str, 
     project_id = args.get("project_id")
     ip_address = args.get("ip_address", "")
     match_external = argToBoolean(args.get("match_external", "false"))
-    max_results = arg_to_number(args.get("max_results"))
+    limit = arg_to_number(args.get("limit"))
     page_token = args.get("page_token")
 
     params: dict[str, Any] = {"project": project_id}
-    if max_results:
-        params["maxResults"] = max_results
+    if limit:
+        params["maxResults"] = limit
     if page_token:
         params["pageToken"] = page_token
 
@@ -1240,8 +1261,14 @@ def compute_instances_aggregated_list_by_ip(creds: Credentials, args: dict[str, 
                 )
 
     hr_headers = ["name", "id", "status", "zone", "networkIP", "accessConfigs.natIP", "matchType", "matchedIP"]
-    hr = tableToMarkdown("GCP Compute Instances (filtered by IP)", hr_items, headers=hr_headers, removeNull=True)
-    return CommandResults(readable_output=hr, outputs_prefix="GCP.Compute.Instance", outputs=matched)
+    hr = tableToMarkdown(
+        "GCP Compute Instances (filtered by IP)",
+        hr_items,
+        headers=hr_headers,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+    return CommandResults(readable_output=hr, outputs_prefix="GCP.Compute.Instance", outputs=matched, raw_response=response)
 
 
 def compute_network_tag_set(creds: Credentials, args: dict[str, Any]) -> CommandResults:
@@ -1278,7 +1305,7 @@ def compute_network_tag_set(creds: Credentials, args: dict[str, Any]) -> Command
     new_tag = args.get("tag")
     readable_output = f"Added '{new_tag}' tag to instance {resource_name} successfully\n" f"The full network tag list is: {tags}"
 
-    return CommandResults(readable_output=readable_output)
+    return CommandResults(readable_output=readable_output, raw_response=response)
 
 
 def storage_bucket_policy_delete(creds: Credentials, args: dict[str, Any]) -> CommandResults:
