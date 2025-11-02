@@ -1098,6 +1098,52 @@ script:
         - contextPath: Core.CaseExtraData.file_artifacts.data.type
           description: The type of the file artifact.
           type: String
+    - arguments:
+        - description: The maximum number of groups to return.
+          defaultValue: "50"
+          name: limit
+        - description: A JSON list of asset group names to search for. (e.g., `["group1", "group2"]`).
+          name: name
+        - description: A comma-separated list of asset group IDs to search for.
+          isArray: true
+          name: id
+        - auto: PREDEFINED
+          description: Filter asset groups by type. When not specified, both types are used.
+          name: type
+          predefined:
+            - STATIC
+            - DYNAMIC
+        - description: A JSON list of asset group descriptions to search for. (e.g. `["description1", "description2"]`).
+          name: description
+      name: core-search-asset-groups
+      description: Searches for asset groups from the Cortex platform using one or more filter criteria.
+      outputs:
+        - contextPath: Core.AssetGroups.name
+          description: The name of the asset group.
+          type: String
+        - contextPath: Core.AssetGroups.filter
+          description: The filter criteria for the asset group.
+          type: String
+        - contextPath: Core.AssetGroups.membership_predicate
+          description: The predicate used to create the asset group.
+          type: String
+        - contextPath: Core.AssetGroups.type
+          description: The type of the asset group.
+          type: String
+        - contextPath: Core.AssetGroups.description
+          description: The description of the asset group.
+          type: String
+        - contextPath: Core.AssetGroups.modified_by
+          description: The user who modified the asset group.
+          type: String
+        - contextPath: Core.AssetGroups.created_by
+          description: The user who created the asset group.
+          type: String
+        - contextPath: Core.AssetGroups.created_by_pretty
+          description: The formatted name of the user who created the asset group.
+          type: String
+        - contextPath: Core.AssetGroups.modified_by_pretty
+          description: The formatted name of the user who created the asset group.
     - name: core-get-vulnerabilities
       description: "Retrieves vulnerabilities based on specified filters."
       arguments:
