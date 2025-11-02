@@ -21,7 +21,7 @@ script:
   commands:
     - arguments:
         - description: The unique ID of the issue. Accepts a comma-separated list.
-          name: issue_id
+          name: id
           isArray: true
         - auto: PREDEFINED
           description: The severity of the issue. Accepts a comma-separated list.
@@ -1133,6 +1133,7 @@ script:
   dockerimage: demisto/google-cloud-storage:1.0.0.4885491
 tests:
   - No tests
+enabled: true
 fromversion: 6.2.0
 marketplaces:
 - platform

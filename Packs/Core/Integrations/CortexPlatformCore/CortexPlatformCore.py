@@ -179,7 +179,7 @@ def get_issue_id(args) -> str:
     Returns:
         str: The extracted issue ID
     """
-    issue_id = args.get("issue_id", "")
+    issue_id = args.get("id", "")
     if not issue_id:
         issue = demisto.callingContext.get("context", {}).get("Incidents")[0]
         issue_id = issue["id"]
@@ -237,6 +237,7 @@ def update_issue_command(client: Client, args: dict):
     filter_data = create_filter_data(issue_id, filtered_update_args)
     demisto.debug(filter_data)
     client.update_issue(filter_data)
+    return "done"
 
 
 def get_extra_data_for_case_id_command(client, args):
