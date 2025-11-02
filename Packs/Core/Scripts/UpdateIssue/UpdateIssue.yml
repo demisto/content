@@ -37,17 +37,8 @@ args:
 - name: systems
   description: Add systems (system label) to an issue in a format of system,system - i.e. 1.1.1.1,2.2.2.2.
   type: string
-- name: labels
-  description: commands.local.cmd.set.incident.arg.label
-  type: string
-- name: add_labels
-  description: commands.local.cmd.set.incident.arg.addlabel
-  type: string
 - name: type
   description: Change the type of an issue.
-  type: string
-- name: replace_playbook
-  description: If provided (any value), the playbook for the issue will be replaced according to the new type if such type is provided, different from the old one and is valid.
   type: string
 - name: custom_fields
   description: Set the custom fields of the issue in the form of a JSON string with field name as key and value as the value.

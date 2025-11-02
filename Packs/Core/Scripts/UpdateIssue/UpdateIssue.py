@@ -3,7 +3,7 @@ from CommonServerPython import *  # noqa: F401
 
 
 def map_to_command_args(args) -> tuple[dict, dict]:
-    set_issue_args = ["owner", "systems", "labels", "add_labels", "type", "replace_playbook", "custom_fields", "details"]
+    set_issue_args = ["systems", "type", "custom_fields", "details"]
     update_issue_args = ["name", "assigned_user_mail", "severity", "occurred", "phase"]
 
     set_issue_args_dict = {}
@@ -11,11 +11,7 @@ def map_to_command_args(args) -> tuple[dict, dict]:
 
     for arg, value in args.items():
         if arg in set_issue_args:
-            if arg == "add_labels":
-                set_issue_args_dict["addLabels"] = value
-            elif arg == "replace_playbook":
-                set_issue_args_dict["replacePlaybook"] = value
-            elif arg == "custom_fields":
+            if arg == "custom_fields":
                 set_issue_args_dict["customFields"] = value
             else:
                 set_issue_args_dict[arg] = value
@@ -47,7 +43,7 @@ def main():
             flag = True
             execute_command("setIssue", set_issue_args_dict)
 
-        if len_update:
+        if len_update > 0:
             demisto.debug(f"Calling core-update-issue with {update_issue_args_dict}")
             flag = True
             execute_command("core-update-issue", update_issue_args_dict)

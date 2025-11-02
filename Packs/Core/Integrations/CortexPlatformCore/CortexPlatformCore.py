@@ -321,6 +321,7 @@ class Client(CoreClient):
 
     def update_issue(self, filter_data):
         return self._http_request(method="POST", json_data=filter_data, url_suffix="/alerts/update_alerts")
+
     def search_assets(self, filter, page_number, page_size, on_demand_fields):
         reply = self._http_request(
             method="POST",
