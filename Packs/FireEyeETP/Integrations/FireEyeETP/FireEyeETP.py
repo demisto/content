@@ -87,7 +87,7 @@ def fetch_oauth_token():
     """
     Fetch OAuth 2.0 access token
     """
-    # Trellix Email Security OAuth2 endpoint
+    # Trellix OAuth2 endpoint
     token_url = "https://auth.trellix.com/auth/realms/IAM/protocol/openid-connect/token" #TODO only for IAM?
     
     # Create Basic auth header with base64 encoded client credentials
@@ -117,7 +117,7 @@ def fetch_oauth_token():
         
         result = response.json()
         access_token = result.get("access_token")
-        expires_in = result.get("expires_in", 3600)  # Default to 1 hour #TODO is that true?
+        expires_in = result.get("expires_in", 600)  # Default to 10 minutes
         
         if not access_token:
             raise Exception("Failed to retrieve access token from OAuth response")

@@ -152,7 +152,7 @@ class Client(BaseClient):  # pragma: no cover
             
             result = response.json()
             access_token = result.get("access_token", "")
-            expires_in = result.get("expires_in", 3600)  # Default 1 hour
+            expires_in = result.get("expires_in", 600)  # Default to 10 minutes
             
             if not access_token:
                 raise ValueError("Failed to obtain access token from OAuth2 authentication")
