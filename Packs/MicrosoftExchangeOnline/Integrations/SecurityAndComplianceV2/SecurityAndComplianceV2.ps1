@@ -1504,10 +1504,22 @@ class SecurityAndComplianceClient {
 
 #### COMMAND FUNCTIONS ####
 
-function TestModuleCommand () {
-    $raw_response = $null
-    $human_readable = "To test your connection, if you are using app-only authentication use the command !$script:COMMAND_PREFIX-auth-start and follow the instructions. If you are using UPN and password authentication, run the command !$script:COMMAND_PREFIX-auth-test to verify the connection."
+function TestModuleCommand ([SecurityAndComplianceClient]$cs_client, [bool]$using_delegated) {
+
     $entry_context = $null
+    if ($using_delegated -eq $false){
+        $human_readable = "To test your connection, if you are using app-only authentication use the command !$script:COMMAND_PREFIX-auth-start and follow the instructions. If you are using UPN and password authentication, run the command !$script:COMMAND_PREFIX-auth-test to verify the connection."
+        $raw_response = $null
+    } else {
+        $human_readable = "Test Ok!"
+        $raw_response = $true
+        try {
+            $cs_client.CreateDelegatedSession("Start-ComplianceSearch")
+        }
+        finally {
+            $cs_client.DisconnectSession()
+        }
+    }
 
     return $human_readable, $entry_context, $raw_response
 }
@@ -1535,9 +1547,9 @@ function CompleteAuthCommand ([OAuth2DeviceCodeClient]$client) {
     return $human_readable, $entry_context, $raw_response
 }
 
-function TestAuthCommand ([OAuth2DeviceCodeClient]$oclient, [SecurityAndComplianceClient]$cs_client) {
+function TestAuthCommand ([OAuth2DeviceCodeClient]$oclient, [SecurityAndComplianceClient]$cs_client, [bool]$using_delegated) {
 
-    if ($this.using_delegated -eq $false){
+    if ($using_delegated -eq $false){
         $raw_response = $oclient.RefreshTokenRequest()
     } else {
         $raw_response = $null
@@ -2211,10 +2223,10 @@ function Main {
         # Executing command
         switch ($command) {
             "test-module" {
-                ($human_readable, $entry_context, $raw_response) = TestModuleCommand
+                ($human_readable, $entry_context, $raw_response) = TestModuleCommand $cs_client $using_delegated
             }
             "$script:COMMAND_PREFIX-auth-test" {
-                ($human_readable, $entry_context, $raw_response) = TestAuthCommand $oauth2_client $cs_client
+                ($human_readable, $entry_context, $raw_response) = TestAuthCommand $oauth2_client $cs_client $using_delegated
             }
             "$script:COMMAND_PREFIX-new-search" {
                 ($human_readable, $entry_context, $raw_response) = NewSearchCommand $cs_client $command_arguments
