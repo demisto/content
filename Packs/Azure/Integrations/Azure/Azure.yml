@@ -351,7 +351,7 @@ script:
       description: Sets the minimum TLS version to be permitted on requests to storage. Default is TLS 1.0.
       type: String
     - contextPath: Azure.StorageAccount.properties.allowSharedKeyAccess
-      description: Whether the storage account permits requests to be authorized with the account access key via Shared Key. If false, then all requests (including shared access signatures) must be authorized with Azure Active Directory (Azure AD).
+      description: Whether the storage account permits requests to be authorized with the account access key via Shared Key. If false, then all requests (including shared access signatures) must be authorized with Entra ID (Azure AD).
       type: Boolean
     - contextPath: Azure.StorageAccount.properties.creationTime
       description: The creation date and time of the storage account in UTC.
@@ -1445,15 +1445,15 @@ script:
       description: SKU name to specify whether the key vault is a standard vault or a premium vault.
       type: String
     - contextPath: Azure.KeyVault.properties.tenantId
-      description: The Azure Active Directory tenant ID that should be used for authenticating requests to the key vault.
+      description: The Entra ID tenant ID that should be used for authenticating requests to the key vault.
       type: String
     - contextPath: Azure.KeyVault.properties.accessPolicies
       description: An array of 0 to 16 identities that have access to the key vault. All identities in the array must use the same tenant ID as the key vault's tenant ID.
     - contextPath: Azure.KeyVault.properties.accessPolicies.tenantId
-      description: The Azure Active Directory tenant ID that should be used for authenticating requests to the key vault.
+      description: The Entra ID tenant ID that should be used for authenticating requests to the key vault.
       type: String
     - contextPath: Azure.KeyVault.properties.accessPolicies.objectId
-      description: The object ID of a user, service principal or security group in the Azure Active Directory tenant for the vault. The object ID must be unique for the list of access policies.
+      description: The object ID of a user, service principal or security group in the Entra ID tenant for the vault. The object ID must be unique for the list of access policies.
       type: String
     - contextPath: Azure.KeyVault.properties.accessPolicies.permissions
       description: Permissions the identity has for keys, secrets and certificates.
@@ -1743,7 +1743,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/crypto:1.0.0.3539024
+  dockerimage: demisto/crypto:1.0.0.5490413
 fromversion: 8.11.0
 isCloudProviderIntegration: true
 tests:

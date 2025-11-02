@@ -1,67 +1,75 @@
 {
-  "id": "SplunkPy-mapper",
-  "name": "Splunk - Incoming Mapper",
-  "type": "mapping-incoming",
-  "description": "Maps Splunk logs fields.",
-  "version": -1,
-  "defaultIncidentType": "",
-  "feed": false,
-  "mapping": {
-    "Access": {
-      "internalMapping": {
-        "App": {
-          "simple": "app",
-          "complex": null
+    "id": "SplunkPy-mapper",
+    "name": "Splunk - Incoming Mapper",
+    "type": "mapping-incoming",
+    "description": "Maps Splunk logs fields.",
+    "version": -1,
+    "defaultIncidentType": "",
+    "feed": false,
+    "mapping": {
+        "Access": {
+            "internalMapping": {
+                "App": {
+                    "simple": "app",
+                    "complex": null
+                },
+                "Dest": {
+                    "simple": "dest",
+                    "complex": null
+                },
+                "Dest NT Domain": {
+                    "simple": "dest_pci_domain",
+                    "complex": null
+                },
+                "Src": {
+                    "simple": "src",
+                    "complex": null
+                },
+                "Src NT Domain": {
+                    "simple": "src_pci_domain",
+                    "complex": null
+                }
+            },
+            "dontMapEventToLabels": false
         },
-        "Dest": {
-          "simple": "dest",
-          "complex": null
+        "Malware": {
+            "internalMapping": {
+                "Dest": {
+                    "simple": "dest",
+                    "complex": null
+                },
+                "Signature": {
+                    "simple": "signature",
+                    "complex": null
+                }
+            },
+            "dontMapEventToLabels": false
         },
-        "Dest NT Domain": {
-          "simple": "dest_pci_domain",
-          "complex": null
-        },
-        "Src": {
-          "simple": "src",
-          "complex": null
-        },
-        "Src NT Domain": {
-          "simple": "src_pci_domain",
-          "complex": null
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "dbotMirrorDirection": {
+                    "complex": null,
+                    "simple": "mirror_direction"
+                },
+                "dbotMirrorId": {
+                    "complex": null,
+                    "simple": "event_id"
+                },
+                "dbotMirrorInstance": {
+                    "complex": null,
+                    "simple": "mirror_instance"
+                }
+            }
         }
-      },
-      "dontMapEventToLabels": false
     },
-    "Malware": {
-      "internalMapping": {
-        "Dest": {
-          "simple": "dest",
-          "complex": null
-        },
-        "Signature": {
-          "simple": "signature",
-          "complex": null
-        }
-      },
-      "dontMapEventToLabels": false
-    },
-    "dbot_classification_incident_type_all": {
-      "dontMapEventToLabels": false,
-      "internalMapping": {
-        "dbotMirrorDirection": {
-          "complex": null,
-          "simple": "mirror_direction"
-        },
-        "dbotMirrorId": {
-          "complex": null,
-          "simple": "event_id"
-        },
-        "dbotMirrorInstance": {
-          "complex": null,
-          "simple": "mirror_instance"
-        }
-      }
-    }
-  },
-  "fromVersion": "6.0.0"
+    "fromVersion": "6.0.0",
+    "supportedModules": [
+        "xsiam",
+        "agentix",
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
+    ]
 }
