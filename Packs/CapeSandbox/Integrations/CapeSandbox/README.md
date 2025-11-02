@@ -47,9 +47,9 @@ Submit a file for analysis to CAPE Sandbox. This command supports PCAP files and
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Cape.Task | Unknown | Task data returned from CAPE when analysis is ready. This object contains details about the submitted task and its status. |
+| **Path** | **Description** |
+| --- | --- |
+| Cape.Task | Task data returned from CAPE when analysis is ready. This object contains details about the submitted task and its status. |
 
 ### cape-file-view
 
@@ -70,16 +70,16 @@ View detailed information about a file that has been analyzed by CAPE Sandbox. Y
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Cape.File.id | String | The ID of the file or task. |
-| Cape.File.file_type | String | The detected type of the file. |
-| Cape.File.md5 | String | The MD5 hash of the file. |
-| Cape.File.crc32 | String | The CRC32 checksum of the file. |
-| Cape.File.sha256 | String | The SHA256 hash of the file. |
-| Cape.File.sha512 | String | The SHA512 hash of the file. |
-| Cape.File.parent | String | The parent process or source of the file. |
-| Cape.File.source_url | String | The URL from which the file was obtained, if applicable. |
+| **Path** | **Description** |
+| --- | --- |
+| Cape.File.id | The ID of the file or task. |
+| Cape.File.file_type | The detected type of the file. |
+| Cape.File.md5 | The MD5 hash of the file. |
+| Cape.File.crc32 | The CRC32 checksum of the file. |
+| Cape.File.sha256 | The SHA256 hash of the file. |
+| Cape.File.sha512 | The SHA512 hash of the file. |
+| Cape.File.parent | The parent process or source of the file. |
+| Cape.File.source_url | The URL from which the file was obtained, if applicable. |
 
 ### cape-sample-download
 
@@ -134,9 +134,9 @@ Submit a URL for analysis to CAPE Sandbox. The command polls the CAPE server unt
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Cape.Task | Unknown | Task data returned from CAPE when analysis is ready. This object contains details about the submitted task and its status. |
+| **Path** | **Description** |
+| --- | --- |
+| Cape.Task | Task data returned from CAPE when analysis is ready. This object contains details about the submitted task and its status. |
 
 ### cape-task-delete
 
@@ -176,9 +176,9 @@ Returns a list of CAPE Sandbox tasks. If a `task_id` is provided, the command re
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Cape.Task | Unknown | Task data, including details for a single task if `task_id` was provided, or a list of tasks. |
+| **Path** | **Description** |
+| --- | --- |
+| Cape.Task | Task data, including details for a single task if `task_id` was provided, or a list of tasks. |
 
 ### cape-task-report-get
 
@@ -199,9 +199,9 @@ Retrieve the analysis report associated with a specified CAPE Sandbox task ID. I
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Cape.Task.Report | Unknown | Details from the CAPE analysis report info object. This will vary based on the report format requested. |
+| **Path** | **Description** |
+| --- | --- |
+| Cape.Task.Report | Details from the CAPE analysis report info object. This will vary based on the report format requested. |
 
 ### cape-pcap-file-download
 
@@ -261,9 +261,9 @@ Returns a list of available analysis machines configured in CAPE Sandbox. If a `
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Cape.Machine | Unknown | Machine data, including details for a single machine if `machine_name` was provided, or a list of machines. |
+| **Path** | **Description** |
+| --- | --- |
+| Cape.Machine | Machine data, including details for a single machine if `machine_name` was provided, or a list of machines. |
 
 ### cape-cuckoo-status-get
 
