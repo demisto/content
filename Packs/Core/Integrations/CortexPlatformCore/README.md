@@ -579,16 +579,16 @@ Get comprehensive recommendations for an issue, including remediation steps, pla
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| issue_id | The ID of the issue to get recommendations for. | Required | 
+| issue_id | The ID of the issue to get recommendations for. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Core.IssueRecommendations.issue_id | String | The unique identifier for the issue. | 
-| Core.IssueRecommendations.issue_name | String | The name of the issue. | 
-| Core.IssueRecommendations.severity | String | The severity of the issue. | 
-| Core.IssueRecommendations.description | String | Description of the issue. | 
-| Core.IssueRecommendations.remediation | String | Remediation steps and recommendations for the issue. | 
-| Core.IssueRecommendations.playbook_suggestions.playbook_id | String | The ID of the suggested playbook. | 
-| Core.IssueRecommendations.playbook_suggestions.suggestion_rule_id | String | The ID of the suggestion rule that generated this recommendation. | 
+| Core.IssueRecommendations.issue_id | String | The unique identifier for the issue. |
+| Core.IssueRecommendations.issue_name | String | The name of the issue. |
+| Core.IssueRecommendations.severity | String | The severity of the issue. |
+| Core.IssueRecommendations.description | String | Description of the issue. |
+| Core.IssueRecommendations.remediation | String | Remediation steps and recommendations for the issue. |
+| Core.IssueRecommendations.playbook_suggestions.playbook_id | String | The ID of the suggested playbook. |
+| Core.IssueRecommendations.playbook_suggestions.suggestion_rule_id | String | The ID of the suggestion rule that generated this recommendation. |
