@@ -1104,23 +1104,23 @@ script:
       - name: page_number
         description: The page number for the assets to return for pagination. Default is 0.
       - name: asset_names
-        description: Comma-separated list of asset names to search for. (e.g., "asset_name1,asset_name2")
+        description: Comma-separated list of asset names to search for. (e.g., "asset_name1,asset_name2").
         isArray: true
       - name: asset_types
-        description: Comma-separated list of asset types to search for. (e.g., "asset_type1,asset_type2")
+        description: Comma-separated list of asset types to search for. (e.g., "asset_type1,asset_type2").
         isArray: true
       - name: asset_tags
         description: |
           A JSON encoded string representing a list of tag:value pairs to search for. (e.g., `[{"tag1": "value1"}, {"tag2": "value2"}]`).
         isArray: true
       - name: asset_ids
-        description: Comma-separated list of asset IDs to search for. (e.g., "asset_id1,asset_id2")
+        description: Comma-separated list of asset IDs to search for. (e.g., "asset_id1,asset_id2").
         isArray: true
       - name: asset_providers
-        description: Comma-separated list of asset providers to search for. (e.g., "provider1,provider2")
+        description: Comma-separated list of asset providers to search for. (e.g., "provider1,provider2").
         isArray: true
       - name: asset_realms
-        description: Comma-separated list of asset realms to search for. (e.g., "realm1,realm2")
+        description: Comma-separated list of asset realms to search for. (e.g., "realm1,realm2").
         isArray: true
       - name: asset_groups
         description: |
