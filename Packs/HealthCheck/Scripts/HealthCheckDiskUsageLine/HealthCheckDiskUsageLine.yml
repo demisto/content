@@ -2,7 +2,7 @@ comment: Present Disk usage stats line widget.
 commonfields:
   id: HealthCheckDiskUsageLine
   version: -1
-dockerimage: demisto/python3:3.12.11.4284848
+dockerimage: demisto/python3:3.12.12.5490952
 enabled: true
 name: HealthCheckDiskUsageLine
 runas: DBotWeakRole

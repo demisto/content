@@ -6,7 +6,7 @@ comment: Read panic log file line by line and display warnings, fatal errors and
 commonfields:
   id: HealthCheckPanicLog
   version: -1
-dockerimage: demisto/python3:3.12.11.4284848
+dockerimage: demisto/python3:3.12.12.5490952
 enabled: true
 name: HealthCheckPanicLog
 runas: DBotWeakRole
