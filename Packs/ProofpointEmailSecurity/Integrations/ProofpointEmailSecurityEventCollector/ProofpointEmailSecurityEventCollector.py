@@ -252,6 +252,12 @@ def fetch_events(
                 demisto.debug(f"[{event_type}] Timeout while waiting for a new event in stream. Breaking.")
                 break
 
+            except exceptions.InvalidStatus as e:
+                status_code = e.response.status_code
+                demisto.error(f"[{event_type}] Invalid status: {status_code}. Starting recovery.")
+                recover_after_disconnection(connection, events, event_ids, reconnect=True)
+                continue
+
             except exceptions.ConnectionClosedError:
                 demisto.error(f"[{event_type}] Connection closed with error. Starting recovery.")
                 recover_after_disconnection(connection, events, event_ids, reconnect=True)
@@ -399,7 +405,7 @@ def perform_long_running_loop(connections: list[EventConnection], fetch_interval
         events = fetch_events(connection, fetch_interval, integration_context, should_skip_sleeping)
         events.extend(integration_context.get(connection.event_type, []))
         integration_context[connection.event_type] = events  # update events in context in case of fail
-        demisto.debug(f"Adding {len(events)} {connection.event_type} Events to XSIAM")
+        demisto.debug(f"[{connection.event_type}] Adding {len(events)} events to XSIAM")
         events_to_send.extend(events)
     demisto.info(f"Going to send {len(events_to_send)} events to xsiam.")
     # Send the events to the XSIAM, with events from the context
@@ -455,7 +461,7 @@ def long_running_execution_command(host: str, cluster_id: str, api_key: str, fet
                         time.sleep(FETCH_SLEEP)
                         demisto.info(f"Finished sleeping {FETCH_SLEEP} seconds.")
         except Exception as e:
-            err = f"Got an error while running in long running {e}"
+            err = f"Got an error while running in long running {e}. {traceback.format_exc()}"
             demisto.updateModuleHealth(err, is_error=True)
             demisto.error(err)
 
