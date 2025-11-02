@@ -4,7 +4,7 @@
         "type": "string",
         "is_array": false
       },
-      "dstd": {
+      "dst": {
         "type": "string",
         "is_array": false
       },
