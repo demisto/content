@@ -320,13 +320,7 @@ class Client(CoreClient):
         return reply
 
     def update_issue(self, filter_data):
-        return self._http_request(
-            method="POST",
-            json_data=filter_data,
-            url_suffix="/alerts/update_alerts"
-        )
-            # method="POST", data=json.dumps(filter_data), headers=self._headers, path="/api/webapp/alerts/update_alerts"
-          
+        return self._http_request(method="POST", json_data=filter_data, url_suffix="/alerts/update_alerts")
     def search_assets(self, filter, page_number, page_size, on_demand_fields):
         reply = self._http_request(
             method="POST",
@@ -566,8 +560,10 @@ def get_issue_id(args) -> str:
     """
     issue_id = args.get("id", "")
     if not issue_id:
-        issue = demisto.callingContext.get("context", {}).get("Incidents")[0]
-        issue_id = issue["id"]
+        issues = demisto.callingContext.get("context", {}).get("Incidents")
+        if issues:
+            issue = issues[0]
+            issue_id = issue.get("id")
 
     return issue_id
 
@@ -584,21 +580,8 @@ def create_filter_data(issue_id: str, update_args: dict) -> dict:
     """
     filter_builder = FilterBuilder()
     filter_builder.add_field("internal_id", FilterType.EQ, issue_id)
-    
-    filter_data = {
-        "filter_data": {"filter": filter_builder.to_dict()},
-        "filter_type": "static",
-        "update_data": update_args
-    }
-    # filter_data = {
-    #     "filter_data": {"filter": {"OR": [{"SEARCH_FIELD": "internal_id", "SEARCH_TYPE": "EQ", "SEARCH_VALUE": issue_id}]}},
-    #     "filter_type": "static",
-    # }
-    # update_data = {}
-    # for key, value in update_args.items():
-    #     update_data[key] = value
 
-    # filter_data["update_data"] = update_data
+    filter_data = {"filter_data": {"filter": filter_builder.to_dict()}, "filter_type": "static", "update_data": update_args}
     return filter_data
 
 
@@ -611,7 +594,7 @@ def update_issue_command(client: Client, args: dict):
     """
     issue_id = get_issue_id(args)
     if not issue_id:
-        return_error("Issue ID is required for updating an issue.")
+        return return_error("Issue ID is required for updating an issue.")
 
     severity_map = {1: "SEV_020_LOW", 2: "SEV_030_MEDIUM", 3: "SEV_040_HIGH", 4: "SEV_050_CRITICAL"}
     severity_value = arg_to_number(args.get("severity"))
@@ -803,7 +786,7 @@ def main():  # pragma: no cover
 
         elif command == "core-get-case-extra-data":
             return_results(get_extra_data_for_case_id_command(client, args))
-            
+
         elif command == "core-search-assets":
             return_results(search_assets_command(client, args))
 
