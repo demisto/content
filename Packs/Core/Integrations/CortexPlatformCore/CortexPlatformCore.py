@@ -11,6 +11,18 @@ TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 INTEGRATION_CONTEXT_BRAND = "Core"
 INTEGRATION_NAME = "Cortex Platform Core"
 MAX_GET_INCIDENTS_LIMIT = 100
+SEARCH_ASSETS_DEFAULT_LIMIT = 100
+
+ASSET_FIELDS = {
+    "asset_names": "xdm.asset.name",
+    "asset_types": "xdm.asset.type.name",
+    "asset_tags": "xdm.asset.tags",
+    "asset_ids": "xdm.asset.id",
+    "asset_providers": "xdm.asset.provider",
+    "asset_realms": "xdm.asset.realm",
+    "asset_group_ids": "xdm.asset.group_ids",
+}
+
 
 WEBAPP_COMMANDS = ["core-get-vulnerabilities", "core-search-asset-groups"]
 DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
@@ -307,6 +319,33 @@ class Client(CoreClient):
 
         return reply
 
+    def search_assets(self, filter, page_number, page_size, on_demand_fields):
+        reply = self._http_request(
+            method="POST",
+            headers=self._headers,
+            json_data={
+                "request_data": {
+                    "filters": filter,
+                    "search_from": page_number * page_size,
+                    "search_to": (page_number + 1) * page_size,
+                    "on_demand_fields": on_demand_fields,
+                },
+            },
+            url_suffix="/assets",
+        )
+
+        return reply
+
+    def search_asset_groups(self, filter):
+        reply = self._http_request(
+            method="POST",
+            headers=self._headers,
+            json_data={"request_data": {"filters": filter}},
+            url_suffix="/asset-groups",
+        )
+
+        return reply
+
     def get_webapp_data(self, request_data: dict) -> dict:
         return self._http_request(
             method="POST",
@@ -535,6 +574,79 @@ def get_extra_data_for_case_id_command(client, args):
     )
 
 
+def search_assets_command(client: Client, args):
+    """
+    Search for assets in XDR based on the provided filters.
+    Args:
+        client (Client): The client instance used to send the request.
+        args (dict): Dictionary containing the arguments for the command.
+                     Expected to include:
+                         - asset_names (list[str]): List of asset names to search for.
+                         - asset_types (list[str]): List of asset types to search for.
+                         - asset_tags (list[str]): List of asset tags to search for.
+                         - asset_ids (list[str]): List of asset IDs to search for.
+                         - asset_providers (list[str]): List of asset providers to search for.
+                         - asset_realms (list[str]): List of asset realms to search for.
+                         - asset_group_names (list[str]): List of asset group names to search for.
+    """
+    asset_group_ids = get_asset_group_ids_from_names(client, argToList(args.get("asset_groups", "")))
+    filter = FilterBuilder()
+    filter.add_field(ASSET_FIELDS["asset_names"], FilterType.CONTAINS, argToList(args.get("asset_names", "")))
+    filter.add_field(ASSET_FIELDS["asset_types"], FilterType.EQ, argToList(args.get("asset_types", "")))
+    filter.add_field(ASSET_FIELDS["asset_tags"], FilterType.JSON_WILDCARD, safe_load_json(args.get("asset_tags", [])))
+    filter.add_field(ASSET_FIELDS["asset_ids"], FilterType.EQ, argToList(args.get("asset_ids", "")))
+    filter.add_field(ASSET_FIELDS["asset_providers"], FilterType.EQ, argToList(args.get("asset_providers", "")))
+    filter.add_field(ASSET_FIELDS["asset_realms"], FilterType.EQ, argToList(args.get("asset_realms", "")))
+    filter.add_field(ASSET_FIELDS["asset_group_ids"], FilterType.ARRAY_CONTAINS, asset_group_ids)
+    filter_str = filter.to_dict()
+
+    demisto.debug(f"Search Assets Filter: {filter_str}")
+    page_size = arg_to_number(args.get("page_size", SEARCH_ASSETS_DEFAULT_LIMIT))
+    page_number = arg_to_number(args.get("page_number", 0))
+    on_demand_fields = ["xdm.asset.tags"]
+    raw_response = client.search_assets(filter_str, page_number, page_size, on_demand_fields).get("reply", {}).get("data", [])
+    # Remove "xdm.asset." suffix from all keys in the response
+    response = [
+        {k.replace("xdm.asset.", "") if k.startswith("xdm.asset.") else k: v for k, v in item.items()} for item in raw_response
+    ]
+    return CommandResults(
+        readable_output=tableToMarkdown("Assets", response, headerTransform=string_to_table_header),
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Asset",
+        outputs=response,
+        raw_response=raw_response,
+    )
+
+
+def get_asset_group_ids_from_names(client: Client, group_names: list[str]) -> list[str]:
+    """
+    Retrieves the IDs of asset groups based on their names.
+
+    Args:
+        client (Client): The client instance used to send the request.
+        group_names (list[str]): List of asset group names to retrieve IDs for.
+
+    Returns:
+        list[str]: List of asset group IDs.
+    """
+    if not group_names:
+        return []
+
+    filter = FilterBuilder()
+    filter.add_field("XDM.ASSET_GROUP.NAME", FilterType.EQ, group_names)
+    filter_str = filter.to_dict()
+
+    groups = client.search_asset_groups(filter_str).get("reply", {}).get("data", [])
+
+    group_ids = [group.get("XDM.ASSET_GROUP.ID") for group in groups if group.get("XDM.ASSET_GROUP.ID")]
+
+    if len(group_ids) != len(group_names):
+        found_groups = [group.get("XDM.ASSET_GROUP.NAME") for group in groups if group.get("XDM.ASSET_GROUP.ID")]
+        missing_groups = [name for name in group_names if name not in found_groups]
+        raise DemistoException(f"Failed to fetch asset group IDs for {missing_groups}. Ensure the asset group names are valid.")
+
+    return group_ids
+
+
 def main():  # pragma: no cover
     """
     Executes an integration command
@@ -605,6 +717,8 @@ def main():  # pragma: no cover
 
         elif command == "core-get-case-extra-data":
             return_results(get_extra_data_for_case_id_command(client, args))
+        elif command == "core-search-assets":
+            return_results(search_assets_command(client, args))
 
         elif command == "core-get-vulnerabilities":
             return_results(get_vulnerabilities_command(client, args))
