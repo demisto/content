@@ -8,6 +8,10 @@
             "type": "string",
             "is_array": false
         },
+        "original_email_body": {
+            "type": "string",
+            "is_array": false
+        },        
         "first_reported_date": {
             "type": "string",
             "is_array": false
