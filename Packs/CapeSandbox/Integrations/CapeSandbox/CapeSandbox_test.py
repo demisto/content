@@ -5,7 +5,6 @@ import time
 import types
 
 import pytest
-
 from CommonServerPython import *
 
 # Mock DemistoClassApiModule before CommonServerPython is imported
@@ -1067,14 +1066,11 @@ def test_cape_task_delete_command_no_task_id_fail(client):
     """
     Given: Command arguments missing a required task_id.
     When: Calling cape_task_delete_command.
-    Then: Should raise DemistoException.
+    Then: Should raise KeyError.
     """
     args = {}
-    with pytest.raises(DemistoException) as excinfo:
+    with pytest.raises(KeyError):
         cape_task_delete_command(client, args)
-
-    assert "missing" in str(excinfo.value).lower()
-    assert "task id" in str(excinfo.value).lower()
 
 
 # --- API Failure Tests ---

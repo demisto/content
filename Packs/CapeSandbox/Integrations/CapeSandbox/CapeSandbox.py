@@ -5,9 +5,8 @@ from enum import Enum
 from pathlib import Path
 from typing import Any, Literal
 
-import urllib3
-
 import demistomock as demisto  # noqa: F401
+import urllib3
 from CommonServerPython import *  # noqa: F401, F403
 
 urllib3.disable_warnings()  # Disable insecure warnings
@@ -35,14 +34,18 @@ LIST_DEFAULT_LIMIT = 50
 
 def parse_integration_params(params: dict[str, Any]) -> dict[str, Any]:
     """Normalize and extract integration configuration from demisto.params()."""
-    base_url = (params.get("url") or "").rstrip("/")
+    base_url = (params.get("url", "")).rstrip("/")
     verify_certificate = not argToBoolean(params.get("insecure", False))
     proxy = argToBoolean(params.get("proxy", False))
 
+    # API Token credentials
+    token_credentials = params.get("token_credentials", {})
+    api_token = token_credentials.get("password", params.get("api_token"))
+
+    # Basic Auth credentials
     credentials = params.get("credentials", {})
-    username = credentials.get("identifier") or params.get("username")
-    password = credentials.get("password") or params.get("password")
-    api_token = params.get("api_token")
+    username = credentials.get("identifier", params.get("username"))
+    password = credentials.get("password", params.get("password"))
 
     if not base_url:
         raise DemistoException("Server URL (url) is required.")
@@ -337,9 +340,9 @@ class CapeSandboxClient(BaseClient):  # noqa: F405
     ) -> None:
         base_url = base_url.rstrip("/") + "/"
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
-        self.api_token = (api_token or "").strip() or None
-        self.username = (username or "").strip() or None
-        self.password = (password or "").strip() or None
+        self.api_token = (api_token or "").strip() if api_token else None
+        self.username = (username or "").strip() if username else None
+        self.password = (password or "").strip() if password else None
 
         demisto.debug(f"Client initialized. Base URL: {base_url}, Verify SSL: {verify}, Proxy: {proxy}")
 
@@ -439,7 +442,7 @@ class CapeSandboxClient(BaseClient):  # noqa: F405
         data = {"username": self.username, "password": self.password}
 
         resp = self._http_request(method="POST", url_suffix=API_AUTH, data=data)
-        token = resp.get("token") or resp.get("key") or ""
+        token = resp.get("token", resp.get("key", ""))
 
         if not token:
             demisto.debug(f"Token generation failed. Response keys missing token/key. Response: {resp}")
@@ -687,11 +690,8 @@ def cape_task_poll_report(args: dict[str, Any], client: CapeSandboxClient) -> Po
     Returns:
         PollResult: Contains polling status and final results if complete.
     """
-    task_id = arg_to_number(args.get("task_id"))
+    task_id = args["task_id"]
     demisto.debug(f"Starting polling for Task ID: {task_id}.")
-
-    if not task_id:
-        raise DemistoException("Task ID is missing for polling sequence.")
 
     polling_interval = arg_to_number(args.get("pollingInterval", POLLING_INTERVAL_SECONDS))
 
@@ -815,7 +815,7 @@ def cape_file_submit_command(client: CapeSandboxClient, args: dict[str, Any]) ->
     # Execute the submission API call
     form = build_submit_form(args)
     submit_resp = client.submit_file(form=form, file_path=file_path, is_pcap=is_pcap)
-    task_ids = ((submit_resp or {}).get("data") or {}).get("task_ids") or []
+    task_ids = ((submit_resp or {}).get("data", {})).get("task_ids", [])
 
     if not task_ids:
         raise DemistoException(f"No task id returned from CAPE. Response: {submit_resp}")
@@ -843,7 +843,7 @@ def cape_url_submit_command(client: CapeSandboxClient, args: dict[str, Any]) -> 
 
     form = build_submit_form(args, url_mode=True)
     submit_resp = client.submit_url(form=form)
-    task_ids = ((submit_resp or {}).get("data") or {}).get("task_ids") or []
+    task_ids = ((submit_resp or {}).get("data", {})).get("task_ids", [])
 
     if not task_ids:
         raise DemistoException(f"No task id returned from CAPE. Response: {submit_resp}.")
@@ -892,7 +892,7 @@ def cape_file_view_command(client: CapeSandboxClient, args: dict[str, Any]) -> C
 
     demisto.debug(f"File view retrieved for {lookup_id}. Formatting results.")
 
-    data = resp.get("data") or resp
+    data = resp.get("data", resp)
     readable = tableToMarkdown(
         f"{INTEGRATION_NAME} File View",
         data if isinstance(data, dict) else [data],
@@ -923,9 +923,7 @@ def cape_pcap_file_download_command(client: CapeSandboxClient, args: dict[str, A
     command = "Download PCAP File"
     demisto.debug(f"Starting execution of command: {command}")
 
-    task_id = arg_to_number(args.get("task_id"))
-    if not task_id:
-        raise DemistoException("Task ID is missing for download pcap file.")
+    task_id = args["task_id"]
 
     dump_pcap = client.get_task_pcap(task_id)
 
@@ -990,10 +988,8 @@ def cape_task_delete_command(client: CapeSandboxClient, args: dict[str, Any]) ->
     command = "Delete Task"
     demisto.debug(f"Starting execution of command: {command}")
 
-    task_id = arg_to_number(args.get("task_id"))
+    task_id = args["task_id"]
     demisto.debug(f"Starting task delete command for Task ID: {task_id}.")
-    if not task_id:
-        raise DemistoException("Task ID is missing for delete task.")
 
     demisto.debug(f"Sending delete request to API for Task ID: {task_id}.")
     client.delete_task(task_id)
@@ -1013,9 +1009,12 @@ def cape_tasks_list_command(client: CapeSandboxClient, args: dict[str, Any]) -> 
 
     task_id = arg_to_number(args.get("task_id"))
 
-    page_size_arg = arg_to_number(args.get("page_size") or args.get("limit")) or LIST_DEFAULT_LIMIT
-    api_limit = int(min(max(1, page_size_arg), LIST_DEFAULT_LIMIT))
-    page = int(max(arg_to_number(args.get("page")) or 1, 1))
+    # Get page_size/limit and cap at default limit
+    requested_limit = arg_to_number(args.get("page_size") or args.get("limit")) or LIST_DEFAULT_LIMIT
+    api_limit = min(requested_limit, LIST_DEFAULT_LIMIT)
+
+    # Normalize page to at least 1
+    page = max(arg_to_number(args.get("page")) or 1, 1)
     offset = (page - 1) * api_limit
 
     DATA_KEYS = [
@@ -1055,7 +1054,7 @@ def cape_tasks_list_command(client: CapeSandboxClient, args: dict[str, Any]) -> 
 
     # --- List View ---
     resp = client.list_tasks(limit=api_limit, offset=offset)
-    data = resp.get("data") or resp
+    data = resp.get("data", resp)
     items = data if isinstance(data, list) else [data]
 
     readable = tableToMarkdown(
@@ -1081,12 +1080,9 @@ def cape_task_report_get_command(client: CapeSandboxClient, args: dict[str, Any]
     command = "Get Task Report"
     demisto.debug(f"Starting execution of command: {command}")
 
-    task_id = arg_to_number(args.get("task_id"))
+    task_id = args["task_id"]
     file_format = args.get("format", "json").strip().lower()
     zip_flag = argToBoolean(args.get("zip", False))
-
-    if not task_id:
-        raise DemistoException("Task ID is missing for get report.")
 
     if zip_flag:
         content = client.get_task_report(task_id=task_id, format=file_format, zip_download=True)
@@ -1107,7 +1103,7 @@ def cape_task_report_get_command(client: CapeSandboxClient, args: dict[str, Any]
 
     target_file = (resp or {}).get("target", {}).get("file", {})
 
-    hr_data = info.copy()
+    hr_data = info
 
     if target_file:
         hr_data["file_name"] = target_file.get("name")
@@ -1164,13 +1160,13 @@ def cape_machines_list_command(client: CapeSandboxClient, args: dict[str, Any]) 
 
     machine_name = args.get("machine_name")
     all_results = arg_to_bool_or_none(args.get("all_results"))
-    limit = max(arg_to_number(args.get("limit")) or LIST_DEFAULT_LIMIT, 1)
+    limit = arg_to_number(args.get("limit", LIST_DEFAULT_LIMIT))
     demisto.debug(f"Starting machines list command. Target machine: {machine_name or 'All'}")
 
     if machine_name:
-        demisto.debug(f"Fetching view for specific machine: {machine_name}.")
+        demisto.debug(f"Fetching view for specific machine: {machine_name=}.")
         resp = client.view_machine(machine_name)
-        machine = resp.get("machine") or resp.get("data") or resp
+        machine = resp.get("machine", resp.get("data", resp))
 
         readable = tableToMarkdown(
             f"{INTEGRATION_NAME} Machine {machine.get('name', machine_name)}",
@@ -1205,7 +1201,7 @@ def cape_machines_list_command(client: CapeSandboxClient, args: dict[str, Any]) 
 
     demisto.debug("Fetching list of all available machines.")
     resp = client.list_machines()
-    machines = resp.get("machines") or resp.get("data") or resp
+    machines = resp.get("machines", resp.get("data", resp))
 
     if isinstance(machines, dict):
         machines = [machines]
@@ -1217,7 +1213,7 @@ def cape_machines_list_command(client: CapeSandboxClient, args: dict[str, Any]) 
         f"{INTEGRATION_NAME} Machines (count={len(machines)})",
         machines,
         headers=[
-            "id",
+            "id",  # Id -> Task Id
             "status",
             "name",
             "arch",
@@ -1252,7 +1248,7 @@ def cape_cuckoo_status_get_command(client: CapeSandboxClient, args: dict[str, An
 
     demisto.debug("Sending request to get Cuckoo/CAPE server status.")
     resp = client.get_cuckoo_status() or {}
-    data = resp.get("data") or resp
+    data = resp.get("data", resp)
 
     if not isinstance(data, dict) or not data.get("tasks"):
         demisto.debug(f"Status response incomplete or unexpected. Keys received: {list(data.keys())}")
@@ -1267,13 +1263,13 @@ def cape_cuckoo_status_get_command(client: CapeSandboxClient, args: dict[str, An
     row = {
         "Version": data.get("version"),
         "Hostname": hostname,
-        "Tasks reported": tasks.get("reported"),
-        "Tasks running": tasks.get("running"),
-        "Tasks completed": tasks.get("completed"),
-        "Tasks pending": tasks.get("pending"),
+        "Tasks Reported": tasks.get("reported"),
+        "Tasks Running": tasks.get("running"),
+        "Tasks Completed": tasks.get("completed"),
+        "Tasks Pending": tasks.get("pending"),
         "Server Usage": server.get("storage", {}).get("used_by"),
-        "Machines available": machines.get("available"),
-        "Machines total": machines.get("total"),
+        "Machines Available": machines.get("available"),
+        "Machines Total": machines.get("total"),
         "Tools": data.get("tools"),
     }
 
@@ -1288,7 +1284,7 @@ def cape_task_screenshot_download_command(client: CapeSandboxClient, args: dict[
     command = "List Task Screenshots"
     demisto.debug(f"Starting execution of command: {command}")
 
-    task_id = arg_to_number(args.get("task_id"))
+    task_id = args["task_id"]
     single_number = arg_to_number(args.get("screenshot"))
 
     if not task_id:
@@ -1298,7 +1294,9 @@ def cape_task_screenshot_download_command(client: CapeSandboxClient, args: dict[
         candidates_raw = [single_number]
 
     else:
+        # about to call with taskif
         meta = client.list_task_screenshots(task_id)
+
         candidates_raw = meta.get("screenshots") or meta.get("data") or meta
 
         if not isinstance(candidates_raw, list):
@@ -1307,17 +1305,16 @@ def cape_task_screenshot_download_command(client: CapeSandboxClient, args: dict[
     file_entries = []
     candidate_numbers = []
 
-    for idx in candidates_raw:
+    for item in candidates_raw:
         current_number: int | None = None
-        if isinstance(idx, dict):
-            current_number = arg_to_number(idx.get("number"))
-        elif isinstance(idx, int):
-            current_number = idx
-
+        if isinstance(item, dict):
+            current_number = arg_to_number(item.get("number"))
+        elif isinstance(item, int):
+            current_number = item
         if current_number is not None:
             candidate_numbers.append(current_number)
 
-    if not candidate_numbers and not single_number:
+    if not candidate_numbers and not single_number:  # TODO
         candidate_numbers.extend(range(1, 6))
 
     processed_numbers = set()
@@ -1341,8 +1338,10 @@ def cape_task_screenshot_download_command(client: CapeSandboxClient, args: dict[
         except DemistoException as error:
             demisto.debug(f"Failed to fetch screenshot {number} for task {task_id}: {error}")
 
-        except Exception as error:
-            demisto.debug(f"Unexpected error while processing screenshot {number}: {error}")
+        # except Exception as error:
+        #     demisto.debug(
+        #         f"Unexpected error while processing screenshot {number}: {error}"
+        #     )
 
     if not file_entries:
         raise DemistoException(f"No screenshots found for task {task_id}")
@@ -1422,14 +1421,10 @@ def main() -> None:
         demisto.debug(f"Command '{command}' execution finished successfully.")
 
     except Exception as error:
-        demisto.error(
-            f"Failed to execute {command} command. Error: {str(error)}.\n",
-            traceback.format_exc(),
-            error,
-        )
         return_error(
             f"Failed to execute {command} command. Error: {str(error)}",
             error=str(error),
+            outputs=traceback.format_exc(),
         )
 
     finally:
