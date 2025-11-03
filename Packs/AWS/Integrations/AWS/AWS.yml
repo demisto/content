@@ -3583,7 +3583,7 @@ script:
           - 'true'
           - 'false'
       - name: limit
-        description: The maximum number of items to return for this request. To get the next page of items, make another request with the token returned in the output.
+        description: The maximum number of items to choose the latest AMI from. To get the next page of items, make another request with the token returned in the output.
       - name: next_token
         description: The token returned from a previous paginated request. Pagination continues from the end of the items returned by the previous request.
     outputs:
@@ -3809,7 +3809,7 @@ script:
         type: string
 
   - name: aws-ec2-ipam-discovered-public-addresses-get
-    description: Gets the public IP addresses that have been discovered by IPAM.
+    description: Gets the public IP addresses that have been discovered by IPAM, Amazon VPC IP Address Manager.
     arguments:
       - name: account_id
         description: The AWS account ID.
