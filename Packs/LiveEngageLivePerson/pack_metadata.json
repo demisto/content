@@ -1,0 +1,18 @@
+{
+    "name": "LiveEngage LivePerson",
+    "description": "LivePerson's LiveEngage is an AI-powered conversational commerce platform that allows businesses to communicate with customers across multiple digital channels. Now part of LivePerson's broader Conversational Cloud, the platform helps companies to orchestrate both AI-powered chatbots and human agents to increase sales and improve customer service.",
+    "support": "xsoar",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "categories": [
+        "Messaging and Conferencing"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "marketplacev2"
+    ]
+}
