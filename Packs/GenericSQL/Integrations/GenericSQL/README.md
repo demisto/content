@@ -103,6 +103,7 @@ Example: "CREATE PROCEDURE _PROCEDURE_NAME_ @timestamp DATETIME
 6. Fetch parameters, ts (timestamp) or id and l (limit), will be added by the fetch mechanism.
 
 ##### Trino
+
 Trino can be fetched by executing a simple query that allows concatenating to it:
 "where {column_name} > {last value} order by {column_name} ASC limit {fetch limit}"
 
