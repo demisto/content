@@ -40,7 +40,7 @@ configuration:
     type: 8
     section: Connect
     advanced: true
-description: CAPE Sandbox is an Open Source software for automating analysis of suspicious files.
+description: CAPE Sandbox is an open-source software for automating analysis of suspicious files and URLs. To learn more about CAPE Sandbox, visit the official CAPE documentation.
 display: Cape Sandbox
 name: CapeSandbox
 sectionorder:
@@ -49,117 +49,133 @@ sectionorder:
 script:
   commands:
     - name: cape-file-submit
-      description: Submit a file for analysis. Supports PCAP with automatic pcap=1. Polls until the task is reported and then returns the task view.
+      description: Submit a file for analysis to CAPE Sandbox. This command supports PCAP files and automatically sets the pcap option to 1. The command polls the CAPE server until the analysis task is reported as complete, and then returns the task view with the analysis results.
       polling: true
       arguments:
         - name: entry_id
-          description: The War Room entry ID of the file to submit.
+          description: The War Room entry ID of the file to submit for analysis.
           required: true
         - name: package
-          description: Analysis package (e.g., ps1).
+          description: The analysis package to use (e.g., ps1 for PowerShell scripts, exe for executables, dll for DLL files). For available packages, see the CAPE documentation.
         - name: timeout
-          description: Analysis timeout in seconds.
+          description: The maximum time in seconds to allow for the analysis to complete.
         - name: priority
-          description: Priority to assign to the task (1-3).
+          description: The priority level to assign to the task (1-3, where 1 is highest priority).
         - name: options
-          description: Options string (e.g., options:function=DllMain).
+          description: A string of additional options to pass to the analysis (e.g., options:function=DllMain). For available options, see the CAPE documentation.
         - name: machine
-          description: ID of the analysis machine to use.
+          description: The specific ID of the analysis machine to use for the task.
         - name: platform
-          description: Platform name to select the analysis machine from (e.g., windows).
+          description: The name of the platform to select the analysis machine from (e.g., windows).
         - name: tags
-          description: Comma-separated tags.
+          description: Comma-separated tags to associate with the analysis task.
         - name: custom
-          description: Custom string to pass over the analysis.
+          description: A custom string to pass to the analysis.
         - name: memory
-          description: Enable full memory dump (true/false).
+          description: Set to true to enable a full memory dump during analysis.
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
         - name: enforce_timeout
-          description: Enforce timeout (true/false).
+          description: Set to true to strictly enforce the analysis timeout.
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
         - name: clock
-          description: VM clock (format %m-%d-%Y %H:%M:%S).
+          description: The VM clock time in the format %m-%d-%Y %H:%M:%S.
       outputs:
         - contextPath: Cape.Task
           description: Task data returned from CAPE when analysis is ready.
           type: Unknown
     - name: cape-file-view
-      description: View file information by Task ID, MD5, or SHA256.
+      description: View detailed information about a file that has been analyzed by CAPE Sandbox. You must specify at least one identifier - Task ID, MD5 hash, or SHA256 hash.
       arguments:
         - name: task_id
-          description: Task ID.
+          description: The unique identifier of the analysis task to view.
         - name: md5
-          description: MD5 hash.
+          description: The MD5 hash of the file to view.
         - name: sha256
-          description: SHA256 hash.
+          description: The SHA256 hash of the file to view.
       outputs:
         - contextPath: Cape.File.id
-          description: File/task ID.
+          description: The ID of the file or task.
           type: String
         - contextPath: Cape.File.file_type
-          description: File type.
+          description: The detected type of the file.
           type: String
         - contextPath: Cape.File.md5
-          description: MD5.
+          description: The MD5 hash of the file.
           type: String
         - contextPath: Cape.File.crc32
-          description: CRC32.
+          description: The CRC32 checksum of the file.
           type: String
         - contextPath: Cape.File.sha256
-          description: SHA256.
+          description: The SHA256 hash of the file.
           type: String
         - contextPath: Cape.File.sha512
-          description: SHA512.
+          description: The SHA512 hash of the file.
           type: String
         - contextPath: Cape.File.parent
-          description: Parent.
+          description: The parent process or source of the file.
           type: String
         - contextPath: Cape.File.source_url
-          description: Source URL.
+          description: The URL from which the file was obtained, if applicable.
           type: String
     - name: cape-sample-download
-      description: Download a sample from a Task by Task ID, MD5, SHA1 or SHA256.
+      description: Download a sample file from a CAPE Sandbox task. You must specify at least one identifier - Task ID, MD5 hash, SHA1 hash, or SHA256 hash. The downloaded file will be added to the War Room.
       arguments:
         - name: task_id
-          description: Task ID.
+          description: The unique identifier of the analysis task to download the sample from.
         - name: md5
-          description: MD5 hash.
+          description: The MD5 hash of the sample file to download.
         - name: sha1
-          description: SHA1 hash.
+          description: The SHA1 hash of the sample file to download.
         - name: sha256
-          description: SHA256 hash.
+          description: The SHA256 hash of the sample file to download.
       outputs: []
     - name: cape-url-submit
-      description: Submit a URL for analysis. Polls until the task is reported and then returns the task view.
+      description: Submit a URL for analysis to CAPE Sandbox. The command polls the CAPE server until the analysis task is reported as complete, and then returns the task view with the analysis results.
       polling: true
       arguments:
         - name: url
-          description: The URL to analyze.
+          description: The URL to submit for analysis.
           required: true
         - name: package
-          description: Analysis package.
+          description: The analysis package to use for URL analysis (e.g., ie for Internet Explorer, chrome for Chrome browser). For available packages, see the CAPE documentation.
         - name: timeout
-          description: Analysis timeout in seconds.
+          description: The maximum time in seconds to allow for the analysis to complete.
         - name: priority
-          description: Priority to assign to the task (1-3).
+          description: The priority level to assign to the task (1-3, where 1 is highest priority).
         - name: options
-          description: Options string (e.g., options:function=DllMain).
+          description: A string of additional options to pass to the analysis (e.g., options:function=DllMain). For available options, see the CAPE documentation.
         - name: machine
-          description: ID of the analysis machine to use.
+          description: The specific ID of the analysis machine to use for the task.
         - name: platform
-          description: Platform name to select the analysis machine from (e.g., windows).
+          description: The name of the platform to select the analysis machine from (e.g., windows).
         - name: tags
-          description: Comma-separated tags.
+          description: Comma-separated tags to associate with the analysis task.
         - name: custom
-          description: Custom string to pass over the analysis.
+          description: A custom string to pass to the analysis.
         - name: memory
-          description: Enable full memory dump (true/false).
+          description: Set to true to enable a full memory dump during analysis.
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
         - name: enforce_timeout
-          description: Enforce timeout (true/false).
+          description: Set to true to strictly enforce the analysis timeout.
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
         - name: clock
-          description: VM clock (format %m-%d-%Y %H:%M:%S).
+          description: The VM clock time in the format %m-%d-%Y %H:%M:%S.
         - name: polling
           deprecated: false
           defaultValue: "true"
-          description: "Cape generic polling."
+          description: Enable or disable generic polling for the CAPE task.
           required: false
           isArray: false
           auto: PREDEFINED
@@ -167,10 +183,10 @@ script:
             - "true"
             - "false"
         - name: pollingInterval
-          description: The polling interval **in seconds**. We strongly recommend an interval of 60 seconds or more to prevent API throttling by the CAPE server.
+          description: The polling interval in seconds. It is strongly recommended to use an interval of 60 seconds or more to prevent API throttling by the CAPE server.
           required: false
         - name: pollingTimeout
-          description: Total time allowed **in seconds** for the XSOAR polling sequence to complete.
+          description: The total time allowed in seconds for the XSOAR polling sequence to complete.
           required: false
 
       outputs:
@@ -178,34 +194,34 @@ script:
           description: Task data returned from CAPE when analysis is ready.
           type: Unknown
     - name: cape-task-delete
-      description: Delete CAPE task by ID.
+      description: Delete a CAPE Sandbox analysis task by its Task ID.
       arguments:
         - name: task_id
-          description: Task ID to delete.
+          description: The unique identifier of the task to delete.
           required: true
     - name: cape-tasks-list
-      description: Returns list of tasks. If task_id is provided, returns the task details.
+      description: Returns a list of CAPE Sandbox tasks. If a task_id is provided, the command returns the detailed information for that specific task.
       arguments:
         - name: task_id
-          description: Task ID to retrieve (optional).
+          description: The unique identifier of the task to retrieve. If provided, returns details for that specific task only.
         - name: page
-          description: Page number (starts at 1).
+          description: The page number for pagination (starts at 1).
         - name: page_size
-          description: Page size (API max is 50).
-          defaultValue: 50
+          description: The number of tasks to return per page. Maximum is 50.
+          defaultValue: "50"
         # REMOVED: The 'limit' argument is removed as it was redundant with page_size.
       outputs:
         - contextPath: Cape.Task
           description: Task data.
           type: Unknown
     - name: cape-task-report-get
-      description: Returns the report associated with the specified task ID. If zip=true, a ZIP file is returned for download.
+      description: Retrieve the analysis report associated with a specified CAPE Sandbox task ID. If zip=true, the report will be returned as a downloadable ZIP file.
       arguments:
         - name: task_id
-          description: Task ID.
+          description: The unique identifier of the task for which to retrieve the report.
           required: true
         - name: format
-          description: Report format.
+          description: The desired format of the report. Possible values are - json (full JSON report), maec (MAEC 4.1 format), maec5 (MAEC 5.0 format), metadata (metadata only), lite (lightweight report), all (all available formats).
           auto: PREDEFINED
           defaultValue: "json"
           predefined:
@@ -216,7 +232,7 @@ script:
             - "lite"
             - "all"
         - name: zip
-          description: Download report as ZIP file.
+          description: Set to true to download the report as a ZIP file.
           defaultValue: "false"
           auto: PREDEFINED
           predefined:
@@ -228,42 +244,42 @@ script:
           description: Details from the CAPE analysis report info object.
           type: Unknown
     - name: cape-pcap-file-download
-      description: Download the PCAP network dump file associated with the task ID.
+      description: Download the PCAP (Packet Capture) network dump file associated with a specific CAPE Sandbox task ID. The PCAP file contains all network traffic captured during the analysis and can be analyzed with tools like Wireshark.
       arguments:
         - name: task_id
-          description: Task ID.
+          description: The unique identifier of the task for which to download the PCAP file.
           required: true
       outputs: []
     - name: cape-task-screenshot-download
-      description: Download screenshots for a task. If 'screenshot' is provided, downloads that single screenshot.
+      description: Download screenshots captured during the analysis of a CAPE Sandbox task. Screenshots show the visual behavior of the analyzed file or URL. If a specific screenshot number is provided, only that single screenshot will be downloaded; otherwise, all available screenshots for the task will be downloaded.
       arguments:
         - name: task_id
-          description: Task ID.
+          description: The unique identifier of the task for which to download screenshots.
           required: true
         - name: screenshot
-          description: Specific screenshot number to download (optional). If not provided, all are downloaded.
+          description: The specific screenshot number to download (e.g., 1, 2). If not provided, all screenshots are downloaded.
       outputs: []
     - name: cape-machines-list
-      description: Returns a list of analysis machines. If machine_name is provided, returns details for that machine.
+      description: Returns a list of available analysis machines configured in CAPE Sandbox. If a machine_name is provided, the command returns detailed information for that specific machine.
       arguments:
         - name: machine_name
-          description: Machine name to fetch (optional).
+          description: The name of the machine to fetch details for. If provided, returns details for that specific machine only.
         - name: all_results
-          description: Return all machines, ignoring the limit (true/false).
+          description: Set to true to return all machines, ignoring the limit parameter.
           defaultValue: "false"
           auto: PREDEFINED
           predefined:
             - "true"
             - "false"
         - name: limit
-          description: Maximum number of machines to return when listing.
-          defaultValue: 50
+          description: The maximum number of machines to return when listing.
+          defaultValue: "50"
       outputs:
         - contextPath: Cape.Machine
           description: Machine data.
           type: Unknown
     - name: cape-cuckoo-status-get
-      description: Returns overall CAPE/Cuckoo status. Human-readable only.
+      description: Returns the overall status of the CAPE/Cuckoo system in a human-readable format. This command provides a quick overview of the sandbox's operational status.
       arguments: []
       outputs: []
     - name: cape-task-poll

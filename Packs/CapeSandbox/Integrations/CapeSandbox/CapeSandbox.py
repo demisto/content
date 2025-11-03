@@ -34,6 +34,8 @@ LIST_DEFAULT_LIMIT = 50
 
 def parse_integration_params(params: dict[str, Any]) -> dict[str, Any]:
     """Normalize and extract integration configuration from demisto.params()."""
+    demisto.debug("Parsing integration parameters.")
+
     base_url = (params.get("url", "")).rstrip("/")
     verify_certificate = not argToBoolean(params.get("insecure", False))
     proxy = argToBoolean(params.get("proxy", False))
@@ -46,6 +48,11 @@ def parse_integration_params(params: dict[str, Any]) -> dict[str, Any]:
     credentials = params.get("credentials", {})
     username = credentials.get("identifier", params.get("username"))
     password = credentials.get("password", params.get("password"))
+
+    demisto.debug(
+        f"Parsed config: {base_url=}, {verify_certificate=}, "
+        f"{proxy=}, has_api_token={bool(api_token)}, has_username={bool(username)}"
+    )
 
     if not base_url:
         raise DemistoException("Server URL (url) is required.")
@@ -65,6 +72,7 @@ def parse_integration_params(params: dict[str, Any]) -> dict[str, Any]:
 
 
 def build_submit_form(args: dict[str, Any], url_mode: bool = False) -> dict[str, Any]:
+    demisto.debug(f"Building submit form with {url_mode=}")
     form = assign_params(
         package=args.get("package"),
         timeout=arg_to_number(args.get("timeout")),
@@ -80,6 +88,7 @@ def build_submit_form(args: dict[str, Any], url_mode: bool = False) -> dict[str,
     )
     if url_mode:
         form["url"] = args.get("url")
+    demisto.debug(f"Built form with {len(form)} parameters: {list(form.keys())}")
     return form
 
 
@@ -507,13 +516,19 @@ class CapeSandboxClient(BaseClient):  # noqa: F405
     # ---------- Submit ----------
     def submit_file(self, form: dict[str, Any], file_path: str, is_pcap: bool) -> dict[str, Any]:
         """Create a task by uploading a file."""
+        demisto.debug(f"Submitting file: {file_path=}, {is_pcap=}")
 
         data = form.copy()
         if is_pcap:
             data["pcap"] = "1"
+            demisto.debug("Added pcap flag to submission data")
+
         basename = Path(file_path).name
+        demisto.debug(f"File basename: {basename}")
+
         with open(file_path, "rb") as f:
             files = {"file": (basename, f)}
+            demisto.debug(f"Sending file upload request with {len(data)} data parameters")
             return self.http_request("POST", url_suffix=TASK_CREATE_FILE, files=files, data=data)
 
     def submit_url(self, form: dict[str, Any]) -> dict[str, Any]:
@@ -700,6 +715,7 @@ def cape_task_poll_report(args: dict[str, Any], client: CapeSandboxClient) -> Po
 
     try:
         resp = client.get_task_status(task_id)
+        demisto.debug(f"Raw status response: {resp}")
 
         status = resp.get("data", "")
         demisto.debug(f"The status for Task ID {task_id} is '{status}'.")
@@ -727,7 +743,10 @@ def cape_task_poll_report(args: dict[str, Any], client: CapeSandboxClient) -> Po
         demisto.debug(f"Task ID {task_id} status is 'reported'. Fetching final results.")
 
         # --- Final Report Fetch ---
+        demisto.debug(f"Fetching final task view for task_id: {task_id}")
         task_view = client.get_task_view(task_id)
+        demisto.debug(f"Task view data keys: {list(task_view.keys()) if isinstance(task_view, dict) else 'N/A'}")
+
         readable = tableToMarkdown(
             f"{INTEGRATION_NAME} Task {task_id}",
             task_view.get("data") or task_view,
@@ -756,8 +775,12 @@ def cape_task_poll_report(args: dict[str, Any], client: CapeSandboxClient) -> Po
         )
 
         # Fetch the JSON report file content
+        demisto.debug(f"Fetching ZIP report for task_id: {task_id}")
         report_file_content = client.get_task_report(task_id=task_id, format="json", zip_download=True)
+        demisto.debug(f"Report ZIP size: {len(report_file_content)} bytes")
+
         filename = build_file_name(file_identifier=task_id, file_type="report", file_format="zip")
+        demisto.debug(f"Generated report filename: {filename}")
         file_result = fileResult(filename, report_file_content)
 
         # --- Result Compilation ---
@@ -807,19 +830,28 @@ def cape_file_submit_command(client: CapeSandboxClient, args: dict[str, Any]) ->
 
     try:
         file_path, filename = get_entry_path(entry_id)
+        demisto.debug(f"Resolved entry_id '{entry_id}' to file: {filename} at path: {file_path}")
     except Exception as error:
+        demisto.debug(f"Failed to resolve entry_id '{entry_id}': {error}")
         raise DemistoException(f"Failed to resolve entry_id '{entry_id}' to a local file path: {error}")
 
     is_pcap = filename.lower().endswith(".pcap")
+    demisto.debug(f"File type detection: is_pcap={is_pcap}, filename={filename}")
 
     # Execute the submission API call
     form = build_submit_form(args)
+    demisto.debug(f"Submitting file with form containing {len(form)} parameters")
+
     submit_resp = client.submit_file(form=form, file_path=file_path, is_pcap=is_pcap)
+    demisto.debug(f"Received submission response: {submit_resp}")
+
     task_ids = ((submit_resp or {}).get("data", {})).get("task_ids", [])
 
     if not task_ids:
+        demisto.debug(f"No task IDs found in response: {submit_resp}")
         raise DemistoException(f"No task id returned from CAPE. Response: {submit_resp}")
 
+    demisto.debug(f"Successfully submitted file. Task IDs: {task_ids}")
     return initiate_polling(
         command=command,
         args=args,
@@ -841,13 +873,20 @@ def cape_url_submit_command(client: CapeSandboxClient, args: dict[str, Any]) -> 
     if not url:
         raise DemistoException("URL is required for cape-url-submit.")
 
+    demisto.debug(f"Submitting URL: {url}")
     form = build_submit_form(args, url_mode=True)
+    demisto.debug(f"Submitting URL with form containing {len(form)} parameters")
+
     submit_resp = client.submit_url(form=form)
+    demisto.debug(f"Received submission response: {submit_resp}")
+
     task_ids = ((submit_resp or {}).get("data", {})).get("task_ids", [])
 
     if not task_ids:
+        demisto.debug(f"No task IDs found in response: {submit_resp}")
         raise DemistoException(f"No task id returned from CAPE. Response: {submit_resp}.")
 
+    demisto.debug(f"Successfully submitted URL. Task IDs: {task_ids}")
     return initiate_polling(
         command=command,
         args=args,
@@ -868,7 +907,7 @@ def cape_file_view_command(client: CapeSandboxClient, args: dict[str, Any]) -> C
     sha256 = args.get("sha256")
 
     lookup_id = task_id or md5 or sha256
-    demisto.debug(f"Starting file view command for ID: {lookup_id}.")
+    demisto.debug(f"Parsed identifiers: {task_id=}, {md5=}, {sha256=}, {lookup_id=}")
 
     if not lookup_id:
         raise DemistoException("Provide one of: task_id, md5, sha256")
@@ -881,14 +920,17 @@ def cape_file_view_command(client: CapeSandboxClient, args: dict[str, Any]) -> C
     if task_id:
         demisto.debug(f"Calling files_view_by_task for task ID: {task_id}.")
         resp = client.files_view_by_task(task_id)
+        demisto.debug(f"Received response for task_id {task_id}: {resp}")
 
     elif md5:
         demisto.debug(f"Calling files_view_by_md5 for MD5: {md5}.")
         resp = client.files_view_by_md5(md5)
+        demisto.debug(f"Received response for MD5 {md5}: {resp}")
 
     elif sha256:
         demisto.debug(f"Calling files_view_by_sha256 for SHA256: {sha256}.")
         resp = client.files_view_by_sha256(sha256)
+        demisto.debug(f"Received response for SHA256 {sha256}: {resp}")
 
     demisto.debug(f"File view retrieved for {lookup_id}. Formatting results.")
 
@@ -924,8 +966,10 @@ def cape_pcap_file_download_command(client: CapeSandboxClient, args: dict[str, A
     demisto.debug(f"Starting execution of command: {command}")
 
     task_id = args["task_id"]
+    demisto.debug(f"Downloading PCAP for task_id: {task_id}")
 
     dump_pcap = client.get_task_pcap(task_id)
+    demisto.debug(f"Successfully retrieved PCAP data. Size: {len(dump_pcap)} bytes")
 
     filename = build_file_name(
         file_identifier=task_id,
@@ -947,6 +991,8 @@ def cape_sample_file_download_command(client: CapeSandboxClient, args: dict[str,
     sha1 = args.get("sha1")
     sha256 = args.get("sha256")
 
+    demisto.debug(f"Parsed identifiers: {task_id=}, {md5=}, {sha1=}, {sha256=}")
+
     if not any([task_id, md5, sha1, sha256]):
         raise DemistoException("Provide one of: task_id, md5, sha1, sha256")
 
@@ -957,20 +1003,26 @@ def cape_sample_file_download_command(client: CapeSandboxClient, args: dict[str,
     filename_base = ""
 
     if task_id:
+        demisto.debug(f"Downloading sample by task_id: {task_id}")
         resp = client.files_get_by_task(task_id)
         filename_base = str(task_id)
 
     elif md5:
+        demisto.debug(f"Downloading sample by MD5: {md5}")
         resp = client.files_get_by_md5(md5)
         filename_base = "md5"
 
     elif sha1:
+        demisto.debug(f"Downloading sample by SHA1: {sha1}")
         resp = client.files_get_by_sha1(sha1)
         filename_base = "sha1"
 
     elif sha256:
+        demisto.debug(f"Downloading sample by SHA256: {sha256}")
         resp = client.files_get_by_sha256(sha256)
         filename_base = "sha256"
+
+    demisto.debug(f"Successfully retrieved sample file. Size: {len(resp) if isinstance(resp, bytes) else 'N/A'} bytes")
 
     filename = build_file_name(
         file_identifier=filename_base,
@@ -1017,6 +1069,8 @@ def cape_tasks_list_command(client: CapeSandboxClient, args: dict[str, Any]) -> 
     page = max(arg_to_number(args.get("page")) or 1, 1)
     offset = (page - 1) * api_limit
 
+    demisto.debug(f"Pagination parameters: {task_id=}, {requested_limit=}, " f"{api_limit=}, {page=}, {offset=}")
+
     DATA_KEYS = [
         "id",
         "category",
@@ -1035,7 +1089,9 @@ def cape_tasks_list_command(client: CapeSandboxClient, args: dict[str, Any]) -> 
 
     if task_id:
         # --- Single Task View ---
+        demisto.debug(f"Fetching single task view for task_id: {task_id}")
         task = client.get_task_view(task_id)
+        demisto.debug(f"Received task view response: {task}")
         data = task.get("data") or task
         readable = tableToMarkdown(
             f"{INTEGRATION_NAME} Task {task_id}",
@@ -1053,9 +1109,15 @@ def cape_tasks_list_command(client: CapeSandboxClient, args: dict[str, Any]) -> 
         )
 
     # --- List View ---
+    demisto.debug(f"Fetching task list with limit={api_limit}, offset={offset}")
     resp = client.list_tasks(limit=api_limit, offset=offset)
+    demisto.debug(f"Raw list response keys: {list(resp.keys()) if isinstance(resp, dict) else 'N/A'}")
+
     data = resp.get("data", resp)
+    demisto.debug(f"Data type: {type(data)}, is_list: {isinstance(data, list)}")
+
     items = data if isinstance(data, list) else [data]
+    demisto.debug(f"Received task list with {len(items)} items")
 
     readable = tableToMarkdown(
         f"{INTEGRATION_NAME} Tasks (page={page}, page_size={api_limit})",
@@ -1084,28 +1146,37 @@ def cape_task_report_get_command(client: CapeSandboxClient, args: dict[str, Any]
     file_format = args.get("format", "json").strip().lower()
     zip_flag = argToBoolean(args.get("zip", False))
 
+    demisto.debug(f"Report parameters: {task_id=}, {file_format=}, {zip_flag=}")
+
     if zip_flag:
+        demisto.debug(f"Downloading ZIP report for task_id: {task_id}")
         content = client.get_task_report(task_id=task_id, format=file_format, zip_download=True)
+        demisto.debug(f"Successfully retrieved ZIP report. Size: {len(content)} bytes")
         filename = build_file_name(file_identifier=task_id, file_type="report", file_format="zip")
 
         demisto.debug(f"Command '{command}' execution finished successfully (Returning ZIP file).")
         return fileResult(filename, content)
 
+    demisto.debug(f"Fetching JSON report for task_id: {task_id}")
     resp = client.get_task_report(task_id=task_id, format=file_format, zip_download=False)
+    demisto.debug(f"Received report response. Keys: {list(resp.keys()) if isinstance(resp, dict) else 'N/A'}")
 
     info = (resp or {}).get("info") or {}
 
     if not info:
+        demisto.debug(f"No 'info' object found in report response: {resp}")
         if resp and isinstance(resp, dict) and resp.get("message"):
             raise DemistoException(f"Failed to retrieve report for task {task_id}: {resp['message']}")
 
         raise DemistoException(f"No info object found in report for task {task_id}")
 
     target_file = (resp or {}).get("target", {}).get("file", {})
+    demisto.debug(f"Target file present: {bool(target_file)}")
 
     hr_data = info
 
     if target_file:
+        demisto.debug(f"Enriching report with target file metadata: {list(target_file.keys())}")
         hr_data["file_name"] = target_file.get("name")
         hr_data["file_path"] = target_file.get("path")
         hr_data["file_size"] = target_file.get("size")
@@ -1114,6 +1185,8 @@ def cape_task_report_get_command(client: CapeSandboxClient, args: dict[str, Any]
         hr_data["sha256"] = target_file.get("sha256")
         hr_data["ssdeep"] = target_file.get("ssdeep")
         hr_data["file_type"] = target_file.get("type")
+    else:
+        demisto.debug("No target file metadata found in report")
 
     headers = [
         "id",
@@ -1201,13 +1274,20 @@ def cape_machines_list_command(client: CapeSandboxClient, args: dict[str, Any]) 
 
     demisto.debug("Fetching list of all available machines.")
     resp = client.list_machines()
+    demisto.debug(f"Raw machines response keys: {list(resp.keys()) if isinstance(resp, dict) else 'N/A'}")
+
     machines = resp.get("machines", resp.get("data", resp))
+    demisto.debug(f"Machines data type: {type(machines)}")
 
     if isinstance(machines, dict):
+        demisto.debug("Converting single machine dict to list")
         machines = [machines]
 
+    demisto.debug(f"Total machines before filtering: {len(machines)}")
     if not all_results:
+        demisto.debug(f"Limiting results to {limit} machines")
         machines = machines[:limit]
+    demisto.debug(f"Final machine count: {len(machines)}")
 
     readable = tableToMarkdown(
         f"{INTEGRATION_NAME} Machines (count={len(machines)})",
@@ -1287,45 +1367,63 @@ def cape_task_screenshot_download_command(client: CapeSandboxClient, args: dict[
     task_id = args["task_id"]
     single_number = arg_to_number(args.get("screenshot"))
 
+    demisto.debug(f"Screenshot parameters: {task_id=}, {single_number=}")
+
     if not task_id:
         raise DemistoException("Task ID is missing for download screenshot.")
 
     if single_number:
+        demisto.debug(f"Downloading single screenshot number: {single_number}")
         candidates_raw = [single_number]
 
     else:
         # about to call with taskif
+        demisto.debug(f"Fetching screenshot list for task_id: {task_id}")
         meta = client.list_task_screenshots(task_id)
+        demisto.debug(f"Received screenshot metadata: {meta}")
 
         candidates_raw = meta.get("screenshots") or meta.get("data") or meta
 
         if not isinstance(candidates_raw, list):
+            demisto.debug(f"Screenshot metadata is not a list, setting to empty: {type(candidates_raw)}")
             candidates_raw = []
 
     file_entries = []
     candidate_numbers = []
 
-    for item in candidates_raw:
+    demisto.debug(f"Processing {len(candidates_raw)} raw screenshot candidates")
+    for idx, item in enumerate(candidates_raw):
         current_number: int | None = None
         if isinstance(item, dict):
             current_number = arg_to_number(item.get("number"))
+            demisto.debug(f"Candidate {idx}: dict with number={current_number}")
         elif isinstance(item, int):
             current_number = item
+            demisto.debug(f"Candidate {idx}: int={current_number}")
+        else:
+            demisto.debug(f"Candidate {idx}: unexpected type {type(item)}")
+
         if current_number is not None:
             candidate_numbers.append(current_number)
 
-    if not candidate_numbers and not single_number:  # TODO
+    if not candidate_numbers and not single_number:
+        demisto.debug("No screenshot numbers found, using fallback range 1-5")
         candidate_numbers.extend(range(1, 6))
 
+    demisto.debug(f"Processing {len(candidate_numbers)} screenshot numbers: {candidate_numbers}")
     processed_numbers = set()
 
-    for number in candidate_numbers:
+    for idx, number in enumerate(candidate_numbers):
         if number in processed_numbers:
+            demisto.debug(f"Screenshot {number} already processed, skipping")
             continue
 
         try:
+            demisto.debug(f"[{idx+1}/{len(candidate_numbers)}] Downloading screenshot {number} for task {task_id}")
             content = client.get_task_screenshot(task_id=task_id, number=number)
+            demisto.debug(f"Successfully retrieved screenshot {number}. Size: {len(content)} bytes")
             filename = build_file_name(task_id, "screenshot", number)
+            demisto.debug(f"Generated filename: {filename}")
 
             file_meta = fileResult(filename, content)
 
@@ -1334,6 +1432,7 @@ def cape_task_screenshot_download_command(client: CapeSandboxClient, args: dict[
             file_entries.append(file_meta)
 
             processed_numbers.add(number)
+            demisto.debug(f"Successfully processed screenshot {number} ({len(file_entries)} total)")
 
         except DemistoException as error:
             demisto.debug(f"Failed to fetch screenshot {number} for task {task_id}: {error}")
@@ -1343,7 +1442,10 @@ def cape_task_screenshot_download_command(client: CapeSandboxClient, args: dict[
         #         f"Unexpected error while processing screenshot {number}: {error}"
         #     )
 
+    demisto.debug(f"Screenshot download complete. Total files: {len(file_entries)}, Processed numbers: {processed_numbers}")
+
     if not file_entries:
+        demisto.debug(f"No screenshots successfully downloaded for task {task_id}")
         raise DemistoException(f"No screenshots found for task {task_id}")
 
     readable = tableToMarkdown(
@@ -1377,7 +1479,9 @@ def main() -> None:
     demisto.debug(f"Received command: {command}")
 
     try:
+        demisto.debug("Parsing integration parameters")
         config = parse_integration_params(params)
+        demisto.debug("Integration parameters parsed successfully")
 
         base_url = config["base_url"]
         verify_certificate = config["verify_certificate"]
@@ -1385,6 +1489,8 @@ def main() -> None:
         api_token = config["api_token"]
         username = config["username"]
         password = config["password"]
+
+        demisto.debug("Initializing CapeSandbox client")
         client = CapeSandboxClient(
             base_url=base_url,
             verify=verify_certificate,
@@ -1413,9 +1519,13 @@ def main() -> None:
         }
 
         if command not in command_map:
+            demisto.debug(f"Command '{command}' not found in command map. Available: {list(command_map.keys())}")
             raise NotImplementedError(f"Command {command} is not implemented")
 
+        demisto.debug(f"Executing command handler for '{command}'")
         result = command_map[command]()
+        demisto.debug(f"Command handler returned result type: {type(result)}")
+
         return_results(result)
 
         demisto.debug(f"Command '{command}' execution finished successfully.")
