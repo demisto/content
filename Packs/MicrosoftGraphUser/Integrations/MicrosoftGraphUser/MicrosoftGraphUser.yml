@@ -159,31 +159,19 @@ script:
   - arguments:
     - description: User ID or userPrincipalName.
       name: user
+      prettyname: User
+      prettypredefined:
+        User UPN: ${issue.original_alert_json.raw_abioc.event.auth_normalized_user.upn}
       required: true
     description: |-
       Disables a user from all Office 365 applications, and prevents sign in. Note: This command disables user,
       but does not terminate an existing session. Supported only in a self deployed app flow with the
       Permission: Directory.AccessAsUser.All(Delegated).
     name: msgraph-user-account-disable
-    compliantpolicies:
-    - User Hard Remediation
-  - arguments:
-      - description: User ID or userPrincipalName.
-        prettyname: User
-        prettypredefined:
-          User UPN: ${issue.original_alert_json.raw_abioc.event.auth_normalized_user.upn}
-        name: user
-        required: true
-    description: |-
-      Disables a user from all Office 365 applications, and prevents sign in. Note: This command disables user,
-      but does not terminate an existing session. Supported only in a self deployed app flow with the
-      Permission: Directory.AccessAsUser.All(Delegated).
-    name: msgraph-user-account-disable-quick-action
     prettyname: Disable User Account [EntraID]
     quickaction: true
-    hidden: true
     compliantpolicies:
-      - User Hard Remediation
+    - User Hard Remediation
   - arguments:
     - description: User ID or userPrincipalName.
       name: user
@@ -681,17 +669,6 @@ script:
     name: msgraph-user-test
   - arguments:
     - description: User ID or userPrincipalName.
-      name: user
-      required: true
-    description: |-
-      Revoke a user session by invalidating all refresh tokens issued to applications for a user.
-      This command requires an administrator role.
-      Permission required: Directory.AccessAsUser.All (Delegated).
-    name: msgraph-user-session-revoke
-    compliantpolicies:
-    - User Soft Remediation
-  - arguments:
-    - description: User ID or userPrincipalName.
       prettyname: User
       prettypredefined:
         User UPN: ${issue.original_alert_json.raw_abioc.event.auth_normalized_user.upn}
@@ -701,10 +678,9 @@ script:
       Revoke a user session by invalidating all refresh tokens issued to applications for a user.
       This command requires an administrator role.
       Permission required: Directory.AccessAsUser.All (Delegated).
-    name: msgraph-user-session-revoke-quick-action
+    name: msgraph-user-session-revoke
     prettyname: Terminate Existing Sessions [EntraID]
     quickaction: true
-    hidden: true
     compliantpolicies:
     - User Soft Remediation
   - arguments:
