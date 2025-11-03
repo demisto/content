@@ -1,7 +1,7 @@
 commonfields:
   id: GCP
   version: -1
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 configuration:
@@ -142,6 +142,96 @@ script:
       description: Type of the resource. Always compute#operation for Operation resources.
       type: string
 
+  - name: gcp-compute-firewall-patch-disable-gcp-default-firewall-rule-quick-action
+    description: Disables default GCP firewall rule which is overly permissive (except HTTP and HTTPS).
+    prettyname: Disable GCP Firewall Rule
+    quickaction: true
+    hidden: true
+    arguments:
+      - name: project_id
+        required: true
+        description: GCP project ID.
+        prettyname: GCP Project ID
+        prettypredefined:
+          GCP Project ID: ${asset.xdm.asset.realm}
+      - name: resource_name
+        required: true
+        description: Name of the firewall rule to disable.
+        prettyname: GCP Firewall Rule Name
+        prettypredefined:
+          GCP Firewall Rule Name: ${asset.xdm.asset.name}
+      - description: Denotes whether the firewall rule is disabled, i.e not applied to the network it is associated with. When set to true, the firewall rule is not enforced and the network behaves as if it did not exist. If this is unspecified, the firewall rule will be enabled.
+        name: disabled
+        defaultValue: "true"
+        hidden: true
+    outputs:
+      - contextPath: GCP.Compute.Operations.id
+        description: The unique identifier for the resource. This identifier is defined by the server.
+        type: string
+      - contextPath: GCP.Compute.Operations.name
+        description: Name of the resource.
+        type: string
+      - contextPath: GCP.Compute.Operations.zone
+        description: The URL of the zone where the operation resides. Only available when performing per-zone operations. You must specify this field as part of the HTTP request URL. It is not configurable as a field in the request body.
+        type: string
+      - contextPath: GCP.Compute.Operations.clientOperationId
+        description: The value of requestId if you provided it in the request. Not present otherwise.
+        type: string
+      - contextPath: GCP.Compute.Operations.operationType
+        description: The type of operation, such as insert, update, or delete, and so on.
+        type: string
+      - contextPath: GCP.Compute.Operations.targetLink
+        description: The URL of the resource that the operation modifies. For operations related to creating a snapshot, this points to the persistent disk from which the snapshot was created.
+        type: string
+      - contextPath: GCP.Compute.Operations.targetId
+        description: The unique target ID, which identifies a specific incarnation of the target resource.
+        type: string
+      - contextPath: GCP.Compute.Operations.status
+        description: 'The status of the operation, which can be one of the following: PENDING, RUNNING, or DONE.'
+        type: string
+      - contextPath: GCP.Compute.Operations.statusMessage
+        description: An optional textual description of the current status of the operation.
+        type: string
+      - contextPath: GCP.Compute.Operations.user
+        description: The user who requested the operation, for example, EMAILADDRESS.
+        type: string
+      - contextPath: GCP.Compute.Operations.progress
+        description: An optional progress indicator that ranges from 0 to 100. There is no requirement that this be linear or support any granularity of operations. This should not be used to guess when the operation will be complete. This number should monotonically increase as the operation progresses.
+        type: number
+      - contextPath: GCP.Compute.Operations.insertTime
+        description: The time that this operation was requested. This value is in RFC3339 text format.
+        type: string
+      - contextPath: GCP.Compute.Operations.startTime
+        description: The time that this operation was started by the server. This value is in RFC3339 text format.
+        type: string
+      - contextPath: GCP.Compute.Operations.endTime
+        description: The time that this operation was completed. This value is in RFC3339 text format.
+        type: string
+      - contextPath: GCP.Compute.Operations.error
+        description: If errors are generated during processing of the operation, this field will be populated.
+        type: string
+      - contextPath: GCP.Compute.Operations.warnings
+        description: If warning messages are generated during processing of the operation, this field will be populated.
+        type: string
+      - contextPath: GCP.Compute.Operations.httpErrorStatusCode
+        description: If the operation fails, this field contains the HTTP error status code that was returned. For example, a 404 means the resource was not found.
+        type: number
+      - contextPath: GCP.Compute.Operations.httpErrorMessage
+        description: If the operation fails, this field contains the HTTP error message that was returned, such as NOT FOUND.
+        type: string
+      - contextPath: GCP.Compute.Operations.selfLink
+        description: Server-defined URL for the resource.
+        type: string
+      - contextPath: GCP.Compute.Operations.region
+        description: The URL of the region where the operation resides. Only available when performing regional operations. You must specify this field as part of the HTTP request URL. It is not configurable as a field in the request body.
+        type: string
+      - contextPath: GCP.Compute.Operations.description
+        description: A textual description of the operation, which is set when the operation is created.
+        type: string
+      - contextPath: GCP.Compute.Operations.kind
+        description: Type of the resource. Always compute#operation for Operation resources.
+        type: string
+
   - name: gcp-storage-bucket-policy-delete
     description: Removes an entity from a bucket's Access Control List.
     arguments:
@@ -157,6 +247,85 @@ script:
       required: false
       isArray: true
       description: "Entity to remove from the Access Control List.\nCommon entity formats are:\n* user:<userId or email>\n* group:<groupId or email>\n* allUsers\n* allAuthenticatedUsers\nFor more options and details, see: https://cloud.google.com/storage/docs/json_api/v1/bucketAccessControls#resource "
+
+  - name: gcp-storage-bucket-policy-delete-remove-allusers-access-quick-action
+    description: Revoke 'allUsers' permission access in GCP Storage buckets.
+    prettyname: Remove GCP Bucket AllUsers Access
+    quickaction: true
+    hidden: true
+    arguments:
+      - name: project_id
+        required: true
+        description: GCP project ID.
+        prettyname: GCP Project ID
+        prettypredefined:
+          GCP Project ID: ${asset.xdm.asset.realm}
+      - name: resource_name
+        required: true
+        description: Name of the GCS bucket.
+        prettyname: GCP Storage Bucket Name
+        prettypredefined:
+          GCP Storage Bucket Name: ${asset.xdm.asset.name}
+      - name: entity
+        auto: PREDEFINED
+        defaultValue: "allUsers"
+        required: false
+        isArray: true
+        hidden: true
+        description: "Entity to remove from the Access Control List.\nCommon entity formats are:\n* user:<userId or email>\n* group:<groupId or email>\n* allUsers\n* allAuthenticatedUsers\nFor more options and details, see: https://cloud.google.com/storage/docs/json_api/v1/bucketAccessControls#resource "
+
+  - name: gcp-storage-bucket-policy-delete-remove-AllAuthenticatedUser-access-quick-action
+    description: Revokes 'allAuthenticatedUsers' permission access in GCP Storage buckets.
+    prettyname: Remove GCP Bucket AllAuthenticatedUser Access
+    quickaction: true
+    hidden: true
+    arguments:
+      - name: project_id
+        required: true
+        description: GCP project ID.
+        prettyname: GCP Project ID
+        prettypredefined:
+          GCP Project ID: ${asset.xdm.asset.realm}
+      - name: resource_name
+        required: true
+        description: Name of the GCS bucket.
+        prettyname: Bucket Name
+        prettypredefined:
+          Bucket Name: ${asset.xdm.asset.name}
+      - name: entity
+        auto: PREDEFINED
+        defaultValue: "allAuthenticatedUsers"
+        required: false
+        hidden: true
+        isArray: true
+        description: "Entity to remove from the Access Control List.\nCommon entity formats are:\n* user:<userId or email>\n* group:<groupId or email>\n* allUsers\n* allAuthenticatedUsers\nFor more options and details, see: https://cloud.google.com/storage/docs/json_api/v1/bucketAccessControls#resource "
+
+  - name: gcp-storage-bucket-policy-delete-make-gcp-bucket-private-quick-action
+    description: Revokes 'allUsers' and 'allAuthenticatedUsers' permissions access in a GCP Storage bucket.
+    prettyname: Make GCP Bucket Private
+    quickaction: true
+    hidden: true
+    arguments:
+      - name: project_id
+        required: true
+        description: GCP project ID.
+        prettyname: GCP Project ID
+        prettypredefined:
+          GCP Project ID: ${asset.xdm.asset.realm}
+      - name: resource_name
+        required: true
+        description: Name of the GCP bucket.
+        prettyname: Bucket Name
+        prettypredefined:
+          Bucket Name: ${asset.xdm.asset.name}
+      - name: entity
+        auto: PREDEFINED
+        defaultValue: "allAuthenticatedUsers,allUsers"
+        required: false
+        hidden: true
+        isArray: true
+        description: "Entity to remove from the Access Control List.\nCommon entity formats are:\n* user:<userId or email>\n* group:<groupId or email>\n* allUsers\n* allAuthenticatedUsers\nFor more options and details, see: https://cloud.google.com/storage/docs/json_api/v1/bucketAccessControls#resource "
+
 
   - name: gcp-compute-subnet-update
     description: Enables flow logs or Private Google Access on a subnet.
@@ -218,6 +387,142 @@ script:
     - contextPath: GCP.Compute.Operations.description
       description: The description of the subnet.
       type: String
+
+  - name: gcp-compute-subnet-update-enable-gcp-subnet-flow-logs-quick-action
+    description: Enables VPC Flow Logs on a GCP subnet.
+    prettyname: Enable GCP Subnet Flow Logs
+    quickaction: true
+    hidden: true
+    arguments:
+      - name: project_id
+        required: true
+        description: GCP project ID.
+        prettyname: GCP Project ID
+        prettypredefined:
+          GCP Project ID: ${asset.xdm.asset.realm}
+      - name: region
+        required: true
+        description: GCP region.
+        prettyname: Region
+        prettypredefined:
+         Region: ${asset.xdm.asset.cloud.region}
+      - name: resource_name
+        required: true
+        description: Subnet name.
+        prettyname: GCP Subnet Name
+        prettypredefined:
+          GCP Subnet Name: ${asset.xdm.asset.name}
+      - name: enable_flow_logs
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - "true"
+          - "false"
+        defaultValue: "true"
+        hidden: true
+        description: Enable VPC Flow Logs.
+    outputs:
+      - contextPath: GCP.Compute.Operations.name
+        description: The name of the updated subnet.
+        type: String
+      - contextPath: GCP.Compute.Operations.region
+        description: The region of the updated subnet.
+        type: String
+      - contextPath: GCP.Compute.Operations.subnetName
+        description: The name of the subnet that was updated.
+        type: String
+      - contextPath: GCP.Compute.Operations.enableFlowLogs
+        description: Whether flow logs are enabled for the subnet.
+        type: Boolean
+      - contextPath: GCP.Compute.Operations.ipCidrRange
+        description: The updated CIDR range for the subnet.
+        type: String
+      - contextPath: GCP.Compute.Operations.privateIpGoogleAccess
+        description: Whether private Google access is enabled for the subnet.
+        type: Boolean
+      - contextPath: GCP.Compute.Operations.privateIpv6GoogleAccess
+        description: Whether private IPv6 Google access is enabled for the subnet.
+        type: Boolean
+      - contextPath: GCP.Compute.Operations.stackType
+        description: The stack type of the subnet (e.g., `IPV4`, `IPV6`).
+        type: String
+      - contextPath: GCP.Compute.Operations.rangeName
+        description: The name of the IP range associated with the subnet.
+        type: String
+      - contextPath: GCP.Compute.Operations.secondaryIpRanges
+        description: List of secondary IP ranges for the subnet.
+        type: Unknown
+      - contextPath: GCP.Compute.Operations.description
+        description: The description of the subnet.
+        type: String
+
+  - name: gcp-compute-subnet-update-enable-private-access-quick-action
+    description: Enables Private Google Access on a GCP subnet.
+    prettyname: Enable GCP Subnet Private Access
+    quickaction: true
+    hidden: true
+    arguments:
+      - name: project_id
+        required: true
+        description: GCP project ID.
+        prettyname: GCP Project ID
+        prettypredefined:
+          GCP Project ID: ${asset.xdm.asset.realm}
+      - name: region
+        required: true
+        description: GCP region.
+        prettyname: Region
+        prettypredefined:
+          Region: ${asset.xdm.asset.cloud.region}
+      - name: resource_name
+        required: true
+        description: Subnet name.
+        prettyname: GCP Subnet Name
+        prettypredefined:
+          GCP Subnet Name: ${asset.xdm.asset.name}
+      - name: enable_private_ip_google_access
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - "true"
+          - "false"
+        defaultValue: "true"
+        hidden: true
+        description: Enable Private Google Access.
+    outputs:
+      - contextPath: GCP.Compute.Operations.name
+        description: The name of the updated subnet.
+        type: String
+      - contextPath: GCP.Compute.Operations.region
+        description: The region of the updated subnet.
+        type: String
+      - contextPath: GCP.Compute.Operations.subnetName
+        description: The name of the subnet that was updated.
+        type: String
+      - contextPath: GCP.Compute.Operations.enableFlowLogs
+        description: Whether flow logs are enabled for the subnet.
+        type: Boolean
+      - contextPath: GCP.Compute.Operations.ipCidrRange
+        description: The updated CIDR range for the subnet.
+        type: String
+      - contextPath: GCP.Compute.Operations.privateIpGoogleAccess
+        description: Whether private Google access is enabled for the subnet.
+        type: Boolean
+      - contextPath: GCP.Compute.Operations.privateIpv6GoogleAccess
+        description: Whether private IPv6 Google access is enabled for the subnet.
+        type: Boolean
+      - contextPath: GCP.Compute.Operations.stackType
+        description: The stack type of the subnet (e.g., `IPV4`, `IPV6`).
+        type: String
+      - contextPath: GCP.Compute.Operations.rangeName
+        description: The name of the IP range associated with the subnet.
+        type: String
+      - contextPath: GCP.Compute.Operations.secondaryIpRanges
+        description: List of secondary IP ranges for the subnet.
+        type: Unknown
+      - contextPath: GCP.Compute.Operations.description
+        description: The description of the subnet.
+        type: String
 
   - name: gcp-container-cluster-security-update
     description: Configures security settings for GKE clusters, including access controls and visibility.
@@ -324,6 +629,216 @@ script:
       description: The current version of the Kubernetes master in the GKE cluster.
       type: String
 
+  - name: gcp-container-cluster-security-update-enable-gke-cluster-intra-node-visibility-quick-action
+    description: Enables intra-node visibility on a GKE cluster for enhanced network monitoring.
+    prettyname: Enable GKE Cluster Intra-Node Visibility
+    quickaction: true
+    hidden: true
+    arguments:
+      - name: project_id
+        required: true
+        description: GCP project ID.
+        prettyname: GCP Project ID
+        prettypredefined:
+          GCP Project ID: ${asset.xdm.asset.realm}
+      - name: region
+        required: true
+        description: GCP region.
+        prettyname: Region
+        prettypredefined:
+          Region: ${asset.xdm.asset.cloud.region}
+      - name: resource_name
+        required: true
+        description: Name of the GKE cluster.
+        prettyname: Cluster Name
+        prettypredefined:
+          Cluster Name: ${asset.xdm.asset.name}
+      - name: enable_intra_node_visibility
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - "true"
+          - "false"
+        defaultValue: "true"
+        hidden: true
+        description: Enable intra-node visibility.
+    outputs:
+      - contextPath: GCP.Container.Operations.name
+        description: The name of the GKE cluster.
+        type: String
+      - contextPath: GCP.Container.Operations.zone
+        description: The zone of the GKE cluster.
+        type: String
+      - contextPath: GCP.Container.Operations.enableStackdriverLogging
+        description: Whether Stackdriver Logging is enabled for the cluster.
+        type: Boolean
+      - contextPath: GCP.Container.Operations.enableStackdriverMonitoring
+        description: Whether Stackdriver Monitoring is enabled for the cluster.
+        type: Boolean
+      - contextPath: GCP.Container.Operations.enablePrivateNodes
+        description: Whether private nodes are enabled for the GKE cluster.
+        type: Boolean
+      - contextPath: GCP.Container.Operations.enablePrivateEndpoint
+        description: Whether private endpoint is enabled for the GKE cluster control plane.
+        type: Boolean
+      - contextPath: GCP.Container.Operations.enableHttpsOnly
+        description: Whether HTTPS-only traffic is enforced for the cluster.
+        type: Boolean
+      - contextPath: GCP.Container.Operations.enableNetworkPolicy
+        description: Whether network policies are enabled for the cluster.
+        type: Boolean
+      - contextPath: GCP.Container.Operations.enableAutoscaling
+        description: Whether autoscaling is enabled for the cluster nodes.
+        type: Boolean
+      - contextPath: GCP.Container.Operations.enableIstio
+        description: Whether Istio is enabled for the GKE cluster.
+        type: Boolean
+      - contextPath: GCP.Container.Operations.enablePodSecurityPolicy
+        description: Whether PodSecurityPolicy is enabled for the GKE cluster.
+        type: Boolean
+      - contextPath: GCP.Container.Operations.enableBinaryAuthorization
+        description: Whether Binary Authorization is enabled for the cluster.
+        type: Boolean
+      - contextPath: GCP.Container.Operations.enableLegacyABAC
+        description: Whether legacy ABAC is enabled for the cluster.
+        type: Boolean
+      - contextPath: GCP.Container.Operations.clusterIpv4Cidr
+        description: The cluster's IPv4 CIDR block.
+        type: String
+      - contextPath: GCP.Container.Operations.masterAuthorizedNetworksConfig.cidrBlocks
+        description: List of authorized CIDR blocks that can access the GKE cluster master.
+        type: Unknown
+      - contextPath: GCP.Container.Operations.masterAuthorizedNetworksConfig.enabled
+        description: Whether master authorized networks are enabled for the cluster.
+        type: Boolean
+      - contextPath: GCP.Container.Operations.network
+        description: The network to which the GKE cluster belongs.
+        type: String
+      - contextPath: GCP.Container.Operations.subnetwork
+        description: The subnetwork to which the GKE cluster belongs.
+        type: String
+      - contextPath: GCP.Container.Operations.loggingService
+        description: The logging service used for the cluster (e.g., "logging.googleapis.com").
+        type: String
+      - contextPath: GCP.Container.Operations.monitoringService
+        description: The monitoring service used for the cluster (e.g., "monitoring.googleapis.com").
+        type: String
+      - contextPath: GCP.Container.Operations.nodePools
+        description: A list of node pools in the cluster, with their configuration and security settings.
+        type: Unknown
+      - contextPath: GCP.Container.Operations.privateClusterConfig.enablePrivateNodes
+        description: Whether private nodes are enabled in the cluster.
+        type: Boolean
+      - contextPath: GCP.Container.Operations.privateClusterConfig.enablePrivateEndpoint
+        description: Whether private endpoint is enabled for the cluster control plane.
+        type: Boolean
+      - contextPath: GCP.Container.Operations.masterVersion
+        description: The current version of the Kubernetes master in the GKE cluster.
+        type: String
+
+  - name: gcp-container-cluster-security-update-enable-master-authorized-networks-on-gke-quick-action
+    description: Enables Master Authorized Networks on a GKE cluster to restrict API server access.
+    prettyname: Enable Master Authorized Networks on GKE
+    quickaction: true
+    hidden: true
+    arguments:
+      - name: project_id
+        required: true
+        description: GCP project ID.
+        prettyname: GCP Project ID
+        prettypredefined:
+          GCP project ID: ${asset.xdm.asset.realm}
+      - name: region
+        required: true
+        description: GCP region.
+        prettyname: Region
+        prettypredefined:
+          Region: ${asset.xdm.asset.cloud.region}
+      - name: resource_name
+        required: true
+        description: Name of the GKE cluster.
+        prettyname: Cluster Name
+        prettypredefined:
+          Cluster Name: ${asset.xdm.asset.name}
+      - name: enable_master_authorized_networks
+        required: false
+        defaultValue: "true"
+        hidden: true
+        description: Enable Master Authorized Networks.
+    outputs:
+      - contextPath: GCP.Container.Operations.name
+        description: The name of the GKE cluster.
+        type: String
+      - contextPath: GCP.Container.Operations.zone
+        description: The zone of the GKE cluster.
+        type: String
+      - contextPath: GCP.Container.Operations.enableStackdriverLogging
+        description: Whether Stackdriver Logging is enabled for the cluster.
+        type: Boolean
+      - contextPath: GCP.Container.Operations.enableStackdriverMonitoring
+        description: Whether Stackdriver Monitoring is enabled for the cluster.
+        type: Boolean
+      - contextPath: GCP.Container.Operations.enablePrivateNodes
+        description: Whether private nodes are enabled for the GKE cluster.
+        type: Boolean
+      - contextPath: GCP.Container.Operations.enablePrivateEndpoint
+        description: Whether private endpoint is enabled for the GKE cluster control plane.
+        type: Boolean
+      - contextPath: GCP.Container.Operations.enableHttpsOnly
+        description: Whether HTTPS-only traffic is enforced for the cluster.
+        type: Boolean
+      - contextPath: GCP.Container.Operations.enableNetworkPolicy
+        description: Whether network policies are enabled for the cluster.
+        type: Boolean
+      - contextPath: GCP.Container.Operations.enableAutoscaling
+        description: Whether autoscaling is enabled for the cluster nodes.
+        type: Boolean
+      - contextPath: GCP.Container.Operations.enableIstio
+        description: Whether Istio is enabled for the GKE cluster.
+        type: Boolean
+      - contextPath: GCP.Container.Operations.enablePodSecurityPolicy
+        description: Whether PodSecurityPolicy is enabled for the GKE cluster.
+        type: Boolean
+      - contextPath: GCP.Container.Operations.enableBinaryAuthorization
+        description: Whether Binary Authorization is enabled for the cluster.
+        type: Boolean
+      - contextPath: GCP.Container.Operations.enableLegacyABAC
+        description: Whether legacy ABAC is enabled for the cluster.
+        type: Boolean
+      - contextPath: GCP.Container.Operations.clusterIpv4Cidr
+        description: The cluster's IPv4 CIDR block.
+        type: String
+      - contextPath: GCP.Container.Operations.masterAuthorizedNetworksConfig.cidrBlocks
+        description: List of authorized CIDR blocks that can access the GKE cluster master.
+        type: Unknown
+      - contextPath: GCP.Container.Operations.masterAuthorizedNetworksConfig.enabled
+        description: Whether master authorized networks are enabled for the cluster.
+        type: Boolean
+      - contextPath: GCP.Container.Operations.network
+        description: The network to which the GKE cluster belongs.
+        type: String
+      - contextPath: GCP.Container.Operations.subnetwork
+        description: The subnetwork to which the GKE cluster belongs.
+        type: String
+      - contextPath: GCP.Container.Operations.loggingService
+        description: The logging service used for the cluster (e.g., "logging.googleapis.com").
+        type: String
+      - contextPath: GCP.Container.Operations.monitoringService
+        description: The monitoring service used for the cluster (e.g., "monitoring.googleapis.com").
+        type: String
+      - contextPath: GCP.Container.Operations.nodePools
+        description: A list of node pools in the cluster, with their configuration and security settings.
+        type: Unknown
+      - contextPath: GCP.Container.Operations.privateClusterConfig.enablePrivateNodes
+        description: Whether private nodes are enabled in the cluster.
+        type: Boolean
+      - contextPath: GCP.Container.Operations.privateClusterConfig.enablePrivateEndpoint
+        description: Whether private endpoint is enabled for the cluster control plane.
+        type: Boolean
+      - contextPath: GCP.Container.Operations.masterVersion
+        description: The current version of the Kubernetes master in the GKE cluster.
+        type: String
+
   - name: gcp-storage-bucket-metadata-update
     description: Updates the metadata of a Google Cloud Storage (GCS) bucket, including settings such as versioning and Uniform Bucket-Level Access (UBLA).
     arguments:
@@ -421,6 +936,497 @@ script:
       description: The path to the custom 404 page for the bucket website.
       type: String
 
+  - name: gcp-storage-bucket-metadata-update-enable-GCP-bucket-versioning-quick-action
+    description: Enables versioning on a GCP Storage bucket to preserve object versions.
+    prettyname: Enable GCP Bucket Versioning
+    quickaction: true
+    hidden: true
+    arguments:
+      - name: project_id
+        required: true
+        description: GCP project ID.
+        prettyname: GCP Project ID
+        prettypredefined:
+          GCP project ID: ${asset.xdm.asset.realm}
+      - name: resource_name
+        required: true
+        description: Name of the bucket.
+        prettyname: Bucket Name
+        prettypredefined:
+          Bucket Name: ${asset.xdm.asset.name}
+      - name: enable_versioning
+        required: false
+        auto: PREDEFINED
+        hidden: true
+        predefined:
+          - "true"
+          - "false"
+        defaultValue: "true"
+        description: Enable versioning.
+    outputs:
+      - contextPath: GCP.StorageBucket.Metadata
+        description: Updated bucket metadata.
+        type: Unknown
+      - contextPath: GCP.StorageBucket.Metadata.name
+        description: The name of the GCP bucket.
+        type: String
+      - contextPath: GCP.StorageBucket.Metadata.id
+        description: The ID of the GCP bucket.
+        type: String
+      - contextPath: GCP.StorageBucket.Metadata.location
+        description: The location of the bucket.
+        type: String
+      - contextPath: GCP.StorageBucket.Metadata.storageClass
+        description: The storage class of the bucket (e.g., STANDARD, NEARLINE).
+        type: String
+      - contextPath: GCP.StorageBucket.Metadata.created
+        description: The creation timestamp of the bucket.
+        type: Date
+      - contextPath: GCP.StorageBucket.Metadata.updated
+        description: The last update timestamp of the bucket.
+        type: Date
+      - contextPath: GCP.StorageBucket.Metadata.metageneration
+        description: The metadata generation of the bucket.
+        type: Number
+      - contextPath: GCP.StorageBucket.Metadata.labels
+        description: The labels attached to the bucket.
+        type: Unknown
+      - contextPath: GCP.StorageBucket.Metadata.defaultEventBasedHold
+        description: Whether a default event-based hold is enabled on the bucket.
+        type: Boolean
+      - contextPath: GCP.StorageBucket.Metadata.retentionPolicy.retentionPeriod
+        description: The duration in seconds that objects in the bucket must be retained.
+        type: Number
+      - contextPath: GCP.StorageBucket.Metadata.retentionPolicy.effectiveTime
+        description: The time from which the retention policy is effective.
+        type: Date
+      - contextPath: GCP.StorageBucket.Metadata.retentionPolicy.isLocked
+        description: Whether the retention policy is locked.
+        type: Boolean
+      - contextPath: GCP.StorageBucket.Metadata.versioning.enabled
+        description: Whether object versioning is enabled.
+        type: Boolean
+      - contextPath: GCP.StorageBucket.Metadata.logging.logBucket
+        description: The destination bucket where access logs are stored.
+        type: String
+      - contextPath: GCP.StorageBucket.Metadata.logging.logObjectPrefix
+        description: The object prefix used for logging.
+        type: String
+      - contextPath: GCP.StorageBucket.Metadata.lifecycle.rule
+        description: A list of lifecycle management rules for the bucket.
+        type: Unknown
+      - contextPath: GCP.StorageBucket.Metadata.iamConfiguration.uniformBucketLevelAccess
+        description: Whether uniform bucket-level access is enabled.
+        type: Boolean
+      - contextPath: GCP.StorageBucket.Metadata.cors
+        description: CORS configuration for the bucket.
+        type: Unknown
+      - contextPath: GCP.StorageBucket.Metadata.customPlacementConfig
+        description: Custom placement configuration for multi-region buckets.
+        type: Unknown
+      - contextPath: GCP.StorageBucket.Metadata.encryption.defaultKmsKeyName
+        description: The default Cloud KMS key used to encrypt objects.
+        type: String
+      - contextPath: GCP.StorageBucket.Metadata.billing.requesterPays
+        description: Whether requester pays is enabled.
+        type: Boolean
+      - contextPath: GCP.StorageBucket.Metadata.website.mainPageSuffix
+        description: Suffix appended to requests for the bucket's website configuration.
+        type: String
+      - contextPath: GCP.StorageBucket.Metadata.website.notFoundPage
+        description: The path to the custom 404 page for the bucket website.
+        type: String
+
+  - name: gcp-storage-bucket-metadata-update-set-GCP-bucket-access-to-uniform-quick-action
+    description: Enables uniform bucket-level access on a GCP Storage bucket for enhanced security.
+    prettyname: Set GCP Bucket Access to Uniform
+    quickaction: true
+    hidden: true
+    arguments:
+      - name: project_id
+        required: true
+        description: GCP project ID.
+        prettyname: GCP Project ID
+        prettypredefined:
+          GCP Project ID: ${asset.xdm.asset.realm}
+      - name: resource_name
+        required: true
+        description: Name of the bucket.
+        prettyname: Bucket Name
+        prettypredefined:
+          Bucket Name: ${asset.xdm.asset.name}
+      - name: enable_uniform_access
+        required: false
+        hidden: true
+        description: Enable uniform bucket-level access.
+    outputs:
+      - contextPath: GCP.StorageBucket.Metadata
+        description: Updated bucket metadata.
+        type: Unknown
+      - contextPath: GCP.StorageBucket.Metadata.name
+        description: The name of the GCP bucket.
+        type: String
+      - contextPath: GCP.StorageBucket.Metadata.id
+        description: The ID of the GCP bucket.
+        type: String
+      - contextPath: GCP.StorageBucket.Metadata.location
+        description: The location of the bucket.
+        type: String
+      - contextPath: GCP.StorageBucket.Metadata.storageClass
+        description: The storage class of the bucket (e.g., STANDARD, NEARLINE).
+        type: String
+      - contextPath: GCP.StorageBucket.Metadata.created
+        description: The creation timestamp of the bucket.
+        type: Date
+      - contextPath: GCP.StorageBucket.Metadata.updated
+        description: The last update timestamp of the bucket.
+        type: Date
+      - contextPath: GCP.StorageBucket.Metadata.metageneration
+        description: The metadata generation of the bucket.
+        type: Number
+      - contextPath: GCP.StorageBucket.Metadata.labels
+        description: The labels attached to the bucket.
+        type: Unknown
+      - contextPath: GCP.StorageBucket.Metadata.defaultEventBasedHold
+        description: Whether a default event-based hold is enabled on the bucket.
+        type: Boolean
+      - contextPath: GCP.StorageBucket.Metadata.retentionPolicy.retentionPeriod
+        description: The duration in seconds that objects in the bucket must be retained.
+        type: Number
+      - contextPath: GCP.StorageBucket.Metadata.retentionPolicy.effectiveTime
+        description: The time from which the retention policy is effective.
+        type: Date
+      - contextPath: GCP.StorageBucket.Metadata.retentionPolicy.isLocked
+        description: Whether the retention policy is locked.
+        type: Boolean
+      - contextPath: GCP.StorageBucket.Metadata.versioning.enabled
+        description: Whether object versioning is enabled.
+        type: Boolean
+      - contextPath: GCP.StorageBucket.Metadata.logging.logBucket
+        description: The destination bucket where access logs are stored.
+        type: String
+      - contextPath: GCP.StorageBucket.Metadata.logging.logObjectPrefix
+        description: The object prefix used for logging.
+        type: String
+      - contextPath: GCP.StorageBucket.Metadata.lifecycle.rule
+        description: A list of lifecycle management rules for the bucket.
+        type: Unknown
+      - contextPath: GCP.StorageBucket.Metadata.iamConfiguration.uniformBucketLevelAccess
+        description: Whether uniform bucket-level access is enabled.
+        type: Boolean
+      - contextPath: GCP.StorageBucket.Metadata.cors
+        description: CORS configuration for the bucket.
+        type: Unknown
+      - contextPath: GCP.StorageBucket.Metadata.customPlacementConfig
+        description: Custom placement configuration for multi-region buckets.
+        type: Unknown
+      - contextPath: GCP.StorageBucket.Metadata.encryption.defaultKmsKeyName
+        description: The default Cloud KMS key used to encrypt objects.
+        type: String
+      - contextPath: GCP.StorageBucket.Metadata.billing.requesterPays
+        description: Whether requester pays is enabled.
+        type: Boolean
+      - contextPath: GCP.StorageBucket.Metadata.website.mainPageSuffix
+        description: Suffix appended to requests for the bucket's website configuration.
+        type: String
+      - contextPath: GCP.StorageBucket.Metadata.website.notFoundPage
+        description: The path to the custom 404 page for the bucket website.
+        type: String
+  - name: gcp-storage-bucket-list
+    description: Retrieves the list of buckets in the project associated with the client.
+    arguments:
+    - name: project_id
+      required: true
+      description: GCP project ID.
+    - name: limit
+      required: false
+      description: Maximum number of buckets to return.
+    - name: prefix
+      required: false
+      description: Filter results to buckets whose names begin with this prefix.
+    - name: page_token
+      required: false
+      description: Token for pagination.
+    outputs:
+      - contextPath: GCP.Storage.Bucket.id
+        description: The unique identifier for the bucket.
+        type: String
+      - contextPath: GCP.Storage.Bucket.name
+        description: The name of the bucket.
+        type: String
+      - contextPath: GCP.Storage.Bucket.kind
+        description: The type of resource (for example, storage#bucket).
+        type: String
+      - contextPath: GCP.Storage.Bucket.location
+        description: The location of the bucket.
+        type: String
+      - contextPath: GCP.Storage.Bucket.locationType
+        description: The type of location (for example, multi-region).
+        type: String
+      - contextPath: GCP.Storage.Bucket.projectNumber
+        description: The GCP project number associated with the bucket.
+        type: String
+      - contextPath: GCP.Storage.Bucket.storageClass
+        description: The storage class of the bucket.
+        type: String
+      - contextPath: GCP.Storage.Bucket.rpo
+        description: The recovery point objective setting of the bucket.
+        type: String
+      - contextPath: GCP.Storage.Bucket.etag
+        description: The HTTP entity tag of the bucket.
+        type: String
+      - contextPath: GCP.Storage.Bucket.generation
+        description: The generation number of the bucket.
+        type: String
+      - contextPath: GCP.Storage.Bucket.metageneration
+        description: The metageneration number of the bucket.
+        type: String
+      - contextPath: GCP.Storage.Bucket.timeCreated
+        description: The time the bucket was created.
+        type: Date
+      - contextPath: GCP.Storage.Bucket.timeUpdated
+        description: The time the bucket was last updated.
+        type: Date
+      - contextPath: GCP.Storage.Bucket.selfLink
+        description: The link to the bucket resource on the GCP API.
+        type: String
+  - name: gcp-storage-bucket-get
+    description: Retrieves information about a specific bucket.
+    arguments:
+    - name: project_id
+      required: true
+      description: GCP project ID.
+    - name: bucket_name
+      required: true
+      description: Name of the bucket to retrieve.
+    outputs:
+      - contextPath: GCP.Storage.Bucket.id
+        description: The unique identifier for the bucket.
+        type: String
+      - contextPath: GCP.Storage.Bucket.name
+        description: The name of the bucket.
+        type: String
+      - contextPath: GCP.Storage.Bucket.kind
+        description: The type of resource (for example, storage#bucket).
+        type: String
+      - contextPath: GCP.Storage.Bucket.location
+        description: The location of the bucket.
+        type: String
+      - contextPath: GCP.Storage.Bucket.locationType
+        description: The type of location (for example, multi-region).
+        type: String
+      - contextPath: GCP.Storage.Bucket.projectNumber
+        description: The GCP project number associated with the bucket.
+        type: String
+      - contextPath: GCP.Storage.Bucket.storageClass
+        description: The storage class of the bucket.
+        type: String
+      - contextPath: GCP.Storage.Bucket.rpo
+        description: The recovery point objective setting of the bucket.
+        type: String
+      - contextPath: GCP.Storage.Bucket.etag
+        description: The HTTP entity tag of the bucket.
+        type: String
+      - contextPath: GCP.Storage.Bucket.generation
+        description: The generation number of the bucket.
+        type: String
+      - contextPath: GCP.Storage.Bucket.metageneration
+        description: The metageneration number of the bucket.
+        type: String
+      - contextPath: GCP.Storage.Bucket.timeCreated
+        description: The time the bucket was created.
+        type: Date
+      - contextPath: GCP.Storage.Bucket.timeUpdated
+        description: The time the bucket was last updated.
+        type: Date
+      - contextPath: GCP.Storage.Bucket.selfLink
+        description: The link to the bucket resource on the GCP API.
+        type: String
+  - name: gcp-storage-bucket-objects-list
+    description: Retrieves the list of objects in a bucket.
+    arguments:
+    - name: project_id
+      required: true
+      description: GCP project ID.
+    - name: bucket_name
+      required: true
+      description: Name of the bucket to list objects from.
+    - name: prefix
+      required: false
+      description: Filter results to objects whose names begin with this prefix.
+    - name: delimiter
+      required: false
+      description: Delimiter to use for grouping objects. For example delimiter="/" Returns results in a directory-like mode, with / being a common value for the delimiter.
+    - name: limit
+      required: false
+      description: Maximum number of objects to return.
+    - name: page_token
+      required: false
+      description: Token for pagination.
+    outputs:
+    - contextPath: GCP.Storage.BucketObject.id
+      description: The unique identifier for the object.
+      type: String
+    - contextPath: GCP.Storage.BucketObject.name
+      description: The name of the object.
+      type: String
+    - contextPath: GCP.Storage.BucketObject.kind
+      description: The type of resource (for example, storage#object).
+      type: String
+    - contextPath: GCP.Storage.BucketObject.bucket
+      description: The name of the bucket containing the object.
+      type: String
+    - contextPath: GCP.Storage.BucketObject.contentType
+      description: The MIME type of the object.
+      type: String
+    - contextPath: GCP.Storage.BucketObject.size
+      description: The size of the object in bytes.
+      type: Number
+    - contextPath: GCP.Storage.BucketObject.crc32c
+      description: The CRC32C checksum of the object.
+      type: String
+    - contextPath: GCP.Storage.BucketObject.md5Hash
+      description: The MD5 hash of the object.
+      type: String
+    - contextPath: GCP.Storage.BucketObject.etag
+      description: The HTTP entity tag of the object.
+      type: String
+    - contextPath: GCP.Storage.BucketObject.generation
+      description: The generation number of the object.
+      type: String
+    - contextPath: GCP.Storage.BucketObject.metageneration
+      description: The metageneration number of the object.
+      type: String
+    - contextPath: GCP.Storage.BucketObject.storageClass
+      description: The storage class of the object.
+      type: String
+    - contextPath: GCP.Storage.BucketObject.mediaLink
+      description: The link for downloading the object content.
+      type: String
+    - contextPath: GCP.Storage.BucketObject.selfLink
+      description: The link to the object resource in the GCP API.
+      type: String
+    - contextPath: GCP.Storage.BucketObject.timeCreated
+      description: The time when the object was created.
+      type: Date
+    - contextPath: GCP.Storage.BucketObject.timeFinalized
+      description: The time when the object was finalized.
+      type: Date
+    - contextPath: GCP.Storage.BucketObject.timeStorageClassUpdated
+      description: The time when the object's storage class was last updated.
+      type: Date
+    - contextPath: GCP.Storage.BucketObject.updated
+      description: The time when the object was last modified.
+      type: Date
+  - name: gcp-storage-bucket-policy-list
+    description: Retrieves the IAM policy for a bucket.
+    arguments:
+    - name: project_id
+      required: true
+      description: GCP project ID.
+    - name: bucket_name
+      required: true
+      description: Name of the bucket to retrieve IAM policy from.
+    - name: requested_policy_version
+      required: false
+      description: The IAM policy version to be returned. If the optionsRequestedPolicyVersion is for an older version that doesn't support part of the requested IAM policy, the request fails. Required to be 3 or greater for buckets with IAM Conditions.
+      type: Number
+    outputs:
+    - contextPath: GCP.Storage.BucketPolicy.version
+      description: IAM policy version.
+      type: Number
+    - contextPath: GCP.Storage.BucketPolicy.etag
+      description: ETag of the IAM policy.
+      type: String
+    - contextPath: GCP.Storage.BucketPolicy.bindings
+      description: List of role bindings for the bucket.
+      type: List
+    - contextPath: GCP.Storage.BucketPolicy.resourceId
+      description: Resource ID of the updated IAM policy. e.g. projects/_/buckets/BUCKET_NAME.
+      type: String
+  - name: gcp-storage-bucket-policy-set
+    description: Sets the IAM policy for a bucket.
+    arguments:
+    - name: project_id
+      required: true
+      description: GCP project ID.
+    - name: bucket_name
+      required: true
+      description: Name of the bucket to set IAM policy on.
+    - name: policy
+      required: true
+      description: JSON string representing the IAM policy to set.
+    - name: add
+      defaultValue: "false"
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: |
+        When true, merges the provided policy bindings into the current bucket policy (per role, deduplicating members) by first calling getIamPolicy and then setIamPolicy with the merged result. When false, replaces the entire policy with the provided JSON via setIamPolicy.
+    outputs:
+    - contextPath: GCP.Storage.BucketPolicy.version
+      description: IAM policy version after update.
+      type: Number
+    - contextPath: GCP.Storage.BucketPolicy.etag
+      description: ETag of the updated IAM policy.
+      type: String
+    - contextPath: GCP.Storage.BucketPolicy.bindings
+      description: List of role bindings for the bucket.
+      type: List
+  - name: gcp-storage-bucket-object-policy-list
+    description: Retrieves the IAM policy for a specific object in a bucket.
+    arguments:
+    - name: project_id
+      required: true
+      description: GCP project ID.
+    - name: bucket_name
+      required: true
+      description: Name of the bucket containing the object.
+    - name: object_name
+      required: true
+      description: Name of the object to retrieve IAM policy from.
+    - name: generation
+      required: false
+      description: Generation of the object.
+    outputs:
+    - contextPath: GCP.Storage.BucketObjectPolicy.bucketName
+      description: Name of the bucket containing the object.
+      type: String
+    - contextPath: GCP.Storage.BucketObjectPolicy.objectName
+      description: Name of the object.
+      type: String
+    - contextPath: GCP.Storage.BucketObjectPolicy.bindings
+      description: List of role bindings for the object.
+      type: List
+  - name: gcp-storage-bucket-object-policy-set
+    description: Sets the IAM policy for a specific object in a bucket.
+    arguments:
+    - name: project_id
+      required: true
+      description: GCP project ID.
+    - name: bucket_name
+      required: true
+      description: Name of the bucket containing the object.
+    - name: object_name
+      required: true
+      description: Name of the object to set IAM policy on.
+    - name: policy
+      required: true
+      description: JSON string representing the IAM policy to set.
+    - name: generation
+      required: false
+      description: Generation of the object.
+    outputs:
+    - contextPath: GCP.Storage.BucketObjectPolicy.version
+      description: IAM policy version after update.
+      type: Number
+    - contextPath: GCP.Storage.BucketObjectPolicy.etag
+      description: ETag of the updated IAM policy.
+      type: String
+    - contextPath: GCP.Storage.BucketObjectPolicy.bindings
+      description: List of role bindings for the object.
+      type: Unknown  
   - name: gcp-iam-project-policy-binding-remove
     description: Removes a specified IAM role binding from a GCP project.
     arguments:
@@ -1996,6 +3002,7 @@ script:
   subtype: python3
   dockerimage: demisto/googleapi-python3:1.0.0.4892936
 fromversion: 8.11.0
+supportsquickactions: true
 isCloudProviderIntegration: true
 tests:
 - No tests (auto formatted)
