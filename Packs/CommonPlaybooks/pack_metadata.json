@@ -50,10 +50,6 @@
             "mandatory": true,
             "display_name": "Common Scripts"
         },
-        "Cisco-umbrella": {
-            "mandatory": true,
-            "display_name": "Cisco Umbrella Investigate"
-        },
         "jamf": {
             "mandatory": false,
             "display_name": "Jamf"
@@ -114,10 +110,6 @@
             "mandatory": false,
             "display_name": "ARIAPacketIntelligence"
         },
-        "JoeSecurity": {
-            "mandatory": true,
-            "display_name": "Joe Security"
-        },
         "WindowsForensics": {
             "mandatory": false,
             "display_name": "Windows Forensics"
@@ -154,10 +146,6 @@
             "mandatory": false,
             "display_name": "ANY.RUN"
         },
-        "FortiGate": {
-            "mandatory": true,
-            "display_name": "FortiGate"
-        },
         "Attlasian": {
             "mandatory": false,
             "display_name": "Atlassian IAM"
@@ -178,10 +166,6 @@
             "mandatory": false,
             "display_name": "ThreatX"
         },
-        "VulnDB": {
-            "mandatory": true,
-            "display_name": "VulnDB"
-        },
         "Symantec_Messaging_Gateway": {
             "mandatory": false,
             "display_name": "Symantec Messaging Gateway"
@@ -201,10 +185,6 @@
         "Cylance_Protect": {
             "mandatory": false,
             "display_name": "Cylance Protect"
-        },
-        "Active_Directory_Query": {
-            "mandatory": true,
-            "display_name": "Active Directory Query"
         },
         "AzureLogAnalytics": {
             "mandatory": false,
@@ -250,10 +230,6 @@
             "mandatory": false,
             "display_name": "Microsoft Exchange On-Premise"
         },
-        "Rapid7_Nexpose": {
-            "mandatory": true,
-            "display_name": "Rapid7 InsightVM"
-        },
         "MicrosoftGraphIdentityandAccess": {
             "mandatory": false,
             "display_name": "Microsoft Graph Identity and Access"
@@ -261,10 +237,6 @@
         "Zoom": {
             "mandatory": false,
             "display_name": "Zoom"
-        },
-        "Zscaler": {
-            "mandatory": true,
-            "display_name": "Zscaler Internet Access"
         },
         "FireEyeHX": {
             "mandatory": false,
@@ -325,10 +297,6 @@
         "Polygon": {
             "mandatory": false,
             "display_name": "Polygon"
-        },
-        "CheckpointFirewall": {
-            "mandatory": true,
-            "display_name": "Check Point Firewall"
         },
         "IllusiveNetworks": {
             "mandatory": false,
@@ -421,10 +389,6 @@
         "CommonTypes": {
             "mandatory": true,
             "display_name": "Common Types"
-        },
-        "Kenna": {
-            "mandatory": true,
-            "display_name": "Kenna"
         },
         "ProofpointServerProtection": {
             "mandatory": false,
@@ -519,7 +483,6 @@
         "AzureCompute",
         "GitHub",
         "CommonScripts",
-        "Cisco-umbrella",
         "jamf",
         "PAN-OS",
         "CiscoSMA",
@@ -535,7 +498,6 @@
         "PANWComprehensiveInvestigation",
         "Okta",
         "ARIAPacketIntelligence",
-        "JoeSecurity",
         "WindowsForensics",
         "McAfee-TIE",
         "CrowdStrikeFalconX",
@@ -545,19 +507,16 @@
         "SplunkPyPreRelease",
         "rasterize",
         "ANYRUN",
-        "FortiGate",
         "Attlasian",
         "CrowdStrikeHost",
         "Envoy",
         "Forcepoint",
         "ThreatX",
-        "VulnDB",
         "Symantec_Messaging_Gateway",
         "Akamai_WAF",
         "SecneurXAnalysis",
         "Carbon_Black_Enterprise_Response",
         "Cylance_Protect",
-        "Active_Directory_Query",
         "AzureLogAnalytics",
         "QRadar",
         "SophosXGFirewall",
@@ -569,10 +528,8 @@
         "PrismaCloud",
         "Azure-Enrichment-Remediation",
         "MicrosoftExchangeOnPremise",
-        "Rapid7_Nexpose",
         "MicrosoftGraphIdentityandAccess",
         "Zoom",
-        "Zscaler",
         "FireEyeHX",
         "AWS-Enrichment-Remediation",
         "Zendesk",
@@ -588,7 +545,6 @@
         "CuckooSandbox",
         "FeedLOLBAS",
         "Polygon",
-        "CheckpointFirewall",
         "IllusiveNetworks",
         "OPSWAT-Filescan",
         "CrowdStrikeFalconSandbox",
@@ -612,7 +568,6 @@
         "SAP_IAM",
         "Lastline",
         "CommonTypes",
-        "Kenna",
         "ProofpointServerProtection",
         "SailPointIdentityIQ",
         "Microsoft365Defender",
