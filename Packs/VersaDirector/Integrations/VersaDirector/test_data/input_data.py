@@ -1,10 +1,11 @@
 # HEADING: --------------- COMMAND FUNCTIONS TESTS ARGUMENTS ---------------
 
+import pytest
+from datetime import datetime, timedelta, UTC
+from VersaDirector import AUTH_BAD_CREDENTIALS, AUTH_EXCEEDED_MAXIMUM, AUTH_EXISTING_TOKEN, AUTH_INVALID_ACCESS_TOKEN, DEFAULT_AUDIT_LOGS_PAGE_SIZE, EVENT_DATE_FORMAT
 
 # Test function: test_handle_auth_token_fail
 # Arguments: (status_code, args, expected_output)
-from VersaDirector import AUTH_BAD_CREDENTIALS, AUTH_EXCEEDED_MAXIMUM, AUTH_EXISTING_TOKEN, AUTH_INVALID_ACCESS_TOKEN
-
 case_500 = (500, {"token_name": "token_name_mock"}, AUTH_EXISTING_TOKEN)
 case_400 = (400, {"token_name": "token_name_mock"}, AUTH_EXCEEDED_MAXIMUM)
 case_no_args_general_error = (404, {"token_name": "token_name_mock"}, "Auth process failed.")
@@ -274,3 +275,46 @@ case_context_args_already_created = (
     (None, {"Authorization": "Bearer access_token", "Accept": "application/json", "Content-Type": "application/json"}),
 )
 create_client_header_args = [case_basic_auth, case_auth_token_only, case_context_args_already_created]
+
+
+# Test function: test_get_audit_logs
+audit_logs_page1_response = {
+    "appliances": [
+        {
+            "applianceuuid": f"app-a{i}", 
+            "startTime": (datetime(2025, 1, 1, 0, 0, 0, tzinfo=UTC) + timedelta(seconds=i)).strftime(EVENT_DATE_FORMAT),
+        }
+        for i in range(DEFAULT_AUDIT_LOGS_PAGE_SIZE)
+    ],
+}
+audit_logs_page2_response = {
+    "appliances": [
+        {
+            "applianceuuid": f"app-b{j}", 
+            "startTime": (datetime(2025, 1, 1, 1, 0, 0, tzinfo=UTC) + timedelta(seconds=j)).strftime(EVENT_DATE_FORMAT),
+        }
+        for j in range(DEFAULT_AUDIT_LOGS_PAGE_SIZE)
+    ],
+}
+
+
+# Test function: test_fetch_events
+# Arguments: (last_run, expected_next_run, expected_events)
+fetch_events_test_params = [
+    pytest.param(
+        {},
+        {"from_date": "2025-01-01T00:33:19Z", "last_fetched_ids": ["app-a1999"]},
+        [
+            {**event, "_time": event["startTime"]} for event in audit_logs_page1_response["appliances"][:2000]
+        ],
+        id="Test empty last run",
+    ),
+    pytest.param(
+        {"from_date": "2025-01-01T00:00:00Z", "last_fetched_ids": ["app-a0"]},
+        {"from_date": "2025-01-01T00:33:20Z", "last_fetched_ids": ["app-a2000"]},
+        [
+            {**event, "_time": event["startTime"]} for event in audit_logs_page1_response["appliances"][1:2001]
+        ],
+        id="Test duplicated ID",
+    ),
+]

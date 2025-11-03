@@ -52,7 +52,8 @@ ALREADY_EXISTS_MSG = "Object already exists."
 
 VENDOR = "Versa"
 PRODUCT = "Director"
-DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
+EVENT_DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
+FILTER_DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
 
 DEFAULT_GET_EVENTS_LIMIT = 10
 DEFAULT_FETCH_EVENTS_LIMIT = 25000
@@ -3644,7 +3645,12 @@ async def get_audit_logs(
                 continue
 
             all_fetched_ids.add(event_id)
-            appliance["_time"] = appliance["startTime"]
+            # `arg_to_datetime` does not return `None` since value is required
+            # Added `type: ignore` to silence type checkers and linters
+            appliance["_time"] = arg_to_datetime(
+                appliance["startTime"],
+                required=True,
+            ).strftime(EVENT_DATE_FORMAT)  # type: ignore [union-attr]
             all_events.append(appliance)
 
     all_events.sort(key=lambda event: event["startTime"])  # sort in ascending order by startTime
@@ -3662,7 +3668,7 @@ async def get_events_command(client: AsyncClient, args: dict[str, Any]) -> tuple
     Returns:
         tuple[list[dict[str, Any]], CommandResults]: A tuple of the events list and the CommandResults with human-readable output.
     """
-    from_date = (arg_to_datetime(args.get("from_date")) or DEFAULT_AUDIT_LOGS_FROM_DATE).strftime(DATE_FORMAT)
+    from_date = (arg_to_datetime(args.get("from_date")) or DEFAULT_AUDIT_LOGS_FROM_DATE).strftime(FILTER_DATE_FORMAT)
     limit = arg_to_number(args.get("limit")) or DEFAULT_GET_EVENTS_LIMIT
 
     events = await get_audit_logs(client, from_date, limit)
@@ -3687,26 +3693,21 @@ async def fetch_events_command(
         tuple[dict[str, Any], list[dict[str, Any]]]: A tuple of the next run and the list of events.
     """
     demisto.debug(f"Starting fetching events with {last_run=}.")
-    from_date = last_run.get("from_date") or DEFAULT_AUDIT_LOGS_FROM_DATE.strftime(DATE_FORMAT)
+    from_date = (arg_to_datetime(last_run.get("from_date")) or DEFAULT_AUDIT_LOGS_FROM_DATE).strftime(FILTER_DATE_FORMAT)
     last_fetched_ids = last_run.get("last_fetched_ids", [])
 
-    events = await get_audit_logs(
-        client=client,
-        from_date=from_date,
-        limit=max_fetch,
-        last_fetched_ids=last_fetched_ids,
-    )
+    events = await get_audit_logs(client=client, from_date=from_date, limit=max_fetch, last_fetched_ids=last_fetched_ids)
 
     if not events:
         demisto.debug(f"No new events found since {last_run=}.")
         return last_run, []
 
-    newest_event_start_time = events[-1]["startTime"]
-    demisto.debug(f"Got {len(events)} deduplicated events with {newest_event_start_time=}.")
+    newest_event_time = events[-1]["_time"]
+    demisto.debug(f"Got {len(events)} deduplicated events with {newest_event_time=}.")
 
-    new_last_fetched_ids = [event["applianceuuid"] for event in events if event["startTime"] == newest_event_start_time]
+    new_last_fetched_ids = [event["applianceuuid"] for event in events if event["_time"] == newest_event_time]
 
-    next_run = {"from_date": newest_event_start_time, "last_fetched_ids": new_last_fetched_ids}
+    next_run = {"from_date": newest_event_time, "last_fetched_ids": new_last_fetched_ids}
     demisto.debug(f"Updating {next_run=} after fetching {len(events)} events.")
 
     return next_run, events

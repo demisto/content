@@ -1,8 +1,12 @@
 import pytest
-from CommonServerPython import DemistoException
+from CommonServerPython import *
+from freezegun import freeze_time
 from requests import Response
 from test_data import input_data
-from VersaDirector import Client
+from VersaDirector import Client, AsyncClient
+from unittest.mock import AsyncMock
+from aiohttp import ClientResponseError, RequestInfo
+from datetime import UTC
 
 
 @pytest.fixture
@@ -18,6 +22,31 @@ def client():
         client_secret_param="",
         use_basic_auth_param=True,
     )
+
+
+@pytest.fixture()
+def async_client():
+    return AsyncClient(server_url="some_mock_url", headers={}, verify=False, proxy=False)
+
+
+def mock_async_session_response(
+    response_json: dict | None = None,
+    error_status_code: int | None = None,
+    error_message: str = "Server error",
+) -> AsyncMock | ClientResponseError:
+    mock_response = AsyncMock()
+    mock_response.json = AsyncMock(return_value=response_json)
+    if error_status_code:
+        return ClientResponseError(
+            status=error_status_code,
+            history=(),
+            request_info=RequestInfo("", "GET", {}, real_url=""),
+            message=error_message,
+        )
+    else:
+        mock_response.raise_for_status = AsyncMock()
+        mock_response.status_code = 200
+    return AsyncMock(__aenter__=AsyncMock(return_value=mock_response))
 
 
 # HEADING: """ COMMAND FUNCTIONS TESTS """
@@ -1652,3 +1681,92 @@ def test_create_client_header(
     from VersaDirector import create_client_header
 
     assert create_client_header(use_basic_auth, username, password, client_id, client_secret, access_token) == expected_output
+
+
+@pytest.mark.asyncio
+async def test_get_audit_logs(async_client: AsyncClient, mocker):
+    """
+    Given:
+     - An AsyncClient instance.
+     - A limit that requires fetching two pages of events.
+     - A list of already fetched event IDs.
+    When:
+     - Calling get_audit_logs.
+    Then:
+     - Ensure that the API is called twice (for two pages).
+     - Ensure that the events are formatted, sorted by time, and deduplicated.
+    """
+    from VersaDirector import get_audit_logs, DEFAULT_AUDIT_LOGS_PAGE_SIZE, FILTER_DATE_FORMAT
+    from datetime import datetime
+
+    # Setup mock responses
+    mock_responses = [
+        mock_async_session_response(input_data.audit_logs_page1_response),
+        mock_async_session_response(input_data.audit_logs_page2_response),
+    ]
+
+    # Mock the session 'get' method
+    async with async_client as client:
+        mocker.patch.object(client._session, "get", side_effect=mock_responses)
+
+        # Define test parameters
+        from_date = datetime(2025, 1, 1, 0, 0, 0, tzinfo=UTC).strftime(FILTER_DATE_FORMAT)
+        limit = DEFAULT_AUDIT_LOGS_PAGE_SIZE + 3
+        last_fetched_ids = ["app-a0"]  # Should be deduplicated
+
+        # Call the function under test
+        events = await get_audit_logs(
+            client=client,
+            from_date=from_date,
+            limit=limit,
+            last_fetched_ids=last_fetched_ids,
+        )
+
+        # Assertions
+        assert len(events) == limit
+        assert events[0]["applianceuuid"] == "app-a1"  # Skipped "app-a0" since it was in last fetched IDs
+        assert client._session.get.call_count == 2  # Called for both pages
+
+        # Verify call arguments for pagination
+        first_call_kwargs = client._session.get.call_args_list[0].kwargs
+        assert first_call_kwargs["params"] == {"searchKey": "time>=2025-01-01 00:00:00", "offset": "0", "limit": "2500"}
+
+        second_call_kwargs = client._session.get.call_args_list[1].kwargs
+        assert second_call_kwargs["params"] == {"searchKey": "time>=2025-01-01 00:00:00", "offset": "2500", "limit": "2500"}
+
+
+@freeze_time("2025-01-01T00:00:00Z")
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "last_run, expected_next_run, expected_events",
+    input_data.fetch_events_test_params,
+)
+async def test_fetch_events_command(
+    last_run: dict,
+    expected_next_run: dict,
+    expected_events: list,
+    async_client: AsyncClient,
+    mocker,
+):
+    """
+    Given:
+     - An AsyncClient instance.
+     - A last run object
+    When:
+     - Calling fetch_events_command.
+    Then:
+     - Ensure that the next run is as expected with "from_date" and "last_fetched_ids".
+     - Ensure that the events are formatted, sorted by time, and deduplicated.
+    """
+    from VersaDirector import fetch_events_command
+
+    max_fetch = 2000
+
+    async with async_client as client:
+        mocker.patch.object(
+            client._session, "get", side_effect=[mock_async_session_response(input_data.audit_logs_page1_response)]
+        )
+        next_run, events = await fetch_events_command(client, last_run, max_fetch)
+
+    assert next_run == expected_next_run
+    assert events == expected_events
