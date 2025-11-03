@@ -121,17 +121,17 @@ def main():  # pragma: nocover
             if isinstance(raw_response_search_cases, dict):
                 raw_response_search_cases = [raw_response_search_cases]
 
-            if len(raw_response_search_cases) < 10:
-                case_extra_data = add_cases_extra_data(raw_response_search_cases)
-                return_results(
-                    CommandResults(
-                        readable_output=tableToMarkdown("Cases", case_extra_data, headerTransform=string_to_table_header),
-                        outputs_prefix="Core.Case",
-                        outputs_key_field="case_id",
-                        outputs=case_extra_data,
-                        raw_response=case_extra_data,
-                    )
+            case_extra_data = add_cases_extra_data(raw_response_search_cases)
+            
+            return_results(
+                CommandResults(
+                    readable_output=tableToMarkdown("Cases", case_extra_data, headerTransform=string_to_table_header),
+                    outputs_prefix="Core.Case",
+                    outputs_key_field="case_id",
+                    outputs=case_extra_data,
+                    raw_response=case_extra_data,
                 )
+            )
 
         return_results(results)
 

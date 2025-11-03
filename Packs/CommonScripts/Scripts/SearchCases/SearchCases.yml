@@ -30,7 +30,7 @@ args:
       - 'true'
       - 'false'
   - auto: PREDEFINED
-    description: Whether to include enriched case data in the response.
+    description: Whether to include enriched case data in the response. Recommended for up to 10 cases.
     name: get_enriched_case_data
     defaultValue: 'false'
     predefined:
