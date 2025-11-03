@@ -2438,21 +2438,22 @@ def test_update_issue_command_missing_issue_id_no_context(mocker):
     WHEN:
         The update_issue_command function is called.
     THEN:
-        Error is returned and update_issue is not called.
+        DemistoException is raised and update_issue is not called.
     """
     from CortexPlatformCore import update_issue_command, Client
+    from CommonServerPython import DemistoException
+    import pytest
 
     client = Client(base_url="", headers={})
     mock_update_issue = mocker.patch.object(client, "update_issue")
-    mock_return_error = mocker.patch("CortexPlatformCore.return_error")
     mock_calling_context = {"context": {}}
     mocker.patch.object(demisto, "callingContext", mock_calling_context)
 
     args = {"name": "Test Issue"}
 
-    update_issue_command(client, args)
+    with pytest.raises(DemistoException, match="Issue ID is required for updating an issue."):
+        update_issue_command(client, args)
 
-    mock_return_error.assert_called_once_with("Issue ID is required for updating an issue.")
     mock_update_issue.assert_not_called()
 
 
@@ -2463,21 +2464,22 @@ def test_update_issue_command_empty_issue_id_no_context(mocker):
     WHEN:
         The update_issue_command function is called.
     THEN:
-        Error is returned and update_issue is not called.
+        DemistoException is raised and update_issue is not called.
     """
     from CortexPlatformCore import update_issue_command, Client
+    from CommonServerPython import DemistoException
+    import pytest
 
     client = Client(base_url="", headers={})
     mock_update_issue = mocker.patch.object(client, "update_issue")
-    mock_return_error = mocker.patch("CortexPlatformCore.return_error")
     mock_calling_context = {"context": {}}
     mocker.patch.object(demisto, "callingContext", mock_calling_context)
 
     args = {"id": "", "name": "Test Issue"}
 
-    update_issue_command(client, args)
+    with pytest.raises(DemistoException, match="Issue ID is required for updating an issue."):
+        update_issue_command(client, args)
 
-    mock_return_error.assert_called_once_with("Issue ID is required for updating an issue.")
     mock_update_issue.assert_not_called()
 
 
