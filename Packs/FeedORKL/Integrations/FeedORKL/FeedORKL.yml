@@ -2,12 +2,16 @@ category: Data Enrichment & Threat Intelligence
 commonfields:
   id: FeedORKL
   version: -1
+sectionorder:
+- Connect
+- Collect
 configuration:
 - defaultvalue: 'true'
   display: Fetch indicators
   name: feed
   required: false
   type: 8
+  section: Collect
 - additionalinfo: Indicators from this integration instance will be marked with this reputation
   defaultvalue: Bad
   display: Indicator Reputation
@@ -19,6 +23,7 @@ configuration:
   - Bad
   required: false
   type: 18
+  section: Collect
 - additionalinfo: Reliability of the source providing the intelligence data
   defaultvalue: B - Usually reliable
   display: Source Reliability
@@ -32,6 +37,7 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
+  section: Collect
 - additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
   display: Traffic Light Protocol Color
   name: tlp_color
@@ -42,6 +48,7 @@ configuration:
   - WHITE
   required: false
   type: 15
+  section: Collect
 - display: ''
   name: feedExpirationPolicy
   type: 17
@@ -50,51 +57,61 @@ configuration:
   - interval
   - indicatorType
   required: false
+  section: Collect
 - display: ''
   name: feedExpirationInterval
   type: 1
   required: false
+  section: Collect
 - additionalinfo: Fetch related indicators. Default is "False".
   defaultvalue: 'false'
   display: Create Relationships
   name: createRelationships
   required: false
   type: 8
+  section: Collect
 - defaultvalue: '240'
   display: Feed Fetch Interval
   name: feedFetchInterval
   required: false
   type: 19
+  section: Collect
 - defaultvalue: '1000'
   display: Maximum Indicators per fetch
   name: limit
   required: false
   type: 0
+  section: Collect
 - additionalinfo: Supports CSV values.
   display: Tags
   name: feedTags
   required: false
   type: 0
+  section: Collect
 - additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
   defaultvalue: 'true'
   display: Bypass exclusion list
   name: feedBypassExclusionList
   required: false
   type: 8
+  section: Collect
 - display: Trust any certificate (not secure)
   name: verify
   required: false
   type: 8
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
+  section: Connect
 - additionalinfo: Incremental feeds pull only new or modified indicators that have been sent from the integration. As the determination if the indicator is new or modified happens on the 3rd-party vendor's side, and only indicators that are new or modified are sent to Cortex XSOAR, all indicators coming from these feeds are labeled new or modified.
   defaultvalue: 'true'
   display: Incremental Feed
   hidden: true
   name: feedIncremental
   type: 8
+  section: Collect
   required: false
 description: Use the ORKL Threat Intel Feed integration to get receive threat intelligence indicators from the feed.
 display: ORKL Threat Intel Feed
@@ -124,7 +141,7 @@ script:
       - desc
     description: Retrieves latest Threat Reports from ORKL.
     name: orkl-get-reports
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.12.5490952
   feed: true
   isFetchSamples: true
   runonce: false

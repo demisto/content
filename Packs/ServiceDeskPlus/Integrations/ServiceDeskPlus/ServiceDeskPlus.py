@@ -27,6 +27,7 @@ REQUEST_FIELDS = [
     "subject",
     "description",
     "request_type",
+    "impact_details",
     "impact",
     "status",
     "mode",
