@@ -1,5 +1,5 @@
 category: Analytics & SIEM
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -161,7 +161,7 @@ script:
     - description: The maximum number of results to return.
       name: limit
       defaultValue: "10"
-    - description: If true, the command will push the events to the Cortex XSIAM dataset. Otherwise, it will only display them.  
+    - description: If true, the command will push the events to the Cortex XSIAM dataset. Otherwise, it will only display them.
       name: should_push_events
       defaultValue: "false"
       auto: PREDEFINED
@@ -592,7 +592,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.12.11.4508456
+  dockerimage: demisto/python3:3.12.12.5490952
   # Fetch incidents
   isfetch: true
   isfetch:marketplacev2: false
