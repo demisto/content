@@ -9,6 +9,7 @@ commonfields:
 dockerimage: demisto/python3:3.12.8.3296088
 enabled: true
 name: BrandImpersonationDetection
+deprecated: true
 outputs:
 - contextPath: SlashNext.PhishingBrand
   description: Target brand of phishing URL.
