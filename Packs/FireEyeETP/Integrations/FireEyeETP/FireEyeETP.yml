@@ -8,14 +8,15 @@ description: 'Trellix Email Security - Cloud is a cloud-based platform that prot
 configuration:
 - display: 'Server URL'
   name: server
-  defaultvalue: https://etp.us.fireeye.com #TODO https://us.etp.trellix.com
+  defaultvalue: https://etp.us.fireeye.com
   type: 0
   required: true
-  additionalinfo: "Valid values: https://etp.us.fireeye.com, https://etp.eu.fireeye.com, https://etp.us.fireeyegov.com"
+  additionalinfo: "Valid URLs (US, EMEA, USGOV): https://us.etp.trellix.com / https://etp.us.fireeye.com, https://eu.etp.trellix.com / https://etp.eu.fireeye.com, https://etp.us.fireeyegov.com"
 - display: Client ID
   name: credentials
   displaypassword: Client Secret
   type: 9
+  additionalinfo: Use the Client ID and Client Secret for the Trellix base URL.
 - display: OAuth Scopes
   name: oauth_scopes
   defaultvalue: etp.alrt.ro etp.trce.ro
@@ -26,14 +27,14 @@ configuration:
   name: api_key
   defaultvalue: ""
   type: 4
-  hidden: true #TODO reconsider
+  hidden: true
   required: false
 - displaypassword: API Key
   name: credentials_api_key
   hiddenusername: true
   type: 9
   required: false
-  hidden: true #TODO reconsider
+  additionalinfo: Use the Api key for the FireEye base URL.
 - display: Trust any certificate (not secure)
   name: unsecure
   type: 8
@@ -380,12 +381,26 @@ script:
   dockerimage: demisto/python3:3.12.11.4508456
 triggers:
   - conditions:
-      - name: api_key
-        operator: not_exists
       - name: credentials_api_key
-        operator: not_exists
+        operator: exists
     effects:
       - name: credentials
+        action:
+          hidden: true
+      - name: oauth_scopes
+        action:
+          hidden: true
+  - conditions:
+      - name: credentials
+        operator: exists
+    effects:
+      - name: credentials_api_key
+        action:
+          hidden: true
+      - name: credentials
+        action:
+          required: true
+      - name: oauth_scopes
         action:
           required: true
 tests:
