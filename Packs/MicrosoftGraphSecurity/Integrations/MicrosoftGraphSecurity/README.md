@@ -3,18 +3,21 @@ This integration was integrated and tested with version 1.0 of Microsoft Graph.
 
 ## Authentication
 
-For more details about the authentication used in this integration, see [Microsoft Integrations - Authentication](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication)  
-*Note*: [The eDiscovery](#ediscovery-commands) and [Threat Assessment](#threat-assessment-commands) commands are only supported when using the `Authorization Code flow` with `Delegated (work or school account)` permission type.
+You can use the following methods to authenticate Microsoft Graph Security:
+- Cortex XSOAR app
+- Authorization Code Flow
+- Client Credentials Flow
+- Azure Managed Identities
 
-When using the `Authorization Code flow` for this integration, you should log in as an administrator or a user with administrative privileges (`Security Reader` or `Security Administrator`) after running the ***msg-generate-login-url*** command and the login window appears. For more information, see [here](https://learn.microsoft.com/en-us/graph/security-authorization).
+For more details about the authentication used in this integration, see [Microsoft Integrations - Authentication](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication)  
+*Note*: [The eDiscovery](#ediscovery-commands) and [Threat Assessment](#threat-assessment-commands) commands are only supported when using the `Authorization Code flow` with `Delegated` permission type.
+
 
 ## Important Notes
 
-- Due to API limitations, the ***message-search-alerts*** command does not filter Office 365 provider alerts.\
-For more information, see: https://github.com/microsoftgraph/security-api-solutions/issues/56.
+- Due to API limitations, the ***message-search-alerts*** command does not filter Office 365 provider alerts.
 - When using Alerts V2, only the following properties are supported as filters for the *Fetched incidents filter* parameter and *filter* arguments: assignedTo, classification, determination, createdDateTime, lastUpdateDateTime, severity, serviceSource and status. See [Microsoft optional query parameters](https://learn.microsoft.com/en-us/graph/api/security-list-alerts_v2?view=graph-rest-1.0&tabs=http#optional-query-parameters).
 - The header *include-unknown-enum-members* is used in the fetch-incidents functionality. It ensures that fields with unknown values are correctly mapped to the appropriate service. [Learn More](https://learn.microsoft.com/en-us/graph/api/resources/security-alert?view=graph-rest-1.0#:~:text=microsoftThreatIntelligence.%20Use%20the%20Prefer%3A-,include%2Dunknown%2Denum%2Dmembers,-request%20header%20to%20get%20the).
-- As of July 2023, Microsoft Graph API does **not support** a solution to search for and delete emails. To do this, refer to the [Security & Compliance](https://xsoar.pan.dev/docs/reference/integrations/security-and-compliance) integration.
 - When using Threat Assessment, only the following properties are supported as filters for *filter* parameter: expectedAssessment, ContentType ,status and requestSource.
 - When using Threat Assessment, for information protection, The following limits apply to any request on /informationProtection:
   - For email, the resource is a unique network message ID/recipient pair. For example, submitting an email with the same message ID sent to the same person multiple times in a 15 minutes period will trigger the limit per resource limits listed in the following table. However, you can submit up to 150 unique emails every 15 minutes (tenant limit).

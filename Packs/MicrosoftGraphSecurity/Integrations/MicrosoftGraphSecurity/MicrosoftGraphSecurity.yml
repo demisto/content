@@ -54,6 +54,13 @@ configuration:
   section: Connect
   displaypassword: Private Key
   required: false
+- display: Use a self-deployed Azure application
+  name: self_deployed
+  type: 8
+  section: Connect
+  required: false
+  additionalinfo: Select this checkbox if you are using a self-deployed Azure application.
+  advanced: false
 - display: Application redirect URI (for self-deployed mode)
   name: redirect_uri
   type: 0
@@ -92,13 +99,6 @@ configuration:
   section: Connect
   required: false
   advanced: true
-- display: Use a self-deployed Azure application
-  name: self_deployed
-  type: 8
-  section: Connect
-  required: false
-  additionalinfo: Select this checkbox if you are using a self-deployed Azure application.
-  advanced: false
 - display: Fetch incidents
   name: isFetch
   type: 8
