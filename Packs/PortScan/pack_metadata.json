@@ -14,53 +14,49 @@
     "useCases": [],
     "keywords": [],
     "dependencies": {
-        "SplunkPy": {
+        "DomainTools": {
             "mandatory": false,
-            "display_name": "Splunk"
-        },
-        "NIST": {
-            "mandatory": false,
-            "display_name": "NIST"
+            "display_name": "DomainTools"
         },
         "CommonPlaybooks": {
             "mandatory": true,
             "display_name": "Common Playbooks"
         },
-        "Active_Directory_Query": {
-            "mandatory": false,
-            "display_name": "Active Directory Query"
-        },
-        "DomainTools": {
-            "mandatory": true,
-            "display_name": "DomainTools Enterprise (Deprecated)"
-        },
-        "FiltersAndTransformers": {
-            "mandatory": true,
-            "display_name": "Filters And Transformers"
-        },
-        "PANWComprehensiveInvestigation": {
-            "mandatory": false,
-            "display_name": "Comprehensive Investigation by Palo Alto Networks"
-        },
-        "CommonScripts": {
-            "mandatory": false,
-            "display_name": "Common Scripts"
-        },
         "CommonTypes": {
             "mandatory": true,
             "display_name": "Common Types"
         },
-        "DomainTools_Iris": {
+        "SplunkPy": {
+            "mandatory": false,
+            "display_name": "SplunkPy"
+        },
+        "PANWComprehensiveInvestigation": {
+            "mandatory": false,
+            "display_name": "PANW Comprehensive Investigation"
+        },
+        "Active_Directory_Query": {
+            "mandatory": false,
+            "display_name": "Active Directory Query"
+        },
+        "PaloAltoNetworks_PAN_OS_EDL_Management": {
+            "mandatory": false,
+            "display_name": "Palo Alto Networks PAN-OS EDL Management"
+        },
+        "NIST": {
             "mandatory": true,
-            "display_name": "DomainTools Iris Investigate"
+            "display_name": "NIST"
+        },
+        "DomainTools_Iris": {
+            "mandatory": false,
+            "display_name": "DomainTools Iris"
         },
         "QRadar": {
             "mandatory": false,
             "display_name": "IBM QRadar"
         },
-        "CoreAlertFields": {
+        "CommonScripts": {
             "mandatory": true,
-            "display_name": "Core Alert Fields"
+            "display_name": "Common Scripts"
         }
     },
     "marketplaces": [
@@ -75,19 +71,5 @@
         "ENT_PLUS",
         "agentix",
         "xsiam"
-    ],
-    "displayedImages": [
-        "SplunkPy",
-        "NIST",
-        "CommonPlaybooks",
-        "Active_Directory_Query",
-        "DomainTools",
-        "FiltersAndTransformers",
-        "PANWComprehensiveInvestigation",
-        "CommonScripts",
-        "CommonTypes",
-        "DomainTools_Iris",
-        "QRadar",
-        "CoreAlertFields"
     ]
 }

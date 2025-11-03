@@ -20,41 +20,33 @@
         "platform"
     ],
     "dependencies": {
-        "SentinelOne": {
+        "FeedMitreAttackv2": {
             "mandatory": true,
-            "display_name": "SentinelOne"
-        },
-        "Elasticsearch": {
-            "mandatory": true,
-            "display_name": "Elasticsearch"
-        },
-        "SplunkPy": {
-            "mandatory": false,
-            "display_name": "Splunk"
-        },
-        "Core": {
-            "mandatory": true,
-            "display_name": "Core"
-        },
-        "CommonScripts": {
-            "mandatory": true,
-            "display_name": "Common Scripts"
-        },
-        "CarbonBlackDefense": {
-            "mandatory": true,
-            "display_name": "Carbon Black Endpoint Standard"
+            "display_name": "MITRE ATT&CK"
         },
         "CommonTypes": {
             "mandatory": true,
             "display_name": "Common Types"
         },
-        "SplunkPyPreRelease": {
+        "SplunkPy": {
             "mandatory": false,
-            "display_name": "Splunk Prerelease (Deprecated)"
+            "display_name": "Splunk"
         },
         "QRadar": {
-            "mandatory": true,
-            "display_name": "IBM QRadar"
+            "mandatory": false,
+            "display_name": "Qradar"
+        },
+        "SentinelOne": {
+            "mandatory": false,
+            "display_name": "Sentinel One"
+        },
+        "CarbonBlackDefense": {
+            "mandatory": false,
+            "display_name": "Carbon Black"
+        },
+        "Elasticsearch": {
+            "mandatory": false,
+            "display_name": "Elasticsearch"
         }
     },
     "supportedModules": [
@@ -64,16 +56,5 @@
         "ENT_PLUS",
         "agentix",
         "xsiam"
-    ],
-    "displayedImages": [
-        "SentinelOne",
-        "Elasticsearch",
-        "SplunkPy",
-        "Core",
-        "CommonScripts",
-        "CarbonBlackDefense",
-        "CommonTypes",
-        "SplunkPyPreRelease",
-        "QRadar"
     ]
 }
