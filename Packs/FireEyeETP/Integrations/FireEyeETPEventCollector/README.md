@@ -35,6 +35,7 @@ We support two different authentication methods depending on the endpoint domain
 | Hide sensitive details from email | Hide subject and attachments details from emails. |  |
 
 **Note:** If API access permissions are not properly set for the user/role, the authentication attempt will fail with a `400 Client Error: Bad Request` even if the Client ID and Secret are otherwise correct.
+
 ## Access control
 
 All the API requests follow the domain and domain group restrictions of the user. For example, if a user has access to only a few domains in their organization, the response to the APIs will be based on only those domains and domain groups.

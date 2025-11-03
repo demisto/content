@@ -9,7 +9,6 @@ Use the Trellix Email Security - Cloud integration to import messages as inciden
 * Search for messages using specific message attributes as indicators.
 * Import messages as Cortex XSOAR incidents, using the message status as indicator.
 
-
 ## Authentication Prerequisites
 
 To ensure a successful connection, you must select the correct authentication method based on the **Server URL** (Instance URL) you are configuring.
@@ -28,13 +27,11 @@ We support two different authentication methods depending on the endpoint domain
 **You must configure only one of the two authentication approaches below** based on your Server URL domain.
 
 * **1. API Key Method (For `fireeye.com` URLs):**
-    * **Configure an API key** on the ETP Web portal. Select the product as both *Email Threat Prevention* and *Identity Access Management*. Select all entitlements.
+  * **Configure an API key** on the ETP Web portal. Select the product as both *Email Threat Prevention* and *Identity Access Management*. Select all entitlements.
 
 * **2. OAuth 2.0 Method (For `trellix.com` URLs):**
-    * When creating the Client ID and Client Secret, ensure the corresponding user/role has **explicit permission to access the API**.
-    * **Note:** If API access permissions are not properly set for the user/role, the authentication attempt will fail with a **`400 Client Error: Bad Request`** even if the Client ID and Secret are correct.
-
-
+  * When creating the Client ID and Client Secret, ensure the corresponding user/role has **explicit permission to access the API**.
+  * **Note:** If API access permissions are not properly set for the user/role, the authentication attempt will fail with a **`400 Client Error: Bad Request`** even if the Client ID and Secret are correct.
 
 * Contact Trellix Email Security - Cloud Technical Support to let them know the IP address of your Cortex XSOAR Server and the URL you are accessing, e.g. `https://etp.us.fireeye.com`. Trellix will add these details to their Firewall rules so that the bidirectional traffic can be allowed between Cortex XSOAR and Trellix Email Security - Cloud.
 
