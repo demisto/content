@@ -2220,9 +2220,9 @@ class EC2:
         }
 
         remove_nulls_from_dictionary(kwargs)
-        if kwargs.get("TagSpecifications"):
+        if tag_specifications_arg := kwargs.get("TagSpecifications", []):
             tags = []
-            for tag in kwargs.get("TagSpecifications"):
+            for tag in tag_specifications_arg:
                 tags.append({"Key": tag.get("Name"), "Value": tag.get("Values", [])[0]})
             tag_specifications = [{"ResourceType": "network-acl", "Tags": tags}]
             kwargs["TagSpecifications"] = tag_specifications
@@ -2246,7 +2246,7 @@ class EC2:
             readable_output=(
                 tableToMarkdown(
                     "AWS EC2 ACL Entries",
-                    [entry for entry in network_acl.get("Entries")],
+                    [entry for entry in network_acl.get("Entries")],  # noqa: C416
                     removeNull=True,
                     headerTransform=pascalToSpace,
                 )
@@ -2269,8 +2269,8 @@ class EC2:
             args (dict): all command arguments, usually passed from ``demisto.args()``.
 
         Returns:
-            CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains public IP addresses
-            that have been discovered by IPAM.
+            CommandResults: A ``CommandResults`` object that is then passed to ``return_results``,
+             that contains public IP addresses that have been discovered by IPAM.
         """
         kwargs = {
             "IpamResourceDiscoveryId": args.get("ipam_resource_discovery_id"),

@@ -6042,9 +6042,11 @@ def test_create_tags_command_failure(mocker):
 
 def test_get_latest_ami_command_success(mocker):
     """
-    Given: A mocked boto3 EC2 client configured to simulate multi-page results from describe_images, where the latest AMI is on the second page.
+    Given: A mocked boto3 EC2 client configured to simulate multi-page results from describe_images, where the latest
+     AMI is on the second page.
     When: get_latest_ami_command is called with specific owner and region filters.
-    Then: It should handle pagination, correctly identify the AMI with the most recent CreationDate, and return `CommandResults` containing the latest AMI's ID and details.
+    Then: It should handle pagination, correctly identify the AMI with the most recent CreationDate, and return `CommandResults`
+     containing the latest AMI's ID and details.
     """
     from AWS import EC2
 
