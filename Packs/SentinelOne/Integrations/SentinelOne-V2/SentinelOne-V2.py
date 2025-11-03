@@ -754,7 +754,7 @@ class Client(BaseClient):
                 "method": method,
                 "value": ioc.get("value"),
                 "validUntil": ioc.get("validUntil"),
-                "name": ioc.get("name")
+                "name": ioc.get("name"),
             }
             # Optional fields as per current single-IOC code
             for opt in ("externalId", "description"):
@@ -882,14 +882,8 @@ class Client(BaseClient):
     def endpoint_fetch_logs_request(self, agent_ids, agent_logs, customer_facing_logs, platform_logs):
         endpoint_url = "agents/actions/fetch-logs"
         payload = {
-            "filter": {
-                "ids": agent_ids
-            },
-            "data": {
-                "agentLogs": agent_logs,
-                "customerFacingLogs": customer_facing_logs,
-                "platformLogs": platform_logs
-            }
+            "filter": {"ids": agent_ids},
+            "data": {"agentLogs": agent_logs, "customerFacingLogs": customer_facing_logs, "platformLogs": platform_logs},
         }
         response = self._http_request(method="POST", url_suffix=endpoint_url, json_data=payload)
         return response.get("data", {})
@@ -1863,6 +1857,7 @@ def create_ioc(client: Client, args: dict) -> CommandResults:
         raw_response=ioc,
     )
 
+
 def create_bulk_ioc(client: Client, args: dict) -> CommandResults:
     """
     Add bulk IoC's to the Threat Intelligence database. . Relavent for API version 2.1
@@ -1884,7 +1879,7 @@ def create_bulk_ioc(client: Client, args: dict) -> CommandResults:
 
     # Load JSON array of IOC objects
     try:
-        with open(file_path, "r", encoding="utf-8") as json_ioc_list:
+        with open(file_path, encoding="utf-8") as json_ioc_list:
             iocs_data = json.load(json_ioc_list)
     except json.JSONDecodeError as e:
         return_error(f"Invalid JSON in uploaded file: {str(e)}")
@@ -1897,26 +1892,24 @@ def create_bulk_ioc(client: Client, args: dict) -> CommandResults:
     iocs = client.create_bulk_ioc_request(iocs_data, account_ids)
 
     for ioc in iocs:
-        context_list.append({
-            "UUID": ioc.get("uuid"),
-            "Name": ioc.get("name"),
-            "Source": ioc.get("source"),
-            "Type": ioc.get("type"),
-            "Batch Id": ioc.get("batchId"),
-            "Creator": ioc.get("creator"),
-            "Scope": ioc.get("scope"),
-            "Scope Id": ioc.get("scopeId")[0],
-            "Valid Until": ioc.get("validUntil"),
-            "Description": ioc.get("description"),
-            "External Id": ioc.get("externalId"),
-        })
+        context_list.append(
+            {
+                "UUID": ioc.get("uuid"),
+                "Name": ioc.get("name"),
+                "Source": ioc.get("source"),
+                "Type": ioc.get("type"),
+                "Batch Id": ioc.get("batchId"),
+                "Creator": ioc.get("creator"),
+                "Scope": ioc.get("scope"),
+                "Scope Id": ioc.get("scopeId")[0],
+                "Valid Until": ioc.get("validUntil"),
+                "Description": ioc.get("description"),
+                "External Id": ioc.get("externalId"),
+            }
+        )
 
     # Create readable output (markdown table)
-    readable_output = tableToMarkdown(
-        "SentinelOne - Create IOCs",
-        context_list,
-        removeNull=True
-    )
+    readable_output = tableToMarkdown("SentinelOne - Create IOCs", context_list, removeNull=True)
 
     return CommandResults(
         readable_output=readable_output,
@@ -2467,6 +2460,7 @@ def initiate_endpoint_scan(client: Client, args: dict) -> CommandResults:
         raw_response=initiated,
     )
 
+
 def abort_endpoint_scan(client: Client, args: dict) -> CommandResults:
     """
     Abort the endpoint virus scan on provided agent IDs
@@ -2493,6 +2487,7 @@ def abort_endpoint_scan(client: Client, args: dict) -> CommandResults:
         raw_response=aborted,
     )
 
+
 def endpoint_fetch_logs(client: Client, args: dict) -> CommandResults:
     """
     Get the Agent and Endpoint logs from Agents for provided agent IDs
@@ -2512,12 +2507,15 @@ def endpoint_fetch_logs(client: Client, args: dict) -> CommandResults:
     else:
         meta = "No entity was affected."
     return CommandResults(
-        readable_output=tableToMarkdown("Sentinel One - Get the Agent and Endpoint logs", context, metadata=meta, removeNull=True),
+        readable_output=tableToMarkdown(
+            "Sentinel One - Get the Agent and Endpoint logs", context, metadata=meta, removeNull=True
+        ),
         outputs_prefix="SentinelOne.Agent",
         outputs_key_field="Affected",
         outputs=context,
         raw_response=response,
     )
+
 
 def get_white_list_command(client: Client, args: dict) -> CommandResults:
     """
