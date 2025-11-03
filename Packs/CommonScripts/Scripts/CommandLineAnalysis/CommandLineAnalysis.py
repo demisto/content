@@ -203,7 +203,7 @@ MSHTA = [
 
 
 SUSPICIOUS_COMMAND_PATTERNS = [
-    r"\-(?:EncodedCommand|enc|e)\b",
+    r"\-(?:EncodedCommand|enc|ec|e)\b",
     r"\-(?:ExecutionPolicy|exec)\s+Bypass\b",
     r"\-(?:NonInteractive|noi)\b",
     r"\-(?:noprofile|nop)\b",
@@ -486,7 +486,7 @@ def handle_powershell_base64(command_line: str) -> tuple[str, bool, bool]:
     result = command_line
     powershell_encoded_base64 = re.compile(
         r"""
-        -(?:e(?:n(?:c(?:o(?:d(?:e(?:d(?:C(?:o(?:m(?:m(?:a(?:n(?:d)?)?)?)?)?)?)?)?)?)?)?)?)?)\s+
+        -(?:(?:e(?:n(?:c(?:o(?:d(?:e(?:d(?:C(?:o(?:m(?:m(?:a(?:n(?:d)?)?)?)?)?)?)?)?)?)?)?)?)?)|ec)\s+
         ["']?([A-Za-z0-9+/]{4,}(?:={0,2}))["']?
         """,
         re.IGNORECASE | re.VERBOSE,
@@ -509,7 +509,7 @@ def handle_powershell_base64(command_line: str) -> tuple[str, bool, bool]:
             if decoded_segment:
                 escaped_match = match.replace("+", "\\+")
                 encoded_param = re.compile(
-                    f"(?i)-(?:e(?:n(?:c(?:o(?:d(?:e(?:d(?:C(?:o(?:m(?:m(?:a(?:n(?:d)?)?)?)?)?)?)?)?)?)?)?)?)?)\\s+[\"']?{escaped_match}"
+                    f"(?i)-(?:(?:e(?:n(?:c(?:o(?:d(?:e(?:d(?:C(?:o(?:m(?:m(?:a(?:n(?:d)?)?)?)?)?)?)?)?)?)?)?)?)?)|ec)\\s+[\"']?{escaped_match}"
                 )
                 result = encoded_param.sub(r"%%TEMP%%", result)
                 result = result.replace(r"%%TEMP%%", f'"{decoded_segment}"')
