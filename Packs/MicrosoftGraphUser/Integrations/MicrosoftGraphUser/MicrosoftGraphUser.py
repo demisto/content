@@ -162,15 +162,6 @@ class MsGraphClient:
             body[field] = value
         self.ms_client.http_request(method="PATCH", url_suffix=f"users/{quote(user)}", json_data=body, resp_type="text")
 
-    def force_change_password(self, user: str):
-        body = {
-            "passwordProfile": {
-                "forceChangePasswordNextSignIn": True,
-                "password": TEMP_PASSWORD
-            }
-        }
-        self.ms_client.http_request(method="PATCH", url_suffix=f"users/{quote(user)}", json_data=body, resp_type="text")
-
     #  If successful, this method returns 204 No Content response code.
     #  Using resp_type=text to avoid parsing error.
     def password_change_user_saas(
@@ -467,11 +458,8 @@ def change_password_user_saas_command(client: MsGraphClient, args: dict):
     return CommandResults(readable_output=human_readable)
 
 def force_reset_password(client: MsGraphClient, args: dict):
-    user = args["user"]
-    client.force_change_password(user)
-
-    human_readable = f"User {user} is forced to change password"
-    return CommandResults(readable_output=human_readable)
+    args = {**args, "password": TEMP_PASSWORD, "force_change_password_next_sign_in": "true"}
+    return change_password_user_saas_command(client, args)
 
 def validate_input_password(args: dict[str, Any]) -> str:
     """
