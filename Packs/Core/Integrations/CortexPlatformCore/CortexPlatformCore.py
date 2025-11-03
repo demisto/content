@@ -794,9 +794,9 @@ def main():  # pragma: no cover
             args = issue_to_alert(args)
             # Extract output_keys before calling get_alerts_by_filter_command
             output_keys = argToList(args.pop("output_keys", []))
-            if args.get("assignee") in ["assigned", "unassigned"]:
+            if str(args.get("assignee", "")).lower() in ["assigned", "unassigned"]:
                 # Swap assignee arg with the requested special operation
-                assignee_filter_option = args.pop("assignee")
+                assignee_filter_option = str(args.pop("assignee", "")).lower()
                 args[assignee_filter_option] = True
 
             issues_command_results: CommandResults = get_alerts_by_filter_command(client, args)
