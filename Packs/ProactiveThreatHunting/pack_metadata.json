@@ -2,7 +2,7 @@
     "name": "Proactive Threat Hunting",
     "description": "The XSOAR Threat Hunting Pack enhances analyst capabilities by leveraging threat intelligence to uncover previously undetected threats, empowering proactive identification and mitigation of potential security risks.",
     "support": "xsoar",
-    "currentVersion": "1.0.6",
+    "currentVersion": "1.0.7",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -24,13 +24,9 @@
         "xsoar"
     ],
     "dependencies": {
-        "CortexXDR": {
+        "WindowsDefenderAdvancedThreatProtection": {
             "mandatory": false,
-            "display_name": "Cortex XDR by Palo Alto Networks"
-        },
-        "FiltersAndTransformers": {
-            "mandatory": true,
-            "display_name": "Filters And Transformers"
+            "display_name": "Windows Defender Advanced Threat Protection (Deprecated)"
         },
         "CommonTypes": {
             "mandatory": true,
@@ -40,26 +36,40 @@
             "mandatory": true,
             "display_name": "Common Playbooks"
         },
-        "FeedLOLBAS": {
+        "CommonScripts": {
             "mandatory": true,
-            "display_name": "LOLBAS Feed"
+            "display_name": "Common Scripts"
+        },
+        "Core": {
+            "mandatory": true,
+            "display_name": "Core"
+        },
+        "FiltersAndTransformers": {
+            "mandatory": true,
+            "display_name": "Filters And Transformers"
         },
         "MicrosoftDefenderAdvancedThreatProtection": {
             "mandatory": false,
             "display_name": "Microsoft Defender for Endpoint"
         },
-        "FeedUnit42v2": {
+        "FeedLOLBAS": {
             "mandatory": false,
-            "display_name": "Feed Unit42 v2"
+            "display_name": "LOLBAS Feed"
+        },
+        "TIM_Processing": {
+            "mandatory": true,
+            "display_name": "TIM - Indicator Auto-Processing"
         }
     },
     "displayedImages": [
-        "CortexXDR",
-        "FiltersAndTransformers",
+        "WindowsDefenderAdvancedThreatProtection",
         "CommonTypes",
-        "MicrosoftDefenderAdvancedThreatProtection",
-        "LOLBASFeed",
         "CommonPlaybooks",
-        "FeedUnit42v2"
+        "CommonScripts",
+        "Core",
+        "FiltersAndTransformers",
+        "MicrosoftDefenderAdvancedThreatProtection",
+        "FeedLOLBAS",
+        "TIM_Processing"
     ]
 }

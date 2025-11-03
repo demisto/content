@@ -2,7 +2,7 @@
     "name": "Sigma",
     "description": "This pack contains all needed objects to import and manage Sigma rules within Cortex TIM",
     "support": "xsoar",
-    "currentVersion": "1.1.1",
+    "currentVersion": "1.1.2",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -20,37 +20,41 @@
         "platform"
     ],
     "dependencies": {
-        "FeedMitreAttackv2": {
+        "SentinelOne": {
             "mandatory": true,
-            "display_name": "MITRE ATT&CK"
+            "display_name": "SentinelOne"
         },
-        "CommonTypes": {
+        "Elasticsearch": {
             "mandatory": true,
-            "display_name": "Common Types"
+            "display_name": "Elasticsearch"
         },
         "SplunkPy": {
             "mandatory": false,
             "display_name": "Splunk"
         },
-        "QRadar": {
-            "mandatory": false,
-            "display_name": "Qradar"
+        "Core": {
+            "mandatory": true,
+            "display_name": "Core"
         },
-        "SentinelOne": {
-            "mandatory": false,
-            "display_name": "Sentinel One"
+        "CommonScripts": {
+            "mandatory": true,
+            "display_name": "Common Scripts"
         },
         "CarbonBlackDefense": {
-            "mandatory": false,
-            "display_name": "Carbon Black"
+            "mandatory": true,
+            "display_name": "Carbon Black Endpoint Standard"
         },
-        "CortexXDR": {
-            "mandatory": false,
-            "display_name": "Cortex XDR"
+        "CommonTypes": {
+            "mandatory": true,
+            "display_name": "Common Types"
         },
-        "Elasticsearch": {
+        "SplunkPyPreRelease": {
             "mandatory": false,
-            "display_name": "Elasticsearch"
+            "display_name": "Splunk Prerelease (Deprecated)"
+        },
+        "QRadar": {
+            "mandatory": true,
+            "display_name": "IBM QRadar"
         }
     },
     "supportedModules": [
@@ -60,5 +64,16 @@
         "ENT_PLUS",
         "agentix",
         "xsiam"
+    ],
+    "displayedImages": [
+        "SentinelOne",
+        "Elasticsearch",
+        "SplunkPy",
+        "Core",
+        "CommonScripts",
+        "CarbonBlackDefense",
+        "CommonTypes",
+        "SplunkPyPreRelease",
+        "QRadar"
     ]
 }
