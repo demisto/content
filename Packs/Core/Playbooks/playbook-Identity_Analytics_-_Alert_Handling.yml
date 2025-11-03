@@ -1,11 +1,22 @@
 id: Identity Analytics - Alert Handling
-version: -1
+version: 50
+contentitemexportablefields:
+  contentitemfields:
+    packID: Core
+    packName: Core
+    itemVersion: 3.4.32
+    fromServerVersion: 6.10.0
+    toServerVersion: ""
+    definitionid: ""
+    prevname: ""
+    isoverridable: false
+vcShouldKeepItemLegacyProdMachine: false
 name: Identity Analytics - Alert Handling
 description: |-
   The `Identity Analytics - Alert Handling` playbook is designed to handle Identity Analytics alerts and executes the following:
 
   Analysis:
-  - Enriches the IP and the account, providing additional context and information about these indicators.
+  - Enriches the Indicators and the account, providing additional context and information about these indicators.
 
   Verdict:
   - Determines the appropriate verdict based on the data collected from the enrichment phase.
@@ -30,17 +41,16 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
-      - "47"
+      - "57"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 250,
-          "y": -510
+          "y": -660
         }
       }
     note: false
@@ -108,53 +118,14 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -280,
-          "y": -80
+          "x": -90,
+          "y": -70
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "2":
-    id: "2"
-    taskid: d44bd7f6-7d7d-4b0e-8746-110754f73f1e
-    type: regular
-    task:
-      id: d44bd7f6-7d7d-4b0e-8746-110754f73f1e
-      version: -1
-      name: IP Enrichment
-      description: Checks the reputation of an IP address.
-      script: '|||ip'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "16"
-    scriptarguments:
-      ip:
-        complex:
-          root: IP
-          accessor: Address
-          transformers:
-          - operator: uniq
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 780,
-          "y": -80
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -169,12 +140,10 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "56"
       - "1"
-      - "2"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -268,7 +237,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "5"
@@ -296,7 +264,9 @@ tasks:
       id: 5b1dc470-d347-4a2c-8908-c1548188fec1
       version: -1
       name: Cloud IAM Enrichment - Generic
-      description: This playbook is responsible for collecting and enriching data on Identity Access Management (IAM) in cloud environments (AWS, Azure, and GCP).
+      description: This playbook is responsible for collecting and enriching data
+        on Identity Access Management (IAM) in cloud environments (AWS, Azure, and
+        GCP).
       playbookName: Cloud IAM Enrichment - Generic
       type: playbook
       iscommand: false
@@ -334,7 +304,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 250,
+          "x": 620,
           "y": 110
         }
       }
@@ -356,7 +326,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "32"
@@ -387,7 +356,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "39"
@@ -417,7 +385,8 @@ tasks:
       id: 9b5c2fc2-c65b-488d-8229-f8b59bb2341a
       version: -1
       name: Found any malicious user activity?
-      description: Determine if the activity is malicious based on the investigation findings.
+      description: Determine if the activity is malicious based on the investigation
+        findings.
       type: condition
       iscommand: false
       brand: ""
@@ -501,7 +470,8 @@ tasks:
       id: c57402d1-54ac-4fcd-86b3-ea787ef0f134
       version: -1
       name: Analyst Decision
-      description: An analyst’s decision is required to determine whether it is a malicious or non-malicious activity.
+      description: An analyst’s decision is required to determine whether it is a
+        malicious or non-malicious activity.
       type: condition
       iscommand: false
       brand: ""
@@ -523,14 +493,15 @@ tasks:
     timertriggers: []
     ignoreworker: false
     message:
-      to:
-      subject:
+      to: null
+      subject: null
       body:
-        simple: An analyst's decision is required to determine whether it is a malicious or non-malicious activity.
+        simple: An analyst's decision is required to determine whether it is a malicious
+          or non-malicious activity.
       methods: []
       format: ""
-      bcc:
-      cc:
+      bcc: null
+      cc: null
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -555,7 +526,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "31"
@@ -715,7 +685,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -740,7 +709,8 @@ tasks:
       id: 7cff1688-ef61-4eb4-8273-ac88be488567
       version: -1
       name: Okta - User Investigation
-      description: This playbook performs an investigation on a specific user, using queries and logs from Okta.
+      description: This playbook performs an investigation on a specific user, using
+        queries and logs from Okta.
       playbookName: Okta - User Investigation
       type: playbook
       iscommand: false
@@ -1033,7 +1003,13 @@ tasks:
       id: 030764ae-207c-4555-831e-a974d06764dd
       version: -1
       name: Containment Plan
-      description: "This playbook handles the main containment actions available with Cortex XSIAM, including the following sub-playbooks:  \n* Containment Plan - Isolate endpoint\n* Containment Plan - Disable account\n* Containment Plan - Quarantine file\n* Containment Plan - Block indicators\n* Containment Plan - Clear user session (currently, the playbook supports only Okta)\n\nNote: The playbook inputs enable manipulating the execution flow. Read the input descriptions for details."
+      description: "This playbook handles the main containment actions available with
+        Cortex XSIAM, including the following sub-playbooks:  \n* Containment Plan
+        - Isolate endpoint\n* Containment Plan - Disable account\n* Containment Plan
+        - Quarantine file\n* Containment Plan - Block indicators\n* Containment Plan
+        - Clear user session (currently, the playbook supports only Okta)\n\nNote:
+        The playbook inputs enable manipulating the execution flow. Read the input
+        descriptions for details."
       playbookName: Containment Plan
       type: playbook
       iscommand: false
@@ -1130,7 +1106,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "51"
@@ -1214,7 +1189,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: "="
+                  simple: =
               ignorecase: true
     - incidentfield: Manager Email Address
       output:
@@ -1231,14 +1206,13 @@ tasks:
       id: 0ea2b397-c024-4c57-81d1-ccdf630043f6
       version: -1
       name: Set Number of Related Alerts
-      description: |-
-        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
-        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
-        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      description: "Set a value in context under the key you entered. If no value
+        is entered, the script doesn't do anything.\n\nThis automation runs using
+        the default Limited User role, unless you explicitly change the permissions.\nFor
+        more information, see the section about permissions here:\n- For Cortex XSOAR
+        6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
+        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1348,7 +1322,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: "="
+                  simple: =
               ignorecase: true
     - incidentfield: sAMAccountName
       output:
@@ -1424,7 +1398,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "37"
@@ -1455,7 +1428,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "48"
@@ -1510,7 +1482,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 250,
+          "x": 620,
           "y": -80
         }
       }
@@ -1521,6 +1493,43 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "57":
+    id: "57"
+    taskid: 2957a278-54d6-4502-b8ba-bf73ba3a1d73
+    type: regular
+    task:
+      id: 2957a278-54d6-4502-b8ba-bf73ba3a1d73
+      version: -1
+      name: Extract and enrich the alert indicators
+      description: commands.local.cmd.extract.indicators
+      script: Builtin|||extractIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "47"
+    scriptarguments:
+      text:
+        simple: ${alert}
+    reputationcalc: 2
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 250,
+          "y": -530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {
@@ -1536,10 +1545,10 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 3300,
+        "height": 3450,
         "width": 2240,
         "x": -540,
-        "y": -510
+        "y": -660
       }
     }
   }
@@ -1552,7 +1561,7 @@ inputs:
     This is the minimum threshold for XSIAM related alerts, based on MITRE tactics used to identify malicious activity by the user in the last 1 day.
     Example: If this input is set to '5' and it detects '6' XSIAM related alerts, it will classify this check as indicating malicious activity.
     The default value is '5'.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: FailedLogonThreshold
   value:
     simple: "30"
@@ -1561,7 +1570,7 @@ inputs:
     This is the minimum threshold for user login failures within the last 1 day.
     example: If this input is set to '30', and the 'Okta - User Investigation' or the 'Azure - User Investigation' sub-playbooks have found 31 failed login attempts - It will classify this behavior as malicious activity.
     The default value is '30'.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: OktaSuspiciousEventsThreshold
   value:
     simple: "5"
@@ -1570,13 +1579,15 @@ inputs:
     This is the minimum threshold for suspicious Okta activity events by the user in the last 1 day.
     example: If this input is set to '5', and the 'Okta - User Investigation' sub-playbooks have found 6 events of suspicious activity by the user - It will classify this behavior as malicious activity.
     The default value is '5'.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: AzureMfaFailedLogonThreshold
   value:
     simple: "10"
   required: false
-  description: This is the minimum threshold for MFA failed logins by the user in the last 1 day. Required to determine how many MFA failed logon events count as malicious events.
-  playbookInputQuery:
+  description: This is the minimum threshold for MFA failed logins by the user in
+    the last 1 day. Required to determine how many MFA failed logon events count as
+    malicious events.
+  playbookInputQuery: null
 - key: AutoRemediation
   value:
     simple: "False"
@@ -1584,7 +1595,7 @@ inputs:
   description: |-
     Whether to execute the remediation flow automatically.
     Possible values are: "True" and "False".
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: AutoContainment
   value:
     simple: "False"
@@ -1592,7 +1603,7 @@ inputs:
   description: |-
     Whether to execute containment plan (except isolation) automatically.
     Possible values are: "True" and "False".
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: UserContainment
   value:
     simple: "False"
@@ -1600,7 +1611,7 @@ inputs:
   description: |-
     Whether to disable the user account using the 'Containment Plan' su-playbook.
     Possible values are: "True" and "False".
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: ClearUserSessions
   value:
     simple: "True"
@@ -1608,7 +1619,7 @@ inputs:
   description: |-
     Whether to clear the user's active Okta sessions using the 'Containment Plan' su-playbook.
     Possible values are: "True" and "False".
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: IAMRemediationType
   value:
     simple: Revoke
@@ -1621,7 +1632,7 @@ inputs:
     Revoke: By entering "Revoke" in the input, the playbook will revoke the user's session.
 
     ALL: By entering "ALL" in the input, the playbook will execute the reset password and revoke session tasks.
-  playbookInputQuery:
+  playbookInputQuery: null
 inputSections:
 - inputs:
   - RelatedAlertsThreshold
@@ -1629,7 +1640,8 @@ inputSections:
   - OktaSuspiciousEventsThreshold
   - AzureMfaFailedLogonThreshold
   name: Investigation
-  description: Investigation settings and data, including any deep dive incident investigation and verdict determination.
+  description: Investigation settings and data, including any deep dive incident investigation
+    and verdict determination.
 - inputs:
   - AutoRemediation
   - AutoContainment
@@ -1637,27 +1649,10 @@ inputSections:
   - ClearUserSessions
   - IAMRemediationType
   name: Remediation
-  description: Remediation settings and data, including containment, eradication, and recovery.
+  description: Remediation settings and data, including containment, eradication,
+    and recovery.
 outputSections:
 - outputs: []
   name: General (Outputs group)
   description: Generic group for outputs
 outputs: []
-tests:
-- Test Playbook - Identity Analytics - Alert Handling
-marketplaces:
-- marketplacev2
-- platform
-fromversion: 6.10.0
-
-supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
-- agentix
-- cloud
-- cloud_posture
-- cloud_runtime_security
-- edr
-- xsiam
