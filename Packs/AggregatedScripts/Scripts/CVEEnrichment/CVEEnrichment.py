@@ -75,7 +75,7 @@ def cve_enrichment_script(
         commands=commands,
         additional_fields=additional_fields,
         external_enrichment=external_enrichment,
-        final_context_path="CVEEnrichment",
+        final_context_path="CVEEnrichment(val.Value && val.Value == obj.Value)",
         args=demisto.args(),
         data=cve_list,
         indicator=cve_indicator,

@@ -81,7 +81,8 @@ class Indicator:
 
     Attributes:
         type (str): Indicator type (e.g., "url", "ip", "cve").
-        value_field (str): Field name holding the indicator's value (e.g., "Data", "Address").
+        value_field (str | list[str]): Field name/ list of field name holding the indicator's value
+        (e.g., "Data", "Address", ["MD5","SHA256"]).
         context_path_prefix (str): Context key prefix to extract (e.g., "URL(" or "IP(").
         context_output_mapping (dict[str, str]):
             Mapping rules from source context to target; the separator is `".."`.
@@ -93,9 +94,33 @@ class Indicator:
     """
 
     type: str
-    value_field: str
+    value_field: str | list[str]
     context_path_prefix: str
     context_output_mapping: dict[str, str]
+
+    def get_all_values_from(self, data: dict[str, Any]) -> dict[str, Any]:
+        """
+        Return ALL identity-like fields that exist in this entry.
+        For File, that could return {"MD5": "...", "SHA1": "...", ...}
+        For URL (single value_field), this just returns {"Data": "..."} if available.
+        Args:
+            data (dict[str, Any]): The Context.
+        Returns:
+            dict ([str, Any]): The values field dict.
+        """
+        out: dict[str, Any] = {}
+        if isinstance(self.value_field, str):
+            val = data.get(self.value_field)
+            if val:
+                out["Value"] = val
+            return out
+
+        # value_field is a list
+        for candidate in self.value_field:
+            val = data.get(candidate)
+            if val:
+                out[candidate] = val
+        return out
 
 
 class CommandType(Enum):
@@ -381,7 +406,7 @@ class ContextBuilder:
         if self.tim_context:
             indicator_list = self.create_indicator()
             self.enrich_final_indicator(indicator_list)
-            final_context[f"{self.final_context_path}(val.Value && val.Value == obj.Value)"] = indicator_list
+            final_context[self.final_context_path] = indicator_list
         if self.dbot_context:
             final_context[Common.DBotScore.CONTEXT_PATH] = self.dbot_context
         final_context.update(self.other_context)
@@ -405,8 +430,9 @@ class ContextBuilder:
         """
         results: list[dict] = []
         for indicator_value, tim_context_result in self.tim_context.items():
-            current_indicator: dict[str, Any] = {"Value": indicator_value}
+            current_indicator: dict[str, Any] = {}
             if tim_indicator := [indicator for indicator in tim_context_result if indicator.get("Brand") == "TIM"]:
+                current_indicator.update(self.indicator.get_all_values_from(tim_indicator[0]) or {"Value": indicator_value})
                 current_indicator.update(
                     {
                         "Status": pop_dict_value(tim_indicator[0], "Status"),
@@ -778,12 +804,18 @@ class ReputationAggregatedCommand(AggregatedCommand):
             mapped_indicator.update({"CVSS": customFields.get("cvssscore")})
         mapped_indicator.update(
             {
-                "Data": ioc.get("value"),
                 "Brand": "TIM",
                 "Status": self.get_indicator_status_from_ioc(ioc),
                 "ModifiedTime": ioc.get("modifiedTime"),
             }
         )
+
+        # If File, value fields contain list of fields such as MD5,SHA256... under the CustomFields
+        # Otherwise the value of the indicator is unique under "value" key of the indicator
+        if isinstance(self.indicator.value_field, list):
+            mapped_indicator.update(self.indicator.get_all_values_from(customFields))
+        else:
+            mapped_indicator.update({self.indicator.value_field: ioc.get("value")})
         return mapped_indicator
 
     def get_indicator_status_from_ioc(self, ioc: dict) -> str | None:
@@ -966,7 +998,7 @@ class ReputationAggregatedCommand(AggregatedCommand):
         demisto.debug(f"Extracted {len(indicator_entries)} indicators from {brand} entry context.")
 
         for indicator_data in indicator_entries:
-            indicator_value = indicator_data.get(self.indicator.value_field)
+            indicator_value = self.indicator.get_all_values_from(indicator_data)
             demisto.debug(f"Parsing indicator: {indicator_value}")
             mapped_indicator = self.map_command_context(indicator_data, self.indicator.context_output_mapping, is_indicator=True)
             if "Score" in self.indicator.context_output_mapping:

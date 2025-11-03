@@ -3,9 +3,26 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 from AggregatedCommandApiModule import *
 
+INTERNAL_ENRICHMENT_BRANDS = ["WildFire-v2"]
+FILE_CONTEXT_PATH = "FileEnrichmentV2(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || ' \
+                       'val.SHA256 && val.SHA256 == obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512 || ' \
+                       'val.CRC32 && val.CRC32 == obj.CRC32 || val.CTPH && val.CTPH == obj.CTPH || ' \
+                       'val.SSDeep && val.SSDeep == obj.SSDeep)"
 
-def url_enrichment_script(
-    url_list: list[str],
+FILE_HASH_TYPES = [
+    "MD5",
+    "SHA1",
+    "SHA256",
+    "SHA512",
+    "CRC32",
+    "CTPH",
+    "SSDeep",
+    "ImpHash",
+]
+
+
+def file_enrichment_script(
+    file_list: list[str],
     external_enrichment: bool = False,
     verbose: bool = False,
     enrichment_brands: list[str] = [],
@@ -13,9 +30,9 @@ def url_enrichment_script(
     args: dict[str, Any] = {},
 ) -> CommandResults:
     """
-    Enriches URL data with information from various integrations
+    Enriches File data with information from various integrations
     Args:
-        url_list (list[str]): List of URLs to enrich.
+        file_list (list[str]): List of Files to enrich.
         external_enrichment (bool): Whether to call external integrations for enrichment.
         verbose (bool): Whether to print verbose output.
         enrichment_brands (list[str]): List of brands to enrich with.
@@ -24,19 +41,31 @@ def url_enrichment_script(
         CommandResult: The result of the command.
     """
     demisto.debug("Extracting indicators")
-    url_list = extract_indicators(url_list, "url")
+    file_list = extract_indicators(file_list, "file")
+
+    enrichment_brands = enrichment_brands or ([] if external_enrichment else INTERNAL_ENRICHMENT_BRANDS)
 
     indicator_mapping = {
-        "Data": "Data",
-        "DetectionEngines": "DetectionEngines",
-        "PositiveDetections": "PositiveDetections",
-        "Score": "Score",
+        "MD5": "MD5",
+        "SHA1": "SHA1",
+        "SHA256": "SHA256",
+        "SHA512": "SHA512",
+        "CRC32": "CRC32",
+        "CTPH": "CTPH",
+        "SSDeep": "SSDeep",
+        "ImpHash": "ImpHash",
+        "Path": "Path",
+        "Size": "Size",
+        "FileType": "FileType",
+        "FileExtension": "FileExtension",
         "Brand": "Brand",
+        "Score": "Score",
     }
+
     url_indicator = Indicator(
-        type="url",
-        value_field="Data",
-        context_path_prefix="URL(",  # add ( to prefix to distinct from URLhaus integration context path
+        type="file",
+        value_field=FILE_HASH_TYPES,
+        context_path_prefix="File",
         context_output_mapping=indicator_mapping,
     )
 
@@ -45,21 +74,29 @@ def url_enrichment_script(
     command_batch1: list[Command] = [
         Command(
             name="CreateNewIndicatorsOnly",
-            args={"indicator_values": url_list, "type": "URL"},
+            args={"indicator_values": file_list, "type": "File"},
             command_type=CommandType.BUILTIN,
             context_output_mapping=None,
             ignore_using_brand=True,
         )
     ]
 
-    # --- Command Batch 2: external enrichment ---
+    # --- Command Batch 2: external enrichment + Core IR---
     demisto.debug("Creating commands - Batch 2: Enriching indicators")
     command_batch2: list[Command] = [
         Command(
             name="enrichIndicators",
-            args={"indicatorsValues": url_list},
+            args={"indicatorsValues": file_list},
             command_type=CommandType.EXTERNAL,
+        ),
+    ] + [
+        Command(
+            name="core-get-hash-analytics-prevalence",
+            args={"sha256": file},
+            brand="Cortex Core - IR",
+            command_type=CommandType.INTERNAL,
         )
+        for file in file_list
     ]
 
     commands = [command_batch1, command_batch2]
@@ -69,18 +106,18 @@ def url_enrichment_script(
         for j, cmd in enumerate(batch):
             demisto.debug(f"Command {j}: {cmd}")
 
-    url_reputation = ReputationAggregatedCommand(
+    file_reputation = ReputationAggregatedCommand(
         brands=enrichment_brands,
         verbose=verbose,
         commands=commands,
         additional_fields=additional_fields,
         external_enrichment=external_enrichment,
-        final_context_path="URLEnrichment(val.Value && val.Value == obj.Value)",
+        final_context_path=FILE_CONTEXT_PATH,
         args=args,
-        data=url_list,
+        data=file_list,
         indicator=url_indicator,
     )
-    return url_reputation.run()
+    return file_reputation.run()
 
 
 """ MAIN FUNCTION """
@@ -88,15 +125,15 @@ def url_enrichment_script(
 
 def main():  # pragma: no cover
     args = demisto.args()
-    url_list = argToList(args.get("url_list"))
+    file_list = argToList(args.get("file_list"))
     external_enrichment = argToBoolean(args.get("external_enrichment", False))
     verbose = argToBoolean(args.get("verbose", False))
     brands = argToList(args.get("brands", []))
     additional_fields = argToBoolean(args.get("additional_fields", False))
-    demisto.debug(f"Data list: {url_list}")
+    demisto.debug(f"Data list: {file_list}")
     demisto.debug(f"Brands: {brands}")
     try:
-        return_results(url_enrichment_script(url_list, external_enrichment, verbose, brands, additional_fields, args))
+        return_results(file_enrichment_script(file_list, external_enrichment, verbose, brands, additional_fields, args))
     except Exception as ex:
         return_error(f"Failed to execute !url-enrichment. Error: {str(ex)}")
 

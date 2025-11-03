@@ -509,7 +509,7 @@ def test_add_tim_context():
     Then:
         - The internal state should be updated with the provided data.
     """
-    builder = ContextBuilder(indicator=default_indicator, final_context_path="Test.Path")
+    builder = ContextBuilder(indicator=default_indicator, final_context_path="Test.Path(val.Value && val.Value == obj.Value)")
     tim_ctx = {"indicator1": [{"Brand": "brandA", "data": "value"}]}
     dbot_list = [make_dbot("indicator1", "brandA", 2)]
 
@@ -528,7 +528,7 @@ def test_add_other_commands_results():
     Then:
         - The internal other_context dictionary should be correctly updated.
     """
-    builder = ContextBuilder(indicator=default_indicator, final_context_path="Test.Path")
+    builder = ContextBuilder(indicator=default_indicator, final_context_path="Test.Path(val.Value && val.Value == obj.Value)")
 
     builder.add_other_commands_results({"Command1": {"data": "value1"}})
     builder.add_other_commands_results({"Command2": {"data": "value2"}})
@@ -540,7 +540,7 @@ def test_build_preserves_exception_keys_when_empty():
     indicator = Indicator(
         type="url", value_field="Data", context_path_prefix="URL(", context_output_mapping={"Score": "Score", "CVSS": "CVSS"}
     )
-    builder = ContextBuilder(indicator=indicator, final_context_path="Test.Path")
+    builder = ContextBuilder(indicator=indicator, final_context_path="Test.Path(val.Value && val.Value == obj.Value)")
 
     # TIM entry where TIM has no CVSS and explicit None ModifiedTime
     tim_ctx = {"v1": [{"Brand": "TIM", "Score": 2, "ModifiedTime": None, "CVSS": None, "Status": None}]}
@@ -574,7 +574,7 @@ def test_build_extract_tim_score():
         context_path_prefix="Test(",
         context_output_mapping={"Score": "Score"},
     )
-    builder = ContextBuilder(indicator=indicator_with_score, final_context_path="Test.Path")
+    builder = ContextBuilder(indicator=indicator_with_score, final_context_path="Test.Path(val.Value && val.Value == obj.Value)")
 
     # Only the TIM scores (5 and 3) should be considered => max is 5
     tim_ctx = {
@@ -610,7 +610,7 @@ def test_build_enriches_final_indicators_correctly(results, expected_max, expect
     Then:
         - The final output is enriched with the correct MaxScore and MaxVerdict.
     """
-    builder = ContextBuilder(indicator=default_indicator, final_context_path="Test.Path")
+    builder = ContextBuilder(indicator=default_indicator, final_context_path="Test.Path(val.Value && val.Value == obj.Value)")
 
     tim_ctx = {"indicator1": results}
     builder.add_tim_context(tim_ctx, dbot_scores=[])
@@ -651,7 +651,7 @@ def test_build_assembles_all_context_types():
     Then:
         - The final context should contain all three types of data in the correct paths.
     """
-    builder = ContextBuilder(indicator=default_indicator, final_context_path="Test.Path")
+    builder = ContextBuilder(indicator=default_indicator, final_context_path="Test.Path(val.Value && val.Value == obj.Value)")
 
     # Add all types of context
     builder.add_tim_context(
@@ -1236,7 +1236,7 @@ def test_create_tim_indicator_uses_score_and_status(module_factory, mocker):
     assert res["Status"] == IndicatorStatus.FRESH.value
     assert res["Brand"] == "TIM"
     assert res["Score"] == 2
-    assert res["Data"] == "indicator1"
+    assert res[default_indicator.value_field] == "indicator1"
     assert res["ModifiedTime"] is None
 
 

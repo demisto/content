@@ -95,7 +95,7 @@ def domain_enrichment_script(
         commands=commands,
         additional_fields=additional_fields,
         external_enrichment=external_enrichment,
-        final_context_path="DomainEnrichment",
+        final_context_path="DomainEnrichment(val.Value && val.Value == obj.Value)",
         args=demisto.args(),
         data=domain_list,
         indicator=domain_indicator,

@@ -116,7 +116,7 @@ def ip_enrichment_script(
         commands=commands,
         additional_fields=additional_fields,
         external_enrichment=external_enrichment,
-        final_context_path="IPEnrichment",
+        final_context_path="IPEnrichment(val.Value && val.Value == obj.Value)",
         args=args,
         data=ip_list,
         indicator=ip_indicator,
