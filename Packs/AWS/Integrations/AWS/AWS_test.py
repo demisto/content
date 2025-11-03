@@ -5983,8 +5983,10 @@ def test_create_network_acl_command_success(mocker):
     from AWS import EC2
 
     mock_client = mocker.Mock()
-    mock_client.create_network_acl.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
-                                                   "NetworkAcl": {"vpc_id": "mock_vpc_id", "Entries": []}}
+    mock_client.create_network_acl.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "NetworkAcl": {"vpc_id": "mock_vpc_id", "Entries": []},
+    }
     args = {"vpc_id": "mock_vpc_id"}
     result = EC2.create_network_acl_command(mock_client, args)
     assert isinstance(result, CommandResults)
@@ -6049,32 +6051,35 @@ def test_get_latest_ami_command_success(mocker):
     first_response = {
         "Images": [
             {"CreationDate": "2024-01-01T10:00:00.000Z", "ImageId": "ami-old-1", "Tags": []},
-            {"CreationDate": "2023-12-31T10:00:00.000Z", "ImageId": "ami-old-2", "Tags": []}
+            {"CreationDate": "2023-12-31T10:00:00.000Z", "ImageId": "ami-old-2", "Tags": []},
         ],
         "nextToken": "next-page-token",
-        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
     }
 
     second_response = {
         "Images": [
-            {"CreationDate": "2024-01-02T10:00:00.000Z", "ImageId": "ami-latest", "Name": "mock_name", "State": "mock_state",
-             "Public": False, "Tags": [{"Key": "mock_key", "Value": "mock_value"}]}
+            {
+                "CreationDate": "2024-01-02T10:00:00.000Z",
+                "ImageId": "ami-latest",
+                "Name": "mock_name",
+                "State": "mock_state",
+                "Public": False,
+                "Tags": [{"Key": "mock_key", "Value": "mock_value"}],
+            }
         ],
-        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
     }
 
     mock_client = mocker.Mock()
     mock_client.describe_images.side_effect = [first_response, second_response]
     mock_client.get_latest_ami_command.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
-    args = {
-        "owners": "self",
-        "region": "us-east-1"
-    }
+    args = {"owners": "self", "region": "us-east-1"}
 
     result = EC2.get_latest_ami_command(mock_client, args)
     assert mock_client.describe_images.call_count == 2
-    mock_client.describe_images.call_args_list[0].assert_called_with(Owner=['self'])
-    mock_client.describe_images.call_args_list[1].assert_called_with(Owner=['self'], NextToken='next-page-token')
+    mock_client.describe_images.call_args_list[0].assert_called_with(Owner=["self"])
+    mock_client.describe_images.call_args_list[1].assert_called_with(Owner=["self"], NextToken="next-page-token")
     expected_image_id = "ami-latest"
 
     assert result.outputs["ImageId"] == expected_image_id
@@ -6106,8 +6111,10 @@ def test_get_ipam_discovered_public_addresses_command_success(mocker):
     from AWS import EC2
 
     mock_client = mocker.Mock()
-    mock_client.get_ipam_discovered_public_addresses.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
-                                                                     "IpamDiscoveredPublicAddresses": {"mock_key": "mock_value"}}
+    mock_client.get_ipam_discovered_public_addresses.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "IpamDiscoveredPublicAddresses": {"mock_key": "mock_value"},
+    }
     args = {"ipam_resource_discovery_id": "mock_id"}
     result = EC2.get_ipam_discovered_public_addresses_command(mock_client, args)
     assert isinstance(result, CommandResults)
@@ -6123,6 +6130,8 @@ def test_get_ipam_discovered_public_addresses_command_failure(mocker):
     from AWS import EC2
 
     mock_client = mocker.Mock()
-    mock_client.get_ipam_discovered_public_addresses.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
+    mock_client.get_ipam_discovered_public_addresses.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}
+    }
     with pytest.raises(SystemExit):
         EC2.get_ipam_discovered_public_addresses_command(mock_client, {})

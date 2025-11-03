@@ -845,7 +845,7 @@ class S3:
             "ErrorDocument": response.get("ErrorDocument"),
             "IndexDocument": response.get("IndexDocument"),
             "RedirectAllRequestsTo": response.get("RedirectAllRequestsTo"),
-            "RoutingRules": response.get("RoutingRules")
+            "RoutingRules": response.get("RoutingRules"),
         }
 
         readable_output = tableToMarkdown(
@@ -855,10 +855,12 @@ class S3:
             headers=["ErrorDocument", "IndexDocument", "RedirectAllRequestsTo", "RoutingRules"],
             headerTransform=pascalToSpace,
         )
-        return CommandResults(readable_output=readable_output,
-                              outputs_prefix="AWS.S3-Buckets.BucketWebsite",
-                              outputs=response.get("WebsiteConfiguration", {}),
-                              raw_response=response.get("WebsiteConfiguration", {}))
+        return CommandResults(
+            readable_output=readable_output,
+            outputs_prefix="AWS.S3-Buckets.BucketWebsite",
+            outputs=response.get("WebsiteConfiguration", {}),
+            raw_response=response.get("WebsiteConfiguration", {}),
+        )
 
     @staticmethod
     def get_bucket_acl_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
@@ -895,10 +897,12 @@ class S3:
             headers=["Grants", "Owner"],
             headerTransform=pascalToSpace,
         )
-        return CommandResults(readable_output=readable_output,
-                              outputs_prefix="AWS.S3-Buckets.BucketAcl",
-                              outputs=response.get("AccessControlPolicy", {}),
-                              raw_response=response.get("AccessControlPolicy", {}))
+        return CommandResults(
+            readable_output=readable_output,
+            outputs_prefix="AWS.S3-Buckets.BucketAcl",
+            outputs=response.get("AccessControlPolicy", {}),
+            raw_response=response.get("AccessControlPolicy", {}),
+        )
 
 
 class IAM:
@@ -2188,7 +2192,7 @@ class EC2:
             outputs=image,
             outputs_prefix="AWS.EC2.Images",
             readable_output=tableToMarkdown("AWS EC2 Images", data, headerTransform=pascalToSpace),
-            outputs_key_field="ImageId"
+            outputs_key_field="ImageId",
         )
 
     @staticmethod
@@ -2212,7 +2216,7 @@ class EC2:
         kwargs = {
             "VpcId": args.get("vpc_id"),
             "ClientToken": args.get("client_token"),
-            "TagSpecifications": parse_filter_field(args.get("tag_specifications"))
+            "TagSpecifications": parse_filter_field(args.get("tag_specifications")),
         }
 
         remove_nulls_from_dictionary(kwargs)
@@ -2240,11 +2244,19 @@ class EC2:
             outputs_prefix="AWS.EC2.VpcId.NetworkAcl",
             outputs_key_field="VpcId",
             readable_output=(
-                tableToMarkdown("AWS EC2 ACL Entries", [entry for entry in network_acl.get("Entries")], removeNull=True,
-                                headerTransform=pascalToSpace)
-                + tableToMarkdown("The AWS EC2 Instance ACL that the entries belong to", readable_data, removeNull=True,
-                                  headerTransform=pascalToSpace)
-            )
+                tableToMarkdown(
+                    "AWS EC2 ACL Entries",
+                    [entry for entry in network_acl.get("Entries")],
+                    removeNull=True,
+                    headerTransform=pascalToSpace,
+                )
+                + tableToMarkdown(
+                    "The AWS EC2 Instance ACL that the entries belong to",
+                    readable_data,
+                    removeNull=True,
+                    headerTransform=pascalToSpace,
+                )
+            ),
         )
 
     @staticmethod
@@ -2265,7 +2277,7 @@ class EC2:
             "AddressRegion": args.get("address_region"),
             "MaxResults": args.get("limit"),
             "Filters": parse_filter_field(args.get("filters")),
-            "NextToken": args.get("next_token")
+            "NextToken": args.get("next_token"),
         }
 
         remove_nulls_from_dictionary(kwargs)
@@ -2276,8 +2288,9 @@ class EC2:
             return CommandResults(readable_output="No Ipam Discovered Public Addresses were found.")
 
         output = json.loads(json.dumps(response, cls=DatetimeEncoder))
-        human_readable = tableToMarkdown("Ipam Discovered Public Addresses", output.get("IpamDiscoveredPublicAddresses"),
-                                         headerTransform=pascalToSpace)
+        human_readable = tableToMarkdown(
+            "Ipam Discovered Public Addresses", output.get("IpamDiscoveredPublicAddresses"), headerTransform=pascalToSpace
+        )
         return CommandResults(
             outputs_prefix="AWS.EC2.IpamDiscoveredPublicAddresses",
             outputs_key_field="Address",
@@ -3746,7 +3759,7 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-s3-bucket-ownership-controls-put": S3.put_bucket_ownership_controls_command,
     "aws-s3-file-upload": S3.file_upload_command,
     "aws-s3-file-download": S3.file_download_command,
-        "aws-s3-bucket-website-get": S3.get_bucket_website_command,
+    "aws-s3-bucket-website-get": S3.get_bucket_website_command,
     "aws-s3-bucket-acl-get": S3.get_bucket_acl_command,
     "aws-iam-account-password-policy-get": IAM.get_account_password_policy_command,
     "aws-iam-account-password-policy-update": IAM.update_account_password_policy_command,
@@ -3772,7 +3785,7 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-ec2-ipam-resource-discoveries-describe": EC2.describe_ipam_resource_discoveries_command,
     "aws-ec2-ipam-resource-discovery-associations-describe": EC2.describe_ipam_resource_discovery_associations_command,
     "aws-ec2-set-snapshot-to-private-quick-action": EC2.modify_snapshot_permission_command,
-        "aws-ec2-latest-ami-get": EC2.get_latest_ami_command,
+    "aws-ec2-latest-ami-get": EC2.get_latest_ami_command,
     "aws-ec2-network-acl-create": EC2.create_network_acl_command,
     "aws-ec2-ipam-discovered-public-addresses-get": EC2.get_ipam_discovered_public_addresses_command,
     "aws-eks-cluster-config-update": EKS.update_cluster_config_command,
