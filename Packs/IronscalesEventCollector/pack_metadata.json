@@ -10,9 +10,16 @@
     "categories": [
         "Email"
     ],
-    "tags": [],
-    "useCases": [],
-    "keywords": [],
+    "tags": [
+        "Email"
+    ],
+    "useCases": [
+        "Phishing",
+        "Network Security"
+    ],
+    "keywords": [
+        "ironscales"
+    ],
     "githubUser": [],
     "marketplaces": [
         "marketplacev2",
