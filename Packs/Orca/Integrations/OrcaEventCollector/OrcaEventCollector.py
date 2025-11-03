@@ -38,7 +38,8 @@ class Client(BaseClient):
                 start_index = int(next_page_token)
             except ValueError:
                 demisto.info(
-                    f"Invalid next_page_token (expected integer for start_at_index): {next_page_token}. Defaulting to 0.")
+                    f"Invalid next_page_token (expected integer for start_at_index): {next_page_token}. Defaulting to 0."
+                )
                 start_index = 0
 
         payload = {
@@ -54,29 +55,36 @@ class Client(BaseClient):
                             "values": [last_fetch],
                             "type": "datetime",
                             "operator": "date_gte",
-                            "value_type": "days"
+                            "value_type": "days",
                         }
-                    ]
-                }
+                    ],
+                },
             },
             "limit": max_fetch,
             "start_at_index": start_index,
             "order_by[]": ["CreatedAt"],
             "select": [
-                "AlertId", "AlertType", "OrcaScore", "RiskLevel",
-                "RuleSource", "ScoreVector", "Category", "Inventory.Name",
-                "CloudAccount.Name", "CloudAccount.CloudProvider", "Source",
-                "Status", "CreatedAt", "LastSeen", "Labels"
-            ]
+                "AlertId",
+                "AlertType",
+                "OrcaScore",
+                "RiskLevel",
+                "RuleSource",
+                "ScoreVector",
+                "Category",
+                "Inventory.Name",
+                "CloudAccount.Name",
+                "CloudAccount.CloudProvider",
+                "Source",
+                "Status",
+                "CreatedAt",
+                "LastSeen",
+                "Labels",
+            ],
         }
 
         demisto.debug(f"In get_alerts (Serving Layer API) request payload: {json.dumps(payload)}")
 
-        return self._http_request(
-            method="POST",
-            url_suffix="/serving-layer/query",
-            json_data=payload
-        )
+        return self._http_request(method="POST", url_suffix="/serving-layer/query", json_data=payload)
 
 
 """ HELPER FUNCTIONS """
@@ -92,9 +100,11 @@ def add_time_key_to_alerts(alerts: List[dict]) -> List[dict]:
     """
     if alerts:
         for alert in alerts:
-            create_time = arg_to_datetime(arg=alert.get("state", {}).get("created_at"))
+            create_time_str = alert.get("data", {}).get("CreatedAt", {}).get("value")
+            create_time = arg_to_datetime(arg=create_time_str)
             alert["_time"] = create_time.strftime(DATE_FORMAT) if create_time else None
-            demisto.debug(f'{alert.get("state", {}).get("alert_id")=} , {alert.get("_time")=}')
+            alert_id = alert.get("data", {}).get("AlertId", {}).get("value")
+            demisto.debug(f'{alert_id=} , {alert.get("_time")=}')
     return alerts
 
 
@@ -132,7 +142,9 @@ def get_alerts(client: Client, max_fetch: int, last_fetch: str, next_page_token:
         - next_page_token if exist
     """
     response = client.get_alerts_request(max_fetch, last_fetch, next_page_token)
-    next_page_token = response.get("next_page_token", None)  # TODO: We need to determine how we handle the pagination. I haven't seen in testing an instance of pagination yet.
+    next_page_token = response.get(
+        "next_page_token", None
+    )
     alerts = response.get("data", [])
     demisto.debug(f"Get Alerts Response {next_page_token=} , {len(alerts)=}\n {alerts=}")
     return alerts, next_page_token
@@ -186,7 +198,7 @@ def main() -> None:
                     )
                 )
 
-            if should_push_events:
+            if should_push_events and alerts:
                 alerts = add_time_key_to_alerts(alerts)
                 demisto.debug(f"before send_events_to_xsiam {VENDOR=} {PRODUCT=} {alerts=}")
                 send_events_to_xsiam(alerts, VENDOR, PRODUCT)
@@ -196,7 +208,8 @@ def main() -> None:
             if next_page_token:
                 current_last_run["lastRun"] = last_fetch
             else:
-                last_updated = arg_to_datetime(arg=alerts[-1].get("state", {}).get("created_at")) if alerts else None
+                last_updated_str = alerts[-1].get("data", {}).get("CreatedAt", {}).get("value") if alerts else None
+                last_updated = arg_to_datetime(arg=last_updated_str)
                 current_last_run["lastRun"] = last_updated.strftime(DATE_FORMAT) if last_updated else last_fetch
 
             demisto.setLastRun(current_last_run)
