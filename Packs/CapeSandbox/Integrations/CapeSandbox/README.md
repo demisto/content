@@ -1,7 +1,15 @@
 # CAPEv2 Malware Sandbox
 
-CAPE Sandbox is an Open Source software for automating analysis of suspicious files.
-This integration was integrated and tested with CAPE V2 API of CapeSandbox.
+CAPE Sandbox is an open-source software for automating analysis of suspicious files and URLs. To learn more about CAPE Sandbox, visit the [official CAPE documentation](https://capev2.readthedocs.io/).
+
+This integration was integrated and tested with CAPE V2 API.
+
+## Authorization
+
+This integration supports two authentication methods:
+
+- **API Token** - Recommended. Generate a token in your CAPE Sandbox instance.
+- **Username and Password** - The integration will automatically generate authentication tokens.
 
 ## Configure Cape Sandbox in Cortex
 
@@ -10,7 +18,7 @@ This integration was integrated and tested with CAPE V2 API of CapeSandbox.
 | Server URL | Base URL of the CAPE Sandbox. | True |
 | API token | Token value as generated in CAPE. If provided, Username/Password is not required. | False |
 | Username | Required if 'Username and Password' is selected above.<br/>Provides credentials for token generation.<br/> | False |
-| Password |  | False |
+| Password | Password for authentication. Required if using Username/Password authentication method. | False |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
 
@@ -33,14 +41,14 @@ Submit a file for analysis to CAPE Sandbox. This command supports PCAP files and
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | entry_id | The War Room entry ID of the file to submit for analysis. | Required |
-| package | The analysis package to use (e.g., `ps1` for PowerShell scripts). | Optional |
+| package | The analysis package to use (e.g., `ps1` for PowerShell scripts, `exe` for executables, `dll` for DLL files). For available packages, see the [CAPE documentation](https://capev2.readthedocs.io/en/latest/usage/packages.html). | Optional |
 | timeout | The maximum time in seconds to allow for the analysis to complete. | Optional |
 | priority | The priority level to assign to the task (1-3, where 1 is highest priority). | Optional |
-| options | A string of additional options to pass to the analysis (e.g., `options:function=DllMain`). | Optional |
+| options | A string of additional options to pass to the analysis (e.g., `options:function=DllMain`). For available options, see the [CAPE documentation](https://capev2.readthedocs.io/en/latest/usage/submit.html#options-options-available). | Optional |
 | machine | The specific ID of the analysis machine to use for the task. | Optional |
 | platform | The name of the platform to select the analysis machine from (e.g., `windows`). | Optional |
 | tags | Comma-separated tags to associate with the analysis task. | Optional |
-| custom | A custom string to pass over to the analysis. | Optional |
+| custom | A custom string to pass to the analysis. | Optional |
 | memory | Set to `true` to enable a full memory dump during analysis. Possible values are: `true`, `false`. | Optional |
 | enforce_timeout | Set to `true` to strictly enforce the analysis timeout. Possible values are: `true`, `false`. | Optional |
 | clock | The VM clock time in the format `%m-%d-%Y %H:%M:%S`. | Optional |
@@ -54,7 +62,7 @@ Submit a file for analysis to CAPE Sandbox. This command supports PCAP files and
 ### cape-file-view
 
 ***
-View detailed information about a file that has been analyzed by CAPE Sandbox. You can specify the file by its Task ID, MD5 hash, or SHA256 hash.
+View detailed information about a file that has been analyzed by CAPE Sandbox. You must specify at least one identifier: Task ID, MD5 hash, or SHA256 hash.
 
 #### Base Command
 
@@ -64,9 +72,9 @@ View detailed information about a file that has been analyzed by CAPE Sandbox. Y
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| task_id | The unique identifier of the analysis task. | Optional |
-| md5 | The MD5 hash of the file. | Optional |
-| sha256 | The SHA256 hash of the file. | Optional |
+| task_id | The unique identifier of the analysis task to view. | Optional |
+| md5 | The MD5 hash of the file to view. | Optional |
+| sha256 | The SHA256 hash of the file to view. | Optional |
 
 #### Context Output
 
@@ -84,7 +92,7 @@ View detailed information about a file that has been analyzed by CAPE Sandbox. Y
 ### cape-sample-download
 
 ***
-Download a sample file from a CAPE Sandbox task. The sample can be identified by its Task ID, MD5 hash, SHA1 hash, or SHA256 hash.
+Download a sample file from a CAPE Sandbox task. You must specify at least one identifier: Task ID, MD5 hash, SHA1 hash, or SHA256 hash. The downloaded file will be added to the War Room.
 
 #### Base Command
 
@@ -94,10 +102,10 @@ Download a sample file from a CAPE Sandbox task. The sample can be identified by
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| task_id | The unique identifier of the analysis task. | Optional |
-| md5 | The MD5 hash of the sample file. | Optional |
-| sha1 | The SHA1 hash of the sample file. | Optional |
-| sha256 | The SHA256 hash of the sample file. | Optional |
+| task_id | The unique identifier of the analysis task to download the sample from. | Optional |
+| md5 | The MD5 hash of the sample file to download. | Optional |
+| sha1 | The SHA1 hash of the sample file to download. | Optional |
+| sha256 | The SHA256 hash of the sample file to download. | Optional |
 
 #### Context Output
 
@@ -117,14 +125,14 @@ Submit a URL for analysis to CAPE Sandbox. The command polls the CAPE server unt
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | url | The URL to submit for analysis. | Required |
-| package | The analysis package to use. | Optional |
+| package | The analysis package to use for URL analysis (e.g., `ie` for Internet Explorer, `chrome` for Chrome browser). For available packages, see the [CAPE documentation](https://capev2.readthedocs.io/en/latest/usage/packages.html). | Optional |
 | timeout | The maximum time in seconds to allow for the analysis to complete. | Optional |
 | priority | The priority level to assign to the task (1-3, where 1 is highest priority). | Optional |
-| options | A string of additional options to pass to the analysis (e.g., `options:function=DllMain`). | Optional |
-| machine | The specific ID of the analysis machine to use. | Optional |
+| options | A string of additional options to pass to the analysis (e.g., `options:function=DllMain`). For available options, see the [CAPE documentation](https://capev2.readthedocs.io/en/latest/usage/submit.html#options-options-available). | Optional |
+| machine | The specific ID of the analysis machine to use for the task. | Optional |
 | platform | The name of the platform to select the analysis machine from (e.g., `windows`). | Optional |
 | tags | Comma-separated tags to associate with the analysis task. | Optional |
-| custom | A custom string to pass over to the analysis. | Optional |
+| custom | A custom string to pass to the analysis. | Optional |
 | memory | Set to `true` to enable a full memory dump during analysis. Possible values are: `true`, `false`. | Optional |
 | enforce_timeout | Set to `true` to strictly enforce the analysis timeout. Possible values are: `true`, `false`. | Optional |
 | clock | The VM clock time in the format `%m-%d-%Y %H:%M:%S`. | Optional |
@@ -170,9 +178,9 @@ Returns a list of CAPE Sandbox tasks. If a `task_id` is provided, the command re
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| task_id | The unique identifier of the task to retrieve (optional). | Optional |
+| task_id | The unique identifier of the task to retrieve. If provided, returns details for that specific task only. | Optional |
 | page | The page number for pagination (starts at 1). | Optional |
-| page_size | The number of tasks to return per page (API maximum is 50). Default is 50. | Optional |
+| page_size | The number of tasks to return per page. Maximum is 50. Default is 50. | Optional |
 
 #### Context Output
 
@@ -194,7 +202,7 @@ Retrieve the analysis report associated with a specified CAPE Sandbox task ID. I
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | task_id | The unique identifier of the task for which to retrieve the report. | Required |
-| format | The desired format of the report. Possible values are: `json`, `maec`, `maec5`, `metadata`, `lite`, `all`. Default is `json`. | Optional |
+| format | The desired format of the report. Possible values are: `json` (full JSON report), `maec` (MAEC 4.1 format), `maec5` (MAEC 5.0 format), `metadata` (metadata only), `lite` (lightweight report), `all` (all available formats). Default is `json`. | Optional |
 | zip | Set to `true` to download the report as a ZIP file. Possible values are: `true`, `false`. Default is `false`. | Optional |
 
 #### Context Output
@@ -206,7 +214,7 @@ Retrieve the analysis report associated with a specified CAPE Sandbox task ID. I
 ### cape-pcap-file-download
 
 ***
-Download the PCAP (Packet Capture) network dump file associated with a specific CAPE Sandbox task ID.
+Download the PCAP (Packet Capture) network dump file associated with a specific CAPE Sandbox task ID. The PCAP file contains all network traffic captured during the analysis and can be analyzed with tools like Wireshark.
 
 #### Base Command
 
@@ -225,7 +233,7 @@ There is no context output for this command. The command directly downloads the 
 ### cape-task-screenshot-download
 
 ***
-Download screenshots captured during the analysis of a CAPE Sandbox task. If a specific `screenshot` number is provided, only that single screenshot will be downloaded; otherwise, all available screenshots for the task will be downloaded.
+Download screenshots captured during the analysis of a CAPE Sandbox task. Screenshots show the visual behavior of the analyzed file or URL. If a specific `screenshot` number is provided, only that single screenshot will be downloaded; otherwise, all available screenshots for the task will be downloaded as a ZIP file.
 
 #### Base Command
 
@@ -255,8 +263,8 @@ Returns a list of available analysis machines configured in CAPE Sandbox. If a `
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| machine_name | The name of the machine to fetch details for (optional). | Optional |
-| all_results | Set to `true` to return all machines, ignoring any specified `limit`. Possible values are: `true`, `false`. Default is `false`. | Optional |
+| machine_name | The name of the machine to fetch details for. If provided, returns details for that specific machine only. | Optional |
+| all_results | Set to `true` to return all machines, ignoring the `limit` parameter. Possible values are: `true`, `false`. Default is `false`. | Optional |
 | limit | The maximum number of machines to return when listing. Default is 50. | Optional |
 
 #### Context Output

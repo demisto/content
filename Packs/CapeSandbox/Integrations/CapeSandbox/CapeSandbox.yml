@@ -9,8 +9,9 @@ configuration:
     required: true
     section: Connect
     additionalinfo: Base URL of the CAPE Sandbox.
-  - name: api_token
-    display: API token
+  - display: API Token
+    name: token_credentials
+    displaypassword: API Token
     type: 9
     required: false
     section: Connect
@@ -31,12 +32,14 @@ configuration:
     type: 8
     defaultvalue: "false"
     section: Connect
+    advanced: true
   - name: proxy
     display: Use system proxy settings
     required: false
     defaultvalue: "false"
     type: 8
     section: Connect
+    advanced: true
 description: CAPE Sandbox is an Open Source software for automating analysis of suspicious files.
 display: Cape Sandbox
 name: CapeSandbox
