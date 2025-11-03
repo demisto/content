@@ -23,6 +23,7 @@ configuration:
   type: 0
   required: false
   additionalinfo: "Space-separated list of OAuth scopes. Note: Only include scopes that your application's Client ID has already been authorized to use."
+  section: Connect
 - displaypassword: API Key
   additionalinfo: The API Key allows you to integrate with the Trellix Email Security - Cloud.
   name: credentials

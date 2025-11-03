@@ -728,7 +728,7 @@ def validate_authentication_params(client_id: str, client_secret: str, api_key: 
         client_id: The Client ID for OAuth2 authentication.
         client_secret: The Client Secret for OAuth2 authentication.
         api_key: The API Key.
-        scopes: The space-separated OAuth Scopes.
+        scope: The space-separated OAuth Scopes.
 
     Returns: 'oauth2' for Client ID/Secret, 'api_key' for API Key
     Raises: ValueError if authentication configuration is invalid or over-configured.
@@ -737,7 +737,7 @@ def validate_authentication_params(client_id: str, client_secret: str, api_key: 
     has_client_id = bool(client_id)
     has_client_secret = bool(client_secret)
     has_api_key = bool(api_key)
-    has_scopes = bool(scopes)
+    has_scopes = bool(scope)
 
     # 1. CHECK FOR AMBIGUOUS OVER-CONFIGURATION
     if has_client_id and has_client_secret and has_api_key:
