@@ -157,8 +157,6 @@ def validate_authentication_params():
     The SCOPES parameter is required only for OAuth2.
     Returns: 'oauth2' for Client ID/Secret, 'api_key' for API Key
     Raises: ValueError if authentication configuration is invalid or over-configured.
-    Note: The configuration conflict checks are necessary only for XSOAR 6. In the SaaS environment,
-    this validation is handled automatically using YML triggers.
     """
     has_client_id = bool(CLIENT_ID)
     has_client_secret = bool(CLIENT_SECRET)

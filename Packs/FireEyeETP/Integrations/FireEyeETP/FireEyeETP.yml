@@ -379,30 +379,6 @@ script:
   isfetch: true
   subtype: python3
   dockerimage: demisto/python3:3.12.11.4508456
-triggers:
-  - conditions:
-      - name: credentials_api_key
-        operator: exists
-    effects:
-      - name: credentials
-        action:
-          hidden: true
-      - name: oauth_scopes
-        action:
-          hidden: true
-  - conditions:
-      - name: credentials
-        operator: exists
-    effects:
-      - name: credentials_api_key
-        action:
-          hidden: true
-      - name: credentials
-        action:
-          required: true
-      - name: oauth_scopes
-        action:
-          required: true
 tests:
 - No Test
 
