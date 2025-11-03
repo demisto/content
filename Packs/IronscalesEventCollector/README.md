@@ -1,6 +1,7 @@
 <~XSIAM>
 
 ## Overview
+
 IRONSCALES is an AI-powered email security platform that detects, remediates, and prevents phishing and BEC attacks while training users through integrated awareness tools.
 
 ### This pack includes
