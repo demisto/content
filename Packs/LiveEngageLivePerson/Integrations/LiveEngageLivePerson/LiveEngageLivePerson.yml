@@ -1,5 +1,8 @@
 display: LiveEngage LivePerson
 name: LiveEngage LivePerson
+commonfields:
+  id: LiveEngage LivePerson
+  version: -1
 category: Messaging and Conferencing
 description: Collects audit events from the LivePerson LiveEngage platform (part of Conversational Cloud).
 detaileddescription: 'LivePerson''s LiveEngage is an AI-powered conversational commerce platform. This integration collects audit trail events.'
@@ -57,7 +60,6 @@ configuration:
     required: false
     type: 8
     section: Connect
-
 script:
   script: '-'
   type: python
@@ -67,26 +69,21 @@ script:
   feed: false
   runonce: false
   commands:
-    - name: test-module
-      description: 'Tests API connectivity and authentication. This command will: 1. Attempt to discover the Event API domain. 2. Attempt to fetch an OAuth 2.0 token. 3. Attempt to fetch a single event.'
     - name: liveperson-get-events
       description: 'Manually fetches LivePerson audit events for debugging. Use caution: set "should_push_events" to false to prevent event duplication.'
       arguments:
         - name: limit
           default: true
-          defaultValue: '50'
-          description: 'The maximum number of events to return.'
+          defaultValue: 10
+          description: The maximum number of events to return.
+          required: false
         - name: start_time
           defaultValue: '3 days'
           description: "The start time to fetch events from (e.g., '3 days ago', '2023-10-25T10:00:00Z')."
         - name: should_push_events
           default: false
-          defaultValue: 'false'
-          description: "If true, pushes the fetched events to XSIAM. Use 'false' for debugging to prevent event duplication."
-          auto: PRESET
-          options:
-            - 'true'
-            - 'false'
+          description: Indicates whether or not to push the collected events into XSIAM.
+          required: false
       outputs:
         - contextPath: LivePerson.Event.changeDate
           description: Timestamp of the event.
