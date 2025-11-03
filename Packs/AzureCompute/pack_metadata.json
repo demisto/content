@@ -2,7 +2,7 @@
     "name": "Azure Compute",
     "description": "Create and Manage Azure Virtual Machines",
     "support": "xsoar",
-    "currentVersion": "1.2.43",
+    "currentVersion": "1.2.44",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
