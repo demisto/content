@@ -502,15 +502,19 @@ def initialize_last_run(fetch_parameters: str, first_fetch: str):
 
 
 def create_sql_query_for_trino(params: dict, last_run: dict) -> str:
-    fetch_column_name_value = last_run.get("fetch_column_name_value") or 0
+    fetch_column_name_value = last_run.get("fetch_column_name_value") or params.get("first_fetch")
     query = params["query"]
     fetch_column_name = params["column_name"]
     id_column = params.get("id_column")
     current_id = last_run.get("id") or 0
     limit = params.get("max_fetch") or FETCH_DEFAULT_LIMIT
 
-    if params.get("fetch_parameters") in {"Unique timestamp", "Unique ascending ID"}:
+    if params.get("fetch_parameters") == "Unique ascending ID":
         return f"{query} WHERE {fetch_column_name} > {fetch_column_name_value} ORDER BY {fetch_column_name} ASC LIMIT {limit}"
+
+    if params.get("fetch_parameters") == "Unique timestamp":
+        return f"{query} WHERE CAST({fetch_column_name} AS TIMESTAMP) > TIMESTAMP '{fetch_column_name_value}'" \
+               f" ORDER BY {fetch_column_name} ASC LIMIT {limit}"
 
     if params.get("fetch_parameters") == "ID and timestamp":
         return (
