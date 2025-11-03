@@ -916,20 +916,8 @@ class MicrosoftClient(BaseClient):
         if flow == CLIENT_CREDENTIALS:
             require_fields(fields=["tenant_id", "client_secret", "client_id"],
                            message_prefix="When using client credentials flow you must")
-            try:
-                self.get_access_token()
-                return "ok"
-            except Exception as e:
-                if can_be_self_deployed:
-                    raise DemistoException(
-                        f"Couldn't connect to the application. Error: {e}. "
-                        f"Please make sure you marked the self-deployed checkbox "
-                        f"if you are using a self-deployed application."
-                    )
-                else:
-                    raise DemistoException(
-                        f"Couldn't connect to the application. Error: {e}. "
-                    )
+            self.get_access_token()
+            return "ok"
 
         elif flow == DEVICE_CODE:
             require_fields(["client_id"], "When using device code flow you must")
@@ -1186,7 +1174,9 @@ class MicrosoftClient(BaseClient):
                 )
             response_json = response.json()
         except Exception as e:
-            return_error(f"Error in Microsoft authorization: {e!s}")
+            return_error(f"Error in Microsoft authorization."
+                         f" If you are using a self-deployed app, make sure the checkbox of self-deployed is selected if exists."
+                         f" Error: {e!s}")
 
         access_token = response_json.get("access_token", "")
         expires_in = int(response_json.get("expires_in", 3595))
