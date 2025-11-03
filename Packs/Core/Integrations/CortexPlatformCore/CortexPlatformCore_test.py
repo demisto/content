@@ -2684,3 +2684,142 @@ def test_update_issue_command_only_issue_id(mocker):
     args = {"id": "12345"}
 
     update_issue_command(client, args)
+
+
+def test_get_issue_recommendations_command(mocker):
+    """
+    Given:
+        - Valid issue_id for get_issue_recommendations command
+    When:
+        - Running get_issue_recommendations command
+    Then:
+        - Ensure the command returns the expected results with issue data and playbook suggestions
+    """
+    from CortexPlatformCore import get_issue_recommendations_command, Client
+
+    # Mock the webapp API response
+    mock_webapp_response = {
+        "reply": {
+            "DATA": [
+                {
+                    "internal_id": "issue_123",
+                    "alert_name": "Critical Security Vulnerability",
+                    "severity": "HIGH",
+                    "alert_description": "SQL injection vulnerability detected",
+                    "remediation": "Update to latest version and apply security patches",
+                }
+            ]
+        }
+    }
+
+    # Mock the playbook suggestions response
+    mock_playbook_response = {
+        "reply": [{"playbook_name": "Security Incident Response", "playbook_id": "pb_001", "confidence": 0.95}]
+    }
+
+    client = Client(base_url="https://test.com", headers={})
+    mocker.patch.object(client, "get_webapp_data", return_value=mock_webapp_response)
+    mocker.patch.object(client, "get_playbook_suggestion_by_issue", return_value=mock_playbook_response)
+
+    args = {"issue_id": "issue_123"}
+
+    result = get_issue_recommendations_command(client, args)
+
+    # Assertions
+    assert result.outputs_prefix == "Core.IssueRecommendations"
+    assert result.outputs_key_field == "issue_id"
+    assert result.outputs["issue_id"] == "issue_123"
+    assert result.outputs["issue_name"] == "Critical Security Vulnerability"
+    assert result.outputs["severity"] == "HIGH"
+    assert result.outputs["remediation"] == "Update to latest version and apply security patches"
+    assert result.outputs["playbook_suggestions"] == mock_playbook_response["reply"]
+    assert "Issue Recommendations for issue_123" in result.readable_output
+    assert "Playbook Suggestions" in result.readable_output
+
+
+def test_get_issue_recommendations_command_no_playbook_suggestions(mocker):
+    """
+    Given:
+        - Valid issue_id with no playbook suggestions available
+    When:
+        - Running get_issue_recommendations command
+    Then:
+        - Ensure the command returns recommendations without playbook suggestions section
+    """
+    from CortexPlatformCore import get_issue_recommendations_command, Client
+
+    # Mock the webapp API response
+    mock_webapp_response = {
+        "reply": {
+            "DATA": [
+                {
+                    "internal_id": "issue_456",
+                    "alert_name": "Configuration Issue",
+                    "severity": "MEDIUM",
+                    "alert_description": "Misconfigured firewall rule",
+                    "remediation": "Review and update firewall configuration",
+                }
+            ]
+        }
+    }
+
+    # Mock empty playbook suggestions
+    mock_playbook_response = {"reply": []}
+
+    client = Client(base_url="https://test.com", headers={})
+    mocker.patch.object(client, "get_webapp_data", return_value=mock_webapp_response)
+    mocker.patch.object(client, "get_playbook_suggestion_by_issue", return_value=mock_playbook_response)
+
+    args = {"issue_id": "issue_456"}
+
+    result = get_issue_recommendations_command(client, args)
+
+    assert result.outputs["issue_id"] == "issue_456"
+    assert result.outputs["playbook_suggestions"] == []
+    assert "Issue Recommendations for issue_456" in result.readable_output
+
+
+def test_get_issue_recommendations_command_api_calls(mocker):
+    """
+    Given:
+        - Valid issue_id for get_issue_recommendations command
+    When:
+        - Running get_issue_recommendations command
+    Then:
+        - Ensure the correct API calls are made with proper parameters
+    """
+    from CortexPlatformCore import get_issue_recommendations_command, Client
+
+    mock_webapp_response = {
+        "reply": {
+            "DATA": [
+                {
+                    "internal_id": "issue_789",
+                    "alert_name": "Test Issue",
+                    "severity": "LOW",
+                    "alert_description": "Test description",
+                    "remediation": "Test remediation",
+                }
+            ]
+        }
+    }
+
+    mock_playbook_response = {"reply": []}
+
+    client = Client(base_url="https://test.com", headers={})
+    webapp_mock = mocker.patch.object(client, "get_webapp_data", return_value=mock_webapp_response)
+    playbook_mock = mocker.patch.object(client, "get_playbook_suggestion_by_issue", return_value=mock_playbook_response)
+
+    args = {"issue_id": "issue_789"}
+
+    get_issue_recommendations_command(client, args)
+
+    # Verify API calls were made
+    webapp_mock.assert_called_once()
+    playbook_mock.assert_called_once_with("issue_789")
+
+    # Verify the webapp call was made with correct request data
+    call_args = webapp_mock.call_args[0][0]
+    assert call_args["table_name"] == "ALERTS_VIEW_TABLE"
+    assert call_args["type"] == "grid"
+    assert "filter_data" in call_args
