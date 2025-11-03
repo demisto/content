@@ -1098,6 +1098,121 @@ script:
         - contextPath: Core.CaseExtraData.file_artifacts.data.type
           description: The type of the file artifact.
           type: String
+    - arguments:
+      - name: page_size
+        description: The number of assets to return per page. Default is 100.
+      - name: page_number
+        description: The page number for the assets to return for pagination. Default is 0.
+      - name: asset_names
+        description: Comma-separated list of asset names to search for. (e.g., "asset_name1,asset_name2").
+        isArray: true
+      - name: asset_types
+        description: Comma-separated list of asset types to search for. (e.g., "asset_type1,asset_type2").
+        isArray: true
+      - name: asset_tags
+        description: |
+          A JSON encoded string representing a list of tag:value pairs to search for. (e.g., `[{"tag1": "value1"}, {"tag2": "value2"}]`).
+        isArray: true
+      - name: asset_ids
+        description: Comma-separated list of asset IDs to search for. (e.g., "asset_id1,asset_id2").
+        isArray: true
+      - name: asset_providers
+        description: Comma-separated list of asset providers to search for. (e.g., "provider1,provider2").
+        isArray: true
+      - name: asset_realms
+        description: Comma-separated list of asset realms to search for. (e.g., "realm1,realm2").
+        isArray: true
+      - name: asset_groups
+        description: |
+          A JSON encoded string representing a list of asset groups to search for. (e.g., `["group1", "group2"]`).
+        isArray: true
+      name: core-search-assets
+      description: Retrieves asset from the Cortex platform using optional filter criteria.
+      outputs:
+      - contextPath: Core.Asset.external_provider_id
+        description: The external provider ID of the asset.
+      - contextPath: Core.Asset.first_observed
+        description: The first time the asset was observed.
+      - contextPath: Core.Asset.tags
+        description: The tags of the asset.
+      - contextPath: Core.Asset.realm
+        description: The realm of the asset.
+      - contextPath: Core.Asset.type.id
+        description: The ID of the asset type.
+      - contextPath: Core.Asset.related_issues.critical_issues
+        description: Critical issues related to the asset.
+      - contextPath: Core.Asset.id
+        description: The ID of the asset.
+      - contextPath: Core.Asset.last_observed
+        description: The last time the asset was observed.
+      - contextPath: Core.Asset.type.category
+        description: The category of the asset type.
+      - contextPath: Core.Asset.related_cases.critical_cases
+        description: Critical cases related to the asset.
+      - contextPath: Core.Asset.group_ids
+        description: The group IDs of the asset.
+      - contextPath: Core.Asset.type.class
+        description: The class of the asset type.
+      - contextPath: Core.Asset.related_issues.issues_breakdown
+        description: The related issues breakdown of the asset.
+      - contextPath: Core.Asset.type.name
+        description: The type of the asset.
+      - contextPath: Core.Asset.name
+        description: The name of the asset.
+      - contextPath: Core.Asset.strong_id
+        description: The strong ID of the asset.
+      - contextPath: Core.Asset.cloud.region
+        description: The cloud region of the asset.
+      - contextPath: Core.Asset.related_cases.cases_breakdown
+        description: The related cases breakdown of the asset.
+      - contextPath: Core.Asset.provider
+        description: The asset provider.
+    - arguments:
+        - description: The maximum number of groups to return.
+          defaultValue: "50"
+          name: limit
+        - description: A JSON list of asset group names to search for. (e.g., `["group1", "group2"]`).
+          name: name
+        - description: A comma-separated list of asset group IDs to search for.
+          isArray: true
+          name: id
+        - auto: PREDEFINED
+          description: Filter asset groups by type. When not specified, both types are used.
+          name: type
+          predefined:
+            - STATIC
+            - DYNAMIC
+        - description: A JSON list of asset group descriptions to search for. (e.g. `["description1", "description2"]`).
+          name: description
+      name: core-search-asset-groups
+      description: Searches for asset groups from the Cortex platform using one or more filter criteria.
+      outputs:
+        - contextPath: Core.AssetGroups.name
+          description: The name of the asset group.
+          type: String
+        - contextPath: Core.AssetGroups.filter
+          description: The filter criteria for the asset group.
+          type: String
+        - contextPath: Core.AssetGroups.membership_predicate
+          description: The predicate used to create the asset group.
+          type: String
+        - contextPath: Core.AssetGroups.type
+          description: The type of the asset group.
+          type: String
+        - contextPath: Core.AssetGroups.description
+          description: The description of the asset group.
+          type: String
+        - contextPath: Core.AssetGroups.modified_by
+          description: The user who modified the asset group.
+          type: String
+        - contextPath: Core.AssetGroups.created_by
+          description: The user who created the asset group.
+          type: String
+        - contextPath: Core.AssetGroups.created_by_pretty
+          description: The formatted name of the user who created the asset group.
+          type: String
+        - contextPath: Core.AssetGroups.modified_by_pretty
+          description: The formatted name of the user who created the asset group.
     - name: core-get-vulnerabilities
       description: "Retrieves vulnerabilities based on specified filters."
       arguments:
