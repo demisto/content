@@ -709,7 +709,71 @@ def search_assets_command(client: Client, args):
         raw_response=raw_response,
     )
 
+def enable_scanners_command(client: Client, args: dict) -> CommandResults:
+    """
+    Enable or disable scanners for specified repositories.
 
+    Args:
+        client (Client): The client instance used to send the request.
+        args (dict): Dictionary containing the arguments for the command.
+                     Expected to include:
+                     - repository_ids (list): List of repository IDs to update
+                     - scanners (dict): Configuration for different scanners
+                     - pr_scanning (dict, optional): Pull request scanning configuration
+                     - tagging_bot (dict, optional): Tagging bot configuration
+                     - excluded_paths (list, optional): Paths to exclude from scanning
+
+    Returns:
+        CommandResults: Object containing the result of the scanner configuration update.
+    """
+    # Validate required arguments
+    repository_ids = argToList(args.get('repository_ids'))
+    if not repository_ids:
+        raise DemistoException("repository_ids is a required argument")
+
+    # Construct scan configuration payload
+    scan_configuration = {
+        "scanners": args.get('scanners', {}),
+        "prScanning": args.get('pr_scanning', {"isEnabled": False, "blockOnError": False}),
+        "taggingBot": args.get('tagging_bot', {"tagResourceBlocks": False, "tagModuleBlocks": False}),
+        "excludedPaths": argToList(args.get('excluded_paths', []))
+    }
+
+    payload = {
+        "repositoryIds": repository_ids,
+        "scanConfiguration": scan_configuration
+    }
+
+    # Send request to update repository scan configuration
+    try:
+        response = client._http_request(
+            method="PUT",
+            url_suffix="/cas/v1/repositories/scan-configuration",
+            json_data=payload,
+            headers={"Content-Type": "application/json"}
+        )
+
+        readable_output = tableToMarkdown(
+            "Repository Scan Configuration Update",
+            [{
+                "Repository IDs": ", ".join(repository_ids),
+                "Status": "Successfully Updated"
+            }]
+        )
+
+        return CommandResults(
+            readable_output=readable_output,
+            outputs_prefix="Core.RepositoryScanConfig",
+            outputs={
+                "repositoryIds": repository_ids,
+                "scanConfiguration": scan_configuration
+            },
+            raw_response=response
+        )
+
+    except Exception as e:
+        raise DemistoException(f"Failed to update repository scan configuration: {str(e)}")
+    
 def get_asset_group_ids_from_names(client: Client, group_names: list[str]) -> list[str]:
     """
     Retrieves the IDs of asset groups based on their names.
@@ -818,6 +882,8 @@ def main():  # pragma: no cover
 
         elif command == "core-get-issue-recommendations":
             return_results(get_issue_recommendations_command(client, args))
+        elif command == "core-enable-scanners":
+            return_results(enable_scanners_command(client, args))
 
     except Exception as err:
         demisto.error(traceback.format_exc())
