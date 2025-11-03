@@ -41,6 +41,9 @@ ignore=SC105
 [file:CoreUnisolateEndpoint.yml]
 ignore=SC105
 
+[file:UpdateIssue.yml]
+ignore=GR103
+
 [known_words]
 xsiam
 coreirapimodule
