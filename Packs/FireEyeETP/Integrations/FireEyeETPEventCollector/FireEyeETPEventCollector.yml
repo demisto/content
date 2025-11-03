@@ -6,8 +6,8 @@ commonfields:
   id: FireEye ETP Event Collector
   version: -1
 configuration:
-- defaultvalue: https://etp.us.fireeye.com.   #TODO should i change it?
-  display: Server URL (e.g., https://etp.us.fireeye.com).  #TODO should i change it?
+- defaultvalue: https://etp.us.fireeye.com.
+  display: Server URL (e.g., https://etp.us.fireeye.com or https://us.etp.trellix.com).
   name: url
   required: true
   type: 0
@@ -30,7 +30,6 @@ configuration:
   hiddenusername: true
   type: 9
   section: Connect
-  hidden: true  #TODO reconsider
 - defaultvalue: "1000"
   display: Maximum number of Alerts to fetch.
   name: alerts_max_fetch
@@ -99,14 +98,6 @@ script:
   script: ""
   subtype: python3
   type: python
-triggers:
-  - conditions:
-      - name: credentials
-        operator: not_exists
-    effects:
-      - name: oauth_credentials
-        action:
-          required: true
 fromversion: 8.2.0
 marketplaces:
 - marketplacev2

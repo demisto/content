@@ -22,7 +22,7 @@ DEFAULT_FIRST_FETCH = "3 days"
 DEFAULT_MAX_FETCH = 1000
 CALCULATED_MAX_FETCH = 5000
 DEFAULT_LIMIT = 10
-DEFAULT_URL = "https://etp.us.fireeye.com"  #TODO should i change it?
+DEFAULT_URL = "https://etp.us.fireeye.com"
 DATEPARSER_SETTINGS = {
     "RETURN_AS_TIMEZONE_AWARE": True,
     "TIMEZONE": "UTC",
@@ -85,14 +85,13 @@ class Client(BaseClient):  # pragma: no cover
         
         # Set up headers based on authentication method
         self._headers = {"Content-Type": "application/json"}
-        
-        # Prioritize OAuth2 (Client ID/Secret) over legacy API Key
+
         if self.client_id and self.client_secret:
-            demisto.info(f"{LOG_LINE} Using OAuth2 authentication (Client ID/Secret)")
+            demisto.debug(f"{LOG_LINE} Using OAuth2 authentication (Client ID/Secret)")
             self.access_token = self._get_valid_oauth_token()
             self._headers["Authorization"] = f"Bearer {self.access_token}"
         elif self.api_key:
-            demisto.info(f"{LOG_LINE} Using legacy API Key authentication")
+            demisto.debug(f"{LOG_LINE} Using API Key authentication")
             self._headers["x-fireeye-api-key"] = self.api_key
         else:
             raise ValueError("Either Client ID/Secret (OAuth2) or API Key (legacy) must be provided for authentication")
@@ -127,18 +126,14 @@ class Client(BaseClient):  # pragma: no cover
             # Trellix OAuth2 endpoint
             token_url = "https://auth.trellix.com/auth/realms/IAM/protocol/openid-connect/token"
             
-            # Create Basic auth header with base64 encoded client credentials
             credentials = f"{self.client_id}:{self.client_secret}"
             encoded_credentials = base64.b64encode(credentials.encode()).decode()
-            
-            
-            # Form data for OAuth2 request
+
             auth_data = {
                 "grant_type": "client_credentials",
                 "scope": self.scope
             }
             
-            # Use requests directly since we need to hit the Trellix IAM endpoint, not the ETP instance
             response = requests.post(
                 token_url,
                 headers={
@@ -164,7 +159,7 @@ class Client(BaseClient):  # pragma: no cover
                 "token_expiry": token_expiry
             })
             
-            demisto.info(f"{LOG_LINE} OAuth2 authentication successful, token cached")
+            demisto.debug(f"{LOG_LINE} OAuth2 authentication successful, token cached")
             return access_token
             
         except Exception as e:
@@ -736,38 +731,65 @@ def _get_max_events_to_fetch(params_max_fetch: str | int, arg_limit: str | int) 
 
 
 
-def validate_authentication(client_id: str, client_secret: str, api_key: str) -> str:
+def validate_authentication_params(client_id: str, client_secret: str, api_key: str, scope: str) -> str:
     """
-    Validate authentication parameters and determine which method to use.
-    Returns: 'oauth2' for Client ID/Secret, 'api_key' for legacy API Key
-    Raises: ValueError if authentication configuration is invalid
-    TODO add a comment that this is for OPP only, that does not have the triggers.
+    Validate authentication parameters and determine which method to use.    
+    Args:
+        client_id: The Client ID for OAuth2 authentication.
+        client_secret: The Client Secret for OAuth2 authentication.
+        api_key: The API Key.
+        scopes: The space-separated OAuth Scopes.
+
+    Returns: 'oauth2' for Client ID/Secret, 'api_key' for API Key
+    Raises: ValueError if authentication configuration is invalid or over-configured.
     """
+    # Use function arguments instead of global variables
     has_client_id = bool(client_id)
     has_client_secret = bool(client_secret)
     has_api_key = bool(api_key)
-    
-    # Check if both Client ID and Client Secret are provided
+    has_scopes = bool(scopes)
+
+    # 1. CHECK FOR AMBIGUOUS OVER-CONFIGURATION
+    if has_client_id and has_client_secret and has_api_key:
+        raise ValueError(
+            "Both OAuth2 (Client ID/Secret) and API Key were provided. "
+            "Please configure only one authentication method."
+        )
+
+    # 2. OAUTH2 VALIDATION
     if has_client_id and has_client_secret:
-        demisto.info(f"{LOG_LINE} Authentication: Using OAuth2 (Client ID/Secret)")
+        # Check for required SCOPES when using OAuth2
+        if not has_scopes:
+            raise ValueError(
+                "Client ID and Client Secret provided, but the 'OAuth Scopes' parameter is missing. "
+                "Scopes are required for OAuth2 authentication."
+            )
+
+        # Assuming LOG_LINE is defined in your script environment
+        demisto.debug(f"{LOG_LINE} Authentication: Using OAuth2 (Client ID/Secret)")
         return "oauth2"
-    
-    # Check if only API Key is provided
+
+    # 3. API KEY VALIDATION
     if has_api_key and not has_client_id and not has_client_secret:
-        demisto.info(f"{LOG_LINE} Authentication: Using legacy API Key")
+        demisto.debug(f"{LOG_LINE} Authentication: Using API Key")
         return "api_key"
-    
-    # Check for incomplete OAuth2 configuration
+
+    # 4. INCOMPLETE OAUTH2 CONFIGURATION
     if has_client_id and not has_client_secret:
-        raise ValueError("Client ID provided but Client Secret is missing. "
-                        "Both Client ID and Client Secret are required for OAuth2 authentication.")
-    
+        raise ValueError(
+            "Client ID provided but Client Secret is missing. "
+            "Both Client ID and Client Secret are required for OAuth2 authentication."
+        )
+
     if has_client_secret and not has_client_id:
-        raise ValueError("Client Secret provided but Client ID is missing. "
-                        "Both Client ID and Client Secret are required for OAuth2 authentication.")
-    
-    # No authentication method provided
+        raise ValueError(
+            "Client Secret provided but Client ID is missing. "
+            "Both Client ID and Client Secret are required for OAuth2 authentication."
+        )
+
+    # 5. NO AUTHENTICATION METHOD PROVIDED
     raise ValueError("No authentication credentials provided.")
+
 
 
 def main() -> None:  # pragma: no cover
@@ -779,7 +801,6 @@ def main() -> None:  # pragma: no cover
     client_secret = params.get("oauth_credentials", {}).get("password", "")
     scope = params.get("oauth_scopes", "etp.conf.ro etp.rprt.ro").strip()
     api_key = params.get("credentials", {}).get("password", "")
-    
     base_url = params.get("url", "").rstrip("/")
     verify = not params.get("insecure", False)
     proxy = params.get("proxy", False)
@@ -788,7 +809,7 @@ def main() -> None:  # pragma: no cover
 
     # Validate authentication configuration
     try:
-        validate_authentication(client_id, client_secret, api_key)
+        validate_authentication_params(client_id, client_secret, api_key, scope)
     except ValueError as e:
         return_error(str(e))
 

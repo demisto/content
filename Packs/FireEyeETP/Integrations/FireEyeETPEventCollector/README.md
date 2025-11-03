@@ -7,7 +7,7 @@ This is the default integration for this content pack when configured by the Dat
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Server URL (e.g., https://etp.us.fireeye.com) |  | True |
-| API Secret Key | The API Key allows you to integrate with the Trellix Email Security - Cloud. | True |
+| API Secret Key | The API Key allows you to integrate with the Trellix Email Security - Cloud. | False |
 | Maximum number of Alerts to fetch. | The maximum number of Alert events to fetch from Trellix Email Security - Cloud. |  |
 | Maximum number of Email Trace to fetch. | The maximum number of Email Trace events to fetch from Trellix Email Security - Cloud. |  |
 | Maximum number of Activity Log fetch. | The maximum number of Activity Log events to fetch from Trellix Email Security - Cloud. |  |

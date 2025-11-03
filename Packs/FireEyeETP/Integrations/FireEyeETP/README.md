@@ -27,7 +27,7 @@ We support two different authentication methods depending on the endpoint domain
 
 **You must configure only one of the two authentication approaches below** based on your Server URL domain.
 
-* **1. Legacy API Key Method (For `fireeye.com` URLs):**
+* **1. API Key Method (For `fireeye.com` URLs):**
     * **Configure an API key** on the ETP Web portal. Select the product as both *Email Threat Prevention* and *Identity Access Management*. Select all entitlements.
 
 * **2. OAuth 2.0 Method (For `trellix.com` URLs):**
