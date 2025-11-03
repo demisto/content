@@ -709,7 +709,7 @@ def search_assets_command(client: Client, args):
         raw_response=raw_response,
     )
 
-def enable_scanners_command(client: Client, args: dict) -> CommandResults:
+def enable_scanners_command(client: Client, args: dict):
     """
     Enable or disable scanners for specified repositories.
 
@@ -728,8 +728,6 @@ def enable_scanners_command(client: Client, args: dict) -> CommandResults:
     """
     # Validate required arguments
     repository_ids = argToList(args.get('repository_ids'))
-    if not repository_ids:
-        raise DemistoException("repository_ids is a required argument")
 
     # Construct scan configuration payload
     scan_configuration = {
