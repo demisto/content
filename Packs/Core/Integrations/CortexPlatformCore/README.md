@@ -439,3 +439,156 @@ Get cases information based on the specified filters.
 | Core.Case.tags | Array | Current tags assigned to the case. |
 | Core.Case.case_domain | String | Domain associated with the case. |
 | Core.Case.custom_fields | Unknown | Custom fields for the case with standardized lowercase, whitespace-free names. |
+
+### core-search-asset-groups
+
+***
+Retrieve asset groups from the Cortex platform with optional filtering.
+
+#### Base Command
+
+`core-search-asset-groups`
+
+#### Input
+
+| name | JSON list of asset groups to search for. (e.g. `["group1", "group2"]`). | Optional |
+| type | Filter asset groups by type. | Optional |
+| description | JSON list of descriptions to search for. (e.g. `["description1", "description2"]`). | Optional |
+| limit | The maximum number of groups to return. | Optional |
+| id | Comma separated list of ids to search for. | Optional |
+
+#### Context Output
+
+| Core.AssetGroups.name | String | The name of the asset group. |
+| Core.AssetGroups.filter | String | The filter criteria for the asset group. |
+| Core.AssetGroups.membership_predicate | String | The predicate used to create the asset group. |
+| Core.AssetGroups.type | String | The type of the asset group. |
+| Core.AssetGroups.description | String | The description of the asset group. |
+| Core.AssetGroups.modified_by | String | The user who modified the asset group. |
+| Core.AssetGroups.modified_by_pretty | String | The formatted name of the user who created the asset group. |
+| Core.AssetGroups.created_by | String | The user who created the asset group. |
+| Core.AssetGroups.created_by_pretty | String | The formatted name of the user who created the asset group. |
+
+### core-get-vulnerabilities
+
+***
+Retrieves vulnerabilities based on specified filters.
+
+#### Base Command
+
+`core-get-vulnerabilities`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| limit | The maximum number of vulnerabilities to return. Default is 50. | Optional |
+| sort_field | The field by which to sort the results. Default is LAST_OBSERVED. | Optional |
+| sort_order | The order in which to sort the results. Possible values are: DESC, ASC. | Optional |
+| cve_id | The CVE ID. Accepts a comma-separated list. | Optional |
+| issue_id | The issue ID. Accepts a comma-separated list. | Optional |
+| cvss_score_gte | The minimum CVSS score. | Optional |
+| epss_score_gte | The minimum EPSS score. | Optional |
+| internet_exposed | Filter by internet exposed assets. Possible values are: true, false. | Optional |
+| exploitable | Filter by exploitable vulnerabilities. Possible values are: true, false. | Optional |
+| has_kev | Filter by vulnerabilities that have a Known Exploited Vulnerability (KEV). Possible values are: true, false. | Optional |
+| affected_software | Filter by affected software. Accepts a comma-separated list. | Optional |
+| on_demand_fields | A comma-separated list of additional fields to retrieve. | Optional |
+| start_time | The start time for filtering according to case creation time. Supports free-text relative and absolute times. For example: 7 days ago, 2023-06-15T10:30:00Z, 13/8/2025. | Optional |
+| end_time | The end time for filtering according to case creation time. Supports free-text relative and absolute times. For example: 7 days ago, 2023-06-15T10:30:00Z, 13/8/2025. | Optional |
+| severity | The severity of the vulnerability issue. Possible values are: info, low, medium, high, critical. | Optional |
+| assignee | The email of the user assigned to the vulnerability. Accepts a comma-separated list. <br/>Use 'unassigned' for unassigned vulnerabilities or 'assigned' for all assigned vulnerabilities.<br/>. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Core.VulnerabilityIssue.ISSUE_ID | String | The unique identifier for the vulnerability issue. |
+| Core.VulnerabilityIssue.CVE_ID | String | The CVE identifier for the vulnerability. |
+| Core.VulnerabilityIssue.CVE_DESCRIPTION | String | The description of the CVE. |
+| Core.VulnerabilityIssue.ASSET_NAME | String | The name of the affected asset. |
+| Core.VulnerabilityIssue.PLATFORM_SEVERITY | String | The severity of the vulnerability as determined by the platform. |
+| Core.VulnerabilityIssue.EPSS_SCORE | Number | The Exploit Prediction Scoring System \(EPSS\) score. |
+| Core.VulnerabilityIssue.CVSS_SCORE | Number | The Common Vulnerability Scoring System \(CVSS\) score. |
+| Core.VulnerabilityIssue.ASSIGNED_TO | String | The email of the user assigned to the vulnerability. |
+| Core.VulnerabilityIssue.ASSIGNED_TO_PRETTY | String | The full name of the user assigned to the vulnerability. |
+| Core.VulnerabilityIssue.AFFECTED_SOFTWARE | Unknown | The software affected by the vulnerability. |
+| Core.VulnerabilityIssue.FIX_AVAILABLE | Boolean | Indicates if a fix is available for the vulnerability. |
+| Core.VulnerabilityIssue.INTERNET_EXPOSED | Boolean | Indicates if the asset is exposed to the internet. |
+| Core.VulnerabilityIssue.HAS_KEV | Boolean | Indicates if the vulnerability is a Known Exploited Vulnerability \(KEV\). |
+| Core.VulnerabilityIssue.EXPLOITABLE | Boolean | Indicates if the vulnerability is exploitable. |
+| Core.VulnerabilityIssue.ASSET_IDS | String | The unique identifier for the asset. |
+
+### core-search-assets
+
+***
+Retrieves asset from the Cortex platform using optional filter criteria.
+
+#### Base Command
+
+`core-search-assets`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| page_size | The number of assets to return per page. Default is 100. | Optional |
+| page_number | The page number for the assets to return for pagination. Default is 0. | Optional |
+| asset_names | Comma-separated list of asset names to search for. (e.g., "asset_name1,asset_name2"). | Optional |
+| asset_types | Comma-separated list of asset types to search for. (e.g., "asset_type1,asset_type2"). | Optional |
+| asset_tags | A JSON encoded string representing a list of tag:value pairs to search for. (e.g., `[{"tag1": "value1"}, {"tag2": "value2"}]`).<br/>. | Optional |
+| asset_ids | Comma-separated list of asset IDs to search for. (e.g., "asset_id1,asset_id2"). | Optional |
+| asset_providers | Comma-separated list of asset providers to search for. (e.g., "provider1,provider2"). | Optional |
+| asset_realms | Comma-separated list of asset realms to search for. (e.g., "realm1,realm2"). | Optional |
+| asset_groups | A JSON encoded string representing a list of asset groups to search for. (e.g., `["group1", "group2"]`).<br/>. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Core.Asset.external_provider_id | unknown | The external provider ID of the asset. |
+| Core.Asset.first_observed | unknown | The first time the asset was observed. |
+| Core.Asset.tags | unknown | The tags of the asset. |
+| Core.Asset.realm | unknown | The realm of the asset. |
+| Core.Asset.type.id | unknown | The ID of the asset type. |
+| Core.Asset.related_issues.critical_issues | unknown | Critical issues related to the asset. |
+| Core.Asset.id | unknown | The ID of the asset. |
+| Core.Asset.last_observed | unknown | The last time the asset was observed. |
+| Core.Asset.type.category | unknown | The category of the asset type. |
+| Core.Asset.related_cases.critical_cases | unknown | Critical cases related to the asset. |
+| Core.Asset.group_ids | unknown | The group IDs of the asset. |
+| Core.Asset.type.class | unknown | The class of the asset type. |
+| Core.Asset.related_issues.issues_breakdown | unknown | The related issues breakdown of the asset. |
+| Core.Asset.type.name | unknown | The type of the asset. |
+| Core.Asset.name | unknown | The name of the asset. |
+| Core.Asset.strong_id | unknown | The strong ID of the asset. |
+| Core.Asset.cloud.region | unknown | The cloud region of the asset. |
+| Core.Asset.related_cases.cases_breakdown | unknown | The related cases breakdown of the asset. |
+| Core.Asset.provider | unknown | The asset provider. |
+
+### core-get-issue-recommendations
+
+***
+Get comprehensive recommendations for an issue, including remediation steps, playbook suggestions, and recommended actions.
+
+#### Base Command
+
+`core-get-issue-recommendations`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| issue_id | The ID of the issue to get recommendations for. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Core.IssueRecommendations.issue_id | String | The unique identifier for the issue. |
+| Core.IssueRecommendations.issue_name | String | The name of the issue. |
+| Core.IssueRecommendations.severity | String | The severity of the issue. |
+| Core.IssueRecommendations.description | String | Description of the issue. |
+| Core.IssueRecommendations.remediation | String | Remediation steps and recommendations for the issue. |
+| Core.IssueRecommendations.playbook_suggestions.playbook_id | String | The ID of the suggested playbook. |
+| Core.IssueRecommendations.playbook_suggestions.suggestion_rule_id | String | The ID of the suggestion rule that generated this recommendation. |
