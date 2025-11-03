@@ -165,7 +165,8 @@ class MsGraphClient:
     def force_change_password(self, user: str):
         body = {
             "passwordProfile": {
-                "forceChangePasswordNextSignIn": True
+                "forceChangePasswordNextSignIn": True,
+                "password": TEMP_PASSWORD
             }
         }
         self.ms_client.http_request(method="PATCH", url_suffix=f"users/{quote(user)}", json_data=body, resp_type="text")
