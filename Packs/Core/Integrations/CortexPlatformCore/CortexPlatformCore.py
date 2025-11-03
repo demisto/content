@@ -399,13 +399,15 @@ def get_issue_recommendations_command(client: Client, args: dict) -> CommandResu
 
     if not issue_data:
         raise DemistoException(f"No issue found with ID: {issue_id}")
+        
+     issue = issue_data[0]
 
     # Get playbook suggestions
     playbook_response = client.get_playbook_suggestion_by_issue(issue_id)
     playbook_suggestions = playbook_response.get("reply", {})
     demisto.debug(f"{playbook_response=}")
 
-    issue = issue_data[0]
+   
     recommendation = {
         "issue_id": issue.get("internal_id") or issue_id,
         "issue_name": issue.get("alert_name"),
