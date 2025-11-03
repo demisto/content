@@ -26,6 +26,7 @@ ASSET_FIELDS = {
 
 WEBAPP_COMMANDS = ["core-get-vulnerabilities", "core-search-asset-groups", "core-get-issue-recommendations"]
 DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
+APPSEC_COMMANDS = ["core-appsec-suggest-fix"]
 
 VULNERABLE_ISSUES_TABLE = "VULNERABLE_ISSUES_TABLE"
 ASSET_GROUPS_TABLE = "UNIFIED_ASSET_MANAGEMENT_ASSET_GROUPS"
@@ -366,6 +367,16 @@ class Client(CoreClient):
             json_data={"alert_internal_id": issue_id},
             headers=self._headers,
             url_suffix="/incident/get_playbook_suggestion_by_alert/",
+        )
+
+        return reply
+    
+    def get_appsec_suggested_fix(self, issue_id: str, request_body: dict):
+        reply = self._http_request(
+            method="GET",
+            json_data=request_body,
+            headers=self._headers,
+            url_suffix=f"/{issue_id}/fix_suggestion",
         )
 
         return reply
@@ -740,6 +751,23 @@ def get_asset_group_ids_from_names(client: Client, group_names: list[str]) -> li
     return group_ids
 
 
+def get_appsec_suggested_fix_command(client, args):
+    args = demisto.args()
+    issue_id = args.get('issue_id')
+    request_body = {
+        "showCodeBlock": args.get('show_code_block', True),
+        "showRemediationInstruction": args.get('show_remediation_instruction', False),
+        "showSuggestedCodeBlock": args.get('show_suggested_code_block', True)
+    }
+    response = client.get_appsec_suggested_fix(issue_id, request_body)
+    return CommandResults(
+        readable_output=tableToMarkdown("AppSec Suggested Fix", response),
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.AppSecSuggestedFix",
+        outputs=response,
+        raw_response=response
+    )
+    
+
 def main():  # pragma: no cover
     """
     Executes an integration command
@@ -753,6 +781,7 @@ def main():  # pragma: no cover
 
     webapp_api_url = "/api/webapp"
     public_api_url = f"{webapp_api_url}/public_api/v1"
+    public_api_appsec_url = f"{webapp_api_url}/public_api/appsec/v1/issues/fix"
     data_platform_api_url = f"{webapp_api_url}/data-platform"
 
     proxy = demisto.params().get("proxy", False)
@@ -769,6 +798,8 @@ def main():  # pragma: no cover
         client_url = webapp_api_url
     elif command in DATA_PLATFORM_COMMANDS:
         client_url = data_platform_api_url
+    elif command in APPSEC_COMMANDS:
+        client_url = public_api_appsec_url
 
     client = Client(
         base_url=client_url,
@@ -810,6 +841,7 @@ def main():  # pragma: no cover
 
         elif command == "core-get-case-extra-data":
             return_results(get_extra_data_for_case_id_command(client, args))
+            
         elif command == "core-search-assets":
             return_results(search_assets_command(client, args))
 
@@ -818,6 +850,9 @@ def main():  # pragma: no cover
 
         elif command == "core-get-issue-recommendations":
             return_results(get_issue_recommendations_command(client, args))
+            
+        elif command == "core-appsec-suggest-fix":
+            return_results(get_appsec_suggested_fix_command(client, args))
 
     except Exception as err:
         demisto.error(traceback.format_exc())

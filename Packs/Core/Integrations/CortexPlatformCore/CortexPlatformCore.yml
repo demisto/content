@@ -1355,6 +1355,46 @@ script:
         - contextPath: Core.IssueRecommendations.playbook_suggestions.suggestion_rule_id
           description: The ID of the suggestion rule that generated this recommendation.
           type: String
+    - arguments:
+      - description: The ID of the security issue.
+        name: issue_id
+        required: true
+      - description: Whether to include the original vulnerable code block.
+        name: show_code_block
+        defaultValue: true
+        auto: PREDEFINED
+        predefined:
+        - "true"
+        - "false"
+      - description: Whether to include manual remediation instructions.
+        name: show_remediation_instruction
+        defaultValue: false
+        auto: PREDEFINED
+        predefined:
+        - "true"
+        - "false"
+      - description: Whether to include automated code fix suggestion.
+        name: show_suggested_code_block
+        auto: PREDEFINED
+        predefined:
+        - "true"
+        - "false"
+        defaultValue: true
+      name: core-appsec-suggest-fix
+      description: Retrieve comprehensive fix suggestions for a specific application security issue with customizable response options.
+      outputs:
+      - contextPath: Core.AppsecFixSuggestion.name
+        description: Name of the security issue.
+        type: String
+      - contextPath: Core.AppsecFixSuggestion.existingCodeBlock
+        description: Original vulnerable code.
+        type: String
+      - contextPath: Core.AppsecFixSuggestion.remediationInstruction
+        description: Manual fix instructions.
+        type: String
+      - contextPath: Core.AppsecFixSuggestion.suggestedCodeBlock
+        description: Automated fix suggestion.
+        type: String
   runonce: false
   script: "-"
   subtype: python3
