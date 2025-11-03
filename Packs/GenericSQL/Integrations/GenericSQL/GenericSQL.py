@@ -513,8 +513,10 @@ def create_sql_query_for_trino(params: dict, last_run: dict) -> str:
         return f"{query} WHERE {fetch_column_name} > {fetch_column_name_value} ORDER BY {fetch_column_name} ASC LIMIT {limit}"
 
     if params.get("fetch_parameters") == "Unique timestamp":
-        return f"{query} WHERE CAST({fetch_column_name} AS TIMESTAMP) > TIMESTAMP '{fetch_column_name_value}'" \
-               f" ORDER BY {fetch_column_name} ASC LIMIT {limit}"
+        return (
+            f"{query} WHERE CAST({fetch_column_name} AS TIMESTAMP) > TIMESTAMP '{fetch_column_name_value}'"
+            f" ORDER BY {fetch_column_name} ASC LIMIT {limit}"
+        )
 
     if params.get("fetch_parameters") == "ID and timestamp":
         return (

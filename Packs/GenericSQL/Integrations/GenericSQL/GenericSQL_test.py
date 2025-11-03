@@ -1005,8 +1005,10 @@ def test_create_sql_query_for_trino_unique_timestamp():
 
     result = create_sql_query_for_trino(params, last_run)
 
-    assert "SELECT * FROM incidents WHERE CAST(incident_time AS TIMESTAMP) > TIMESTAMP '2023-01-01 00:00:00'" \
-           " ORDER BY incident_time ASC LIMIT 5" in result
+    assert (
+        "SELECT * FROM incidents WHERE CAST(incident_time AS TIMESTAMP) > TIMESTAMP '2023-01-01 00:00:00'"
+        " ORDER BY incident_time ASC LIMIT 5" in result
+    )
     assert "ORDER BY incident_time ASC" in result
     assert "LIMIT 5" in result
 
