@@ -4365,12 +4365,10 @@ def test_get_bucket_website_command_failure(mocker):
 
     mock_client = mocker.Mock()
     mock_client.get_bucket_website.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
+    mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
     args = {"bucket": "mock_bucket_name"}
-
-    with pytest.raises(DemistoException,
-                       match=f"AWS S3 API call to get_bucket_website failed or returned an unexpected status code."
-                             f" Received HTTP Status Code: {HTTPStatus.BAD_REQUEST}"):
-        S3.get_bucket_website_command(mock_client, args)
+    S3.get_bucket_website_command(mock_client, args)
+    mock_error_handler.assert_called_once()
 
 
 def test_get_bucket_acl_command_success(mocker):
@@ -4399,12 +4397,10 @@ def test_get_bucket_acl_command_failure(mocker):
 
     mock_client = mocker.Mock()
     mock_client.get_bucket_acl.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
+    mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
     args = {"bucket": "mock_bucket_name"}
-
-    with pytest.raises(DemistoException,
-                       match=f"AWS S3 API call to get_bucket_acl failed or returned an unexpected status code."
-                             f" Received HTTP Status Code: {HTTPStatus.BAD_REQUEST}"):
-        S3.get_bucket_acl_command(mock_client, args)
+    S3.get_bucket_acl_command(mock_client, args)
+    mock_error_handler.assert_called_once()
 
 
 def test_create_network_acl_command_success(mocker):
@@ -4435,10 +4431,7 @@ def test_create_network_acl_command_failure(mocker):
     mock_client = mocker.Mock()
     mock_client.create_network_acl.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
     args = {"vpc_id": "mock_vpc_id"}
-
-    with pytest.raises(DemistoException,
-                       match="AWS EC2 API call to create_network_acl failed or returned an unexpected status code."
-                             f" Received HTTP Status Code: {HTTPStatus.BAD_REQUEST}"):
+    with pytest.raises(SystemExit):
         EC2.create_network_acl_command(mock_client, args)
 
 
@@ -4468,12 +4461,10 @@ def test_create_tags_command_failure(mocker):
 
     mock_client = mocker.Mock()
     mock_client.create_tags.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
+    mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
     args = {"resources": "mock_resources", "tags": "key=mock_key,value=mock_value"}
-
-    with pytest.raises(DemistoException,
-                       match=f"AWS EC2 API call to create_tags failed or returned an unexpected status code."
-                             f" Received HTTP Status Code: {HTTPStatus.BAD_REQUEST}"):
-        EC2.create_tags_command(mock_client, args)
+    EC2.create_tags_command(mock_client, args)
+    mock_error_handler.assert_called_once()
 
 
 def test_get_latest_ami_command_success(mocker):
@@ -4489,7 +4480,8 @@ def test_get_latest_ami_command_success(mocker):
             {"CreationDate": "2024-01-01T10:00:00.000Z", "ImageId": "ami-old-1", "Tags": []},
             {"CreationDate": "2023-12-31T10:00:00.000Z", "ImageId": "ami-old-2", "Tags": []}
         ],
-        "nextToken": "next-page-token"
+        "nextToken": "next-page-token",
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}
     }
 
     second_response = {
@@ -4497,6 +4489,7 @@ def test_get_latest_ami_command_success(mocker):
             {"CreationDate": "2024-01-02T10:00:00.000Z", "ImageId": "ami-latest", "Name": "mock_name", "State": "mock_state",
              "Public": False, "Tags": [{"Key": "mock_key", "Value": "mock_value"}]}
         ],
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}
     }
 
     mock_client = mocker.Mock()
@@ -4526,16 +4519,10 @@ def test_get_latest_ami_command_failure(mocker):
     Then: It should catch the failure response and raise a `DemistoException` indicating the AWS API call failure.
     """
     from AWS import EC2
-    from botocore.exceptions import ClientError
 
-    mock_error = ClientError(
-        {'Error': {'Code': 'InvalidParameterValue', 'Message': 'Invalid IpamResourceDiscoveryId'}},
-        'GetIpamDiscoveredPublicAddresses'
-    )
     mock_client = mocker.Mock()
-    mock_client.describe_images.side_effect = mock_error
-
-    with pytest.raises(DemistoException, match=f"AWS EC2 API call to describe_images failed."):
+    mock_client.describe_images.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
+    with pytest.raises(SystemExit):
         EC2.get_latest_ami_command(mock_client, {})
 
 
@@ -4563,15 +4550,8 @@ def test_get_ipam_discovered_public_addresses_command_failure(mocker):
     Then: It should catch the AWS `ClientError` and raise a descriptive `DemistoException` indicating the failure of the API call.
     """
     from AWS import EC2
-    from botocore.exceptions import ClientError
-
-    mock_error = ClientError(
-        {'Error': {'Code': 'InvalidParameterValue', 'Message': 'Invalid IpamResourceDiscoveryId'}},
-        'GetIpamDiscoveredPublicAddresses'
-    )
 
     mock_client = mocker.Mock()
-    mock_client.get_ipam_discovered_public_addresses.side_effect = mock_error
-
-    with pytest.raises(DemistoException, match=f"AWS EC2 API call to get_ipam_discovered_public_addresses failed."):
+    mock_client.get_ipam_discovered_public_addresses.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
+    with pytest.raises(SystemExit):
         EC2.get_ipam_discovered_public_addresses_command(mock_client, {})
