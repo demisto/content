@@ -767,32 +767,29 @@ class S3:
                             (IndexDocument, ErrorDocument, RedirectAllRequestsTo, RoutingRules).
         """
         kwargs = {"Bucket": args.get("bucket")}
-        try:
-            response = client.get_bucket_website(**kwargs)
-            if response["ResponseMetadata"]["HTTPStatusCode"] in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
-                response["WebsiteConfiguration"] = {
-                    "ErrorDocument": response.get("ErrorDocument"),
-                    "IndexDocument": response.get("IndexDocument"),
-                    "RedirectAllRequestsTo": response.get("RedirectAllRequestsTo"),
-                    "RoutingRules": response.get("RoutingRules")
-                }
-                readable_output = tableToMarkdown(
-                    name="Bucket Website Configuration",
-                    t=response.get("WebsiteConfiguration", {}),
-                    removeNull=True,
-                    headers=["ErrorDocument", "IndexDocument", "RedirectAllRequestsTo", "RoutingRules"],
-                    headerTransform=pascalToSpace,
-                )
-                return CommandResults(readable_output=readable_output,
-                                      outputs_prefix="AWS.S3-Buckets.BucketWebsite",
-                                      outputs=response.get("WebsiteConfiguration", {}),
-                                      raw_response=response.get("WebsiteConfiguration", {}))
-            raise DemistoException(
-                f"AWS S3 API call to get_bucket_website failed or returned an unexpected status code. "
-                f"Received HTTP Status Code: {response['ResponseMetadata']['HTTPStatusCode']}"
-            )
-        except Exception as e:
-            raise DemistoException(f"Error: {str(e)}")
+
+        response = client.get_bucket_website(**kwargs)
+        if response["ResponseMetadata"]["HTTPStatusCode"] not in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        response["WebsiteConfiguration"] = {
+            "ErrorDocument": response.get("ErrorDocument"),
+            "IndexDocument": response.get("IndexDocument"),
+            "RedirectAllRequestsTo": response.get("RedirectAllRequestsTo"),
+            "RoutingRules": response.get("RoutingRules")
+        }
+
+        readable_output = tableToMarkdown(
+            name="Bucket Website Configuration",
+            t=response.get("WebsiteConfiguration", {}),
+            removeNull=True,
+            headers=["ErrorDocument", "IndexDocument", "RedirectAllRequestsTo", "RoutingRules"],
+            headerTransform=pascalToSpace,
+        )
+        return CommandResults(readable_output=readable_output,
+                              outputs_prefix="AWS.S3-Buckets.BucketWebsite",
+                              outputs=response.get("WebsiteConfiguration", {}),
+                              raw_response=response.get("WebsiteConfiguration", {}))
 
     @staticmethod
     def get_bucket_acl_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
@@ -813,30 +810,26 @@ class S3:
                             (Grants and Owner).
         """
         kwargs = {"Bucket": args.get("bucket")}
-        try:
-            response = client.get_bucket_acl(**kwargs)
-            if response["ResponseMetadata"]["HTTPStatusCode"] in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
-                response["AccessControlPolicy"] = {
-                    "Grants": response.get("Grants"),
-                    "Owner": response.get("Owner"),
-                }
-                readable_output = tableToMarkdown(
-                    name="Bucket Acl",
-                    t=response.get("AccessControlPolicy", {}),
-                    removeNull=True,
-                    headers=["Grants", "Owner"],
-                    headerTransform=pascalToSpace,
-                )
-                return CommandResults(readable_output=readable_output,
-                                      outputs_prefix="AWS.S3-Buckets.BucketAcl",
-                                      outputs=response.get("AccessControlPolicy", {}),
-                                      raw_response=response.get("AccessControlPolicy", {}))
-            raise DemistoException(
-                f"AWS S3 API call to get_bucket_acl failed or returned an unexpected status code. "
-                f"Received HTTP Status Code: {response['ResponseMetadata']['HTTPStatusCode']}"
-            )
-        except Exception as e:
-            raise DemistoException(f"Error: {str(e)}")
+
+        response = client.get_bucket_acl(**kwargs)
+        if response["ResponseMetadata"]["HTTPStatusCode"] not in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        response["AccessControlPolicy"] = {
+            "Grants": response.get("Grants"),
+            "Owner": response.get("Owner"),
+        }
+        readable_output = tableToMarkdown(
+            name="Bucket Acl",
+            t=response.get("AccessControlPolicy", {}),
+            removeNull=True,
+            headers=["Grants", "Owner"],
+            headerTransform=pascalToSpace,
+        )
+        return CommandResults(readable_output=readable_output,
+                              outputs_prefix="AWS.S3-Buckets.BucketAcl",
+                              outputs=response.get("AccessControlPolicy", {}),
+                              raw_response=response.get("AccessControlPolicy", {}))
 
 
 class IAM:
@@ -1883,47 +1876,54 @@ class EC2:
         }
 
         remove_nulls_from_dictionary(kwargs)
+        pagination_kwargs = build_pagination_kwargs(kwargs)
+        response = client.describe_images(**pagination_kwargs)
+        if response["ResponseMetadata"]["HTTPStatusCode"] not in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+        amis = response.get("Images", [])
+        iterates = 1
+
+        while response.get("nextToken"):
+            demisto.info(f"iterate #{iterates}")
+            pagination_kwargs["NextToken"] = response.get("nextToken")
+            remove_nulls_from_dictionary(pagination_kwargs)
+            pagination_kwargs = build_pagination_kwargs(pagination_kwargs)
+            response = client.describe_images(**pagination_kwargs)
+            if response["ResponseMetadata"]["HTTPStatusCode"] not in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
+                AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+            amis.extend(response.get("Images", []))
+            iterates += 1
+
+        demisto.info(f"Fetched {len(amis)} AMIs")
+        if not amis:
+            return CommandResults(readable_output="No AMIs found.")
+
+        sorted_amis = sorted(amis, key=lambda x: x["CreationDate"], reverse=True)
+        image = sorted_amis[0]
+        data = {
+            "CreationDate": image.get("CreationDate"),
+            "ImageId": image.get("ImageId"),
+            "Public": image.get("Public"),
+            "Name": image.get("Name"),
+            "State": image.get("State"),
+            "Region": args.get("region"),
+            "Description": image.get("Description"),
+        }
+        data.update({tag["Key"]: tag["Value"] for tag in image["Tags"]}) if "Tags" in image else None
+        remove_nulls_from_dictionary(data)
+
         try:
-            response = client.describe_images(**kwargs)
-            amis = response.get("Images", [])
-            iterates = 1
-            while response.get("nextToken"):
-                demisto.info(f"iterate #{iterates}")
-                kwargs["NextToken"] = response.get("nextToken")
-                response = client.describe_images(**kwargs)
-                amis.extend(response.get("Images", []))
-                iterates += 1
+            raw = json.loads(json.dumps(image, cls=DatetimeEncoder))
+            raw.update({"Region": args.get("region")})
+        except ValueError as err_msg:
+            raise DemistoException(f"Could not decode/encode the raw response - {err_msg}")
 
-            demisto.info(f"Fetched {len(amis)} AMIs")
-            if not amis:
-                return CommandResults(readable_output="No AMIs found.")
-
-            sorted_amis = sorted(amis, key=lambda x: x["CreationDate"], reverse=True)
-            image = sorted_amis[0]
-            data = {
-                "CreationDate": image.get("CreationDate"),
-                "ImageId": image.get("ImageId"),
-                "Public": image.get("Public"),
-                "Name": image.get("Name"),
-                "State": image.get("State"),
-                "Region": args.get("region"),
-                "Description": image.get("Description"),
-            }
-            data.update({tag["Key"]: tag["Value"] for tag in image["Tags"]}) if "Tags" in image else None
-            remove_nulls_from_dictionary(data)
-
-            try:
-                raw = json.loads(json.dumps(image, cls=DatetimeEncoder))
-                raw.update({"Region": args.get("region")})
-            except ValueError as err_msg:
-                raise DemistoException(f"Could not decode/encode the raw response - {err_msg}")
-            return CommandResults(
-                outputs=image,
-                outputs_prefix="AWS.EC2.Images",
-                readable_output=tableToMarkdown("AWS EC2 Images", data)
-            )
-        except Exception as e:
-            raise DemistoException(f"AWS EC2 API call to describe_images failed. {str(e)}")
+        return CommandResults(
+            outputs=image,
+            outputs_prefix="AWS.EC2.Images",
+            readable_output=tableToMarkdown("AWS EC2 Images", data, headerTransform=pascalToSpace),
+            outputs_key_field="ImageId"
+        )
 
     @staticmethod
     def create_network_acl_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
@@ -1957,33 +1957,29 @@ class EC2:
             tag_specifications = [{"ResourceType": "network-acl", "Tags": tags}]
             kwargs["TagSpecifications"] = tag_specifications
 
-        try:
-            response = client.create_network_acl(**kwargs)
-            if response["ResponseMetadata"]["HTTPStatusCode"] in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
-                network_acl = response.get("NetworkAcl")
-                readable_data = {
-                    "Associations": network_acl.get("Associations"),
-                    "IsDefault": network_acl.get("IsDefault"),
-                    "NetworkAclId": network_acl.get("NetworkAclId"),
-                    "Tags": network_acl.get("Tags"),
-                    "VpcId": network_acl.get("VpcId"),
-                }
-                return CommandResults(
-                    outputs=network_acl,
-                    outputs_prefix="AWS.EC2.VpcId.NetworkAcl",
-                    outputs_key_field="VpcId",
-                    readable_output=(
-                        tableToMarkdown("AWS EC2 ACL Entries", [entry for entry in network_acl.get("Entries")], removeNull=True)
-                        + tableToMarkdown("The AWS EC2 Instance ACL that the entries belong to", readable_data, removeNull=True)
-                    ),
-                )
-            raise DemistoException(
-                f"AWS EC2 API call to create_network_acl failed or returned an unexpected status code. "
-                f"Received HTTP Status Code: {response['ResponseMetadata']['HTTPStatusCode']}"
-            )
-        except Exception as e:
-            raise DemistoException(f"Error: {str(e)}")
+        response = client.create_network_acl(**kwargs)
+        if response["ResponseMetadata"]["HTTPStatusCode"] not in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
+        network_acl = response.get("NetworkAcl")
+        readable_data = {
+            "Associations": network_acl.get("Associations"),
+            "IsDefault": network_acl.get("IsDefault"),
+            "NetworkAclId": network_acl.get("NetworkAclId"),
+            "Tags": network_acl.get("Tags"),
+            "VpcId": network_acl.get("VpcId"),
+        }
+        return CommandResults(
+            outputs=network_acl,
+            outputs_prefix="AWS.EC2.VpcId.NetworkAcl",
+            outputs_key_field="VpcId",
+            readable_output=(
+                tableToMarkdown("AWS EC2 ACL Entries", [entry for entry in network_acl.get("Entries")], removeNull=True,
+                                headerTransform=pascalToSpace)
+                + tableToMarkdown("The AWS EC2 Instance ACL that the entries belong to", readable_data, removeNull=True,
+                                  headerTransform=pascalToSpace)
+            )
+        )
 
     @staticmethod
     def get_ipam_discovered_public_addresses_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
@@ -2007,22 +2003,22 @@ class EC2:
         }
 
         remove_nulls_from_dictionary(kwargs)
-        try:
-            response = client.get_ipam_discovered_public_addresses(**kwargs)
-            if not response.get("IpamDiscoveredPublicAddresses"):
-                return CommandResults(readable_output="No Ipam Discovered Public Addresses were found.")
+        response = client.get_ipam_discovered_public_addresses(**kwargs)
+        if response["ResponseMetadata"]["HTTPStatusCode"] not in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+        if not response.get("IpamDiscoveredPublicAddresses"):
+            return CommandResults(readable_output="No Ipam Discovered Public Addresses were found.")
 
-            output = json.loads(json.dumps(response, cls=DatetimeEncoder))
-            human_readable = tableToMarkdown("Ipam Discovered Public Addresses", output.get("IpamDiscoveredPublicAddresses"))
-            return CommandResults(
-                outputs_prefix="AWS.EC2.IpamDiscoveredPublicAddresses",
-                outputs_key_field="Address",
-                outputs=output.get("IpamDiscoveredPublicAddresses"),
-                raw_response=output,
-                readable_output=human_readable,
-            )
-        except Exception as e:
-            raise DemistoException(f"AWS EC2 API call to get_ipam_discovered_public_addresses failed. {str(e)}")
+        output = json.loads(json.dumps(response, cls=DatetimeEncoder))
+        human_readable = tableToMarkdown("Ipam Discovered Public Addresses", output.get("IpamDiscoveredPublicAddresses"),
+                                         headerTransform=pascalToSpace)
+        return CommandResults(
+            outputs_prefix="AWS.EC2.IpamDiscoveredPublicAddresses",
+            outputs_key_field="Address",
+            outputs=output.get("IpamDiscoveredPublicAddresses"),
+            raw_response=output,
+            readable_output=human_readable,
+        )
 
     @staticmethod
     def create_tags_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
@@ -2047,16 +2043,12 @@ class EC2:
             "Tags": parse_tag_field(args.get("tags")),
         }
 
-        try:
-            response = client.create_tags(**kwargs)
-            if response["ResponseMetadata"]["HTTPStatusCode"] in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
-                return CommandResults(readable_output="The resources where tagged successfully")
-            raise DemistoException(
-                f"AWS EC2 API call to create_tags failed or returned an unexpected status code. "
-                f"Received HTTP Status Code: {response['ResponseMetadata']['HTTPStatusCode']}"
-            )
-        except Exception as e:
-            raise DemistoException(f"Error: {str(e)}")
+        response = client.create_tags(**kwargs)
+        if response["ResponseMetadata"]["HTTPStatusCode"] not in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        return CommandResults(readable_output="The resources where tagged successfully")
+
 
 class EKS:
     service = AWSServices.EKS
@@ -2735,6 +2727,8 @@ REQUIRED_ACTIONS: list[str] = [
     "eks:DescribeCluster",
     "eks:AssociateAccessPolicy",
     "ec2:CreateSecurityGroup",
+    "ec2:CreateNetworkAcl",
+    "ec2:GetIpamDiscoveredPublicAddresses",
     "ec2:CreateTags",
     "ec2:DeleteSecurityGroup",
     "ec2:DescribeInstances",
@@ -2758,6 +2752,8 @@ REQUIRED_ACTIONS: list[str] = [
     "iam:GetAccountAuthorizationDetails",
     "ecs:UpdateClusterSettings",
     "s3:GetBucketPolicy",
+    "s3:GetBucketWebsite",
+    "s3:GetBucketAcl",
     "s3:GetBucketPublicAccessBlock",
     "s3:GetEncryptionConfiguration",
     "s3:DeleteBucketPolicy",
