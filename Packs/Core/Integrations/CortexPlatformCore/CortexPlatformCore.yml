@@ -1355,6 +1355,261 @@ script:
         - contextPath: Core.IssueRecommendations.playbook_suggestions.suggestion_rule_id
           description: The ID of the suggestion rule that generated this recommendation.
           type: String
+    - name: core-create-policy
+      description: Creates a new policy in Cortex Platform with defined conditions, scope, and triggers.
+      arguments:
+        - name: name
+          description: A unique name for the policy.
+          required: true
+        - name: description
+          description: A brief explanation of the policy's objective.
+        - name: asset_group_ids
+          description: Comma-separated list of Asset Group IDs to apply the policy to. Cannot be used with scope parameters.
+          isArray: true
+        # Condition Filters (Findings Criteria)
+        - name: conditions_finding_type
+          description: Filter by finding types.
+          isArray: true
+          auto: PREDEFINED
+          predefined:
+            - ci_cd_risk
+            - cve
+            - iac
+            - license
+            - operational_risk
+            - secret
+            - sast
+        - name: conditions_severity
+          description: Filter by severity.
+          isArray: true
+          auto: PREDEFINED
+          predefined:
+            - CRITICAL
+            - HIGH
+            - MEDIUM
+            - LOW
+        - name: conditions_developer_suppression
+          description: Respect or ignore developer-suppressed findings.
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+        - name: conditions_backlog_status
+          description: Filter by backlog status of the finding.
+          auto: PREDEFINED
+          predefined:
+            - NEW
+            - BACKLOG
+        - name: conditions_package_name # todo
+          description: Name of the software package. Partial matches allowed.
+        - name: conditions_package_version
+          description: Version of the software package.
+        - name: conditions_package_operational_risk
+          description: Operational risk level of the package.
+          auto: PREDEFINED
+          predefined:
+            - LOW
+            - MEDIUM
+            - HIGH
+        - name: conditions_appsec_rule # todo
+          description: The AppSec rule violated (CI/CD, Secrets, IaC, etc.).
+        - name: conditions_cvss
+          description: CVSS base score for vulnerability findings.
+        - name: conditions_epss
+          description: Exploit Prediction Scoring System score (0-100).
+        - name: conditions_has_a_fix
+          description: Whether a remediation fix exists.
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+        - name: conditions_is_kev
+          description: Whether the finding is a Known Exploited Vulnerability.
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+        - name: conditions_secret_validity
+          description: Validity status of an exposed secret.
+          auto: PREDEFINED
+          predefined:
+            - VALID
+            - PRIVILEGED
+            - INVALID
+            - UNAVAILABLE
+        - name: conditions_category
+          description: Category of the asset where the finding exists.
+          auto: PREDEFINED
+          predefined:
+            - APPLICATION
+            - REPOSITORY
+        # Scope Filters (Asset Criteria)
+        - name: scope_category
+          description: Type of asset to include.
+          isArray: true
+          auto: PREDEFINED
+          predefined:
+            - application
+            - repository
+            - cicd_instance
+            - cicd_pipeline
+            - vcs_collaborator
+            - vcs_organization
+        - name: scope_business_application_names #todo
+          description: Name(s) of business applications. Partial match supported.
+        - name: scope_application_business_criticality
+          description: Criticality of the business application.
+          auto: PREDEFINED
+          predefined:
+            - CRITICAL
+            - HIGH
+            - MEDIUM
+            - LOW
+        - name: scope_repository_name # todo
+          description: Name of the code repository.
+        - name: scope_is_public_repository
+          description: Whether the repository is public.
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+        - name: scope_has_deployed_assets
+          description: Whether the repository or app has deployed assets.
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+        - name: scope_has_internet_exposed
+          description: Whether deployed assets are exposed to the internet.
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+        - name: scope_has_sensitive_data_access
+          description: Assets with access to sensitive data.
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+        - name: scope_has_privileged_capabilities
+          description: Assets with privileged capabilities.
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+        # Trigger Settings (Policy Execution Events)
+        - name: triggers_periodic_enabled
+          description: Enable the periodic trigger for scheduled scans.
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+        - name: triggers_periodic_report_issue
+          description: Automatically create issues for periodic scans.
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+        - name: triggers_periodic_override_severity
+          description: Override severity for issues created by periodic scans.
+          auto: PREDEFINED
+          predefined:
+            - Critical
+            - High
+            - Medium
+            - Low
+        - name: triggers_pr_enabled
+          description: Enable pull request (PR) trigger.
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+        - name: triggers_pr_report_issue
+          description: Create issues when policy violations occur in PRs.
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+        - name: triggers_pr_block_pr
+          description: Block pull requests with policy violations.
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+        - name: triggers_pr_report_pr_comment
+          description: Add a violation summary comment to the PR.
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+        - name: triggers_pr_override_severity
+          description: Override severity for PR-triggered issues.
+          auto: PREDEFINED
+          predefined:
+            - Critical
+            - High
+            - Medium
+            - Low
+        - name: triggers_cicd_enabled
+          description: Enable CI/CD trigger for pipeline enforcement.
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+        - name: triggers_cicd_report_issue
+          description: Create issues for CI/CD pipeline violations.
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+        - name: triggers_cicd_block_cicd
+          description: Block or fail the pipeline when violations are found.
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+        - name: triggers_cicd_report_cicd
+          description: Report the policy evaluation status in the CI/CD system.
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+        - name: triggers_cicd_override_severity
+          description: Override severity for CI/CD-triggered issues.
+          auto: PREDEFINED
+          predefined:
+            - Critical
+            - High
+            - Medium
+            - Low
+      outputs:
+        - contextPath: Core.Policy.id
+          description: The unique identifier of the created policy.
+          type: String
+        - contextPath: Core.Policy.name
+          description: The name of the policy.
+          type: String
+        - contextPath: Core.Policy.description
+          description: The description of the policy.
+          type: String
+        - contextPath: Core.Policy.conditions
+          description: The conditions that trigger the policy.
+          type: Object
+        - contextPath: Core.Policy.scope
+          description: The scope of assets the policy applies to.
+          type: Object
+        - contextPath: Core.Policy.assetGroupIds
+          description: The IDs of asset groups the policy applies to.
+          type: Array
+        - contextPath: Core.Policy.triggers
+          description: The triggers and actions configured for the policy.
+          type: Object
+        - contextPath: Core.Policy.createdAt
+          description: The timestamp when the policy was created.
+          type: Date
+        - contextPath: Core.Policy.updatedAt
+          description: The timestamp when the policy was last updated.
+          type: Date
   runonce: false
   script: "-"
   subtype: python3
