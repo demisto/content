@@ -1150,7 +1150,7 @@ script:
       required: true
     description: Deletes a specific email rule by ID from a user's mailbox using the Microsoft Graph API.
     name: msgraph-mail-delete-rule
-  dockerimage: demisto/crypto:1.0.0.4834757
+  dockerimage: demisto/crypto:1.0.0.5490413
   isfetch: true
   runonce: false
   script: '-'
