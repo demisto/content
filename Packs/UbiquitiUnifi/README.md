@@ -12,11 +12,10 @@ Ubiquiti UniFi is an integrated network management and security platform that pr
 
 ### Broker VM
 
-To create or configure the Broker VM, use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Documentation/Set-up-and-configure-Broker-VM).
-
+For more information, see [here](https://help.ui.com/hc/en-us/articles/33349041044119-UniFi-System-Logs-SIEM-Integration).
 You can configure the specific vendor and product for this instance.
 
-1. Navigate to **Settings** > **Configuration** > **Data Broker** > **Broker VMs**.
+1. In Cortex XSIAM, navigate to **Settings** > **Configuration** > **Data Broker** > **Broker VMs**.
 2. Right-click, and select **Syslog Collector** > **Configure**.
 3. When configuring the Syslog Collector, set the following values:
    - vendor as vendor - ubiquiti
@@ -33,6 +32,6 @@ Enter the **IP Address** and **Port** used by your SIEM or external syslog serve
 
 NOTE: The types of logs supported in this package are **CEF** only.
 
-For more information use the following guide [here](https://help.ui.com/hc/en-us/articles/33349041044119-UniFi-System-Logs-SIEM-Integration).
+For more information, see [here](https://help.ui.com/hc/en-us/articles/33349041044119-UniFi-System-Logs-SIEM-Integration).  
 
 </~XSIAM>
