@@ -216,7 +216,7 @@ Missing or incorrect values in these fields can cause a 404 error, as the integr
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSIAM/XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### o365-sc-auth-start
