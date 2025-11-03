@@ -4,7 +4,6 @@ import demistomock as demisto
 import pytest
 from freezegun import freeze_time
 
-# Import the methods from your integration file
 from OrcaEventCollector import Client, get_alerts, add_time_key_to_alerts, orca_test_module, main
 from CommonServerPython import DemistoException
 
