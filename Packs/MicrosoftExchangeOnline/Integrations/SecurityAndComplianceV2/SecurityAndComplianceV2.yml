@@ -1255,7 +1255,7 @@ script:
     - contextPath: O365.SecurityAndCompliance.CaseHoldRule.Name
       description: Case hold policy name.
       type: String
-  dockerimage: demisto/pwsh-exchangev3:1.0.0.116826
+  dockerimage: demisto/pwsh-exchangev3:1.0.0.4904712
   runonce: true
   script: ''
   type: powershell

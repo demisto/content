@@ -5888,6 +5888,7 @@
         },
         {
             "playbookID": "QuarantineFile-Test",
+            "integrations": "Cortex XDR - IR",
             "timeout": 300,
             "fromversion": "6.10.0"
         },
@@ -5940,8 +5941,21 @@
             "fromversion": "6.10.0"
         },
         {
+            "playbookID": "GetEndpointData-Test",
+            "integrations": ["Active Directory Query v2", "CrowdstrikeFalcon", "FireEyeHX v2", "Cortex XDR - IR"],
+            "instance_names": [
+                "active_directory_80k"
+            ],
+            "timeout": 300,
+            "fromversion": "6.10.0"
+        },
+        {
             "integrations": "Unit 42 Intelligence",
             "playbookID": "Unit 42 Intelligence Test"
+        },
+        {
+            "playbookID": "CVEEnrichment-Test",
+            "integrations": ["CIRCL CVE Search","Palo Alto Networks Threat Vault v2"]
         }
     ],
     "skipped_tests": {
@@ -6343,6 +6357,7 @@
         "PaloAltoNetworks_IoT",
         "PaloAltoNetworksAIOps",
         "Jira",
+        "AggregatedScripts",
         "Campaign"
     ],
     "selected_nightly_tpb": [
