@@ -67,6 +67,7 @@ configuration:
   - High
   - Medium
   - Low
+  - Critical
   required: false
 - name: fetch_incidentStatus
   display: Define which Alerts should be fetched.
@@ -1872,6 +1873,53 @@ script:
     - Domain Blockage
     - IP Blockage
   - arguments:
+    - name: entry_id
+      required: true
+      description: Entry ID of uploaded IOCs JSON file.
+    - name: account_ids
+      required: true
+      description: List of account IDs to filter by.
+      isArray: true
+    description: Add bulk list of IoCs to the Threat Intelligence database. Relevant for API version 2.1.
+    name: sentinelone-create-bulk-ioc
+    outputs:
+    - contextPath: SentinelOne.IOC.UUID
+      description: The IOC UUID.
+      type: String
+    - contextPath: SentinelOne.IOC.Name
+      description: Threat Intelligence indicator name.
+      type: String
+    - contextPath: SentinelOne.IOC.Source
+      description: The source of the identified Threat Intelligence indicator.
+      type: String
+    - contextPath: SentinelOne.IOC.Type
+      description: The type of the Threat Intelligence indicator.
+      type: String
+    - contextPath: SentinelOne.IOC.BatchId
+      description: The IOC batch ID.
+      type: String
+    - contextPath: SentinelOne.IOC.Creator
+      description: The IOC creator.
+      type: String
+    - contextPath: SentinelOne.IOC.Scope
+      description: The IOC scope.
+      type: String
+    - contextPath: SentinelOne.IOC.ScopeId
+      description: The IOC scope ID.
+      type: String
+    - contextPath: SentinelOne.IOC.ValidUntil
+      description: Expiration date for the Threat Intelligence indicator.
+      type: String
+    - contextPath: SentinelOne.IOC.Description
+      description: Description of the Threat Intelligence indicator.
+      type: String
+    - contextPath: SentinelOne.IOC.ExternalId
+      description: The unique identifier of the indicator as provided by the Threat Intelligence source.
+      type: String
+    compliantpolicies:
+    - Domain Blockage
+    - IP Blockage
+  - arguments:
     - name: account_ids
       required: true
       description: List of account IDs to filter by.
@@ -2250,6 +2298,53 @@ script:
     - contextPath: SentinelOne.Agent.Initiated
       description: Whether the scan was initiated.
       type: Boolean
+  - arguments:
+    - name: agent_ids
+      required: true
+      description: "A comma-separated list of Agent IDs. Example: 14629133470822878,14627455454652878."
+    name: sentinelone-abort-endpoint-scan
+    description: Abort the endpoint virus scan on provided agent IDs.
+    outputs:
+    - contextPath: SentinelOne.Agent.AgentID
+      description: The Agent ID.
+      type: String
+    - contextPath: SentinelOne.Agent.Aborted
+      description: Whether the scan was aborted.
+      type: Boolean
+  - arguments:
+    - name: agent_ids
+      required: true
+      description: "A comma-separated list of Agent IDs. Example: 14629133470822878,14627455454652878."
+    - name: agents_logs
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      defaultValue: "true"
+      description: Fetch Agent logs.
+    - name: customer_facing_logs
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      defaultValue: "false"
+      description: Fetch customer-facing logs.
+    - name: platform_logs
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      defaultValue: "false"
+      description: Actively fetch logs from the relevant platform (Windows, macOS, or Linux).
+    name: sentinelone-endpoint-fetch-logs
+    description: Get the Agent and Endpoint logs from Agents for provided agent IDs
+    outputs:
+    - contextPath: SentinelOne.Agent.Affected
+      description: Number of affected endpoints.
+      type: String
   - arguments:
     - description: Value of the item to be removed from the exclusion list.
       name: item

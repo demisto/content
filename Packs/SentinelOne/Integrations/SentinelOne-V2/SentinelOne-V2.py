@@ -734,6 +734,41 @@ class Client(BaseClient):
         response = self._http_request(method="POST", url_suffix=endpoint_url, json_data=payload)
         return response.get("data", {})
 
+    def create_bulk_ioc_request(self, iocs_from_file, account_ids):
+        endpoint_url = "threat-intelligence/iocs"
+        required_fields = {"source", "type", "value", "method", "validUntil", "name"}
+        normalized_iocs: list[dict] = []
+        for idx, ioc in enumerate(iocs_from_file):
+            if not isinstance(ioc, dict):
+                return_error(f"IOC at index {idx} is not an object.")
+            missing = [field for field in required_fields if field not in ioc or ioc.get(field) in (None, "")]
+            if missing:
+                return_error(f"IOC at index {idx} missing required field(s): {', '.join(missing)}")
+            # Normalize to API expectations (upper-case TYPE and METHOD)
+            ioc_type = (ioc.get("type") or "").upper()
+            method = (ioc.get("method") or "").upper()
+            # Build the outbound object preserving optional fields if present
+            outbound = {
+                "source": ioc.get("source"),
+                "type": ioc_type,
+                "method": method,
+                "value": ioc.get("value"),
+                "validUntil": ioc.get("validUntil"),
+                "name": ioc.get("name")
+            }
+            # Optional fields as per current single-IOC code
+            for opt in ("externalId", "description"):
+                if opt in ioc and ioc.get(opt) not in (None, ""):
+                    outbound[opt] = ioc.get(opt)
+            normalized_iocs.append(outbound)
+
+        payload = {
+            "filter": {"accountIds": account_ids},
+            "data": normalized_iocs,
+        }
+        response = self._http_request(method="POST", url_suffix=endpoint_url, json_data=payload)
+        return response.get("data", {})
+
     def delete_ioc_request(self, account_ids, uuids):
         endpoint_url = "threat-intelligence/iocs"
         payload = {"filter": {"accountIds": account_ids, "uuids": uuids}}
@@ -835,6 +870,27 @@ class Client(BaseClient):
     def initiate_endpoint_scan_request(self, agent_ids):
         endpoint_url = "agents/actions/initiate-scan"
         payload = {"filter": {"ids": agent_ids}, "data": {}}
+        response = self._http_request(method="POST", url_suffix=endpoint_url, json_data=payload)
+        return response.get("data", {})
+
+    def abort_endpoint_scan_request(self, agent_ids):
+        endpoint_url = "agents/actions/abort-scan"
+        payload = {"filter": {"ids": agent_ids}, "data": {}}
+        response = self._http_request(method="POST", url_suffix=endpoint_url, json_data=payload)
+        return response.get("data", {})
+
+    def endpoint_fetch_logs_request(self, agent_ids, agent_logs, customer_facing_logs, platform_logs):
+        endpoint_url = "agents/actions/fetch-logs"
+        payload = {
+            "filter": {
+                "ids": agent_ids
+            },
+            "data": {
+                "agentLogs": agent_logs,
+                "customerFacingLogs": customer_facing_logs,
+                "platformLogs": platform_logs
+            }
+        }
         response = self._http_request(method="POST", url_suffix=endpoint_url, json_data=payload)
         return response.get("data", {})
 
@@ -1807,6 +1863,69 @@ def create_ioc(client: Client, args: dict) -> CommandResults:
         raw_response=ioc,
     )
 
+def create_bulk_ioc(client: Client, args: dict) -> CommandResults:
+    """
+    Add bulk IoC's to the Threat Intelligence database. . Relavent for API version 2.1
+    """
+    context_list = []
+
+    # Get arguments
+    entry_id = args.get("entry_id")
+    account_ids = argToList(args.get("account_ids"))
+
+    # Resolve file path from entry_id
+    try:
+        file_info = demisto.getFilePath(entry_id)
+    except Exception as e:
+        return_error(f"Failed to retrieve file info for entry_id={entry_id}. Error: {str(e)}")
+    if not file_info or not file_info.get("path"):
+        return_error(f"Could not resolve file path for entry_id={entry_id}")
+    file_path = file_info["path"]
+
+    # Load JSON array of IOC objects
+    try:
+        with open(file_path, "r", encoding="utf-8") as json_ioc_list:
+            iocs_data = json.load(json_ioc_list)
+    except json.JSONDecodeError as e:
+        return_error(f"Invalid JSON in uploaded file: {str(e)}")
+    except Exception as e:
+        return_error(f"Failed reading uploaded file {file_path}: {str(e)}")
+    if not isinstance(iocs_data, list):
+        return_error("Uploaded JSON must be an array of IOC objects.")
+
+    # Make request and get raw response
+    iocs = client.create_bulk_ioc_request(iocs_data, account_ids)
+
+    for ioc in iocs:
+        context_list.append({
+            "UUID": ioc.get("uuid"),
+            "Name": ioc.get("name"),
+            "Source": ioc.get("source"),
+            "Type": ioc.get("type"),
+            "Batch Id": ioc.get("batchId"),
+            "Creator": ioc.get("creator"),
+            "Scope": ioc.get("scope"),
+            "Scope Id": ioc.get("scopeId")[0],
+            "Valid Until": ioc.get("validUntil"),
+            "Description": ioc.get("description"),
+            "External Id": ioc.get("externalId"),
+        })
+
+    # Create readable output (markdown table)
+    readable_output = tableToMarkdown(
+        "SentinelOne - Create IOCs",
+        context_list,
+        removeNull=True
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="SentinelOne.IOCs",
+        outputs_key_field="UUID",
+        outputs=context_list,
+        raw_response=iocs,
+    )
+
 
 def delete_ioc(client: Client, args: dict) -> CommandResults:
     """
@@ -2348,6 +2467,57 @@ def initiate_endpoint_scan(client: Client, args: dict) -> CommandResults:
         raw_response=initiated,
     )
 
+def abort_endpoint_scan(client: Client, args: dict) -> CommandResults:
+    """
+    Abort the endpoint virus scan on provided agent IDs
+    """
+    context_entries = []
+
+    agent_ids = argToList(args.get("agent_ids"))
+    aborted = client.abort_endpoint_scan_request(agent_ids)
+    if aborted.get("affected") and int(aborted.get("affected")) > 0:
+        updated = True
+        meta = f'Total of {aborted.get("affected")} provided agents were successfully aborted the scan'
+    else:
+        updated = False
+        meta = "No agents scan was aborted"
+    for agent_id in agent_ids:
+        context_entries.append({"Agent ID": agent_id, "Aborted": updated})
+    return CommandResults(
+        readable_output=tableToMarkdown(
+            "Sentinel One - Abort endpoint scan on provided Agent ID", context_entries, metadata=meta, removeNull=True
+        ),
+        outputs_prefix="SentinelOne.Agent",
+        outputs_key_field="Agent ID",
+        outputs=context_entries,
+        raw_response=aborted,
+    )
+
+def endpoint_fetch_logs(client: Client, args: dict) -> CommandResults:
+    """
+    Get the Agent and Endpoint logs from Agents for provided agent IDs
+    """
+    context = {}
+
+    agent_ids = argToList(args.get("agent_ids"))
+    agent_logs = argToBoolean(args.get("agents_logs"))
+    customer_facing_logs = argToBoolean(args.get("customer_facing_logs"))
+    platform_logs = argToBoolean(args.get("platform_logs"))
+
+    response = client.endpoint_fetch_logs_request(agent_ids, agent_logs, customer_facing_logs, platform_logs)
+    agents_affected = response.get("affected", 0)
+    context = {"Affected": agents_affected}
+    if agents_affected > 0:
+        meta = "Fetch logs operation was successfully executed for the provided agent(s)."
+    else:
+        meta = "No entity was affected."
+    return CommandResults(
+        readable_output=tableToMarkdown("Sentinel One - Get the Agent and Endpoint logs", context, metadata=meta, removeNull=True),
+        outputs_prefix="SentinelOne.Agent",
+        outputs_key_field="Affected",
+        outputs=context,
+        raw_response=response,
+    )
 
 def get_white_list_command(client: Client, args: dict) -> CommandResults:
     """
@@ -4288,6 +4458,8 @@ def main():
             "sentinelone-fetch-threat-file": fetch_threat_file,
             "sentinelone-get-installed-applications": get_installed_applications,
             "sentinelone-initiate-endpoint-scan": initiate_endpoint_scan,
+            "sentinelone-abort-endpoint-scan": abort_endpoint_scan,
+            "sentinelone-endpoint-fetch-logs": endpoint_fetch_logs,
             "get-modified-remote-data": get_modified_remote_data_command,
             "update-remote-system": update_remote_system_command,
         },
@@ -4314,6 +4486,7 @@ def main():
             "sentinelone-write-threat-note": write_threat_note,
             "sentinelone-get-threat-notes": get_threat_notes,
             "sentinelone-create-ioc": create_ioc,
+            "sentinelone-create-bulk-ioc": create_bulk_ioc,
             "sentinelone-delete-ioc": delete_ioc,
             "sentinelone-get-iocs": get_iocs,
             "sentinelone-create-power-query": create_power_query,
