@@ -82,7 +82,7 @@ class Client(BaseClient):  # pragma: no cover
         self.outbound_traffic = outbound_traffic
         self.hide_sensitive = hide_sensitive
         self.access_token = ""
-        
+
         # Set up headers based on authentication method
         self._headers = {"Content-Type": "application/json"}
 
@@ -95,7 +95,7 @@ class Client(BaseClient):  # pragma: no cover
             self._headers["x-fireeye-api-key"] = self.api_key
         else:
             raise ValueError("Either Client ID/Secret (OAuth2) or API Key (legacy) must be provided for authentication")
-    
+
     def _get_valid_oauth_token(self) -> str:
         """
         Get a valid OAuth access token, reusing cached token if still valid.
@@ -104,19 +104,19 @@ class Client(BaseClient):  # pragma: no cover
         context = get_integration_context()
         cached_token = context.get("access_token", "")
         token_expiry = context.get("token_expiry", 0)
-        
+
         # Check if cached token is still valid (with 60-second buffer)
         current_time = time.time()
         is_expired = current_time >= (token_expiry - 60)
-        
+
         if cached_token and not is_expired:
             demisto.debug(f"{LOG_LINE} Using cached OAuth token")
             return cached_token
-        
+
         # Need to fetch new token
         demisto.debug(f"{LOG_LINE} Fetching new OAuth token")
         return self._fetch_oauth_token()
-    
+
     def _fetch_oauth_token(self) -> str:
         """
         Fetch a new OAuth access token using this client instance and cache it in integration context.
@@ -125,43 +125,34 @@ class Client(BaseClient):  # pragma: no cover
         try:
             # Trellix OAuth2 endpoint
             token_url = "https://auth.trellix.com/auth/realms/IAM/protocol/openid-connect/token"
-            
+
             credentials = f"{self.client_id}:{self.client_secret}"
             encoded_credentials = base64.b64encode(credentials.encode()).decode()
 
-            auth_data = {
-                "grant_type": "client_credentials",
-                "scope": self.scope
-            }
-            
+            auth_data = {"grant_type": "client_credentials", "scope": self.scope}
+
             response = requests.post(
                 token_url,
-                headers={
-                    "Content-Type": "application/x-www-form-urlencoded",
-                    "Authorization": f"Basic {encoded_credentials}"
-                },
+                headers={"Content-Type": "application/x-www-form-urlencoded", "Authorization": f"Basic {encoded_credentials}"},
                 data=auth_data,
-                verify=self._verify
+                verify=self._verify,
             )
             response.raise_for_status()
-            
+
             result = response.json()
             access_token = result.get("access_token", "")
             expires_in = result.get("expires_in", 600)  # Default to 10 minutes
-            
+
             if not access_token:
                 raise ValueError("Failed to obtain access token from OAuth2 authentication")
-            
+
             # Cache token in integration context
             token_expiry = int(time.time()) + int(expires_in)
-            set_integration_context({
-                "access_token": access_token,
-                "token_expiry": token_expiry
-            })
-            
+            set_integration_context({"access_token": access_token, "token_expiry": token_expiry})
+
             demisto.debug(f"{LOG_LINE} OAuth2 authentication successful, token cached")
             return access_token
-            
+
         except Exception as e:
             demisto.error(f"{LOG_LINE} OAuth2 authentication failed: {str(e)}")
             raise ValueError(f"OAuth2 authentication failed: {str(e)}")
@@ -730,10 +721,9 @@ def _get_max_events_to_fetch(params_max_fetch: str | int, arg_limit: str | int) 
         raise ValueError("Please provide a valid integer value for a fetch limit.")
 
 
-
 def validate_authentication_params(client_id: str, client_secret: str, api_key: str, scope: str) -> str:
     """
-    Validate authentication parameters and determine which method to use.    
+    Validate authentication parameters and determine which method to use.
     Args:
         client_id: The Client ID for OAuth2 authentication.
         client_secret: The Client Secret for OAuth2 authentication.
@@ -752,8 +742,7 @@ def validate_authentication_params(client_id: str, client_secret: str, api_key: 
     # 1. CHECK FOR AMBIGUOUS OVER-CONFIGURATION
     if has_client_id and has_client_secret and has_api_key:
         raise ValueError(
-            "Both OAuth2 (Client ID/Secret) and API Key were provided. "
-            "Please configure only one authentication method."
+            "Both OAuth2 (Client ID/Secret) and API Key were provided. " "Please configure only one authentication method."
         )
 
     # 2. OAUTH2 VALIDATION
@@ -789,7 +778,6 @@ def validate_authentication_params(client_id: str, client_secret: str, api_key: 
 
     # 5. NO AUTHENTICATION METHOD PROVIDED
     raise ValueError("No authentication credentials provided.")
-
 
 
 def main() -> None:  # pragma: no cover
