@@ -1,6 +1,6 @@
 category: Database
 commonfields:
-  id: Generic SQL - dev
+  id: Generic SQL
   version: -1
 sectionorder:
 - Connect
@@ -127,8 +127,8 @@ configuration:
   required: false
   section: Collect
 description: 'Use the Generic SQL integration to run SQL queries on the following databases: MySQL, PostgreSQL, Microsoft SQL Server, Oracle, Teradata and Trino.'
-display: Generic SQL - dev
-name: Generic SQL - dev
+display: Generic SQL
+name: Generic SQL
 script:
   commands:
   - arguments:
