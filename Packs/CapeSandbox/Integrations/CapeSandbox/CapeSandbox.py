@@ -1,3 +1,4 @@
+import json
 import os
 import re
 import time
@@ -30,6 +31,8 @@ INTEGRATION_NAME = "CapeSandbox"
 POLLING_INTERVAL_SECONDS = 60
 POLLING_TIMEOUT_SECONDS = 60 * 15
 LIST_DEFAULT_LIMIT = 50
+MAX_RETRY_ATTEMPTS = 3
+RETRY_BASE_DELAY = 5
 
 
 def parse_integration_params(params: dict[str, Any]) -> dict[str, Any]:
@@ -474,44 +477,158 @@ class CapeSandboxClient(BaseClient):  # noqa: F405
 
         return token
 
+    def _handle_429_error(
+        self,
+        error: DemistoException,
+        attempt: int,
+        method: str,
+        endpoint: str,
+    ) -> bool:
+        """
+        Handle 429 (rate limit) errors with retry logic.
+
+        Args:
+            error: The DemistoException that was raised
+            attempt: Current attempt number (0-based)
+            method: HTTP method (GET, POST, etc.)
+            endpoint: API endpoint (url_suffix or full_url)
+
+        Returns:
+            bool: True if should retry, False if should raise the error
+        """
+        error_msg = str(error)
+
+        # Check if this is a 429 rate limit error
+        if "[429]" not in error_msg and "Too Many Requests" not in error_msg:
+            # Not a rate limit error, don't retry
+            demisto.debug(f"Non-429 error encountered: {type(error).__name__}")
+            return False
+
+        # It's a 429 error
+        if attempt < MAX_RETRY_ATTEMPTS - 1:
+            # We can retry
+            wait_time = self._extract_retry_wait_time(error_msg)
+
+            demisto.info(
+                f"Rate limit (429) encountered for {method} {endpoint}. "
+                f"Attempt {attempt + 1}/{MAX_RETRY_ATTEMPTS} failed. "
+                f"Retrying after {wait_time} seconds."
+            )
+
+            time.sleep(wait_time)  # pylint: disable=E9003
+            return True
+        else:
+            # Max retries exceeded
+            demisto.error(
+                f"Rate limit (429) - Max retries ({MAX_RETRY_ATTEMPTS}) exceeded " f"for {method} {endpoint}. Giving up."
+            )
+            return False
+
     def http_request(
         self,
         method: str,
-        headers: dict[str, str] | None = None,
         url_suffix: str = "",
-        full_url: str = "",
-        params: dict[str, Any] | None = None,
+        headers: dict[str, str] | None = None,
         data: dict[str, Any] | None = None,
-        json_data: dict[str, Any] | None = None,
         files: dict[str, Any] | None = None,
         resp_type: str = ResponseTypes.JSON.value,
-        ok_codes: tuple[int, ...] | None = None,
     ) -> Any:
+        """
+        Execute HTTP request with automatic retry on 429 (rate limit) errors.
+
+        Implements retry logic for rate limiting with smart wait time extraction.
+
+        Args:
+            method: HTTP method (GET, POST, etc.)
+            url_suffix: API endpoint path (relative to base_url)
+            headers: Optional additional headers to merge with auth headers
+            data: Optional form data for POST requests
+            files: Optional files for multipart uploads
+            resp_type: Response type - 'json' or 'content' (binary)
+
+        Returns:
+            Response data (dict for JSON, bytes for content)
+        """
+        # Prepare headers with authentication
         merged_headers = self._auth_headers()
         if headers:
             merged_headers.update(headers)
 
-        demisto.debug(f"Executing API request: {method} {url_suffix}.")
+        endpoint = url_suffix
 
-        response = self._http_request(
-            method=method,
-            headers=merged_headers,
-            url_suffix=url_suffix,
-            full_url=full_url,
-            params=params,
-            data=data,
-            json_data=json_data,
-            files=files,
-            resp_type=resp_type,
-            ok_codes=(200, 201, 202, 204),
-        )
+        # Retry loop for 429 errors
+        for attempt in range(MAX_RETRY_ATTEMPTS):
+            try:
+                demisto.debug(f"API request attempt {attempt + 1}/{MAX_RETRY_ATTEMPTS}: " f"{method} {endpoint}")
 
-        demisto.debug(f"API request to {url_suffix} completed. Response type: {resp_type}.")
+                response = self._http_request(
+                    method=method,
+                    headers=merged_headers,
+                    url_suffix=url_suffix,
+                    data=data,
+                    files=files,
+                    resp_type=resp_type,
+                    ok_codes=(200, 201, 202, 204),
+                )
 
-        if resp_type == ResponseTypes.JSON.value:
-            self._check_for_api_error(response, url_suffix)
+                demisto.debug(f"API request successful on attempt {attempt + 1}: " f"{method} {endpoint}")
 
-        return response
+                # Check for API-specific errors in JSON responses
+                if resp_type == ResponseTypes.JSON.value:
+                    self._check_for_api_error(response, url_suffix)
+
+                return response
+
+            except DemistoException as error:
+                # Check if we should retry (429 error) or raise immediately
+                should_retry = self._handle_429_error(error, attempt, method, endpoint)
+
+                if should_retry:
+                    continue
+                else:
+                    raise
+
+        # This should never be reached, but just in case
+        raise DemistoException(f"Failed to complete request to {endpoint} " f"after {MAX_RETRY_ATTEMPTS} attempts")
+
+    def _extract_retry_wait_time(self, error_message: str) -> int:
+        """
+        Extract the wait time from a 429 error message.
+
+        Expected format: 'Expected available in 35 seconds.'
+
+        Args:
+            error_message: The error message containing wait time information
+
+        Returns:
+            int: Number of seconds to wait (defaults to base delay if not found)
+        """
+        try:
+            # Try to parse JSON from error message
+            if '{"detail":' in error_message or "{'detail':" in error_message:
+                # Extract JSON portion
+                json_start = error_message.find("{")
+                json_end = error_message.rfind("}") + 1
+                if json_start >= 0 and json_end > json_start:
+                    json_str = error_message[json_start:json_end]
+                    # Handle single quotes
+                    json_str = json_str.replace("'", '"')
+                    error_data = json.loads(json_str)
+                    detail = error_data.get("detail", "")
+
+                    # Extract seconds from detail message
+                    # Format: "Request was throttled. Expected available in 35 seconds."
+                    match = re.search(r"(\d+)\s+seconds?", detail)
+                    if match:
+                        wait_seconds = int(match.group(1))
+                        demisto.debug(f"Extracted wait time from API response: {wait_seconds} seconds")
+                        return wait_seconds
+        except Exception as parse_error:
+            demisto.debug(f"Could not parse wait time from error message: {parse_error}")
+
+        # Default to base delay if we can't extract the wait time
+        demisto.debug(f"Using default retry delay: {RETRY_BASE_DELAY} seconds")
+        return RETRY_BASE_DELAY
 
     # ---------- Submit ----------
     def submit_file(self, form: dict[str, Any], file_path: str, is_pcap: bool) -> dict[str, Any]:
@@ -720,7 +837,7 @@ def cape_task_poll_report(args: dict[str, Any], client: CapeSandboxClient) -> Po
         status = resp.get("data", "")
         demisto.debug(f"The status for Task ID {task_id} is '{status}'.")
 
-    except DemistoException as error:
+    except Exception as error:
         # Check if the error is the specific 429 Too Many Requests error
         error_message = str(error)
         if "429" in error_message or "Too Many Requests" in error_message:
@@ -1520,7 +1637,7 @@ def main() -> None:
         demisto.debug(f"Command '{command}' completed successfully")
 
     except Exception as error:
-        error_msg = f"Failed to execute '{command}' command: {str(error)}"
+        error_msg = f"Failed to execute {command=}. Error: {str(error)}"
         demisto.debug(f"Error: {error_msg}\nTrace: {traceback.format_exc()}")
         return_error(error_msg, error=str(error))
 

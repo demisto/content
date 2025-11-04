@@ -7,12 +7,13 @@ import types
 import pytest
 from CommonServerPython import *
 
-# Mock DemistoClassApiModule before CommonServerPython is imported
+# Mock DemistoClassApiModule before CapeSandbox is imported
 mock_demisto_class_api_module = types.ModuleType("DemistoClassApiModule")
 sys.modules["DemistoClassApiModule"] = mock_demisto_class_api_module
 
-import CapeSandbox
-from CapeSandbox import (
+# Import CapeSandbox after mock setup - this is intentional and required
+import CapeSandbox  # noqa: E402
+from CapeSandbox import (  # noqa: E402
     CapeSandboxClient,
     build_file_name,
     build_submit_form,
@@ -407,10 +408,7 @@ def test_list_tasks_happy_path(mocker, client):
         method="GET",
         headers=mocker.ANY,
         url_suffix=mocker.ANY,
-        full_url=mocker.ANY,
-        params=None,
         data=None,
-        json_data=None,
         files=None,
         resp_type=mocker.ANY,
         ok_codes=mocker.ANY,
@@ -440,6 +438,124 @@ def test_view_machine_missing_name_fail(client):
 
 # ========================================
 # Tests: test-module Command
+
+# ========================================
+# Tests: 429 Rate Limit Handling
+# ========================================
+
+
+def test_extract_retry_wait_time_from_json_detail(client):
+    """Tests _extract_retry_wait_time extracts seconds from JSON error message."""
+    error_msg = 'Error in API call [429] - {"detail": "Request was throttled. Expected available in 35 seconds."}'
+    wait_time = client._extract_retry_wait_time(error_msg)
+    assert wait_time == 35
+
+
+def test_extract_retry_wait_time_with_single_quotes(client):
+    """Tests _extract_retry_wait_time handles single quotes in JSON."""
+    error_msg = "Error [429] - {'detail': 'Expected available in 120 seconds.'}"
+    wait_time = client._extract_retry_wait_time(error_msg)
+    assert wait_time == 120
+
+
+def test_extract_retry_wait_time_no_match_returns_default(client):
+    """Tests _extract_retry_wait_time returns default delay when no match found."""
+    error_msg = "Error [429] - Too Many Requests"
+    wait_time = client._extract_retry_wait_time(error_msg)
+    assert wait_time == CapeSandbox.RETRY_BASE_DELAY
+
+
+def test_extract_retry_wait_time_invalid_json_returns_default(client):
+    """Tests _extract_retry_wait_time returns default on invalid JSON."""
+    error_msg = "Error [429] - {invalid json"
+    wait_time = client._extract_retry_wait_time(error_msg)
+    assert wait_time == CapeSandbox.RETRY_BASE_DELAY
+
+
+def test_handle_429_error_should_retry(mocker, client):
+    """Tests _handle_429_error returns True for 429 error within retry limit."""
+    error = DemistoException("Error [429] - Too Many Requests")
+    mocker.patch.object(client, "_extract_retry_wait_time", return_value=5)
+    mocker.patch.object(CapeSandbox.time, "sleep")
+
+    should_retry = client._handle_429_error(error, attempt=0, method="GET", endpoint="/test")
+
+    assert should_retry is True
+    CapeSandbox.time.sleep.assert_called_once_with(5)
+
+
+def test_handle_429_error_max_retries_exceeded(mocker, client, capfd):
+    """Tests _handle_429_error returns False when max retries exceeded."""
+    error = DemistoException("Error [429] - Too Many Requests")
+    mocker.patch.object(client, "_extract_retry_wait_time", return_value=5)
+
+    # Attempt 2 is the last attempt (0, 1, 2 = 3 attempts total)
+    with capfd.disabled():
+        should_retry = client._handle_429_error(
+            error,
+            attempt=CapeSandbox.MAX_RETRY_ATTEMPTS - 1,
+            method="GET",
+            endpoint="/test",
+        )
+
+    assert should_retry is False
+
+
+def test_handle_429_error_non_429_error_no_retry(client):
+    """Tests _handle_429_error returns False for non-429 errors."""
+    error = DemistoException("Error [500] - Internal Server Error")
+
+    should_retry = client._handle_429_error(error, attempt=0, method="GET", endpoint="/test")
+
+    assert should_retry is False
+
+
+def test_http_request_retries_on_429(mocker, client):
+    """Tests http_request retries on 429 error and succeeds on second attempt."""
+    # First call raises 429, second call succeeds
+    mocker.patch.object(
+        client,
+        "_http_request",
+        side_effect=[
+            DemistoException('Error [429] - {"detail": "Expected available in 5 seconds."}'),
+            {"data": "success"},
+        ],
+    )
+    mocker.patch.object(CapeSandbox.time, "sleep")
+
+    result = client.http_request("GET", url_suffix="/test")
+
+    assert result == {"data": "success"}
+    assert client._http_request.call_count == 2
+    CapeSandbox.time.sleep.assert_called_once()
+
+
+def test_http_request_fails_after_max_retries(mocker, client, capfd):
+    """Tests http_request raises error after max retry attempts."""
+    error_429 = DemistoException("Error [429] - Too Many Requests")
+    mocker.patch.object(client, "_http_request", side_effect=error_429)
+    mocker.patch.object(CapeSandbox.time, "sleep")
+
+    with capfd.disabled():
+        with pytest.raises(DemistoException, match="Too Many Requests"):
+            client.http_request("GET", url_suffix="/test")
+
+    # Should attempt MAX_RETRY_ATTEMPTS times
+    assert client._http_request.call_count == CapeSandbox.MAX_RETRY_ATTEMPTS
+
+
+def test_http_request_non_429_error_no_retry(mocker, client):
+    """Tests http_request doesn't retry on non-429 errors."""
+    error_500 = DemistoException("Error [500] - Internal Server Error")
+    mocker.patch.object(client, "_http_request", side_effect=error_500)
+
+    with pytest.raises(DemistoException, match="Internal Server Error"):
+        client.http_request("GET", url_suffix="/test")
+
+    # Should only attempt once (no retries)
+    assert client._http_request.call_count == 1
+
+
 # ========================================
 
 
@@ -497,6 +613,7 @@ def test_cape_file_submit_command(mocker, client):
     result = cape_file_submit_command(client, args)
     assert compare_string_ignore_case(result.readable_output, "Polling initiated for task 123")
     assert result.outputs_prefix == "Cape.Task.File"
+    assert isinstance(result.outputs, dict)
     assert result.outputs.get("id") == 123
 
 
@@ -556,6 +673,7 @@ def test_cape_url_submit_command(mocker, client):
     result = cape_url_submit_command(client, args)
     assert compare_string_ignore_case(result.readable_output, "Polling initiated for URL task 456")
     assert result.outputs_prefix == "Cape.Task.Url"
+    assert isinstance(result.outputs, dict)
     assert result.outputs.get("id") == 456
 
 
@@ -595,6 +713,7 @@ def test_cape_file_view_command_by_id_type(mocker, client, id_type, id_value, cl
     )
     args = {id_type: id_value}
     result = cape_file_view_command(client, args)
+    assert isinstance(result.outputs, dict)
     assert result.outputs["id"] == "test_task_id"
 
 
@@ -715,6 +834,7 @@ def test_cape_tasks_list_command_multiple_tasks(mocker, client):
     args = {"limit": 2, "page": 1}
     result = cape_tasks_list_command(client, args)
     assert result.outputs_prefix == "Cape.Task"
+    assert isinstance(result.outputs, list)
     assert len(result.outputs) == 2
     assert result.outputs[0].get("id") == 1
 
@@ -748,6 +868,7 @@ def test_cape_task_report_get_command_json(mocker, client):
     args = {"task_id": "123", "format": "json", "zip": False}
     result = cape_task_report_get_command(client, args)
     assert result.outputs_prefix == "Cape.Task.Report"
+    assert isinstance(result.outputs, dict)
     assert result.outputs["id"] == 123
 
 
@@ -853,6 +974,7 @@ def test_cape_task_screenshot_download_command_multiple(mocker, client):
     args = {"task_id": "123"}
     result = cape_task_screenshot_download_command(client, args)
     assert result.outputs_prefix == "Cape.Task.Screenshot"
+    assert isinstance(result.outputs, list)
     assert len(result.outputs) == 2
 
 
@@ -865,6 +987,7 @@ def test_cape_task_screenshot_download_single(mocker, client):
 
     args = {"task_id": "123", "screenshot": 5}
     result = cape_task_screenshot_download_command(client, args)
+    assert isinstance(result.outputs, list)
     assert len(result.outputs) == 1
     assert result.outputs[0]["File"] == "screenshot_5.png"
 
@@ -893,6 +1016,7 @@ def test_cape_machines_list_command_single_machine_view_by_name(mocker, client):
 
     assert result.outputs_prefix == "Cape.Machine"
     assert result.outputs is not None
+    assert isinstance(result.outputs, dict)
     assert result.outputs["id"] == 5
 
 
@@ -907,6 +1031,7 @@ def test_cape_machines_list_command_multiple_machines(mocker, client):
     result = cape_machines_list_command(client, args)
     assert result.outputs_prefix == "Cape.Machine"
     assert result.outputs is not None
+    assert isinstance(result.outputs, list)
     assert len(result.outputs) == 2
     assert result.outputs[0].get("id") == 1
 
