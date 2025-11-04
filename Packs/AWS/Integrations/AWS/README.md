@@ -2562,3 +2562,83 @@ Describes resource discovery association with an Amazon VPC IPAM. An associated 
 | AWS.EC2.IpamResourceDiscoveryAssociations.IpamResourceDiscoveryId | String | The resource discovery ID. |
 | AWS.EC2.IpamResourceDiscoveryAssociations.IpamRegion | String | The IPAM home region. |
 | AWS.EC2.IpamResourceDiscoveryAssociations.AccountId | string | The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided. |
+### aws-ec2-enable-imdsv2-quick-action
+
+***
+Enables instance metadata services v2.0 for the EC2 instance.
+
+#### Base Command
+
+`aws-ec2-enable-imdsv2-quick-action`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required | 
+| region | The AWS region. | Required | 
+| instance_id | The ID of the instance. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+### aws-s3-public-access-block-quick-action
+
+***
+Blocks all public access to the S3 bucket.
+
+#### Base Command
+
+`aws-s3-public-access-block-quick-action`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required | 
+| region | The AWS region. | Required | 
+| bucket | The name of the Amazon S3 bucket. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+### aws-eks-enable-control-plane-logging-quick-action
+
+***
+Enables control plane logging for an EKS cluster.
+
+#### Base Command
+
+`aws-eks-enable-control-plane-logging-quick-action`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required | 
+| region | The AWS region. | Required | 
+| cluster_name | The name of the Amazon EKS cluster to update. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+### aws-eks-disable-public-access-quick-action
+
+***
+Disables public access to the EKS cluster's API endpoint, making it only accessible from within the cluster's VPC.
+
+#### Base Command
+
+`aws-eks-disable-public-access-quick-action`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required | 
+| region | The AWS region. | Required | 
+| cluster_name | The name of the Amazon EKS cluster to update. | Required | 
+
+#### Context Output
+
+There is no context output for this command.

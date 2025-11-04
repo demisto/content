@@ -1985,3 +1985,22 @@ Updates the password policy to require a minimum length of 14 characters, at lea
 #### Context Output
 
 There is no context output for this command.
+### aws-iam-suspend-access-for-role-quick-action
+
+***
+Attach an inline "Deny All" Policy effectively denying all actions for all entities assuming the IAM role.
+
+#### Base Command
+
+`aws-iam-suspend-access-for-role-quick-action`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required | 
+| roleName | The name of the role to associate the policy with. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
