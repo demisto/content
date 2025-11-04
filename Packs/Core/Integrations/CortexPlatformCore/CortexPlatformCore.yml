@@ -1383,8 +1383,11 @@ script:
       name: core-appsec-suggest-fix
       description: Retrieve comprehensive fix suggestions for a specific application security issue with customizable response options.
       outputs:
-      - contextPath: Core.AppsecFixSuggestion.name
+      - contextPath: Core.AppsecFixSuggestion.issueName
         description: Name of the security issue.
+        type: String
+      - contextPath: Core.AppsecFixSuggestion.issueId
+        description: The ID of the security issue.
         type: String
       - contextPath: Core.AppsecFixSuggestion.existingCodeBlock
         description: Original vulnerable code.

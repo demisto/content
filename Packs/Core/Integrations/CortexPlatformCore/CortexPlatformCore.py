@@ -755,16 +755,17 @@ def get_appsec_suggested_fix_command(client, args):
     args = demisto.args()
     issue_id = args.get('issue_id')
     request_body = {
-        "showCodeBlock": args.get('show_code_block', True),
-        "showRemediationInstruction": args.get('show_remediation_instruction', False),
-        "showSuggestedCodeBlock": args.get('show_suggested_code_block', True)
+        "showCodeBlock": arg_to_bool_or_none(args.get('show_code_block', True)),
+        "showRemediationInstruction": arg_to_bool_or_none(args.get('show_remediation_instruction', False)),
+        "showSuggestedCodeBlock": arg_to_bool_or_none(args.get('show_suggested_code_block', True))
     }
     response = client.get_appsec_suggested_fix(issue_id, request_body)
     return CommandResults(
         readable_output=tableToMarkdown("AppSec Suggested Fix", response),
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.AppSecSuggestedFix",
         outputs=response,
-        raw_response=response
+        raw_response=response,
+        outputs_key_field="issueId"
     )
     
 
