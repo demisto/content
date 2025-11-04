@@ -86,8 +86,8 @@ script:
         - name: clock
           description: The VM clock time in the format %m-%d-%Y %H:%M:%S.
       outputs:
-        - contextPath: Cape.Task
-          description: Task data returned from CAPE when analysis is ready.
+        - contextPath: Cape.Task.File
+          description: File analysis task data returned from CAPE Sandbox, including task ID, file details, and analysis status.
           type: Unknown
     - name: cape-file-view
       description: View detailed information about a file that has been analyzed by CAPE Sandbox. You must specify at least one identifier - Task ID, MD5 hash, or SHA256 hash.
@@ -134,7 +134,10 @@ script:
           description: The SHA1 hash of the sample file to download.
         - name: sha256
           description: The SHA256 hash of the sample file to download.
-      outputs: []
+      outputs:
+        - contextPath: Cape.Task.Url
+          description: URL analysis task data associated with the downloaded sample file.
+          type: Unknown
     - name: cape-url-submit
       description: Submit a URL for analysis to CAPE Sandbox. The command polls the CAPE server until the analysis task is reported as complete, and then returns the task view with the analysis results.
       polling: true
@@ -258,7 +261,10 @@ script:
           required: true
         - name: screenshot
           description: The specific screenshot number to download (e.g., 1, 2). If not provided, all screenshots are downloaded.
-      outputs: []
+      outputs:
+        - contextPath: Cape.Task.Screenshot
+          description: Screenshot file data from the CAPE analysis task, including file name and task ID.
+          type: Unknown
     - name: cape-machines-list
       description: Returns a list of available analysis machines configured in CAPE Sandbox. If a machine_name is provided, the command returns detailed information for that specific machine.
       arguments:

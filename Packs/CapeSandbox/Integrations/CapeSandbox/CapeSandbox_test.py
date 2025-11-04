@@ -384,7 +384,60 @@ def test_http_request_api_error_check(error_response, expected_match):
     """Tests _check_for_api_error successfully detects and raises DemistoException."""
     client = CapeSandboxClient(base_url=SERVER_URL, verify=True, proxy=True, api_token="TOKEN")
     with pytest.raises(DemistoException, match=expected_match):
-        client._check_for_api_error(error_response, "test-suffix")
+        client._check_for_api_error(error_response, "test-suffix", "json")
+
+
+@pytest.mark.parametrize(
+    "binary_response,resp_type,expected_match",
+    [
+        # Binary content that contains JSON error
+        (
+            b'{"error": true, "error_value": "No screenshots created for task 23"}',
+            "content",
+            "No screenshots created",
+        ),
+        # Binary content that contains JSON error with message field
+        (b'{"error": true, "message": "File not found"}', "content", "File not found"),
+        # Binary content that contains JSON error without specific message
+        (b'{"error": true}', "content", "Unknown API error occurred"),
+    ],
+)
+def test_check_for_api_error_binary_json_error(binary_response, resp_type, expected_match):
+    """Tests _check_for_api_error detects JSON errors in binary content responses."""
+    client = CapeSandboxClient(base_url=SERVER_URL, verify=True, proxy=True, api_token="TOKEN")
+    with pytest.raises(DemistoException, match=expected_match):
+        client._check_for_api_error(binary_response, "test-suffix", resp_type)
+
+
+@pytest.mark.parametrize(
+    "binary_response,resp_type",
+    [
+        # Valid binary content (not JSON)
+        (b"\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR", "content"),
+        # Binary content with invalid JSON
+        (b"{invalid json}", "content"),
+        # Binary content that's valid JSON but no error
+        (b'{"status": "success", "data": "test"}', "content"),
+        # Empty binary content
+        (b"", "content"),
+    ],
+)
+def test_check_for_api_error_binary_valid_content(binary_response, resp_type):
+    """Tests _check_for_api_error doesn't raise for valid binary content."""
+    client = CapeSandboxClient(base_url=SERVER_URL, verify=True, proxy=True, api_token="TOKEN")
+    # Should not raise any exception
+    client._check_for_api_error(binary_response, "test-suffix", resp_type)
+
+
+def test_check_for_api_error_json_response_type():
+    """Tests _check_for_api_error handles dict responses for json resp_type."""
+    client = CapeSandboxClient(base_url=SERVER_URL, verify=True, proxy=True, api_token="TOKEN")
+    # Should raise for error dict
+    with pytest.raises(DemistoException, match="Task not found"):
+        client._check_for_api_error({"error": True, "error_value": "Task not found"}, "test-suffix", "json")
+
+    # Should not raise for non-error dict
+    client._check_for_api_error({"status": "success", "data": []}, "test-suffix", "json")
 
 
 @pytest.mark.parametrize(
@@ -536,9 +589,8 @@ def test_http_request_fails_after_max_retries(mocker, client, capfd):
     mocker.patch.object(client, "_http_request", side_effect=error_429)
     mocker.patch.object(CapeSandbox.time, "sleep")
 
-    with capfd.disabled():
-        with pytest.raises(DemistoException, match="Too Many Requests"):
-            client.http_request("GET", url_suffix="/test")
+    with capfd.disabled(), pytest.raises(DemistoException, match="Too Many Requests"):
+        client.http_request("GET", url_suffix="/test")
 
     # Should attempt MAX_RETRY_ATTEMPTS times
     assert client._http_request.call_count == CapeSandbox.MAX_RETRY_ATTEMPTS
@@ -813,7 +865,7 @@ def test_cape_task_delete_command(mocker, client):
     )
     args = {"task_id": "123"}
     result = cape_task_delete_command(client, args)
-    expected_output = "Task id=123 was deleted successfully"
+    expected_output = "Task ID: 123 was deleted successfully"
     assert compare_string_ignore_case(result.readable_output, expected_output)
 
 

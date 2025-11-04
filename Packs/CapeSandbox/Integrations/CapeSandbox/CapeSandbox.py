@@ -412,11 +412,21 @@ class CapeSandboxClient(BaseClient):  # noqa: F405
             demisto.debug("Invalid 'valid_until' value found in cache. Forcing renewal.")
             return None
 
-    def _check_for_api_error(self, response: dict[str, Any], url_suffix: str) -> None:
+    def _check_for_api_error(self, response: dict[str, Any] | bytes, url_suffix: str, resp_type: str) -> None:
         """
-        Checks the CAPE JSON response for the specific error field: 'error': True.
+        Checks the CAPE response for the specific error field: 'error': True.
+        Handles both JSON dict responses and binary content responses that might be JSON errors.
         If an error is detected, logs the failure and raises a DemistoException.
         """
+        # If response type is content (bytes), try to parse as JSON to check for errors
+        if resp_type == ResponseTypes.CONTENT.value and isinstance(response, bytes):
+            try:
+                response = json.loads(response.decode("utf-8"))
+            except (json.JSONDecodeError, UnicodeDecodeError, AttributeError):
+                # Not JSON or not decodable, treat as valid binary content
+                return
+
+        # Check for error in dict response
         if isinstance(response, dict) and response.get("error") is True:
             fail_message = (
                 response.get("error_value") or response.get("failed") or response.get("message") or "Unknown API error occurred."
@@ -427,7 +437,7 @@ class CapeSandboxClient(BaseClient):  # noqa: F405
                 {"url": url_suffix, "message": fail_message, "response": response},
             )
 
-            raise DemistoException(f"CapeSandbox API call failed for {url_suffix}, " f"with error {fail_message}")
+            raise DemistoException(f"CapeSandbox API call failed with error: {fail_message}")
 
     def ensure_token(self) -> str:
         """
@@ -573,9 +583,7 @@ class CapeSandboxClient(BaseClient):  # noqa: F405
 
                 demisto.debug(f"API request successful on attempt {attempt + 1}: " f"{method} {endpoint}")
 
-                # Check for API-specific errors in JSON responses
-                if resp_type == ResponseTypes.JSON.value:
-                    self._check_for_api_error(response, url_suffix)
+                self._check_for_api_error(response, url_suffix, resp_type)
 
                 return response
 
@@ -1158,7 +1166,7 @@ def cape_task_delete_command(client: CapeSandboxClient, args: dict[str, Any]) ->
     client.delete_task(task_id)
     demisto.debug(f"API confirmed deletion of Task ID: {task_id}.")
 
-    readable = f"Task id={task_id} was deleted successfully"
+    readable = f"Task ID: {task_id} was deleted successfully"
 
     demisto.debug(f"Command '{command}' execution finished successfully.")
     return CommandResults(readable_output=readable)
@@ -1544,11 +1552,6 @@ def cape_task_screenshot_download_command(client: CapeSandboxClient, args: dict[
 
         except DemistoException as error:
             demisto.debug(f"Failed to fetch screenshot {number} for task {task_id}: {error}")
-
-        # except Exception as error:
-        #     demisto.debug(
-        #         f"Unexpected error while processing screenshot {number}: {error}"
-        #     )
 
     demisto.debug(f"Screenshot download complete. Total files: {len(file_entries)}, Processed numbers: {processed_numbers}")
 
