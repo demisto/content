@@ -823,10 +823,7 @@ def cape_file_submit_command(client: CapeSandboxClient, args: dict[str, Any]) ->
     command = "Submit File"
     demisto.debug(f"Starting execution of command: {command}")
 
-    entry_id = args.get("entry_id")
-
-    if not entry_id:
-        raise DemistoException("entry_id is required for cape-file-submit.")
+    entry_id = args["entry_id"]
 
     try:
         file_path, filename = get_entry_path(entry_id)
@@ -868,10 +865,7 @@ def cape_url_submit_command(client: CapeSandboxClient, args: dict[str, Any]) -> 
     command = "Submit URL"
     demisto.debug(f"Starting execution of command: {command}")
 
-    url = args.get("url")
-
-    if not url:
-        raise DemistoException("URL is required for cape-url-submit.")
+    url = args["url"]
 
     demisto.debug(f"Submitting URL: {url}")
     form = build_submit_form(args, url_mode=True)
@@ -1369,9 +1363,6 @@ def cape_task_screenshot_download_command(client: CapeSandboxClient, args: dict[
 
     demisto.debug(f"Screenshot parameters: {task_id=}, {single_number=}")
 
-    if not task_id:
-        raise DemistoException("Task ID is missing for download screenshot.")
-
     if single_number:
         demisto.debug(f"Downloading single screenshot number: {single_number}")
         candidates_raw = [single_number]
@@ -1469,76 +1460,72 @@ def cape_task_screenshot_download_command(client: CapeSandboxClient, args: dict[
 # =================================
 # Main router
 # =================================
-def main() -> None:
-    demisto.debug("--- CapeSandbox Integration START ---")
 
-    params: dict[str, Any] = demisto.params()
-    args = demisto.args()
+COMMAND_MAP: dict[str, Any] = {
+    "test-module": test_module,
+    "cape-file-submit": cape_file_submit_command,
+    "cape-file-view": cape_file_view_command,
+    "cape-sample-download": cape_sample_file_download_command,
+    "cape-url-submit": cape_url_submit_command,
+    "cape-tasks-list": cape_tasks_list_command,
+    "cape-task-delete": cape_task_delete_command,
+    "cape-task-screenshot-download": cape_task_screenshot_download_command,
+    "cape-task-report-get": cape_task_report_get_command,
+    "cape-pcap-file-download": cape_pcap_file_download_command,
+    "cape-machines-list": cape_machines_list_command,
+    "cape-cuckoo-status-get": cape_cuckoo_status_get_command,
+    "cape-task-poll": cape_task_poll_report,
+}
+
+
+def main() -> None:
+    """Main entry point for CapeSandbox integration."""
+    demisto.debug("CapeSandbox integration started")
 
     command = demisto.command()
-    demisto.debug(f"Received command: {command}")
+    demisto.debug(f"Received command: '{command}'")
 
     try:
-        demisto.debug("Parsing integration parameters")
-        config = parse_integration_params(params)
-        demisto.debug("Integration parameters parsed successfully")
+        if command not in COMMAND_MAP:
+            raise DemistoException(f"Command '{command}' is not implemented")
 
-        base_url = config["base_url"]
-        verify_certificate = config["verify_certificate"]
-        proxy = config["proxy"]
-        api_token = config["api_token"]
-        username = config["username"]
-        password = config["password"]
+        demisto.debug(f"Command '{command}' validated successfully")
+
+        demisto.debug("Parsing integration configuration")
+        config = parse_integration_params(demisto.params())
+        demisto.debug("Configuration parsed successfully")
 
         demisto.debug("Initializing CapeSandbox client")
         client = CapeSandboxClient(
-            base_url=base_url,
-            verify=verify_certificate,
-            proxy=proxy,
-            api_token=api_token,
-            username=username,
-            password=password,
+            base_url=config["base_url"],
+            verify=config["verify_certificate"],
+            proxy=config["proxy"],
+            api_token=config["api_token"],
+            username=config["username"],
+            password=config["password"],
         )
+        demisto.debug("Client initialized successfully")
 
-        demisto.debug(f"Starting execution of command: {command}...")
+        command_func = COMMAND_MAP[command]
+        demisto.debug(f"Executing command function for '{command}'")
 
-        command_map = {
-            "test-module": lambda: test_module(client),
-            "cape-file-submit": lambda: cape_file_submit_command(client, args),
-            "cape-file-view": lambda: cape_file_view_command(client, args),
-            "cape-sample-download": lambda: cape_sample_file_download_command(client, args),
-            "cape-url-submit": lambda: cape_url_submit_command(client, args),
-            "cape-tasks-list": lambda: cape_tasks_list_command(client, args),
-            "cape-task-delete": lambda: cape_task_delete_command(client, args),
-            "cape-task-screenshot-download": lambda: cape_task_screenshot_download_command(client, args),
-            "cape-task-report-get": lambda: cape_task_report_get_command(client, args),
-            "cape-pcap-file-download": lambda: cape_pcap_file_download_command(client, args),
-            "cape-machines-list": lambda: cape_machines_list_command(client, args),
-            "cape-cuckoo-status-get": lambda: cape_cuckoo_status_get_command(client, args),
-            "cape-task-poll": lambda: cape_task_poll_report(args, client),
-        }
-
-        if command not in command_map:
-            demisto.debug(f"Command '{command}' not found in command map. Available: {list(command_map.keys())}")
-            raise NotImplementedError(f"Command {command} is not implemented")
-
-        demisto.debug(f"Executing command handler for '{command}'")
-        result = command_map[command]()
-        demisto.debug(f"Command handler returned result type: {type(result)}")
+        if command == "test-module":
+            result = command_func(client)
+        elif command == "cape-task-poll":
+            result = command_func(demisto.args(), client)
+        else:
+            result = command_func(client, demisto.args())
 
         return_results(result)
-
-        demisto.debug(f"Command '{command}' execution finished successfully.")
+        demisto.debug(f"Command '{command}' completed successfully")
 
     except Exception as error:
-        return_error(
-            f"Failed to execute {command} command. Error: {str(error)}",
-            error=str(error),
-            outputs=traceback.format_exc(),
-        )
+        error_msg = f"Failed to execute '{command}' command: {str(error)}"
+        demisto.debug(f"Error: {error_msg}\nTrace: {traceback.format_exc()}")
+        return_error(error_msg, error=str(error))
 
     finally:
-        demisto.debug("--- CapeSandbox Integration END ---")
+        demisto.debug("CapeSandbox integration finished")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
