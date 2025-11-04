@@ -2,7 +2,7 @@ category: Network Security
 commonfields:
   id: Akamai WAF
   version: -1
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 configuration:
@@ -678,163 +678,163 @@ script:
     polling: true
     description: Activates a client list.
     arguments:
-      - name: list_id
-        required: true
-        description: The ID of the client list to activate.
-      - name: network_environment
-        required: true
-        auto: PREDEFINED
-        predefined:
-          - STAGING
-          - PRODUCTION
-        description: The network environment where the list will be activated.
-      - name: comments
-        description: A description of the activation.
-      - name: notification_recipients
-        isArray: true
-        description: A list of email addresses to notify.
-      - name: siebel_ticket_id
-        description: A Siebel ticket ID.
-      - name: include_polling
-        description: Whether to poll deactivation status until completion.
-        auto: PREDEFINED
-        predefined:
-          - 'true'
-          - 'false'
-        defaultValue: 'true'
-      - name: interval
-        description: Interval in seconds between polling attempts.
-        defaultValue: 30
-        type: Number
-      - name: timeout
-        description: Timeout in seconds for polling.
-        defaultValue: 180
-        type: Number
-      - name: poll_status
-        description: The poll status.
-        deprecated: true
+    - name: list_id
+      required: true
+      description: The ID of the client list to activate.
+    - name: network_environment
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - STAGING
+      - PRODUCTION
+      description: The network environment where the list will be activated.
+    - name: comments
+      description: A description of the activation.
+    - name: notification_recipients
+      isArray: true
+      description: A list of email addresses to notify.
+    - name: siebel_ticket_id
+      description: A Siebel ticket ID.
+    - name: include_polling
+      description: Whether to poll deactivation status until completion.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: 'true'
+    - name: interval
+      description: Interval in seconds between polling attempts.
+      defaultValue: 30
+      type: Number
+    - name: timeout
+      description: Timeout in seconds for polling.
+      defaultValue: 180
+      type: Number
+    - name: poll_status
+      description: The poll status.
+      deprecated: true
     outputs:
-      - contextPath: Akamai.Activation
-        description: The activation details.
-        type: unknown
+    - contextPath: Akamai.Activation
+      description: The activation details.
+      type: unknown
   - name: akamai-add-client-list-entry
     description: Adds an entry to a client list.
     arguments:
-      - name: list_id
-        required: true
-        description: The ID of the client list.
-      - name: value
-        required: true
-        description: The value of the new entry.
-      - name: description
-        description: A description of the new entry.
-      - name: expiration_date
-        description: The expiration date for the new entry. Use ISO 8601 format (e.g. 2025-09-29 or 2025-09-29T13:15:28).
-      - name: tags
-        isArray: true
-        description: A list of tags for the new entry.
+    - name: list_id
+      required: true
+      description: The ID of the client list.
+    - name: value
+      required: true
+      description: The value of the new entry.
+    - name: description
+      description: A description of the new entry.
+    - name: expiration_date
+      description: The expiration date for the new entry. Use ISO 8601 format (e.g. 2025-09-29 or 2025-09-29T13:15:28).
+    - name: tags
+      isArray: true
+      description: A list of tags for the new entry.
   - name: akamai-remove-client-list-entry
     description: Removes an entry from a client list.
     arguments:
-      - name: list_id
-        required: true
-        description: The ID of the client list.
-      - name: value
-        isArray: true
-        required: true
-        description: A list of values to remove from the client list.
+    - name: list_id
+      required: true
+      description: The ID of the client list.
+    - name: value
+      isArray: true
+      required: true
+      description: A list of values to remove from the client list.
   - name: akamai-get-contract-group
     description: Get contract groups.
     arguments: []
     outputs:
-      - contextPath: Akamai.ContractGroup
-        description: The contract groups.
-        type: unknown
+    - contextPath: Akamai.ContractGroup
+      description: The contract groups.
+      type: unknown
   - name: akamai-update-client-list
     description: Updates a client list.
     arguments:
-      - name: list_id
-        required: true
-        description: The ID of the client list to update.
-      - name: name
-        required: true
-        description: The new name of the client list.
-      - name: notes
-        description: The new description of the client list.
-      - name: tags
-        isArray: true
-        description: The new tags for the client list.
+    - name: list_id
+      required: true
+      description: The ID of the client list to update.
+    - name: name
+      required: true
+      description: The new name of the client list.
+    - name: notes
+      description: The new description of the client list.
+    - name: tags
+      isArray: true
+      description: The new tags for the client list.
     outputs:
-      - contextPath: Akamai.ClientList
-        description: The updated client list.
-        type: unknown
+    - contextPath: Akamai.ClientList
+      description: The updated client list.
+      type: unknown
   - name: akamai-deactivate-client-list
     polling: true
     description: Deactivates a client list.
     arguments:
-      - name: list_id
-        required: true
-        description: The ID of the client list to deactivate.
-      - name: network_environment
-        required: true
-        auto: PREDEFINED
-        predefined:
-          - STAGING
-          - PRODUCTION
-        description: The network environment where the list is deactivated.
-      - name: comments
-        description: A description for the deactivation.
-      - name: notification_recipients
-        isArray: true
-        description: A list of email addresses to notify.
-      - name: siebel_ticket_id
-        description: A Siebel ticket ID.
-      - name: include_polling
-        description: Whether to poll deactivation status until completion.
-        auto: PREDEFINED
-        predefined:
-          - 'true'
-          - 'false'
-        defaultValue: 'true'
-      - name: interval
-        description: Interval in seconds between polling attempts.
-        defaultValue: 30
-        type: Number
-      - name: timeout
-        description: Timeout in seconds for polling.
-        defaultValue: 180
-        type: Number
-      - name: poll_status
-        description: The poll status.
-        deprecated: true
+    - name: list_id
+      required: true
+      description: The ID of the client list to deactivate.
+    - name: network_environment
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - STAGING
+      - PRODUCTION
+      description: The network environment where the list is deactivated.
+    - name: comments
+      description: A description for the deactivation.
+    - name: notification_recipients
+      isArray: true
+      description: A list of email addresses to notify.
+    - name: siebel_ticket_id
+      description: A Siebel ticket ID.
+    - name: include_polling
+      description: Whether to poll deactivation status until completion.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: 'true'
+    - name: interval
+      description: Interval in seconds between polling attempts.
+      defaultValue: 30
+      type: Number
+    - name: timeout
+      description: Timeout in seconds for polling.
+      defaultValue: 180
+      type: Number
+    - name: poll_status
+      description: The poll status.
+      deprecated: true
     outputs:
-      - contextPath: Akamai.Activation
-        description: The deactivation details.
-        type: unknown
+    - contextPath: Akamai.Activation
+      description: The deactivation details.
+      type: unknown
   - name: akamai-update-client-list-entry
     description: Updates an entry in a client list.
     arguments:
-      - name: list_id
-        required: true
-        description: The ID of the client list.
-      - name: value
-        required: true
-        description: The value of the entry to update.
-      - name: description
-        description: The new description for the entry.
-      - name: expiration_date
-        description: The new expiration date for the entry. Use ISO 8601 format (e.g. 2025-09-29 or 2025-09-29T13:15:28).
-      - name: tags
-        isArray: true
-        description: The new tags for the entry.
-      - name: is_override
-        type: boolean
-        default: False
-        description: Whether to override missing entries.
+    - name: list_id
+      required: true
+      description: The ID of the client list.
+    - name: value
+      required: true
+      description: The value of the entry to update.
+    - name: description
+      description: The new description for the entry.
+    - name: expiration_date
+      description: The new expiration date for the entry. Use ISO 8601 format (e.g. 2025-09-29 or 2025-09-29T13:15:28).
+    - name: tags
+      isArray: true
+      description: The new tags for the entry.
+    - name: is_override
+      type: boolean
+      default: false
+      description: Whether to override missing entries.
     outputs:
-      - contextPath: Akamai.ClientList
-        description: The updated client list.
-        type: unknown
+    - contextPath: Akamai.ClientList
+      description: The updated client list.
+      type: unknown
   - arguments: []
     description: Get Google Tag Manager (GTM) domains.
     name: akamai-get-domains
@@ -2078,7 +2078,7 @@ script:
       name: with_metrics
     description: Akamai Generic API Call.
     name: akamai-generic-api-call-command
-  dockerimage: demisto/auth-utils:1.0.0.4885715
+  dockerimage: demisto/auth-utils:1.0.0.5476008
   script: ''
   subtype: python3
   type: python
