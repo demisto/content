@@ -73,6 +73,11 @@ INFOBLOX_FIELD_MAPPING = {
     "email": {"path": "email", "type": "str"},
 }
 
+# Key mapping for Infoblox response
+RESPONSE_KEY_MAPPING = {
+    "class": "threat_class",
+}
+
 # Default number of indicators to fetch in a single API call
 DEFAULT_LIMIT = 1000
 # Daily limit of indicators allowed by the API
@@ -87,6 +92,8 @@ BATCH_SIZE = 2000
 DEFAULT_FIRST_FETCH = "1 hour"
 # Default indicator types
 DEFAULT_INDICATOR_TYPES = ["ip", "host", "email", "url", "hash"]
+# Total number of indicator types
+TOTAL_INDICATOR_TYPES = len(DEFAULT_INDICATOR_TYPES)
 
 """ CLIENT CLASS """
 
@@ -188,36 +195,6 @@ class Client(BaseClient):
                 backoff_factor=BACKOFF_FACTOR,
             )
 
-            status_code = res.status_code
-
-            # Handle specific status codes with detailed error messages
-            if status_code not in VALID_CODES:
-                try:
-                    resp_json = res.json()
-                except ValueError:
-                    resp_json = {}
-
-                if status_code == 400:
-                    error_detail = resp_json.get("detail", resp_json.get("message", ""))
-                    raise DemistoException(
-                        f"Bad Request (400): {error_detail or 'Invalid argument or parameter in the request.'}"
-                    )
-                elif status_code == 401:
-                    raise DemistoException("Authentication Error (401): API key is invalid or expired.")
-                elif status_code == 403:
-                    raise DemistoException("Forbidden (403): Insufficient permissions to access this resource.")
-                elif status_code == 404:
-                    raise DemistoException("Not Found (404): The requested resource was not found.")
-                elif status_code == 429:
-                    raise DemistoException("Rate Limit Exceeded (429): Too many requests. Please try again later.")
-                elif 500 <= status_code < 600:
-                    raise DemistoException(
-                        f"Server Error ({status_code}): Internal server error occurred. Please try again later."
-                    )
-                else:
-                    err_msg = HTTP_ERRORS.get(status_code, f"Error in API call with status code {status_code}.")
-                    raise DemistoException(err_msg)
-
             try:
                 return res.json()
             except ValueError:
@@ -229,8 +206,6 @@ class Client(BaseClient):
                 err_msg += e.args[0].reason.args[0]
             except Exception:
                 err_msg += str(e)
-            finally:
-                self._is_valid_for_token_refresh = True
             raise DemistoException(err_msg) from e
 
         except DemistoException as e:
@@ -259,7 +234,7 @@ class Client(BaseClient):
         dga_flag: str = None,
         threat_class: list[str] = None,
         profile: list[str] = None,
-    ) -> dict[str, Any]:
+    ) -> list[dict[str, Any]]:
         """Retrieves indicators from the Infoblox Threat Intelligence Feed.
 
         Args:
@@ -272,7 +247,7 @@ class Client(BaseClient):
             profile (List[str], optional): Filter by profiles. Defaults to None.
 
         Returns:
-            Dict[str, Any]: Response containing threat indicators.
+            List[Dict[str, Any]]: Response containing threat indicators.
         """
         params: dict[str, Any] = {}
 
@@ -326,6 +301,38 @@ class Client(BaseClient):
 
 
 """ HELPER FUNCTIONS """
+
+
+def transform_keys(
+    data: dict[str, Any] | list[dict[str, Any]], key_mapping: dict[str, str]
+) -> dict[str, Any] | list[dict[str, Any]]:
+    """
+    Transform keys in a dictionary or list of dictionaries based on a key mapping.
+
+    Args:
+        data (dict[str, Any] | list[dict[str, Any]]): Dictionary, list of dictionaries, or any nested structure.
+        key_mapping (dict[str, str]): Dictionary mapping old keys to new keys.
+
+    Returns:
+        dict[str, Any] | list[dict[str, Any]]: Transformed data with keys renamed according to the mapping.
+    """
+    if isinstance(data, dict):
+        # Transform dictionary keys
+        transformed = {}
+        for key, value in data.items():
+            # Use mapped key if available, otherwise use original key
+            new_key = key_mapping.get(key, key)
+            # Recursively transform nested structures
+            transformed[new_key] = transform_keys(value, key_mapping)
+        return transformed
+
+    elif isinstance(data, list):
+        # Transform each item in the list
+        return [transform_keys(item, key_mapping) for item in data]  # type: ignore
+
+    else:
+        # Return primitive values as-is
+        return data
 
 
 def map_indicator_type(indicator_data: dict[str, Any]) -> tuple[str, str | None]:
@@ -433,14 +440,14 @@ def calculate_dbot_score(indicator_data: dict[str, Any]) -> int:
         int: DBot score (1=Unknown, 2=Suspicious, 3=Malicious).
     """
     threat_level = indicator_data.get("threat_level", 0)
-    confidence = indicator_data.get("confidence", 0)
 
-    if threat_level >= 80 or confidence >= 80:
-        return 3  # Malicious
-    elif threat_level >= 60 or confidence >= 60:
-        return 2  # Suspicious
-    else:
-        return 1  # Unknown
+    if threat_level >= 80:
+        return Common.DBotScore.BAD
+    if threat_level >= 30:
+        return Common.DBotScore.SUSPICIOUS
+    if threat_level > 0:
+        return Common.DBotScore.GOOD
+    return Common.DBotScore.NONE
 
 
 def validate_str_param(param: Any, param_name: str, required: bool = False) -> str:
@@ -724,7 +731,6 @@ def fetch_indicators_command(
         return [], {}
 
     indicators = []
-    # latest_fetch_time = last_fetch_time
 
     # Process indicators with detailed logging
     demisto.debug(f"Processing {len(indicators_data)} indicators")
@@ -816,8 +822,8 @@ def infoblox_get_indicators_command(client: Client, args: dict[str, Any], params
 
     if indicator_types and limit < len(indicator_types):  # type: ignore
         raise ValueError("Limit must be greater than or equal to the number of indicator types.")
-    elif not indicator_types and limit < 5:  # type: ignore
-        raise ValueError("Please provide indicator types when limit is less than 5.")
+    elif not indicator_types and limit < TOTAL_INDICATOR_TYPES:  # type: ignore
+        raise ValueError(f"Please provide indicator types when limit is less than {TOTAL_INDICATOR_TYPES}.")
 
     # Call API with validated parameters
     indicators_data = client.get_indicators(
@@ -883,7 +889,7 @@ def infoblox_get_indicators_command(client: Client, args: dict[str, Any], params
         readable_output=readable_output_md,
         outputs_prefix="Infoblox.FeedIndicator",
         outputs_key_field="id",
-        outputs=indicators_data,
+        outputs=transform_keys(indicators_data, RESPONSE_KEY_MAPPING),
         raw_response=indicators_data,
     )
 

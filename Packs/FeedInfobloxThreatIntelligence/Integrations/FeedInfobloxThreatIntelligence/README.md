@@ -67,7 +67,7 @@ Fetches a given limit of indicators from the Infoblox platform and displays them
 | Infoblox.FeedIndicator.threat_level | Number | Threat level of the indicator \(0-100\). |
 | Infoblox.FeedIndicator.threat_label | String | Threat label of the indicator. |
 | Infoblox.FeedIndicator.confidence | Number | Confidence level of the indicator \(0-100\). |
-| Infoblox.FeedIndicator.class | String | Threat class of the indicator. |
+| Infoblox.FeedIndicator.threat_class | String | Threat class of the indicator. |
 | Infoblox.FeedIndicator.property | String | Property of the indicator. |
 | Infoblox.FeedIndicator.profile | String | Profile of the indicator. |
 | Infoblox.FeedIndicator.detected | Date | Detection timestamp. |
@@ -100,7 +100,7 @@ Fetches a given limit of indicators from the Infoblox platform and displays them
 ```json
 {
     "Infoblox": {
-        "Indicator": [
+        "FeedIndicator": [
             {
                 "id": "00000000-0000-0000-0000-000000000001",
                 "type": "EMAIL",
@@ -110,7 +110,7 @@ Fetches a given limit of indicators from the Infoblox platform and displays them
                 "tld": "com",
                 "profile": "IID",
                 "property": "APT_testC2",
-                "class": "APT",
+                "threat_class": "APT",
                 "threat_level": 80,
                 "expiration": "2043-01-06T00:41:57.421Z",
                 "detected": "2023-01-11T00:41:57.421Z",
@@ -139,7 +139,7 @@ Fetches a given limit of indicators from the Infoblox platform and displays them
                 "ip": "0.0.0.0",
                 "profile": "IID",
                 "property": "APT_testC2",
-                "class": "APT",
+                "threat_class": "APT",
                 "threat_level": 100,
                 "expiration": "2042-11-01T09:29:18.721Z",
                 "detected": "2022-11-01T09:29:18.721Z",
@@ -170,7 +170,7 @@ Fetches a given limit of indicators from the Infoblox platform and displays them
                 "tld": "net",
                 "profile": "IID",
                 "property": "MalwareC2_testRAT",
-                "class": "MalwareC2",
+                "threat_class": "MalwareC2",
                 "threat_level": 100,
                 "threat_label": "LowProfileC2Beacon",
                 "expiration": "2026-04-15T23:54:58.665Z",
@@ -202,7 +202,7 @@ Fetches a given limit of indicators from the Infoblox platform and displays them
                 "hash_type": "SHA256",
                 "profile": "IID",
                 "property": "MalwareC2_Azorult",
-                "class": "MalwareC2",
+                "threat_class": "MalwareC2",
                 "threat_level": 100,
                 "expiration": "2025-08-25T20:00:34.12Z",
                 "detected": "2024-08-25T20:00:34.12Z",
@@ -224,7 +224,7 @@ Fetches a given limit of indicators from the Infoblox platform and displays them
                 "url": "http://0.0.0.0/example",
                 "profile": "IID",
                 "property": "MalwareC2_Generic",
-                "class": "MalwareC2",
+                "threat_class": "MalwareC2",
                 "threat_level": 100,
                 "expiration": "2025-10-01T10:32:58.891Z",
                 "detected": "2025-06-03T10:32:58.891Z",

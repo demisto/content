@@ -866,19 +866,19 @@ class TestHelperFunctions:
         """Test calculate_dbot_score for no threat level"""
         indicator_data = {}
         score = calculate_dbot_score(indicator_data)
-        assert score == 1  # Unknown
+        assert score == 0  # Unknown
 
     def test_calculate_dbot_score_high_confidence(self):
         """Test calculate_dbot_score for high confidence"""
-        indicator_data = {"threat_level": 50, "confidence": 90}
+        indicator_data = {"threat_level": 50}
         score = calculate_dbot_score(indicator_data)
-        assert score == 3  # Malicious due to high confidence
+        assert score == 2
 
     def test_calculate_dbot_score_medium_confidence(self):
         """Test calculate_dbot_score for medium confidence"""
-        indicator_data = {"threat_level": 30, "confidence": 70}
+        indicator_data = {"threat_level": 30}
         score = calculate_dbot_score(indicator_data)
-        assert score == 2  # Suspicious due to medium confidence
+        assert score == 2  # Suspicious due to medium threat level
 
     def test_map_indicator_type_invalid_data(self):
         """Test map_indicator_type with invalid data type"""

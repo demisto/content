@@ -317,7 +317,7 @@ script:
     - contextPath: Infoblox.FeedIndicator.confidence
       description: Confidence level of the indicator (0-100).
       type: Number
-    - contextPath: Infoblox.FeedIndicator.class
+    - contextPath: Infoblox.FeedIndicator.threat_class
       description: Threat class of the indicator.
       type: String
     - contextPath: Infoblox.FeedIndicator.property

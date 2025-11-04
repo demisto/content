@@ -2,7 +2,7 @@
 
 The **Infoblox Threat Intelligence Feed** integration enables Cortex XSOAR users to automatically ingest, enrich, and operationalize curated threat indicators from the Infoblox Threat Intelligence Data Exchange (TIDE) platform. This integration ensures your security operations have access to the latest, highly accurate, and prioritized threat data—empowering proactive defense and rapid response to emerging threats.
 
-## Key Features
+## What does this pack do?
 
 - **Automated Indicator Ingestion:** Seamlessly fetches and updates threat indicators from Infoblox TIDE into XSOAR.
 - **Comprehensive Indicator Support:** Ingests domains, IPs, URLs, emails, and file hashes with rich context.
