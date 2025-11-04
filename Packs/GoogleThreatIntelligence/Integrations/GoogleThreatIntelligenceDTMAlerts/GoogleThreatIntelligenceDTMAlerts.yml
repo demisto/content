@@ -6,7 +6,7 @@ display: Google Threat Intelligence - DTM Alerts
 fromversion: 6.10.0
 category: Data Enrichment & Threat Intelligence
 defaultmapperin: Google Threat Intelligence DTM Alerts - Incoming Mapper
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 description: This integration allows the creation of incidents based on DTM Alerts from Google Threat Intelligence.

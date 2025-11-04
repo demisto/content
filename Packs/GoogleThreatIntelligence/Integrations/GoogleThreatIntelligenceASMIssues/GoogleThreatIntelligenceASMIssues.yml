@@ -6,7 +6,7 @@ display: Google Threat Intelligence - ASM Issues
 fromversion: 6.10.0
 category: Data Enrichment & Threat Intelligence
 defaultmapperin: Google Threat Intelligence ASM Issues - Incoming Mapper
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 description: This integration allows the creation of incidents based on ASM Issues from Google Threat Intelligence.
