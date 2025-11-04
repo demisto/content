@@ -7,6 +7,8 @@ This integration was integrated and tested with version 2 of the Genesys Cloud P
 | **Parameter** | **Required** |
 | --- | --- |
 | Server URL | False |
+| Client ID | True |
+| Client Secret | True |
 | Trust any certificate (not secure) | False |
 | Use system proxy settings | False |
 | Fetch Events | False |
