@@ -182,6 +182,7 @@ Update workspace settings
 
 #### Context Output
 
+
 There is no context output for this command.
 
 ### anyllm-workspace-add-embedding
