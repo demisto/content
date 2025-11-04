@@ -17,7 +17,7 @@ This integration allows the creation of incidents based on DTM Alerts from Googl
 | Alert Severity | Fetch Alerts by the specified severity. | False |
 | Alert Tags | Fetch Alerts by the specified tags. | False |
 | Alert Match Value | Fetch Alerts by specified match value. | False |
-| Alert mscore | Fetch Alerts with mscore greater than or equal to the given value.<br/><br/>Note: The value can range in between from 0 to 100. | False |
+| Alert mscore | Fetch Alerts with mscore greater than or equal to the given value.<br/><br/>Note: Valid range is 0 to 100. | False |
 | Alert Search | Search Alerts and triggering documents using a Lucene query with text values joined by AND/OR. | False |
 | Use system proxy settings |  | False |
 | Trust any certificate (not secure) |  | False |
@@ -26,7 +26,7 @@ This integration allows the creation of incidents based on DTM Alerts from Googl
 
 Your API key can be found in your GoogleThreatIntelligence account user menu, clicking on your avatar:
 
-![How to get api key in GoogleThreatIntelligence](../../doc_files/ddeb298-Screen_Shot_2019-10-17_at_3_17_04_PM.png)
+![How to get api key in GoogleThreatIntelligence](../../doc_files/Google_Threat_intelligence_API_key.png)
 
 Your API key carries all your privileges, so keep it secure and don't share it with anyone.
 
@@ -69,79 +69,79 @@ Search the DTM Alerts with provided filter arguments.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.id | String | Unique identifier for the alert. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.monitor_id | String | Identifier of the monitoring source that generated the alert. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.__id | String | Unique document ID associated with the alert. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.__type | String | Type of document associated with the alert. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.body | String | Full content or message body of the alert. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.channel.channel_id | String | ID of the channel where the alert was observed. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.channel.channel_info.description | String | Description of the channel where the alert was detected. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.channel.channel_url | String | URL of the detected channel. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.channel.invite_url | String | Invite link of the detected channel, if available. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.channel.messenger.id | String | Identifier of the messenger platform linked to the alert. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.channel.messenger.name | String | Name of the messenger platform. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.channel.name | String | Name of the channel where the content was found. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.ingested | Date | Date and time when the document was ingested into the system. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.message_id | String | Identifier of the specific message triggering the alert. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.messenger.id | String | Messenger platform ID associated with the message. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.messenger.name | String | Name of the messenger platform associated with the message. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.sender.avatar_file.hashes.sha256 | String | SHA-256 hash of the sender's avatar file. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.sender.avatar_file.mime_type | String | MIME type of the sender's avatar file. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.sender.identity.first_name | String | First name of the sender. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.sender.identity.last_name | String | Last name of the sender. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.sender.identity.name | String | Full name of the sender. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.sender.telegram.name | String | Telegram username of the sender. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.sender.telegram.user_id | Number | Telegram user ID of the sender. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.source | String | Source of the document or content triggering the alert. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.timestamp | Date | Timestamp when the message or document was created. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.labels.id | String | Unique identifier of the label assigned to the alert. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.labels.classifier | String | Classifier name used for label assignment. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.labels.version | String | Version of the classifier or labeling process. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.labels.label | String | Name of the label assigned to the alert. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.labels.confidence | Number | Confidence score of the assigned label. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.labels.element_path | String | Path of the element where the label was applied. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.topics.id | String | Unique identifier of the extracted topic. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.topics.type | String | Type of the extracted topic. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.topics.value | String | Value of the extracted topic. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.topics.extractor | String | Name of the topic extraction tool. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.topics.extractor_version | String | Version of the topic extractor used. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.topics.entity_locations.element_path | String | Path of the element where the entity was detected. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.topics.entity_locations.offsets | Number | Character offsets of the detected entity in the document. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.topic_matches.topic_id | String | Identifier of the matched topic. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.topic_matches.value | String | Matched value for the topic. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.label_matches | Unknown | List of labels matched for the alert. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc_matches.match_path | String | Path within the document where a match occurred. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc_matches.locations.offsets | Number | Offset positions of the document match. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc_matches.locations.value | String | Value of the matched document content. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.tags | Unknown | Tags associated with the alert. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.created_at | Date | Date and time when the alert was created. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.updated_at | Date | Date and time when the alert was last updated. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.labels_url | String | URL to fetch labels associated with the alert. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.topics_url | String | URL to fetch topics associated with the alert. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc_url | String | URL of the original document related to the alert. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.status | String | Current status of the alert \(e.g., open, closed, triaged\). |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.alert_type | String | Type or category of the alert. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.alert_summary | String | Summary of the alert. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.title | String | Title of the alert. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.email_sent_at | String | Timestamp when the alert email was sent. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.indicator_mscore | Number | Malicious score of the indicator related to the alert. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.severity | String | Severity level of the alert \(e.g., low, medium, high\). |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.confidence | Number | Confidence score of the alert detection. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.aggregated_under_id | String | ID under which the alert has been aggregated. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.monitor_name | String | Name of the monitoring source that generated the alert. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.analysis | String | Analysis report or details associated with the alert. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.has_analysis | Boolean | Indicates whether the alert has an associated analysis. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.ai_doc_summary | String | AI-generated summary of the document related to the alert. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.similarity_score | Number | Similarity score between this alert and related alerts. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.severity_reasoning.rule | String | Rule used to determine the severity of the alert. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.confidence_reasoning.version | String | Version of the confidence reasoning model. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.confidence_reasoning.response_count | Number | Number of responses contributing to confidence reasoning. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.confidence_reasoning.malicious_count | Number | Number of malicious detections contributing to confidence. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.confidence_reasoning.benign_count | Number | Number of benign detections contributing to confidence. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.confidence_reasoning.confidence_count | Unknown | Total number of samples considered for confidence calculation. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.confidence_reasoning.explanation | Unknown | Explanation behind the confidence score. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.ignore | Boolean | Indicates if the alert should be ignored. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.monitor_version | Number | Version of the monitoring source generating the alert. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.id | String | Unique identifier for the alert. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.monitor_id | String | Identifier of the monitoring source that generated the alert. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.doc.__id | String | Unique document ID associated with the alert. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.doc.__type | String | Type of document associated with the alert. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.doc.body | String | Full content or message body of the alert. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.doc.channel.channel_id | String | ID of the channel where the alert was observed. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.doc.channel.channel_info.description | String | Description of the channel where the alert was detected. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.doc.channel.channel_url | String | URL of the detected channel. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.doc.channel.invite_url | String | Invite link of the detected channel, if available. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.doc.channel.messenger.id | String | Identifier of the messenger platform linked to the alert. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.doc.channel.messenger.name | String | Name of the messenger platform. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.doc.channel.name | String | Name of the channel where the content was found. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.doc.ingested | Date | Date and time when the document was ingested into the system. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.doc.message_id | String | Identifier of the specific message triggering the alert. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.doc.messenger.id | String | Messenger platform ID associated with the message. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.doc.messenger.name | String | Name of the messenger platform associated with the message. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.doc.sender.avatar_file.hashes.sha256 | String | SHA-256 hash of the sender's avatar file. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.doc.sender.avatar_file.mime_type | String | MIME type of the sender's avatar file. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.doc.sender.identity.first_name | String | First name of the sender. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.doc.sender.identity.last_name | String | Last name of the sender. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.doc.sender.identity.name | String | Full name of the sender. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.doc.sender.telegram.name | String | Telegram username of the sender. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.doc.sender.telegram.user_id | Number | Telegram user ID of the sender. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.doc.source | String | Source of the document or content triggering the alert. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.doc.timestamp | Date | Timestamp when the message or document was created. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.labels.id | String | Unique identifier of the label assigned to the alert. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.labels.classifier | String | Classifier name used for label assignment. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.labels.version | String | Version of the classifier or labeling process. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.labels.label | String | Name of the label assigned to the alert. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.labels.confidence | Number | Confidence score of the assigned label. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.labels.element_path | String | Path of the element where the label was applied. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.topics.id | String | Unique identifier of the extracted topic. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.topics.type | String | Type of the extracted topic. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.topics.value | String | Value of the extracted topic. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.topics.extractor | String | Name of the topic extraction tool. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.topics.extractor_version | String | Version of the topic extractor used. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.topics.entity_locations.element_path | String | Path of the element where the entity was detected. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.topics.entity_locations.offsets | Number | Character offsets of the detected entity in the document. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.topic_matches.topic_id | String | Identifier of the matched topic. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.topic_matches.value | String | Matched value for the topic. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.label_matches | List | List of labels matched for the alert. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.doc_matches.match_path | String | Path within the document where a match occurred. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.doc_matches.locations.offsets | Number | Offset positions of the document match. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.doc_matches.locations.value | String | Value of the matched document content. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.tags | List | Tags associated with the alert. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.created_at | Date | Date and time when the alert was created. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.updated_at | Date | Date and time when the alert was last updated. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.labels_url | String | URL to fetch labels associated with the alert. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.topics_url | String | URL to fetch topics associated with the alert. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.doc_url | String | URL of the original document related to the alert. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.status | String | Current status of the alert \(e.g., open, closed, triaged\). |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.alert_type | String | Type or category of the alert. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.alert_summary | String | Summary of the alert. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.title | String | Title of the alert. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.email_sent_at | String | Timestamp when the alert email was sent. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.indicator_mscore | Number | Malicious score of the indicator related to the alert. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.severity | String | Severity level of the alert \(e.g., low, medium, high\). |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.confidence | Number | Confidence score of the alert detection. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.aggregated_under_id | String | ID under which the alert has been aggregated. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.monitor_name | String | Name of the monitoring source that generated the alert. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.analysis | String | Analysis report or details associated with the alert. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.has_analysis | Boolean | Indicates whether the alert has an associated analysis. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.ai_doc_summary | String | AI-generated summary of the document related to the alert. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.similarity_score | Number | Similarity score between this alert and related alerts. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.severity_reasoning.rule | String | Rule used to determine the severity of the alert. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.confidence_reasoning.version | String | Version of the confidence reasoning model. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.confidence_reasoning.response_count | Number | Number of responses contributing to confidence reasoning. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.confidence_reasoning.malicious_count | Number | Number of malicious detections contributing to confidence. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.confidence_reasoning.benign_count | Number | Number of benign detections contributing to confidence. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.confidence_reasoning.confidence_count | Number | Total number of samples considered for confidence calculation. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.confidence_reasoning.explanation | String | Explanation behind the confidence score. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.ignore | Boolean | Indicates if the alert should be ignored. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.monitor_version | Number | Version of the monitoring source generating the alert. |
 
 #### Command example
 
@@ -472,8 +472,8 @@ Search the DTM Alerts with provided filter arguments.
 >
 >|Alert ID|Title|Alert Summary|Alert Type|Severity|Status|Monitor ID|Monitor Name|Indicator Score|Created At|Updated At|Tags|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
->| dummy_0000 | Found topic "google" posted by actor "sevenbump" on channel "social" | This message advertises a service that provides fraudulent Google verification badges for any account. <br> | Message | Low | Read | dummy_monitor_id | Initial Access Broker | 11 | 2025-05-21T11:28:02.646Z | 2025-05-22T07:09:51.257Z | attempt,<br>Test |
->| dummy_0001 | Found topic "Google" posted by actor "sevenbump" on Google channel "social" | This message advertises a service that offers unauthorized google account.<br> | Message | Low | Read | dummy_monitor_id | Initial Access Broker | 11 | 2025-05-21T10:19:04.241Z | 2025-05-22T07:09:51.257Z | attempt |
+>| dummy_0000 | Found topic "google" posted by actor "sevenbump" on channel "social" | This message advertises a service that provides fraudulent Google verification badges for any account. <br/> | Message | Low | Read | dummy_monitor_id | Initial Access Broker | 11 | 2025-05-21T11:28:02.646Z | 2025-05-22T07:09:51.257Z | attempt,<br/>Test |
+>| dummy_0001 | Found topic "Google" posted by actor "sevenbump" on Google channel "social" | This message advertises a service that offers unauthorized google account.<br/> | Message | Low | Read | dummy_monitor_id | Initial Access Broker | 11 | 2025-05-21T10:19:04.241Z | 2025-05-22T07:09:51.257Z | attempt |
 
 ### gti-dtm-alert-get
 
@@ -497,77 +497,77 @@ Get a particular DTM Alert by ID.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.id | String | Unique identifier for the alert. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.monitor_id | String | Identifier of the monitoring source that generated the alert. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.__id | String | Unique document ID associated with the alert. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.__type | String | Type of document associated with the alert. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.body | String | Full content or message body of the alert. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.channel.channel_id | String | ID of the channel where the alert was observed. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.channel.channel_info.description | String | Description of the channel where the alert was detected. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.channel.channel_url | String | URL of the detected channel. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.channel.invite_url | String | Invite link of the detected channel, if available. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.channel.messenger.id | String | Identifier of the messenger platform linked to the alert. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.channel.messenger.name | String | Name of the messenger platform. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.channel.name | String | Name of the channel where the content was found. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.ingested | Date | Date and time when the document was ingested into the system. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.message_id | String | Identifier of the specific message triggering the alert. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.messenger.id | String | Messenger platform ID associated with the message. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.messenger.name | String | Name of the messenger platform associated with the message. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.sender.avatar_file.hashes.sha256 | String | SHA-256 hash of the sender's avatar file. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.sender.avatar_file.mime_type | String | MIME type of the sender's avatar file. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.sender.identity.first_name | String | First name of the sender. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.sender.identity.last_name | String | Last name of the sender. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.sender.identity.name | String | Full name of the sender. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.sender.telegram.name | String | Telegram username of the sender. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.sender.telegram.user_id | Number | Telegram user ID of the sender. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.source | String | Source of the document or content triggering the alert. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.timestamp | Date | Timestamp when the message or document was created. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.labels.id | String | Unique identifier of the label assigned to the alert. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.labels.classifier | String | Classifier name used for label assignment. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.labels.version | String | Version of the classifier or labeling process. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.labels.label | String | Name of the label assigned to the alert. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.labels.confidence | Number | Confidence score of the assigned label. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.labels.element_path | String | Path of the element where the label was applied. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.topics.id | String | Unique identifier of the extracted topic. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.topics.type | String | Type of the extracted topic. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.topics.value | String | Value of the extracted topic. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.topics.extractor | String | Name of the topic extraction tool. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.topics.extractor_version | String | Version of the topic extractor used. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.topics.entity_locations.element_path | String | Path of the element where the entity was detected. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.topics.entity_locations.offsets | Number | Character offsets of the detected entity in the document. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.topic_matches.topic_id | String | Identifier of the matched topic. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.topic_matches.value | String | Matched value for the topic. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.label_matches | Unknown | List of labels matched for the alert. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc_matches.match_path | String | Path within the document where a match occurred. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc_matches.locations.offsets | Number | Offset positions of the document match. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc_matches.locations.value | String | Value of the matched document content. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.tags | Unknown | Tags associated with the alert. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.created_at | Date | Date and time when the alert was created. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.updated_at | Date | Date and time when the alert was last updated. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.labels_url | String | URL to fetch labels associated with the alert. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.topics_url | String | URL to fetch topics associated with the alert. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc_url | String | URL of the original document related to the alert. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.status | String | Current status of the alert \(e.g., open, closed, triaged\). |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.alert_type | String | Type or category of the alert. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.alert_summary | String | Summary of the alert. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.title | String | Title of the alert. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.email_sent_at | String | Timestamp when the alert email was sent. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.indicator_mscore | Number | Malicious score of the indicator related to the alert. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.severity | String | Severity level of the alert \(e.g., low, medium, high\). |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.confidence | Number | Confidence score of the alert detection. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.aggregated_under_id | String | ID under which the alert has been aggregated. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.has_analysis | Boolean | Indicates whether the alert has an associated analysis. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.ai_doc_summary | String | AI-generated summary of the document related to the alert. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.similarity_score | Number | Similarity score between this alert and related alerts. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.severity_reasoning.rule | String | Rule used to determine the severity of the alert. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.confidence_reasoning.version | String | Version of the confidence reasoning model. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.confidence_reasoning.response_count | Number | Number of responses contributing to confidence reasoning. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.confidence_reasoning.malicious_count | Number | Number of malicious detections contributing to confidence. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.confidence_reasoning.benign_count | Number | Number of benign detections contributing to confidence. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.confidence_reasoning.confidence_count | Unknown | Total number of samples considered for confidence calculation. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.confidence_reasoning.explanation | Unknown | Explanation behind the confidence score. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.ignore | Boolean | Indicates if the alert should be ignored. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.monitor_version | Number | Version of the monitoring source generating the alert. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.id | String | Unique identifier for the alert. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.monitor_id | String | Identifier of the monitoring source that generated the alert. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.doc.__id | String | Unique document ID associated with the alert. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.doc.__type | String | Type of document associated with the alert. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.doc.body | String | Full content or message body of the alert. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.doc.channel.channel_id | String | ID of the channel where the alert was observed. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.doc.channel.channel_info.description | String | Description of the channel where the alert was detected. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.doc.channel.channel_url | String | URL of the detected channel. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.doc.channel.invite_url | String | Invite link of the detected channel, if available. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.doc.channel.messenger.id | String | Identifier of the messenger platform linked to the alert. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.doc.channel.messenger.name | String | Name of the messenger platform. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.doc.channel.name | String | Name of the channel where the content was found. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.doc.ingested | Date | Date and time when the document was ingested into the system. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.doc.message_id | String | Identifier of the specific message triggering the alert. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.doc.messenger.id | String | Messenger platform ID associated with the message. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.doc.messenger.name | String | Name of the messenger platform associated with the message. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.doc.sender.avatar_file.hashes.sha256 | String | SHA-256 hash of the sender's avatar file. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.doc.sender.avatar_file.mime_type | String | MIME type of the sender's avatar file. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.doc.sender.identity.first_name | String | First name of the sender. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.doc.sender.identity.last_name | String | Last name of the sender. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.doc.sender.identity.name | String | Full name of the sender. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.doc.sender.telegram.name | String | Telegram username of the sender. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.doc.sender.telegram.user_id | Number | Telegram user ID of the sender. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.doc.source | String | Source of the document or content triggering the alert. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.doc.timestamp | Date | Timestamp when the message or document was created. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.labels.id | String | Unique identifier of the label assigned to the alert. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.labels.classifier | String | Classifier name used for label assignment. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.labels.version | String | Version of the classifier or labeling process. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.labels.label | String | Name of the label assigned to the alert. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.labels.confidence | Number | Confidence score of the assigned label. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.labels.element_path | String | Path of the element where the label was applied. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.topics.id | String | Unique identifier of the extracted topic. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.topics.type | String | Type of the extracted topic. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.topics.value | String | Value of the extracted topic. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.topics.extractor | String | Name of the topic extraction tool. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.topics.extractor_version | String | Version of the topic extractor used. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.topics.entity_locations.element_path | String | Path of the element where the entity was detected. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.topics.entity_locations.offsets | Number | Character offsets of the detected entity in the document. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.topic_matches.topic_id | String | Identifier of the matched topic. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.topic_matches.value | String | Matched value for the topic. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.label_matches | List | List of labels matched for the alert. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.doc_matches.match_path | String | Path within the document where a match occurred. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.doc_matches.locations.offsets | Number | Offset positions of the document match. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.doc_matches.locations.value | String | Value of the matched document content. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.tags | List | Tags associated with the alert. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.created_at | Date | Date and time when the alert was created. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.updated_at | Date | Date and time when the alert was last updated. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.labels_url | String | URL to fetch labels associated with the alert. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.topics_url | String | URL to fetch topics associated with the alert. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.doc_url | String | URL of the original document related to the alert. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.status | String | Current status of the alert \(e.g., open, closed, triaged\). |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.alert_type | String | Type or category of the alert. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.alert_summary | String | Summary of the alert. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.title | String | Title of the alert. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.email_sent_at | String | Timestamp when the alert email was sent. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.indicator_mscore | Number | Malicious score of the indicator related to the alert. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.severity | String | Severity level of the alert \(e.g., low, medium, high\). |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.confidence | Number | Confidence score of the alert detection. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.aggregated_under_id | String | ID under which the alert has been aggregated. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.has_analysis | Boolean | Indicates whether the alert has an associated analysis. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.ai_doc_summary | String | AI-generated summary of the document related to the alert. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.similarity_score | Number | Similarity score between this alert and related alerts. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.severity_reasoning.rule | String | Rule used to determine the severity of the alert. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.confidence_reasoning.version | String | Version of the confidence reasoning model. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.confidence_reasoning.response_count | Number | Number of responses contributing to confidence reasoning. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.confidence_reasoning.malicious_count | Number | Number of malicious detections contributing to confidence. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.confidence_reasoning.benign_count | Number | Number of benign detections contributing to confidence. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.confidence_reasoning.confidence_count | Number | Total number of samples considered for confidence calculation. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.confidence_reasoning.explanation | String | Explanation behind the confidence score. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.ignore | Boolean | Indicates if the alert should be ignored. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.monitor_version | Number | Version of the monitoring source generating the alert. |
 
 #### Command example
 
@@ -778,77 +778,77 @@ Update the status of DTM alert.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.id | String | Unique identifier for the alert. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.monitor_id | String | Identifier of the monitoring source that generated the alert. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.__id | String | Unique document ID associated with the alert. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.__type | String | Type of document associated with the alert. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.body | String | Full content or message body of the alert. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.channel.channel_id | String | ID of the channel where the alert was observed. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.channel.channel_info.description | String | Description of the channel where the alert was detected. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.channel.channel_url | String | URL of the detected channel. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.channel.invite_url | String | Invite link of the detected channel, if available. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.channel.messenger.id | String | Identifier of the messenger platform linked to the alert. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.channel.messenger.name | String | Name of the messenger platform. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.channel.name | String | Name of the channel where the content was found. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.ingested | Date | Date and time when the document was ingested into the system. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.message_id | String | Identifier of the specific message triggering the alert. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.messenger.id | String | Messenger platform ID associated with the message. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.messenger.name | String | Name of the messenger platform associated with the message. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.sender.avatar_file.hashes.sha256 | String | SHA-256 hash of the sender's avatar file. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.sender.avatar_file.mime_type | String | MIME type of the sender's avatar file. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.sender.identity.first_name | String | First name of the sender. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.sender.identity.last_name | String | Last name of the sender. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.sender.identity.name | String | Full name of the sender. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.sender.telegram.name | String | Telegram username of the sender. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.sender.telegram.user_id | Number | Telegram user ID of the sender. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.source | String | Source of the document or content triggering the alert. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.timestamp | Date | Timestamp when the message or document was created. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.labels.id | String | Unique identifier of the label assigned to the alert. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.labels.classifier | String | Classifier name used for label assignment. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.labels.version | String | Version of the classifier or labeling process. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.labels.label | String | Name of the label assigned to the alert. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.labels.confidence | Number | Confidence score of the assigned label. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.labels.element_path | String | Path of the element where the label was applied. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.topics.id | String | Unique identifier of the extracted topic. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.topics.type | String | Type of the extracted topic. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.topics.value | String | Value of the extracted topic. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.topics.extractor | String | Name of the topic extraction tool. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.topics.extractor_version | String | Version of the topic extractor used. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.topics.entity_locations.element_path | String | Path of the element where the entity was detected. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.topics.entity_locations.offsets | Number | Character offsets of the detected entity in the document. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.topic_matches.topic_id | String | Identifier of the matched topic. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.topic_matches.value | String | Matched value for the topic. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.label_matches | Unknown | List of labels matched for the alert. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc_matches.match_path | String | Path within the document where a match occurred. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc_matches.locations.offsets | Number | Offset positions of the document match. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc_matches.locations.value | String | Value of the matched document content. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.tags | Unknown | Tags associated with the alert. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.created_at | Date | Date and time when the alert was created. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.updated_at | Date | Date and time when the alert was last updated. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.labels_url | String | URL to fetch labels associated with the alert. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.topics_url | String | URL to fetch topics associated with the alert. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc_url | String | URL of the original document related to the alert. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.status | String | Current status of the alert \(e.g., open, closed, triaged\). |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.alert_type | String | Type or category of the alert. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.alert_summary | String | Summary of the alert. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.title | String | Title of the alert. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.email_sent_at | String | Timestamp when the alert email was sent. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.indicator_mscore | Number | Malicious score of the indicator related to the alert. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.severity | String | Severity level of the alert \(e.g., low, medium, high\). |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.confidence | Number | Confidence score of the alert detection. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.aggregated_under_id | String | ID under which the alert has been aggregated. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.has_analysis | Boolean | Indicates whether the alert has an associated analysis. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.ai_doc_summary | String | AI-generated summary of the document related to the alert. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.similarity_score | Number | Similarity score between this alert and related alerts. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.severity_reasoning.rule | String | Rule used to determine the severity of the alert. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.confidence_reasoning.version | String | Version of the confidence reasoning model. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.confidence_reasoning.response_count | Number | Number of responses contributing to confidence reasoning. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.confidence_reasoning.malicious_count | Number | Number of malicious detections contributing to confidence. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.confidence_reasoning.benign_count | Number | Number of benign detections contributing to confidence. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.confidence_reasoning.confidence_count | Unknown | Total number of samples considered for confidence calculation. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.confidence_reasoning.explanation | Unknown | Explanation behind the confidence score. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.ignore | Boolean | Indicates if the alert should be ignored. |
-| GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.monitor_version | Number | Version of the monitoring source generating the alert. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.id | String | Unique identifier for the alert. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.monitor_id | String | Identifier of the monitoring source that generated the alert. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.doc.__id | String | Unique document ID associated with the alert. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.doc.__type | String | Type of document associated with the alert. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.doc.body | String | Full content or message body of the alert. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.doc.channel.channel_id | String | ID of the channel where the alert was observed. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.doc.channel.channel_info.description | String | Description of the channel where the alert was detected. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.doc.channel.channel_url | String | URL of the detected channel. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.doc.channel.invite_url | String | Invite link of the detected channel, if available. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.doc.channel.messenger.id | String | Identifier of the messenger platform linked to the alert. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.doc.channel.messenger.name | String | Name of the messenger platform. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.doc.channel.name | String | Name of the channel where the content was found. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.doc.ingested | Date | Date and time when the document was ingested into the system. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.doc.message_id | String | Identifier of the specific message triggering the alert. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.doc.messenger.id | String | Messenger platform ID associated with the message. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.doc.messenger.name | String | Name of the messenger platform associated with the message. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.doc.sender.avatar_file.hashes.sha256 | String | SHA-256 hash of the sender's avatar file. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.doc.sender.avatar_file.mime_type | String | MIME type of the sender's avatar file. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.doc.sender.identity.first_name | String | First name of the sender. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.doc.sender.identity.last_name | String | Last name of the sender. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.doc.sender.identity.name | String | Full name of the sender. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.doc.sender.telegram.name | String | Telegram username of the sender. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.doc.sender.telegram.user_id | Number | Telegram user ID of the sender. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.doc.source | String | Source of the document or content triggering the alert. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.doc.timestamp | Date | Timestamp when the message or document was created. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.labels.id | String | Unique identifier of the label assigned to the alert. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.labels.classifier | String | Classifier name used for label assignment. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.labels.version | String | Version of the classifier or labeling process. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.labels.label | String | Name of the label assigned to the alert. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.labels.confidence | Number | Confidence score of the assigned label. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.labels.element_path | String | Path of the element where the label was applied. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.topics.id | String | Unique identifier of the extracted topic. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.topics.type | String | Type of the extracted topic. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.topics.value | String | Value of the extracted topic. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.topics.extractor | String | Name of the topic extraction tool. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.topics.extractor_version | String | Version of the topic extractor used. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.topics.entity_locations.element_path | String | Path of the element where the entity was detected. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.topics.entity_locations.offsets | Number | Character offsets of the detected entity in the document. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.topic_matches.topic_id | String | Identifier of the matched topic. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.topic_matches.value | String | Matched value for the topic. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.label_matches | List | List of labels matched for the alert. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.doc_matches.match_path | String | Path within the document where a match occurred. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.doc_matches.locations.offsets | Number | Offset positions of the document match. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.doc_matches.locations.value | String | Value of the matched document content. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.tags | List | Tags associated with the alert. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.created_at | Date | Date and time when the alert was created. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.updated_at | Date | Date and time when the alert was last updated. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.labels_url | String | URL to fetch labels associated with the alert. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.topics_url | String | URL to fetch topics associated with the alert. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.doc_url | String | URL of the original document related to the alert. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.status | String | Current status of the alert \(e.g., open, closed, triaged\). |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.alert_type | String | Type or category of the alert. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.alert_summary | String | Summary of the alert. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.title | String | Title of the alert. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.email_sent_at | String | Timestamp when the alert email was sent. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.indicator_mscore | Number | Malicious score of the indicator related to the alert. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.severity | String | Severity level of the alert \(e.g., low, medium, high\). |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.confidence | Number | Confidence score of the alert detection. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.aggregated_under_id | String | ID under which the alert has been aggregated. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.has_analysis | Boolean | Indicates whether the alert has an associated analysis. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.ai_doc_summary | String | AI-generated summary of the document related to the alert. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.similarity_score | Number | Similarity score between this alert and related alerts. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.severity_reasoning.rule | String | Rule used to determine the severity of the alert. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.confidence_reasoning.version | String | Version of the confidence reasoning model. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.confidence_reasoning.response_count | Number | Number of responses contributing to confidence reasoning. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.confidence_reasoning.malicious_count | Number | Number of malicious detections contributing to confidence. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.confidence_reasoning.benign_count | Number | Number of benign detections contributing to confidence. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.confidence_reasoning.confidence_count | Number | Total number of samples considered for confidence calculation. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.confidence_reasoning.explanation | String | Explanation behind the confidence score. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.ignore | Boolean | Indicates if the alert should be ignored. |
+| GoogleThreatIntelligenceDTMAlerts.Alerts.monitor_version | Number | Version of the monitoring source generating the alert. |
 
 #### Command example
 

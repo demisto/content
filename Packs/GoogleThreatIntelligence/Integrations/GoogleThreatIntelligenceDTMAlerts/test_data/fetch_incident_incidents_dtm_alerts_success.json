@@ -8,6 +8,10 @@
                 "__id": "dummy_doc_00",
                 "__type": "message",
                 "body": "this is body message for dummy alert 00",
+                "description":"This is description for dummay aler_00.",
+                "item_type":"mail",
+                "raw_text":"This is raw text for dummy alert 00.",
+                "title":"alert title for dtm alert 00",
                 "channel": {
                     "channel_id": "-1001596019399",
                     "channel_info": {
@@ -149,6 +153,10 @@
                 "__id": "dummy_id_01",
                 "__type": "message",
                 "body": "this is body message for dummy alert 01",
+                "description":"This is description for dummay aler_01.",
+                "item_type":"mail",
+                "raw_text":"This is raw text for dummy alert 01.",
+                "title":"alert title for dtm alert 00",
                 "channel": {
                     "channel_id": "-1001596019399",
                     "channel_info": {
@@ -298,6 +306,10 @@
                 "__id": "dummy_doc_00",
                 "__type": "message",
                 "body": "dummy body with multiple lines\ndummy body with multiple lines\ndummy body with multiple lines",
+                "description":"This is description for dummay aler_0001.",
+                "raw_text":"This is raw text for dummy alert 0001.",
+                "title":"alert title for dtm alert 0001",
+                "item_type":"mail",
                 "channel": {
                     "channel_id": "-1001596019399",
                     "channel_info": {

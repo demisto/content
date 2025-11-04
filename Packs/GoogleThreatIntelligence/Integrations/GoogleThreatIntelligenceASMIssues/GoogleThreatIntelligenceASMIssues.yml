@@ -11,8 +11,7 @@ sectionOrder:
 - Collect
 description: This integration allows the creation of incidents based on ASM Issues from Google Threat Intelligence.
 configuration:
-- display: API Key
-  displaypassword: API Key
+- displaypassword: API Key
   name: credentials
   type: 9
   required: true
@@ -185,19 +184,19 @@ script:
       type: String
     - contextPath: GoogleThreatIntelligenceASMIssues.Issues.summary.ticket_list
       description: List of linked tickets associated with the issue.
-      type: list
+      type: List
     - contextPath: GoogleThreatIntelligenceASMIssues.Issues.tags
       description: Tags associated with the issue for classification.
-      type: list
+      type: List
     - contextPath: GoogleThreatIntelligenceASMIssues.Issues.cisa_known_exploited
       description: Indicates whether the issue is part of CISA's Known Exploited Vulnerabilities list.
       type: Boolean
     - contextPath: GoogleThreatIntelligenceASMIssues.Issues.epss_v2_score_lte
       description: EPSS v2 score indicating likelihood of exploitation (less than or equal).
-      type: Unknown
+      type: Number
     - contextPath: GoogleThreatIntelligenceASMIssues.Issues.epss_v2_percentile_gte
       description: EPSS v2 percentile indicating exploitation probability (greater than or equal).
-      type: Unknown
+      type: Number
   - name: gti-asm-issue-get
     description: Get a particular ASM Issue by ID.
     arguments:
@@ -372,10 +371,10 @@ script:
       type: String
     - contextPath: GoogleThreatIntelligenceASMIssues.Issues.summary.ticket_list
       description: List of tickets associated with the issue summary.
-      type: list
+      type: List
     - contextPath: GoogleThreatIntelligenceASMIssues.Issues.tags
       description: Tags assigned to the issue for categorization.
-      type: list
+      type: List
   - name: gti-asm-issue-status-update
     description: Update the status of an ASM Issue.
     arguments:
@@ -420,4 +419,4 @@ script:
   isfetch: true
   isremotesyncout: true
 tests:
-- GoogleThreatIntelligenceASMIssues-test
+- No tests (auto formatted)

@@ -757,7 +757,7 @@ def gti_dtm_alert_list_command(client: Client, args: dict) -> CommandResults:
     )
 
 
-def gti_dtm_alert_status_command(client: Client, args: dict) -> CommandResults:
+def gti_dtm_alert_status_update_command(client: Client, args: dict) -> CommandResults:
     """
     Update DTM alert status for the specified alert ID.
 
@@ -1044,7 +1044,7 @@ def main():
     commands: dict[str, Callable] = {
         "gti-dtm-alert-list": gti_dtm_alert_list_command,
         "gti-dtm-alert-get": gti_dtm_alert_get_command,
-        "gti-dtm-alert-status-update": gti_dtm_alert_status_command,
+        "gti-dtm-alert-status-update": gti_dtm_alert_status_update_command,
     }
     try:
         result = None

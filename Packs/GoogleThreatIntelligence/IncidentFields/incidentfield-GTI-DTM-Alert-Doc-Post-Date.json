@@ -4,7 +4,7 @@
     "modified": "2025-09-01T20:40:34.376653444+05:30",
     "name": "GTI DTM Alert Doc Post Date",
     "ownerOnly": false,
-    "description": "Post Date of the  document associated with the alert.",
+    "description": "Post Date of the document associated with the alert.",
     "cliName": "gtidtmalertdocpostdate",
     "type": "date",
     "closeForm": false,

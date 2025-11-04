@@ -1,13 +1,17 @@
-### Authorization:
+## Google Threat Intelligence - ASM Issues
+
+To use the integration, an API Key will be required from your Google Threat Intelligence account.
+
+## Authorization:
 
 Your API key can be found in your Google Threat Intelligence account user menu, clicking on your avatar.
 Your API key carries all your privileges, so keep it secure and don't share it with anyone.
 
 ### Instance Configuration
 
-1. Configure an Google Threat Intelligence - ASM Issues integration instance with valid API Key.
+1. Configure a Google Threat Intelligence - ASM Issues integration instance with valid API Key.
 2. Click **Test** to validate the connection.
-3. To fetch ASM Issues as an incidents in XSOAR, select the option `Fetches incidents` and follow the table to update configuration parameters.
+3. To fetch ASM Issues as incidents in XSOAR, select the option `Fetches incidents` and follow the table to update configuration parameters.
 
 | **Parameter** | **Description** |
 | --- | --- |

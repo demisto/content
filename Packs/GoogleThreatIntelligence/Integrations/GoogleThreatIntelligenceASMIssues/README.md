@@ -21,7 +21,7 @@ This integration allows the creation of incidents based on ASM Issues from Googl
 
 Your API key can be found in your GoogleThreatIntelligence account user menu, clicking on your avatar:
 
-![How to get api key in GoogleThreatIntelligence](../../doc_files/ddeb298-Screen_Shot_2019-10-17_at_3_17_04_PM.png)
+![How to get api key in GoogleThreatIntelligence](../../doc_files/Google_Threat_intelligence_API_key.png)
 
 Your API key carries all your privileges, so keep it secure and don't share it with anyone.
 
@@ -79,11 +79,11 @@ Search the ASM Issues with provided filter arguments.
 | GoogleThreatIntelligenceASMIssues.Issues.summary.identifiers.type | String | Type of identifier linked to the issue. |
 | GoogleThreatIntelligenceASMIssues.Issues.summary.status_new | String | Updated status of the issue based on latest assessment. |
 | GoogleThreatIntelligenceASMIssues.Issues.summary.status_new_detailed | String | Detailed description of the updated issue status. |
-| GoogleThreatIntelligenceASMIssues.Issues.summary.ticket_list | list | List of linked tickets associated with the issue. |
-| GoogleThreatIntelligenceASMIssues.Issues.tags | list | Tags associated with the issue for classification. |
+| GoogleThreatIntelligenceASMIssues.Issues.summary.ticket_list | List | List of linked tickets associated with the issue. |
+| GoogleThreatIntelligenceASMIssues.Issues.tags | List | Tags associated with the issue for classification. |
 | GoogleThreatIntelligenceASMIssues.Issues.cisa_known_exploited | Boolean | Indicates whether the issue is part of CISA's Known Exploited Vulnerabilities list. |
-| GoogleThreatIntelligenceASMIssues.Issues.epss_v2_score_lte | Unknown | EPSS v2 score indicating likelihood of exploitation \(less than or equal\). |
-| GoogleThreatIntelligenceASMIssues.Issues.epss_v2_percentile_gte | Unknown | EPSS v2 percentile indicating exploitation probability \(greater than or equal\). |
+| GoogleThreatIntelligenceASMIssues.Issues.epss_v2_score_lte | Number | EPSS v2 score indicating likelihood of exploitation \(less than or equal\). |
+| GoogleThreatIntelligenceASMIssues.Issues.epss_v2_percentile_gte | Number | EPSS v2 percentile indicating exploitation probability \(greater than or equal\). |
 
 #### Command example
 
@@ -258,8 +258,8 @@ Get a particular ASM Issue by ID.
 | GoogleThreatIntelligenceASMIssues.Issues.summary.identifiers | List | Identifiers included in the issue summary. |
 | GoogleThreatIntelligenceASMIssues.Issues.summary.status_new | String | Updated status of the issue summary. |
 | GoogleThreatIntelligenceASMIssues.Issues.summary.status_new_detailed | String | Detailed description of the updated issue summary status. |
-| GoogleThreatIntelligenceASMIssues.Issues.summary.ticket_list | list | List of tickets associated with the issue summary. |
-| GoogleThreatIntelligenceASMIssues.Issues.tags | list | Tags assigned to the issue for categorization. |
+| GoogleThreatIntelligenceASMIssues.Issues.summary.ticket_list | List | List of tickets associated with the issue summary. |
+| GoogleThreatIntelligenceASMIssues.Issues.tags | List | Tags assigned to the issue for categorization. |
 
 #### Command example
 

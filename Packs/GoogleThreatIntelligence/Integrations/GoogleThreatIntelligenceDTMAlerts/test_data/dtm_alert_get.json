@@ -137,5 +137,6 @@
         "benign_count": 0
     },
     "ignore": false,
+    "tags":["test"],
     "monitor_version": 1
 }

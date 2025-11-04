@@ -4,7 +4,7 @@
     "modified": "2025-09-02T12:02:17.579896834+05:30",
     "name": "GTI DTM Alert Doc Similar Domains",
     "ownerOnly": false,
-    "description": "Similar Domains of the document  associated with the alert.",
+    "description": "Similar Domains of the document associated with the alert.",
     "cliName": "gtidtmalertdocsimilardomains",
     "type": "multiSelect",
     "closeForm": false,

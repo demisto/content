@@ -315,7 +315,7 @@ def test_gti_dtm_alerts_list_command_success(mock_client, requests_mock):
         "mscore_gte": "11",
         "include_more_details": "Yes",
         "include_monitor_name": "Yes",
-        "has_analysis": "False",
+        "has_analysis": "True",
         "search": "social",
         "match_value": "access",
     }
@@ -374,7 +374,7 @@ def test_gti_dtm_alerts_list_command_when_invalid_input(args, mocker, exception,
     assert str(e.value) == error
 
 
-def test_gti_dtm_alerts_no_records_found(mock_client, requests_mock):
+def test_gti_dtm_alerts_list_no_records_found(mock_client, requests_mock):
     """
     Given:
     - No records found
@@ -424,7 +424,7 @@ def test_gti_update_dtm_alert_status_command_success(mock_client, requests_mock)
     Then:
     - Validate the command results are valid
     """
-    from GoogleThreatIntelligenceDTMAlerts import gti_dtm_alert_status_command
+    from GoogleThreatIntelligenceDTMAlerts import gti_dtm_alert_status_update_command
 
     mock_response = util_load_json("test_data/dtm_alert_status_update.json")
     with open(
@@ -438,7 +438,7 @@ def test_gti_update_dtm_alert_status_command_success(mock_client, requests_mock)
     }
     requests_mock.patch(f"{BASE_URL}/dtm/alerts/dummy_alert_id", json=mock_response)
 
-    results = gti_dtm_alert_status_command(mock_client, test_args)
+    results = gti_dtm_alert_status_update_command(mock_client, test_args)
 
     assert results.readable_output == dtm_alert_list_hr
     assert results.outputs == [mock_response]
@@ -467,10 +467,10 @@ def test_gti_update_dtm_alert_status_command_when_invalid_input(args, mock_clien
     Then:
     - Validate the command results are valid
     """
-    from GoogleThreatIntelligenceDTMAlerts import gti_dtm_alert_status_command
+    from GoogleThreatIntelligenceDTMAlerts import gti_dtm_alert_status_update_command
 
     with pytest.raises(exception) as e:
-        gti_dtm_alert_status_command(mock_client, args)
+        gti_dtm_alert_status_update_command(mock_client, args)
 
     assert str(e.value) == error
 

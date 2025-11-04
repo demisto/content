@@ -11,8 +11,7 @@ sectionOrder:
 - Collect
 description: This integration allows the creation of incidents based on DTM Alerts from Google Threat Intelligence.
 configuration:
-- display: API Key
-  displaypassword: API Key
+- displaypassword: API Key
   name: credentials
   type: 9
   required: true
@@ -110,7 +109,7 @@ configuration:
   type: 0
   required: false
   section: Collect
-  additionalinfo: "Fetch Alerts with mscore greater than or equal to the given value.\n\nNote: The value can range in between from 0 to 100."
+  additionalinfo: "Fetch Alerts with mscore greater than or equal to the given value.\n\nNote: Valid range is 0 to 100."
 - display: Alert Search
   name: alert_search
   type: 0
@@ -248,223 +247,223 @@ script:
       required: false
       description: Filter alerts by the given match value. Supports comma-separated values.
     outputs:
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.id
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.id
       description: Unique identifier for the alert.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.monitor_id
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.monitor_id
       description: Identifier of the monitoring source that generated the alert.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.__id
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.doc.__id
       description: Unique document ID associated with the alert.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.__type
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.doc.__type
       description: Type of document associated with the alert.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.body
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.doc.body
       description: Full content or message body of the alert.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.channel.channel_id
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.doc.channel.channel_id
       description: ID of the channel where the alert was observed.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.channel.channel_info.description
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.doc.channel.channel_info.description
       description: Description of the channel where the alert was detected.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.channel.channel_url
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.doc.channel.channel_url
       description: URL of the detected channel.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.channel.invite_url
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.doc.channel.invite_url
       description: Invite link of the detected channel, if available.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.channel.messenger.id
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.doc.channel.messenger.id
       description: Identifier of the messenger platform linked to the alert.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.channel.messenger.name
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.doc.channel.messenger.name
       description: Name of the messenger platform.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.channel.name
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.doc.channel.name
       description: Name of the channel where the content was found.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.ingested
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.doc.ingested
       description: Date and time when the document was ingested into the system.
       type: Date
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.message_id
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.doc.message_id
       description: Identifier of the specific message triggering the alert.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.messenger.id
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.doc.messenger.id
       description: Messenger platform ID associated with the message.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.messenger.name
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.doc.messenger.name
       description: Name of the messenger platform associated with the message.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.sender.avatar_file.hashes.sha256
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.doc.sender.avatar_file.hashes.sha256
       description: SHA-256 hash of the sender's avatar file.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.sender.avatar_file.mime_type
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.doc.sender.avatar_file.mime_type
       description: MIME type of the sender's avatar file.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.sender.identity.first_name
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.doc.sender.identity.first_name
       description: First name of the sender.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.sender.identity.last_name
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.doc.sender.identity.last_name
       description: Last name of the sender.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.sender.identity.name
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.doc.sender.identity.name
       description: Full name of the sender.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.sender.telegram.name
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.doc.sender.telegram.name
       description: Telegram username of the sender.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.sender.telegram.user_id
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.doc.sender.telegram.user_id
       description: Telegram user ID of the sender.
       type: Number
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.source
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.doc.source
       description: Source of the document or content triggering the alert.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.timestamp
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.doc.timestamp
       description: Timestamp when the message or document was created.
       type: Date
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.labels.id
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.labels.id
       description: Unique identifier of the label assigned to the alert.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.labels.classifier
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.labels.classifier
       description: Classifier name used for label assignment.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.labels.version
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.labels.version
       description: Version of the classifier or labeling process.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.labels.label
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.labels.label
       description: Name of the label assigned to the alert.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.labels.confidence
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.labels.confidence
       description: Confidence score of the assigned label.
       type: Number
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.labels.element_path
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.labels.element_path
       description: Path of the element where the label was applied.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.topics.id
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.topics.id
       description: Unique identifier of the extracted topic.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.topics.type
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.topics.type
       description: Type of the extracted topic.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.topics.value
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.topics.value
       description: Value of the extracted topic.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.topics.extractor
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.topics.extractor
       description: Name of the topic extraction tool.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.topics.extractor_version
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.topics.extractor_version
       description: Version of the topic extractor used.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.topics.entity_locations.element_path
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.topics.entity_locations.element_path
       description: Path of the element where the entity was detected.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.topics.entity_locations.offsets
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.topics.entity_locations.offsets
       description: Character offsets of the detected entity in the document.
       type: Number
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.topic_matches.topic_id
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.topic_matches.topic_id
       description: Identifier of the matched topic.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.topic_matches.value
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.topic_matches.value
       description: Matched value for the topic.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.label_matches
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.label_matches
       description: List of labels matched for the alert.
-      type: Unknown
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc_matches.match_path
+      type: List
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.doc_matches.match_path
       description: Path within the document where a match occurred.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc_matches.locations.offsets
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.doc_matches.locations.offsets
       description: Offset positions of the document match.
       type: Number
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc_matches.locations.value
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.doc_matches.locations.value
       description: Value of the matched document content.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.tags
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.tags
       description: Tags associated with the alert.
-      type: Unknown
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.created_at
+      type: List
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.created_at
       description: Date and time when the alert was created.
       type: Date
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.updated_at
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.updated_at
       description: Date and time when the alert was last updated.
       type: Date
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.labels_url
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.labels_url
       description: URL to fetch labels associated with the alert.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.topics_url
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.topics_url
       description: URL to fetch topics associated with the alert.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc_url
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.doc_url
       description: URL of the original document related to the alert.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.status
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.status
       description: Current status of the alert (e.g., open, closed, triaged).
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.alert_type
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alert_type
       description: Type or category of the alert.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.alert_summary
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alert_summary
       description: Summary of the alert.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.title
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.title
       description: Title of the alert.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.email_sent_at
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.email_sent_at
       description: Timestamp when the alert email was sent.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.indicator_mscore
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.indicator_mscore
       description: Malicious score of the indicator related to the alert.
       type: Number
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.severity
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.severity
       description: Severity level of the alert (e.g., low, medium, high).
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.confidence
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.confidence
       description: Confidence score of the alert detection.
       type: Number
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.aggregated_under_id
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.aggregated_under_id
       description: ID under which the alert has been aggregated.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.monitor_name
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.monitor_name
       description: Name of the monitoring source that generated the alert.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.analysis
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.analysis
       description: Analysis report or details associated with the alert.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.has_analysis
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.has_analysis
       description: Indicates whether the alert has an associated analysis.
       type: Boolean
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.ai_doc_summary
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.ai_doc_summary
       description: AI-generated summary of the document related to the alert.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.similarity_score
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.similarity_score
       description: Similarity score between this alert and related alerts.
       type: Number
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.severity_reasoning.rule
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.severity_reasoning.rule
       description: Rule used to determine the severity of the alert.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.confidence_reasoning.version
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.confidence_reasoning.version
       description: Version of the confidence reasoning model.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.confidence_reasoning.response_count
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.confidence_reasoning.response_count
       description: Number of responses contributing to confidence reasoning.
       type: Number
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.confidence_reasoning.malicious_count
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.confidence_reasoning.malicious_count
       description: Number of malicious detections contributing to confidence.
       type: Number
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.confidence_reasoning.benign_count
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.confidence_reasoning.benign_count
       description: Number of benign detections contributing to confidence.
       type: Number
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.confidence_reasoning.confidence_count
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.confidence_reasoning.confidence_count
       description: Total number of samples considered for confidence calculation.
-      type: Unknown
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.confidence_reasoning.explanation
+      type: Number
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.confidence_reasoning.explanation
       description: Explanation behind the confidence score.
-      type: Unknown
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.ignore
+      type: String
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.ignore
       description: Indicates if the alert should be ignored.
       type: Boolean
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.monitor_version
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.monitor_version
       description: Version of the monitoring source generating the alert.
       type: Number
   - name: gti-dtm-alert-get
@@ -492,217 +491,217 @@ script:
       required: false
       description: "Specify whether to truncate document fields to the given length.\n\nNote: A Unicode ellipsis (\\x2026) is used to indicate truncation."
     outputs:
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.id
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.id
       description: Unique identifier for the alert.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.monitor_id
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.monitor_id
       description: Identifier of the monitoring source that generated the alert.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.__id
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.doc.__id
       description: Unique document ID associated with the alert.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.__type
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.doc.__type
       description: Type of document associated with the alert.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.body
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.doc.body
       description: Full content or message body of the alert.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.channel.channel_id
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.doc.channel.channel_id
       description: ID of the channel where the alert was observed.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.channel.channel_info.description
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.doc.channel.channel_info.description
       description: Description of the channel where the alert was detected.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.channel.channel_url
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.doc.channel.channel_url
       description: URL of the detected channel.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.channel.invite_url
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.doc.channel.invite_url
       description: Invite link of the detected channel, if available.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.channel.messenger.id
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.doc.channel.messenger.id
       description: Identifier of the messenger platform linked to the alert.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.channel.messenger.name
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.doc.channel.messenger.name
       description: Name of the messenger platform.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.channel.name
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.doc.channel.name
       description: Name of the channel where the content was found.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.ingested
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.doc.ingested
       description: Date and time when the document was ingested into the system.
       type: Date
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.message_id
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.doc.message_id
       description: Identifier of the specific message triggering the alert.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.messenger.id
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.doc.messenger.id
       description: Messenger platform ID associated with the message.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.messenger.name
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.doc.messenger.name
       description: Name of the messenger platform associated with the message.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.sender.avatar_file.hashes.sha256
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.doc.sender.avatar_file.hashes.sha256
       description: SHA-256 hash of the sender's avatar file.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.sender.avatar_file.mime_type
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.doc.sender.avatar_file.mime_type
       description: MIME type of the sender's avatar file.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.sender.identity.first_name
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.doc.sender.identity.first_name
       description: First name of the sender.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.sender.identity.last_name
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.doc.sender.identity.last_name
       description: Last name of the sender.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.sender.identity.name
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.doc.sender.identity.name
       description: Full name of the sender.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.sender.telegram.name
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.doc.sender.telegram.name
       description: Telegram username of the sender.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.sender.telegram.user_id
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.doc.sender.telegram.user_id
       description: Telegram user ID of the sender.
       type: Number
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.source
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.doc.source
       description: Source of the document or content triggering the alert.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.timestamp
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.doc.timestamp
       description: Timestamp when the message or document was created.
       type: Date
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.labels.id
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.labels.id
       description: Unique identifier of the label assigned to the alert.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.labels.classifier
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.labels.classifier
       description: Classifier name used for label assignment.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.labels.version
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.labels.version
       description: Version of the classifier or labeling process.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.labels.label
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.labels.label
       description: Name of the label assigned to the alert.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.labels.confidence
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.labels.confidence
       description: Confidence score of the assigned label.
       type: Number
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.labels.element_path
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.labels.element_path
       description: Path of the element where the label was applied.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.topics.id
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.topics.id
       description: Unique identifier of the extracted topic.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.topics.type
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.topics.type
       description: Type of the extracted topic.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.topics.value
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.topics.value
       description: Value of the extracted topic.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.topics.extractor
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.topics.extractor
       description: Name of the topic extraction tool.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.topics.extractor_version
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.topics.extractor_version
       description: Version of the topic extractor used.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.topics.entity_locations.element_path
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.topics.entity_locations.element_path
       description: Path of the element where the entity was detected.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.topics.entity_locations.offsets
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.topics.entity_locations.offsets
       description: Character offsets of the detected entity in the document.
       type: Number
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.topic_matches.topic_id
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.topic_matches.topic_id
       description: Identifier of the matched topic.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.topic_matches.value
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.topic_matches.value
       description: Matched value for the topic.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.label_matches
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.label_matches
       description: List of labels matched for the alert.
-      type: Unknown
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc_matches.match_path
+      type: List
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.doc_matches.match_path
       description: Path within the document where a match occurred.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc_matches.locations.offsets
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.doc_matches.locations.offsets
       description: Offset positions of the document match.
       type: Number
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc_matches.locations.value
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.doc_matches.locations.value
       description: Value of the matched document content.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.tags
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.tags
       description: Tags associated with the alert.
-      type: Unknown
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.created_at
+      type: List
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.created_at
       description: Date and time when the alert was created.
       type: Date
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.updated_at
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.updated_at
       description: Date and time when the alert was last updated.
       type: Date
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.labels_url
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.labels_url
       description: URL to fetch labels associated with the alert.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.topics_url
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.topics_url
       description: URL to fetch topics associated with the alert.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc_url
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.doc_url
       description: URL of the original document related to the alert.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.status
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.status
       description: Current status of the alert (e.g., open, closed, triaged).
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.alert_type
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alert_type
       description: Type or category of the alert.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.alert_summary
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alert_summary
       description: Summary of the alert.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.title
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.title
       description: Title of the alert.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.email_sent_at
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.email_sent_at
       description: Timestamp when the alert email was sent.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.indicator_mscore
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.indicator_mscore
       description: Malicious score of the indicator related to the alert.
       type: Number
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.severity
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.severity
       description: Severity level of the alert (e.g., low, medium, high).
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.confidence
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.confidence
       description: Confidence score of the alert detection.
       type: Number
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.aggregated_under_id
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.aggregated_under_id
       description: ID under which the alert has been aggregated.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.has_analysis
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.has_analysis
       description: Indicates whether the alert has an associated analysis.
       type: Boolean
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.ai_doc_summary
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.ai_doc_summary
       description: AI-generated summary of the document related to the alert.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.similarity_score
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.similarity_score
       description: Similarity score between this alert and related alerts.
       type: Number
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.severity_reasoning.rule
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.severity_reasoning.rule
       description: Rule used to determine the severity of the alert.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.confidence_reasoning.version
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.confidence_reasoning.version
       description: Version of the confidence reasoning model.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.confidence_reasoning.response_count
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.confidence_reasoning.response_count
       description: Number of responses contributing to confidence reasoning.
       type: Number
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.confidence_reasoning.malicious_count
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.confidence_reasoning.malicious_count
       description: Number of malicious detections contributing to confidence.
       type: Number
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.confidence_reasoning.benign_count
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.confidence_reasoning.benign_count
       description: Number of benign detections contributing to confidence.
       type: Number
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.confidence_reasoning.confidence_count
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.confidence_reasoning.confidence_count
       description: Total number of samples considered for confidence calculation.
-      type: Unknown
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.confidence_reasoning.explanation
+      type: Number
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.confidence_reasoning.explanation
       description: Explanation behind the confidence score.
-      type: Unknown
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.ignore
+      type: String
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.ignore
       description: Indicates if the alert should be ignored.
       type: Boolean
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.monitor_version
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.monitor_version
       description: Version of the monitoring source generating the alert.
       type: Number
   - name: gti-dtm-alert-status-update
@@ -726,221 +725,221 @@ script:
       - Not Relevant
       - Tracked External
     outputs:
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.id
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.id
       description: Unique identifier for the alert.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.monitor_id
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.monitor_id
       description: Identifier of the monitoring source that generated the alert.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.__id
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.doc.__id
       description: Unique document ID associated with the alert.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.__type
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.doc.__type
       description: Type of document associated with the alert.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.body
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.doc.body
       description: Full content or message body of the alert.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.channel.channel_id
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.doc.channel.channel_id
       description: ID of the channel where the alert was observed.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.channel.channel_info.description
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.doc.channel.channel_info.description
       description: Description of the channel where the alert was detected.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.channel.channel_url
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.doc.channel.channel_url
       description: URL of the detected channel.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.channel.invite_url
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.doc.channel.invite_url
       description: Invite link of the detected channel, if available.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.channel.messenger.id
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.doc.channel.messenger.id
       description: Identifier of the messenger platform linked to the alert.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.channel.messenger.name
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.doc.channel.messenger.name
       description: Name of the messenger platform.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.channel.name
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.doc.channel.name
       description: Name of the channel where the content was found.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.ingested
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.doc.ingested
       description: Date and time when the document was ingested into the system.
       type: Date
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.message_id
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.doc.message_id
       description: Identifier of the specific message triggering the alert.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.messenger.id
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.doc.messenger.id
       description: Messenger platform ID associated with the message.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.messenger.name
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.doc.messenger.name
       description: Name of the messenger platform associated with the message.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.sender.avatar_file.hashes.sha256
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.doc.sender.avatar_file.hashes.sha256
       description: SHA-256 hash of the sender's avatar file.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.sender.avatar_file.mime_type
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.doc.sender.avatar_file.mime_type
       description: MIME type of the sender's avatar file.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.sender.identity.first_name
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.doc.sender.identity.first_name
       description: First name of the sender.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.sender.identity.last_name
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.doc.sender.identity.last_name
       description: Last name of the sender.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.sender.identity.name
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.doc.sender.identity.name
       description: Full name of the sender.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.sender.telegram.name
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.doc.sender.telegram.name
       description: Telegram username of the sender.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.sender.telegram.user_id
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.doc.sender.telegram.user_id
       description: Telegram user ID of the sender.
       type: Number
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.source
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.doc.source
       description: Source of the document or content triggering the alert.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc.timestamp
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.doc.timestamp
       description: Timestamp when the message or document was created.
       type: Date
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.labels.id
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.labels.id
       description: Unique identifier of the label assigned to the alert.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.labels.classifier
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.labels.classifier
       description: Classifier name used for label assignment.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.labels.version
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.labels.version
       description: Version of the classifier or labeling process.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.labels.label
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.labels.label
       description: Name of the label assigned to the alert.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.labels.confidence
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.labels.confidence
       description: Confidence score of the assigned label.
       type: Number
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.labels.element_path
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.labels.element_path
       description: Path of the element where the label was applied.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.topics.id
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.topics.id
       description: Unique identifier of the extracted topic.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.topics.type
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.topics.type
       description: Type of the extracted topic.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.topics.value
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.topics.value
       description: Value of the extracted topic.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.topics.extractor
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.topics.extractor
       description: Name of the topic extraction tool.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.topics.extractor_version
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.topics.extractor_version
       description: Version of the topic extractor used.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.topics.entity_locations.element_path
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.topics.entity_locations.element_path
       description: Path of the element where the entity was detected.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.topics.entity_locations.offsets
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.topics.entity_locations.offsets
       description: Character offsets of the detected entity in the document.
       type: Number
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.topic_matches.topic_id
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.topic_matches.topic_id
       description: Identifier of the matched topic.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.topic_matches.value
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.topic_matches.value
       description: Matched value for the topic.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.label_matches
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.label_matches
       description: List of labels matched for the alert.
-      type: Unknown
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc_matches.match_path
+      type: List
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.doc_matches.match_path
       description: Path within the document where a match occurred.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc_matches.locations.offsets
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.doc_matches.locations.offsets
       description: Offset positions of the document match.
       type: Number
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc_matches.locations.value
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.doc_matches.locations.value
       description: Value of the matched document content.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.tags
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.tags
       description: Tags associated with the alert.
-      type: Unknown
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.created_at
+      type: List
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.created_at
       description: Date and time when the alert was created.
       type: Date
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.updated_at
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.updated_at
       description: Date and time when the alert was last updated.
       type: Date
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.labels_url
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.labels_url
       description: URL to fetch labels associated with the alert.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.topics_url
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.topics_url
       description: URL to fetch topics associated with the alert.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.doc_url
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.doc_url
       description: URL of the original document related to the alert.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.status
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.status
       description: Current status of the alert (e.g., open, closed, triaged).
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.alert_type
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alert_type
       description: Type or category of the alert.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.alert_summary
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alert_summary
       description: Summary of the alert.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.title
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.title
       description: Title of the alert.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.email_sent_at
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.email_sent_at
       description: Timestamp when the alert email was sent.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.indicator_mscore
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.indicator_mscore
       description: Malicious score of the indicator related to the alert.
       type: Number
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.severity
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.severity
       description: Severity level of the alert (e.g., low, medium, high).
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.confidence
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.confidence
       description: Confidence score of the alert detection.
       type: Number
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.aggregated_under_id
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.aggregated_under_id
       description: ID under which the alert has been aggregated.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.has_analysis
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.has_analysis
       description: Indicates whether the alert has an associated analysis.
       type: Boolean
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.ai_doc_summary
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.ai_doc_summary
       description: AI-generated summary of the document related to the alert.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.similarity_score
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.similarity_score
       description: Similarity score between this alert and related alerts.
       type: Number
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.severity_reasoning.rule
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.severity_reasoning.rule
       description: Rule used to determine the severity of the alert.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.confidence_reasoning.version
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.confidence_reasoning.version
       description: Version of the confidence reasoning model.
       type: String
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.confidence_reasoning.response_count
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.confidence_reasoning.response_count
       description: Number of responses contributing to confidence reasoning.
       type: Number
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.confidence_reasoning.malicious_count
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.confidence_reasoning.malicious_count
       description: Number of malicious detections contributing to confidence.
       type: Number
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.confidence_reasoning.benign_count
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.confidence_reasoning.benign_count
       description: Number of benign detections contributing to confidence.
       type: Number
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.confidence_reasoning.confidence_count
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.confidence_reasoning.confidence_count
       description: Total number of samples considered for confidence calculation.
-      type: Unknown
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.confidence_reasoning.explanation
+      type: Number
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.confidence_reasoning.explanation
       description: Explanation behind the confidence score.
-      type: Unknown
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.ignore
+      type: String
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.ignore
       description: Indicates if the alert should be ignored.
       type: Boolean
-    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.alerts.monitor_version
+    - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.monitor_version
       description: Version of the monitoring source generating the alert.
       type: Number
   dockerimage: demisto/python3:3.12.11.4819260
   isfetch: true
   isremotesyncout: true
 tests:
-- GoogleThreatIntelligenceDTMAlerts-test
+- No tests (auto formatted)

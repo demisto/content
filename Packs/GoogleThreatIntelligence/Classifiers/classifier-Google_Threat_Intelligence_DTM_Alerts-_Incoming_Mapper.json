@@ -77,8 +77,9 @@
                 },
                 "GTI DTM Alert Doc Description": {
                     "complex": {
+                        "accessor":"description",
                         "filters": [],
-                        "root": "description",
+                        "root": "doc",
                         "transformers": []
                     }
                 },
@@ -139,7 +140,7 @@
                 },
                 "GTI DTM Alert Doc Paste ID": {
                     "complex": {
-                        "accessor": " paste_id",
+                        "accessor": "paste_id",
                         "filters": [],
                         "root": "doc",
                         "transformers": []
@@ -147,7 +148,7 @@
                 },
                 "GTI DTM Alert Doc Post Date": {
                     "complex": {
-                        "accessor": " post_date",
+                        "accessor": "post_date",
                         "filters": [],
                         "root": "doc",
                         "transformers": []
