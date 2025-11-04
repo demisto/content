@@ -7,7 +7,7 @@ import EvaluateContextValue
 import demistomock as demisto
 
 
-def equals_object(obj1, obj2) -> bool:
+def equals_object(obj1: Any, obj2: Any) -> bool:
     if type(obj1) is not type(obj2):
         return False
     elif isinstance(obj1, dict):
@@ -20,7 +20,7 @@ def equals_object(obj1, obj2) -> bool:
     elif isinstance(obj1, list):
         # Compare lists (ignore order)
         list2 = list(obj2)
-        for _i1, v1 in enumerate(obj1):
+        for _, v1 in enumerate(obj1):
             for i2, v2 in enumerate(list2):
                 if equals_object(v1, v2):
                     list2.pop(i2)
@@ -33,7 +33,11 @@ def equals_object(obj1, obj2) -> bool:
 
 
 class TestEvaluateContextValue:
-    def __side_effect_demisto_dt(self, obj, dt):
+    def __side_effect_demisto_dt(
+        self,
+        obj: dict: dict[str, Any],
+        dt: str,
+    ) -> Any:
         if dt in (".", ".=val"):
             return obj
 

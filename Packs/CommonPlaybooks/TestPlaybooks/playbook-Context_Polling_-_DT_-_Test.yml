@@ -457,20 +457,6 @@ view: |-
 inputs: []
 outputs: []
 tests:
-- Endpoint Enrichment - Generic v2.1 - Test
-- Calculate Severity - Generic v2 - Test
-- Detonate URL - Generic Test
-- Endpoint Enrichment - Generic v2.1.6.8 - Test
-- Domain Enrichment - Generic v2 - Test
-- test-domain-indicator
-- URL Enrichment - Generic v2 - Test
-- Containment Plan - Test
-- File Enrichment - Generic v2 - Test
-- Context Polling - DT - Test
-- Calculate Severity - Standard - Test
-- Email Address Enrichment - Generic v2.1 - Test
-- Wait Until Datetime - Test
-- Eradication plan - Test
-- Field polling test
+- No tests (auto formatted)
 fromversion: 6.10.0
 description: "This is a test playbook for 'Context Polling - DT'."
