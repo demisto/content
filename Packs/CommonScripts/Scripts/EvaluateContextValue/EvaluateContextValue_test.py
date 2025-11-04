@@ -35,7 +35,7 @@ def equals_object(obj1: Any, obj2: Any) -> bool:
 class TestEvaluateContextValue:
     def __side_effect_demisto_dt(
         self,
-        obj: dict: dict[str, Any],
+        obj: dict[str, Any],
         dt: str,
     ) -> Any:
         if dt in (".", ".=val"):
