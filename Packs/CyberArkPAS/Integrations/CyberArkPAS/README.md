@@ -1291,49 +1291,32 @@ Returns the activities of a specific account that is identified by its account I
                 "ClientID": "1",
                 "Date": 1597863265,
                 "MoreInfo": "NewName",
-                "Reason": "",
-                "User": "Administrator"
-            },
-            {
-                "Action": "Add File Category",
-                "ActionID": 105,
-                "Alert": false,
-                "ClientID": "1",
-                "Date": 1597863168,
-                "MoreInfo": "CreationMethod",
-                "Reason": "Value=[ABC]",
-                "User": "Administrator"
-            }
-        ]
-    }
-}
-```
-
-#### Human Readable Output
-
->### Results
->
->|Action|ActionID|Alert|ClientID|Date|MoreInfo|Reason|User|
->|---|---|---|---|---|---|---|---|
->| Rename File | 124 | false | 1 | 1597863265 | NewName |  | Administrator |
->| Add File Category | 105 | false | 1 | 1597863168 | CreationMethod | Value=[ABC] | Administrator |
-
-### cyberark-pas-account-get-details
+### cyberark-pas-account-delete
 
 ***
-Returns information for the specified account, identified by the account ID.
-
-To run this command, you must have *List Accounts* permission in the Safe.
+Delete a specific account in the vault.
 
 #### Base Command
 
-`cyberark-pas-account-get-details`
+`cyberark-pas-account-delete`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| account_id | The ID of the account for which to retrieve information. | Required |
+| account_id | The unique ID of the account to delete. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CyberArkPAS.Accounts.id | String | The unique ID of the account. | 
+| CyberArkPAS.Accounts.secretManagement | String | Whether the account secret is automatically managed by the CPM. | 
+| CyberArkPAS.Accounts.address | String | The name or address of the machine where the account will be used. | 
+| CyberArkPAS.Accounts.secretType | String | The type of password. | 
+| CyberArkPAS.Accounts.safeName | String | The safe where the account was created. | 
+| CyberArkPAS.Accounts.userName | String | The user name of the account. | 
+| CyberArkPAS.Accounts.Deleted | Boolean | Whether the account was deleted. | 
 
 #### Context Output
 
