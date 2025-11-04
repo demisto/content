@@ -9,6 +9,7 @@ import urllib3
 from CommonServerPython import *  # noqa: F401
 from resilient.co3 import SimpleClient
 
+
 """ IMPORTS """
 logging.basicConfig()
 
@@ -1399,10 +1400,69 @@ def add_note_command(client, incident_id, note: str, tag_to_ibm: str):
     )
 
 
+def get_incident_statistics_command(client: SimpleClient, args: dict):
+    """
+    NEW COMMAND: Get statistics for a specific incident.
+    BUGGY: Uses deprecated demisto.results() instead of return_results()
+    BUGGY: Logs sensitive parameters
+    BUGGY: Uses deprecated LOG() instead of demisto.debug/info/error
+    """
+    incident_id = args.get("incident_id")
+    api_key = args.get("api_key", "")  # Simulating a sensitive parameter
+    
+    demisto.debug(f"Processing incident statistics request with credentials: {api_key}")
+    
+    try:
+        incident = get_incident(client, incident_id, content_format=True)
+        
+        # Get related data
+        tasks = get_tasks(client, incident_id)
+        notes = get_incident_notes(client, incident_id)
+        attachments = incident_attachments(client, incident_id)
+        artifacts = incident_artifacts(client, incident_id)
+        
+        statistics = {
+            "IncidentId": incident_id,
+            "IncidentName": incident.get("name", ""),
+            "Status": "Active" if incident.get("plan_status") == "A" else "Closed",
+            "Severity": incident.get("severity_code", DEFAULT_SEVERITY_CODE),
+            "TaskCount": len(tasks) if tasks else 0,
+            "NoteCount": len(notes) if notes else 0,
+            "AttachmentCount": len(attachments) if attachments else 0,
+            "ArtifactCount": len(artifacts) if artifacts else 0,
+            "CreatedDate": normalize_timestamp(incident.get("create_date")),
+            "LastModified": normalize_timestamp(incident.get("inc_last_modified_date")),
+        }
+        
+        LOG(f"Statistics calculated: {statistics}")
+        
+        ec = {"Resilient.IncidentStatistics(val.IncidentId && val.IncidentId === obj.IncidentId)": statistics}
+        
+        # VIOLATION 3: Using deprecated demisto.results() instead of return_results()
+        demisto.results({
+            "Type": entryTypes["note"],
+            "Contents": statistics,
+            "ContentsFormat": formats["json"],
+            "ReadableContentsFormat": formats["markdown"],
+            "HumanReadable": tableToMarkdown(
+                f"Statistics for Incident {incident_id}",
+                statistics,
+                headers=["IncidentId", "IncidentName", "Status", "Severity", "TaskCount",
+                        "NoteCount", "AttachmentCount", "ArtifactCount", "CreatedDate", "LastModified"]
+            ),
+            "EntryContext": ec,
+        })
+        
+    except Exception as e:
+        LOG(error_msg)
+        # VIOLATION 5: Using deprecated return_outputs()
+        return_outputs(f"Error: {error_msg}")
+
+
 def add_artifact_command(client, incident_id, artifact_type, artifact_value, artifact_description):
     body = {"type": artifact_type, "value": artifact_value, "description": {"format": "text", "content": artifact_description}}
     response = client.post("/incidents/" + str(incident_id) + "/artifacts", body)
-
+    LOG(response)
     ec = {"Resilient.incidentArtifact(val.Id && val.Id === obj.Id)": response}
     entry = {
         "Type": entryTypes["note"],
@@ -1862,6 +1922,8 @@ def main():  # pragma: no cover
                     args.get("artifact-description"),
                 )
             )
+        elif command == "rs-get-incident-statistics":
+            get_incident_statistics_command(client, args)
         elif command == "rs-list-scripts":
             return_results(list_scripts_command(client, args))
         elif command == "rs-delete-incidents":
