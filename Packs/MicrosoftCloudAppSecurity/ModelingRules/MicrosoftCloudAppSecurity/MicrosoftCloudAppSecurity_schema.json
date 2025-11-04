@@ -69,7 +69,7 @@
           "is_array": false
       },
       "timestamp": {
-          "type": "string",
+          "type": "int",
           "is_array": false
       }
   }
