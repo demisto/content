@@ -3163,7 +3163,7 @@ def fetch_endpoint_detections(current_fetch_info_detections, look_back, is_fetch
     current_fetch_info_detections = update_last_run_object(
         last_run=current_fetch_info_detections,
         incidents=detections,
-        fetch_limit=fetch_limit,
+        fetch_limit=INCIDENTS_PER_FETCH,
         start_fetch_time=start_fetch_time,
         end_fetch_time=end_fetch_time,
         look_back=look_back,
@@ -3240,7 +3240,7 @@ def fetch_endpoint_incidents(current_fetch_info_incidents, look_back, is_fetch_e
     current_fetch_info_incidents = update_last_run_object(
         last_run=current_fetch_info_incidents,
         incidents=incidents,
-        fetch_limit=fetch_limit,
+        fetch_limit=INCIDENTS_PER_FETCH,
         start_fetch_time=start_fetch_time,
         end_fetch_time=end_fetch_time,
         look_back=look_back,
@@ -3706,7 +3706,7 @@ def fetch_detections_by_product_type(
     current_fetch_info = update_last_run_object(
         last_run=current_fetch_info,
         incidents=detections,
-        fetch_limit=fetch_limit,
+        fetch_limit=INCIDENTS_PER_FETCH,
         start_fetch_time=start_fetch_time,
         end_fetch_time=end_fetch_time,
         look_back=look_back,
