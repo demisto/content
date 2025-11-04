@@ -1099,16 +1099,16 @@ Creates a new firewall rule in the specified project.
 | description | An optional description for the firewall rule. | Optional |
 | network | URL of the network, e.g., global/networks/default. | Optional |
 | priority | Priority 0-65535. Default 1000. | Optional |
-| direction | INGRESS or EGRESS. | Optional |
+| direction | Direction of traffic to which this firewall applies. Default INGRESS. Possible values are: INGRESS, EGRESS. Default is INGRESS. | Optional |
 | allowed | ALLOW rules in tuples, e.g., ipprotocol=tcp,ports=443;ipprotocol=tcp,ports=80. | Optional |
 | denied | DENY rules in tuples, e.g., ipprotocol=tcp,ports=22,443. | Optional |
-| sourceRanges | Comma-separated CIDRs for INGRESS. | Optional |
-| destinationRanges | Comma-separated CIDRs for EGRESS. | Optional |
-| sourceTags | Comma-separated instance tags to match as source. | Optional |
-| targetTags | Comma-separated tags to apply this rule to. | Optional |
-| sourceServiceAccounts | Comma-separated service accounts for source. | Optional |
-| targetServiceAccounts | Comma-separated service accounts to target. | Optional |
-| logConfigEnable | Enable firewall logging. Possible values are: true, false. | Optional |
+| source_ranges | Comma-separated CIDRs for INGRESS. | Optional |
+| destination_ranges | Comma-separated CIDRs for EGRESS. | Optional |
+| source_tags | Comma-separated instance tags to match as source. | Optional |
+| target_tags | Comma-separated tags to apply this rule to. | Optional |
+| source_service_accounts | Comma-separated service accounts for source. | Optional |
+| target_service_accounts | Comma-separated service accounts to target. | Optional |
+| log_config_enable | Enable firewall logging. Possible values are: true, false. | Optional |
 | disabled | Whether this firewall rule is disabled. Possible values are: true, false. | Optional |
 
 #### Context Output
@@ -1142,9 +1142,9 @@ Lists firewall rules in the specified project.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | project_id | GCP project ID. | Required |
-| limit | Maximum number of results to return. | Optional |
+| limit | Maximum number of results to return. Acceptable values are 0 to 500, inclusive. | Optional |
 | page_token | Token for pagination. | Optional |
-| filter | API filter expression. | Optional |
+| filter | A filter expression for resources listed in the response. The expression must specify a field name, a comparison operator (=, !=, &gt;, or &lt;), and a value, which can be a string, number, or boolean. For example, to exclude a Compute Engine instance named example-instance, use name != example-instance.<br/>For more options and details, see:<br/>https://cloud.google.com/compute/docs/reference/rest/v1/firewalls/list#:~:text=page%20of%20results.-,filter,-string. | Optional |
 
 #### Context Output
 
@@ -1207,9 +1207,9 @@ Lists snapshots in the specified project.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | project_id | GCP project ID. | Required |
-| limit | Maximum number of results to return. | Optional |
+| limit | Maximum number of results to return. Acceptable values are 0 to 500, inclusive. | Optional |
 | page_token | Token for pagination. | Optional |
-| filter | API filter expression. | Optional |
+| filter | A filter expression for resources listed in the response. The expression must specify a field name, a comparison operator (=, !=, &gt;, or &lt;), and a value, which can be a string, number, or boolean. For example, to exclude a Compute Engine instance named example-instance, use name != example-instance.<br/>For more options and details, see:<br/>https://cloud.google.com/compute/docs/reference/rest/v1/snapshots/list#:~:text=page%20of%20results.-,filter,-string. | Optional |
 
 #### Context Output
 
@@ -1298,7 +1298,7 @@ Aggregated list of instances across all zones; can be filtered by internal or ex
 | project_id | GCP project ID. | Required |
 | ip_address | The IP address to search for. | Required |
 | match_external | If true, match against external NAT IPs; otherwise internal NIC IPs. Possible values are: true, false. | Optional |
-| limit | Maximum number of results to return. | Optional |
+| limit | Maximum number of results to return. Acceptable values are 0 to 500, inclusive. | Optional |
 | page_token | Token for pagination. | Optional |
 
 #### Context Output
@@ -1328,8 +1328,23 @@ Adds a network tag to a VM instance (merges with existing tags).
 | zone | Zone of the VM (e.g., us-central1-a). | Required |
 | resource_name | Instance name. | Required |
 | tag | Tag to add. | Required |
+| tags_fingerprint | Fingerprint of the previous set of tags for this resource, used to prevent conflicts. Provide the latest fingerprint value when making a request to add or change tags. | Required |
 | add_tag | If true, adds the tag to the existing tags; otherwise, overrides them. The default is true. Possible values are: true, false. Default is true. | Optional |
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Compute.Operations.id | string | Operation ID. |
+| GCP.Compute.Operations.name | string | Operation name. |
+| GCP.Compute.Operations.status | string | Current operation status \(e.g., RUNNING, DONE\). |
+| GCP.Compute.Operations.operationType | string | Type of operation being performed. |
+| GCP.Compute.Operations.progress | number | Operation progress percentage \(0-100\). |
+| GCP.Compute.Operations.user | string | User or service account that initiated the operation. |
+| GCP.Compute.Operations.targetLink | string | Full URL of the target resource for this operation. |
+| GCP.Compute.Operations.targetId | string | Target resource ID. |
+| GCP.Compute.Operations.zone | string | Zone where the operation is performed. |
+| GCP.Compute.Operations.insertTime | string | Time when the operation was inserted. |
+| GCP.Compute.Operations.startTime | string | Time when the operation started. |
+| GCP.Compute.Operations.selfLink | string | URL for this operation resource. |
+| GCP.Compute.Operations.kind | string | Type of the resource \(e.g., compute\#operation\). |

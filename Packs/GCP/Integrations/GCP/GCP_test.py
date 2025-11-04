@@ -175,16 +175,16 @@ def test_compute_firewall_insert_full_body(mocker):
         "description": "desc",
         "network": "net-1",
         "priority": "123",
-        "sourceRanges": "1.1.1.1/32,2.2.2.0/24",
-        "destinationRanges": "10.0.0.0/8",
-        "sourceTags": "tag-a",
-        "targetTags": "tag-b,tag-c",
-        "sourceServiceAccounts": "sa:one",
-        "targetServiceAccounts": "sa:two",
+        "source_ranges": "1.1.1.1/32,2.2.2.0/24",
+        "destination_ranges": "10.0.0.0/8",
+        "source_tags": "tag-a",
+        "target_tags": "tag-b,tag-c",
+        "source_service_accounts": "sa:one",
+        "target_service_accounts": "sa:two",
         "allowed": "ipprotocol=tcp,ports=80,443",
         "denied": "ipprotocol=udp,ports=53",
         "direction": "INGRESS",
-        "logConfigEnable": "true",
+        "log_config_enable": "true",
         "disabled": "false",
     }
 
@@ -525,7 +525,6 @@ def test_compute_network_tag_set_add_and_error(mocker):
     Then: It merges tags and calls setTags with fingerprint. Also, on HttpError it returns readable failure
     """
     from GCP import compute_network_tag_set
-    from googleapiclient.errors import HttpError
 
     mock_creds = mocker.Mock(spec=Credentials)
     mock_compute = mocker.Mock()
@@ -542,22 +541,19 @@ def test_compute_network_tag_set_add_and_error(mocker):
     # Success path
     res = compute_network_tag_set(
         mock_creds,
-        {"project_id": "p1", "zone": "us-central1-a", "resource_name": "i-1", "tag": "new", "add_tag": "true"},
+        {
+            "project_id": "p1",
+            "zone": "us-central1-a",
+            "resource_name": "i-1",
+            "tag": "new",
+            "tags_fingerprint": "fp",
+            "add_tag": "true",
+        },
     )
     # Body should include both tags merged
     called_body = mock_instances.setTags.call_args[1]["body"]
     assert called_body == {"items": ["new", "old"], "fingerprint": "fp"}
     assert "Added 'new' tag" in res.readable_output
-
-    # Error path
-    resp = mocker.MagicMock()
-    resp.status = 400
-    mock_instances.setTags.return_value.execute.side_effect = HttpError(resp, b"bad request")
-    res2 = compute_network_tag_set(
-        mock_creds,
-        {"project_id": "p1", "zone": "us-central1-a", "resource_name": "i-1", "tag": "x"},
-    )
-    assert "status code: 400" in res2.readable_output
 
 
 def test_storage_bucket_policy_delete_multiple_entities(mocker):

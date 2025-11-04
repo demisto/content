@@ -1002,17 +1002,17 @@ def compute_firewall_insert(creds: Credentials, args: dict[str, Any]) -> Command
         body["network"] = network
     if priority := args.get("priority"):
         body["priority"] = arg_to_number(priority)
-    if sourceRanges := args.get("sourceRanges"):
+    if sourceRanges := args.get("source_ranges"):
         body["sourceRanges"] = argToList(sourceRanges)
-    if destinationRanges := args.get("destinationRanges"):
+    if destinationRanges := args.get("destination_ranges"):
         body["destinationRanges"] = argToList(destinationRanges)
-    if sourceTags := args.get("sourceTags"):
+    if sourceTags := args.get("source_tags"):
         body["sourceTags"] = argToList(sourceTags)
-    if targetTags := args.get("targetTags"):
+    if targetTags := args.get("target_tags"):
         body["targetTags"] = argToList(targetTags)
-    if sourceServiceAccounts := args.get("sourceServiceAccounts"):
+    if sourceServiceAccounts := args.get("source_service_accounts"):
         body["sourceServiceAccounts"] = argToList(sourceServiceAccounts)
-    if targetServiceAccounts := args.get("targetServiceAccounts"):
+    if targetServiceAccounts := args.get("target_service_accounts"):
         body["targetServiceAccounts"] = argToList(targetServiceAccounts)
     if allowed := args.get("allowed"):
         body["allowed"] = parse_firewall_rule(allowed)
@@ -1020,7 +1020,7 @@ def compute_firewall_insert(creds: Credentials, args: dict[str, Any]) -> Command
         body["denied"] = parse_firewall_rule(denied)
     if direction := args.get("direction"):
         body["direction"] = direction
-    if logConfigEnable := args.get("logConfigEnable"):
+    if logConfigEnable := args.get("log_config_enable"):
         body["logConfig"] = {"enable": argToBoolean(logConfigEnable)}
     if disabled := args.get("disabled"):
         body["disabled"] = argToBoolean(disabled)
@@ -1040,7 +1040,7 @@ def compute_firewall_insert(creds: Credentials, args: dict[str, Any]) -> Command
         headerTransform=pascalToSpace,
         removeNull=True,
     )
-    return CommandResults(readable_output=hr, outputs_prefix="GCP.Compute.Operations", outputs=response)
+    return CommandResults(readable_output=hr, outputs_prefix="GCP.Compute.Operations", outputs=response, raw_response=response)
 
 
 def compute_firewall_list(creds: Credentials, args: dict[str, Any]) -> CommandResults:
@@ -1051,6 +1051,7 @@ def compute_firewall_list(creds: Credentials, args: dict[str, Any]) -> CommandRe
     limit = arg_to_number(args.get("limit"))
     page_token = args.get("page_token")
     flt = args.get("filter")
+    validate_limit(limit)
 
     params: dict[str, Any] = {
         "project": project_id,
@@ -1116,6 +1117,7 @@ def compute_firewall_get(creds: Credentials, args: dict[str, Any]) -> CommandRes
         outputs_prefix="GCP.Compute.Firewall",
         outputs=response,
         outputs_key_field="name",
+        raw_response=response,
     )
 
 
@@ -1129,6 +1131,7 @@ def compute_snapshots_list(creds: Credentials, args: dict[str, Any]) -> CommandR
     flt = args.get("filter")
 
     params: dict[str, Any] = {"project": project_id}
+    validate_limit(limit)
     if limit:
         params["maxResults"] = limit
     if page_token:
@@ -1142,7 +1145,7 @@ def compute_snapshots_list(creds: Credentials, args: dict[str, Any]) -> CommandR
     items = response.get("items", [])
     next_token = response.get("nextPageToken")
     metadata = (
-        "Run the following command to retrieve the next batch of billings:\n"
+        "Run the following command to retrieve the next batch of snapshots:\n"
         f"!gcp-compute-snapshots-list project_id={project_id} page_token={next_token}"
         if next_token
         else None
@@ -1185,15 +1188,25 @@ def compute_snapshot_get(creds: Credentials, args: dict[str, Any]) -> CommandRes
         headerTransform=pascalToSpace,
         removeNull=True,
     )
-    return CommandResults(readable_output=hr, outputs_prefix="GCP.Compute.Snapshot", outputs=response, outputs_key_field="id")
+    return CommandResults(
+        readable_output=hr,
+        outputs_prefix="GCP.Compute.Snapshot",
+        outputs=response,
+        outputs_key_field="id",
+        raw_response=response,
+    )
 
 
 def _collect_instance_ips(instance: dict[str, Any]) -> tuple[list[str], list[str]]:
     """
-    Collect internal and external IPs from a compute instance resource.
+    Collects internal and external IP addresses from a Compute Engine instance.
+
+    Args:
+        instance (dict): The instance resource object.
 
     Returns:
-        tuple[list[str], list[str]]: (internal_ips, external_ips)
+        Tuple[List[str], List[str]]: A tuple containing two lists -
+        the first for internal IPs and the second for external IPs.
     """
     internal_ips: list[str] = []
     external_ips: list[str] = []
@@ -1208,10 +1221,16 @@ def _collect_instance_ips(instance: dict[str, Any]) -> tuple[list[str], list[str
 
 def _match_instance_by_ip(instance: dict[str, Any], ip_address: str, match_external: bool) -> tuple[bool, str]:
     """
-    Determine whether the instance matches the given IP according to mode.
+    Checks if the given IP address matches the instance IPs based on the match mode.
+
+    Args:
+        instance (dict): The instance resource object.
+        ip_address (str): The IP address to match.
+        match_external (bool): Whether to check external IPs (True) or internal IPs (False).
 
     Returns:
-        (matched, match_type) where match_type is one of "internal"|"external"|"none".
+        Tuple[bool, str]: A tuple indicating whether a match was found,
+        and the match type ('internal', 'external', or 'none').
     """
     internal_ips, external_ips = _collect_instance_ips(instance)
     if match_external:
@@ -1268,7 +1287,13 @@ def compute_instances_aggregated_list_by_ip(creds: Credentials, args: dict[str, 
         headerTransform=pascalToSpace,
         removeNull=True,
     )
-    return CommandResults(readable_output=hr, outputs_prefix="GCP.Compute.Instance", outputs=matched, raw_response=response)
+    return CommandResults(
+        readable_output=hr,
+        outputs_prefix="GCP.Compute.Instance",
+        outputs=matched,
+        outputs_key_field="id",
+        raw_response=response,
+    )
 
 
 def compute_network_tag_set(creds: Credentials, args: dict[str, Any]) -> CommandResults:
@@ -1282,30 +1307,35 @@ def compute_network_tag_set(creds: Credentials, args: dict[str, Any]) -> Command
     add_tag = argToBoolean(args.get("add_tag", "true"))
 
     compute = GCPServices.COMPUTE.build(creds)
-    instance = compute.instances().get(project=project_id, zone=zone, instance=resource_name).execute()  # pylint: disable=E1101
-    demisto.debug(f"Instance get response for {project_id}: \n{instance}")
-    tags_obj = instance.get("tags", {})
-    fingerprint = tags_obj.get("fingerprint")
-    items = tags_obj.get("items", []) or []
-    if add_tag and tags not in items:
-        tags.extend(items)
+    fingerprint = args.get("tags_fingerprint", "")
+
+    if add_tag:
+        instance = compute.instances().get(project=project_id, zone=zone, instance=resource_name).execute()  # pylint: disable=E1101
+        demisto.debug(f"Instance get response for {project_id}: \n{instance}")
+        tags_obj = instance.get("tags", {})
+        items = tags_obj.get("items", []) or []
+        if tags not in items:
+            tags.extend(items)
 
     body = {"items": tags, "fingerprint": fingerprint}
-    try:
-        response = (
-            compute.instances()  # pylint: disable=E1101
-            .setTags(project=project_id, zone=zone, instance=resource_name, body=body)
-            .execute()
-        )
-    except HttpError as e:
-        reason = e._get_reason()
-        return CommandResults(readable_output=f"The command failed with status code: {e.resp.status}\n{reason}")
+
+    response = (
+        compute.instances()  # pylint: disable=E1101
+        .setTags(project=project_id, zone=zone, instance=resource_name, body=body)
+        .execute()
+    )
 
     demisto.debug(f"Add network tag response for {project_id}: \n{response}")
     new_tag = args.get("tag")
     readable_output = f"Added '{new_tag}' tag to instance {resource_name} successfully\n" f"The full network tag list is: {tags}"
 
-    return CommandResults(readable_output=readable_output, raw_response=response)
+    return CommandResults(
+        readable_output=readable_output,
+        outputs=response,
+        outputs_prefix=" GCP.Compute.Operations",
+        outputs_key_field="id",
+        raw_response=response,
+    )
 
 
 def storage_bucket_policy_delete(creds: Credentials, args: dict[str, Any]) -> CommandResults:
@@ -1955,10 +1985,7 @@ def gcp_compute_instances_list_command(creds: Credentials, args: dict[str, Any])
     order_by = args.get("order_by")
     page_token = args.get("page_token")
 
-    if not limit or (limit and (limit > 500 or limit < 1)):
-        raise DemistoException(
-            f"The acceptable values of the argument limit are 1 to 500, inclusive. Currently the value is {limit}"
-        )
+    validate_limit(limit)
 
     compute = GCPServices.COMPUTE.build(creds)
     response = (
@@ -2206,6 +2233,22 @@ def _get_requirements(command: str = "") -> tuple[list[str], list[str]]:
     )
 
     return apis, permissions
+
+
+def validate_limit(limit):
+    """
+    Validates that the provided limit argument is within the allowed range.
+
+    Args:
+        limit (int): The limit value to validate.
+
+    Raises:
+        DemistoException: If the limit is not set or is outside the allowed range (1-500 inclusive).
+    """
+    if not limit or (limit and (limit > 500 or limit < 1)):
+        raise DemistoException(
+            f"The acceptable values of the argument limit are 1 to 500, inclusive. Currently the value is {limit}"
+        )
 
 
 def check_required_permissions(

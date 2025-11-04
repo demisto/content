@@ -157,24 +157,29 @@ script:
     - name: priority
       description: Priority 0-65535. Default 1000.
     - name: direction
-      description: INGRESS or EGRESS.
+      description: Direction of traffic to which this firewall applies. Default INGRESS.
+      auto: PREDEFINED
+      predefined:
+      - "INGRESS"
+      - "EGRESS"
+      defaultValue: "INGRESS"
     - name: allowed
       description: 'ALLOW rules in tuples, e.g., ipprotocol=tcp,ports=443;ipprotocol=tcp,ports=80.'
     - name: denied
       description: 'DENY rules in tuples, e.g., ipprotocol=tcp,ports=22,443.'
-    - name: sourceRanges
+    - name: source_ranges
       description: Comma-separated CIDRs for INGRESS.
-    - name: destinationRanges
+    - name: destination_ranges
       description: Comma-separated CIDRs for EGRESS.
-    - name: sourceTags
+    - name: source_tags
       description: Comma-separated instance tags to match as source.
-    - name: targetTags
+    - name: target_tags
       description: Comma-separated tags to apply this rule to.
-    - name: sourceServiceAccounts
+    - name: source_service_accounts
       description: Comma-separated service accounts for source.
-    - name: targetServiceAccounts
+    - name: target_service_accounts
       description: Comma-separated service accounts to target.
-    - name: logConfigEnable
+    - name: log_config_enable
       auto: PREDEFINED
       predefined:
       - "true"
@@ -230,12 +235,12 @@ script:
       required: true
       description: GCP project ID.
     - name: limit
-      description: Maximum number of results to return.
+      description: Maximum number of results to return. Acceptable values are 0 to 500, inclusive.
     - name: page_token
       description: Token for pagination.
       required: false
     - name: filter
-      description: API filter expression.
+      description: "A filter expression for resources listed in the response. The expression must specify a field name, a comparison operator (=, !=, >, or <), and a value, which can be a string, number, or boolean. For example, to exclude a Compute Engine instance named example-instance, use name != example-instance.\nFor more options and details, see:\nhttps://cloud.google.com/compute/docs/reference/rest/v1/firewalls/list#:~:text=page%20of%20results.-,filter,-string."
     outputs:
     - contextPath: GCP.Compute.Firewall.id
       description: Unique identifier for the firewall rule.
@@ -317,11 +322,11 @@ script:
       required: true
       description: GCP project ID.
     - name: limit
-      description: Maximum number of results to return.
+      description: Maximum number of results to return. Acceptable values are 0 to 500, inclusive.
     - name: page_token
       description: Token for pagination.
     - name: filter
-      description: API filter expression.
+      description: "A filter expression for resources listed in the response. The expression must specify a field name, a comparison operator (=, !=, >, or <), and a value, which can be a string, number, or boolean. For example, to exclude a Compute Engine instance named example-instance, use name != example-instance.\nFor more options and details, see:\nhttps://cloud.google.com/compute/docs/reference/rest/v1/snapshots/list#:~:text=page%20of%20results.-,filter,-string."
     outputs:
     - contextPath: GCP.Compute.Snapshot.id
       description: Unique identifier for the snapshot resource.
@@ -484,7 +489,7 @@ script:
       - "false"
       description: If true, match against external NAT IPs; otherwise internal NIC IPs.
     - name: limit
-      description: Maximum number of results to return.
+      description: Maximum number of results to return. Acceptable values are 0 to 500, inclusive.
     - name: page_token
       description: Token for pagination.
     outputs:
@@ -518,6 +523,9 @@ script:
     - name: tag
       required: true
       description: Tag to add.
+    - name: tags_fingerprint
+      description: Fingerprint of the previous set of tags for this resource, used to prevent conflicts. Provide the latest fingerprint value when making a request to add or change tags.
+      required: true
     - name: add_tag
       defaultValue: "true"
       auto: PREDEFINED
@@ -525,7 +533,46 @@ script:
       - "true"
       - "false"
       description: If true, adds the tag to the existing tags; otherwise, overrides them. The default is true.
-    outputs: []
+    outputs:
+    - contextPath: GCP.Compute.Operations.id
+      description: Operation ID.
+      type: string
+    - contextPath: GCP.Compute.Operations.name
+      description: Operation name.
+      type: string
+    - contextPath: GCP.Compute.Operations.status
+      description: Current operation status (e.g., RUNNING, DONE).
+      type: string
+    - contextPath: GCP.Compute.Operations.operationType
+      description: Type of operation being performed.
+      type: string
+    - contextPath: GCP.Compute.Operations.progress
+      description: Operation progress percentage (0-100).
+      type: number
+    - contextPath: GCP.Compute.Operations.user
+      description: User or service account that initiated the operation.
+      type: string
+    - contextPath: GCP.Compute.Operations.targetLink
+      description: Full URL of the target resource for this operation.
+      type: string
+    - contextPath: GCP.Compute.Operations.targetId
+      description: Target resource ID.
+      type: string
+    - contextPath: GCP.Compute.Operations.zone
+      description: Zone where the operation is performed.
+      type: string
+    - contextPath: GCP.Compute.Operations.insertTime
+      description: Time when the operation was inserted.
+      type: string
+    - contextPath: GCP.Compute.Operations.startTime
+      description: Time when the operation started.
+      type: string
+    - contextPath: GCP.Compute.Operations.selfLink
+      description: URL for this operation resource.
+      type: string
+    - contextPath: GCP.Compute.Operations.kind
+      description: Type of the resource (e.g., compute#operation).
+      type: string
   - name: gcp-compute-firewall-patch-disable-gcp-default-firewall-rule-quick-action
     description: Disables default GCP firewall rule which is overly permissive (except HTTP and HTTPS).
     prettyname: Disable GCP Firewall Rule
