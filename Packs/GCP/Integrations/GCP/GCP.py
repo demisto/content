@@ -1163,7 +1163,7 @@ def compute_snapshots_list(creds: Credentials, args: dict[str, Any]) -> CommandR
         "GCP.Compute.Snapshot(val.id && val.id == obj.id)": items,
         "GCP.Compute(true)": {"SnapshotNextToken": next_token},
     }
-    return CommandResults(readable_output=hr, outputs=outputs)
+    return CommandResults(readable_output=hr, outputs=outputs, raw_response=response)
 
 
 def compute_snapshot_get(creds: Credentials, args: dict[str, Any]) -> CommandResults:
