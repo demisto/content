@@ -2,7 +2,7 @@ category: IT Services
 commonfields:
   id: VenafiTLSProtect
   version: -1
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 configuration:

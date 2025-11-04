@@ -2,8 +2,8 @@ category: Utilities
 commonfields:
   id: Tavily
   version: -1
-sectionOrder:
-  - Connect
+sectionorder:
+- Connect
 configuration:
 - name: url
   display: Server URL
