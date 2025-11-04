@@ -2419,8 +2419,7 @@ def xsoar_status_to_vision_one(incident_status: int) -> str:
         return "in_progress"
     elif incident_status == 2:  # Closed
         return "closed"
-    else:
-        return "open"
+    return "open"
 
 
 def update_remote_system_command(v1_client: pytmv1.Client, args: dict[str, Any]) -> str:
@@ -2542,10 +2541,10 @@ def vision_one_status_to_xsoar(v1_status: str) -> int:
 def get_modified_remote_data_command(v1_client: pytmv1.Client, args: dict[str, Any]) -> GetModifiedRemoteDataResponse:
     """
     Handles incoming mirroring - detects which Vision One alerts have been modified.
-    Queries alerts updated since lastUpdate timestamp and returns their IDs.
+    Queries alerts updated since last_update timestamp and returns their IDs.
 
     :param v1_client: pytmv1.Client object used to initialize pytmv1 client
-    :param args: Arguments containing lastUpdate timestamp
+    :param args: Arguments containing last_update timestamp
     :return: GetModifiedRemoteDataResponse with list of modified alert IDs
     """
     # Parse arguments
@@ -2559,7 +2558,7 @@ def get_modified_remote_data_command(v1_client: pytmv1.Client, args: dict[str, A
         try:
             last_update_dt = datetime.fromisoformat(last_update.replace("Z", "+00:00"))
         except Exception as e:
-            demisto.error(f"get_modified_remote_data: Invalid lastUpdate format: {last_update}, error: {e}")
+            demisto.error(f"get_modified_remote_data: Invalid last_update format: {last_update}, error: {e}")
             last_update_dt = datetime.now(UTC) - timedelta(hours=1)
 
     # Set end time to now
@@ -2574,13 +2573,9 @@ def get_modified_remote_data_command(v1_client: pytmv1.Client, args: dict[str, A
     last_update_dt = last_update_dt.astimezone(UTC)
     end_dt = end_dt.astimezone(UTC)
 
-    # Format to ISO 8601 without milliseconds
-    formatted_start = last_update_dt.isoformat(timespec="milliseconds").replace("+00:00", "Z")
-    formatted_end = end_dt.isoformat(timespec="milliseconds").replace("+00:00", "Z")
-
-    # Remove milliseconds for API compatibility
-    formatted_start = str(formatted_start[: (formatted_start.index("."))]) + str(formatted_start[-1])
-    formatted_end = str(formatted_end[: (formatted_end.index("."))]) + str(formatted_end[-1])
+    # Format to ISO 8601 without milliseconds for API compatibility
+    formatted_start = last_update_dt.isoformat(timespec="seconds").replace("+00:00", "Z")
+    formatted_end = end_dt.isoformat(timespec="seconds").replace("+00:00", "Z")
 
     # List to collect modified alert IDs
     modified_incident_ids: list[str] = []

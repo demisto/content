@@ -1471,14 +1471,14 @@ script:
     - name: id
       description: The Vision One alert ID.
       required: true
-    - name: lastUpdate
-      description: Retrieve entries that were modified after lastUpdate timestamp.
-      required: true
+    - name: last_update
+      description: Retrieve entries that were modified after last_update timestamp.
+      required: false
   - name: get-modified-remote-data
     description: Gets the list of Vision One alerts that were modified since the last update time. This command is used for incoming mirroring.
     arguments:
-    - name: lastUpdate
-      description: Retrieve entries that were modified after lastUpdate timestamp.
+    - name: last_update
+      description: Retrieve entries that were modified after last_update timestamp.
   dockerimage: demisto/pytmv1:0.9.3.5531492
   isFetchSamples: true
   isfetch: true
