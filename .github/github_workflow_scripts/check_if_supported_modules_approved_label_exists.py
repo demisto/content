@@ -5,6 +5,10 @@ import urllib3
 from github.Repository import Repository
 from github.PullRequest import PullRequest
 from utils import timestamped_print
+import yaml
+import json
+from typing import Dict, Any, Optional
+import requests
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 print = timestamped_print
@@ -24,29 +28,91 @@ def arguments_handler():
     return parser.parse_args()
 
 
-def check_pr_contains_yml_or_json(pr: PullRequest) -> bool:
+def parse_yml_or_json(content: str, file_path: str) -> Optional[Dict[str, Any]]:
     """
-    Check if the PR contains any YAML or JSON file changes.
+    Parse YAML or JSON content into a Python dictionary.
+
+    Args:
+        content: File content as string
+        file_path: Path of the file (for error reporting)
+
+    Returns:
+        Parsed content as dictionary or None if parsing fails
+    """
+    try:
+        if file_path.lower().endswith(('.yml', '.yaml')):
+            return yaml.safe_load(content)
+        elif file_path.lower().endswith('.json'):
+            return json.loads(content)
+    except (yaml.YAMLError, json.JSONDecodeError) as e:
+        print(f"⚠️  Warning: Failed to parse {file_path}: {str(e)}")
+    return None
+
+
+def has_supported_modules_field(file_content: Dict[str, Any]) -> bool:
+    """
+    Recursively check if the dictionary contains a 'supportedModules' field.
+
+    Args:
+        file_content: Parsed YAML/JSON content as dictionary
+
+    Returns:
+        bool: True if 'supportedModules' field is found, False otherwise
+    """
+    if isinstance(file_content, dict):
+        if 'supportedModules' in file_content:
+            return True
+        for value in file_content.values():
+            if has_supported_modules_field(value):
+                return True
+    elif isinstance(file_content, list):
+        for item in file_content:
+            if has_supported_modules_field(item):
+                return True
+    return False
+
+
+def check_pr_contains_supported_modules(pr: PullRequest) -> bool:
+    """
+    Check if the PR contains any YAML or JSON files with 'supportedModules' field.
 
     Args:
         pr: GitHub PullRequest object
 
     Returns:
-        bool: True if PR contains YAML or JSON files, False otherwise
+        bool: True if PR contains files with 'supportedModules' field, False otherwise
     """
     try:
-        # Get the list of files changed in the PR
         files = pr.get_files()
-        pr_contains_yml_or_json = False
         for file in files:
-            if file.filename.lower().endswith(('.yml', '.yaml', '.json')):
-                print(f"Found YAML/JSON file in PR: {file.filename}")
-                pr_contains_yml_or_json = True
-        return pr_contains_yml_or_json
+            if not file.filename.lower().endswith(('.yml', '.yaml', '.json')):
+                continue
+
+            try:
+                # Get the file content
+                response = requests.get(file.raw_url, timeout=10)
+                response.raise_for_status()
+                content = response.text
+
+                # Parse the content
+                parsed_content = parse_yml_or_json(content, file.filename)
+                if parsed_content is None:
+                    continue
+
+                # Check for supportedModules field
+                if has_supported_modules_field(parsed_content):
+                    print(f"Found 'supportedModules' in file: {file.filename}")
+                    return True
+
+            except Exception as e:
+                print(f"⚠️  Warning: Error processing {file.filename}: {str(e)}")
+                continue
+
+        return False
+
     except Exception as e:
-        print(f"Error checking PR files: {str(e)}")
-        # Default to True to be safe if we can't check
-        return True
+        print(f"⚠️  Error checking PR files: {str(e)}")
+        return True  # Default to True to be safe if we can't check
 
 
 def main():
@@ -72,18 +138,18 @@ def main():
     print(f"Checking if {SUPPORTED_MODULES_APPROVED_LABEL} label exist in PR {pr_number}")
     if not supported_modules_approved:
 
-        # First check if the PR contains YAML or JSON files
-        has_yml_or_json = check_pr_contains_yml_or_json(pr)
-        if has_yml_or_json:
+        # Check if the PR contains files with 'supportedModules' field
+        has_supported_modules = check_pr_contains_supported_modules(pr)
+        if has_supported_modules:
             print(
                 f"❌ ERROR: Required label '{SUPPORTED_MODULES_APPROVED_LABEL}' is missing from PR #{pr_number}.\n"
-                "   This PR contains YAML or JSON file changes that require PM review.\n"
+                "   This PR contains files with 'supportedModules' field that require PM review.\n"
                 "   Please ask a Product Manager to review the changes and add the label if approved."
             )
             sys.exit(1)
         else:
             print(
-                "ℹ️  PR does not contain any YAML or JSON file changes.\n"
+                "ℹ️  PR does not contain any files with 'supportedModules' field.\n"
                 "   The 'supported-modules-approved' label is not required for this PR."
             )
             sys.exit(0)
