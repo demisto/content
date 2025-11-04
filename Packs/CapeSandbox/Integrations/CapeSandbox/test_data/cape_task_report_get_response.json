@@ -1,22 +1,22 @@
 {
     "info": {
         "id": 123,
-        "started": "2023-01-01 10:00:00",
-        "ended": "2023-01-01 10:05:00",
+        "started": "1970-01-01 00:00:00",
+        "ended": "1970-01-01 00:05:00",
         "category": "file",
         "machine": "win7",
         "package": "test_package",
         "tlp": "AMBER",
         "options": "test_options",
-        "source_url": "http://test.com/source",
+        "source_url": "http://test.example.com/source",
         "route": "test_route",
         "user_id": "test_user",
         "file_name": "test_file.exe",
         "file_path": "/path/to/test_file.exe",
         "file_size": 1024,
         "crc32": "test_crc32",
-        "sha1": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
-        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "sha1": "0011223344556677889900112233445566778899",
+        "sha256": "0011223344556677889900112233445566778899001122334455667788990011",
         "ssdeep": "test_ssdeep",
         "file_type": "executable"
     },
@@ -26,8 +26,8 @@
             "path": "/path/to/test_file.exe",
             "size": 1024,
             "crc32": "test_crc32",
-            "sha1": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
-            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "sha1": "0011223344556677889900112233445566778899",
+            "sha256": "0011223344556677889900112233445566778899001122334455667788990011",
             "ssdeep": "test_ssdeep",
             "type": "executable"
         }

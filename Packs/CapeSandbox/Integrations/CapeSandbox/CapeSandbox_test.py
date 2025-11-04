@@ -39,13 +39,13 @@ from CapeSandbox import (  # noqa: E402
 # Constants
 # ========================================
 
-SERVER_URL = "https://test_url.com"
+SERVER_URL = "http://test.example.com"
 TEST_DATA_PATH_SUFFIX = "test_data"
 INTEGRATION_DIR_REL = "Packs/CapeSandbox/Integrations/CapeSandbox/"
 
-MOCK_MD5 = "d41d8cd98f00b204e9800998ecf8427e"
-MOCK_SHA1 = "da39a3ee5e6b4b0d3255bfef95601890afd80709"
-MOCK_SHA256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+MOCK_MD5 = "00112233445566778899aabbccddeeff"
+MOCK_SHA1 = "0011223344556677889900112233445566778899"
+MOCK_SHA256 = "0011223344556677889900112233445566778899001122334455667788990011"
 
 
 # ========================================
@@ -120,42 +120,89 @@ def mock_context():
 # ========================================
 
 
-def test_parse_integration_params_missing_url_fail():
-    """Tests parse_integration_params fails if 'url' is missing."""
-    params = {"url": ""}
-    with pytest.raises(DemistoException, match="Server URL.+is required"):
+@pytest.mark.parametrize(
+    "params,expected_error",
+    [
+        ({"url": ""}, "Server URL.+is required"),
+        ({}, "Server URL.+is required"),
+    ],
+)
+def test_parse_integration_params_missing_url_fail(params, expected_error):
+    """Tests parse_integration_params fails if 'url' is missing or empty."""
+    with pytest.raises(DemistoException, match=expected_error):
         parse_integration_params(params)
 
 
-def test_parse_integration_params_username_precedence():
-    """Tests parse_integration_params uses API token over username/password."""
-    params = {
-        "url": SERVER_URL,
-        "api_token": "API_TOKEN",
-        "username": "user",
-        "password": "pwd",
-        "insecure": True,
-        "proxy": True,
-        "credentials": {"identifier": "user_cred", "password": "pwd_cred"},
-    }
+@pytest.mark.parametrize(
+    "params,expected_api_token,expected_username,expected_verify,expected_proxy",
+    [
+        # API token takes precedence over username/password
+        (
+            {
+                "url": SERVER_URL,
+                "api_token": "API_TOKEN",
+                "username": "user",
+                "password": "pwd",
+                "insecure": True,
+                "proxy": True,
+                "credentials": {"identifier": "user_cred", "password": "pwd_cred"},
+            },
+            "API_TOKEN",
+            "user_cred",
+            False,
+            True,
+        ),
+        # token_credentials takes precedence over api_token
+        (
+            {
+                "url": SERVER_URL,
+                "token_credentials": {"password": "TOKEN_FROM_CREDS"},
+                "api_token": "API_TOKEN_DIRECT",
+                "insecure": False,
+                "proxy": False,
+            },
+            "TOKEN_FROM_CREDS",
+            None,
+            True,
+            False,
+        ),
+        # URL with trailing slash is stripped
+        (
+            {"url": f"{SERVER_URL}/", "api_token": "TOKEN"},
+            "TOKEN",
+            None,
+            True,
+            False,
+        ),
+        # credentials identifier takes precedence over username
+        (
+            {
+                "url": SERVER_URL,
+                "credentials": {"identifier": "cred_user", "password": "cred_pwd"},
+                "username": "direct_user",
+                "password": "direct_pwd",
+            },
+            None,
+            "cred_user",
+            True,
+            False,
+        ),
+    ],
+)
+def test_parse_integration_params_various_configs(params, expected_api_token, expected_username, expected_verify, expected_proxy):
+    """Tests parse_integration_params handles various configuration scenarios."""
     result = parse_integration_params(params)
-    assert result["api_token"] == "API_TOKEN"
-    assert result["username"] == "user_cred"
-    assert not result["verify_certificate"]
-    assert result["proxy"]
-
-
-def test_parse_integration_params_url_strip():
-    """Tests parse_integration_params strips trailing slash from URL."""
-    params = {"url": f"{SERVER_URL}/", "api_token": "TOKEN"}
-    result = parse_integration_params(params)
+    assert result["api_token"] == expected_api_token
+    assert result["username"] == expected_username
+    assert result["verify_certificate"] == expected_verify
+    assert result["proxy"] == expected_proxy
     assert result["base_url"] == SERVER_URL
 
 
 def test_build_submit_form_full_and_url_mode():
     """Tests build_submit_form correctly assigns all optional args and handles URL mode."""
     args = {
-        "url": "http://example.com",
+        "url": "http://test.example.com",
         "package": "win_exe",
         "timeout": 120,
         "priority": 2,
@@ -165,7 +212,7 @@ def test_build_submit_form_full_and_url_mode():
     }
 
     form_url = build_submit_form(args, url_mode=True)
-    assert form_url["url"] == "http://example.com"
+    assert form_url["url"] == "http://test.example.com"
     assert form_url["package"] == "win_exe"
     assert form_url["timeout"] == 120
     assert form_url["priority"] == 2
@@ -175,6 +222,71 @@ def test_build_submit_form_full_and_url_mode():
     form_file = build_submit_form(args, url_mode=False)
     assert "url" not in form_file
     assert "memory" in form_file
+
+
+@pytest.mark.parametrize(
+    "args,url_mode,check_keys_present,check_keys_absent",
+    [
+        # All optional parameters with URL mode
+        (
+            {
+                "url": "http://test.example.com",
+                "package": "win_exe",
+                "timeout": 120,
+                "priority": 2,
+                "memory": "True",
+                "enforce_timeout": "True",
+                "tags": "test_tag",
+                "options": "opt1,opt2",
+                "machine": "win10",
+                "platform": "windows",
+                "custom": "custom_data",
+                "clock": "1970-01-01 12:00:00",
+            },
+            True,
+            [
+                "url",
+                "package",
+                "timeout",
+                "priority",
+                "memory",
+                "enforce_timeout",
+                "tags",
+                "options",
+                "machine",
+                "platform",
+                "custom",
+                "clock",
+            ],
+            [],
+        ),
+        # File mode excludes URL
+        (
+            {"package": "win_exe", "memory": "True", "url": "http://test.example.com"},
+            False,
+            ["package", "memory"],
+            ["url"],
+        ),
+        # Empty args
+        ({}, False, [], []),
+        # Boolean false values excluded
+        (
+            {"memory": "false", "enforce_timeout": "False", "package": "exe"},
+            False,
+            ["package"],
+            ["memory", "enforce_timeout"],
+        ),
+    ],
+)
+def test_build_submit_form_all_parameters(args, url_mode, check_keys_present, check_keys_absent):
+    """Tests build_submit_form with comprehensive parameter combinations."""
+    form = build_submit_form(args, url_mode=url_mode)
+
+    for key in check_keys_present:
+        assert key in form, f"Expected key '{key}' not in form"
+
+    for key in check_keys_absent:
+        assert key not in form, f"Unexpected key '{key}' found in form"
 
 
 @pytest.mark.parametrize(
@@ -197,6 +309,40 @@ def test_build_file_name_all_types(identifier, file_type, file_format, screensho
         screenshot_number=screenshot_number,
     )
     assert result == expected
+
+
+@pytest.mark.parametrize(
+    "identifier,file_type,file_format,expected",
+    [
+        # Report with different formats
+        (101, "report", "pdf", "cape_task_101_report.pdf"),
+        (102, "report", "html", "cape_task_102_report.html"),
+        (103, "report", "zip", "cape_task_103_report.zip"),
+        # File with different formats
+        (201, "file", "bin", "cape_task_201_file.bin"),
+        (202, "file", "exe", "cape_task_202_file.exe"),
+    ],
+)
+def test_build_file_name_report_formats(identifier, file_type, file_format, expected):
+    """Tests build_file_name with various report and file formats."""
+    result = build_file_name(identifier, file_type=file_type, file_format=file_format)
+    assert result == expected
+
+
+@pytest.mark.parametrize(
+    "status,expected",
+    [
+        ("reported", True),
+        ("running", False),
+        ("pending", False),
+        ("completed", False),
+        ("", False),
+        ("REPORTED", False),  # Case sensitive
+    ],
+)
+def test_status_is_reported(status, expected):
+    """Tests status_is_reported function correctly identifies reported status."""
+    assert CapeSandbox.status_is_reported(status) is expected
 
 
 def test_extract_entry_file_data_not_found_fail(mocker):
@@ -649,7 +795,7 @@ def test_cape_file_submit_command(mocker, client):
     mocker.patch.object(
         client,
         "submit_file",
-        return_value=util_load_json("cape_file_submit_response.json"),
+        return_value={"data": {"task_ids": [123]}},
     )
     mocker.patch.object(
         CapeSandbox,
@@ -666,7 +812,9 @@ def test_cape_file_submit_command(mocker, client):
     assert compare_string_ignore_case(result.readable_output, "Polling initiated for task 123")
     assert result.outputs_prefix == "Cape.Task.File"
     assert isinstance(result.outputs, dict)
-    assert result.outputs.get("id") == 123
+    outputs = result.outputs
+    assert isinstance(outputs, dict)
+    assert outputs.get("id") == 123
 
 
 def test_cape_file_submit_command_no_task_id_fail(mocker, client):
@@ -709,24 +857,30 @@ def test_cape_url_submit_command(mocker, client):
     mocker.patch.object(
         client,
         "submit_url",
-        return_value=util_load_json("cape_url_submit_response.json"),
+        return_value={"data": {"task_ids": [456]}},
     )
     mocker.patch.object(
         CapeSandbox,
         "initiate_polling",
         return_value=CommandResults(
             readable_output="Polling initiated for URL task 456",
-            outputs={"id": 456, "target": "http://example.com", "status": "pending"},
+            outputs={
+                "id": 456,
+                "target": "http://test.example.com",
+                "status": "pending",
+            },
             outputs_prefix="Cape.Task.Url",
         ),
     )
 
-    args = {"url": "http://example.com"}
+    args = {"url": "http://test.example.com"}
     result = cape_url_submit_command(client, args)
     assert compare_string_ignore_case(result.readable_output, "Polling initiated for URL task 456")
     assert result.outputs_prefix == "Cape.Task.Url"
     assert isinstance(result.outputs, dict)
-    assert result.outputs.get("id") == 456
+    outputs = result.outputs
+    assert isinstance(outputs, dict)
+    assert outputs.get("id") == 456
 
 
 def test_cape_url_submit_command_no_url_fail(client):
@@ -740,7 +894,7 @@ def test_cape_url_submit_command_no_task_id_fail(mocker, client):
     mocker.patch.object(client, "submit_url", return_value={"data": {"task_ids": None}})
 
     with pytest.raises(DemistoException, match="No task id returned from CAPE"):
-        cape_url_submit_command(client, {"url": "http://test.com"})
+        cape_url_submit_command(client, {"url": "http://test.example.com"})
 
 
 # ========================================
@@ -766,7 +920,9 @@ def test_cape_file_view_command_by_id_type(mocker, client, id_type, id_value, cl
     args = {id_type: id_value}
     result = cape_file_view_command(client, args)
     assert isinstance(result.outputs, dict)
-    assert result.outputs["id"] == "test_task_id"
+    outputs = result.outputs
+    assert isinstance(outputs, dict)
+    assert outputs["id"] == "test_task_id"
 
 
 @pytest.mark.parametrize(
@@ -861,7 +1017,7 @@ def test_cape_task_delete_command(mocker, client):
     mocker.patch.object(
         client,
         "delete_task",
-        return_value=util_load_json("cape_task_delete_response.json"),
+        return_value={"status": "success", "message": "Task deleted successfully"},
     )
     args = {"task_id": "123"}
     result = cape_task_delete_command(client, args)
@@ -968,7 +1124,7 @@ def test_cape_task_report_get_command_json_no_info_path(mocker, client):
 def test_cape_task_report_get_command_json_target_file_data(mocker, client):
     """Tests report retrieval includes target file data in readable output."""
     mock_resp = {
-        "info": {"id": 123, "started": "2023-01-01"},
+        "info": {"id": 123, "started": "1970-01-01"},
         "target": {"file": {"name": "test.exe", "sha256": MOCK_SHA256}},
     }
     mocker.patch.object(client, "get_task_report", return_value=mock_resp)
@@ -1005,7 +1161,12 @@ def test_cape_task_screenshot_download_command_multiple(mocker, client):
     mocker.patch.object(
         client,
         "list_task_screenshots",
-        return_value=util_load_json("cape_task_screenshots_list_response.json"),
+        return_value={
+            "screenshots": [
+                {"number": 1, "url": "http://test.example.com/screenshot1.png"},
+                {"number": 2, "url": "http://test.example.com/screenshot2.png"},
+            ]
+        },
     )
 
     content_list = [
@@ -1101,3 +1262,183 @@ def test_cape_cuckoo_status_get_command_unexpected_response(mocker, client):
 
     assert result.readable_output is not None
     assert "N/A" in result.readable_output
+
+
+# ========================================
+# Tests: Polling Functions
+# ========================================
+
+
+def test_initiate_polling_basic(mocker):
+    """Tests initiate_polling creates correct CommandResults with ScheduledCommand."""
+    result = CapeSandbox.initiate_polling(
+        command="test-command",
+        args={"arg1": "value1"},
+        task_id=123,
+        api_target="test.exe",
+        outputs_prefix="Cape.Task.File",
+    )
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "Cape.Task.File"
+    outputs = result.outputs
+    assert isinstance(outputs, dict)
+    assert outputs["id"] == 123
+    assert outputs["target"] == "test.exe"
+    assert outputs["status"] == "pending"
+    assert "Polling initiated" in result.readable_output
+    assert result.scheduled_command is not None
+    scheduled_cmd = result.scheduled_command
+    assert scheduled_cmd._command == "cape-task-poll"  # type: ignore[attr-defined]
+
+
+def test_initiate_polling_custom_intervals():
+    """Tests initiate_polling creates CommandResults with ScheduledCommand."""
+    result = CapeSandbox.initiate_polling(
+        command="test-command",
+        args={"pollingInterval": 30, "pollingTimeout": 600},
+        task_id=456,
+        api_target="malware.dll",
+        outputs_prefix="Cape.Task.File",
+    )
+
+    # Just verify the scheduled command exists and has the right command name
+    assert result.scheduled_command is not None
+    scheduled_cmd = result.scheduled_command
+    assert scheduled_cmd._command == "cape-task-poll"  # type: ignore[attr-defined]
+
+
+def test_cape_task_poll_report_non_429_error_raises(mocker, client):
+    """Tests cape_task_poll_report raises non-429 errors."""
+    mocker.patch.object(
+        client,
+        "get_task_status",
+        side_effect=DemistoException("Error [500] - Internal Server Error"),
+    )
+
+    args = {"task_id": "888", "outputs_prefix": "Cape.Task.File"}
+
+    with pytest.raises(DemistoException, match="Internal Server Error"):
+        CapeSandbox.cape_task_poll_report(args, client)
+
+
+# ========================================
+# Tests: Main Function
+# ========================================
+
+
+def test_main_invalid_command_fail(mocker):
+    """Tests main() raises error for invalid/unimplemented command."""
+    mocker.patch.object(demisto, "command", return_value="invalid-command")
+    mocker.patch.object(demisto, "params", return_value={"url": SERVER_URL, "api_token": "TOKEN"})
+    mocker.patch.object(demisto, "args", return_value={})
+
+    # Mock return_error to capture the error
+    mock_return_error = mocker.patch("CapeSandbox.return_error")
+
+    CapeSandbox.main()
+
+    # Verify return_error was called with appropriate message
+    mock_return_error.assert_called_once()
+    error_call_args = mock_return_error.call_args[0][0]
+    assert "invalid-command" in error_call_args
+    assert "not implemented" in error_call_args.lower()
+
+
+def test_main_test_module_success(mocker):
+    """Tests main() executes test-module command successfully."""
+    mocker.patch.object(demisto, "command", return_value="test-module")
+    mocker.patch.object(demisto, "params", return_value={"url": SERVER_URL, "api_token": "TOKEN"})
+    mocker.patch.object(demisto, "args", return_value={})
+
+    mock_return_results = mocker.patch("CapeSandbox.return_results")
+
+    CapeSandbox.main()
+
+    mock_return_results.assert_called_once_with("ok")
+
+
+def test_main_cape_file_submit_success(mocker):
+    """Tests main() executes cape-file-submit command successfully."""
+    mocker.patch.object(demisto, "command", return_value="cape-file-submit")
+    mocker.patch.object(demisto, "params", return_value={"url": SERVER_URL, "api_token": "TOKEN"})
+    mocker.patch.object(demisto, "args", return_value={"entry_id": "test_id"})
+    mocker.patch.object(CapeSandbox, "get_entry_path", return_value=("/tmp/file.exe", "file.exe"))
+
+    mock_client = mocker.MagicMock()
+    mock_client.submit_file.return_value = {"data": {"task_ids": [123]}}
+    mocker.patch.object(CapeSandbox, "CapeSandboxClient", return_value=mock_client)
+
+    mock_return_results = mocker.patch("CapeSandbox.return_results")
+    mocker.patch.object(
+        CapeSandbox,
+        "initiate_polling",
+        return_value=CommandResults(readable_output="Polling initiated"),
+    )
+
+    CapeSandbox.main()
+
+    mock_return_results.assert_called_once()
+
+
+def test_main_cape_task_poll_success(mocker):
+    """Tests main() executes cape-task-poll command with correct argument passing."""
+    mocker.patch.object(demisto, "command", return_value="cape-task-poll")
+    mocker.patch.object(demisto, "params", return_value={"url": SERVER_URL, "api_token": "TOKEN"})
+    mocker.patch.object(
+        demisto,
+        "args",
+        return_value={"task_id": "123", "outputs_prefix": "Cape.Task.File"},
+    )
+
+    mock_client = mocker.MagicMock()
+    mock_client.get_task_status.return_value = {"data": "running"}
+    mocker.patch.object(CapeSandbox, "CapeSandboxClient", return_value=mock_client)
+
+    mock_return_results = mocker.patch("CapeSandbox.return_results")
+
+    CapeSandbox.main()
+
+    # Verify return_results was called (polling result)
+    mock_return_results.assert_called_once()
+
+
+def test_main_command_execution_error(mocker):
+    """Tests main() handles command execution errors gracefully."""
+    mocker.patch.object(demisto, "command", return_value="cape-file-view")
+    mocker.patch.object(demisto, "params", return_value={"url": SERVER_URL, "api_token": "TOKEN"})
+    mocker.patch.object(demisto, "args", return_value={})  # Missing required args
+
+    mock_return_error = mocker.patch("CapeSandbox.return_error")
+
+    CapeSandbox.main()
+
+    # Verify error was handled
+    mock_return_error.assert_called_once()
+    error_message = mock_return_error.call_args[0][0]
+    assert "cape-file-view" in error_message.lower()
+
+
+@pytest.mark.parametrize(
+    "command_name,expected_in_map",
+    [
+        ("test-module", True),
+        ("cape-file-submit", True),
+        ("cape-url-submit", True),
+        ("cape-file-view", True),
+        ("cape-sample-download", True),
+        ("cape-tasks-list", True),
+        ("cape-task-delete", True),
+        ("cape-task-report-get", True),
+        ("cape-pcap-file-download", True),
+        ("cape-machines-list", True),
+        ("cape-cuckoo-status-get", True),
+        ("cape-task-poll", True),
+        ("cape-task-screenshot-download", True),
+        ("non-existent-command", False),
+        ("", False),
+    ],
+)
+def test_command_map_completeness(command_name, expected_in_map):
+    """Tests that COMMAND_MAP contains all expected commands."""
+    assert (command_name in CapeSandbox.COMMAND_MAP) == expected_in_map

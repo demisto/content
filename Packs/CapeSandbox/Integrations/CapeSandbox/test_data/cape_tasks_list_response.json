@@ -12,14 +12,14 @@
             "timeout": 60,
             "memory": true,
             "tags": ["tag1", "tag2"],
-            "added_on": "2023-01-01 10:00:00",
-            "completed_on": "2023-01-01 10:05:00"
+            "added_on": "1970-01-01 00:00:00",
+            "completed_on": "1970-01-01 00:05:00"
         },
         {
             "id": 2,
             "category": "url",
             "machine": "win10",
-            "target": "http://test.com",
+            "target": "http://test.example.com",
             "package": "test_package",
             "platform": "windows",
             "options": "test_options",
@@ -27,8 +27,8 @@
             "timeout": 60,
             "memory": false,
             "tags": ["tag3"],
-            "added_on": "2023-01-01 10:10:00",
-            "completed_on": "2023-01-01 10:15:00"
+            "added_on": "1970-01-01 00:10:00",
+            "completed_on": "1970-01-01 00:15:00"
         }
     ]
 }
