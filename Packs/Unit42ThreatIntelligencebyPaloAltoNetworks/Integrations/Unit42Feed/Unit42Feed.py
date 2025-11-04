@@ -18,7 +18,7 @@ THREAT_OBJECTS_ENDPOINT = "/api/v1/feeds/threat_objects"
 # Retry configuration
 RETRY_COUNT = 5
 BACKOFF_FACTOR = 5
-STATUS_CODES_TO_RETRY = list(range(400, 600))  # All 4xx and 5xx errors
+STATUS_CODES_TO_RETRY = [429] + list(range(500, 600))
 
 # Mapping from API indicator types to XSOAR indicator types
 INDICATOR_TYPE_MAPPING = {
@@ -73,25 +73,18 @@ def unit42_error_handler(res: requests.Response) -> str:
         Error message string including X-Request-ID if available
     """
     request_id = res.headers.get("X-Request-ID", "N/A")
-    error_msg = f"Error in API request [Status: {res.status_code}]"
+    error_msg = f"Error in API request [Status: {res.status_code}]\n"
 
     # Log the X-Request-ID for debugging
     demisto.debug(f"{INTEGRATION_NAME} API Error - X-Request-ID: {request_id}, Status: {res.status_code}, URL: {res.url}")
 
-    # Try to extract error details from response
     try:
-        error_data = res.json()
-        if isinstance(error_data, dict):
-            api_error = error_data.get("error", error_data.get("message", ""))
-            if api_error:
-                error_msg += f" - {api_error}"
+        error_msg += res.json()
     except Exception:
-        # If JSON parsing fails, include first 200 chars of response text
         if res.text:
             error_msg += f" - {res.text[:200]}"
 
-    # Always include X-Request-ID in the error message for user visibility
-    error_msg += f" [X-Request-ID: {request_id}]"
+    error_msg += f"\n[X-Request-ID: {request_id}]"
 
     return error_msg
 

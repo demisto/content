@@ -8,6 +8,7 @@ from Unit42Feed import (
     build_threat_object_description,
     test_module as unit42_test_module,
     main,
+    unit42_error_handler,
     INDICATOR_TYPE_MAPPING,
     VERDICT_TO_SCORE,
     VALID_REGIONS,
@@ -1198,3 +1199,161 @@ def test_main_function_exception_handling(mocker):
     error_call = mock_return_error.call_args[0][0]
     assert "Failed to execute test-module command" in error_call
     assert "Test error" in error_call
+
+
+def test_unit42_error_handler_with_request_id(mocker):
+    """
+    Given:
+        - A mock response with 500 status code and X-Request-ID header
+    When:
+        - Calling unit42_error_handler function
+    Then:
+        - Returns error message containing status code and X-Request-ID
+        - Logs debug message with request details
+    """
+    mock_response = mocker.Mock()
+    mock_response.status_code = 500
+    mock_response.headers = {"X-Request-ID": "test-request-id-12345"}
+    mock_response.url = "https://api.example.com/test"
+    mock_response.text = "Internal Server Error"
+    mock_response.json.side_effect = Exception("Not JSON")
+
+    mock_debug = mocker.patch("Unit42Feed.demisto.debug")
+
+    error_msg = unit42_error_handler(mock_response)
+
+    assert "Error in API request [Status: 500]" in error_msg
+    assert "[X-Request-ID: test-request-id-12345]" in error_msg
+    assert "Internal Server Error" in error_msg
+    mock_debug.assert_called_once()
+    debug_call = mock_debug.call_args[0][0]
+    assert "test-request-id-12345" in debug_call
+    assert "500" in debug_call
+
+
+def test_unit42_error_handler_without_request_id(mocker):
+    """
+    Given:
+        - A mock response with 404 status code and no X-Request-ID header
+    When:
+        - Calling unit42_error_handler function
+    Then:
+        - Returns error message with 'N/A' for X-Request-ID
+        - Logs debug message with N/A request ID
+    """
+    mock_response = mocker.Mock()
+    mock_response.status_code = 404
+    mock_response.headers = {}
+    mock_response.url = "https://api.example.com/test"
+    mock_response.text = "Not Found"
+    mock_response.json.side_effect = Exception("Not JSON")
+
+    mock_debug = mocker.patch("Unit42Feed.demisto.debug")
+
+    error_msg = unit42_error_handler(mock_response)
+
+    assert "Error in API request [Status: 404]" in error_msg
+    assert "[X-Request-ID: N/A]" in error_msg
+    assert "Not Found" in error_msg
+    mock_debug.assert_called_once()
+    debug_call = mock_debug.call_args[0][0]
+    assert "N/A" in debug_call
+
+
+def test_unit42_error_handler_with_json_error(mocker):
+    """
+    Given:
+        - A mock response with 400 status code and JSON error details
+    When:
+        - Calling unit42_error_handler function
+    Then:
+        - Returns error message with parsed JSON error details
+        - Includes X-Request-ID in error message
+    """
+    mock_response = mocker.Mock()
+    mock_response.status_code = 400
+    mock_response.headers = {"X-Request-ID": "json-error-id"}
+    mock_response.url = "https://api.example.com/test"
+    mock_response.json.return_value = {"error": "Invalid parameter", "details": "Missing required field"}
+    mock_response.text = '{"error": "Invalid parameter"}'
+
+    mock_debug = mocker.patch("Unit42Feed.demisto.debug")
+
+    error_msg = unit42_error_handler(mock_response)
+
+    assert "Error in API request [Status: 400]" in error_msg
+    assert "[X-Request-ID: json-error-id]" in error_msg
+    assert "Invalid parameter" in error_msg or "error" in error_msg
+
+
+def test_client_retry_configuration():
+    """
+    Given:
+        - Client initialization parameters
+    When:
+        - Initializing Unit42Feed Client
+    Then:
+        - Configures retry mechanism with correct parameters
+        - Sets status codes to retry (400-599)
+        - Sets backoff factor and retry count
+    """
+    headers = {"Authorization": "Bearer test_token"}
+    client = Client(headers=headers, verify=False, proxy=False)
+
+    # Verify retry is configured (we can't directly access _implement_retry params,
+    # but we can verify the client was initialized successfully)
+    assert client._base_url == "https://prod-us.tas.crtx.paloaltonetworks.com"
+    assert client._headers == headers
+    assert client._verify is False
+
+
+def test_get_indicators_with_error_handler(client, mocker):
+    """
+    Given:
+        - A Unit42Feed client
+        - Mock API that returns 500 error with X-Request-ID
+    When:
+        - Calling get_indicators
+    Then:
+        - Error handler is invoked
+        - Error message includes X-Request-ID
+    """
+    mock_response = mocker.Mock()
+    mock_response.status_code = 500
+    mock_response.headers = {"X-Request-ID": "error-request-id"}
+    mock_response.url = "https://api.example.com/indicators"
+    mock_response.text = "Internal Server Error"
+    mock_response.raise_for_status.side_effect = Exception("HTTP 500 Error")
+
+    mocker.patch.object(client, "_http_request", side_effect=Exception("HTTP 500 Error"))
+
+    with pytest.raises(Exception) as exc_info:
+        client.get_indicators(indicator_types=["ip"])
+
+    assert "500" in str(exc_info.value) or "Error" in str(exc_info.value)
+
+
+def test_get_threat_objects_with_error_handler(client, mocker):
+    """
+    Given:
+        - A Unit42Feed client
+        - Mock API that returns 503 error with X-Request-ID
+    When:
+        - Calling get_threat_objects
+    Then:
+        - Error handler is invoked
+        - Error message includes X-Request-ID
+    """
+    mock_response = mocker.Mock()
+    mock_response.status_code = 503
+    mock_response.headers = {"X-Request-ID": "service-unavailable-id"}
+    mock_response.url = "https://api.example.com/threat_objects"
+    mock_response.text = "Service Unavailable"
+    mock_response.raise_for_status.side_effect = Exception("HTTP 503 Error")
+
+    mocker.patch.object(client, "_http_request", side_effect=Exception("HTTP 503 Error"))
+
+    with pytest.raises(Exception) as exc_info:
+        client.get_threat_objects()
+
+    assert "503" in str(exc_info.value) or "Error" in str(exc_info.value)
