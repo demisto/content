@@ -23,12 +23,13 @@ ASSET_FIELDS = {
     "asset_group_ids": "xdm.asset.group_ids",
 }
 
-
-WEBAPP_COMMANDS = ["core-get-vulnerabilities", "core-search-asset-groups", "core-get-issue-recommendations"]
+WEBAPP_COMMANDS = ["core-get-vulnerabilities", "core-search-asset-groups", "core-get-issue-recommendations",
+                   "core-get-asset-coverage"]
 DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
 
 VULNERABLE_ISSUES_TABLE = "VULNERABLE_ISSUES_TABLE"
 ASSET_GROUPS_TABLE = "UNIFIED_ASSET_MANAGEMENT_ASSET_GROUPS"
+ASSET_COVERAGE_TABLE = "COVERAGE"
 
 ASSET_GROUP_FIELDS = {
     "asset_group_name": "XDM__ASSET_GROUP__NAME",
@@ -71,6 +72,7 @@ class FilterBuilder:
         GTE = ("GTE", "OR")
         ARRAY_CONTAINS = ("ARRAY_CONTAINS", "OR")
         JSON_WILDCARD = ("JSON_WILDCARD", "OR")
+        WILDCARD = ("WILDCARD", "OR")
         IS_EMPTY = ("IS_EMPTY", "OR")
         NIS_EMPTY = ("NIS_EMPTY", "AND")
 
@@ -502,15 +504,16 @@ def build_webapp_request_data(
     table_name: str,
     filter_dict: dict,
     limit: int,
-    sort_field: str,
+    sort_field: str | None,
     on_demand_fields: list | None = None,
     sort_order: str = "DESC",
 ) -> dict:
     """
     Builds the request data for the generic /api/webapp/get_data endpoint.
     """
+    sort = [{"FIELD": sort_field, "ORDER": sort_order}] if sort_field else []
     filter_data = {
-        "sort": [{"FIELD": sort_field, "ORDER": sort_order}],
+        "sort": sort,
         "paging": {"from": 0, "to": limit},
         "filter": filter_dict,
     }
@@ -740,6 +743,55 @@ def get_asset_group_ids_from_names(client: Client, group_names: list[str]) -> li
     return group_ids
 
 
+def get_asset_coverage_command(client: Client, args: dict):
+    """
+    Retrieves ASPM assets coverage using the generic /api/webapp/get_data endpoint.
+    """
+    limit = arg_to_number(args.get("limit")) or 100
+    sort_field = args.get("sort_field")
+    sort_order = args.get("sort_order")
+
+    filter_builder = FilterBuilder()
+    filter_builder.add_field("asset_id", FilterType.CONTAINS, argToList(args.get("asset_id")))
+    filter_builder.add_field("asset_name", FilterType.WILDCARD, argToList(args.get("asset_name")))
+    filter_builder.add_field("asset_name", FilterType.CONTAINS, argToList(args.get("asset_name_contains")))
+    filter_builder.add_field("business_application_names", FilterType.ARRAY_CONTAINS,
+                             argToList(args.get('business_application_names')))
+    filter_builder.add_field("status_coverage", FilterType.EQ, argToList(args.get("status_coverage")))
+    filter_builder.add_field("is_scanned_by_vulnerabilities", FilterType.EQ, argToList(args.get("is_scanned_by_vulnerabilities")))
+    filter_builder.add_field("is_scanned_by_code_weakness", FilterType.EQ, argToList(args.get("is_scanned_by_code_weakness")))
+    filter_builder.add_field("is_scanned_by_secrets", FilterType.EQ, argToList(args.get("is_scanned_by_secrets")))
+    filter_builder.add_field("is_scanned_by_iac", FilterType.EQ, argToList(args.get("is_scanned_by_iac")))
+    filter_builder.add_field("is_scanned_by_malware", FilterType.EQ, argToList(args.get("is_scanned_by_malware")))
+    filter_builder.add_field("is_scanned_by_cicd", FilterType.EQ, argToList(args.get("is_scanned_by_cicd")))
+    filter_builder.add_field("last_scan_status", FilterType.EQ, argToList(args.get("last_scan_status")))
+    filter_builder.add_field("asset_type", FilterType.EQ, argToList(args.get("asset_type")))
+    filter_builder.add_field("unified_provider", FilterType.EQ, argToList(args.get("unified_provider")))
+    filter_builder.add_field("asset_provider", FilterType.EQ, argToList(args.get("asset_provider")))
+
+    request_data = build_webapp_request_data(
+        table_name=ASSET_COVERAGE_TABLE,
+        filter_dict=filter_builder.to_dict(),
+        limit=limit,
+        sort_field=sort_field,
+        sort_order=sort_order,
+    )
+    response = client.get_webapp_data(request_data)
+    reply = response.get("reply", {})
+    data = reply.get("DATA", [])
+
+    readable_output = tableToMarkdown(
+        "ASPM Coverage", data, headerTransform=string_to_table_header, sort_headers=False
+    )
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Coverage.Asset",
+        outputs_key_field="asset_id",
+        outputs=data,
+        raw_response=response,
+    )
+
+
 def main():  # pragma: no cover
     """
     Executes an integration command
@@ -797,11 +849,13 @@ def main():  # pragma: no cover
             issues_command_results: CommandResults = get_alerts_by_filter_command(client, args)
             # Convert alert keys to issue keys
             if issues_command_results.outputs:
-                issues_command_results.outputs = [alert_to_issue(output) for output in issues_command_results.outputs]  # type: ignore[attr-defined,arg-type]
+                issues_command_results.outputs = [alert_to_issue(output) for output in
+                                                  issues_command_results.outputs]  # type: ignore[attr-defined,arg-type]
 
             # Apply output_keys filtering if specified
             if output_keys and issues_command_results.outputs:
-                issues_command_results.outputs = filter_context_fields(output_keys, issues_command_results.outputs)  # type: ignore[attr-defined,arg-type]
+                issues_command_results.outputs = filter_context_fields(output_keys,
+                                                                       issues_command_results.outputs)  # type: ignore[attr-defined,arg-type]
 
             return_results(issues_command_results)
 
@@ -818,6 +872,9 @@ def main():  # pragma: no cover
 
         elif command == "core-get-issue-recommendations":
             return_results(get_issue_recommendations_command(client, args))
+
+        elif command == "core-get-asset-coverage":
+            return_results((get_asset_coverage_command(client, args)))
 
     except Exception as err:
         demisto.error(traceback.format_exc())
