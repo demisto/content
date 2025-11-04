@@ -769,6 +769,31 @@ class Client(BaseClient):
         response = self._http_request(method="POST", url_suffix=endpoint_url, json_data=payload)
         return response.get("data", {})
 
+    def run_powerquery_request(self, sdl_url, sdl_api_key, query, start_time, end_time, priority, recurring, team_emails):
+        if not sdl_url.startswith("https://"):
+            raise DemistoException("Invalid URL: must start with https://")
+
+        headers = {
+            "Authorization": f"Bearer {sdl_api_key}",
+            "Content-Type": "application/json",
+        }
+
+        payload = {"query": query}
+        optional_params = {
+            "startTime": start_time,
+            "endTime": end_time,
+            "priority": priority,
+            "recurring": recurring,
+            "teamEmails": team_emails,
+        }
+
+        payload.update(
+            {param_name: param_value for param_name, param_value in optional_params.items() if param_value not in [None, ""]}
+        )
+        return self._http_request(
+            method="POST", full_url=f"{sdl_url.rstrip('/')}/api/powerQuery", headers=headers, json_data=payload
+        )
+
     def delete_ioc_request(self, account_ids, uuids):
         endpoint_url = "threat-intelligence/iocs"
         payload = {"filter": {"accountIds": account_ids, "uuids": uuids}}
@@ -1888,7 +1913,6 @@ def create_bulk_ioc(client: Client, args: dict) -> CommandResults:
     if not isinstance(iocs_data, list):
         return_error("Uploaded JSON must be an array of IOC objects.")
 
-    # Make request and get raw response
     iocs = client.create_bulk_ioc_request(iocs_data, account_ids)
 
     for ioc in iocs:
@@ -1917,6 +1941,45 @@ def create_bulk_ioc(client: Client, args: dict) -> CommandResults:
         outputs_key_field="UUID",
         outputs=context_list,
         raw_response=iocs,
+    )
+
+
+def run_powerquery(client: Client, args: dict) -> CommandResults:
+    outputs = {}
+
+    # Get arguments
+    sdl_url = args.get("singularity_xdr_Url")
+    sdl_api_key = args.get("singularity_xdr_api_key")
+    query = args.get("query")
+    start_time = args.get("startTime")
+    end_time = args.get("endTime")
+    priority = args.get("priority")
+    recurring = argToBoolean(args.get("recurring")) if args.get("recurring") else None
+    team_emails = argToList(args.get("teamEmails")) or None
+
+    pq_response = client.run_powerquery_request(
+        sdl_url, sdl_api_key, query, start_time, end_time, priority, recurring, team_emails
+    )
+
+    # Extract columns and rows
+    columns = [col["name"] for col in pq_response.get("columns", [])]
+    rows = pq_response.get("values", [])
+
+    table_data = [dict(zip(columns, row)) for row in rows]
+
+    summary = f"### SentinelOne PowerQuery Results\n" f"**Query:** `{args.get('query')}`  \n\n"
+
+    md = summary + tableToMarkdown("Query Output", table_data)
+
+    outputs = {
+        "status": pq_response.get("status"),
+        "matchingEvents": pq_response.get("matchingEvents"),
+        "omittedEvents": pq_response.get("omittedEvents"),
+        "results": table_data,
+    }
+
+    return CommandResults(
+        readable_output=md, outputs_prefix="SentinelOne.PowerQuery.Results", outputs=outputs, raw_response=pq_response
     )
 
 
@@ -4460,6 +4523,7 @@ def main():
             "sentinelone-endpoint-fetch-logs": endpoint_fetch_logs,
             "get-modified-remote-data": get_modified_remote_data_command,
             "update-remote-system": update_remote_system_command,
+            "sentinelone-run-powerquery": run_powerquery,
         },
         "2.0": {
             "sentinelone-mark-as-threat": mark_as_threat_command,

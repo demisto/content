@@ -1920,6 +1920,52 @@ script:
     - Domain Blockage
     - IP Blockage
   - arguments:
+    - name: singularity_xdr_Url
+      required: true
+      description: Singularity Data Lake XDR URL.
+    - name: singularity_xdr_api_key
+      required: true
+      description: A Log Read Access API key.
+    - name: query
+      required: true
+      description: The query, in PowerQuery syntax.
+    - name: startTime
+      required: false
+      description: Start time for your query.
+    - name: endTime
+      required: false
+      description: End time for your query.
+    - name: priority
+      required: false
+      description: Query execution priority (defaults to "low").
+      defaultValue: low
+    - name: recurring
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      defaultValue: "false"
+      description: Optional (defaults to false). When set to true, a materialized view of your query is created.
+    - name: teamEmails
+      required: false
+      description: Comma-separated list of account emails to query, enabling Cross Team Search.
+    description: Run a PowerQuery, where you can pipe one or many search expressions into a set of commands to transform, manipulate, group, and summarize your data.
+    name: sentinelone-run-powerquery
+    outputs:
+      - contextPath: SentinelOne.PowerQuery.Results.status
+        description: The status of the PowerQuery execution.
+        type: String
+      - contextPath: SentinelOne.PowerQuery.Results.matchingEvents
+        description: Number of events that match the query's initial filter.
+        type: Number
+      - contextPath: SentinelOne.PowerQuery.Results.omittedEvents
+        description: Number of events omitted from the final result due to memory limits.
+        type: Number
+      - contextPath: SentinelOne.PowerQuery.Results.results
+        description: A list of result rows returned by the PowerQuery, where each object represents one row (column:value pairs).
+        type: List
+  - arguments:
     - name: account_ids
       required: true
       description: List of account IDs to filter by.
