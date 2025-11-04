@@ -1,5 +1,5 @@
 category: Messaging and Conferencing
-sectionOrder:
+sectionorder:
 - Connect
 commonfields:
   id: SIGNL4
@@ -46,18 +46,18 @@ script:
     description: Trigger a SIGNL4 alert.
     name: signl4_alert
     outputs:
-      - contextPath: SIGNL4.AlertCreated.eventId
-        description: The event ID.
-        type: String
+    - contextPath: SIGNL4.AlertCreated.eventId
+      description: The event ID.
+      type: String
   - arguments:
     - description: The external ID is used to reference the open alert which shall be closed.
       name: s4_external_id
     description: Close an alert in SIGNL4
     name: signl4_close_alert
     outputs:
-      - contextPath: SIGNL4.AlertClosed.eventId
-        description: The event ID.
-        type: String
+    - contextPath: SIGNL4.AlertClosed.eventId
+      description: The event ID.
+      type: String
   dockerimage: demisto/python3:3.12.8.3296088
   runonce: false
   script: '-'

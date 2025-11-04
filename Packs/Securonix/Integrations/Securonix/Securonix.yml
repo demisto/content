@@ -1,5 +1,5 @@
 category: Analytics & SIEM
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -1770,7 +1770,7 @@ script:
       required: true
     description: Deletes the entries from the lookup table.
     name: securonix-lookup-table-entries-delete
-  dockerimage: demisto/python3:3.12.11.4819260
+  dockerimage: demisto/python3:3.12.12.5490952
   isfetch: true
   runonce: false
   script: '-'
