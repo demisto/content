@@ -3,7 +3,6 @@ This integration was integrated and tested with version 2 of the Genesys Cloud P
 
 ## Configure Genesys Cloud in Cortex
 
-
 | **Parameter** | **Required** |
 | --- | --- |
 | Server URL | False |
@@ -33,10 +32,10 @@ Gets events from Hello World.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| should_push_events | If true, the command will create events, otherwise it will only display them. Possible values are: true, false. Default is false. | Required | 
-| service_name | Filter by alert status. Possible values are: Architect, PeoplePermissions, ContactCenter, Groups, Telephony, Outbound, Routing, Integrations, AnalyticsReporting. | Optional | 
-| limit | Maximum number of results to return. | Required | 
-| from_date | Date from which to get events. | Optional | 
+| should_push_events | If true, the command will create events, otherwise it will only display them. Possible values are: true, false. Default is false. | Required |
+| service_name | Filter by alert status. Possible values are: Architect, PeoplePermissions, ContactCenter, Groups, Telephony, Outbound, Routing, Integrations, AnalyticsReporting. | Optional |
+| limit | Maximum number of results to return. | Required |
+| from_date | Date from which to get events. | Optional |
 
 #### Context Output
 

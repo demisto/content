@@ -7,4 +7,4 @@ def util_load_json(path):
 
 
 def test_baseintegration_dummy():
-    assert 1 == 1
+    assert True

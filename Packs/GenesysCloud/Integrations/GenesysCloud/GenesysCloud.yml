@@ -103,7 +103,7 @@ script:
     description: Gets events from Hello World.
     execution: false
     name: genesis-cloud-get-events
-  dockerimage: demisto/python3:3.12.12.5490952
+  dockerimage: demisto/auth-utils:1.0.0.4578605
   isfetchevents: true
   runonce: false
   script: '-'
