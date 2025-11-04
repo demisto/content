@@ -5940,6 +5940,10 @@
         {
             "integrations": "Unit 42 Intelligence",
             "playbookID": "Unit 42 Intelligence Test"
+        },
+        {
+            "playbookID": "CVEEnrichment-Test",
+            "integrations": ["CIRCL CVE Search","Palo Alto Networks Threat Vault v2"]
         }
     ],
     "skipped_tests": {
@@ -6270,7 +6274,6 @@
         "ThreatGridv2": "No instance - developed by Qmasters",
         "SentinelOne V2": "No instance - developed by partner",
         "CheckPhish": "Issue CRTX-86562",
-        "SecurityAndComplianceV2": "Can only be authenticated via MFA and requires user interaction to configure.",
         "ThreatExchange v2": "No instance",
         "PhishLabs IOC EIR": "No instance, CRTX-91214",
         "fortimail": "No instance",
@@ -6396,7 +6399,8 @@
         "servicenow_test_v2",
         "Rasterize Test",
         "AbuseIPDB Test",
-        "AbuseIPDB PopulateIndicators Test"
+        "AbuseIPDB PopulateIndicators Test",
+        "O365-SecurityAndComplianceV2-Test"
     ],
     "parallel_integrations": [
         "AWS - ACM",
