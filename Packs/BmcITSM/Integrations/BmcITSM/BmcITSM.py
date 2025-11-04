@@ -666,7 +666,9 @@ class Client(BaseClient):
                 "First_Name": first_name,
                 "Last_Name": last_name,
                 "Description": summary,
-                "Detailed_Decription": details,
+                # Note that when creating a new incident using the bmc-itsm-incident-create command,
+                # the details field is called "Detailed_Decription" with an underscore.
+                "Detailed Decription": details,
                 "Company": company,
                 "Urgency": urgency,
                 "Impact": impact,

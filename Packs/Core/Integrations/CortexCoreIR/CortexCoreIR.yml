@@ -4532,5 +4532,10 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
-- asm
 - exposure_management
+- cloud
+- cloud_runtime_security
+- agentix
+- cloud_posture
+- xsiam
+- edr
