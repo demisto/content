@@ -1,5 +1,5 @@
 Fetch audit events from Genesys Cloud's suite of products and services.
-This integration was integrated and tested with version xx of GenesysCloud.
+This integration was integrated and tested with version 2 of the Genesys Cloud Platform API.
 
 ## Configure Genesys Cloud in Cortex
 
