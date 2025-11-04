@@ -7,7 +7,7 @@ from github.PullRequest import PullRequest
 from utils import timestamped_print
 import yaml
 import json
-from typing import Dict, Any, Optional
+from typing import Any
 import requests
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -28,7 +28,7 @@ def arguments_handler():
     return parser.parse_args()
 
 
-def parse_yml_or_json(content: str, file_path: str) -> Optional[Dict[str, Any]]:
+def parse_yml_or_json(content: str, file_path: str) -> dict[str, Any] | None:
     """
     Parse YAML or JSON content into a Python dictionary.
 
@@ -40,16 +40,16 @@ def parse_yml_or_json(content: str, file_path: str) -> Optional[Dict[str, Any]]:
         Parsed content as dictionary or None if parsing fails
     """
     try:
-        if file_path.lower().endswith(('.yml', '.yaml')):
+        if file_path.lower().endswith((".yml", ".yaml")):
             return yaml.safe_load(content)
-        elif file_path.lower().endswith('.json'):
+        elif file_path.lower().endswith(".json"):
             return json.loads(content)
     except (yaml.YAMLError, json.JSONDecodeError) as e:
         print(f"⚠️  Warning: Failed to parse {file_path}: {str(e)}")
     return None
 
 
-def has_supported_modules_field(file_content: Dict[str, Any]) -> bool:
+def has_supported_modules_field(file_content: dict[str, Any]) -> bool:
     """
     Recursively check if the dictionary contains a 'supportedModules' field.
 
@@ -60,7 +60,7 @@ def has_supported_modules_field(file_content: Dict[str, Any]) -> bool:
         bool: True if 'supportedModules' field is found, False otherwise
     """
     if isinstance(file_content, dict):
-        if 'supportedModules' in file_content:
+        if "supportedModules" in file_content:
             return True
         for value in file_content.values():
             if has_supported_modules_field(value):
@@ -85,7 +85,7 @@ def check_pr_contains_supported_modules(pr: PullRequest) -> bool:
     try:
         files = pr.get_files()
         for file in files:
-            if not file.filename.lower().endswith(('.yml', '.yaml', '.json')):
+            if not file.filename.lower().endswith((".yml", ".yaml", ".json")):
                 continue
 
             try:
@@ -152,12 +152,7 @@ def is_supported_modules_modified(pr: PullRequest, file_path: str) -> bool:
     if not diff:
         return False
 
-    return any(
-        line.startswith('+')
-        and 'supportedModules' in line
-        and line.strip() != '+'
-        for line in diff.split('\n')
-    )
+    return any(line.startswith("+") and "supportedModules" in line and line.strip() != "+" for line in diff.split("\n"))
 
 
 def check_pr_contains_supported_modules_changes(pr: PullRequest) -> bool:
@@ -173,7 +168,7 @@ def check_pr_contains_supported_modules_changes(pr: PullRequest) -> bool:
     try:
         files = pr.get_files()
         for file in files:
-            if not file.filename.lower().endswith(('.yml', '.yaml', '.json')):
+            if not file.filename.lower().endswith((".yml", ".yaml", ".json")):
                 continue
 
             try:
@@ -188,9 +183,7 @@ def check_pr_contains_supported_modules_changes(pr: PullRequest) -> bool:
                     continue
 
                 # Check if file contains supportedModules
-                if has_supported_modules_field(
-                    parsed_content
-                ) and is_supported_modules_modified(pr, file.filename):
+                if has_supported_modules_field(parsed_content) and is_supported_modules_modified(pr, file.filename):
                     print(f"Found modified 'supportedModules' in file: {file.filename}")
                     return True
 
@@ -232,19 +225,19 @@ def main():
 
         if has_supported_modules_changes:
             print(
-                f"❌ ERROR: Required label '{SUPPORTED_MODULES_APPROVED_LABEL}' is missing from PR #{pr_number}.\n"
+                f"ERROR: Required label '{SUPPORTED_MODULES_APPROVED_LABEL}' is missing from PR #{pr_number}.\n"
                 "   This PR modifies the 'supportedModules' field which requires PM review.\n"
                 "   Please ask a Product Manager to review the changes and add the label if approved."
             )
             sys.exit(1)
         else:
             print(
-                "ℹ️  PR does not modify any 'supportedModules' fields.\n"
+                "INFO: PR does not modify any 'supportedModules' fields.\n"
                 "   The 'supported-modules-approved' label is not required for this PR."
             )
             sys.exit(0)
 
-    print(f"✅ PR #{pr_number} has the required label: {SUPPORTED_MODULES_APPROVED_LABEL}")
+    print(f"SUCCESS: PR #{pr_number} has the required label: {SUPPORTED_MODULES_APPROVED_LABEL}")
     sys.exit(0)
 
 
