@@ -1480,6 +1480,7 @@ script:
 
   - name: aws-iam-suspend-access-for-role-quick-action
     description: Attach an inline "Deny All" Policy effectively denying all actions for all entities assuming the IAM role.
+    prettyname: Suspend Access for Role
     hidden: true
     quickaction: true
     arguments:

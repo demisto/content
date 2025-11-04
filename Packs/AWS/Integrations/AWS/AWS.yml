@@ -1151,7 +1151,7 @@ script:
           EKS Cluster: ${asset.xdm.asset.name}
       - name: resources_vpc_config
         description: "A JSON representation of the VPC configuration used by the cluster control plane. For example \"{'subnetIds': ['string'], 'securityGroupIds': ['string'], 'endpointPublicAccess': True, 'endpointPrivateAccess': True, 'publicAccessCidrs': ['string']}\"."
-        defaultValue: "{'endpointPublicAccess': False, 'endpointPrivateAccess': True}"
+        defaultValue: '{"endpointPublicAccess": false, "endpointPrivateAccess": true}'
         hidden: true
 
   - name: aws-eks-describe-cluster
