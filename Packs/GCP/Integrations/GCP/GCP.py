@@ -1493,11 +1493,18 @@ def gcp_compute_network_get_command(creds: Credentials, args: dict[str, Any]) ->
     compute = GCPServices.COMPUTE.build(creds)
     response = compute.networks().get(project=project, network=network).execute()
 
-    data_res = {"name": response.get("name"), "id": response.get("id")}
+    data_res = {
+        "name": response.get("name"),
+        "id": response.get("id"),
+        "creationTimestamp": response.get("creationTimestamp"),
+        "description": response.get("description"),
+    }
 
-    headers = ["id", "name"]
+    headers = ["id", "name", "creationTimestamp", "description"]
 
-    readable_output = tableToMarkdown(f"GCP network {network}", data_res, headers=headers, removeNull=True)
+    readable_output = tableToMarkdown(
+        f"GCP network {network}", data_res, headers=headers, removeNull=True, headerTransform=pascalToSpace
+    )
 
     return CommandResults(
         readable_output=readable_output,
@@ -1523,16 +1530,24 @@ def gcp_compute_image_get(creds: Credentials, args: dict[str, Any]) -> CommandRe
     compute = GCPServices.COMPUTE.build(creds)
     response = compute.images().get(project=project, image=image).execute()
 
-    data_res = {"id": response.get("id"), "name": response.get("name")}
-    headers = ["id", "name"]
+    data_res = {
+        "id": response.get("id"),
+        "name": response.get("name"),
+        "creationTimestamp": response.get("creationTimestamp"),
+        "description": response.get("description"),
+    }
+    headers = ["id", "name", "creationTimestamp", "description"]
 
-    readable_output = tableToMarkdown(f"GCP images {image}", data_res, headers=headers, removeNull=True)
+    readable_output = tableToMarkdown(
+        f"GCP images {image}", data_res, headers=headers, removeNull=True, headerTransform=pascalToSpace
+    )
 
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix="GCP.Compute.Images",
         outputs_key_field="id",
         outputs=response,
+        raw_response=response,
     )
 
 
@@ -1554,13 +1569,16 @@ def gcp_compute_region_get(creds: Credentials, args: dict[str, Any]) -> CommandR
     data_res = {"id": response.get("id"), "name": response.get("name"), "status": response.get("status")}
     headers = ["id", "name", "status"]
 
-    readable_output = tableToMarkdown(f"GCP region {region}", data_res, headers=headers, removeNull=True)
+    readable_output = tableToMarkdown(
+        f"GCP region {region}", data_res, headers=headers, removeNull=True, headerTransform=pascalToSpace
+    )
 
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix="GCP.Compute.Regions",
         outputs_key_field="id",
         outputs=response,
+        raw_response=response,
     )
 
 
@@ -1574,7 +1592,7 @@ def gcp_compute_instance_group_get(creds: Credentials, args: dict[str, Any]) -> 
         CommandResults: _description_
     """
     project = args.get("project_id")
-    instance_group = args.get("instanceGroup")
+    instance_group = args.get("instance_group")
     zone = args.get("zone")
 
     compute = GCPServices.COMPUTE.build(creds)
@@ -1588,13 +1606,16 @@ def gcp_compute_instance_group_get(creds: Credentials, args: dict[str, Any]) -> 
     }
     headers = ["id", "name", "zone", "network"]
 
-    readable_output = tableToMarkdown(f"GCP instanceGroups {instance_group}", data_res, headers=headers, removeNull=True)
+    readable_output = tableToMarkdown(
+        f"GCP instanceGroups {instance_group}", data_res, headers=headers, removeNull=True, headerTransform=pascalToSpace
+    )
 
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix="GCP.Compute.InstanceGroups",
         outputs_key_field="id",
         outputs=response,
+        raw_response=response,
     )
 
 
@@ -1617,15 +1638,18 @@ def gcp_compute_zone_get(creds: Credentials, args: dict[str, Any]) -> CommandRes
         "id": response.get("id"),
     }
 
-    headers = ["status", "id", "name"]
+    headers = ["id", "name", "status"]
 
-    readable_output = tableToMarkdown(f"GCP zone {zone}", data_res, headers=headers, removeNull=True)
+    readable_output = tableToMarkdown(
+        f"GCP zone {zone}", data_res, headers=headers, removeNull=True, headerTransform=pascalToSpace
+    )
 
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix="gcp.compute.Zones",
+        outputs_prefix="GCP.Compute.Zones",
         outputs_key_field="id",
         outputs=response,
+        raw_response=response,
     )
 
 
@@ -1638,7 +1662,7 @@ def gcp_compute_network_insert(creds: Credentials, args: dict[str, Any]) -> Comm
             - name: Name of the network
             - description: Optional description
             - autoCreateSubnetworks: "true"/"false" (optional, defaults to True)
-            - routingConfigRoutingMode: "REGIONAL" or "GLOBAL" (optional)
+            - routing_config_routing_mode: "REGIONAL" or "GLOBAL" (optional)
             - project_id: GCP project ID
     Returns:
         CommandResults: The result of the network creation operation.
@@ -1666,8 +1690,8 @@ def gcp_compute_network_insert(creds: Credentials, args: dict[str, Any]) -> Comm
         config["autoCreateSubnetworks"] = True  # default to subnet-mode network
 
     # Optional routing config
-    if args.get("routingConfigRoutingMode"):
-        config["routingConfig"] = {"routingMode": args["routingConfigRoutingMode"]}
+    if args.get("routing_config_routing_mode"):
+        config["routingConfig"] = {"routingMode": args["routing_config_routing_mode"]}
 
     # Project ID
     project = args.get("project_id")
@@ -1688,13 +1712,16 @@ def gcp_compute_network_insert(creds: Credentials, args: dict[str, Any]) -> Comm
     }
 
     headers = ["status", "kind", "id", "progress", "operationType", "name"]
-    readable_output = tableToMarkdown("Google Cloud Compute Network Insert", data_res, headers=headers, removeNull=True)
+    readable_output = tableToMarkdown(
+        "Google Cloud Compute Network Insert", data_res, headers=headers, removeNull=True, headerTransform=pascalToSpace
+    )
 
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix="GCP.Compute.Operations",
         outputs_key_field="id",
         outputs=response,
+        raw_response=response,
     )
 
 
@@ -1703,39 +1730,82 @@ def gcp_compute_networks_list(creds: Credentials, args: dict[str, Any]) -> Comma
     Retrieves the list of networks available to the specified project.
     """
     project = args.get("project_id")
-    max_results = args.get("maxResults")
+    limit = (arg_to_number(args.get("limit")) or 500) if args.get("limit", "500") != "0" else 0
     filters = args.get("filters")
-    order_by = args.get("orderBy")
-    page_token = args.get("pageToken")
+    order_by = args.get("order_by")
+    page_token = args.get("page_token")
 
-    output = []
+    if not limit or (limit and (limit > 500 or limit < 1)):
+        raise DemistoException(
+            f"The acceptable values of the argument limit are 1 to 500, inclusive. Currently the value is {limit}"
+        )
+
     data_res = []
     compute = GCPServices.COMPUTE.build(creds)
-    request = compute.networks().list(
-        project=project,
-        filter=filters,
-        maxResults=max_results,
-        orderBy=order_by,
-        pageToken=page_token,
+    response = (
+        compute.networks()
+        .list(
+            project=project,
+            filter=filters,
+            maxResults=limit,
+            orderBy=order_by,
+            pageToken=page_token,
+        )
+        .execute()
     )
 
-    while request:
-        response = request.execute()
-        if "items" in response:
-            for item in response["items"]:
-                output.append(item)
-                data_res_item = {"name": item.get("name"), "id": item.get("id")}
-                data_res.append(data_res_item)
-        request = compute.networks().list_next(previous_request=request, previous_response=response)
+    next_page_token = response.get("nextPageToken")
 
-    headers = ["name", "id"]
-    readable_output = tableToMarkdown("Google Cloud Compute Networks", data_res, headers=headers, removeNull=True)
+    metadata = (
+        "Run the following command to retrieve the next batch of networks:\n"
+        f"!gcp-compute-networks-list project_id={project} page_token={next_page_token}"
+        if next_page_token
+        else None
+    )
+
+    if limit < 500:
+        metadata = f"{metadata} {limit=}"
+
+    if next_page_token:
+        response["NetworksNextPageToken"] = response.pop("nextPageToken")
+
+    if response.get("items"):
+        response["Networks"] = response.pop("items")
+
+    for item in response.get("Networks", [{}]):
+        # output.append(item)
+        data_res_item = {
+            "name": item.get("name"),
+            "id": item.get("id"),
+            "creationTimestamp": item.get("creationTimestamp"),
+            "status": item.get("status"),
+        }
+        data_res.append(data_res_item)
+
+    headers = ["name", "id", "creationTimestamp", "status"]
+    readable_output = tableToMarkdown(
+        "Google Cloud Compute Networks",
+        data_res,
+        headers=headers,
+        removeNull=True,
+        metadata=metadata,
+    )
+
+    outputs = {
+        "GCP.Compute.Networks(val.id && val.id == obj.id)": response.get("Networks", []),
+        "GCP.Compute(true)": {
+            "NetworksNextPageToken": response.get("NetworksNextPageToken"),
+            "NetworksSelfLink": response.get("selfLink"),
+            "outputsWarning": response.get("warning"),
+        },
+    }
+    remove_empty_elements(outputs)
 
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix="GCP.Compute.Networks",
         outputs_key_field="id",
-        outputs=response,
+        outputs=outputs,
     )
 
 

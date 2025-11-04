@@ -1508,7 +1508,7 @@ script:
     - contextPath: GCP.Compute.Networks.selfLink
       description: Server-defined URL for the resource.
       type: string
-    - contextPath: GCP.Compute.Networks.autoCreateSubnetworks
+    - contextPath: GCP.Compute.Networks.auto_create_sub_networks
       description: When set to true, the VPC network is created in "auto" mode. When set to false, the VPC network is created in "custom" mode.
       type: boolean
     - contextPath: GCP.Compute.Networks.subnetworks
@@ -1553,7 +1553,7 @@ script:
     - description: Name of the image resource to return.
       name: image
       required: true
-    description: Returns the specified image. Gets a list of available images by making a list() request.
+    description: Returns the specified image.
     name: gcp-compute-image-get
     outputs:
     - contextPath: GCP.Compute.Images.id
@@ -1712,7 +1712,7 @@ script:
     - description: GCP project ID.
       name: project_id
       required: true
-    description: Returns the specified Region resource. Gets a list of available regions by making a list() request.
+    description: Returns the specified Region resource.
     name: gcp-compute-region-get
     outputs:
     - contextPath: GCP.Compute.Regions.id
@@ -1776,7 +1776,7 @@ script:
 # gcp-compute-instance-group-get
   - arguments:
     - description: The name of the instance group.
-      name: instanceGroup
+      name: instance_group
       required: true
     - description: GCP project ID.
       name: project_id
@@ -1784,53 +1784,53 @@ script:
     - description: The name of the zone where the instance group is located.
       name: zone
       required: true
-    description: Returns the specified instance group. Gets a list of available instance groups by making a list() request.
+    description: Returns the specified instance group.
     name: gcp-compute-instance-group-get
     outputs:
-    - contextPath: GCP.Compute.InstanceGroups.id
+    - contextPath: GCP.Compute.instance_groups.id
       description: The unique identifier for the resource. This identifier is defined by the server.
       type: string
-    - contextPath: GCP.Compute.InstanceGroups.creationTimestamp
+    - contextPath: GCP.Compute.instance_groups.creationTimestamp
       description: The creation timestamp for this instance group in RFC3339 text format.
       type: string
-    - contextPath: GCP.Compute.InstanceGroups.name
+    - contextPath: GCP.Compute.instance_groups.name
       description: The name of the instance group. The name must be 1-63 characters long, and comply with RFC1035.
       type: string
-    - contextPath: GCP.Compute.InstanceGroups.description
+    - contextPath: GCP.Compute.instance_groups.description
       description: An optional description of this resource. Provide this property when you create the resource.
       type: string
-    - contextPath: GCP.Compute.InstanceGroups.namedPorts
+    - contextPath: GCP.Compute.instance_groups.namedPorts
       description: Assigns a name to a port number.
       type: string
-    - contextPath: GCP.Compute.InstanceGroups.namedPorts.name
+    - contextPath: GCP.Compute.instance_groups.namedPorts.name
       description: The name for this named port. The name must be 1-63 characters long, and comply with RFC1035.
       type: string
-    - contextPath: GCP.Compute.InstanceGroups.namedPorts.port
+    - contextPath: GCP.Compute.instance_groups.namedPorts.port
       description: The port number, which can be a value between 1 and 65535.
       type: string
-    - contextPath: GCP.Compute.InstanceGroups.network
+    - contextPath: GCP.Compute.instance_groups.network
       description: The URL of the network to which all instances in the instance group belong.
       type: string
-    - contextPath: GCP.Compute.InstanceGroups.fingerprint
+    - contextPath: GCP.Compute.instance_groups.fingerprint
       description: The fingerprint of the named ports. The system uses this fingerprint to detect conflicts when multiple users change the named ports concurrently.
       type: string
-    - contextPath: GCP.Compute.InstanceGroups.zone
+    - contextPath: GCP.Compute.instance_groups.zone
       description: The URL of the zone where the instance group is located (for zonal resources).
       type: string
-    - contextPath: GCP.Compute.InstanceGroups.selfLink
+    - contextPath: GCP.Compute.instance_groups.selfLink
       description: The URL for this instance group. The server generates this URL.
       type: string
-    - contextPath: GCP.Compute.InstanceGroups.size
+    - contextPath: GCP.Compute.instance_groups.size
       description: The total number of instances in the instance group.
       type: string
-    - contextPath: GCP.Compute.InstanceGroups.region
+    - contextPath: GCP.Compute.instance_groups.region
       description: The URL of the region where the instance group is located (for regional resources).
       type: string
-    - contextPath: GCP.Compute.InstanceGroups.subnetwork
+    - contextPath: GCP.Compute.instance_groups.subnetwork
       description: The URL of the subnetwork to which all instances in the instance group belong.
       type: string
-    - contextPath: GCP.Compute.InstanceGroups.kind
-      description: ' The resource type, which is always compute#instanceGroup for instance groups.'
+    - contextPath: GCP.Compute.instance_groups.kind
+      description: ' The resource type, which is always compute#instance_group for instance groups.'
       type: string
 
 # gcp-compute-zone-get
@@ -1841,7 +1841,7 @@ script:
     - description: GCP project ID.
       name: project_id
       required: true
-    description: Returns the specified Zone resource. Gets a list of available zones by making a list() request.
+    description: Returns the specified Zone resource.
     name: gcp-compute-zone-get
     outputs:
     - contextPath: GCP.Compute.Zones.id
@@ -1896,14 +1896,14 @@ script:
       name: project_id
       required: true
     - defaultValue: '500'
-      description: 'The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500).'
-      name: maxResults
+      description: 'The maximum number of results per page that should be returned. If the number of available results is larger than limit, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive.'
+      name: limit
     - description: A filter expression that filters resources listed in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be either =, !=, >, or <.  For example, if you are filtering Compute Engine instances, you can exclude instances named example-instance by specifying name != example-instance.
       name: filters
-    - description: Sorts list results by a certain order. By default, results are returned in alphanumerical order based on the resource name.  You can also sort results in descending order based on the creation timestamp using orderBy="creationTimestamp desc". This sorts results based on the creationTimestamp field in reverse chronological order (newest result first). Use this to sort resources like operations so that the newest operation is returned first.
-      name: orderBy
-    - description: Specifies a page token to use. Set pageToken to the nextPageToken returned by a previous list request to get the next page of results.
-      name: pageToken
+    - description: Sorts list results by a certain order. By default, results are returned in alphanumerical order based on the resource name.  You can also sort results in descending order based on the creation timestamp using order_by="creationTimestamp desc". This sorts results based on the creationTimestamp field in reverse chronological order (newest result first). Use this to sort resources like operations so that the newest operation is returned first.
+      name: order_by
+    - description: Specifies a page token to use. Set page_token to the nextPageToken returned by a previous list request to get the next page of results.
+      name: page_token
     description: Retrieves the list of networks available to the specified project.
     name: gcp-compute-networks-list
     outputs:
@@ -1925,7 +1925,7 @@ script:
     - contextPath: GCP.Compute.Networks.selfLink
       description: Server-defined URL for the resource.
       type: string
-    - contextPath: GCP.Compute.Networks.autoCreateSubnetworks
+    - contextPath: GCP.Compute.Networks.auto_create_sub_networks
       description: When set to true, the VPC network is created in "auto" mode. When set to false, the VPC network is created in "custom" mode.
       type: boolean
     - contextPath: GCP.Compute.Networks.subnetworks
@@ -1975,13 +1975,13 @@ script:
       name: description
     - auto: PREDEFINED
       description: When set to true, the VPC network is created in "auto" mode. When set to false, the VPC network is created in "custom" mode.  An auto mode VPC network starts with one subnet per region. Each subnet has a predetermined range as described in Auto mode VPC network IP ranges.
-      name: autoCreateSubnetworks
+      name: auto_create_sub_networks
       predefined:
       - 'true'
       - 'false'
     - auto: PREDEFINED
       description: The network-wide routing mode to use. If set to REGIONAL, this network's cloud routers will only advertise routes with subnets of this network in the same region as the router. If set to GLOBAL, this network's cloud routers will advertise routes with all subnets of this network, across regions.
-      name: routingConfigRoutingMode
+      name: routing_config_routing_mode
       predefined:
       - REGIONAL
       - GLOBAL
