@@ -464,12 +464,6 @@
             "fromversion": "6.0.0"
         },
         {
-            "integrations": "EwsExtension",
-            "playbookID": "playbook-EWS_O365_Extension_test",
-            "fromversion": "6.0.0",
-            "timeout": 500
-        },
-        {
             "integrations": "Majestic Million",
             "playbookID": "Majestic Million Test Playbook",
             "fromversion": "5.5.0",
@@ -6065,7 +6059,6 @@
         "cisco-ise-test-playbook": "CRTX-146167",
         "GuardiCoreV2-Test": "Issue 43822",
         "ExtractAttackPattern-Test": "Issue 44095",
-        "playbook-EWS_O365_Extension_test": "Issue 25605, Issue 39008",
         "Cherwell - test": "Issue 26780",
         "Cherwell Example Scripts - test": "Issue 27107",
         "Endpoint Malware Investigation - Generic - Test": "Issue 44779",
