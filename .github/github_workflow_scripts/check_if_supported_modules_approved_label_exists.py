@@ -115,6 +115,96 @@ def check_pr_contains_supported_modules(pr: PullRequest) -> bool:
         return True  # Default to True to be safe if we can't check
 
 
+def get_file_diff(pr: PullRequest, file_path: str) -> str:
+    """
+    Get the unified diff for a specific file in the PR.
+
+    Args:
+        pr: GitHub PullRequest object
+        file_path: Path of the file to get diff for
+
+    Returns:
+        str: Unified diff string or empty string if not found
+    """
+    try:
+        # Get the specific file's diff
+        for file in pr.get_files():
+            if file.filename == file_path:
+                return file.patch or ""
+        return ""
+    except Exception as e:
+        print(f"⚠️  Warning: Could not get diff for {file_path}: {str(e)}")
+        return ""
+
+
+def is_supported_modules_modified(pr: PullRequest, file_path: str) -> bool:
+    """
+    Check if the 'supportedModules' field was added or modified in the PR.
+
+    Args:
+        pr: GitHub PullRequest object
+        file_path: Path of the file to check
+
+    Returns:
+        bool: True if 'supportedModules' was added or modified, False otherwise
+    """
+    diff = get_file_diff(pr, file_path)
+    if not diff:
+        return False
+
+    return any(
+        line.startswith('+')
+        and 'supportedModules' in line
+        and line.strip() != '+'
+        for line in diff.split('\n')
+    )
+
+
+def check_pr_contains_supported_modules_changes(pr: PullRequest) -> bool:
+    """
+    Check if the PR contains any changes to 'supportedModules' field in YAML/JSON files.
+
+    Args:
+        pr: GitHub PullRequest object
+
+    Returns:
+        bool: True if PR contains changes to 'supportedModules' field, False otherwise
+    """
+    try:
+        files = pr.get_files()
+        for file in files:
+            if not file.filename.lower().endswith(('.yml', '.yaml', '.json')):
+                continue
+
+            try:
+                # Get the file content
+                response = requests.get(file.raw_url, timeout=10)
+                response.raise_for_status()
+                content = response.text
+
+                # Parse the content
+                parsed_content = parse_yml_or_json(content, file.filename)
+                if parsed_content is None:
+                    continue
+
+                # Check if file contains supportedModules
+                if has_supported_modules_field(
+                    parsed_content
+                ) and is_supported_modules_modified(pr, file.filename):
+                    print(f"Found modified 'supportedModules' in file: {file.filename}")
+                    return True
+
+            except Exception as e:
+                print(f"⚠️  Warning: Error processing {file.filename}: {str(e)}")
+                continue
+
+        return False
+
+    except Exception as e:
+        print(f"⚠️  Error checking PR files: {str(e)}")
+        return True  # Default to True to be safe if we can't check
+
+
 def main():
     """
     This script is checking that "supported-modules-approved" label exists for a PR in case
@@ -137,19 +227,19 @@ def main():
 
     print(f"Checking if {SUPPORTED_MODULES_APPROVED_LABEL} label exist in PR {pr_number}")
     if not supported_modules_approved:
+        # Check if the PR contains changes to 'supportedModules' field
+        has_supported_modules_changes = check_pr_contains_supported_modules_changes(pr)
 
-        # Check if the PR contains files with 'supportedModules' field
-        has_supported_modules = check_pr_contains_supported_modules(pr)
-        if has_supported_modules:
+        if has_supported_modules_changes:
             print(
                 f"❌ ERROR: Required label '{SUPPORTED_MODULES_APPROVED_LABEL}' is missing from PR #{pr_number}.\n"
-                "   This PR contains files with 'supportedModules' field that require PM review.\n"
+                "   This PR modifies the 'supportedModules' field which requires PM review.\n"
                 "   Please ask a Product Manager to review the changes and add the label if approved."
             )
             sys.exit(1)
         else:
             print(
-                "ℹ️  PR does not contain any files with 'supportedModules' field.\n"
+                "ℹ️  PR does not modify any 'supportedModules' fields.\n"
                 "   The 'supported-modules-approved' label is not required for this PR."
             )
             sys.exit(0)
