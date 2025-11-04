@@ -1,5 +1,41 @@
-This README contains the full documentation for your integration.
+Fetch audit events from Genesys Cloud's suite of products and services.
+This integration was integrated and tested with version xx of GenesysCloud.
 
-You auto-generate this README file from your integration YML file using the `demisto-sdk generate-docs` command.
+## Configure Genesys Cloud in Cortex
 
-For more information see the [integration documentation](https://xsoar.pan.dev/docs/integrations/integration-docs).
+
+| **Parameter** | **Required** |
+| --- | --- |
+| Server URL | False |
+| Trust any certificate (not secure) | False |
+| Use system proxy settings | False |
+| Fetch Events | False |
+| Service names | True |
+| Maximum Number of Events Per Service | False |
+
+## Commands
+
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
+After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
+### genesis-cloud-get-events
+
+***
+Gets events from Hello World.
+
+#### Base Command
+
+`genesis-cloud-get-events`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| should_push_events | If true, the command will create events, otherwise it will only display them. Possible values are: true, false. Default is false. | Required | 
+| service_name | Filter by alert status. Possible values are: Architect, PeoplePermissions, ContactCenter, Groups, Telephony, Outbound, Routing, Integrations, AnalyticsReporting. | Optional | 
+| limit | Maximum number of results to return. | Required | 
+| from_date | Date from which to get events. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
