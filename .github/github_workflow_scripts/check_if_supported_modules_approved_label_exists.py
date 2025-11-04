@@ -24,6 +24,31 @@ def arguments_handler():
     return parser.parse_args()
 
 
+def check_pr_contains_yml_or_json(pr: PullRequest) -> bool:
+    """
+    Check if the PR contains any YAML or JSON file changes.
+
+    Args:
+        pr: GitHub PullRequest object
+
+    Returns:
+        bool: True if PR contains YAML or JSON files, False otherwise
+    """
+    try:
+        # Get the list of files changed in the PR
+        files = pr.get_files()
+        pr_contains_yml_or_json = False
+        for file in files:
+            if file.filename.lower().endswith(('.yml', '.yaml', '.json')):
+                print(f"Found YAML/JSON file in PR: {file.filename}")
+                pr_contains_yml_or_json = True
+        return pr_contains_yml_or_json
+    except Exception as e:
+        print(f"Error checking PR files: {str(e)}")
+        # Default to True to be safe if we can't check
+        return True
+
+
 def main():
     """
     This script is checking that "supported-modules-approved" label exists for a PR in case
@@ -42,16 +67,28 @@ def main():
 
     pr_label_names = [label.name for label in pr.labels]
 
-    docs_approved = SUPPORTED_MODULES_APPROVED_LABEL in pr_label_names
+    supported_modules_approved = SUPPORTED_MODULES_APPROVED_LABEL in pr_label_names
 
     print(f"Checking if {SUPPORTED_MODULES_APPROVED_LABEL} label exist in PR {pr_number}")
-    if not docs_approved:
-        print(
-            f"ERROR: Label supported-modules-approved was not added to PR: {pr_number}. Please ask the PM to review"
-            f" the documentation and add the label after his approval."
-        )
-        sys.exit(1)
+    if not supported_modules_approved:
 
+        # First check if the PR contains YAML or JSON files
+        has_yml_or_json = check_pr_contains_yml_or_json(pr)
+        if has_yml_or_json:
+            print(
+                f"❌ ERROR: Required label '{SUPPORTED_MODULES_APPROVED_LABEL}' is missing from PR #{pr_number}.\n"
+                "   This PR contains YAML or JSON file changes that require PM review.\n"
+                "   Please ask a Product Manager to review the changes and add the label if approved."
+            )
+            sys.exit(1)
+        else:
+            print(
+                "ℹ️  PR does not contain any YAML or JSON file changes.\n"
+                "   The 'supported-modules-approved' label is not required for this PR."
+            )
+            sys.exit(0)
+
+    print(f"✅ PR #{pr_number} has the required label: {SUPPORTED_MODULES_APPROVED_LABEL}")
     sys.exit(0)
 
 
