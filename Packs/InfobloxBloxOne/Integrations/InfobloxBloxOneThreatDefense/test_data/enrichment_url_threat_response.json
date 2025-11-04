@@ -1,0 +1,30 @@
+{
+    "threat": [
+        {
+            "id": "00000000-0000-0000-0000-000000000001",
+            "type": "URL",
+            "host": "test.com",
+            "url": "https://test.com",
+            "domain": "test.com",
+            "tld": "com",
+            "profile": "IID",
+            "property": "Scam_Generic",
+            "class": "Scam",
+            "threat_level": 100,
+            "expiration": "2025-10-05T12:12:00.22Z",
+            "detected": "2025-06-07T12:12:00.22Z",
+            "received": "2025-06-07T12:16:32.337Z",
+            "imported": "2025-06-07T12:16:32.337Z",
+            "up": "true",
+            "confidence": 100,
+            "batch_id": "00000000-0000-0000-0000-000000000000",
+            "extended": {
+                "cyberint_guid": "simple_cyberint_guid",
+                "notes": "Scam advertised. Lures victims to put their money into fake investments.",
+                "protocol": "https",
+                "references": "https://test.com"
+            }
+        }
+    ],
+    "record_count": 1
+}
