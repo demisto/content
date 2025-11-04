@@ -2562,7 +2562,7 @@ Describes resource discovery association with an Amazon VPC IPAM. An associated 
 | AWS.EC2.IpamResourceDiscoveryAssociations.IpamResourceDiscoveryId | String | The resource discovery ID. |
 | AWS.EC2.IpamResourceDiscoveryAssociations.IpamRegion | String | The IPAM home region. |
 | AWS.EC2.IpamResourceDiscoveryAssociations.AccountId | string | The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided. |
-### aws-ec2-enable-imdsv2-quick-action
+### Enable IMDSv2
 
 ***
 Enables instance metadata services v2.0 for the EC2 instance.
@@ -2582,7 +2582,7 @@ Enables instance metadata services v2.0 for the EC2 instance.
 #### Context Output
 
 There is no context output for this command.
-### aws-s3-public-access-block-quick-action
+### Block S3 Public Access
 
 ***
 Blocks all public access to the S3 bucket.
@@ -2602,7 +2602,7 @@ Blocks all public access to the S3 bucket.
 #### Context Output
 
 There is no context output for this command.
-### aws-eks-enable-control-plane-logging-quick-action
+### Enable Control Plane Logging
 
 ***
 Enables control plane logging for an EKS cluster.
@@ -2622,7 +2622,7 @@ Enables control plane logging for an EKS cluster.
 #### Context Output
 
 There is no context output for this command.
-### aws-eks-disable-public-access-quick-action
+### Set EKS cluster to Private / Disable Public Access
 
 ***
 Disables public access to the EKS cluster's API endpoint, making it only accessible from within the cluster's VPC.
