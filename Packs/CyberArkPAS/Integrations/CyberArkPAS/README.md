@@ -1183,12 +1183,6 @@ Remove a specific member from a safe.
 | --- | --- | --- |
 | CyberArkPAS.Safes.Members.Deleted | Boolean | Whether the safe member was deleted. | 
 
-| CyberArkPAS.Accounts.safeName | String | The safes where the accounts were created. |
-| CyberArkPAS.Accounts.secretManagement | String | Whether the accounts secrets were automatically managed by the CPM. |
-| CyberArkPAS.Accounts.secretType | String | The type of passwords. |
-| CyberArkPAS.Accounts.userName | String | The user names of the accounts. |
-| CyberArkPAS.Accounts.address | String | The names or addresses of the machine where the accounts are used. |
-
 #### Command Example
 
 ```!cyberark-pas-accounts-list limit=2```
@@ -1291,89 +1285,6 @@ Returns the activities of a specific account that is identified by its account I
                 "ClientID": "1",
                 "Date": 1597863265,
                 "MoreInfo": "NewName",
-### cyberark-pas-account-delete
-
-***
-Delete a specific account in the vault.
-
-#### Base Command
-
-`cyberark-pas-account-delete`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| account_id | The unique ID of the account to delete. | Required | 
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| CyberArkPAS.Accounts.id | String | The unique ID of the account. | 
-| CyberArkPAS.Accounts.secretManagement | String | Whether the account secret is automatically managed by the CPM. | 
-| CyberArkPAS.Accounts.address | String | The name or address of the machine where the account will be used. | 
-| CyberArkPAS.Accounts.secretType | String | The type of password. | 
-| CyberArkPAS.Accounts.safeName | String | The safe where the account was created. | 
-| CyberArkPAS.Accounts.userName | String | The user name of the account. | 
-| CyberArkPAS.Accounts.Deleted | Boolean | Whether the account was deleted. | 
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| CyberArkPAS.Accounts.id | String | The unique ID of the account. |
-| CyberArkPAS.Accounts.categoryModificationTime | Number | The date the account was last modified. |
-| CyberArkPAS.Accounts.createdTime | Number | The date the account was created. |
-| CyberArkPAS.Accounts.name | String | The name of the account. |
-| CyberArkPAS.Accounts.platformId | String | The platform assigned to this account. |
-| CyberArkPAS.Accounts.safeName | String | The safe where the account is created. |
-| CyberArkPAS.Accounts.secretManagement | String | Whether the account secret is automatically managed by the CPM. |
-| CyberArkPAS.Accounts.secretType | String | The type of password. |
-| CyberArkPAS.Accounts.userName | String | The name of the account user. |
-| CyberArkPAS.Accounts.address | String | The name or address of the machine where the account will be used. |
-
-#### Command Example
-
-```!cyberark-pas-account-get-details account_id=46_7```
-
-#### Context Example
-
-```
-{
-    "CyberArkPAS": {
-        "Accounts": {
-            "address": "address.com",
-            "categoryModificationTime": 1597581174,
-            "createdTime": 1595431869,
-            "id": "46_7",
-            "name": "Operating System-UnixSSH",
-            "platformAccountProperties": {
-                "Tags": "SSH",
-                "UseSudoOnReconcile": "No"
-            },
-            "platformId": "UnixSSH",
-            "safeName": "Linux Accounts",
-            "secretManagement": {
-                "automaticManagementEnabled": true,
-                "lastModifiedTime": 1595417469,
-                "lastReconciledTime": 1576120341,
-                "status": "success"
-            },
-            "secretType": "password",
-            "userName": "user1"
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->### Results
->
->|address|categoryModificationTime|createdTime|id|name|platformAccountProperties|platformId|safeName|secretManagement|secretType|userName|
->|---|---|---|---|---|---|---|---|---|---|---|
->| address | 1597581174 | 1595431869 | 46_7 | Operating System-UnixSSH | UseSudoOnReconcile: No<br/>Tags: SSH | UnixSSH | Linux Accounts | automaticManagementEnabled: true<br/>status: success<br/>lastModifiedTime: 1595417469<br/>lastReconciledTime: 1576120341 | password | user1 |
 
 ### cyberark-pas-credentials-change-in-vault-only
 
