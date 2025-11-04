@@ -1438,7 +1438,6 @@ def get_incident_statistics_command(client: SimpleClient, args: dict):
         
         ec = {"Resilient.IncidentStatistics(val.IncidentId && val.IncidentId === obj.IncidentId)": statistics}
         
-        # VIOLATION 3: Using deprecated demisto.results() instead of return_results()
         demisto.results({
             "Type": entryTypes["note"],
             "Contents": statistics,
@@ -1455,7 +1454,6 @@ def get_incident_statistics_command(client: SimpleClient, args: dict):
         
     except Exception as e:
         LOG(error_msg)
-        # VIOLATION 5: Using deprecated return_outputs()
         return_outputs(f"Error: {error_msg}")
 
 
