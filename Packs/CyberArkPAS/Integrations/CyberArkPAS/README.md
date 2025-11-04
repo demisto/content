@@ -1059,50 +1059,6 @@ Update an existing safe member.
 >|---|---|---|---|---|---|---|---|---|---|
 >| / | 1597863168 | 1597863168 | 89_3 | TestAccount1 | WinServerLocal | TestSafe1 | automaticManagementEnabled: true<br/>lastModifiedTime: 1597848768 | password | TestUser |
 
-### cyberark-pas-account-delete
-
-***
-Delete a specific account in the vault.
-
-To run this command, you must have *Delete Accounts* permission in the Vault.
-
-#### Base Command
-
-`cyberark-pas-account-delete`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| account_id | The unique ID of the account to delete. | Required |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| CyberArkPAS.Accounts.Deleted | Boolean | Whether the safe was deleted. |
-
-#### Command Example
-
-```!cyberark-pas-account-delete account_id= 89_3```
-
-#### Context Example
-
-```
-{
-    "CyberArkPAS": {
-        "Accounts": {
-            "Deleted": true,
-            "id": "89_3"
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
-> Account 89_3 was deleted
-
 ### cyberark-pas-account-update
 
 ***
@@ -1182,6 +1138,12 @@ Remove a specific member from a safe.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | CyberArkPAS.Safes.Members.Deleted | Boolean | Whether the safe member was deleted. | 
+
+| CyberArkPAS.Accounts.safeName | String | The safes where the accounts were created. |
+| CyberArkPAS.Accounts.secretManagement | String | Whether the accounts secrets were automatically managed by the CPM. |
+| CyberArkPAS.Accounts.secretType | String | The type of passwords. |
+| CyberArkPAS.Accounts.userName | String | The user names of the accounts. |
+| CyberArkPAS.Accounts.address | String | The names or addresses of the machine where the accounts are used. |
 
 #### Command Example
 
@@ -1285,6 +1247,89 @@ Returns the activities of a specific account that is identified by its account I
                 "ClientID": "1",
                 "Date": 1597863265,
                 "MoreInfo": "NewName",
+### cyberark-pas-account-delete
+
+***
+Delete a specific account in the vault.
+
+#### Base Command
+
+`cyberark-pas-account-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The unique ID of the account to delete. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CyberArkPAS.Accounts.id | String | The unique ID of the account. | 
+| CyberArkPAS.Accounts.secretManagement | String | Whether the account secret is automatically managed by the CPM. | 
+| CyberArkPAS.Accounts.address | String | The name or address of the machine where the account will be used. | 
+| CyberArkPAS.Accounts.secretType | String | The type of password. | 
+| CyberArkPAS.Accounts.safeName | String | The safe where the account was created. | 
+| CyberArkPAS.Accounts.userName | String | The user name of the account. | 
+| CyberArkPAS.Accounts.Deleted | Boolean | Whether the account was deleted. | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CyberArkPAS.Accounts.id | String | The unique ID of the account. |
+| CyberArkPAS.Accounts.categoryModificationTime | Number | The date the account was last modified. |
+| CyberArkPAS.Accounts.createdTime | Number | The date the account was created. |
+| CyberArkPAS.Accounts.name | String | The name of the account. |
+| CyberArkPAS.Accounts.platformId | String | The platform assigned to this account. |
+| CyberArkPAS.Accounts.safeName | String | The safe where the account is created. |
+| CyberArkPAS.Accounts.secretManagement | String | Whether the account secret is automatically managed by the CPM. |
+| CyberArkPAS.Accounts.secretType | String | The type of password. |
+| CyberArkPAS.Accounts.userName | String | The name of the account user. |
+| CyberArkPAS.Accounts.address | String | The name or address of the machine where the account will be used. |
+
+#### Command Example
+
+```!cyberark-pas-account-get-details account_id=46_7```
+
+#### Context Example
+
+```
+{
+    "CyberArkPAS": {
+        "Accounts": {
+            "address": "address.com",
+            "categoryModificationTime": 1597581174,
+            "createdTime": 1595431869,
+            "id": "46_7",
+            "name": "Operating System-UnixSSH",
+            "platformAccountProperties": {
+                "Tags": "SSH",
+                "UseSudoOnReconcile": "No"
+            },
+            "platformId": "UnixSSH",
+            "safeName": "Linux Accounts",
+            "secretManagement": {
+                "automaticManagementEnabled": true,
+                "lastModifiedTime": 1595417469,
+                "lastReconciledTime": 1576120341,
+                "status": "success"
+            },
+            "secretType": "password",
+            "userName": "user1"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Results
+>
+>|address|categoryModificationTime|createdTime|id|name|platformAccountProperties|platformId|safeName|secretManagement|secretType|userName|
+>|---|---|---|---|---|---|---|---|---|---|---|
+>| address | 1597581174 | 1595431869 | 46_7 | Operating System-UnixSSH | UseSudoOnReconcile: No<br/>Tags: SSH | UnixSSH | Linux Accounts | automaticManagementEnabled: true<br/>status: success<br/>lastModifiedTime: 1595417469<br/>lastReconciledTime: 1576120341 | password | user1 |
 
 ### cyberark-pas-credentials-change-in-vault-only
 
@@ -1553,3 +1598,43 @@ Return all Privileged Threat Analytics (PTA) security events.
 >|---|---|---|---|---|---|---|---|
 >| station: 1.1.1.1<br/>reason: ip<br/>vault_user: administrator | {'id': '1', 'type': 'VAULT_LOGON', 'sensorType': 'VAULT', 'action': 'Logon', 'createTime': 1597864497000, 'vaultUser': 'Administrator', 'source': {'mOriginalAddress': '1.1.1.1', 'mResolvedAddress': {'mOriginalAddress': '1.1.1.1', 'mAddress': '1.1.1.1', 'mHostName': '1-2-3-4', 'mFqdn': '1-2-3-4'}}, 'cloudData': {}} | 1597864497000 | 1 | 1597864497000 | OPEN | 25.751749103263528 | VaultViaIrregularIp |
 >| station: 1.1.1.1<br/>reason: ip<br/>vault_user: administrator | {'id': '2', 'type': 'VAULT_LOGON', 'sensorType': 'VAULT', 'action': 'Logon', 'createTime': 1597864209000, 'vaultUser': 'Administrator', 'source': {'mOriginalAddress': '1.1.1.1', 'mResolvedAddress': {'mOriginalAddress': '1.1.1.1', 'mAddress': '1.1.1.1', 'mHostName': '1-2-3-4', 'mFqdn': '1-2-3-4'}}, 'cloudData': {}} | 1597864209000 | 2 | 1597864209000 | OPEN | 25.751749103263528 | VaultViaIrregularIp |
+### cyberark-pas-account-add
+
+***
+Add a new privileged account or SSH key to the vault.
+
+#### Base Command
+
+`cyberark-pas-account-add`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_name | The name of the account. | Required | 
+| address | The name or address of the machine where the account will be used. | Required | 
+| platform_id | The platform assigned to this account. | Required | 
+| safe_name | The name of the safe where the account will be created. | Required | 
+| secret_type | The type of password. Valid values are: 'password', 'key'. Default is 'password'. Possible values are: password, key. Default is password. | Optional | 
+| username | The The user name of the account. | Required | 
+| password | The password that the user will use to log on for the first time. | Required | 
+| properties | Object containing key-value pairs to associate with the account, as defined by the account platform.<br/>e.g., {"Location": "IT", "OwnerName": "MSSPAdmin"}. | Optional | 
+| automatic_management_enabled | Whether the account secret is automatically managed by the Central Policy Manager (CPM). Can be 'true' or 'false'. Default is 'true'. Possible values are: true, false. Default is true. | Optional | 
+| manual_management_reason | The reason for disabling automatic secret management. | Optional | 
+| remote_machines | List of remote machines, separated by semicolons.<br/>e.g., server1.cyberark.com;server2.cyberark.com. | Optional | 
+| access_restricted_to_remote_machines | Whether or not to restrict access to specified remote machines only. Can be 'true' or 'false'. Default is: 'true'. Possible values are: true, false. Default is true. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CyberArkPAS.Accounts.id | String | The unique ID of the account. | 
+| CyberArkPAS.Accounts.categoryModificationTime | Number | The last modified date of the account. | 
+| CyberArkPAS.Accounts.createdTime | Number | The date the account was created. | 
+| CyberArkPAS.Accounts.name | String | The name of the account. | 
+| CyberArkPAS.Accounts.platformId | String | The platform assigned to this account. | 
+| CyberArkPAS.Accounts.safeName | String | The safe where the account is created. | 
+| CyberArkPAS.Accounts.secretManagement | String | Whether the account secret is automatically managed by the CPM. | 
+| CyberArkPAS.Accounts.secretType | String | The type of password. | 
+| CyberArkPAS.Accounts.userName | String | The name of the account user. | 
+| CyberArkPAS.Accounts.address | String | The name or address of the machine where the account will be used. | 
