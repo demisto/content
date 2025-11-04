@@ -2,7 +2,6 @@ Retrieval Augmented Generation (RAG) with LLM and Vector DB that can be local fo
 
 ## Configure AnythingLLM in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | AnythingLLM URL (e.g., http://&lt;url to local AnythingLLM&gt;:3001) or https://&lt;Anything LLM cloud url&gt; |  | True |
@@ -17,7 +16,6 @@ Retrieval Augmented Generation (RAG) with LLM and Vector DB that can be local fo
 | AIRS Application Name for Scan Requests | Provide an application name to identify XSOAR scan requests in AIRS | False |
 | AIR User for Scan Requests | Provide a user name to include in XSOAR scan requests in AIRS | False |
 | Anything LLM Model in use | Provide the LLM model being used for scan requests in AIRS | False |
-
 
 ## Commands
 
@@ -181,7 +179,6 @@ Update workspace settings
 | settings | JSON object for the settings. | Required |
 
 #### Context Output
-
 
 There is no context output for this command.
 
