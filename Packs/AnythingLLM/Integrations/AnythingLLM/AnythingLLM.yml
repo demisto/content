@@ -1,6 +1,9 @@
 commonfields:
   id: AnythingLLM
   version: -1
+sectionorder:
+- Connect
+- Collect
 name: AnythingLLM
 display: AnythingLLM
 category: Utilities
