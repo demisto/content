@@ -983,14 +983,31 @@ def storage_bucket_object_policy_set(creds: Credentials, args: dict[str, Any]) -
 
 def compute_firewall_insert(creds: Credentials, args: dict[str, Any]) -> CommandResults:
     """
-    Creates a new firewall rule in a GCP project.
+    Creates a new Google Cloud Compute Engine firewall rule.
 
     Args:
-        creds (Credentials): GCP credentials.
-        args (dict[str, Any]): Must include 'project_id' and 'resource_name'.
+        creds (Credentials): Authorized GCP credentials used to access the Compute Engine API.
+        args (dict): Command arguments including:
+            - project_id (str): The ID of the GCP project where the rule will be created.
+            - resource_name (str): The name of the firewall rule.
+            - description (str, optional): Description of the rule.
+            - network (str, optional): The URL of the network for the rule.
+            - priority (int, optional): Priority value for the rule (lower means higher priority).
+            - source_ranges (str, optional): Comma-separated list of CIDR blocks for allowed sources.
+            - destination_ranges (str, optional): Comma-separated list of CIDR blocks for destinations.
+            - source_tags (str, optional): Comma-separated list of source tags.
+            - target_tags (str, optional): Comma-separated list of target tags.
+            - source_service_accounts (str, optional): Comma-separated list of source service accounts.
+            - target_service_accounts (str, optional): Comma-separated list of target service accounts.
+            - allowed (str, optional): Allowed protocols and ports (in JSON format).
+            - denied (str, optional): Denied protocols and ports (in JSON format).
+            - direction (str, optional): Direction of traffic ('INGRESS' or 'EGRESS').
+            - log_config_enable (bool, optional): Whether to enable logging for this rule.
+            - disabled (bool, optional): Whether the rule should be disabled upon creation.
 
     Returns:
-        CommandResults: Result of the firewall insert operation.
+        CommandResults: Object containing the operation details of the firewall insert request,
+        with `GCP.Compute.Operations` context output.
     """
     project_id = args.get("project_id")
     resource_name = args.get("resource_name")
@@ -1045,7 +1062,19 @@ def compute_firewall_insert(creds: Credentials, args: dict[str, Any]) -> Command
 
 def compute_firewall_list(creds: Credentials, args: dict[str, Any]) -> CommandResults:
     """
-    Lists firewall rules in the specified project.
+    Lists all firewall rules in the specified GCP project.
+
+    Args:
+        creds (Credentials): Authorized GCP credentials used to access the Compute Engine API.
+        args (dict): Command arguments including:
+            - project_id (str): The GCP project ID.
+            - limit (int, optional): Maximum number of results to return (1–500). Defaults to API default.
+            - page_token (str, optional): Token to retrieve the next page of results.
+            - filter (str, optional): Expression for filtering the listed resources.
+
+    Returns:
+        CommandResults: Object containing the list of firewall rules in the project,
+        with `GCP.Compute.Firewall` and `GCP.Compute.FirewallNextToken` context outputs.
     """
     project_id = args.get("project_id")
     limit = arg_to_number(args.get("limit"))
@@ -1093,7 +1122,17 @@ def compute_firewall_list(creds: Credentials, args: dict[str, Any]) -> CommandRe
 
 def compute_firewall_get(creds: Credentials, args: dict[str, Any]) -> CommandResults:
     """
-    Retrieves a firewall rule.
+    Retrieves details of a specific Google Cloud firewall rule.
+
+    Args:
+        creds (Credentials): Authorized GCP credentials used to access the Compute Engine API.
+        args (dict): Command arguments including:
+            - project_id (str): The GCP project ID.
+            - resource_name (str): The name of the firewall rule to retrieve.
+
+    Returns:
+        CommandResults: Object containing the firewall rule details under `GCP.Compute.Firewall`.
+        If the firewall rule is not found, returns a human-readable message.
     """
     project_id = args.get("project_id")
     resource_name = args.get("resource_name")
@@ -1123,7 +1162,19 @@ def compute_firewall_get(creds: Credentials, args: dict[str, Any]) -> CommandRes
 
 def compute_snapshots_list(creds: Credentials, args: dict[str, Any]) -> CommandResults:
     """
-    Lists snapshots in the specified project.
+    Lists all Compute Engine snapshots in a specified GCP project.
+
+    Args:
+        creds (Credentials): Authorized GCP credentials used to access the Compute Engine API.
+        args (dict): Command arguments including:
+            - project_id (str): The GCP project ID.
+            - limit (int, optional): Maximum number of results to return (1–500).
+            - page_token (str, optional): Token for pagination.
+            - filter (str, optional): Expression for filtering listed snapshots.
+
+    Returns:
+        CommandResults: Object containing a list of snapshot details under `GCP.Compute.Snapshot`
+        and pagination token under `GCP.Compute.SnapshotNextToken`.
     """
     project_id = args.get("project_id")
     limit = arg_to_number(args.get("limit"))
@@ -1168,7 +1219,17 @@ def compute_snapshots_list(creds: Credentials, args: dict[str, Any]) -> CommandR
 
 def compute_snapshot_get(creds: Credentials, args: dict[str, Any]) -> CommandResults:
     """
-    Retrieves a snapshot by name.
+    Retrieves a specific Compute Engine snapshot by name.
+
+    Args:
+        creds (Credentials): Authorized GCP credentials used to access the Compute Engine API.
+        args (dict): Command arguments including:
+            - project_id (str): The GCP project ID.
+            - resource_name (str): The name of the snapshot to retrieve.
+
+    Returns:
+        CommandResults: Object containing the snapshot details under `GCP.Compute.Snapshot`.
+        If not found, returns a readable message instead of raising an exception.
     """
     project_id = args.get("project_id")
     resource_name = args.get("resource_name")
@@ -1240,13 +1301,27 @@ def _match_instance_by_ip(instance: dict[str, Any], ip_address: str, match_exter
 
 def compute_instances_aggregated_list_by_ip(creds: Credentials, args: dict[str, Any]) -> CommandResults:
     """
-    Aggregated list of instances across all zones, filtered by IP address (internal by default, external if match_external=true).
+    Lists Compute Engine instances aggregated across all zones and filters them by IP address.
+
+    Args:
+        creds (Credentials): Authorized GCP credentials used to access the Compute Engine API.
+        args (dict): Command arguments including:
+            - project_id (str): The GCP project ID.
+            - ip_address (str): The IP address to match.
+            - match_external (bool, optional): Whether to search external IPs (default is False).
+            - limit (int, optional): Maximum number of results per API call.
+            - page_token (str, optional): Token for pagination.
+
+    Returns:
+        CommandResults: Object containing matched instances under `GCP.Compute.Instance`,
+        including match type and matched IP, along with readable summary table.
     """
     project_id = args.get("project_id")
     ip_address = args.get("ip_address", "")
     match_external = argToBoolean(args.get("match_external", "false"))
     limit = arg_to_number(args.get("limit"))
     page_token = args.get("page_token")
+    validate_limit(limit)
 
     params: dict[str, Any] = {"project": project_id}
     if limit:
@@ -1298,7 +1373,22 @@ def compute_instances_aggregated_list_by_ip(creds: Credentials, args: dict[str, 
 
 def compute_network_tag_set(creds: Credentials, args: dict[str, Any]) -> CommandResults:
     """
-    Adds a network tag to a VM instance (merges with existing tags).
+    Adds or updates network tags for a Compute Engine VM instance.
+
+    Args:
+        creds (Credentials): Authorized GCP credentials used to access the Compute Engine API.
+        args (dict): Command arguments including:
+            - project_id (str): The GCP project ID.
+            - zone (str): The zone of the instance (e.g., "us-central1-a").
+            - resource_name (str): The name of the VM instance.
+            - tag (str): The tag or list of tags to apply.
+            - add_tag (bool, optional): Whether to merge with existing tags (default: True).
+            - tags_fingerprint (str): The current fingerprint of the instance's tags,
+              required for updates.
+
+    Returns:
+        CommandResults: Object containing operation details under `GCP.Compute.Operations`,
+        and a readable message confirming tag update.
     """
     project_id = args.get("project_id")
     zone = extract_zone_name(args.get("zone"))
@@ -2245,7 +2335,7 @@ def validate_limit(limit):
     Raises:
         DemistoException: If the limit is not set or is outside the allowed range (1-500 inclusive).
     """
-    if not limit or (limit and (limit > 500 or limit < 1)):
+    if limit > 500 or limit < 1:
         raise DemistoException(
             f"The acceptable values of the argument limit are 1 to 500, inclusive. Currently the value is {limit}"
         )

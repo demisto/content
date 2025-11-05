@@ -371,7 +371,7 @@ def test_compute_instances_aggregated_list_by_ip_internal(mocker):
     mocker.patch("GCP.build", return_value=mock_compute)
     mocker.patch("GCP.tableToMarkdown", return_value="md")
 
-    res = compute_instances_aggregated_list_by_ip(mock_creds, {"project_id": "p1", "ip_address": "10.0.0.6"})
+    res = compute_instances_aggregated_list_by_ip(mock_creds, {"project_id": "p1", "ip_address": "10.0.0.6", "limit": "10"})
 
     # Expect only i-2
     assert len(res.outputs) == 1
@@ -419,7 +419,7 @@ def test_compute_instances_aggregated_list_by_ip_external(mocker):
     mocker.patch("GCP.tableToMarkdown", return_value="md")
 
     res = compute_instances_aggregated_list_by_ip(
-        mock_creds, {"project_id": "p1", "ip_address": "34.1.1.2", "match_external": "true"}
+        mock_creds, {"project_id": "p1", "ip_address": "34.1.1.2", "match_external": "true", "limit": "10"}
     )
 
     # Expect only i-2
@@ -509,7 +509,7 @@ def test_compute_instances_aggregated_list_by_ip_hr_headers(mocker):
     mocker.patch("GCP.build", return_value=mock_compute)
     ttmd = mocker.patch("GCP.tableToMarkdown", return_value="md")
 
-    compute_instances_aggregated_list_by_ip(mock_creds, {"project_id": "p1", "ip_address": "10.0.0.5"})
+    compute_instances_aggregated_list_by_ip(mock_creds, {"project_id": "p1", "ip_address": "10.0.0.5", "limit": "10"})
 
     # Inspect headers
     _, kwargs = ttmd.call_args
@@ -3448,3 +3448,45 @@ def test_gcp_compute_instance_label_set_command_add_labels_false(mocker):
     )
 
     assert result.outputs == mock_operation_response
+
+
+def test_validate_limit_valid_input():
+    """
+    Given: A valid limit value (between 1 and 500 inclusive)
+    When: validate_limit is called
+    Then: No exception is raised
+    """
+    from GCP import validate_limit
+
+    # Test with minimum valid limit
+    validate_limit(1)
+    # Test with maximum valid limit
+    validate_limit(500)
+    # Test with a value in between
+    validate_limit(250)
+
+
+def test_validate_limit_invalid_input_too_low():
+    """
+    Given: An invalid limit value (less than 1)
+    When: validate_limit is called
+    Then: DemistoException is raised with an appropriate message
+    """
+    from GCP import validate_limit, DemistoException
+
+    with pytest.raises(DemistoException) as e:
+        validate_limit(0)
+    assert "The acceptable values of the argument limit are 1 to 500, inclusive. Currently the value is 0" in str(e.value)
+
+
+def test_validate_limit_invalid_input_too_high():
+    """
+    Given: An invalid limit value (greater than 500)
+    When: validate_limit is called
+    Then: DemistoException is raised with an appropriate message
+    """
+    from GCP import validate_limit, DemistoException
+
+    with pytest.raises(DemistoException) as e:
+        validate_limit(501)
+    assert "The acceptable values of the argument limit are 1 to 500, inclusive. Currently the value is 501" in str(e.value)

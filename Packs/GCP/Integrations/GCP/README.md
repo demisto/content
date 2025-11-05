@@ -1142,7 +1142,7 @@ Lists firewall rules in the specified project.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | project_id | GCP project ID. | Required |
-| limit | Maximum number of results to return. Acceptable values are 0 to 500, inclusive. | Optional |
+| limit | Maximum number of results to return. Acceptable values are 0 to 500, inclusive. Default is 500. | Optional |
 | page_token | Token for pagination. | Optional |
 | filter | A filter expression for resources listed in the response. The expression must specify a field name, a comparison operator (=, !=, &gt;, or &lt;), and a value, which can be a string, number, or boolean. For example, to exclude a Compute Engine instance named example-instance, use name != example-instance.<br/>For more options and details, see:<br/>https://cloud.google.com/compute/docs/reference/rest/v1/firewalls/list#:~:text=page%20of%20results.-,filter,-string. | Optional |
 
@@ -1207,7 +1207,7 @@ Lists snapshots in the specified project.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | project_id | GCP project ID. | Required |
-| limit | Maximum number of results to return. Acceptable values are 0 to 500, inclusive. | Optional |
+| limit | Maximum number of results to return. Acceptable values are 0 to 500, inclusive. Default is 500. | Optional |
 | page_token | Token for pagination. | Optional |
 | filter | A filter expression for resources listed in the response. The expression must specify a field name, a comparison operator (=, !=, &gt;, or &lt;), and a value, which can be a string, number, or boolean. For example, to exclude a Compute Engine instance named example-instance, use name != example-instance.<br/>For more options and details, see:<br/>https://cloud.google.com/compute/docs/reference/rest/v1/snapshots/list#:~:text=page%20of%20results.-,filter,-string. | Optional |
 
@@ -1298,7 +1298,7 @@ Aggregated list of instances across all zones; can be filtered by internal or ex
 | project_id | GCP project ID. | Required |
 | ip_address | The IP address to search for. | Required |
 | match_external | If true, match against external NAT IPs; otherwise internal NIC IPs. Possible values are: true, false. | Optional |
-| limit | Maximum number of results to return. Acceptable values are 0 to 500, inclusive. | Optional |
+| limit | Maximum number of results to return. Acceptable values are 0 to 500, inclusive. Default is 500. | Optional |
 | page_token | Token for pagination. | Optional |
 
 #### Context Output
@@ -1328,7 +1328,7 @@ Adds a network tag to a VM instance (merges with existing tags).
 | zone | Zone of the VM (e.g., us-central1-a). | Required |
 | resource_name | Instance name. | Required |
 | tag | Tag to add. | Required |
-| tags_fingerprint | Fingerprint of the previous set of tags for this resource, used to prevent conflicts. Provide the latest fingerprint value when making a request to add or change tags. | Required |
+| tags_fingerprint | Fingerprint of the previous set of tags for this resource, used to prevent conflicts. Provide the latest fingerprint value when making a request to add or change tags. To retrieve the finger print use the command gcp-compute-instance-get. | Required |
 | add_tag | If true, adds the tag to the existing tags; otherwise, overrides them. The default is true. Possible values are: true, false. Default is true. | Optional |
 
 #### Context Output
