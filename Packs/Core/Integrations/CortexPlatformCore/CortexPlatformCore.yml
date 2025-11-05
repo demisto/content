@@ -1366,22 +1366,42 @@ script:
         - description: List of scanners to disable
           name: disabled_scanners
           isArray: true
-        - description: Enable live validation of discovered secrets.
+        - auto: PREDEFINED
+          description: Enable live validation of discovered secrets.
           type: boolean
-          name: secret_validation 
-        - description: Enable scanning on pull requests. This argument only relevant when SECRETS scanner is enabled.
-          defaultvalue: "False"
+          name: secret_validation
+          predefined:
+            - "true"
+            - "false"
+        - auto: PREDEFINED
+          description: Enable scanning on pull requests. This argument only relevant when SECRETS scanner is enabled.
+          defaultvalue: "false"
           type: boolean
           name: pr_scanning
-        - description: Block deployment on scanner errors
+          predefined:
+            - "true"
+            - "false"
+        - auto: PREDEFINED
+          description: Block deployment on scanner errors
           name: block_on_error
           type: boolean
-        - description: Enable tagging of resource blocks
+          predefined:
+            - "true"
+            - "false"
+        - auto: PREDEFINED
+          description: Enable tagging of resource blocks
           name: tag_resource_blocks
           type: boolean
-        - description: Enable tagging of module blocks
+          predefined:
+            - "true"
+            - "false"
+        - auto: PREDEFINED
+          description: Enable tagging of module blocks
           name: tag_module_blocks
           type: boolean
+          predefined:
+            - "true"
+            - "false"
         - description: List of file paths to exclude from scanning
           name: exclude_paths
           isArray: true

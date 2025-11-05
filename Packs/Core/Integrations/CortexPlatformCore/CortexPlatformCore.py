@@ -839,8 +839,6 @@ def enable_scanners_command(client: Client, args: dict):
     return CommandResults(
             readable_output=readable_output,
             raw_response=response,
-            outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.RepositoryScanConfiguration",
-            outputs={"success_message": f"{readable_output}"}
         )
     
 def get_asset_group_ids_from_names(client: Client, group_names: list[str]) -> list[str]:
