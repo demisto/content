@@ -882,23 +882,3 @@ There is no context output for this command.
 #### Command example
 
 ```!msgraph-user-change-password-on-premise user=123456-abcd-7890-erty-987qwe987 password=123456```
-
-### msgraph-user-update-quick-action
-
-***
-Updates the properties of a user object.
-Permissions: - User.ReadWrite (Delegated & Application).
-
-#### Base Command
-
-`msgraph-user-update-quick-action`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| user | User ID or userPrincipalName to update properties for. | Required |
-
-#### Context Output
-
-There is no context output for this command.
