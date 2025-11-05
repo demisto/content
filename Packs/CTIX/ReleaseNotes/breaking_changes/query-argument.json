@@ -1,0 +1,5 @@
+{
+  "id": "query",
+  "type": "argument",
+  "description": "The 'query' argument has been removed from the CTIX command 'ctix-saved-result-set'. Playbooks or automations using this argument may break and need to be updated."
+}
