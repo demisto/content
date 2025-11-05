@@ -299,7 +299,7 @@ REQUIRED_API_PERMISSIONS = ["GroupMember.ReadWrite.All", "RoleManagement.ReadWri
 PREFIX_URL_AZURE = "https://management.azure.com/subscriptions/"
 PREFIX_URL_MS_GRAPH = "https://graph.microsoft.com/v1.0"
 POLICY_ASSIGNMENT_API_VERSION = "2024-05-01"
-POSTGRES_API_VERSION = "2017-12-01"
+POSTGRES_API_VERSION = "2025-08-01"
 WEBAPP_API_VERSION = "2024-04-01"
 FLEXIBLE_API_VERSION = "2023-12-30"
 MONITOR_API_VERSION = "2016-03-01"
@@ -796,7 +796,7 @@ class AzureClient:
         """
         full_url = (
             f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
-            f"/providers/Microsoft.DBforPostgreSQL/servers/{server_name}/configurations/{configuration_name}"
+            f"/providers/Microsoft.DBforPostgreSQL/flexibleServers/{server_name}/configurations/{configuration_name}"
         )
         params = {"api-version": POSTGRES_API_VERSION}
         data = {"properties": {"source": source, "value": value}}
