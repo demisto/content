@@ -967,7 +967,7 @@ def create_policy_build_triggers(args):
         actions = {}
         for k in [report_key, block_key, comment_key]:
             if k:
-                actions[k.replace("triggers_", "").split("_")[1]] = argToBoolean(args.get(k, False))
+                actions[k.replace("triggers_", "").split("_")[1]] = argToBoolean(args.get(k) or False)
         override = args.get(override_key)
         is_enabled = any(actions.values()) or bool(override)
         return {
