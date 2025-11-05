@@ -6,7 +6,10 @@ script: ''
 type: python
 tags:
 - Utilities
-comment: A polling wrapper script; Searches for a specific indicator in the tenant's event and log data, and extracts the logs the indicator appears in.
+comment: Retrieves Application Security Posture Management (ASPM) coverage information for assets,
+  including scan status across different security scanning types (vulnerabilities, secrets, code weakness, IaC, malware, CICD).
+  Returns coverage statistics, histograms, and detailed asset information. 
+  Filters can be provided to return a subset of the results. Statistics are generated over the filtered set.
 enabled: true
 args:
 - description: The unique ID of the asset. Accepts a comma-separated list.

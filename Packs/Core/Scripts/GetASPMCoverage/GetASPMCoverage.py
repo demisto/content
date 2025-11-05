@@ -3,7 +3,6 @@ from typing import Any, Union
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-
 scanner_columns = [
     "is_scanned_by_vulnerabilities",
     "is_scanned_by_code_weakness",
@@ -12,12 +11,30 @@ scanner_columns = [
     "is_scanned_by_malware",
 ]
 
+valid_args = {
+    "asset_id",
+    "asset_name",
+    "asset_name_contains",
+    "business_application_names",
+    "status_coverage",
+    "is_scanned_by_vulnerabilities",
+    "is_scanned_by_code_weakness",
+    "is_scanned_by_secrets",
+    "is_scanned_by_iac",
+    "is_scanned_by_malware",
+    "is_scanned_by_cicd",
+    "asset_type",
+    "unified_provider",
+    "asset_provider",
+    "limit",
+}
+
+
 
 def get_command_results(command: str, args: dict[str, Any]) -> Union[dict[str, Any] | list]:
     """Execute a Demisto command and return the result."""
     try:
         command_results = demisto.executeCommand(command, args)
-        print(command_results)
         if command_results and isinstance(command_results, list) and command_results[0].get("Contents"):
             return command_results[0]["Contents"].get("reply", {})
         return {}
@@ -32,20 +49,23 @@ def transform_scanner_histograms_outputs(asset_coverage_histograms):
 
     output = {}
     total_enabled = 0
-    total = 0
+    total_relevant = 0
     for column in scanner_columns:
         data = asset_coverage_histograms.get(column, [])
         enabled_count = get_count(data, "ENABLED")
         disabled_count = get_count(data, "DISABLED")
+        relevant_count = enabled_count + disabled_count
         output[column] = {
             "enabled": enabled_count,
             "disabled": disabled_count,
-            "coverage_percentage": enabled_count / (enabled_count + disabled_count)
+            "coverage_percentage": enabled_count / relevant_count if relevant_count else 0
         }
         total_enabled += enabled_count
-        total += enabled_count + disabled_count
+        total_relevant += relevant_count
 
-    return output, total_enabled / total
+    coverage_percentage = total_enabled / total_relevant if total_relevant else 0
+
+    return output, coverage_percentage
 
 
 def transform_status_coverage_histogram_output(data):
@@ -70,11 +90,14 @@ def transform_status_coverage_histogram_output(data):
 def main():
     try:
         args = demisto.args()
+        extra_args = set(args.keys()) - valid_args
+        if extra_args:
+            raise Exception(f"Unexpected args found: {extra_args}")
         asset_coverage = get_command_results("core-get-asset-coverage", args)
         assets = asset_coverage.get("DATA", [])
         args["columns"] = ", ".join(scanner_columns + ["status_coverage"])
         asset_coverage_histograms = get_command_results("core-get-asset-coverage-histogram", args)
-        scanner_histograms_outputs , coverage_percentage = transform_scanner_histograms_outputs(asset_coverage_histograms)
+        scanner_histograms_outputs, coverage_percentage = transform_scanner_histograms_outputs(asset_coverage_histograms)
         status_coverage_histogram_output = transform_status_coverage_histogram_output(asset_coverage_histograms)
         outputs = {
             "total_filtered_assets": asset_coverage.get("FILTER_COUNT"),
@@ -88,7 +111,6 @@ def main():
             CommandResults(
                 outputs=outputs,
                 outputs_prefix="Core.Coverage",
-                readable_output=outputs,
                 raw_response=outputs,
             )
         )
