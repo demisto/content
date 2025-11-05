@@ -1,5 +1,3 @@
-from typing import Final
-
 import secrets
 import string
 import demistomock as demisto
@@ -459,16 +457,20 @@ def change_password_user_saas_command(client: MsGraphClient, args: dict):
 
     return CommandResults(readable_output=human_readable)
 
+
 def force_reset_password(client: MsGraphClient, args: dict):
     chars = string.ascii_letters + string.digits + string.punctuation
-    temp_password = ''.join(secrets.choice(chars) for _ in range(TEMP_PASSWORD_LENGTH))
+    temp_password = "".join(secrets.choice(chars) for _ in range(TEMP_PASSWORD_LENGTH))
     args = {**args, "password": temp_password, "force_change_password_next_sign_in": "true"}
 
     command_results = change_password_user_saas_command(client, args)
-    human_readable = (f"User {args['user']} will be required to change his password. "
-                      f"To do so, they can use the temporary password {temp_password}.")
+    human_readable = (
+        f"User {args['user']} will be required to change his password. "
+        f"To do so, they can use the temporary password {temp_password}."
+    )
     command_results.readable_output = human_readable
     return command_results
+
 
 def validate_input_password(args: dict[str, Any]) -> str:
     """
