@@ -3,7 +3,7 @@ sectionorder:
 - Connect
 - Collect
 commonfields:
-  id: Anomali ThreatStream v3 - test
+  id: Anomali ThreatStream v3
   version: -1
 configuration:
 - defaultvalue: https://api.threatstream.com
@@ -112,7 +112,7 @@ configuration:
 defaultclassifier: 'null'
 description: Use Anomali ThreatStream to query and submit threats.
 display: Anomali ThreatStream v3
-name: Anomali ThreatStream v3 - test
+name: Anomali ThreatStream v3
 script:
   commands:
   - arguments:
@@ -2700,6 +2700,7 @@ script:
       predefined:
       - 'false'
       - 'true'
+      deprecated: true
     - description: A comma-separated list of additional details for the indicator. This information is displayed in the Tag column of the ThreatStream UI.
       name: detail
     - default: true
