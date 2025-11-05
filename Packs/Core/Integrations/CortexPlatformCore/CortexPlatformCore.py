@@ -957,39 +957,47 @@ def create_policy_build_scope(args):
 
 
 def create_policy_build_triggers(args):
-    def trigger(enabled, report_key, block_key=None, comment_key=None, override_key=None):
-        if enabled is None:
-            return {}
+    """
+    Build triggers for create-policy.
+    Always include full trigger structure for periodic, PR, and CI/CD.
+    Actions are True/False depending on user input.
+    isEnabled is True if any action or override is set.
+    """
+    def trigger(report_key, block_key=None, comment_key=None, override_key=None):
         actions = {}
         for k in [report_key, block_key, comment_key]:
-            if k and argToBoolean(args.get(k)):
-                actions[k.replace("triggers_", "").split("_")[1]] = True
-        result = {"isEnabled": enabled, "actions": actions}
-        if override_key and args.get(override_key):
-            result["overrideIssueSeverity"] = args.get(override_key)
-        return result
+            if k:
+                actions[k.replace("triggers_", "").split("_")[1]] = argToBoolean(args.get(k, False))
+        override = args.get(override_key)
+        is_enabled = any(actions.values()) or bool(override)
+        return {
+            "isEnabled": is_enabled,
+            "actions": actions,
+            "overrideIssueSeverity": override if override is not None else None,
+        }
 
-    return {
-        "periodic": trigger(
-            argToBoolean(args.get("triggers_periodic_enabled")),
-            "triggers_periodic_report_issue",
-            override_key="triggers_periodic_override_severity",
-        ),
+    triggers = {
+        "periodic": trigger("triggers_periodic_report_issue", override_key="triggers_periodic_override_severity"),
         "pr": trigger(
-            argToBoolean(args.get("triggers_pr_enabled")),
             "triggers_pr_report_issue",
             "triggers_pr_block_pr",
             "triggers_pr_report_pr_comment",
-            "triggers_pr_override_severity",
+            override_key="triggers_pr_override_severity",
         ),
         "cicd": trigger(
-            argToBoolean(args.get("triggers_cicd_enabled")),
             "triggers_cicd_report_issue",
             "triggers_cicd_block_cicd",
             "triggers_cicd_report_cicd",
-            "triggers_cicd_override_severity",
+            override_key="triggers_cicd_override_severity",
         ),
     }
+
+    # Ensure at least one trigger is enabled
+    if not any(t["isEnabled"] for t in triggers.values()):
+        raise DemistoException("At least one trigger (periodic, PR, or CI/CD) must be set.")
+
+    return triggers
+
 
 
 

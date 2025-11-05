@@ -1465,12 +1465,6 @@ script:
             - "true"
             - "false"
         # Trigger Settings (Policy Execution Events)
-        - name: triggers_periodic_enabled
-          description: Enable the periodic trigger for scheduled scans.
-          auto: PREDEFINED
-          predefined:
-            - "true"
-            - "false"
         - name: triggers_periodic_report_issue
           description: Automatically create issues for periodic scans.
           auto: PREDEFINED
@@ -1485,12 +1479,6 @@ script:
             - High
             - Medium
             - Low
-        - name: triggers_pr_enabled
-          description: Enable pull request (PR) trigger.
-          auto: PREDEFINED
-          predefined:
-            - "true"
-            - "false"
         - name: triggers_pr_report_issue
           description: Create issues when policy violations occur in PRs.
           auto: PREDEFINED
@@ -1517,12 +1505,6 @@ script:
             - High
             - Medium
             - Low
-        - name: triggers_cicd_enabled
-          description: Enable CI/CD trigger for pipeline enforcement.
-          auto: PREDEFINED
-          predefined:
-            - "true"
-            - "false"
         - name: triggers_cicd_report_issue
           description: Create issues for CI/CD pipeline violations.
           auto: PREDEFINED
