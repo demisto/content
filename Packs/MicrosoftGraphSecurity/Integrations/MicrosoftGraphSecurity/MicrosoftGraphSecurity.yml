@@ -1703,7 +1703,7 @@ script:
       isArray: false
       name: search_id
       required: true
-    - description: The ID of the eDiscovery search.
+    - description: Whether the action is soft delete or hard delete.
       isArray: false
       name: purge_type
       required: false
@@ -1711,7 +1711,7 @@ script:
       predefined:
       - permanentlyDelete
       - recoverable
-    - description: The ID of the eDiscovery search.
+    - description: Define the locations to be in scope of the purge action.
       isArray: false
       name: purge_areas
       required: false
@@ -1720,8 +1720,7 @@ script:
       - teamsMessages
       - mailboxes
     description: |-
-      Delete Microsoft Teams messages contained in an eDiscovery search.
-      Note: This request purges Teams data only. It does not purge other types of data such as mailbox items.
+      Delete Exchange mailbox items or Microsoft Teams messages contained in an eDiscovery search.
 
       You can collect and purge the following categories of Teams content:
 
