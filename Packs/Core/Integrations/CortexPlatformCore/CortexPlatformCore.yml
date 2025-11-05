@@ -1366,7 +1366,11 @@ script:
         - description: List of scanners to disable
           name: disabled_scanners
           isArray: true
-        - description: Enable scanning on pull requests
+        - description: Enable live validation of discovered secrets.
+          type: boolean
+          name: secret_validation 
+        - description: Enable scanning on pull requests. This argument only relevant when SECRETS scanner is enabled.
+          defaultvalue: "False"
           type: boolean
           name: pr_scanning
         - description: Block deployment on scanner errors

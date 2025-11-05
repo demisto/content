@@ -45,6 +45,8 @@ VULNERABILITIES_SEVERITY_MAPPING = {
     "critical": "SEV_070_CRITICAL",
 }
 
+ALLOWED_SCANNERS = ['SCA', 'IAC', 'SECRETS',]
+
 
 class FilterBuilder:
     """
@@ -717,6 +719,24 @@ def search_assets_command(client: Client, args):
         raw_response=raw_response,
     )
 
+def validate_scanner_name(scanner_name: str) -> bool:
+    """
+    Validate that a scanner name is allowed.
+    
+    Args:
+        scanner_name (str): The name of the scanner to validate.
+        
+    Returns:
+        bool: True if the scanner name is valid.
+        
+    Raises:
+        ValueError: If the scanner name is not in the list of allowed scanners.
+    """
+    if scanner_name.upper() not in ALLOWED_SCANNERS:
+        raise ValueError(f"Invalid scanner '{scanner_name}'. Allowed scanners are: {', '.join(sorted(ALLOWED_SCANNERS))}")
+    
+    return True
+        
 def build_scanner_config_payload(args: dict) -> dict:
     """
     Build a scanner configuration payload for repository scanning.
@@ -741,7 +761,8 @@ def build_scanner_config_payload(args: dict) -> dict:
     """
     repository_ids = argToList(args.get('repository_ids'))
     enabled_scanners = argToList(args.get('enabled_scanners', []))
-    disabled_scanners = argToList(args.get('disable_scanners', []))
+    disabled_scanners = argToList(args.get('disabled_scanners', []))
+    secret_validation = argToBoolean(args.get("secret_validation", "False"))
     enable_pr_scanning = arg_to_bool_or_none(args.get("pr_scanning"))
     block_on_error = arg_to_bool_or_none(args.get("block_on_error"))
     tag_resource_blocks = arg_to_bool_or_none(args.get("tag_resource_blocks"))
@@ -755,9 +776,15 @@ def build_scanner_config_payload(args: dict) -> dict:
     # Build scanners configuration
     scanners = {}
     for scanner in enabled_scanners:
-        scanners[scanner.upper()] = {"isEnabled": True}
+        if validate_scanner_name(scanner):
+            if scanner.upper() == "SECRETS":
+                scanners["SECRETS"] = {"isEnabled": True, "scanOptions": {"secretValidation": secret_validation}}
+            else:
+                scanners[scanner.upper()] = {"isEnabled": True}
+
     for scanner in disabled_scanners:
-        scanners[scanner.upper()] = {"isEnabled": False}
+        if validate_scanner_name(scanner):
+            scanners[scanner.upper()] = {"isEnabled": False}
 
     # Build scan configuration payload with only relevant arguments
     scan_configuration = {}
@@ -770,7 +797,7 @@ def build_scanner_config_payload(args: dict) -> dict:
             "isEnabled": enable_pr_scanning,
             **({"blockOnError": block_on_error} if block_on_error is not None else {})
         }
-    
+        
     if args.get("tag_resource_blocks") is not None or args.get("tag_module_blocks") is not None:
         scan_configuration["taggingBot"] = {
             **({"tagResourceBlocks": tag_resource_blocks} if tag_resource_blocks is not None else {}),
@@ -804,22 +831,16 @@ def enable_scanners_command(client: Client, args: dict):
     repository_ids = argToList(args.get('repository_ids'))
     payload = build_scanner_config_payload(args)
 
-    # repository_ids = ["68fe4d0b29f7e707bb504ec5"] # Assuming this is the desired ID
-
     # Send request to update repository scan configuration
     response = client.enable_scanners(payload)
     
-    readable_output = tableToMarkdown(
-            "Repository Scan Configuration Update",
-            [{
-                "Repository IDs": ", ".join(repository_ids),
-                "Status": "Successfully Updated"
-            }]
-        )
+    readable_output = f"Successfully updated repositories: {', '.join(repository_ids)}"
 
     return CommandResults(
             readable_output=readable_output,
-            raw_response=response
+            raw_response=response,
+            outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.RepositoryScanConfiguration",
+            outputs={"success_message": f"{readable_output}"}
         )
     
 def get_asset_group_ids_from_names(client: Client, group_names: list[str]) -> list[str]:
