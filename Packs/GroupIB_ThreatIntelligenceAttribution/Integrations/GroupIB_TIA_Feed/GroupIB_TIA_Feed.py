@@ -871,9 +871,7 @@ class Client(BaseClient):
             integration_name="Group-IB Threat Intelligence",
             integration_version="2.1.0",
         )
-        demisto.info(
-            f"[Client.__init__] TI Feed client initialized: url={base_url}, verify={verify}, proxy={proxy}"
-        )
+        demisto.info(f"[Client.__init__] TI Feed client initialized: url={base_url}, verify={verify}, proxy={proxy}")
 
     def create_update_generator_proxy_functions(
         self,
@@ -898,9 +896,7 @@ class Client(BaseClient):
 
     def get_available_collections_proxy_function(self) -> list:
         collections = self.poller.get_available_collections()
-        demisto.debug(
-            f"[Client.get_available_collections_proxy_function] Available collections: {collections}"
-        )
+        demisto.debug(f"[Client.get_available_collections_proxy_function] Available collections: {collections}")
         return collections
 
 
@@ -1200,16 +1196,12 @@ class DateHelper:
             date_from = date_from_for_mypy.strftime("%Y-%m-%d")
         else:
             seq_update = last_fetch
-        demisto.debug(
-            f"[DateHelper.handle_first_time_fetch] Result: date_from={date_from}, seq_update={seq_update}"
-        )
+        demisto.debug(f"[DateHelper.handle_first_time_fetch] Result: date_from={date_from}, seq_update={seq_update}")
         return date_from, seq_update
 
 
 def validate_launch_get_indicators_command(limit, collection_name):
-    demisto.debug(
-        f"[validate_launch_get_indicators_command] Raw inputs: limit={limit}, collection={collection_name}"
-    )
+    demisto.debug(f"[validate_launch_get_indicators_command] Raw inputs: limit={limit}, collection={collection_name}")
     try:
         limit_int = int(limit)
     except (TypeError, ValueError):
@@ -1223,27 +1215,21 @@ def validate_launch_get_indicators_command(limit, collection_name):
     if collection_name not in COMMON_MAPPING:
         raise DemistoException("Incorrect collection name. Please, choose one of the displayed options.")
 
-    demisto.debug(
-        f"[validate_launch_get_indicators_command] Validation passed: limit={limit_int}, collection={collection_name}"
-    )
+    demisto.debug(f"[validate_launch_get_indicators_command] Validation passed: limit={limit_int}, collection={collection_name}")
 
 
 """ Commands """
 
 
 def collection_availability_check(client: Client, collection_name: str) -> None:
-    demisto.debug(
-        f"[collection_availability_check] Checking availability for collection={collection_name}"
-    )
+    demisto.debug(f"[collection_availability_check] Checking availability for collection={collection_name}")
     if collection_name not in client.get_available_collections_proxy_function():
         raise Exception(
             f"Collection {collection_name} is not available from you, "
             "please disable collection on it or contact Group-IB to grant access"
             f"{client.get_available_collections_proxy_function()}"
         )
-    demisto.debug(
-        f"[collection_availability_check] Collection is available: {collection_name}"
-    )
+    demisto.debug(f"[collection_availability_check] Collection is available: {collection_name}")
 
 
 def fetch_indicators_command(
@@ -1277,9 +1263,7 @@ def fetch_indicators_command(
 
     for collection_name in indicator_collections:
         collection_availability_check(client=client, collection_name=collection_name)
-        demisto.debug(
-            f"[fetch-indicators] Processing collection={collection_name}"
-        )
+        demisto.debug(f"[fetch-indicators] Processing collection={collection_name}")
         mapping: dict = COMMON_MAPPING.get(collection_name, {})
         requests_sent = 0
         date_from, seq_update = DateHelper.handle_first_time_fetch(
@@ -1303,9 +1287,7 @@ def fetch_indicators_command(
             apply_hunting_rules=hunting_rules,
             limit=limit,
         )
-        demisto.debug(
-            f"[fetch-indicators] Generator created for collection={collection_name}: {portions}"
-        )
+        demisto.debug(f"[fetch-indicators] Generator created for collection={collection_name}: {portions}")
         for portion in portions:
             seq_update = portion.sequpdate
             demisto.debug(
@@ -1332,9 +1314,7 @@ def fetch_indicators_command(
                 break
 
         next_run["last_fetch"][collection_name] = seq_update
-        demisto.debug(
-            f"[fetch-indicators] Updated next_run for collection={collection_name}: last_fetch={seq_update}"
-        )
+        demisto.debug(f"[fetch-indicators] Updated next_run for collection={collection_name}: last_fetch={seq_update}")
 
     return next_run, indicators
 
@@ -1353,9 +1333,7 @@ def get_indicators_command(client: Client, args: dict[str, str]):
         int(args.get("limit", "50")),
     )
 
-    demisto.debug(
-        f"[get_indicators_command] Called with args: id={id_}, collection={collection_name}, limit={limit}"
-    )
+    demisto.debug(f"[get_indicators_command] Called with args: id={id_}, collection={collection_name}, limit={limit}")
     validate_launch_get_indicators_command(limit, collection_name)
     mapping: dict = COMMON_MAPPING.get(collection_name, {})
 
@@ -1386,16 +1364,12 @@ def get_indicators_command(client: Client, args: dict[str, str]):
                 build_for_comand=True,
             ).get_indicators()
             indicators.extend(builded_indicators)
-            demisto.debug(
-                f"[get_indicators_command] Portion processed: added={len(builded_indicators)}, total={len(indicators)}"
-            )
+            demisto.debug(f"[get_indicators_command] Portion processed: added={len(builded_indicators)}, total={len(indicators)}")
 
             if len(indicators) >= limit:
                 break
     else:
-        demisto.debug(
-            f"[get_indicators_command] Fetch by id: collection={collection_name}, id={id_}"
-        )
+        demisto.debug(f"[get_indicators_command] Fetch by id: collection={collection_name}, id={id_}")
         portions = client.poller.search_feed_by_id(collection_name=collection_name, feed_id=id_)
         portions.get_iocs()
         parsed_json = portions.parse_portion(keys=mapping.get("parser_mapping"))

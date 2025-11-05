@@ -1445,7 +1445,15 @@ class Client(BaseClient):
 
         return last_fetch, date_from  # type: ignore
 
-    def create_poll_generator(self, collection_name: str, hunting_rules: int, enable_probable_corporate_access: bool, unique:bool, combolist: bool, **kwargs):
+    def create_poll_generator(
+        self,
+        collection_name: str,
+        hunting_rules: int,
+        enable_probable_corporate_access: bool,
+        unique: bool,
+        combolist: bool,
+        **kwargs,
+    ):
         """
         Interface to work with different types of indicators.
         """
@@ -1470,7 +1478,7 @@ class Client(BaseClient):
                 f"last_fetch={last_fetch}, date_from={date_from}, date_to={date_to}, "
                 f"starting_date_from={starting_date_from}, starting_date_to={starting_date_to}"
             )
-            
+
             return self.poller.create_search_generator(
                 collection_name=collection_name,
                 date_from=date_from,
@@ -1503,17 +1511,13 @@ class Client(BaseClient):
                     if resolved_seq:
                         sequpdate_for_generator = resolved_seq
                         date_from_for_generator = None
-                        demisto.debug(
-                            f"[create_poll_generator] Using resolved seqUpdate={resolved_seq}; dropping date_from"
-                        )
+                        demisto.debug(f"[create_poll_generator] Using resolved seqUpdate={resolved_seq}; dropping date_from")
                     else:
                         demisto.debug(
                             "[create_poll_generator] sequence_list returned empty for collection; fallback to date_from"
                         )
                 except Exception as e:
-                    demisto.debug(
-                        f"[create_poll_generator] sequence_list resolution failed: {e}; fallback to date_from"
-                    )
+                    demisto.debug(f"[create_poll_generator] sequence_list resolution failed: {e}; fallback to date_from")
 
             demisto.debug(
                 "[create_poll_generator] Using update generator: "
@@ -2104,9 +2108,7 @@ def fetch_incidents_command(
         collection_availability_check(client=client, collection_name=collection_name)
         CommonHelpers.validate_collections(collection_name)
         last_fetch = last_run.get("last_fetch", {}).get(collection_name)
-        demisto.debug(
-            f"[fetch-incidents] Collection={collection_name} previous_last_fetch={last_fetch}"
-        )
+        demisto.debug(f"[fetch-incidents] Collection={collection_name} previous_last_fetch={last_fetch}")
         requests_count = 0
         sequpdate = 0
         portions, last_fetch = client.create_poll_generator(
@@ -2146,9 +2148,7 @@ def fetch_incidents_command(
                 for incident in iterable
             )
             added = len(incidents) - before_count
-            demisto.debug(
-                f"[fetch-incidents] Built incidents for portion: added={added}, total={len(incidents)}"
-            )
+            demisto.debug(f"[fetch-incidents] Built incidents for portion: added={added}, total={len(incidents)}")
 
             requests_count += 1
             if requests_count >= max_requests:
@@ -2157,9 +2157,7 @@ def fetch_incidents_command(
         if collection_name == "compromised/breached":
             next_run["last_fetch"][collection_name] = last_fetch
         else:
-            demisto.debug(
-                f"[fetch-incidents] Final seqUpdate for collection={collection_name}: {sequpdate}"
-            )
+            demisto.debug(f"[fetch-incidents] Final seqUpdate for collection={collection_name}: {sequpdate}")
             effective_last_fetch = last_fetch
             if isinstance(sequpdate, int) and sequpdate > 0:
                 if isinstance(last_fetch, int) and last_fetch > 0:
@@ -2168,9 +2166,7 @@ def fetch_incidents_command(
                     effective_last_fetch = sequpdate
 
             next_run["last_fetch"][collection_name] = effective_last_fetch
-            demisto.debug(
-                f"[fetch-incidents] Updated next_run for collection={collection_name}: {effective_last_fetch}"
-            )
+            demisto.debug(f"[fetch-incidents] Updated next_run for collection={collection_name}: {effective_last_fetch}")
 
     return next_run, incidents
 
