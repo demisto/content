@@ -375,6 +375,7 @@ class Client(CoreClient):
         reply = self._http_request(
             method="POST",
             json_data=request_body,
+            headers=self._headers,
             url_suffix="/trigger_fix_pull_request"
         )
         return reply
