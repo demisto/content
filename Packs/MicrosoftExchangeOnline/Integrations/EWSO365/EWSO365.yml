@@ -1017,4 +1017,6 @@ script:
   type: python
 tests:
 - EWS search-mailbox test
+- EWS_O365_send_mail_test
+- EWS_O365_test
 fromversion: 5.0.0

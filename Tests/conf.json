@@ -2250,11 +2250,6 @@
         {
             "integrations": "Microsoft 365 Defender",
             "playbookID": "Microsoft_365_Defender-Test",
-            "instance_names": "ms_365_defender_device_code"
-        },
-        {
-            "integrations": "Microsoft 365 Defender",
-            "playbookID": "Microsoft_365_Defender-Test",
             "instance_names": "ms_365_defender_client_cred"
         },
         {
@@ -6064,7 +6059,6 @@
         "AzureADTest": "Issue 40131",
         "Autoextract - Test": "Issue 45293",
         "LogRhythm-Test-Playbook": "Issue 27164",
-        "Microsoft_365_Defender-Test": "Issue 39390",
         "Tanium Threat Response - Request File Download v2 - Test": "Issue 46326",
         "Cisco Umbrella Test": "Issue 24338",
         "Unit42 Intel Objects Feed - Test": "Issue 44100",
