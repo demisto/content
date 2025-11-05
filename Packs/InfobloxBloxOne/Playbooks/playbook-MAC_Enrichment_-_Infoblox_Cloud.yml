@@ -1,0 +1,371 @@
+id: MAC Enrichment - Infoblox Cloud
+version: -1
+name: MAC Enrichment - Infoblox Cloud
+description: This playbook enriches MAC addresses with DHCP lease information using Infoblox Threat Defense with DDI integration.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 38b9dcc0-fb89-4a8e-8cac-03660e88f931
+    type: start
+    task:
+      id: 38b9dcc0-fb89-4a8e-8cac-03660e88f931
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 20
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: b1bb3546-f51c-4ec6-89ce-e77229b04bbc
+    type: condition
+    task:
+      id: b1bb3546-f51c-4ec6-89ce-e77229b04bbc
+      version: -1
+      name: Is Infoblox Threat Defense with DDI integration enabled?
+      description: Checks whether Infoblox BloxOne Threat Defense is enabled or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: InfobloxBloxOneThreatDefense
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: name
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 155
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: bffcac1b-2f68-4a99-8780-715453129326
+    type: regular
+    task:
+      id: bffcac1b-2f68-4a99-8780-715453129326
+      version: -1
+      name: Clear previous inputs
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      key:
+        simple: Collect MAC indicators
+      subplaybook:
+        simple: auto
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 04f46887-dd87-4e02-8eb7-659dea85645d
+    type: condition
+    task:
+      id: 04f46887-dd87-4e02-8eb7-659dea85645d
+      version: -1
+      name: Check whether MAC Addresses are available in playbook input
+      description: Check whether MAC addresses are available in playbook input.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "11"
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.mac_addresses
+                transformers:
+                - operator: splitAndTrim
+                  args:
+                    delimiter:
+                      value:
+                        simple: ','
+                - operator: RemoveEmpty
+                  args:
+                    empty_values: {}
+                    remove_keys: {}
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: b4d5306d-4e42-4140-812a-45eb38085a9e
+    type: regular
+    task:
+      id: b4d5306d-4e42-4140-812a-45eb38085a9e
+      version: -1
+      name: Get DHCP lease information for MAC indicators
+      description: Enrich a MAC address with DHCP lease information.
+      script: '|||infobloxcloud-mac-enrich'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      mac:
+        complex:
+          root: Collect MAC indicators.Answers
+          accessor: "0"
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: inputs.mac_addresses
+                iscontext: true
+          - operator: splitAndTrim
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: RemoveEmpty
+            args:
+              empty_values: {}
+              remove_keys: {}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 4138ce3f-d270-4a38-8abd-8cd02d2d4c4f
+    type: title
+    task:
+      id: 4138ce3f-d270-4a38-8abd-8cd02d2d4c4f
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 847031df-6870-403a-814f-68a0355ccda0
+    type: collection
+    task:
+      id: 847031df-6870-403a-814f-68a0355ccda0
+      version: -1
+      name: Collect the MAC indicators to enrich
+      description: Collect the MAC indicator values to enrich them using "Infoblox Threat Defense with DDI" integration.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -60,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+        simple: Collect the MAC indicators to enrich with "Infoblox Threat Defense with DDI" integration.
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: 'Specify the MAC indicators to enrich. '
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: The given MAC indicator will be enriched.
+        readonly: false
+      title: Collect MAC indicators
+      description: This task collects the MAC indicator values to enrich them using "Infoblox Threat Defense with DDI" integration.
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "1_10_#default#": 0.38,
+      "1_2_yes": 0.57,
+      "3_8_yes": 0.21
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1125,
+        "width": 602.5,
+        "x": -60,
+        "y": 20
+      }
+    }
+  }
+inputs:
+- key: mac_addresses
+  value: {}
+  required: false
+  description: The comma-separated list of MAC addresses to enrich.
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0
