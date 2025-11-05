@@ -1358,17 +1358,6 @@ Use this command in case your authentication calls fail due to internal call-lim
 
 ```Caching mechanism failure time counters have been successfully reset.```
 
-## Additional Information
-
----
-
-* In the documented CDL v2, You must now specify the customer's instance ID when you identify the log type that you want to query
-against. That is, log types must be fully qualified and the instance ID is a part of the fully qualified name:
-`<instanceID>.firewall.traffic`
-However in this integration the instance ID is added automatically to the query so the name `firewall.traffic` is a valid table name
-* The SQL syntax supported for queries is `csql`
-* The provided authentication items ([configuration step 4](#configure-cortex-data-lake-on-cortex-xsoar)) can only be used once for each Strata Logging Service XSOAR Connector tenant (but can be shared for different Cortex XSOAR instances). Trying to re-generate those items will revoke any previously generated set of authentication items.
-
 ### 10. cdl-query-gp-logs
 
 ***
@@ -2908,3 +2897,14 @@ Searches the firewall.globalprotect log table.
 |AttemptedGateways|AuthMethod|ConnectionErrorID|ConnectionErrorValue|CountOfRepeats|CustomerID|EndpointDeviceName|EndpointGPVersion|EndpointOSType|EndpointOSVersion|EventID|Gateway|GatewayPriority|GatewaySelectionType|HostID|IsDuplicateLog|IsExported|IsForwarded|IsPrismaBranch|IsPrismaMobile|LogSource|LogSourceID|LogSourceName|LogTime|LogType|LoginDuration|Opaque|PlatformType|Portal|PrivateIPv4|PrivateIPv6|ProjectName|PublicIPv4|PublicIPv6|QuarantineReason|SequenceNo|SourceRegion|SourceUser|SourceUserDomain|SourceUserName|SSLResponseTime|Stage|EventStatus|Subtype|TimeGenerated|TunnelType|VendorName|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | gateway1,500,1; | SAML |  |  | 1 | 117270019 | device1 | 328198 | Windows |  | gateway-auth | gateway1 | 1 | automatic | 12341234-1234-1234-1234-123412341234 | false | false | false | false | false | gw | 007251000070976 | gw1 | 2025-03-10T20 | globalprotect | 1000 |  |  | portal1 | 10.0.0.1 |  |  | 206.116.22.23 |  |  | 123 | US | user1 | domain1 | user1 | 500 | login | success | globalprotect | 2025-03-10T20 | IPSec | Palo Alto Networks |
+
+## Additional Information
+
+---
+
+* In the documented CDL v2, You must now specify the customer's instance ID when you identify the log type that you want to query
+against. That is, log types must be fully qualified and the instance ID is a part of the fully qualified name:
+`<instanceID>.firewall.traffic`
+However in this integration the instance ID is added automatically to the query so the name `firewall.traffic` is a valid table name
+* The SQL syntax supported for queries is `csql`
+* The provided authentication items ([configuration step 4](#configure-cortex-data-lake-on-cortex-xsoar)) can only be used once for each Strata Logging Service XSOAR Connector tenant (but can be shared for different Cortex XSOAR instances). Trying to re-generate those items will revoke any previously generated set of authentication items.
