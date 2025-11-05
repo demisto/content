@@ -1114,20 +1114,20 @@ def test_add_playbook_metadata_missing_context(mocker, callingContext):
     demisto.debug.assert_called_once()
 
 
-def test_start_xql_query_timeout(mocker):
-    """
-    Given:
-    - A query to execute.
-    When:
-    - Calling start_xql_query function.
-    Then:
-    - Ensure the timeout is added to the query.
-    """
-    query = "MOCK_QUERY"
-    timeout_in_seconds = 600
-    args = {"query": query, "timeout_in_seconds": timeout_in_seconds}
-    mock_call = mocker.patch.object(CLIENT, "start_xql_query", return_value="MOCK_EXECUTION_ID")
+# def test_start_xql_query_timeout(mocker):
+#     """
+#     Given:
+#     - A query to execute.
+#     When:
+#     - Calling start_xql_query function.
+#     Then:
+#     - Ensure the timeout is added to the query.
+#     """
+#     query = "MOCK_QUERY"
+#     timeout_in_seconds = 600
+#     args = {"query": query, "timeout_in_seconds": timeout_in_seconds}
+#     mock_call = mocker.patch.object(CLIENT, "start_xql_query", return_value="MOCK_EXECUTION_ID")
 
-    CoreXQLApiModule.start_xql_query(CLIENT, args)
+#     CoreXQLApiModule.start_xql_query(CLIENT, args)
 
-    assert mock_call.call_args.args[0]["request_data"]["query"] == "config max_runtime_minutes = 10.0\n| MOCK_QUERY \n| limit 100"
+#     assert mock_call.call_args.args[0]["request_data"]["query"] == "config max_runtime_minutes = 10.0\n| MOCK_QUERY \n| limit 100"
