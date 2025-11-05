@@ -49,7 +49,9 @@ sectionorder:
 script:
   commands:
     - name: cape-file-submit
-      description: Submit a file for analysis to CAPE Sandbox. This command supports PCAP files and automatically sets the pcap option to 1. The command polls the CAPE server until the analysis task is reported as complete, and then returns the task view with the analysis results.
+      description: |
+        Submit a file for analysis to CAPE Sandbox. This command supports PCAP files and automatically sets the pcap option to 1. The command polls the CAPE server until the analysis task is reported as complete, and then returns the task view with the analysis results.
+        Note: Analysis scans may take a long time to complete and could cause a timeout. If a timeout occurs, you can use the !cape-tasks-list task_id=<task_id> command to check the status of your task.
       polling: true
       arguments:
         - name: entry_id
@@ -62,7 +64,7 @@ script:
         - name: priority
           description: The priority level to assign to the task (1-3, where 1 is highest priority).
         - name: options
-          description: A string of additional options to pass to the analysis (e.g., options:function=DllMain). For available options, see the CAPE documentation.
+          description: A string of additional options to pass to the analysis (e.g., options:function=DllMain).  For available options, see the CAPE documentation - https://capev2.readthedocs.io/en/latest/usage/submit.html#options-options-available.
         - name: machine
           description: The specific ID of the analysis machine to use for the task.
         - name: platform
@@ -139,7 +141,9 @@ script:
           description: URL analysis task data associated with the downloaded sample file.
           type: Unknown
     - name: cape-url-submit
-      description: Submit a URL for analysis to CAPE Sandbox. The command polls the CAPE server until the analysis task is reported as complete, and then returns the task view with the analysis results.
+      description: |
+        Submit a URL for analysis to CAPE Sandbox. The command polls the CAPE server until the analysis task is reported as complete, and then returns the task view with the analysis results.
+        Note: Analysis scans may take a long time to complete and could cause a timeout. If a timeout occurs, you can use the !cape-tasks-list task_id=<task_id> command to check the status of your task.
       polling: true
       arguments:
         - name: url

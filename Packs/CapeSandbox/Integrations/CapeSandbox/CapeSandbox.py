@@ -1192,18 +1192,18 @@ def cape_tasks_list_command(client: CapeSandboxClient, args: dict[str, Any]) -> 
 
     DATA_KEYS = [
         "id",
-        "category",
-        "machine",
         "target",
+        "status",
+        "added_on",
+        "completed_on",
+        "category",
+        "timeout",
+        "tags",
+        "machine",
         "package",
         "platform",
         "options",
-        "status",
-        "timeout",
         "memory",
-        "tags",
-        "added_on",
-        "completed_on",
     ]
 
     if task_id:
