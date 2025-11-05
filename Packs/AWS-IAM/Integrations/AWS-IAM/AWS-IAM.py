@@ -1331,7 +1331,7 @@ def main():  # pragma: no cover
             list_attached_group_policies(args, client)
         elif command == "aws-iam-get-user-login-profile":
             get_user_login_profile(args, client)
-        elif (command == "aws-iam-put-role-policy" or command == "aws-iam-suspend-access-for-role-quick-action"):
+        elif command == "aws-iam-put-role-policy" or command == "aws-iam-suspend-access-for-role-quick-action":
             return_results(put_role_policy_command(args, client))
         elif command == "aws-iam-put-user-policy":
             return_results(put_user_policy_command(args, client))
