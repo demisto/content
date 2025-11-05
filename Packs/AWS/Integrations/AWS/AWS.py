@@ -2144,6 +2144,10 @@ class EC2:
             "MaxResults": args.get("limit"),
             "NextToken": args.get("next_token"),
         }
+        # case 1100 images and user assign no limit
+        # case 1100 images and user ask for 5000 limit
+        # case 900 images and user assign no limit
+        # case 900 images and user ask for 5000
 
         remove_nulls_from_dictionary(kwargs)
         pagination_kwargs = build_pagination_kwargs(kwargs)
@@ -2152,8 +2156,9 @@ class EC2:
             AWSErrorHandler.handle_response_error(response, args.get("account_id"))
         amis = response.get("Images", [])
         iterates = 1
+        updated_limit = response.get("MaxResults", MAX_LIMIT_VALUE)
 
-        while response.get("nextToken"):
+        while response.get("nextToken") and updated_limit > 0:
             demisto.info(f"iterate #{iterates}")
             pagination_kwargs["NextToken"] = response.get("nextToken")
             remove_nulls_from_dictionary(pagination_kwargs)
@@ -2162,6 +2167,7 @@ class EC2:
             if response["ResponseMetadata"]["HTTPStatusCode"] not in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
                 AWSErrorHandler.handle_response_error(response, args.get("account_id"))
             amis.extend(response.get("Images", []))
+            updated_limit -= MAX_LIMIT_VALUE
             iterates += 1
 
         demisto.info(f"Fetched {len(amis)} AMIs")
