@@ -33,13 +33,13 @@ configuration:
   section: Connect
   type: 8
   required: false
-- display: Timeout 
+- display: Timeout
   name: timeout
+  defaultvalue: "15"
   type: 0
   required: false
-  defaultvalue: 30
   section: Connect
-  additionalinfo: Connection timeout in seconds (default is 30).
+  additionalinfo: Connection timeout in seconds (default is 15).
 - display: Use system proxy settings
   name: proxy
   type: 8
@@ -134,20 +134,6 @@ script:
       description: Modified at timestamp.
       type: number
     description: Get paginated list of tags.
-  - name: ctix-disable-or-enable-tag
-    arguments:
-    - name: tag_name
-      required: true
-      description: Name of the tag.
-    - name: action
-      required: true
-      description: Choose to Enable or Disable the tag.
-    outputs:
-    - contextPath: CTIX.TagAction.result
-      description: Status.
-      type: string
-    description: Disable or Enables a tag with given tag_name.
-    execution: true
   - name: ctix-allowed-iocs
     arguments:
     - name: type
@@ -594,6 +580,12 @@ script:
       defaultValue: "10"
     - name: label_name
       description: label name.
+    - name: version
+      auto: PREDEFINED
+      predefined:
+      - v2
+      - v3
+      description: Saved Result Set Version
     outputs:
     - contextPath: CTIX.SavedResultSet.analyst_score
       description: Analyst score of the IOC.
@@ -1876,6 +1868,26 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score.
       type: Number
+  - name: ctix-disable-or-enable-tags
+    arguments:
+    - name: tag_id
+      required: true
+      description: ID of the tag.
+      type: textArea
+    - name: action
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - disabled
+      - enabled
+      description: Choose to Enable or Disable the tag.
+      defaultValue: enabled
+      type: textArea
+    outputs:
+    - contextPath: CTIX.TagAction.result
+      description: Status
+      type: unknown
+    description: Disable or Enables a tag with given tag_name.
   dockerimage: demisto/python3:3.12.11.4284848
   subtype: python3
 tests:
