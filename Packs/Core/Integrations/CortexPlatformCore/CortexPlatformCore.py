@@ -352,6 +352,14 @@ class Client(CoreClient):
             url_suffix="/get_data",
             json_data=request_data,
         )
+        
+    def enable_scanners(self, payload: dict) -> dict:
+        return self._http_request(
+            method="PUT",
+            url_suffix="/cas/v1/repositories/scan-configuration",
+            json_data=payload,
+            headers={"Content-Type": "application/json"}
+        )
 
     def get_playbook_suggestion_by_issue(self, issue_id):
         """
@@ -709,49 +717,99 @@ def search_assets_command(client: Client, args):
         raw_response=raw_response,
     )
 
-def enable_scanners_command(client: Client, args: dict):
+def build_scanner_config_payload(args: dict) -> dict:
     """
-    Enable or disable scanners for specified repositories.
-
+    Build a scanner configuration payload for repository scanning.
+    
     Args:
-        client (Client): The client instance used to send the request.
-        args (dict): Dictionary containing the arguments for the command.
-                     Expected to include:
-                     - repository_ids (list): List of repository IDs to update
-                     - scanners (dict): Configuration for different scanners
-                     - pr_scanning (dict, optional): Pull request scanning configuration
-                     - tagging_bot (dict, optional): Tagging bot configuration
-                     - excluded_paths (list, optional): Paths to exclude from scanning
-
+        args (dict): Dictionary containing configuration arguments.
+                    Expected to include:
+                        - repository_ids (list): List of repository IDs to configure scanning for.
+                        - enabled_scanners (list): List of scanners to enable.
+                        - disable_scanners (list): List of scanners to disable.
+                        - pr_scanning (bool): Whether to enable PR scanning.
+                        - block_on_error (bool): Whether to block on scanning errors.
+                        - tag_resource_blocks (bool): Whether to tag resource blocks.
+                        - tag_module_blocks (bool): Whether to tag module blocks.
+                        - exclude_paths (list): List of paths to exclude from scanning.
+    
     Returns:
-        CommandResults: Object containing the result of the scanner configuration update.
+        dict: Scanner configuration payload containing repository IDs and scan configuration.
+        
+    Raises:
+        ValueError: If the same scanner is specified in both enabled and disabled lists.
     """
-    # Validate required arguments
     repository_ids = argToList(args.get('repository_ids'))
+    enabled_scanners = argToList(args.get('enabled_scanners', []))
+    disabled_scanners = argToList(args.get('disable_scanners', []))
+    enable_pr_scanning = arg_to_bool_or_none(args.get("pr_scanning"))
+    block_on_error = arg_to_bool_or_none(args.get("block_on_error"))
+    tag_resource_blocks = arg_to_bool_or_none(args.get("tag_resource_blocks"))
+    tag_module_blocks = arg_to_bool_or_none(args.get("tag_module_blocks"))
+    exclude_paths = argToList(args.get('exclude_paths', []))
 
-    # Construct scan configuration payload
-    scan_configuration = {
-        "scanners": args.get('scanners', {}),
-        "prScanning": args.get('pr_scanning', {"isEnabled": False, "blockOnError": False}),
-        "taggingBot": args.get('tagging_bot', {"tagResourceBlocks": False, "tagModuleBlocks": False}),
-        "excludedPaths": argToList(args.get('excluded_paths', []))
-    }
+    overlap = set(enabled_scanners) & set(disabled_scanners)
+    if overlap:
+        raise ValueError(f"Cannot enable and disable the same scanner(s) simultaneously: {', '.join(overlap)}")
+    
+    # Build scanners configuration
+    scanners = {}
+    for scanner in enabled_scanners:
+        scanners[scanner.upper()] = {"isEnabled": True}
+    for scanner in disabled_scanners:
+        scanners[scanner.upper()] = {"isEnabled": False}
 
-    payload = {
+    # Build scan configuration payload with only relevant arguments
+    scan_configuration = {}
+    
+    if scanners:
+        scan_configuration["scanners"] = scanners
+    
+    if args.get("pr_scanning") is not None:
+        scan_configuration["prScanning"] = {
+            "isEnabled": enable_pr_scanning,
+            **({"blockOnError": block_on_error} if block_on_error is not None else {})
+        }
+    
+    if args.get("tag_resource_blocks") is not None or args.get("tag_module_blocks") is not None:
+        scan_configuration["taggingBot"] = {
+            **({"tagResourceBlocks": tag_resource_blocks} if tag_resource_blocks is not None else {}),
+            **({"tagModuleBlocks": tag_module_blocks} if tag_module_blocks is not None else {})
+        }
+    
+    if exclude_paths:
+        scan_configuration["excludedPaths"] = exclude_paths
+
+    scanner_configuration_payload = {
         "repositoryIds": repository_ids,
         "scanConfiguration": scan_configuration
     }
+    
+    demisto.debug(f"{scanner_configuration_payload=}")
+    
+    return scanner_configuration_payload
+    
+def enable_scanners_command(client: Client, args: dict):
+    """
+    Updates repository scan configuration by enabling/disabling scanners and setting scan options.
+
+    Args:
+        client (Client): The client instance used to send the request.
+        args (dict): Dictionary containing configuration arguments including repository_ids,
+                    enabled_scanners, disabled_scanners, and other scan settings.
+
+    Returns:
+        CommandResults: Command results with readable output showing update status and raw response.
+    """
+    repository_ids = argToList(args.get('repository_ids'))
+    payload = build_scanner_config_payload(args)
+
+    # repository_ids = ["68fe4d0b29f7e707bb504ec5"] # Assuming this is the desired ID
 
     # Send request to update repository scan configuration
-    try:
-        response = client._http_request(
-            method="PUT",
-            url_suffix="/cas/v1/repositories/scan-configuration",
-            json_data=payload,
-            headers={"Content-Type": "application/json"}
-        )
-
-        readable_output = tableToMarkdown(
+    response = client.enable_scanners(payload)
+    
+    readable_output = tableToMarkdown(
             "Repository Scan Configuration Update",
             [{
                 "Repository IDs": ", ".join(repository_ids),
@@ -759,18 +817,10 @@ def enable_scanners_command(client: Client, args: dict):
             }]
         )
 
-        return CommandResults(
+    return CommandResults(
             readable_output=readable_output,
-            outputs_prefix="Core.RepositoryScanConfig",
-            outputs={
-                "repositoryIds": repository_ids,
-                "scanConfiguration": scan_configuration
-            },
             raw_response=response
         )
-
-    except Exception as e:
-        raise DemistoException(f"Failed to update repository scan configuration: {str(e)}")
     
 def get_asset_group_ids_from_names(client: Client, group_names: list[str]) -> list[str]:
     """
@@ -881,6 +931,7 @@ def main():  # pragma: no cover
         elif command == "core-get-issue-recommendations":
             return_results(get_issue_recommendations_command(client, args))
         elif command == "core-enable-scanners":
+            client._base_url = "/api"
             return_results(enable_scanners_command(client, args))
 
     except Exception as err:

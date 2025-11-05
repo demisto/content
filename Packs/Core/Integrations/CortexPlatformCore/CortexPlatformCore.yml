@@ -1355,6 +1355,35 @@ script:
         - contextPath: Core.IssueRecommendations.playbook_suggestions.suggestion_rule_id
           description: The ID of the suggestion rule that generated this recommendation.
           type: String
+    - arguments:
+        - description: List of repository IDs to configure scanners for
+          name: repository_ids
+          isArray: true
+          required: true
+        - description: List of scanners to enable
+          name: enabled_scanners
+          isArray: true
+        - description: List of scanners to disable
+          name: disabled_scanners
+          isArray: true
+        - description: Enable scanning on pull requests
+          type: boolean
+          name: pr_scanning
+        - description: Block deployment on scanner errors
+          name: block_on_error
+          type: boolean
+        - description: Enable tagging of resource blocks
+          name: tag_resource_blocks
+          type: boolean
+        - description: Enable tagging of module blocks
+          name: tag_module_blocks
+          type: boolean
+        - description: List of file paths to exclude from scanning
+          name: exclude_paths
+          isArray: true
+      name: core-enable-scanners
+      description: Enable scanners with the specified configuration.
+          
   runonce: false
   script: "-"
   subtype: python3
