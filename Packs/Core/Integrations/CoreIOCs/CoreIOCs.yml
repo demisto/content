@@ -116,3 +116,4 @@ supportedModules:
 - cloud
 - cloud_posture
 - cloud_runtime_security
+- edr
