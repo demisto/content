@@ -1484,7 +1484,7 @@ def main():  # pragma: no cover
                 common_fields=common_fields,
                 limit=limit,
             )
-            demisto.debug(f"fetch-indicators length indicators: {len(indicators)}")
+            demisto.debug(f"[fetch-indicators] Indicators created this run: count={len(indicators)}")
 
             set_integration_context(next_run)
             demisto.debug(f"[main] Updated integration context: {next_run}")

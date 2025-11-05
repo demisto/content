@@ -2423,7 +2423,7 @@ def main():
                 unique=unique,
                 enable_probable_corporate_access=enable_probable_corporate_access,
             )
-            demisto.debug(f"len incidents: {len(incidents)}")
+            demisto.debug(f"[fetch-incidents] Incidents created this run: count={len(incidents)}")
             demisto.debug(f"next_run: {next_run}, last_run: {last_run}")
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
