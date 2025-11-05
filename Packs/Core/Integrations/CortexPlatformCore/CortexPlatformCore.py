@@ -825,7 +825,7 @@ def get_asset_coverage_histogram_command(client: Client, args: dict):
     """
     columns = argToList(args.get("columns"))
     if not columns:
-        raise ValueError("Please provide column value to create the histogram")
+        raise ValueError("Please provide column value to create the histogram.")
     request_data = build_histogram_request_data(
         table_name=ASSET_COVERAGE_TABLE,
         filter_dict=build_asset_coverage_filter(args).to_dict(),

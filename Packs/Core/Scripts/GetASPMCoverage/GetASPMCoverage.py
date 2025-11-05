@@ -18,7 +18,7 @@ def main():
     try:
         args = demisto.args()
         get_asset_coverage = get_command_results("core-get-asset-coverage", args)
-        args["column"] =
+        args["columns"] = [""]
         return_results()
     except Exception as e:
         return_error(f"Failed to execute script.\nError:\n{e!s}")
