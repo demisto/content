@@ -2141,33 +2141,26 @@ class EC2:
             "ImageIds": parse_resource_ids(args.get("image_ids")) if args.get("image_ids") else None,
             "IncludeDeprecated": arg_to_bool_or_none(args.get("include_deprecated")),
             "IncludeDisabled": arg_to_bool_or_none(args.get("include_disabled")),
-            "MaxResults": args.get("limit"),
-            "NextToken": args.get("next_token"),
         }
-        # case 1100 images and user assign no limit
-        # case 1100 images and user ask for 5000 limit
-        # case 900 images and user assign no limit
-        # case 900 images and user ask for 5000
 
+        limit = args.get("limit", float('inf'))
         remove_nulls_from_dictionary(kwargs)
         pagination_kwargs = build_pagination_kwargs(kwargs)
+        pagination_kwargs.update(kwargs)
         response = client.describe_images(**pagination_kwargs)
         if response["ResponseMetadata"]["HTTPStatusCode"] not in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
             AWSErrorHandler.handle_response_error(response, args.get("account_id"))
         amis = response.get("Images", [])
         iterates = 1
-        updated_limit = response.get("MaxResults", MAX_LIMIT_VALUE)
 
-        while response.get("nextToken") and updated_limit > 0:
+        while response.get("nextToken") and limit > len(amis):
             demisto.info(f"iterate #{iterates}")
             pagination_kwargs["NextToken"] = response.get("nextToken")
             remove_nulls_from_dictionary(pagination_kwargs)
-            pagination_kwargs = build_pagination_kwargs(pagination_kwargs)
             response = client.describe_images(**pagination_kwargs)
             if response["ResponseMetadata"]["HTTPStatusCode"] not in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
                 AWSErrorHandler.handle_response_error(response, args.get("account_id"))
             amis.extend(response.get("Images", []))
-            updated_limit -= MAX_LIMIT_VALUE
             iterates += 1
 
         demisto.info(f"Fetched {len(amis)} AMIs")
@@ -2188,11 +2181,11 @@ class EC2:
         data.update({tag["Key"]: tag["Value"] for tag in image["Tags"]}) if "Tags" in image else None
         remove_nulls_from_dictionary(data)
 
-        try:
-            raw = json.loads(json.dumps(image, cls=DatetimeEncoder))
-            raw.update({"Region": args.get("region")})
-        except ValueError as err_msg:
-            raise DemistoException(f"Could not decode/encode the raw response - {err_msg}")
+        # try:
+        #     raw = json.loads(json.dumps(image, cls=DatetimeEncoder))
+        #     raw.update({"Region": args.get("region")})
+        # except ValueError as err_msg:
+        #     raise DemistoException(f"Could not decode/encode the raw response - {err_msg}")
 
         return CommandResults(
             outputs=image,
@@ -2281,13 +2274,13 @@ class EC2:
         kwargs = {
             "IpamResourceDiscoveryId": args.get("ipam_resource_discovery_id"),
             "AddressRegion": args.get("address_region"),
-            "MaxResults": args.get("limit"),
             "Filters": parse_filter_field(args.get("filters")),
-            "NextToken": args.get("next_token"),
         }
 
         remove_nulls_from_dictionary(kwargs)
-        response = client.get_ipam_discovered_public_addresses(**kwargs)
+        pagination_kwargs = build_pagination_kwargs(kwargs)
+        pagination_kwargs.update(kwargs)
+        response = client.get_ipam_discovered_public_addresses(**pagination_kwargs)
         if response["ResponseMetadata"]["HTTPStatusCode"] not in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
             AWSErrorHandler.handle_response_error(response, args.get("account_id"))
         if not response.get("IpamDiscoveredPublicAddresses"):
