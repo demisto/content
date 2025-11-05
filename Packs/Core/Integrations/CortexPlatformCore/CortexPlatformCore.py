@@ -834,7 +834,7 @@ def core_create_policy_command(client: Client, args: dict) -> CommandResults:
         "assetGroupIds": asset_group_ids,
         "triggers": triggers,
     }
-
+    demisto.debug(f"{payload=}")
     response = client.create_policy(payload)
 
     readable_output = tableToMarkdown(
