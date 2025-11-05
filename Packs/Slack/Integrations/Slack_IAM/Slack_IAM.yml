@@ -1,5 +1,5 @@
 category: Identity and Access Management
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -370,3 +370,16 @@ script:
 tests:
 - No tests
 fromversion: 6.0.0
+supportedModules:
+- xsiam
+- agentix
+- edr
+- cloud
+- cloud_runtime_security
+- C1
+- C3
+- X0
+- X1
+- X3
+- X5
+- ENT_PLUS

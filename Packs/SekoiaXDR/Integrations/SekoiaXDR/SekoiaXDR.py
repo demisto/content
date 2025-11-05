@@ -245,13 +245,13 @@ class Client(BaseClient):
     def get_kill_chain(self, kill_chain_uuid: str) -> dict[str, Any]:
         return self._http_request(method="GET", url_suffix=f"/v1/sic/kill-chains/{kill_chain_uuid}")
 
-    def http_request(self, method: str, url_suffix: str, params: dict, data: dict) -> dict[str, Any]:
+    def http_request(self, method: str, url_suffix: str, params: dict, data: dict | None) -> dict[str, Any]:
         if not params:
             params = {}
 
         if data and method in ["POST", "PUT", "PATCH"]:
             # If data is provided, we use json_data to send it as JSON
-            return self._http_request(method=method, url_suffix=url_suffix, params=params, json_data=data)
+            return self._http_request(method=method, url_suffix=url_suffix, params=params, data=data)
 
         return self._http_request(method=method, url_suffix=url_suffix, params=params)
 
@@ -1397,8 +1397,16 @@ def http_request_command(client: Client, args: dict[str, Any]) -> CommandResults
         args["method"],
         args["url_sufix"],
         args.get("parameters", {}),
-        args.get("data", {}),
+        args.get("data", ""),
     )
+
+    if data:
+        try:
+            data = json.loads(data)
+        except json.JSONDecodeError as e:
+            raise DemistoException(f"Data argument is not a valid JSON: {e}")
+    else:
+        data = None
 
     request = client.http_request(method=method, params=params, url_suffix=url_suffix, data=data)
     readable_output = tableToMarkdown(
@@ -1426,7 +1434,7 @@ def test_module(client: Client) -> str:
     Returns:
         str: 'ok' if test passed, anything else will raise an exception and will fail the test.
     """
-    # Check a JWT token’s validity
+    # Check a JWT token's validity
     # https://docs.sekoia.io/develop/rest_api/identity_and_authentication/#tag/User-Authentication/operation/get_validate_resource
 
     try:
@@ -1473,7 +1481,10 @@ def main() -> None:
 
     demisto.debug(f"Command being called is {command}")
     try:
-        headers = {"Authorization": f"Bearer {api_key}"}
+        headers = {
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": "application/json",
+        }
         client = Client(base_url=base_url, verify=verify_certificate, headers=headers, proxy=proxy)
 
         if command == "test-module":
