@@ -40,7 +40,7 @@ type: python
 compliantpolicies:
   - User Soft Remediation
 subtype: python3
-dockerimage: demisto/python3:3.12.11.4417419
+dockerimage: demisto/python3:3.12.12.5490952
 fromversion: 6.10.0
 tests:
 - ClearUserSession - Test
