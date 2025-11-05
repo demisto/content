@@ -374,7 +374,7 @@ class Client(CoreClient):
     def appsec_remediate_issue(self, request_body):
         reply = self._http_request(
             method="POST",
-            headers=request_body,
+            json_data=request_body,
             url_suffix="/trigger_fix_pull_request"
         )
         return reply
