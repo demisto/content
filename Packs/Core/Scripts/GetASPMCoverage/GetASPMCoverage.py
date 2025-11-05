@@ -3,6 +3,7 @@ from typing import Any, Union
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
+
 scanner_columns = [
     "is_scanned_by_vulnerabilities",
     "is_scanned_by_code_weakness",
@@ -25,15 +26,13 @@ def get_command_results(command: str, args: dict[str, Any]) -> Union[dict[str, A
         return {}
 
 
-def calculate_coverage_percentage(asset_coverage_histograms):
-
-
-
 def transform_scanner_histograms_outputs(asset_coverage_histograms):
     def get_count(data, value):
         return next((item['count'] for item in data if item['value'] == value), 0)
 
     output = {}
+    total_enabled = 0
+    total = 0
     for column in scanner_columns:
         data = asset_coverage_histograms.get(column, [])
         enabled_count = get_count(data, "ENABLED")
@@ -43,8 +42,10 @@ def transform_scanner_histograms_outputs(asset_coverage_histograms):
             "disabled": disabled_count,
             "coverage_percentage": enabled_count / (enabled_count + disabled_count)
         }
+        total_enabled += enabled_count
+        total += enabled_count + disabled_count
 
-    return output
+    return output, total_enabled / total
 
 
 def transform_status_coverage_histogram_output(data):
@@ -71,30 +72,23 @@ def main():
         args = demisto.args()
         asset_coverage = get_command_results("core-get-asset-coverage", args)
         assets = asset_coverage.get("DATA", [])
-        print(asset_coverage)
-        demisto.debug(asset_coverage)
-
         args["columns"] = ", ".join(scanner_columns + ["status_coverage"])
         asset_coverage_histograms = get_command_results("core-get-asset-coverage-histogram", args)
-        print(asset_coverage_histograms)
-        demisto.debug(asset_coverage_histograms)
-        scanner_histograms_outputs = transform_scanner_histograms_outputs(asset_coverage_histograms)
-        status_coverage_histogram_output = transform_status_coverage_histogram_output(data)
+        scanner_histograms_outputs , coverage_percentage = transform_scanner_histograms_outputs(asset_coverage_histograms)
+        status_coverage_histogram_output = transform_status_coverage_histogram_output(asset_coverage_histograms)
         outputs = {
             "total_filtered_assets": asset_coverage.get("FILTER_COUNT"),
             "number_returned_assets": len(assets),
-            "coverage_percentage": calculate_coverage_percentage(asset_coverage_histograms),
+            "coverage_percentage": coverage_percentage,
             "Histogram": scanner_histograms_outputs | status_coverage_histogram_output,
             "Asset": assets
         }
-
-        human_readable = ""
 
         return_results(
             CommandResults(
                 outputs=outputs,
                 outputs_prefix="Core.Coverage",
-                readable_output=human_readable,
+                readable_output=outputs,
                 raw_response=outputs,
             )
         )
