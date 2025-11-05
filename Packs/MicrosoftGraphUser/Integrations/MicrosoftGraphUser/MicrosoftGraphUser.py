@@ -196,9 +196,10 @@ class MsGraphClient:
             method="POST",
             url_suffix=f"users/{quote(user)}/authentication/methods/{password_method_id}/resetPassword",
             ok_codes=(202,),
-            empty_valid_codes=(202,),
+            empty_valid_codes=[202],
             json_data={"newPassword": password},
             return_empty_response=True,
+            resp_type="response",  # the response is empty, this ensures the http_request function will not try to parse it
         )
 
     def get_delta(self, properties):
