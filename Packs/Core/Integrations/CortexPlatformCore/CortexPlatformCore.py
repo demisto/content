@@ -31,6 +31,7 @@ DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
 
 VULNERABLE_ISSUES_TABLE = "VULNERABLE_ISSUES_TABLE"
 ASSET_GROUPS_TABLE = "UNIFIED_ASSET_MANAGEMENT_ASSET_GROUPS"
+APPSEC_RULES_TABLE = "CAS_DETECTION_RULES"
 
 ASSET_GROUP_FIELDS = {
     "asset_group_name": "XDM__ASSET_GROUP__NAME",
@@ -779,259 +780,70 @@ def get_asset_group_ids_from_names(client: Client, group_names: list[str]) -> li
     return group_ids
 
 
-def create_policy_command(client: Client, args: dict) -> CommandResults:
+def get_appsec_rule_ids_from_names(client: Client, rule_names: list[str]) -> list[str]:
+    """Fetch AppSec rule IDs by rule names (exact first, then partial)."""
+    if not rule_names:
+        return []
+
+    fb = FilterBuilder().add_field("ruleName", FilterType.CONTAINS, rule_names)
+    data = client.get_webapp_data(
+        build_webapp_request_data(APPSEC_RULES_TABLE, fb.to_dict(), limit=200, sort_field="ruleName")
+    ).get("reply", {}).get("DATA", []) or []
+
+    lookup = {r["ruleName"].lower(): r["id"] for r in data if r.get("id")}
+    ids, found = [], set()
+
+    for name in rule_names:
+        n = name.lower()
+        rid = lookup.get(n) or next((v for k, v in lookup.items() if n in k), None)
+        if rid:
+            ids.append(rid)
+            found.add(name)
+
+    missing = set(rule_names) - found
+    if missing:
+        raise DemistoException(f"Missing AppSec rules: {', '.join(missing)}")
+
+    return ids
+
+
+def core_create_policy_command(client: Client, args: dict) -> CommandResults:
     """
-    Creates a new policy in Cortex XDR AppSec.
-    
-    This command allows for defining policy name, description, conditions for findings,
-    scope for assets, asset group IDs, and various triggers for policy evaluation.
-    
-    Args:
-        client (Client): The client instance used to send the request.
-        args (dict): Dictionary containing the arguments for the command.
-                     Expected to include:
-                         - name (str, required): A unique name for the policy.
-                         - description (str, optional): A brief explanation of the policy's objective.
-                         - asset_group_ids (str, optional): Comma-separated list of Asset Group IDs.
-                         - conditions_finding_type (str, optional): Filter by finding types (e.g., cve, iac, secret).
-                         - conditions_severity (str, optional): Filter by severity (e.g., critical, high).
-                         - conditions_developer_suppression (bool, optional): Respect or ignore developer-suppressed findings.
-                         - conditions_backlog_status (str, optional): Filter by backlog status of the finding.
-                         - conditions_package_name (str, optional): Name of the software package.
-                         - conditions_package_version (str, optional): Version of the software package.
-                         - conditions_package_operational_risk (str, optional): Operational risk level of the package.
-                         - conditions_appsec_rule (str, optional): The AppSec rule violated.
-                         - conditions_cvss (int, optional): CVSS base score for vulnerability findings.
-                         - conditions_epss (int, optional): Exploit Prediction Scoring System score.
-                         - conditions_has_a_fix (bool, optional): Whether a remediation fix exists.
-                         - conditions_is_kev (bool, optional): Whether the finding is a Known Exploited Vulnerability.
-                         - conditions_secret_validity (str, optional): Validity status of an exposed secret.
-                         - conditions_category (str, optional): Category of the asset where the finding exists.
-                         - scope_category (str, optional): Filter by asset category (e.g., application, repository).
-                         - scope_business_application_names (str, optional): Name(s) of business applications.
-                         - scope_application_business_criticality (str, optional): Criticality of the business application.
-                         - scope_repository_name (str, optional): Name of the code repository.
-                         - scope_is_public_repository (bool, optional): Whether the repository is public.
-                         - scope_has_deployed_assets (bool, optional): Filter for assets that are deployed.
-                         - scope_has_internet_exposed (bool, optional): Filter for assets exposed to the internet.
-                         - scope_has_sensitive_data_access (bool, optional): Assets with access to sensitive data.
-                         - scope_has_privileged_capabilities (bool, optional): Assets with privileged capabilities.
-                         - triggers_* (various): Parameters for configuring policy triggers.
-    
-    Returns:
-        CommandResults: Object containing the formatted policy creation result,
-                        raw response, and outputs for integration context.
+    Creates a new policy in Cortex Platform with defined conditions, scope, and triggers.
     """
-    name = args.get("name")
-    if not name:
+    policy_name = args.get("policy_name")
+    if not policy_name:
         raise DemistoException("Policy name is required.")
-    
+
     description = args.get("description", "")
-    asset_group_ids = argToList(args.get("asset_group_ids", ""))
-    
-    # Build conditions using FilterBuilder
-    condition_filter_builder = FilterBuilder()
-    
-    # Add Finding Type condition with mapping
-    finding_types = argToList(args.get("conditions_finding_type", []))
-    if finding_types:
-        condition_filter_builder.add_field("Finding Type", FilterType.EQ, finding_types, POLICY_FINDING_TYPE_MAPPING)
-    
-    # Add Severity condition with mapping
-    severities = argToList(args.get("conditions_severity", []))
-    if severities:
-        condition_filter_builder.add_field("Severity", FilterType.EQ, severities)
-    
-    # Add Developer Suppression condition
-    developer_suppression = arg_to_bool_or_none(args.get("conditions_developer_suppression"))
-    if developer_suppression is not None:
-        condition_filter_builder.add_field("Respect Developer Suppression", FilterType.EQ, developer_suppression)
-    
-    # Add Backlog Status condition
-    backlog_status = args.get("conditions_backlog_status")
-    if backlog_status:
-        condition_filter_builder.add_field("Backlog Status", FilterType.EQ, backlog_status)
-    
-    # Add Package Name condition
-    package_name = args.get("conditions_package_name")
-    if package_name:
-        condition_filter_builder.add_field("Package Name", FilterType.CONTAINS, package_name)
-    
-    # Add Package Version condition
-    package_version = args.get("conditions_package_version")
-    if package_version:
-        condition_filter_builder.add_field("Package Version", FilterType.EQ, package_version)
-    
-    # Add Package Operational Risk condition
-    package_operational_risk = args.get("conditions_package_operational_risk")
-    if package_operational_risk:
-        condition_filter_builder.add_field("Package Operational Risk", FilterType.EQ, package_operational_risk)
-    
-    # Add AppSec Rule condition
-    appsec_rule = args.get("conditions_appsec_rule")
-    if appsec_rule:
-        condition_filter_builder.add_field("AppSec Rule", FilterType.EQ, appsec_rule)
-    
-    # Add CVSS Score condition
-    cvss_score = arg_to_number(args.get("conditions_cvss"))
-    if cvss_score is not None:
-        condition_filter_builder.add_field("CVSS", FilterType.EQ, cvss_score)
-    
-    # Add EPSS Score condition
-    epss_score = arg_to_number(args.get("conditions_epss"))
-    if epss_score is not None:
-        condition_filter_builder.add_field("EPSS", FilterType.EQ, epss_score)
-    
-    # Add Has A Fix condition
-    has_a_fix = arg_to_bool_or_none(args.get("conditions_has_a_fix"))
-    if has_a_fix is not None:
-        condition_filter_builder.add_field("HasAFix", FilterType.EQ, has_a_fix)
-    
-    # Add Is KEV condition
-    is_kev = arg_to_bool_or_none(args.get("conditions_is_kev"))
-    if is_kev is not None:
-        condition_filter_builder.add_field("IsKev", FilterType.EQ, is_kev)
-    
-    # Add Secret Validity condition
-    secret_validity = args.get("conditions_secret_validity")
-    if secret_validity:
-        condition_filter_builder.add_field("SecretValidity", FilterType.EQ, secret_validity)
-    
-    # Add Category condition
-    category = args.get("conditions_category")
-    if category:
-        condition_filter_builder.add_field("Category", FilterType.EQ, category)
-    
-    conditions = condition_filter_builder.to_dict()
-    
-    # Build scope using FilterBuilder
-    scope_filter_builder = FilterBuilder()
-    
-    # Add Category condition with mapping
-    categories = argToList(args.get("scope_category", []))
-    if categories:
-        scope_filter_builder.add_field("Category", FilterType.EQ, categories, POLICY_CATEGORY_MAPPING)
-    
-    # Add Business Application Names condition
-    business_app_names = args.get("scope_business_application_names")
-    if business_app_names:
-        scope_filter_builder.add_field("Business Application Names", FilterType.CONTAINS, business_app_names)
-    
-    # Add Business Criticality condition
-    business_criticality = args.get("scope_application_business_criticality")
-    if business_criticality:
-        scope_filter_builder.add_field("Application Business Criticality", FilterType.EQ, business_criticality)
-    
-    # Add Repository Name condition
-    repository_name = args.get("scope_repository_name")
-    if repository_name:
-        scope_filter_builder.add_field("Repository Name", FilterType.CONTAINS, repository_name)
-    
-    # Add Is Public Repository condition
-    is_public_repository = arg_to_bool_or_none(args.get("scope_is_public_repository"))
-    if is_public_repository is not None:
-        scope_filter_builder.add_field("Is Public Repository", FilterType.EQ, is_public_repository)
-    
-    # Add Has Deployed Assets condition
-    has_deployed_assets = arg_to_bool_or_none(args.get("scope_has_deployed_assets"))
-    if has_deployed_assets is not None:
-        scope_filter_builder.add_field("Has Deployed Assets", FilterType.EQ, has_deployed_assets)
-    
-    # Add Has Internet-exposed deployed assets condition
-    has_internet_exposed = arg_to_bool_or_none(args.get("scope_has_internet_exposed"))
-    if has_internet_exposed is not None:
-        scope_filter_builder.add_field("Has Internet-exposed deployed assets", FilterType.EQ, has_internet_exposed)
-    
-    # Add Has Sensitive Data Access condition
-    has_sensitive_data_access = arg_to_bool_or_none(args.get("scope_has_sensitive_data_access"))
-    if has_sensitive_data_access is not None:
-        scope_filter_builder.add_field(
-            "Has deployed assets with Access to sensitive data", FilterType.EQ, has_sensitive_data_access
-        )
-    
-    # Add Has Privileged Capabilities condition
-    has_privileged_capabilities = arg_to_bool_or_none(args.get("scope_has_privileged_capabilities"))
-    if has_privileged_capabilities is not None:
-        scope_filter_builder.add_field(
-            "Has deployed assets with privileged capabilities", FilterType.EQ, has_privileged_capabilities
-        )
-    
-    scope = scope_filter_builder.to_dict()
-    
-    # Build triggers
-    triggers = {}
-    
-    # Periodic Trigger
-    periodic_enabled = argToBoolean(args.get("triggers_periodic_enabled"))
-    if periodic_enabled is not None:
-        periodic_actions = {}
-        if argToBoolean(args.get("triggers_periodic_report_issue")):
-            periodic_actions["reportIssue"] = True
-        periodic_override_severity = args.get("triggers_periodic_override_severity")
-        triggers["periodic"] = {
-            "isEnabled": periodic_enabled,
-            "actions": periodic_actions,
-        }
-        if periodic_override_severity:
-            triggers["periodic"]["overrideIssueSeverity"] = periodic_override_severity
-    
-    # PR Trigger
-    pr_enabled = argToBoolean(args.get("triggers_pr_enabled"))
-    if pr_enabled is not None:
-        pr_actions = {}
-        if argToBoolean(args.get("triggers_pr_report_issue")):
-            pr_actions["reportIssue"] = True
-        if argToBoolean(args.get("triggers_pr_block_pr")):
-            pr_actions["blockPr"] = True
-        if argToBoolean(args.get("triggers_pr_report_pr_comment")):
-            pr_actions["reportPrComment"] = True
-        pr_override_severity = args.get("triggers_pr_override_severity")
-        triggers["pr"] = {
-            "isEnabled": pr_enabled,
-            "actions": pr_actions,
-        }
-        if pr_override_severity:
-            triggers["pr"]["overrideIssueSeverity"] = pr_override_severity
-    
-    # CI/CD Trigger
-    cicd_enabled = argToBoolean(args.get("triggers_cicd_enabled"))
-    if cicd_enabled is not None:
-        cicd_actions = {}
-        if argToBoolean(args.get("triggers_cicd_report_issue")):
-            cicd_actions["reportIssue"] = True
-        if argToBoolean(args.get("triggers_cicd_block_cicd")):
-            cicd_actions["blockCicd"] = True
-        if argToBoolean(args.get("triggers_cicd_report_cicd")):
-            cicd_actions["reportCicd"] = True
-        cicd_override_severity = args.get("triggers_cicd_override_severity")
-        triggers["cicd"] = {
-            "isEnabled": cicd_enabled,
-            "actions": cicd_actions,
-        }
-        if cicd_override_severity:
-            triggers["cicd"]["overrideIssueSeverity"] = cicd_override_severity
-    
-    # Assemble the policy payload
-    policy_payload = {
-        "name": name,
+    asset_group_ids = core_create_policy_get_asset_groups(client, args)
+
+    conditions = core_create_policy_build_conditions(client, args)
+    scope = core_create_policy_build_scope(args)
+    triggers = core_create_policy_build_triggers(args)
+
+    # Ensure at least one trigger is enabled
+    if not any(trigger.get("isEnabled") for trigger in triggers.values()):
+        raise DemistoException("At least one trigger (periodic, PR, or CI/CD) must be enabled for the policy.")
+
+    payload = {
+        "name": policy_name,
         "description": description,
         "conditions": conditions,
         "scope": scope,
         "assetGroupIds": asset_group_ids,
         "triggers": triggers,
     }
-    
-    # Create the policy
-    response = client.create_policy(policy_payload)
-    
-    # Format the response
+
+    response = client.create_policy(payload)
+
     readable_output = tableToMarkdown(
         "Cortex XDR Policy Created",
         response,
         headers=["id", "name", "description", "createdAt"],
         headerTransform=string_to_table_header,
     )
-    
+
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Policy",
@@ -1039,6 +851,146 @@ def create_policy_command(client: Client, args: dict) -> CommandResults:
         outputs=response,
         raw_response=response,
     )
+
+
+# -------- Helper Builders -------- #
+
+def core_create_policy_get_asset_groups(client, args):
+    names = argToList(args.get("asset_group_names"))
+    return get_asset_group_ids_from_names(client, names) if names else []
+
+
+def core_create_policy_build_conditions(client, args):
+    builder = FilterBuilder()
+
+    # Finding Type
+    finding_types = argToList(args.get("conditions_finding_type"))
+    if finding_types:
+        builder.add_field("Finding Type", FilterType.EQ, finding_types, POLICY_FINDING_TYPE_MAPPING)
+
+    # Severity
+    severities = argToList(args.get("conditions_severity"))
+    if severities:
+        builder.add_field("Severity", FilterType.EQ, severities)
+
+    # Developer Suppression
+    dev_supp = arg_to_bool_or_none(args.get("conditions_developer_suppression"))
+    if dev_supp is not None:
+        builder.add_field("Respect Developer Suppression", FilterType.EQ, dev_supp)
+
+    # Backlog
+    backlog = args.get("conditions_backlog_status")
+    if backlog:
+        builder.add_field("Backlog Status", FilterType.EQ, backlog)
+
+    # Packages
+    for field in ["package_name", "package_version", "package_operational_risk"]:
+        val = args.get(f"conditions_{field}")
+        if val:
+            op = FilterType.CONTAINS if field == "package_name" else FilterType.EQ
+            builder.add_field(field.replace("_", " ").title(), op, val)
+
+    # AppSec Rules
+    rule_names = argToList(args.get("conditions_appsec_rule_names"))
+    if rule_names:
+        rule_ids = get_appsec_rule_ids_from_names(client, rule_names)
+        builder.add_field("AppSec Rule", FilterType.EQ, rule_ids)
+
+    # CVSS / EPSS
+    for f, n in [("cvss", "CVSS"), ("epss", "EPSS")]:
+        val = arg_to_number(args.get(f"conditions_{f}"))
+        if val is not None:
+            builder.add_field(n, FilterType.EQ, val)
+
+    # Boolean Conditions
+    for key, label in {
+        "has_a_fix": "HasAFix",
+        "is_kev": "IsKev",
+    }.items():
+        val = arg_to_bool_or_none(args.get(f"conditions_{key}"))
+        if val is not None:
+            builder.add_field(label, FilterType.EQ, val)
+
+    # Secret Validity, License Type
+    for key, label in {
+        "secret_validity": "SecretValidity",
+        "license_type": "LicenseType",
+    }.items():
+        vals = argToList(args.get(f"conditions_{key}", []))
+        if vals:
+            builder.add_field(label, FilterType.EQ, vals)
+
+    return builder.to_dict()
+
+
+def core_create_policy_build_scope(args):
+    builder = FilterBuilder()
+
+    # Category
+    categories = argToList(args.get("scope_category", []))
+    if categories:
+        builder.add_field("Category", FilterType.EQ, categories, POLICY_CATEGORY_MAPPING)
+
+    # Business Apps / Criticality
+    for field, label in {
+        "scope_business_application_names": "Business Application Names",
+        "scope_application_business_criticality": "Application Business Criticality",
+        "scope_repository_name": "Repository Name",
+    }.items():
+        val = args.get(field)
+        if val:
+            builder.add_field(label, FilterType.CONTAINS, val)
+
+    # Boolean scope filters
+    for key, label in {
+        "scope_is_public_repository": "Is Public Repository",
+        "scope_has_deployed_assets": "Has Deployed Assets",
+        "scope_has_internet_exposed": "Has Internet Exposed",
+        "scope_has_sensitive_data_access": "Has Sensitive Data Access",
+        "scope_has_privileged_capabilities": "Has Privileged Capabilities",
+    }.items():
+        val = arg_to_bool_or_none(args.get(key))
+        if val is not None:
+            builder.add_field(label, FilterType.EQ, val)
+
+    return builder.to_dict()
+
+
+def core_create_policy_build_triggers(args):
+    def trigger(enabled, report_key, block_key=None, comment_key=None, override_key=None):
+        if enabled is None:
+            return {}
+        actions = {}
+        for k in [report_key, block_key, comment_key]:
+            if k and argToBoolean(args.get(k)):
+                actions[k.replace("triggers_", "").split("_")[1]] = True
+        result = {"isEnabled": enabled, "actions": actions}
+        if override_key and args.get(override_key):
+            result["overrideIssueSeverity"] = args.get(override_key)
+        return result
+
+    return {
+        "periodic": trigger(
+            argToBoolean(args.get("triggers_periodic_enabled")),
+            "triggers_periodic_report_issue",
+            override_key="triggers_periodic_override_severity",
+        ),
+        "pr": trigger(
+            argToBoolean(args.get("triggers_pr_enabled")),
+            "triggers_pr_report_issue",
+            "triggers_pr_block_pr",
+            "triggers_pr_report_pr_comment",
+            "triggers_pr_override_severity",
+        ),
+        "cicd": trigger(
+            argToBoolean(args.get("triggers_cicd_enabled")),
+            "triggers_cicd_report_issue",
+            "triggers_cicd_block_cicd",
+            "triggers_cicd_report_cicd",
+            "triggers_cicd_override_severity",
+        ),
+    }
+
 
 
 def main():  # pragma: no cover
