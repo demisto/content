@@ -139,20 +139,56 @@ def get_file_diff(pr: PullRequest, file_path: str) -> str:
 
 def is_supported_modules_modified(pr: PullRequest, file_path: str) -> bool:
     """
-    Check if the 'supportedModules' field was added or modified in the PR.
+    Check if the 'supportedModules' field or its contents were modified in the PR.
 
     Args:
         pr: GitHub PullRequest object
         file_path: Path of the file to check
 
     Returns:
-        bool: True if 'supportedModules' was added or modified, False otherwise
+        bool: True if 'supportedModules' or its contents were modified, False otherwise
     """
     diff = get_file_diff(pr, file_path)
     if not diff:
         return False
 
-    return any(line.startswith("+") and "supportedModules" in line and line.strip() != "+" for line in diff.split("\n"))
+    # First check if the 'supportedModules' field itself was modified
+    if any(line.strip().startswith(('+', '-')) and 'supportedModules' in line for line in diff.split('\n')):
+        return True
+
+    # Then check for modifications inside the array
+    in_supported_modules = False
+    lines = diff.split('\n')
+
+    for line in lines:
+        line = line.strip()
+
+        # Check if we're entering the supportedModules section
+        if 'supportedModules' in line and ':' in line:
+            in_supported_modules = True
+            continue
+
+        # If we're in the supportedModules section, check for any modifications
+        if in_supported_modules:
+            # If we hit a line that's not part of the array (new top-level key), we're done
+            if line.startswith(('  ', '\t')) and all(
+                c not in line for c in '[]{}'
+            ):
+                continue
+            if line.startswith(('+', '-', ' ')) and any(c in line for c in ['[', ']', '- ']):
+                # Check if this is a modification to the array elements
+                if any(x in line for x in ['+', '-']):
+                    # Skip the opening bracket line if it's just the bracket
+                    if line.strip() in ('+[', '-[', '+ [', '- [', ']', '+]', '-]'):
+                        continue
+                    # Check if this is a real modification to the array elements
+                    if any(x in line for x in ['"', "'"]):
+                        return True
+            elif line.startswith(('+', '-')):
+                # If we hit a line that's not part of the array, we're done
+                break
+
+    return False
 
 
 def check_pr_contains_supported_modules_changes(pr: PullRequest) -> bool:
