@@ -295,7 +295,10 @@ class Code42Client(BaseClient):
         return self.incydr_sdk.files.v1.stream_file_by_sha256(hash_arg)
 
     def download_file_by_xfc_id(self, xfc_id):
-        return self.incydr_sdk.files.v1.stream_file_by_xfc_content_id(xfc_id)
+        try:
+            return self.incydr_sdk.files.v1.stream_file_by_xfc_content_id(xfc_id)
+        except Exception as e:
+            raise Code42FileDownloadError(e)
 
     def _get_user_id(self, username):
         user_id = self.get_user(username).user_id
@@ -373,6 +376,11 @@ class Code42LegalHoldMatterNotFoundError(Exception):
 class Code42InvalidLegalHoldMembershipError(Exception):
     def __init__(self, username, matter_name):
         super().__init__(f"User '{username}' is not an active member of legal hold matter '{matter_name}'")
+
+
+class Code42FileDownloadError(Exception):
+    def __init__(self, exception):
+        super().__init__(f"Error downloading file: {exception}")
 
 
 @logger
