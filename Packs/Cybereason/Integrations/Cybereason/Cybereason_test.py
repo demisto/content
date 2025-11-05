@@ -73,6 +73,84 @@ def load_mock_response(file_name: str) -> str:
         return mock_file.read()
 
 
+def test_cybereason_api_call(mocker):
+    """
+    Given:
+        - API call returns a redirect to the login page (session expired).
+    When:
+        - cybereason_api_call() is executed.
+    Then:
+        - Should trigger re-login, update token, and retry request successfully.
+    """
+    from Cybereason import Client, TOKEN_VALIDITY_PERIOD_SECONDS
+
+    mock_response_login_redirect = mocker.Mock()
+    mock_response_login_redirect.status_code = 200
+    mock_response_login_redirect.url = "https://server/login.html"
+
+    mock_response_success = mocker.Mock()
+    mock_response_success.status_code = 200
+    mock_response_success.url = "https://server/some_api"
+    mock_response_success.json.return_value = {"result": "ok"}
+
+    mock_http_request = mocker.Mock(side_effect=[mock_response_login_redirect, mock_response_success])
+    mock_login = mocker.patch("Cybereason.login", return_value=("new_token", int(time.time())))
+    mock_get_context = mocker.patch("Cybereason.get_integration_context", return_value={})
+    mock_set_context = mocker.patch("Cybereason.set_integration_context")
+    mock_headers = mocker.patch("Cybereason.HEADERS", {"Cookie": ""})
+
+    client = Client(base_url="https://server", verify=False, headers=mock_headers, proxy=False)
+    client._http_request = mock_http_request
+
+    result = client.cybereason_api_call("GET", "/some_api", json_body={})
+
+    # Assertions
+    mock_login.assert_called_once()
+    assert result == {"result": "ok"}
+    assert mock_set_context.called
+    assert "JSESSIONID=new_token" in mock_headers["Cookie"]
+    assert mock_http_request.call_count == 2 
+
+def test_validate_jsession(mocker, token_valid, expected_refresh):
+    """
+    Given:
+        - A token validity scenario (valid or expired).
+    When:
+        - validate_jsession() is called.
+    Then:
+        - If token is valid → should NOT refresh.
+        - If token expired → should refresh and update context.
+    """
+    mock_time = int(time.time())
+    valid_until = mock_time + 10000 if token_valid else mock_time - 10
+
+    mock_integration_context = {
+        "jsession_id": "old_token",
+        "valid_until": valid_until,
+    }
+
+    mocker.patch("Cybereason.get_integration_context", return_value=mock_integration_context)
+    mock_set_context = mocker.patch("Cybereason.set_integration_context")
+    mock_headers = mocker.patch("Cybereason.HEADERS", {})
+    mock_login = mocker.patch("Cybereason.login", return_value=("new_token", mock_time))
+    mock_client = mocker.Mock()
+
+    validate_jsession(mock_client)
+
+    if expected_refresh:
+        # Expired case: login called, context updated
+        mock_login.assert_called_once()
+        mock_set_context.assert_called_once()
+        assert mock_integration_context["jsession_id"] == "new_token"
+        assert mock_integration_context["valid_until"] == mock_time + TOKEN_VALIDITY_PERIOD_SECONDS
+        assert "JSESSIONID=new_token" in mock_headers["Cookie"]
+    else:
+        # Valid token case: no refresh
+        mock_login.assert_not_called()
+        mock_set_context.assert_not_called()
+        assert "JSESSIONID=old_token" in mock_headers["Cookie"]
+
+
 def test_one_query_file(mocker):
     from Cybereason import Client, query_file_command
 

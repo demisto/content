@@ -123,8 +123,6 @@ CONNECTION_INFO = [
     {"field": "endTime", "header": "End Time", "type": "time"},
 ]
 
-SINGLE_MALOP_HEADERS = ["GUID", "Link", "CreationTime", "Status", "LastUpdateTime", "InvolvedHash"]
-
 DOMAIN_HEADERS = [
     "Name",
     "Reputation",
@@ -155,6 +153,8 @@ CONNECTION_INFO = [
     {"field": "calculatedCreationTime", "header": "Creation Time", "type": "time"},
     {"field": "endTime", "header": "End Time", "type": "time"},
 ]
+
+TOKEN_VALIDITY_PERIOD_SECONDS = 28000
 
 CONNECTION_FIELDS = [element["field"] for element in CONNECTION_INFO]
 
@@ -229,12 +229,12 @@ class Client(BaseClient):
                 # Update context and headers
                 integration_context = (
                     get_integration_context()
-                )  # You might need to make integration_context global or pass it around if it's not
+                )
                 integration_context["jsession_id"] = new_token
-                integration_context["valid_until"] = login_time + 28000
+                integration_context["valid_until"] = login_time + TOKEN_VALIDITY_PERIOD_SECONDS
                 set_integration_context(integration_context)
                 HEADERS["Cookie"] = f"JSESSIONID={new_token}"
-                demisto.info(f"cybereason_api_call: New token generated: {new_token}. Retrying original request.")
+                demisto.info(f"cybereason_api_call: New token generated. Retrying original request.")
 
                 # Retry the request with the new token
                 res = make_request()
@@ -1813,13 +1813,13 @@ def validate_jsession(client: Client, explicit_refresh=False):
     demisto.debug(f"Value of Should Refresh: {should_refresh}. Token {token}")
     if not should_refresh:
         # Token is still valid and no explicit refresh requested, so use existing token
-        demisto.debug(f"Token is still valid - did not expire. Token: {token}")
+        demisto.debug(f"Token is still valid - did not expire")
         HEADERS["Cookie"] = f"JSESSIONID={token}"
         return
     demisto.debug("Token expired, missing, or explicit refresh requested. Logging in to get a new token.")
     new_token, login_time = login(client)
     integration_context["jsession_id"] = new_token
-    integration_context["valid_until"] = login_time + 28000
+    integration_context["valid_until"] = login_time + TOKEN_VALIDITY_PERIOD_SECONDS
     set_integration_context(integration_context)
     HEADERS["Cookie"] = f"JSESSIONID={new_token}"
 
