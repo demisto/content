@@ -1,0 +1,23 @@
+{
+    "description": "The Classifier for the Infoblox Threat Defense with DDI integration.",
+    "feed": false,
+    "id": "Infoblox Cloud - Classifier",
+    "keyTypeMap": {
+        "Infoblox Cloud DNS Security Event": "Infoblox Cloud DNS Security Event",
+        "Infoblox Cloud SOC Insight": "Infoblox Cloud SOC Insight"
+    },
+    "name": "Infoblox Cloud - Classifier",
+    "propagationLabels": [
+        "all"
+    ],
+    "transformer": {
+        "complex": {
+            "filters": [],
+            "root": "incident_type",
+            "transformers": []
+        }
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.5.0"
+}
