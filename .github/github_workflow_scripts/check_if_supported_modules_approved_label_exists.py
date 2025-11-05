@@ -105,13 +105,13 @@ def check_pr_contains_supported_modules(pr: PullRequest) -> bool:
                     return True
 
             except Exception as e:
-                print(f"⚠️  Warning: Error processing {file.filename}: {str(e)}")
+                print(f"Warning: Error processing {file.filename}: {str(e)}")
                 continue
 
         return False
 
     except Exception as e:
-        print(f"⚠️  Error checking PR files: {str(e)}")
+        print(f"Error checking PR files: {str(e)}")
         return True  # Default to True to be safe if we can't check
 
 
@@ -178,8 +178,6 @@ def is_supported_modules_modified(pr: PullRequest, file_path: str) -> bool:
         # Convert to sets for comparison
         base_set = set(base_modules) if isinstance(base_modules, list) else set()
         head_set = set(head_modules) if isinstance(head_modules, list) else set()
-        print(f"### {base_set}")
-        print(f"$$$ {head_set}")
         # Check if there are any differences
         return base_set != head_set
 
@@ -216,9 +214,6 @@ def check_pr_contains_supported_modules_changes(pr: PullRequest) -> bool:
                     continue
 
                 # Check if file contains supportedModules
-                print(f"{file.filename} and {file}")
-                print(f"has_supported_modules -> {has_supported_modules_field(parsed_content)}")
-                print(f"is_supported_modules_modified -> {is_supported_modules_modified(pr, file.filename)}")
                 if has_supported_modules_field(parsed_content) and is_supported_modules_modified(pr, file.filename):
                     print(f"Found modified 'supportedModules' in file: {file.filename}")
                     return True
