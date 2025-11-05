@@ -40,6 +40,7 @@ The following three filters control data collection behavior for the `compromise
 - **Enable filter "Probable Corporate Access"**: Filter to limit data collection to only corporate accounts
 
 **Filter Logic** (applies to unique and combolist filters):
+
 - If **both** `Include unique type in data` and `Include combolist type in data` are **disabled**: No filtering is applied, and both types of data are collected
 - If **only** `Include unique type in data` is **enabled**: Only unique records are collected
 - If **only** `Include combolist type in data` is **enabled**: Only combolist records are collected
@@ -47,17 +48,16 @@ The following three filters control data collection behavior for the `compromise
 - When both unique and combolist filters are **not enabled** (no checkboxes selected), you can enable `Enable filter "Probable Corporate Access"` to limit data from the whole feed to only corporate accounts. And you can combine with unique or combolist, if needed. For example, if you are collecting **only combolist** data (without unique), you can enable `Enable filter "Probable Corporate Access"` to include probable corporate access records in the combolist data collection
 
 **Best Practice**: For optimal organization and performance, consider running **two separate integration instances**:
-- **Instance 1**: Enable `Include unique type in data` only 
-- **Instance 2**: Enable `Include combolist type in data` only 
+
+- **Instance 1**: Enable `Include unique type in data` only
+- **Instance 2**: Enable `Include combolist type in data` only
 - **Instance 3** (optional): Enable 'Probable Corporate Access' - if you need to focus on your company employees compromises only
 
 These filters have no effect on other collections.
 
-
 ## Data Collections Overview
 
 Once the configuration is complete, the following collections become available in Cortex XSOAR. For detailed information about each collection, its structure, and available fields, please refer to the [official Collections Details documentation](https://tap.group-ib.com/hc/api?scope=integrations&q=en%2FIntegrations%2FCollections%20Info%2FCollections%20Details%2FCollections%20Details).
-
 
 **Note:** If you're using a POC or partner license, access to data is limited to 30 days. The recommended date ranges below are guidelines and can be adjusted according to your needs.
 
@@ -190,7 +190,6 @@ Command performs Group-IB event lookup in compromised/account collection with pr
 
 ```!gibtia-get-compromised-account-info id=253b9a136f0d574149fc43691eaf7ae27aff141a```
 
-
 ### gibtia-get-compromised-breached-info
 
 ***
@@ -220,7 +219,6 @@ Command performs Group-IB event lookup in compromised/breached collection with p
 #### Command Example
 
 ```!gibtia-get-compromised-breached-info id=277c4112d348c91f6dabe9467f0d18ba```
-
 
 ### gibtia-get-compromised-mule-info
 
@@ -262,7 +260,6 @@ Command performs Group-IB event lookup in compromised/mule collection with provi
 
 ```!gibtia-get-compromised-mule-info id=50a3b4abbfca5dcbec9c8b3a110598f61ba90a99```
 
-
 ### gibtia-get-osi-git-leak-info
 
 ***
@@ -297,7 +294,6 @@ Command performs Group-IB event lookup in osi/git_leak collection with provided 
 #### Command Example
 
 ```!gibtia-get-osi-git-leak-info id=ead0d8ae9f2347789941ebacde88ad2e3b1ef691```
-
 
 ### gibtia-get-osi-public-leak-info
 
@@ -335,7 +331,6 @@ Command performs Group-IB event lookup in osi/public_leak collection with provid
 
 ```!gibtia-get-osi-public-leak-info id=a09f2354e52d5fa0a8697c8df0b4ed99cc956273```
 
-
 ### gibtia-get-osi-vulnerability-info
 
 ***
@@ -372,7 +367,6 @@ Command performs Group-IB event lookup in osi/vulnerability collection with prov
 #### Command Example
 
 ```!gibtia-get-osi-vulnerability-info id=CVE-2021-27152```
-
 
 ### gibtia-get-attacks-ddos-info
 
@@ -415,7 +409,6 @@ Command performs Group-IB event lookup in attacks/ddos collection with provided 
 
 ```!gibtia-get-attacks-ddos-info id=26a05baa4025edff367b058b13c6b43e820538a5```
 
-
 ### gibtia-get-attacks-deface-info
 
 ***
@@ -449,7 +442,6 @@ Command performs Group-IB event lookup in attacks/deface collection with provide
 #### Command Example
 
 ```!gibtia-get-attacks-deface-info id=6009637a1135cd001ef46e21```
-
 
 ### gibtia-get-threat-info
 
@@ -511,7 +503,6 @@ Command performs Group-IB event lookup in hi/threat (or in apt/threat if the APT
 
 ```!gibtia-get-threat-info id=1b09d389d016121afbffe481a14b30ea995876e4 isAPT=true```
 
-
 ### gibtia-get-threat-actor-info
 
 ***
@@ -556,7 +547,6 @@ Command performs Group-IB event lookup in hi/threat_actor (or in apt/threat_acto
 
 ```!gibtia-get-threat-actor-info id=0d4496592ac3a0f5511cd62ef29887f48d9cb545 isAPT=true```
 
-
 ### gibtia-get-suspicious-ip-tor-node-info
 
 ***
@@ -586,7 +576,6 @@ Command performs Group-IB event lookup in suspicious_ip/tor_node collection with
 #### Command Example
 
 ```!gibtia-get-suspicious-ip-tor-node-info id=109.70.100.46```
-
 
 ### gibtia-get-suspicious-ip-open-proxy-info
 
@@ -621,7 +610,6 @@ Command performs Group-IB event lookup in suspicious_ip/open_proxy collection wi
 
 ```!gibtia-get-suspicious-ip-open-proxy-info id=cc6a2856da2806b03839f81aa214f22dbcfd7369```
 
-
 ### gibtia-get-suspicious-ip-socks-proxy-info
 
 ***
@@ -651,7 +639,6 @@ Command performs Group-IB event lookup in suspicious_ip/socks_proxy collection w
 #### Command Example
 
 ```!gibtia-get-suspicious-ip-socks-proxy-info id=02e385600dfc5bf9b3b3656df8e0e20f5fc5c86e```
-
 
 ### gibtia-get-malware-cnc-info
 
@@ -690,7 +677,6 @@ Command performs Group-IB event lookup in malware/cnc collection by provided ID.
 
 ```!gibtia-get-malware-cnc-info id=aeed277396e27e375d030a91533aa232444d0089```
 
-
 ### gibtia-get-available-collections
 
 ***
@@ -713,7 +699,6 @@ There are no input arguments for this command.
 #### Command Example
 
 ```!gibtia-get-available-collections```
-
 
 ### gibtia-global-search
 
@@ -741,7 +726,6 @@ Command performs global Group-IB search
 #### Command Example
 
 ```!gibtia-global-search query=100.100.100.100```
-
 
 ### gibtia-local-search
 
