@@ -82,7 +82,8 @@ def test_cybereason_api_call(mocker):
     Then:
         - Should trigger re-login, update token, and retry request successfully.
     """
-    from Cybereason import Client, TOKEN_VALIDITY_PERIOD_SECONDS
+    from Cybereason import Client
+    import time
 
     mock_response_login_redirect = mocker.Mock()
     mock_response_login_redirect.status_code = 200
@@ -95,7 +96,7 @@ def test_cybereason_api_call(mocker):
 
     mock_http_request = mocker.Mock(side_effect=[mock_response_login_redirect, mock_response_success])
     mock_login = mocker.patch("Cybereason.login", return_value=("new_token", int(time.time())))
-    mock_get_context = mocker.patch("Cybereason.get_integration_context", return_value={})
+    mocker.patch("Cybereason.get_integration_context", return_value={})
     mock_set_context = mocker.patch("Cybereason.set_integration_context")
     mock_headers = mocker.patch("Cybereason.HEADERS", {"Cookie": ""})
 
@@ -109,9 +110,10 @@ def test_cybereason_api_call(mocker):
     assert result == {"result": "ok"}
     assert mock_set_context.called
     assert "JSESSIONID=new_token" in mock_headers["Cookie"]
-    assert mock_http_request.call_count == 2 
+    assert mock_http_request.call_count == 2
 
-def test_validate_jsession(mocker, token_valid, expected_refresh):
+
+def test_validate_jsession_two(mocker):
     """
     Given:
         - A token validity scenario (valid or expired).
@@ -121,6 +123,12 @@ def test_validate_jsession(mocker, token_valid, expected_refresh):
         - If token is valid → should NOT refresh.
         - If token expired → should refresh and update context.
     """
+    from Cybereason import validate_jsession
+    import time
+
+    token_valid = False
+    expected_refresh = True
+
     mock_time = int(time.time())
     valid_until = mock_time + 10000 if token_valid else mock_time - 10
 
@@ -142,7 +150,7 @@ def test_validate_jsession(mocker, token_valid, expected_refresh):
         mock_login.assert_called_once()
         mock_set_context.assert_called_once()
         assert mock_integration_context["jsession_id"] == "new_token"
-        assert mock_integration_context["valid_until"] == mock_time + TOKEN_VALIDITY_PERIOD_SECONDS
+        assert mock_integration_context["valid_until"] == mock_time + 28000
         assert "JSESSIONID=new_token" in mock_headers["Cookie"]
     else:
         # Valid token case: no refresh

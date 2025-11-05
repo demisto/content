@@ -227,14 +227,12 @@ class Client(BaseClient):
                 new_token, login_time = login(self)
 
                 # Update context and headers
-                integration_context = (
-                    get_integration_context()
-                )
+                integration_context = get_integration_context()
                 integration_context["jsession_id"] = new_token
                 integration_context["valid_until"] = login_time + TOKEN_VALIDITY_PERIOD_SECONDS
                 set_integration_context(integration_context)
                 HEADERS["Cookie"] = f"JSESSIONID={new_token}"
-                demisto.info(f"cybereason_api_call: New token generated. Retrying original request.")
+                demisto.info("cybereason_api_call: New token generated. Retrying original request.")
 
                 # Retry the request with the new token
                 res = make_request()
@@ -1813,7 +1811,7 @@ def validate_jsession(client: Client, explicit_refresh=False):
     demisto.debug(f"Value of Should Refresh: {should_refresh}. Token {token}")
     if not should_refresh:
         # Token is still valid and no explicit refresh requested, so use existing token
-        demisto.debug(f"Token is still valid - did not expire")
+        demisto.debug("Token is still valid - did not expire")
         HEADERS["Cookie"] = f"JSESSIONID={token}"
         return
     demisto.debug("Token expired, missing, or explicit refresh requested. Logging in to get a new token.")
