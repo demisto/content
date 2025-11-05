@@ -1662,14 +1662,15 @@ Shared channels - Message posts, replies, and attachments shared in a shared Tea
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| case_id | The ID of the eDiscovery case. | Required | 
-| search_id | The ID of the eDiscovery search. | Required | 
-| purge_type | Whether the action is soft delete or hard delete. Possible values are: permanentlyDelete, recoverable. | Optional | 
-| purge_areas | Define the locations to be in scope of the purge action. Possible values are: teamsMessages, mailboxes. | Optional | 
+| case_id | The ID of the eDiscovery case. | Required |
+| search_id | The ID of the eDiscovery search. | Required |
+| purge_type | Whether the action is soft delete or hard delete. Possible values are: permanentlyDelete, recoverable. | Optional |
+| purge_areas | Define the locations to be in scope of the purge action. Possible values are: teamsMessages, mailboxes. | Optional |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### msg-delete-ediscovery-search
 
 ***

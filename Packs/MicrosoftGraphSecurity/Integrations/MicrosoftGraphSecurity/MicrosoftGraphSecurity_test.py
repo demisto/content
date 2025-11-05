@@ -5,7 +5,7 @@ from types import SimpleNamespace
 
 import demistomock as demisto
 import pytest
-from CommonServerPython import DemistoException
+from CommonServerPython import DemistoException, CommandResults
 from MicrosoftGraphSecurity import (
     MANAGED_IDENTITIES_TOKEN_URL,
     MsGraphClient,
@@ -876,3 +876,140 @@ def test_update_incident_command(mocker):
     assert results.outputs_key_field == expected_results["outputs_key_field"]
     assert results.outputs == expected_results["outputs"]
     assert results.readable_output == expected_results["readable_output"]
+
+
+# ==============================
+# Tests for Estimate Statistics
+# ==============================
+
+from MicrosoftGraphSecurity import (
+    run_estimate_statistics_command,
+    get_last_estimate_statistics_operation_command,
+)
+
+
+class DummyEstimateClient:
+    def __init__(self):
+        self.ms_client = self
+
+    def http_request(self, method, url_suffix=None, json_data=None, resp_type=None, ok_codes=None):
+        """Mock the POST and GET calls for estimateStatistics."""
+        if method == "POST":
+            # Simulate POST that returns Location header
+            class DummyResponse:
+                headers = {"Location": "https://graph.microsoft.com/v1.0/security/cases/CASE1/searches/SEARCH1/operations/OP1"}
+
+            return DummyResponse()
+
+        elif method == "GET":
+            # Simulate operation status GET
+            return {
+                "id": "OP1",
+                "status": "running",
+                "createdDateTime": "2025-11-05T10:00:00Z",
+                "lastActionDateTime": "2025-11-05T10:01:00Z",
+                "percentProgress": 20,
+            }
+
+        raise ValueError(f"Unexpected method {method}")
+
+    def run_estimate_statistics_request(self, case_id, search_id, statistics_options=None):
+        # Simulate the operation Graph API response
+        return {
+            "id": "operation-id-123",
+            "status": "completed",
+            "createdDateTime": "2025-11-05T10:00:00Z",
+            "lastActionDateTime": "2025-11-05T10:05:00Z",
+            "indexedItemCount": 200,
+            "indexedItemsSize": 1024000,
+            "unindexedItemCount": 5,
+            "unindexedItemsSize": 4096,
+            "mailboxCount": 4,
+            "siteCount": 3,
+        }
+
+
+def test_run_estimate_statistics_command_running_status():
+    client = DummyEstimateClient()
+    args = {"case_id": "CASE1", "search_id": "SEARCH1", "statistics_options": None}
+
+    result = run_estimate_statistics_command(client, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "MsGraph.eDiscovery.EstimateStatistics"
+    assert result.outputs_key_field == "operationId"
+    assert result.outputs["status"] == "completed"
+    assert "completed" in result.readable_output
+
+
+def test_run_estimate_statistics_command_missing_location():
+    class BadClient(DummyEstimateClient):
+        def run_estimate_statistics_request(self, case_id, search_id, statistics_options=None):
+            # Simulate missing Location header
+            url = f"security/cases/ediscoveryCases/{case_id}/searches/{search_id}/estimateStatistics"
+            body = {}
+            if statistics_options:
+                if isinstance(statistics_options, list):
+                    statistics_options = ",".join(statistics_options)
+                body["statisticsOptions"] = statistics_options
+
+            # Simulate POST response with missing Location
+            class DummyResponse:
+                headers = {}  # No Location header
+
+            response = DummyResponse()
+            location_url = response.headers.get("Location")
+            if not location_url:
+                raise DemistoException("Missing Location header in estimateStatistics response")
+
+    client = BadClient()
+    args = {"case_id": "CASE1", "search_id": "SEARCH1", "statistics_options": None}
+
+    with pytest.raises(DemistoException) as e:
+        run_estimate_statistics_command(client, args)
+
+    assert "Missing Location header" in str(e.value)
+
+
+def test_get_last_estimate_statistics_operation_success(mocker):
+    mock_resp = {
+        "id": "OP2",
+        "status": "succeeded",
+        "createdDateTime": "2025-11-05T10:05:00Z",
+        "lastActionDateTime": "2025-11-05T10:06:00Z",
+        "indexedItemCount": 1756,
+        "indexedItemsSize": 89489297,
+        "unindexedItemCount": 1,
+        "unindexedItemsSize": 57952,
+        "mailboxCount": 4,
+        "siteCount": 6,
+    }
+
+    mock_client = mocker.Mock()
+    mock_client.get_last_estimate_statistics_operation.return_value = mock_resp
+
+    args = {"case_id": "CASE1", "search_id": "SEARCH1"}
+    result = get_last_estimate_statistics_operation_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "MsGraph.eDiscovery.EstimateStatistics"
+    assert result.outputs["status"] == "succeeded"
+    assert result.outputs["indexedItemCount"] == 1756
+    assert "1756" in result.readable_output
+
+
+def test_get_last_estimate_statistics_operation_running_status(mocker):
+    mock_resp = {
+        "id": "OP3",
+        "status": "running",
+        "percentProgress": 40,
+        "createdDateTime": "2025-11-05T10:07:00Z",
+    }
+
+    mock_client = mocker.Mock()
+    mock_client.get_last_estimate_statistics_operation.return_value = mock_resp
+
+    args = {"case_id": "CASE1", "search_id": "SEARCH1"}
+    result = get_last_estimate_statistics_operation_command(mock_client, args)
+
+    assert result.outputs["status"] == "running"

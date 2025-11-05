@@ -294,10 +294,7 @@ class MsGraphClient:
             raise DemistoException("Missing Location header in estimateStatistics response")
 
         # Fetch operation status
-        operation = self.ms_client.http_request(
-            method="GET",
-            full_url=location_url
-        )
+        operation = self.ms_client.http_request(method="GET", full_url=location_url)
 
         return operation
 
@@ -364,8 +361,6 @@ class MsGraphClient:
                 method="GET",
                 url_suffix=THREAT_ASSESSMENT_URL_PREFIX,
                 params={"$skipToken": next_token},
-                retries=1,
-                status_list_to_retry=[405],
             )
         if filters:
             params["$filter"] = filters
@@ -375,7 +370,7 @@ class MsGraphClient:
                 params["$orderby"] = f"{order_by} {sort_order}"
 
         return self.ms_client.http_request(
-            method="GET", url_suffix=THREAT_ASSESSMENT_URL_PREFIX, params=params, retries=1, status_list_to_retry=[405]
+            method="GET", url_suffix=THREAT_ASSESSMENT_URL_PREFIX, params=params
         )
 
     def advanced_hunting_request(self, query: str, timeout: int):
@@ -1462,7 +1457,7 @@ def create_ediscovery_non_custodial_data_source_command(client: MsGraphClient, a
 
     return to_msg_command_results(
         raw_object_list=resp,
-           outputs_prefix="MsGraph.NoncustodialDataSource",
+        outputs_prefix="MsGraph.NoncustodialDataSource",
         output_key_field="DataSourceId",
         raw_keys_to_replace={"status": "DataSourceStatus", "id": "DataSourceId"},
     )
@@ -1560,6 +1555,7 @@ def purge_ediscovery_data_command(client: MsGraphClient, args):
     status = get_status_of_operation(client, resp)
     return CommandResults(readable_output=f"eDiscovery purge status is {status}.")
 
+
 def run_estimate_statistics_command(client: MsGraphClient, args):
     case_id = args.get("case_id")
     search_id = args.get("search_id")
@@ -1601,7 +1597,7 @@ def get_last_estimate_statistics_operation_command(client: MsGraphClient, args):
     # Extract key details for display
     stats_info = {
         "Operation ID": resp.get("id"),
-        "Status": resp.get('status'),
+        "Status": resp.get("status"),
         "Progress": resp.get("percentProgress"),
         "Created": resp.get("createdDateTime"),
         "Last Modified": resp.get("lastActionDateTime"),
@@ -1616,12 +1612,13 @@ def get_last_estimate_statistics_operation_command(client: MsGraphClient, args):
     }
 
     human_readable = tableToMarkdown(
-        name=f"eDiscovery Estimate Statistics for Search `{args.get('search_id')}`",
-        t=stats_info,
-        removeNull=True
+        name=f"eDiscovery Estimate Statistics for Search `{args.get('search_id')}`", t=stats_info, removeNull=True
     )
     return CommandResults(
-        outputs_prefix="MsGraph.eDiscovery.EstimateStatistics", outputs_key_field="id", outputs=resp, readable_output=human_readable
+        outputs_prefix="MsGraph.eDiscovery.EstimateStatistics",
+        outputs_key_field="id",
+        outputs=resp,
+        readable_output=human_readable,
     )
 
 
