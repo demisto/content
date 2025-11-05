@@ -2215,13 +2215,16 @@ def test_get_remote_data_alert_not_modified(mocker):
     mocker.patch.object(demisto, "error")
 
     # Mock alert.get() to return alert with old update time
-    mock_alert_resp = Mock(spec=GetAlertResp)
-    mock_alert_resp.dict.return_value = {
+    mock_alert_data = Mock()
+    mock_alert_data.model_dump.return_value = {
         "id": "WB-ALERT-OLD",
         "status": "Open",
         "severity": "medium",
-        "updatedDateTime": "2025-01-01T00:00:00Z",  # Before last_update
+        "updated_date_time": "2025-01-01T00:00:00Z",  # Before last_update
     }
+
+    mock_alert_resp = Mock(spec=GetAlertResp)
+    mock_alert_resp.data = mock_alert_data
 
     mock_get_result = Mock(spec=Result)
     mock_get_result.result_code = ResultCode.SUCCESS
@@ -2247,28 +2250,88 @@ def test_get_remote_data_success_closed_alert(mocker):
     Test get_remote_data when alert status is closed.
 
     Given:
-        - Alert with status "Closed"
+        - Alert with status "Closed" (realistic Vision One data structure)
     When:
         - Execute get_remote_data command
     Then:
         - Should return incident data with status 2 (Closed)
         - Should add close entry
+        - Should preserve impact_scope and indicators fields
     """
     from pytmv1 import GetAlertResp, Result, ResultCode
 
     client = Mock()
     mocker.patch.object(demisto, "error")
 
-    # Mock alert.get() to return closed alert
-    mock_alert_resp = Mock(spec=GetAlertResp)
-    mock_alert_resp.dict.return_value = {
+    # Mock alert.get() to return closed alert with realistic Vision One structure
+    mock_alert_data = Mock()
+    mock_alert_data.model_dump.return_value = {
+        "schema_version": "1.12",
         "id": "WB-ALERT-CLOSED",
         "status": "Closed",
         "severity": "high",
         "investigation_status": "Closed",
         "investigation_result": "True Positive",
-        "updatedDateTime": "2025-01-03T00:00:00Z",
+        "updated_date_time": "2025-01-03T00:00:00Z",
+        "created_date_time": "2025-01-01T00:00:00Z",
+        "model": "Privilege Escalation via UAC Bypass",
+        "score": 64,
+        "workbench_link": "https://portal.xdr.trendmicro.com/...",
+        "impact_scope": {
+            "desktop_count": 1,
+            "server_count": 0,
+            "account_count": 1,
+            "entities": [
+                {
+                    "entity_type": "account",
+                    "entity_value": "domain\\user",
+                    "entity_id": "domain\\user",
+                    "related_entities": ["HOST-GUID"],
+                    "provenance": ["Alert"]
+                },
+                {
+                    "entity_type": "host",
+                    "entity_value": {
+                        "guid": "HOST-GUID",
+                        "name": "test-host",
+                        "ips": ["10.0.0.1"]
+                    },
+                    "entity_id": "HOST-GUID",
+                    "related_entities": ["domain\\user"],
+                    "related_indicator_ids": [1, 2],
+                    "provenance": ["Alert"]
+                }
+            ]
+        },
+        "indicators": [
+            {
+                "id": 1,
+                "type": "command_line",
+                "field": "processCmd",
+                "value": "powershell.exe -enc ...",
+                "related_entities": ["HOST-GUID"],
+                "provenance": ["Alert"]
+            },
+            {
+                "id": 2,
+                "type": "registry_key",
+                "field": "objectRegistryKeyHandle",
+                "value": "hkcr\\ms-settings\\shell\\open\\command",
+                "related_entities": ["HOST-GUID"],
+                "provenance": ["Alert"]
+            }
+        ],
+        "matched_rules": [
+            {
+                "id": "rule-id",
+                "name": "UAC Bypass Rule",
+                "matched_filters": []
+            }
+        ]
     }
+
+    mock_alert_resp = Mock(spec=GetAlertResp)
+    mock_alert_resp.data = mock_alert_data
 
     mock_get_result = Mock(spec=Result)
     mock_get_result.result_code = ResultCode.SUCCESS
@@ -2300,27 +2363,72 @@ def test_get_remote_data_success_open_alert(mocker):
     Test get_remote_data when alert status is open or in progress.
 
     Given:
-        - Alert with status "In Progress"
+        - Alert with status "In Progress" (realistic Vision One data structure)
     When:
         - Execute get_remote_data command
     Then:
         - Should return incident data with status 1 (Active)
-        - Should add reopen entry
+        - Should not add any entries (XSOAR handles status update automatically)
+        - Should preserve impact_scope and indicators fields
     """
     from pytmv1 import GetAlertResp, Result, ResultCode
 
     client = Mock()
     mocker.patch.object(demisto, "error")
 
-    # Mock alert.get() to return in-progress alert
-    mock_alert_resp = Mock(spec=GetAlertResp)
-    mock_alert_resp.dict.return_value = {
+    # Mock alert.get() to return in-progress alert with realistic Vision One structure
+    mock_alert_data = Mock()
+    mock_alert_data.model_dump.return_value = {
+        "schema_version": "1.12",
         "id": "WB-ALERT-ACTIVE",
         "status": "In Progress",
         "severity": "medium",
         "investigation_status": "In Progress",
-        "updatedDateTime": "2025-01-03T00:00:00Z",
+        "updated_date_time": "2025-01-03T00:00:00Z",
+        "created_date_time": "2025-01-01T00:00:00Z",
+        "model": "Suspicious Network Activity",
+        "score": 45,
+        "workbench_link": "https://portal.xdr.trendmicro.com/...",
+        "impact_scope": {
+            "desktop_count": 1,
+            "server_count": 0,
+            "account_count": 1,
+            "entities": [
+                {
+                    "entity_type": "host",
+                    "entity_value": {
+                        "guid": "HOST-GUID-123",
+                        "name": "workstation-01",
+                        "ips": ["192.168.1.100"]
+                    },
+                    "entity_id": "HOST-GUID-123",
+                    "related_entities": ["user@domain.com"],
+                    "related_indicator_ids": [1],
+                    "provenance": ["Alert"]
+                }
+            ]
+        },
+        "indicators": [
+            {
+                "id": 1,
+                "type": "ip",
+                "field": "dst",
+                "value": "203.0.113.10",
+                "related_entities": ["HOST-GUID-123"],
+                "provenance": ["Alert"]
+            }
+        ],
+        "matched_rules": [
+            {
+                "id": "rule-id-456",
+                "name": "Outbound Connection to Known Bad IP",
+                "matched_filters": []
+            }
+        ]
     }
+
+    mock_alert_resp = Mock(spec=GetAlertResp)
+    mock_alert_resp.data = mock_alert_data
 
     mock_get_result = Mock(spec=Result)
     mock_get_result.result_code = ResultCode.SUCCESS
@@ -2340,11 +2448,8 @@ def test_get_remote_data_success_open_alert(mocker):
     assert result.mirrored_object["id"] == "WB-ALERT-ACTIVE"
     assert result.mirrored_object["status"] == 1  # Active
 
-    # Should have reopen entry
-    assert len(result.entries) == 1
-    reopen_entry = result.entries[0]
-    assert reopen_entry["Type"] == 1  # Note
-    assert "reopened" in reopen_entry["Contents"].lower() or "in progress" in reopen_entry["Contents"].lower()
+    # Should not have any entries (no reopen needed, XSOAR handles status update via status field)
+    assert len(result.entries) == 0
 
 
 def test_get_remote_data_alert_not_found(mocker):

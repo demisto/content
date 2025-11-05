@@ -1,13 +1,35 @@
 {
     "defaultIncidentType": "Trend Micro Vision One XDR Incident",
-    "description": "Maps outgoing Trend Micro Vision One alerts for mirroring. Note: status and closeReason are handled directly by the integration code in update_remote_system function, not by this mapper.",
+    "description": "Maps outgoing Trend Micro Vision One alerts for mirroring. Maps XSOAR incident fields to Vision One alert fields.",
     "feed": false,
     "fromVersion": "6.5.0",
     "id": "Trend Micro Vision One V3 XDR - Outgoing Mapper",
     "mapping": {
         "Trend Micro Vision One XDR Incident": {
             "dontMapEventToLabels": true,
-            "internalMapping": {}
+            "internalMapping": {
+                "status": {
+                    "simple": "status"
+                },
+                "investigation_result": {
+                    "simple": "closeReason"
+                },
+                "closeNotes": {
+                    "simple": "closeNotes"
+                },
+                "closingUserId": {
+                    "simple": "closingUserId"
+                },
+                "mirror_direction": {
+                    "simple": "dbotMirrorDirection"
+                },
+                "mirror_instance": {
+                    "simple": "dbotMirrorInstance"
+                },
+                "mirror_id": {
+                    "simple": "dbotMirrorId"
+                }
+            }
         }
     },
     "name": "Trend Micro Vision One V3 XDR - Outgoing Mapper",
