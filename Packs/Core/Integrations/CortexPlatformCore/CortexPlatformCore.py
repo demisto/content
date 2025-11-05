@@ -355,6 +355,13 @@ class Client(CoreClient):
             json_data=request_data,
         )
 
+    def get_webapp_histograms(self, request_data: dict) -> dict:
+        return self._http_request(
+            method="POST",
+            url_suffix="/get_histograms",
+            json_data=request_data,
+        )
+
     def get_playbook_suggestion_by_issue(self, issue_id):
         """
         Get playbook suggestions for a specific issue.
@@ -506,7 +513,7 @@ def build_webapp_request_data(
     limit: int,
     sort_field: str | None,
     on_demand_fields: list | None = None,
-    sort_order: str = "DESC",
+    sort_order: str | None = "DESC",
 ) -> dict:
     """
     Builds the request data for the generic /api/webapp/get_data endpoint.
@@ -523,6 +530,24 @@ def build_webapp_request_data(
         on_demand_fields = []
 
     return {"type": "grid", "table_name": table_name, "filter_data": filter_data, "jsons": [], "onDemandFields": on_demand_fields}
+
+
+def build_histogram_request_data(
+    table_name: str,
+    filter_dict: dict,
+    max_values_per_column: int,
+    columns: list
+) -> dict:
+    """
+    Builds the request data for the generic /api/webapp//get_histograms endpoint.
+    """
+    filter_data = {
+        "filter": filter_dict,
+    }
+    demisto.debug(f"{filter_data=}")
+
+    return {"table_name": table_name, "filter_data": filter_data, "max_values_per_column": max_values_per_column,
+            "columns": columns}
 
 
 def get_vulnerabilities_command(client: Client, args: dict) -> CommandResults:
@@ -743,14 +768,7 @@ def get_asset_group_ids_from_names(client: Client, group_names: list[str]) -> li
     return group_ids
 
 
-def get_asset_coverage_command(client: Client, args: dict):
-    """
-    Retrieves ASPM assets coverage using the generic /api/webapp/get_data endpoint.
-    """
-    limit = arg_to_number(args.get("limit")) or 100
-    sort_field = args.get("sort_field")
-    sort_order = args.get("sort_order")
-
+def build_asset_coverage_filter(args: dict) -> FilterBuilder:
     filter_builder = FilterBuilder()
     filter_builder.add_field("asset_id", FilterType.CONTAINS, argToList(args.get("asset_id")))
     filter_builder.add_field("asset_name", FilterType.WILDCARD, argToList(args.get("asset_name")))
@@ -769,12 +787,20 @@ def get_asset_coverage_command(client: Client, args: dict):
     filter_builder.add_field("unified_provider", FilterType.EQ, argToList(args.get("unified_provider")))
     filter_builder.add_field("asset_provider", FilterType.EQ, argToList(args.get("asset_provider")))
 
+    return filter_builder
+
+
+def get_asset_coverage_command(client: Client, args: dict):
+    """
+    Retrieves ASPM assets coverage using the generic /api/webapp/get_data endpoint.
+    """
+
     request_data = build_webapp_request_data(
         table_name=ASSET_COVERAGE_TABLE,
-        filter_dict=filter_builder.to_dict(),
-        limit=limit,
-        sort_field=sort_field,
-        sort_order=sort_order,
+        filter_dict=build_asset_coverage_filter(args).to_dict(),
+        limit=arg_to_number(args.get("limit")) or 100,
+        sort_field=args.get("sort_field"),
+        sort_order=args.get("sort_order"),
     )
     response = client.get_webapp_data(request_data)
     reply = response.get("reply", {})
@@ -788,6 +814,43 @@ def get_asset_coverage_command(client: Client, args: dict):
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Coverage.Asset",
         outputs_key_field="asset_id",
         outputs=data,
+        raw_response=response,
+    )
+
+
+def get_asset_coverage_histogram_command(client: Client, args: dict):
+    """
+    Retrieves ASPM assets coverage histogrsm using the generic /api/webapp/get_histograms endpoint.
+    """
+    #todo: default value for cilumns?
+    request_data = build_histogram_request_data(
+        table_name=ASSET_COVERAGE_TABLE,
+        filter_dict=build_asset_coverage_filter(args).to_dict(),
+        columns=args.get("columns"),
+        max_values_per_column=arg_to_number(args.get("max_values_per_column")) or 100
+    )
+
+    response = client.get_webapp_histograms(request_data)
+    reply = response.get("reply", {})
+    outputs = [
+        {"column_name": column_name, "data": data}
+        for column_name, data in reply.items()
+    ]
+
+    readable_output = "\n".join(
+        tableToMarkdown(
+            f"ASPM Coverage {output['column_name']} Histogram",
+            output["data"],
+            headerTransform=string_to_table_header,
+            sort_headers=False
+        )
+        for output in outputs
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Coverage.Histogram",
+        outputs=outputs,
         raw_response=response,
     )
 
@@ -875,6 +938,9 @@ def main():  # pragma: no cover
 
         elif command == "core-get-asset-coverage":
             return_results((get_asset_coverage_command(client, args)))
+
+        elif command == "core-get-asset-coverage-histogram":
+            return_results((get_asset_coverage_histogram_command(client, args)))
 
     except Exception as err:
         demisto.error(traceback.format_exc())
