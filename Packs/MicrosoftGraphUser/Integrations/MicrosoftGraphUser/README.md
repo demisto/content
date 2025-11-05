@@ -64,8 +64,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ***
 Disables a user from all Office 365 applications, and prevents sign in. Note: This command disables user,
 but does not terminate an existing session. Supported only in a self deployed app flow with the
-**Permission**: Directory.AccessAsUser.All(Delegated).
-**Permission For disabling an admin/privileged user**: User.EnableDisableAccount.All (Application).
+Permission: Directory.AccessAsUser.All(Delegated).
 
 #### Base Command
 
@@ -75,8 +74,11 @@ but does not terminate an existing session. Supported only in a self deployed ap
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user | User ID or userPrincipalName. | Required |
+| user | User ID or userPrincipalName. | Required | 
 
+#### Context Output
+
+There is no context output for this command.
 ### msgraph-user-unblock
 
 ***
@@ -683,12 +685,11 @@ Permission required: Directory.AccessAsUser.All (Delegated).
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user | User ID or userPrincipalName. | Required |
+| user | User ID or userPrincipalName. | Required | 
 
 #### Context Output
 
 There is no context output for this command.
-
 ### msgraph-user-generate-login-url
 
 ***
@@ -878,4 +879,24 @@ There is no context output for this command.
 
 #### Command example
 
-```!msgraph-user-change-password-on-premise user=123456-abcd-7890-erty-987qwe987 password=123456
+```!msgraph-user-change-password-on-premise user=123456-abcd-7890-erty-987qwe987 password=123456```
+
+### msgraph-user-update-quick-action
+
+***
+Updates the properties of a user object.
+Permissions: - User.ReadWrite (Delegated & Application).
+
+#### Base Command
+
+`msgraph-user-update-quick-action`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user | User ID or userPrincipalName to update properties for. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
