@@ -1355,6 +1355,137 @@ script:
         - contextPath: Core.IssueRecommendations.playbook_suggestions.suggestion_rule_id
           description: The ID of the suggestion rule that generated this recommendation.
           type: String
+    - name: core-get-appsec-issues
+      description: "Retrieves application security issues based on specified filters."
+      arguments:
+        - name: limit
+          description: "The maximum number of issues to return."
+          defaultValue: "50"
+        - name: sort_field
+          description: The field by which to sort the results.
+          defaultValue: local_insert_ts
+        - name: sort_order
+          description: The order in which to sort the results.
+          auto: PREDEFINED
+          predefined:
+            - DESC
+            - ASC
+        - name: start_time
+          description: "The start time for filtering according to issue insert time. Supports free-text relative and absolute times. For example: 7 days ago, 2023-06-15T10:30:00Z, 13/8/2025."
+        - name: end_time
+          description: "The end time for filtering according to issue insert time. Supports free-text relative and absolute times. For example: 7 days ago, 2023-06-15T10:30:00Z, 13/8/2025."
+        - name: issue_id
+          description: "The issue ID. Accepts a comma-separated list."
+          isArray: true
+        - name: assignee
+          description: |
+            The email of the user assigned to the issue. Accepts a comma-separated list. 
+            Use 'unassigned' for all unassigned issues or 'assigned' for all assigned issues.
+          isArray: true
+        - name: collaborator
+          description: The collaborators of the issue. Accepts a comma-separated list.
+          isArray: true
+        - name: status
+          isArray: true
+          description: The issue status. Accepts a comma-separated list.
+          predefined:
+            - New
+            - In Progress
+            - Resolved
+          auto: PREDEFINED
+        - name: issue_name
+          isArray: true
+          description: The issue name. Accepts a comma-separated list.
+        - name: cvss_score_gte
+          description: "The minimum CVSS score."
+        - name: epss_score_gte
+          description: "The minimum EPSS score."
+        - name: has_kev
+          description: "Filter by vulnerabilities that have a Known Exploited Vulnerability (KEV)."
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+        - name: severity
+          description: The severity of the issue.
+          isArray: true
+          auto: PREDEFINED
+          predefined:
+            - info
+            - low
+            - medium
+            - high
+            - critical
+        - name: urgency
+          description: The urgency of the issue.
+          isArray: true
+          auto: PREDEFINED
+          predefined:
+            - n/a
+            - not_urgent
+            - urgent
+            - top_urgent
+        - name: fix_available
+          description: Is there an available automated fix.
+          isArray: true
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+        - name: sla
+          description: SLA status of the issue.
+          isArray: true
+          auto: PREDEFINED
+          predefined:
+            - APPROACHING
+            - IN_SLA
+            - OVERDUE
+      outputs:
+        - contextPath: Core.AppsecIssue.ISSUE_ID
+          description: The unique identifier for the issue issue.
+          type: String
+        - contextPath: Core.AppsecIssue.CVE_ID
+          description: The CVE identifier for the issue.
+          type: String
+        - contextPath: Core.AppsecIssue.CVE_DESCRIPTION
+          description: The description of the CVE.
+          type: String
+        - contextPath: Core.AppsecIssue.ASSET_NAME
+          description: The name of the affected asset.
+          type: String
+        - contextPath: Core.AppsecIssue.PLATFORM_SEVERITY
+          description: The severity of the issue as determined by the platform.
+          type: String
+        - contextPath: Core.AppsecIssue.EPSS_SCORE
+          description: The Exploit Prediction Scoring System (EPSS) score.
+          type: Number
+        - contextPath: Core.AppsecIssue.CVSS_SCORE
+          description: The Common Vulnerability Scoring System (CVSS) score.
+          type: Number
+        - contextPath: Core.AppsecIssue.ASSIGNED_TO
+          description: The email of the user assigned to the issue.
+          type: String
+        - contextPath: Core.AppsecIssue.ASSIGNED_TO_PRETTY
+          description: The full name of the user assigned to the issue.
+          type: String
+        - contextPath: Core.AppsecIssue.AFFECTED_SOFTWARE
+          description: The software affected by the issue.
+          type: Unknown
+        - contextPath: Core.AppsecIssue.FIX_AVAILABLE
+          description: Indicates if a fix is available for the issue.
+          type: Boolean
+        - contextPath: Core.AppsecIssue.INTERNET_EXPOSED
+          description: Indicates if the asset is exposed to the internet.
+          type: Boolean
+        - contextPath: Core.AppsecIssue.HAS_KEV
+          description: Indicates if the issue is a Known Exploited Vulnerability (KEV).
+          type: Boolean
+        - contextPath: Core.AppsecIssue.EXPLOITABLE
+          description: Indicates if the issue is exploitable.
+          type: Boolean
+        - contextPath: Core.AppsecIssue.ASSET_IDS
+          description: The unique identifier for the asset.
+          type: String
   runonce: false
   script: "-"
   subtype: python3
