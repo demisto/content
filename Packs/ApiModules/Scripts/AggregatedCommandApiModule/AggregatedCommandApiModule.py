@@ -432,9 +432,11 @@ class ContextBuilder:
         for indicator_value, tim_context_result in self.tim_context.items():
             current_indicator: dict[str, Any] = {}
             if tim_indicator := [indicator for indicator in tim_context_result if indicator.get("Brand") == "TIM"]:
-                current_indicator.update(self.indicator.get_all_values_from(tim_indicator[0]) or {"Value": indicator_value})
+                if self.indicator.type == "file":
+                    current_indicator.update({"Hashes":self.indicator.get_all_values_from(tim_indicator[0])})
                 current_indicator.update(
                     {
+                        "Value": indicator_value,
                         "Status": pop_dict_value(tim_indicator[0], "Status"),
                         "ModifiedTime": pop_dict_value(tim_indicator[0], "ModifiedTime"),
                     }
@@ -812,10 +814,9 @@ class ReputationAggregatedCommand(AggregatedCommand):
 
         # If File, value fields contain list of fields such as MD5,SHA256... under the CustomFields
         # Otherwise the value of the indicator is unique under "value" key of the indicator
-        if isinstance(self.indicator.value_field, list):
-            mapped_indicator.update(self.indicator.get_all_values_from(customFields))
-        else:
-            mapped_indicator.update({self.indicator.value_field: ioc.get("value")})
+        if self.indicator.type == "file":
+            mapped_indicator.update({"Hashes": self.indicator.get_all_values_from(customFields)})
+        mapped_indicator.update({"Value": ioc.get("value")})
         return mapped_indicator
 
     def get_indicator_status_from_ioc(self, ioc: dict) -> str | None:
