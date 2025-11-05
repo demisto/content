@@ -132,9 +132,7 @@ def test_get_tags_not_found(requests_mock):
 
 
 def test_disable_or_enable_tag(requests_mock):
-    mock_response = util_load_json("test_data/delete_tag.json")
-    mock_response_get_tags = util_load_json("test_data/get_tags.json")
-    requests_mock.get(f"{BASE_URL}ingestion/tags/", json=mock_response_get_tags)
+    mock_response = util_load_json("test_data/disable_or_enable_tag.json")
     requests_mock.post(f"{BASE_URL}ingestion/tags/bulk-actions/", json=mock_response)
 
     client = Client(
@@ -142,10 +140,11 @@ def test_disable_or_enable_tag(requests_mock):
         access_id=ACCESS_ID,
         secret_key=SECRET_KEY,
         verify=False,
+        timeout=15,
         proxies={},
     )
 
-    args = {"tag_name": "test, test1"}
+    args = {"tag_id": "foo, bar", "action": "disabled"}
 
     response = disable_or_enable_tags_command(client, args)
     assert response.outputs[0] == mock_response
@@ -155,30 +154,22 @@ def test_disable_or_enable_tag(requests_mock):
     assert isinstance(response.raw_response, list)
     assert len(response.raw_response) == 2
 
-
-def test_delete_tags_no_input(requests_mock):
-    mock_response = util_load_json("test_data/delete_tag.json")
-    mock_response_get_tags = util_load_json("test_data/get_tags.json")
-    requests_mock.get(f"{BASE_URL}ingestion/tags/", json=mock_response_get_tags)
-    requests_mock.post(f"{BASE_URL}ingestion/tags/bulk-actions/", json=mock_response)
+def test_disable_or_enable_tag_no_inputs(requests_mock):
+    requests_mock.post(f"{BASE_URL}ingestion/tags/bulk-actions/", json=[])
 
     client = Client(
         base_url=BASE_URL,
         access_id=ACCESS_ID,
         secret_key=SECRET_KEY,
         verify=False,
+        timeout=15,
         proxies={},
     )
 
-    args = {}
-    response = delete_tag_command(client, args)
+    args = {"tag_id": "", "action": "disabled"}
+
+    response = disable_or_enable_tags_command(client, args)
     assert response.outputs is None
-    assert response.outputs_prefix is None
-    assert response.outputs_key_field is None
-
-    assert not isinstance(response.raw_response, list)
-    assert response.raw_response is None
-
 
 def test_whitelist_iocs_command(requests_mock):
     mock_response = util_load_json("test_data/whitelist_iocs.json")
@@ -290,7 +281,7 @@ def test_remove_whitelisted_ioc_command(requests_mock):
         proxies={},
     )
 
-    args = {"ids": "a,b,c"}
+    args = {"ids": "foo"}
 
     response = remove_whitelisted_ioc_command(client, args)
 
@@ -538,7 +529,7 @@ def test_add_analyst_score_command(requests_mock):
 
 def test_saved_result_set_command(requests_mock):
     mock_response = util_load_json("test_data/saved_result_set.json")
-    requests_mock.post(f"{BASE_URL}ingestion/rules/save_result_set")
+    requests_mock.get(f"{BASE_URL}ingestion/rules/save_result_set/")
 
     client = Client(
         base_url=BASE_URL,
@@ -548,7 +539,7 @@ def test_saved_result_set_command(requests_mock):
         proxies={},
     )
 
-    args = {"page": 1, "page_size": 1, "label_name": "test", "query": "type=indicator"}
+    args = {"page": 1, "page_size": 1, "label_name": "test", "query": "type=indicator", "version" : "v2"}
 
     response = saved_result_set_command(client, args)
 
