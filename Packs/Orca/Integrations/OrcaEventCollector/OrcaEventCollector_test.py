@@ -94,6 +94,7 @@ def test_client_get_alerts_request_payload(mocker, next_page_token, expected_sta
 # --- HELPER FUNCTION TESTS ---
 
 
+@freeze_time("2023-01-04T00:00:00")
 def test_add_time_key_to_alerts_corrected(mocker):
     """
     Given:
@@ -117,10 +118,10 @@ def test_add_time_key_to_alerts_corrected(mocker):
     expected = [
         {"data": {"CreatedAt": {"value": "2023-01-01T12:00:00Z"}}, "_time": "2023-01-01T12:00:00Z"},
         {"data": {"CreatedAt": {"value": "2023-01-02T13:00:00+00:00"}}, "_time": "2023-01-02T13:00:00Z"},
-        {"data": {"CreatedAt": {"value": None}}, "_time": None},
-        {"data": {"CreatedAt": {}}, "_time": None},
-        {"data": {}, "_time": None},
-        {"_time": None},
+        {"data": {"CreatedAt": {"value": None}}, "_time": "2023-01-04T00:00:00Z"},
+        {"data": {"CreatedAt": {}}, "_time": "2023-01-04T00:00:00Z"},
+        {"data": {}, "_time": "2023-01-04T00:00:00Z"},
+        {"_time": "2023-01-04T00:00:00Z"},
     ]
 
     result = add_time_key_to_alerts(alerts)

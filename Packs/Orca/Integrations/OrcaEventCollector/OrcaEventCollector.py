@@ -90,21 +90,49 @@ class Client(BaseClient):
 """ HELPER FUNCTIONS """
 
 
-def add_time_key_to_alerts(alerts: List[dict]) -> List[dict]:
+def add_time_key_to_alerts(alerts: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     """
-    Adds the _time key to the alerts.
+    Adds the _time key to the alerts with improved logging and clarity.
+    This function mutates the 'alerts' list in place and also returns it.
+
     Args:
-        alerts: List[Dict] - list of events to add the _time key to.
+        alerts: A list of alert dictionaries to process.
+
     Returns:
-        list: The events with the _time key.
+        The mutated list of alerts, now including the '_time' key.
     """
-    if alerts:
-        for alert in alerts:
-            create_time_str = alert.get("data", {}).get("CreatedAt", {}).get("value")
-            create_time = arg_to_datetime(arg=create_time_str)
-            alert["_time"] = create_time.strftime(DATE_FORMAT) if create_time else None
-            alert_id = alert.get("data", {}).get("AlertId", {}).get("value")
-            demisto.debug(f'{alert_id=} , {alert.get("_time")=}')
+    now_utc = datetime.now(timezone.utc)
+    fallback_time_str = now_utc.strftime(DATE_FORMAT)
+
+    if not alerts:
+        return alerts
+
+    for alert in alerts:
+        alert_data = alert.get("data", {})
+        create_time_str = alert_data.get("CreatedAt", {}).get("value")
+        alert_id = alert_data.get("AlertId", {}).get("value") or alert.get("id", "UNKNOWN_ID")
+        create_time = None
+        if create_time_str:
+            try:
+                create_time = arg_to_datetime(arg=create_time_str)
+            except Exception as e:
+                demisto.error(
+                    f"arg_to_datetime failed unexpectedly for AlertId: {alert_id} "
+                    f"with value '{create_time_str}', setting fallback time {now_utc}. Error: {e}"
+                )
+                create_time = now_utc
+
+        if create_time:
+            alert["_time"] = create_time.strftime(DATE_FORMAT)
+        else:
+            demisto.info(
+                f"Could not parse or find 'CreatedAt' value for AlertId: {alert_id}. "
+                f"Raw 'CreatedAt' value was: '{create_time_str}'. Setting '_time' to {fallback_time_str}."
+            )
+            alert["_time"] = fallback_time_str
+
+        demisto.debug(f"Processed AlertId: {alert_id}, final _time: {alert.get('_time')}")
+
     return alerts
 
 
@@ -180,7 +208,7 @@ def main() -> None:
         next_page_token = last_run.get("next_page_token")
 
         if command == "test-module":
-            return_results(orca_test_module(client, last_fetch, max_fetch))
+            return_results(orca_test_module(client, last_fetch, 3))
         elif command in ("fetch-events", "orca-security-get-events"):
             alerts, next_page_token = get_alerts(client, max_fetch, last_fetch, next_page_token)
 
