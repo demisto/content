@@ -37,7 +37,7 @@ jobs:
         echo "Disk usage: ${USAGE}%"
         if [ "$USAGE" -gt 75 ]; then
           echo "Cleaning old Docker images"
-          docker image prune -af --filter "until=48h" || true
+          docker image prune -af --filter "until=24h" || true
           echo "Disk usage after cleanup:"
           df -h
         else
