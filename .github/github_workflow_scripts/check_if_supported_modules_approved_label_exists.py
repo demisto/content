@@ -189,6 +189,7 @@ def is_supported_modules_modified(pr: PullRequest, file_path: str) -> bool:
 def check_pr_contains_supported_modules_changes(pr: PullRequest) -> bool:
     """
     Check if the PR contains any changes to 'supportedModules' field in YAML/JSON files.
+    This includes new files that contain 'supportedModules' field.
 
     Args:
         pr: GitHub PullRequest object
@@ -203,20 +204,20 @@ def check_pr_contains_supported_modules_changes(pr: PullRequest) -> bool:
                 continue
 
             try:
-                # Get the file content
-                response = requests.get(file.raw_url, timeout=10)
-                response.raise_for_status()
-                content = response.text
-
-                # Parse the content
-                parsed_content = parse_yml_or_json(content, file.filename)
-                if parsed_content is None:
-                    continue
-
-                # Check if file contains supportedModules
-                if has_supported_modules_field(parsed_content) and is_supported_modules_modified(pr, file.filename):
-                    print(f"Found modified 'supportedModules' in file: {file.filename}")
-                    return True
+                # For new files, just check if they contain supportedModules
+                if file.status == 'added':
+                    response = requests.get(file.raw_url, timeout=10)
+                    response.raise_for_status()
+                    content = response.text
+                    parsed_content = parse_yml_or_json(content, file.filename)
+                    if parsed_content and has_supported_modules_field(parsed_content):
+                        print(f"Found new file with 'supportedModules': {file.filename}")
+                        return True
+                # For modified files, check if supportedModules was modified
+                elif file.status == 'modified':
+                    if is_supported_modules_modified(pr, file.filename):
+                        print(f"Found modified 'supportedModules' in file: {file.filename}")
+                        return True
 
             except Exception as e:
                 print(f"Warning: Error processing {file.filename}: {str(e)}")
