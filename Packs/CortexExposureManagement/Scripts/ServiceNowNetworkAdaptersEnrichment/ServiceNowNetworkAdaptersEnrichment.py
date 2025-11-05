@@ -49,14 +49,15 @@ class ConfigurationItem:
 
 def get_command_results(command: str, args: dict[str, Any]) -> Union[dict[str, Any] | list]:
     """Execute a Demisto command and return the result."""
-    try:
-        command_results = demisto.executeCommand(command, args)
-        if command_results and isinstance(command_results, list) and command_results[0].get("Contents"):
-            return command_results[0]["Contents"].get("result", {})
-        return {}
-    except Exception as e:
-        demisto.error(f"Error executing command {command}: {str(e)}")
-        return {}
+    command_results = demisto.executeCommand(command, args)
+    if command_results and isinstance(command_results, list) and command_results[0].get("Contents"):
+        return command_results[0]["Contents"].get("result", {})
+    return {}
+
+
+def build_servicenow_url(instance_url: str, table: str, sys_id: str) -> str:
+    """Build ServiceNow navigation URL."""
+    return f"{instance_url}/nav_to.do?uri={table}.do?sys_id={sys_id}" if instance_url else ""
 
 
 def get_network_adapter(sid: str) -> NetworkAdapter:
@@ -64,6 +65,7 @@ def get_network_adapter(sid: str) -> NetworkAdapter:
     result = get_command_results(SERVICENOW_CMDB_RECORD_GET_BY_ID, {"class": CMDB_CI_NETWORK_ADAPTER, "sys_id": sid})
     if not isinstance(result, dict):
         result = {}
+
     attributes = result.get("attributes", {})
     sys_domain = attributes.get("sys_domain", {})
     instance_url = sys_domain.get("link", "").replace(DEFAULT_INSTANCE_URL_SUFFIX, "")
@@ -80,24 +82,30 @@ def get_network_adapter(sid: str) -> NetworkAdapter:
         related_configuration_item_name=cmdb_ci.get("display_value"),
         related_configuration_item_id=cmdb_ci.get("value"),
         instance_url=instance_url,
-        url=f"{instance_url}/nav_to.do?uri=cmdb_ci_network_adapter.do?sys_id={sid}" if instance_url else "",
+        url=build_servicenow_url(instance_url=instance_url, table="cmdb_ci_network_adapter", sys_id=sid) if instance_url else ""
     )
 
 
-def get_related_configuration_item(sid: str, instance_url: str) -> ConfigurationItem:
+def get_related_configuration_item(sid: str, instance_url:
+str) -> ConfigurationItem:
     """Fetch and parse related configuration item details from ServiceNow."""
     # First get the CI class
     result = get_command_results(SERVICENOW_CMDB_RECORD_GET_BY_ID, {"class": "cmdb_ci", "sys_id": sid})
     if not isinstance(result, dict):
         result = {}
+
     ci_class = result.get("attributes", {}).get("sys_class_name", "")
     if not ci_class:
-        return ConfigurationItem(sys_id=sid, url=f"{instance_url}/nav_to.do?uri=cmdb_ci.do?sys_id={sid}" if instance_url else "")
+        return ConfigurationItem(sys_id=sid,
+                                 url= build_servicenow_url(instance_url=instance_url,
+                                                           table="cmdb_ci",
+                                                           sys_id=sid) if instance_url else "")
 
     # Get full CI details with the specific class
     result = get_command_results(SERVICENOW_CMDB_RECORD_GET_BY_ID, {"class": ci_class, "sys_id": sid})
     if not isinstance(result, dict):
         result = {}
+
     attributes = result.get("attributes", {})
     assigned_to = attributes.get("assigned_to", {}) if isinstance(attributes.get("assigned_to"), dict) else {}
 
@@ -112,7 +120,7 @@ def get_related_configuration_item(sid: str, instance_url: str) -> Configuration
         os_version=attributes.get("os_version"),
         ci_class=ci_class,
         use=attributes.get("used_for"),
-        url=f"{instance_url}/nav_to.do?uri={ci_class}.do?sys_id={sid}" if instance_url else "",
+        url = build_servicenow_url(instance_url=instance_url, table=ci_class, sys_id=sid) if instance_url else ""
     )
 
 
