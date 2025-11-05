@@ -133,7 +133,7 @@ def get_file_diff(pr: PullRequest, file_path: str) -> str:
                 return file.patch or ""
         return ""
     except Exception as e:
-        print(f"⚠️  Warning: Could not get diff for {file_path}: {str(e)}")
+        print(f"Warning: Could not get diff for {file_path}: {str(e)}")
         return ""
 
 
@@ -152,6 +152,7 @@ def is_supported_modules_modified(pr: PullRequest, file_path: str) -> bool:
     if not diff:
         return False
 
+    print(diff)
     # First check if the 'supportedModules' field itself was modified
     if any(line.strip().startswith(('+', '-')) and 'supportedModules' in line for line in diff.split('\n')):
         return True
@@ -215,6 +216,7 @@ def check_pr_contains_supported_modules_changes(pr: PullRequest) -> bool:
 
                 # Parse the content
                 parsed_content = parse_yml_or_json(content, file.filename)
+                print(parsed_content)
                 if parsed_content is None:
                     continue
 
