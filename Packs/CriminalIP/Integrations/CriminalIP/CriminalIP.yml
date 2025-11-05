@@ -1,6 +1,7 @@
 category: Data Enrichment & Threat Intelligence
-sectionOrder:
+sectionorder:
 - Connect
+- Collect
 commonfields:
   id: CriminalIP
   version: -1

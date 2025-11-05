@@ -98,6 +98,8 @@ tasks:
     scriptarguments:
       Domain:
         simple: ${item}
+      items:                     
+        simple: ${inputs.Domains}
     separatecontext: false
     continueonerrortype: ""
     loop:
