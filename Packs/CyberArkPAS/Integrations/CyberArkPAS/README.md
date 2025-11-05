@@ -1135,12 +1135,6 @@ Remove a specific member from a safe.
 | --- | --- | --- |
 | CyberArkPAS.Safes.Members.Deleted | Boolean | Whether the safe member was deleted. | 
 
-| CyberArkPAS.Accounts.safeName | String | The safes where the accounts were created. |
-| CyberArkPAS.Accounts.secretManagement | String | Whether the accounts secrets were automatically managed by the CPM. |
-| CyberArkPAS.Accounts.secretType | String | The type of passwords. |
-| CyberArkPAS.Accounts.userName | String | The user names of the accounts. |
-| CyberArkPAS.Accounts.address | String | The names or addresses of the machine where the accounts are used. |
-
 #### Command Example
 
 ```!cyberark-pas-accounts-list limit=2```
@@ -1323,12 +1317,6 @@ Remove a specific member from a safe.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | CyberArkPAS.Safes.Members.Deleted | Boolean | Whether the safe member was deleted. | 
-
-| CyberArkPAS.Accounts.safeName | String | The safes where the accounts were created. |
-| CyberArkPAS.Accounts.secretManagement | String | Whether the accounts secrets were automatically managed by the CPM. |
-| CyberArkPAS.Accounts.secretType | String | The type of passwords. |
-| CyberArkPAS.Accounts.userName | String | The user names of the accounts. |
-| CyberArkPAS.Accounts.address | String | The names or addresses of the machine where the accounts are used. |
 
 #### Command Example
 
