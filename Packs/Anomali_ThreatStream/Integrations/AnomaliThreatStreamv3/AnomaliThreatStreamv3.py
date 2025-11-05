@@ -2566,7 +2566,7 @@ def submit_report(
     import_indicators=True,
     submission_classification="private",
     report_platform="WINDOWS7",
-    premium_sandbox="true", # this argumant is deprecated, must be "true"
+    premium_sandbox="true",  # this argumant is deprecated, must be "true"
     detail=None,
 ):
     """

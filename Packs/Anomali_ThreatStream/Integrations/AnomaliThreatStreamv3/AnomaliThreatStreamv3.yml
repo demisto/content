@@ -2695,7 +2695,7 @@ script:
       required: true
     - auto: PREDEFINED
       defaultValue: 'true'
-      description: Deprecated, must be set to 'true'
+      description: Deprecated, must be set to 'true'.
       name: premium_sandbox
       predefined:
       - 'false'
