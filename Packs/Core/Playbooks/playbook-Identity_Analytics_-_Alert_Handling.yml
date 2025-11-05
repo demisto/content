@@ -1640,12 +1640,22 @@ outputSections:
   description: Generic group for outputs
 outputs: []
 tests:
-- Test Playbook - Impossible Traveler - Enrichment
-- T1059 - Command and Scripting Interpreter - Test
-- Test Playbook - IOC Alert
-- Test Playbook - Identity Analytics - Alert Handling
+- No tests (auto formatted)
+marketplaces:
+- marketplacev2
+- platform
 fromversion: 6.10.0
-
 contentitemexportablefields:
   contentitemfields: {}
 system: true
+supportedModules:
+- X1
+- X3
+- X5
+- ENT_PLUS
+- agentix
+- cloud
+- cloud_posture
+- cloud_runtime_security
+- edr
+- xsiam
