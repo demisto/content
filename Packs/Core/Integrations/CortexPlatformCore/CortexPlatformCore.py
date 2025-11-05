@@ -543,6 +543,7 @@ def build_histogram_request_data(
     """
     filter_data = {
         "filter": filter_dict,
+
     }
     demisto.debug(f"{filter_data=}")
 
@@ -822,11 +823,13 @@ def get_asset_coverage_histogram_command(client: Client, args: dict):
     """
     Retrieves ASPM assets coverage histogrsm using the generic /api/webapp/get_histograms endpoint.
     """
-    #todo: default value for cilumns?
+    columns = argToList(args.get("columns"))
+    if not columns:
+        raise ValueError("Please provide column value to create the histogram")
     request_data = build_histogram_request_data(
         table_name=ASSET_COVERAGE_TABLE,
         filter_dict=build_asset_coverage_filter(args).to_dict(),
-        columns=args.get("columns"),
+        columns=columns,
         max_values_per_column=arg_to_number(args.get("max_values_per_column")) or 100
     )
 

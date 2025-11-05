@@ -158,6 +158,7 @@ script:
         - name: columns
           description: A list of fields for which to generate histograms.
           isArray: true
+          required: true
           predefined:
             - asset_name
             - business_application_names

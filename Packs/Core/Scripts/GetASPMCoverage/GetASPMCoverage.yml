@@ -164,7 +164,51 @@ outputs:
 - contextPath: Core.Coverage.Histogram.aspm_status_coverage.not_scanned.percentage
   description:
   type: Number
-
+- contextPath: Core.Coverage.Histogram.is_scanned_by_vulnerabilities.coverage_percentage
+  description:
+  type: Number
+- contextPath: Core.Coverage.Histogram.is_scanned_by_vulnerabilities.enabled.count
+  description:
+  type: Number
+- contextPath: Core.Coverage.Histogram.is_scanned_by_vulnerabilities.disabled.count
+  description:
+  type: Number
+- contextPath: Core.Coverage.Histogram.is_scanned_by_code_weakness.coverage_percentage
+  description:
+  type: Number
+- contextPath: Core.Coverage.Histogram.is_scanned_by_code_weakness.enabled.count
+  description:
+  type: Number
+- contextPath: Core.Coverage.Histogram.is_scanned_by_code_weakness.disabled.count
+  description:
+  type: Number
+- contextPath: Core.Coverage.Histogram.is_scanned_by_secrets.coverage_percentage
+  description:
+  type: Number
+- contextPath: Core.Coverage.Histogram.is_scanned_by_secrets.enabled.count
+  description:
+  type: Number
+- contextPath: Core.Coverage.Histogram.is_scanned_by_secrets.disabled.count
+  description:
+  type: Number
+- contextPath: Core.Coverage.Histogram.is_scanned_by_iac.coverage_percentage
+  description:
+  type: Number
+- contextPath: Core.Coverage.Histogram.is_scanned_by_iac.enabled.count
+  description:
+  type: Number
+- contextPath: Core.Coverage.Histogram.is_scanned_by_iac.disabled.count
+  description:
+  type: Number
+- contextPath: Core.Coverage.Histogram.is_scanned_by_malware.coverage_percentage
+  description:
+  type: Number
+- contextPath: Core.Coverage.Histogram.is_scanned_by_malware.enabled.count
+  description:
+  type: Number
+- contextPath: Core.Coverage.Histogram.is_scanned_by_malware.disabled.count
+  description:
+  type: Number
 - contextPath: Core.Coverage.Asset.asset_id
   description: The unique ID of the asset. Each asset is assigned a unique identifier in the system.
   type: String
