@@ -74,11 +74,12 @@ Permission: Directory.AccessAsUser.All(Delegated).
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user | User ID or userPrincipalName. | Required | 
+| user | User ID or userPrincipalName. | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### msgraph-user-unblock
 
 ***
@@ -685,11 +686,12 @@ Permission required: Directory.AccessAsUser.All (Delegated).
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user | User ID or userPrincipalName. | Required | 
+| user | User ID or userPrincipalName. | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### msgraph-user-generate-login-url
 
 ***
@@ -895,7 +897,7 @@ Permissions: - User.ReadWrite (Delegated & Application).
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user | User ID or userPrincipalName to update properties for. | Required | 
+| user | User ID or userPrincipalName to update properties for. | Required |
 
 #### Context Output
 
