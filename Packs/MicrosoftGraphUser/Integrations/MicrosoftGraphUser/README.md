@@ -62,7 +62,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### msgraph-user-account-disable
 
 ***
-Disables a user from all Office 365 applications, and prevents sign in. Note: This command disables user,
+Disables a user from all Office 365 applications, and prevents sign in. Note: This command disables a user,
 but does not terminate an existing session. Supported only in a self deployed app flow with the
 Permission: Directory.AccessAsUser.All(Delegated).
 
