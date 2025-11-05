@@ -1059,6 +1059,191 @@ Update an existing safe member.
 >|---|---|---|---|---|---|---|---|---|---|
 >| / | 1597863168 | 1597863168 | 89_3 | TestAccount1 | WinServerLocal | TestSafe1 | automaticManagementEnabled: true<br/>lastModifiedTime: 1597848768 | password | TestUser |
 
+### cyberark-pas-account-add
+
+***
+Add a new privileged account or SSH key to the vault.
+
+To run this command, you must have the following permissions in the Safe:
+
+* For updating account properties: *Update Password Properties*.
+* For renaming accounts: *Rename Accounts*.
+* For moving accounts to a different folder: *Move Accounts* or *Move Folders*.
+
+#### Base Command
+
+`cyberark-pas-account-add`
+
+#### Input
+
+| **Argument Name** | **Description**                      | **Required** |
+| --- |--------------------------------------| --- |
+| account_id | The unique ID of the account to add. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CyberArkPAS.Accounts.id | String | The unique ID of the account. |
+| CyberArkPAS.Accounts.categoryModificationTime | Number | The last modified date of the account. |
+| CyberArkPAS.Accounts.createdTime | Number | The date the account was created. |
+| CyberArkPAS.Accounts.name | String | The name of the account. |
+| CyberArkPAS.Accounts.platformId | String | The platform assigned to this account. |
+| CyberArkPAS.Accounts.safeName | String | The safe where the account was created. |
+| CyberArkPAS.Accounts.secretManagement | String | Whether the account secret is automatically managed by the CPM. |
+| CyberArkPAS.Accounts.secretType | String | The type of password. |
+| CyberArkPAS.Accounts.userName | String | The user name of the account. |
+| CyberArkPAS.Accounts.address | String | The name or address of the machine where the account will be used. |
+
+#### Command Example
+
+```!cyberark-pas-account-add safe_name=TestSafe account_name=TestAccount1 address=/ password=12345Aa platform_id=WinServerLocal username=TestUser```
+
+#### Context Example
+
+```
+{
+    "CyberArkPAS": {
+        "Accounts": {
+            "address": "/",
+            "categoryModificationTime": 1597863168,
+            "createdTime": 1597863168,
+            "id": "89_3",cyberark-pas-safe-member-add
+            "name": "NewName",
+            "platformId": "WinServerLocal",
+            "safeName": "TestSafe1",
+            "secretManagement": {
+### cyberark-pas-safe-member-delete
+
+***
+Remove a specific member from a safe.
+
+#### Base Command
+
+`cyberark-pas-safe-member-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| safe_name | The URL encoded name of the safe to delete a member from. | Required | 
+| member_name | The name of the safe member to delete from the safe’s list of members. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CyberArkPAS.Safes.Members.Deleted | Boolean | Whether the safe member was deleted. | 
+
+| CyberArkPAS.Accounts.safeName | String | The safes where the accounts were created. |
+| CyberArkPAS.Accounts.secretManagement | String | Whether the accounts secrets were automatically managed by the CPM. |
+| CyberArkPAS.Accounts.secretType | String | The type of passwords. |
+| CyberArkPAS.Accounts.userName | String | The user names of the accounts. |
+| CyberArkPAS.Accounts.address | String | The names or addresses of the machine where the accounts are used. |
+
+#### Command Example
+
+```!cyberark-pas-accounts-list limit=2```
+
+#### Context Example
+
+```
+{
+    "CyberArkPAS": {
+        "Accounts": [
+            {
+                "address": "string",
+                "categoryModificationTime": 1594569595,
+                "createdTime": 1594573679,
+                "id": "2_6",
+                "name": "account1",
+                "platformAccountProperties": {},
+                "platformId": "Oracle",
+                "safeName": "VaultInternal",
+                "secretManagement": {
+                    "automaticManagementEnabled": true,
+                    "lastModifiedTime": 159459279
+                },
+                "secretType": "password",
+                "userName": "string"
+            },
+            {
+                "address": "string",
+                "categoryModificationTime": 1583345933,
+                "createdTime": 157312750,
+                "id": "2_3",
+                "name": "cybr",
+                "platformAccountProperties": {},
+                "platformId": "WinDomain",
+                "safeName": "VaultInternal",
+                "secretManagement": {
+                    "automaticManagementEnabled": false,
+                    "lastModifiedTime": 157319750,
+                    "manualManagementReason": "NoReason"
+                },
+                "secretType": "password",
+                "userName": "vault"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### There are 2 accounts
+>
+>|address|categoryModificationTime|createdTime|id|name|platformAccountProperties|platformId|safeName|secretManagement|secretType|userName|
+>|---|---|---|---|---|---|---|---|---|---|---|
+>| string | 1594569595 | 1594573679 | 2_6 | account1 |  | Oracle | VaultInternal | automaticManagementEnabled: true<br/>lastModifiedTime: 1594559279 | password | string |
+>| string | 1583345933 | 1573127750 | 2_3 | cybr|  | WinDomain | VaultInternal | automaticManagementEnabled: false<br/>manualManagementReason: NoReason<br/>lastModifiedTime: 1573109750 | password | vault |
+
+### cyberark-pas-account-get-list-activity
+
+***
+Returns the activities of a specific account that is identified by its account ID.
+
+#### Base Command
+
+`cyberark-pas-account-get-list-activity`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The ID of the account whose activities will be retrieved. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CyberArkPAS.Activities.Action | String | The activity that was performed. |
+| CyberArkPAS.Activities.ActionID | Number | The code identification of the specific activity. |
+| CyberArkPAS.Activities.Alert | Boolean | Whether or not the activity caused an alert. |
+| CyberArkPAS.Activities.ClientID | String | The name of the account. |
+| CyberArkPAS.Activities.Date | Number | The date the account was created. |
+| CyberArkPAS.Activities.MoreInfo | String | More information about the activity. |
+| CyberArkPAS.Activities.Reason | String | The reason given by the user for the activity. |
+| CyberArkPAS.Activities.User | String | The user who performed the activity. |
+
+#### Command Example
+
+```!cyberark-pas-account-get-list-activity account_id= 89_3```
+
+#### Context Example
+
+```
+{
+    "CyberArkPAS": {
+        "Activities": [
+            {
+                "Action": "Rename File",
+                "ActionID": 124,
+                "Alert": false,
+                "ClientID": "1",
+                "Date": 1597863265,
+                "MoreInfo": "NewName",
+
 ### cyberark-pas-account-update
 
 ***
