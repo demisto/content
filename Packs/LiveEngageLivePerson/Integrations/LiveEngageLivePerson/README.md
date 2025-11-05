@@ -46,16 +46,6 @@ Fill in the parameters as follows:
 4. Click **Test** to validate the settings.
 5. Click **Save & Exit**.
 
-### Test the Integration
-
-After saving the configuration, click the **Test** button. This executes the `test-module` command, which performs a comprehensive, end-to-end check of the configuration:
-
-1. **Discovers the Event API domain** using your Account ID.
-2. **Fetches an OAuth 2.0 token** using your credentials against the Authorization Server URL.
-3. **Fetches a single event** from the Audit Trail API to confirm connectivity and permissions.
-
-You should see an **"ok"** message if the configuration is successful.
-
 ### Commands
 
 You can execute the following command from the XSIAM CLI, as part of an automation, or in a playbook.

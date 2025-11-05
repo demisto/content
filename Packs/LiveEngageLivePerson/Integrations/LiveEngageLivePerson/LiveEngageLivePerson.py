@@ -56,36 +56,44 @@ class Client(BaseClient):
         demisto.info(f"{INTEGRATION_PREFIX} Client initialized. Event API Base URL: {base_url}")
 
     @staticmethod
-    def _get_event_domain(account_id: str, verify: bool, proxies: dict) -> str:
+    def _get_event_domain(account_id: str, verify: bool, proxy: bool) -> str:
         """
         [STATIC] Uses the public LivePerson Domain API to find the correct
         base URL for the 'accountConfigReadOnly' service.
         This call is unauthenticated but MUST respect proxy/verify settings.
-        (Ref: Kickoff video @ 07:45-09:30)
+        We use a temporary BaseClient for this one-off call.
 
         :param account_id: The user's LivePerson Account ID.
         :param verify: SSL verification flag.
-        :param proxies: Proxies dictionary.
+        :param proxy: Proxy usage flag (boolean).
         :return: The full base URL for the event API (e.g., https://va.ac.liveperson.net)
         :raises: DemistoException if the domain cannot be fetched or parsed.
         """
-        domain_api_url = DOMAIN_API_URL.format(account_id=account_id)
-        demisto.info(f"{INTEGRATION_PREFIX} Attempting to fetch event domain from: {domain_api_url}")
+        # Note: DOMAIN_API_URL is a full URL, but BaseClient needs a base and a suffix.
+        # "https://api.liveperson.net/api/account/{account_id}/service/accountConfigReadOnly/baseURI.json?version=1.0"
+        domain_api_base = "https://api.liveperson.net"
+        domain_api_path = f"/api/account/{account_id}/service/accountConfigReadOnly/baseURI.json"
+        params = {"version": "1.0"}
+
+        demisto.info(f"{INTEGRATION_PREFIX} Attempting to fetch event domain from: {domain_api_base}{domain_api_path}")
 
         try:
-            res = requests.get(url=domain_api_url, verify=verify, proxies=proxies)
-            res.raise_for_status()
-        except requests.exceptions.HTTPError as e:
-            msg = f"Failed to fetch event domain. Status: {e.response.status_code}, Response: {e.response.text}"
-            demisto.error(f"{INTEGRATION_PREFIX} {msg}")
-            raise DemistoException(msg, e)
-        except requests.exceptions.RequestException as e:
-            msg = f"Failed to fetch event domain. Network error: {str(e)}"
+            # Use a temporary BaseClient. It will correctly handle proxy and verify.
+            temp_client = BaseClient(base_url=domain_api_base, verify=verify, proxy=proxy)
+            data = temp_client._http_request(
+                method="GET",
+                url_suffix=domain_api_path,
+                params=params,
+                resp_type="json",
+                ok_codes=(200,)
+            )
+        except DemistoException as e:
+            # BaseClient wraps HTTPError and RequestException in DemistoException
+            msg = f"Failed to fetch event domain. Error: {str(e)}"
             demisto.error(f"{INTEGRATION_PREFIX} {msg}")
             raise DemistoException(msg, e)
 
         try:
-            data = res.json()
             event_domain = data.get("baseURI")
             if not event_domain:
                 msg = f'Event domain API response missing "baseURI" field. Response: {data}'
@@ -95,49 +103,45 @@ class Client(BaseClient):
             demisto.info(f"{INTEGRATION_PREFIX} Successfully fetched event domain: {event_domain}")
             return f"https://{event_domain}"
 
-        except ValueError as e:
-            msg = f"Failed to parse event domain API response as JSON. Response: {res.text}"
+        except AttributeError as e:
+            # This handles if 'data' is not a dictionary as expected
+            msg = f"Failed to parse event domain API response. Expected JSON dict. Response: {data}"
             demisto.error(f"{INTEGRATION_PREFIX} {msg}")
             raise DemistoException(msg, e)
 
-    @staticmethod
-    def _get_access_token(auth_url: str, account_id: str, client_id: str, client_secret: str, verify: bool, proxies: dict) -> str:
+    def _get_access_token(self) -> str:
         """
-        [STATIC] Generates an OAuth 2.0 access token from the *authentication* server.
-        This call is separate from BaseClient's base_url but MUST
-        respect proxy/verify settings.
+        [INSTANCE] Generates an OAuth 2.0 access token from the *authentication* server.
+        This call is separate from the main base_url but MUST
+        respect the client's proxy/verify settings.
 
-        :param auth_url: The full auth server URL (e.g., https://sy.sentinel.liveperson.net)
-        :param account_id: The user's LivePerson Account ID.
-        :param client_id: OAuth Client ID.
-        :param client_secret: OAuth Client Secret.
-        :param verify: SSL verification flag.
-        :param proxies: Proxies dictionary.
         :return: A valid access token string.
         :raises: DemistoException if the token cannot be fetched or parsed.
         """
-        token_path = OAUTH_PATH_SUFFIX.format(account_id=account_id)
-        full_auth_url = urljoin(auth_url, token_path)
+        token_path = OAUTH_PATH_SUFFIX.format(account_id=self.account_id)
+        full_auth_url = urljoin(self.auth_url, token_path)
 
-        data = {"client_id": client_id, "client_secret": client_secret, "grant_type": "client_credentials"}
+        data = {"client_id": self.client_id, "client_secret": self.client_secret, "grant_type": "client_credentials"}
         headers = {"Content-Type": "application/x-www-form-urlencoded"}
 
-        demisto.info(f"{INTEGRATION_PREFIX} Attempting to get new OAuth 2.0 token from: {auth_url}")
+        demisto.info(f"{INTEGRATION_PREFIX} Attempting to get new OAuth 2.0 token from: {self.auth_url}")
 
         try:
-            res = requests.post(url=full_auth_url, data=data, headers=headers, verify=verify, proxies=proxies)
-            res.raise_for_status()
-        except requests.exceptions.HTTPError as e:
-            msg = f"Failed to get access token. Status: {e.response.status_code}, Response: {e.response.text}"
-            demisto.error(f"{INTEGRATION_PREFIX} {msg}")
-            raise DemistoException(msg, e)
-        except requests.exceptions.RequestException as e:
-            msg = f"Failed to get access token. Network error: {str(e)}"
+            token_data = super()._http_request(
+                method="POST",
+                full_url=full_auth_url,
+                data=data,
+                headers=headers,
+                resp_type="json",
+                ok_codes=(200,)
+            )
+        except DemistoException as e:
+            # BaseClient will raise DemistoException for HTTP errors or network issues
+            msg = f"Failed to get access token. Error: {str(e)}"
             demisto.error(f"{INTEGRATION_PREFIX} {msg}")
             raise DemistoException(msg, e)
 
         try:
-            token_data = res.json()
             access_token = token_data.get("access_token")
             if not access_token:
                 msg = f'Auth response missing "access_token" field. Response: {token_data}'
@@ -147,8 +151,8 @@ class Client(BaseClient):
             demisto.info(f"{INTEGRATION_PREFIX} Successfully retrieved new access token.")
             return access_token
 
-        except ValueError as e:
-            msg = f"Failed to parse auth response as JSON. Response: {res.text}"
+        except AttributeError as e:
+            msg = f"Failed to parse auth response. Expected JSON dict. Response: {token_data}"
             demisto.error(f"{INTEGRATION_PREFIX} {msg}")
             raise DemistoException(msg, e)
 
@@ -158,14 +162,7 @@ class Client(BaseClient):
         stored configuration and correctly configured proxy/verify settings.
         This updates the client's auth headers.
         """
-        access_token = self._get_access_token(
-            auth_url=self.auth_url,
-            account_id=self.account_id,
-            client_id=self.client_id,
-            client_secret=self.client_secret,
-            verify=self._verify,
-            proxies=self._proxies,
-        )
+        access_token = self._get_access_token()
         self._headers["Authorization"] = f"Bearer {access_token}"
 
     def _http_request(self, *args, **kwargs) -> dict[str, Any]:
@@ -186,6 +183,7 @@ class Client(BaseClient):
 
         except DemistoException as e:
             # If we get a 401/403, our token might be expired.
+            # Check the error message from BaseClient
             if "401" in str(e) or "403" in str(e):
                 demisto.info(
                     f"{INTEGRATION_PREFIX} Received 401/403 error. Token may be expired. " "Refreshing token and retrying."
@@ -229,6 +227,7 @@ class Client(BaseClient):
             demisto.debug(f"{INTEGRATION_PREFIX} Fetching page. Offset: {offset}, Limit: {events_to_fetch}")
 
             try:
+                # This call now goes through our _http_request override
                 response = self._http_request(method="POST", url_suffix=fetch_url_suffix, json_data=request_body)
 
                 events = response.get("data", [])
