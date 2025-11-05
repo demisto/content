@@ -807,7 +807,7 @@ def get_appsec_rule_ids_from_names(client: Client, rule_names: list[str]) -> lis
     return ids
 
 
-def core_create_policy_command(client: Client, args: dict) -> CommandResults:
+def create_policy_command(client: Client, args: dict) -> CommandResults:
     """
     Creates a new policy in Cortex Platform with defined conditions, scope, and triggers.
     """
@@ -816,11 +816,11 @@ def core_create_policy_command(client: Client, args: dict) -> CommandResults:
         raise DemistoException("Policy name is required.")
 
     description = args.get("description", "")
-    asset_group_ids = core_create_policy_get_asset_groups(client, args)
+    asset_group_ids = create_policy_get_asset_groups(client, args)
 
-    conditions = core_create_policy_build_conditions(client, args)
-    scope = core_create_policy_build_scope(args)
-    triggers = core_create_policy_build_triggers(args)
+    conditions = create_policy_build_conditions(client, args)
+    scope = create_policy_build_scope(args)
+    triggers = create_policy_build_triggers(args)
 
     # Ensure at least one trigger is enabled
     if not any(trigger.get("isEnabled") for trigger in triggers.values()):
@@ -855,12 +855,12 @@ def core_create_policy_command(client: Client, args: dict) -> CommandResults:
 
 # -------- Helper Builders -------- #
 
-def core_create_policy_get_asset_groups(client, args):
+def create_policy_get_asset_groups(client, args):
     names = argToList(args.get("asset_group_names"))
     return get_asset_group_ids_from_names(client, names) if names else []
 
 
-def core_create_policy_build_conditions(client, args):
+def create_policy_build_conditions(client, args):
     builder = FilterBuilder()
 
     # Finding Type
@@ -923,7 +923,7 @@ def core_create_policy_build_conditions(client, args):
     return builder.to_dict()
 
 
-def core_create_policy_build_scope(args):
+def create_policy_build_scope(args):
     builder = FilterBuilder()
 
     # Category
@@ -956,7 +956,7 @@ def core_create_policy_build_scope(args):
     return builder.to_dict()
 
 
-def core_create_policy_build_triggers(args):
+def create_policy_build_triggers(args):
     def trigger(enabled, report_key, block_key=None, comment_key=None, override_key=None):
         if enabled is None:
             return {}
