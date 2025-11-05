@@ -216,11 +216,13 @@ def check_pr_contains_supported_modules_changes(pr: PullRequest) -> bool:
 
                 # Parse the content
                 parsed_content = parse_yml_or_json(content, file.filename)
-                print(parsed_content)
                 if parsed_content is None:
                     continue
 
                 # Check if file contains supportedModules
+                print(f"{file.filename} and {file}")
+                print(f"has_supported_modules -> {has_supported_modules_field(parsed_content)}")
+                print(f"is_supported_modules_modified -> {is_supported_modules_modified(pr, file.filename)}")
                 if has_supported_modules_field(parsed_content) and is_supported_modules_modified(pr, file.filename):
                     print(f"Found modified 'supportedModules' in file: {file.filename}")
                     return True
