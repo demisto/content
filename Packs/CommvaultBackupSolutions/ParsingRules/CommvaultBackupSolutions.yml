@@ -1,0 +1,6 @@
+name: Commvault Backup Solutions Parsing Rule
+id: Commvault_Backup_Solutions_ParsingRule
+fromversion: 8.2.0
+tags: []
+rules: ''
+samples: ''

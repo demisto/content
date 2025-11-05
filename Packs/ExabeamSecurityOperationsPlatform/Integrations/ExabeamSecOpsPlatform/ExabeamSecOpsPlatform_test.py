@@ -626,7 +626,35 @@ def test_last_case_time_and_ids():
 @pytest.mark.parametrize(
     "mock_response, params, last_run, expected_incidents, expected_last_run",
     [
-        (
+        pytest.param(
+            CommandResults(
+                outputs_prefix="ExabeamPlatform.Case",
+                readable_output="",
+                outputs=[
+                    {
+                        "caseId": "aa11",
+                        "alertName": "alert1",
+                        "caseCreationTimestamp": 1723212955501076,
+                    },
+                    {
+                        "caseId": "bb22",
+                        "alertName": "alert2",
+                        "caseCreationTimestamp": 1723212955501077,
+                    },
+                ],
+            ),
+            {"fetch_query": "priority:LOW", "max_fetch": "2", "first_fetch": "3 days"},
+            {"time": "2024-08-12T01:55:35Z", "last_ids": ["aa11"]},
+            [
+                {
+                    "Name": "alert2",
+                    "rawJSON": '{"caseId": "bb22", "alertName": "alert2", "caseCreationTimestamp": "2024-08-09T14:15:55Z"}',
+                }
+            ],
+            {"time": "2024-08-09T14:15:55Z", "last_ids": ["bb22"]},
+            id="different incident creation time",
+        ),
+        pytest.param(
             CommandResults(
                 outputs_prefix="ExabeamPlatform.Case",
                 readable_output="",
@@ -644,14 +672,50 @@ def test_last_case_time_and_ids():
                 ],
             ),
             {"fetch_query": "priority:LOW", "max_fetch": "2", "first_fetch": "3 days"},
-            {"time": "2024-08-12T01:55:36Z", "last_ids": ["aa11"]},
+            {"time": "2024-08-09T14:15:55Z", "last_ids": ["aa11"]},
             [
                 {
                     "Name": "alert2",
                     "rawJSON": '{"caseId": "bb22", "alertName": "alert2", "caseCreationTimestamp": "2024-08-09T14:15:55Z"}',
-                }
+                },
             ],
-            {"time": "2024-08-09T14:15:55Z", "last_ids": ["bb22"]},
+            {"time": "2024-08-09T14:15:55Z", "last_ids": ["aa11", "bb22"]},
+            id="same incident creation time, expected to add bb22 to last run and create incident just for bb22",
+        ),
+        pytest.param(
+            CommandResults(
+                outputs_prefix="ExabeamPlatform.Case",
+                readable_output="",
+                outputs=[
+                    {
+                        "caseId": "aa11",
+                        "alertName": "alert1",
+                        "caseCreationTimestamp": 1723212955501077,
+                    }
+                ],
+            ),
+            {"fetch_query": "priority:LOW", "max_fetch": "2", "first_fetch": "3 days"},
+            {"time": "2024-08-09T14:15:55Z", "last_ids": ["aa11"]},
+            [],
+            {"time": "2024-08-09T14:15:55Z", "last_ids": ["aa11"]},
+            id="same incident again, expected to keep it in last run and not create incident",
+        ),
+        pytest.param(
+            CommandResults(
+                outputs_prefix="ExabeamPlatform.Case",
+                readable_output="",
+                outputs=[{"caseId": "cc33", "alertName": "alert3", "caseCreationTimestamp": 1723213855501000}],
+            ),
+            {"fetch_query": "priority:LOW", "max_fetch": "2", "first_fetch": "3 days"},
+            {"time": "2024-08-09T14:15:55Z", "last_ids": ["aa11", "bb22"]},
+            [
+                {
+                    "Name": "alert3",
+                    "rawJSON": '{"caseId": "cc33", "alertName": "alert3", "caseCreationTimestamp": "2024-08-09T14:30:55Z"}',
+                },
+            ],
+            {"time": "2024-08-09T14:30:55Z", "last_ids": ["cc33"]},
+            id="new incident, expected to create incident and update last run",
         ),
     ],
 )

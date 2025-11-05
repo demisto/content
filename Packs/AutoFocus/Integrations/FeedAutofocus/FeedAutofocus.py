@@ -491,6 +491,9 @@ def fetch_indicators_command(client: Client, feed_tags: list, tlp_color: str | N
 
 
 def main():
+    if is_demisto_version_ge("8.12.0") and datetime.now() > datetime(2025, 12, 1):
+        return_error("AutoFocus Feed integration is deprecated. Please use Unit 42 Feed integration instead.")
+
     params = demisto.params()
     feed_tags = argToList(params.get("feedTags"))
     tlp_color = params.get("tlp_color")
