@@ -47,7 +47,7 @@ class ConfigurationItem:
         return asdict(self)
 
 
-def get_command_results(command: str, args: dict[str, Any]) -> Union[dict[str, Any] , list]:
+def get_command_results(command: str, args: dict[str, Any]) -> Union[dict[str, Any], list]:
     """Execute a Demisto command and return the result."""
     command_results = demisto.executeCommand(command, args)
     if command_results and isinstance(command_results, list) and command_results[0].get("Contents"):
@@ -82,12 +82,11 @@ def get_network_adapter(sid: str) -> NetworkAdapter:
         related_configuration_item_name=cmdb_ci.get("display_value"),
         related_configuration_item_id=cmdb_ci.get("value"),
         instance_url=instance_url,
-        url=build_servicenow_url(instance_url=instance_url, table="cmdb_ci_network_adapter", sys_id=sid) if instance_url else ""
+        url=build_servicenow_url(instance_url=instance_url, table="cmdb_ci_network_adapter", sys_id=sid) if instance_url else "",
     )
 
 
-def get_related_configuration_item(sid: str, instance_url:
-str) -> ConfigurationItem:
+def get_related_configuration_item(sid: str, instance_url: str) -> ConfigurationItem:
     """Fetch and parse related configuration item details from ServiceNow."""
     # First get the CI class
     result = get_command_results(SERVICENOW_CMDB_RECORD_GET_BY_ID, {"class": "cmdb_ci", "sys_id": sid})
@@ -96,10 +95,9 @@ str) -> ConfigurationItem:
 
     ci_class = result.get("attributes", {}).get("sys_class_name", "")
     if not ci_class:
-        return ConfigurationItem(sys_id=sid,
-                                 url= build_servicenow_url(instance_url=instance_url,
-                                                           table="cmdb_ci",
-                                                           sys_id=sid) if instance_url else "")
+        return ConfigurationItem(
+            sys_id=sid, url=build_servicenow_url(instance_url=instance_url, table="cmdb_ci", sys_id=sid) if instance_url else ""
+        )
 
     # Get full CI details with the specific class
     result = get_command_results(SERVICENOW_CMDB_RECORD_GET_BY_ID, {"class": ci_class, "sys_id": sid})
@@ -120,7 +118,7 @@ str) -> ConfigurationItem:
         os_version=attributes.get("os_version"),
         ci_class=ci_class,
         use=attributes.get("used_for"),
-        url = build_servicenow_url(instance_url=instance_url, table=ci_class, sys_id=sid) if instance_url else ""
+        url=build_servicenow_url(instance_url=instance_url, table=ci_class, sys_id=sid) if instance_url else "",
     )
 
 
