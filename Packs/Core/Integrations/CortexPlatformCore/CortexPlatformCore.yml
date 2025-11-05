@@ -1361,14 +1361,14 @@ script:
         required: true
       - description: Whether to include the original vulnerable code block.
         name: show_code_block
-        defaultValue: true
+        defaultValue: "true"
         auto: PREDEFINED
         predefined:
         - "true"
         - "false"
       - description: Whether to include manual remediation instructions.
         name: show_remediation_instruction
-        defaultValue: false
+        defaultValue: "true"
         auto: PREDEFINED
         predefined:
         - "true"
@@ -1379,7 +1379,7 @@ script:
         predefined:
         - "true"
         - "false"
-        defaultValue: true
+        defaultValue: "true"
       name: core-appsec-suggest-fix
       description: Retrieve comprehensive fix suggestions for a specific application security issue with customizable response options.
       outputs:
