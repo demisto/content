@@ -59,6 +59,7 @@ def test_create_tag(requests_mock):
         access_id=ACCESS_ID,
         secret_key=SECRET_KEY,
         verify=False,
+        timeout=15,
         proxies={},
     )
 
@@ -82,6 +83,7 @@ def test_create_tag_command_already_exists(requests_mock):
         access_id=ACCESS_ID,
         secret_key=SECRET_KEY,
         verify=False,
+        timeout=15,
         proxies={},
     )
 
@@ -100,6 +102,7 @@ def test_get_tags(requests_mock):
         access_id=ACCESS_ID,
         secret_key=SECRET_KEY,
         verify=False,
+        timeout=15,
         proxies={},
     )
 
@@ -122,6 +125,7 @@ def test_get_tags_not_found(requests_mock):
         access_id=ACCESS_ID,
         secret_key=SECRET_KEY,
         verify=False,
+        timeout=15,
         proxies={},
     )
 
@@ -152,7 +156,8 @@ def test_disable_or_enable_tag(requests_mock):
     assert response.outputs_key_field == "result"
 
     assert isinstance(response.raw_response, list)
-    assert len(response.raw_response) == 2
+    assert len(response.raw_response) == 1
+
 
 def test_disable_or_enable_tag_no_inputs(requests_mock):
     requests_mock.post(f"{BASE_URL}ingestion/tags/bulk-actions/", json=[])
@@ -171,6 +176,7 @@ def test_disable_or_enable_tag_no_inputs(requests_mock):
     response = disable_or_enable_tags_command(client, args)
     assert response.outputs is None
 
+
 def test_whitelist_iocs_command(requests_mock):
     mock_response = util_load_json("test_data/whitelist_iocs.json")
     requests_mock.post(f"{BASE_URL}conversion/allowed_indicators/", json=mock_response)
@@ -180,6 +186,7 @@ def test_whitelist_iocs_command(requests_mock):
         access_id=ACCESS_ID,
         secret_key=SECRET_KEY,
         verify=False,
+        timeout=15,
         proxies={},
     )
 
@@ -205,6 +212,7 @@ def test_whitelist_iocs_command_fallback(requests_mock):
         access_id=ACCESS_ID,
         secret_key=SECRET_KEY,
         verify=False,
+        timeout=15,
         proxies={},
     )
 
@@ -230,6 +238,7 @@ def test_get_whitelist_iocs_command_fallback(requests_mock):
         access_id=ACCESS_ID,
         secret_key=SECRET_KEY,
         verify=False,
+        timeout=15,
         proxies={},
     )
 
@@ -254,6 +263,7 @@ def test_get_whitelist_iocs_command(requests_mock):
         access_id=ACCESS_ID,
         secret_key=SECRET_KEY,
         verify=False,
+        timeout=15,
         proxies={},
     )
 
@@ -270,18 +280,20 @@ def test_get_whitelist_iocs_command(requests_mock):
 
 
 def test_remove_whitelisted_ioc_command(requests_mock):
+    mock_id = "foo"
     mock_response = util_load_json("test_data/remove_whitelist_ioc.json")
-    requests_mock.delete(f"{BASE_URL}conversion/allowed_indicators/", json=mock_response)
+    requests_mock.delete(f"{BASE_URL}conversion/allowed_indicators/{mock_id}/", json=mock_response)
 
     client = Client(
         base_url=BASE_URL,
         access_id=ACCESS_ID,
         secret_key=SECRET_KEY,
         verify=False,
+        timeout=15,
         proxies={},
     )
 
-    args = {"ids": "foo"}
+    args = {"ids": mock_id}
 
     response = remove_whitelisted_ioc_command(client, args)
 
@@ -301,6 +313,7 @@ def test_get_threat_data_command(requests_mock):
         access_id=ACCESS_ID,
         secret_key=SECRET_KEY,
         verify=False,
+        timeout=15,
         proxies={},
     )
 
@@ -327,6 +340,7 @@ def test_get_saved_searches_command(requests_mock):
         access_id=ACCESS_ID,
         secret_key=SECRET_KEY,
         verify=False,
+        timeout=15,
         proxies={},
     )
 
@@ -353,6 +367,7 @@ def test_get_server_collections_command(requests_mock):
         access_id=ACCESS_ID,
         secret_key=SECRET_KEY,
         verify=False,
+        timeout=15,
         proxies={},
     )
 
@@ -379,6 +394,7 @@ def test_get_actions_command(requests_mock):
         access_id=ACCESS_ID,
         secret_key=SECRET_KEY,
         verify=False,
+        timeout=15,
         proxies={},
     )
 
@@ -410,6 +426,7 @@ def test_add_indicator_as_false_positive_command(requests_mock):
         access_id=ACCESS_ID,
         secret_key=SECRET_KEY,
         verify=False,
+        timeout=15,
         proxies={},
     )
 
@@ -436,6 +453,7 @@ def test_add_ioc_manual_review_command(requests_mock):
         access_id=ACCESS_ID,
         secret_key=SECRET_KEY,
         verify=False,
+        timeout=15,
         proxies={},
     )
 
@@ -459,6 +477,7 @@ def test_deprecate_ioc_command(requests_mock):
         access_id=ACCESS_ID,
         secret_key=SECRET_KEY,
         verify=False,
+        timeout=15,
         proxies={},
     )
 
@@ -482,6 +501,7 @@ def test_add_analyst_tlp_command(requests_mock):
         access_id=ACCESS_ID,
         secret_key=SECRET_KEY,
         verify=False,
+        timeout=15,
         proxies={},
     )
 
@@ -509,6 +529,7 @@ def test_add_analyst_score_command(requests_mock):
         access_id=ACCESS_ID,
         secret_key=SECRET_KEY,
         verify=False,
+        timeout=15,
         proxies={},
     )
 
@@ -529,17 +550,18 @@ def test_add_analyst_score_command(requests_mock):
 
 def test_saved_result_set_command(requests_mock):
     mock_response = util_load_json("test_data/saved_result_set.json")
-    requests_mock.get(f"{BASE_URL}ingestion/rules/save_result_set/")
+    requests_mock.get(f"{BASE_URL}ingestion/rules/save_result_set/", json=mock_response)
 
     client = Client(
         base_url=BASE_URL,
         access_id=ACCESS_ID,
         secret_key=SECRET_KEY,
         verify=False,
+        timeout=15,
         proxies={},
     )
 
-    args = {"page": 1, "page_size": 1, "label_name": "test", "query": "type=indicator", "version" : "v2"}
+    args = {"page": 1, "page_size": 1, "label_name": "test", "query": "type=indicator", "version": "v2"}
 
     response = saved_result_set_command(client, args)
 
@@ -561,6 +583,7 @@ def test_add_tag_indicator_updation_command(requests_mock):
         access_id=ACCESS_ID,
         secret_key=SECRET_KEY,
         verify=False,
+        timeout=15,
         proxies={},
     )
 
@@ -596,6 +619,7 @@ def test_remove_tag_indicator_updation_command(requests_mock):
         access_id=ACCESS_ID,
         secret_key=SECRET_KEY,
         verify=False,
+        timeout=15,
         proxies={},
     )
 
@@ -626,6 +650,7 @@ def test_search_for_tag_command(requests_mock):
         access_id=ACCESS_ID,
         secret_key=SECRET_KEY,
         verify=False,
+        timeout=15,
         proxies={},
     )
 
@@ -652,6 +677,7 @@ def test_get_indicator_details_command(requests_mock):
         access_id=ACCESS_ID,
         secret_key=SECRET_KEY,
         verify=False,
+        timeout=15,
         proxies={},
     )
 
@@ -678,6 +704,7 @@ def test_get_indicator_tags_command(requests_mock):
         access_id=ACCESS_ID,
         secret_key=SECRET_KEY,
         verify=False,
+        timeout=15,
         proxies={},
     )
 
@@ -701,6 +728,7 @@ def test_get_indicator_relations_command(requests_mock):
         access_id=ACCESS_ID,
         secret_key=SECRET_KEY,
         verify=False,
+        timeout=15,
         proxies={},
     )
 
@@ -724,6 +752,7 @@ def test_get_indicator_observations_command(requests_mock):
         access_id=ACCESS_ID,
         secret_key=SECRET_KEY,
         verify=False,
+        timeout=15,
         proxies={},
     )
 
@@ -747,6 +776,7 @@ def test_get_conversion_feed_source_command(requests_mock):
         access_id=ACCESS_ID,
         secret_key=SECRET_KEY,
         verify=False,
+        timeout=15,
         proxies={},
     )
 
@@ -770,6 +800,7 @@ def test_get_lookup_threat_data_command(requests_mock):
         access_id=ACCESS_ID,
         secret_key=SECRET_KEY,
         verify=False,
+        timeout=15,
         proxies={},
     )
 
@@ -798,6 +829,7 @@ def test_domain(requests_mock):
         access_id=ACCESS_ID,
         secret_key=SECRET_KEY,
         verify=False,
+        timeout=15,
         proxies={},
     )
 
@@ -827,6 +859,7 @@ def test_url(requests_mock):
         access_id=ACCESS_ID,
         secret_key=SECRET_KEY,
         verify=False,
+        timeout=15,
         proxies={},
     )
 
@@ -856,6 +889,7 @@ def test_ip(requests_mock):
         access_id=ACCESS_ID,
         secret_key=SECRET_KEY,
         verify=False,
+        timeout=15,
         proxies={},
     )
 
@@ -885,6 +919,7 @@ def test_file(requests_mock):
         access_id=ACCESS_ID,
         secret_key=SECRET_KEY,
         verify=False,
+        timeout=15,
         proxies={},
     )
 
@@ -914,6 +949,7 @@ def test_get_all_notes(requests_mock):
         access_id=ACCESS_ID,
         secret_key=SECRET_KEY,
         verify=False,
+        timeout=15,
         proxies={},
     )
 
@@ -941,6 +977,7 @@ def test_get_note_details(requests_mock):
         access_id=ACCESS_ID,
         secret_key=SECRET_KEY,
         verify=False,
+        timeout=15,
         proxies={},
     )
 
@@ -964,6 +1001,7 @@ def test_create_note(requests_mock):
         access_id=ACCESS_ID,
         secret_key=SECRET_KEY,
         verify=False,
+        timeout=15,
         proxies={},
     )
 
@@ -992,6 +1030,7 @@ def test_update_note(requests_mock):
         access_id=ACCESS_ID,
         secret_key=SECRET_KEY,
         verify=False,
+        timeout=15,
         proxies={},
     )
 
@@ -1021,6 +1060,7 @@ def test_delete_note(requests_mock):
         access_id=ACCESS_ID,
         secret_key=SECRET_KEY,
         verify=False,
+        timeout=15,
         proxies={},
     )
 
@@ -1044,6 +1084,7 @@ def test_make_request_get(requests_mock):
         access_id=ACCESS_ID,
         secret_key=SECRET_KEY,
         verify=False,
+        timeout=15,
         proxies={},
     )
 
@@ -1072,6 +1113,7 @@ def test_make_request_post(requests_mock):
         access_id=ACCESS_ID,
         secret_key=SECRET_KEY,
         verify=False,
+        timeout=15,
         proxies={},
     )
 
@@ -1108,6 +1150,7 @@ def test_make_request_put(requests_mock):
         access_id=ACCESS_ID,
         secret_key=SECRET_KEY,
         verify=False,
+        timeout=15,
         proxies={},
     )
 
@@ -1144,6 +1187,7 @@ def test_make_request_delete(requests_mock):
         access_id=ACCESS_ID,
         secret_key=SECRET_KEY,
         verify=False,
+        timeout=15,
         proxies={},
     )
 
@@ -1183,6 +1227,7 @@ def test_cve_command(requests_mock):
         access_id=ACCESS_ID,
         secret_key=SECRET_KEY,
         verify=False,
+        timeout=15,
         proxies={},
     )
 

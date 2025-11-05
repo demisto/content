@@ -1,17 +1,96 @@
-{"next": "threat-data/list/?page=2&page_size=1", "page_size": 1, "previous": 
-	null, "results": [{"analyst_score": null, "analyst_tlp": null, 
-	"confidence_score": null, "confidence_type": "ctix", "country": null, 
-	"created": 1652111918, "ctix_created": 1652111957, "ctix_modified": 
-	1652111957, "first_seen": null, "id": 
-	"670afacb-2f72-42fe-84cc-b2022ba6a7ed", "indicator_type": null, "ioc_type": 
-	null, "is_actioned": false, "is_deprecated": false, "is_false_positive": 
-	false, "is_reviewed": false, "is_revoked": false, "is_watchlist": false, 
-	"is_whitelisted": false, "last_seen": null, "modified": 1652111949, "name": 
-	"Test12344", "null": [], "primary_attribute": null, "published_collections": 
-	[], "risk_severity": null, "source_collections": [{"id": 
-	"32b98724-8625-4af2-ad83-43b4b5c50885", "name": "Test12344"}], 
-	"source_confidence": "NONE", "sources": [{"id": 
-	"5968d895-424f-4271-a1d3-2b01041a17bb", "name": "Test12344", "source_type": 
-	"WEB_SCRAPPER"}], "sub_type": null, "subscriber_collections": [], 
-	"subscribers": [], "tags": [], "tlp": "AMBER", "type": "report", 
-	"valid_from": null, "valid_until": null}], "total": 353243}
+{
+  "next": null,
+  "previous": null,
+  "page_size": 1,
+  "total": 1,
+  "results": [
+    {
+      "id": "00000000-0000-4000-8000-000000000000",
+      "ctix_created": 1700000000,
+      "ctix_modified": 1700000000,
+      "version": "vX",
+      "ctix_tags": [
+        {
+          "id": "00000000-0000-4000-8000-000000000001",
+          "icon": null,
+          "name": "mock-tag",
+          "theme": "blue",
+          "groups": [],
+          "created": 1700000000,
+          "modified": 1700000000,
+          "tag_type": {
+            "id": "user",
+            "name": "User"
+          },
+          "is_active": true,
+          "created_by": {
+            "id": "00000000-0000-4000-8000-000000000010",
+            "email": "system@example.com",
+            "last_name": "System",
+            "first_name": "Mock"
+          },
+          "colour_code": "#0068FA",
+          "description": "",
+          "modified_by": {
+            "id": "00000000-0000-4000-8000-000000000010",
+            "email": "system@example.com",
+            "last_name": "System",
+            "first_name": "Mock"
+          },
+          "groups_count": 0
+        }
+      ],
+      "data": [
+        {
+          "id": "00000000-0000-4000-8000-000000000100",
+          "name": "example.test",
+          "tags": [
+            "test:category",
+            "test:to_ids",
+            "TEST:Context",
+            "TEST:Confidence:5",
+            "TEST:Priority:1"
+          ],
+          "country": null,
+          "created": 1700000000,
+          "sources": [
+            {
+              "tlp": "AMBER",
+              "name": "Mock Source",
+              "score": 100,
+              "last_seen": null,
+              "first_seen": 1700000000
+            }
+          ],
+          "ctix_tlp": null,
+          "ioc_type": "domain-name",
+          "modified": 1700000000,
+          "sdo_name": "example.test",
+          "sdo_type": "indicator",
+          "severity": "UNKNOWN",
+          "ctix_score": 50,
+          "is_revoked": false,
+          "source_tlp": "AMBER",
+          "valid_from": 1700000000,
+          "analyst_tlp": null,
+          "is_actioned": false,
+          "is_reviewed": false,
+          "valid_until": 1710000000,
+          "ctix_created": 1700000000,
+          "is_whitelist": false,
+          "analyst_score": null,
+          "ctix_modified": 1700000000,
+          "custom_scores": null,
+          "is_deprecated": false,
+          "indicator_type": {
+            "type": "domain-name",
+            "attribute_field": "value"
+          },
+          "is_false_positive": false
+        }
+      ],
+      "timestamp": 1700000000,
+      "title": "Mock Package From CTIX"
+    }
+  ]
+}

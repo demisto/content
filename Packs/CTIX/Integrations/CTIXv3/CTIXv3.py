@@ -144,7 +144,7 @@ class Client(BaseClient):
         params["Signature"] = self.signature(expires)
         return params
 
-    def get_http_request(self, full_url: str, payload: dict = None, fallback_full_url: str = None,params: dict = None, **kwargs):
+    def get_http_request(self, full_url: str, payload: dict = None, fallback_full_url: str = None, params: dict = None, **kwargs):
         """
         GET HTTP Request
 
@@ -333,7 +333,7 @@ class Client(BaseClient):
         """
         url_suffix = "ingestion/tags/bulk-actions/"
         client_url = self.base_url + url_suffix
-        return self.post_http_request(client_url, {"ids": tag_ids, "action": action}, {"component" : "tags"})
+        return self.post_http_request(client_url, {"ids": tag_ids, "action": action}, {"component": "tags"})
 
     def whitelist_iocs(self, ioc_type, values, reason):
         url_suffix = "conversion/allowed_indicators/"  # for CTIX >= 3.6
@@ -361,7 +361,7 @@ class Client(BaseClient):
         params = {"page": page, "page_size": page_size}
         if q:
             params["q"] = q  # type: ignore
-        return self.get_http_request(client_url, {}, fallback_full_url=fallback_client_url, **params)
+        return self.get_http_request(client_url, {}, fallback_full_url=fallback_client_url, params=params)
 
     def remove_whitelisted_ioc(self, whitelist_id: str):
         """Removes whitelisted ioc with given `whitelist_id`
@@ -964,7 +964,7 @@ def get_tags_command(client: Client, args=dict[str, Any]) -> List[CommandResults
         return results
 
 
-def disable_or_enable_tags_command(client : Client, args: dict[str, Any]) -> CommandResults:
+def disable_or_enable_tags_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Disable/Enable Tags command
 
@@ -973,9 +973,9 @@ def disable_or_enable_tags_command(client : Client, args: dict[str, Any]) -> Com
     :return CommandResults: XSOAR based result
     """
     tag_ids = argToList(args.get("tag_id"))
-    action = args.get("action").lower()
+    action = args.get("action") or "disabled"
     final_result = []
-    response = client.disable_or_enable_tag(tag_ids=tag_ids,action=action)
+    response = client.disable_or_enable_tag(tag_ids=tag_ids, action=action.lower())
     final_result.append(response.get("data"))
     final_result = no_result_found(final_result)
     if isinstance(final_result, CommandResults):
@@ -1993,7 +1993,7 @@ def main() -> None:
     access_id = params.get("access_id")
     secret_key = params.get("secret_key")
     verify = not params.get("insecure", False)
-    timeout = arg_to_number(params.get("timeout", 15))
+    timeout = arg_to_number(params.get("timeout")) or 15
     reliability = params.get("integrationReliability", DBotScoreReliability.C)
 
     if DBotScoreReliability.is_valid_type(reliability):
@@ -2007,12 +2007,7 @@ def main() -> None:
 
     try:
         client = Client(
-            base_url=base_url,
-            access_id=access_id,
-            secret_key=secret_key,
-            verify=verify,
-            proxies=proxies,
-            timeout=timeout
+            base_url=base_url, access_id=access_id, secret_key=secret_key, verify=verify, proxies=proxies, timeout=timeout
         )
 
         CMD_TO_FUNC = {
