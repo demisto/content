@@ -45,7 +45,7 @@ def parse_yml_or_json(content: str, file_path: str) -> dict[str, Any] | None:
         elif file_path.lower().endswith(".json"):
             return json.loads(content)
     except (yaml.YAMLError, json.JSONDecodeError) as e:
-        print(f"⚠️  Warning: Failed to parse {file_path}: {str(e)}")
+        print(f"Warning: Failed to parse {file_path}: {str(e)}")
     return None
 
 
@@ -188,20 +188,20 @@ def check_pr_contains_supported_modules_changes(pr: PullRequest) -> bool:
                     return True
 
             except Exception as e:
-                print(f"⚠️  Warning: Error processing {file.filename}: {str(e)}")
+                print(f"Warning: Error processing {file.filename}: {str(e)}")
                 continue
 
         return False
 
     except Exception as e:
-        print(f"⚠️  Error checking PR files: {str(e)}")
+        print(f"Error checking PR files: {str(e)}")
         return True  # Default to True to be safe if we can't check
 
 
 def main():
     """
-    This script is checking that "supported-modules-approved" label exists for a PR in case
-    the label exists the workflow will pass, if the label is missing the workflow will fail.
+    This script is checking that "supported-modules-approved" label exists for a PR (if needed), in case
+    the label exists the workflow will pass, if the label is missing (and needed) the workflow will fail.
     """
     options = arguments_handler()
     pr_number = options.pr_number
