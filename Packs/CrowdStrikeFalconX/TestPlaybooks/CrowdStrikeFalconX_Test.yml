@@ -1544,8 +1544,8 @@ tasks:
       id: acb87956-0709-4c41-b741-5d16865d85f3
       version: -1
       name: Save submitted_id to context
-      description: Deprecated. No available replacement. Sets key/value pair in incident's context.
-      scriptName: SetContext
+      description: Set a value in context under the key you entered.
+      scriptName: Set
       type: regular
       iscommand: false
       brand: ""
@@ -1581,8 +1581,8 @@ tasks:
       id: a993049d-b939-4366-bc1e-f048caeacce4
       version: -1
       name: Save ioc_report_broad_json_artifact_id to context
-      description: Deprecated. No available replacement. Sets key/value pair in incident's context.
-      scriptName: SetContext
+      description: Set a value in context under the key you entered.
+      scriptName: Set
       type: regular
       iscommand: false
       brand: ""
