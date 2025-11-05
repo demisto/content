@@ -723,7 +723,7 @@ class TestCommands:
 
     @freeze_time("2020-06-03T02:00:00Z")
     def test_iocs_to_keep(self, mocker):
-        http_request = mocker.patch.object(Client, "http_request")
+        http_request = mocker.patch.object(Client, "http_request", return_value={"reply": True})
         iocs, _ = TestCreateFile.get_all_iocs(TestCreateFile.data_test_create_file_iocs_to_keep, "txt")
         mocker.patch.object(demisto, "searchIndicators", returnvalue=iocs)
         mocker.patch("CoreIOCs.upload_file_to_bucket")
