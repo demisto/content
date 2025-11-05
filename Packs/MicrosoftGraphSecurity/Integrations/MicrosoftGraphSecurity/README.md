@@ -2424,3 +2424,65 @@ Update the incident with the given ID.
 >|Display name|id|Severity|Status|Assigned to|Custom tags|System tags|Classification|Determination|Created date time|Updated date time|
 >|---|---|---|---|---|---|---|---|---|---|---|
 >| Exfiltration incident involving one user | 12345 | medium | active | test5 |  |  | unknown | unknown | 2024-03-17T15:50:31.9033333Z | 2024-03-19T07:24:34.7066667Z |
+### msg-run-estimate-statistics
+
+***
+Starts an eDiscovery estimate statistics operation in Microsoft Purview. The operation calculates the size and number of items matching the search query.
+
+#### Base Command
+
+`msg-run-estimate-statistics`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| case_id | The ID of the eDiscovery case. | Required | 
+| search_id | The ID of the eDiscovery search. | Required | 
+| statistics_options | Bitwise options that specify the statistics to generate. The possible values are: includeRefiners, includeQueryStats, includeUnindexedStats, advancedIndexing, locationsWithoutHits, unknownFutureValue. The advancedIndexing and locationsWithoutHits values are only considered if includeUnindexedStats is set. Possible values are: includeRefiners, includeQueryStats, includeUnindexedStats, advancedIndexing, locationsWithoutHits, unknownFutureValue. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MsGraph.eDiscovery.EstimateStatistics.CaseID | String | The ID of the eDiscovery case. | 
+| MsGraph.eDiscovery.EstimateStatistics.SearchID | String | The ID of the eDiscovery search. | 
+| MsGraph.eDiscovery.EstimateStatistics.OperationID | String | The ID of the operation that was created for the estimate statistics request. | 
+| MsGraph.eDiscovery.EstimateStatistics.Status | String | The status of the estimate statistics operation. For example, running, succeeded, or failed. | 
+| MsGraph.eDiscovery.EstimateStatistics.OperationType | String | The type of the operation, typically 'ediscoveryEstimate'. | 
+| MsGraph.eDiscovery.EstimateStatistics.PercentProgress | Number | The percent progress of the operation. | 
+| MsGraph.eDiscovery.EstimateStatistics.CreatedDateTime | Date | The date and time when the estimate operation was created. | 
+| MsGraph.eDiscovery.EstimateStatistics.CompletedDateTime | Date | The date and time when the estimate operation completed. | 
+### msg-get-last-estimate-statistics-operation
+
+***
+Retrieves the most recent eDiscovery estimate statistics operation for a given search in Microsoft Purview. Use this command after running 'msg-run-estimate-statistics' to check the results.
+
+#### Base Command
+
+`msg-get-last-estimate-statistics-operation`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| case_id | The ID of the eDiscovery case. | Required | 
+| search_id | The ID of the eDiscovery search. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MsGraph.eDiscovery.EstimateStatistics.CaseID | String | The ID of the eDiscovery case. | 
+| MsGraph.eDiscovery.EstimateStatistics.SearchID | String | The ID of the eDiscovery search. | 
+| MsGraph.eDiscovery.EstimateStatistics.OperationID | String | The ID of the last estimate statistics operation. | 
+| MsGraph.eDiscovery.EstimateStatistics.Status | String | The current status of the last estimate statistics operation \(e.g., running, succeeded, failed\). | 
+| MsGraph.eDiscovery.EstimateStatistics.PercentProgress | Number | The percent progress of the last estimate statistics operation. | 
+| MsGraph.eDiscovery.EstimateStatistics.CreatedDateTime | Date | The date and time when the estimate operation was created. | 
+| MsGraph.eDiscovery.EstimateStatistics.CompletedDateTime | Date | The date and time when the estimate operation completed. | 
+| MsGraph.eDiscovery.EstimateStatistics.IndexedItemsCount | Number | The number of indexed items found in the search. | 
+| MsGraph.eDiscovery.EstimateStatistics.IndexedItemsSize | Number | The total size \(in bytes\) of indexed items. | 
+| MsGraph.eDiscovery.EstimateStatistics.UnindexedItemsCount | Number | The number of unindexed items found in the search. | 
+| MsGraph.eDiscovery.EstimateStatistics.UnindexedItemsSize | Number | The total size \(in bytes\) of unindexed items. | 
+| MsGraph.eDiscovery.EstimateStatistics.TotalItemsCount | Number | The total number of items \(indexed \+ unindexed\). | 
+| MsGraph.eDiscovery.EstimateStatistics.TotalItemsSize | Number | The total size \(in bytes\) of all items \(indexed \+ unindexed\). | 

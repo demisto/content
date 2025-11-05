@@ -270,6 +270,41 @@ class MsGraphClient:
         body = {"purgeType": purge_type, "purgeAreas": purge_areas}
         return self.ms_client.http_request(method="POST", url_suffix=url, json_data=body, resp_type="response")
 
+    def run_estimate_statistics_request(self, case_id, search_id, statistics_options=None):
+        url = f"security/cases/ediscoveryCases/{case_id}/searches/{search_id}/estimateStatistics"
+        body = {}
+        if statistics_options:
+            # Handle lists or single values safely
+            if isinstance(statistics_options, list):
+                statistics_options = ",".join(statistics_options)
+            body["statisticsOptions"] = statistics_options
+
+        response = self.ms_client.http_request(
+            method="POST",
+            url_suffix=url,
+            json_data=body,
+            resp_type="response",
+            ok_codes=[202],
+        )
+
+        # Get the Location header which contains the location of the microsoft.graph.security.estimateStatisticsOperation
+        # that was created to handle the estimate.
+        location_url = response.headers.get("Location")
+        if not location_url:
+            raise DemistoException("Missing Location header in estimateStatistics response")
+
+        # Fetch operation status
+        operation = self.ms_client.http_request(
+            method="GET",
+            full_url=location_url
+        )
+
+        return operation
+
+    def get_last_estimate_statistics_operation(self, case_id, search_id):
+        url = f"security/cases/ediscoveryCases/{case_id}/searches/{search_id}/lastEstimateStatisticsOperation"
+        return self.ms_client.http_request(method="GET", url_suffix=url)
+
     def create_mail_assessment_request(self, recipient_email, expected_assessment, category, user_id, message_id):
         body = {
             "@odata.type": "#microsoft.graph.mailAssessmentRequest",
@@ -1427,7 +1462,7 @@ def create_ediscovery_non_custodial_data_source_command(client: MsGraphClient, a
 
     return to_msg_command_results(
         raw_object_list=resp,
-        outputs_prefix="MsGraph.NoncustodialDataSource",
+           outputs_prefix="MsGraph.NoncustodialDataSource",
         output_key_field="DataSourceId",
         raw_keys_to_replace={"status": "DataSourceStatus", "id": "DataSourceId"},
     )
@@ -1524,6 +1559,70 @@ def purge_ediscovery_data_command(client: MsGraphClient, args):
     )
     status = get_status_of_operation(client, resp)
     return CommandResults(readable_output=f"eDiscovery purge status is {status}.")
+
+def run_estimate_statistics_command(client: MsGraphClient, args):
+    case_id = args.get("case_id")
+    search_id = args.get("search_id")
+    statistics_options = argToList(args.get("statistics_options", []))
+
+    # Run the async estimate operation and fetch its status
+    operation = client.run_estimate_statistics_request(case_id, search_id, statistics_options)
+
+    outputs = {
+        "operationId": operation.get("id"),
+        "caseId": case_id,
+        "searchId": search_id,
+        "status": operation.get("status"),
+        "operationType": operation.get("operationType"),
+        "percentProgress": operation.get("percentProgress"),
+        "createdDateTime": operation.get("createdDateTime"),
+        "completedDateTime": operation.get("completedDateTime"),
+    }
+
+    # Prepare human-readable output
+    human_readable = tableToMarkdown(
+        name=f"eDiscovery Estimate Operation for search {search_id}",
+        t=[outputs],
+        headers=["caseId", "searchId", "operationId", "status", "percentProgress", "createdDateTime", "completedDateTime"],
+        removeNull=True,
+    )
+
+    return CommandResults(
+        readable_output=human_readable,
+        outputs_prefix="MsGraph.eDiscovery.EstimateStatistics",
+        outputs_key_field="operationId",
+        outputs=outputs,
+        raw_response=operation,
+    )
+
+
+def get_last_estimate_statistics_operation_command(client: MsGraphClient, args):
+    resp = client.get_last_estimate_statistics_operation(args.get("case_id"), args.get("search_id"))
+    # Extract key details for display
+    stats_info = {
+        "Operation ID": resp.get("id"),
+        "Status": resp.get('status'),
+        "Progress": resp.get("percentProgress"),
+        "Created": resp.get("createdDateTime"),
+        "Last Modified": resp.get("lastActionDateTime"),
+        "Indexed Items": resp.get("indexedItemCount"),
+        "Indexed Size (bytes)": resp.get("indexedItemsSize"),
+        "Unindexed Items": resp.get("unindexedItemCount"),
+        "Unindexed Size (bytes)": resp.get("unindexedItemsSize"),
+        "Total Items": resp.get("totalItemCount"),
+        "Total Size (bytes)": resp.get("totalItemsSize"),
+        "Mailbox Count": resp.get("mailboxCount"),
+        "Site Count": resp.get("siteCount"),
+    }
+
+    human_readable = tableToMarkdown(
+        name=f"eDiscovery Estimate Statistics for Search `{args.get('search_id')}`",
+        t=stats_info,
+        removeNull=True
+    )
+    return CommandResults(
+        outputs_prefix="MsGraph.eDiscovery.EstimateStatistics", outputs_key_field="id", outputs=resp, readable_output=human_readable
+    )
 
 
 def create_ediscovery_search_command(client: MsGraphClient, args):
@@ -2084,6 +2183,8 @@ def main():
         "msg-list-ediscovery-searchs": list_ediscovery_search_command,
         "msg-delete-ediscovery-search": delete_ediscovery_search_command,
         "msg-purge-ediscovery-data": purge_ediscovery_data_command,
+        "msg-run-estimate-statistics": run_estimate_statistics_command,
+        "msg-get-last-estimate-statistics-operation": get_last_estimate_statistics_operation_command,
         "msg-advanced-hunting": advanced_hunting_command,
         "msg-list-security-incident": get_list_security_incident_command,
         "msg-update-security-incident": update_incident_command,

@@ -1602,6 +1602,107 @@ script:
       isArray: false
       name: search_id
       required: true
+    - description: "Bitwise options that specify the statistics to generate. The possible values are: includeRefiners, includeQueryStats, includeUnindexedStats, advancedIndexing, locationsWithoutHits, unknownFutureValue. The advancedIndexing and locationsWithoutHits values are only considered if includeUnindexedStats is set."
+      isArray: false
+      name: statistics_options
+      required: false
+      auto: PREDEFINED
+      predefined:
+        - 'includeRefiners'
+        - 'includeQueryStats'
+        - 'includeUnindexedStats'
+        - 'advancedIndexing'
+        - 'locationsWithoutHits'
+        - 'unknownFutureValue'
+    description: Starts an eDiscovery estimate statistics operation in Microsoft Purview. The operation calculates the size and number of items matching the search query.
+    execution: false
+    name: msg-run-estimate-statistics
+    outputs:
+      - contextPath: MsGraph.eDiscovery.EstimateStatistics.CaseID
+        description: The ID of the eDiscovery case.
+        type: String
+      - contextPath: MsGraph.eDiscovery.EstimateStatistics.SearchID
+        description: The ID of the eDiscovery search.
+        type: String
+      - contextPath: MsGraph.eDiscovery.EstimateStatistics.OperationID
+        description: The ID of the operation that was created for the estimate statistics request.
+        type: String
+      - contextPath: MsGraph.eDiscovery.EstimateStatistics.Status
+        description: The status of the estimate statistics operation. For example, running, succeeded, or failed.
+        type: String
+      - contextPath: MsGraph.eDiscovery.EstimateStatistics.OperationType
+        description: The type of the operation, typically 'ediscoveryEstimate'.
+        type: String
+      - contextPath: MsGraph.eDiscovery.EstimateStatistics.PercentProgress
+        description: The percent progress of the operation.
+        type: Number
+      - contextPath: MsGraph.eDiscovery.EstimateStatistics.CreatedDateTime
+        description: The date and time when the estimate operation was created.
+        type: Date
+      - contextPath: MsGraph.eDiscovery.EstimateStatistics.CompletedDateTime
+        description: The date and time when the estimate operation completed.
+        type: Date
+  - arguments:
+    - description: The ID of the eDiscovery case.
+      isArray: false
+      name: case_id
+      required: true
+    - description: The ID of the eDiscovery search.
+      isArray: false
+      name: search_id
+      required: true
+    outputs:
+      - contextPath: MsGraph.eDiscovery.EstimateStatistics.CaseID
+        description: The ID of the eDiscovery case.
+        type: String
+      - contextPath: MsGraph.eDiscovery.EstimateStatistics.SearchID
+        description: The ID of the eDiscovery search.
+        type: String
+      - contextPath: MsGraph.eDiscovery.EstimateStatistics.OperationID
+        description: The ID of the last estimate statistics operation.
+        type: String
+      - contextPath: MsGraph.eDiscovery.EstimateStatistics.Status
+        description: The current status of the last estimate statistics operation (e.g., running, succeeded, failed).
+        type: String
+      - contextPath: MsGraph.eDiscovery.EstimateStatistics.PercentProgress
+        description: The percent progress of the last estimate statistics operation.
+        type: Number
+      - contextPath: MsGraph.eDiscovery.EstimateStatistics.CreatedDateTime
+        description: The date and time when the estimate operation was created.
+        type: Date
+      - contextPath: MsGraph.eDiscovery.EstimateStatistics.CompletedDateTime
+        description: The date and time when the estimate operation completed.
+        type: Date
+      - contextPath: MsGraph.eDiscovery.EstimateStatistics.IndexedItemsCount
+        description: The number of indexed items found in the search.
+        type: Number
+      - contextPath: MsGraph.eDiscovery.EstimateStatistics.IndexedItemsSize
+        description: The total size (in bytes) of indexed items.
+        type: Number
+      - contextPath: MsGraph.eDiscovery.EstimateStatistics.UnindexedItemsCount
+        description: The number of unindexed items found in the search.
+        type: Number
+      - contextPath: MsGraph.eDiscovery.EstimateStatistics.UnindexedItemsSize
+        description: The total size (in bytes) of unindexed items.
+        type: Number
+      - contextPath: MsGraph.eDiscovery.EstimateStatistics.TotalItemsCount
+        description: The total number of items (indexed + unindexed).
+        type: Number
+      - contextPath: MsGraph.eDiscovery.EstimateStatistics.TotalItemsSize
+        description: The total size (in bytes) of all items (indexed + unindexed).
+        type: Number
+    description:  Retrieves the most recent eDiscovery estimate statistics operation for a given search in Microsoft Purview. Use this command after running 'msg-run-estimate-statistics' to check the results.
+    execution: false
+    name: msg-get-last-estimate-statistics-operation
+  - arguments:
+    - description: The ID of the eDiscovery case.
+      isArray: false
+      name: case_id
+      required: true
+    - description: The ID of the eDiscovery search.
+      isArray: false
+      name: search_id
+      required: true
     - description: The ID of the eDiscovery search.
       isArray: false
       name: purge_type
