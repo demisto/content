@@ -367,12 +367,12 @@ script:
 
         - contextPath: Core.Coverage.Asset.asset_provider
           description:
-            The vendor or source platform of the asset. Indicates where the asset originates from. Possible values: AWS, AWS_CODE_BUILD, AWS_CODE_COMMIT, AZURE, AZURE_REPOS, BITBUCKET, BITBUCKET_DATACENTER, CIRCLE_CI, DOCKER, GCP, GITHUB, GITHUB_ACTIONS, GITHUB_ENTERPRISE, GITLAB, GITLAB_SELF_MANAGED, HCP_TFC_RUN_TASKS, HCP_TFE_RUN_TASKS, JENKINS, JFROG_ARTIFACTORY, OCI.
+            "The vendor or source platform of the asset. Indicates where the asset originates from. Possible values: AWS, AWS_CODE_BUILD, AWS_CODE_COMMIT, AZURE, AZURE_REPOS, BITBUCKET, BITBUCKET_DATACENTER, CIRCLE_CI, DOCKER, GCP, GITHUB, GITHUB_ACTIONS, GITHUB_ENTERPRISE, GITLAB, GITLAB_SELF_MANAGED, HCP_TFC_RUN_TASKS, HCP_TFE_RUN_TASKS, JENKINS, JFROG_ARTIFACTORY, OCI."
           type: String
 
         - contextPath: Core.Coverage.Asset.asset_type
           description:
-            The type or category of the asset. Determines the nature of the resource being scanned. Possible values: CICD PIPELINE, CONTAINER IMAGE REPOSITORY, REPOSITORY.
+            "The type or category of the asset. Determines the nature of the resource being scanned. Possible values: CICD PIPELINE, CONTAINER IMAGE REPOSITORY, REPOSITORY."
           type: String
 
         - contextPath: Core.Coverage.Asset.business_application_names
@@ -381,52 +381,52 @@ script:
 
         - contextPath: Core.Coverage.Asset.is_scanned_by_cicd
           description:
-            Indicates whether the asset is scanned within CI/CD pipelines. Possible values: ENABLED, DISABLED, IRRELEVANT.
+            "Indicates whether the asset is scanned within CI/CD pipelines. Possible values: ENABLED, DISABLED, IRRELEVANT."
           type: String
 
         - contextPath: Core.Coverage.Asset.is_scanned_by_code_weakness
           description:
-            Indicates whether code weakness scanning is performed on the asset. Possible values: ENABLED, DISABLED, IRRELEVANT.
+            "Indicates whether code weakness scanning is performed on the asset. Possible values: ENABLED, DISABLED, IRRELEVANT."
           type: String
 
         - contextPath: Core.Coverage.Asset.is_scanned_by_iac
           description:
-            Indicates whether infrastructure-as-code (IaC) scanning is enabled for the asset. Possible values: ENABLED, DISABLED, IRRELEVANT.
+            "Indicates whether infrastructure-as-code (IaC) scanning is enabled for the asset. Possible values: ENABLED, DISABLED, IRRELEVANT."
           type: String
 
         - contextPath: Core.Coverage.Asset.is_scanned_by_malware
           description:
-            Indicates whether malware scanning is enabled for the asset. Possible values: ENABLED, DISABLED, IRRELEVANT.
+            "Indicates whether malware scanning is enabled for the asset. Possible values: ENABLED, DISABLED, IRRELEVANT."
           type: String
 
         - contextPath: Core.Coverage.Asset.is_scanned_by_secrets
           description:
-            Indicates whether the asset is scanned for hardcoded secrets or credentials. Possible values: ENABLED, DISABLED, IRRELEVANT.
+            "Indicates whether the asset is scanned for hardcoded secrets or credentials. Possible values: ENABLED, DISABLED, IRRELEVANT."
           type: String
 
         - contextPath: Core.Coverage.Asset.is_scanned_by_semgrep
           description:
-            Boolean flag indicating whether the asset is analyzed using Semgrep for code issues or misconfigurations. Possible values: true, false.
+            "Boolean flag indicating whether the asset is analyzed using Semgrep for code issues or misconfigurations. Possible values: true, false."
           type: Boolean
 
         - contextPath: Core.Coverage.Asset.is_scanned_by_sonarqube
           description:
-            Boolean flag indicating whether the asset is analyzed using SonarQube for code quality and security issues. Possible values: true, false.
+            "Boolean flag indicating whether the asset is analyzed using SonarQube for code quality and security issues. Possible values: true, false."
           type: Boolean
 
         - contextPath: Core.Coverage.Asset.is_scanned_by_veracode
           description:
-            Boolean flag indicating whether the asset is scanned using Veracode for security vulnerabilities. Possible values: true, false.
+            "Boolean flag indicating whether the asset is scanned using Veracode for security vulnerabilities. Possible values: true, false."
           type: Boolean
 
         - contextPath: Core.Coverage.Asset.is_scanned_by_vulnerabilities
           description:
-            Indicates whether vulnerability scanning is enabled for the asset. Possible values: ENABLED, DISABLED, IRRELEVANT.
+            "Indicates whether vulnerability scanning is enabled for the asset. Possible values: ENABLED, DISABLED, IRRELEVANT."
           type: String
 
         - contextPath: Core.Coverage.Asset.last_scan_status
           description:
-            The status of the most recent scan performed on the asset. Possible values: NOT_SCANNED_YET, ERROR, COMPLETED.
+            "The status of the most recent scan performed on the asset. Possible values: NOT_SCANNED_YET, ERROR, COMPLETED."
           type: String
 
         - contextPath: Core.Coverage.Asset.scanners_data
@@ -435,12 +435,12 @@ script:
 
         - contextPath: Core.Coverage.Asset.status_coverage
           description:
-            The overall scan coverage of the asset. Possible values: FULLY SCANNED, PARTIALLY SCANNED, NOT SCANNED.
+            "The overall scan coverage of the asset. Possible values: FULLY SCANNED, PARTIALLY SCANNED, NOT SCANNED."
           type: String
 
         - contextPath: Core.Coverage.Asset.unified_provider
           description:
-            The unified provider name associated with the asset. Standardized across different vendor integrations. Possible values: AWS, AWS_CODE_BUILD, AWS_CODE_COMMIT, AZURE, AZURE_PIPELINES, AZURE_REPOS, BITBUCKET, CIRCLE_CI, DOCKER, GCP, GITHUB, GITHUB_ACTIONS, GITLAB, GITLAB_CI, HCP_TFC_RUN_TASKS, JENKINS, JFROG_ARTIFACTORY, OCI.
+            "The unified provider name associated with the asset. Standardized across different vendor integrations. Possible values: AWS, AWS_CODE_BUILD, AWS_CODE_COMMIT, AZURE, AZURE_PIPELINES, AZURE_REPOS, BITBUCKET, CIRCLE_CI, DOCKER, GCP, GITHUB, GITHUB_ACTIONS, GITLAB, GITLAB_CI, HCP_TFC_RUN_TASKS, JENKINS, JFROG_ARTIFACTORY, OCI."
           type: String
     - arguments:
         - description: The unique ID of the issue. Accepts a comma-separated list.
