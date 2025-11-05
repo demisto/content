@@ -229,7 +229,7 @@ class ServiceNowClient(BaseClient):
         """
         Get an access token that was previously created if it is still valid, else, generate a new access token from
         the client id, client secret and refresh token.
-        
+
         Args:
             retry_attempted: Internal flag to prevent infinite retry loops. Should not be set by callers.
         """
@@ -270,12 +270,11 @@ class ServiceNowClient(BaseClient):
                         demisto.debug("Refresh token may have expired, automatically generating new refresh token via login")
                         self.login(self.username, self.password)
                         return self.get_access_token(retry_attempted=True)
-                    
+
                     # If retry was already attempted or credentials not available, raise the error
                     return_error(
                         f"Error occurred while creating an access token. Please check the Client ID, Client Secret "
-                        f"and try to run again the login command to generate a new refresh token as it "
-                        f"might have expired.\n{res}"
+                        f"and try to run again the login command to generate a new refresh token.\n{res}"
                     )
                 if res.get("access_token"):
                     expiry_time = date_to_timestamp(datetime.now(), date_format="%Y-%m-%dT%H:%M:%S")
