@@ -26,6 +26,7 @@ ASSET_FIELDS = {
 
 WEBAPP_COMMANDS = ["core-get-vulnerabilities", "core-search-asset-groups", "core-get-issue-recommendations"]
 DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
+APPSEC_COMMANDS = ["core-appsec-remediate-issue"]
 
 VULNERABLE_ISSUES_TABLE = "VULNERABLE_ISSUES_TABLE"
 ASSET_GROUPS_TABLE = "UNIFIED_ASSET_MANAGEMENT_ASSET_GROUPS"
@@ -368,6 +369,14 @@ class Client(CoreClient):
             url_suffix="/incident/get_playbook_suggestion_by_alert/",
         )
 
+        return reply
+    
+    def appsec_remediate_issue(self, request_body):
+        reply = self._http_request(
+            method="POST",
+            headers=request_body,
+            url_suffix="/trigger_fix_pull_request"
+        )
         return reply
 
 
@@ -740,6 +749,19 @@ def get_asset_group_ids_from_names(client: Client, group_names: list[str]) -> li
     return group_ids
 
 
+def appsec_remediate_issue_command(client, args):
+    args = demisto.args()
+    request_body = {
+        "issueIds": argToList(args.get("issue_ids")),
+        "title": args.get("title"),
+        "fixBranchName": args.get("fix_branch_name")
+    }
+    request_body = remove_empty_elements(request_body)
+    print(request_body)
+    response = client.appsec_remediate_issue(request_body)
+    print(response)
+    
+
 def main():  # pragma: no cover
     """
     Executes an integration command
@@ -754,6 +776,7 @@ def main():  # pragma: no cover
     webapp_api_url = "/api/webapp"
     public_api_url = f"{webapp_api_url}/public_api/v1"
     data_platform_api_url = f"{webapp_api_url}/data-platform"
+    public_api_appsec_url = f"{webapp_api_url}/public_api/appsec/v1/issues/fix"
 
     proxy = demisto.params().get("proxy", False)
     verify_cert = not demisto.params().get("insecure", False)
@@ -769,6 +792,8 @@ def main():  # pragma: no cover
         client_url = webapp_api_url
     elif command in DATA_PLATFORM_COMMANDS:
         client_url = data_platform_api_url
+    elif command in APPSEC_COMMANDS:
+        client_url = public_api_appsec_url
 
     client = Client(
         base_url=client_url,
@@ -818,6 +843,9 @@ def main():  # pragma: no cover
 
         elif command == "core-get-issue-recommendations":
             return_results(get_issue_recommendations_command(client, args))
+            
+        elif command == "core-appsec-remediate-issue":
+            return_results(appsec_remediate_issue_command(client, args))
 
     except Exception as err:
         demisto.error(traceback.format_exc())

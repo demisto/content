@@ -1355,6 +1355,32 @@ script:
         - contextPath: Core.IssueRecommendations.playbook_suggestions.suggestion_rule_id
           description: The ID of the suggestion rule that generated this recommendation.
           type: String
+    - arguments:
+      - description: comma-separated list of issue IDs to fix (maximum 10 per request).
+        name: issue_ids
+        required: true
+      - description: Custom title for the pull request.
+        name: title
+      - description: Custom branch name for the fix.
+        name: fix_branch_name
+      name: core-appsec-remediate-issue
+      description: Create automated pull requests to fix multiple security issues in a single bulk operation.
+      outputs:
+      - contextPath: Core.Appsec.Remediation.message
+        description: Operation result message.
+        type: String
+      - contextPath: Core.Appsec.Remediation.status
+        description: Overall process status.
+        type: String
+      - contextPath: Core.Appsec.Remediation.remediationId
+        description: Unique identifier to track the remediation process.
+        type: String
+      - contextPath: Core.Appsec.Remediation.triggeredPrs
+        description: Status of each issue.
+        type: String
+      - contextPath: Core.Appsec.Remediation.issueId
+        description: The issue identifier.
+        type: String
   runonce: false
   script: "-"
   subtype: python3
