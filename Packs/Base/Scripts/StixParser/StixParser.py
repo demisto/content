@@ -1489,12 +1489,12 @@ class StixDecode:
             title = next((c for c in ttp[0] if c.name == "Title"), None)  # type: ignore
             if title is not None:
                 title = title.text  # type: ignore
-                ttp_info["stix_ttp_title"] = title
+                ttp_info["stix_ttp_title"] = title  # type: ignore
 
             description = next((c for c in ttp[0] if c.name == "Description"), None)  # type: ignore
             if description is not None:
                 description = description.text  # type: ignore
-                ttp_info["ttp_description"] = description
+                ttp_info["ttp_description"] = description  # type: ignore
 
             if behavior := package.find_all("Behavior"):
                 if behavior[0].find_all("Malware"):  # type: ignore
