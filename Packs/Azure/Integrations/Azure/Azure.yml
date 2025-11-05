@@ -614,6 +614,27 @@ script:
     - description: The name of the Blob Container.
       name: container_name
       required: true
+    - description: The entry ID of the file to upload as a new blob. Available from XSOAR war room while the context data contains file output.
+      name: file_entry_id
+      required: true
+    - description: The name of the Blob to create. Default is XSOAR file name.
+      name: blob_name
+    - description: "The subscription ID."
+      name: subscription_id
+      required: true
+    - description: "The resource group name."
+      name: resource_group_name
+      required: true
+    - description: The storage account name.
+      name: account_name
+      required: true
+    description: Retrieve Blob from Container.
+    name: azure-storage-container-blob-create
+
+  - arguments:
+    - description: The name of the Blob Container.
+      name: container_name
+      required: true
     - description: The name of the Blob to retrieve.
       name: blob_name
       required: true
