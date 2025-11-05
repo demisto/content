@@ -3,7 +3,7 @@ from CommonServerPython import *  # noqa: F401
 from CoreIRApiModule import *
 import dateparser
 from enum import Enum
-
+import subprocess
 # Disable insecure warnings
 urllib3.disable_warnings()
 
@@ -371,10 +371,10 @@ class Client(CoreClient):
 
         return reply
     
-    def get_appsec_suggested_fix(self, issue_id: str, request_body: dict):
+    def get_appsec_suggested_fix(self, issue_id: str, params: dict):
         reply = self._http_request(
             method="GET",
-            json_data=request_body,
+            params=params,
             headers=self._headers,
             url_suffix=f"/{issue_id}/fix_suggestion",
         )
@@ -753,12 +753,12 @@ def get_asset_group_ids_from_names(client: Client, group_names: list[str]) -> li
 def get_appsec_suggested_fix_command(client, args):
     args = demisto.args()
     issue_id = args.get('issue_id')
-    request_body = {
+    params = {
         "showCodeBlock": args.get('show_code_block', "true"),
         "showRemediationInstruction": args.get('show_remediation_instruction', "true"),
         "showSuggestedCodeBlock": args.get('show_suggested_code_block', "true")
     }
-    response = client.get_appsec_suggested_fix(issue_id, request_body)
+    response = client.get_appsec_suggested_fix(issue_id, params)
     return CommandResults(
         readable_output=tableToMarkdown("AppSec Suggested Fix", response),
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.AppSecSuggestedFix",
