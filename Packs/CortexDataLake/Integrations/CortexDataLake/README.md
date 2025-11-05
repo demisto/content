@@ -24,10 +24,10 @@ The License ID will be used in Step 4.
 
    The Customer name will be used in Step 4.
 
-5. In the Palo Alto Networks HUB, enter the License ID and the Customer name in the screen obtained in Step 1. The License ID and Customer name were obtained in Steps 2 and 3. Click **Start Authorization Process** to get the Authentication Token, Registration ID, and Encryption Key - these three fields will be used in the Palo Alto Networks Cortex v2 integration instance in Step 7 below.
-6. In Palo Alto Networks Cortex XSOAR, navigate to **Settings** > **Integrations** > **Servers & Services**.
-7. Search for Strata Logging Service XSOAR Connector.
-8. Click **Add instance** to create and configure a new integration instance.
+4. In the Palo Alto Networks HUB, enter the License ID and the Customer name in the screen obtained in Step 1. The License ID and Customer name were obtained in Steps 2 and 3. Click **Start Authorization Process** to get the Authentication Token, Registration ID, and Encryption Key - these three fields will be used in the Palo Alto Networks Cortex v2 integration instance in Step 7 below.
+5. In Palo Alto Networks Cortex XSOAR, navigate to **Settings** > **Integrations** > **Servers & Services**.
+6. Search for Strata Logging Service XSOAR Connector.
+7. Click **Add instance** to create and configure a new integration instance.
     * **Name**: A textual name for the integration instance.
     * **Authentication Token**: Retrieved in the authentication process in Step 4.
     * **Registration ID**: Retrieved in the authentication process in Step 4.
@@ -43,7 +43,7 @@ The License ID will be used in Step 4.
     * **Incidents fetched per query**: How many incidents will be fetched per query. Caution: high number could create overload. Default is 10.
     * **proxy**: Use system proxy settings.
     * **insecure**: Trust any certificate (not secure).
-4. Click **Test** to validate the URLs, token, and connection.
+8. Click **Test** to validate the URLs, token, and connection.
 
 In order for the integration to work, the following URLs need to be accessible:
 
