@@ -13,6 +13,7 @@ INTEGRATION_NAME = "Cortex Platform Core"
 MAX_GET_INCIDENTS_LIMIT = 100
 SEARCH_ASSETS_DEFAULT_LIMIT = 100
 
+
 ASSET_FIELDS = {
     "asset_names": "xdm.asset.name",
     "asset_types": "xdm.asset.type.name",
@@ -24,11 +25,13 @@ ASSET_FIELDS = {
     "asset_categories": "xdm.asset.type.category",
 }
 
-
 WEBAPP_COMMANDS = [
     "core-get-vulnerabilities",
     "core-search-asset-groups",
     "core-get-issue-recommendations",
+    "core-update-issue",
+    "core-get-asset-coverage",
+    "core-get-asset-coverage-histogram",
     "core-create-appsec-policy",
 ]
 DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
@@ -36,6 +39,7 @@ APPSEC_COMMANDS = ["core-enable-scanners", "core-appsec-remediate-issue"]
 
 VULNERABLE_ISSUES_TABLE = "VULNERABLE_ISSUES_TABLE"
 ASSET_GROUPS_TABLE = "UNIFIED_ASSET_MANAGEMENT_ASSET_GROUPS"
+ASSET_COVERAGE_TABLE = "COVERAGE"
 APPSEC_RULES_TABLE = "CAS_DETECTION_RULES"
 
 ASSET_GROUP_FIELDS = {
@@ -59,6 +63,7 @@ ALLOWED_SCANNERS = [
     "SECRETS",
 ]
 
+COVERAGE_API_FIELDS_MAPPING = {"vendor_name": "asset_provider", "asset_provider": "unified_provider"}
 # Policy finding type mapping
 POLICY_FINDING_TYPE_MAPPING = {
     "CI/CD Risk": "CAS_CI_CD_RISK_SCANNER",
@@ -355,6 +360,9 @@ class Client(CoreClient):
 
         return reply
 
+    def update_issue(self, filter_data):
+        return self._http_request(method="POST", json_data=filter_data, url_suffix="/alerts/update_alerts")
+
     def search_assets(self, filter, page_number, page_size, on_demand_fields):
         reply = self._http_request(
             method="POST",
@@ -386,6 +394,13 @@ class Client(CoreClient):
         return self._http_request(
             method="POST",
             url_suffix="/get_data",
+            json_data=request_data,
+        )
+
+    def get_webapp_histograms(self, request_data: dict) -> dict:
+        return self._http_request(
+            method="POST",
+            url_suffix="/get_histograms",
             json_data=request_data,
         )
 
@@ -573,15 +588,16 @@ def build_webapp_request_data(
     table_name: str,
     filter_dict: dict,
     limit: int,
-    sort_field: str,
+    sort_field: str | None,
     on_demand_fields: list | None = None,
-    sort_order: str = "DESC",
+    sort_order: str | None = "DESC",
 ) -> dict:
     """
     Builds the request data for the generic /api/webapp/get_data endpoint.
     """
+    sort = [{"FIELD": COVERAGE_API_FIELDS_MAPPING.get(sort_field, sort_field), "ORDER": sort_order}] if sort_field else []
     filter_data = {
-        "sort": [{"FIELD": sort_field, "ORDER": sort_order}],
+        "sort": sort,
         "paging": {"from": 0, "to": limit},
         "filter": filter_dict,
     }
@@ -591,6 +607,23 @@ def build_webapp_request_data(
         on_demand_fields = []
 
     return {"type": "grid", "table_name": table_name, "filter_data": filter_data, "jsons": [], "onDemandFields": on_demand_fields}
+
+
+def build_histogram_request_data(table_name: str, filter_dict: dict, max_values_per_column: int, columns: list) -> dict:
+    """
+    Builds the request data for the generic /api/webapp//get_histograms endpoint.
+    """
+    filter_data = {
+        "filter": filter_dict,
+    }
+    demisto.debug(f"{filter_data=}")
+
+    return {
+        "table_name": table_name,
+        "filter_data": filter_data,
+        "max_values_per_column": max_values_per_column,
+        "columns": columns,
+    }
 
 
 def get_vulnerabilities_command(client: Client, args: dict) -> CommandResults:
@@ -709,6 +742,78 @@ def get_cases_command(client, args):
         outputs=mapped_raw_cases,
         raw_response=mapped_raw_cases,
     )
+
+
+def get_issue_id(args) -> str:
+    """Retrieve the issue ID from either provided arguments or calling context.
+
+    Args:
+        args (dict): Arguments passed in the command, containing optional issue_id
+
+    Returns:
+        str: The extracted issue ID
+    """
+    issue_id = args.get("id", "")
+    if not issue_id:
+        issues = demisto.callingContext.get("context", {}).get("Incidents")
+        if issues:
+            issue = issues[0]
+            issue_id = issue.get("id")
+
+    return issue_id
+
+
+def create_filter_data(issue_id: str, update_args: dict) -> dict:
+    """Creates filter data for updating an issue with specified parameters.
+
+    Args:
+        issue_id (bool): Issue ID from args or context
+        update_args (dict): Dictionary of fields to update
+
+    Returns:
+        dict: Object representing updated issue details
+    """
+    filter_builder = FilterBuilder()
+    filter_builder.add_field("internal_id", FilterType.EQ, issue_id)
+
+    filter_data = {"filter_data": {"filter": filter_builder.to_dict()}, "filter_type": "static", "update_data": update_args}
+    return filter_data
+
+
+def update_issue_command(client: Client, args: dict):
+    """Updates an issue with specified parameters.
+
+    Args:
+        client (Client): Client instance to execute the request
+        args (dict): Command arguments for updating an issue
+    """
+    issue_id = get_issue_id(args)
+    if not issue_id:
+        raise DemistoException("Issue ID is required for updating an issue.")
+
+    severity_map = {"low": "SEV_020_LOW", "medium": "SEV_030_MEDIUM", "high": "SEV_040_HIGH", "critical": "SEV_050_CRITICAL"}
+    severity_value = args.get("severity")
+    update_args = {
+        "assigned_user": args.get("assigned_user_mail"),
+        "severity": severity_map.get(severity_value) if severity_value is not None else None,
+        "name": args.get("name"),
+        "occurred": arg_to_timestamp(args.get("occurred"), ""),
+        "phase": args.get("phase"),
+        "type": args.get("type"),
+        "description": args.get("description"),
+    }
+
+    # Remove None values before sending to API
+    filtered_update_args = {k: v for k, v in update_args.items() if v is not None}
+    if not filtered_update_args:
+        raise DemistoException("Please provide arguments to update the issue.")
+
+    # Send update to API
+    filter_data = create_filter_data(issue_id, filtered_update_args)
+
+    demisto.debug(filter_data)
+    client.update_issue(filter_data)
+    return "done"
 
 
 def get_extra_data_for_case_id_command(client: CoreClient, args):
@@ -965,6 +1070,90 @@ def appsec_remediate_issue_command(client: Client, args: dict) -> CommandResults
         outputs=triggered_prs,
         outputs_key_field="issueId",
         raw_response=triggered_prs,
+    )
+
+def build_asset_coverage_filter(args: dict) -> FilterBuilder:
+    filter_builder = FilterBuilder()
+    filter_builder.add_field("asset_id", FilterType.CONTAINS, argToList(args.get("asset_id")))
+    filter_builder.add_field("asset_name", FilterType.CONTAINS, argToList(args.get("asset_name")))
+    filter_builder.add_field(
+        "business_application_names", FilterType.ARRAY_CONTAINS, argToList(args.get("business_application_names"))
+    )
+    filter_builder.add_field("status_coverage", FilterType.EQ, argToList(args.get("status_coverage")))
+    filter_builder.add_field("is_scanned_by_vulnerabilities", FilterType.EQ, argToList(args.get("is_scanned_by_vulnerabilities")))
+    filter_builder.add_field("is_scanned_by_code_weakness", FilterType.EQ, argToList(args.get("is_scanned_by_code_weakness")))
+    filter_builder.add_field("is_scanned_by_secrets", FilterType.EQ, argToList(args.get("is_scanned_by_secrets")))
+    filter_builder.add_field("is_scanned_by_iac", FilterType.EQ, argToList(args.get("is_scanned_by_iac")))
+    filter_builder.add_field("is_scanned_by_malware", FilterType.EQ, argToList(args.get("is_scanned_by_malware")))
+    filter_builder.add_field("is_scanned_by_cicd", FilterType.EQ, argToList(args.get("is_scanned_by_cicd")))
+    filter_builder.add_field("last_scan_status", FilterType.EQ, argToList(args.get("last_scan_status")))
+    filter_builder.add_field("asset_type", FilterType.EQ, argToList(args.get("asset_type")))
+    filter_builder.add_field("unified_provider", FilterType.EQ, argToList(args.get("asset_provider")))
+    filter_builder.add_field("asset_provider", FilterType.EQ, argToList(args.get("vendor_name")))
+
+    return filter_builder
+
+
+def get_asset_coverage_command(client: Client, args: dict):
+    """
+    Retrieves ASPM assets coverage using the generic /api/webapp/get_data endpoint.
+    """
+
+    request_data = build_webapp_request_data(
+        table_name=ASSET_COVERAGE_TABLE,
+        filter_dict=build_asset_coverage_filter(args).to_dict(),
+        limit=arg_to_number(args.get("limit")) or 100,
+        sort_field=args.get("sort_field"),
+        sort_order=args.get("sort_order"),
+    )
+    response = client.get_webapp_data(request_data)
+    reply = response.get("reply", {})
+    data = reply.get("DATA", [])
+
+    readable_output = tableToMarkdown("ASPM Coverage", data, headerTransform=string_to_table_header, sort_headers=False)
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Coverage.Asset",
+        outputs_key_field="asset_id",
+        outputs=data,
+        raw_response=response,
+    )
+
+
+def get_asset_coverage_histogram_command(client: Client, args: dict):
+    """
+    Retrieves ASPM assets coverage histogrm using the generic /api/webapp/get_histograms endpoint.
+    """
+    columns = argToList(args.get("columns"))
+    columns = [COVERAGE_API_FIELDS_MAPPING.get(col, col) for col in columns]
+    if not columns:
+        raise ValueError("Please provide column value to create the histogram.")
+    request_data = build_histogram_request_data(
+        table_name=ASSET_COVERAGE_TABLE,
+        filter_dict=build_asset_coverage_filter(args).to_dict(),
+        columns=columns,
+        max_values_per_column=arg_to_number(args.get("max_values_per_column")) or 100,
+    )
+
+    response = client.get_webapp_histograms(request_data)
+    reply = response.get("reply", {})
+    outputs = [{"column_name": column_name, "data": data} for column_name, data in reply.items()]
+
+    readable_output = "\n".join(
+        tableToMarkdown(
+            f"ASPM Coverage {output['column_name']} Histogram",
+            output["data"],
+            headerTransform=string_to_table_header,
+            sort_headers=False,
+        )
+        for output in outputs
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Coverage.Histogram",
+        outputs=outputs,
+>>>>>>> origin
     )
 
 
@@ -1352,11 +1541,15 @@ def main():  # pragma: no cover
 
         elif command == "core-get-case-extra-data":
             return_results(get_extra_data_for_case_id_command(client, args))
+
         elif command == "core-search-assets":
             return_results(search_assets_command(client, args))
 
         elif command == "core-get-vulnerabilities":
             return_results(get_vulnerabilities_command(client, args))
+
+        elif command == "core-update-issue":
+            return_results(update_issue_command(client, args))
 
         elif command == "core-get-issue-recommendations":
             return_results(get_issue_recommendations_command(client, args))
@@ -1367,6 +1560,11 @@ def main():  # pragma: no cover
         elif command == "core-appsec-remediate-issue":
             return_results(appsec_remediate_issue_command(client, args))
 
+        elif command == "core-get-asset-coverage":
+            return_results(get_asset_coverage_command(client, args))
+
+        elif command == "core-get-asset-coverage-histogram":
+            return_results(get_asset_coverage_histogram_command(client, args))
         elif command == "core-create-appsec-policy":
             return_results(create_policy_command(client, args))
 
