@@ -2234,12 +2234,6 @@
         },
         {
             "integrations": "Microsoft Defender Advanced Threat Protection",
-            "playbookID": "Microsoft Defender Advanced Threat Protection - Test self deployed",
-            "instance_names": "microsoft_defender_atp_dev_self_deployed",
-            "timeout": 700
-        },
-        {
-            "integrations": "Microsoft Defender Advanced Threat Protection",
             "playbookID": "Microsoft Defender - ATP - Indicators SC Test",
             "instance_names": "microsoft_defender_atp_dev_self_deployed"
         },
@@ -6118,7 +6112,6 @@
         "SumoLogic-Test": "401 unauthorized, CIAC-6334",
         "Microsoft Defender Advanced Threat Protection - Test dev": "Issue CIAC-7514",
         "Microsoft Defender Advanced Threat Protection - Test self deployed": "Issue CIAC-7527",
-        "Microsoft Defender Advanced Threat Protection - Test": "Issue CIAC-7527",
         "OpsGenieV3TestPlaybook": "Issue CIAC-7649",
         "ThreatStream-Test": "Issue CRTX-96526",
         "MSG-Threat-Assessment-test": "API limitation",
@@ -6380,7 +6373,7 @@
         "MicrosoftGraphMail-Test_prod",
         "Microsoft Defender Advanced Threat Protection - Test dev",
         "Microsoft Defender Advanced Threat Protection - Test prod",
-        "Microsoft Defender Advanced Threat Protection - Test self deployed",
+        "Microsoft Defender Advanced Threat Protection - Test",
         "Microsoft Defender - ATP - Indicators SC Test",
         "Whois A new layout implemented with python-whois service",
         "Detonate URL - WildFire-v2 - Test",
