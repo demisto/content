@@ -99,11 +99,8 @@ class Client(BaseClient):
             proxy: boolean, if *false* feed HTTPS server certificate will not use proxies. Default: *false*
         """
         super().__init__(base_url=BASE_URL, headers=headers, verify=verify, proxy=proxy)
-
-        # Configure retry mechanism with exponential backoff and jitter
-        # Retries: 0s, 5s, 10s, 20s, 40s (total ~75s max wait time)
         self._implement_retry(
-            retries=RETRY_COUNT, status_list_to_retry=STATUS_CODES_TO_RETRY, backoff_factor=BACKOFF_FACTOR, raise_on_status=False
+            retries=RETRY_COUNT, status_list_to_retry=STATUS_CODES_TO_RETRY, backoff_factor=BACKOFF_FACTOR
         )
 
     def get_indicators(

@@ -77,25 +77,18 @@ def unit42_error_handler(res: requests.Response) -> str:
         Error message string including X-Request-ID if available
     """
     request_id = res.headers.get("X-Request-ID", "N/A")
-    error_msg = f"Error in API request [Status: {res.status_code}]"
+    error_msg = f"Error in API request [Status: {res.status_code}]\n"
 
     # Log the X-Request-ID for debugging
     demisto.debug(f"{INTEGRATION_NAME} API Error - X-Request-ID: {request_id}, Status: {res.status_code}, URL: {res.url}")
 
-    # Try to extract error details from response
     try:
-        error_data = res.json()
-        if isinstance(error_data, dict):
-            api_error = error_data.get("error", error_data.get("message", ""))
-            if api_error:
-                error_msg += f" - {api_error}"
+        error_msg += res.json()
     except Exception:
-        # If JSON parsing fails, include first 200 chars of response text
         if res.text:
             error_msg += f" - {res.text[:200]}"
 
-    # Always include X-Request-ID in the error message for user visibility
-    error_msg += f" [X-Request-ID: {request_id}]"
+    error_msg += f"\n[X-Request-ID: {request_id}]"
 
     return error_msg
 
@@ -116,10 +109,8 @@ class Client(BaseClient):
         super().__init__(base_url=SERVER_URL, verify=verify, proxy=proxy, headers=headers)
         self.reliability = reliability
 
-        # Configure retry mechanism with exponential backoff and jitter
-        # Retries: 0s, 5s, 10s, 20s, 40s (total ~75s max wait time)
         self._implement_retry(
-            retries=RETRY_COUNT, status_list_to_retry=STATUS_CODES_TO_RETRY, backoff_factor=BACKOFF_FACTOR, raise_on_status=False
+            retries=RETRY_COUNT, status_list_to_retry=STATUS_CODES_TO_RETRY, backoff_factor=BACKOFF_FACTOR
         )
 
     def lookup_indicator(self, indicator_type: str, indicator_value: str) -> requests.Response:
