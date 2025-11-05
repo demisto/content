@@ -199,6 +199,8 @@ def check_pr_contains_supported_modules_changes(pr: PullRequest) -> bool:
     """
     try:
         files = pr.get_files()
+        modified_files = []
+
         for file in files:
             if not file.filename.lower().endswith((".yml", ".yaml", ".json")):
                 continue
@@ -211,17 +213,23 @@ def check_pr_contains_supported_modules_changes(pr: PullRequest) -> bool:
                     content = response.text
                     parsed_content = parse_yml_or_json(content, file.filename)
                     if parsed_content and has_supported_modules_field(parsed_content):
-                        print(f"Found new file with 'supportedModules': {file.filename}")
-                        return True
+                        modified_files.append(f"- New file with 'supportedModules': {file.filename}")
                 # For modified files, check if supportedModules was modified
                 elif file.status == 'modified':
                     if is_supported_modules_modified(pr, file.filename):
-                        print(f"Found modified 'supportedModules' in file: {file.filename}")
-                        return True
+                        modified_files.append(f"- Modified 'supportedModules' in file: {file.filename}")
 
             except Exception as e:
                 print(f"Warning: Error processing {file.filename}: {str(e)}")
                 continue
+
+        # If we found any modified files, print all of them and return True
+        if modified_files:
+            print("\nThe following files have changes to 'supportedModules':")
+            for msg in modified_files:
+                print(msg)
+            print("\nThis PR modifies the 'supportedModules' field which requires PM review.")
+            return True
 
         return False
 
