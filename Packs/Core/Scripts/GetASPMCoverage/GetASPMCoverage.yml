@@ -167,46 +167,46 @@ outputs:
 - contextPath: Core.Coverage.Histogram.is_scanned_by_vulnerabilities.coverage_percentage
   description:
   type: Number
-- contextPath: Core.Coverage.Histogram.is_scanned_by_vulnerabilities.enabled.count
+- contextPath: Core.Coverage.Histogram.is_scanned_by_vulnerabilities.enabled
   description:
   type: Number
-- contextPath: Core.Coverage.Histogram.is_scanned_by_vulnerabilities.disabled.count
+- contextPath: Core.Coverage.Histogram.is_scanned_by_vulnerabilities.disabled
   description:
   type: Number
 - contextPath: Core.Coverage.Histogram.is_scanned_by_code_weakness.coverage_percentage
   description:
   type: Number
-- contextPath: Core.Coverage.Histogram.is_scanned_by_code_weakness.enabled.count
+- contextPath: Core.Coverage.Histogram.is_scanned_by_code_weakness.enabled
   description:
   type: Number
-- contextPath: Core.Coverage.Histogram.is_scanned_by_code_weakness.disabled.count
+- contextPath: Core.Coverage.Histogram.is_scanned_by_code_weakness.disabled
   description:
   type: Number
 - contextPath: Core.Coverage.Histogram.is_scanned_by_secrets.coverage_percentage
   description:
   type: Number
-- contextPath: Core.Coverage.Histogram.is_scanned_by_secrets.enabled.count
+- contextPath: Core.Coverage.Histogram.is_scanned_by_secrets.enabled
   description:
   type: Number
-- contextPath: Core.Coverage.Histogram.is_scanned_by_secrets.disabled.count
+- contextPath: Core.Coverage.Histogram.is_scanned_by_secrets.disabled
   description:
   type: Number
 - contextPath: Core.Coverage.Histogram.is_scanned_by_iac.coverage_percentage
   description:
   type: Number
-- contextPath: Core.Coverage.Histogram.is_scanned_by_iac.enabled.count
+- contextPath: Core.Coverage.Histogram.is_scanned_by_iac.enabled
   description:
   type: Number
-- contextPath: Core.Coverage.Histogram.is_scanned_by_iac.disabled.count
+- contextPath: Core.Coverage.Histogram.is_scanned_by_iac.disabled
   description:
   type: Number
 - contextPath: Core.Coverage.Histogram.is_scanned_by_malware.coverage_percentage
   description:
   type: Number
-- contextPath: Core.Coverage.Histogram.is_scanned_by_malware.enabled.count
+- contextPath: Core.Coverage.Histogram.is_scanned_by_malware.enabled
   description:
   type: Number
-- contextPath: Core.Coverage.Histogram.is_scanned_by_malware.disabled.count
+- contextPath: Core.Coverage.Histogram.is_scanned_by_malware.disabled
   description:
   type: Number
 - contextPath: Core.Coverage.Asset.asset_id

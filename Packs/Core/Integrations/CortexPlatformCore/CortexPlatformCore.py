@@ -24,7 +24,7 @@ ASSET_FIELDS = {
 }
 
 WEBAPP_COMMANDS = ["core-get-vulnerabilities", "core-search-asset-groups", "core-get-issue-recommendations",
-                   "core-get-asset-coverage"]
+                   "core-get-asset-coverage", "core-get-asset-coverage-histogram"]
 DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
 
 VULNERABLE_ISSUES_TABLE = "VULNERABLE_ISSUES_TABLE"
@@ -806,21 +806,15 @@ def get_asset_coverage_command(client: Client, args: dict):
     response = client.get_webapp_data(request_data)
     reply = response.get("reply", {})
     data = reply.get("DATA", [])
-    total_filtered_assets = reply.get("FILTER_COUNT")
-
-    outputs = {
-        "Asset": data,
-        "total_filtered_assets": total_filtered_assets
-    }
 
     readable_output = tableToMarkdown(
         "ASPM Coverage", data, headerTransform=string_to_table_header, sort_headers=False
     )
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Coverage",
-        outputs_key_field="Asset.asset_id",
-        outputs=outputs,
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Coverage.Asset",
+        outputs_key_field="asset_id",
+        outputs=data,
         raw_response=response,
     )
 

@@ -3,13 +3,22 @@ from typing import Any, Union
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
+scanner_columns = [
+    "is_scanned_by_vulnerabilities",
+    "is_scanned_by_code_weakness",
+    "is_scanned_by_secrets",
+    "is_scanned_by_iac",
+    "is_scanned_by_malware",
+]
+
 
 def get_command_results(command: str, args: dict[str, Any]) -> Union[dict[str, Any] | list]:
     """Execute a Demisto command and return the result."""
     try:
         command_results = demisto.executeCommand(command, args)
+        print(command_results)
         if command_results and isinstance(command_results, list) and command_results[0].get("Contents"):
-            return command_results[0]["Contents"].get("result", {})
+            return command_results[0]["Contents"].get("reply", {})
         return {}
     except Exception as e:
         demisto.error(f"Error executing command {command}: {str(e)}")
@@ -17,38 +26,66 @@ def get_command_results(command: str, args: dict[str, Any]) -> Union[dict[str, A
 
 
 def calculate_coverage_percentage(asset_coverage_histograms):
-    return 100
 
 
-def transform_asset_coverage_histograms_outputs(asset_coverage_histograms):
-    return asset_coverage_histograms
+
+def transform_scanner_histograms_outputs(asset_coverage_histograms):
+    def get_count(data, value):
+        return next((item['count'] for item in data if item['value'] == value), 0)
+
+    output = {}
+    for column in scanner_columns:
+        data = asset_coverage_histograms.get(column, [])
+        enabled_count = get_count(data, "ENABLED")
+        disabled_count = get_count(data, "DISABLED")
+        output[column] = {
+            "enabled": enabled_count,
+            "disabled": disabled_count,
+            "coverage_percentage": enabled_count / (enabled_count + disabled_count)
+        }
+
+    return output
+
+
+def transform_status_coverage_histogram_output(data):
+    mapping = {
+        'PARTIALLY SCANNED': 'partially_scanned',
+        'FULLY SCANNED': 'fully_scanned',
+        'NOT SCANNED': 'not_scanned'
+    }
+
+    output = {}
+
+    for item in data['status_coverage']:
+        key = mapping.get(item['value'], item['value'].lower().replace(" ", "_"))
+        output[key] = {
+            "count": item["count"],
+            "percentage": item["percentage"]
+        }
+
+    return {"aspm_status_coverage": output}
 
 
 def main():
     try:
         args = demisto.args()
         asset_coverage = get_command_results("core-get-asset-coverage", args)
+        assets = asset_coverage.get("DATA", [])
         print(asset_coverage)
         demisto.debug(asset_coverage)
 
-        columns = [
-            "is_scanned_by_vulnerabilities",
-            "is_scanned_by_code_weakness",
-            "is_scanned_by_secrets",
-            "is_scanned_by_iac,is_scanned_by_malware",
-            "status_coverage"
-        ]
-
-        args["columns"] = ", ".join(columns)
+        args["columns"] = ", ".join(scanner_columns + ["status_coverage"])
         asset_coverage_histograms = get_command_results("core-get-asset-coverage-histogram", args)
         print(asset_coverage_histograms)
         demisto.debug(asset_coverage_histograms)
+        scanner_histograms_outputs = transform_scanner_histograms_outputs(asset_coverage_histograms)
+        status_coverage_histogram_output = transform_status_coverage_histogram_output(data)
         outputs = {
-            "total_filtered_assets": 0,
-            "number_returned_assets": len(asset_coverage),
+            "total_filtered_assets": asset_coverage.get("FILTER_COUNT"),
+            "number_returned_assets": len(assets),
             "coverage_percentage": calculate_coverage_percentage(asset_coverage_histograms),
-            "Histogram": transform_asset_coverage_histograms_outputs(asset_coverage_histograms),
-            "Asset": asset_coverage
+            "Histogram": scanner_histograms_outputs | status_coverage_histogram_output,
+            "Asset": assets
         }
 
         human_readable = ""
