@@ -1358,36 +1358,21 @@ script:
     - name: core-create-policy
       description: Creates a new policy in Cortex Platform with defined conditions, scope, and triggers.
       arguments:
-        - name: name
+        - name: policy_name
           description: A unique name for the policy.
           required: true
         - name: description
           description: A brief explanation of the policy's objective.
-        - name: asset_group_ids
-          description: Comma-separated list of Asset Group IDs to apply the policy to. Cannot be used with scope parameters.
+        - name: asset_group_names
+          description: Comma-separated list of Asset Group names to apply the policy to. Will be converted to IDs automatically.
           isArray: true
         # Condition Filters (Findings Criteria)
         - name: conditions_finding_type
-          description: Filter by finding types.
+          description: "Filter by finding types. Supports multiple values: ci_cd_risk, cve, iac, license, operational_risk, secret, sast."
           isArray: true
-          auto: PREDEFINED
-          predefined:
-            - ci_cd_risk
-            - cve
-            - iac
-            - license
-            - operational_risk
-            - secret
-            - sast
         - name: conditions_severity
-          description: Filter by severity.
+          description: "Filter by severity. Supports multiple values: CRITICAL, HIGH, MEDIUM, LOW."
           isArray: true
-          auto: PREDEFINED
-          predefined:
-            - CRITICAL
-            - HIGH
-            - MEDIUM
-            - LOW
         - name: conditions_developer_suppression
           description: Respect or ignore developer-suppressed findings.
           auto: PREDEFINED
@@ -1401,18 +1386,14 @@ script:
             - NEW
             - BACKLOG
         - name: conditions_package_name # todo
-          description: Name of the software package. Partial matches allowed.
+          description: Name of the software package.
         - name: conditions_package_version
           description: Version of the software package.
         - name: conditions_package_operational_risk
           description: Operational risk level of the package.
-          auto: PREDEFINED
-          predefined:
-            - LOW
-            - MEDIUM
-            - HIGH
-        - name: conditions_appsec_rule # todo
-          description: The AppSec rule violated (CI/CD, Secrets, IaC, etc.).
+        - name: conditions_appsec_rule_names
+          description: Comma-separated list of AppSec rule names to apply the policy to. Will be converted to IDs automatically.
+          isArray: true
         - name: conditions_cvss
           description: CVSS base score for vulnerability findings.
         - name: conditions_epss
@@ -1430,43 +1411,29 @@ script:
             - "true"
             - "false"
         - name: conditions_secret_validity
-          description: Validity status of an exposed secret.
-          auto: PREDEFINED
-          predefined:
-            - VALID
+          description: "Validity status of an exposed secret. Supports multiple values:            - VALID
             - PRIVILEGED
             - INVALID
-            - UNAVAILABLE
-        - name: conditions_category
-          description: Category of the asset where the finding exists.
-          auto: PREDEFINED
-          predefined:
-            - APPLICATION
-            - REPOSITORY
+            - UNAVAILABLE"
+          isArray: true
+
+        - name: conditions_license_type
+          description: The type of software license detected.
+          isArray: true
+
         # Scope Filters (Asset Criteria)
         - name: scope_category
-          description: Type of asset to include.
+          description: Type of asset to include (application, repository, cicd_instance, cicd_pipeline, vcs_collaborator, vcs_organization).
           isArray: true
-          auto: PREDEFINED
-          predefined:
-            - application
-            - repository
-            - cicd_instance
-            - cicd_pipeline
-            - vcs_collaborator
-            - vcs_organization
-        - name: scope_business_application_names #todo
-          description: Name(s) of business applications. Partial match supported.
+        - name: scope_business_application_names
+          description: Name(s) of business applications.
+          isArray: true
         - name: scope_application_business_criticality
-          description: Criticality of the business application.
-          auto: PREDEFINED
-          predefined:
-            - CRITICAL
-            - HIGH
-            - MEDIUM
-            - LOW
-        - name: scope_repository_name # todo
+          description: "Criticality of the business application. Supports multiple values: CRITICAL, HIGH, MEDIUM, LOW."
+          isArray: true
+        - name: scope_repository_name
           description: Name of the code repository.
+          isArray: true
         - name: scope_is_public_repository
           description: Whether the repository is public.
           auto: PREDEFINED
