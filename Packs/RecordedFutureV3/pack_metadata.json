@@ -47,9 +47,8 @@
     ],
     "marketplaces": [
         "xsoar",
-        "xsoar_on_prem",
-        "xsoar_saas",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
     ],
     "devEmail": [
         "int-saas-team@recordedfuture.com"
@@ -58,5 +57,10 @@
         "recordedfuture-dev",
         "aommm",
         "hildenjohannes"
+    ],
+        "supportedModules": [
+
+        "agentix",
+        "xsiam"
     ]
 }
