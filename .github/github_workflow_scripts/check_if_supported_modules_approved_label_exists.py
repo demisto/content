@@ -148,48 +148,44 @@ def is_supported_modules_modified(pr: PullRequest, file_path: str) -> bool:
     Returns:
         bool: True if 'supportedModules' or its contents were modified, False otherwise
     """
-    diff = get_file_diff(pr, file_path)
-    if not diff:
+
+    # Get file extension
+    file_ext = file_path[file_path.rfind('.'):].lower()
+    if file_ext not in ('.yaml', '.yml', '.json'):
         return False
 
-    print(diff)
-    # First check if the 'supportedModules' field itself was modified
-    if any(line.strip().startswith(('+', '-')) and 'supportedModules' in line for line in diff.split('\n')):
-        return True
+    # Get the file content before and after the PR
+    try:
+        repo = pr.base.repo
+        base_sha = pr.base.sha
+        head_sha = pr.head.sha
 
-    # Then check for modifications inside the array
-    in_supported_modules = False
-    lines = diff.split('\n')
+        # Get base version (before PR)
+        base_content = repo.get_contents(file_path, ref=base_sha).decoded_content.decode('utf-8')
+        base_data = parse_yml_or_json(base_content, file_path)
 
-    for line in lines:
-        line = line.strip()
+        # Get head version (after PR)
+        head_content = repo.get_contents(file_path, ref=head_sha).decoded_content.decode('utf-8')
+        head_data = parse_yml_or_json(head_content, file_ext)
 
-        # Check if we're entering the supportedModules section
-        if 'supportedModules' in line and ':' in line:
-            in_supported_modules = True
-            continue
+        if not base_data or not head_data:
+            return False
 
-        # If we're in the supportedModules section, check for any modifications
-        if in_supported_modules:
-            # If we hit a line that's not part of the array (new top-level key), we're done
-            if line.startswith(('  ', '\t')) and all(
-                c not in line for c in '[]{}'
-            ):
-                continue
-            if line.startswith(('+', '-', ' ')) and any(c in line for c in ['[', ']', '- ']):
-                # Check if this is a modification to the array elements
-                if any(x in line for x in ['+', '-']):
-                    # Skip the opening bracket line if it's just the bracket
-                    if line.strip() in ('+[', '-[', '+ [', '- [', ']', '+]', '-]'):
-                        continue
-                    # Check if this is a real modification to the array elements
-                    if any(x in line for x in ['"', "'"]):
-                        return True
-            elif line.startswith(('+', '-')):
-                # If we hit a line that's not part of the array, we're done
-                break
+        # Compare the supportedModules field
+        base_modules = base_data.get('supportedModules', [])
+        head_modules = head_data.get('supportedModules', [])
 
-    return False
+        # Convert to sets for comparison
+        base_set = set(base_modules) if isinstance(base_modules, list) else set()
+        head_set = set(head_modules) if isinstance(head_modules, list) else set()
+        print(f"### {base_set}")
+        print(f"$$$ {head_set}")
+        # Check if there are any differences
+        return base_set != head_set
+
+    except Exception as e:
+        print(f"Error comparing file {file_path}: {str(e)}")
+        return False
 
 
 def check_pr_contains_supported_modules_changes(pr: PullRequest) -> bool:
