@@ -2,7 +2,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 
-def extract_ids(case_extra_data):
+def extract_ids(case_extra_data: dict) -> list:
     """
     Extract a list of IDs from a command result.
 
@@ -13,8 +13,11 @@ def extract_ids(case_extra_data):
     Returns:
         A list of the IDs extracted from the command result.
     """
+    if not case_extra_data:
+        return []
+
     field_name = "issue_id"
-    issues = case_extra_data.get("issues")
+    issues = case_extra_data.get("issues", {})
     issues_data = issues.get("data", {}) if issues else {}
     issue_ids = [c.get(field_name) for c in issues_data if isinstance(c, dict) and field_name in c]
     demisto.debug(f"Extracted issue ids: {issue_ids}")
@@ -122,7 +125,7 @@ def main():  # pragma: nocover
                 raw_response_search_cases = [raw_response_search_cases]
 
             case_extra_data = add_cases_extra_data(raw_response_search_cases)
-            
+
             return_results(
                 CommandResults(
                     readable_output=tableToMarkdown("Cases", case_extra_data, headerTransform=string_to_table_header),
