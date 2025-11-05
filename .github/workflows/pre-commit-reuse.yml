@@ -31,6 +31,21 @@ jobs:
     - name: Install dependencies
       run: poetry install
 
+    - name: Smart Free Disk Space
+      run: |
+        USAGE=$(df / | tail -1 | awk '{print $5}' | sed 's/%//')
+        echo "Disk usage: ${USAGE}%"
+        if [ "$USAGE" -gt 80 ]; then
+          echo "Cleaning disk..."
+          df -h
+          docker system prune -af --filter "until=24h" || true
+          docker volume prune -f || true
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc || true
+          df -h
+        else
+          echo "Disk usage below threshold, skipping cleanup."
+        fi
+
     - name: Cache Pre commit
       id: cache-pre-commit
       uses: actions/cache@v3
