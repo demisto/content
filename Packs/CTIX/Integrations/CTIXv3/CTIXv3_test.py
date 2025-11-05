@@ -10,7 +10,7 @@ from CTIXv3 import (
     create_tag_command,
     cve_command,
     delete_note,
-    delete_tag_command,
+    disable_or_enable_tags_command,
     deprecate_ioc_command,
     domain,
     file,
@@ -131,7 +131,7 @@ def test_get_tags_not_found(requests_mock):
     assert response[0].outputs is None
 
 
-def test_delete_tag(requests_mock):
+def test_disable_or_enable_tag(requests_mock):
     mock_response = util_load_json("test_data/delete_tag.json")
     mock_response_get_tags = util_load_json("test_data/get_tags.json")
     requests_mock.get(f"{BASE_URL}ingestion/tags/", json=mock_response_get_tags)
@@ -147,9 +147,9 @@ def test_delete_tag(requests_mock):
 
     args = {"tag_name": "test, test1"}
 
-    response = delete_tag_command(client, args)
+    response = disable_or_enable_tags_command(client, args)
     assert response.outputs[0] == mock_response
-    assert response.outputs_prefix == "CTIX.DeleteTag"
+    assert response.outputs_prefix == "CTIX.TagAction"
     assert response.outputs_key_field == "result"
 
     assert isinstance(response.raw_response, list)
@@ -280,7 +280,7 @@ def test_get_whitelist_iocs_command(requests_mock):
 
 def test_remove_whitelisted_ioc_command(requests_mock):
     mock_response = util_load_json("test_data/remove_whitelist_ioc.json")
-    requests_mock.post(f"{BASE_URL}conversion/whitelist/bulk-actions/", json=mock_response)
+    requests_mock.delete(f"{BASE_URL}conversion/allowed_indicators/", json=mock_response)
 
     client = Client(
         base_url=BASE_URL,
@@ -538,7 +538,7 @@ def test_add_analyst_score_command(requests_mock):
 
 def test_saved_result_set_command(requests_mock):
     mock_response = util_load_json("test_data/saved_result_set.json")
-    requests_mock.post(f"{BASE_URL}ingestion/threat-data/list/", json=mock_response)
+    requests_mock.post(f"{BASE_URL}ingestion/rules/save_result_set")
 
     client = Client(
         base_url=BASE_URL,
@@ -563,7 +563,7 @@ def test_add_tag_indicator_updation_command(requests_mock):
     mock_response = util_load_json("test_data/add_tag_indicator.json")
     mock_response_get = util_load_json("test_data/get_indicator_tags.json")
     requests_mock.get(f"{BASE_URL}ingestion/threat-data/indicator/foo/quick-actions/", json=mock_response_get)
-    requests_mock.post(f"{BASE_URL}ingestion/threat-data/action/add_tag/", json=mock_response)
+    requests_mock.post(f"{BASE_URL}ingestion/threat-data/bulk-action/add_tag/", json=mock_response)
 
     client = Client(
         base_url=BASE_URL,
@@ -598,7 +598,7 @@ def test_remove_tag_indicator_updation_command(requests_mock):
         f"{BASE_URL}ingestion/threat-data/indicator/foo/quick-actions/",
         json=mock_response_get,
     )
-    requests_mock.post(f"{BASE_URL}ingestion/threat-data/action/remove_tag/", json=mock_response)
+    requests_mock.post(f"{BASE_URL}ingestion/threat-data/bulk-action/remove_tag/", json=mock_response)
 
     client = Client(
         base_url=BASE_URL,

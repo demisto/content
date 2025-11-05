@@ -33,6 +33,13 @@ configuration:
   section: Connect
   type: 8
   required: false
+- display: Timeout 
+  name: timeout
+  type: 0
+  required: false
+  defaultvalue: 30
+  section: Connect
+  additionalinfo: Connection timeout in seconds (default is 30).
 - display: Use system proxy settings
   name: proxy
   type: 8
@@ -127,16 +134,19 @@ script:
       description: Modified at timestamp.
       type: number
     description: Get paginated list of tags.
-  - name: ctix-delete-tag
+  - name: ctix-disable-or-enable-tag
     arguments:
     - name: tag_name
       required: true
       description: Name of the tag.
+    - name: action
+      required: true
+      description: Choose to Enable or Disable the tag.
     outputs:
-    - contextPath: CTIX.DeleteTag.result
+    - contextPath: CTIX.TagAction.result
       description: Status.
       type: string
-    description: Delete a tag with given tag_name.
+    description: Disable or Enables a tag with given tag_name.
     execution: true
   - name: ctix-allowed-iocs
     arguments:
@@ -584,8 +594,6 @@ script:
       defaultValue: "10"
     - name: label_name
       description: label name.
-    - name: query
-      description: CQL.
     outputs:
     - contextPath: CTIX.SavedResultSet.analyst_score
       description: Analyst score of the IOC.
@@ -941,7 +949,7 @@ script:
     - contextPath: CTIX.IndicatorTags.type
       description: Type of Indicator.
     description: Get Indicator Tags.
-  - name: ctix-get-indicator-relations
+  - name: ctix-get-object-relations
     arguments:
     - name: page
       description: page.
@@ -962,7 +970,7 @@ script:
       description: Indicator sources.
     - contextPath: CTIX.IndicatorRelations.target_ref
       description: "Indicator target reference."
-    description: Get Indicator Relations.
+    description: Get Object Relations.
   - name: ctix-get-indicator-observations
     arguments:
     - name: page
