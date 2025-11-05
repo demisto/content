@@ -148,6 +148,13 @@ configuration:
   - WHITE
   type: 15
   required: false
+- display: Limit (items per request)
+  name: limit
+  section: Collect
+  defaultvalue: '100'
+  type: 0
+  required: false
+  additionalinfo: Number of items requested per API page. Larger values reduce API round-trips but may increase response size. Server-side caps may apply.
 - display: ''
   name: feedExpirationPolicy
   type: 17
