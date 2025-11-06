@@ -17,8 +17,7 @@ THREAT_OBJECTS_ENDPOINT = "/api/v1/feeds/threat_objects"
 
 # Retry configuration
 RETRY_COUNT = 5
-BACKOFF_FACTOR = 5
-STATUS_CODES_TO_RETRY = [429] + list(range(500, 600))
+STATUS_CODES_TO_RETRY = list(range(429, 600))
 
 # Mapping from API indicator types to XSOAR indicator types
 INDICATOR_TYPE_MAPPING = {
@@ -157,7 +156,6 @@ class Client(BaseClient):
             status_list_to_retry=STATUS_CODES_TO_RETRY,
             raise_on_status=True,
         )
-
         return response
 
 
