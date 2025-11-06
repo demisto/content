@@ -2143,7 +2143,7 @@ class EC2:
             "IncludeDisabled": arg_to_bool_or_none(args.get("include_disabled")),
         }
 
-        limit = args.get("limit", float('inf'))
+        limit = args.get("limit", float("inf"))
         remove_nulls_from_dictionary(kwargs)
         pagination_kwargs = build_pagination_kwargs(kwargs)
         pagination_kwargs.update(kwargs)
