@@ -1,5 +1,5 @@
 import pytest
-from ServiceNowNetworkAdaptersEnrichment import (
+from ServiceNowCMDBEnrichAsset import (
     NetworkAdapter,
     ConfigurationItem,
     get_command_results,
@@ -86,7 +86,7 @@ def test_get_command_results(mocker):
     expected_result = {"result": "success"}
 
     mocker.patch(
-        "ServiceNowNetworkAdaptersEnrichment.demisto.executeCommand", return_value=[{"Contents": {"result": expected_result}}]
+        "ServiceNowCMDBEnrichAsset.demisto.executeCommand", return_value=[{"Contents": {"result": expected_result}}]
     )
 
     result = get_command_results(mock_command, mock_args)
@@ -99,7 +99,7 @@ def test_get_network_adapter(mocker, mock_network_adapter_data):
     When get_network_adapter is called
     Then it should return a properly populated NetworkAdapter instance
     """
-    mocker.patch("ServiceNowNetworkAdaptersEnrichment.get_command_results", return_value=mock_network_adapter_data["result"])
+    mocker.patch("ServiceNowCMDBEnrichAsset.get_command_results", return_value=mock_network_adapter_data["result"])
 
     adapter = get_network_adapter("na123")
 
@@ -120,7 +120,7 @@ def test_get_related_configuration_item(mocker, mock_ci_data):
     """
     # First call returns the CI class
     mocker.patch(
-        "ServiceNowNetworkAdaptersEnrichment.get_command_results",
+        "ServiceNowCMDBEnrichAsset.get_command_results",
         side_effect=[{"attributes": {"sys_class_name": "cmdb_ci_linux_server"}}, mock_ci_data["result"]],
     )
 
@@ -145,11 +145,11 @@ def test_main_success(mocker, mock_demisto_args, mock_network_adapter_data, mock
     Then it should process the network adapters and return the expected results
     """
     # Mock demisto functions
-    mocker.patch("ServiceNowNetworkAdaptersEnrichment.demisto.args", return_value=mock_demisto_args)
+    mocker.patch("ServiceNowCMDBEnrichAsset.demisto.args", return_value=mock_demisto_args)
 
     # Mock command execution
     mocker.patch(
-        "ServiceNowNetworkAdaptersEnrichment.get_command_results",
+        "ServiceNowCMDBEnrichAsset.get_command_results",
         side_effect=[
             [{"sys_id": "na123"}],  # First call to get network adapters
             mock_network_adapter_data["result"],  # Get network adapter details
@@ -159,7 +159,7 @@ def test_main_success(mocker, mock_demisto_args, mock_network_adapter_data, mock
     )
 
     # Mock return_results
-    mock_return = mocker.patch("ServiceNowNetworkAdaptersEnrichment.return_results")
+    mock_return = mocker.patch("ServiceNowCMDBEnrichAsset.return_results")
 
     main()
 
@@ -177,8 +177,8 @@ def test_main_no_ip(mocker):
     When main is called
     Then it should raise a validation error
     """
-    mocker.patch("ServiceNowNetworkAdaptersEnrichment.demisto.args", return_value={"ip_address": None})
-    mock_error = mocker.patch("ServiceNowNetworkAdaptersEnrichment.return_error")
+    mocker.patch("ServiceNowCMDBEnrichAsset.demisto.args", return_value={"ip_address": None})
+    mock_error = mocker.patch("ServiceNowCMDBEnrichAsset.return_error")
 
     main()
 
@@ -192,9 +192,9 @@ def test_main_no_results(mocker, mock_demisto_args):
     When main is called
     Then it should return empty result sets
     """
-    mocker.patch("ServiceNowNetworkAdaptersEnrichment.demisto.args", return_value=mock_demisto_args)
-    mocker.patch("ServiceNowNetworkAdaptersEnrichment.get_command_results", return_value=[])
-    mock_return = mocker.patch("ServiceNowNetworkAdaptersEnrichment.return_results")
+    mocker.patch("ServiceNowCMDBEnrichAsset.demisto.args", return_value=mock_demisto_args)
+    mocker.patch("ServiceNowCMDBEnrichAsset.get_command_results", return_value=[])
+    mock_return = mocker.patch("ServiceNowCMDBEnrichAsset.return_results")
 
     main()
 

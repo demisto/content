@@ -171,7 +171,7 @@ def main():
         return_results(
             CommandResults(
                 outputs=outputs,
-                outputs_prefix="CortexExposureManagement.ServiceNowEnrichment",
+                outputs_prefix="ServiceNowCMDBAssetEnrichment",
                 readable_output=human_readable,
                 raw_response=outputs,
             )
