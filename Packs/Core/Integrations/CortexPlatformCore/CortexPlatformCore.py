@@ -526,7 +526,7 @@ def build_webapp_request_data(
     """
     Builds the request data for the generic /api/webapp/get_data endpoint.
     """
-    sort = [{"FIELD": sort_field, "ORDER": COVERAGE_API_FIELDS_MAPPING.get(sort_field, sort_field)}] if sort_field else []
+    sort = [{"FIELD": COVERAGE_API_FIELDS_MAPPING.get(sort_field, sort_field), "ORDER": sort_order}] if sort_field else []
     filter_data = {
         "sort": sort,
         "paging": {"from": 0, "to": limit},
@@ -825,7 +825,7 @@ def get_asset_coverage_command(client: Client, args: dict):
 
 def get_asset_coverage_histogram_command(client: Client, args: dict):
     """
-    Retrieves ASPM assets coverage histogrsm using the generic /api/webapp/get_histograms endpoint.
+    Retrieves ASPM assets coverage histogrm using the generic /api/webapp/get_histograms endpoint.
     """
     columns = argToList(args.get("columns"))
     columns = [COVERAGE_API_FIELDS_MAPPING.get(col, col) for col in columns]
