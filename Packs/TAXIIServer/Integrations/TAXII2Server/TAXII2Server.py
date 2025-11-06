@@ -294,7 +294,9 @@ class TAXII2Server:
         found_collection = self.collections_by_id.get(collection_id, {})
         query = found_collection.get("query")
         demisto.debug(f"T2S: calling find_indicators with {query=} {types=} {added_after=} {limit=} {offset=}")
-        iocs, extensions, total, use_search_after = find_indicators(query=query, types=types, added_after=added_after, limit=limit, offset=offset, collection_id=collection_id)
+        iocs, extensions, total, use_search_after = find_indicators(
+            query=query, types=types, added_after=added_after, limit=limit, offset=offset, collection_id=collection_id
+        )
         demisto.debug(f"T2S: after find_indicators {iocs}")
         demisto.debug(f"T2S: after find_indicators len: {len(iocs)}")
 
@@ -590,7 +592,7 @@ def set_field_filters(is_manifest: bool = False) -> Optional[str]:
     return field_filters
 
 
-def search_indicators(field_filters: Optional[str], query: str, limit: int, search_after: list=None) -> IndicatorsSearcher:
+def search_indicators(field_filters: Optional[str], query: str, limit: int, search_after: list = None) -> IndicatorsSearcher:
     """
     Args:
         field_filters: filter
@@ -620,7 +622,9 @@ def search_indicators(field_filters: Optional[str], query: str, limit: int, sear
     )
 
 
-def find_indicators(query: str, types: list, added_after, limit: int, offset: int, is_manifest: bool = False, collection_id=None) -> tuple:
+def find_indicators(
+    query: str, types: list, added_after, limit: int, offset: int, is_manifest: bool = False, collection_id=None
+) -> tuple:
     """
     Args:
         query: search indicators query
@@ -640,16 +644,18 @@ def find_indicators(query: str, types: list, added_after, limit: int, offset: in
     # remove old search_after values from the context
     integration_context = get_integration_context(True)
     demisto.info(f"{integration_context=}")
-    demisto.info(f"before finalize_search_after")
+    demisto.info("before finalize_search_after")
     finalize_search_after(integration_context)
     demisto.info(f"{integration_context=}")
 
     # check if there is a search_after value for this collection with this offset
-    if integration_context.get(SEARCH_AFTER_KEY_NAME,{}).get(collection_id,{}).get(str(offset)):
+    if integration_context.get(SEARCH_AFTER_KEY_NAME, {}).get(collection_id, {}).get(str(offset)):
         search_after = integration_context[SEARCH_AFTER_KEY_NAME][collection_id][str(offset)]
         demisto.info(f"found search_after_cache: {search_after}")
-        demisto.info(f"{INTEGRATION_NAME}: search indicators parameters is {field_filters=}, {new_query=}, {limit=}, {search_after=}")
-        indicator_searcher = search_indicators(field_filters, new_query, limit, search_after['search_after'])
+        demisto.info(
+            f"{INTEGRATION_NAME}: search indicators parameters is {field_filters=}, {new_query=}, {limit=}, {search_after=}"
+        )
+        indicator_searcher = search_indicators(field_filters, new_query, limit, search_after["search_after"])
         use_search_after = True
     else:
         demisto.info("could not found search_after_cache")
@@ -666,9 +672,10 @@ def find_indicators(query: str, types: list, added_after, limit: int, offset: in
     demisto.debug(f"T2S: find_indicators {iocs=}")
     demisto.debug(f"T2S: find_indicators len={len(iocs)}")
 
-
     if indicator_searcher._search_after_param:
-        demisto.info(f"search_after_param returns from the search: {indicator_searcher._search_after_param=} {indicator_searcher._total_iocs_fetched=} {offset=}")
+        demisto.info(
+            f"search_after_param returns from the search: {indicator_searcher._search_after_param=} {indicator_searcher._total_iocs_fetched=} {offset=}"
+        )
 
         if SEARCH_AFTER_KEY_NAME not in integration_context:
             integration_context[SEARCH_AFTER_KEY_NAME] = {}
@@ -677,16 +684,15 @@ def find_indicators(query: str, types: list, added_after, limit: int, offset: in
             integration_context[SEARCH_AFTER_KEY_NAME][collection_id] = {}
 
         # Set the value
-        integration_context[SEARCH_AFTER_KEY_NAME][collection_id][
-            str(indicator_searcher._total_iocs_fetched + offset)] = {"search_after":indicator_searcher._search_after_param,
-                                                                "last_updated": datetime.now(timezone.utc).isoformat()}
+        integration_context[SEARCH_AFTER_KEY_NAME][collection_id][str(indicator_searcher._total_iocs_fetched + offset)] = {
+            "search_after": indicator_searcher._search_after_param,
+            "last_updated": datetime.now(timezone.utc).isoformat(),
+        }
 
         demisto.info(f"{integration_context=}")
         set_integration_context(integration_context)
 
-
     return iocs, extensions, total, use_search_after
-
 
 
 def finalize_search_after(integration_context: dict) -> None:
@@ -718,8 +724,6 @@ def finalize_search_after(integration_context: dict) -> None:
         # Clean up empty nested dicts
         if not time_dict:
             del search_cache[collection_id]
-
-
 
 
 def parse_content_range(content_range: str) -> tuple:
@@ -1159,7 +1163,7 @@ def main():  # pragma: no cover
         elif command == "taxii-server-info":
             integration_context = get_integration_context(True)
             return_results(get_server_info_command(integration_context))
-           # TODO: remove
+        # TODO: remove
         elif command == "taxii-delete-context":
             integration_context = get_integration_context(True)
             integration_context.pop(SEARCH_AFTER_KEY_NAME, None)
