@@ -113,76 +113,76 @@ args:
   defaultValue: "50"
 outputs:
 - contextPath: Core.Coverage.total_filtered_assets
-  description:
+  description: The total number of assets matching the filter (before the limit is applied).
   type: Number
 - contextPath: Core.Coverage.number_returned_assets
-  description:
+  description: The number of returned assets.
   type: Number
 - contextPath: Core.Coverage.coverage_percentage
-  description: The ASPM coverage percentage calculated from Scanner coverage histogram.
+  description: The ASPM coverage percentage calculated from the scanner coverage histogram.
   type: Number
 - contextPath: Core.Coverage.Metrics.aspm_status_coverage.partially_scanned.count
-  description:
+  description: The number of assets that are partially scanned according to ASPM coverage.
   type: Number
 - contextPath: Core.Coverage.Metrics.aspm_status_coverage.fully_scanned.count
-  description:
+  description: The number of assets that are fully scanned according to ASPM coverage.
   type: Number
 - contextPath: Core.Coverage.Metrics.aspm_status_coverage.not_scanned.count
-  description:
+  description: The number of assets that are not scanned according to ASPM coverage.
   type: Number
 - contextPath: Core.Coverage.Metrics.aspm_status_coverage.partially_scanned.percentage
-  description:
+  description: The percentage of assets that are partially scanned according to ASPM coverage.
   type: Number
 - contextPath: Core.Coverage.Metrics.aspm_status_coverage.fully_scanned.percentage
-  description:
+  description: The percentage of assets that are fully scanned according to ASPM coverage.
   type: Number
 - contextPath: Core.Coverage.Metrics.aspm_status_coverage.not_scanned.percentage
-  description:
+  description: The percentage of assets that are not scanned according to ASPM coverage.
   type: Number
 - contextPath: Core.Coverage.Metrics.is_scanned_by_vulnerabilities.coverage_percentage
-  description:
+  description: The percentage of assets scanned for vulnerabilities.
   type: Number
 - contextPath: Core.Coverage.Metrics.is_scanned_by_vulnerabilities.enabled
-  description:
+  description: The number of assets where vulnerability scanning is enabled.
   type: Number
 - contextPath: Core.Coverage.Metrics.is_scanned_by_vulnerabilities.disabled
-  description:
+  description: The number of assets where vulnerability scanning is disabled.
   type: Number
 - contextPath: Core.Coverage.Metrics.is_scanned_by_code_weakness.coverage_percentage
-  description:
+  description: The percentage of assets scanned for code weaknesses.
   type: Number
 - contextPath: Core.Coverage.Metrics.is_scanned_by_code_weakness.enabled
-  description:
+  description: The number of assets where code weakness scanning is enabled.
   type: Number
 - contextPath: Core.Coverage.Metrics.is_scanned_by_code_weakness.disabled
-  description:
+  description: The number of assets where code weakness scanning is disabled.
   type: Number
 - contextPath: Core.Coverage.Metrics.is_scanned_by_secrets.coverage_percentage
-  description:
+  description: The percentage of assets scanned for secrets.
   type: Number
 - contextPath: Core.Coverage.Metrics.is_scanned_by_secrets.enabled
-  description:
+  description: The number of assets where secret scanning is enabled.
   type: Number
 - contextPath: Core.Coverage.Metrics.is_scanned_by_secrets.disabled
-  description:
+  description: The number of assets where secret scanning is disabled.
   type: Number
 - contextPath: Core.Coverage.Metrics.is_scanned_by_iac.coverage_percentage
-  description:
+  description: The percentage of assets scanned for infrastructure-as-code (IaC) issues.
   type: Number
 - contextPath: Core.Coverage.Metrics.is_scanned_by_iac.enabled
-  description:
+  description: The number of assets where infrastructure-as-code (IaC) scanning is enabled.
   type: Number
 - contextPath: Core.Coverage.Metrics.is_scanned_by_iac.disabled
-  description:
+  description: The number of assets where infrastructure-as-code (IaC) scanning is disabled.
   type: Number
 - contextPath: Core.Coverage.Metrics.is_scanned_by_malware.coverage_percentage
-  description:
+  description: The percentage of assets scanned for malware.
   type: Number
 - contextPath: Core.Coverage.Metrics.is_scanned_by_malware.enabled
-  description:
+  description: The number of assets where malware scanning is enabled.
   type: Number
 - contextPath: Core.Coverage.Metrics.is_scanned_by_malware.disabled
-  description:
+  description: The number of assets where malware scanning is disabled.
   type: Number
 - contextPath: Core.Coverage.Asset.asset_id
   description: The unique ID of the asset. Each asset is assigned a unique identifier in the system.

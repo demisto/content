@@ -24,8 +24,13 @@ ASSET_FIELDS = {
     "asset_group_ids": "xdm.asset.group_ids",
 }
 
-WEBAPP_COMMANDS = ["core-get-vulnerabilities", "core-search-asset-groups", "core-get-issue-recommendations",
-                   "core-get-asset-coverage", "core-get-asset-coverage-histogram"]
+WEBAPP_COMMANDS = [
+    "core-get-vulnerabilities",
+    "core-search-asset-groups",
+    "core-get-issue-recommendations",
+    "core-get-asset-coverage",
+    "core-get-asset-coverage-histogram",
+]
 DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
 
 VULNERABLE_ISSUES_TABLE = "VULNERABLE_ISSUES_TABLE"
@@ -47,10 +52,7 @@ VULNERABILITIES_SEVERITY_MAPPING = {
     "critical": "SEV_070_CRITICAL",
 }
 
-COVERAGE_API_FIELDS_MAPPING = {
-    "vendor_name": "asset_provider",
-    "asset_provider": "unified_provider"
-}
+COVERAGE_API_FIELDS_MAPPING = {"vendor_name": "asset_provider", "asset_provider": "unified_provider"}
 
 
 class FilterBuilder:
@@ -539,12 +541,7 @@ def build_webapp_request_data(
     return {"type": "grid", "table_name": table_name, "filter_data": filter_data, "jsons": [], "onDemandFields": on_demand_fields}
 
 
-def build_histogram_request_data(
-    table_name: str,
-    filter_dict: dict,
-    max_values_per_column: int,
-    columns: list
-) -> dict:
+def build_histogram_request_data(table_name: str, filter_dict: dict, max_values_per_column: int, columns: list) -> dict:
     """
     Builds the request data for the generic /api/webapp//get_histograms endpoint.
     """
@@ -553,8 +550,12 @@ def build_histogram_request_data(
     }
     demisto.debug(f"{filter_data=}")
 
-    return {"table_name": table_name, "filter_data": filter_data, "max_values_per_column": max_values_per_column,
-            "columns": columns}
+    return {
+        "table_name": table_name,
+        "filter_data": filter_data,
+        "max_values_per_column": max_values_per_column,
+        "columns": columns,
+    }
 
 
 def get_vulnerabilities_command(client: Client, args: dict) -> CommandResults:
@@ -779,8 +780,9 @@ def build_asset_coverage_filter(args: dict) -> FilterBuilder:
     filter_builder = FilterBuilder()
     filter_builder.add_field("asset_id", FilterType.CONTAINS, argToList(args.get("asset_id")))
     filter_builder.add_field("asset_name", FilterType.CONTAINS, argToList(args.get("asset_name")))
-    filter_builder.add_field("business_application_names", FilterType.ARRAY_CONTAINS,
-                             argToList(args.get('business_application_names')))
+    filter_builder.add_field(
+        "business_application_names", FilterType.ARRAY_CONTAINS, argToList(args.get("business_application_names"))
+    )
     filter_builder.add_field("status_coverage", FilterType.EQ, argToList(args.get("status_coverage")))
     filter_builder.add_field("is_scanned_by_vulnerabilities", FilterType.EQ, argToList(args.get("is_scanned_by_vulnerabilities")))
     filter_builder.add_field("is_scanned_by_code_weakness", FilterType.EQ, argToList(args.get("is_scanned_by_code_weakness")))
@@ -812,9 +814,7 @@ def get_asset_coverage_command(client: Client, args: dict):
     reply = response.get("reply", {})
     data = reply.get("DATA", [])
 
-    readable_output = tableToMarkdown(
-        "ASPM Coverage", data, headerTransform=string_to_table_header, sort_headers=False
-    )
+    readable_output = tableToMarkdown("ASPM Coverage", data, headerTransform=string_to_table_header, sort_headers=False)
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Coverage.Asset",
@@ -836,22 +836,19 @@ def get_asset_coverage_histogram_command(client: Client, args: dict):
         table_name=ASSET_COVERAGE_TABLE,
         filter_dict=build_asset_coverage_filter(args).to_dict(),
         columns=columns,
-        max_values_per_column=arg_to_number(args.get("max_values_per_column")) or 100
+        max_values_per_column=arg_to_number(args.get("max_values_per_column")) or 100,
     )
 
     response = client.get_webapp_histograms(request_data)
     reply = response.get("reply", {})
-    outputs = [
-        {"column_name": column_name, "data": data}
-        for column_name, data in reply.items()
-    ]
+    outputs = [{"column_name": column_name, "data": data} for column_name, data in reply.items()]
 
     readable_output = "\n".join(
         tableToMarkdown(
             f"ASPM Coverage {output['column_name']} Histogram",
             output["data"],
             headerTransform=string_to_table_header,
-            sort_headers=False
+            sort_headers=False,
         )
         for output in outputs
     )
@@ -921,13 +918,11 @@ def main():  # pragma: no cover
             issues_command_results: CommandResults = get_alerts_by_filter_command(client, args)
             # Convert alert keys to issue keys
             if issues_command_results.outputs:
-                issues_command_results.outputs = [alert_to_issue(output) for output in
-                                                  issues_command_results.outputs]  # type: ignore[attr-defined,arg-type]
+                issues_command_results.outputs = [alert_to_issue(output) for output in issues_command_results.outputs]  # type: ignore[attr-defined,arg-type]
 
             # Apply output_keys filtering if specified
             if output_keys and issues_command_results.outputs:
-                issues_command_results.outputs = filter_context_fields(output_keys,
-                                                                       issues_command_results.outputs)  # type: ignore[attr-defined,arg-type]
+                issues_command_results.outputs = filter_context_fields(output_keys, issues_command_results.outputs)  # type: ignore[attr-defined,arg-type]
 
             return_results(issues_command_results)
 
@@ -946,10 +941,10 @@ def main():  # pragma: no cover
             return_results(get_issue_recommendations_command(client, args))
 
         elif command == "core-get-asset-coverage":
-            return_results((get_asset_coverage_command(client, args)))
+            return_results(get_asset_coverage_command(client, args))
 
         elif command == "core-get-asset-coverage-histogram":
-            return_results((get_asset_coverage_histogram_command(client, args)))
+            return_results(get_asset_coverage_histogram_command(client, args))
 
     except Exception as err:
         demisto.error(traceback.format_exc())

@@ -1,4 +1,4 @@
-from typing import Any, Union
+from typing import Any
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -28,7 +28,7 @@ valid_args = {
 }
 
 
-def get_command_results(command: str, args: dict[str, Any]) -> Union[dict[str, Any] | list]:
+def get_command_results(command: str, args: dict[str, Any]) -> dict[str, Any] | list:
     """Execute a Demisto command and return the result."""
     try:
         command_results = demisto.executeCommand(command, args)
@@ -42,7 +42,7 @@ def get_command_results(command: str, args: dict[str, Any]) -> Union[dict[str, A
 
 def transform_scanner_histograms_outputs(asset_coverage_histograms):
     def get_count(data, value):
-        return next((item['count'] for item in data if item['value'] == value), 0)
+        return next((item["count"] for item in data if item["value"] == value), 0)
 
     output = {}
     total_enabled = 0
@@ -55,7 +55,7 @@ def transform_scanner_histograms_outputs(asset_coverage_histograms):
         output[column] = {
             "enabled": enabled_count,
             "disabled": disabled_count,
-            "coverage_percentage": enabled_count / relevant_count if relevant_count else 0
+            "coverage_percentage": enabled_count / relevant_count if relevant_count else 0,
         }
         total_enabled += enabled_count
         total_relevant += relevant_count
@@ -66,20 +66,13 @@ def transform_scanner_histograms_outputs(asset_coverage_histograms):
 
 
 def transform_status_coverage_histogram_output(data):
-    mapping = {
-        'PARTIALLY SCANNED': 'partially_scanned',
-        'FULLY SCANNED': 'fully_scanned',
-        'NOT SCANNED': 'not_scanned'
-    }
+    mapping = {"PARTIALLY SCANNED": "partially_scanned", "FULLY SCANNED": "fully_scanned", "NOT SCANNED": "not_scanned"}
 
     output = {}
 
-    for item in data['status_coverage']:
-        key = mapping.get(item['value'], item['value'].lower().replace(" ", "_"))
-        output[key] = {
-            "count": item["count"],
-            "percentage": item["percentage"]
-        }
+    for item in data["status_coverage"]:
+        key = mapping.get(item["value"], item["value"].lower().replace(" ", "_"))
+        output[key] = {"count": item["count"], "percentage": item["percentage"]}
 
     return {"aspm_status_coverage": output}
 
@@ -91,6 +84,8 @@ def main():
         if extra_args:
             raise Exception(f"Unexpected args found: {extra_args}")
         asset_coverage = get_command_results("core-get-asset-coverage", args)
+        if type(asset_coverage) is not dict:
+            asset_coverage = {}
         assets = asset_coverage.get("DATA", [])
         args["columns"] = ", ".join(scanner_columns + ["status_coverage"])
         asset_coverage_histograms = get_command_results("core-get-asset-coverage-histogram", args)
@@ -101,7 +96,7 @@ def main():
             "number_returned_assets": len(assets),
             "coverage_percentage": coverage_percentage,
             "Metrics": scanner_histograms_outputs | status_coverage_histogram_output,
-            "Asset": assets
+            "Asset": assets,
         }
 
         return_results(
