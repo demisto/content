@@ -77,7 +77,7 @@ tasks:
       id: 38ca5f90-2696-44b7-8c62-ceac53699ab0
       version: -1
       name: ms-management-activity-start-subscription
-      description: Starts a subscription to a given content type
+      description: Starts a subscription to a given content type.
       script: Microsoft Management Activity API (O365 Azure Events)|||ms-management-activity-start-subscription
       type: regular
       iscommand: true
