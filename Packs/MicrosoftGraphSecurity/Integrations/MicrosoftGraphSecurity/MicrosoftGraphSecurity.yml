@@ -21,13 +21,14 @@ configuration:
   - Alerts v2
   section: Connect
   required: false
-- defaultvalue: Device Code
+- defaultvalue: Not Selected
   display: Authentication Flow
   name: auth_flow
   type: 15
   options:
-  - Client Credentials
-  - Authorization Code
+    - Not Selected
+    - Client Credentials
+    - Authorization Code
   section: Connect
   required: false
 - name: creds_auth_id

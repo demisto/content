@@ -2098,8 +2098,12 @@ def main():
     try:
         auth_code = params.get("auth_code", {}).get("password")
         redirect_uri = params.get("redirect_uri")
-        # auth_flow = params.get("auth_flow")
-        grant_type = AUTHORIZATION_CODE if auth_code and redirect_uri else CLIENT_CREDENTIALS
+        auth_flow = get_auth_type_flow(params.get("auth_flow"))
+        grant_type = (
+            auth_flow if auth_flow
+            else AUTHORIZATION_CODE if auth_code and redirect_uri
+            else CLIENT_CREDENTIALS
+        )
         client: MsGraphClient = MsGraphClient(
             tenant_id=tenant,
             auth_code=auth_code,
