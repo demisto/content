@@ -3560,6 +3560,7 @@ def main():
     """
     Executes an integration command
     """
+    # comment
     command = demisto.command()
     LOG(f'Command being called is {command}')
 

@@ -2986,6 +2986,7 @@ LOG('Command being called is {}'.format(demisto.command()))
 
 
 def main():
+    # comment
     command = demisto.command()
     args = demisto.args()
     try:
