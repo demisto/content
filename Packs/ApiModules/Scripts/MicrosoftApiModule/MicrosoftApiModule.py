@@ -1239,7 +1239,9 @@ class MicrosoftClient(BaseClient):
                 )
             response_json = response.json()
         except Exception as e:
-            return_error(f"Error in Microsoft authorization: {e!s}")
+            return_error(f"Error in Microsoft authorization."
+                         f" If you are using a self-deployed app, make sure the checkbox of self-deployed is selected if exists."
+                         f" Error: {e!s}")
 
         access_token = response_json.get("access_token", "")
         expires_in = int(response_json.get("expires_in", 3595))
@@ -1305,7 +1307,9 @@ class MicrosoftClient(BaseClient):
                 )
             response_json = response.json()
         except Exception as e:
-            return_error(f"Error in Microsoft authorization: {e!s}")
+            return_error(f"Error in Microsoft authorization."
+                         f" If you are using a self-deployed app, make sure the checkbox of self-deployed is selected if exists."
+                         f" Error: {e!s}")
 
         access_token = response_json.get("access_token", "")
         expires_in = int(response_json.get("expires_in", 3595))
