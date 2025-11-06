@@ -1356,12 +1356,12 @@ script:
           description: The ID of the suggestion rule that generated this recommendation.
           type: String
     - arguments:
-        - description: List of repository IDs to configure scanners for
+        - description: List of repository IDs to configure scanners for.
           name: repository_ids
           isArray: true
           required: true
         - auto: PREDEFINED
-          description: List of scanners to enable
+          description: List of scanners to enable.
           name: enabled_scanners
           isArray: true
           predefined:
@@ -1369,7 +1369,7 @@ script:
             - IAC
             - SCA
         - auto: PREDEFINED
-          description: List of scanners to disable
+          description: List of scanners to disable.
           name: disabled_scanners
           isArray: true
           predefined:
@@ -1391,31 +1391,31 @@ script:
             - "true"
             - "false"
         - auto: PREDEFINED
-          description: Block deployment on scanner errors
+          description: Block deployment on scanner errors.
           name: block_on_error
           type: boolean
           predefined:
             - "true"
             - "false"
         - auto: PREDEFINED
-          description: Enable tagging of resource blocks
+          description: Enable tagging of resource blocks.
           name: tag_resource_blocks
           type: boolean
           predefined:
             - "true"
             - "false"
         - auto: PREDEFINED
-          description: Enable tagging of module blocks
+          description: Enable tagging of module blocks.
           name: tag_module_blocks
           type: boolean
           predefined:
             - "true"
             - "false"
-        - description: List of file paths to exclude from scanning
+        - description: List of file paths to exclude from scanning.
           name: exclude_paths
           isArray: true
       name: core-enable-scanners
-      description: Enable scanners with the specified configuration.
+      description: Enable or disable scanners with the specified configuration.
           
   runonce: false
   script: "-"
