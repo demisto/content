@@ -2479,3 +2479,56 @@ Retrieves the most recent eDiscovery estimate statistics operation for a given s
 | MsGraph.eDiscovery.EstimateStatistics.UnindexedItemsSize | Number | The total size \(in bytes\) of unindexed items. |
 | MsGraph.eDiscovery.EstimateStatistics.TotalItemsCount | Number | The total number of items \(indexed \+ unindexed\). |
 | MsGraph.eDiscovery.EstimateStatistics.TotalItemsSize | Number | The total size \(in bytes\) of all items \(indexed \+ unindexed\). |
+
+### msg-start-ediscovery-report
+
+***
+Starts an eDiscovery export report for a given case and search in Microsoft Purview and returns the operation URL for polling. Use the operation URL with 'msg-get-ediscovery-report' to check the status or download the report once ready.
+
+#### Base Command
+
+`msg-start-ediscovery-report`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| case_id | The unique ID of the eDiscovery case. | Required |
+| search_id | The unique ID of the eDiscovery search. | Required |
+| export_criteria | Items to include in the export (e.g., "searchHits", "partiallyIndexed"). Possible values are: searchHits, partiallyIndexed. | Required |
+| additional_options | Comma-separated list of additional options (e.g., "cloudAttachments,allDocumentVersions"). The advancedIndexing value is only available if exportCriteria includes partiallyIndexed. Possible values are: none, teamsAndYammerConversations, cloudAttachments, allDocumentVersions, subfolderContents, listAttachments, htmlTranscripts, advancedIndexing, allItemsInFolder. | Required |
+| display_name | Optional display name for the export report. | Optional |
+| description | Optional description for the export report. | Optional |
+| export_location | Optional export location for partially indexed items. The nonresponsiveLocations value is only available if exportCriteria includes partiallyIndexed. Possible values are: responsiveLocations, nonresponsiveLocations. | Optional |
+| cloud_attachment_version | Optional cloud attachment version. Possible values are: latest, recent10, recent100, all. Default is latest. | Optional |
+| document_version | Optional document version. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MsGraph.eDiscovery.ExportReport.CaseID | String | The eDiscovery case ID. |
+| MsGraph.eDiscovery.ExportReport.SearchID | String | The eDiscovery search ID. |
+| MsGraph.eDiscovery.ExportReport.OperationURL | String | The operation URL to poll export status. |
+
+### msg-get-ediscovery-report
+
+***
+Checks the status of an existing eDiscovery export report and downloads it if ready. Use this command repeatedly until the report is completed.
+
+#### Base Command
+
+`msg-get-ediscovery-report`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| operation_url | The Location URL returned by a previous eDiscovery export command. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MsGraph.eDiscovery.ExportReport.OperationURL | String | The operation URL used to check the export status. |
+| MsGraph.eDiscovery.ExportReport.Status | String | The current status of the export operation \(e.g., notStarted, running, succeeded, failed\). |
