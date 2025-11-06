@@ -121,22 +121,22 @@ outputs:
 - contextPath: Core.Coverage.coverage_percentage
   description: The ASPM coverage percentage calculated from the scanner coverage histogram.
   type: Number
-- contextPath: Core.Coverage.Metrics.aspm_status_coverage.partially_scanned.count
+- contextPath: Core.Coverage.Metrics.aspm_status_coverage.partially_scanned_count
   description: The number of assets that are partially scanned according to ASPM coverage.
   type: Number
-- contextPath: Core.Coverage.Metrics.aspm_status_coverage.fully_scanned.count
+- contextPath: Core.Coverage.Metrics.aspm_status_coverage.fully_scanned_count
   description: The number of assets that are fully scanned according to ASPM coverage.
   type: Number
-- contextPath: Core.Coverage.Metrics.aspm_status_coverage.not_scanned.count
+- contextPath: Core.Coverage.Metrics.aspm_status_coverage.not_scanned_count
   description: The number of assets that are not scanned according to ASPM coverage.
   type: Number
-- contextPath: Core.Coverage.Metrics.aspm_status_coverage.partially_scanned.percentage
+- contextPath: Core.Coverage.Metrics.aspm_status_coverage.partially_scanned_percentage
   description: The percentage of assets that are partially scanned according to ASPM coverage.
   type: Number
-- contextPath: Core.Coverage.Metrics.aspm_status_coverage.fully_scanned.percentage
+- contextPath: Core.Coverage.Metrics.aspm_status_coverage.fully_scanned_percentage
   description: The percentage of assets that are fully scanned according to ASPM coverage.
   type: Number
-- contextPath: Core.Coverage.Metrics.aspm_status_coverage.not_scanned.percentage
+- contextPath: Core.Coverage.Metrics.aspm_status_coverage.not_scanned_percentage
   description: The percentage of assets that are not scanned according to ASPM coverage.
   type: Number
 - contextPath: Core.Coverage.Metrics.is_scanned_by_vulnerabilities.coverage_percentage

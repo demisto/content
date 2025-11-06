@@ -72,7 +72,8 @@ def transform_status_coverage_histogram_output(data):
 
     for item in data["status_coverage"]:
         key = mapping.get(item["value"], item["value"].lower().replace(" ", "_"))
-        output[key] = {"count": item["count"], "percentage": item["percentage"]}
+        output[key + "_count"] = item["count"]
+        output[key + "_percentage"] = item["percentage"]
 
     return {"aspm_status_coverage": output}
 
