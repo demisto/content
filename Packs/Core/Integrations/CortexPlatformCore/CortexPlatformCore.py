@@ -690,8 +690,8 @@ def update_issue_command(client: Client, args: dict):
     if not issue_id:
         raise DemistoException("Issue ID is required for updating an issue.")
 
-    severity_map = {1: "SEV_020_LOW", 2: "SEV_030_MEDIUM", 3: "SEV_040_HIGH", 4: "SEV_050_CRITICAL"}
-    severity_value = arg_to_number(args.get("severity"))
+    severity_map = {"low": "SEV_020_LOW", "medium": "SEV_030_MEDIUM", "high": "SEV_040_HIGH", "critical": "SEV_050_CRITICAL"}
+    severity_value = args.get("severity")
     update_args = {
         "assigned_user": args.get("assigned_user_mail"),
         "severity": severity_map.get(severity_value) if severity_value is not None else None,

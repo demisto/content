@@ -17,13 +17,13 @@ args:
   type: string
 - name: severity
   auto: PREDEFINED
-  description: Change the severity of an issue. Low (1), Medium (2), High (3), Critical (4). Must be a number.
+  description: Change the severity of an issue.
   type: string
   predefined:
-  - '1'
-  - '2'
-  - '3'
-  - '4'
+    - low
+    - medium
+    - high
+    - critical
 - name: name
   description: Change the issue name.
   type: string
