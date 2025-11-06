@@ -233,9 +233,7 @@
             "timeout": 400
         },
         {
-            "integrations": [
-                "Microsoft Management Activity API (O365 Azure Events)"
-            ],
+            "integrations": "Microsoft Management Activity API (O365 Azure Events)",
             "playbookID": "MicrosoftManagementActivity - Test"
         },
         {
