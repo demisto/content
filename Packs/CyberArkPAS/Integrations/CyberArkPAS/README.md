@@ -885,21 +885,21 @@ Add an existing user as a safe member.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| member_name | The name of the user to add as a safe member. | Required | 
-| search_in | Search for the member in the vault or domain. | Optional | 
-| membership_expiration_date | The membership expiration date in the format MM\DD\YY. Leave empty if there is no expiration date. | Optional | 
-| permissions | The user’s permissions in the safe.<br/>Valid values: UseAccounts, RetrieveAccounts, ListAccounts, AddAccounts, UpdateAccountContent, UpdateAccountProperties, InitiateCPMAccountManagementOperations, InitiateCPMAccountManagementOperations, SpecifyNextAccountContent, RenameAccounts, DeleteAccounts, UnlockAccounts, ManageSafe, ManageSafeMembers, BackupSafe, ViewAuditLog, ViewAuditLog, ViewSafeMembers, AccessWithoutConfirmation, CreateFolders, DeleteFolders, MoveAccountsAndFolders<br/>e.g., UseAccounts,RetrieveAccounts. | Optional | 
-| safe_name | The URL encoded name of the safe to add a member to. | Required | 
-| requests_authorization_level | The request authorization levels.<br/>0 – cannot authorize<br/>1 – authorization level 1<br/>2 – authorization level 2<br/>Default is '0'. Possible values are: 0, 1, 2. Default is 0. | Optional | 
+| member_name | The name of the user to add as a safe member. | Required |
+| search_in | Search for the member in the vault or domain. | Optional |
+| membership_expiration_date | The membership expiration date in the format MM\DD\YY. Leave empty if there is no expiration date. | Optional |
+| permissions | The user’s permissions in the safe.<br/>Valid values: UseAccounts, RetrieveAccounts, ListAccounts, AddAccounts, UpdateAccountContent, UpdateAccountProperties, InitiateCPMAccountManagementOperations, InitiateCPMAccountManagementOperations, SpecifyNextAccountContent, RenameAccounts, DeleteAccounts, UnlockAccounts, ManageSafe, ManageSafeMembers, BackupSafe, ViewAuditLog, ViewAuditLog, ViewSafeMembers, AccessWithoutConfirmation, CreateFolders, DeleteFolders, MoveAccountsAndFolders<br/>e.g., UseAccounts,RetrieveAccounts. | Optional |
+| safe_name | The URL encoded name of the safe to add a member to. | Required |
+| requests_authorization_level | The request authorization levels.<br/>0 – cannot authorize<br/>1 – authorization level 1<br/>2 – authorization level 2<br/>Default is '0'. Possible values are: 0, 1, 2. Default is 0. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CyberArkPAS.Safes.Members.MemberName | String | The name of the safe member. | 
-| CyberArkPAS.Safes.Members.MembershipExpirationDate | Number | The expiration date of the safe member. | 
-| CyberArkPAS.Safes.Members.Permissions | Unknown | The permissions of the safe member. | 
-| CyberArkPAS.Safes.Members.SearchIn | String | The vault or domain where the user or group was found. | 
+| CyberArkPAS.Safes.Members.MemberName | String | The name of the safe member. |
+| CyberArkPAS.Safes.Members.MembershipExpirationDate | Number | The expiration date of the safe member. |
+| CyberArkPAS.Safes.Members.Permissions | Unknown | The permissions of the safe member. |
+| CyberArkPAS.Safes.Members.SearchIn | String | The vault or domain where the user or group was found. |
 
 ### cyberark-pas-safe-member-update
 
@@ -1142,6 +1142,7 @@ Remove a specific member from a safe.
 #### Context Example
 
 ```
+
 {
     "CyberArkPAS": {
         "Accounts": [
@@ -1181,6 +1182,7 @@ Remove a specific member from a safe.
         ]
     }
 }
+
 ```
 
 #### Human Readable Output
@@ -1227,6 +1229,7 @@ Returns the activities of a specific account that is identified by its account I
 #### Context Example
 
 ```
+
 {
     "CyberArkPAS": {
         "Activities": [
@@ -1325,6 +1328,7 @@ Remove a specific member from a safe.
 #### Context Example
 
 ```
+
 {
     "CyberArkPAS": {
         "Accounts": [
@@ -1364,6 +1368,7 @@ Remove a specific member from a safe.
         ]
     }
 }
+
 ```
 
 #### Human Readable Output
@@ -1410,6 +1415,7 @@ Returns the activities of a specific account that is identified by its account I
 #### Context Example
 
 ```
+
 {
     "CyberArkPAS": {
         "Activities": [
@@ -1420,6 +1426,7 @@ Returns the activities of a specific account that is identified by its account I
                 "ClientID": "1",
                 "Date": 1597863265,
                 "MoreInfo": "NewName",
+
 ### cyberark-pas-account-delete
 
 ***
@@ -1433,19 +1440,19 @@ Delete a specific account in the vault.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| account_id | The unique ID of the account to delete. | Required | 
+| account_id | The unique ID of the account to delete. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CyberArkPAS.Accounts.id | String | The unique ID of the account. | 
-| CyberArkPAS.Accounts.secretManagement | String | Whether the account secret is automatically managed by the CPM. | 
-| CyberArkPAS.Accounts.address | String | The name or address of the machine where the account will be used. | 
-| CyberArkPAS.Accounts.secretType | String | The type of password. | 
-| CyberArkPAS.Accounts.safeName | String | The safe where the account was created. | 
-| CyberArkPAS.Accounts.userName | String | The user name of the account. | 
-| CyberArkPAS.Accounts.Deleted | Boolean | Whether the account was deleted. | 
+| CyberArkPAS.Accounts.id | String | The unique ID of the account. |
+| CyberArkPAS.Accounts.secretManagement | String | Whether the account secret is automatically managed by the CPM. |
+| CyberArkPAS.Accounts.address | String | The name or address of the machine where the account will be used. |
+| CyberArkPAS.Accounts.secretType | String | The type of password. |
+| CyberArkPAS.Accounts.safeName | String | The safe where the account was created. |
+| CyberArkPAS.Accounts.userName | String | The user name of the account. |
+| CyberArkPAS.Accounts.Deleted | Boolean | Whether the account was deleted. |
 
 #### Context Output
 
@@ -1771,6 +1778,7 @@ Return all Privileged Threat Analytics (PTA) security events.
 >|---|---|---|---|---|---|---|---|
 >| station: 1.1.1.1<br/>reason: ip<br/>vault_user: administrator | {'id': '1', 'type': 'VAULT_LOGON', 'sensorType': 'VAULT', 'action': 'Logon', 'createTime': 1597864497000, 'vaultUser': 'Administrator', 'source': {'mOriginalAddress': '1.1.1.1', 'mResolvedAddress': {'mOriginalAddress': '1.1.1.1', 'mAddress': '1.1.1.1', 'mHostName': '1-2-3-4', 'mFqdn': '1-2-3-4'}}, 'cloudData': {}} | 1597864497000 | 1 | 1597864497000 | OPEN | 25.751749103263528 | VaultViaIrregularIp |
 >| station: 1.1.1.1<br/>reason: ip<br/>vault_user: administrator | {'id': '2', 'type': 'VAULT_LOGON', 'sensorType': 'VAULT', 'action': 'Logon', 'createTime': 1597864209000, 'vaultUser': 'Administrator', 'source': {'mOriginalAddress': '1.1.1.1', 'mResolvedAddress': {'mOriginalAddress': '1.1.1.1', 'mAddress': '1.1.1.1', 'mHostName': '1-2-3-4', 'mFqdn': '1-2-3-4'}}, 'cloudData': {}} | 1597864209000 | 2 | 1597864209000 | OPEN | 25.751749103263528 | VaultViaIrregularIp |
+>
 ### cyberark-pas-account-add
 
 ***
@@ -1784,30 +1792,30 @@ Add a new privileged account or SSH key to the vault.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| account_name | The name of the account. | Required | 
-| address | The name or address of the machine where the account will be used. | Required | 
-| platform_id | The platform assigned to this account. | Required | 
-| safe_name | The name of the safe where the account will be created. | Required | 
-| secret_type | The type of password. Valid values are: 'password', 'key'. Default is 'password'. Possible values are: password, key. Default is password. | Optional | 
-| username | The The user name of the account. | Required | 
-| password | The password that the user will use to log on for the first time. | Required | 
-| properties | Object containing key-value pairs to associate with the account, as defined by the account platform.<br/>e.g., {"Location": "IT", "OwnerName": "MSSPAdmin"}. | Optional | 
-| automatic_management_enabled | Whether the account secret is automatically managed by the Central Policy Manager (CPM). Can be 'true' or 'false'. Default is 'true'. Possible values are: true, false. Default is true. | Optional | 
-| manual_management_reason | The reason for disabling automatic secret management. | Optional | 
-| remote_machines | List of remote machines, separated by semicolons.<br/>e.g., server1.cyberark.com;server2.cyberark.com. | Optional | 
-| access_restricted_to_remote_machines | Whether or not to restrict access to specified remote machines only. Can be 'true' or 'false'. Default is: 'true'. Possible values are: true, false. Default is true. | Optional | 
+| account_name | The name of the account. | Required |
+| address | The name or address of the machine where the account will be used. | Required |
+| platform_id | The platform assigned to this account. | Required |
+| safe_name | The name of the safe where the account will be created. | Required |
+| secret_type | The type of password. Valid values are: 'password', 'key'. Default is 'password'. Possible values are: password, key. Default is password. | Optional |
+| username | The The user name of the account. | Required |
+| password | The password that the user will use to log on for the first time. | Required |
+| properties | Object containing key-value pairs to associate with the account, as defined by the account platform.<br/>e.g., {"Location": "IT", "OwnerName": "MSSPAdmin"}. | Optional |
+| automatic_management_enabled | Whether the account secret is automatically managed by the Central Policy Manager (CPM). Can be 'true' or 'false'. Default is 'true'. Possible values are: true, false. Default is true. | Optional |
+| manual_management_reason | The reason for disabling automatic secret management. | Optional |
+| remote_machines | List of remote machines, separated by semicolons.<br/>e.g., server1.cyberark.com;server2.cyberark.com. | Optional |
+| access_restricted_to_remote_machines | Whether or not to restrict access to specified remote machines only. Can be 'true' or 'false'. Default is: 'true'. Possible values are: true, false. Default is true. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CyberArkPAS.Accounts.id | String | The unique ID of the account. | 
-| CyberArkPAS.Accounts.categoryModificationTime | Number | The last modified date of the account. | 
-| CyberArkPAS.Accounts.createdTime | Number | The date the account was created. | 
-| CyberArkPAS.Accounts.name | String | The name of the account. | 
-| CyberArkPAS.Accounts.platformId | String | The platform assigned to this account. | 
-| CyberArkPAS.Accounts.safeName | String | The safe where the account is created. | 
-| CyberArkPAS.Accounts.secretManagement | String | Whether the account secret is automatically managed by the CPM. | 
-| CyberArkPAS.Accounts.secretType | String | The type of password. | 
-| CyberArkPAS.Accounts.userName | String | The name of the account user. | 
-| CyberArkPAS.Accounts.address | String | The name or address of the machine where the account will be used. | 
+| CyberArkPAS.Accounts.id | String | The unique ID of the account. |
+| CyberArkPAS.Accounts.categoryModificationTime | Number | The last modified date of the account. |
+| CyberArkPAS.Accounts.createdTime | Number | The date the account was created. |
+| CyberArkPAS.Accounts.name | String | The name of the account. |
+| CyberArkPAS.Accounts.platformId | String | The platform assigned to this account. |
+| CyberArkPAS.Accounts.safeName | String | The safe where the account is created. |
+| CyberArkPAS.Accounts.secretManagement | String | Whether the account secret is automatically managed by the CPM. |
+| CyberArkPAS.Accounts.secretType | String | The type of password. |
+| CyberArkPAS.Accounts.userName | String | The name of the account user. |
+| CyberArkPAS.Accounts.address | String | The name or address of the machine where the account will be used. |
