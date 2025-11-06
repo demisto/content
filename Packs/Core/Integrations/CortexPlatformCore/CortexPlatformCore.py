@@ -526,8 +526,7 @@ def build_webapp_request_data(
     """
     Builds the request data for the generic /api/webapp/get_data endpoint.
     """
-    sort_field = COVERAGE_API_FIELDS_MAPPING.get(sort_field, sort_field)
-    sort = [{"FIELD": sort_field, "ORDER": sort_order}] if sort_field else []
+    sort = [{"FIELD": sort_field, "ORDER": COVERAGE_API_FIELDS_MAPPING.get(sort_field, sort_field)}] if sort_field else []
     filter_data = {
         "sort": sort,
         "paging": {"from": 0, "to": limit},
