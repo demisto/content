@@ -675,7 +675,9 @@ def get_auth_type_flow(auth_flow):
         "Authorization Code": AUTHORIZATION_CODE,
         "Device Code": DEVICE_CODE
     }
-    return auth_flow_dict[auth_flow]
+    # in case azure managed identites is sent
+    return auth_flow_dict.get(auth_flow, None)
+
 
 class MicrosoftClient(BaseClient):
     def __init__(
@@ -910,7 +912,7 @@ class MicrosoftClient(BaseClient):
         except ValueError as exception:
             raise DemistoException(f"Failed to parse json object from response: {response.content}", exception)
 
-    def main_test_module(self, integration_command_prefix: str, can_be_self_deployed: bool = True):
+    def main_test_module(self, integration_command_prefix: str):
         """
         Checks all necessary fields for the specific authentication flow.
         """
