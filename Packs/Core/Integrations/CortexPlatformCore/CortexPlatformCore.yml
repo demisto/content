@@ -1360,12 +1360,22 @@ script:
           name: repository_ids
           isArray: true
           required: true
-        - description: List of scanners to enable
+        - auto: PREDEFINED
+          description: List of scanners to enable
           name: enabled_scanners
           isArray: true
-        - description: List of scanners to disable
+          predefined:
+            - SECRETS
+            - IAC
+            - SCA
+        - auto: PREDEFINED
+          description: List of scanners to disable
           name: disabled_scanners
           isArray: true
+          predefined:
+            - SECRETS
+            - IAC
+            - SCA
         - auto: PREDEFINED
           description: Enable live validation of discovered secrets.
           type: boolean
@@ -1375,7 +1385,6 @@ script:
             - "false"
         - auto: PREDEFINED
           description: Enable scanning on pull requests. This argument only relevant when SECRETS scanner is enabled.
-          defaultvalue: "false"
           type: boolean
           name: pr_scanning
           predefined:
