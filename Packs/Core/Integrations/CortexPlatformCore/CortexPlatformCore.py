@@ -381,16 +381,6 @@ class Client(CoreClient):
             },
             url_suffix="/trigger_fix_pull_request",
         )
-    
-    # def appsec_get_remediation_status(self, remediation_id):
-    #     return self._http_request(
-    #         method="GET",
-    #         headers={
-    #             **self._headers,
-    #             'content-type': "application/json"
-    #         },
-    #         url_suffix=f"/{remediation_id}",
-    #     )
 
 
 def get_issue_recommendations_command(client: Client, args: dict) -> CommandResults:
@@ -778,21 +768,6 @@ def appsec_remediate_issue_command(client, args):
         raw_response=response
     )
     
-# def remediation_status_get_command(client, args):
-#     """
-#     Retrieve the remediation status for specific AppSec issues.
-
-#     Args:
-#         client (Client): The client instance used to send the request.
-#         args (dict): Dictionary containing arguments for the command.
-
-#     Returns:
-#         CommandResults: Formatted results of the remediation status query.
-#     """
-#     response = client.appsec_get_remediation_status(args.get("remediationId"))
-    
-    
-
 
 def main():  # pragma: no cover
     """
@@ -878,21 +853,6 @@ def main():  # pragma: no cover
             
         elif command == "core-appsec-remediate-issue":
             return_results(appsec_remediate_issue_command(client, args))
-        
-        # elif command == "core-appsec-get-fix-status":
-        #     return_results(
-        #         run_polling_command(
-        #             client=client,
-        #             args=args,
-        #             cmd="core-appsec-remediate-issue",
-        #             command_function=appsec_remediate_issue_command,
-        #             command_decision_field="remediationId",
-        #             results_function=remediation_status_get_command,
-        #             polling_field="isProcessDone",
-        #             polling_value=["true"],
-        #             stop_polling=True,
-        #         )
-        #     )
 
     except Exception as err:
         demisto.error(traceback.format_exc())
