@@ -26,9 +26,6 @@ script:
         - description: The name of the asset. Accepts a comma-separated list.
           name: asset_name
           isArray: true
-        - description: A sub string to filter name of the asset. Accepts a comma-separated list.
-          name: asset_name_contains
-          isArray: true
         - description: Business application names. Accepts a comma-separated list.
           name: business_application_names
           isArray: true
@@ -107,7 +104,7 @@ script:
         - auto: PREDEFINED
           description: The asset provider. Accepts a comma-separated list.
           isArray: true
-          name: unified_provider
+          name: asset_provider
           predefined:
             - AWS
             - AWS_CODE_BUILD
@@ -130,7 +127,7 @@ script:
         - auto: PREDEFINED
           description: The vendor name. Accepts a comma-separated list.
           isArray: true
-          name: asset_provider
+          name: vendor_name
           predefined:
             - AWS
             - AWS_CODE_BUILD
@@ -171,8 +168,8 @@ script:
             - is_scanned_by_cicd
             - last_scan_status
             - asset_type
-            - unified_provider
             - asset_provider
+            - vendor_name
       name: core-get-asset-coverage-histogram
       description: "Calculates the distribution of values (counts and percentages) for specified categorical fields."
       outputs:
@@ -201,9 +198,6 @@ script:
           isArray: true
         - description: The name of the asset. Accepts a comma-separated list.
           name: asset_name
-          isArray: true
-        - description: A sub string to filter name of the asset. Accepts a comma-separated list.
-          name: asset_name_contains
           isArray: true
         - description: Business application names. Accepts a comma-separated list.
           name: business_application_names
@@ -283,7 +277,7 @@ script:
         - auto: PREDEFINED
           description: The asset provider. Accepts a comma-separated list.
           isArray: true
-          name: unified_provider
+          name: asset_provider
           predefined:
             - AWS
             - AWS_CODE_BUILD
@@ -306,7 +300,7 @@ script:
         - auto: PREDEFINED
           description: The vendor name. Accepts a comma-separated list.
           isArray: true
-          name: asset_provider
+          name: vendor_name
           predefined:
             - AWS
             - AWS_CODE_BUILD
@@ -346,8 +340,8 @@ script:
             - is_scanned_by_cicd
             - last_scan_status
             - asset_type
-            - unified_provider
             - asset_provider
+            - vendor_name
         - auto: PREDEFINED
           description: The order in which to sort the results.
           name: sort_order

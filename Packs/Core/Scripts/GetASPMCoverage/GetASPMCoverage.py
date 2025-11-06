@@ -14,7 +14,6 @@ scanner_columns = [
 valid_args = {
     "asset_id",
     "asset_name",
-    "asset_name_contains",
     "business_application_names",
     "status_coverage",
     "is_scanned_by_vulnerabilities",
@@ -24,11 +23,9 @@ valid_args = {
     "is_scanned_by_malware",
     "is_scanned_by_cicd",
     "asset_type",
-    "unified_provider",
     "asset_provider",
     "limit",
 }
-
 
 
 def get_command_results(command: str, args: dict[str, Any]) -> Union[dict[str, Any] | list]:
@@ -103,7 +100,7 @@ def main():
             "total_filtered_assets": asset_coverage.get("FILTER_COUNT"),
             "number_returned_assets": len(assets),
             "coverage_percentage": coverage_percentage,
-            "Histogram": scanner_histograms_outputs | status_coverage_histogram_output,
+            "Metrics": scanner_histograms_outputs | status_coverage_histogram_output,
             "Asset": assets
         }
 

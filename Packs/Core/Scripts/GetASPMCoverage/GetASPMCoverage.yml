@@ -18,9 +18,6 @@ args:
 - description: The name of the asset. Accepts a comma-separated list.
   name: asset_name
   isArray: true
-- description: A sub string to filter name of the asset. Accepts a comma-separated list.
-  name: asset_name_contains
-  isArray: true
 - description: Business application names. Accepts a comma-separated list.
   name: business_application_names
   isArray: true
@@ -91,7 +88,7 @@ args:
 - auto: PREDEFINED
   description: The asset provider. Accepts a comma-separated list.
   isArray: true
-  name: unified_provider
+  name: asset_provider
   predefined:
     - AWS
     - AWS_CODE_BUILD
@@ -111,31 +108,6 @@ args:
     - JENKINS
     - JFROG_ARTIFACTORY
     - OCI
-- auto: PREDEFINED
-  description: The vendor name. Accepts a comma-separated list.
-  isArray: true
-  name: asset_provider
-  predefined:
-    - AWS
-    - AWS_CODE_BUILD
-    - AWS_CODE_COMMIT
-    - AZURE
-    - AZURE_REPOS
-    - BITBUCKET
-    - BITBUCKET_DATACENTER
-    - CIRCLE_CI
-    - DOCKER
-    - GCP
-    - GITHUB
-    - GITHUB_ACTIONS
-    - GITHUB_ENTERPRISE
-    - GITLAB
-    - GITLAB_SELF_MANAGED
-    - HCP_TFC_RUN_TASKS
-    - HCP_TFE_RUN_TASKS
-    - JENKINS
-    - JFROG_ARTIFACTORY
-    - OCI
 - name: limit
   description: "The maximum number of assets to return."
   defaultValue: "50"
@@ -149,67 +121,67 @@ outputs:
 - contextPath: Core.Coverage.coverage_percentage
   description: The ASPM coverage percentage calculated from Scanner coverage histogram.
   type: Number
-- contextPath: Core.Coverage.Histogram.aspm_status_coverage.partially_scanned.count
+- contextPath: Core.Coverage.Metrics.aspm_status_coverage.partially_scanned.count
   description:
   type: Number
-- contextPath: Core.Coverage.Histogram.aspm_status_coverage.fully_scanned.count
+- contextPath: Core.Coverage.Metrics.aspm_status_coverage.fully_scanned.count
   description:
   type: Number
-- contextPath: Core.Coverage.Histogram.aspm_status_coverage.not_scanned.count
+- contextPath: Core.Coverage.Metrics.aspm_status_coverage.not_scanned.count
   description:
   type: Number
-- contextPath: Core.Coverage.Histogram.aspm_status_coverage.partially_scanned.percentage
+- contextPath: Core.Coverage.Metrics.aspm_status_coverage.partially_scanned.percentage
   description:
   type: Number
-- contextPath: Core.Coverage.Histogram.aspm_status_coverage.fully_scanned.percentage
+- contextPath: Core.Coverage.Metrics.aspm_status_coverage.fully_scanned.percentage
   description:
   type: Number
-- contextPath: Core.Coverage.Histogram.aspm_status_coverage.not_scanned.percentage
+- contextPath: Core.Coverage.Metrics.aspm_status_coverage.not_scanned.percentage
   description:
   type: Number
-- contextPath: Core.Coverage.Histogram.is_scanned_by_vulnerabilities.coverage_percentage
+- contextPath: Core.Coverage.Metrics.is_scanned_by_vulnerabilities.coverage_percentage
   description:
   type: Number
-- contextPath: Core.Coverage.Histogram.is_scanned_by_vulnerabilities.enabled
+- contextPath: Core.Coverage.Metrics.is_scanned_by_vulnerabilities.enabled
   description:
   type: Number
-- contextPath: Core.Coverage.Histogram.is_scanned_by_vulnerabilities.disabled
+- contextPath: Core.Coverage.Metrics.is_scanned_by_vulnerabilities.disabled
   description:
   type: Number
-- contextPath: Core.Coverage.Histogram.is_scanned_by_code_weakness.coverage_percentage
+- contextPath: Core.Coverage.Metrics.is_scanned_by_code_weakness.coverage_percentage
   description:
   type: Number
-- contextPath: Core.Coverage.Histogram.is_scanned_by_code_weakness.enabled
+- contextPath: Core.Coverage.Metrics.is_scanned_by_code_weakness.enabled
   description:
   type: Number
-- contextPath: Core.Coverage.Histogram.is_scanned_by_code_weakness.disabled
+- contextPath: Core.Coverage.Metrics.is_scanned_by_code_weakness.disabled
   description:
   type: Number
-- contextPath: Core.Coverage.Histogram.is_scanned_by_secrets.coverage_percentage
+- contextPath: Core.Coverage.Metrics.is_scanned_by_secrets.coverage_percentage
   description:
   type: Number
-- contextPath: Core.Coverage.Histogram.is_scanned_by_secrets.enabled
+- contextPath: Core.Coverage.Metrics.is_scanned_by_secrets.enabled
   description:
   type: Number
-- contextPath: Core.Coverage.Histogram.is_scanned_by_secrets.disabled
+- contextPath: Core.Coverage.Metrics.is_scanned_by_secrets.disabled
   description:
   type: Number
-- contextPath: Core.Coverage.Histogram.is_scanned_by_iac.coverage_percentage
+- contextPath: Core.Coverage.Metrics.is_scanned_by_iac.coverage_percentage
   description:
   type: Number
-- contextPath: Core.Coverage.Histogram.is_scanned_by_iac.enabled
+- contextPath: Core.Coverage.Metrics.is_scanned_by_iac.enabled
   description:
   type: Number
-- contextPath: Core.Coverage.Histogram.is_scanned_by_iac.disabled
+- contextPath: Core.Coverage.Metrics.is_scanned_by_iac.disabled
   description:
   type: Number
-- contextPath: Core.Coverage.Histogram.is_scanned_by_malware.coverage_percentage
+- contextPath: Core.Coverage.Metrics.is_scanned_by_malware.coverage_percentage
   description:
   type: Number
-- contextPath: Core.Coverage.Histogram.is_scanned_by_malware.enabled
+- contextPath: Core.Coverage.Metrics.is_scanned_by_malware.enabled
   description:
   type: Number
-- contextPath: Core.Coverage.Histogram.is_scanned_by_malware.disabled
+- contextPath: Core.Coverage.Metrics.is_scanned_by_malware.disabled
   description:
   type: Number
 - contextPath: Core.Coverage.Asset.asset_id

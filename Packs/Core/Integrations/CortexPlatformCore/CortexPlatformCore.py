@@ -13,6 +13,7 @@ INTEGRATION_NAME = "Cortex Platform Core"
 MAX_GET_INCIDENTS_LIMIT = 100
 SEARCH_ASSETS_DEFAULT_LIMIT = 100
 
+
 ASSET_FIELDS = {
     "asset_names": "xdm.asset.name",
     "asset_types": "xdm.asset.type.name",
@@ -44,6 +45,11 @@ VULNERABILITIES_SEVERITY_MAPPING = {
     "medium": "SEV_050_MEDIUM",
     "high": "SEV_060_HIGH",
     "critical": "SEV_070_CRITICAL",
+}
+
+COVERAGE_API_FIELDS_MAPPING = {
+    "vendor_name": "asset_provider",
+    "asset_provider": "unified_provider"
 }
 
 
@@ -518,6 +524,7 @@ def build_webapp_request_data(
     """
     Builds the request data for the generic /api/webapp/get_data endpoint.
     """
+    sort_field = COVERAGE_API_FIELDS_MAPPING.get(sort_field, sort_field)
     sort = [{"FIELD": sort_field, "ORDER": sort_order}] if sort_field else []
     filter_data = {
         "sort": sort,
@@ -543,7 +550,6 @@ def build_histogram_request_data(
     """
     filter_data = {
         "filter": filter_dict,
-
     }
     demisto.debug(f"{filter_data=}")
 
@@ -772,8 +778,7 @@ def get_asset_group_ids_from_names(client: Client, group_names: list[str]) -> li
 def build_asset_coverage_filter(args: dict) -> FilterBuilder:
     filter_builder = FilterBuilder()
     filter_builder.add_field("asset_id", FilterType.CONTAINS, argToList(args.get("asset_id")))
-    filter_builder.add_field("asset_name", FilterType.WILDCARD, argToList(args.get("asset_name")))
-    filter_builder.add_field("asset_name", FilterType.CONTAINS, argToList(args.get("asset_name_contains")))
+    filter_builder.add_field("asset_name", FilterType.CONTAINS, argToList(args.get("asset_name")))
     filter_builder.add_field("business_application_names", FilterType.ARRAY_CONTAINS,
                              argToList(args.get('business_application_names')))
     filter_builder.add_field("status_coverage", FilterType.EQ, argToList(args.get("status_coverage")))
@@ -785,8 +790,8 @@ def build_asset_coverage_filter(args: dict) -> FilterBuilder:
     filter_builder.add_field("is_scanned_by_cicd", FilterType.EQ, argToList(args.get("is_scanned_by_cicd")))
     filter_builder.add_field("last_scan_status", FilterType.EQ, argToList(args.get("last_scan_status")))
     filter_builder.add_field("asset_type", FilterType.EQ, argToList(args.get("asset_type")))
-    filter_builder.add_field("unified_provider", FilterType.EQ, argToList(args.get("unified_provider")))
-    filter_builder.add_field("asset_provider", FilterType.EQ, argToList(args.get("asset_provider")))
+    filter_builder.add_field("unified_provider", FilterType.EQ, argToList(args.get("asset_provider")))
+    filter_builder.add_field("asset_provider", FilterType.EQ, argToList(args.get("vendor_name")))
 
     return filter_builder
 
@@ -824,6 +829,7 @@ def get_asset_coverage_histogram_command(client: Client, args: dict):
     Retrieves ASPM assets coverage histogrsm using the generic /api/webapp/get_histograms endpoint.
     """
     columns = argToList(args.get("columns"))
+    columns = [COVERAGE_API_FIELDS_MAPPING.get(col, col) for col in columns]
     if not columns:
         raise ValueError("Please provide column value to create the histogram.")
     request_data = build_histogram_request_data(
