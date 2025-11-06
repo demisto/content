@@ -235,8 +235,8 @@ script:
       required: true
       description: GCP project ID.
     - name: limit
-      defaultValue: '500'
-      description: "Maximum number of results to return. Acceptable values are 0 to 500, inclusive. (Default: 500)."
+      defaultValue: '50'
+      description: "Maximum number of results to return. Acceptable values are 0 to 500, inclusive."
     - name: page_token
       description: Token for pagination.
       required: false
@@ -323,8 +323,8 @@ script:
       required: true
       description: GCP project ID.
     - name: limit
-      defaultValue: '500'
-      description: "Maximum number of results to return. Acceptable values are 0 to 500, inclusive. (Default: 500)."
+      defaultValue: '50'
+      description: "Maximum number of results to return. Acceptable values are 0 to 500, inclusive."
     - name: page_token
       description: Token for pagination.
     - name: filter
@@ -491,8 +491,8 @@ script:
       - "false"
       description: If true, match against external NAT IPs; otherwise internal NIC IPs.
     - name: limit
-      defaultValue: '500'
-      description: "Maximum number of results to return. Acceptable values are 0 to 500, inclusive. (Default: 500)."
+      defaultValue: '50'
+      description: "Maximum number of results to return. Acceptable values are 0 to 500, inclusive."
     - name: page_token
       description: Token for pagination.
     outputs:
@@ -527,7 +527,7 @@ script:
       required: true
       description: Tag to add.
     - name: tags_fingerprint
-      description: Fingerprint of the previous set of tags for this resource, used to prevent conflicts. Provide the latest fingerprint value when making a request to add or change tags. To retrieve the finger print use the command gcp-compute-instance-get.
+      description: Fingerprint of the previous set of tags for this resource, used to prevent conflicts. Provide the latest fingerprint value when making a request to add or change tags. To retrieve the fingerprint use the command gcp-compute-instance-get.
       required: true
     - name: add_tag
       defaultValue: "true"
