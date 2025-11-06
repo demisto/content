@@ -592,3 +592,63 @@ Get comprehensive recommendations for an issue, including remediation steps, pla
 | Core.IssueRecommendations.remediation | String | Remediation steps and recommendations for the issue. |
 | Core.IssueRecommendations.playbook_suggestions.playbook_id | String | The ID of the suggested playbook. |
 | Core.IssueRecommendations.playbook_suggestions.suggestion_rule_id | String | The ID of the suggestion rule that generated this recommendation. |
+
+### core-get-appsec-issues
+
+***
+Retrieves application security issues based on specified filters.
+
+#### Base Command
+
+`core-get-appsec-issues`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| limit | The maximum number of issues to return. Default is 50. | Optional | 
+| sort_field | The field by which to sort the results. Default is local_insert_ts. | Optional | 
+| sort_order | The order in which to sort the results. Possible values are: DESC, ASC. | Optional | 
+| start_time | The start time for filtering according to issue insert time. Supports free-text relative and absolute times. For example: 7 days ago, 2023-06-15T10:30:00Z, 13/8/2025. | Optional | 
+| end_time | The end time for filtering according to issue insert time. Supports free-text relative and absolute times. For example: 7 days ago, 2023-06-15T10:30:00Z, 13/8/2025. | Optional | 
+| issue_id | The issue ID. Accepts a comma-separated list. | Optional | 
+| assignee | The email of the user assigned to the issue. Accepts a comma-separated list. <br/>Use 'unassigned' for all unassigned issues or 'assigned' for all assigned issues.<br/>. | Optional | 
+| collaborator | The collaborators of the issue. Accepts a comma-separated list. | Optional | 
+| status | The issue status. Accepts a comma-separated list. Possible values are: New, In Progress, Resolved. | Optional | 
+| issue_name | The issue name. Accepts a comma-separated list. | Optional | 
+| cvss_score_gte | The minimum CVSS score. | Optional | 
+| epss_score_gte | The minimum EPSS score. | Optional | 
+| has_kev | Filter by vulnerabilities that have a Known Exploited Vulnerability (KEV). Possible values are: true, false. | Optional | 
+| severity | The severity of the issue. Accepts a comma-separated list. Possible values are: info, low, medium, high, critical. | Optional | 
+| urgency | The urgency of the issue. Accepts a comma-separated list. Possible values are: n/a, not_urgent, urgent, top_urgent. | Optional | 
+| fix_available | Is there an available automated fix. Possible values are: true, false. | Optional | 
+| sla | SLA status of the issue. Accepts a comma-separated list. Possible values are: APPROACHING, IN_SLA, OVERDUE. | Optional | 
+| validation | Validation status of the issue. Accepts a comma-separated list. Possible values are: INVALID, NO_VALIDATION, PRIVILEGED, UNAVAILABLE, VALID. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Core.AppsecIssue.internal_id | String | The unique identifier for the issue. | 
+| Core.AppsecIssue.asset_names | String | The names of the assets related to the issue. | 
+| Core.AppsecIssue.severity | String | The severity of the issue. | 
+| Core.AppsecIssue.epss_score | Number | The Exploit Prediction Scoring System \(EPSS\) score. | 
+| Core.AppsecIssue.cvss_score | Number | The Common Vulnerability Scoring System \(CVSS\) score. | 
+| Core.AppsecIssue.assigned_to_pretty | String | The full name of the user assigned to the issue. | 
+| Core.AppsecIssue.is_fixable | Boolean | Whether a fix is available for the issue. | 
+| Core.AppsecIssue.issue_name | String | The name of the issue. | 
+| Core.AppsecIssue.issue_source | String | The source of the issue. | 
+| Core.AppsecIssue.issue_category | String | The category of the issue. | 
+| Core.AppsecIssue.issue_domain | String | The domain of the issue. | 
+| Core.AppsecIssue.issue_description | String | The description of the issue. | 
+| Core.AppsecIssue.status_progress | String | The status of the issue. | 
+| Core.AppsecIssue.source_insert_ts | Number | The timestamp when the issue was inserted. | 
+| Core.AppsecIssue.urgency | String | The urgency of the issue. | 
+| Core.AppsecIssue.sla_status | String | The SLA status of the issue. | 
+| Core.AppsecIssue.secret_validation | String | The secret validation status of the issue. | 
+| Core.AppsecIssue.repository_name | String | The name of the repository where the issue was found. | 
+| Core.AppsecIssue.repository_organization | String | The organization of the repository where the issue was found. | 
+| Core.AppsecIssue.file_path | String | The file path related to the issue. | 
+| Core.AppsecIssue.collaborator | String | The collaborator associated with the issue. | 
+| Core.AppsecIssue.is_kev | Boolean | Whether the issue is part of the Known Exploited Vulnerabilities catalog \(KEV\). | 
+

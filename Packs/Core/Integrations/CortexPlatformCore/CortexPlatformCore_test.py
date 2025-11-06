@@ -2473,8 +2473,7 @@ def test_create_appsec_issues_filter_and_tables_simple_filter():
     }
     filter_dict = filter_builder.to_dict()
     assert any(
-        field.get("SEARCH_VALUE") == "high" and field.get("SEARCH_FIELD") == "urgency"
-        for field in filter_dict.get("AND", [])
+        field.get("SEARCH_VALUE") == "high" and field.get("SEARCH_FIELD") == "urgency" for field in filter_dict.get("AND", [])
     )
 
 
