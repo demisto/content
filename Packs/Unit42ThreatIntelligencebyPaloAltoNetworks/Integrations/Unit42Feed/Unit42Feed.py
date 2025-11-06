@@ -60,7 +60,7 @@ VALID_REGIONS = {
 }
 
 
-def unit42_error_handler(res: requests.Response) -> str:
+def unit42_error_handler(res: requests.Response):
     """
     Custom error handler for Unit 42 API requests.
     Extracts and logs X-Request-ID header for failed requests (4xx/5xx errors).
@@ -78,7 +78,7 @@ def unit42_error_handler(res: requests.Response) -> str:
     error_msg += f"[X-Request-ID: {request_id}]\n"
     error_msg += f"Response text - {res.text}"
 
-    return error_msg
+    return_error(error_msg)
 
 
 class Client(BaseClient):
@@ -127,7 +127,6 @@ class Client(BaseClient):
             error_handler=unit42_error_handler,
             retries=RETRY_COUNT,
             status_list_to_retry=STATUS_CODES_TO_RETRY,
-            raise_on_status=True,
         )
         return response
 
@@ -154,7 +153,6 @@ class Client(BaseClient):
             error_handler=unit42_error_handler,
             retries=RETRY_COUNT,
             status_list_to_retry=STATUS_CODES_TO_RETRY,
-            raise_on_status=True,
         )
         return response
 
