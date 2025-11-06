@@ -56,7 +56,7 @@ TAXII_V21_REQUIRED_FILTER_FIELDS = {"ismalwarefamily", "published"}
 SEARCH_AFTER_KEY_NAME = "search_after_cache"
 # TODO: revert
 PAGE_SIZE = 100
-PAGE_SIZE = 2000
+# PAGE_SIZE = 2000
 
 """ TAXII2 Server """
 
@@ -643,23 +643,20 @@ def find_indicators(
 
     # remove old search_after values from the context
     integration_context = get_integration_context(True)
-    demisto.info(f"{integration_context=}")
-    demisto.info("before finalize_search_after")
-    finalize_search_after(integration_context)
-    demisto.info(f"{integration_context=}")
+    remove_old_cache(integration_context)
 
     # check if there is a search_after value for this collection with this offset
     if integration_context.get(SEARCH_AFTER_KEY_NAME, {}).get(collection_id, {}).get(str(offset)):
         search_after = integration_context[SEARCH_AFTER_KEY_NAME][collection_id][str(offset)]
-        demisto.info(f"found search_after_cache: {search_after}")
-        demisto.info(
+        demisto.debug(f"found search_after_cache for {offset=}: {search_after}")
+        demisto.debug(
             f"{INTEGRATION_NAME}: search indicators parameters is {field_filters=}, {new_query=}, {limit=}, {search_after=}"
         )
         indicator_searcher = search_indicators(field_filters, new_query, limit, search_after["search_after"])
         use_search_after = True
     else:
-        demisto.info("could not found search_after_cache")
-        demisto.info(f"{INTEGRATION_NAME}: search indicators parameters is {field_filters=}, {new_query=}, {new_limit=}")
+        demisto.debug("could not found search_after_cache")
+        demisto.debug(f"{INTEGRATION_NAME}: search indicators parameters is {field_filters=}, {new_query=}, {new_limit=}")
         indicator_searcher = search_indicators(field_filters, new_query, new_limit)
 
     XSOAR2STIXParser_client = XSOAR2STIXParser(
@@ -673,7 +670,7 @@ def find_indicators(
     demisto.debug(f"T2S: find_indicators len={len(iocs)}")
 
     if indicator_searcher._search_after_param:
-        demisto.info(
+        demisto.debug(
             f"search_after_param returns from the search: {indicator_searcher._search_after_param=} {indicator_searcher._total_iocs_fetched=} {offset=}"
         )
 
@@ -689,13 +686,12 @@ def find_indicators(
             "last_updated": datetime.now(timezone.utc).isoformat(),
         }
 
-        demisto.info(f"{integration_context=}")
         set_integration_context(integration_context)
 
     return iocs, extensions, total, use_search_after
 
 
-def finalize_search_after(integration_context: dict) -> None:
+def remove_old_cache(integration_context: dict) -> None:
     """Remove expired entries from cache['search_after_cache'] if older than 24 hours."""
     now = datetime.now(timezone.utc)
     # TODO: revert
@@ -719,11 +715,11 @@ def finalize_search_after(integration_context: dict) -> None:
 
             if now - last_updated > expiry_time:
                 del time_dict[offset]
-                demisto.info(f"finalize_context removed {collection_id=} {offset=} {data} from cache")
+                demisto.info(f"remove_old_cache removed {collection_id=} {offset=} {data} from cache")
 
         # Clean up empty nested dicts
         if not time_dict:
-            del search_cache[collection_id]
+            search_cache.pop(collection_id, None)
 
 
 def parse_content_range(content_range: str) -> tuple:
