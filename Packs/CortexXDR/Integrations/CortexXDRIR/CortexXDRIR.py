@@ -1431,6 +1431,7 @@ def main():  # pragma: no cover
     """
     Executes an integration command
     """
+    # comment
     command = demisto.command()
     params = demisto.params()
     LOG(f"Command being called is {command}")
