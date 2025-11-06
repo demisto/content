@@ -205,22 +205,18 @@ script:
         prettypredefined:
           Bucket Name: ${asset.xdm.asset.name}
       - name: block_public_acls
-        description: Weather Amazon S3 should block public access control lists (ACLs) for this bucket and objects in this bucket.
         description: Wether Amazon S3 should block public access control lists (ACLs) for this bucket and objects in this bucket.
         defaultValue: 'true'
         hidden: true
       - name: ignore_public_acls
-        description: Weather Amazon S3 should ignore public ACLs for this bucket and objects in this bucket.
         description: Wether Amazon S3 should ignore public ACLs for this bucket and objects in this bucket.
         defaultValue: 'true'
         hidden: true
       - name: block_public_policy
-        description: Weather Amazon S3 should block public bucket policies for this bucket.
         description: Wether Amazon S3 should block public bucket policies for this bucket.
         defaultValue: 'true'
         hidden: true
       - name: restrict_public_buckets
-        description: Weather Amazon S3 should restrict public bucket policies for this bucket.
         description: Wether Amazon S3 should restrict public bucket policies for this bucket.
         defaultValue: 'true'
         hidden: true
