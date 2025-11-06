@@ -109,9 +109,7 @@ def test_map_to_command_args_id_argument(mocker):
 
     set_issue_args_dict, update_issue_args_dict = map_to_command_args(args)
 
-    assert set_issue_args_dict["id"] == "12345"
     assert set_issue_args_dict["type"] == "Security"
-    assert update_issue_args_dict["id"] == "12345"
     assert update_issue_args_dict["name"] == "Test Issue"
 
 
@@ -129,10 +127,8 @@ def test_map_to_command_args_id_only(mocker):
 
     set_issue_args_dict, update_issue_args_dict = map_to_command_args(args)
 
-    assert set_issue_args_dict["id"] == "67890"
-    assert update_issue_args_dict["id"] == "67890"
-    assert len(set_issue_args_dict) == 1
-    assert len(update_issue_args_dict) == 1
+    assert len(set_issue_args_dict) == 0
+    assert len(update_issue_args_dict) == 0
 
 
 def test_map_to_command_args_unknown_arguments(mocker):
@@ -256,14 +252,12 @@ def test_map_to_command_args_complete_scenario(mocker):
     set_issue_args_dict, update_issue_args_dict = map_to_command_args(args)
 
     # Check set_issue_args_dict
-    assert set_issue_args_dict["id"] == "INC-2024-001"
     assert set_issue_args_dict["systems"] == "DC01,EXCH01,WEB01"
     assert set_issue_args_dict["type"] == "APT"
     assert set_issue_args_dict["customFields"] == '{"threat_actor":"APT29","ttp":"T1566.001"}'
     assert set_issue_args_dict["details"] == "Nation-state threat actor detected"
 
     # Check update_issue_args_dict
-    assert update_issue_args_dict["id"] == "INC-2024-001"
     assert update_issue_args_dict["name"] == "Advanced Persistent Threat"
     assert update_issue_args_dict["assigned_user_mail"] == "senior.analyst@company.com"
     assert update_issue_args_dict["severity"] == "4"
@@ -447,8 +441,8 @@ class TestUpdateIssueMain:
 
         # Assert
         assert mock_execute_command.call_count == 2
-        mock_execute_command.assert_any_call("setIssue", {"systems": "test-system"})
-        mock_execute_command.assert_any_call("core-update-issue", {"name": "New Issue"})
+        mock_execute_command.assert_any_call("setIssue", {"systems": "test-system", "id": None})
+        mock_execute_command.assert_any_call("core-update-issue", {"name": "New Issue", "id": None})
         mock_return_results.assert_called_once_with("done")
 
     @patch("UpdateIssue.demisto")
