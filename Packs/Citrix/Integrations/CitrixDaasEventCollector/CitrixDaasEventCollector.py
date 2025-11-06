@@ -127,15 +127,14 @@ class Client(BaseClient):
         access_token = token_res["access_token"]
         demisto.setIntegrationContext({ACCESS_TOKEN_CONST: access_token})
         demisto.debug("access token created")
+        return access_token
 
     def get_operations(self, search_date_option="LastMinute", continuation_token=None):
         # get access token value
         integration_context = demisto.getIntegrationContext()
         access_token = integration_context.get(ACCESS_TOKEN_CONST)
         if not access_token:
-            self.request_access_token()
-
-        access_token = integration_context.get(ACCESS_TOKEN_CONST)
+            access_token = self.request_access_token()
 
         # set request params
         params = {"searchDateOption": search_date_option, "limit": OPERATIONS_REQUEST_LIMIT, "async": "false"}
