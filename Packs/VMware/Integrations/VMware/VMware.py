@@ -50,7 +50,7 @@ def parse_params(params):
 
 
 class Client(BaseClient):
-    def __init__(self, full_url: str, user_name: str, password: str, verify: bool, proxy: bool):
+    def __init__(self, full_url: str, user_name: str, password: str, verify: bool = False, proxy: bool = False):
         self.user_name = user_name
         self.password = password
         super().__init__(base_url=f"https://{full_url}", verify=verify, proxy=proxy)
@@ -623,18 +623,23 @@ def list_vms_by_tag(client: Client, args: dict) -> CommandResults:
     category_name = args["category"]
     tag_name = args["tag"]
 
+    # STEP 1 - Get category ID by category name
     category_id = client.get_category_id(category_name)
     demisto.debug(f"Got {category_id=} using {category_name=}.")
 
+    # STEP 2 - Get tag ID by tag name and category ID
     tag_id = client.get_tag_id(tag_name, category_id)
     demisto.debug(f"Got {tag_id=} using {tag_name=} and {category_id=}.")
 
+    # STEP 3 - Get objects associated with tag ID
     associated_objects = client.list_associated_objects(tag_id)
     demisto.debug(f"Got {len(associated_objects)} objects associated with {tag_id=}.")
 
+    # STEP 4 - Filter VMs for list of associated objects
     vm_ids = [vm.get("id") for vm in associated_objects if vm.get("type") == "VirtualMachine"]
     demisto.debug(f"Got {len(vm_ids)} VM IDs associated with {tag_id=}.")
 
+    # STEP 5 - Get VM names by VM IDs
     if not vm_ids:
         associated_vms = []
     else:
@@ -931,7 +936,7 @@ def main():  # pragma: no cover
         if command == "vmware-change-nic-state":
             result = change_nic_state(si, args)
         if command == "vmware-list-vms-by-tag":
-            client = Client(full_url, user_name, password, verify, proxy=proxy)
+            client = Client(full_url, user_name, password, verify=verify, proxy=proxy)
             return_results(list_vms_by_tag(client, args))
         if command == "vmware-create-vm":
             result = create_vm(si, args)
@@ -945,7 +950,7 @@ def main():  # pragma: no cover
             result = register_vm(si, args)
         if command == "vmware-unregister-vm":
             result = unregister_vm(si, args)
-        if result:
+        if result is not None:
             res.append(result)
     except Exception as ex:
         if hasattr(ex, "msg") and ex.msg:  # type: ignore
