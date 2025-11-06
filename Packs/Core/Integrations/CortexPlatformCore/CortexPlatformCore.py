@@ -24,9 +24,7 @@ ASSET_FIELDS = {
 }
 
 
-WEBAPP_COMMANDS = [
-    "core-get-vulnerabilities", "core-search-asset-groups", "core-get-issue-recommendations", "core-create-policy"
-]
+WEBAPP_COMMANDS = ["core-get-vulnerabilities", "core-search-asset-groups", "core-get-issue-recommendations", "core-create-policy"]
 DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
 
 VULNERABLE_ISSUES_TABLE = "VULNERABLE_ISSUES_TABLE"
@@ -399,17 +397,14 @@ class Client(CoreClient):
         """
         Creates a new policy in Cortex XDR.
         Args:
-            policy_payload (dict): The policy definition payload.
+            policy_payload (str): The policy definition payload.
         Returns:
             dict: The response from the API.
         """
         return self._http_request(
             method="POST",
             data=policy_payload,
-            headers={
-                **self._headers,
-                'content-type': "application/json"
-            },
+            headers={**self._headers, "content-type": "application/json"},
             url_suffix="/public_api/appsec/v1/policies",
         )
 
@@ -784,14 +779,30 @@ def get_asset_group_ids_from_names(client: Client, group_names: list[str]) -> li
 
 
 def get_appsec_rule_ids_from_names(client: Client, rule_names: list[str]) -> list[str]:
-    """Fetch AppSec rule IDs by rule names (exact first, then partial)."""
+    """
+    Retrieves the IDs of AppSec rules based on their names using exact and partial matching.
+
+    Args:
+        client (Client): The client instance used to send the request.
+        rule_names (list[str]): List of AppSec rule names to retrieve IDs for.
+
+    Returns:
+        list[str]: List of AppSec rule IDs.
+
+    Raises:
+        DemistoException: If any rule names cannot be found in the system.
+    """
     if not rule_names:
         return []
 
-    fb = FilterBuilder().add_field("ruleName", FilterType.CONTAINS, rule_names)
-    data = client.get_webapp_data(
-        build_webapp_request_data(APPSEC_RULES_TABLE, fb.to_dict(), limit=200, sort_field="ruleName")
-    ).get("reply", {}).get("DATA", []) or []
+    fb = FilterBuilder()
+    fb.add_field("ruleName", FilterType.CONTAINS, rule_names)
+    data = (
+        client.get_webapp_data(build_webapp_request_data(APPSEC_RULES_TABLE, fb.to_dict(), limit=200, sort_field="ruleName"))
+        .get("reply", {})
+        .get("DATA", [])
+        or []
+    )
 
     lookup = {r["ruleName"].lower(): r["id"] for r in data if r.get("id")}
     ids, found = [], set()
@@ -813,6 +824,22 @@ def get_appsec_rule_ids_from_names(client: Client, rule_names: list[str]) -> lis
 def create_policy_command(client: Client, args: dict) -> CommandResults:
     """
     Creates a new policy in Cortex Platform with defined conditions, scope, and triggers.
+    Args:
+        client: The Cortex Platform client instance.
+        args: Dictionary containing policy configuration parameters including:
+            - policy_name: Required name for the new policy
+            - description: Optional policy description
+            - asset_group_names: Asset groups to apply the policy to
+            - conditions_*: Various condition parameters (finding type, severity, etc.)
+            - scope_*: Policy scope configuration parameters
+            - trigger_*: Policy trigger configuration (periodic, PR, CI/CD)
+
+    Returns:
+        CommandResults: Results object containing the created policy information with
+        readable output, outputs prefix, and raw response data.
+
+    Raises:
+        DemistoException: If policy name is missing or no triggers are enabled.
     """
     policy_name = args.get("policy_name")
     if not policy_name:
@@ -862,7 +889,22 @@ def create_policy_get_asset_groups(client, args):
     return get_asset_group_ids_from_names(client, names) if names else []
 
 
-def create_policy_build_conditions(client, args):
+def create_policy_build_conditions(client: Client, args: dict) -> dict:
+    """
+    Build conditions for create-policy command based on provided arguments.
+
+    Creates a filter structure for policy conditions including finding types, severity,
+    developer suppression, backlog status, package information, AppSec rules, CVSS/EPSS scores,
+    and various boolean conditions. If no finding types are specified, defaults to all types
+    except "CI/CD Risk".
+
+    Args:
+        client: The Cortex Platform client instance
+        args: Dictionary containing condition arguments from the command
+
+    Returns:
+        dict: Filter dictionary containing all specified conditions
+    """
     builder = FilterBuilder()
 
     finding_types = argToList(args.get("conditions_finding_type"))
@@ -927,7 +969,28 @@ def create_policy_build_conditions(client, args):
     return builder.to_dict()
 
 
-def create_policy_build_scope(args):
+def create_policy_build_scope(args: dict) -> dict:
+    """
+    Build scope filters for create-policy.
+    Processes various scope parameters including categories, business applications,
+    repository settings, and boolean filters like public repository status and
+    security characteristics.
+
+    Args:
+        args: Dictionary containing scope filter parameters with keys like:
+            - scope_category: List of categories to filter by
+            - scope_business_application_names: Business application names
+            - scope_application_business_criticality: Application criticality level
+            - scope_repository_name: Repository name to filter
+            - scope_is_public_repository: Boolean for public repository filter
+            - scope_has_deployed_assets: Boolean for deployed assets filter
+            - scope_has_internet_exposed: Boolean for internet exposure filter
+            - scope_has_sensitive_data_access: Boolean for sensitive data access filter
+            - scope_has_privileged_capabilities: Boolean for privileged capabilities filter
+
+    Returns:
+        dict: Filter dictionary structure for policy scope, can be empty if no scope filters set
+    """
     builder = FilterBuilder()
 
     # Category
@@ -961,72 +1024,83 @@ def create_policy_build_scope(args):
     return builder.to_dict()
 
 
-def create_policy_build_triggers(args):
+def create_policy_build_triggers(args: dict) -> dict:
     """
-    Build triggers for create-policy.
-    Always include full trigger structure for periodic, PR, and CI/CD.
-    Actions are True/False depending on user input.
-    isEnabled is True if any action or override is set.
+    Build triggers configuration for policy creation.
+
+    Creates a complete triggers structure with periodic, PR, and CI/CD trigger types.
+    Each trigger includes enabled status, actions, and optional severity overrides.
+
+    Args:
+        args (dict): Command arguments containing trigger configuration parameters:
+            - triggers_periodic_report_issue: Enable periodic issue reporting
+            - triggers_periodic_override_severity: Override severity for periodic triggers
+            - triggers_pr_report_issue: Enable PR issue reporting
+            - triggers_pr_block_pr: Enable PR blocking
+            - triggers_pr_report_pr_comment: Enable PR comment reporting
+            - triggers_pr_override_severity: Override severity for PR triggers
+            - triggers_cicd_report_issue: Enable CI/CD issue reporting
+            - triggers_cicd_block_cicd: Enable CI/CD blocking
+            - triggers_cicd_report_cicd: Enable CI/CD reporting
+            - triggers_cicd_override_severity: Override severity for CI/CD triggers
+
+    Returns:
+        dict: Triggers configuration with periodic, PR, and CI/CD sections.
+              Each section contains isEnabled flag, actions dict, and overrideIssueSeverity.
+
+    Raises:
+        DemistoException: When no triggers are enabled (at least one must be set).
+
+    Note:
+        When an override severity is specified, reportIssue is automatically enabled
+        for that trigger type.
     """
     # Periodic trigger
     periodic_report_issue = argToBoolean(args.get("triggers_periodic_report_issue", False))
     periodic_override = args.get("triggers_periodic_override_severity")
-    
+
     # If override is set, reportIssue must be True
     if periodic_override:
         periodic_report_issue = True
-    
+
     periodic_enabled = periodic_report_issue or bool(periodic_override)
-    
+
     # PR trigger
     pr_report_issue = argToBoolean(args.get("triggers_pr_report_issue", False))
     pr_block_pr = argToBoolean(args.get("triggers_pr_block_pr", False))
     pr_report_comment = argToBoolean(args.get("triggers_pr_report_pr_comment", False))
     pr_override = args.get("triggers_pr_override_severity")
-    
+
     # If override is set, reportIssue must be True
     if pr_override:
         pr_report_issue = True
-    
+
     pr_enabled = pr_report_issue or pr_block_pr or pr_report_comment or bool(pr_override)
-    
+
     # CI/CD trigger
     cicd_report_issue = argToBoolean(args.get("triggers_cicd_report_issue", False))
     cicd_block_cicd = argToBoolean(args.get("triggers_cicd_block_cicd", False))
     cicd_report_cicd = argToBoolean(args.get("triggers_cicd_report_cicd", False))
     cicd_override = args.get("triggers_cicd_override_severity")
-    
+
     # If override is set, reportIssue must be True
     if cicd_override:
         cicd_report_issue = True
-    
+
     cicd_enabled = cicd_report_issue or cicd_block_cicd or cicd_report_cicd or bool(cicd_override)
 
     triggers = {
-        "periodic": {
-            "isEnabled": periodic_enabled,
-            "actions": {
-                "reportIssue": periodic_report_issue
-            }
-        },
+        "periodic": {"isEnabled": periodic_enabled, "actions": {"reportIssue": periodic_report_issue}},
         "pr": {
             "isEnabled": pr_enabled,
-            "actions": {
-                "reportIssue": pr_report_issue,
-                "blockPr": pr_block_pr,
-                "reportPrComment": pr_report_comment
-            }
+            "actions": {"reportIssue": pr_report_issue, "blockPr": pr_block_pr, "reportPrComment": pr_report_comment},
         },
         "cicd": {
             "isEnabled": cicd_enabled,
-            "actions": {
-                "reportIssue": cicd_report_issue,
-                "blockCicd": cicd_block_cicd,
-                "reportCicd": cicd_report_cicd
-            }
-        }
+            "actions": {"reportIssue": cicd_report_issue, "blockCicd": cicd_block_cicd, "reportCicd": cicd_report_cicd},
+        },
     }
-    
+
     # Add override severity if specified (and set to null if not specified)
     triggers["periodic"]["overrideIssueSeverity"] = periodic_override if periodic_override else None
     triggers["pr"]["overrideIssueSeverity"] = pr_override if pr_override else None
@@ -1037,7 +1111,6 @@ def create_policy_build_triggers(args):
         raise DemistoException("At least one trigger (periodic, PR, or CI/CD) must be set.")
 
     return triggers
-
 
 
 def main():  # pragma: no cover
@@ -1118,7 +1191,7 @@ def main():  # pragma: no cover
 
         elif command == "core-get-issue-recommendations":
             return_results(get_issue_recommendations_command(client, args))
-            
+
         elif command == "core-create-policy":
             return_results(create_policy_command(client, args))
 
