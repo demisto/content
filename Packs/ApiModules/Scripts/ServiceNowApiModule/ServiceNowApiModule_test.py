@@ -123,7 +123,10 @@ def test_get_access_token_with_automatic_retry(mocker):
     mock_login.assert_called_once_with(client.username, client.password)
 
     # Validate debug message was logged
-    mock_debug.assert_called_once_with("Refresh token may have expired, automatically generating new refresh token via login")
+    assert mock_debug.call_count == 2
+    debug_calls = [call[0][0] for call in mock_debug.call_args_list]
+    assert "Refresh token may have expired, automatically generating new refresh token via login" in debug_calls
+    assert "Setting integration context" in debug_calls
 
     # Validate that _http_request was called twice (first attempt + retry)
     assert mock_http_request.call_count == 2
