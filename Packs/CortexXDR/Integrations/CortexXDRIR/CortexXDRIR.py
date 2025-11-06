@@ -1428,6 +1428,7 @@ def update_alerts_in_xdr_command(client: Client, args: Dict) -> CommandResults:
 
 
 def main():  # pragma: no cover
+    # comment
     """
     Executes an integration command
     """
