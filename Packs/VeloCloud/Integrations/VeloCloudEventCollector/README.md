@@ -1,5 +1,5 @@
 Collects events from the VeloCloud API.
-This integration was integrated and tested with version xx of VeloCloudEventCollector.
+This integration was integrated and tested with VeloCloud as of 2025-10-06.
 
 ## Configure VeloCloud Event Collector in Cortex
 
