@@ -1363,27 +1363,60 @@ script:
         name: title
       - description: Custom branch name for the fix.
         name: fix_branch_name
+      # - description: Interval in seconds between each poll.
+      #   name: interval_in_seconds
+      #   defaultValue: '30'
+      # - description: Polling timeout in seconds.
+      #   name: timeout_in_seconds
+      #   defaultValue: '600'
+      # - description: The remediation ID for polling use.
+      #   name: remediationId
+      #   hidden: true
       name: core-appsec-remediate-issue
+      polling: true
       description: Create automated pull requests to fix multiple security issues in a single bulk operation.
       outputs:
-      - contextPath: Core.Appsec.Remediation.message
+      - contextPath: Core.TriggerPR.message
         description: Operation result message.
         type: String
-      - contextPath: Core.Appsec.Remediation.status
+      - contextPath: Core.TriggerPR.status
         description: Overall process status.
         type: String
-      - contextPath: Core.Appsec.Remediation.remediationId
+      - contextPath: Core.TriggerPR.remediationId
         description: Unique identifier to track the remediation process.
         type: String
-      - contextPath: Core.Appsec.Remediation.triggeredPrs
-        description: Status of each issue.
-        type: String
-      - contextPath: Core.Appsec.Remediation.triggeredPrs.issueId
+      - contextPath: Core.TriggerPR.triggeredPrs.issueId
         description: The issue identifier.
         type: String
-      - contextPath: Core.Appsec.Remediation.triggeredPrs.status
+      - contextPath: Core.TriggerPR.triggeredPrs.status
         description: Either "triggered" or "automated_fix_not_available".
         type: String
+
+    # - arguments:
+    #   - description: Remediation ID returned from core-appsec-remediate-issue.
+    #     name: remediationId
+    #     required: true
+    #   name: core-appsec-get-fix-status
+    #   description: Monitor the progress and results of remediation processes using the remediation ID.
+    #   outputs:
+    #   - contextPath: Core.Appsec.Remediation.results.successfulIssueIds
+    #     description: Issues that were successfully fixed.
+    #     type: Array
+    #   - contextPath: Core.Appsec.Remediation.results.failureIssueIds
+    #     description: Issues that failed to be fixed.
+    #     type: Array
+    #   - contextPath: Core.Appsec.Remediation.results.remediationRepositoryId
+    #     description: Internal repository identifier.
+    #     type: String
+    #   - contextPath: Core.Appsec.Remediation.results.errorMessage
+    #     description: Error details if the process failed.
+    #     type: String
+    #   - contextPath: Core.Appsec.Remediation.results.prUrl
+    #     description: URL of the created pull request.
+    #     type: String
+    #   - contextPath: Core.Appsec.Remediation.isProcessDone
+    #     description: Whether all remediation processes are complete.
+    #     type: String
   runonce: false
   script: "-"
   subtype: python3
