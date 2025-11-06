@@ -163,6 +163,54 @@ def test_get_related_incidents_playground() -> None:
     assert get_related_incidents(indicators, "query", None) == []
 
 
+def test_get_related_incidents_filters_json_objects() -> None:
+    """
+    Given:
+    - Indicators with investigationIDs containing:
+    - Valid incident IDs (strings like "11496621")
+    - JSON object strings (starting with '{')
+    - Playground incident IDs (UUID format)
+    - Non-string values (integers, None)
+    When:
+    - Running get_related_incidents()
+    Then:
+    - Ensure only valid incident ID strings are returned
+    - Ensure JSON objects, playground IDs, and non-strings are filtered out
+    """
+    json_object = '{"id":"11496621","name":"Test Incident","status":1}'
+    indicators = {
+        "ind1": {
+            "investigationIDs": [
+                "11496621",  # Valid incident ID
+                "11600076",  # Valid incident ID
+                json_object,  # JSON object - should be filtered out
+                PLAYGROUND_ID,  # Playground ID - should be filtered out
+                123,  # Integer - should be filtered out
+                None,  # None - should be filtered out
+                "12626842",  # Valid incident ID
+            ]
+        },
+        "ind2": {
+            "investigationIDs": [
+                "11496621",  # Duplicate valid ID
+                '{"another":"json"}',  # Another JSON object - should be filtered out
+            ]
+        },
+    }
+
+    result = get_related_incidents(indicators, "", None)
+
+    # Should only return the valid incident IDs (deduplicated)
+    expected_ids = {"11496621", "11600076", "12626842"}
+    assert set(result) == expected_ids
+
+    # Ensure no JSON objects are in the result
+    for incident_id in result:
+        assert not incident_id.startswith("{"), f"JSON object found in result: {incident_id}"
+        assert isinstance(incident_id, str), f"Non-string value found in result: {incident_id}"
+        assert not re.match(PLAYGROUND_PATTERN, incident_id), f"Playground ID found in result: {incident_id}"
+
+
 @pytest.mark.parametrize(
     "incidents, indicators, expected_indicators",
     [
