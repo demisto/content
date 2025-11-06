@@ -710,7 +710,7 @@ def update_issue_command(client: Client, args: dict):
     return "done"
 
 
-def get_extra_data_for_case_id_command(client, args):
+def get_extra_data_for_case_id_command(client: CoreClient, args):
     """
     Retrieves extra data for a specific case ID.
 
