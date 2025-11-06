@@ -1,8 +1,8 @@
 {
-    "name": "Infoblox BloxOne",
-    "description": "Infoblox BloxOne",
+    "name": "Infoblox Threat Defense with DDI",
+    "description": "Utilize the Infoblox Threat Defense with DDI integration to manage SOC Insight incident response, indicator enrichment, and block cyber threats.",
     "support": "partner",
-    "currentVersion": "1.1.17",
+    "currentVersion": "2.0.0",
     "author": "Infoblox Inc.",
     "url": "https://support.infoblox.com/",
     "email": "support@infoblox.com",
@@ -17,6 +17,7 @@
         "marketplacev2",
         "platform"
     ],
+    "defaultDataSource": "InfobloxBloxOneThreatDefense",
     "supportedModules": [
         "X1",
         "X3",
@@ -24,5 +25,34 @@
         "ENT_PLUS",
         "agentix",
         "xsiam"
+    ],
+    "dependencies": {
+        "CommonScripts": {
+            "mandatory": true,
+            "display_name": "Common Scripts"
+        },
+        "ServiceNow": {
+            "mandatory": false,
+            "display_name": "ServiceNow"
+        },
+        "CommonTypes": {
+            "mandatory": true,
+            "display_name": "Common Types"
+        },
+        "CoreAlertFields": {
+            "mandatory": true,
+            "display_name": "Core Alert Fields"
+        },
+        "FiltersAndTransformers": {
+            "mandatory": true,
+            "display_name": "Filters And Transformers"
+        }
+    },
+    "displayedImages": [
+        "CommonScripts",
+        "ServiceNow",
+        "CommonTypes",
+        "CoreAlertFields",
+        "FiltersAndTransformers"
     ]
 }

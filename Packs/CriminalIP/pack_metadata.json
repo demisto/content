@@ -1,0 +1,35 @@
+{
+    "name": "CriminalIP",
+    "description": "Criminal IP integration with Palo Alto Xsoar provides AI and OSINT-powered cyber threat intelligence for IP and domain analysis, along with comprehensive attack surface management capabilities.",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "author": "AI SPERA",
+    "url": "https://www.criminalip.io/",
+    "email": "support@aispera.com",
+    "created": "2025-04-28T10:00:00Z",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "certification": "certified",
+    "dependencies": {
+        "Base": {
+            "mandatory": true,
+            "display_name": "Base"
+        },
+        "CommonScripts": {
+            "mandatory": true,
+            "display_name": "Common Scripts"
+        },
+        "CommonPlaybooks": {
+            "mandatory": true,
+            "display_name": "Common Playbooks"
+        }
+    }
+}
