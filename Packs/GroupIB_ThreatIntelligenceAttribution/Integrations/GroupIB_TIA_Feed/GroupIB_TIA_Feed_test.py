@@ -405,9 +405,7 @@ def test_collection_availability_check_success(mocker):
         headers={"Accept": "*/*"},
     )
     collection_name = "compromised/account_group"
-    mocker.patch.object(
-        client, "get_available_collections_proxy_function", return_value=[collection_name, "other/collection"]
-    )
+    mocker.patch.object(client, "get_available_collections_proxy_function", return_value=[collection_name, "other/collection"])
 
     # Should not raise any exception
     collection_availability_check(client, collection_name)
