@@ -8,6 +8,7 @@ TASK_STATES = {
     "skipped": "WillNotBeExecuted",
     "willnotbeexecuted": "WillNotBeExecuted",
     "blocked": "Blocked",
+    undefined: undefined
 }
 
 
@@ -49,7 +50,7 @@ function isTaskMatch(task, name, tag, states) {
         (taskTask.tags && taskTask.tags.indexOf(tag) !== -1);
 
     var stateMatch = !states || states.length === 0 ||
-        (states.indexOf(task.state) !== -1 || task.state === undefined);
+        (states.indexOf(task.state) !== -1);
 
     return nameMatch && tagMatch && stateMatch;
 }
