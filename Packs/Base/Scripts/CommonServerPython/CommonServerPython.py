@@ -22,7 +22,7 @@ import urllib
 import gzip
 import ssl
 import signal
-from random import randint
+from random import randint, uniform
 import xml.etree.cElementTree as ET
 from collections import OrderedDict
 from datetime import datetime, timedelta
@@ -9428,6 +9428,7 @@ if 'requests' in sys.modules:
         def _implement_retry(self, retries=0,
                              status_list_to_retry=None,
                              backoff_factor=5,
+                             backoff_jitter=uniform(0, 1.0),
                              raise_on_redirect=False,
                              raise_on_status=False):
             """
@@ -9455,6 +9456,10 @@ if 'requests' in sys.modules:
                 than :attr:`Retry.BACKOFF_MAX`.
 
                 By default, backoff_factor set to 5
+                
+            :type backoff_jitter ``float``
+            :param backoff_jitter: the sleep (backoff factor) is extended by
+                random.uniform(0, {backoff jitter})
 
             :type raise_on_redirect ``bool``
             :param raise_on_redirect: Whether, if the number of redirects is
@@ -9478,6 +9483,7 @@ if 'requests' in sys.modules:
                     read=retries,
                     connect=retries,
                     backoff_factor=backoff_factor,
+                    backoff_jitter=backoff_jitter,
                     status=retries,
                     status_forcelist=status_list_to_retry,
                     raise_on_status=raise_on_status,
