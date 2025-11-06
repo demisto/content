@@ -1087,13 +1087,13 @@ def delete_account_command(
     """
     # Get account details before deletion to return complete information
     account_details = client.get_account_details(account_id)
-    
+
     # Delete the account
     client.delete_account(account_id)
-    
+
     # Add the deleted flag to the account details
     account_details["Deleted"] = True
-    
+
     return CommandResults(
         readable_output=f"Account {account_id} was deleted",
         outputs_prefix="CyberArkPAS.Accounts",
