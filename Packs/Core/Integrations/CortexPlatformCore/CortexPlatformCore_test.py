@@ -2378,3 +2378,379 @@ def test_get_issue_recommendations_command_api_calls(mocker):
     assert call_args["table_name"] == "ALERTS_VIEW_TABLE"
     assert call_args["type"] == "grid"
     assert "filter_data" in call_args
+
+
+def test_create_policy_command_basic_success(mocker: MockerFixture):
+    """
+    GIVEN:
+        A mocked client and minimal valid arguments for creating a policy.
+    WHEN:
+        The create_policy_command function is called.
+    THEN:
+        The policy is created successfully with default values where appropriate.
+    """
+    from CortexPlatformCore import Client, create_policy_command
+
+    # Mock client and response
+    mock_client = Client(base_url="", headers={})
+    mock_response = {"id": "policy-123", "name": "Test Policy", "description": "", "createdAt": "2025-01-01T00:00:00Z"}
+    mock_create_policy = mocker.patch.object(mock_client, "create_policy", return_value=mock_response)
+
+    # Mock helper functions
+    mocker.patch("CortexPlatformCore.create_policy_get_asset_groups", return_value=[])
+
+    # Minimal args with just policy name and one trigger enabled
+    args = {"policy_name": "Test Policy", "triggers_periodic_report_issue": "true"}
+
+    result = create_policy_command(mock_client, args)
+
+    # Verify result
+    assert result.outputs == mock_response
+    assert result.outputs_prefix == "Core.Policy"
+    assert result.outputs_key_field == "id"
+    assert "Test Policy" in result.readable_output
+
+    # Verify create_policy was called with correct payload
+    mock_create_policy.assert_called_once()
+    payload_str = mock_create_policy.call_args[0][0]
+    payload = json.loads(payload_str)
+
+    assert payload["name"] == "Test Policy"
+    assert payload["description"] == ""
+    assert payload["assetGroupIds"] == []
+    assert payload["triggers"]["periodic"]["isEnabled"] is True
+    assert payload["triggers"]["periodic"]["actions"]["reportIssue"] is True
+
+
+def test_create_policy_command_missing_policy_name(mocker: MockerFixture):
+    """
+    GIVEN:
+        A mocked client and arguments missing the required policy_name.
+    WHEN:
+        The create_policy_command function is called.
+    THEN:
+        A DemistoException is raised indicating policy_name is required.
+    """
+    from CortexPlatformCore import Client, create_policy_command
+    from CommonServerPython import DemistoException
+
+    mock_client = Client(base_url="", headers={})
+
+    # Args missing policy_name
+    args = {"triggers_periodic_report_issue": "true"}
+
+    with pytest.raises(DemistoException) as excinfo:
+        create_policy_command(mock_client, args)
+
+    assert "Policy name is required" in str(excinfo.value)
+
+
+def test_create_policy_command_no_triggers_enabled(mocker: MockerFixture):
+    """
+    GIVEN:
+        A mocked client and arguments with no triggers enabled.
+    WHEN:
+        The create_policy_command function is called.
+    THEN:
+        A DemistoException is raised indicating at least one trigger must be enabled.
+    """
+    from CortexPlatformCore import Client, create_policy_command
+    from CommonServerPython import DemistoException
+
+    mock_client = Client(base_url="", headers={})
+    mocker.patch("CortexPlatformCore.create_policy_get_asset_groups", return_value=[])
+
+    # Args with policy_name but no triggers enabled
+    args = {"policy_name": "Test Policy"}
+
+    with pytest.raises(DemistoException) as excinfo:
+        create_policy_command(mock_client, args)
+
+    assert "At least one trigger" in str(excinfo.value)
+
+
+def test_create_policy_command_with_asset_groups(mocker: MockerFixture):
+    """
+    GIVEN:
+        A mocked client and arguments including asset_group_names.
+    WHEN:
+        The create_policy_command function is called.
+    THEN:
+        The asset groups are properly resolved and included in the policy.
+    """
+    from CortexPlatformCore import Client, create_policy_command
+
+    mock_client = Client(base_url="", headers={})
+    mock_response = {"id": "policy-123", "name": "Test Policy"}
+    mocker.patch.object(mock_client, "create_policy", return_value=mock_response)
+
+    # Mock asset group resolution
+    mock_asset_groups = ["group-1", "group-2"]
+    mocker.patch("CortexPlatformCore.create_policy_get_asset_groups", return_value=mock_asset_groups)
+
+    args = {"policy_name": "Test Policy", "asset_group_names": "Group 1,Group 2", "triggers_periodic_report_issue": "true"}
+
+    create_policy_command(mock_client, args)
+
+    # Verify asset groups were included in the payload
+    payload_str = mock_client.create_policy.call_args[0][0]
+    payload = json.loads(payload_str)
+
+    assert payload["assetGroupIds"] == mock_asset_groups
+
+
+def test_create_policy_command_with_conditions(mocker: MockerFixture):
+    """
+    GIVEN:
+        A mocked client and arguments with various condition parameters.
+    WHEN:
+        The create_policy_command function is called.
+    THEN:
+        The conditions are properly built and included in the policy.
+    """
+    from CortexPlatformCore import Client, create_policy_command
+
+    mock_client = Client(base_url="", headers={})
+    mock_response = {"id": "policy-123", "name": "Test Policy"}
+    mocker.patch.object(mock_client, "create_policy", return_value=mock_response)
+    mocker.patch("CortexPlatformCore.create_policy_get_asset_groups", return_value=[])
+
+    # Mock AppSec rule resolution
+    mock_rule_ids = ["rule-1", "rule-2"]
+    mocker.patch("CortexPlatformCore.get_appsec_rule_ids_from_names", return_value=mock_rule_ids)
+
+    args = {
+        "policy_name": "Test Policy",
+        "conditions_finding_type": "Vulnerabilities,Secrets",
+        "conditions_severity": "high,critical",
+        "conditions_developer_suppression": "true",
+        "conditions_has_a_fix": "true",
+        "conditions_is_kev": "false",
+        "conditions_appsec_rule_names": "Rule 1,Rule 2",
+        "triggers_periodic_report_issue": "true",
+    }
+
+    create_policy_command(mock_client, args)
+
+    # Verify conditions were included in the payload
+    payload_str = mock_client.create_policy.call_args[0][0]
+    payload = json.loads(payload_str)
+
+    conditions = payload["conditions"]
+    assert "AND" in conditions
+
+    # Check that finding types were mapped correctly
+    finding_type_filter = next((f for f in conditions["AND"] if "Finding Type" in str(f)), None)
+    assert finding_type_filter is not None
+
+    # Check that severity filter was included
+    severity_filter = next((f for f in conditions["AND"] if "Severity" in str(f)), None)
+    assert severity_filter is not None
+
+    # Check that AppSec rules were included
+    appsec_filter = next((f for f in conditions["AND"] if "AppSec Rule" in str(f)), None)
+    assert appsec_filter is not None
+
+
+def test_create_policy_command_with_scope(mocker: MockerFixture):
+    """
+    GIVEN:
+        A mocked client and arguments with scope parameters.
+    WHEN:
+        The create_policy_command function is called.
+    THEN:
+        The scope is properly built and included in the policy.
+    """
+    from CortexPlatformCore import Client, create_policy_command
+
+    mock_client = Client(base_url="", headers={})
+    mock_response = {"id": "policy-123", "name": "Test Policy"}
+    mocker.patch.object(mock_client, "create_policy", return_value=mock_response)
+    mocker.patch("CortexPlatformCore.create_policy_get_asset_groups", return_value=[])
+
+    args = {
+        "policy_name": "Test Policy",
+        "scope_category": "application,repository",
+        "scope_business_application_names": "App1,App2",
+        "scope_repository_name": "repo1",
+        "scope_is_public_repository": "true",
+        "scope_has_internet_exposed": "true",
+        "triggers_periodic_report_issue": "true",
+    }
+
+    create_policy_command(mock_client, args)
+
+    # Verify scope was included in the payload
+    payload_str = mock_client.create_policy.call_args[0][0]
+    payload = json.loads(payload_str)
+
+    scope = payload["scope"]
+    assert "AND" in scope
+
+    # Check that category was mapped correctly
+    category_filter = next((f for f in scope["AND"] if "Category" in str(f)), None)
+    assert category_filter is not None
+
+    # Check that business application names were included
+    app_filter = next((f for f in scope["AND"] if "Business Application Names" in str(f)), None)
+    assert app_filter is not None
+
+    # Check that repository name was included
+    repo_filter = next((f for f in scope["AND"] if "Repository Name" in str(f)), None)
+    assert repo_filter is not None
+
+
+def test_create_policy_command_with_triggers(mocker: MockerFixture):
+    """
+    GIVEN:
+        A mocked client and arguments with various trigger configurations.
+    WHEN:
+        The create_policy_command function is called.
+    THEN:
+        The triggers are properly configured and included in the policy.
+    """
+    from CortexPlatformCore import Client, create_policy_command
+
+    mock_client = Client(base_url="", headers={})
+    mock_response = {"id": "policy-123", "name": "Test Policy"}
+    mocker.patch.object(mock_client, "create_policy", return_value=mock_response)
+    mocker.patch("CortexPlatformCore.create_policy_get_asset_groups", return_value=[])
+
+    args = {
+        "policy_name": "Test Policy",
+        "triggers_periodic_report_issue": "true",
+        "triggers_periodic_override_severity": "critical",
+        "triggers_pr_report_issue": "true",
+        "triggers_pr_block_pr": "true",
+        "triggers_pr_report_pr_comment": "false",
+        "triggers_cicd_report_issue": "false",
+        "triggers_cicd_block_cicd": "true",
+    }
+
+    create_policy_command(mock_client, args)
+
+    # Verify triggers were configured correctly
+    payload_str = mock_client.create_policy.call_args[0][0]
+    payload = json.loads(payload_str)
+
+    triggers = payload["triggers"]
+
+    # Check periodic trigger
+    assert triggers["periodic"]["isEnabled"] is True
+    assert triggers["periodic"]["actions"]["reportIssue"] is True
+    assert triggers["periodic"]["overrideIssueSeverity"] == "critical"
+
+    # Check PR trigger
+    assert triggers["pr"]["isEnabled"] is True
+    assert triggers["pr"]["actions"]["reportIssue"] is True
+    assert triggers["pr"]["actions"]["blockPr"] is True
+    assert triggers["pr"]["actions"]["reportPrComment"] is False
+
+    # Check CI/CD trigger
+    assert triggers["cicd"]["isEnabled"] is True
+    assert triggers["cicd"]["actions"]["reportIssue"] is False
+    assert triggers["cicd"]["actions"]["blockCicd"] is True
+
+
+def test_create_policy_command_with_all_parameters(mocker: MockerFixture):
+    """
+    GIVEN:
+        A mocked client and arguments with all possible parameters.
+    WHEN:
+        The create_policy_command function is called.
+    THEN:
+        The policy is created with all parameters properly configured.
+    """
+    from CortexPlatformCore import Client, create_policy_command
+
+    mock_client = Client(base_url="", headers={})
+    mock_response = {
+        "id": "policy-123",
+        "name": "Comprehensive Policy",
+        "description": "A comprehensive policy with all parameters",
+        "createdAt": "2025-01-01T00:00:00Z",
+    }
+    mock_create_policy = mocker.patch.object(mock_client, "create_policy", return_value=mock_response)
+
+    # Mock asset group resolution
+    mock_asset_groups = ["group-1", "group-2"]
+    mocker.patch("CortexPlatformCore.create_policy_get_asset_groups", return_value=mock_asset_groups)
+
+    # Mock AppSec rule resolution
+    mock_rule_ids = ["rule-1", "rule-2"]
+    mocker.patch("CortexPlatformCore.get_appsec_rule_ids_from_names", return_value=mock_rule_ids)
+
+    # Comprehensive args with all parameters
+    args = {
+        "policy_name": "Comprehensive Policy",
+        "description": "A comprehensive policy with all parameters",
+        "asset_group_names": "Group 1,Group 2",
+        # Conditions
+        "conditions_finding_type": "Vulnerabilities,Secrets,Weaknesses",
+        "conditions_severity": "high,critical",
+        "conditions_developer_suppression": "true",
+        "conditions_backlog_status": "active",
+        "conditions_package_name": "vulnerable-package",
+        "conditions_package_version": "1.0.0",
+        "conditions_package_operational_risk": "high",
+        "conditions_appsec_rule_names": "Rule 1,Rule 2",
+        "conditions_cvss": "7.5",
+        "conditions_epss": "0.8",
+        "conditions_has_a_fix": "true",
+        "conditions_is_kev": "true",
+        "conditions_secret_validity": "valid",
+        "conditions_license_type": "GPL",
+        # Scope
+        "scope_category": "application,repository",
+        "scope_business_application_names": "App1,App2",
+        "scope_application_business_criticality": "high",
+        "scope_repository_name": "repo1",
+        "scope_is_public_repository": "true",
+        "scope_has_deployed_assets": "true",
+        "scope_has_internet_exposed": "true",
+        "scope_has_sensitive_data_access": "true",
+        "scope_has_privileged_capabilities": "false",
+        # Triggers
+        "triggers_periodic_report_issue": "true",
+        "triggers_periodic_override_severity": "critical",
+        "triggers_pr_report_issue": "true",
+        "triggers_pr_block_pr": "true",
+        "triggers_pr_report_pr_comment": "true",
+        "triggers_pr_override_severity": "high",
+        "triggers_cicd_report_issue": "true",
+        "triggers_cicd_block_cicd": "true",
+        "triggers_cicd_report_cicd": "true",
+        "triggers_cicd_override_severity": "medium",
+    }
+
+    result = create_policy_command(mock_client, args)
+
+    # Verify result
+    assert result.outputs == mock_response
+    assert "Comprehensive Policy" in result.readable_output
+
+    # Verify create_policy was called with correct payload
+    mock_create_policy.assert_called_once()
+    payload_str = mock_create_policy.call_args[0][0]
+    payload = json.loads(payload_str)
+
+    # Check basic fields
+    assert payload["name"] == "Comprehensive Policy"
+    assert payload["description"] == "A comprehensive policy with all parameters"
+    assert payload["assetGroupIds"] == mock_asset_groups
+
+    # Check conditions
+    assert "AND" in payload["conditions"]
+
+    # Check scope
+    assert "AND" in payload["scope"]
+
+    # Check triggers
+    assert payload["triggers"]["periodic"]["isEnabled"] is True
+    assert payload["triggers"]["periodic"]["overrideIssueSeverity"] == "critical"
+
+    assert payload["triggers"]["pr"]["isEnabled"] is True
+    assert payload["triggers"]["pr"]["overrideIssueSeverity"] == "high"
+
+    assert payload["triggers"]["cicd"]["isEnabled"] is True
+    assert payload["triggers"]["cicd"]["overrideIssueSeverity"] == "medium"

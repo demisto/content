@@ -885,7 +885,6 @@ def create_policy_command(client: Client, args: dict) -> CommandResults:
 
 
 def create_policy_get_asset_groups(client: Client, args: dict) -> list[str]:
-
     names = argToList(args.get("asset_group_names"))
     return get_asset_group_ids_from_names(client, names) if names else []
 
