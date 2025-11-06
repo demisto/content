@@ -25,6 +25,7 @@ INDICATOR_TYPE = {
     "md5": FeedIndicatorType.File,
     "url": FeedIndicatorType.URL,
     "email": FeedIndicatorType.Email,
+    "string": FeedIndicatorType.String,
 }
 
 INDICATOR_TYPE_UPPER = {
