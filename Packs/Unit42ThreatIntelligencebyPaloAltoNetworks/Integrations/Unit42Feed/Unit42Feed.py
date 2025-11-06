@@ -73,18 +73,11 @@ def unit42_error_handler(res: requests.Response) -> str:
         Error message string including X-Request-ID if available
     """
     request_id = res.headers.get("X-Request-ID", "N/A")
-    error_msg = f"Error in API request [Status: {res.status_code}]\n"
-
-    # Log the X-Request-ID for debugging
     demisto.debug(f"{INTEGRATION_NAME} API Error - X-Request-ID: {request_id}, Status: {res.status_code}, URL: {res.url}")
 
-    try:
-        error_msg += res.json()
-    except Exception:
-        if res.text:
-            error_msg += f" - {res.text[:200]}"
-
-    error_msg += f"\n[X-Request-ID: {request_id}]"
+    error_msg = f"Error in API request [Status: {res.status_code}]\n"
+    error_msg += f"[X-Request-ID: {request_id}]\n"
+    error_msg += f"Response text - {res.text}"
 
     return error_msg
 
@@ -99,9 +92,6 @@ class Client(BaseClient):
             proxy: boolean, if *false* feed HTTPS server certificate will not use proxies. Default: *false*
         """
         super().__init__(base_url=BASE_URL, headers=headers, verify=verify, proxy=proxy)
-        self._implement_retry(
-            retries=RETRY_COUNT, status_list_to_retry=STATUS_CODES_TO_RETRY, backoff_factor=BACKOFF_FACTOR
-        )
 
     def get_indicators(
         self,
@@ -132,9 +122,14 @@ class Client(BaseClient):
             params["page_token"] = next_page_token
 
         response = self._http_request(
-            method="GET", url_suffix=INDICATORS_ENDPOINT, params=params, error_handler=unit42_error_handler
+            method="GET",
+            url_suffix=INDICATORS_ENDPOINT,
+            params=params,
+            error_handler=unit42_error_handler,
+            retries=RETRY_COUNT,
+            status_list_to_retry=STATUS_CODES_TO_RETRY,
+            raise_on_status=True
         )
-
         return response
 
     def get_threat_objects(self, limit: int = API_LIMIT, next_page_token: str | None = None) -> dict:
@@ -154,7 +149,13 @@ class Client(BaseClient):
             params["page_token"] = next_page_token
 
         response = self._http_request(
-            method="GET", url_suffix=THREAT_OBJECTS_ENDPOINT, params=params, error_handler=unit42_error_handler
+            method="GET",
+            url_suffix=THREAT_OBJECTS_ENDPOINT,
+            params=params,
+            error_handler=unit42_error_handler,
+            retries=RETRY_COUNT,
+            status_list_to_retry=STATUS_CODES_TO_RETRY,
+            raise_on_status=True
         )
 
         return response
