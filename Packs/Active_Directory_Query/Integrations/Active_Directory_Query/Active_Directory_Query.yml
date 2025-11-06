@@ -266,11 +266,23 @@ script:
       description: "The attribute value to update."
     description: Updates attributes of an existing Active Directory contact.
   - name: ad-disable-account
+    prettyname: ActiveDirectory Deactivate/Disable User
+    quickaction: true
+    supportedModules:
+      - C3
+      - X0
+      - X3
+      - X5
+      - ENT_PLUS
     arguments:
-    - name: username
+    - description: "The username of the account to disable (sAMAccountName)."
+      name: username
       required: true
-      description: "The username of the account to disable (sAMAccountName)."
+      prettyname: Run action on
+      prettypredefined:
+        User from the issue: ${issue.original_alert_json.raw_abioc.event.xdm.source.user.username}
     - name: base-dn
+      prettyname: Base DN
       description: Root (e.g., DC=domain,DC=com). By default, the Base DN configured for the instance is used.
     description: Disables an Active Directory user account.
     compliantpolicies:
@@ -831,6 +843,7 @@ script:
   ismappable: true
   isremotesyncout: true
   runonce: false
+supportsquickactions: true
 fromversion: 5.0.0
 tests:
 - Active Directory Test
